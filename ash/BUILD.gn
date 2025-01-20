@@ -4069,7 +4069,6 @@ test("ash_unittests") {
     "scanner/scanner_metrics_unittest.cc",
     "scanner/scanner_session_unittest.cc",
     "scanner/scanner_text_unittest.cc",
-    "scanner/scanner_unpopulated_action_unittest.cc",
     "screen_util_unittest.cc",
     "sensor_info/sensor_provider_unittest.cc",
     "session/fullscreen_controller_unittest.cc",

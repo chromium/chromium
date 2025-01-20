@@ -312,13 +312,19 @@ void ScannerController::OnSessionUIClosed() {
 
 void ScannerController::ExecuteAction(
     const ScannerActionViewModel& scanner_action) {
+  if (!scanner_session_) {
+    return;
+  }
   const manta::proto::ScannerAction::ActionCase action_case =
       scanner_action.GetActionCase();
-  scanner_action.unpopulated_action().Populate(base::BindOnce(
-      &ExecutePopulatedAction, action_case, base::TimeTicks::Now(),
-      scanner_action.delegate(),
-      base::BindOnce(&ScannerController::OnActionFinished,
-                     weak_ptr_factory_.GetWeakPtr(), action_case)));
+  scanner_session_->PopulateAction(
+      scanner_action.unpopulated_action().downscaled_jpeg_bytes(),
+      scanner_action.unpopulated_action().unpopulated_action(),
+      base::BindOnce(
+          &ExecutePopulatedAction, action_case, base::TimeTicks::Now(),
+          scanner_action.delegate(),
+          base::BindOnce(&ScannerController::OnActionFinished,
+                         weak_ptr_factory_.GetWeakPtr(), action_case)));
   ShowActionProgressNotification(action_case);
 }
 

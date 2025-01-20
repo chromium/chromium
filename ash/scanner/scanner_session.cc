@@ -95,10 +95,9 @@ scoped_refptr<base::RefCountedMemory> DownscaleImageIfNeeded(
 
 // Runs the callback with the populated proto from the response of a call to
 // `FetchActionDetailsForImage`.
-void OnActionPopulated(
-    ScannerUnpopulatedAction::PopulatedActionCallback callback,
-    std::unique_ptr<manta::proto::ScannerOutput> output,
-    manta::MantaStatus status) {
+void OnActionPopulated(ScannerSession::PopulateActionCallback callback,
+                       std::unique_ptr<manta::proto::ScannerOutput> output,
+                       manta::MantaStatus status) {
   if (output == nullptr) {
     // TODO(b/363100868): Handle error case
     std::move(callback).Run(manta::proto::ScannerAction());
@@ -212,16 +211,11 @@ void ScannerSession::OnActionsReturned(
 
   std::vector<ScannerActionViewModel> action_view_models;
 
-  ScannerUnpopulatedAction::PopulateCallback populate_to_proto_callback =
-      base::BindRepeating(&ScannerSession::PopulateAction,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          downscaled_jpeg_bytes);
-
   for (manta::proto::ScannerAction& proto_action :
        *output->mutable_objects(0)->mutable_actions()) {
     std::optional<ScannerUnpopulatedAction> unpopulated_action_ =
         ScannerUnpopulatedAction::FromProto(std::move(proto_action),
-                                            populate_to_proto_callback);
+                                            downscaled_jpeg_bytes);
     if (unpopulated_action_.has_value()) {
       action_view_models.emplace_back(std::move(*unpopulated_action_),
                                       command_delegate_->GetWeakPtr());
@@ -234,7 +228,7 @@ void ScannerSession::OnActionsReturned(
 void ScannerSession::PopulateAction(
     scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes,
     manta::proto::ScannerAction unpopulated_action,
-    ScannerUnpopulatedAction::PopulatedActionCallback callback) {
+    PopulateActionCallback callback) {
   delegate_->FetchActionDetailsForImage(
       std::move(downscaled_jpeg_bytes), std::move(unpopulated_action),
       base::BindOnce(&OnActionPopulated, std::move(callback)));

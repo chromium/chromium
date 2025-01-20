@@ -36,6 +36,8 @@ class ASH_EXPORT ScannerSession {
   // Callback used to receive the actions returned from a FetchActions call.
   using FetchActionsCallback =
       base::OnceCallback<void(std::vector<ScannerActionViewModel> actions)>;
+  using PopulateActionCallback =
+      base::OnceCallback<void(manta::proto::ScannerAction action)>;
 
   ScannerSession(ScannerProfileScopedDelegate* delegate,
                  ScannerCommandDelegate* command_delegate);
@@ -48,6 +50,13 @@ class ASH_EXPORT ScannerSession {
   void FetchActionsForImage(scoped_refptr<base::RefCountedMemory> jpeg_bytes,
                             FetchActionsCallback callback);
 
+  // Populates the selected action based on the contents of
+  // `downscaled_jpeg_bytes`.
+  void PopulateAction(
+      scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes,
+      manta::proto::ScannerAction unpopulated_action,
+      PopulateActionCallback callback);
+
  private:
   void OnActionsReturned(
       scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes,
@@ -55,14 +64,6 @@ class ASH_EXPORT ScannerSession {
       FetchActionsCallback callback,
       std::unique_ptr<manta::proto::ScannerOutput> output,
       manta::MantaStatus status);
-
-  // Populates the selected action. Used as a
-  // `ScannerUnpopulatedAction::PopulateToProtoCallback` once bound with the
-  // possibly-downscaled JPEG bytes.
-  void PopulateAction(
-      scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes,
-      manta::proto::ScannerAction unpopulated_action,
-      ScannerUnpopulatedAction::PopulatedActionCallback callback);
 
   const raw_ptr<ScannerProfileScopedDelegate> delegate_;
 

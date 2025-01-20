@@ -7,27 +7,28 @@
 #include <optional>
 #include <utility>
 
-#include "base/check_op.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/manta/proto/scanner.pb.h"
 
 namespace ash {
 
 ScannerUnpopulatedAction::ScannerUnpopulatedAction(
     manta::proto::ScannerAction unpopulated_action,
-    PopulateCallback populate_to_proto_callback)
+    scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes)
     : unpopulated_action_(std::move(unpopulated_action)),
-      populate_callback_(std::move(populate_to_proto_callback)) {}
+      downscaled_jpeg_bytes_(std::move(downscaled_jpeg_bytes)) {}
 
 std::optional<ScannerUnpopulatedAction> ScannerUnpopulatedAction::FromProto(
     manta::proto::ScannerAction unpopulated_action,
-    PopulateCallback populate_to_proto_callback) {
+    scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes) {
   if (unpopulated_action.action_case() ==
       manta::proto::ScannerAction::ACTION_NOT_SET) {
     return std::nullopt;
   }
 
   return ScannerUnpopulatedAction(std::move(unpopulated_action),
-                                  std::move(populate_to_proto_callback));
+                                  std::move(downscaled_jpeg_bytes));
 }
 
 ScannerUnpopulatedAction::ScannerUnpopulatedAction(
@@ -40,17 +41,5 @@ ScannerUnpopulatedAction& ScannerUnpopulatedAction::operator=(
     ScannerUnpopulatedAction&&) = default;
 
 ScannerUnpopulatedAction::~ScannerUnpopulatedAction() = default;
-
-void ScannerUnpopulatedAction::Populate(
-    PopulatedActionCallback callback) const& {
-  manta::proto::ScannerAction::ActionCase unpopulated_action_case =
-      unpopulated_action_.action_case();
-  // This should never occur unless the action has been previously moved.
-  CHECK_NE(unpopulated_action_case,
-           manta::proto::ScannerAction::ACTION_NOT_SET);
-
-  // This causes a copy of the unpopulated action to be made.
-  populate_callback_.Run(unpopulated_action_, std::move(callback));
-}
 
 }  // namespace ash

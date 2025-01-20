@@ -8,7 +8,8 @@
 #include <optional>
 
 #include "ash/ash_export.h"
-#include "base/functional/callback.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/manta/proto/scanner.pb.h"
 
 namespace ash {
@@ -16,21 +17,13 @@ namespace ash {
 // Represents a `manta::proto::ScannerAction` from an initial response from the
 // Scanner service, which is expected to be "unpopulated".
 //
-// Takes in a `PopulateCallback` which should return a "populated"
-// `manta::proto::ScannerAction`, or one with no action case if there is an
-// error. Provides methods to populate this to a `ScannerAction`.
+// Additionally stores JPEG bytes to be used to populate the action.
 class ASH_EXPORT ScannerUnpopulatedAction {
  public:
-  using PopulatedActionCallback =
-      base::OnceCallback<void(manta::proto::ScannerAction populated_action)>;
-  using PopulateCallback = base::RepeatingCallback<void(
-      manta::proto::ScannerAction unpopulated_action,
-      PopulatedActionCallback callback)>;
-
   // Returns nullopt iff `unpopulated_action.action_case() == ACTION_NOT_SET`.
   static std::optional<ScannerUnpopulatedAction> FromProto(
       manta::proto::ScannerAction unpopulated_action,
-      PopulateCallback populate_to_proto_callback);
+      scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes);
 
   ScannerUnpopulatedAction(const ScannerUnpopulatedAction&);
   ScannerUnpopulatedAction& operator=(const ScannerUnpopulatedAction&);
@@ -45,19 +38,22 @@ class ASH_EXPORT ScannerUnpopulatedAction {
     return unpopulated_action_.action_case();
   }
 
-  // Calls the provided `PopulatedActionCallback` and asynchronously returns a
-  // `ScannerAction`. If any errors occur, such as `callback` returning a
-  // different type of action to this action, an empty action is returned.
-  // This method will crash if this has been previously moved.
-  void Populate(PopulatedActionCallback callback) const&;
+  const manta::proto::ScannerAction& unpopulated_action() const {
+    return unpopulated_action_;
+  }
+
+  const scoped_refptr<base::RefCountedMemory>& downscaled_jpeg_bytes() const {
+    return downscaled_jpeg_bytes_;
+  }
 
  private:
-  ScannerUnpopulatedAction(manta::proto::ScannerAction unpopulated_action,
-                           PopulateCallback populate_to_proto_callback);
+  ScannerUnpopulatedAction(
+      manta::proto::ScannerAction unpopulated_action,
+      scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes);
 
   // Guaranteed to have `action_case()` to be set to a known value.
   manta::proto::ScannerAction unpopulated_action_;
-  PopulateCallback populate_callback_;
+  scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes_;
 };
 
 }  // namespace ash
