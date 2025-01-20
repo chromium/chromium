@@ -22,6 +22,15 @@ class WebauthnCredentialSpecifics_Encrypted;
 
 namespace webauthn::passkey_model_utils {
 
+// Extension output data for passkey creation and assertion.
+struct ExtensionOutputData {
+  ExtensionOutputData();
+  ExtensionOutputData(const ExtensionOutputData&);
+  ~ExtensionOutputData();
+
+  std::vector<uint8_t> prf_result;
+};
+
 // Extension input data for passkey creation and assertion.
 struct ExtensionInputData {
   // This constructor must be used if there is an extension present in the
@@ -44,7 +53,18 @@ struct ExtensionInputData {
   // Generates a CBOR output from the extension input data.
   std::optional<cbor::Value> ToCBOR() const;
 
+  // Generates the extensions output data from the input data and encrypted
+  // secrets. See:
+  // https://w3c.github.io/webauthn/#sctn-defined-client-extensions
+  ExtensionOutputData ToOutputData(
+      const sync_pb::WebauthnCredentialSpecifics_Encrypted& encrypted) const;
+
  private:
+  // Evaluates HMAC to produce the PRF result, using the hmac secret if it
+  // exists, or derives one from the private key otherwise.
+  std::vector<uint8_t> EvaluateHMAC(
+      const sync_pb::WebauthnCredentialSpecifics_Encrypted& encrypted) const;
+
   std::optional<device::PRFInput> prf_input;
 };
 
@@ -64,14 +84,16 @@ bool IsPasskeyValid(const sync_pb::WebauthnCredentialSpecifics& passkey);
 // the security domain secret of the `hw_protected` domain. Returns a passkey
 // sync entity with the sealed `encrypted` member set, and the unsealed private
 // key. If `extension_input_data` has PRF enabled, the hmac_secret will be
-// created as part of the sealed `encrypted` member.
+// created as part of the sealed `encrypted` member. If PRF is enabled and
+// `extension_output_data` is non null, `extension_output_data` will be written
+// to.
 std::pair<sync_pb::WebauthnCredentialSpecifics, std::vector<uint8_t>>
-GeneratePasskeyAndEncryptSecrets(
-    std::string_view rp_id,
-    const PasskeyModel::UserEntity& user_entity,
-    base::span<const uint8_t> trusted_vault_key,
-    int32_t trusted_vault_key_version,
-    const ExtensionInputData& extension_input_data);
+GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
+                                 const PasskeyModel::UserEntity& user_entity,
+                                 base::span<const uint8_t> trusted_vault_key,
+                                 int32_t trusted_vault_key_version,
+                                 const ExtensionInputData& extension_input_data,
+                                 ExtensionOutputData* extension_output_data);
 
 // Attempts to decrypt data from the `encrypted_data` field of `in` and
 // deserialize it into `out`. The return value indicates whether decryption and

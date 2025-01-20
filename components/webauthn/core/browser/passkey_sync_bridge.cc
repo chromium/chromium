@@ -431,7 +431,7 @@ sync_pb::WebauthnCredentialSpecifics PasskeySyncBridge::CreatePasskey(
   auto [specifics, public_key_spki_der] =
       webauthn::passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
           rp_id, user_entity, trusted_vault_key, trusted_vault_key_version,
-          /*extension_input_data=*/{});
+          /*extension_input_data=*/{}, /*extension_output_data=*/nullptr);
 
   AddShadowedCredentialIdsToNewPasskey(specifics);
 

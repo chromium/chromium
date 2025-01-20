@@ -199,7 +199,7 @@ ASPasskeyRegistrationCredential* PerformPasskeyCreation(
               webauthn::PasskeyModel::UserEntity(user_id, user_name_str,
                                                  user_name_str),
               trusted_vault_key, /*trusted_vault_key_version=*/0,
-              /*extension_input_data=*/{});
+              /*extension_input_data=*/{}, /*extension_output_data=*/nullptr);
   sync_pb::WebauthnCredentialSpecifics passkey = generated_passkey.first;
   std::vector<uint8_t> public_key_spki_der = generated_passkey.second;
 

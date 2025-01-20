@@ -102,7 +102,21 @@ std::array<uint8_t, kEncryptionSecretSize> DerivePasskeyEncryptionSecret(
       base::as_bytes(base::span(kHkdfInfo)));
 }
 
+std::array<uint8_t, kHmacSecretSize> DeriveHmacSecretFromPrivateKey(
+    base::span<const uint8_t> private_key) {
+  CHECK(!private_key.empty());
+  constexpr std::string_view kHkdfInfo = "derived PRF HMAC secret";
+  return crypto::HkdfSha256<kEncryptionSecretSize>(
+      private_key,
+      /*salt=*/base::span<const uint8_t>(),
+      base::as_bytes(base::span(kHkdfInfo)));
+}
+
 }  // namespace
+
+ExtensionOutputData::ExtensionOutputData() = default;
+ExtensionOutputData::ExtensionOutputData(const ExtensionOutputData&) = default;
+ExtensionOutputData::~ExtensionOutputData() = default;
 
 ExtensionInputData::ExtensionInputData(base::span<const uint8_t> prf_input1,
                                        base::span<const uint8_t> prf_input2) {
@@ -145,6 +159,26 @@ std::optional<cbor::Value> ExtensionInputData::ToCBOR() const {
   return cbor::Value(std::move(extensions));
 }
 
+ExtensionOutputData ExtensionInputData::ToOutputData(
+    const sync_pb::WebauthnCredentialSpecifics_Encrypted& encrypted) const {
+  if (!hasPRF() || prf_input->input1.empty()) {
+    return {};
+  }
+
+  ExtensionOutputData extension_output_data;
+  extension_output_data.prf_result = EvaluateHMAC(encrypted);
+  return extension_output_data;
+}
+
+std::vector<uint8_t> ExtensionInputData::EvaluateHMAC(
+    const sync_pb::WebauthnCredentialSpecifics_Encrypted& encrypted) const {
+  const std::string& hmac_secret = encrypted.hmac_secret();
+  return prf_input->EvaluateHMAC(
+      hmac_secret.empty() ? DeriveHmacSecretFromPrivateKey(
+                                base::as_byte_span(encrypted.private_key()))
+                          : base::as_byte_span(hmac_secret));
+}
+
 std::vector<sync_pb::WebauthnCredentialSpecifics> FilterShadowedCredentials(
     base::span<const sync_pb::WebauthnCredentialSpecifics> passkeys) {
   // Collect all explicitly shadowed credentials.
@@ -183,12 +217,12 @@ bool IsPasskeyValid(const sync_pb::WebauthnCredentialSpecifics& passkey) {
 }
 
 std::pair<sync_pb::WebauthnCredentialSpecifics, std::vector<uint8_t>>
-GeneratePasskeyAndEncryptSecrets(
-    std::string_view rp_id,
-    const PasskeyModel::UserEntity& user_entity,
-    base::span<const uint8_t> trusted_vault_key,
-    int32_t trusted_vault_key_version,
-    const ExtensionInputData& extension_input_data) {
+GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
+                                 const PasskeyModel::UserEntity& user_entity,
+                                 base::span<const uint8_t> trusted_vault_key,
+                                 int32_t trusted_vault_key_version,
+                                 const ExtensionInputData& extension_input_data,
+                                 ExtensionOutputData* extension_output_data) {
   sync_pb::WebauthnCredentialSpecifics specifics;
   specifics.set_sync_id(base::RandBytesAsString(kSyncIdLength));
   specifics.set_credential_id(base::RandBytesAsString(kCredentialIdLength));
@@ -211,6 +245,10 @@ GeneratePasskeyAndEncryptSecrets(
                                                &specifics));
   CHECK(specifics.has_encrypted());
   specifics.set_key_version(trusted_vault_key_version);
+
+  if (extension_output_data) {
+    *extension_output_data = extension_input_data.ToOutputData(encrypted);
+  }
 
   std::vector<uint8_t> public_key_spki;
   CHECK(ec_key->ExportPublicKey(&public_key_spki));
