@@ -1122,6 +1122,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/preferences:java",
       "//chrome/browser/preferences:pref_service_java",
       "//chrome/browser/preferences:preferences_junit_tests",
+      "//chrome/browser/preloading/android:java",
       "//chrome/browser/privacy_guide/android:java",
       "//chrome/browser/privacy_guide/android:junit",
       "//chrome/browser/privacy_sandbox/android:java",

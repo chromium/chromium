@@ -15,7 +15,7 @@ public class PreloadingDataBridge {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void setIsNavigationInDomainCallbackForCct(
                 @JniType("content::WebContents*") WebContents webContents);
     }
