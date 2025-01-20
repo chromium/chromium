@@ -876,7 +876,7 @@ void InspectImage(
 
 void TestAvifBppHistogram(const char* image_name,
                           const char* histogram_name = nullptr,
-                          base::HistogramBase::Sample sample = 0) {
+                          base::HistogramBase::Sample32 sample = 0) {
   TestBppHistogram(CreateAVIFDecoder, "Avif", image_name, histogram_name,
                    sample);
 }

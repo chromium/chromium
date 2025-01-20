@@ -218,7 +218,7 @@ TEST_F(HistogramBaseTest, AddTimeMillisecondsGranularityOverflow) {
                                           1, sample_max, 100, 0);
   int64_t large_negative = std::numeric_limits<int64_t>::min();
   add_count = 0;
-  while (large_negative < std::numeric_limits<HistogramBase::Sample>::min()) {
+  while (large_negative < std::numeric_limits<HistogramBase::Sample32>::min()) {
     histogram->AddTimeMillisecondsGranularity(Milliseconds(large_negative));
     ++add_count;
     large_negative /= 7;

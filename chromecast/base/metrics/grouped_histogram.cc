@@ -93,8 +93,8 @@ class GroupedHistogram : public base::Histogram {
   // TODO(crbug.com/40824087): min/max parameters are redundant with "ranges"
   // and can probably be removed.
   GroupedHistogram(const char* metric_to_override,
-                   Sample minimum,
-                   Sample maximum,
+                   Sample32 minimum,
+                   Sample32 maximum,
                    const base::BucketRanges* ranges)
       : Histogram(metric_to_override, ranges),
         minimum_(minimum),
@@ -108,7 +108,7 @@ class GroupedHistogram : public base::Histogram {
   }
 
   // base::Histogram implementation:
-  void Add(Sample value) override {
+  void Add(Sample32 value) override {
     Histogram::Add(value);
 
     // Note: This is very inefficient. Fetching the app name (which has a lock)
@@ -129,8 +129,8 @@ class GroupedHistogram : public base::Histogram {
  private:
   // Saved construction arguments for reconstructing the Histogram later (with
   // a suffixed app name).
-  Sample minimum_;
-  Sample maximum_;
+  Sample32 minimum_;
+  Sample32 maximum_;
   uint32_t bucket_count_;
 };
 
@@ -139,8 +139,8 @@ class GroupedHistogram : public base::Histogram {
 // It acts similarly to Histogram::FactoryGet but checks that
 // the histogram is being newly created and does not already exist.
 void PreregisterHistogram(const char* name,
-                          GroupedHistogram::Sample minimum,
-                          GroupedHistogram::Sample maximum,
+                          GroupedHistogram::Sample32 minimum,
+                          GroupedHistogram::Sample32 maximum,
                           size_t bucket_count,
                           int32_t flags) {
   std::string_view name_piece(name);

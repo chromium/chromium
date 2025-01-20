@@ -477,7 +477,7 @@ class WebBundleURLLoaderFactory::BundleDataSource
     DCHECK(!finished_loading_);
     base::UmaHistogramCustomCounts(
         "SubresourceWebBundles.ReceivedSize",
-        base::saturated_cast<base::Histogram::Sample>(buffer_.size()), 1,
+        base::saturated_cast<base::Histogram::Sample32>(buffer_.size()), 1,
         50000000, 50);
     DCHECK(data_completed_closure_);
     // Defer calling |data_completed_closure_| not to run

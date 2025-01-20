@@ -41,8 +41,8 @@ constexpr int kTitleTagTitleSource =
 constexpr int kInferredTitleSource =
     static_cast<int>(TileTitleSource::INFERRED);
 
-using Sample = base::HistogramBase::Sample;
-using Samples = std::vector<Sample>;
+using Sample32 = base::HistogramBase::Sample32;
+using Samples = std::vector<Sample32>;
 
 // Helper function that uses sensible defaults for irrelevant fields of
 // NTPTileImpression.

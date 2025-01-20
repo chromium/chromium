@@ -1626,10 +1626,10 @@ int SetupMain() {
   PROCESS_MEMORY_COUNTERS pmc;
   if (::GetProcessMemoryInfo(::GetCurrentProcess(), &pmc, sizeof(pmc))) {
     UMA_HISTOGRAM_MEMORY_KB("Setup.Install.PeakPagefileUsage",
-                            base::saturated_cast<base::HistogramBase::Sample>(
+                            base::saturated_cast<base::HistogramBase::Sample32>(
                                 pmc.PeakPagefileUsage / 1024));
     UMA_HISTOGRAM_MEMORY_KB("Setup.Install.PeakWorkingSetSize",
-                            base::saturated_cast<base::HistogramBase::Sample>(
+                            base::saturated_cast<base::HistogramBase::Sample32>(
                                 pmc.PeakWorkingSetSize / 1024));
   }
 

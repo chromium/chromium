@@ -50,7 +50,7 @@ class CastRuntimeHistogramFlattener final : public base::HistogramFlattener {
 
     for (std::unique_ptr<base::SampleCountIterator> it = samples.Iterator();
          !it->Done(); it->Next()) {
-      base::Histogram::Sample min;
+      base::Histogram::Sample32 min;
       int64_t max = 0;
       base::Histogram::Count count;
       it->Get(&min, &max, &count);

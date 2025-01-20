@@ -410,7 +410,7 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::AllocateHistogram(
         bucket_ranges->persistent_reference();
     if (!ranges_ref) {
       size_t ranges_count = bucket_count + 1;
-      size_t ranges_bytes = ranges_count * sizeof(HistogramBase::Sample);
+      size_t ranges_bytes = ranges_count * sizeof(HistogramBase::Sample32);
       ranges_ref =
           memory_allocator_->Allocate(ranges_bytes, kTypeIdRangesArray);
       if (ranges_ref) {

@@ -258,7 +258,7 @@ void CustomEventRecorder::LogHistograms() {
 void CustomEventRecorder::OnMetricsSampleCallback(
     const char* histogram_name,
     uint64_t name_hash,
-    base::HistogramBase::Sample sample) {
+    base::HistogramBase::Sample32 sample) {
   TRACE_EVENT_INSTANT(
       kHistogramSamplesCategory, "HistogramSample",
       [&](perfetto::EventContext ctx) {

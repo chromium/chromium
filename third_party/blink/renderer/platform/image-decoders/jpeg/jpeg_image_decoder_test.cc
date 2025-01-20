@@ -106,7 +106,7 @@ void ReadYUV(size_t max_decoded_bytes,
 
 void TestJpegBppHistogram(const char* image_name,
                           const char* histogram_name = nullptr,
-                          base::HistogramBase::Sample sample = 0) {
+                          base::HistogramBase::Sample32 sample = 0) {
   TestBppHistogram(CreateJPEGDecoder, "Jpeg", image_name, histogram_name,
                    sample);
 }

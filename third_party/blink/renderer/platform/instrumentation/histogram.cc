@@ -11,8 +11,8 @@
 namespace blink {
 
 CustomCountHistogram::CustomCountHistogram(const char* name,
-                                           base::HistogramBase::Sample min,
-                                           base::HistogramBase::Sample max,
+                                           base::HistogramBase::Sample32 min,
+                                           base::HistogramBase::Sample32 max,
                                            int32_t bucket_count) {
   histogram_ = base::Histogram::FactoryGet(
       name, min, max, bucket_count,
@@ -22,17 +22,17 @@ CustomCountHistogram::CustomCountHistogram(const char* name,
 CustomCountHistogram::CustomCountHistogram(base::HistogramBase* histogram)
     : histogram_(histogram) {}
 
-void CustomCountHistogram::Count(base::HistogramBase::Sample sample) {
+void CustomCountHistogram::Count(base::HistogramBase::Sample32 sample) {
   histogram_->Add(sample);
 }
 
-void CustomCountHistogram::CountMany(base::HistogramBase::Sample sample,
+void CustomCountHistogram::CountMany(base::HistogramBase::Sample32 sample,
                                      int count) {
   histogram_->AddCount(sample, count);
 }
 
 void CustomCountHistogram::CountMicroseconds(base::TimeDelta delta) {
-  Count(base::saturated_cast<base::HistogramBase::Sample>(
+  Count(base::saturated_cast<base::HistogramBase::Sample32>(
       delta.InMicroseconds()));
 }
 

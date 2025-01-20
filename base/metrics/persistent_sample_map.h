@@ -76,12 +76,12 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
   // Gets a pointer to a "count" corresponding to a given |value|. Returns NULL
   // if sample does not exist.
   std::atomic<HistogramBase::Count>* GetSampleCountStorage(
-      HistogramBase::Sample value) const;
+      HistogramBase::Sample32 value) const;
 
   // Gets a pointer to a "count" corresponding to a given |value|, creating
   // the sample (initialized to zero) if it does not already exist.
   std::atomic<HistogramBase::Count>* GetOrCreateSampleCountStorage(
-      HistogramBase::Sample value);
+      HistogramBase::Sample32 value);
 
  private:
   // Gets the object that manages persistent records. This returns the

@@ -888,13 +888,13 @@ void ServiceWorkerGlobalScope::CountCacheStorageInstalledScript(
 
   base::UmaHistogramCustomCounts(
       "ServiceWorker.CacheStorageInstalledScript.ScriptSize",
-      base::saturated_cast<base::Histogram::Sample>(script_size), 1000, 5000000,
+      base::saturated_cast<base::Histogram::Sample32>(script_size), 1000, 5000000,
       50);
 
   if (script_metadata_size) {
     base::UmaHistogramCustomCounts(
         "ServiceWorker.CacheStorageInstalledScript.CachedMetadataSize",
-        base::saturated_cast<base::Histogram::Sample>(script_metadata_size),
+        base::saturated_cast<base::Histogram::Sample32>(script_metadata_size),
         1000, 50000000, 50);
   }
 }
@@ -1348,18 +1348,18 @@ void ServiceWorkerGlobalScope::SetIsInstalling(bool is_installing) {
   // stored in Cache storage during installation.
   base::UmaHistogramCounts1000(
       "ServiceWorker.CacheStorageInstalledScript.Count",
-      base::saturated_cast<base::Histogram::Sample>(
+      base::saturated_cast<base::Histogram::Sample32>(
           cache_storage_installed_script_count_));
   base::UmaHistogramCustomCounts(
       "ServiceWorker.CacheStorageInstalledScript.ScriptTotalSize",
-      base::saturated_cast<base::Histogram::Sample>(
+      base::saturated_cast<base::Histogram::Sample32>(
           cache_storage_installed_script_total_size_),
       1000, 50000000, 50);
 
   if (cache_storage_installed_script_metadata_total_size_) {
     base::UmaHistogramCustomCounts(
         "ServiceWorker.CacheStorageInstalledScript.CachedMetadataTotalSize",
-        base::saturated_cast<base::Histogram::Sample>(
+        base::saturated_cast<base::Histogram::Sample32>(
             cache_storage_installed_script_metadata_total_size_),
         1000, 50000000, 50);
   }

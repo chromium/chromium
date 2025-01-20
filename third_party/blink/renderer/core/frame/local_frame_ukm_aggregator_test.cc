@@ -918,8 +918,8 @@ TEST_F(LocalFrameUkmAggregatorSimTest, VisualUpdateDelay) {
   Compositor().BeginFrame();
   histogram_tester.ExpectTotalCount("Blink.VisualUpdateDelay.UpdateTime.PreFCP",
                                     1);
-  base::HistogramBase::Sample delay =
-      base::saturated_cast<base::HistogramBase::Sample>(
+  base::HistogramBase::Sample32 delay =
+      base::saturated_cast<base::HistogramBase::Sample32>(
           (Compositor().LastFrameTime() -
            local_root_aggregator().LastFrameRequestTimeForTest())
               .InMicroseconds());

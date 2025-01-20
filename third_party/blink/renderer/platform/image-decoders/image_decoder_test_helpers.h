@@ -127,7 +127,7 @@ void TestBppHistogram(DecoderCreator create_decoder,
                       const char* image_type,
                       const char* image_name,
                       const char* histogram_name,
-                      base::HistogramBase::Sample sample);
+                      base::HistogramBase::Sample32 sample);
 
 }  // namespace blink
 

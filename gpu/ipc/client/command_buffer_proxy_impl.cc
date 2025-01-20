@@ -706,9 +706,9 @@ CommandBufferProxyImpl::GetUMAHistogramEnsureWorkVisibleDuration() {
     //
     // Histogram values are in microseconds.
 
-    std::vector<base::HistogramBase::Sample> intervals;
-    constexpr base::HistogramBase::Sample k15Milliseconds = 15 * 1000;
-    constexpr base::HistogramBase::Sample k30Seconds = 30 * 1000 * 1000;
+    std::vector<base::HistogramBase::Sample32> intervals;
+    constexpr base::HistogramBase::Sample32 k15Milliseconds = 15 * 1000;
+    constexpr base::HistogramBase::Sample32 k30Seconds = 30 * 1000 * 1000;
     constexpr int kFirstPartCount = 60;
     constexpr int kSecondPartCount = 120;
     intervals.reserve(kFirstPartCount + kSecondPartCount);

@@ -15,7 +15,7 @@ namespace midi {
 
 namespace {
 
-using Sample = base::HistogramBase::Sample;
+using Sample32 = base::HistogramBase::Sample32;
 using midi::mojom::PortState;
 using midi::mojom::Result;
 

@@ -782,7 +782,7 @@ class BackForwardCachePrintBrowserTest : public PrintBrowserTest {
   void ExpectBlocklistedFeature(
       blink::scheduler::WebSchedulerTrackedFeature feature,
       base::Location location) {
-    base::HistogramBase::Sample32 sample = base::HistogramBase::Sample(feature);
+    base::HistogramBase::Sample32 sample = base::HistogramBase::Sample32(feature);
     AddSampleToBuckets(&expected_blocklisted_features_, sample);
 
     EXPECT_THAT(

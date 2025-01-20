@@ -3047,7 +3047,7 @@ class InputHandlerProxyMainThreadScrollingReasonTest
     touch_end_.touches_length = 1;
   }
 
-  base::HistogramBase::Sample GetBucketSample(uint32_t reason) {
+  base::HistogramBase::Sample32 GetBucketSample(uint32_t reason) {
     uint32_t bucket = 0;
     while (reason >>= 1)
       bucket++;

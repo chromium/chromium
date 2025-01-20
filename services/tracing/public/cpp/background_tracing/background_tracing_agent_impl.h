@@ -46,11 +46,11 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) BackgroundTracingAgentImpl
 
  private:
   void OnHistogramChanged(const std::string& rule_id,
-                          base::Histogram::Sample reference_lower_value,
-                          base::Histogram::Sample reference_upper_value,
+                          base::Histogram::Sample32 reference_lower_value,
+                          base::Histogram::Sample32 reference_upper_value,
                           const char* histogram_name,
                           uint64_t name_hash,
-                          base::Histogram::Sample actual_value);
+                          base::Histogram::Sample32 actual_value);
 
   mojo::Remote<mojom::BackgroundTracingAgentClient> client_;
   base::Time histogram_last_changed_;

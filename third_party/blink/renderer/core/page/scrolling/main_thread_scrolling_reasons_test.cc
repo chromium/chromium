@@ -302,10 +302,10 @@ TEST_P(MainThreadScrollingReasonsTest, ReportBackgroundAttachmentFixed) {
           "Renderer4.MainThreadGestureScrollReason2"),
       testing::ElementsAre(
           base::Bucket(
-              base::HistogramBase::Sample(
+              base::HistogramBase::Sample32(
                   cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason),
               1),
-          base::Bucket(base::HistogramBase::Sample(
+          base::Bucket(base::HistogramBase::Sample32(
                            cc::MainThreadScrollingReason::BucketIndexForTesting(
                                expected_reason)),
                        1)));

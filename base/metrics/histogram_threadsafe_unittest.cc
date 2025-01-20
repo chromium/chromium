@@ -82,7 +82,7 @@ class SnapshotDeltaThread : public SimpleThread {
         // but the randomness does not really matter as thread-safety is what is
         // being tested here and there is already a lot of non-determinism
         // surrounding scheduling.
-        Histogram::Sample sample = rand() % histogram_max_;
+        Histogram::Sample32 sample = rand() % histogram_max_;
         histogram->Add(sample);
 
         // Take a snapshot of the histogram. Because of the multithreading
@@ -102,7 +102,7 @@ class SnapshotDeltaThread : public SimpleThread {
  private:
   // Stores an actual |sample| that was emitted for |histogram|. This is done
   // to compare what was found in histogram snapshots (see StoreSnapshot()).
-  void StoreActualSample(HistogramBase* histogram, Histogram::Sample sample) {
+  void StoreActualSample(HistogramBase* histogram, Histogram::Sample32 sample) {
     subtle::NoBarrier_AtomicIncrement(real_total_samples_count_, 1);
     switch (histogram->GetHistogramType()) {
       case HISTOGRAM: {
