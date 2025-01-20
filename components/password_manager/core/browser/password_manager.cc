@@ -1179,10 +1179,13 @@ void PasswordManager::OnPasswordFormsRemoved(
   // have data that we can save.
   // If the submitted manager observes one of the removed forms, just
   // ignore it as it was already inspected above.
-  base::ranges::any_of(removed_forms_copy, [&](const auto& removed_form_id) {
-    auto* manager = GetMatchedManagerForForm(driver, removed_form_id);
-    return manager != submitted_manager && detect_submission(manager);
-  });
+  if (base::ranges::any_of(
+          removed_forms_copy, [&](const auto& removed_form_id) {
+            auto* manager = GetMatchedManagerForForm(driver, removed_form_id);
+            return manager != submitted_manager && detect_submission(manager);
+          })) {
+    return;
+  }
 }
 
 void PasswordManager::OnIframeDetach(
