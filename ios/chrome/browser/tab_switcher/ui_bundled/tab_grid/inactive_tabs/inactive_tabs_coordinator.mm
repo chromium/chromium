@@ -394,6 +394,11 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   // No-op.
 }
 
+- (void)didTapButtonInActivitySummary:
+    (BaseGridViewController*)gridViewController {
+  NOTREACHED();
+}
+
 #pragma mark - InactiveTabsUserEducationCoordinatorDelegate
 
 - (void)inactiveTabsUserEducationCoordinatorDidTapSettingsButton:

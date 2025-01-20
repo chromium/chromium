@@ -224,10 +224,12 @@
 #pragma mark - TabGroupActivitySummaryCellDelegate
 
 - (void)closeButtonForActivitySummaryTapped {
+  [self.delegate didTapButtonInActivitySummary:self];
   [self removeActivitySummaryCell];
 }
 
 - (void)activityButtonForActivitySummaryTapped {
+  [self.delegate didTapButtonInActivitySummary:self];
   [self removeActivitySummaryCell];
   [self.viewDelegate showRecentActivity];
 }

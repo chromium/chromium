@@ -1844,6 +1844,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.mutator dragAndDropSessionEnded];
 }
 
+- (void)didTapButtonInActivitySummary:
+    (BaseGridViewController*)gridViewController {
+  NOTREACHED();
+}
+
 #pragma mark - TabGridToolbarsMainTabGridDelegate
 
 - (void)pageControlChangedValue:(id)sender {
