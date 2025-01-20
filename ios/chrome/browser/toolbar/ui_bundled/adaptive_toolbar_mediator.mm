@@ -146,7 +146,7 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
     _messagingService->RemovePersistentMessageObserver(
         _messagingBackendServiceBridge.get());
     _messagingBackendServiceBridge.reset();
-    _messagingService = nil;
+    _messagingService = nullptr;
   }
 }
 
