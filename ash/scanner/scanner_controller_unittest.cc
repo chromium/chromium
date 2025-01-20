@@ -53,6 +53,7 @@
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/message_center/fake_message_center.h"
 #include "ui/message_center/message_center.h"
 #include "url/gurl.h"
 
@@ -461,7 +462,9 @@ TEST_F(ScannerControllerTest, RunningActionFailsIfActionDetailsFails) {
   std::vector<ScannerActionViewModel> actions = future.Take();
   ASSERT_THAT(actions, SizeIs(1));
   base::test::TestFuture<bool> action_finished_future;
-  actions.front().ExecuteAction(action_finished_future.GetCallback());
+  scanner_controller->SetOnActionFinishedForTesting(
+      action_finished_future.GetCallback());
+  scanner_controller->ExecuteAction(actions[0]);
 
   EXPECT_FALSE(action_finished_future.Get());
 }
@@ -494,7 +497,9 @@ TEST_F(ScannerControllerTest,
   std::vector<ScannerActionViewModel> actions = future.Take();
   ASSERT_THAT(actions, SizeIs(1));
   base::test::TestFuture<bool> action_finished_future;
-  actions.front().ExecuteAction(action_finished_future.GetCallback());
+  scanner_controller->SetOnActionFinishedForTesting(
+      action_finished_future.GetCallback());
+  scanner_controller->ExecuteAction(actions[0]);
 
   EXPECT_FALSE(action_finished_future.Get());
 }
@@ -528,7 +533,9 @@ TEST_F(ScannerControllerTest,
   std::vector<ScannerActionViewModel> actions = future.Take();
   ASSERT_THAT(actions, SizeIs(1));
   base::test::TestFuture<bool> action_finished_future;
-  actions.front().ExecuteAction(action_finished_future.GetCallback());
+  scanner_controller->SetOnActionFinishedForTesting(
+      action_finished_future.GetCallback());
+  scanner_controller->ExecuteAction(actions[0]);
 
   EXPECT_FALSE(action_finished_future.Get());
 }
@@ -561,7 +568,9 @@ TEST_F(ScannerControllerTest,
   std::vector<ScannerActionViewModel> actions = future.Take();
   ASSERT_THAT(actions, SizeIs(1));
   base::test::TestFuture<bool> action_finished_future;
-  actions.front().ExecuteAction(action_finished_future.GetCallback());
+  scanner_controller->SetOnActionFinishedForTesting(
+      action_finished_future.GetCallback());
+  scanner_controller->ExecuteAction(actions[0]);
 
   EXPECT_FALSE(action_finished_future.Get());
 }
@@ -600,7 +609,9 @@ TEST_F(ScannerControllerTest,
   std::vector<ScannerActionViewModel> actions = future.Take();
   ASSERT_THAT(actions, SizeIs(1));
   base::test::TestFuture<bool> action_finished_future;
-  actions.front().ExecuteAction(action_finished_future.GetCallback());
+  scanner_controller->SetOnActionFinishedForTesting(
+      action_finished_future.GetCallback());
+  scanner_controller->ExecuteAction(actions[0]);
   ASSERT_TRUE(action_finished_future.IsReady());
 }
 
@@ -631,7 +642,9 @@ TEST_F(ScannerControllerTest,
   std::vector<ScannerActionViewModel> actions = future.Take();
   ASSERT_THAT(actions, SizeIs(1));
   base::test::TestFuture<bool> action_finished_future;
-  actions.front().ExecuteAction(action_finished_future.GetCallback());
+  scanner_controller->SetOnActionFinishedForTesting(
+      action_finished_future.GetCallback());
+  scanner_controller->ExecuteAction(actions[0]);
   ASSERT_TRUE(action_finished_future.IsReady());
 }
 
@@ -676,7 +689,9 @@ TEST_F(ScannerControllerTest, RunningNewEventActionOpensUrl) {
   std::vector<ScannerActionViewModel> actions = future.Take();
   ASSERT_THAT(actions, SizeIs(1));
   base::test::TestFuture<bool> action_finished_future;
-  actions.front().ExecuteAction(action_finished_future.GetCallback());
+  scanner_controller->SetOnActionFinishedForTesting(
+      action_finished_future.GetCallback());
+  scanner_controller->ExecuteAction(actions[0]);
 
   EXPECT_TRUE(action_finished_future.Get());
 }
@@ -689,6 +704,8 @@ TEST(ScannerControllerNoFixtureTest, RunningNewContactActionOpensUrl) {
       base::test::TaskEnvironment::MainThreadType::IO);
   // A session controller for `ScopedSessionObserver`.
   SessionControllerImpl session_controller;
+  // A message center for showing notifications.
+  message_center::MessageCenter::Initialize();
   // A new window delegate for opening the URL in test.
   MockNewWindowDelegate mock_new_window_delegate;
   EXPECT_CALL(mock_new_window_delegate,
@@ -734,9 +751,13 @@ TEST(ScannerControllerNoFixtureTest, RunningNewContactActionOpensUrl) {
   std::vector<ScannerActionViewModel> actions = future.Take();
   ASSERT_THAT(actions, SizeIs(1));
   base::test::TestFuture<bool> action_finished_future;
-  actions.front().ExecuteAction(action_finished_future.GetCallback());
+  scanner_controller.SetOnActionFinishedForTesting(
+      action_finished_future.GetCallback());
+  scanner_controller.ExecuteAction(actions[0]);
 
   EXPECT_TRUE(action_finished_future.Get());
+
+  message_center::MessageCenter::Shutdown();
 }
 
 }  // namespace

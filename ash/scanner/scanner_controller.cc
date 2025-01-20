@@ -26,6 +26,7 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -76,33 +77,6 @@ void ShowActionProgressNotification(
                                  NotificationCatalogName::kScannerAction),
       optional_fields, /*delegate=*/nullptr, kCaptureModeIcon,
       message_center::SystemNotificationWarningLevel::NORMAL));
-}
-
-// Should be called when an action finishes execution.
-void OnActionFinished(manta::proto::ScannerAction::ActionCase action_case,
-                      bool success) {
-  // Remove the action progress notification.
-  message_center::MessageCenter::Get()->RemoveNotification(
-      kScannerActionNotificationId,
-      /*by_user=*/false);
-
-  if (success) {
-    // TODO: crbug.com/375967525 - Finalize the action toast string.
-    if (action_case == manta::proto::ScannerAction::kCopyToClipboard) {
-      ToastManager::Get()->Show(ToastData(
-          kScannerActionSuccessToastId, ToastCatalogName::kScannerActionSuccess,
-          u"Text copied to clipboard"));
-    }
-    // TODO: crbug.com/383925780 - We should also show a toast for other action
-    // cases once the feedback mechanism is ready.
-  } else {
-    // TODO: crbug.com/383926250 - The action failure text should depend on the
-    // type of action attempted.
-    constexpr char16_t kPlaceholderActionFailureText[] = u"Action Failed";
-    ToastManager::Get()->Show(ToastData(kScannerActionFailureToastId,
-                                        ToastCatalogName::kScannerActionFailure,
-                                        kPlaceholderActionFailureText));
-  }
 }
 
 void OnFeedbackFormSendButtonClicked(const AccountId& account_id,
@@ -182,7 +156,9 @@ void ScannerController::ExecuteAction(
     const ScannerActionViewModel& scanner_action) {
   const manta::proto::ScannerAction::ActionCase action_case =
       scanner_action.GetActionCase();
-  scanner_action.ExecuteAction(base::BindOnce(&OnActionFinished, action_case));
+  scanner_action.ExecuteAction(
+      base::BindOnce(&ScannerController::OnActionFinished,
+                     weak_ptr_factory_.GetWeakPtr(), action_case));
   ShowActionProgressNotification(action_case);
 }
 
@@ -208,8 +184,45 @@ void ScannerController::OpenFeedbackDialog(
       base::BindOnce(&OnFeedbackFormSendButtonClicked, account_id));
 }
 
+void ScannerController::SetOnActionFinishedForTesting(
+    OnActionFinishedCallback callback) {
+  on_action_finished_for_testing_ = std::move(callback);
+}
+
 bool ScannerController::HasActiveSessionForTesting() const {
   return !!scanner_session_;
+}
+
+void ScannerController::OnActionFinished(
+    manta::proto::ScannerAction::ActionCase action_case,
+    bool success) {
+  // Remove the action progress notification.
+  message_center::MessageCenter::Get()->RemoveNotification(
+      kScannerActionNotificationId,
+      /*by_user=*/false);
+
+  if (success) {
+    // TODO: crbug.com/375967525 - Finalize the action toast string.
+    if (action_case == manta::proto::ScannerAction::kCopyToClipboard) {
+      ToastManager::Get()->Show(ToastData(
+          kScannerActionSuccessToastId, ToastCatalogName::kScannerActionSuccess,
+          u"Text copied to clipboard"));
+    }
+    // TODO: crbug.com/383925780 - We should also show a toast for other action
+    // cases once the feedback mechanism is ready.
+  } else {
+    // TODO: crbug.com/383926250 - The action failure text should depend on the
+    // type of action attempted.
+    constexpr char16_t kPlaceholderActionFailureText[] = u"Action Failed";
+    ToastManager::Get()->Show(ToastData(kScannerActionFailureToastId,
+                                        ToastCatalogName::kScannerActionFailure,
+                                        kPlaceholderActionFailureText));
+  }
+
+  if (!on_action_finished_for_testing_.is_null()) {
+    CHECK_IS_TEST();
+    std::move(on_action_finished_for_testing_).Run(success);
+  }
 }
 
 }  // namespace ash
