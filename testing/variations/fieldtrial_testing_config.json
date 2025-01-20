@@ -19682,6 +19682,37 @@
             ]
         }
     ],
+    "ResamplingScrollEvents": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Latency375",
+                    "params": {
+                        "latency": "0.375",
+                        "mode": "frames"
+                    },
+                    "enable_features": [
+                        "ResamplingScrollEventsExperimentalPrediction"
+                    ]
+                },
+                {
+                    "name": "Latency500",
+                    "params": {
+                        "latency": "0.5",
+                        "mode": "frames"
+                    },
+                    "enable_features": [
+                        "ResamplingScrollEventsExperimentalPrediction"
+                    ]
+                }
+            ]
+        }
+    ],
     "ResolutionBasedDecoderPriority": [
         {
             "platforms": [
