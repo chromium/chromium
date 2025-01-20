@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
@@ -75,7 +76,10 @@
   self.viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(browser);
   self.viewController.adaptiveDelegate = self;
 
-  self.mediator = [[AdaptiveToolbarMediator alloc] init];
+  self.mediator = [[AdaptiveToolbarMediator alloc]
+      initWithMessagingService:collaboration::messaging::
+                                   MessagingBackendServiceFactory::
+                                       GetForProfile(browser->GetProfile())];
   self.mediator.incognito = browser->GetProfile()->IsOffTheRecord();
   self.mediator.consumer = self.viewController;
   self.mediator.navigationBrowserAgent =

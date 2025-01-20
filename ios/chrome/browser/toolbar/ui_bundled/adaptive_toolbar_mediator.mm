@@ -9,9 +9,12 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/collaboration/public/messaging/message.h"
+#import "components/collaboration/public/messaging/messaging_backend_service.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/optimization_guide/optimization_guide_buildflags.h"
 #import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_bridge.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
@@ -48,7 +51,24 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/gfx/image/image.h"
 
+namespace {
+
+// Returns a local tab group ID in `message`. Returns nullopt if the ID doesn't
+// exist.
+std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
+    collaboration::messaging::PersistentMessage message) {
+  if (!message.attribution.tab_group_metadata.has_value()) {
+    return std::nullopt;
+  }
+  collaboration::messaging::TabGroupMessageMetadata group_data =
+      message.attribution.tab_group_metadata.value();
+  return group_data.local_tab_group_id;
+}
+
+}  // namespace
+
 @interface AdaptiveToolbarMediator () <CRWWebStateObserver,
+                                       MessagingBackendServiceObserving,
                                        OverlayPresenterObserving,
                                        WebStateListObserving>
 
@@ -65,14 +85,32 @@
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
   std::unique_ptr<OverlayPresenterObserverBridge> _overlayObserver;
+
+  // A service to get activity messages for a shared tab group.
+  raw_ptr<collaboration::messaging::MessagingBackendService> _messagingService;
+  // The bridge between the C++ MessagingBackendService observer and this
+  // Objective-C class.
+  std::unique_ptr<MessagingBackendServiceBridge> _messagingBackendServiceBridge;
+  // A set of a shared group ID that has changed and a user has not seen it yet.
+  std::set<tab_groups::LocalTabGroupID> _dirtyGroups;
 }
 
-- (instancetype)init {
+- (instancetype)initWithMessagingService:
+    (collaboration::messaging::MessagingBackendService*)messagingService {
   self = [super init];
   if (self) {
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     _overlayObserver = std::make_unique<OverlayPresenterObserverBridge>(self);
+
+    _messagingService = messagingService;
+    if (_messagingService) {
+      _messagingBackendServiceBridge =
+          std::make_unique<MessagingBackendServiceBridge>(self);
+      _messagingService->AddPersistentMessageObserver(
+          _messagingBackendServiceBridge.get());
+      [self fetchMessages];
+    }
   }
   return self;
 }
@@ -102,6 +140,13 @@
     _webState->RemoveObserver(_webStateObserver.get());
     _webStateObserver.reset();
     _webState = nullptr;
+  }
+
+  if (_messagingService) {
+    _messagingService->RemovePersistentMessageObserver(
+        _messagingBackendServiceBridge.get());
+    _messagingBackendServiceBridge.reset();
+    _messagingService = nil;
   }
 }
 
@@ -212,6 +257,48 @@
   [self.consumer setTabCount:[self tabCountToDisplay] addedInBackground:NO];
 }
 
+#pragma mark - MessagingBackendServiceObserving
+
+- (void)onMessagingBackendServiceInitialized {
+  [self fetchMessages];
+}
+
+- (void)displayPersistentMessage:
+    (collaboration::messaging::PersistentMessage)message {
+  CHECK(_messagingService);
+  CHECK(_messagingService->IsInitialized());
+
+  if (message.type !=
+      collaboration::messaging::PersistentNotificationType::DIRTY_TAB_GROUP) {
+    return;
+  }
+
+  if (std::optional<tab_groups::LocalTabGroupID> localTabGroupID =
+          LocalTabGroupID(message)) {
+    _dirtyGroups.insert(*localTabGroupID);
+  }
+
+  [self updateTabGridButtonBlueDot];
+}
+
+- (void)hidePersistentMessage:
+    (collaboration::messaging::PersistentMessage)message {
+  CHECK(_messagingService);
+  CHECK(_messagingService->IsInitialized());
+
+  if (message.type !=
+      collaboration::messaging::PersistentNotificationType::DIRTY_TAB_GROUP) {
+    return;
+  }
+
+  if (std::optional<tab_groups::LocalTabGroupID> localTabGroupID =
+          LocalTabGroupID(message)) {
+    _dirtyGroups.erase(*localTabGroupID);
+  }
+
+  [self updateTabGridButtonBlueDot];
+}
+
 #pragma mark - AdaptiveToolbarMenusProvider
 
 - (UIMenu*)menuForButtonOfType:(AdaptiveToolbarButtonType)buttonType {
@@ -267,6 +354,7 @@
   }
   if (self.webStateList) {
     [self.consumer setTabCount:_webStateList->count() addedInBackground:NO];
+    [self updateTabGridButtonBlueDot];
   }
 }
 
@@ -283,6 +371,7 @@
 
     if (self.consumer) {
       [self.consumer setTabCount:_webStateList->count() addedInBackground:NO];
+      [self updateTabGridButtonBlueDot];
     }
   } else {
     // Clear the web navigation browser agent if the webStateList is nil.
@@ -567,6 +656,43 @@
   return IsTabGroupIndicatorEnabled() && HasTabGroupIndicatorButtonsUpdated()
              ? ToolbarTabGroupState::kTabGroup
              : ToolbarTabGroupState::kNormal;
+}
+
+// Updates the blue dot in the Tab Grid button depending on the messages and the
+// current active web state.
+- (void)updateTabGridButtonBlueDot {
+  if ([self tabGroupStateToDisplay] == ToolbarTabGroupState::kNormal) {
+    // Show the blue dot if there is at least one group that has been updated.
+    [self.consumer setTabGridButtonBlueDot:_dirtyGroups.size() > 0];
+    return;
+  }
+
+  // Show the blue dot if the current active group has been updated.
+  CHECK([self tabGroupStateToDisplay] == ToolbarTabGroupState::kTabGroup);
+  const TabGroup* activeGroup = [self activeWebStateTabGroup];
+  [self.consumer setTabGridButtonBlueDot:_dirtyGroups.contains(
+                                             activeGroup->tab_group_id())];
+}
+
+// Gets messages to indicate that a shared tab group has been changed.
+- (void)fetchMessages {
+  if (!_messagingService || !_messagingService->IsInitialized()) {
+    return;
+  }
+
+  std::vector<collaboration::messaging::PersistentMessage> messages =
+      _messagingService->GetMessages(
+          collaboration::messaging::PersistentNotificationType::
+              DIRTY_TAB_GROUP);
+
+  for (auto& message : messages) {
+    if (std::optional<tab_groups::LocalTabGroupID> localTabGroupID =
+            LocalTabGroupID(message)) {
+      _dirtyGroups.insert(*localTabGroupID);
+    }
+  }
+
+  [self updateTabGridButtonBlueDot];
 }
 
 @end
