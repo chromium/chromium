@@ -5022,6 +5022,7 @@ static_library("browser") {
       "//chrome/browser/ash/app_list/search/omnibox",
       "//chrome/browser/ash/app_mode",
       "//chrome/browser/ash/app_mode/auto_sleep",
+      "//chrome/browser/ash/app_mode/isolated_web_app",
       "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/apps",

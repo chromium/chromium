@@ -277,11 +277,8 @@ bool KioskMixin::LaunchManually(const KioskApp& app) {
     case KioskAppType::kChromeApp:
       return LoginScreenTestApi::LaunchApp(app.id().app_id.value());
     case KioskAppType::kWebApp:
-      return LoginScreenTestApi::LaunchApp(app.id().account_id);
     case KioskAppType::kIsolatedWebApp:
-      // TODO(crbug.com/379633748): Support IWA in KioskMixin.
-      NOTIMPLEMENTED();
-      return false;
+      return LoginScreenTestApi::LaunchApp(app.id().account_id);
   }
 }
 
