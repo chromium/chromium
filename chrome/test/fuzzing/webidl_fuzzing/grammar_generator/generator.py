@@ -498,7 +498,7 @@ def main():
     if args.include_path:
       f.write(f'!include {args.include_path}\n')
     f.write('!lineguard try { <line> } catch(e) { }\n')
-    f.write('<root root=true> = <lines count=20>\n')
+    f.write('<root root=true> = <lines>\n')
     for rule in builder.rules:
       line = f'<{rule.lhs.name}> = '
       rhs_line = ''
