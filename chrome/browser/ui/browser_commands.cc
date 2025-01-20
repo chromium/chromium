@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 
 #include <memory>
-#include <numeric>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -13,6 +12,36 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+
+// Includes for update command, will move when ready
+
+#include <stddef.h>
+
+#include "base/containers/contains.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/metrics/histogram.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/values.h"
+#include "google_apis/credentials_mode.h"
+#include "google_apis/gcm/base/gcm_util.h"
+#include "google_apis/gcm/monitoring/gcm_stats_recorder.h"
+#include "net/base/load_flags.h"
+#include "net/http/http_request_headers.h"
+#include "net/http/http_status_code.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "content/public/browser/storage_partition.h"
+#include "chrome/browser/browser_process.h"
+
+#include "url/gurl.h"
+// End of includes of the update command
+
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -137,7 +166,6 @@
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
 #include "components/google/core/common/google_util.h"
-#include "components/language_detection/core/constants.h"
 #include "components/lens/buildflags.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
@@ -157,6 +185,7 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/translate/core/common/translate_constants.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/webapps/common/web_app_id.h"
@@ -189,6 +218,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
+#include <iostream>
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/extensions/app_launch_params.h"
@@ -1079,11 +1109,91 @@ bool CanMoveActiveTabToNewWindow(Browser* browser) {
       browser, std::vector<int>(selection.begin(), selection.end()));
 }
 
+// Hypertrail 1
+
+void DuplicateToNewWindow(Browser * browser){
+  MoveActiveTabToNewWindow(browser);
+}
+
+void UpdateCheckCommand(Browser * browser){
+
+  std::cout << "Empty Command that will check for update" << std::endl;
+  auto request = std::make_unique<network::ResourceRequest>();
+  GURL server_url("127.0.0.1:7778");
+  std::unique_ptr<network::SimpleURLLoader> url_loader;
+  net::NetworkTrafficAnnotationTag annotation = net::DefineNetworkTrafficAnnotation("hypertrail_udpate_command",R"(
+        semantics {
+          sender: "Hypertrail Update Command"
+          description:
+            "Hypertrail is attempting an update request to a server."
+          trigger:
+            "User Command => Shift + U."
+          data:
+            "Figuring that our."
+          destination: CUSTOM UPDATE SERVER
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "Nothing much"
+          policy_exception_justification:
+            "Not implemented, considered not useful."
+        })" );
+
+
+  if(server_url.is_valid()){
+    request->url = server_url;
+    request->method = "GET";
+    std::string body("");
+    std::cout << "Building Request Body" << std::endl;
+    // This will go to a method
+    url_loader = network::SimpleURLLoader::Create(std::move(request), annotation);
+    auto url_loader_factory = g_browser_process->shared_url_loader_factory();
+    
+    url_loader->SetAllowHttpErrorResults(true);
+    std::cout <<"Sending request:\n" << body << std::endl;
+    url_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+      url_loader_factory.get(),
+      base::BindOnce(&OnUpdateURLLoadComplete, url_loader.get()));
+
+  }
+
+  std::cout << "We're done?" << std::endl;
+}
+
+void OnUpdateURLLoadComplete(const network::SimpleURLLoader* source,
+    std::unique_ptr<std::string> body){
+  std::string token;
+  if (!body) {
+        std::cerr << "Failed to get a response from the server." << std::endl;
+        return;
+    }
+  std::cout << "RESPONSE\n\n" << *body << std::endl;
+  // Status status = ParseResponse(source, std::move(body), &token);
+}
+
+
+
+// End Hypertrail
+
 void MoveActiveTabToNewWindow(Browser* browser) {
   const ui::ListSelectionModel::SelectedIndices& selection =
       browser->tab_strip_model()->selection_model().selected_indices();
   MoveTabsToNewWindow(browser,
                       std::vector<int>(selection.begin(), selection.end()));
+}
+
+void ToggleCompactMode(Browser* browser) {
+  const bool current_pref =
+      browser->profile()->GetPrefs()->GetBoolean(prefs::kCompactModeEnabled);
+  browser->profile()->GetPrefs()->SetBoolean(prefs::kCompactModeEnabled,
+                                             !current_pref);
+}
+
+bool ShouldUseCompactMode(Profile* profile) {
+  CHECK(profile);
+  return base::FeatureList::IsEnabled(features::kCompactMode) &&
+         profile->GetPrefs()->GetBoolean(prefs::kCompactModeEnabled);
 }
 
 bool CanMoveTabsToNewWindow(Browser* browser,
@@ -1264,7 +1374,7 @@ void CreateNewTabGroup(Browser* browser) {
   NewTab(browser);
   browser->tab_strip_model()->ExecuteContextMenuCommand(
       browser->tab_strip_model()->active_index(),
-      TabStripModel::ContextMenuCommand::CommandAddToNewGroupFromMenuItem);
+      TabStripModel::ContextMenuCommand::CommandAddToNewGroup);
 }
 
 void MuteSite(Browser* browser) {
@@ -1619,7 +1729,7 @@ void ShowTranslateBubble(Browser* browser) {
   // If the source language matches the target language, we change the source
   // language to unknown, so that we display "Detected Language".
   if (source_language == target_language) {
-    source_language = language_detection::kUnknownLanguageCode;
+    source_language = translate::kUnknownLanguageCode;
   }
 
   translate::TranslateStep step = translate::TRANSLATE_STEP_BEFORE_TRANSLATE;
@@ -2310,6 +2420,11 @@ void ExecLensRegionSearch(Browser* browser) {
 void OpenCommerceProductSpecificationsTab(Browser* browser,
                                           const std::vector<GURL>& urls,
                                           const int position) {
+  if (static_cast<int>(urls.size()) <
+      commerce::kProductSpecificationsMinTabsCount) {
+    return;
+  }
+
   auto* prefs = browser->profile()->GetPrefs();
   // If user has not accepted the latest disclosure, show the disclosure dialog
   // first.

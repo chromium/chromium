@@ -46,6 +46,14 @@ const AcceleratorMapping kAcceleratorMap[] = {
 #endif
     {ui::VKEY_ESCAPE, ui::EF_NONE, IDC_CLOSE_FIND_OR_STOP},
 
+// Hypertrail 
+
+    {ui::VKEY_B, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR, IDC_DUPLICATE_TAB_TO_WINDOW}, 
+    {ui::VKEY_K, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR, IDC_DUPLICATE_TAB}, // Testing a general shortcut
+    {ui::VKEY_U, ui::EF_SHIFT_DOWN, IDC_UPDATE_CHECK},
+
+// End Hypetrail
+
 #if !BUILDFLAG(IS_MAC)
     {ui::VKEY_D, ui::EF_PLATFORM_ACCELERATOR, IDC_BOOKMARK_THIS_TAB},
     {ui::VKEY_D, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR,
@@ -118,8 +126,6 @@ const AcceleratorMapping kAcceleratorMap[] = {
     {ui::VKEY_8, ui::EF_ALT_DOWN, IDC_SELECT_TAB_7},
     {ui::VKEY_NUMPAD8, ui::EF_ALT_DOWN, IDC_SELECT_TAB_7},
     {ui::VKEY_BROWSER_FAVORITES, ui::EF_NONE, IDC_SHOW_BOOKMARK_BAR},
-    {ui::VKEY_K, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR,
-     IDC_DUPLICATE_TAB},
 #endif  // BUILDFLAG(IS_LINUX)
     {ui::VKEY_B, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR,
      IDC_SHOW_BOOKMARK_BAR},

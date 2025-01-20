@@ -21,6 +21,21 @@
 #include "printing/buildflags/buildflags.h"
 #include "ui/base/window_open_disposition.h"
 
+#include <stdint.h>
+
+#include <map>
+#include <memory>
+
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
+#include "google_apis/gcm/base/gcm_export.h"
+#include "net/base/backoff_entry.h"
+#include "services/network/public/cpp/simple_url_loader.h"
+#include "url/gurl.h"
+
 class Browser;
 class CommandObserver;
 class GURL;
@@ -125,6 +140,8 @@ bool CanDuplicateTab(const Browser* browser);
 bool CanDuplicateKeyboardFocusedTab(const Browser* browser);
 bool CanMoveActiveTabToNewWindow(Browser* browser);
 void MoveActiveTabToNewWindow(Browser* browser);
+void ToggleCompactMode(Browser* browser);
+bool ShouldUseCompactMode(Profile* profile);
 bool CanMoveTabsToNewWindow(Browser* browser,
                             const std::vector<int>& tab_indices);
 // Moves the specified |tab_indices| to a newly-created window. If |group| is
@@ -138,6 +155,7 @@ void MoveTabsToNewWindow(
 bool CanCloseTabsToRight(const Browser* browser);
 bool CanCloseOtherTabs(const Browser* browser);
 content::WebContents* DuplicateTabAt(Browser* browser, int index);
+void DuplicateTabAt(Browser * browser);
 bool CanDuplicateTabAt(const Browser* browser, int index);
 void MoveTabsToExistingWindow(Browser* source,
                               Browser* target,
@@ -274,6 +292,11 @@ void ProcessInterceptedChromeURLNavigationInIncognito(Browser* browser,
 void ExecLensOverlay(Browser* browser);
 void ExecLensRegionSearch(Browser* browser);
 
+// Hypertrail -> All new Hypertrail commands will go here
+void DuplicateToNewWindow(Browser * browser);
+void UpdateCheckCommand(Browser * browser);
+void OnUpdateURLLoadComplete(const network::SimpleURLLoader* source,
+    std::unique_ptr<std::string> body);
 // Commerce
 void OpenCommerceProductSpecificationsTab(Browser* browser,
                                           const std::vector<GURL>& urls,
