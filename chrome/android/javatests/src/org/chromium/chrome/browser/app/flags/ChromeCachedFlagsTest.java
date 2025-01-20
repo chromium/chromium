@@ -52,7 +52,6 @@ public class ChromeCachedFlagsTest {
     private static final Set<CachedFlag> BASELINE =
             Set.of(
                     ChromeFeatureList.sDownloadsMigrateToJobsAPI,
-                    ChromeFeatureList.sPrefetchBrowserInitiatedTriggers,
                     ChromeFeatureList.sSafetyHubMagicStack);
 
     /**

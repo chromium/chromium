@@ -733,7 +733,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sPostGetMyMemoryStateToBackground =
             newCachedFlag(POST_GET_MEMORY_PRESSURE_TO_BACKGROUND, true);
     public static final CachedFlag sPrefetchBrowserInitiatedTriggers =
-            newCachedFlag(PREFETCH_BROWSER_INITIATED_TRIGGERS, false);
+            newCachedFlag(PREFETCH_BROWSER_INITIATED_TRIGGERS, true);
     public static final CachedFlag sRedirectExplicitCTAIntentsToExistingActivity =
             newCachedFlag(REDIRECT_EXPLICIT_CTA_INTENTS_TO_EXISTING_ACTIVITY, true);
 
