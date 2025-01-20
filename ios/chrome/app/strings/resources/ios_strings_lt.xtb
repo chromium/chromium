@@ -191,6 +191,7 @@
 <translation id="1779354709911146450">Autentifikavimo klaida</translation>
 <translation id="1780152987505130652">Uždaryti grupę</translation>
 <translation id="178400879184240105">Slaptažodžiai unikalūs</translation>
+<translation id="17906873777101817">Siūlyti išsaugoti slaptažodžius ir prieigos raktus</translation>
 <translation id="1807893857950749072">Leisti kainų stebėjimo pranešimus…</translation>
 <translation id="1810976980198522421">Atšaukti</translation>
 <translation id="1815941218935345331">Slaptažodis</translation>
@@ -1323,6 +1324,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="6732087373923685049">fotoaparatas</translation>
 <translation id="6746338529702829275">Peržiūrėkite paskyros duomenis</translation>
 <translation id="6755200887046212842">Tvarkyti paskyras</translation>
+<translation id="6755733078693946548">Pasiekti slaptažodžius ir prieigos raktus iš bet kurios programos</translation>
 <translation id="6761393919622941301">Garsas</translation>
 <translation id="6779455296366983087">Naršymo duomenys bus ištrinti</translation>
 <translation id="6790502149545262384">Netrukus atidarę naują skirtuką matysite istorijas iš „<ph name="CHANNEL_NAME" />“.</translation>
@@ -1590,6 +1592,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="7977451675950311423">Įspėjama, jei naudojate slaptažodį, kuris pažeistas dėl duomenų saugos pažeidimo.</translation>
 <translation id="7977482887663636093">Nauji skirtukai: <ph name="NUMBER_OF_TABS_ADDED" />, uždaryta: <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="797824194429476746">Skirtukai liks atidaryti šiame įrenginyje, bet grupė bus visam laikui ištrinta.</translation>
+<translation id="797874245254030665">Pasiekkite slaptažodžius ir prieigos raktus iš bet kurios programos</translation>
 <translation id="7982789257301363584">Tinklas</translation>
 <translation id="7987685713885608670">Kad būtų saugiau, šifruokite slaptažodžius įrenginyje prieš išsaugodami juos „Google“ slaptažodžių tvarkytuvėje.</translation>
 <translation id="798991908416757345">Skirtukų grupės nepasiekiamos</translation>
@@ -1642,7 +1645,6 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8195191503358432289">Slaptažodžio pridėjimas</translation>
 <translation id="8202744799033457229">Rodyti istoriją</translation>
 <translation id="8205564605687841303">Atšaukti</translation>
-<translation id="820568752112382238">Dažniausiai lankomos svetainės</translation>
 <translation id="8206354486702514201">Šį nustatymą vykdo jūsų administratorius.</translation>
 <translation id="8209050860603202033">Atidaryti vaizdą</translation>
 <translation id="8211030355252954494">Gavote <ph name="WEBSITE" /> slaptažodžius</translation>
@@ -1671,6 +1673,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8299613349954694191">Norėdami naršyti žiniatinklį privačiai, atidarykite inkognito skirtuką.</translation>
 <translation id="8307481894409578819">Nepavyksta įkelti šio failo</translation>
 <translation id="8319076807703933069">Nauja paieška</translation>
+<translation id="8328607660158575887">Atidaryti automatinio pildymo ir slaptažodžių nustatymus</translation>
 <translation id="833647236762414178">Kurkite, saugokite ir tvarkykite slaptažodžius bei prieigos raktus, kad galėtumėte lengvai prisijungti prie svetainių ir programų. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sukurkite atsarginę turinio kopiją ir naudokite ją bet kuriame įrenginyje.</translation>
 <translation id="8349305172487531364">Žymių juosta</translation>
@@ -1823,6 +1826,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8909459547399237818">Pasirinkite Slaptažodžių tvarkyklė, tada palieskite „Pridėti valdiklį“</translation>
 <translation id="891282356902782456">Šis slaptažodis saugomas tik šiame įrenginyje. Jei norite jį naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje (<ph name="EMAIL" />).</translation>
 <translation id="8915916167043355778">Uždaryti viską</translation>
+<translation id="892185197271200809">Visi iš karto neteks prieigos prie skirtukų grupės „<ph name="GROUP_NAME" />“, o ji bus ištrinta iš visų įrenginių</translation>
 <translation id="8921902386312975525">Siuntinių stebėjimo parinktys</translation>
 <translation id="8923178205567790913">Slaptažodžiai</translation>
 <translation id="892776311701544612">Sužinokite daugiau…</translation>

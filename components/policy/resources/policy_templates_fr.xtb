@@ -10443,7 +10443,6 @@ Cette règle est un mappage des ID de configuration avec des configurations de V
       Si <ph name="PRODUCT_NAME" /> est en cours d'utilisation lorsque le paramètre de cette règle change, la modification ne s'applique qu'aux nouveaux onglets ouverts.</translation>
 <translation id="8685748277907759932">Empêcher les utilisateurs d'employer la fonctionnalité Appuyer pour rechercher</translation>
 <translation id="8686700500128191717">Activer les rapports sur les utilisateurs de l'appareil</translation>
-<translation id="8687570136798972353">Activer <ph name="GLIC" /></translation>
 <translation id="8687958770985542440">Réactiver les API Web Components v0 jusqu'à la version M84.</translation>
 <translation id="8693243869659262736">Utiliser le client DNS intégré</translation>
 <translation id="8695006038397632296">Créer et importer des demandes d'installation d'extensions dans la console d'administration</translation>

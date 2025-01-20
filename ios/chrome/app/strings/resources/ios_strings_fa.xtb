@@ -651,6 +651,7 @@
 <translation id="3955740319737378355">تمام</translation>
 <translation id="3955822496205734389">چند گذرواژه ضعیف دارید.</translation>
 <translation id="3958312024468322930">آن را به جایگاه واقع در پایین «صفحه اصلی» بکشید</translation>
+<translation id="3960218941754097036">‏هر چیزی را در صفحه‌نمایش با «لنز Google» جستجو کنید</translation>
 <translation id="3962326069546168954">ذخیره</translation>
 <translation id="3967327056943561740">نشانک‌ها</translation>
 <translation id="3967822245660637423">بارگیری کامل شد</translation>
@@ -693,6 +694,7 @@
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">این وب‌سایت می‌خواهد فایلی را بارگیری کند و به تقویمتان اضافه کند.</translation>
 <translation id="4152011295694446843">نشانک‌ها را اینجا خواهید دید</translation>
+<translation id="4154753961803534698">جستجو با دوربین</translation>
 <translation id="4158491215857439601">مدیر گذرواژه</translation>
 <translation id="4163699139741158298">{count,plural, =1{نشانک در «{title}» ذخیره شد. این نشانک فقط در این دستگاه ذخیره می‌شود.}one{‫{count} نشانک در «{title}» ذخیره شد. این نشانک فقط در این دستگاه ذخیره می‌شود.}other{‫{count} نشانک در «{title}» ذخیره شد. این نشانک‌ها فقط در این دستگاه ذخیره می‌شود.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> با ارقام آخر <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1159,6 +1161,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6168647875670665004">مقالات پیشنهادی</translation>
 <translation id="6169031022444660352">برای حذف کردن همه اطلاعات اعتباری ذخیره‌شده، ابتدا باید گذرنویسه‌ای در دستگاهتان تنظیم کنید.</translation>
 <translation id="6173499589275053515">‏گذرواژه در «حساب Google» شما ذخیره شد، <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">جستجو در صفحه‌نمایش</translation>
 <translation id="6187302354554850004">آخرین همگام‌سازی: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">تاریخ ایجاد: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">خوانده‌نشده</translation>
@@ -1596,6 +1599,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8005666035647241369">‏به «مدیر گذرواژه Google» در این دستگاه</translation>
 <translation id="8011489434346330032">بازرس وب</translation>
 <translation id="802154636333426148">بارگیری نشد</translation>
+<translation id="8023170444051056234">دسترسی به گروه برگه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهید، و این گروه از همه دستگاه‌هایتان حذف می‌شود</translation>
 <translation id="8023878949384262191">بخش را بزرگ می‌کند.</translation>
 <translation id="8027581147000338959">باز کردن در پنجرهٔ جدید</translation>
 <translation id="8032569120109842252">دنبال می‌کنید</translation>
@@ -1638,7 +1642,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8195191503358432289">افزودن گذرواژه</translation>
 <translation id="8202744799033457229">نمایش سابقه</translation>
 <translation id="8205564605687841303">لغو</translation>
-<translation id="820568752112382238">سایت‌هایی که بیشتر بازدید شده</translation>
 <translation id="8206354486702514201">این تنظیم توسط سرپرست شما اجباری شده است.</translation>
 <translation id="8209050860603202033">باز کردن تصویر</translation>
 <translation id="8211030355252954494">چند گذرواژه برای <ph name="WEBSITE" /> دریافت کردید</translation>

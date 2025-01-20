@@ -1261,6 +1261,7 @@
 <translation id="5245201184978705914">無法產生轉錄稿</translation>
 <translation id="5251174953851719648">重新整理內容</translation>
 <translation id="5253783950165989294">已連線至名為「<ph name="DEVICE_NAME" />」的裝置，電池電力：<ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5256939106029293271">測試麥克風</translation>
 <translation id="5258528442992323769">沒有已儲存的桌面</translation>
 <translation id="5260676007519551770">桌面 4</translation>
 <translation id="5265391159779542051">已載入結果</translation>
@@ -1418,6 +1419,7 @@
 <translation id="5745612484876805746">夜燈功能會在日落時自動開啟</translation>
 <translation id="5750765938512549687">藍牙已關閉</translation>
 <translation id="5758114525425072423">啟動專注模式，計時器已設為 <ph name="FOCUS_DURATION" />。</translation>
+<translation id="5759522586053040964">聽聽自己的聲音聽起來如何。如要停止，請按一下測試圖示或關閉視訊通話面板。</translation>
 <translation id="5760866832697883462">連結 <ph name="NAME" /></translation>
 <translation id="5762420912707163638">切換標記。<ph name="STATE_TEXT" /> 你可以使用觸控板、觸控螢幕或觸控筆在螢幕上繪圖。</translation>
 <translation id="576341972084747908">下載危險檔案 <ph name="FILENAME" /></translation>

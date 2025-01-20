@@ -651,6 +651,7 @@
 <translation id="3955740319737378355">Дууссан</translation>
 <translation id="3955822496205734389">Танд сул нууц үгнүүд байна.</translation>
 <translation id="3958312024468322930">Үүнийг үндсэн нүүрнийхээ доод талын суурилуулагч руу чирнэ үү</translation>
+<translation id="3960218941754097036">Google Lens-р дэлгэц дээрээ байгаа дурын зүйлийг хайгаарай</translation>
 <translation id="3962326069546168954">Хадгалах</translation>
 <translation id="3967327056943561740">Хавчуурга</translation>
 <translation id="3967822245660637423">Татаж авч дууслаа</translation>
@@ -693,6 +694,7 @@
 <translation id="4147897805161313378">Google Зураг</translation>
 <translation id="4148023517926189160">Энэ вебсайт файл татаж, таны календарьт нэмэхийг хүсэж байна.</translation>
 <translation id="4152011295694446843">Та хавчуургуудаа эндээс олох болно</translation>
+<translation id="4154753961803534698">Камераар хайх</translation>
 <translation id="4158491215857439601">Нууц үгний менежер</translation>
 <translation id="4163699139741158298">{count,plural, =1{Хавчуургыг "{title}"-д хадгалсан. Үүнийг зөвхөн энэ төхөөрөмжид хадгалсан.}other{{count} хавчуургыг "{title}"-д хадгалсан. Тэдгээрийг зөвхөн энэ төхөөрөмжид хадгалсан.}}</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" />-р төгссөн <ph name="NETWORK_NAME" /></translation>
@@ -1159,6 +1161,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6168647875670665004">Нийтлэлийн зөвлөмж</translation>
 <translation id="6169031022444660352">Бүх хадгалсан мандат үнэмлэхийг устгахын тулд та эхлээд төхөөрөмж дээрээ нууц код тохируулах ёстой.</translation>
 <translation id="6173499589275053515">Таны <ph name="EMAIL" /> Google Бүртгэлд нууц үг хадгалсан</translation>
+<translation id="6181969657494915430">Дэлгэцээс хайх</translation>
 <translation id="6187302354554850004">Хамгийн сүүлд синк хийсэн: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" />-нд үүсгэсэн</translation>
 <translation id="6189413832092199491">Уншаагүй</translation>
@@ -1596,6 +1599,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8005666035647241369">Энэ төхөөрөмж дээрх Google-н Нууц үгний менежерт</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="802154636333426148">Татаж чадсангүй</translation>
+<translation id="8023170444051056234">Та “<ph name="GROUP_NAME" />" табын бүлэгт хандах эрхээ тэр даруй алдах ба уг бүлгийг таны бүх төхөөрөмжөөс устгана</translation>
 <translation id="8023878949384262191">Хэсгийг өргөтгөдөг.</translation>
 <translation id="8027581147000338959">Шинэ цонхонд нээх</translation>
 <translation id="8032569120109842252">Дагаж буй</translation>
@@ -1638,7 +1642,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8195191503358432289">Нууц үг нэмэх</translation>
 <translation id="8202744799033457229">Түүхийг харуулах</translation>
 <translation id="8205564605687841303">Цуцлах</translation>
-<translation id="820568752112382238">Хамгийн их зочилсон сайт</translation>
 <translation id="8206354486702514201">Энэ тохиргоог таны админаас идэвхжүүлсэн байна.</translation>
 <translation id="8209050860603202033">Зургийг нээх</translation>
 <translation id="8211030355252954494">Та <ph name="WEBSITE" />-н нууц үгнүүдийг хүлээн авсан</translation>

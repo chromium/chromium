@@ -191,6 +191,7 @@
 <translation id="1779354709911146450">身份验证错误</translation>
 <translation id="1780152987505130652">关闭组</translation>
 <translation id="178400879184240105">您的每个密码都互不重复</translation>
+<translation id="17906873777101817">主动询问是否保存密码和通行密钥</translation>
 <translation id="1807893857950749072">允许接收价格跟踪通知…</translation>
 <translation id="1810976980198522421">取消</translation>
 <translation id="1815941218935345331">密码</translation>
@@ -493,6 +494,7 @@
 <translation id="3130863904455712965">历史记录和其他内容</translation>
 <translation id="313283613037595347">创建新的无痕式标签页。</translation>
 <translation id="3138611310073113613">舍弃所做选择</translation>
+<translation id="3140825265190223781">已保存的密码和通行密钥</translation>
 <translation id="3143515551205905069">取消同步</translation>
 <translation id="314837624430314508">及时了解最新资讯、价格跟踪动态等。</translation>
 <translation id="3157387275655328056">添加到阅读清单</translation>
@@ -650,6 +652,7 @@
 <translation id="3955740319737378355">完成</translation>
 <translation id="3955822496205734389">您有些密码的安全系数较低。</translation>
 <translation id="3958312024468322930">将图标拖动到主屏幕底部的程序坞中</translation>
+<translation id="3960218941754097036">使用 Google 智能镜头搜索屏幕上的任何内容</translation>
 <translation id="3962326069546168954">保存</translation>
 <translation id="3967327056943561740">书签</translation>
 <translation id="3967822245660637423">下载完毕</translation>
@@ -692,6 +695,7 @@
 <translation id="4147897805161313378">Google 相册</translation>
 <translation id="4148023517926189160">此网站想下载文件并将其添加到您的日历中。</translation>
 <translation id="4152011295694446843">您的书签会显示在此处</translation>
+<translation id="4154753961803534698">拍照搜索</translation>
 <translation id="4158491215857439601">密码管理工具</translation>
 <translation id="4163699139741158298">{count,plural, =1{书签已保存到“{title}”，而且只保存在此设备上。}other{{count} 个书签已保存到“{title}”，而且只保存在此设备上。}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />，后四位数字为 <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1158,6 +1162,7 @@
 <translation id="6168647875670665004">文章推荐</translation>
 <translation id="6169031022444660352">如要删除所有已保存的凭据，您必须先在设备上设置密码。</translation>
 <translation id="6173499589275053515">密码已保存到您的 Google 账号 <ph name="EMAIL" /> 中</translation>
+<translation id="6181969657494915430">搜索屏幕</translation>
 <translation id="6187302354554850004">上次同步时间：<ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">创建日期：<ph name="DATE" /></translation>
 <translation id="6189413832092199491">未读</translation>
@@ -1319,6 +1324,7 @@
 <translation id="6732087373923685049">摄像头</translation>
 <translation id="6746338529702829275">检查您的账号数据</translation>
 <translation id="6755200887046212842">管理账号</translation>
+<translation id="6755733078693946548">从任意应用中获取密码和通行密钥</translation>
 <translation id="6761393919622941301">音频</translation>
 <translation id="6779455296366983087">您的浏览数据将被删除</translation>
 <translation id="6790502149545262384">不久之后，当打开新标签页时，您会看到来自<ph name="CHANNEL_NAME" />的故事。</translation>
@@ -1586,6 +1592,7 @@
 <translation id="7977451675950311423">若您使用的密码遭遇了数据泄露，向您发出警告。</translation>
 <translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> 个新标签页，<ph name="NUMBER_OF_TABS_REMOVED" /> 个已关闭</translation>
 <translation id="797824194429476746">相应标签页将在此设备上保持打开状态，但分组将被永久删除。</translation>
+<translation id="797874245254030665">从任意应用中获取您的密码和通行密钥</translation>
 <translation id="7982789257301363584">网络</translation>
 <translation id="7987685713885608670">为了提高安全性，请先在设备上对密码进行加密，然后再将其保存到 Google 密码管理工具中。</translation>
 <translation id="798991908416757345">标签页分组不可用</translation>
@@ -1595,6 +1602,7 @@
 <translation id="8005666035647241369">保存到此设备上的 Google 密码管理工具中</translation>
 <translation id="8011489434346330032">网页检查器</translation>
 <translation id="802154636333426148">下载失败</translation>
+<translation id="8023170444051056234">您将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且该分组将从您的所有设备中删除</translation>
 <translation id="8023878949384262191">展开此部分。</translation>
 <translation id="8027581147000338959">在新窗口中打开</translation>
 <translation id="8032569120109842252">已关注</translation>
@@ -1637,7 +1645,6 @@
 <translation id="8195191503358432289">添加密码</translation>
 <translation id="8202744799033457229">显示历史记录</translation>
 <translation id="8205564605687841303">取消</translation>
-<translation id="820568752112382238">最常访问的网站</translation>
 <translation id="8206354486702514201">此设置是由您的管理员执行的。</translation>
 <translation id="8209050860603202033">打开图片</translation>
 <translation id="8211030355252954494">您收到了多个用于登录 <ph name="WEBSITE" /> 的密码</translation>
@@ -1666,6 +1673,8 @@
 <translation id="8299613349954694191">打开一个无痕式标签页即可私密地浏览网页。</translation>
 <translation id="8307481894409578819">无法上传此文件</translation>
 <translation id="8319076807703933069">新搜索</translation>
+<translation id="8328607660158575887">打开“自动填充与密码”设置</translation>
+<translation id="833647236762414178">您可以创建、保存和管理密码和通行密钥，以便轻松登录网站和应用。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">备份您的资料，在任何设备上使用</translation>
 <translation id="8349305172487531364">书签栏</translation>
 <translation id="8364563001733875155">如要更改 PIN 码，请先在设备上设置密码。</translation>
@@ -1817,6 +1826,7 @@
 <translation id="8909459547399237818">选择“密码管理工具”，然后点按“添加小组件”</translation>
 <translation id="891282356902782456">这个密码仅会保存到此设备上。如果想在您的其他设备上使用它，请将它保存到您的 Google 账号 <ph name="EMAIL" /> 中。</translation>
 <translation id="8915916167043355778">全部关闭</translation>
+<translation id="892185197271200809">所有人将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且该分组将从所有设备中删除</translation>
 <translation id="8921902386312975525">包裹跟踪选项</translation>
 <translation id="8923178205567790913">密码</translation>
 <translation id="892776311701544612">了解详情…</translation>

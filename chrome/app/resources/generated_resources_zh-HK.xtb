@@ -1935,6 +1935,7 @@
 <translation id="2323018538045954000">已儲存的 Wi-Fi 網絡</translation>
 <translation id="2325444234681128157">記住密碼</translation>
 <translation id="2326188115274135041">確認 PIN 以開啟自動解鎖</translation>
+<translation id="2326583548923775947">這並非 Google 帳戶。你儲存到 Chrome 的項目無法在其他裝置上查看。</translation>
 <translation id="2326906096734221931">開啟應用程式設定</translation>
 <translation id="2326931316514688470">重新載入應用程式(&amp;R)</translation>
 <translation id="2327492829706409234">啟用應用程式</translation>
@@ -2383,6 +2384,7 @@
 <translation id="2638662041295312666">登入圖片</translation>
 <translation id="2640299212685523844">使用 GTK</translation>
 <translation id="264083724974021997">連接去你部手機 - 對話框</translation>
+<translation id="2641098199809442625">你的密碼並未更新，但你應該仍能使用舊密碼存取網站。</translation>
 <translation id="2642111877055905627">足球</translation>
 <translation id="2642206811783203764">一律在 <ph name="SITE_NAME" /> 上執行</translation>
 <translation id="2643064289437760082">只要刪除瀏覽資料，即可隨時刪除廣告評估資料</translation>

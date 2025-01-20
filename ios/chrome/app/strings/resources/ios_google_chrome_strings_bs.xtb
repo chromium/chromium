@@ -169,6 +169,7 @@ Pričekajte nekoliko minuta prije odjave. Ako se sada odjavite, ovi podaci će s
 <translation id="5639704535586432836">Otvorite Postavke &gt; Privatnost &gt; Kamera &gt; Google Chrome i uključite kameru.</translation>
 <translation id="5642200033778930880">Google Chrome ne može koristiti vašu kameru u podijeljenom načinu prikaza</translation>
 <translation id="5661521615548540542">Google upravitelj lozinki nije uspio provjeriti sve lozinke. Pokušajte ponovo kasnije.</translation>
+<translation id="5681291952421236520">Prebacivanje Chromea</translation>
 <translation id="5690398455483874150">{count,plural, =1{Trenutno se prikazuje 1 prozor Chromea}one{Trenutno se prikazuje {count} prozor Chromea}few{Trenutno se prikazuju {count} prozora Chromea}other{Trenutno se prikazuje {count} prozora Chromea}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Postavite Chrome kao zadani preglednik</translation>
@@ -204,6 +205,7 @@ Pričekajte nekoliko minuta prije nego što promijenite račun. Ako promijenite 
 <translation id="6484712497741564393">Prijavljeni ste kao <ph name="EMAIL" />.
 
 Vaši podaci su šifrirani pristupnim izrazom. Unesite ga da koristite i sačuvate podatke Chromea na Google računu.</translation>
+<translation id="6533470733797826516">Brže se prijavite uz automatsko popunjavanje u Chromeu</translation>
 <translation id="6545449117344801102">Chrome otkriva adrese i koristi Google Mape da vam daje smjernice i lokalne informacije.</translation>
 <translation id="6634107063912726160">Kada se odjavite Chrome neće sinhronizirati nove podatke s vašim Google računom. Prethodno sinhronizirani podaci ostaju na računu.</translation>
 <translation id="6636941099779251629">Vaša organizacija zahtijeva da se prijavite da koristite Chrome. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>

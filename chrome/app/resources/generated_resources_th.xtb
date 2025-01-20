@@ -523,6 +523,7 @@
 <translation id="135389172849514421">ใช้งานได้ขณะออฟไลน์</translation>
 <translation id="1353980523955420967">ไม่พบ PPD โปรดตรวจสอบว่า Chromebook ออนไลน์อยู่และลองอีกครั้ง</translation>
 <translation id="1354045473509304750">อนุญาตให้ <ph name="HOST" /> ใช้และเคลื่อนย้ายกล้องของคุณต่อไป</translation>
+<translation id="1354148503392558902">กำลังเปลี่ยนรหัสผ่าน...</translation>
 <translation id="1355088139103479645">ลบข้อมูลทั้งหมดใช่ไหม</translation>
 <translation id="1356376170199999104">อนุญาต – <ph name="PERMISSION_DETAILS" /> เปิดไมโครโฟนโดยใช้สวิตช์จริง</translation>
 <translation id="1356959069439783953">แท็บที่ไม่ได้ใช้งานจะมีรูปลักษณ์ใหม่</translation>
@@ -1094,6 +1095,7 @@
 <translation id="1751335846119670066">ช่วยฉันอ่าน</translation>
 <translation id="17513872634828108">แท็บที่เปิดอยู่</translation>
 <translation id="175196451752279553">เ&amp;ปิดแท็บที่ถูกปิดขึ้นใหม่</translation>
+<translation id="1752557850776261983">กำลังตรวจสอบการลงชื่อเข้าใช้...</translation>
 <translation id="1753067873202720523">Chromebook อาจไม่ชาร์จขณะที่เปิดอยู่</translation>
 <translation id="1753557900380512635">การตกแต่งภายใน</translation>
 <translation id="1753905327828125965">เข้าชมบ่อยสุด</translation>

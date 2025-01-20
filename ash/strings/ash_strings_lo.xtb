@@ -1270,6 +1270,7 @@
 <translation id="5245201184978705914">ບໍ່ສາມາດສ້າງການຖອດຂໍ້ຄວາມຈາກສຽງໄດ້</translation>
 <translation id="5251174953851719648">ໂຫຼດເນື້ອຫາຄືນໃໝ່</translation>
 <translation id="5253783950165989294">ເຊື່ອມຕໍ່ຫາອຸປະກອນຊື່ <ph name="DEVICE_NAME" /> ແລ້ວ, ແບັດເຕີຣີ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5256939106029293271">ທົດສອບໄມຂອງທ່ານ</translation>
 <translation id="5258528442992323769">ບໍ່ມີໂຕະທີ່ບັນທຶກໄວ້</translation>
 <translation id="5260676007519551770">ໂຕະ 4</translation>
 <translation id="5265391159779542051">ໂຫຼດຜົນການຊອກຫາແລ້ວ</translation>
@@ -1427,6 +1428,7 @@
 <translation id="5745612484876805746">ແສງກາງຄືນເປີດໂດຍອັດຕະໂນມັດເມື່ອຕາເວັນຕົກ</translation>
 <translation id="5750765938512549687">Bluetooth ປິດຢູ່</translation>
 <translation id="5758114525425072423">ເລີ່ມໂໝດໂຟກັສ. ຕັ້ງໂມງນັບຖອຍຫຼັງ <ph name="FOCUS_DURATION" /> ແລ້ວ.</translation>
+<translation id="5759522586053040964">ຟັງເບິ່ງວ່າຄົນອື່ນໄດ້ຍິນສຽງທ່ານແນວໃດ. ເພື່ອຢຸດ, ໃຫ້ຄລິກໄອຄອນທົດສອບ ຫຼື ປິດແຜງໂທວິດີໂອ.</translation>
 <translation id="5760866832697883462">ເຊື່ອມ​ຕໍ່ <ph name="NAME" /> ຂອງ​ທ່ານ</translation>
 <translation id="5762420912707163638">ສະຫຼັບຕົວໝາຍ. <ph name="STATE_TEXT" /> ໃຊ້ແທຣັກແຜດ, ໜ້າຈໍສຳຜັດ ຫຼື ປາກກາເພື່ອແຕ້ມຢູ່ໜ້າຈໍ.</translation>
 <translation id="576341972084747908">ດາວໂຫຼດ <ph name="FILENAME" /> ທີ່ເປັນອັນຕະລາຍ</translation>

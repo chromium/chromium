@@ -1270,6 +1270,7 @@
 <translation id="5245201184978705914">ترانویسی ایجاد نشد</translation>
 <translation id="5251174953851719648">بازآوری محتوا</translation>
 <translation id="5253783950165989294">متصل به دستگاهی با نام <ph name="DEVICE_NAME" />، شارژ باتری <ph name="BATTERY_PERCENTAGE" />٪</translation>
+<translation id="5256939106029293271">میکروفون را آزمایش کنید</translation>
 <translation id="5258528442992323769">میز کار ذخیره‌شده‌ای ندارید</translation>
 <translation id="5260676007519551770">میز ۴</translation>
 <translation id="5265391159779542051">نتایج بار شدند</translation>
@@ -1427,6 +1428,7 @@
 <translation id="5745612484876805746">«نور شب» هنگام غروب آفتاب به‌طور خودکار روشن می‌شود</translation>
 <translation id="5750765938512549687">بلوتوث خاموش است</translation>
 <translation id="5758114525425072423">شروع «تمرکز». زمان‌سنج روی <ph name="FOCUS_DURATION" /> تنظیم شده است.</translation>
+<translation id="5759522586053040964">ببینید دیگران صدای شما را چگونه می‌شنوند. برای متوقف کردن، روی نماد آزمایش کلیک کنید یا پانل تماس تصویری را ببندید.</translation>
 <translation id="5760866832697883462">متصل کردن <ph name="NAME" /></translation>
 <translation id="5762420912707163638">روشن/ خاموش کردن نشانگر. <ph name="STATE_TEXT" /> برای کشیدن طرح روی صفحه از پد لمسی، صفحه لمسی، یا قلم استفاده کنید.</translation>
 <translation id="576341972084747908">بارگیری <ph name="FILENAME" /> خطرناک</translation>

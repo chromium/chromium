@@ -243,6 +243,7 @@ Para obtener más información sobre el tratamiento de datos en las funciones de
 
       Si se le asigna el valor "False", no aparecerá la casilla "Permitir siempre" y el usuario verá un mensaje de confirmación cada vez que se invoque un protocolo externo.</translation>
 <translation id="1181598794547737681">Habilitar la interfaz del cuadro de descargas</translation>
+<translation id="1182701225491473405">Configuración de Controlled Frame</translation>
 <translation id="1184531093651606913">Impide que las extensiones se carguen desde la línea de comandos</translation>
 <translation id="1184562656144537588">Manifest V2 solo está habilitado para extensiones de instalación forzada</translation>
 <translation id="11903325225202653">Si se le asigna el valor "true" a esta política, el modo Contraste alto permanece activado. Si se le asigna el valor "false", el modo Contraste alto permanece desactivado.
@@ -1010,6 +1011,7 @@ Esta política es una solución temporal en caso de que las empresas experimente
       Si no se define esta política o se le asigna a una lista vacía, no se adjuntarán datos de depuración de bajo nivel a los comentarios de los usuarios.
       Lee la descripción de cada tipo de dispositivo para consultar el tipo concreto de datos de depuración de bajo nivel.</translation>
 <translation id="1744340218280697033">No permitir que los padres añadan cuentas supervisadas</translation>
+<translation id="1745981653910662565">Permitir la API Controlled Frame en estos sitios</translation>
 <translation id="1751429117283165017">Si se le asigna un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios no pueden pedir a los usuarios que les concedan acceso de escritura a archivos o directorios en el sistema de archivos del sistema operativo del host.
 
       Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
@@ -1230,6 +1232,7 @@ Si se inhabilita, <ph name="PRODUCT_NAME" /> cerrará la pestaña después de ca
       Si no se define esta política, se desactivará la autenticación <ph name="HTTP_NEGOTIATE" /> en Android.</translation>
 <translation id="1923704782248889851">Habilitar el dictado</translation>
 <translation id="1924085079572112898">Los ajustes de F11 están inhabilitados</translation>
+<translation id="1924393228810864764">No permitir que los orígenes de aplicaciones web aisladas usen Controlled Frame</translation>
 <translation id="1925529914257504750">Actualización automática de conexiones P2P habilitada</translation>
 <translation id="1928355425032308464">Habilitar entrada de vídeo</translation>
 <translation id="1930094135927166199">Inhabilitar la energía compartida por USB</translation>
@@ -1302,6 +1305,7 @@ Si se inhabilita, <ph name="PRODUCT_NAME" /> cerrará la pestaña después de ca
 
       Si se inhabilita esta política o no se le asigna ningún valor, no se usará la transición rápida.</translation>
 <translation id="1972134432340252414">Bloquea los puntos de extensión antiguos en el proceso del navegador</translation>
+<translation id="1973804850652157024">Controlar el uso de la API Controlled Frame</translation>
 <translation id="1977581177449752640">Si se le asigna un valor a esta política, el host de acceso remoto utilizará un certificado de cliente con el CN de emisor especificado para autenticarse en <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Para usar cualquier certificado de cliente disponible, asígnale el valor <ph name="WILDCARD_VALUE" />. Esta función está inhabilitada si está vacía o no se le asigna ningún valor.</translation>
 <translation id="1984934843478301531">Automatización del inicio de aplicaciones</translation>
 <translation id="1985545260037812875">Mostrar pantalla de configuración del tamaño de visualización durante el inicio de sesión</translation>
@@ -4210,6 +4214,17 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="4146319954420095470">(¡Advertencia! Esta dependencia se dejará de admitir pronto. Empieza a usar <ph name="GLS_POLICY_NAME" /> en su lugar). Si se asigna el valor <ph name="BLOCK_GEOLOCATION_SETTING" /> a esta política, los servicios del sistema de <ph name="PRODUCT_OS_NAME" /> y las aplicaciones Android no podrán acceder a la información de ubicación. Si se asigna cualquier otro valor a esta política o no se define, se pedirá al usuario que dé su permiso cuando una aplicación Android quiera acceder a la información de ubicación.</translation>
 <translation id="4147818922357566987">Habilitar variaciones referentes solo a correcciones críticas</translation>
 <translation id="4150201353443180367">Pantalla</translation>
+<translation id="4150646872548223241">La API Controlled Frame, disponible para ciertos contextos aislados, como las aplicaciones web aisladas (IWAs), permite que una aplicación inserte y manipule contenido arbitrario.
+Consulta https://github.com/WICG/controlled-frame para obtener más información.
+
+Si se define esta política, podrás indicar patrones de URL que especifiquen qué sitios pueden usar la API Controlled Frame.
+Los patrones válidos se limitan a las aplicaciones web aisladas.
+
+Si no se establece la política, <ph name="DEFAULT_CONTROLLED_FRAME_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido.
+
+Los patrones de URL no deben entrar en conflicto con <ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" />. Si una URL está incluida en ambas políticas, no tendrá preferencia ninguna política.
+
+Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="4154221011709068799">No permitir dispositivos de almacenamiento externo</translation>
 <translation id="415445772247959702">Web Store (compatible a partir de la versión 89)</translation>
 <translation id="4157003184375321727">Informar de la versión del firmware y del sistema operativo</translation>
@@ -6947,6 +6962,7 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
       Si no, se le podrá asignar uno de estos valores: "tls1.2" o "tls1.3". Si se define esta política, <ph name="PRODUCT_NAME" /> no usará versiones de SSL/TLS posteriores a la versión especificada. Los valores que no se reconozcan se ignorarán.</translation>
 <translation id="6120909112796019291">Permitir la edición de fotos basada en IA generativa y mejorar los modelos de IA.</translation>
 <translation id="6123052603197028610">No permitir que las consultas a los servidores de Google obtengan marcas de tiempo</translation>
+<translation id="6128539430475678271">Bloquear la API Controlled Frame en estos sitios</translation>
 <translation id="6130360423841559818">Controlar el nuevo comportamiento del cuadro de diálogo de cancelación producido por el evento beforeunload</translation>
 <translation id="6131803221304830537">Inhabilitar la integridad del código del renderizador</translation>
 <translation id="6132506775968708399">Bloquear cookies de terceros</translation>
@@ -7409,6 +7425,7 @@ Si la política no se define, <ph name="PRODUCT_OS_NAME" /> usará el directorio
       Si esta política no se establece para un sitio, se le aplicará la política de <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" />, si se ha definido. En caso contrario, el permiso se ajustará a los valores predeterminados del navegador y los usuarios podrán elegir este permiso en función del sitio.</translation>
 <translation id="6383774771168138899">Configura el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Habilitar que se muestren páginas de resultados del buscador predeterminado en un panel lateral del navegador.</translation>
+<translation id="6389240462871677239">Permitir que los orígenes de aplicaciones web aisladas usen Controlled Frame</translation>
 <translation id="6389858262577493180">Habilitar el uso de <ph name="GLIC" /></translation>
 <translation id="6390338862225976270">Estas funciones de DevTools de <ph name="PRODUCT_NAME" /> emplean modelos de IA generativa para proporcionar información de depuración adicional. Para usar estas funciones, <ph name="PRODUCT_NAME" /> tiene que recoger datos como mensajes de error, rastreos de la pila, fragmentos de código y solicitudes de red, y enviarlos a un servidor que pertenece a Google y ejecuta un modelo de IA generativa. En los datos enviados al servidor no se incluyen el cuerpo de las respuestas ni los encabezados de autenticación y cookies de las solicitudes de red.
 
@@ -8181,6 +8198,17 @@ Si se inhabilita esta política o no se define, se aplicará el comportamiento p
 <translation id="692096803256767290">Restaurar SO a la versión seleccionada</translation>
 <translation id="6921241119085515674">Permitir el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6921544339867564740">Permitir que los dispositivos utilicen máquinas virtuales en ChromeOS</translation>
+<translation id="692161853658983957">La API Controlled Frame, disponible para ciertos contextos aislados, como las aplicaciones web aisladas (IWAs), permite que una aplicación inserte y manipule contenido arbitrario.
+Consulta https://github.com/WICG/controlled-frame para obtener más información.
+
+Si se define esta política, podrás indicar patrones de URL que especifiquen qué sitios no pueden usar la API Controlled Frame.
+Los patrones válidos se limitan a las aplicaciones web aisladas.
+
+Si no se establece la política, <ph name="DEFAULT_CONTROLLED_FRAME_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido.
+
+Los patrones de URL no deben entrar en conflicto con <ph name="CONTROLLED_FRAME_ALLOWED_FOR_URLS_POLICY_NAME" />. Si una URL está incluida en ambas políticas, no tendrá preferencia ninguna política.
+
+Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="6922265559343919728">Elegir si las URLs blob se particionan durante la obtención y la navegación</translation>
 <translation id="6922884955650325312">Bloquear el complemento <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="6924223708804692571">Permite forzar la inhabilitación del corrector ortográfico de idiomas. Se ignorarán los idiomas no reconocidos de esa lista.
@@ -8198,6 +8226,12 @@ Si se inhabilita esta política o no se define, se aplicará el comportamiento p
 <translation id="6929639826067341257">Sugerir a los usuarios que lleven sus datos al perfil gestionado, pero darles la opción de no hacerlo</translation>
 <translation id="6929746927224321095">Inhabilitar Autocompletar</translation>
 <translation id="6931242315485576290">Inhabilitar sincronización de datos con Google</translation>
+<translation id="6931967294677760242">La API Controlled Frame, disponible para ciertos contextos aislados, como las aplicaciones web aisladas (IWAs), permite que una aplicación inserte y manipule contenido arbitrario.
+Consulta https://github.com/WICG/controlled-frame para obtener más información.
+
+Si se le asigna el valor 1 a esta política o no se define, los orígenes de aplicaciones web aisladas podrán usar Controlled Frame.
+
+Si se le asigna el valor 2 a esta política, se impedirá que los orígenes de aplicaciones web aisladas usen Controlled Frame.</translation>
 <translation id="6932282102911647185">Color morado para la retroiluminación del teclado</translation>
 <translation id="6938424179790370595">Si se le asigna el valor None a esta política, la lupa se desactiva.
 
@@ -10502,7 +10536,6 @@ Esta política asigna IDs de configuración a las configuraciones de VM. Si una 
       Si se realizan cambios en esta política mientras <ph name="PRODUCT_NAME" /> está abierto, solo se aplicarán al abrir pestañas nuevas.</translation>
 <translation id="8685748277907759932">Evitar que los usuarios utilicen la función Tocar para buscar</translation>
 <translation id="8686700500128191717">Habilitar los informes sobre los usuarios del dispositivo</translation>
-<translation id="8687570136798972353">Habilitar <ph name="GLIC" /></translation>
 <translation id="8687958770985542440">Volver a habilitar la API v0 de componentes web hasta M84.</translation>
 <translation id="8693243869659262736">Utilizar cliente DNS integrado</translation>
 <translation id="8695006038397632296">Crear y subir solicitudes de instalación de extensiones a la consola de administración</translation>

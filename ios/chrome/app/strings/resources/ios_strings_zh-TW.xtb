@@ -650,6 +650,7 @@
 <translation id="3955740319737378355">完成</translation>
 <translation id="3955822496205734389">你有多組低強度密碼。</translation>
 <translation id="3958312024468322930">將圖示拖曳到主畫面底部的 Dock</translation>
+<translation id="3960218941754097036">使用 Google 智慧鏡頭搜尋畫面上的內容</translation>
 <translation id="3962326069546168954">儲存</translation>
 <translation id="3967327056943561740">書籤</translation>
 <translation id="3967822245660637423">下載完成</translation>
@@ -692,6 +693,7 @@
 <translation id="4147897805161313378">Google 相簿</translation>
 <translation id="4148023517926189160">這個網站想要下載檔案並將其新增至你的日曆中。</translation>
 <translation id="4152011295694446843">這裡會顯示你的書籤</translation>
+<translation id="4154753961803534698">透過相機搜尋</translation>
 <translation id="4158491215857439601">密碼管理工具</translation>
 <translation id="4163699139741158298">{count,plural, =1{這個書籤已儲存到「{title}」，且只會儲存在這部裝置。}other{{count} 個書籤已儲存到「{title}」，且只會儲存在這部裝置。}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />，末四碼為 <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1158,6 +1160,7 @@
 <translation id="6168647875670665004">文章建議</translation>
 <translation id="6169031022444660352">必須先在裝置上設定螢幕鎖定密碼，才能刪除所有已儲存的憑證。</translation>
 <translation id="6173499589275053515">密碼已儲存到 Google 帳戶 (<ph name="EMAIL" />)</translation>
+<translation id="6181969657494915430">搜尋畫面</translation>
 <translation id="6187302354554850004">上次同步處理時間：<ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">建立時間：<ph name="DATE" /></translation>
 <translation id="6189413832092199491">未讀取</translation>
@@ -1595,6 +1598,7 @@
 <translation id="8005666035647241369">儲存至這部裝置的 Google 密碼管理員</translation>
 <translation id="8011489434346330032">網頁檢閱器</translation>
 <translation id="802154636333426148">下載失敗</translation>
+<translation id="8023170444051056234">你將立即失去「<ph name="GROUP_NAME" />」分頁群組的存取權，且該群組會從你的所有裝置中刪除</translation>
 <translation id="8023878949384262191">展開這個專區。</translation>
 <translation id="8027581147000338959">在新視窗中開啟</translation>
 <translation id="8032569120109842252">追蹤中</translation>
@@ -1637,7 +1641,6 @@
 <translation id="8195191503358432289">新增密碼</translation>
 <translation id="8202744799033457229">顯示歷史記錄</translation>
 <translation id="8205564605687841303">取消</translation>
-<translation id="820568752112382238">最常造訪的網站</translation>
 <translation id="8206354486702514201">這項設定由管理員執行。</translation>
 <translation id="8209050860603202033">開啟圖片</translation>
 <translation id="8211030355252954494">你收到「<ph name="WEBSITE" />」的密碼</translation>

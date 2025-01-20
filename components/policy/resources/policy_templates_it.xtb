@@ -10637,7 +10637,6 @@ Questo criterio è una mappatura degli ID di configurazione alle configurazioni 
       Se il criterio viene modificato mentre <ph name="PRODUCT_NAME" /> è in esecuzione, viene applicato solo alle nuove schede aperte.</translation>
 <translation id="8685748277907759932">Impedisci agli utenti di usare la funzionalità Tocca per cercare</translation>
 <translation id="8686700500128191717">Attiva i report sugli utenti del dispositivo</translation>
-<translation id="8687570136798972353">Attiva <ph name="GLIC" /></translation>
 <translation id="8687958770985542440">Riattiva l'API Web Components v0 fino alla versione M84</translation>
 <translation id="8693243869659262736">Utilizza client DNS integrato</translation>
 <translation id="8695006038397632296">Crea o carica richieste di installazione di estensioni nella Console di amministrazione</translation>

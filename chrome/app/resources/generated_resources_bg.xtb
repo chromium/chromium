@@ -1931,6 +1931,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2323018538045954000">Запазени Wi-Fi мрежи</translation>
 <translation id="2325444234681128157">Запомняне на паролата</translation>
 <translation id="2326188115274135041">Потвърдете ПИН кода, за да включите функцията за автоматично отключване</translation>
+<translation id="2326583548923775947">Това не е профил в Google. Елементите, които запазвате в Chrome, няма да са налице на други устройства.</translation>
 <translation id="2326906096734221931">Отваряне на настройките на приложението</translation>
 <translation id="2326931316514688470">&amp;Презареждане на приложението</translation>
 <translation id="2327492829706409234">Активиране на приложението</translation>
@@ -2379,6 +2380,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2638662041295312666">Изображение при вход</translation>
 <translation id="2640299212685523844">Използване на GTK</translation>
 <translation id="264083724974021997">Свързване с телефона ви – Диалогов прозорец</translation>
+<translation id="2641098199809442625">Паролата ви не бе актуализирана. Би трябвало да имате достъп до сайта със старата си парола.</translation>
 <translation id="2642111877055905627">Футболна топка</translation>
 <translation id="2642206811783203764">Винаги за <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">Можете да изтриете данните от измерването на рекламите по всяко време, като изчистите данните за сърфирането си.</translation>

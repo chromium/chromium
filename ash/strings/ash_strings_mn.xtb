@@ -1271,6 +1271,7 @@
 <translation id="5245201184978705914">Сийрүүлгийг үүсгэх боломжгүй</translation>
 <translation id="5251174953851719648">Контентыг сэргээх</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> нэртэй төхөөрөмжид холбогдсон, <ph name="BATTERY_PERCENTAGE" />% батарей</translation>
+<translation id="5256939106029293271">Микрофоноо шалгах</translation>
 <translation id="5258528442992323769">Хадгалсан дэлгэц байхгүй</translation>
 <translation id="5260676007519551770">Дэлгэц 4</translation>
 <translation id="5265391159779542051">Илэрцүүдийг ачаалсан</translation>
@@ -1428,6 +1429,7 @@
 <translation id="5745612484876805746">Шөнийн гэрэл нь нар жаргахад автоматаар асдаг</translation>
 <translation id="5750765938512549687">Bluetooth унтраалттай байна</translation>
 <translation id="5758114525425072423">Төвлөрөх горимыг эхлүүлнэ үү. Цаг хэмжигчийг <ph name="FOCUS_DURATION" /> болгож тохируулсан.</translation>
+<translation id="5759522586053040964">Та бусад хүнд хэрхэн сонсогдохоо сонсоно уу. Зогсоохын тулд шалгах дүрс тэмдэг дээр товших эсвэл видео дуудлагын түр зуурын самбарыг хаана уу.</translation>
 <translation id="5760866832697883462">Өөрийн <ph name="NAME" />-г холбоно уу</translation>
 <translation id="5762420912707163638">Тэмдэглэгчийг асаана уу/унтраана уу. <ph name="STATE_TEXT" /> Дэлгэц дээр зурахын тулд мэдрэгч самбар, мэдрэмтгий дэлгэц эсвэл мэдрэгч үзгийг ашиглана уу.</translation>
 <translation id="576341972084747908">Аюултай <ph name="FILENAME" />-г татах</translation>

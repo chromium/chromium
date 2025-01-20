@@ -974,6 +974,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4285498937028063278">Otkači</translation>
 <translation id="428715201724021596">Povezuje se sa profilom. To može da potraje nekoliko minuta.</translation>
 <translation id="4287250812980588583">Chrome prozor</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Jačinu zvuka mikrofona kontroliše <ph name="APP_NAME" />}one{Jačinu zvuka mikrofona kontroliše # aplikacija}few{Jačinu zvuka mikrofona kontrolišu # aplikacije}other{Jačinu zvuka mikrofona kontroliše # aplikacija}}</translation>
 <translation id="4294319844246081198">Dobro jutro, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Obrišite sva obaveštenja (<ph name="COUNT" />)</translation>
 <translation id="4300272766492248925">Otvori aplikaciju</translation>

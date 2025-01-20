@@ -85,6 +85,7 @@
 <translation id="1158211211994409885">Хост <ph name="HOST_NAME" /> је неочекивано прекинуо везу.</translation>
 <translation id="1160009341934077418">Историја цена широм веба</translation>
 <translation id="1161325031994447685">поново да се повежете са WiFi мрежом</translation>
+<translation id="1161663161838091892">Синхронизујте картице и историју да бисте наставили</translation>
 <translation id="1163507966173624031">Народна и традиционална музика</translation>
 <translation id="11635448457105324">Дугме Управљајте адресама, активирајте га да бисте додали адресе и управљали њима у подешавањима Chrome-а</translation>
 <translation id="1165039591588034296">Грешка</translation>
@@ -1105,10 +1106,12 @@
 <translation id="297173220375858963">Стоно издаваштво</translation>
 <translation id="2972581237482394796">&amp;Понови радњу</translation>
 <translation id="2974468223369775963">Овај IBAN није сачуван на Google налогу. Уместо тога, сачуван је у Chrome-у на овом уређају. Chrome ће вас поново питати следећи пут када користите овај IBAN.</translation>
+<translation id="297667759942911166">Сарађујте у групама картица</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, тренутно изабрано. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">закључа и користи тастатуру</translation>
 <translation id="2978824962390592855">Опера</translation>
 <translation id="2979424420072875974">Ресурси за писце</translation>
+<translation id="2979639724566107830">Отворите у новом прозору</translation>
 <translation id="2980742331521553164">CVC ове картице ће бити шифрован и сачуван на Google налогу ради бржег плаћања</translation>
 <translation id="2983666748527428214">Отвори картицу без архивирања</translation>
 <translation id="2985306909656435243">Ако омогућите ову опцију, Chromium ће складиштити копију картице на овом уређају ради бржег попуњавања образаца.</translation>
@@ -2063,6 +2066,7 @@
 <translation id="4661556981531699496">Кућни љубимци и животиње</translation>
 <translation id="4661868874067696603">Претражите још опција куповине</translation>
 <translation id="4663373278480897665">Камера је дозвољена</translation>
+<translation id="4664084870155869900">Аутоматски се попуњава следећи пут. Картица је сачувана на уређају.</translation>
 <translation id="466561305373967878">Друштвене игре</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Виртуелна реалност</translation>
@@ -2634,6 +2638,7 @@
 <translation id="5675809467256309336">Денс и електронска музика</translation>
 <translation id="5675959228867414813">Прикажи према датуму</translation>
 <translation id="567604591393105935">Доња табела за трговину је отворена до половине екрана</translation>
+<translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Фолија</translation>
 <translation id="5680642791693447368">Трилери, криминалистички филмови и филмови мистерије</translation>
 <translation id="568292603005599551">Позиција слике на X оси</translation>
@@ -2671,6 +2676,7 @@
 <translation id="573555826359077410">Дугме Направи упитник, активирајте га да бисте брзо направили нов упитник у Google упитницима</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Сачувајте картицу на Google налогу}one{Сачувајте картице на Google налогу}few{Сачувајте картице на Google налогу}other{Сачувајте картице на Google налогу}}</translation>
 <translation id="5738385766833540397">Управљајте начином на који примате обавештења о снижењима за производе које пратите</translation>
+<translation id="573974402615125334">Да бисте делили групе картица, придруживали им се и сарађивали у њима, синхронизујте историју и картице</translation>
 <translation id="5740911612628596808">Коверта C9</translation>
 <translation id="5742806904559466333">Барови, клубови и ноћни живот</translation>
 <translation id="5743684619253032786">Производи за негу ноктију</translation>
@@ -3870,6 +3876,7 @@
 <translation id="7865448901209910068">Најбоља брзина</translation>
 <translation id="7870281855125116701">Пронађен је попуст</translation>
 <translation id="7871445724586827387">Промените лозинку за Google налог</translation>
+<translation id="787226752901403048">Пријавите се у Chrome да бисте делили групе картица, придруживали им се и сарађивали на идејама</translation>
 <translation id="7877007680666472091">ИД-ови заштићеног садржаја</translation>
 <translation id="7878562273885520351">Лозинка је можда компромитована</translation>
 <translation id="7882421473871500483">Браон</translation>
@@ -4325,6 +4332,7 @@
 <translation id="8702965365666568344">Трака за монтирање</translation>
 <translation id="8703575177326907206">Ваша веза са доменом <ph name="DOMAIN" /> није шифрована.</translation>
 <translation id="8705331520020532516">Серијски број</translation>
+<translation id="8706806585855470492">Моћи ћете да делите групе картица, придружујете им се и сарађујете у њима</translation>
 <translation id="8708134712139312373">Може да тражи да се повезује са Bluetooth уређајима</translation>
 <translation id="8710842507289500830">Стил фонта</translation>
 <translation id="8712637175834984815">Важи</translation>
@@ -4467,6 +4475,7 @@
 <translation id="8975263830901772334">Називи датотека које штампате</translation>
 <translation id="8982884016487650216">Учитавање PDF-а је завршено</translation>
 <translation id="8983369100812962543">Сада можете да промените величину апликације</translation>
+<translation id="8985112471026018799">Сачувајте картицу да бисте брже плаћали</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте прегледали историју прегледања у Chrome-у</translation>
 <translation id="8987663052629670333">Услуге израде фотографија</translation>
 <translation id="8987927404178983737">Месец</translation>
@@ -4533,6 +4542,7 @@
 <translation id="9090993752571911635">Интернет провајдери</translation>
 <translation id="9093723786115107672">Одећа за спавање</translation>
 <translation id="9094544726794842788">Опција Не свиђа ми се отвара образац за слање детаљних повратних информација о томе зашто вам се не свиђају ови резултати</translation>
+<translation id="9094809883254050729">Аутоматски се попуњава следећи пут. Картица се шифрује када се сачува.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните tab, па Enter да бисте подесили Chrome као подразумевани прегледач система у подешавањима iOS-а</translation>
 <translation id="9101450247048146228">Коришћење и кретање камере (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">1. фиока</translation>

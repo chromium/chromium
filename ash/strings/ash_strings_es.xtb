@@ -1265,6 +1265,7 @@ También puedes usar la combinación de teclas. Primero, selecciona el texto y, 
 <translation id="5245201184978705914">No se puede generar la transcripción</translation>
 <translation id="5251174953851719648">Actualizar contenido</translation>
 <translation id="5253783950165989294">Conectado a un dispositivo llamado <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" /> % de batería</translation>
+<translation id="5256939106029293271">Prueba tu micrófono</translation>
 <translation id="5258528442992323769">No hay escritorios guardados</translation>
 <translation id="5260676007519551770">Escritorio 4</translation>
 <translation id="5265391159779542051">Resultados cargados</translation>
@@ -1422,6 +1423,7 @@ No hay dispositivos conectados.</translation>
 <translation id="5745612484876805746">La luz nocturna se activa automáticamente al anochecer</translation>
 <translation id="5750765938512549687">El Bluetooth está desactivado</translation>
 <translation id="5758114525425072423">Iniciar modo Sin distracciones. Se ha añadido un temporizador de <ph name="FOCUS_DURATION" />.</translation>
+<translation id="5759522586053040964">Escucha cómo te oirán los demás. Para detener la prueba, haz clic en el icono de prueba o cierra el panel de la videollamada.</translation>
 <translation id="5760866832697883462">Conecta <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Activar/Desactivar marcador. <ph name="STATE_TEXT" /> Usa el panel táctil, la pantalla táctil o el lápiz óptico para dibujar en la pantalla.</translation>
 <translation id="576341972084747908">Descargando archivo peligroso <ph name="FILENAME" /></translation>

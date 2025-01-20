@@ -191,6 +191,7 @@
 <translation id="1779354709911146450">ข้อผิดพลาดในการตรวจสอบสิทธิ์</translation>
 <translation id="1780152987505130652">ปิดกลุ่ม</translation>
 <translation id="178400879184240105">รหัสผ่านของคุณไม่ซ้ำกันเลย</translation>
+<translation id="17906873777101817">เสนอให้บันทึกรหัสผ่านและพาสคีย์</translation>
 <translation id="1807893857950749072">อนุญาตการแจ้งเตือนการติดตามราคา…</translation>
 <translation id="1810976980198522421">ยกเลิก</translation>
 <translation id="1815941218935345331">รหัสผ่าน</translation>
@@ -1323,6 +1324,7 @@
 <translation id="6732087373923685049">กล้อง</translation>
 <translation id="6746338529702829275">ตรวจสอบข้อมูลบัญชีของคุณ</translation>
 <translation id="6755200887046212842">จัดการบัญชี</translation>
+<translation id="6755733078693946548">เข้าถึงรหัสผ่านและพาสคีย์จากแอปใดก็ได้</translation>
 <translation id="6761393919622941301">เสียง</translation>
 <translation id="6779455296366983087">ข้อมูลการท่องเว็บจะถูกลบ</translation>
 <translation id="6790502149545262384">เร็วๆ นี้คุณจะเห็นเรื่องราวจาก <ph name="CHANNEL_NAME" /> เมื่อเปิดแท็บใหม่</translation>
@@ -1590,6 +1592,7 @@
 <translation id="7977451675950311423">เตือนคุณหากใช้รหัสผ่านที่ถูกละเมิดในการละเมิดข้อมูล</translation>
 <translation id="7977482887663636093">แท็บใหม่ <ph name="NUMBER_OF_TABS_ADDED" /> แท็บ ปิดไปแล้ว <ph name="NUMBER_OF_TABS_REMOVED" /> แท็บ</translation>
 <translation id="797824194429476746">แท็บจะยังคงเปิดอยู่ในอุปกรณ์นี้ แต่ระบบจะลบกลุ่มอย่างถาวร</translation>
+<translation id="797874245254030665">เข้าถึงรหัสผ่านและพาสคีย์จากแอปใดก็ได้</translation>
 <translation id="7982789257301363584">เครือข่าย</translation>
 <translation id="7987685713885608670">เข้ารหัสให้แก่รหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านบน Google เพื่อเพิ่มความปลอดภัย</translation>
 <translation id="798991908416757345">กลุ่มแท็บไม่พร้อมใช้งาน</translation>
@@ -1642,7 +1645,6 @@
 <translation id="8195191503358432289">เพิ่มรหัสผ่าน</translation>
 <translation id="8202744799033457229">แสดงประวัติการเข้าชม</translation>
 <translation id="8205564605687841303">ยกเลิก</translation>
-<translation id="820568752112382238">เว็บไซต์ที่เข้าชมบ่อยที่สุด</translation>
 <translation id="8206354486702514201">ผู้ดูแลระบบของคุณกำหนดให้ใช้การตั้งค่านี้</translation>
 <translation id="8209050860603202033">เปิดรูปภาพ</translation>
 <translation id="8211030355252954494">คุณได้รับรหัสผ่านสำหรับ <ph name="WEBSITE" /></translation>
@@ -1671,6 +1673,7 @@
 <translation id="8299613349954694191">เปิดแท็บที่ไม่ระบุตัวตนเพื่อท่องเว็บในแบบส่วนตัว</translation>
 <translation id="8307481894409578819">อัปโหลดไฟล์นี้ไม่ได้</translation>
 <translation id="8319076807703933069">ค้นหาใหม่</translation>
+<translation id="8328607660158575887">เปิดการตั้งค่าการป้อนข้อความอัตโนมัติและรหัสผ่าน</translation>
 <translation id="833647236762414178">สร้าง บันทึก และจัดการรหัสผ่านและพาสคีย์เพื่อให้ลงชื่อเข้าใช้เว็บไซต์และแอปได้โดยง่าย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">สำรองข้อมูลและใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
 <translation id="8349305172487531364">แถบบุ๊กมาร์ก</translation>
@@ -1823,6 +1826,7 @@
 <translation id="8909459547399237818">เลือกเครื่องมือจัดการรหัสผ่าน แล้วแตะ "เพิ่มวิดเจ็ต"</translation>
 <translation id="891282356902782456">รหัสผ่านข้างต้นจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google <ph name="EMAIL" /></translation>
 <translation id="8915916167043355778">ปิดทั้งหมด</translation>
+<translation id="892185197271200809">ทุกคนจะเสียสิทธิ์เข้าถึงกลุ่มแท็บ "<ph name="GROUP_NAME" />" ทันที และระบบจะลบกลุ่มนี้ออกจากอุปกรณ์ทุกเครื่อง</translation>
 <translation id="8921902386312975525">ตัวเลือกในการติดตามพัสดุ</translation>
 <translation id="8923178205567790913">รหัสผ่าน</translation>
 <translation id="892776311701544612">ดูข้อมูลเพิ่มเติม…</translation>

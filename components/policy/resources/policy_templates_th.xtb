@@ -10444,7 +10444,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
       หากนโยบายนี้เปลี่ยนแปลงในขณะที่ <ph name="PRODUCT_NAME" /> ทำงานอยู่ จะมีผลกับแท็บที่เปิดใหม่เท่านั้น</translation>
 <translation id="8685748277907759932">ป้องกันไม่ให้ผู้ใช้ใช้ "แตะเพื่อค้นหา"</translation>
 <translation id="8686700500128191717">เปิดใช้การรายงานผู้ใช้อุปกรณ์</translation>
-<translation id="8687570136798972353">เปิดใช้ <ph name="GLIC" /></translation>
 <translation id="8687958770985542440">เปิดใช้ Web Components v0 API ได้อีกครั้งจนกว่าจะถึงเวอร์ชัน M84</translation>
 <translation id="8693243869659262736">ใช้ไคลเอ็นต์ DNS ในตัว</translation>
 <translation id="8695006038397632296">สร้างและอัปโหลดคำขอติดตั้งส่วนขยายไปยังคอนโซลผู้ดูแลระบบ</translation>
