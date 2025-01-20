@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="bg">
+<translation id="130631256467250065">Промените ви ще влязат в сила следващия път, когато рестартирате устройството си.</translation>
+<translation id="275588974610408078">Подаването на сигнали за сривове не е налице в Chromium.</translation>
+<translation id="3064346599913645280">Преглеждате защитена страница в Chromium.</translation>
+<translation id="3255926992597692024">Chromium се опитва да промени настройките за попълване на начините на плащане.</translation>
+<translation id="358997566136285270">Лого на Chromium</translation>
+<translation id="4050599136622776556">Chromium се опитва да редактира начините на плащане.</translation>
+<translation id="4365115785552740256">Chromium е възможен благодарение на проекта с отворен код <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> и на друг <ph name="BEGIN_LINK_OSS" />софтуер с отворен код<ph name="END_LINK_OSS" />.</translation>
+<translation id="4559775032954821361">Отворете
+менюто на Chromium &gt;
+<ph name="SETTINGS_TITLE" />
+&gt;
+<ph name="ADVANCED_TITLE" />
+&gt;
+<ph name="PROXIES_TITLE" />
+&gt;
+„LAN настройки“
+и премахнете отметката от квадратчето „Използвайте прокси сървър за вашата локална мрежа“.</translation>
+<translation id="4622039161600275920">Тази страница е блокирана от Chromium</translation>
+<translation id="48558539577516920">Разрешете достъпа на Chromium до мрежата от настройките на защитната стена
+или антивирусния си софтуер.</translation>
+<translation id="580822234363523061">Отворете
+менюто на Chromium &gt;
+<ph name="SETTINGS_TITLE" />
+&gt;
+<ph name="ADVANCED_TITLE" />
+&gt;
+<ph name="PROXIES_TITLE" />
+и се уверете, че за конфигурацията ви е зададено „no proxy“ или „direct“.</translation>
+<translation id="6549378540556750549">Браузърът Chromium е възможен и благодарение на друг <ph name="BEGIN_LINK_OSS" />софтуер с отворен код<ph name="END_LINK_OSS" />.</translation>
+<translation id="6613594504749178791">Промените ви ще влязат в сила следващия път, когато стартирате отново Chromium.</translation>
+<translation id="691026815377248078">Chromium се нуждае от достъп до Bluetooth, за да продължи
+сдвояването. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Браузърът Chromium е възможен благодарение на проекта с отворен код <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="7861509383340276692">Отворете
+менюто на Chromium &gt;
+„<ph name="SETTINGS_TITLE" />“
+&gt;
+„<ph name="ADVANCED_TITLE" />“
+и премахнете отметката от „<ph name="NO_PREFETCH_DESCRIPTION" />“.
+Ако това не реши проблема, препоръчваме ви да изберете отново тази опция,
+за да подобрите ефективността.</translation>
+<translation id="8187289872471304532">Отворете
+„Applications“ &gt; „System Preferences“ &gt; „Network“ &gt; „Advanced“ &gt; „Proxies“
+и премахнете отметките от избраните прокси сървъри.</translation>
+<translation id="8597726643333341451">Преглеждате защитена страница в Chrome for Testing</translation>
+<translation id="8684913864886094367">Chromium не се затвори правилно.</translation>
+</translationbundle>

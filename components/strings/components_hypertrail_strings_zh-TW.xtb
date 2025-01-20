@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="zh-TW">
+<translation id="130631256467250065">你的變更會在下次重新啟動裝置時生效。</translation>
+<translation id="275588974610408078">Chromium 不支援當機回報功能。</translation>
+<translation id="3064346599913645280">目前顯示的是安全型 Chromium 網頁</translation>
+<translation id="3255926992597692024">Chromium 正嘗試修改填入付款方式的設定。</translation>
+<translation id="358997566136285270">Chromium 標誌</translation>
+<translation id="4050599136622776556">Chromium 正在嘗試編輯付款方式。</translation>
+<translation id="4365115785552740256">Chromium 的開發有賴 <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> 開放原始碼計劃和其他<ph name="BEGIN_LINK_OSS" />開發原始碼軟體<ph name="END_LINK_OSS" />。</translation>
+<translation id="4559775032954821361">前往
+          Chromium 選單 &gt;
+          [<ph name="SETTINGS_TITLE" />]
+          &gt;
+          [<ph name="ADVANCED_TITLE" />]
+          &gt;
+          [<ph name="PROXIES_TITLE" />]
+          &gt;
+          [區域網路設定]
+          然後取消勾選 [在你的區域網路使用 Proxy 伺服器] 核取方塊。</translation>
+<translation id="4622039161600275920">Chromium 已封鎖這個網頁</translation>
+<translation id="48558539577516920">允許 Chromium 存取受到防火牆或防毒軟體設定所阻擋的
+          網路。</translation>
+<translation id="580822234363523061">前往
+          Chromium 選單 &gt;
+          [<ph name="SETTINGS_TITLE" />]
+          &gt;
+          [<ph name="ADVANCED_TITLE" />]
+          &gt;
+          [<ph name="PROXIES_TITLE" />]
+          並確認你的設定為 [不使用 Proxy] 或 [直接連線]。</translation>
+<translation id="6549378540556750549">Chromium 的開發也受惠於其他<ph name="BEGIN_LINK_OSS" />開放原始碼軟體<ph name="END_LINK_OSS" />。</translation>
+<translation id="6613594504749178791">你的變更將於下次重新啟動 Chromium 時生效。</translation>
+<translation id="691026815377248078">Chromium 需要藍牙存取權才能繼續配對。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium 的開發受惠於 <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> 開放原始碼計畫。</translation>
+<translation id="7861509383340276692">前往
+          Chromium 選單 &gt;
+          [<ph name="SETTINGS_TITLE" />]
+          &gt;
+          [<ph name="ADVANCED_TITLE" />]
+          然後取消勾選 [<ph name="NO_PREFETCH_DESCRIPTION" />]。
+          如果仍然無法解決問題，建議你重新勾選這個選項
+          以增進效能。</translation>
+<translation id="8187289872471304532">前往
+          [應用程式] &gt; [系統偏好設定] &gt; [網路] &gt; [進階] &gt; [Proxy]
+          然後取消勾選所有已選取的 Proxy。</translation>
+<translation id="8597726643333341451">目前顯示的是 Chrome for Testing 安全網頁</translation>
+<translation id="8684913864886094367">Chromium 未正確關閉。</translation>
+</translationbundle>

@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="th">
+<translation id="130631256467250065">การเปลี่ยนแปลงของคุณจะมีผลในครั้งถัดไปที่คุณรีสตาร์ทอุปกรณ์ของคุณ</translation>
+<translation id="275588974610408078">ไม่มีการรายงานข้อขัดข้องใน Chrome</translation>
+<translation id="3064346599913645280">คุณกำลังดูหน้า Chromium ที่ปลอดภัย</translation>
+<translation id="3255926992597692024">Chromium กำลังพยายามแก้ไขการตั้งค่าสำหรับการกรอกวิธีการชำระเงิน</translation>
+<translation id="358997566136285270">โลโก้ Chromium</translation>
+<translation id="4050599136622776556">Chromium กําลังพยายามแก้ไขวิธีการชําระเงิน</translation>
+<translation id="4365115785552740256">Chromium เกิดขึ้นได้ด้วยการสนับสนุนจากโครงการโอเพนซอร์ส <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> และ<ph name="BEGIN_LINK_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_OSS" />อื่นๆ</translation>
+<translation id="4559775032954821361">ไปที่
+          เมนู Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          การตั้งค่า LAN
+          และยกเลิกการเลือกช่องทำเครื่องหมาย "ใช้เซิร์ฟเวอร์พร็อกซีสำหรับ LAN ของคุณ"</translation>
+<translation id="4622039161600275920">หน้านี้ถูกบล็อกโดย Chromium</translation>
+<translation id="48558539577516920">อนุญาตให้ Chromium เข้าถึงเครือข่ายในการตั้งค่าไฟร์วอลล์
+          หรือการป้องกันไวรัส</translation>
+<translation id="580822234363523061">ไปที่
+          เมนู Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          และตรวจสอบว่าคุณตั้งการกำหนดค่าของคุณเป็น "ไม่มีพร็อกซี" หรือ "โดยตรง"</translation>
+<translation id="6549378540556750549">Chromium ยังเกิดขึ้นได้ด้วย<ph name="BEGIN_LINK_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_OSS" />อื่นๆ</translation>
+<translation id="6613594504749178791">การเปลี่ยนแปลงของคุณจะมีผลในครั้งถัดไปที่คุณเปิด Chromium ขึ้นอีก</translation>
+<translation id="691026815377248078">Chromium ต้องการสิทธิ์เข้าถึงบลูทูธเพื่อจับคู่ต่อ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium เกิดขึ้นได้ด้วยโปรเจ็กต์โอเพนซอร์ส <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /></translation>
+<translation id="7861509383340276692">ไปที่
+          เมนู Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          และยกเลิกการเลือก "<ph name="NO_PREFETCH_DESCRIPTION" />"
+          หากวิธีนี้ไม่ช่วยแก้ปัญหา เราขอแนะนำให้เลือกตัวเลือกนี้
+          อีกครั้งเพื่อให้ประสิทธิภาพการทำงานดียิ่งขึ้น</translation>
+<translation id="8187289872471304532">ไปที่
+          แอปพลิเคชัน &gt; ค่ากำหนดของระบบ &gt; เครือข่าย &gt; ขั้นสูง &gt; พร็อกซี
+          แล้วยกเลิกการเลือกพร็อกซีที่ได้เลือกไว้</translation>
+<translation id="8597726643333341451">คุณกําลังดูหน้า Chrome สําหรับการทดสอบที่ปลอดภัย</translation>
+<translation id="8684913864886094367">Chromium ไม่ได้ปิดอย่างถูกต้อง</translation>
+</translationbundle>

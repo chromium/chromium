@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="da">
+<translation id="130631256467250065">Dine ændringer træder i kraft, næste gang du genstarter din enhed.</translation>
+<translation id="275588974610408078">Nedbrudsrapportering er ikke tilgængeligt i Chromium.</translation>
+<translation id="3064346599913645280">Du ser en sikker Chromium-side</translation>
+<translation id="3255926992597692024">Chromium forsøger at ændre indstillinger for udfyldning af betalingsmetoder.</translation>
+<translation id="358997566136285270">Chromium-logo</translation>
+<translation id="4050599136622776556">Chromium forsøger at redigere betalingsmetoder.</translation>
+<translation id="4365115785552740256">Chromium er realiseret ved hjælp af <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />-open source-projektet og anden <ph name="BEGIN_LINK_OSS" />open source-software<ph name="END_LINK_OSS" />.</translation>
+<translation id="4559775032954821361">Gå til
+          Chromium-menuen &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          LAN-indstillinger,
+          og fjern markeringen i afkrydsningsfeltet "Brug en proxyserver til LAN".</translation>
+<translation id="4622039161600275920">Chromium har blokeret denne side</translation>
+<translation id="48558539577516920">Tillad, at Chromium får adgang til netværket i dine indstillinger for firewall eller
+        antivirus.</translation>
+<translation id="580822234363523061">Gå til
+          Chromium-menuen &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />,
+          og kontrollér, at din konfiguration er indstillet til "ingen proxy" eller "direkte".</translation>
+<translation id="6549378540556750549">Chromium leveres også ved hjælp af andet <ph name="BEGIN_LINK_OSS" />open source-software<ph name="END_LINK_OSS" />.</translation>
+<translation id="6613594504749178791">Dine ændringer træder i kraft, næste gang du genstarter Chromium.</translation>
+<translation id="691026815377248078">Chromium skal have adgang til Bluetooth for at fortsætte 
+ parringen. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium leveres ved hjælp af open source-projektet <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="7861509383340276692">Gå til
+          Chromium-menuen &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          og fjern markeringen af "<ph name="NO_PREFETCH_DESCRIPTION" />".
+          Hvis det ikke løser problemet, bør du markere dette afkrydsningsfelt
+          igen for at forbedre effektiviteten.</translation>
+<translation id="8187289872471304532">Gå til 
+          Applikationer &gt; Systemindstillinger &gt; Netværk &gt; Avanceret &gt; Proxyer,
+          og fjern markeringen af alle valgte proxyer.</translation>
+<translation id="8597726643333341451">Du ser en sikker Chrome for Testing-side</translation>
+<translation id="8684913864886094367">Chromium blev ikke afsluttet korrekt.</translation>
+</translationbundle>

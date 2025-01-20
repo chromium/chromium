@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="cs">
+<translation id="130631256467250065">Změny se projeví po příštím restartu zařízení.</translation>
+<translation id="275588974610408078">Hlášení o selhání není v prohlížeči Chromium k dispozici.</translation>
+<translation id="3064346599913645280">Prohlížíte si zabezpečenou stránku vygenerovanou prohlížečem Chromium</translation>
+<translation id="3255926992597692024">Chromium se pokouší upravit nastavení vyplňování platebních metod.</translation>
+<translation id="358997566136285270">Logo Chromium</translation>
+<translation id="4050599136622776556">Chromium se pokouší upravit platební metody.</translation>
+<translation id="4365115785552740256">Chromium staví na projektu s otevřeným zdrojovým kódem <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> a využívá i další <ph name="BEGIN_LINK_OSS" />software s otevřeným zdrojovým kódem<ph name="END_LINK_OSS" />.</translation>
+<translation id="4559775032954821361">Přejděte do
+          nabídky Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Nastavení místní sítě (LAN)
+          a zrušte zaškrtnutí políčka Použít pro síť LAN proxy server.</translation>
+<translation id="4622039161600275920">Tato stránka je blokována prohlížečem Chromium</translation>
+<translation id="48558539577516920">V nastavení firewallu a antivirového programu povolte prohlížeči Chromium přístup k síti.</translation>
+<translation id="580822234363523061">Přejděte do
+          nabídky Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          a zkontrolujte, zda je konfigurace nastavena na možnost „no proxy“ (bez proxy) nebo „direct“ (přímo).</translation>
+<translation id="6549378540556750549">Chromium využívá také další <ph name="BEGIN_LINK_OSS" />open source software<ph name="END_LINK_OSS" />.</translation>
+<translation id="6613594504749178791">Změny se projeví po příštím restartu prohlížeče Chromium.</translation>
+<translation id="691026815377248078">Chromium potřebuje přístup k Bluetooth, aby bylo možné
+ pokračovat v párování. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium staví na open source projektu <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="7861509383340276692">Přejděte do nabídky Chromium &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="ADVANCED_TITLE" /> a zrušte výběr možnosti <ph name="NO_PREFETCH_DESCRIPTION" />. Pokud to však problém nevyřeší, doporučujeme vám tuto možnost znovu vybrat (za účelem zlepšení výkonu).</translation>
+<translation id="8187289872471304532">Přejděte do nabídky
+          Aplikace &gt; Nastavení systému &gt; Síť &gt; Rozšířená nastavení &gt; Servery proxy
+          a zrušte výběr všech vybraných serverů proxy.</translation>
+<translation id="8597726643333341451">Prohlížíte si zabezpečenou stránku Chrome for Testing</translation>
+<translation id="8684913864886094367">Aplikace Chromium nebyla řádně ukončena.</translation>
+</translationbundle>

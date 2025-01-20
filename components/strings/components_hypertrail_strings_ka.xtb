@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ka">
+<translation id="130631256467250065">ცვლილებები გააქტიურდება მოწყობილობის შემდეგი გადატვირთვისას.</translation>
+<translation id="275588974610408078">ჩაშლის ანგარიშები ხელმისაწვდომი არ არის Chromium-ზე.</translation>
+<translation id="3064346599913645280">თქვენ ათვალიერებთ Chromium-ის დაცულ გვერდს</translation>
+<translation id="3255926992597692024">Chromium ცდილობს პარამეტრების შეცვლას, გადახდის მეთოდების შესავსებად.</translation>
+<translation id="358997566136285270">Chromium-ის ლოგო</translation>
+<translation id="4050599136622776556">Chromium ცდილობს გადახდის მეთოდების რედაქტირებას.</translation>
+<translation id="4365115785552740256">Chromium არსებობს <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ღია წყაროს პროექტის და სხვა <ph name="BEGIN_LINK_OSS" />ღია წყაროს პროგრამული უზრუნველყოფის<ph name="END_LINK_OSS" /> წყალობით.</translation>
+<translation id="4559775032954821361">გახსენით
+          Chromium-ის მენიუ &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          LAN-ის პარამეტრები
+          და მოხსენით მონიშვნა მოსანიშნი უჯრიდან „პროქსი სერვერის გამოყენება LAN-ისთვის“.</translation>
+<translation id="4622039161600275920">ეს გვერდი დაბლოკილია Chromium-ის მიერ</translation>
+<translation id="48558539577516920">თქვენი ქსელის დაცვის ან ანტივირუსის პარამეტრებში, მიეცით Chromium-ს ქსელზე წვდომის
+          უფლება.</translation>
+<translation id="580822234363523061">გახსენით
+          Chromium-ის მენიუ &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+         და დარწმუნდით, რომ კონფიგურაციაში დაყენებულია მნიშვნელობები „პროქსის გარეშე“ ან „პირდაპირი“</translation>
+<translation id="6549378540556750549">Chromium, ასევე, მუშაობს <ph name="BEGIN_LINK_OSS" />ღია კოდის სხვა პროგრამული უზრუნველყოფის<ph name="END_LINK_OSS" /> დამსახურებით.</translation>
+<translation id="6613594504749178791">თქვენი ცვლილებები გააქტიურდება Chromium-ის შემდეგი გაშვებისას.</translation>
+<translation id="691026815377248078">დაწყვილების გასაგრძელებლად Chromium საჭიროებს Bluetooth-ზე წვდომას. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium არსებობს <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />-ის ღია კოდის პროექტის წყალობით.</translation>
+<translation id="7861509383340276692">გახსენით
+         Chromium-ის მენიუ &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          და მოხსენით მონიშვნა ელემენტიდან „<ph name="NO_PREFETCH_DESCRIPTION" />“.
+          თუ პრობლემა ვერ გადაწყდა, გირჩევთ ხელახლა აირჩიოთ
+          ეს პარამეტრი, გაუმჯობესებული ეფექტურობისთვის.</translation>
+<translation id="8187289872471304532">გადადით
+          პროგრამები &gt; სისტემის პარამეტრები &gt; ქსელი &gt; მოწინავე &gt; პროქსი
+          და გააუქმეთ ნებისმიერი არჩეული პროქსი.</translation>
+<translation id="8597726643333341451">თქვენი უყურებთ Chrome for Testing-ის დაცულ გვერდს</translation>
+<translation id="8684913864886094367">Chromium სწორად ვერ გაითიშა.</translation>
+</translationbundle>

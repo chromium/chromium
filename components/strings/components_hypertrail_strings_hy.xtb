@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="hy">
+<translation id="130631256467250065">Ձեր փոփոխություններն ուժի մեջ կմտնեն հաջորդ անգամ, երբ վերագործարկեք սարքը:</translation>
+<translation id="275588974610408078">Խափանումների մասին հաղորդումը մատչելի չէ Chromium-ում:</translation>
+<translation id="3064346599913645280">Ցուցադրվող Chromium էջն անվտանգ է</translation>
+<translation id="3255926992597692024">Chromium-ը փորձում է փոխել վճարման եղանակների լրացման կարգավորումները։</translation>
+<translation id="358997566136285270">Chromium-ի պատկերանշանը</translation>
+<translation id="4050599136622776556">Chromium-ը փորձում է փոփոխել վճարման եղանակները։</translation>
+<translation id="4365115785552740256">Chromium-ը ստեղծվել է շնորհիվ <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> բաց կոդով նախագծի և այլ <ph name="BEGIN_LINK_OSS" />բաց կոդով ծրագրակազմերի<ph name="END_LINK_OSS" />:</translation>
+<translation id="4559775032954821361">Անցեք
+          Chromium-ի ընտրացանկ &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          LAN կարգավորումներ
+          և ապանշեք «Օգտագործել պրոքսի սերվեր LAN-ի համար» նշավանդակը:</translation>
+<translation id="4622039161600275920">Այս էջն արգելափակվել է Chromium-ի կողմից</translation>
+<translation id="48558539577516920">Հրապատի կամ հակավիրուսային ծրագրի կարգավորումներում
+       թույլատրեք Chromium-ին միանալ ցանցին:</translation>
+<translation id="580822234363523061">Անցեք
+          Chromium-ի ընտրացանկ &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          և համոզվեք, որ ընտրված է «առանց պրոքսի-սերվերի» կամ «անմիջական» կազմաձևումը:</translation>
+<translation id="6549378540556750549">Chromium-ը նաև աշխատում է այլ <ph name="BEGIN_LINK_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_OSS" /> շնորհիվ։</translation>
+<translation id="6613594504749178791">Փոփոխություններն ուժի մեջ կմտնեն Chromium-ը հաջորդ անգամ գործարկելիս:</translation>
+<translation id="691026815377248078">Զուգակցումը շարունակելու համար Chromium-ին հասանելի դարձրեք Bluetooth-ը։ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium-ը ստեղծվել է <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />-ի բաց կոդով նախագծի հիման վրա։</translation>
+<translation id="7861509383340276692">Անցեք
+          Chromium ընտրացանկ &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          և ապանշեք «<ph name="NO_PREFETCH_DESCRIPTION" />»-ը:
+          Եթե խնդիրը չվերանա, խորհուրդ ենք տալիս կրկին ընտրել այս տարբերակը՝
+          արդյունավետությունը բարձրացնելու համար:</translation>
+<translation id="8187289872471304532">Անցեք
+          Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies
+          և ապընտեք բոլոր ընտրված պրոքսի-սերվերները:</translation>
+<translation id="8597726643333341451">Դուք դիտում եք Chrome for Testing-ի անվտանգ էջ</translation>
+<translation id="8684913864886094367">Chromium-ը ճիշտ չի փակվել:</translation>
+</translationbundle>

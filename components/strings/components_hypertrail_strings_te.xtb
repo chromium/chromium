@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="te">
+<translation id="130631256467250065">మీ మార్పులు మీరు మీ పరికరాన్ని పునఃప్రారంభించే తర్వాతిసారి అమలులోకి వస్తాయి.</translation>
+<translation id="275588974610408078">Chromiumలో క్రాష్ రిపోర్ట్‌ అందుబాటులో లేదు.</translation>
+<translation id="3064346599913645280">మీరు సురక్షితమైన Chromium పేజీని వీక్షిస్తున్నారు</translation>
+<translation id="3255926992597692024">పేమెంట్ ఆప్షన్‌లను పూరించడానికి సంబంధించిన సెట్టింగ్‌లను ఎడిట్ చేయడానికి Chromium ట్రై చేస్తోంది.</translation>
+<translation id="358997566136285270">Chromium లోగో</translation>
+<translation id="4050599136622776556">పేమెంట్ ఆప్షన్‌లను ఎడిట్ చేయడానికి Chromium ట్రై చేస్తోంది.</translation>
+<translation id="4365115785552740256">Chromium అనేది <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ఓపెన్ సోర్స్ ప్రాజెక్ట్ మరియు ఇతర <ph name="BEGIN_LINK_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_OSS" />లపై ఎంతగానో ఆధారపడుతుంది.</translation>
+<translation id="4559775032954821361">Chromium మెనూ &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          LAN సెట్టింగ్‌లకు వెళ్లండి
+          మరియు "మీ LAN కోసం ప్రాక్సీ సర్వర్‌ను ఉపయోగించండి" చెక్ బాక్స్‌ ఎంపికను తీసివేయండి.</translation>
+<translation id="4622039161600275920">Chromium ద్వారా ఈ పేజీ బ్లాక్ చేయబడింది</translation>
+<translation id="48558539577516920">మీ ఫైర్‌వాల్ లేదా యాంటీవైరస్ సెట్టింగ్‌ల్లో నెట్‌వర్క్‌ను యాక్సెస్ చేయడానికి
+        Chromiumను అనుమతించండి.</translation>
+<translation id="580822234363523061">Chromium మెనూ &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />కు వెళ్లండి
+          మరియు మీ కాన్ఫిగరేషన్ "ప్రాక్సీ వద్దు" లేదా "నేరుగా" లాగా సెట్ చేయబడిందని నిర్ధారించుకోండి.</translation>
+<translation id="6549378540556750549">ఇతర <ph name="BEGIN_LINK_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_OSS" /> ద్వారా కూడా Chromiumను రూపొందించడం సాధ్యమయ్యింది.</translation>
+<translation id="6613594504749178791">మీ మార్పులు మీరు Chromiumని మరుసటిసారి ప్రారంభించినప్పుడు ప్రభావాన్ని చూపుతాయి.</translation>
+<translation id="691026815377248078">పెయిరింగ్‌ను కొనసాగించడానికి Chromiumకు 
+ బ్లూటూత్ యాక్సెస్ అవసరం. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637"><ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ఓపెన్ సోర్స్ ప్రాజెక్ట్ ద్వారా Chromiumను రూపొందించడం సాధ్యమయ్యింది.</translation>
+<translation id="7861509383340276692">Chromium మెనూ &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />కు వెళ్లండి,
+          ఆపై "<ph name="NO_PREFETCH_DESCRIPTION" />" ఎంపికను తీసివేయండి.
+          దీని వల్ల సమస్య పరిష్కారం కాకపోతే, మెరుగైన పనితీరు కోసం మీరు
+          ఈ ఎంపికను మళ్లీ ఎంచుకోవాలని మేము సిఫార్సు చేస్తున్నాము.</translation>
+<translation id="8187289872471304532">ఇలా వెళ్లండి         
+         అప్లికేష‌న్‌లు &gt; సిస్టమ్ ప్రాధాన్యతలు &gt; నెట్‌వర్క్ &gt; అధునాతనం &gt; ప్రాక్సీలు
+         ఏవైనా ప్రాక్సీలను ఎంపిక చేసుకుని ఉంటే వాటిని తొల‌గించండి.</translation>
+<translation id="8597726643333341451">మీరు సురక్షితమైన Chrome for Testing పేజీని చూస్తున్నారు</translation>
+<translation id="8684913864886094367">Chromium సరిగ్గా షట్ డౌన్ కాలేదు.</translation>
+</translationbundle>

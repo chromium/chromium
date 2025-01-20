@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="or">
+<translation id="130631256467250065">ପରବର୍ତ୍ତୀ ସମୟରେ ଆପଣ ଆପଣଙ୍କ ଡିଭାଇସ୍‍କୁ ରିଷ୍ଟାର୍ଟ କଲେ ଆପଣଙ୍କର ଥିବା ପରିବର୍ତ୍ତନଗୁଡ଼ିକ କାର୍ଯ୍ୟକାରୀ ହେବ।</translation>
+<translation id="275588974610408078">Chromiumରେ କ୍ରାସ୍ ରିପୋର୍ଟିଂ ଉପଲବ୍ଧ ନାହିଁ।</translation>
+<translation id="3064346599913645280">ଆପଣ ଏକ ସୁରକ୍ଷିତ Chromium ପୃଷ୍ଠା ଦେଖୁଛନ୍ତି</translation>
+<translation id="3255926992597692024">ପେମେଣ୍ଟ ପଦ୍ଧତି ପୂରଣ କରିବା ପାଇଁ Chromium ସେଟିଂସ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଚେଷ୍ଟା କରୁଛି।</translation>
+<translation id="358997566136285270">Chromium ଲୋଗୋ</translation>
+<translation id="4050599136622776556">Chromium ପେମେଣ୍ଟ ପଦ୍ଧତିଗୁଡ଼ିକୁ ଏଡିଟ କରିବା ପାଇଁ ଚେଷ୍ଟା କରୁଛି।</translation>
+<translation id="4365115785552740256"><ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ଭଳି ମୁକ୍ତ ଉତ୍ସ ପ୍ରୋଜେକ୍ଟ ଏବଂ ଅନ୍ୟ <ph name="BEGIN_LINK_OSS" />ମୁକ୍ତ ଉତ୍ସ ସଫ୍ଟୱେର୍<ph name="END_LINK_OSS" /> ଦ୍ୱାରା Chromiumକୁ ତିଆରି କରିବା ସମ୍ଭବ କରାଯାଇଛି।</translation>
+<translation id="4559775032954821361">Chromium ମେନୁ &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          LAN ସେଟିଂସ୍‌କୁ
+          ଯାଆନ୍ତୁ ଏବଂ "ଆପଣଙ୍କର LAN ପାଇଁ ଏକ ପ୍ରକ୍ସି ସର୍ଭର ବ୍ୟବହାର କରନ୍ତୁ" ଚେକ୍‌ବକ୍ସକୁ ଅଚୟନିତ କରନ୍ତୁ।</translation>
+<translation id="4622039161600275920">ଏହି ପୃଷ୍ଠାକୁ Chromium ଦ୍ୱାରା ବ୍ଲକ୍ କରାଯାଇଛି</translation>
+<translation id="48558539577516920">Chromiumକୁ ଆପଣଙ୍କର ଫାୟାରୱାଲ୍ କିମ୍ବା ଆଣ୍ଟିଭାଇରସ୍ ସେଟିଂସ୍‍‍ରେ ନେଟ୍‍ୱର୍କକୁ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ଅନୁମତି ଦିଅନ୍ତୁ।</translation>
+<translation id="580822234363523061">Chromium ମେନୁ &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          ଯାଆନ୍ତୁ ଏବଂ ଏହା ସୁନିଶ୍ଚିତ କରନ୍ତୁ ଯେ, ଆପଣଙ୍କ କନ୍‍ଫିଗ୍‍ରେସନ୍ "ପ୍ରକ୍ସି ନୁହେଁ" କିମ୍ବା "ପ୍ରତ୍ୟେକ୍ଷ"ରେ ସେଟ୍ ହୋଇଛି।</translation>
+<translation id="6549378540556750549">Chromium ଅନ୍ୟ <ph name="BEGIN_LINK_OSS" />ଓପନ ସୋର୍ସ ସଫ୍ଟୱେର<ph name="END_LINK_OSS" /> ଦ୍ୱାରା ମଧ୍ୟ ସମ୍ଭବପର ହୋଇଥାଏ।</translation>
+<translation id="6613594504749178791">ପରବର୍ତ୍ତୀ ସମୟରେ Chromiumକୁ ପୁଣି ଲଞ୍ଚ କରିବାବେଳେ ଆପଣ କରିଥିବା ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ଲାଗୁ ହେବ।</translation>
+<translation id="691026815377248078">ପେୟାରିଂ ଜାରି ରଖିବା ପାଇଁ Chromium ବ୍ଲୁଟୁଥ୍ ଆକ୍ସେସ୍ ଆବଶ୍ୟକ କରେ। <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ଓପନ ସୋର୍ସ ସଫ୍ଟୱେର ପ୍ରୋଜେକ୍ଟ ଦ୍ୱାରା ମଧ୍ୟ ସମ୍ଭବପର ହୋଇଥାଏ।</translation>
+<translation id="7861509383340276692">Chromium ମେନୁ &gt;
+ <ph name="SETTINGS_TITLE" /> &gt;
+
+ <ph name="ADVANCED_TITLE" />କୁ 
+ଯାଆନ୍ତୁ 
+ଏବଂ "<ph name="NO_PREFETCH_DESCRIPTION" />"କୁ ଅଚୟନିତ କରନ୍ତୁ
+ଯଦି ଏହା ସମସ୍ୟାର ସମାଧାନ କରିପାରିଲା ନାହିଁ, ତେବେ ଉନ୍ନତ କାର୍ଯ୍ୟଦକ୍ଷତା ପାଇଁ ଆମେ ଆପଣଙ୍କୁ ଏହି ବିକଳ୍ପକୁ
+ ପୁନର୍ବାର ଚୟନ କରିବାକୁ ସୁପାରିଶ କରୁଛୁ।</translation>
+<translation id="8187289872471304532">ଆପ୍ଲିକେସନ୍ସ &gt; ସିଷ୍ଟମ୍ ଅଗ୍ରାଧିକାର &gt; ନେଟ୍‌ୱାର୍କ &gt; ଅତ୍ୟାଧୁନିକ &gt; ପ୍ରକ୍ସିକୁ ଯାଆନ୍ତୁ ଏବଂ ବଛାଯାଇଥିବା ଯେକୌଣସି ପ୍ରକ୍ସିକୁ ଅଚୟନ କରନ୍ତୁ।</translation>
+<translation id="8597726643333341451">ଆପଣ ଏକ ସୁରକ୍ଷିତ Chrome for Testing ପୃଷ୍ଠା ଭ୍ୟୁ କରୁଛନ୍ତି</translation>
+<translation id="8684913864886094367">Chromium ସଠିକ୍‌ରୂପେ ବନ୍ଦ ହୋଇନଥିଲା।</translation>
+</translationbundle>

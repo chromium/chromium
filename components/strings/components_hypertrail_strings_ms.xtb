@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ms">
+<translation id="130631256467250065">Perubahan anda akan dilaksanakan apabila anda memulakan semula peranti anda pada masa akan datang.</translation>
+<translation id="275588974610408078">Laporan keranapan tidak tersedia dalam Chromium.</translation>
+<translation id="3064346599913645280">Anda sedang melihat halaman Chromium yang selamat</translation>
+<translation id="3255926992597692024">Chromium sedang cuba mengubah suai tetapan untuk pengisian kaedah pembayaran.</translation>
+<translation id="358997566136285270">Logo Chromium</translation>
+<translation id="4050599136622776556">Chromium sedang cuba mengedit kaedah pembayaran.</translation>
+<translation id="4365115785552740256">Chromium berjaya dilaksanakan melalui projek sumber terbuka <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> dan <ph name="BEGIN_LINK_OSS" />perisian sumber terbuka<ph name="END_LINK_OSS" /> yang lain.</translation>
+<translation id="4559775032954821361">Pergi ke
+          menu Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Tetapan LAN
+          dan nyahpilih kotak pilihan "Gunakan pelayan proksi untuk LAN anda".</translation>
+<translation id="4622039161600275920">Halaman ini telah disekat oleh Chromium</translation>
+<translation id="48558539577516920">Benarkan Chromium mengakses rangkaian di tetapan tembok api atau
+        antivirus anda.</translation>
+<translation id="580822234363523061">Pergi ke
+          menu Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          dan pastikan konfigurasi anda ditetapkan kepada "tiada proksi" atau "terus".</translation>
+<translation id="6549378540556750549">Chromium juga berjaya dilaksanakan oleh <ph name="BEGIN_LINK_OSS" />perisian sumber terbuka<ph name="END_LINK_OSS" /> yang lain.</translation>
+<translation id="6613594504749178791">Perubahan anda akan dilaksanakan apabila anda melancarkan semula Chromium pada masa hadapan.</translation>
+<translation id="691026815377248078">Chromium memerlukan akses Bluetooth untuk meneruskan 
+ penggandingan. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium berjaya dilaksanakan oleh projek sumber terbuka <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="7861509383340276692">Pergi ke
+          menu Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          dan nyahpilih "<ph name="NO_PREFETCH_DESCRIPTION" />."
+          Jika tindakan ini tidak menyelesaikan isu ini, kami cadangkan agar memilih pilihan ini
+          sekali lagi untuk prestasi yang dipertingkatkan.</translation>
+<translation id="8187289872471304532">Pergi ke
+          Apikasi &gt; Pilihan Sistem &gt; Rangkaian &gt; Terperinci &gt; Proksi
+          dan nyahpilih mana-mana proksi yang telah dipilih.</translation>
+<translation id="8597726643333341451">Anda melihat halaman Chrome for Testing yang selamat</translation>
+<translation id="8684913864886094367">Chromium tidak ditutup dengan betul.</translation>
+</translationbundle>

@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="mk">
+<translation id="130631256467250065">Вашите промени ќе стапат на сила следниот пат кога ќе го рестартирате уредот.</translation>
+<translation id="275588974610408078">Не е достапно пријавување падови на Chromium.</translation>
+<translation id="3064346599913645280">Гледате безбедна страница на Chromium</translation>
+<translation id="3255926992597692024">Chromium се обидува да ги измени поставките за пополнување на начините на плаќање.</translation>
+<translation id="358997566136285270">Лого на Chromium</translation>
+<translation id="4050599136622776556">Chromium се обидува да ги измени начините на плаќање.</translation>
+<translation id="4365115785552740256">Chromium е овозможен од проектот со отворен код <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> и друг <ph name="BEGIN_LINK_OSS" />софтвер со отворен код<ph name="END_LINK_OSS" />.</translation>
+<translation id="4559775032954821361">Одете во
+          менито на Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Поставки за LAN
+          и поништете го изборот на полето „Употребете прокси-сервер за LAN“.</translation>
+<translation id="4622039161600275920">Страницава е блокирана од Chromium</translation>
+<translation id="48558539577516920">Дозволете Chromium да пристапи на мрежата во поставките за
+        заштитен ѕид или антивирус.</translation>
+<translation id="580822234363523061">Одете на
+          менито на Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          и погрижете се конфигурацијата да ви е поставена на „нема прокси“ или „директно“.</translation>
+<translation id="6549378540556750549">Chromium го овозможува и друг <ph name="BEGIN_LINK_OSS" />софтвер со отворен код<ph name="END_LINK_OSS" />.</translation>
+<translation id="6613594504749178791">Промените ќе стапат на сила следниот пат кога ќе го стартувате Chromium повторно.</translation>
+<translation id="691026815377248078">Chromium бара пристап до Bluetooth за да продолжи со 
+ спарувањето. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium го овозможува проектот за софтвер со отворен код на <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="7861509383340276692">Одете во
+          менито на Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          и поништете го изборот на „<ph name="NO_PREFETCH_DESCRIPTION" />“.
+          Доколку со ова не се реши проблемот, препорачуваме повторно да ја изберете опцијата
+          за подобра изведба.</translation>
+<translation id="8187289872471304532">Отидете на
+          Апликации &gt; Претпочитани вредности на системот &gt; Мрежа &gt; Напредно &gt; Проксија
+           а потоа поништете го изборот на проксијата што сте ги избрале.</translation>
+<translation id="8597726643333341451">Прегледувате безбедна страница на „Chrome за тестирање“</translation>
+<translation id="8684913864886094367">Chromium не се исклучи правилно.</translation>
+</translationbundle>

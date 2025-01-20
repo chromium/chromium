@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ar">
+<translation id="130631256467250065">تسري التغييرات في المرة التالية التي تعيد فيها تشغيل الجهاز.</translation>
+<translation id="275588974610408078">‏تقارير الأعطال غير متاحة في Chromium.</translation>
+<translation id="3064346599913645280">‏أنت تعرض صفحة Chromium آمنة</translation>
+<translation id="3255926992597692024">‏يحاول Chromium تعديل إعدادات ميزة "الملء التلقائي" لبيانات طُرق الدفع.</translation>
+<translation id="358997566136285270">‏شعار Chromium</translation>
+<translation id="4050599136622776556">‏يحاول Chromium تعديل طُرق الدفع.</translation>
+<translation id="4365115785552740256">‏أصبح Chromium الآن متاحًا بفضل المشروع المفتوح المصدر <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> و<ph name="BEGIN_LINK_OSS" />برامج أخرى مفتوحة المصدر<ph name="END_LINK_OSS" />.</translation>
+<translation id="4559775032954821361">‏انتقل إلى
+          قائمة Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          إعدادات الشبكة المحلية
+          وألغ وضع علامة في مربّع الاختيار "استخدام خادم وكيل لشبكة الاتصال المحلية".</translation>
+<translation id="4622039161600275920">‏تم حظر هذه الصفحة بواسطة متصفّح Chromium.</translation>
+<translation id="48558539577516920">‏اسمح لـ Chromium بالدخول إلى الشبكة من خلال إعدادات جدار الحماية أو
+        برنامج مكافحة الفيروسات.</translation>
+<translation id="580822234363523061">‏انتقل إلى
+          قائمة Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          وتأكد من ضبط الإعداد على "بلا خادم وكيل" أو "مباشر."</translation>
+<translation id="6549378540556750549">‏أصبح Chromium متاحًا من خلال <ph name="BEGIN_LINK_OSS" />برنامج آخر مفتوح المصدر<ph name="END_LINK_OSS" />.</translation>
+<translation id="6613594504749178791">‏ستسري التغييرات في المرة التالية التي تعيد فيها تشغيل Chromium.</translation>
+<translation id="691026815377248078">‏يجب منح Chromium الإذن بالوصول إلى البلوتوث لمواصلة عملية 
+الإقران. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">‏أصبح Chromium متاحًا من خلال مشروع <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> المفتوح المصدر.</translation>
+<translation id="7861509383340276692">‏انتقل إلى
+        قائمة Chromium &gt;
+        <ph name="SETTINGS_TITLE" />
+        &gt;
+        <ph name="ADVANCED_TITLE" />
+        وألغ اختيار "<ph name="NO_PREFETCH_DESCRIPTION" />"
+        في حالة ما إذا لم يؤد ذلك إلى حل المشكلة، نوصي بتحديد هذا الخيار
+        مرة أخرى من أجل أداء أفضل.</translation>
+<translation id="8187289872471304532">‏انتقل إلى Applications (التطبيقات) &gt; System Preferences (الإعدادات المفضّلة للنظام) &gt; Network (الشبكة) &gt; Advanced (الخيارات المتقدمة) &gt; Proxies (الخوادم الوكيلة) وألغ اختيار أي خوادم وكيلة تم تحديدها.</translation>
+<translation id="8597726643333341451">‏أنت تعرض صفحة Chrome for Testing آمنة.</translation>
+<translation id="8684913864886094367">‏لم يغلق Chromium بشكل صحيح.</translation>
+</translationbundle>

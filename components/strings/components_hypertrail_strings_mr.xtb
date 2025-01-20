@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="mr">
+<translation id="130631256467250065">तुम्ही आपल्या डिव्हाइसचा पुढील वेळी पुनरारंभ कराल तेव्हा तुमचे बदल प्रभावी होतील.</translation>
+<translation id="275588974610408078">Chromium मध्ये क्रॅश अहवाल उपलब्ध नाही.</translation>
+<translation id="3064346599913645280">तुम्ही एक सुरक्षित Chromium पेज पाहत आहात</translation>
+<translation id="3255926992597692024">Chromium पेमेंट पद्धती भरण्यासाठी सेटिंग्जमध्ये फेरबदल करण्याचा प्रयत्न करत आहे.</translation>
+<translation id="358997566136285270">Chromium लोगो</translation>
+<translation id="4050599136622776556">Chromium हे पेमेंट पद्धती संपादित करण्याचा प्रयत्‍न करत आहे.</translation>
+<translation id="4365115785552740256">Chromium हे <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> खुला स्रोत प्रकल्प आणि इतर <ph name="BEGIN_LINK_OSS" />खुले स्रोत सॉफ्टवेअर<ph name="END_LINK_OSS" /> द्वारे बनवणे शक्य झाले.</translation>
+<translation id="4559775032954821361">Chromium मेनू &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          LAN सेटिंग्ज
+          वर जा आणि "तुमच्या LAN साठी एक प्रॉक्सी सर्व्हर वापरा" चेकबॉक्स ची निवड रद्द करा.</translation>
+<translation id="4622039161600275920">हे पेज Chromium ने ब्लॉक केले आहे</translation>
+<translation id="48558539577516920">तुमच्या फायरवॉल किंवा अँटीव्हायरस सेटिंग्जमधील नेटवर्क ॲक्सेस करण्यास
+        Chromium ला परवानगी  द्या.</translation>
+<translation id="580822234363523061">Chromium मेनू &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          वर जा आणि तुमचे कॉन्फिगरेशन "प्रॉक्सी नाही" किंवा "प्रत्यक्ष" वर सेट केल्याचे सुनिश्चित करा.</translation>
+<translation id="6549378540556750549">Chromium हे इतर <ph name="BEGIN_LINK_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_OSS" /> द्वारेदेखील तयार करण्यात आले आहे.</translation>
+<translation id="6613594504749178791">तुम्ही पुढल्या वेळी Chromium रीलाँच कराल तोपर्यंत तुमचे बदल प्रभावी होतील.</translation>
+<translation id="691026815377248078">पेअर करणे पुढे सुरू ठेवण्यासाठी, Chromium ला ब्लूटूथ ॲक्सेस करण्याची 
+ आवश्यकता आहे. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium हे <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> मुक्त स्रोत प्रोजेक्टद्वारे तयार करण्यात आले आहे.</translation>
+<translation id="7861509383340276692">Chromium मेनू &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          वर जा आणि "<ph name="NO_PREFETCH_DESCRIPTION" />" ची निवड रद्द करा.
+          हे समस्‍येचे निराकरण करीत नसल्‍यास, आम्‍ही
+सुधारित कार्यप्रदर्शनासाठी पुन्हा
+          हा पर्याय निवडण्याची शिफारस करतो.</translation>
+<translation id="8187289872471304532">ॲप्लिकेशन &gt; सिस्टम प्राधान्ये &gt; नेटवर्क &gt; प्रगत &gt; प्रॉक्सी
+          वर जा आणि निवडलेल्या कोणत्याही प्रॉक्सींची निवड रद्द करा.</translation>
+<translation id="8597726643333341451">तुम्ही सुरक्षित Chrome for Testing पेज पाहत आहात</translation>
+<translation id="8684913864886094367">Chromium योग्यरित्या बंद केले नव्‍हते.</translation>
+</translationbundle>

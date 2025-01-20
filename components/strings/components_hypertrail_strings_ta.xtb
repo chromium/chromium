@@ -1,0 +1,45 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ta">
+<translation id="130631256467250065">அடுத்த முறை உங்கள் சாதனத்தை மறுதொடக்கம் செய்யும்போது, மாற்றங்கள் செயல்பாட்டிற்கு வரும்.</translation>
+<translation id="275588974610408078">சிதைவு அறிக்கை Chromium இல் கிடைக்கவில்லை.</translation>
+<translation id="3064346599913645280">பாதுகாப்பான Chromium பக்கத்தைப் பார்க்கிறீர்கள்</translation>
+<translation id="3255926992597692024">பேமெண்ட் விவரங்களை நிரப்பும் முறைகளுக்கான அமைப்புகளை Chromium மாற்ற முயல்கிறது.</translation>
+<translation id="358997566136285270">Chromium லோகோ</translation>
+<translation id="4050599136622776556">பேமெண்ட் முறைகளை Chromium மாற்ற முயல்கிறது.</translation>
+<translation id="4365115785552740256"><ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ஓப்பன் சோர்ஸ் திட்டபணி மற்றும் பிற <ph name="BEGIN_LINK_OSS" />ஓப்பன் சோர்ஸ் மென்பொருட்களால்<ph name="END_LINK_OSS" /> Chromium ஐ உருவாக்குவது சாத்தியமானது.</translation>
+<translation id="4559775032954821361">Chromium மெனு &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          LAN அமைப்புகள்
+          என்பதற்குச் சென்று, "உங்கள் LAN க்கு பிராக்சி சர்வரைப் பயன்படுத்தவும்" என்ற தேர்வுப்பெட்டியைத் தேர்வுநீக்கவும்.</translation>
+<translation id="4622039161600275920">இந்தப் பக்கத்தை Chromium தடுத்துள்ளது</translation>
+<translation id="48558539577516920">ஃபயர்வாலிலோ வைரஸ் தடுப்பு
+          அமைப்புகளிலோ நெட்வொர்க்கை அணுக Chromiumமை அனுமதிக்கவும்.</translation>
+<translation id="580822234363523061">Chromium மெனு&gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          என்பதற்குச் சென்று, உங்கள் உள்ளமைவு "பிராக்சி இல்லை" அல்லது "நேரடி" என அமைக்கப்பட்டிருப்பதை உறுதிசெய்யவும்.</translation>
+<translation id="6549378540556750549">பிற <ph name="BEGIN_LINK_OSS" />ஓப்பன் சோர்ஸ் மென்பொருள்<ph name="END_LINK_OSS" /> மூலமாகவும் Chromium உருவாக்கப்பட்டுள்ளது.</translation>
+<translation id="6613594504749178791">அடுத்த முறை நீங்கள் Chromium ஐ மீண்டும் தொடங்கும்போது உங்கள் மாற்றங்கள் செயல்படும்.</translation>
+<translation id="691026815377248078">இணைப்பதைத் தொடர Chromiumமிற்கு புளூடூத் அணுகல் 
+ தேவை. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637"><ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ஓப்பன் சோர்ஸ் திட்டப்பணி மூலம் Chromium உருவாக்கப்பட்டுள்ளது.</translation>
+<translation id="7861509383340276692">Chromium மெனு &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          என்பதற்குச் சென்று, "<ph name="NO_PREFETCH_DESCRIPTION" />" என்பதைத் தேர்வுநீக்கம் செய்யவும்.
+          இது சிக்கலைத் தீர்க்கவில்லை எனில், மேம்பட்ட செயல்திறனுக்கு இந்த விருப்பத்தை மீண்டும் தேர்ந்தெடுக்கும்படி பரிந்துரைக்கிறோம்.</translation>
+<translation id="8187289872471304532">'ஆப்ஸ் &gt; சிஸ்டம் விருப்பத்தேர்வுகள் &gt; நெட்வொர்க் &gt; மேம்பட்டவை &gt; பிராக்ஸிகள்'
+          என்பதற்குச் சென்று தேர்ந்தெடுக்கப்பட்டுள்ள பிராக்ஸிகளைத் தேர்வுநீக்கவும்.</translation>
+<translation id="8597726643333341451">பாதுகாப்பான Chrome for Testing பக்கத்தைப் பார்க்கிறீர்கள்</translation>
+<translation id="8684913864886094367">Chromium சரியாக நிறுத்தப்படவில்லை.</translation>
+</translationbundle>

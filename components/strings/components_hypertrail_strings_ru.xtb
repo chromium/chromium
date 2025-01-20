@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ru">
+<translation id="130631256467250065">Изменения вступят в силу после перезагрузки устройства.</translation>
+<translation id="275588974610408078">В Chromium отсутствует функция отчета об ошибках.</translation>
+<translation id="3064346599913645280">Вы просматриваете безопасную страницу Chromium</translation>
+<translation id="3255926992597692024">Chromium пытается изменить настройки заполнения способов оплаты.</translation>
+<translation id="358997566136285270">Логотип Chromium</translation>
+<translation id="4050599136622776556">Chromium пытается изменить способы оплаты.</translation>
+<translation id="4365115785552740256">Chromium обязан своим появлением проекту с открытым исходным кодом <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> и другому <ph name="BEGIN_LINK_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_OSS" />.</translation>
+<translation id="4559775032954821361">Выберите
+          меню Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Настройка сети
+          и снимите флажок "Использовать прокси-сервер для локальных подключений".</translation>
+<translation id="4622039161600275920">Эта страница была заблокирована браузером Chromium.</translation>
+<translation id="48558539577516920">Разрешите доступ к сети для Chromium
+          в настройках брандмауэра или антивируса.</translation>
+<translation id="580822234363523061">Выберите
+          меню Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          и убедитесь, что в конфигурации отключено использование прокси-сервера или выбрано непосредственное подключение.</translation>
+<translation id="6549378540556750549">Chromium также работает благодаря <ph name="BEGIN_LINK_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_OSS" />.</translation>
+<translation id="6613594504749178791">Изменения вступят в силу при следующем входе в Chromium.</translation>
+<translation id="691026815377248078">Чтобы продолжить подключение, предоставьте браузеру Chromium доступ к Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium создан на основе проекта <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> с открытым исходным кодом.</translation>
+<translation id="7861509383340276692">Откройте меню Chromium, нажмите "<ph name="SETTINGS_TITLE" />" &gt; "<ph name="ADVANCED_TITLE" />" и снимите флажок "<ph name="NO_PREFETCH_DESCRIPTION" />". Если устранить проблему не удалось, снова установите флажок, чтобы страницы загружались быстрее.</translation>
+<translation id="8187289872471304532">Выберите
+          Программы &gt; Системные настройки &gt; Сеть &gt; Дополнительно &gt; Прокси
+          и снимите флажки напротив всех прокси-серверов.</translation>
+<translation id="8597726643333341451">Вы просматриваете безопасную страницу Chrome для тестирования</translation>
+<translation id="8684913864886094367">Работа Chromium была завершена некорректно.</translation>
+</translationbundle>

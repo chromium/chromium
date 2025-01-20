@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="bn">
+<translation id="130631256467250065">পরের বার আপনি আপনার ডিভাইস পুনরারম্ভ করলে আপনার পরিবর্তনগুলি প্রভাবী হবে৷</translation>
+<translation id="275588974610408078">Chromium-এ ক্র্যাশ প্রতিবেদন উপলব্ধ নেই৷</translation>
+<translation id="3064346599913645280">আপনি একটি নিরাপদ Chromium পৃষ্ঠা  দেখছেন</translation>
+<translation id="3255926992597692024">পেমেন্ট পদ্ধতি পূরণের জন্য Chromium চেষ্টা করছে সেটিংস পরিবর্তন করার।</translation>
+<translation id="358997566136285270">Chromium লোগো</translation>
+<translation id="4050599136622776556">Chromium পেমেন্ট পদ্ধতি এডিট করার চেষ্টা করছে।</translation>
+<translation id="4365115785552740256">Chromium  <ph name="BEGIN_LINK_CHROMIUM" /> Chromium<ph name="END_LINK_CHROMIUM" /> ওপেন সোর্স প্রকল্প এবং অন্যান্য <ph name="BEGIN_LINK_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_OSS" /> দিয়ে করা সম্ভব হয়েছে৷</translation>
+<translation id="4559775032954821361">Chromium মেনুতে
+          যান &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          LAN সেটিংস
+          এবং "আপনার LAN এর জন্য একটি প্রক্সি সার্ভার ব্যবহার করুন" চেকবাক্সটি অনির্বাচন করুন৷</translation>
+<translation id="4622039161600275920">Chromium ব্রাউজারে এই পৃষ্ঠা ব্লক করা হয়েছে</translation>
+<translation id="48558539577516920">আপনার ফায়ারওয়াল বা অ্যান্টিভাইরাস সেটিংসে Chromium কে নেটওয়ার্ক অ্যাক্সেস 
+        করতে অনুমতি দিন।</translation>
+<translation id="580822234363523061">Chromium মেনুতে
+          যান &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          এবং আপনার কনফিগারেশন "প্রক্সি নয়" বা "সরাসরি" তে সেট আছে কি না নিশ্চিত করুন৷</translation>
+<translation id="6549378540556750549">এছাড়াও Chromium অন্য <ph name="BEGIN_LINK_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_OSS" /> দ্বারা পরিচালিত।</translation>
+<translation id="6613594504749178791">আপনার পরিবর্তনগুলি পরবর্তী সময় আপনি Chromium আবার চালু হলে ফলপ্রদ হবে৷</translation>
+<translation id="691026815377248078">অন্য ডিভাইসের সাথে কানেক্ট করার জন্য Chromium-কে ব্লুটুথের অ্যাক্সেস দিতে 
+হবে। <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">এছাড়াও Chromium <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ওপেন সোর্স প্রোজেক্ট দ্বারা পরিচালিত।</translation>
+<translation id="7861509383340276692">Chromium মেনুতে
+        যান &gt;
+        <ph name="SETTINGS_TITLE" />
+        &gt;
+        <ph name="ADVANCED_TITLE" />
+        এবং অনির্বাচন করুন "<ph name="NO_PREFETCH_DESCRIPTION" />৷"
+        যদি এটি সমস্যাটির সমাধান না করে, তাহলে উন্নত কার্য সম্পাদনার জন্য আবার এই বিকল্পটি নির্বাচন করা সুপারিশ আমরা করি৷</translation>
+<translation id="8187289872471304532">Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies এ যান
+          এবং নির্বাচিত থাকা যে কোনো প্রক্সি অনির্বাচন করুন৷</translation>
+<translation id="8597726643333341451">আপনি নিরাপদ Chrome for Testing পৃষ্ঠা দেখছেন</translation>
+<translation id="8684913864886094367">Chromium সঠিকভাবে বন্ধ হয়নি৷</translation>
+</translationbundle>

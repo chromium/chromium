@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="lo">
+<translation id="130631256467250065">ການປ່ຽນແປງຂອງທ່ານຈະມີຜົນຄັ້ງຕໍ່ໄປທີ່ທ່ານເລີ່ມເປີດໃຊ້ອຸປະກອນຂອງທ່ານໃໝ່.</translation>
+<translation id="275588974610408078">ບໍ່ມີການລາຍງານການຂັດຂ້ອງຢູ່ໃນ Chromium​.</translation>
+<translation id="3064346599913645280">ທ່ານກຳລັງເບິ່ງໜ້າ Chromium ທີ່ປອດໄພ</translation>
+<translation id="3255926992597692024">Chromium ກຳລັງພະຍາຍາມແກ້ໄຂການຕັ້ງຄ່າສຳລັບການຕື່ມວິທີການຈ່າຍເງິນ.</translation>
+<translation id="358997566136285270">ໂລໂກ້ Chromium</translation>
+<translation id="4050599136622776556">Chromium ກຳລັງພະຍາຍາມແກ້ໄຂວິທີການຈ່າຍເງິນ.</translation>
+<translation id="4365115785552740256">Chromium ເຮັດໃຫ້ເປັນໄປໄດ້ໂດຍ <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ໂຄງການ open source ແລະ <ph name="BEGIN_LINK_OSS" />ຊອບແວ open source<ph name="END_LINK_OSS" /> ອື່ນໆ.</translation>
+<translation id="4559775032954821361">ໄປທີ່
+          ເມນູ Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          ການຕັ້ງຄ່າ LAN
+          ແລະຖອນເລືອກກ່ອງໝາຍຕິກ "ໃຊ້ເຊີບເວີພຣັອກຊີສໍາລັບ LAN ຂອງທ່ານ".</translation>
+<translation id="4622039161600275920">ໜ້ານີ້ຖືກບລັອກໄວ້ໂດຍ Chromium</translation>
+<translation id="48558539577516920">ອະນຸຍາດໃຫ້ Chromium ເຂົ້າເຖິງເຄືອຂ່າຍໃນການຕັ້ງຄ່າໄຟຣ໌ວໍ ຫຼື ໂປຣແກຣມ
+          ຕ້ານໄວຣັສຂອງທ່ານ.</translation>
+<translation id="580822234363523061">ໄປທີ່
+          ເມນູ Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          ແລະເບິ່ງໃຫ້ແນ່ໃຈວ່າ ການກໍານົດຂອງທ່ານໄດ້ຕັ້ງເປັນ "ບໍ່ມີພຣັອກຊີ" ຫຼື "ໂດຍກົງ" ແລ້ວ.</translation>
+<translation id="6549378540556750549">Chromium ຍັງເປັນໄປໄດ້ໂດຍ <ph name="BEGIN_LINK_OSS" />ຊອບແວໂອເພນຊອດ<ph name="END_LINK_OSS" /> ອື່ນນຳອີກ.</translation>
+<translation id="6613594504749178791">ການປ່ຽນແປງຂອງທ່ານຈະມີຜົນຄັ້ງຕໍ່ໄປທີ່ທ່ານເລີ່ມເປີດໃຊ້ Chromium ໃໝ່.</translation>
+<translation id="691026815377248078">Chromium ຕ້ອງການສິດເຂົ້າເຖິງ Bluetooth ເພື່ອສືບຕໍ່ 
+ ການຈັບຄູ່. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium ເປັນໄປໄດ້ໂດຍໂຄງການໂອເພນຊອດ <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="7861509383340276692">ໄປ​ທີ່
+          ເມ​ນູ Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          ແລະ​ຖອນ​ເລືອກ "<ph name="NO_PREFETCH_DESCRIPTION" />."
+          ຖ້າອັນ​ນີ້​ບໍ່​ແກ້​ໄຂ​ບັນ​ຫາ​ໄດ້, ພວກ​ເຮົາ​ແນະ​ນຳ​ໃຫ້​ເລືອກ​ເອົາ​ທາງ​ເລືອກ​ນີ້
+          ອີກ​ເພື່ອ​ເພີ່ມ​ການ​ປະ​ຕິ​ບັດ​ງານ.</translation>
+<translation id="8187289872471304532">ໄປທີ່
+          ແອັບພລິເຄຊັນ &gt; ຄວາມມັກລະບົບ &gt; ເຄືອຂ່າຍ &gt; ຂັ້ນສູງ &gt; ພຣັອກຊີ ແລະຖອນເລືອກພຣັອກຊີທີ່ໄດ້ເລືອກໄວ້ແລ້ວ.</translation>
+<translation id="8597726643333341451">ທ່ານກຳລັງເບິ່ງໜ້າ Chrome ສຳລັບການທົດສອບທີ່ປອດໄພ</translation>
+<translation id="8684913864886094367">Chromium ມອດ​ຢ່າງບໍ່​ຖືກ​ຕ້ອງ.</translation>
+</translationbundle>

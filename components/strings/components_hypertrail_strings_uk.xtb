@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="uk">
+<translation id="130631256467250065">Ваші зміни почнуть діяти під час наступного перезапуску пристрою.</translation>
+<translation id="275588974610408078">Функція повідомлення про аварійне завершення роботи не доступна в Chromium.</translation>
+<translation id="3064346599913645280">Ви переглядаєте безпечну сторінку Chromium</translation>
+<translation id="3255926992597692024">Chromium намагається змінити параметри заповнення способів оплати.</translation>
+<translation id="358997566136285270">Логотип Chromium</translation>
+<translation id="4050599136622776556">Chromium намагається змінити способи оплати.</translation>
+<translation id="4365115785552740256">Chromium став можливим завдяки проекту з відкритим кодом <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> та іншому <ph name="BEGIN_LINK_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_OSS" />.</translation>
+<translation id="4559775032954821361">Перейдіть у
+          меню Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Налаштування LAN
+          і зніміть прапорець біля опції "Використовувати проксі-сервер для вашої локальної мережі".</translation>
+<translation id="4622039161600275920">Веб-переглядач Chromium заблокував цю сторінку</translation>
+<translation id="48558539577516920">Надайте Chromium доступ до мережі в налаштуваннях брандмауера чи
+        антивірусної програми.</translation>
+<translation id="580822234363523061">Перейдіть у
+          меню Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          і переконайтеся, що встановлено значення конфігурації "без проксі" чи "безпосередньо".</translation>
+<translation id="6549378540556750549">Chromium також працює завдяки іншому <ph name="BEGIN_LINK_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_OSS" />.</translation>
+<translation id="6613594504749178791">Ваші зміни почнуть діяти після наступного перезапуску Chromium.</translation>
+<translation id="691026815377248078">Щоб продовжити підключення, надайте веб-переглядачу Chromium
+доступ до Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium було створено на основі проекту програмного забезпечення з відкритим кодом <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="7861509383340276692">Перейдіть у
+          меню Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          і зніміть прапорець біля опції "<ph name="NO_PREFETCH_DESCRIPTION" />".
+          Якщо проблема не зникне, радимо знову вибрати цю опцію,
+          щоб покращити стабільність.</translation>
+<translation id="8187289872471304532">Перейдіть у меню
+          Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies (Програми &gt; Системні налаштування &gt; Мережа &gt; Розширені &gt; Проксі-сервери)
+          і зніміть прапорці біля всіх вибраних проксі-серверів.</translation>
+<translation id="8597726643333341451">Ви переглядаєте безпечну сторінку Chrome for Testing</translation>
+<translation id="8684913864886094367">Chromium було неправильно закрито.</translation>
+</translationbundle>

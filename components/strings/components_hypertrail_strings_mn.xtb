@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="mn">
+<translation id="130631256467250065">Та төхөөрөмжөө дахин эхлүүлснээр таны хийсэн өөрчлөлт идэвхжинэ.</translation>
+<translation id="275588974610408078">Chromium гэмтэл гарсан тухай мэдээлэх боломжгүй.</translation>
+<translation id="3064346599913645280">Ta Chromium-н аюулгүй хуудсыг харж байна</translation>
+<translation id="3255926992597692024">Chromium төлбөрийн хэрэгсэл бөглөх тохиргоог өөрчлөхөөр оролдож байна.</translation>
+<translation id="358997566136285270">Chromium лого</translation>
+<translation id="4050599136622776556">Chromium төлбөрийн хэрэгслийг засахаар оролдож байна.</translation>
+<translation id="4365115785552740256">Chromium-ыг <ph name="BEGIN_LINK_CHROMIUM" />-аас ажиллуулж байна. Chromium нь <ph name="END_LINK_CHROMIUM" /> нээлттэй эхийн төсөл болон бусад <ph name="BEGIN_LINK_OSS" /> нээлттэй эхийн программ хангамжийг нээнэ <ph name="END_LINK_OSS" /> .</translation>
+<translation id="4559775032954821361">Chromium цэс&gt; 
+рүү очоод
+<ph name="SETTINGS_TITLE" />
+ &gt; 
+<ph name="ADVANCED_TITLE" /> 
+&gt; 
+<ph name="PROXIES_TITLE" /> 
+&gt;
+LAN Тохиргоонууд руу орж
+"LAN-д прокси серверийг ашиглах" сонголтыг болиулах.</translation>
+<translation id="4622039161600275920">Энэ хуудсыг Chromium блоклосон байна</translation>
+<translation id="48558539577516920">Chromium-г галт хана эсвэл вирусны эсрэг программын тохиргоонд хандахыг 
+       зөвшөөрөх.</translation>
+<translation id="580822234363523061">Chromium цэс&gt; 
+руу очоод 
+<ph name="SETTINGS_TITLE" />
+ &gt; 
+<ph name="ADVANCED_TITLE" /> 
+&gt; 
+<ph name="PROXIES_TITLE" /> 
+тохиргоогоо "ямар ч прокси байхгүй" эсвэл "шууд" гэж зааж өгсөн байгаа эсэхийг шалгана уу.</translation>
+<translation id="6549378540556750549">Chromium-г мөн <ph name="BEGIN_LINK_OSS" />нээлттэй эх кодтой бусад программ хангамжаар<ph name="END_LINK_OSS" /> боломжтой болгосон.</translation>
+<translation id="6613594504749178791">Таныг Chromium дахин эхлүүлэхэд өөрчлөлт идэвхжинэ.</translation>
+<translation id="691026815377248078">Үргэлжлүүлэн хослуулахын тулд Chromium-д Bluetooth-н 
+ хандалт шаардлагатай. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Chromium-г мөн <ph name="BEGIN_LINK_CHROMIUM" />Chromium-н<ph name="END_LINK_CHROMIUM" /> нээлттэй эх кодын төслөөр боломжтой болгосон.</translation>
+<translation id="7861509383340276692">Chromium цэс&gt; рүү орж
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+           "<ph name="NO_PREFETCH_DESCRIPTION" />." сонголтыг устгана уу. 
+Хэрвээ ингээд асуудлыг шийдвэрлэж чадахгүй байгаа бол бид танд үзүүлэлтийг сайжруулахын тулд энэ сонголтоо дахин хийхийг зөвлөж байна.</translation>
+<translation id="8187289872471304532">Дараах урсгалын дарааллаар хандана уу
+          Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies
+          мөн аливаа төлөөлөх сервер сонгосон байгаа бол үл сонгосон болгож өөрчлөх.</translation>
+<translation id="8597726643333341451">Ta Chrome for Testing-н аюулгүй хуудсыг үзэж байна</translation>
+<translation id="8684913864886094367">Chromium-ыг буруу унтраасан байна.</translation>
+</translationbundle>

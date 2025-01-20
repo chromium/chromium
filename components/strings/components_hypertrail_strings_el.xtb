@@ -1,0 +1,52 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="el">
+<translation id="130631256467250065">Οι αλλαγές σας θα εφαρμοστούν την επόμενη φορά που θα επανεκκινήσετε τη συσκευή σας.</translation>
+<translation id="275588974610408078">Η αναφορά σφαλμάτων δεν είναι διαθέσιμη στο Chromium.</translation>
+<translation id="3064346599913645280">Βλέπετε μια ασφαλή σελίδα Chromium</translation>
+<translation id="3255926992597692024">Το Chromium προσπαθεί να τροποποιήσει τις ρυθμίσεις για τη συμπλήρωση τρόπων πληρωμής.</translation>
+<translation id="358997566136285270">Λογότυπο Chromium</translation>
+<translation id="4050599136622776556">Το Chromium προσπαθεί να επεξεργαστεί τους τρόπους πληρωμής.</translation>
+<translation id="4365115785552740256">Το Chromium υλοποιήθηκε με τη βοήθεια του έργου ανοικτού κώδικα <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> και άλλου <ph name="BEGIN_LINK_OSS" />λογισμικού ανοικτού κώδικα<ph name="END_LINK_OSS" />.</translation>
+<translation id="4559775032954821361">Μεταβείτε
+          στο μενού του Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Ρυθμίσεις LAN
+          και αποεπιλέξτε το πλαίσιο ελέγχου "Χρήση
+          διακομιστή μεσολάβησης για το LAN".</translation>
+<translation id="4622039161600275920">Αυτή η σελίδα έχει αποκλειστεί από το Chromium.</translation>
+<translation id="48558539577516920">Επιτρέψτε στο Chromium να αποκτήσει πρόσβαση στο δίκτυο από τις ρυθμίσεις του τείχους προστασίας
+          ή του λογισμικού προστασίας από ιούς που διαθέτετε.</translation>
+<translation id="580822234363523061">Μεταβείτε
+          στο μενού του Chromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="ADVANCED_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          και βεβαιωθείτε ότι η διαμόρφωσή σας είναι ρυθμισμένη στην επιλογή
+          "χωρίς διακομιστή μεσολάβησης" ή "άμεση".</translation>
+<translation id="6549378540556750549">Το Chromium υλοποιήθηκε με τη βοήθεια και άλλων <ph name="BEGIN_LINK_OSS" />λογισμικών ανοικτού κώδικα<ph name="END_LINK_OSS" />.</translation>
+<translation id="6613594504749178791">Οι αλλαγές που πραγματοποιήσατε θα ισχύσουν την επόμενη φορά που θα εκκινήσετε το Chromium.</translation>
+<translation id="691026815377248078">Το Chromium χρειάζεται πρόσβαση στο Bluetooth για να συνεχιστεί 
+ η σύζευξη. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7681937895330411637">Το Chromium υλοποιήθηκε με το έργο ανοικτού κώδικα <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="7861509383340276692">Μεταβείτε
+        στο μενού του Chromium &gt;
+        <ph name="SETTINGS_TITLE" />
+        &gt;
+        <ph name="ADVANCED_TITLE" />
+        και αποεπιλέξτε "<ph name="NO_PREFETCH_DESCRIPTION" />".
+        Εάν με αυτόν τον τρόπο δεν επιλύεται το ζήτημά σας, συνιστούμε
+        να ενεργοποιήσετε ξανά αυτή την επιλογή για βελτιωμένη απόδοση.</translation>
+<translation id="8187289872471304532">Μεταβείτε στο
+          Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies
+          και αποεπιλέξτε τυχόν διακομιστές μεσολάβησης που έχουν επιλεγεί.</translation>
+<translation id="8597726643333341451">Βλέπετε μια ασφαλή σελίδα Chrome for Testing</translation>
+<translation id="8684913864886094367">Το Chromium δεν έκλεισε σωστά.</translation>
+</translationbundle>
