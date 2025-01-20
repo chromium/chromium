@@ -206,14 +206,14 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupportExtended {
                         /* sourceName= */ "Desktop",
                         /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
                         /* title= */ "Google Dog",
-                        /* timestamp= */ makeTimestamp(16, 0, 0));
+                        /* lastActiveTime= */ makeTimestamp(16, 0, 0));
         // Invalid due to empty title.
         SuggestionEntry entryInvalid =
                 SuggestionEntry.createFromForeignFields(
                         /* sourceName= */ "Desktop",
                         /* url= */ JUnitTestGURLs.RED_2,
                         /* title= */ "",
-                        /* timestamp= */ makeTimestamp(17, 0, 0));
+                        /* lastActiveTime= */ makeTimestamp(17, 0, 0));
 
         List<SuggestionEntry> suggestions = new ArrayList<SuggestionEntry>();
         suggestions.add(entryInvalid);
@@ -245,19 +245,19 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupportExtended {
                         /* sourceName= */ "Desktop",
                         /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
                         /* title= */ "Google Dog",
-                        /* timestamp= */ makeTimestamp(16, 0, 0));
+                        /* lastActiveTime= */ makeTimestamp(16, 0, 0));
         SuggestionEntry entryNewer =
                 SuggestionEntry.createFromForeignFields(
                         /* sourceName= */ "Phone",
                         /* url= */ JUnitTestGURLs.RED_2,
                         /* title= */ "Red 2",
-                        /* timestamp= */ makeTimestamp(13, 0, 0));
+                        /* lastActiveTime= */ makeTimestamp(13, 0, 0));
         SuggestionEntry entryOldest =
                 SuggestionEntry.createFromForeignFields(
                         /* sourceName= */ "Desktop",
                         /* url= */ JUnitTestGURLs.BLUE_1,
                         /* title= */ "Blue 1",
-                        /* timestamp= */ makeTimestamp(12, 0, 0));
+                        /* lastActiveTime= */ makeTimestamp(12, 0, 0));
 
         List<SuggestionEntry> suggestions = new ArrayList<SuggestionEntry>();
         suggestions.add(entryNewest);

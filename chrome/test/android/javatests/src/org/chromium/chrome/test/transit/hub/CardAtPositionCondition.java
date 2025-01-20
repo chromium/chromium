@@ -32,7 +32,7 @@ public class CardAtPositionCondition extends Condition {
             int expectedCardIndex,
             Supplier<View> recyclerViewSupplier,
             Supplier<View> cardViewSupplier) {
-        super(/* runsOnUiThread= */ false);
+        super(/* isRunOnUiThread= */ false);
         mExpectedCardIndex = expectedCardIndex;
         mRecyclerViewElementSupplier = dependOnSupplier(recyclerViewSupplier, "RecyclerView");
         mCardViewElementSupplier = dependOnSupplier(cardViewSupplier, "CardView");

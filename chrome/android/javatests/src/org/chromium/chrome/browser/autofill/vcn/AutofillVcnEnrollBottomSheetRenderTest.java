@@ -173,7 +173,7 @@ public class AutofillVcnEnrollBottomSheetRenderTest {
                                                 issuerIcon.mIconResource))
                         .with(
                                 AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON,
-                                new IssuerIcon(R.drawable.visa_card, /* issuerIconUrl= */ null))
+                                new IssuerIcon(R.drawable.visa_card, /* iconUrl= */ null))
                         .with(
                                 AutofillVcnEnrollBottomSheetProperties.ISSUER_LEGAL_MESSAGES,
                                 new LegalMessages(

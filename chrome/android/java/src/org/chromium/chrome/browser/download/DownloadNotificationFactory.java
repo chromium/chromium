@@ -91,7 +91,7 @@ public final class DownloadNotificationFactory {
                         LegacyHelpers.isLegacyDownload(downloadUpdate.getContentId())
                                 ? NotificationUmaTracker.SystemNotificationType.DOWNLOAD_FILES
                                 : NotificationUmaTracker.SystemNotificationType.DOWNLOAD_PAGES,
-                        /* tag= */ null,
+                        /* notificationTag= */ null,
                         notificationId);
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(

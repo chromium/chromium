@@ -77,7 +77,7 @@ public class AutofillSnackbarController implements SnackbarManager.SnackbarContr
                                 this,
                                 Snackbar.TYPE_ACTION,
                                 Snackbar.UMA_AUTOFILL_VIRTUAL_CARD_FILLED)
-                        .setAction(action, /* objectData= */ null);
+                        .setAction(action, /* actionData= */ null);
         // Wrap the message text if it doesn't fit on a single line. The action text will not wrap
         // though.
         snackBar.setSingleLine(false);

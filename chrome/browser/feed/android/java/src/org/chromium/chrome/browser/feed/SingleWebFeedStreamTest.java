@@ -151,10 +151,10 @@ public class SingleWebFeedStreamTest {
                         mSnackbarManager,
                         mBottomSheetController,
                         mWindowAndroid,
-                        /* shareSupplier= */ mShareDelegateSupplier,
+                        /* shareDelegateSupplier= */ mShareDelegateSupplier,
                         StreamKind.SINGLE_WEB_FEED,
                         mActionDelegate,
-                        /* FeedContentFirstLoadWatcher= */ null,
+                        /* feedContentFirstLoadWatcher= */ null,
                         /* streamsMediator= */ null,
                         new SingleWebFeedParameters(
                                 "WebFeedId".getBytes(), SingleWebFeedEntryPoint.OTHER),

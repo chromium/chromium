@@ -109,7 +109,7 @@ public class IdentityDiscController
                         /* isEnabled= */ true,
                         AdaptiveToolbarButtonVariant.UNKNOWN,
                         /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* showHoverHighlight= */ true);
+                        /* showHoverhighlight= */ true);
     }
 
     /** Registers itself to observe sign-in and sync status events. */

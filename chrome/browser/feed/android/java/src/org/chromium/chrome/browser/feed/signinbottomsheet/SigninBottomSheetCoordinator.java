@@ -139,7 +139,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
                         AccountPickerLaunchMode.DEFAULT,
                         /* isWebSignin= */ false,
                         mSigninAccessPoint,
-                        /* selectedCoreAccountId= */ null);
+                        /* selectedAccountId= */ null);
     }
 
     private void makeSigninNotAllowedToast() {

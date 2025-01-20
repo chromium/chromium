@@ -359,8 +359,7 @@ public class NewTabPageLayout extends LinearLayout {
         Callback<LoadUrlParams> logoClickedCallback =
                 mCallbackController.makeCancelable(
                         (urlParams) -> {
-                            mManager.getNativePageHost()
-                                    .loadUrl(urlParams, /* isIncognito= */ false);
+                            mManager.getNativePageHost().loadUrl(urlParams, /* incognito= */ false);
                             BrowserUiUtils.recordModuleClickHistogram(
                                     ModuleTypeOnStartAndNtp.DOODLE);
                         });

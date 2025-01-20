@@ -147,7 +147,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         WebContentsObserver webContentsObserver = captureWebContentsObserver();
         List<TabObserver> tabObservers = captureTabObservers();
         for (TabObserver observer : tabObservers) {
-            observer.onClosingStateChanged(env.tabProvider.getTab(), /* isClosing= */ true);
+            observer.onClosingStateChanged(env.tabProvider.getTab(), /* closing= */ true);
         }
 
         verify(env.tabProvider.getTab().getWebContents()).removeObserver(webContentsObserver);

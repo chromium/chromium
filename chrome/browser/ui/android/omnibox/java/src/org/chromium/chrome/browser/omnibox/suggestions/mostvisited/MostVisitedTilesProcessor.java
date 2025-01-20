@@ -198,7 +198,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                         .with(
                                 TileViewProperties.ICON_TINT,
                                 ChromeColors.getSecondaryIconTint(
-                                        mContext, /* isIncognito= */ false))
+                                        mContext, /* forceLightIconTint= */ false))
                         .with(TileViewProperties.CONTENT_DESCRIPTION, contentDescription)
                         .with(TileViewProperties.ICON, decoration)
                         .with(

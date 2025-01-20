@@ -185,7 +185,7 @@ public class ChildConnectionAllocatorTest {
                         TEST_PACKAGE_NAME,
                         /* freeSlotCallback= */ null,
                         "AllocatorTest",
-                        /* bindTocall= */ true,
+                        /* bindToCaller= */ true,
                         /* bindAsExternalService= */ false,
                         /* useStrongBinding= */ false,
                         10);
@@ -197,7 +197,7 @@ public class ChildConnectionAllocatorTest {
                         TEST_PACKAGE_NAME,
                         /* freeSlotCallback= */ null,
                         "AllocatorTest",
-                        /* bindTocall= */ true,
+                        /* bindToCaller= */ true,
                         /* bindAsExternalService= */ false,
                         /* useStrongBinding= */ false,
                         10);

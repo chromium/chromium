@@ -195,8 +195,8 @@ public class FullscreenManagerTestUtils {
                                     SystemClock.uptimeMillis(),
                                     vx,
                                     vy,
-                                    /* synthetic_scroll= */ false,
-                                    /* prevent_boosting= */ false);
+                                    /* syntheticScroll= */ false,
+                                    /* preventBoosting= */ false);
                 });
     }
 }

@@ -230,7 +230,7 @@ public class SendTabToSelfCoordinator {
                             AccountPickerLaunchMode.DEFAULT,
                             /* isWebSignin= */ false,
                             SigninAccessPoint.SEND_TAB_TO_SELF_PROMO,
-                            /* selectedCoreAccountId= */ null);
+                            /* selectedAccountId= */ null);
                     return;
                 }
         }

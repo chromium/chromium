@@ -71,7 +71,7 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
     public void testRecord_SamePackageName() {
         recordPrefForTesting(PACKAGE_A, null, TASK_ID_123);
         CustomTabActivityLifecycleUmaTracker.recordForRetainableSessions(
-                PACKAGE_A, REFERRER_A, TASK_ID_123, mPref, /* launchWithSameUri= */ true);
+                PACKAGE_A, REFERRER_A, TASK_ID_123, mPref, /* launchWithSameUrl= */ true);
         assertInteractionRecorded(ClientIdentifierType.PACKAGE_NAME);
     }
 
@@ -79,7 +79,7 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
     public void testRecord_DiffPackageName() {
         recordPrefForTesting(PACKAGE_A, null, TASK_ID_123);
         CustomTabActivityLifecycleUmaTracker.recordForRetainableSessions(
-                PACKAGE_B, REFERRER_B, TASK_ID_123, mPref, /* launchWithSameUri= */ true);
+                PACKAGE_B, REFERRER_B, TASK_ID_123, mPref, /* launchWithSameUrl= */ true);
         assertInteractionRecorded(ClientIdentifierType.DIFFERENT);
     }
 
@@ -87,7 +87,7 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
     public void testRecord_SameReferrer() {
         recordPrefForTesting(null, REFERRER_A, TASK_ID_123);
         CustomTabActivityLifecycleUmaTracker.recordForRetainableSessions(
-                null, REFERRER_A, TASK_ID_123, mPref, /* launchWithSameUri= */ true);
+                null, REFERRER_A, TASK_ID_123, mPref, /* launchWithSameUrl= */ true);
         assertInteractionRecorded(ClientIdentifierType.REFERRER);
     }
 
@@ -95,7 +95,7 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
     public void testRecord_DiffReferrer() {
         recordPrefForTesting(null, REFERRER_A, TASK_ID_123);
         CustomTabActivityLifecycleUmaTracker.recordForRetainableSessions(
-                null, REFERRER_B, TASK_ID_123, mPref, /* launchWithSameUri= */ true);
+                null, REFERRER_B, TASK_ID_123, mPref, /* launchWithSameUrl= */ true);
         assertInteractionRecorded(ClientIdentifierType.DIFFERENT);
     }
 
@@ -103,7 +103,7 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
     public void testRecord_Mixed_ReferrerThenPackage() {
         recordPrefForTesting(null, REFERRER_A, TASK_ID_123);
         CustomTabActivityLifecycleUmaTracker.recordForRetainableSessions(
-                PACKAGE_A, "Random referral", TASK_ID_123, mPref, /* launchWithSameUri= */ true);
+                PACKAGE_A, "Random referral", TASK_ID_123, mPref, /* launchWithSameUrl= */ true);
         assertInteractionRecorded(ClientIdentifierType.MIXED);
     }
 
@@ -111,7 +111,7 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
     public void testRecord_Mixed_PackageThenReferrer() {
         recordPrefForTesting(PACKAGE_A, null, TASK_ID_123);
         CustomTabActivityLifecycleUmaTracker.recordForRetainableSessions(
-                null, REFERRER_A, TASK_ID_123, mPref, /* launchWithSameUri= */ true);
+                null, REFERRER_A, TASK_ID_123, mPref, /* launchWithSameUrl= */ true);
         assertInteractionRecorded(ClientIdentifierType.MIXED);
     }
 
@@ -119,7 +119,7 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
     public void testRecord_DiffUri() {
         recordPrefForTesting(null, REFERRER_A, TASK_ID_123);
         CustomTabActivityLifecycleUmaTracker.recordForRetainableSessions(
-                PACKAGE_A, REFERRER_A, TASK_ID_123, mPref, /* launchWithSameUri= */ false);
+                PACKAGE_A, REFERRER_A, TASK_ID_123, mPref, /* launchWithSameUrl= */ false);
         assertNoInteractionRecorded();
     }
 
@@ -127,7 +127,7 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
     public void testRecord_DiffTaskId() {
         recordPrefForTesting(PACKAGE_A, null, TASK_ID_123);
         CustomTabActivityLifecycleUmaTracker.recordForRetainableSessions(
-                PACKAGE_A, REFERRER_A, 99, mPref, /* launchWithSameUri= */ true);
+                PACKAGE_A, REFERRER_A, 99, mPref, /* launchWithSameUrl= */ true);
         assertInteractionRecorded(ClientIdentifierType.PACKAGE_NAME);
     }
 
@@ -137,7 +137,7 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
 
         recordPrefForTesting(PACKAGE_A, null, TASK_ID_123);
         CustomTabActivityLifecycleUmaTracker.recordForRetainableSessions(
-                PACKAGE_A, REFERRER_A, TASK_ID_123, mPref, /* launchWithSameUri= */ true);
+                PACKAGE_A, REFERRER_A, TASK_ID_123, mPref, /* launchWithSameUrl= */ true);
         assertNoInteractionRecorded();
     }
 

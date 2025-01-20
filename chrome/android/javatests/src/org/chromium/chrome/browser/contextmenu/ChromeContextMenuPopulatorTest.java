@@ -1176,7 +1176,7 @@ public class ChromeContextMenuPopulatorTest {
                         /* referrer= */ null,
                         /* canSaveMedia= */ false,
                         /* triggeringTouchXDp= */ 0,
-                        /* triggeringTouchXDp= */ 0,
+                        /* triggeringTouchYDp= */ 0,
                         MenuSourceType.TOUCH,
                         /* openedFromHighlight= */ true,
                         /* additionalNavigationParams= */ null);

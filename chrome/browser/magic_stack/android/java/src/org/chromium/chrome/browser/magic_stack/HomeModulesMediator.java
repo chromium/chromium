@@ -617,7 +617,7 @@ public class HomeModulesMediator {
                     /* canUpdateCacheForFutureRequests= */ true,
                     /* fallbackAllowed= */ true);
         } else {
-            return new PredictionOptions(/* on_demand= */ false);
+            return new PredictionOptions(/* onDemandExecution= */ false);
         }
     }
 

@@ -45,9 +45,9 @@ public class CalculatorAnswerTextLayoutUnitTest {
     public void testCalculatorAnswerAppearance() {
         // Layout text appearance is different based on whether the instance holds the answer.
         CalculatorAnswerTextLayout answerLayout =
-                new CalculatorAnswerTextLayout(mContext, "answer", /* isAnswer= */ true);
+                new CalculatorAnswerTextLayout(mContext, "answer", /* isAnswerLine= */ true);
         CalculatorAnswerTextLayout displayTextLayout =
-                new CalculatorAnswerTextLayout(mContext, "text", /* isAnswer= */ false);
+                new CalculatorAnswerTextLayout(mContext, "text", /* isAnswerLine= */ false);
 
         Assert.assertEquals(answerLayout.getText().toString(), "answer");
         Assert.assertEquals(displayTextLayout.getText().toString(), "text");

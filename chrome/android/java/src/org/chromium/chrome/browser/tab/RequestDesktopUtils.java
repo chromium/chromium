@@ -292,7 +292,7 @@ public class RequestDesktopUtils {
         }
         PrefService prefService = UserPrefs.get(profile);
         if (prefService.isDefaultValuePreference(DESKTOP_SITE_WINDOW_SETTING_ENABLED)) {
-            prefService.setBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED, /* newValue= */ true);
+            prefService.setBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED, /* value= */ true);
         }
     }
 

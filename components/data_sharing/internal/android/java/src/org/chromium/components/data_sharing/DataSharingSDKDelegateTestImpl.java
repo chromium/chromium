@@ -54,22 +54,22 @@ public class DataSharingSDKDelegateTestImpl implements DataSharingSDKDelegate {
 
     @Override
     public void addMember(AddMemberParams params, Callback<Integer> callback) {
-        callback.onResult(/* status= */ 0);
+        callback.onResult(/* result= */ 0);
     }
 
     @Override
     public void removeMember(RemoveMemberParams params, Callback<Integer> callback) {
-        callback.onResult(/* status= */ 1);
+        callback.onResult(/* result= */ 1);
     }
 
     @Override
     public void leaveGroup(LeaveGroupParams params, Callback<Integer> callback) {
-        callback.onResult(/* status= */ 0);
+        callback.onResult(/* result= */ 0);
     }
 
     @Override
     public void deleteGroup(DeleteGroupParams params, Callback<Integer> callback) {
-        callback.onResult(/* status= */ 0);
+        callback.onResult(/* result= */ 0);
     }
 
     @Override

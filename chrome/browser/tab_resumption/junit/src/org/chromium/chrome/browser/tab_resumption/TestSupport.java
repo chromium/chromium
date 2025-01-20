@@ -186,7 +186,7 @@ public class TestSupport {
                 /* sourceName= */ "Desktop",
                 /* url= */ urlChoices[index],
                 /* title= */ titleChoices[index],
-                /* timestamp= */ makeTimestamp(16, 0, 0));
+                /* lastActiveTime= */ makeTimestamp(16, 0, 0));
     }
 
     static Tab makeMockBrowserTab() {

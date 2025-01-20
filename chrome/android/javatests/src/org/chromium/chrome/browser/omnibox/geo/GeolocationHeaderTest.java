@@ -233,7 +233,7 @@ public class GeolocationHeaderTest {
                                     ContentSettingsType.GEOLOCATION,
                                     SEARCH_URL_1,
                                     null,
-                                    /* isEmbargo= */ false,
+                                    /* isEmbargoed= */ false,
                                     SessionModel.DURABLE);
                     infoHttps.setContentSetting(
                             ProfileManager.getLastUsedRegularProfile(), httpsPermission);
@@ -348,7 +348,7 @@ public class GeolocationHeaderTest {
                         ContentSettingsType.GEOLOCATION,
                         SEARCH_URL_1,
                         /* embedder= */ null,
-                        /* isEmbargo= */ false,
+                        /* isEmbargoed= */ false,
                         sessionModel);
 
         ThreadUtils.runOnUiThreadBlocking(

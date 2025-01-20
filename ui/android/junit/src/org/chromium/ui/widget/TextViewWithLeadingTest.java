@@ -44,7 +44,7 @@ public class TextViewWithLeadingTest {
 
     private void inflateAndVerify(@LayoutRes int layoutRes) {
         TextView textView = (TextView) inflate(layoutRes);
-        assertNotEquals(/* expected= */ 0, textView.getLineSpacingExtra(), /* delta= */ 1);
+        assertNotEquals(/* unexpected= */ 0, textView.getLineSpacingExtra(), /* delta= */ 1);
     }
 
     private View inflate(@LayoutRes int layoutRes) {

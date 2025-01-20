@@ -899,7 +899,7 @@ public class ChromeBackupAgentTest {
         verify(mPrefService, never()).setBoolean(any(), anyBoolean());
         verify(mTaskRunner)
                 .startBackgroundTasks(
-                        /* allocateChildConnection= */ false, /* initVariationSeed= */ true);
+                        /* allocateChildConnection= */ false, /* fetchVariationSeed= */ true);
 
         // Verify that no sign-in or prefs restoration is done.
         verifyRestoreFinishWithoutSignin();

@@ -1608,7 +1608,8 @@ public class ReadAloudController
                 DeviceConditions.isCurrentlyScreenOnAndUnlocked(mActivity.getApplicationContext());
         if (ReadAloudFeatures.isBackgroundPlaybackEnabled() && mPlayerCoordinator != null) {
             if (mIsScreenOnAndUnlocked != isScreenOnAndUnlocked) {
-                mPlayerCoordinator.onScreenStatusChanged(/* isLocked= */ !isScreenOnAndUnlocked);
+                mPlayerCoordinator.onScreenStatusChanged(
+                        /* isScreenLocked= */ !isScreenOnAndUnlocked);
                 mIsScreenOnAndUnlocked = isScreenOnAndUnlocked;
             }
             // Do nothing Chrome doesn't have to be in foreground to keep playback active.
@@ -1626,10 +1627,10 @@ public class ReadAloudController
 
         if (mPlayerCoordinator != null) {
             if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES && !isScreenOnAndUnlocked) {
-                mPlayerCoordinator.onScreenStatusChanged(/* isLocked= */ true);
+                mPlayerCoordinator.onScreenStatusChanged(/* isScreenLocked= */ true);
             } else if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES
                     && isScreenOnAndUnlocked) {
-                mPlayerCoordinator.onScreenStatusChanged(/* isLocked= */ false);
+                mPlayerCoordinator.onScreenStatusChanged(/* isScreenLocked= */ false);
             }
         }
     }

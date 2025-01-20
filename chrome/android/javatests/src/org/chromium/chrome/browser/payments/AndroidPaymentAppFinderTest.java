@@ -157,7 +157,7 @@ public class AndroidPaymentAppFinderTest
                     GURL urlBeforeRedirects,
                     boolean didFollowRedirect,
                     Callback<Boolean> resultCallback) {
-                resultCallback.onResult(/* allow= */ true);
+                resultCallback.onResult(/* result= */ true);
             }
         };
     }
@@ -1695,7 +1695,7 @@ public class AndroidPaymentAppFinderTest
                                     mDownloader,
                                     new PaymentManifestParser(),
                                     mPackageManager,
-                                    /* delegate= */ this,
+                                    /* factoryDelegate= */ this,
                                     /* factory= */ null);
                     finder.bypassIsReadyToPayServiceInTest();
                     if (appStorePackageName != null) {

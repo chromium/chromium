@@ -431,7 +431,7 @@ public class FullscreenSigninMediator
                                 mContext,
                                 mModalDialogManager);
         signinManager.signOut(
-                SignoutReason.ABORT_SIGNIN, signOutCallback, /* forceWipeData= */ false);
+                SignoutReason.ABORT_SIGNIN, signOutCallback, /* forceWipeUserData= */ false);
     }
 
     private @AccountConsistencyPromoAction int getSigninPromoAction() {

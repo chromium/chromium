@@ -618,7 +618,7 @@ public class BluetoothChooserDialogTest {
                                     "https://origin.example.com/",
                                     ConnectionSecurityLevel.SECURE,
                                     /* delegate= */ null,
-                                    /* nativeUsbChooserDialogPtr= */ 42);
+                                    /* nativeBluetoothChooserDialogPtr= */ 42);
                         });
         Assert.assertNull(dialog);
     }

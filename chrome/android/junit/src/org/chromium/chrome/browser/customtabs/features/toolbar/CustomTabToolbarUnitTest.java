@@ -535,8 +535,8 @@ public class CustomTabToolbarUnitTest {
 
         mLocationBar.onHighlightCookieControl(true);
         mLocationBar.onStatusChanged(
-                /* controls_visible= */ false,
-                /* protections_on= */ false,
+                /* controlsVisible= */ false,
+                /* protectionsOn= */ false,
                 /* enforcement= */ 0,
                 CookieBlocking3pcdStatus.LIMITED,
                 /* expiration= */ 0);
@@ -553,8 +553,8 @@ public class CustomTabToolbarUnitTest {
 
         mLocationBar.onHighlightCookieControl(true);
         mLocationBar.onStatusChanged(
-                /* controls_visible= */ true,
-                /* protections_on= */ true,
+                /* controlsVisible= */ true,
+                /* protectionsOn= */ true,
                 /* enforcement= */ 0,
                 CookieBlocking3pcdStatus.NOT_IN3PCD,
                 /* expiration= */ 0);

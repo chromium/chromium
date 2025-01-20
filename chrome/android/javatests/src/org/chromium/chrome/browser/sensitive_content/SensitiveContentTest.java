@@ -263,7 +263,7 @@ public class SensitiveContentTest {
     public void testRegularTabSwitcherBecomesSensitive() {
         final String histogram = "SensitiveContent.TabSwitching.RegularTabSwitcherPane.Sensitivity";
         HistogramWatcher histogramWatcherForTrueBucket =
-                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ true);
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* value= */ true);
         // Open a second tab.
         PageStation page = mPage.openNewTabFast();
         final Tab secondTab = page.getLoadedTab();
@@ -283,7 +283,7 @@ public class SensitiveContentTest {
         histogramWatcherForTrueBucket.assertExpected();
 
         HistogramWatcher histogramWatcherForFalseBucket =
-                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ false);
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* value= */ false);
         // Open the tab switcher.
         regularTabSwitcher = page.openRegularTabSwitcher();
         // Check that the tab switcher is not sensitive anymore.
@@ -303,7 +303,7 @@ public class SensitiveContentTest {
         final String histogram =
                 "SensitiveContent.TabSwitching.IncognitoTabSwitcherPane.Sensitivity";
         HistogramWatcher histogramWatcherForTrueBucket =
-                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ true);
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* value= */ true);
         // Open the first incognito tab.
         PageStation page = mPage.openNewIncognitoTabFast();
         // Open the second incognito tab.
@@ -320,7 +320,7 @@ public class SensitiveContentTest {
         histogramWatcherForTrueBucket.assertExpected();
 
         HistogramWatcher histogramWatcherForFalseBucket =
-                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ false);
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* value= */ false);
         // Close the second incognito tab (the only tab with sensitive content).
         incognitoTabSwitcher =
                 incognitoTabSwitcher.closeTabAtIndex(1, IncognitoTabSwitcherStation.class);
@@ -399,7 +399,7 @@ public class SensitiveContentTest {
     public void testTabGroupUiOpenedFromBottomToolbarBecomesSensitive() {
         final String histogram = "SensitiveContent.TabSwitching.BottomTabStripGroupUI.Sensitivity";
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ true);
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* value= */ true);
         // Load sensitive content only into the first tab.
         final Tab firstTab = mPage.getLoadedTab();
         PageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));

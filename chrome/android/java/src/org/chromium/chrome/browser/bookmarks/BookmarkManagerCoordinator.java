@@ -256,7 +256,7 @@ public class BookmarkManagerCoordinator
                         moveSnackbarManager);
         mPromoHeaderManager = mMediator.getPromoHeaderManager();
 
-        bookmarkDelegateSupplier.set(/* bookmarkDelegate= */ mMediator);
+        bookmarkDelegateSupplier.set(/* object= */ mMediator);
 
         mMainView.addOnAttachStateChangeListener(this);
 

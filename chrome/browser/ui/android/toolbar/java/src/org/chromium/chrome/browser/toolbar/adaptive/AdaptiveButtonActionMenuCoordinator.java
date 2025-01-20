@@ -106,7 +106,7 @@ public class AdaptiveButtonActionMenuCoordinator {
                 BrowserUiListMenuUtils.buildMenuListItem(
                         R.string.adaptive_toolbar_menu_edit_shortcut,
                         R.id.customize_adaptive_button_menu_id,
-                        /* iconId= */ 0,
+                        /* startIconId= */ 0,
                         /* enabled= */ true));
         return itemList;
     }

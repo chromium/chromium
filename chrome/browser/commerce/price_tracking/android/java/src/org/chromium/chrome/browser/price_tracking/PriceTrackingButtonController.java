@@ -87,8 +87,8 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
                 new ButtonSpec(
                         /* drawable= */ AppCompatResources.getDrawable(
                                 context, R.drawable.price_tracking_enabled_filled),
-                        /* clickListener= */ this,
-                        /* longClickListener= */ null,
+                        /* onClickListener= */ this,
+                        /* onLongClickListener= */ null,
                         /* contentDescription= */ context.getString(
                                 R.string.disable_price_tracking_menu_item),
                         /* supportsTinting= */ true,

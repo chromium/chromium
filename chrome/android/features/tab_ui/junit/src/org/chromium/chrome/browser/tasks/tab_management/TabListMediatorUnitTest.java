@@ -1016,7 +1016,7 @@ public class TabListMediatorUnitTest {
         verify(mTabRemover)
                 .closeTabs(
                         eq(params),
-                        /* allowUndo= */ eq(true),
+                        /* allowDialog= */ eq(true),
                         mTabModelActionListenerCaptor.capture());
         assertTrue(mModelList.get(1).model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION));
 

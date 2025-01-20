@@ -146,7 +146,7 @@ public class TabModelSelectorImplTest {
                 mMockTabContentManager, mRegularTabModel, mIncognitoTabModel);
 
         assertEquals(
-                mTabModelSelector.getModel(/* isIncognito= */ false),
+                mTabModelSelector.getModel(/* incognito= */ false),
                 mTabModelSelector.getCurrentTabModelSupplier().get());
         assertEquals(
                 mTabModelSelector.getCurrentModel(),

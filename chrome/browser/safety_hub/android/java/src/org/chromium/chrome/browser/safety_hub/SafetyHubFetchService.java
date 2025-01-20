@@ -180,7 +180,7 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
      */
     void fetchCredentialsCount(Callback<Boolean> onFinishedCallback) {
         if (!checkConditions()) {
-            onFinishedCallback.onResult(/* needsReschedule= */ false);
+            onFinishedCallback.onResult(/* result= */ false);
             cancelFetchJob();
             return;
         }
@@ -284,7 +284,7 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
         }
 
         notifyPasswordCountsChanged();
-        onFinishedCallback.onResult(/* needsReschedule= */ mCredentialCountError);
+        onFinishedCallback.onResult(/* result= */ mCredentialCountError);
         if (!mCredentialCountError) {
             scheduleNextFetchJob();
         }

@@ -186,11 +186,11 @@ public class FeedStreamTest {
                         mBottomSheetController,
                         mWindowAndroid,
                         mShareDelegateSupplier,
-                        /* isInterestFeed= */ StreamKind.FOR_YOU,
+                        /* streamKind= */ StreamKind.FOR_YOU,
                         mActionDelegate,
                         mFeedContentFirstLoadWatcher,
                         mStreamsMediator,
-                        /* SingleWebFeedHelper= */ null,
+                        /* singleWebFeedParameters= */ null,
                         new FeedSurfaceRendererBridgeFactory());
         mRecyclerView = new RecyclerView(mActivity);
         mRecyclerView.setAdapter(mAdapter);
@@ -1177,11 +1177,11 @@ public class FeedStreamTest {
                         mBottomSheetController,
                         mWindowAndroid,
                         mShareDelegateSupplier,
-                        /* isInterestFeed= */ StreamKind.FOR_YOU,
+                        /* streamKind= */ StreamKind.FOR_YOU,
                         mActionDelegate,
-                        /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
+                        /* feedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
-                        /* SingleWebFeedHelper= */ null,
+                        /* singleWebFeedParameters= */ null,
                         new FeedSurfaceRendererBridgeFactory());
         assertNull(stream.getUnreadContentObserverForTest());
     }
@@ -1198,11 +1198,11 @@ public class FeedStreamTest {
                         mBottomSheetController,
                         mWindowAndroid,
                         mShareDelegateSupplier,
-                        /* isInterestFeed= */ StreamKind.FOLLOWING,
+                        /* streamKind= */ StreamKind.FOLLOWING,
                         mActionDelegate,
-                        /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
+                        /* feedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
-                        /* SingleWebFeedHelper= */ null,
+                        /* singleWebFeedParameters= */ null,
                         new FeedSurfaceRendererBridgeFactory());
         assertNotNull(stream.getUnreadContentObserverForTest());
     }
@@ -1221,9 +1221,9 @@ public class FeedStreamTest {
                         mShareDelegateSupplier,
                         StreamKind.FOLLOWING,
                         mActionDelegate,
-                        /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
+                        /* feedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
-                        /* SingleWebFeedHelper= */ null,
+                        /* singleWebFeedParameters= */ null,
                         new FeedSurfaceRendererBridgeFactory());
         assertNotNull(stream.getUnreadContentObserverForTest());
     }
@@ -1242,9 +1242,9 @@ public class FeedStreamTest {
                         mShareDelegateSupplier,
                         StreamKind.FOR_YOU,
                         mActionDelegate,
-                        /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
+                        /* feedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
-                        /* SingleWebFeedHelper= */ null,
+                        /* singleWebFeedParameters= */ null,
                         new FeedSurfaceRendererBridgeFactory());
         assertFalse(stream.supportsOptions());
     }
@@ -1263,9 +1263,9 @@ public class FeedStreamTest {
                         mShareDelegateSupplier,
                         StreamKind.FOR_YOU,
                         mActionDelegate,
-                        /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
+                        /* feedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
-                        /* SingleWebFeedHelper= */ null,
+                        /* singleWebFeedParameters= */ null,
                         new FeedSurfaceRendererBridgeFactory());
         assertFalse(stream.supportsOptions());
     }
@@ -1284,9 +1284,9 @@ public class FeedStreamTest {
                         mShareDelegateSupplier,
                         StreamKind.FOLLOWING,
                         mActionDelegate,
-                        /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
+                        /* feedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
-                        /* SingleWebFeedHelper= */ null,
+                        /* singleWebFeedParameters= */ null,
                         new FeedSurfaceRendererBridgeFactory());
         assertFalse(stream.supportsOptions());
     }
@@ -1305,9 +1305,9 @@ public class FeedStreamTest {
                         mShareDelegateSupplier,
                         StreamKind.FOLLOWING,
                         mActionDelegate,
-                        /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
+                        /* feedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
-                        /* SingleWebFeedHelper= */ null,
+                        /* singleWebFeedParameters= */ null,
                         new FeedSurfaceRendererBridgeFactory());
         assertTrue(stream.supportsOptions());
     }

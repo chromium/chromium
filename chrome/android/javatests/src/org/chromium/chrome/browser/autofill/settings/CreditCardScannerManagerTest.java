@@ -287,7 +287,7 @@ public class CreditCardScannerManagerTest {
         String cardNumber = "4444333322221111";
         int expirationYear = 1995;
         manager.onScanCompleted(
-                /* cardHolderName= */ "", cardNumber, /* expirationMonth= */ 0, expirationYear);
+                /* cardholderName= */ "", cardNumber, /* expirationMonth= */ 0, expirationYear);
 
         Set<FieldType> fieldTypes = manager.getFieldsFilledByScannerForTesting();
 
@@ -304,7 +304,7 @@ public class CreditCardScannerManagerTest {
                 manager.getScanResultForTesting());
         verify(mDelegate)
                 .onScanCompleted(
-                        /* cardHolderName= */ "",
+                        /* cardholderName= */ "",
                         cardNumber,
                         /* expirationMonth= */ 0,
                         expirationYear);

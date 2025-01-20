@@ -185,7 +185,7 @@ public class InMemoryCachedImageFetcherTest {
         Assert.assertEquals(
                 "url/1/100/200",
                 mInMemoryCachedImageFetcher.encodeCacheKey(
-                        "url", /* shouldResize= */ true, 100, 200));
+                        "url", /* wasResized= */ true, 100, 200));
     }
 
     @Test

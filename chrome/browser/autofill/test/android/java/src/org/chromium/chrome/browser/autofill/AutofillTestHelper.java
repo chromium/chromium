@@ -446,7 +446,7 @@ public class AutofillTestHelper {
                 /* isVirtual= */ false,
                 /* name= */ name,
                 /* number= */ number,
-                /* obfuscatedNumber= */ "",
+                /* networkAndLastFourDigits= */ "",
                 /* month= */ month,
                 year,
                 /* basicCardIssuerNetwork= */ network,

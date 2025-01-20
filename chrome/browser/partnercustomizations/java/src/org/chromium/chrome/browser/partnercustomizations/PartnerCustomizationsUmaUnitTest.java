@@ -249,7 +249,7 @@ public class PartnerCustomizationsUmaUnitTest {
                 /* isCharacterizationCertain= */ true,
                 /* isHomepagePartner= */ true,
                 /* isHomepageNtp= */ true,
-                /* unused= */ true);
+                /* wasHomepageCached= */ true);
         histograms.assertExpected();
     }
 
@@ -262,7 +262,7 @@ public class PartnerCustomizationsUmaUnitTest {
                 /* isCharacterizationCertain= */ true,
                 /* isHomepagePartner= */ true,
                 /* isHomepageNtp= */ false,
-                /* unused= */ true);
+                /* wasHomepageCached= */ true);
         histograms.assertExpected();
     }
 
@@ -275,7 +275,7 @@ public class PartnerCustomizationsUmaUnitTest {
                 /* isCharacterizationCertain= */ true,
                 /* isHomepagePartner= */ false,
                 /* isHomepageNtp= */ true,
-                /* unused= */ true);
+                /* wasHomepageCached= */ true);
         histograms.assertExpected();
     }
 
@@ -288,7 +288,7 @@ public class PartnerCustomizationsUmaUnitTest {
                 /* isCharacterizationCertain= */ true,
                 /* isHomepagePartner= */ false,
                 /* isHomepageNtp= */ false,
-                /* unused= */ true);
+                /* wasHomepageCached= */ true);
         histograms.assertExpected();
     }
 
@@ -301,7 +301,7 @@ public class PartnerCustomizationsUmaUnitTest {
                 /* isCharacterizationCertain= */ false,
                 /* isHomepagePartner= */ true,
                 /* isHomepageNtp= */ true,
-                /* unused= */ true);
+                /* wasHomepageCached= */ true);
         histograms.assertExpected();
     }
 
@@ -314,7 +314,7 @@ public class PartnerCustomizationsUmaUnitTest {
                 /* isCharacterizationCertain= */ false,
                 /* isHomepagePartner= */ true,
                 /* isHomepageNtp= */ false,
-                /* unused= */ true);
+                /* wasHomepageCached= */ true);
         histograms.assertExpected();
     }
 
@@ -327,7 +327,7 @@ public class PartnerCustomizationsUmaUnitTest {
                 /* isCharacterizationCertain= */ false,
                 /* isHomepagePartner= */ false,
                 /* isHomepageNtp= */ true,
-                /* unused= */ true);
+                /* wasHomepageCached= */ true);
         histograms.assertExpected();
     }
 
@@ -340,7 +340,7 @@ public class PartnerCustomizationsUmaUnitTest {
                 /* isCharacterizationCertain= */ false,
                 /* isHomepagePartner= */ false,
                 /* isHomepageNtp= */ false,
-                /* unused= */ true);
+                /* wasHomepageCached= */ true);
         histograms.assertExpected();
     }
 
@@ -353,7 +353,7 @@ public class PartnerCustomizationsUmaUnitTest {
                 /* isCharacterizationCertain= */ true,
                 /* isHomepagePartner= */ true,
                 /* isHomepageNtp= */ true,
-                /* unused= */ true);
+                /* wasHomepageCached= */ true);
         histograms.assertExpected();
     }
 
@@ -366,7 +366,7 @@ public class PartnerCustomizationsUmaUnitTest {
                 /* isCharacterizationCertain= */ true,
                 /* isHomepagePartner= */ true,
                 /* isHomepageNtp= */ false,
-                /* unused= */ true);
+                /* wasHomepageCached= */ true);
         histograms.assertExpected();
     }
 
@@ -379,7 +379,7 @@ public class PartnerCustomizationsUmaUnitTest {
                 /* isCharacterizationCertain= */ true,
                 /* isHomepagePartner= */ false,
                 /* isHomepageNtp= */ true,
-                /* unused= */ true);
+                /* wasHomepageCached= */ true);
         histograms.assertExpected();
     }
 
@@ -392,7 +392,7 @@ public class PartnerCustomizationsUmaUnitTest {
                 /* isCharacterizationCertain= */ true,
                 /* isHomepagePartner= */ false,
                 /* isHomepageNtp= */ false,
-                /* unused= */ true);
+                /* wasHomepageCached= */ true);
         histograms.assertExpected();
     }
 
@@ -405,7 +405,7 @@ public class PartnerCustomizationsUmaUnitTest {
                 /* isCharacterizationCertain= */ false,
                 /* isHomepagePartner= */ true,
                 /* isHomepageNtp= */ true,
-                /* unused= */ true);
+                /* wasHomepageCached= */ true);
         histograms.assertExpected();
     }
 
@@ -418,7 +418,7 @@ public class PartnerCustomizationsUmaUnitTest {
                 /* isCharacterizationCertain= */ false,
                 /* isHomepagePartner= */ true,
                 /* isHomepageNtp= */ false,
-                /* unused= */ true);
+                /* wasHomepageCached= */ true);
         histograms.assertExpected();
     }
 
@@ -431,7 +431,7 @@ public class PartnerCustomizationsUmaUnitTest {
                 /* isCharacterizationCertain= */ false,
                 /* isHomepagePartner= */ false,
                 /* isHomepageNtp= */ true,
-                /* unused= */ true);
+                /* wasHomepageCached= */ true);
         histograms.assertExpected();
     }
 
@@ -444,7 +444,7 @@ public class PartnerCustomizationsUmaUnitTest {
                 /* isCharacterizationCertain= */ false,
                 /* isHomepagePartner= */ false,
                 /* isHomepageNtp= */ false,
-                /* unused= */ true);
+                /* wasHomepageCached= */ true);
         histograms.assertExpected();
     }
 

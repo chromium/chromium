@@ -60,7 +60,7 @@ public class SharedGroupTestHelper {
     /** Creates new group data. */
     public static GroupData newGroupData(String collaborationId, GroupMember... members) {
         return new GroupData(
-                collaborationId, /* displayName= */ null, members, /* groupToken= */ null);
+                collaborationId, /* displayName= */ null, members, /* accessToken= */ null);
     }
 
     /** Responds to a readGroup call on the {@link DataSharingService}. */

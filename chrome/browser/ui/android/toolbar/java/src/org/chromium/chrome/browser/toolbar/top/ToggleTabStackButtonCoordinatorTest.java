@@ -142,7 +142,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     private void showOverviewMode() {
         mOverviewOpen = true;
         for (LayoutStateProvider.LayoutStateObserver observer : mLayoutStateObserverSet) {
-            observer.onStartedShowing(/* showToolbar= */ LayoutType.TAB_SWITCHER);
+            observer.onStartedShowing(/* layoutType= */ LayoutType.TAB_SWITCHER);
         }
         for (LayoutStateProvider.LayoutStateObserver observer : mLayoutStateObserverSet) {
             observer.onFinishedShowing(LayoutType.TAB_SWITCHER);

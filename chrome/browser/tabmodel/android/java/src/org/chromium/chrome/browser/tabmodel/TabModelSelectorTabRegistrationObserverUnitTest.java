@@ -90,7 +90,7 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                         selector,
                         normalTabRemover,
                         /* supportUndo= */ true,
-                        /* trackInNativeModelList= */ true);
+                        /* isArchivedTabModel= */ true);
         TabRemover incognitoTabRemover =
                 new PassthroughTabRemover(
                         () ->

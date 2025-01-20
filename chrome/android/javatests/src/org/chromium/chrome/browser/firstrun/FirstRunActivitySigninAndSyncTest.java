@@ -188,7 +188,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
         clickButton(R.id.signin_fre_continue_button);
 
-        onViewWaiting(withText(R.string.sign_in_managed_account), /* check_root_dialog= */ true)
+        onViewWaiting(withText(R.string.sign_in_managed_account), /* checkRootDialog= */ true)
                 .check(matches(isDisplayed()));
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
         waitUntilCurrentPageIs(HistorySyncFirstRunFragment.class);

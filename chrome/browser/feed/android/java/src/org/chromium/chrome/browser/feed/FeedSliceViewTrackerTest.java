@@ -96,7 +96,7 @@ public class FeedSliceViewTrackerTest {
                                 mActivity,
                                 mContentManager,
                                 mLayoutHelper,
-                                /* mWatchForUserInteractionReliabilityReport= */ true,
+                                /* watchForUserInteractionReliabilityReport= */ true,
                                 mObserver));
     }
 

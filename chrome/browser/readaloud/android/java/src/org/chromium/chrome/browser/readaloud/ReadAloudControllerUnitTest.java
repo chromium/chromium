@@ -1244,7 +1244,7 @@ public class ReadAloudControllerUnitTest {
                 .onFailure(
                         new ReadAloudUnsupportedException(
                                 "message",
-                                /* throwable= */ null,
+                                /* cause= */ null,
                                 ReadAloudUnsupportedException.RejectionReason
                                         .UNKNOWN_REJECTION_REASON));
         resolvePromises();

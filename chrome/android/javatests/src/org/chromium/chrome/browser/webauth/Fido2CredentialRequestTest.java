@@ -2677,7 +2677,7 @@ public class Fido2CredentialRequestTest {
                         eq(Fido2CredentialRequest.convertOriginToString(mOrigin)),
                         eq(mCreationOptions.challenge),
                         /* isCrossOrigin= */ eq(false),
-                        /* payment= */ isNull(),
+                        /* optionsByteBuffer= */ isNull(),
                         eq(mCreationOptions.relyingParty.name),
                         eq(mOrigin));
         Assert.assertEquals(Integer.valueOf(AuthenticatorStatus.SUCCESS), mCallback.getStatus());

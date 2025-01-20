@@ -221,11 +221,11 @@ public class SearchResumptionModuleMediatorUnitTest {
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_SHOW, ModuleShowStatus.EXPANDED));
 
-        mMediator.onExpandedOrCollapsed(/* expand= */ true);
+        mMediator.onExpandedOrCollapsed(/* expanded= */ true);
         Assert.assertTrue(
                 mActionTester.getActions().contains(SearchResumptionModuleUtils.ACTION_EXPAND));
 
-        mMediator.onExpandedOrCollapsed(/* expand= */ false);
+        mMediator.onExpandedOrCollapsed(/* expanded= */ false);
         Assert.assertTrue(
                 mActionTester.getActions().contains(SearchResumptionModuleUtils.ACTION_COLLAPSE));
     }

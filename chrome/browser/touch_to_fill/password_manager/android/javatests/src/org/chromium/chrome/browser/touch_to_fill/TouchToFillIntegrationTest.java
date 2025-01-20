@@ -139,7 +139,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
@@ -158,7 +158,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
@@ -182,7 +182,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.singletonList(sCam),
                             Collections.singletonList(sAna),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
@@ -206,7 +206,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
@@ -230,7 +230,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Arrays.asList(sAna, sBob),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
@@ -253,7 +253,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
@@ -285,7 +285,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ true,
                             /* showCredManEntry= */ false);
@@ -387,7 +387,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Arrays.asList(sAna, sBob),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
@@ -418,7 +418,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ true);

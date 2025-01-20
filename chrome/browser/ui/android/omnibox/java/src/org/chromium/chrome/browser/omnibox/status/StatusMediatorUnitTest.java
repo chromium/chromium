@@ -673,8 +673,8 @@ public final class StatusMediatorUnitTest {
     public void iphCookieControls_showIphOnlyWhenNotIn3pcd() {
         setupCookieControlsTest();
         mMediator.onStatusChanged(
-                /* controls_visible= */ true,
-                /* protections_on= */ true,
+                /* controlsVisible= */ true,
+                /* protectionsOn= */ true,
                 /* enforcement= */ 0,
                 CookieBlocking3pcdStatus.NOT_IN3PCD,
                 /* expiration= */ 0);
@@ -686,8 +686,8 @@ public final class StatusMediatorUnitTest {
         verify(mPageInfoIphController, times(1)).showCookieControlsIph(anyInt(), anyInt());
 
         mMediator.onStatusChanged(
-                /* controls_visible= */ true,
-                /* protections_on= */ true,
+                /* controlsVisible= */ true,
+                /* protectionsOn= */ true,
                 /* enforcement= */ 0,
                 CookieBlocking3pcdStatus.LIMITED,
                 /* expiration= */ 0);
@@ -733,8 +733,8 @@ public final class StatusMediatorUnitTest {
         doReturn(null).when(mTab).getWebContents();
 
         mMediator.onStatusChanged(
-                /* controls_visible= */ true,
-                /* protections_on= */ true,
+                /* controlsVisible= */ true,
+                /* protectionsOn= */ true,
                 /* enforcement= */ 0,
                 CookieBlocking3pcdStatus.LIMITED,
                 /* expiration= */ 0);

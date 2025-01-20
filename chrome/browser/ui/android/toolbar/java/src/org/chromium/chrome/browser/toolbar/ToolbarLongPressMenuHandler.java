@@ -183,10 +183,10 @@ public class ToolbarLongPressMenuHandler {
                                 ? R.string.toolbar_move_to_the_bottom
                                 : R.string.toolbar_move_to_the_top,
                         MenuItemType.MOVE_ADDRESS_BAR_TO,
-                        /* iconId= */ 0));
+                        /* startIconId= */ 0));
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItem(
-                        R.string.toolbar_copy_link, MenuItemType.COPY_LINK, /* iconId= */ 0));
+                        R.string.toolbar_copy_link, MenuItemType.COPY_LINK, /* startIconId= */ 0));
         return itemList;
     }
 

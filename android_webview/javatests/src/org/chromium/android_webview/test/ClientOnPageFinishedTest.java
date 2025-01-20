@@ -523,7 +523,7 @@ public class ClientOnPageFinishedTest extends AwParameterizedTest {
                     webServer.setResponseWithRunnableAction(
                             "/slow_page.html",
                             "",
-                            /* headers= */ null,
+                            /* responseHeaders= */ null,
                             () -> {
                                 try {
                                     // Delay the server response so that we guarantee stopLoading()
@@ -549,7 +549,8 @@ public class ClientOnPageFinishedTest extends AwParameterizedTest {
             firstUrlLatch.countDown();
 
             // Load another page to ensure onPageFinished isn't called several times.
-            final String syncUrl = webServer.setResponse("/sync.html", "", /* headers= */ null);
+            final String syncUrl =
+                    webServer.setResponse("/sync.html", "", /* responseHeaders= */ null);
             mActivityTestRule.loadUrlSync(mAwContents, onPageFinishedHelper, syncUrl);
             Assert.assertEquals(syncUrl, onPageFinishedHelper.getUrl());
             final int finalCallCount = onPageFinishedHelper.getCallCount();
@@ -577,7 +578,7 @@ public class ClientOnPageFinishedTest extends AwParameterizedTest {
                     webServer.setResponseWithRunnableAction(
                             "/stallingImage.html",
                             "",
-                            /* headers= */ null,
+                            /* responseHeaders= */ null,
                             () -> {
                                 serverImageUrlLatch.countDown();
                                 try {

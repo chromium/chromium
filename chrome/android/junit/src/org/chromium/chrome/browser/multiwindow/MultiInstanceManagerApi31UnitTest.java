@@ -1118,7 +1118,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Action
         InstanceInfo info = mMultiInstanceManager.getInstanceInfoFor(mTabbedActivityTask63);
-        mMultiInstanceManager.moveTabAction(info, mTab1, /* atIndex= */ 0);
+        mMultiInstanceManager.moveTabAction(info, mTab1, /* tabAtIndex= */ 0);
 
         // Verify reparentTabToRunningActivity is called once.
         verify(mMultiInstanceManager, times(1))
@@ -1163,7 +1163,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         0,
                         false);
 
-        mMultiInstanceManager.moveTabAction(info, mTab1, /* atIndex= */ 0);
+        mMultiInstanceManager.moveTabAction(info, mTab1, /* tabAtIndex= */ 0);
 
         // Verify moveAndReparentTabToNewWindow is called made with desired parameters once. The
         // method is validated in integration test here

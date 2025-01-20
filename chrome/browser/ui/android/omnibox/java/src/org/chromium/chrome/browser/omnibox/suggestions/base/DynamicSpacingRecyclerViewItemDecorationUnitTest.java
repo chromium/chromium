@@ -219,7 +219,7 @@ public class DynamicSpacingRecyclerViewItemDecorationUnitTest {
                 new DynamicSpacingRecyclerViewItemDecoration(
                         LEAD_IN_SPACE, MIN_ELEMENT_SPACE, itemWidth);
 
-        mDecoration.notifyViewSizeChanged(false, CONTAINER_SIZE, /* height= */ 100);
+        mDecoration.notifyViewSizeChanged(false, CONTAINER_SIZE, /* newHeight= */ 100);
 
         // It's unlikely that the minimum spacing would guarantee 2.5 items to be shown, but we can
         // verify this fast.

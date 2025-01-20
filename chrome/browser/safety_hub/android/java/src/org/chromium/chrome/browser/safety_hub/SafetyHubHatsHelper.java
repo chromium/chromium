@@ -101,7 +101,7 @@ class SafetyHubHatsHelper extends EmptyTabObserver implements Destroyable {
         }
         surveyClient.showSurvey(
                 activity,
-                /* lifecyclerDispatcher= */ null,
+                /* lifecycleDispatcher= */ null,
                 getSurveyPsbBitValues(),
                 getSurveyPsbStringValues());
     }

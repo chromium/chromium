@@ -862,7 +862,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         AwPrefetchParameters prefetchParameters =
                 new AwPrefetchParameters(
                         /* additionalHeaders= */ null,
-                        /* noVarySearchData= */ null,
+                        /* expectedNoVarySearch= */ null,
                         /* isJavascriptEnabled= */ true);
         startPrerenderingAndWait(
                 mPrerenderingUrl,

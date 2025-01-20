@@ -90,7 +90,7 @@ public class TestDataSharingService implements DataSharingService {
     @Override
     public ParseUrlResult parseDataSharingUrl(GURL url) {
         return new ParseUrlResult(
-                new GroupToken(/* groupId= */ null, /* accessToken= */ null),
+                new GroupToken(/* collaborationId= */ null, /* accessToken= */ null),
                 ParseUrlStatus.UNKNOWN);
     }
 

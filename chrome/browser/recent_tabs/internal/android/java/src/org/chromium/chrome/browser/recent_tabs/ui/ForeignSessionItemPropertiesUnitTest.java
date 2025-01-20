@@ -33,7 +33,7 @@ public class ForeignSessionItemPropertiesUnitTest {
         mSession = new ForeignSession("tag", "John's iPhone 6", 32L, new ArrayList<>(), 2);
         mModel =
                 ForeignSessionItemProperties.create(
-                        /* device= */ mSession,
+                        /* session= */ mSession,
                         /* isSelected= */ false,
                         /* onClickListener= */ () -> {});
     }

@@ -68,7 +68,7 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
                 tabSupplier,
                 modalDialogManager,
                 buttonDrawable,
-                /* contentDescriptionResId= */ context.getString(R.string.price_insights_title),
+                /* contentDescription= */ context.getString(R.string.price_insights_title),
                 /* actionChipLabelResId= */ R.string.price_insights_price_is_low_title,
                 /* supportsTinting= */ true,
                 /* iphCommandBuilder= */ null,

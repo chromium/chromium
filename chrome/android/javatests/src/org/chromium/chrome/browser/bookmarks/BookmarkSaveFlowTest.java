@@ -225,7 +225,7 @@ public class BookmarkSaveFlowTest {
                     mBookmarkModel.setPowerBookmarkMeta(id, meta.build());
                     mBookmarkSaveFlowCoordinator.show(
                             id,
-                            /* fromHeuristicEntryPoint= */ false,
+                            /* fromExplicitTrackUi= */ false,
                             /* wasBookmarkMoved= */ false,
                             /* isNewBookmark= */ true,
                             meta.build());
@@ -262,7 +262,7 @@ public class BookmarkSaveFlowTest {
 
                     mBookmarkSaveFlowCoordinator.show(
                             id,
-                            /* fromHeuristicEntryPoint= */ true,
+                            /* fromExplicitTrackUi= */ true,
                             /* wasBookmarkMoved= */ false,
                             /* isNewBookmark= */ false,
                             meta.build());
@@ -308,7 +308,7 @@ public class BookmarkSaveFlowTest {
 
                     mBookmarkSaveFlowCoordinator.show(
                             id,
-                            /* fromHeuristicEntryPoint= */ false,
+                            /* fromExplicitTrackUi= */ false,
                             /* wasBookmarkMoved= */ false,
                             /* isNewBookmark= */ false,
                             meta.build());
@@ -354,7 +354,7 @@ public class BookmarkSaveFlowTest {
                     BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
                     mBookmarkSaveFlowCoordinator.show(
                             id,
-                            /* fromHeuristicEntryPoint= */ false,
+                            /* fromExplicitTrackUi= */ false,
                             /* wasBookmarkMoved= */ false,
                             /* isNewBookmark= */ true);
                     return null;

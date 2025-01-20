@@ -380,7 +380,7 @@ public class SingleWebsiteSettingsTest {
                         embedder,
                         ContentSettingValues.ASK,
                         ProviderType.NONE,
-                        /* expiration= */ 0,
+                        /* expirationInDays= */ 0,
                         /* isEmbargoed= */ false);
         // Set setting explicitly to write it to prefs.
         ThreadUtils.runOnUiThreadBlocking(

@@ -403,7 +403,7 @@ public class TabUiUtilsUnitTest {
         final String histogram = "SensitiveContent.TabSwitching.RegularTabSwitcherPane.Sensitivity";
 
         HistogramWatcher histogramWatcherForTrueBucket =
-                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ true);
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* value= */ true);
         when(mTab.getTabHasSensitiveContent()).thenReturn(true);
         TabUiUtils.updateViewContentSensitivityForTabs(
                 tabList, mContentSensitivitySetter, histogram);
@@ -411,7 +411,7 @@ public class TabUiUtilsUnitTest {
         histogramWatcherForTrueBucket.assertExpected();
 
         HistogramWatcher histogramWatcherForFalseBucket =
-                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ false);
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* value= */ false);
         when(mTab.getTabHasSensitiveContent()).thenReturn(false);
         TabUiUtils.updateViewContentSensitivityForTabs(
                 tabList, mContentSensitivitySetter, histogram);
@@ -427,7 +427,7 @@ public class TabUiUtilsUnitTest {
         when(mTabModel.getTabAt(0)).thenAnswer(invocation -> mTab);
 
         HistogramWatcher histogramWatcherForTrueBucket =
-                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ true);
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* value= */ true);
         when(mTab.getTabHasSensitiveContent()).thenReturn(true);
         TabUiUtils.updateViewContentSensitivityForTabs(
                 mTabModel, mContentSensitivitySetter, histogram);
@@ -435,7 +435,7 @@ public class TabUiUtilsUnitTest {
         histogramWatcherForTrueBucket.assertExpected();
 
         HistogramWatcher histogramWatcherForFalseBucket =
-                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ false);
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* value= */ false);
         when(mTab.getTabHasSensitiveContent()).thenReturn(false);
         TabUiUtils.updateViewContentSensitivityForTabs(
                 mTabModel, mContentSensitivitySetter, histogram);

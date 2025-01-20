@@ -61,7 +61,7 @@ final class SigninBridge {
                     accountPickerLaunchMode,
                     /* isWebSignin= */ true,
                     SigninAccessPoint.WEB_SIGNIN,
-                    /* selectedCoreAccountId= */ null);
+                    /* selectedAccountId= */ null);
         }
     }
 
