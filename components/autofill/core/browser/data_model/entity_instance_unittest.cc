@@ -17,8 +17,8 @@ TEST(AutofillEntityInstanceTest, Attributes) {
   EntityInstance pp =
       test::GetPassportEntityInstance({.name = kName, .number = nullptr});
   using enum AttributeTypeName;
-  EXPECT_EQ(pp.attributes().size(), 5u);
-  EXPECT_EQ(pp.type().attributes().size(), 6u);
+  EXPECT_EQ(pp.attributes().size(), 4u);
+  EXPECT_EQ(pp.type().attributes().size(), 5u);
   EXPECT_FALSE(pp.attribute(AttributeType(kPassportNumber)));
   {
     base::optional_ref<const AttributeInstance> a =

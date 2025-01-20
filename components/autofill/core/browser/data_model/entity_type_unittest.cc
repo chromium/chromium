@@ -27,8 +27,7 @@ TEST(AutofillEntityTypeTest, Attributes) {
                                    AttributeType(kPassportNumber),
                                    AttributeType(kPassportCountry),
                                    AttributeType(kPassportExpiryDate),
-                                   AttributeType(kPassportIssueDate),
-                                   AttributeType(kPassportPlaceOfBirth)));
+                                   AttributeType(kPassportIssueDate)));
   ASSERT_FALSE(e.attributes().empty());
 }
 

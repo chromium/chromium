@@ -434,7 +434,10 @@ enum FieldType {
   // Departamento).
   ADDRESS_HOME_APT_TYPE = 157,
 
-  // Reserved for a server-side-only use: 158-159
+  // Loyalty program card or membeship ID.
+  LOYALTY_MEMBERSHIP_ID = 158,
+
+  // Reserved for a server-side-only use: 159
 
   // Similar to `SINGLE_USERNAME`, but for the case when there are additional
   // fields between single username and password forms.
@@ -485,13 +488,12 @@ enum FieldType {
   PASSPORT_ISSUING_COUNTRY_TAG = 170,
   PASSPORT_EXPIRATION_DATE_TAG = 171,
   PASSPORT_ISSUE_DATE_TAG = 172,
-  PASSPORT_COUNTRY_OF_BIRTH_TAG = 173,
 
   // Types corresponding to the "Loyalty card" entity from
   // components/autofill/core/browser/data_model/entity_schema.json.
-  LOYALTY_CARD_PROGRAM = 174,
-  LOYALTY_CARD_PROVIDER = 175,
-  LOYALTY_CARD_MEMBER_ID = 176,
+  LOYALTY_MEMBERSHIP_PROGRAM = 173,
+  LOYALTY_MEMBERSHIP_PROVIDER = 174,
+  // The member ID is represented by LOYALTY_MEMBERSHIP_ID.
 
   // No new types can be added without a corresponding change to the Autofill
   // server.
@@ -503,7 +505,7 @@ enum FieldType {
   // If the newly added type is a storable type of AutofillProfile, update
   // AutofillProfile.StorableTypes in
   // tools/metrics/histograms/metadata/autofill/histograms.xml.
-  MAX_VALID_FIELD_TYPE = 177,
+  MAX_VALID_FIELD_TYPE = 175,
 };
 // LINT.ThenChange(//chrome/common/extensions/api/autofill_private.idl)
 
@@ -596,8 +598,7 @@ constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
            // Reserved for server-side only use.
            !(111 <= t && t <= 113) && t != 117 && t != 127 &&
            !(130 <= t && t <= 132) && t != 134 && !(137 <= t && t <= 139) &&
-           !(147 <= t && t <= 149) && t != 155 && t != 158 &&
-           t != 159 && t != 161;
+           !(147 <= t && t <= 149) && t != 155 && t != 159 && t != 161;
   };
   return IsValid(raw_value) ? static_cast<FieldType>(raw_value)
                             : fallback_value;

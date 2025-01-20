@@ -319,7 +319,6 @@ struct PassportEntityOptions {
   const char* country = "Sweden";
   const char* expiry_date = "12/2019";
   const char* issue_date = "01/2010";
-  const char* place_of_birth = "Vimmerby, Sweden";
   std::string_view guid = "00000000-0000-4000-8000-000000000000";
   std::string_view nickname = "Passie";
   base::Time date_modified = kJune2017;
