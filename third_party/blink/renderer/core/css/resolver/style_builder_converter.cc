@@ -1003,11 +1003,15 @@ FontSelectionValue StyleBuilderConverter::ConvertFontStyle(
 }
 
 FontSelectionValue StyleBuilderConverterBase::ConvertFontWeight(
+    const CSSLengthResolver& length_resolver,
     const CSSValue& value,
     FontSelectionValue parent_weight) {
   if (const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
     if (primitive_value->IsNumber()) {
-      return ClampTo<FontSelectionValue>(primitive_value->GetFloatValue());
+      // clamp to [1, 1000] range as per
+      // https://drafts.csswg.org/css-fonts/#font-weight-prop.
+      return ClampTo<FontSelectionValue>(std::clamp(
+          primitive_value->ComputeNumber(length_resolver), 1., 1000.));
     }
   }
 
@@ -1036,7 +1040,8 @@ FontSelectionValue StyleBuilderConverter::ConvertFontWeight(
     StyleResolverState& state,
     const CSSValue& value) {
   return StyleBuilderConverterBase::ConvertFontWeight(
-      value, state.ParentStyle()->GetFontDescription().Weight());
+      state.CssToLengthConversionData(), value,
+      state.ParentStyle()->GetFontDescription().Weight());
 }
 
 FontDescription::FontVariantCaps

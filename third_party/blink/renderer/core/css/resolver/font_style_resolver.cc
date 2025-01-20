@@ -75,6 +75,7 @@ FontDescription FontStyleResolver::ComputeFont(
   // CSSPropertyID::kFontWeight
   if (property_set.HasProperty(CSSPropertyID::kFontWeight)) {
     builder.SetWeight(StyleBuilderConverterBase::ConvertFontWeight(
+        conversion_data,
         *property_set.GetPropertyCSSValue(CSSPropertyID::kFontWeight),
         FontBuilder::InitialWeight()));
   }

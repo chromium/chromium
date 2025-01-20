@@ -74,7 +74,11 @@ InterpolationValue CSSFontWeightInterpolationType::MaybeConvertValue(
               inherited_font_weight));
     }
   }
+  // TODO(40946458): Should do a proper interpolation here instead of converting
+  // relative units first.
   return CreateFontWeightValue(StyleBuilderConverterBase::ConvertFontWeight(
+      state ? state->CssToLengthConversionData()
+            : CSSToLengthConversionData(/*element=*/nullptr),
       value, inherited_font_weight));
 }
 
