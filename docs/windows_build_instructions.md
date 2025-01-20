@@ -85,7 +85,8 @@ https://git-scm.com/download/win.
 For more information on Git for Windows (which is a separate project from Git),
 see https://gitforwindows.org.
 
-Note: if you are a Google employee, see [go/building-chrome-win#install-git](https://goto.google.com/building-chrome-win#install-git).
+Note: if you are a Google employee, see git installation instructions at
+[go/building-chrome-win](https://goto.google.com/building-chrome-win#install-updates-and-required-software).
 
 ### Update git
 
