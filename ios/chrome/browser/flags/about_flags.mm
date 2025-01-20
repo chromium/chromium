@@ -527,92 +527,6 @@ const FeatureEntry::FeatureVariation kIOSDockingPromoVariations[] = {
     {"Display promo during FRE", kIOSDockingPromoDisplayedDuringFRE,
      std::size(kIOSDockingPromoDisplayedDuringFRE), nullptr}};
 
-const FeatureEntry::FeatureParam kModernTabStripNTBDynamic[] = {
-    {kModernTabStripParameterName, kModernTabStripNTBDynamicParam}};
-const FeatureEntry::FeatureParam kModernTabStripNTBStatic[] = {
-    {kModernTabStripParameterName, kModernTabStripNTBStaticParam}};
-const FeatureEntry::FeatureParam kModernTabStripCloserNTBOption[] = {
-    {kModernTabStripCloserNTB, "true"},
-    {kModernTabStripBiggerNTB, "true"}};
-const FeatureEntry::FeatureParam kModernTabStripDarkerBackgroundOption[] = {
-    {kModernTabStripDarkerBackground, "true"},
-    {kModernTabStripBiggerNTB, "true"}};
-const FeatureEntry::FeatureParam
-    kModernTabStripCloserNTBDarkerBackgroundOption[] = {
-        {kModernTabStripDarkerBackground, "true"},
-        {kModernTabStripCloserNTB, "true"},
-        {kModernTabStripBiggerNTB, "true"}};
-const FeatureEntry::FeatureParam kModernTabStripNTBNoBackgroundOption[] = {
-    {kModernTabStripNTBNoBackground, "true"},
-    {kModernTabStripBiggerNTB, "true"}};
-const FeatureEntry::FeatureParam kModernTabStripBlackBackgroundOption[] = {
-    {kModernTabStripBlackBackground, "true"},
-    {kModernTabStripNTBNoBackground, "true"},
-    {kModernTabStripBiggerNTB, "true"}};
-
-const FeatureEntry::FeatureParam kModernTabStripCloseButtonVisibleOption[] = {
-    {kModernTabStripCloseButtonsVisible, "true"},
-    {kModernTabStripCloserNTB, "true"},
-    {kModernTabStripHighContrastNTB, "true"},
-    {kModernTabStripBiggerNTB, "true"}};
-const FeatureEntry::FeatureParam
-    kModernTabStripInactiveTabsHighContrastOption[] = {
-        {kModernTabStripInactiveTabsHighContrast, "true"},
-        {kModernTabStripCloserNTB, "true"},
-        {kModernTabStripDarkerBackgroundV3, "true"},
-        {kModernTabStripHighContrastNTB, "true"},
-        {kModernTabStripBiggerNTB, "true"}};
-const FeatureEntry::FeatureParam kModernTabStripHighContrastNTBOption[] = {
-    {kModernTabStripHighContrastNTB, "true"},
-    {kModernTabStripNTBNoBackground, "true"},
-    {kModernTabStripCloserNTB, "true"},
-    {kModernTabStripBiggerNTB, "true"}};
-const FeatureEntry::FeatureParam kModernTabStripV3AllOptions[] = {
-    {kModernTabStripCloseButtonsVisible, "true"},
-    {kModernTabStripNTBNoBackground, "true"},
-    {kModernTabStripInactiveTabsHighContrast, "true"},
-    {kModernTabStripCloserNTB, "true"},
-    {kModernTabStripHighContrastNTB, "true"},
-    {kModernTabStripDarkerBackgroundV3, "true"},
-    {kModernTabStripBiggerNTB, "true"}};
-const FeatureEntry::FeatureParam kModernTabStripDetachedTabsOptions[] = {
-    {kModernTabStripCloseButtonsVisible, "true"},
-    {kModernTabStripHighContrastNTB, "true"},
-    {kModernTabStripInactiveTabsHighContrast, "true"},
-    {kModernTabStripDarkerBackgroundV3, "true"},
-    {kModernTabStripDetachedTabs, "true"},
-    {kModernTabStripCloserNTB, "true"},
-    {kModernTabStripNTBNoBackground, "true"},
-    {kModernTabStripBiggerNTB, "true"}};
-
-const FeatureEntry::FeatureVariation kModernTabStripVariations[] = {
-    {"New tab button dynamic", kModernTabStripNTBDynamic,
-     std::size(kModernTabStripNTBDynamic), nullptr},
-    {"New tab button static", kModernTabStripNTBStatic,
-     std::size(kModernTabStripNTBStatic), nullptr},
-    {"Closer NTB", kModernTabStripCloserNTBOption,
-     std::size(kModernTabStripCloserNTBOption), nullptr},
-    {"Darker background", kModernTabStripDarkerBackgroundOption,
-     std::size(kModernTabStripDarkerBackgroundOption), nullptr},
-    {"Closer NTB + darker background",
-     kModernTabStripCloserNTBDarkerBackgroundOption,
-     std::size(kModernTabStripCloserNTBDarkerBackgroundOption), nullptr},
-    {"NTB no background", kModernTabStripNTBNoBackgroundOption,
-     std::size(kModernTabStripNTBNoBackgroundOption), nullptr},
-    {"Black background", kModernTabStripBlackBackgroundOption,
-     std::size(kModernTabStripBlackBackgroundOption), nullptr},
-    {"V3 Close buttons", kModernTabStripCloseButtonVisibleOption,
-     std::size(kModernTabStripCloseButtonVisibleOption), nullptr},
-    {"V3 High Contrast tabs", kModernTabStripInactiveTabsHighContrastOption,
-     std::size(kModernTabStripInactiveTabsHighContrastOption), nullptr},
-    {"V3 Visible NTB", kModernTabStripHighContrastNTBOption,
-     std::size(kModernTabStripHighContrastNTBOption), nullptr},
-    {"V3 all options", kModernTabStripV3AllOptions,
-     std::size(kModernTabStripV3AllOptions), nullptr},
-    {"V3 detached tabs", kModernTabStripDetachedTabsOptions,
-     std::size(kModernTabStripDetachedTabsOptions), nullptr},
-};
-
 const FeatureEntry::FeatureVariation
     kImageServiceOptimizationGuideSalientImagesVariations[] = {
         {"High Performance Canonicalization", nullptr, 0, "3362133"},
@@ -1414,9 +1328,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
 #endif
     {"modern-tab-strip", flag_descriptions::kModernTabStripName,
      flag_descriptions::kModernTabStripDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kModernTabStrip,
-                                    kModernTabStripVariations,
-                                    "ModernTabStrip")},
+     FEATURE_VALUE_TYPE(kModernTabStrip)},
     {"ios-enable-delete-all-saved-credentials",
      flag_descriptions::kIOSEnableDeleteAllSavedCredentialsName,
      flag_descriptions::kIOSEnableDeleteAllSavedCredentialsDescription,

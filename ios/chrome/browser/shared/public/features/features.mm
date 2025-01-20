@@ -176,31 +176,7 @@ BASE_FEATURE(kShareInWebContextMenuIOS,
 
 BASE_FEATURE(kModernTabStrip,
              "ModernTabStrip",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const char kModernTabStripParameterName[] = "modern-tab-strip-new-tab-button";
-const char kModernTabStripNTBDynamicParam[] = "dynamic";
-const char kModernTabStripNTBStaticParam[] = "static";
-
-extern const char kModernTabStripCloserNTB[] = "modern-tab-strip-closer-ntb";
-extern const char kModernTabStripDarkerBackground[] =
-    "modern-tab-strip-darker-background";
-extern const char kModernTabStripNTBNoBackground[] =
-    "modern-tab-strip-ntb-no-background";
-extern const char kModernTabStripBlackBackground[] =
-    "modern-tab-strip-black-background";
-extern const char kModernTabStripBiggerNTB[] = "modern-tab-strip-bigger-ntb";
-
-extern const char kModernTabStripDarkerBackgroundV3[] =
-    "modern-tab-strip-darker-background-v3";
-extern const char kModernTabStripCloseButtonsVisible[] =
-    "modern-tab-strip-close-buttons-visible";
-extern const char kModernTabStripInactiveTabsHighContrast[] =
-    "modern-tab-strip-inactive-tabs-high-contrast";
-extern const char kModernTabStripHighContrastNTB[] =
-    "modern-tab-strip-high-contrast-ntb";
-extern const char kModernTabStripDetachedTabs[] =
-    "modern-tab-strip-detached-tabs";
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIOSBrowserEditMenuMetrics,
              "IOSBrowserEditMenuMetrics",

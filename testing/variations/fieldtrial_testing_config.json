@@ -12021,24 +12021,6 @@
             ]
         }
     ],
-    "IOSModernTabStrip": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "modern-tab-strip-new-tab-button": "dynamic"
-                    },
-                    "enable_features": [
-                        "ModernTabStrip"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSNewFeedPositioningStudy": [
         {
             "platforms": [
