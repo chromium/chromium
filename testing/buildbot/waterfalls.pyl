@@ -133,6 +133,7 @@
         },
         'os_type': 'chromeos',
         'cros_board': 'brya',
+        'cros_model': 'kano',
       },
       'chromeos-brya-chrome-tests': {
         'mixins': [
@@ -143,6 +144,7 @@
         },
         'os_type': 'chromeos',
         'cros_board': 'brya',
+        'cros_model': 'kano',
       },
       'chromeos-jacuzzi-chrome': {
         'additional_compile_targets': [
@@ -417,6 +419,7 @@
         },
         'os_type': 'chromeos',
         'cros_board': 'brya',
+        'cros_model': 'kano',
       },
       'chromeos-jacuzzi-chrome-preuprev': {
         'additional_compile_targets': [
@@ -1171,6 +1174,7 @@
         },
         'os_type': 'chromeos',
         'cros_board': 'brya',
+        'cros_model': 'kano',
       },
       'chromeos-eve-chrome': {
         # This builder is build only.
