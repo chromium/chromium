@@ -301,6 +301,7 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
   return true;
 }
 
+// This function is not used if TextCombineEmphasisNG flag is enabled.
 void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
                              const TextRunPaintInfo& run_info,
                              const AtomicString& mark,

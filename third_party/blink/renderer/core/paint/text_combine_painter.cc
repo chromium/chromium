@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_painter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -149,6 +150,23 @@ void TextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,
       gfx::PointF(text_origin()) +
       gfx::Vector2dF(0, font_ascent + emphasis_mark_offset());
   const TextRunPaintInfo text_run_paint_info(placeholder_text_run);
+
+  if (RuntimeEnabledFeatures::TextCombineEmphasisNGEnabled()) {
+    // TODO(crbug.com/389726691): Remove the CachingWordShaper usage.
+    CachingWordShaper word_shaper(emphasis_mark_font);
+    ShapeResultBuffer buffer;
+    word_shaper.FillResultBuffer(text_run_paint_info, &buffer);
+    if (buffer.ShapeResultSize() == 0) {
+      return;
+    }
+    graphics_context().DrawEmphasisMarks(
+        emphasis_mark_font,
+        TextFragmentPaintInfo{placeholder_text_run.ToStringView(), 0, 1,
+                              buffer.ViewAt(0)},
+        emphasis_mark(), emphasis_mark_text_origin,
+        PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kForeground));
+    return;
+  }
   graphics_context().DrawEmphasisMarks(
       emphasis_mark_font, text_run_paint_info, emphasis_mark(),
       emphasis_mark_text_origin,

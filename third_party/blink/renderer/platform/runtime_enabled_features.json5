@@ -4247,6 +4247,11 @@
       status: "stable",
     },
     {
+      // crbug.com/389726691
+      name: "TextCombineEmphasisNG",
+      status: "stable",
+    },
+    {
       name: "TextDetector",
       status: "experimental",
     },
