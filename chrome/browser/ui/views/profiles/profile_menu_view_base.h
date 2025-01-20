@@ -111,6 +111,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     // to be shown.
     std::u16string header_string;
     ui::ImageModel header_image;
+    base::RepeatingClosure header_action;
 
     // `profile_image` must not be empty. It does not need to be circular.
     ui::ImageModel profile_image;
