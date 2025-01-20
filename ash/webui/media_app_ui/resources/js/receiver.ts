@@ -369,6 +369,8 @@ const DELEGATE: ClientApiDelegate = {
     // Close any existing pipes when opening a new file.
     ocrUntrustedService?.$.close();
     mahiUntrustedService?.$.close();
+    // Release Mantis resources if opened previously.
+    mantisUntrustedService?.$.close();
 
     if (type === 'application/pdf') {
       ocrUntrustedService = connectToOcrUntrustedService();
