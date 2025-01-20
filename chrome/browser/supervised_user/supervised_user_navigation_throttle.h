@@ -23,8 +23,7 @@ class Profile;
 
 namespace supervised_user {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-bool ShouldShowReAuthInterstitial(content::NavigationHandle& navigation_handle,
-                                  bool is_main_frame);
+bool ShouldShowReAuthInterstitial(content::NavigationHandle& navigation_handle);
 #endif
 }  // namespace supervised_user
 

@@ -914,14 +914,6 @@ void ProfilePickerHandler::OnVisibilityChanged(content::Visibility visibility) {
 }
 
 void ProfilePickerHandler::MaybeUpdateGuestMode() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  if (!base::FeatureList::IsEnabled(
-          supervised_user::kHideGuestModeForSupervisedUsers)) {
-    return;
-  }
-#else
-  return;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   CHECK(IsJavascriptAllowed());
   FireWebUIListener("guest-mode-availability-updated",
                     base::Value(profiles::IsGuestModeEnabled()));

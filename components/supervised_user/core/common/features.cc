@@ -93,19 +93,10 @@ BASE_FEATURE(kCustomProfileStringsForSupervisedUsers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-BASE_FEATURE(kEnableSupervisedUserVersionSignOutDialog,
-             "EnableSupervisedUserVersionSignOutDialog",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShowKiteForSupervisedUsers,
              "ShowKiteForSupervisedUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-BASE_FEATURE(kHideGuestModeForSupervisedUsers,
-             "HideGuestModeForSupervisedUsers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kForceSafeSearchForUnauthenticatedSupervisedUsers,
@@ -117,23 +108,16 @@ BASE_FEATURE(kForceSafeSearchForUnauthenticatedSupervisedUsers,
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+BASE_FEATURE(kEnableSupervisedUserVersionSignOutDialog,
+             "EnableSupervisedUserVersionSignOutDialog",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kForceSupervisedUserReauthenticationForYouTube,
              "ForceSupervisedUserReauthenticationForYouTube",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kForceSupervisedUserReauthenticationForBlockedSites,
-             "ForceSupervisedUserReauthenticationForBlockedSites",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCloseSignTabsFromReauthenticationInterstitial,
-             "CloseSignTabsFromReauthenticationInterstitial",
-             // Enabled by default, flag meant to work as a kill switch.
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAllowSupervisedUserReauthenticationForSubframes,
-             "EnableSupervisedUserReauthenticationForSubframes",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
+// TODO(crbug.com/378636321): Clean-up this flag once
+// `ForceSupervisedUserReauthenticationForYouTube` is enabled.
 BASE_FEATURE(kExemptYouTubeInfrastructureFromBlocking,
              "ExemptYouTubeInfrastructureFromBlocking",
              base::FEATURE_ENABLED_BY_DEFAULT);

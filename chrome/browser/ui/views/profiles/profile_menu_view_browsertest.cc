@@ -90,7 +90,6 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/supervised_user/core/browser/family_link_user_capabilities.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -1983,7 +1982,7 @@ constexpr std::array
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_GuestProfileButtonAvailable_SignedInNotSupervised,
     ProfileMenuClickTest_GuestProfileButtonAvailable_SignedInNotSupervised,
-    /*enabled_features=*/{supervised_user::kHideGuestModeForSupervisedUsers},
+    /*enabled_features=*/{},
     /*disabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop}) {
   AccountInfo account_info = signin::MakePrimaryAccountAvailable(
       identity_manager(), "adult@gmail.com", signin::ConsentLevel::kSignin);
@@ -2019,7 +2018,7 @@ constexpr std::array
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_GuestProfileButtonNotAvailable_SignedInSupervised,
     ProfileMenuClickTest_GuestProfileButtonNotAvailable_SignedInSupervised,
-    /*enabled_features=*/{supervised_user::kHideGuestModeForSupervisedUsers},
+    /*enabled_features=*/{},
     /*disabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop}) {
   AccountInfo account_info = signin::MakePrimaryAccountAvailable(
       identity_manager(), "child@gmail.com", signin::ConsentLevel::kSignin);

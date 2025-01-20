@@ -219,7 +219,7 @@ void ClassifyUrlNavigationThrottle::OnInterstitialResult(
       CHECK(navigation_handle());
 // LINT.IfChange(cancel_with_interstitial)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-      if (ShouldShowReAuthInterstitial(*navigation_handle(), is_main_frame)) {
+      if (ShouldShowReAuthInterstitial(*navigation_handle())) {
         // Show the re-authentication interstitial if the user signed out of
         // the content area, as parent's approval requires authentication.
         // This interstitial is only available on Linux/Mac/Windows as

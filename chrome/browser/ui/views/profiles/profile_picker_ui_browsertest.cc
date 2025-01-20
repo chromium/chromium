@@ -35,7 +35,8 @@ namespace {
 struct ProfilePickerTestParam {
   PixelTestParam pixel_test_param;
   bool use_multiple_profiles = false;
-  bool hide_guest_mode_for_supervised_users = false;
+  // Requires `use_multiple_profiles` to be enabled.
+  bool has_supervised_user = false;
   bool show_kite_for_supervised_users = false;
   // param to be removed when `kOutlineSilhouetteIcon` is enabled by default.
   bool outline_silhouette_icon = false;
@@ -86,17 +87,16 @@ const ProfilePickerTestParam kTestParams[] = {
      .use_multiple_profiles = true,
      .outline_silhouette_icon = true},
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    {.pixel_test_param = {.test_suffix = "MultipleProfiles_HideGuest"},
-     .use_multiple_profiles = true,
-     .hide_guest_mode_for_supervised_users = true},
     {.pixel_test_param = {.test_suffix = "MultipleProfiles_Kite"},
      .use_multiple_profiles = true,
+     .has_supervised_user = true,
      .show_kite_for_supervised_users = true},
     {.pixel_test_param = {.test_suffix = "DarkRtlSmallMultipleProfiles_Kite",
                           .use_dark_theme = true,
                           .use_right_to_left_language = true,
                           .window_size = PixelTestParam::kSmallWindowSize},
      .use_multiple_profiles = true,
+     .has_supervised_user = true,
      .show_kite_for_supervised_users = true},
 #endif
     {.pixel_test_param = {.test_suffix = "GlicRegular"},
@@ -184,7 +184,7 @@ void SetSigninProfileProperties(signin::IdentityManager* identity_manager,
 }
 
 // Create 4 profiles with different icons and types.
-void AddMultipleProfiles(bool is_glic_version) {
+void AddMultipleProfiles(bool is_glic_version, bool has_supervised_user) {
   std::vector<ProfileStatus> profiles_status;
   if (is_glic_version) {
     // For the glic version, we need all Profiles to be signed in.
@@ -193,10 +193,12 @@ void AddMultipleProfiles(bool is_glic_version) {
         {ProfileStatus::kSignedIn, ProfileStatus::kSignedInManaged,
          ProfileStatus::kSignedIn, ProfileStatus::kSignedInManaged});
   } else {
-    profiles_status.insert(
-        profiles_status.end(),
-        {ProfileStatus::kSignedOut, ProfileStatus::kSignedIn,
-         ProfileStatus::kSignedInManaged, ProfileStatus::kSignedInSupervised});
+    profiles_status.insert(profiles_status.end(),
+                           {ProfileStatus::kSignedOut, ProfileStatus::kSignedIn,
+                            ProfileStatus::kSignedInManaged});
+    if (has_supervised_user) {
+      profiles_status.push_back(ProfileStatus::kSignedInSupervised);
+    }
   }
 
   size_t icon_index = 0;
@@ -225,9 +227,7 @@ class ProfilePickerUIPixelTest
       : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     scoped_feature_list_.InitWithFeatureStates(
-        {{supervised_user::kHideGuestModeForSupervisedUsers,
-          GetParam().hide_guest_mode_for_supervised_users},
-         {supervised_user::kShowKiteForSupervisedUsers,
+        {{supervised_user::kShowKiteForSupervisedUsers,
           GetParam().show_kite_for_supervised_users},
          {kOutlineSilhouetteIcon, GetParam().outline_silhouette_icon}});
 #endif
@@ -252,7 +252,7 @@ class ProfilePickerUIPixelTest
       // In Glic mode, if `use_multiple_profiles` is set,
       // `no_glic_eligible_profiles` must be set to false.
       CHECK(!is_glic_version || !no_glic_eligible_profiles);
-      AddMultipleProfiles(is_glic_version);
+      AddMultipleProfiles(is_glic_version, GetParam().has_supervised_user);
     }
 
     if (GetParam().disallow_profile_creation) {

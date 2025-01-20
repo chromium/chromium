@@ -11050,12 +11050,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-    {"supervised-profile-hide-guest",
-     flag_descriptions::kSupervisedProfileHideGuestName,
-     flag_descriptions::kSupervisedProfileHideGuestDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(supervised_user::kHideGuestModeForSupervisedUsers)},
-
     {"supervised-profile-safe-search",
      flag_descriptions::kSupervisedProfileSafeSearchName,
      flag_descriptions::kSupervisedProfileSafeSearchDescription,
@@ -11069,20 +11063,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsLinux | kOsMac | kOsWin,
      FEATURE_VALUE_TYPE(
          supervised_user::kForceSupervisedUserReauthenticationForYouTube)},
-
-    {"supervised-profile-blocked-site-reauth",
-     flag_descriptions::kSupervisedProfileReauthForBlockedSiteName,
-     flag_descriptions::kSupervisedProfileReauthForBlockedSiteDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(
-         supervised_user::kForceSupervisedUserReauthenticationForBlockedSites)},
-
-    {"supervised-profile-subframe-reauth",
-     flag_descriptions::kSupervisedProfileSubframeReauthName,
-     flag_descriptions::kSupervisedProfileSubframeReauthDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(
-         supervised_user::kAllowSupervisedUserReauthenticationForSubframes)},
 
     {"supervised-profile-filtering-fallback",
      flag_descriptions::kSupervisedProfileFilteringFallbackName,

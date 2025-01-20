@@ -115,11 +115,8 @@ class SupervisedUserPendingStateNavigationTest
  public:
   SupervisedUserPendingStateNavigationTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
-        supervised_user::kForceSupervisedUserReauthenticationForBlockedSites,
-        supervised_user::kCloseSignTabsFromReauthenticationInterstitial,
         supervised_user::kUncredentialedFilteringFallbackForSupervisedUsers,
-        supervised_user::kForceSupervisedUserReauthenticationForYouTube,
-        supervised_user::kAllowSupervisedUserReauthenticationForSubframes};
+        supervised_user::kForceSupervisedUserReauthenticationForYouTube};
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (GetParam() == ThrottleTestParam::FeatureStatus::kEnabled) {
