@@ -507,9 +507,13 @@ class PermissionRequestManager
   std::optional<UiDecision> current_request_ui_to_use_;
 
   // The likelihood value returned by the Web Permission Predictions Service,
-  // to be recoreded in UKM.
+  // to be recorded in UKM.
   std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
       prediction_grant_likelihood_;
+
+  // The permission request relevance returned by an on-device ML model,
+  // to be recorded in UKM.
+  std::optional<PermissionRequestRelevance> permission_request_relevance_;
 
   // Status of the decision made by the Web Permission Prediction Service, if
   // it was held back or not.

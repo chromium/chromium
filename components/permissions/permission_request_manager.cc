@@ -1070,6 +1070,7 @@ void PermissionRequestManager::ResetViewStateForCurrentRequest() {
   current_request_decision_time_ = base::Time();
   current_request_prompt_disposition_.reset();
   prediction_grant_likelihood_.reset();
+  permission_request_relevance_.reset();
   current_request_ui_to_use_.reset();
   was_decision_held_back_.reset();
   selector_decisions_.clear();
@@ -1125,8 +1126,9 @@ void PermissionRequestManager::CurrentRequestsDecided(
         DetermineCurrentRequestUIDisposition(),
         DetermineCurrentRequestUIDispositionReasonForUMA(),
         view_ ? std::optional(view_->GetPromptVariants()) : std::nullopt,
-        prediction_grant_likelihood_, was_decision_held_back_, ignore_reason,
-        did_show_prompt_, did_click_manage_, did_click_learn_more_);
+        prediction_grant_likelihood_, permission_request_relevance_,
+        was_decision_held_back_, ignore_reason, did_show_prompt_,
+        did_click_manage_, did_click_learn_more_);
   }
 
   std::optional<QuietUiReason> quiet_ui_reason;
@@ -1475,6 +1477,11 @@ void PermissionRequestManager::OnPermissionUiSelectorDone(
     if (!prediction_grant_likelihood_.has_value()) {
       prediction_grant_likelihood_ = permission_ui_selectors_[decision_index]
                                          ->PredictedGrantLikelihoodForUKM();
+    }
+
+    if (!permission_request_relevance_.has_value()) {
+      permission_request_relevance_ = permission_ui_selectors_[decision_index]
+                                          ->PermissionRequestRelevanceForUKM();
     }
 
     if (!was_decision_held_back_.has_value()) {

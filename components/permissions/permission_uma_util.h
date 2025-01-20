@@ -16,6 +16,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_request_enums.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "components/permissions/request_type.h"
 #include "content/public/browser/permission_result.h"
@@ -697,6 +698,7 @@ class PermissionUmaUtil {
       std::optional<PermissionPromptDispositionReason> ui_reason,
       std::optional<std::vector<ElementAnchoredBubbleVariant>> variants,
       std::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
+      std::optional<PermissionRequestRelevance> permission_request_relevance,
       std::optional<bool> prediction_decision_held_back,
       std::optional<permissions::PermissionIgnoredReason> ignored_reason,
       bool did_show_prompt,
@@ -914,6 +916,7 @@ class PermissionUmaUtil {
       content::BrowserContext* browser_context,
       content::RenderFrameHost* render_frame_host,
       std::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
+      std::optional<PermissionRequestRelevance> permission_request_relevance,
       std::optional<bool> prediction_decision_held_back);
 
   // Records |count| total prior actions for a prompt of type |permission|
