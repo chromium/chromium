@@ -8,6 +8,7 @@
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
@@ -36,6 +37,13 @@ DOMException* ConvertModelStreamingResponseErrorToDOMException(
 
 WTF::String ConvertModelAvailabilityCheckResultToDebugString(
     mojom::blink::ModelAvailabilityCheckResult result);
+
+// Throw the reason of the AbortSignal if it's aborted. If the reason is empty,
+// an AbortError will be thrown.
+// Returns if the signal is aborted.
+bool HandleAbortSignal(AbortSignal* signal,
+                       ScriptState* script_state,
+                       ExceptionState& exception_state);
 
 }  // namespace blink
 
