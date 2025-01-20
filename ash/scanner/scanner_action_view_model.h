@@ -8,8 +8,9 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/scanner/scanner_unpopulated_action.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/manta/proto/scanner.pb.h"
 
@@ -26,7 +27,8 @@ class ScannerCommandDelegate;
 class ASH_EXPORT ScannerActionViewModel {
  public:
   explicit ScannerActionViewModel(
-      ScannerUnpopulatedAction unpopulated_action,
+      manta::proto::ScannerAction unpopulated_action,
+      scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes,
       base::WeakPtr<ScannerCommandDelegate> delegate);
   ScannerActionViewModel(const ScannerActionViewModel&);
   ScannerActionViewModel& operator=(const ScannerActionViewModel&);
@@ -40,13 +42,17 @@ class ASH_EXPORT ScannerActionViewModel {
   const gfx::VectorIcon& GetIcon() const;
   manta::proto::ScannerAction::ActionCase GetActionCase() const;
 
-  const ScannerUnpopulatedAction& unpopulated_action() const {
+  const manta::proto::ScannerAction& unpopulated_action() const {
     return unpopulated_action_;
+  }
+  const scoped_refptr<base::RefCountedMemory>& downscaled_jpeg_bytes() const {
+    return downscaled_jpeg_bytes_;
   }
   base::WeakPtr<ScannerCommandDelegate> delegate() const { return delegate_; }
 
  private:
-  ScannerUnpopulatedAction unpopulated_action_;
+  manta::proto::ScannerAction unpopulated_action_;
+  scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes_;
   base::WeakPtr<ScannerCommandDelegate> delegate_;
 };
 

@@ -318,8 +318,8 @@ void ScannerController::ExecuteAction(
   const manta::proto::ScannerAction::ActionCase action_case =
       scanner_action.GetActionCase();
   scanner_session_->PopulateAction(
-      scanner_action.unpopulated_action().downscaled_jpeg_bytes(),
-      scanner_action.unpopulated_action().unpopulated_action(),
+      scanner_action.downscaled_jpeg_bytes(),
+      scanner_action.unpopulated_action(),
       base::BindOnce(
           &ExecutePopulatedAction, action_case, base::TimeTicks::Now(),
           scanner_action.delegate(),

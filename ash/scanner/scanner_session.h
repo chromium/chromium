@@ -10,7 +10,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/scanner/scanner_action_view_model.h"
-#include "ash/scanner/scanner_unpopulated_action.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"

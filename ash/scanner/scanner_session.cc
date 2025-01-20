@@ -15,7 +15,6 @@
 #include "ash/scanner/scanner_action_view_model.h"
 #include "ash/scanner/scanner_command_delegate.h"
 #include "ash/scanner/scanner_metrics.h"
-#include "ash/scanner/scanner_unpopulated_action.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
@@ -213,11 +212,10 @@ void ScannerSession::OnActionsReturned(
 
   for (manta::proto::ScannerAction& proto_action :
        *output->mutable_objects(0)->mutable_actions()) {
-    std::optional<ScannerUnpopulatedAction> unpopulated_action_ =
-        ScannerUnpopulatedAction::FromProto(std::move(proto_action),
-                                            downscaled_jpeg_bytes);
-    if (unpopulated_action_.has_value()) {
-      action_view_models.emplace_back(std::move(*unpopulated_action_),
+    if (proto_action.action_case() !=
+        manta::proto::ScannerAction::ACTION_NOT_SET) {
+      action_view_models.emplace_back(std::move(proto_action),
+                                      downscaled_jpeg_bytes,
                                       command_delegate_->GetWeakPtr());
     }
   }
