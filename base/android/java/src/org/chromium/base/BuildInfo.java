@@ -48,6 +48,8 @@ public class BuildInfo {
 
     private static @Nullable PackageInfo sBrowserPackageInfo;
     private static boolean sInitialized;
+    private static @Nullable String sGmsVersionCodeForTesting;
+
     private ApplicationInfo mBrowserApplicationInfo;
 
     /**
@@ -143,8 +145,8 @@ public class BuildInfo {
     }
 
     @CalledByNativeForTesting
-    private static void setGmsVersionCodeForTest(@JniType("std::string") String gmsVersionCode) {
-        getInstance().mGmsVersionCode = gmsVersionCode;
+    public static void setGmsVersionCodeForTest(@JniType("std::string") String gmsVersionCode) {
+        sGmsVersionCodeForTesting = gmsVersionCode;
     }
 
     /** Returns a serialized string array of all properties of this class. */
@@ -166,7 +168,7 @@ public class BuildInfo {
             String.valueOf(versionCode),
             versionName,
             androidBuildFingerprint,
-            mGmsVersionCode,
+            getGmsVersionCode(),
             installerPackageName,
             abiString,
             customThemes,
@@ -246,7 +248,7 @@ public class BuildInfo {
 
     /** The versionCode of Play Services. */
     public String getGmsVersionCode() {
-        return mGmsVersionCode;
+        return sGmsVersionCodeForTesting == null ? mGmsVersionCode : sGmsVersionCodeForTesting;
     }
 
     @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/98
