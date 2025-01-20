@@ -2666,7 +2666,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.PromiseApp.LifecycleEvent"
-    enum="PromiseAppLifecycleEvent" expires_after="2025-04-27">
+    enum="PromiseAppLifecycleEvent" expires_after="2026-02-23">
   <owner>ovn@google.com</owner>
   <owner>cros-web-apps-team@google.com</owner>
   <summary>
@@ -2678,7 +2678,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.PromiseApp.PromiseAppIconType" enum="PromiseAppIconType"
-    expires_after="2025-02-23">
+    expires_after="2026-02-23">
   <owner>ovn@google.com</owner>
   <owner>cros-web-apps-team@google.com</owner>
   <summary>
@@ -2691,7 +2691,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.PromiseApp.PromiseAppType" enum="PromiseAppType"
-    expires_after="2025-04-27">
+    expires_after="2026-02-23">
   <owner>ovn@google.com</owner>
   <owner>cros-web-apps-team@google.com</owner>
   <summary>
