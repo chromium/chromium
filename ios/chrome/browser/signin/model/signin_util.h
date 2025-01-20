@@ -41,8 +41,8 @@ CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size);
 // The value is cached. The result is cached for later calls.
 signin::Tribool IsFirstSessionAfterDeviceRestore();
 
-// Stores a user's account info and if history sync was enabled or not, when we
-// detect that it was forgotten during a device restore.
+// Stores a user's account info and whether history sync was enabled or not,
+// when we detect that it was forgotten during a device restore.
 void StorePreRestoreIdentity(PrefService* profile_pref,
                              AccountInfo account,
                              bool history_sync_enabled);
@@ -64,5 +64,9 @@ base::span<const std::string_view> GetAccountCapabilityNamesForPrefetch();
 // Pre-fetches system capabilities for the given identities so that they
 // can be cached for later usage.
 void RunSystemCapabilitiesPrefetch(NSArray<id<SystemIdentity>>* identities);
+
+// Whether a phone backup/restore state should be simulated.
+// This can be triggered either by EG test flag or by Experimental settings.
+bool SimulatePostDeviceRestore();
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_UTIL_H_

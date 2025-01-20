@@ -16,6 +16,9 @@ const char kAddFakeIdentitiesAtStartup[] = "add-fake-identities";
 // Sign in automatically at startup.
 const char kSignInAtStartup[] = "sign-in-at-startup";
 
+// Simulate post device restore.
+const char kSimulatePostDeviceRestore[] = "simulate-post-device-restore";
+
 // Enables FakeTabGroupSyncService.
 const char kEnableFakeTabGroupSyncService[] =
     "enable-fake-tab-group-sync-service";

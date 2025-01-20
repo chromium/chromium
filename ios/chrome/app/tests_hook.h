@@ -112,6 +112,11 @@ bool DelayAppLaunchPromos();
 // provider when testing. May return nullptr.
 policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider();
 
+// Whether a phone backup/restore state should be simulated for testing purpose.
+// Uses`experimental_flags::SimulatePostDeviceRestore()` to check whether this
+// feature should be enabled due to experimental feature.
+bool SimulatePostDeviceRestore();
+
 // Allows overriding the SystemIdentityManager factory. The real factory will
 // be used if this hook returns null.
 std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager();

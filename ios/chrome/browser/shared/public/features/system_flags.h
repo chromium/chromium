@@ -136,7 +136,9 @@ std::string GetSegmentForForcedDeviceSwitcherExperience();
 // former takes precedence.
 std::string GetSegmentForForcedShopperExperience();
 
-// Whether a phone backup/restore state should be simulated.
+// Whether a phone backup/restore state should be simulated due to experimental
+// settings. Uses `tests_hook::SimulatePostDeviceRestore()` to check whether
+// this feature should be enabled for EG tests.
 bool SimulatePostDeviceRestore();
 
 // In production, the history sync opt-in isn't shown if it was declined too

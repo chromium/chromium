@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -135,6 +136,11 @@ policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider() {
     return nullptr;
   }
   return GetTestPlatformPolicyProvider();
+}
+
+bool SimulatePostDeviceRestore() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      test_switches::kSimulatePostDeviceRestore);
 }
 
 std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager() {

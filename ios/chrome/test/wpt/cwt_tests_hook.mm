@@ -54,6 +54,9 @@ std::unique_ptr<ProfileOAuth2TokenService> GetOverriddenTokenService(
 policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider() {
   return nullptr;
 }
+bool SimulatePostDeviceRestore() {
+  return false;
+}
 std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager() {
   return nullptr;
 }
