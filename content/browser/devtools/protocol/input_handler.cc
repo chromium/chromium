@@ -1481,8 +1481,12 @@ void InputHandler::OnWidgetForDispatchDragEvent(
 float InputHandler::ScaleFactor() {
   DCHECK(web_contents_);
   // Browser zoom
-  float scale_factor =
-      blink::ZoomLevelToZoomFactor(web_contents_->GetPendingPageZoomLevel());
+  RenderWidgetHostImpl* widget_host_for_zoom_level =
+      (host_ && host_->GetRenderWidgetHost())
+          ? host_->GetRenderWidgetHost()
+          : web_contents_->GetPrimaryMainFrame()->GetRenderWidgetHost();
+  float scale_factor = blink::ZoomLevelToZoomFactor(
+      web_contents_->GetPendingZoomLevel(widget_host_for_zoom_level));
   // CSS zoom applied to embedding element (e.g. <iframe>), if applicable.
   if (host_) {
     if (RenderWidgetHostImpl* widget_host = host_->GetRenderWidgetHost()) {
@@ -1492,6 +1496,8 @@ float InputHandler::ScaleFactor() {
     }
   }
   // Pinch zoom
+  // TODO(376084060): Investigate if this should also be host_->GetPage() when
+  // `host_` is available.
   scale_factor *= web_contents_->GetPrimaryPage().GetPageScaleFactor();
 
   return scale_factor;

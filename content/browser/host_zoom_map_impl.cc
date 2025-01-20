@@ -46,8 +46,7 @@ std::string GetHostFromProcessFrame(RenderFrameHostImpl* rfh) {
   if (!rfh)
     return std::string();
 
-  NavigationEntry* entry =
-      rfh->frame_tree()->controller().GetLastCommittedEntry();
+  NavigationEntry* entry = rfh->GetController().GetLastCommittedEntry();
   if (!entry)
     return std::string();
 
@@ -96,20 +95,38 @@ HostZoomMap* HostZoomMap::GetForStoragePartition(
 
 // Helper function for setting/getting zoom levels for WebContents without
 // having to import HostZoomMapImpl everywhere.
+
+// static
 double HostZoomMap::GetZoomLevel(WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  HostZoomMapImpl* host_zoom_map = static_cast<HostZoomMapImpl*>(
-      HostZoomMap::GetForWebContents(web_contents));
-  return host_zoom_map->GetZoomLevelForWebContents(
-      static_cast<WebContentsImpl*>(web_contents));
+  return GetZoomLevel(web_contents,
+                      web_contents->GetPrimaryMainFrame()->GetGlobalId());
 }
 
-void HostZoomMap::SetZoomLevel(WebContents* web_contents, double level) {
+// static
+double HostZoomMap::GetZoomLevel(WebContents* web_contents,
+                                 GlobalRenderFrameHostId rfh_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   HostZoomMapImpl* host_zoom_map = static_cast<HostZoomMapImpl*>(
-      HostZoomMap::GetForWebContents(web_contents));
+      HostZoomMap::Get(RenderFrameHost::FromID(rfh_id)->GetSiteInstance()));
+  return host_zoom_map->GetZoomLevelForWebContents(
+      static_cast<WebContentsImpl*>(web_contents), rfh_id);
+}
+
+// static
+void HostZoomMap::SetZoomLevel(WebContents* web_contents, double level) {
+  HostZoomMap::SetZoomLevel(
+      web_contents, web_contents->GetPrimaryMainFrame()->GetGlobalId(), level);
+}
+
+// static
+void HostZoomMap::SetZoomLevel(WebContents* web_contents,
+                               GlobalRenderFrameHostId rfh_id,
+                               double level) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  HostZoomMapImpl* host_zoom_map = static_cast<HostZoomMapImpl*>(
+      HostZoomMap::Get(RenderFrameHost::FromID(rfh_id)->GetSiteInstance()));
   host_zoom_map->SetZoomLevelForWebContents(
-      static_cast<WebContentsImpl*>(web_contents), level);
+      static_cast<WebContentsImpl*>(web_contents), rfh_id, level);
 }
 
 void HostZoomMap::SendErrorPageZoomLevelRefresh(WebContents* web_contents) {
@@ -289,6 +306,40 @@ double HostZoomMapImpl::GetDefaultZoomLevel() {
   return default_zoom_level_;
 }
 
+void HostZoomMapImpl::SetDefaultZoomLevelInternal(double level,
+                                                  WebContentsImpl* web_contents,
+                                                  RenderFrameHostImpl* rfh) {
+  // Get the url from the navigation controller directly, as calling
+  // WebContentsImpl::GetLastCommittedURL() may give us a virtual url that
+  // is different than the one stored in the map.
+  GURL url;
+  std::string host;
+  std::string scheme;
+
+  NavigationEntry* entry = rfh->GetController().GetLastCommittedEntry();
+  // It is possible for a WebContent's zoom level to be queried before
+  // a navigation has occurred.
+  if (entry) {
+    url = GetURLFromEntry(entry);
+    scheme = url.scheme();
+    host = net::GetHostOrSpecFromURL(url);
+  }
+
+  bool uses_default_zoom = !HasZoomLevel(scheme, host) &&
+                           !UsesTemporaryZoomLevel(rfh->GetGlobalId());
+
+  if (uses_default_zoom) {
+    web_contents->UpdateZoom(rfh->GetGlobalId());
+
+    HostZoomMap::ZoomLevelChange change;
+    change.mode = HostZoomMap::ZOOM_CHANGED_FOR_HOST;
+    change.host = host;
+    change.zoom_level = level;
+
+    zoom_level_changed_callbacks_.Notify(change);
+  }
+}
+
 void HostZoomMapImpl::SetDefaultZoomLevel(double level) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -315,37 +366,26 @@ void HostZoomMapImpl::SetDefaultZoomLevel(double level) {
     if (GetForWebContents(web_contents) != this)
       continue;
 
-    // Get the url from the navigation controller directly, as calling
-    // WebContentsImpl::GetLastCommittedURL() may give us a virtual url that
-    // is different than the one stored in the map.
-    GURL url;
-    std::string host;
-    std::string scheme;
+    SetDefaultZoomLevelInternal(level, web_contents,
+                                web_contents->GetPrimaryMainFrame());
+  }
 
-    NavigationEntry* entry =
-        web_contents->GetController().GetLastCommittedEntry();
-    // It is possible for a WebContent's zoom level to be queried before
-    // a navigation has occurred.
-    if (entry) {
-      url = GetURLFromEntry(entry);
-      scheme = url.scheme();
-      host = net::GetHostOrSpecFromURL(url);
-    }
-
-    bool uses_default_zoom =
-        !HasZoomLevel(scheme, host) &&
-        !UsesTemporaryZoomLevel(
-            web_contents->GetPrimaryMainFrame()->GetGlobalId());
-
-    if (uses_default_zoom) {
-      web_contents->UpdateZoom();
-
-      HostZoomMap::ZoomLevelChange change;
-      change.mode = HostZoomMap::ZOOM_CHANGED_FOR_HOST;
-      change.host = host;
-      change.zoom_level = level;
-
-      zoom_level_changed_callbacks_.Notify(change);
+  // If kGuestViewMPArch is enabled, then update zoom levels for subframes that
+  // do not have an overriding entry.
+  if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    return;
+  }
+  for (auto ftn_id : independent_zoom_frame_tree_nodes_) {
+    auto* rfh = FrameTreeNode::GloballyFindByID(ftn_id)->current_frame_host();
+    // `rfh` should be non-null here since, if it was deleted, then
+    // WebContentsObserver::FrameDeleted will have notified any ZoomControllers,
+    // and `independent_zoom_frame_tree_nodes_` will have been updated
+    // accordingly.
+    if (!UsesTemporaryZoomLevel(rfh->GetGlobalId())) {
+      auto* web_contents = WebContentsImpl::FromRenderFrameHostImpl(rfh);
+      if (web_contents && (rfh != web_contents->GetPrimaryMainFrame())) {
+        SetDefaultZoomLevelInternal(level, web_contents, rfh);
+      }
     }
   }
 }
@@ -358,10 +398,16 @@ base::CallbackListSubscription HostZoomMapImpl::AddZoomLevelChangedCallback(
 
 double HostZoomMapImpl::GetZoomLevelForWebContents(
     WebContentsImpl* web_contents_impl) {
+  return GetZoomLevelForWebContents(
+      web_contents_impl,
+      web_contents_impl->GetPrimaryMainFrame()->GetGlobalId());
+}
+
+double HostZoomMapImpl::GetZoomLevelForWebContents(
+    WebContentsImpl* web_contents_impl,
+    GlobalRenderFrameHostId rfh_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  GlobalRenderFrameHostId rfh_id =
-      web_contents_impl->GetPrimaryMainFrame()->GetGlobalId();
   if (UsesTemporaryZoomLevel(rfh_id))
     return GetTemporaryZoomLevel(rfh_id);
 
@@ -369,12 +415,16 @@ double HostZoomMapImpl::GetZoomLevelForWebContents(
   // WebContentsImpl::GetLastCommittedURL() may give us a virtual url that
   // is different than is stored in the map.
   GURL url;
+  RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(rfh_id);
   NavigationEntry* entry =
-      web_contents_impl->GetController().GetLastCommittedEntry();
+      base::FeatureList::IsEnabled(features::kGuestViewMPArch)
+          ? rfh->GetController().GetLastCommittedEntry()
+          : web_contents_impl->GetController().GetLastCommittedEntry();
   // It is possible for a WebContent's zoom level to be queried before
   // a navigation has occurred.
-  if (entry)
+  if (entry) {
     url = GetURLFromEntry(entry);
+  }
 
 #if BUILDFLAG(IS_ANDROID)
   return GetZoomLevelForHostAndSchemeAndroid(url.scheme(),
@@ -387,24 +437,27 @@ double HostZoomMapImpl::GetZoomLevelForWebContents(
 
 void HostZoomMapImpl::SetZoomLevelForWebContents(
     WebContentsImpl* web_contents_impl,
+    GlobalRenderFrameHostId rfh_id,
     double level) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  GlobalRenderFrameHostId rfh_id =
-      web_contents_impl->GetPrimaryMainFrame()->GetGlobalId();
   if (UsesTemporaryZoomLevel(rfh_id)) {
     SetTemporaryZoomLevel(rfh_id, level);
   } else {
+    RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(rfh_id);
+    NavigationEntry* entry =
+        base::FeatureList::IsEnabled(features::kGuestViewMPArch)
+            ? rfh->GetController().GetLastCommittedEntry()
+            : web_contents_impl->GetController().GetLastCommittedEntry();
     // Get the url from the navigation controller directly, as calling
     // WebContentsImpl::GetLastCommittedURL() may give us a virtual url that
-    // is different than what the render frame is using. If the two don't match,
-    // the attempt to set the zoom will fail.
-    NavigationEntry* entry =
-        web_contents_impl->GetController().GetLastCommittedEntry();
+    // is different than what the render frame is using. If the two don't
+    // match, the attempt to set the zoom will fail.
     // Tests may invoke this function with a null entry, but we don't
     // want to save zoom levels in this case.
-    if (!entry)
+    if (!entry) {
       return;
+    }
 
     GURL url = GetURLFromEntry(entry);
     SetZoomLevelForHost(net::GetHostOrSpecFromURL(url), level);
@@ -437,12 +490,16 @@ void HostZoomMapImpl::SetTemporaryZoomLevel(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(rfh_id);
-  DCHECK(rfh == rfh->GetOutermostMainFrame());
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    CHECK(rfh->is_local_root());
+  } else {
+    DCHECK(rfh == rfh->GetOutermostMainFrame());
+  }
 
   temporary_zoom_levels_[rfh_id] = level;
 
   WebContentsImpl* web_contents = WebContentsImpl::FromRenderFrameHostImpl(rfh);
-  web_contents->UpdateZoom();
+  web_contents->UpdateZoom(rfh_id);
 
   HostZoomMap::ZoomLevelChange change;
   change.mode = HostZoomMap::ZOOM_CHANGED_TEMPORARY_ZOOM;
@@ -474,7 +531,7 @@ void HostZoomMapImpl::ClearTemporaryZoomLevel(
   temporary_zoom_levels_.erase(it);
   WebContentsImpl* web_contents = WebContentsImpl::FromRenderFrameHostImpl(
       RenderFrameHostImpl::FromID(rfh_id));
-  web_contents->UpdateZoom();
+  web_contents->UpdateZoom(rfh_id);
 }
 
 void HostZoomMapImpl::SendZoomLevelChange(const std::string& scheme,
@@ -493,6 +550,22 @@ void HostZoomMapImpl::SendZoomLevelChange(const std::string& scheme,
     if (!UsesTemporaryZoomLevel(
             web_contents->GetPrimaryMainFrame()->GetGlobalId())) {
       web_contents->UpdateZoomIfNecessary(scheme, host);
+    }
+  }
+
+  // Also loop over the independently-zoomed FTNs that aren't primary
+  // mainframes. If kGuestViewMPArch isn't enabled, then there will be no
+  // such frames, so early-out in that case.
+  if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    return;
+  }
+  for (auto ftn_id : independent_zoom_frame_tree_nodes_) {
+    auto* rfh = FrameTreeNode::GloballyFindByID(ftn_id)->current_frame_host();
+    if (!UsesTemporaryZoomLevel(rfh->GetGlobalId())) {
+      auto* web_contents = WebContentsImpl::FromRenderFrameHostImpl(rfh);
+      if (web_contents && (rfh != web_contents->GetPrimaryMainFrame())) {
+        web_contents->UpdateZoomIfNecessary(scheme, host, rfh);
+      }
     }
   }
 }
@@ -679,6 +752,21 @@ void HostZoomMapImpl::SetZoomLevelForPreviewAndHost(const std::string& host,
     zoomLevel.level = level;
     zoomLevel.last_modified = clock_->Now();
   }
+}
+
+void HostZoomMapImpl::SetIndependentZoomForFrameTreeNode(
+    WebContents* web_contents,
+    FrameTreeNodeId ftn_id) {
+  CHECK(web_contents);
+  CHECK(static_cast<RenderFrameHostImpl*>(
+            web_contents->UnsafeFindFrameByFrameTreeNodeId(ftn_id))
+            ->is_local_root());
+  independent_zoom_frame_tree_nodes_.insert(ftn_id);
+}
+
+void HostZoomMapImpl::ClearIndependentZoomForFrameTreeNode(
+    FrameTreeNodeId ftn_id) {
+  independent_zoom_frame_tree_nodes_.erase(ftn_id);
 }
 
 }  // namespace content

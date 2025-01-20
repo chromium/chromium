@@ -160,6 +160,8 @@ class ScopedAllowRendererCrashes;
 class ToRenderFrameHost;
 class WebContents;
 
+double GetPendingZoomLevel(RenderWidgetHost* render_widget_host);
+
 // This encapsulates the pattern of waiting for an event and returning whether
 // that event was received from `Wait`. This makes it easy to do the right thing
 // in Wait, i.e. return with `[[nodiscard]]`.

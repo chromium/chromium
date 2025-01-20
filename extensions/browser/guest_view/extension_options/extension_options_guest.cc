@@ -308,9 +308,7 @@ void ExtensionOptionsGuest::DidFinishNavigation(
     return;
   }
 
-  auto* guest_zoom_controller =
-      zoom::ZoomController::FromWebContents(web_contents());
-  guest_zoom_controller->SetZoomMode(zoom::ZoomController::ZOOM_MODE_ISOLATED);
+  GetZoomController()->SetZoomMode(zoom::ZoomController::ZOOM_MODE_ISOLATED);
   SetGuestZoomLevelToMatchEmbedder();
 
   if (!url::IsSameOriginWith(navigation_handle->GetURL(), options_page_)) {

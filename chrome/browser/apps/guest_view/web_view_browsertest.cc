@@ -160,6 +160,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_updates_and_events.h"
@@ -4286,8 +4287,6 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          WebViewCaptureTest::DescribeParams);
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestZoomAPI) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testZoomAPI", "web_view/shim", NO_TEST_SERVER);
 }
 
@@ -4388,26 +4387,18 @@ IN_PROC_BROWSER_TEST_P(WebViewSizeTest, Shim_TestResizeEvents) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestPerOriginZoomMode) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testPerOriginZoomMode", "web_view/shim", NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestPerViewZoomMode) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testPerViewZoomMode", "web_view/shim", NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestDisabledZoomMode) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testDisabledZoomMode", "web_view/shim", NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestZoomBeforeNavigation) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testZoomBeforeNavigation", "web_view/shim", NO_TEST_SERVER);
 }
 
@@ -7392,6 +7383,35 @@ INSTANTIATE_TEST_SUITE_P(WebViewTests,
                          WebViewFencedFrameTest,
                          testing::Combine(testing::Bool(), testing::Bool()),
                          WebViewFencedFrameTest::DescribeParams);
+
+IN_PROC_BROWSER_TEST_P(WebViewFencedFrameTest, ZoomFencedFrame) {
+  TestHelper("testZoomFencedFrame", "web_view/shim", NEEDS_TEST_SERVER);
+
+  // Verify setup is correct.
+  auto* guest_rfh =
+      GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
+  std::vector<content::RenderFrameHost*> rfhs =
+      content::CollectAllRenderFrameHosts(guest_rfh);
+  ASSERT_EQ(rfhs.size(), 2u);
+  ASSERT_EQ(rfhs[0], guest_rfh);
+  content::RenderFrameHostWrapper fenced_frame(rfhs[1]);
+  EXPECT_TRUE(fenced_frame->IsFencedFrameRoot());
+
+  // Query zoom level of FencedFrame's RenderWidgetHost, make sure it matches
+  // the expected zoom level.
+  auto* fenced_frame_rwh = fenced_frame->GetRenderWidgetHost();
+  // See Javascript fcn testZoomFencedFrame for source of the 0.95 zoom factor.
+  double expected_zoom_level = blink::ZoomFactorToZoomLevel(0.95);
+  EXPECT_DOUBLE_EQ(expected_zoom_level,
+                   content::GetPendingZoomLevel(fenced_frame_rwh));
+
+  // Verify webview's embedder has expected zoom.
+  auto* embedder_web_contents = GetFirstAppWindowWebContents();
+  auto* embedder_rwh =
+      embedder_web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost();
+  EXPECT_DOUBLE_EQ(blink::ZoomFactorToZoomLevel(1.0),
+                   content::GetPendingZoomLevel(embedder_rwh));
+}
 
 IN_PROC_BROWSER_TEST_P(WebViewFencedFrameTest,
                        FencedFrameInGuestHasGuestSiteInstance) {

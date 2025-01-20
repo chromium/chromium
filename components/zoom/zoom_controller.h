@@ -75,16 +75,24 @@ class ZoomController : public content::WebContentsObserver {
 
   struct ZoomChangedEventData {
     ZoomChangedEventData(content::WebContents* web_contents,
+                         content::FrameTreeNodeId ftn_id,
                          double old_zoom_level,
                          double new_zoom_level,
                          ZoomController::ZoomMode zoom_mode,
                          bool can_show_bubble)
         : web_contents(web_contents),
+          frame_tree_node_id(ftn_id),
           old_zoom_level(old_zoom_level),
           new_zoom_level(new_zoom_level),
           zoom_mode(zoom_mode),
           can_show_bubble(can_show_bubble) {}
     raw_ptr<content::WebContents> web_contents;
+    // Since there can be multiple ZoomControllers for a given WebContents,
+    // include the FrameTreeNodeId to uniquely identify which one created this
+    // struct. One case where a single WebContents will have multiple
+    // ZoomControllers is in a GuestView with features::kGuestViewMPArch
+    // enabled.
+    content::FrameTreeNodeId frame_tree_node_id;
     double old_zoom_level;
     double new_zoom_level;
     ZoomController::ZoomMode zoom_mode;
@@ -107,12 +115,18 @@ class ZoomController : public content::WebContentsObserver {
   // `rfh_id` isn't for the primary mainframe.
   static ZoomController* CreateForWebContentsAndRenderFrameHost(
       content::WebContents* web_contents,
-      const content::GlobalRenderFrameHostId rfh_id);
+      content::GlobalRenderFrameHostId rfh_id);
 
   // Retrieves the ZoomController for `web_contents` primary mainframe if it
   // exists, otherwise returns nullptr.
   static ZoomController* FromWebContents(
       const content::WebContents* web_contents);
+
+  // Retrieves the ZoomController for `web_contents` and the specified `rfh_id`
+  // if it exists, otherwise returns nullptr.
+  static ZoomController* FromWebContentsAndRenderFrameHost(
+      const content::WebContents* web_contents,
+      content::GlobalRenderFrameHostId rfh_id);
 
   ZoomController(const ZoomController&) = delete;
   ZoomController& operator=(const ZoomController&) = delete;
@@ -198,6 +212,10 @@ class ZoomController : public content::WebContentsObserver {
 
     ZoomController* GetZoomController(
         const content::GlobalRenderFrameHostId& rfh_id) const;
+
+    void AddZoomControllerIfNecessary(
+        content::WebContents* web_contents,
+        const content::GlobalRenderFrameHostId& rfh_id);
 
     // Called from ZoomController to notify that one of the ZoomControllers has
     // had its frame deleted, meaning the ZoomCOntroller itself should be

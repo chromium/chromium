@@ -115,6 +115,7 @@ class BrowserContext;
 class DocumentRef;
 struct GlobalRenderFrameHostId;
 struct GlobalRenderFrameHostToken;
+class NavigationController;
 class NavigationHandle;
 class RenderProcessHost;
 class RenderViewHost;
@@ -218,6 +219,15 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual ui::AXTreeID GetAXTreeID() = 0;
 
   using AXTreeSnapshotCallback = base::OnceCallback<void(ui::AXTreeUpdate&)>;
+
+  // Gets the NavigationController for the frame tree of this RenderFrameHost.
+  // This method is preferred over other means to get the controller, e.g.
+  // getting it directly from the frame_tree().
+  // Note: this may be different than the NavigationController for the
+  // WebContents that includes this RenderFrameHost.
+  // Note: the controller may change over the lifetime of the RenderFrameHost,
+  // due to prerendering.
+  virtual NavigationController& GetController() = 0;
 
   // Returns the SiteInstance grouping all RenderFrameHosts that have script
   // access to this RenderFrameHost, and must therefore live in the same

@@ -87,11 +87,12 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // The RenderWidgetHost is going to be deleted.
   virtual void RenderWidgetDeleted(RenderWidgetHostImpl* render_widget_host) {}
 
-  // If a main frame navigation is in progress, this will return the zoom level
-  // for the pending page. Otherwise, this returns the zoom level for the
-  // current page. Note that subframe navigations do not affect the zoom level,
-  // which is tracked at the level of the page.
-  virtual double GetPendingPageZoomLevel();
+  // If a frame navigation is in progress for the frame that owns `rwh`, this
+  // will return the pending zoom level for that frame. Otherwise, this returns
+  // the zoom level for the current frame. Note that subframe navigations only
+  // affect the zoom level if the frame has requested independent zoom via
+  // HostZoomMap.
+  virtual double GetPendingZoomLevel(RenderWidgetHostImpl* rwh);
 
   // The RenderWidget was resized.
   virtual void RenderWidgetWasResized(RenderWidgetHostImpl* render_widget_host,

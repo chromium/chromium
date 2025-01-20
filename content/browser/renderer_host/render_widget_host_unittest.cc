@@ -403,7 +403,9 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
 
   void SetZoomLevel(double zoom_level) { zoom_level_ = zoom_level; }
 
-  double GetPendingPageZoomLevel() override { return zoom_level_; }
+  double GetPendingZoomLevel(RenderWidgetHostImpl* rwh) override {
+    return zoom_level_;
+  }
 
   void FocusOwningWebContents(
       RenderWidgetHostImpl* render_widget_host) override {

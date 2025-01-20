@@ -250,9 +250,6 @@ void GuestViewBase::InitWithGuestPageHolder(
     content::GuestPageHolder* guest_page_holder) {
   SetGuestPageHolder(guest_page_holder);
 
-  // TODO(crbug.com/40202416): Add a ZoomController that manages the zoom just
-  // within this guest.
-
   GetGuestViewManager()->AddGuest(this);
 
   // Populate the view instance ID if we have it on creation.
@@ -260,6 +257,15 @@ void GuestViewBase::InitWithGuestPageHolder(
       create_params.FindInt(kParameterInstanceId).value_or(view_instance_id_);
 
   SetUpSizing(create_params);
+
+  // Observe guest zoom changes.
+  auto* zoom_controller =
+      zoom::ZoomController::CreateForWebContentsAndRenderFrameHost(
+          web_contents(),
+          guest_page_holder->GetGuestMainFrame()->GetGlobalId());
+  CHECK(zoom_controller);
+  CHECK(!zoom_controller_observations_.IsObservingSource(zoom_controller));
+  zoom_controller_observations_.AddObservation(zoom_controller);
 
   // Give the derived class an opportunity to perform additional initialization.
   DidInitialize(create_params);
@@ -277,6 +283,14 @@ void GuestViewBase::SetCreateParams(
   DCHECK_EQ(web_contents_create_params.browser_context, browser_context());
   DCHECK_EQ(web_contents_create_params.guest_delegate, this);
   create_params_ = {create_params.Clone(), web_contents_create_params};
+}
+
+zoom::ZoomController* GuestViewBase::GetZoomController() const {
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    return zoom::ZoomController::FromWebContentsAndRenderFrameHost(
+        web_contents(), GetGuestMainFrame()->GetGlobalId());
+  }
+  return zoom::ZoomController::FromWebContents(web_contents());
 }
 
 void GuestViewBase::DispatchOnResizeEvent(const gfx::Size& old_size,
@@ -979,10 +993,15 @@ void GuestViewBase::OnZoomControllerDestroyed(zoom::ZoomController* source) {
 
 void GuestViewBase::OnZoomChanged(
     const zoom::ZoomController::ZoomChangedEventData& data) {
-  if (data.web_contents == embedder_web_contents()) {
+  const bool embedder_zoom_changed =
+      attached() &&
+      (base::FeatureList::IsEnabled(features::kGuestViewMPArch)
+           ? data.frame_tree_node_id ==
+                 owner_rfh()->GetOutermostMainFrame()->GetFrameTreeNodeId()
+           : data.web_contents == embedder_web_contents());
+  if (embedder_zoom_changed) {
     // The embedder's zoom level has changed.
-    auto* guest_zoom_controller =
-        zoom::ZoomController::FromWebContents(web_contents());
+    auto* guest_zoom_controller = GetZoomController();
     if (blink::ZoomValuesEqual(data.new_zoom_level,
                                guest_zoom_controller->GetZoomLevel())) {
       return;
@@ -993,10 +1012,20 @@ void GuestViewBase::OnZoomChanged(
     return;
   }
 
-  if (data.web_contents == web_contents()) {
+  const bool guest_zoom_changed =
+      base::FeatureList::IsEnabled(features::kGuestViewMPArch)
+          ? data.frame_tree_node_id == GetGuestMainFrame()->GetFrameTreeNodeId()
+          : data.web_contents == web_contents();
+  if (guest_zoom_changed) {
     // The guest's zoom level has changed.
     GuestZoomChanged(data.old_zoom_level, data.new_zoom_level);
+    return;
   }
+
+  // Note: we can get here if the event isn't for the guest, and
+  // embedder_web_contents = nullptr. Not sure if this is a concern or not.
+  // E.g. in browser_tests, DeveloperPrivateApiTest.InspectEmbeddedOptionsPage.
+  // This seems to be a legacy issue.
 }
 
 void GuestViewBase::DispatchEventToGuestProxy(
@@ -1186,17 +1215,13 @@ void GuestViewBase::SetUpSizing(const base::Value::Dict& params) {
 
 void GuestViewBase::SetGuestZoomLevelToMatchEmbedder() {
   auto* embedder_zoom_controller =
-      zoom::ZoomController::FromWebContents(owner_web_contents());
+      zoom::ZoomController::FromWebContentsAndRenderFrameHost(
+          owner_web_contents(),
+          owner_rfh()->GetOutermostMainFrame()->GetGlobalId());
   if (!embedder_zoom_controller)
     return;
 
-  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
-    NOTIMPLEMENTED();
-    return;
-  }
-
-  zoom::ZoomController::FromWebContents(web_contents())
-      ->SetZoomLevel(embedder_zoom_controller->GetZoomLevel());
+  GetZoomController()->SetZoomLevel(embedder_zoom_controller->GetZoomLevel());
 }
 
 void GuestViewBase::StartTrackingEmbedderZoomLevel() {
@@ -1204,7 +1229,10 @@ void GuestViewBase::StartTrackingEmbedderZoomLevel() {
     return;
 
   auto* embedder_zoom_controller =
-      zoom::ZoomController::FromWebContents(owner_web_contents());
+      zoom::ZoomController::FromWebContentsAndRenderFrameHost(
+          owner_web_contents(),
+          owner_rfh()->GetOutermostMainFrame()->GetGlobalId());
+
   // Chrome Apps do not have a ZoomController.
   if (!embedder_zoom_controller)
     return;
@@ -1222,7 +1250,9 @@ void GuestViewBase::StopTrackingEmbedderZoomLevel() {
   if (!owner_web_contents())
     return;
   auto* embedder_zoom_controller =
-      zoom::ZoomController::FromWebContents(owner_web_contents());
+      zoom::ZoomController::FromWebContentsAndRenderFrameHost(
+          owner_web_contents(),
+          owner_rfh()->GetOutermostMainFrame()->GetGlobalId());
   // Chrome Apps do not have a ZoomController.
   if (!embedder_zoom_controller)
     return;

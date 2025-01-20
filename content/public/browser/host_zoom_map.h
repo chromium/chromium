@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -86,10 +87,15 @@ class HostZoomMap {
   // Returns the current zoom level for the specified WebContents. May be
   // temporary or host-specific.
   CONTENT_EXPORT static double GetZoomLevel(WebContents* web_contents);
+  CONTENT_EXPORT static double GetZoomLevel(WebContents* web_contents,
+                                            GlobalRenderFrameHostId rfh_id);
 
   // Sets the current zoom level for the specified WebContents. The level may
   // be temporary or host-specific depending on the particular WebContents.
   CONTENT_EXPORT static void SetZoomLevel(WebContents* web_contents,
+                                          double level);
+  CONTENT_EXPORT static void SetZoomLevel(WebContents* web_contents,
+                                          GlobalRenderFrameHostId rfh_id,
                                           double level);
 
   // Send an IPC to refresh any displayed error page's zoom levels. Needs to
@@ -217,6 +223,14 @@ class HostZoomMap {
   virtual double GetZoomLevelForPreviewAndHost(const std::string& host) = 0;
   virtual void SetZoomLevelForPreviewAndHost(const std::string& host,
                                              double level) = 0;
+
+  // Allows lookup and setting of ZoomLevel for the content currently displayed
+  // in the indicated FrameTreeNode. `ftn_id` must refer to a RenderFrameHost
+  // local-root.
+  // WJM: make this comment better.
+  virtual void SetIndependentZoomForFrameTreeNode(WebContents* web_contents,
+                                                  FrameTreeNodeId ftn_id) = 0;
+  virtual void ClearIndependentZoomForFrameTreeNode(FrameTreeNodeId ftn_id) = 0;
 
  protected:
   virtual ~HostZoomMap() {}
