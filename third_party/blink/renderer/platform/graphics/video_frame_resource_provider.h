@@ -60,9 +60,8 @@ class PLATFORM_EXPORT VideoFrameResourceProvider {
 
   bool IsInitialized() { return resource_updater_.get(); }
 
-  virtual void PrepareSendToParent(
-      const WebVector<viz::ResourceId>& resource_ids,
-      WebVector<viz::TransferableResource>* transferable_resources);
+  virtual std::vector<viz::TransferableResource> PrepareSendToParent(
+      const std::vector<viz::ResourceId>& resource_ids);
   virtual void ReceiveReturnsFromParent(
       Vector<viz::ReturnedResource> transferable_resources);
 
