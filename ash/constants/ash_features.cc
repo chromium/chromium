@@ -1708,7 +1708,7 @@ BASE_FEATURE(kLobsterDogfood,
 // Enables lobster feedback form.
 BASE_FEATURE(kLobsterFeedback,
              "LobsterFeedback",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables lobster feedback form.
 BASE_FEATURE(kLobsterFileNamingImprovement,
