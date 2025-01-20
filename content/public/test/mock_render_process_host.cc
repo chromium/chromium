@@ -493,6 +493,10 @@ void MockRenderProcessHost::DecrementPendingReuseRefCount() {
   --pending_reuse_ref_count_;
 }
 
+int MockRenderProcessHost::GetPendingReuseRefCountForTesting() const {
+  return pending_reuse_ref_count_;
+}
+
 size_t MockRenderProcessHost::GetWorkerRefCount() const {
   return worker_ref_count_;
 }
