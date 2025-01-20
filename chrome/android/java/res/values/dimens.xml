@@ -110,7 +110,6 @@ found in the LICENSE file.
     <dimen name="compositor_tab_title_favicon_bubble_offset">6dp</dimen>
 
     <!-- First Run Experience dimensions -->
-    <dimen name="fre_tos_image_height">110dp</dimen>
     <dimen name="fre_loading_spinner_size">48dp</dimen>
     <dimen name="fre_policy_privacy_disclaimer_icon_size">18dp</dimen>
     <dimen name="fre_policy_privacy_disclaimer_icon_padding">8dp</dimen>

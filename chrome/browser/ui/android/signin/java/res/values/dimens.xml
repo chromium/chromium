@@ -6,6 +6,8 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Default height of the logo in fullscreen signin -->
+    <dimen name="fullscreen_signin_logo_default_height">110dp</dimen>
     <!-- Signin promo dimensions -->
     <dimen name="sync_promo_account_image_size">44dp</dimen>
     <dimen name="signin_promo_cold_state_image_size">24dp</dimen>
