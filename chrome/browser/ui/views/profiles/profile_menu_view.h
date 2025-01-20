@@ -86,6 +86,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
   static bool close_on_deactivate_for_testing_;
 
   // Helper methods for building the menu.
+  void SetMenuTitleForAccessibility();
   void BuildGuestIdentity();
   void BuildAutofillSettingsButton();
   void BuildCustomizeProfileButton();

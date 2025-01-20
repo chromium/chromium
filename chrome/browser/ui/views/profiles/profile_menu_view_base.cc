@@ -803,6 +803,15 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   }
 
   // Subtitle.
+
+  // Set the subtitle as the name of the parent container, so accessibility
+  // tools can read it together with the button text. The role change is
+  // required by Windows ATs.
+  identity_info_container_->GetViewAccessibility().SetRole(
+      ax::mojom::Role::kGroup);
+  identity_info_container_->GetViewAccessibility().SetName(
+      params.subtitle, ax::mojom::NameFrom::kAttribute);
+
   const int subtitle_bottom_margin =
       has_button ? kSubtitleBottomMarginWithButton : kBottomMarginWhenNoButton;
   identity_info_container_->AddChildView(
