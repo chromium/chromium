@@ -12,22 +12,13 @@
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
+// TODO(crbug.com/390993114): Remove, replace with direct includes.
+#include "components/regional_capabilities/regional_capabilities_switches.h"  // IWYU pragma: export
+
 namespace switches {
 
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 extern const char kExtraSearchQueryParams[];
-
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-extern const char kSearchEngineChoiceCountry[];
-
-// `kDefaultListCountryOverride` and `kEeaRegionCountryOverrideString` are
-// special values for `kSearchEngineChoiceCountry`.
-// `kDefaultListCountryOverride` will override the list of search engines to
-// display the default set.
-// `kEeaListCountryOverride` will override the list
-// of search engines to display list of all EEA engines.
-inline const char kDefaultListCountryOverride[] = "DEFAULT_EEA";
-inline const char kEeaListCountryOverride[] = "EEA_ALL";
 
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 extern const char kIgnoreNoFirstRunForSearchEngineChoiceScreen[];

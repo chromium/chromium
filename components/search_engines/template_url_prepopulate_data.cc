@@ -21,8 +21,8 @@
 #include "components/country_codes/country_codes.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/regional_capabilities/eea_countries_ids.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
-#include "components/search_engines/eea_countries_ids.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_data.h"
@@ -337,7 +337,7 @@ GetAllEeaRegionPrepopulatedEngines() {
   // because they point to the same search engine so we only want to record one
   // instance.
   base::flat_set<int> used_engines;
-  for (int eea_country_id : search_engines::kEeaChoiceCountriesIds) {
+  for (int eea_country_id : regional_capabilities::kEeaChoiceCountriesIds) {
     std::vector<EngineAndTier> country_engines =
         GetPrepopulationSetFromCountryID(eea_country_id);
     for (const EngineAndTier& engine : country_engines) {

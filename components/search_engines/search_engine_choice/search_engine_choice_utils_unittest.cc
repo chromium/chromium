@@ -22,10 +22,8 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/search_engines/eea_countries_ids.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
-#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -55,33 +53,6 @@ class SearchEngineChoiceUtilsTest : public ::testing::Test {
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<TemplateURLService> template_url_service_;
 };
-
-// Sanity check the list.
-TEST_F(SearchEngineChoiceUtilsTest, IsEeaChoiceCountry) {
-  using country_codes::CountryCharsToCountryID;
-  using search_engines::IsEeaChoiceCountry;
-
-  EXPECT_TRUE(IsEeaChoiceCountry(CountryCharsToCountryID('D', 'E')));
-  EXPECT_TRUE(IsEeaChoiceCountry(CountryCharsToCountryID('F', 'R')));
-  EXPECT_TRUE(IsEeaChoiceCountry(CountryCharsToCountryID('V', 'A')));
-  EXPECT_TRUE(IsEeaChoiceCountry(CountryCharsToCountryID('A', 'X')));
-  EXPECT_TRUE(IsEeaChoiceCountry(CountryCharsToCountryID('Y', 'T')));
-  EXPECT_TRUE(IsEeaChoiceCountry(CountryCharsToCountryID('N', 'C')));
-
-  EXPECT_FALSE(IsEeaChoiceCountry(CountryCharsToCountryID('U', 'S')));
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kSearchEngineChoiceCountry,
-      switches::kDefaultListCountryOverride);
-  EXPECT_TRUE(IsEeaChoiceCountry(CountryCharsToCountryID('U', 'S')));
-
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSearchEngineChoiceCountry);
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kSearchEngineChoiceCountry, switches::kEeaListCountryOverride);
-  EXPECT_TRUE(IsEeaChoiceCountry(CountryCharsToCountryID('U', 'S')));
-}
 
 TEST_F(SearchEngineChoiceUtilsTest, ChoiceScreenDisplayState_ToDict) {
   ChoiceScreenDisplayState display_state(

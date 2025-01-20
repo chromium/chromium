@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEARCH_ENGINES_EEA_COUNTRIES_IDS_H_
-#define COMPONENTS_SEARCH_ENGINES_EEA_COUNTRIES_IDS_H_
+#ifndef COMPONENTS_REGIONAL_CAPABILITIES_EEA_COUNTRIES_IDS_H_
+#define COMPONENTS_REGIONAL_CAPABILITIES_EEA_COUNTRIES_IDS_H_
 
 #include "base/containers/fixed_flat_set.h"
 #include "components/country_codes/country_codes.h"
 
-namespace search_engines {
+namespace regional_capabilities {
 
 // Google-internal reference: http://go/geoscope-comparisons.
 inline constexpr auto kEeaChoiceCountriesIds = base::MakeFixedFlatSet<int>({
@@ -64,6 +64,6 @@ inline constexpr auto kEeaChoiceCountriesIds = base::MakeFixedFlatSet<int>({
     country_codes::CountryCharsToCountryID('Y', 'T'),  // Mayotte
 });
 
-}  // namespace search_engines
+}  // namespace regional_capabilities
 
-#endif  // COMPONENTS_SEARCH_ENGINES_EEA_COUNTRIES_IDS_H_
+#endif  // COMPONENTS_REGIONAL_CAPABILITIES_EEA_COUNTRIES_IDS_H_

@@ -59,6 +59,12 @@ class RegionalCapabilitiesService : public KeyedService {
       std::unique_ptr<Client> regional_capabilities_client);
   ~RegionalCapabilitiesService() override;
 
+  // Returns whether the profile country is a EEA member.
+  //
+  // Testing note: To control the value this returns in manual or automated
+  // tests, see `switches::kSearchEngineChoiceCountry`.
+  bool IsInEeaCountry();
+
   // Clears the country id cache to be able to change countries multiple times
   // in tests.
   void ClearCountryIdCacheForTesting();

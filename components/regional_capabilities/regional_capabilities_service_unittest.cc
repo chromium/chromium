@@ -13,7 +13,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/country_codes/country_codes.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
-#include "components/search_engines/search_engines_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -279,5 +278,26 @@ TEST_F(RegionalCapabilitiesServiceTest, ClearPrefForUnknownCountry_Valid) {
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_LINUX)
+
+TEST_F(RegionalCapabilitiesServiceTest, IsInEeaCountry) {
+  std::unique_ptr<RegionalCapabilitiesService> service =
+      InitService(kBelgiumCountryId);
+  EXPECT_TRUE(service->IsInEeaCountry());
+
+  SetCommandLineCountry("US");
+  EXPECT_FALSE(service->IsInEeaCountry());
+
+  SetCommandLineCountry(kBelgiumCountryCode);
+  EXPECT_TRUE(service->IsInEeaCountry());
+
+  // When --search-engine-choice-country is set to DEFAULT_EEA or EEA_ALL, the
+  // country is always considered as being in the EEA.
+
+  SetCommandLineCountry(switches::kDefaultListCountryOverride);
+  EXPECT_TRUE(service->IsInEeaCountry());
+
+  SetCommandLineCountry(switches::kEeaListCountryOverride);
+  EXPECT_TRUE(service->IsInEeaCountry());
+}
 
 }  // namespace regional_capabilities

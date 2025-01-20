@@ -58,6 +58,10 @@ int RegionalCapabilitiesService::GetCountryId() {
   return country_id_cache_.value();
 }
 
+bool RegionalCapabilitiesService::IsInEeaCountry() {
+  return IsEeaCountry(GetCountryId());
+}
+
 void RegionalCapabilitiesService::InitializeCountryIdCache() {
   // TODO(crbug.com/328040066): Move `kCountryIDAtInstall` pref declaration in
   // this file / package.

@@ -2,12 +2,6 @@ include_rules = [
   "+components/country_codes",
   "+components/keyed_service/core",
   "+components/prefs",
-
-  # TODO(crbug.com/388792357): Remove //component/search_engines dependencies.
-  # This is done temporarily to establish the APIs, moving the implementation
-  # into the new component will be done in follow-ups.
-  "+components/search_engines/search_engines_switches.h",
-  "+components/search_engines/search_engine_choice/search_engine_choice_utils.h",
 ]
 
 specific_include_rules = {

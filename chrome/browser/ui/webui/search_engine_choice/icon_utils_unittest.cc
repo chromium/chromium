@@ -10,8 +10,8 @@
 #include "base/command_line.h"
 #include "chrome/browser/browser_process.h"
 #include "components/country_codes/country_codes.h"
-#include "components/search_engines/eea_countries_ids.h"
-#include "components/search_engines/search_engines_switches.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
+#include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,7 +35,7 @@ TEST_F(IconUtilsTest, GetSearchEngineGeneratedIconPath) {
   ASSERT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kSearchEngineChoiceCountry));
 
-  for (int country_id : search_engines::kEeaChoiceCountriesIds) {
+  for (int country_id : regional_capabilities::kEeaChoiceCountriesIds) {
     search_engine_choice_service()->ClearCountryIdCacheForTesting();
     pref_service()->SetInteger(country_codes::kCountryIDAtInstall, country_id);
     std::vector<std::unique_ptr<TemplateURLData>> urls =

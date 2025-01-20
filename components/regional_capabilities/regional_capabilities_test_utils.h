@@ -11,6 +11,11 @@
 #include "components/country_codes/country_codes.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 
+// The API & structure of the component is not yet stable. Until it stabilizes,
+// we forward this include here so tests can keep referencing
+// `kEeaChoiceCountriesIds`.
+#include "components/regional_capabilities/eea_countries_ids.h"  // IWYU pragma: export
+
 namespace regional_capabilities {
 
 class RegionalCapabilitiesService;
