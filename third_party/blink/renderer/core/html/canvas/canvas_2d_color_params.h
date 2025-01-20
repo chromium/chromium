@@ -34,6 +34,7 @@ class CORE_EXPORT Canvas2DColorParams {
   }
   SkColorType GetSkColorType() const;
   sk_sp<SkColorSpace> GetSkColorSpace() const;
+  gfx::ColorSpace GetGfxColorSpace() const;
 
  private:
   PredefinedColorSpace color_space_ = PredefinedColorSpace::kSRGB;
