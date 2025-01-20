@@ -6,7 +6,7 @@
       "win"
     ],
     "simple_policy_pref_mapping_test": {
-      "pref_name": "glic.enabled_by_policy",
+      "pref_name": "glic.settings_policy",
       "default_value": 0,
       "values_to_test": [
         0,

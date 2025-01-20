@@ -88,9 +88,10 @@ class GlicBackgroundModeManager
   std::unique_ptr<GlicStatusIcon> status_icon_;
 
   // The current state of the launcher_enabled pref. Note that the pref is a
-  // local state and is thus per-installation. Each profile also has an
-  // "enabled_by_policy". Background mode is entered only if `enabled_pref` is
-  // true AND at least one loaded profile is enabled by policy.
+  // local state and is thus per-installation. Each profile also has a
+  // "settings_policy" pref which can be used to disable the feature for a
+  // profile. Background mode is entered only if `enabled_pref` is true AND at
+  // least one loaded profile is enabled by policy.
   bool enabled_pref_ = false;
 
   // The actual registered hotkey may be different from the expected hotkey

@@ -3300,9 +3300,9 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 
 #if BUILDFLAG(ENABLE_GLIC)
   handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
-      key::kGlicSettings, glic::prefs::kGlicEnabledByPolicy,
-      static_cast<int>(glic::prefs::EnabledByPolicyState::kMinValue),
-      static_cast<int>(glic::prefs::EnabledByPolicyState::kMaxValue), false));
+      key::kGlicSettings, glic::prefs::kGlicSettingsPolicy,
+      static_cast<int>(glic::prefs::SettingsPolicyState::kMinValue),
+      static_cast<int>(glic::prefs::SettingsPolicyState::kMaxValue), false));
 #endif
 
   return handlers;

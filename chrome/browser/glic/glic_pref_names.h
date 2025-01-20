@@ -20,10 +20,10 @@ inline constexpr char kGlicLauncherGlobalHotkey[] =
 // ************* PROFILE PREFS ***************
 // Prefs below are tied to a user profile
 
-// Integer pref that determines whether Glic is enabled for this user profile.
-// This is controlled from enterprise policy.
-inline constexpr char kGlicEnabledByPolicy[] = "glic.enabled_by_policy";
-enum class EnabledByPolicyState {
+// Integer pref that determines Glic enabling state for this user profile. This
+// is controlled from enterprise policy.
+inline constexpr char kGlicSettingsPolicy[] = "glic.settings_policy";
+enum class SettingsPolicyState {
   kMinValue = 0,
 
   kEnabled = kMinValue,
