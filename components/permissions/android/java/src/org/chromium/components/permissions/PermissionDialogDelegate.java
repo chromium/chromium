@@ -128,15 +128,21 @@ public class PermissionDialogDelegate {
                 .acceptThisTime(mNativeDelegatePtr, PermissionDialogDelegate.this);
     }
 
-    public void onCancel() {
+    public void onDeny() {
         assert mNativeDelegatePtr != 0;
-        PermissionDialogDelegateJni.get().cancel(mNativeDelegatePtr, PermissionDialogDelegate.this);
+        PermissionDialogDelegateJni.get().deny(mNativeDelegatePtr, PermissionDialogDelegate.this);
     }
 
     public void onDismiss(@DismissalType int dismissalType) {
         assert mNativeDelegatePtr != 0;
         PermissionDialogDelegateJni.get()
                 .dismissed(mNativeDelegatePtr, PermissionDialogDelegate.this, dismissalType);
+    }
+
+    public void onAcknowledge() {
+        assert mNativeDelegatePtr != 0;
+        PermissionDialogDelegateJni.get()
+                .acknowledge(mNativeDelegatePtr, PermissionDialogDelegate.this);
     }
 
     public void destroy() {
@@ -217,7 +223,6 @@ public class PermissionDialogDelegate {
                 variant);
     }
 
-    /** Upon construction, this class takes ownership of the passed in native delegate. */
     private PermissionDialogDelegate(
             long nativeDelegatePtr,
             WindowAndroid window,
@@ -245,13 +250,43 @@ public class PermissionDialogDelegate {
         mEmbeddedPromptVariant = variant;
     }
 
+    /** Called by native code to update the current permission dialog with new screen. */
+    @CalledByNative
+    void updateDialog(
+            int[] contentSettingsTypes,
+            int iconId,
+            String message,
+            int[] boldedRanges,
+            String positiveButtonText,
+            String negativeButtonText,
+            String positiveEphemeralButtonText,
+            boolean showPositiveNonEphemeralAsFirstButton,
+            @EmbeddedPromptVariant int variant) {
+        mContentSettingsTypes = contentSettingsTypes;
+        mMessageText = message;
+        mDrawableId = iconId;
+        for (int i = 0; i + 1 < boldedRanges.length; i += 2) {
+            mBoldedRanges.add(new Pair(boldedRanges[i], boldedRanges[i + 1]));
+        }
+        mPositiveButtonText = positiveButtonText;
+        mNegativeButtonText = negativeButtonText;
+        mPositiveEphemeralButtonText = positiveEphemeralButtonText;
+        mShowPositiveNonEphemeralAsFirstButton = showPositiveNonEphemeralAsFirstButton;
+        mEmbeddedPromptVariant = variant;
+
+        assert mDialogController != null;
+        mDialogController.updateCustomView(this);
+    }
+
     @NativeMethods
     interface Natives {
         void accept(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
 
         void acceptThisTime(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
 
-        void cancel(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
+        void acknowledge(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
+
+        void deny(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
 
         void dismissed(
                 long nativePermissionDialogDelegate,

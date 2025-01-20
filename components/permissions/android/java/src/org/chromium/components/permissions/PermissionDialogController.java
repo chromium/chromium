@@ -52,11 +52,11 @@ public class PermissionDialogController
     @IntDef({
         State.NOT_SHOWING,
         State.PROMPT_OPEN,
-        State.PROMPT_ACCEPTED,
-        State.PROMPT_DENIED,
+        State.PROMPT_POSITIVE_CLICKED,
+        State.PROMPT_NEGATIVE_CLICKED,
         State.REQUEST_ANDROID_PERMISSIONS_FOR_PERSISTENT_GRANT,
         State.REQUEST_ANDROID_PERMISSIONS_FOR_EPHEMERAL_GRANT,
-        State.PROMPT_ACCEPTED_THIS_TIME
+        State.PROMPT_POSITIVE_EPHEMERAL_CLICKED
     })
     @Retention(RetentionPolicy.SOURCE)
     private @interface State {
@@ -64,11 +64,11 @@ public class PermissionDialogController
         // We don't show prompts while Chrome Home is showing.
         // int PROMPT_PENDING = 1; // Obsolete.
         int PROMPT_OPEN = 2;
-        int PROMPT_ACCEPTED = 3;
-        int PROMPT_DENIED = 4;
+        int PROMPT_POSITIVE_CLICKED = 3;
+        int PROMPT_NEGATIVE_CLICKED = 4;
         int REQUEST_ANDROID_PERMISSIONS_FOR_PERSISTENT_GRANT = 5;
         int REQUEST_ANDROID_PERMISSIONS_FOR_EPHEMERAL_GRANT = 6;
-        int PROMPT_ACCEPTED_THIS_TIME = 7;
+        int PROMPT_POSITIVE_EPHEMERAL_CLICKED = 7;
     }
 
     /** Interface for a class that wants to receive updates from this controller. */
@@ -135,13 +135,6 @@ public class PermissionDialogController
         PermissionDialogController.getInstance().queueDialog(delegate);
     }
 
-    /** Called by native code to update the current permission dialog with new screen variant. */
-    @CalledByNative
-    private static void updateDialogWithNewScreenVariant(
-            PermissionDialogDelegate delegate, @EmbeddedPromptVariant int variant) {
-        PermissionDialogController.getInstance().updateCustomView(delegate, variant);
-    }
-
     /**
      * @param observer An observer to be notified of changes.
      */
@@ -159,11 +152,8 @@ public class PermissionDialogController
      * displaying dialog.
      *
      * @param delegate The wrapper for the native-side permission delegate.
-     * @param variant The screent variant we want to display.
      */
-    private void updateCustomView(
-            PermissionDialogDelegate delegate, @EmbeddedPromptVariant int variant) {
-        delegate.setEmbeddedPromptVariant(variant);
+    public void updateCustomView(PermissionDialogDelegate delegate) {
         if (mDialogDelegate != delegate) {
             return;
         }
@@ -201,7 +191,7 @@ public class PermissionDialogController
             // If this dialog comes from a embedded permission request, it might have multiple of
             // different screens showing up. It makes more sense to notify the observers (in this
             // case to change the icon) after all the screens have appeared.
-            if (!isEmbeddedPromptScreenVariant()) {
+            if (!isEmbeddedPrompt()) {
                 notifyObservers(ContentSettingValues.ALLOW);
             }
             if (mState == State.REQUEST_ANDROID_PERMISSIONS_FOR_PERSISTENT_GRANT) {
@@ -400,29 +390,32 @@ public class PermissionDialogController
     }
 
     public void dismissFromNative(PermissionDialogDelegate delegate) {
-        if (mDialogDelegate == delegate) {
-            // Some caution is required here to handle cases where the user actions or dismisses
-            // the prompt at roughly the same time as native. Due to asynchronicity, this function
-            // may be called after onClick and before onDismiss, or before both of those listeners.
+        if (mDialogDelegate != delegate) {
+            assert mRequestQueue.contains(delegate);
+            mRequestQueue.remove(delegate);
+        } else {
+            boolean isEmbeddedPrompt = isEmbeddedPrompt();
             mDialogDelegate = null;
-            if (mState == State.PROMPT_OPEN) {
+            if (isEmbeddedPrompt) {
                 mModalDialogManager.dismissDialog(
                         mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
             } else {
-                assert mState == State.REQUEST_ANDROID_PERMISSIONS_FOR_PERSISTENT_GRANT
-                        || mState == State.REQUEST_ANDROID_PERMISSIONS_FOR_EPHEMERAL_GRANT
-                        || mState == State.PROMPT_DENIED
-                        || mState == State.PROMPT_ACCEPTED;
+                // Some caution is required here to handle cases where the user actions or dismisses
+                // the prompt at roughly the same time as native. Due to asynchronicity, this
+                // function may be called after onClick and before onDismiss, or before both of
+                // those listeners.
+                if (mState == State.PROMPT_OPEN) {
+                    mModalDialogManager.dismissDialog(
+                            mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
+                } else {
+                    assert mState == State.REQUEST_ANDROID_PERMISSIONS_FOR_PERSISTENT_GRANT
+                            || mState == State.REQUEST_ANDROID_PERMISSIONS_FOR_EPHEMERAL_GRANT
+                            || mState == State.PROMPT_NEGATIVE_CLICKED
+                            || mState == State.PROMPT_POSITIVE_CLICKED;
+                }
             }
-        } else {
-            assert mRequestQueue.contains(delegate);
-            mRequestQueue.remove(delegate);
         }
-        if (delegate != null) {
-            delegate.destroy();
-            delegate = null;
-        }
-
+        delegate.destroy();
         mState = State.NOT_SHOWING;
     }
 
@@ -467,24 +460,55 @@ public class PermissionDialogController
             mState = State.NOT_SHOWING;
             return;
         }
-        if (mState == State.PROMPT_ACCEPTED || mState == State.PROMPT_ACCEPTED_THIS_TIME) {
+
+        if (mState == State.PROMPT_POSITIVE_EPHEMERAL_CLICKED) {
             requestAndroidPermissionsIfNecessary();
-        } else {
-            // Otherwise, run the necessary delegate callback immediately and
-            // schedule the next dialog.
-            if (mState == State.PROMPT_DENIED) {
-                notifyObservers(ContentSettingValues.BLOCK);
-                mDialogDelegate.onCancel();
-            } else {
-                @DismissalType int type = DismissalType.UNSPECIFIED;
-                if (dismissalCause == DialogDismissalCause.NAVIGATE_BACK) {
-                    type = DismissalType.NAVIGATE_BACK;
-                } else if (dismissalCause == DialogDismissalCause.TOUCH_OUTSIDE) {
-                    type = DismissalType.TOUCH_OUTSIDE;
-                }
-                notifyObservers(ContentSettingValues.DEFAULT);
-                mDialogDelegate.onDismiss(type);
+        } else if (mState == State.PROMPT_POSITIVE_CLICKED) {
+            // Request android permission in embedded prompt in `PROMPT_POSITIVE_CLICKED` state will
+            // be handled in onClick.
+            if (!isEmbeddedPrompt()) {
+                requestAndroidPermissionsIfNecessary();
             }
+        } else if (mState == State.PROMPT_NEGATIVE_CLICKED) {
+            if (!isEmbeddedPrompt()
+                    || mDialogDelegate.getEmbeddedPromptVariant() == EmbeddedPromptVariant.ASK) {
+                // Run the necessary delegate callback immediately and
+                // schedule the next dialog.
+                notifyObservers(ContentSettingValues.BLOCK);
+                mDialogDelegate.onDeny();
+            } else {
+                switch (mDialogDelegate.getEmbeddedPromptVariant()) {
+                    case EmbeddedPromptVariant.OS_SYSTEM_SETTINGS -> {
+                        notifyObservers(ContentSettingValues.DEFAULT);
+                        mDialogDelegate.onAcknowledge();
+                    }
+                    case EmbeddedPromptVariant.PREVIOUSLY_GRANTED -> {
+                        notifyObservers(ContentSettingValues.DEFAULT);
+                        mDialogDelegate.onDeny();
+                    }
+                    case EmbeddedPromptVariant.PREVIOUSLY_DENIED -> {
+                        // TODO(crbug.com/388407640): Change it as we might run
+                        // into osPrompt variant.
+                        notifyObservers(ContentSettingValues.ALLOW);
+                        mDialogDelegate.onAcceptThisTime();
+                    }
+                    default -> {
+                        assert false
+                                : "Unexpected screen variant in dialog: "
+                                        + mDialogDelegate.getEmbeddedPromptVariant();
+                    }
+                }
+            }
+            scheduleDisplay();
+        } else {
+            @DismissalType int type = DismissalType.UNSPECIFIED;
+            if (dismissalCause == DialogDismissalCause.NAVIGATE_BACK) {
+                type = DismissalType.NAVIGATE_BACK;
+            } else if (dismissalCause == DialogDismissalCause.TOUCH_OUTSIDE) {
+                type = DismissalType.TOUCH_OUTSIDE;
+            }
+            notifyObservers(ContentSettingValues.DEFAULT);
+            mDialogDelegate.onDismiss(type);
             scheduleDisplay();
         }
     }
@@ -494,15 +518,15 @@ public class PermissionDialogController
         assert mState == State.PROMPT_OPEN;
         switch (buttonType) {
             case ModalDialogProperties.ButtonType.POSITIVE -> {
-                mState = State.PROMPT_ACCEPTED;
+                mState = State.PROMPT_POSITIVE_CLICKED;
                 handlePositiveButtonClicked(model);
             }
             case ModalDialogProperties.ButtonType.POSITIVE_EPHEMERAL -> {
-                mState = State.PROMPT_ACCEPTED_THIS_TIME;
+                mState = State.PROMPT_POSITIVE_EPHEMERAL_CLICKED;
                 handlePositiveButtonClicked(model);
             }
             case ModalDialogProperties.ButtonType.NEGATIVE -> {
-                mState = State.PROMPT_DENIED;
+                mState = State.PROMPT_NEGATIVE_CLICKED;
                 mModalDialogManager.dismissDialog(
                         model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
             }
@@ -522,24 +546,54 @@ public class PermissionDialogController
         }
     }
 
-    public void destroyDelegate(@ContentSettingValues int result) {
-        notifyObservers(result);
-        mDialogDelegate.destroy();
-        mDialogDelegate = null;
+    public void acknowledgeDelegate(PropertyModel model) {
+        notifyObservers(ContentSettingValues.DEFAULT);
+        mDialogDelegate.onAcknowledge();
     }
 
     private void handlePositiveButtonClicked(PropertyModel model) {
-        if (!isEmbeddedPromptScreenVariant()) {
+        if (!isEmbeddedPrompt()) {
             mModalDialogManager.dismissDialog(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-        } else {
-            requestAndroidPermissionsIfNecessary();
+            return;
+        }
+        switch (mDialogDelegate.getEmbeddedPromptVariant()) {
+            case EmbeddedPromptVariant.ASK -> {
+                requestAndroidPermissionsIfNecessary();
+            }
+            case EmbeddedPromptVariant.ADMINISTRATOR_GRANTED -> {
+                acknowledgeDelegate(model);
+            }
+            case EmbeddedPromptVariant.ADMINISTRATOR_DENIED -> {
+                acknowledgeDelegate(model);
+            }
+            case EmbeddedPromptVariant.OS_SYSTEM_SETTINGS -> {
+                // TODO(crbug.com/388407640): ignore missing message and revise the screening logic
+                // after accept/deny OS permission
+                AndroidPermissionRequester.requestAndroidPermissions(
+                        mDialogDelegate.getWindow(),
+                        mDialogDelegate.getContentSettingsTypes(),
+                        PermissionDialogController.this);
+            }
+            case EmbeddedPromptVariant.PREVIOUSLY_GRANTED -> {
+                acknowledgeDelegate(model);
+            }
+            case EmbeddedPromptVariant.PREVIOUSLY_DENIED -> {
+                acknowledgeDelegate(model);
+            }
+
+            default -> {
+                assert false
+                        : "Unexpected screen variant in dialog: "
+                                + mDialogDelegate.getEmbeddedPromptVariant();
+            }
         }
     }
 
     /** Request Android permissions if necessary, after user accepted the dialog */
     private void requestAndroidPermissionsIfNecessary() {
-        assert mState == State.PROMPT_ACCEPTED || mState == State.PROMPT_ACCEPTED_THIS_TIME;
-        if (mState == State.PROMPT_ACCEPTED) {
+        assert mState == State.PROMPT_POSITIVE_CLICKED
+                || mState == State.PROMPT_POSITIVE_EPHEMERAL_CLICKED;
+        if (mState == State.PROMPT_POSITIVE_CLICKED) {
             mState = State.REQUEST_ANDROID_PERMISSIONS_FOR_PERSISTENT_GRANT;
         } else {
             mState = State.REQUEST_ANDROID_PERMISSIONS_FOR_EPHEMERAL_GRANT;
@@ -557,7 +611,7 @@ public class PermissionDialogController
         }
     }
 
-    private boolean isEmbeddedPromptScreenVariant() {
+    private boolean isEmbeddedPrompt() {
         return mDialogDelegate != null
                 && mDialogDelegate.getEmbeddedPromptVariant()
                         != EmbeddedPromptVariant.UNINITIALIZED;
