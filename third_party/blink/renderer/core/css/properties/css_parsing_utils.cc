@@ -6653,9 +6653,7 @@ cssvalue::CSSPathValue* ConsumeBasicShapePath(CSSParserTokenStream& args) {
   // A path data string that does not conform to the to the grammar
   // and parsing rules of SVG 1.1, or that does conform but defines
   // an empty path, is invalid and causes the entire path() to be invalid.
-  if (!byte_stream || !args.AtEnd() ||
-      (RuntimeEnabledFeatures::ClipPathRejectEmptyPathsEnabled() &&
-       byte_stream->IsEmpty())) {
+  if (!byte_stream || !args.AtEnd() || byte_stream->IsEmpty()) {
     return nullptr;
   }
 
