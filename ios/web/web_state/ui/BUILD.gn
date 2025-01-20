@@ -36,7 +36,6 @@ source_set("ui") {
     "//ios/web/net:net",
     "//ios/web/public",
     "//ios/web/public/annotations",
-    "//ios/web/public/deprecated",
     "//ios/web/public/download",
     "//ios/web/public/find_in_page",
     "//ios/web/public/js_messaging",
@@ -84,10 +83,7 @@ source_set("web_controller_header") {
     "crw_web_controller.h",
   ]
 
-  deps = [
-    ":crw_web_view_navigation_proxy",
-    "//ios/web/public/deprecated",
-  ]
+  deps = [ ":crw_web_view_navigation_proxy" ]
 
   public_deps = [ "//base" ]
 }

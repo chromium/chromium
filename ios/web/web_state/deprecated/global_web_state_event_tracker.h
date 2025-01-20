@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_WEB_WEB_STATE_GLOBAL_WEB_STATE_EVENT_TRACKER_H_
-#define IOS_WEB_WEB_STATE_GLOBAL_WEB_STATE_EVENT_TRACKER_H_
+#ifndef IOS_WEB_WEB_STATE_DEPRECATED_GLOBAL_WEB_STATE_EVENT_TRACKER_H_
+#define IOS_WEB_WEB_STATE_DEPRECATED_GLOBAL_WEB_STATE_EVENT_TRACKER_H_
 
 #include <stddef.h>
 
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
-#include "ios/web/public/deprecated/global_web_state_observer.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
+#include "ios/web/web_state/deprecated/global_web_state_observer.h"
 
 namespace web {
 
@@ -60,4 +60,4 @@ class GlobalWebStateEventTracker : public WebStateObserver {
 
 }  // namespace web
 
-#endif  // IOS_WEB_WEB_STATE_GLOBAL_WEB_STATE_EVENT_TRACKER_H_
+#endif  // IOS_WEB_WEB_STATE_DEPRECATED_GLOBAL_WEB_STATE_EVENT_TRACKER_H_

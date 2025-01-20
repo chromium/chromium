@@ -162,7 +162,6 @@ source_set("model") {
     "//ios/web/common",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
-    "//ios/web/public/deprecated",
     "//ios/web/public/navigation",
     "//url",
   ]

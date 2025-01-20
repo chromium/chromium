@@ -70,7 +70,6 @@ source_set("form_input_accessory") {
     "//ios/chrome/common/ui/util",
     "//ios/web/common",
     "//ios/web/public",
-    "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging",
     "//ui/base",
   ]
