@@ -167,7 +167,8 @@ public class StaticLayoutUnitTest {
                         mTabContentManager,
                         mBrowserControlsStateProvider,
                         () -> mTopUiThemeColorProvider,
-                        mStaticTabSceneLayer);
+                        mStaticTabSceneLayer,
+                        false);
         mModel = mStaticLayout.getModelForTesting();
         doReturn(true).when(mUpdateHost).isActiveLayout(mStaticLayout);
 

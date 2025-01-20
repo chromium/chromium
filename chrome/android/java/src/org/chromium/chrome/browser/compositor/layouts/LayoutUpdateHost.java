@@ -24,8 +24,9 @@ public interface LayoutUpdateHost {
      * Requests a next update to refresh the transforms and changing properties. The update occurs
      * once a frame. This is requesting a new frame to be updated and rendered (no need to call
      * {@link LayoutRenderHost#requestRender()}).
+     *
      * @param onUpdateEffective Callback that will be called when there is a buffer swap for the
-     *                          updated frame.
+     *     updated frame.
      */
     default void requestUpdate(Runnable onUpdateEffective) {}
 

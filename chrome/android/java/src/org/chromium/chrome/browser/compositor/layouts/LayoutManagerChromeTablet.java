@@ -205,4 +205,9 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     public StripLayoutHelperManager getStripLayoutHelperManager() {
         return mTabStripLayoutHelperManager;
     }
+
+    @Override
+    public boolean hasTabletUi() {
+        return true;
+    }
 }
