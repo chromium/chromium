@@ -65,6 +65,7 @@ build_webui_tests("build") {
       "destination_dropdown_cros_test.ts",
       "destination_item_test_cros.ts",
       "destination_search_test_chromeos.ts",
+      "managed_print_options_test_chromeos.ts",
       "native_layer_cros_stub.ts",
       "pin_settings_test.ts",
       "print_server_store_test.ts",

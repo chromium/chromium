@@ -128,7 +128,7 @@ suite('DestinationItemTestCros', function() {
         });
       });
 
-  // Tests that the printer stauts icon is only notified to update if the
+  // Tests that the printer status icon is only notified to update if the
   // destination key in the printer status response matches the current
   // destination.
   test(
