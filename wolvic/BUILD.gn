@@ -355,6 +355,7 @@ android_library("wolvic_java") {
     "java/org/chromium/wolvic/payments/WolvicPaymentRequestService.java",
     "java/org/chromium/wolvic/payments/WolvicPaymentResponseHelper.java",
     "java/org/chromium/wolvic/payments/ui/WolvicPaymentUiService.java",
+    "java/org/chromium/wolvic/payments/ui/PaymentRequestUI.java",
   ]
   srcjar_deps = [ ":jni_headers" ]
   deps = [
