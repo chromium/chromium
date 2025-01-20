@@ -119,8 +119,7 @@ TEST_P(SharedMemorySwitchTest, PassViaSwitch) {
 
   // Update the launch parameters.
   if (read_only) {
-    AddToLaunchParameters(kSharedMemoryData,
-                          read_only_region.region.Duplicate(),
+    AddToLaunchParameters(kSharedMemoryData, read_only_region.region,
 #if BUILDFLAG(IS_APPLE)
                           kArbitraryRendezvousKey,
 #elif BUILDFLAG(IS_POSIX)
@@ -128,7 +127,7 @@ TEST_P(SharedMemorySwitchTest, PassViaSwitch) {
 #endif
                           &command_line, &launch_options);
   } else {
-    AddToLaunchParameters(kSharedMemoryData, unsafe_region.Duplicate(),
+    AddToLaunchParameters(kSharedMemoryData, unsafe_region,
 #if BUILDFLAG(IS_APPLE)
                           kArbitraryRendezvousKey,
 #elif BUILDFLAG(IS_POSIX)
