@@ -593,17 +593,9 @@ TEST_F(FormCacheBrowserTest, UpdateFormCacheMeasuresTotalTime) {
   histogram_tester.ExpectTotalCount(
       "Autofill.TimingPrecise.UpdateFormCache.DidDispatchDomContentLoadedEvent",
       1);
-  // / On pageload `AutofillAgent::DidDispatchDomContentLoadedEvent()` and
-  // `PasswordAutofillAgent::DidFinishLoad()` are called, each triggering form
-  //  extraction.
-  histogram_tester.ExpectTotalCount(
-      "Autofill.TimingPrecise.ExtractFormData",
-      // When `AutofillOptimizeFormExtraction` is disabled, the
-      // signal from AutofillAgent also notifies PasswordAutofillAgent, which
-      // extracts a third but redundant time.
-      base::FeatureList::IsEnabled(features::kAutofillOptimizeFormExtraction)
-          ? 2
-          : 3);
+  // form_util::ExtractFormData() is also called by PasswordAutofillAgent.
+  histogram_tester.ExpectTotalCount("Autofill.TimingPrecise.ExtractFormData",
+                                    3);
   histogram_tester.ExpectTotalCount(
       "Autofill.TimingPrecise.ExtractFormData.UpdateFormCache", 1);
 }

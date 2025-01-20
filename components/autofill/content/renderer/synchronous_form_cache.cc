@@ -49,13 +49,10 @@ std::optional<FormData> SynchronousFormCache::GetOrExtractForm(
       return it->second ? std::optional(*it->second) : std::nullopt;
     }
     // This codepath should not be reached, as it would mean that we populated
-    // the cache with the wrong form or incomplete set of forms before passing
-    // it around methods. We currently don't enforce this because on full DOM
-    // extractions, AutofillAgent sometimes stops extracting forms given some
-    // limits and then notifies PasswordAutofillAgent which tries extracting
-    // everything regardless.
-    // TODO(crbug.com/40947729): Consider adding a `DumpWithoutCrashing()` call
-    // here to monitor cases where this happens and possible fix them.
+    // the cache with wrong forms before passing it around methods. We do not
+    // crash the renderer because this wouldn't break anything since we can
+    // always re-extract.
+    base::debug::DumpWithoutCrashing(FROM_HERE);
   }
   return form_util::ExtractFormData(document, form_element, field_data_manager,
                                     timer_state, extract_options);

@@ -930,8 +930,6 @@ TEST_F(FormAutofillUtilsTest,
 
 TEST_F(FormAutofillUtilsTest,
        FindFormAndFieldForFormControlElement_NotExtractBounds) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kAutofillOptimizeFormExtraction);
   LoadHTML("<body><form id='form1'><input id='i1'></form></body>");
   WebDocument doc = GetDocument();
   auto web_control = GetFormControlElementById(doc, "i1");
@@ -1014,8 +1012,6 @@ TEST_F(FormAutofillUtilsTest,
 
 TEST_F(FormAutofillUtilsTest,
        FindFormAndFieldForFormControlElement_NotExtractDataList) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kAutofillOptimizeFormExtraction);
   LoadHTML(
       "<body><input list='datalist_id' name='count' id='i1'><datalist "
       "id='datalist_id'><option value='1'>one</option><option "
