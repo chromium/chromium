@@ -924,7 +924,7 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       params.header_string = l10n_util::GetStringUTF16(IDS_MANAGED_BY_PARENT);
     } else {
       params.header_string =
-          l10n_util::GetStringUTF16(IDS_PROFILE_MENU_BROWSER_MANAGED_HEADER);
+          l10n_util::GetStringUTF16(IDS_PROFILE_MENU_PROFILE_MANAGED_HEADER);
       custom_management_image =
           policy::ManagementServiceFactory::GetForProfile(profile)
               ->GetManagementIconForProfile();
