@@ -5457,6 +5457,57 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Net.SessionCreate.GoogleSearch.Preconnect.{ProtocolType}.IsSessionReused"
+    enum="Boolean" expires_after="2025-03-02">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Records whether the session is already established for a preconnect request
+    to GoogleSearch using {ProtocolType}. This is recorded everytime a
+    preconnect is attempted to GoogleSearch, after preconnect attempt is
+    finished.
+  </summary>
+  <token key="ProtocolType">
+    <variant name="Quic"/>
+    <variant name="Spdy"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Net.SessionCreate.{ProtocolType}.HasTrafficAnnotation{HostType}"
+    enum="Boolean" expires_after="2025-03-02">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Whether the session create to {HostType} using {ProtocolType} had any
+    traffic annotation tag associated. {ProtocolType}. This is recorded
+    everytime a session create is attempted to GoogleSearch, after the attempt
+    is finished.
+  </summary>
+  <token key="ProtocolType">
+    <variant name="Quic"/>
+    <variant name="Spdy"/>
+  </token>
+  <token key="HostType" variants="HostType"/>
+</histogram>
+
+<histogram name="Net.SessionCreate.{ProtocolType}.TrafficAnnotation{HostType}"
+    enum="TrafficAnnotationUniqueIdHash" expires_after="2025-03-02">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The traffic annotation tag for the session create to {HostType} using
+    {ProtocolType}. This is recorded everytime a session create is attempted to
+    GoogleSearch, after the attempt is finished.
+  </summary>
+  <token key="ProtocolType">
+    <variant name="Quic"/>
+    <variant name="Spdy"/>
+  </token>
+  <token key="HostType" variants="HostType"/>
+</histogram>
+
 <histogram name="Net.SharedDictionaryManagerOnDisk.DictionarySizeKB" units="KB"
     expires_after="2024-12-20">
   <owner>horo@chromium.org</owner>

@@ -361,6 +361,9 @@ class HttpStreamFactory::Job
 
   void RecordPreconnectHistograms(int result);
 
+  // Records histograms required at the end of the execution.
+  void RecordCompletionHistograms(int result);
+
   const StreamRequestInfo request_info_;
   RequestPriority priority_;
   const ProxyInfo proxy_info_;
