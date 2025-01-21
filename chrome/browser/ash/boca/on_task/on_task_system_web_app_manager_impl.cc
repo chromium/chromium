@@ -101,6 +101,8 @@ void OnTaskSystemWebAppManagerImpl::CloseSystemWebAppWindow(
     window_tracker->InitializeBrowserInfoForTracking(nullptr);
   }
   if (browser) {
+    // Skips the tab unload process so that browser closes immediately.
+    browser->set_force_skip_warning_user_on_close(true);
     browser->window()->Close();
   }
 }
@@ -112,7 +114,9 @@ SessionID OnTaskSystemWebAppManagerImpl::GetActiveSystemWebAppWindowID() {
   // OnTask (for instance, those manually spawned by consumers).
   Browser* const browser =
       FindSystemWebAppBrowser(profile_, SystemWebAppType::BOCA);
-  if (!browser) {
+  // Verify that there is no browser instance and that there is no scheduled
+  // task to delete the browser instance following window close.
+  if (!browser || browser->IsBrowserClosing()) {
     return SessionID::InvalidValue();
   }
   return browser->session_id();
