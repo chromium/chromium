@@ -18,7 +18,6 @@ specific_include_rules = {
     "+chrome/browser/ash/app_restore",
     "+chrome/browser/ash/login/test",
     "+chrome/browser/ash/system_web_apps",
-    "+chrome/browser/chromeos/echo",
     "+chrome/browser/ui/browser_element_identifiers.h",
     "+chrome/browser/ui/browser_finder.h",
     "+chrome/browser/ui/browser.h",

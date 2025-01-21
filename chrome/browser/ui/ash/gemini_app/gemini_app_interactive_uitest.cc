@@ -35,7 +35,6 @@
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/chromeos/echo/echo_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -51,6 +50,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
+#include "chromeos/ash/components/report/utils/time_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "components/session_manager/session_manager_types.h"
@@ -320,12 +320,11 @@ class GeminiAppInteractiveUiTestBase
     AppListClientImpl::GetInstance()->UpdateProfile();
 
     // Fetch `device_info` from echo.
-    base::test::TestFuture<std::optional<base::Time>> oobe_timestamp;
-    chromeos::echo_util::GetOobeTimestamp(oobe_timestamp.GetCallback());
-    ASSERT_TRUE(oobe_timestamp.Wait());
-    ASSERT_TRUE(oobe_timestamp.Get().has_value());
+    std::optional<base::Time> oobe_timestamp =
+        ash::report::utils::GetFirstActiveWeek();
+    ASSERT_TRUE(oobe_timestamp.has_value());
     web_app::DeviceInfo device_info;
-    device_info.oobe_timestamp = oobe_timestamp.Get().value();
+    device_info.oobe_timestamp = oobe_timestamp.value();
 
     // Cache install info for the Gemini app.
     gemini_app_install_info_ =
