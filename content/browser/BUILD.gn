@@ -2363,6 +2363,7 @@ source_set("browser") {
     "webid/flags.h",
     "webid/identity_registry.cc",
     "webid/identity_registry.h",
+    "webid/identity_registry_delegate.h",
     "webid/idp_network_request_manager.cc",
     "webid/idp_network_request_manager.h",
     "webid/jwt_signer.cc",

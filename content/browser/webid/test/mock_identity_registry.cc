@@ -12,7 +12,7 @@ namespace content {
 
 MockIdentityRegistry::MockIdentityRegistry(
     content::WebContents* web_contents,
-    base::WeakPtr<FederatedIdentityModalDialogViewDelegate> delegate,
+    base::WeakPtr<IdentityRegistryDelegate> delegate,
     const GURL& idp_config_url)
     : IdentityRegistry(web_contents, delegate, idp_config_url) {}
 
