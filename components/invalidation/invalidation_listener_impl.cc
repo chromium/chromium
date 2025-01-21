@@ -184,9 +184,9 @@ void InvalidationListenerImpl::OnMessage(const std::string& app_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(app_id, gcm_app_id_);
 
-  LOG(WARNING) << log_prefix_ << " Message received";
+  VLOG(2) << log_prefix_ << " Message received";
   for (const auto& [key, value] : message.data) {
-    LOG(WARNING) << log_prefix_ << " " << key << "->" << value;
+    VLOG(2) << log_prefix_ << " " << key << "->" << value;
   }
 
   const DirectInvalidation invalidation = ParseIncomingMessage(message);
@@ -254,7 +254,7 @@ void InvalidationListenerImpl::OnRegistrationTokenReceived(
         base::Time::Now() + kRegistrationTokenTimeToLive);
     registration_retry_backoff_.Reset();
   } else {
-    LOG(WARNING) << log_prefix_ << " Message subscription failed: " << result;
+    VLOG(2) << log_prefix_ << " Message subscription failed: " << result;
     registration_token_ = std::nullopt;
   }
 
