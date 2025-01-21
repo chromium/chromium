@@ -7153,4 +7153,54 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraints) {
   EXPECT_TRUE(GetStyleEngine().HasComplexSafaAreaConstraints());
 }
 
+TEST_F(StyleEngineTest, HasComplexSafaAreaConstraintsNestedBottom) {
+  ScopedUpdateComplexSafaAreaConstraintsForTest
+      update_complex_safe_area_constraints(true);
+
+  // Any styles that are nested in a 'bottom' anchored element, may have
+  // complex safe area constraints depending on the following usages.
+
+  // When no style properties use env(safe-area-inset-bottom), there are no
+  // complex safe area constraints.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="bottom: 5px">
+      <div style="padding-bottom: 30px" />
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+
+  // When a style property other than 'bottom' uses env(safe-area-inset-bottom),
+  // there are complex safe area constraints.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="bottom: 5px">
+      <div style="padding-bottom: env(safe-area-inset-bottom)" />
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetStyleEngine().HasComplexSafaAreaConstraints());
+
+  // When the 'bottom' style property uses env(safe-area-inset-bottom)
+  // as defined under 'IsBottomRelativeToSafeAreaInset' in
+  // computed_style_extra_fields.json5, this is considered a "fast-path"
+  // and there are no complex safe area constraints.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="bottom: 5px">
+      <div style="env(safe-area-inset-bottom)" />
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+
+  // When a style property other than 'bottom' uses calc() with
+  // env(safe-area-inset-bottom), there are complex safe area constraints.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="bottom: 5px">
+      <div style="height: calc(env(safe-area-inset-bottom) + 30px)" />
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetStyleEngine().HasComplexSafaAreaConstraints());
+}
+
 }  // namespace blink
