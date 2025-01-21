@@ -5,29 +5,42 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_platform_apitest.h"
+#else
+#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif
+
 namespace extensions {
 namespace {
 
-class WebAccessibleResourcesApiTest : public ExtensionApiTest {
+#if BUILDFLAG(IS_ANDROID)
+using ExtensionApiTestBase = ExtensionPlatformApiTest;
+#else
+using ExtensionApiTestBase = ExtensionApiTest;
+#endif
+
+class WebAccessibleResourcesApiTest : public ExtensionApiTestBase {
  public:
   void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
+    ExtensionApiTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
@@ -74,8 +87,8 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesApiTest,
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_page));
   test_page = test_page.AppendASCII("simple.html");
   GURL gurl = net::FilePathToFileURL(test_page);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(web_contents, gurl));
   static constexpr char kScriptTemplate[] = R"(
     // Verify that web accessible resource can be fetched.
     async function run(isAllowed, filename) {
@@ -112,8 +125,11 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesApiTest,
   ASSERT_TRUE(content::EvalJs(web_contents, script).ExtractBool());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Test loading of subresources using an initiator coming from a file:// scheme,
 // and, notably, from within a content script context.
+// TODO(crbug.com/390687767): Port to desktop Android when the chrome.scripting
+// API is ported.
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesApiTest,
                        FileSchemeInitiators_ContentScript) {
   // Load extension.
@@ -200,10 +216,11 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesApiTest,
       profile(), extension->id(), base::StringPrintf(kScript, tab_id));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Useful for testing web accessible resources loaded from a content script.
 class WebAccessibleResourcesDynamicUrlScriptingApiTest
-    : public ExtensionApiTest {
+    : public ExtensionApiTestBase {
  public:
   WebAccessibleResourcesDynamicUrlScriptingApiTest() {
     feature_list_.InitAndEnableFeature(
@@ -211,7 +228,7 @@ class WebAccessibleResourcesDynamicUrlScriptingApiTest
   }
 
   void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
+    ExtensionApiTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
@@ -326,11 +343,14 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesDynamicUrlScriptingApiTest,
 
   ResultCatcher catcher;
   GURL gurl = embedded_test_server()->GetURL("example.com", "/empty.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), gurl));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Load dynamic web accessible resources via chrome.scripting.executeScript().
+// TODO(crbug.com/390687767): Port to desktop Android when the chrome.scripting
+// API is ported.
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesDynamicUrlScriptingApiTest,
                        ExecuteScript) {
   // Load extension.
@@ -357,6 +377,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesDynamicUrlScriptingApiTest,
       profile(), extension->id(), base::StringPrintf(kScript, tab_id));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace extensions
