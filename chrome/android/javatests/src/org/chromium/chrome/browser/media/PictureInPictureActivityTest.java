@@ -372,7 +372,7 @@ public class PictureInPictureActivityTest {
     public void testNotifyNativeWhenTabClose() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
         testExitOn(activity, () -> mTab.setClosing(/* closing= */ true));
-        verify(mNativeMock, times(1)).destroy(NATIVE_OVERLAY);
+        verify(mNativeMock, times(1)).destroyStartedByJava(NATIVE_OVERLAY);
     }
 
     @Test
@@ -396,7 +396,7 @@ public class PictureInPictureActivityTest {
 
         verify(mNativeMock, times(1)).onActivityStart(eq(mNativeWindowToken), eq(activity), any());
         // Nothing should be destroyed, because there was no native window.
-        verify(mNativeMock, times(0)).destroy(anyInt());
+        verify(mNativeMock, times(0)).destroyStartedByJava(anyInt());
     }
 
     private WebContents getWebContents() {
