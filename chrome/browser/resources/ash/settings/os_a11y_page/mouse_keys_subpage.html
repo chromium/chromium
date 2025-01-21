@@ -7,6 +7,25 @@
     background-color: var(--page-backdrop-bg-color);
   }
 
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns */
+    grid-template-rows: repeat(3, 1fr);    /* Three rows */
+    gap: 10px;
+  }
+
+  .illustration-keyboard {
+    height: 135px;
+    width: 344px;
+  }
+
+  .keyboard-preview {
+    padding-top: var(--cr-section-padding);
+    padding-right: var(--cr-section-padding);
+    padding-left: var(--cr-section-padding);
+    padding-bottom: 0;
+  }
+
   settings-toggle-button {
     padding-inline-end: var(--cr-section-padding);
     padding-inline-start: var(--cr-section-padding);
@@ -67,5 +86,24 @@
           pref="{{prefs.settings.a11y.mouse_keys.dominant_hand}}"
           menu-options="[[mouseKeysDominantHandOptions_]]">
       </settings-dropdown-menu>
+  </settings-card>
+  <settings-card>
+    <div id="primaryKeysPreview"
+      class="keyboard-preview"
+      hidden$="[[!prefs.settings.a11y.mouse_keys.use_primary_keys.value]]">
+      <p>$i18n{primaryKeyTitle}</p>
+        <div class="grid-container">
+          <template is="dom-repeat"
+            items="[[primaryKeyboardRightHandPreviewOptions_]]"
+            as="option">
+              <div class="grid-item">
+                <iron-icon icon="[[option.icon]]"
+                  class="illustration-keyboard">
+                </iron-icon>
+                <p>[[option.label]]</p>
+              </div>
+          </template>
+        </div>
+    </div>
   </settings-card>
 </div>

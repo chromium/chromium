@@ -33,6 +33,11 @@ interface SliderData {
   defaultValue: number;
 }
 
+interface KeyboardPreviewOption {
+  icon: string;
+  label: string;
+}
+
 const SettingsMouseKeysSubpageElementBase = DeepLinkingMixin(RouteObserverMixin(
     WebUiListenerMixin(PrefsMixin(I18nMixin(PolymerElement)))));
 
@@ -76,8 +81,49 @@ export class SettingsMouseKeysSubpageElement extends
           ];
         },
       },
+
+      primaryKeyboardRightHandPreviewOptions_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          return [
+            {
+              icon:
+                  'os-settings-illo:mouse-keys-primary-keyboard-cursor-control',
+              label: loadTimeData.getString('rightPrimaryKeyMoveCursor'),
+            },
+            {
+              icon:
+                  'os-settings-illo:mouse-keys-primary-keyboard-press-mouse-button',
+              label: loadTimeData.getString('rightPrimaryKeyPressMouseButton'),
+            },
+            {
+              icon:
+                  'os-settings-illo:mouse-keys-primary-keyboard-change-mouse-button',
+              label: loadTimeData.getString('rightPrimaryKeyChangeMouseButton'),
+            },
+            {
+              icon: 'os-settings-illo:mouse-keys-primary-keyboard-double-click',
+              label: loadTimeData.getString('rightPrimaryKeyDoubleClick'),
+            },
+            {
+              icon:
+                  'os-settings-illo:mouse-keys-primary-keyboard-hold-mouse-button',
+              label: loadTimeData.getString('rightPrimaryKeyHoldMouseButton'),
+            },
+            {
+              icon:
+                  'os-settings-illo:mouse-keys-primary-keyboard-release-mouse-button',
+              label:
+                  loadTimeData.getString('rightPrimaryKeyReleaseMouseButton'),
+            },
+          ];
+        },
+      },
     };
   }
+
+  private primaryKeyboardRightHandPreviewOptions_: KeyboardPreviewOption[];
 
   private getToggleLabel_(): string {
     return this.getPref('settings.a11y.mouse_keys.enabled').value ?

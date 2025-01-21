@@ -2119,6 +2119,27 @@ Use Ctrl + Alt + Brightness down to zoom out.
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_LEFT_HAND" desc="Drop down entries for mouse keys specifying your left hand as your dominant hand.">
     Left side
   </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_PRIMARY_KEYBOARD_TITLE" desc="Title for the mouse keys primary key keyboard configurations.">
+    Control your mouse cursor with your primary keyboard
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_RIGHT_KEYBOARD_PREVIEW_MOVE_CURSOR" desc="Instructions for mouse keys showing how the user can move their cursor using the right hand side of the primary keyboard.">
+    Use the 7, 8, 9, u, o, j, k, l keys to move the cursor
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_RIGHT_KEYBOARD_PREVIEW_PRESS_MOUSE_BUTTON" desc="Instructions for mouse keys showing the user how to press a mouse button using the right hand side of the primary keyboard.">
+    Use “i” to press a mouse button
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_RIGHT_KEYBOARD_PREVIEW_CHANGE_MOUSE_SELECTION" desc="Instructions for mouse keys showing the user how to switch between mouse buttons using the right hand side of the primary keyboard.">
+   Use “,” to change mouse button selection between left button, right button, and both
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_RIGHT_KEYBOARD_PREVIEW_DOUBLE_CLICK" desc="Instructions for mouse keys showing the user how to double click using the right hand side of the primary keyboard.">
+    When left mouse button is selected, use “/” to double-click
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_RIGHT_KEYBOARD_PREVIEW_HOLD_MOUSE_BUTTON" desc="Instructions for mouse keys showing the user how to press and hold a mouse button using the right hand side of the primary keyboard.">
+    Use “m” to press a mouse button and hold
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_RIGHT_KEYBOARD_PREVIEW_RELEASE_MOUSE_BUTTON" desc="Instructions for mouse keys showing the user how to release a mouse button using the right hand side of the primary keyboard.">
+    Use “.” to release a mouse button
+  </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_DESCRIPTION" desc="Description explaining that Dictation sends audio data to Google for transcription">
     Send your voice to Google to allow dictation into any text field.
   </message>
