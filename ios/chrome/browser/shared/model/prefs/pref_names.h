@@ -735,6 +735,9 @@ inline constexpr char kChromeDataRegionSetting[] = "chrome_data_region_setting";
 inline constexpr char kYoutubeIncognitoHasBeenShown[] =
     "ios.youtube_incognito.has_been_shown";
 
+// A dictionary to store reminders that the user has set.
+inline constexpr char kReminderNotifications[] = "ios.notifications.reminders";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_

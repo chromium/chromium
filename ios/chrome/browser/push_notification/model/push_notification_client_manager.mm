@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/reminder_notifications/model/reminder_notification_client.h"
 #import "ios/chrome/browser/safety_check_notifications/model/safety_check_notification_client.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_push_notification_client.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tips_notifications/model/tips_notification_client.h"
@@ -57,7 +58,10 @@ PushNotificationClientManager::PushNotificationClientManager(
     AddPushNotificationClient(
         std::make_unique<SendTabPushNotificationClient>());
     if (IsSendTabIOSPushNotificationsEnabledWithTabReminders()) {
-      AddPushNotificationClient(std::make_unique<ReminderNotificationClient>());
+      ProfileManagerIOS* profile_manager =
+          GetApplicationContext()->GetProfileManager();
+      AddPushNotificationClient(
+          std::make_unique<ReminderNotificationClient>(profile_manager));
     }
   }
 }

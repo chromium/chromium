@@ -1025,6 +1025,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Preferences related to Lens Overlay.
   registry->RegisterBooleanPref(prefs::kLensOverlayConditionsAccepted, false);
 
+  // Prefs related to Reminder Notifications.
+  registry->RegisterDictionaryPref(prefs::kReminderNotifications);
+
   // Deprecated 09/2024.
   registry->RegisterIntegerPref(kContentSettingsWindowLastTabIndex, 0);
   registry->RegisterStringPref(kSyncPasswordHash, std::string());
