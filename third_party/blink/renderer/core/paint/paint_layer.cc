@@ -378,7 +378,7 @@ void PaintLayer::UpdateDescendantDependentFlags() {
   if (needs_descendant_dependent_flags_update_) {
     bool old_has_non_isolated_descendant_with_blend_mode =
         has_non_isolated_descendant_with_blend_mode_;
-    has_visible_self_painting_descendant_ = false;
+    bool has_visible_self_painting_descendant = false;
     has_non_isolated_descendant_with_blend_mode_ = false;
     has_fixed_position_descendant_ = false;
     has_non_contained_absolute_position_descendant_ = false;
@@ -406,7 +406,7 @@ void PaintLayer::UpdateDescendantDependentFlags() {
 
       if ((child->HasVisibleContent() && child->IsSelfPaintingLayer()) ||
           child->HasVisibleSelfPaintingDescendant()) {
-        has_visible_self_painting_descendant_ = true;
+        has_visible_self_painting_descendant = true;
       }
 
       has_non_isolated_descendant_with_blend_mode_ |=
@@ -448,6 +448,14 @@ void PaintLayer::UpdateDescendantDependentFlags() {
           true;
     }
 
+    // Stacking node z-order lists depend on visibility (`HasVisibleContent()`
+    // and `HasVisibleSelfPaintingDescendant()`), so these must be updated prior
+    // to `UpdateStackingNode()`.
+    SetHasVisibleSelfPaintingDescendant(has_visible_self_painting_descendant);
+    if (RuntimeEnabledFeatures::PaintLayerUpdateOptimizationsEnabled()) {
+      UpdateHasVisibleContent();
+    }
+
     UpdateStackingNode();
 
     if (old_has_non_isolated_descendant_with_blend_mode !=
@@ -463,7 +471,6 @@ void PaintLayer::UpdateDescendantDependentFlags() {
     }
 
     if (RuntimeEnabledFeatures::PaintLayerUpdateOptimizationsEnabled()) {
-      UpdateHasVisibleContent();
       Update3DTransformedDescendantStatus();
     }
 
@@ -525,7 +532,36 @@ void PaintLayer::UpdateHasVisibleContent() {
     // therefore changes our rect and we need to visit this LayoutObject during
     // the PrePaintTreeWalk.
     layout_object_->SetShouldCheckForPaintInvalidation();
+
+    // If `IsZOrderListVisible()` changes, invalidate z-order lists.
+    if (RuntimeEnabledFeatures::PaintLayerUpdateOptimizationsEnabled()) {
+      if (auto* stacking_context = AncestorStackingContext()) {
+        if (stacking_context->StackingNode()) {
+          stacking_context->StackingNode()->DirtyZOrderLists();
+        }
+      }
+    }
   }
+}
+
+void PaintLayer::SetHasVisibleSelfPaintingDescendant(bool has_visible) {
+  // If `IsZOrderListVisible()` changes, invalidate z-order lists.
+  if (RuntimeEnabledFeatures::PaintLayerUpdateOptimizationsEnabled()) {
+    if (has_visible != has_visible_self_painting_descendant_) {
+      if (auto* stacking_context = AncestorStackingContext()) {
+        if (stacking_context->StackingNode()) {
+          stacking_context->StackingNode()->DirtyZOrderLists();
+        }
+      }
+    }
+  }
+  has_visible_self_painting_descendant_ = has_visible;
+}
+
+bool PaintLayer::IsZOrderListVisible() const {
+  return !RuntimeEnabledFeatures::PaintLayerUpdateOptimizationsEnabled() ||
+         HasVisibleContent() || HasVisibleSelfPaintingDescendant() ||
+         HasViewTransitionName();
 }
 
 void PaintLayer::Update3DTransformedDescendantStatus() {
@@ -2204,6 +2240,15 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
   UpdateBackdropFilters(old_style, new_style);
   UpdateClipPath(old_style, new_style);
   UpdateOffsetPath(old_style, new_style);
+
+  bool had_view_transition_name = has_view_transition_name_;
+  has_view_transition_name_ = !!new_style.ViewTransitionName();
+  if (had_view_transition_name != has_view_transition_name_) {
+    // If `IsZOrderListVisible()` changes, invalidate z-order lists.
+    if (RuntimeEnabledFeatures::PaintLayerUpdateOptimizationsEnabled()) {
+      DirtyStackingContextZOrderLists();
+    }
+  }
 
   if (diff.ZIndexChanged()) {
     // We don't need to invalidate paint of objects when paint order

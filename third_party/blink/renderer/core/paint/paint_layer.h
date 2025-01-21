@@ -513,6 +513,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   void DirtyStackingContextZOrderLists();
 
+  bool IsZOrderListVisible() const;
+
   bool KnownToClipSubtreeToPaddingBox() const;
 
   void Trace(Visitor*) const override;
@@ -529,9 +531,11 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     return invisible_for_position_visibility_;
   }
   bool HasAncestorInvisibleForPositionVisibility() const;
+  bool HasViewTransitionName() const { return has_view_transition_name_; }
 
  private:
   void UpdateHasVisibleContent();
+  void SetHasVisibleSelfPaintingDescendant(bool);
   void Update3DTransformedDescendantStatus();
 
   // Bounding box in the coordinates of this layer.
@@ -746,6 +750,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   unsigned invisible_for_position_visibility_ : 4 = 0;
   unsigned descendant_needs_check_position_visibility_ : 1 = false;
+
+  unsigned has_view_transition_name_ : 1 = false;
 
 #if DCHECK_IS_ON()
   mutable unsigned layer_list_mutation_allowed_ : 1;
