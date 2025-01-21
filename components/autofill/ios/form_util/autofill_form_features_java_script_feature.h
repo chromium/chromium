@@ -33,6 +33,12 @@ class AutofillFormFeaturesJavaScriptFeature : public web::JavaScriptFeature {
   // Autofill features to work in an isolated content world.
   void SetAutofillIsolatedContentWorld(web::WebFrame* frame, bool enabled);
 
+  // Enables/disables the renderer side behaviors in `frame` needed for
+  // enabling the fix for not showing the payment sheet as a spam after
+  // dismissing a modal dialog triggered from the KA (e.g. filling a
+  // suggestion).
+  void SetAutofillFixPaymentSheetSpam(web::WebFrame* frame, bool enabled);
+
  private:
   friend class base::NoDestructor<AutofillFormFeaturesJavaScriptFeature>;
 

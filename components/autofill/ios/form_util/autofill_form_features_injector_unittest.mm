@@ -61,7 +61,8 @@ TEST_F(AutofillFormInjectorTest, InjectFlagsWebFrames) {
       /* enabled_features= */ {kAutofillIsolatedWorldForJavascriptIos,
                                autofill::features::kAutofillAcrossIframesIos,
                                autofill::features::
-                                   kAutofillAcrossIframesIosThrottling},
+                                   kAutofillAcrossIframesIosThrottling,
+                               kAutofillFixPaymentSheetSpam},
       /* disabled_features= */ {});
 
   AutofillFormFeaturesInjector injector(&fake_web_state_,
@@ -73,10 +74,14 @@ TEST_F(AutofillFormInjectorTest, InjectFlagsWebFrames) {
 
     EXPECT_THAT(
         fake_frame->GetJavaScriptCallHistory(),
-        UnorderedElementsAre(
-            uR"(__gCrWeb.autofill_form_features.setAutofillIsolatedContentWorld(true);)",
-            uR"(__gCrWeb.autofill_form_features.setAutofillAcrossIframes(true);)",
-            uR"(__gCrWeb.autofill_form_features.setAutofillAcrossIframesThrottling(true);)"));
+        UnorderedElementsAre(u"__gCrWeb.autofill_form_features."
+                             u"setAutofillIsolatedContentWorld(true);",
+                             u"__gCrWeb.autofill_form_features."
+                             u"setAutofillAcrossIframes(true);",
+                             u"__gCrWeb.autofill_form_features."
+                             u"setAutofillAcrossIframesThrottling(true);",
+                             u"__gCrWeb.autofill_form_features."
+                             u"setAutofillFixPaymentSheetSpam(true);"));
   }
 }
 
