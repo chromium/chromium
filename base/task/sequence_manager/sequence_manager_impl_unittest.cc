@@ -128,16 +128,16 @@ enum class TestQueuePriority : TaskQueue::QueuePriority {
 std::string ToString(RunnerType type) {
   switch (type) {
     case RunnerType::kMockTaskRunner:
-      return "kMockTaskRunner";
+      return "MockTaskRunner";
     case RunnerType::kMessagePump:
-      return "kMessagePump";
+      return "MessagePump";
   }
 }
 
 std::string ToString(WakeUpType type) {
   switch (type) {
     case WakeUpType::kDefault:
-      return "";
+      return "DefaultWakeUps";
     case WakeUpType::kAlign:
       return "AlignedWakeUps";
   }
@@ -155,7 +155,7 @@ std::string ToString(MetricsSampling sampling) {
 std::string GetTestNameSuffix(
     const testing::TestParamInfo<
         std::tuple<RunnerType, WakeUpType, MetricsSampling>>& info) {
-  return StrCat({"With", ToString(std::get<0>(info.param)).substr(1),
+  return StrCat({"With", ToString(std::get<0>(info.param)),
                  ToString(std::get<1>(info.param)),
                  ToString(std::get<2>(info.param))});
 }
