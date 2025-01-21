@@ -102,13 +102,13 @@ const CGFloat kIpadTabSwipeDistance = 100;
   // The animated disabler displays the toolbar when a side swipe navigation
   // gesture is being recognized.
   std::unique_ptr<AnimatedScopedFullscreenDisabler> _animatedFullscreenDisabler;
+
+  // The webStateList owned by the current browser.
+  raw_ptr<WebStateList> _webStateList;
 }
 
 // The current active WebState.
 @property(nonatomic, readonly) web::WebState* activeWebState;
-
-// The webStateList owned by the current browser.
-@property(nonatomic, readonly) WebStateList* webStateList;
 
 // Whether to allow navigating from the leading edge.
 @property(nonatomic, assign) BOOL leadingEdgeNavigationEnabled;
@@ -166,8 +166,8 @@ const CGFloat kIpadTabSwipeDistance = 100;
 }
 
 - (void)disconnect {
-  if (self.webStateList) {
-    self.webStateList->RemoveObserver(_webStateListObserver.get());
+  if (_webStateList) {
+    _webStateList->RemoveObserver(_webStateListObserver.get());
   }
   _scopedWebStateObservation.reset();
   _webStateObserverBridge.reset();
@@ -240,7 +240,7 @@ const CGFloat kIpadTabSwipeDistance = 100;
 }
 
 - (web::WebState*)activeWebState {
-  return self.webStateList ? self.webStateList->GetActiveWebState() : nullptr;
+  return _webStateList ? _webStateList->GetActiveWebState() : nullptr;
 }
 
 - (void)setEnabled:(BOOL)enabled {
@@ -279,7 +279,7 @@ const CGFloat kIpadTabSwipeDistance = 100;
 
 - (void)handleiPadTabSwipe:(SideSwipeGestureRecognizer*)gesture {
   // Don't handle swipe when there are no tabs.
-  int count = self.webStateList->count();
+  int count = _webStateList->count();
   if (count == 0) {
     return;
   }
@@ -294,7 +294,7 @@ const CGFloat kIpadTabSwipeDistance = 100;
         postNotificationName:kSideSwipeWillStartNotification
                       object:nil];
     [self.tabStripDelegate setHighlightsSelectedTab:YES];
-    _startingTabIndex = self.webStateList->active_index();
+    _startingTabIndex = _webStateList->active_index();
   } else if (gesture.state == UIGestureRecognizerStateChanged) {
     // Side swipe for iPad involves changing the selected tab as the swipe moves
     // across the width of the view.  The screen is broken up into
@@ -316,7 +316,7 @@ const CGFloat kIpadTabSwipeDistance = 100;
       }
 
       web::WebState* currentWebState = self.activeWebState;
-      int currentIndex = self.webStateList->GetIndexOfWebState(currentWebState);
+      int currentIndex = _webStateList->GetIndexOfWebState(currentWebState);
       DCHECK_GE(currentIndex, 0);
       // Wrap around edges.
       int newIndex = (int)(_startingTabIndex + indexDelta) % count;
@@ -328,11 +328,11 @@ const CGFloat kIpadTabSwipeDistance = 100;
 
       if (newIndex != currentIndex) {
         [self willActivateWebStateAtIndex:newIndex];
-        web::WebState* webState = self.webStateList->GetWebStateAt(newIndex);
+        web::WebState* webState = _webStateList->GetWebStateAt(newIndex);
         // Toggle overlay preview mode for selected tab.
         PagePlaceholderTabHelper::FromWebState(webState)
             ->AddPlaceholderForNextNavigation();
-        self.webStateList->ActivateWebStateAt(newIndex);
+        _webStateList->ActivateWebStateAt(newIndex);
 
         // And disable overlay preview mode for last selected tab.
         PagePlaceholderTabHelper::FromWebState(currentWebState)
@@ -341,11 +341,10 @@ const CGFloat kIpadTabSwipeDistance = 100;
     }
   } else {
     if (gesture.state == UIGestureRecognizerStateCancelled) {
-      web::WebState* webState =
-          self.webStateList->GetWebStateAt(_startingTabIndex);
+      web::WebState* webState = _webStateList->GetWebStateAt(_startingTabIndex);
       PagePlaceholderTabHelper::FromWebState(webState)
           ->CancelPlaceholderForNextNavigation();
-      self.webStateList->ActivateWebStateAt(_startingTabIndex);
+      _webStateList->ActivateWebStateAt(_startingTabIndex);
     }
     PagePlaceholderTabHelper::FromWebState(self.activeWebState)
         ->CancelPlaceholderForNextNavigation();
@@ -367,7 +366,7 @@ const CGFloat kIpadTabSwipeDistance = 100;
   if (!self.activeWebState || index == WebStateList::kInvalidIndex) {
     return;
   }
-  int currentIndex = self.webStateList->GetIndexOfWebState(self.activeWebState);
+  int currentIndex = _webStateList->GetIndexOfWebState(self.activeWebState);
   if (currentIndex != index && currentIndex != WebStateList::kInvalidIndex) {
     _engagementTracker->NotifyEvent(
         feature_engagement::events::kIOSSwipeToolbarToChangeTabUsed);
@@ -543,7 +542,7 @@ const CGFloat kIpadTabSwipeDistance = 100;
       _tabSideSwipeView =
           [[CardSideSwipeView alloc] initWithFrame:frame
                                          topMargin:headerHeight
-                                      webStateList:self.webStateList];
+                                      webStateList:_webStateList];
       _tabSideSwipeView.toolbarSnapshotProvider = self.toolbarSnapshotProvider;
 
       [_tabSideSwipeView setAutoresizingMask:UIViewAutoresizingFlexibleWidth |
