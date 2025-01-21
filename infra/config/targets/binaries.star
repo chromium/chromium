@@ -842,6 +842,8 @@ targets.binaries.console_test_launcher(
 targets.binaries.windowed_test_launcher(
     name = "dawn_end2end_tests",
     label = "//third_party/dawn/src/dawn/tests:dawn_end2end_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.script(
@@ -1060,12 +1062,16 @@ targets.binaries.console_test_launcher(
 targets.binaries.windowed_test_launcher(
     name = "gl_tests",
     label = "//gpu:gl_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     args = [],
 )
 
 targets.binaries.windowed_test_launcher(
     name = "gl_unittests",
     label = "//ui/gl:gl_unittests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(

@@ -65,18 +65,6 @@
       'use_lkgm': True,
     },
   },
-  'CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM': {
-    'identifier': 'VOLTEER_PUBLIC_RELEASE_LKGM',
-    'skylab': {
-      'cros_board': 'volteer',
-      'cros_model': 'voxel',
-      'use_lkgm': True,
-      'bucket': 'chromiumos-image-archive',
-      'dut_pool': 'chromium',
-      'public_builder': 'cros_test_platform_public',
-      'public_builder_bucket': 'testplatform-public',
-    },
-  },
   'INTEL_UHD_630_OR_770': {
     'identifier': 'Intel UHD 630 or 770',
     'mixins': [

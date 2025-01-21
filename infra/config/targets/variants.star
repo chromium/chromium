@@ -68,6 +68,7 @@ targets.variant(
 targets.variant(
     name = "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
     identifier = "VOLTEER_PUBLIC_RELEASE_LKGM",
+    generate_pyl_entry = False,
     skylab = targets.skylab(
         bucket = "chromiumos-image-archive",
         cros_board = "volteer",

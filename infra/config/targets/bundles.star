@@ -2461,6 +2461,45 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "dawn_chromeos_release_telemetry_tests_volteer_skylab",
+    targets = [
+        # TODO(crbug.com/340815322): Add gpu_dawn_webgpu_compat_cts once
+        # compat works properly on ChromeOS.
+        targets.bundle(
+            targets = "gpu_dawn_webgpu_cts",
+            variants = [
+                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
+    name = "dawn_chromeos_release_tests_volteer_skylab",
+    targets = [
+        # gtests
+        targets.bundle(
+            targets = "gpu_common_gtests_passthrough",
+            variants = [
+                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_dawn_gtests",
+            variants = [
+                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_dawn_gtests_with_validation",
+            variants = [
+                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
     name = "desktop_chromium_mac_osxbeta_scripts",
     targets = [
         "content_shell_crash_test",
@@ -3187,6 +3226,50 @@ targets.bundle(
     ],
 )
 
+# GPU gtests which run on both the main and FYI waterfalls.
+targets.bundle(
+    name = "gpu_common_gtests_passthrough",
+    targets = [
+        "gl_tests_passthrough",
+        "gl_unittests",
+    ],
+    per_test_modifications = {
+        "gl_tests_passthrough": targets.mixin(
+            args = [
+                "--use-gl=angle",
+            ],
+            chromeos_args = [
+                "--stop-ui",
+                targets.magic_args.CROS_GTEST_FILTER_FILE,
+            ],
+            desktop_args = [
+                "--use-gpu-in-tests",
+            ],
+            linux_args = [
+                "--no-xvfb",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+        "gl_unittests": [
+            targets.mixin(
+                chromeos_args = [
+                    "--stop-ui",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.gl_unittests.filter",
+                ],
+                desktop_args = [
+                    "--use-gpu-in-tests",
+                ],
+                linux_args = [
+                    "--no-xvfb",
+                ],
+            ),
+            "skia_gold_test",
+        ],
+    },
+)
+
 targets.bundle(
     name = "gpu_common_gtests_validating",
     targets = [
@@ -3316,6 +3399,52 @@ targets.bundle(
     ],
 )
 
+# GPU gtests that test only Dawn
+targets.bundle(
+    name = "gpu_dawn_gtests",
+    targets = [
+        "dawn_end2end_implicit_device_sync_tests",
+        "dawn_end2end_skip_validation_tests",
+        "dawn_end2end_tests",
+        "dawn_end2end_wire_tests",
+    ],
+    per_test_modifications = {
+        "dawn_end2end_implicit_device_sync_tests": targets.mixin(
+            linux_args = [
+                "--no-xvfb",
+            ],
+            ci_only = True,  # https://crbug.com/dawn/1749
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+        "dawn_end2end_skip_validation_tests": targets.mixin(
+            linux_args = [
+                "--no-xvfb",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+        "dawn_end2end_tests": targets.mixin(
+            linux_args = [
+                "--no-xvfb",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+        "dawn_end2end_wire_tests": targets.mixin(
+            linux_args = [
+                "--no-xvfb",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
+)
+
 targets.bundle(
     name = "gpu_dawn_gtests_no_dxc",
     targets = [
@@ -3367,6 +3496,24 @@ targets.bundle(
         "dawn_end2end_use_tint_ir_tests": targets.mixin(
             swarming = targets.swarming(
                 shards = 1,
+            ),
+        ),
+    },
+)
+
+# GPU gtests that test only Dawn with backend validation layers
+targets.bundle(
+    name = "gpu_dawn_gtests_with_validation",
+    targets = [
+        "dawn_end2end_validation_layers_tests",
+    ],
+    per_test_modifications = {
+        "dawn_end2end_validation_layers_tests": targets.mixin(
+            linux_args = [
+                "--no-xvfb",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
             ),
         ),
     },
@@ -3592,6 +3739,104 @@ targets.bundle(
             ),
             "gpu_integration_test_common_args",
             "webgpu_telemetry_cts",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "gpu_dawn_webgpu_cts",
+    targets = [
+        "webgpu_cts_dedicated_worker_tests",
+        "webgpu_cts_service_worker_tests",
+        "webgpu_cts_shared_worker_tests",
+        "webgpu_cts_tests",
+        "webgpu_cts_with_validation_tests",
+        # We intentionally do not have validation + worker tests since
+        # no validation + worker should provide sufficient coverage.
+    ],
+    per_test_modifications = {
+        "webgpu_cts_dedicated_worker_tests": [
+            targets.mixin(
+                swarming = targets.swarming(
+                    shards = 1,
+                ),
+                android_swarming = targets.swarming(
+                    shards = 2,
+                ),
+                skylab = targets.skylab(
+                    shards = 1,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+            "webgpu_telemetry_cts",
+            "linux_vulkan",
+        ],
+        "webgpu_cts_service_worker_tests": [
+            targets.mixin(
+                swarming = targets.swarming(
+                    shards = 1,
+                ),
+                android_swarming = targets.swarming(
+                    shards = 2,
+                ),
+                skylab = targets.skylab(
+                    shards = 1,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+            "webgpu_telemetry_cts",
+            "linux_vulkan",
+        ],
+        "webgpu_cts_shared_worker_tests": [
+            targets.mixin(
+                swarming = targets.swarming(
+                    shards = 1,
+                ),
+                android_swarming = targets.swarming(
+                    shards = 2,
+                ),
+                skylab = targets.skylab(
+                    shards = 1,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+            "webgpu_telemetry_cts",
+            "linux_vulkan",
+        ],
+        "webgpu_cts_tests": [
+            targets.mixin(
+                swarming = targets.swarming(
+                    shards = 14,
+                ),
+                android_swarming = targets.swarming(
+                    shards = 36,
+                ),
+                skylab = targets.skylab(
+                    shards = 14,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+            "webgpu_telemetry_cts",
+            "linux_vulkan",
+        ],
+        "webgpu_cts_with_validation_tests": [
+            targets.mixin(
+                args = [
+                    "--enable-dawn-backend-validation",
+                ],
+                swarming = targets.swarming(
+                    shards = 14,
+                ),
+                android_swarming = targets.swarming(
+                    shards = 36,
+                ),
+                skylab = targets.skylab(
+                    shards = 14,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+            "webgpu_telemetry_cts",
+            "linux_vulkan",
         ],
     },
 )
