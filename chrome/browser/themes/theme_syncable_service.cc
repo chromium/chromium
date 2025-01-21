@@ -379,10 +379,26 @@ ThemeSyncableService::MergeDataAndStartSyncing(
   // not reset it.
   for (const syncer::SyncData& sync_data : base::Reversed(initial_sync_data)) {
     if (sync_data.GetSpecifics().has_theme()) {
+      sync_pb::ThemeSpecifics new_specs = sync_data.GetSpecifics().theme();
       if (!HasNonDefaultTheme(current_specifics) ||
-          HasNonDefaultTheme(sync_data.GetSpecifics().theme())) {
+          HasNonDefaultTheme(new_specs)) {
         ThemeSyncState startup_state =
-            MaybeSetTheme(current_specifics, sync_data.GetSpecifics().theme());
+            MaybeSetTheme(current_specifics, new_specs);
+        // Commit the current theme if it has changed and is different from the
+        // remote theme. This can happen when theme attributes which were
+        // earlier synced via prefs (user color and ntp background), are now
+        // populated in ThemeSpecifics. This new ThemeSpecifics should be
+        // committed to the server. Note that this is avoided for incoming
+        // extension themes as they are applied from a posted task and will call
+        // OnThemeChanged() when set and commit the current theme.
+        if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics) &&
+            startup_state == ThemeSyncState::kApplied &&
+            !new_specs.use_custom_theme() &&
+            !AreThemeSpecificsEquivalent(
+                GetThemeSpecificsFromCurrentTheme(), new_specs,
+                theme_service_->IsSystemThemeDistinctFromDefaultTheme())) {
+          OnThemeChanged();
+        }
         NotifyOnSyncStarted(startup_state);
         return std::nullopt;
       }
