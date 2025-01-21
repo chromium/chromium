@@ -49,7 +49,6 @@ class BASE_EXPORT PartitionAllocSupport {
  public:
   struct BrpConfiguration {
     bool enable_brp = false;
-    bool process_affected_by_brp_flag = false;
 
     // TODO(https://crbug.com/371135823): Remove after the investigation.
     size_t extra_extras_size = 0;

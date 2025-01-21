@@ -7,14 +7,19 @@
 #include "base/command_line.h"
 #include "base/debug/asan_service.h"
 #include "base/i18n/icu_util.h"
+#include "base/test/test_suite_helper.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "content/browser/network_service_instance_impl.h"  // [nogncheck]
 #include "content/browser/storage_partition_impl.h"         // [nogncheck]
 #include "content/browser/storage_partition_impl_map.h"     // [nogncheck]
+#include "partition_alloc/buildflags.h"
 
-namespace content {
-namespace mojolpm {
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
+#include "base/allocator/partition_alloc_support.h"
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
+
+namespace content::mojolpm {
 
 #if defined(ADDRESS_SANITIZER)
 static void FalsePositiveErrorReportCallback(const char* reason,
@@ -43,6 +48,8 @@ static void AddFalsePositiveErrorReportCallback() {
 FuzzerEnvironment::FuzzerEnvironment(int argc, const char* const* argv)
     : command_line_initialized_(base::CommandLine::Init(argc, argv)),
       fuzzer_thread_("fuzzer_thread") {
+  base::test::InitScopedFeatureListForTesting(feature_list_);
+
   TestTimeouts::Initialize();
 
   logging::SetMinLogLevel(logging::LOGGING_FATAL);
@@ -58,6 +65,20 @@ FuzzerEnvironment::FuzzerEnvironment(int argc, const char* const* argv)
   base::debug::AsanService::GetInstance()->Initialize();
   AddFalsePositiveErrorReportCallback();
 #endif  // defined(ADDRESS_SANITIZER)
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
+  // For now, the dangling pointer detector is not enforced in MojoLPM. The
+  // errors are only potential security issues. We should consider enabling this
+  // feature in the future, after evaluating the amount of code to be updated.
+  // It would be interesting, because MojoLPM would highlight area lacking
+  // proper testing.
+  const bool check_dangling_pointers = true;
+
+  // Among other things, this will install the hooks to determine the
+  // `MiraclePtr Status`, and some additional memory safety checks.
+  base::allocator::PartitionAllocSupport::Get()
+      ->ReconfigureAfterFeatureListInit("", check_dangling_pointers);
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 }
 
 FuzzerEnvironment::~FuzzerEnvironment() {}
@@ -100,5 +121,4 @@ BrowserContext* RenderViewHostTestHarnessAdapter::browser_context() {
   return RenderViewHostTestHarness::browser_context();
 }
 
-}  // namespace mojolpm
-}  // namespace content
+}  // namespace content::mojolpm

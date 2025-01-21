@@ -7,6 +7,7 @@
 
 #include "base/at_exit.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_content_client_initializer.h"
@@ -14,8 +15,7 @@
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
 
-namespace content {
-namespace mojolpm {
+namespace content::mojolpm {
 // Global environment needed to run the interface being tested.
 //
 // This will be created once, before fuzzing starts, and will be shared between
@@ -50,6 +50,7 @@ class FuzzerEnvironment {
       serialization_error_suppressor_;
 
   TestContentClientInitializer content_client_initializer_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // If we can also safely re-use a single BrowserTaskEnvironment and the
@@ -83,7 +84,7 @@ class RenderViewHostTestHarnessAdapter : public RenderViewHostTestHarness {
  private:
   void TestBody() override {}
 };
-}  // namespace mojolpm
-}  // namespace content
+
+}  // namespace content::mojolpm
 
 #endif  // CONTENT_TEST_FUZZER_MOJOLPM_FUZZER_SUPPORT_H_
