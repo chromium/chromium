@@ -29,7 +29,7 @@
 //! info!(a = 1; "Something of interest");
 //! ```
 //!
-//! Key-values support the same shorthand identifer syntax as `format_args`:
+//! Key-values support the same shorthand identifier syntax as `format_args`:
 //!
 //! ```
 //! # use log::info;

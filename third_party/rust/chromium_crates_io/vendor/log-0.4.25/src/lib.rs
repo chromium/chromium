@@ -143,8 +143,11 @@
 //!     * [flexi_logger]
 //!     * [call_logger]
 //!     * [structured-logger]
+//!     * [clang_log]
+//!     * [ftail]
 //! * Complex configurable frameworks:
 //!     * [log4rs]
+//!     * [logforth]
 //!     * [fern]
 //! * Adaptors for other facilities:
 //!     * [syslog]
@@ -321,6 +324,7 @@
 //! [syslog]: https://docs.rs/syslog/*/syslog/
 //! [slog-stdlog]: https://docs.rs/slog-stdlog/*/slog_stdlog/
 //! [log4rs]: https://docs.rs/log4rs/*/log4rs/
+//! [logforth]: https://docs.rs/logforth/*/logforth/
 //! [fern]: https://docs.rs/fern/*/fern/
 //! [systemd-journal-logger]: https://docs.rs/systemd-journal-logger/*/systemd_journal_logger/
 //! [android_log]: https://docs.rs/android_log/*/android_log/
@@ -332,11 +336,13 @@
 //! [logcontrol-log]: https://docs.rs/logcontrol-log/*/logcontrol_log/
 //! [log_err]: https://docs.rs/log_err/*/log_err/
 //! [log-reload]: https://docs.rs/log-reload/*/log_reload/
+//! [clang_log]: https://docs.rs/clang_log/latest/clang_log
+//! [ftail]: https://docs.rs/ftail/latest/ftail
 
 #![doc(
     html_logo_url = "https://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png",
     html_favicon_url = "https://www.rust-lang.org/favicon.ico",
-    html_root_url = "https://docs.rs/log/0.4.22"
+    html_root_url = "https://docs.rs/log/0.4.25"
 )]
 #![warn(missing_docs)]
 #![deny(missing_debug_implementations, unconditional_recursion)]

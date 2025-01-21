@@ -11,7 +11,7 @@ use crate::{Level, LevelFilter, LOG_LEVEL_NAMES};
 use std::fmt;
 use std::str::{self, FromStr};
 
-// The Deserialize impls are handwritten to be case insensitive using FromStr.
+// The Deserialize impls are handwritten to be case-insensitive using FromStr.
 
 impl Serialize for Level {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
@@ -57,7 +57,7 @@ impl<'de> Deserialize<'de> for Level {
             where
                 E: Error,
             {
-                // Case insensitive.
+                // Case-insensitive.
                 FromStr::from_str(s).map_err(|_| Error::unknown_variant(s, &LOG_LEVEL_NAMES[1..]))
             }
 
@@ -152,7 +152,7 @@ impl<'de> Deserialize<'de> for LevelFilter {
             where
                 E: Error,
             {
-                // Case insensitive.
+                // Case-insensitive.
                 FromStr::from_str(s).map_err(|_| Error::unknown_variant(s, &LOG_LEVEL_NAMES))
             }
 

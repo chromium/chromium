@@ -39,15 +39,8 @@ jobs:
       run: |
         rustup update ${{ matrix.rust }} --no-self-update
         rustup default ${{ matrix.rust }}
-    - run: cargo test --verbose
-    - run: cargo test --verbose --no-default-features
-    - run: cargo test --verbose --features std,serde,sval,sval_ref,value-bag,kv,kv_std,kv_sval,kv_serde
-    - run: cargo test --verbose --features serde
-    - run: cargo test --verbose --features std
-    - run: cargo test --verbose --features kv
-    - run: cargo test --verbose --features kv_sval
-    - run: cargo test --verbose --features kv_serde
-    - run: cargo test --verbose --features "kv kv_std kv_sval kv_serde"
+        cargo install cargo-hack
+    - run: cargo hack test --feature-powerset --lib --exclude-features max_level_off,max_level_error,max_level_warn,max_level_info,max_level_debug,max_level_trace,release_max_level_off,release_max_level_error,release_max_level_warn,release_max_level_info,release_max_level_debug,release_max_level_trace
     - run: cargo run --verbose --manifest-path test_max_level_features/Cargo.toml
     - run: cargo run --verbose --manifest-path test_max_level_features/Cargo.toml --release
 

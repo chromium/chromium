@@ -35,6 +35,7 @@ impl ToKey for str {
 // If a new field (such as an optional index) is added to the key they must not affect comparison
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Key<'k> {
+    // NOTE: This may become `Cow<'k, str>`
     key: &'k str,
 }
 
@@ -45,8 +46,22 @@ impl<'k> Key<'k> {
     }
 
     /// Get a borrowed string from this key.
+    ///
+    /// The lifetime of the returned string is bound to the borrow of `self` rather
+    /// than to `'k`.
     pub fn as_str(&self) -> &str {
         self.key
+    }
+
+    /// Try get a borrowed string for the lifetime `'k` from this key.
+    ///
+    /// If the key is a borrow of a longer lived string, this method will return `Some`.
+    /// If the key is internally buffered, this method will return `None`.
+    pub fn to_borrowed_str(&self) -> Option<&'k str> {
+        // NOTE: If the internals of `Key` support buffering this
+        // won't be unconditionally `Some` anymore. We want to keep
+        // this option open
+        Some(self.key)
     }
 }
 
@@ -139,5 +154,10 @@ mod tests {
     #[test]
     fn key_from_string() {
         assert_eq!("a key", Key::from_str("a key").as_str());
+    }
+
+    #[test]
+    fn key_to_borrowed() {
+        assert_eq!("a key", Key::from_str("a key").to_borrowed_str().unwrap());
     }
 }

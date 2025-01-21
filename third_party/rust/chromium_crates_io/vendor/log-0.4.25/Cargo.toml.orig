@@ -1,7 +1,7 @@
 [package]
 
 name = "log"
-version = "0.4.22" # remember to update html_root_url
+version = "0.4.25" # remember to update html_root_url
 authors = ["The Rust Project Developers"]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
@@ -72,10 +72,10 @@ sval = { version = "2.1" }
 sval_derive = { version = "2.1" }
 value-bag = { version = "1.7", features = ["test"] }
 
-# NOTE: log doesn't actually depent on this crate. However our dependencies,
+# NOTE: log doesn't actually depent on this crate. However, our dependencies,
 # serde and sval, dependent on version 1.0 of the crate, which has problem fixed
 # in 1.0.60, specifically in the following commit
 # https://github.com/dtolnay/proc-macro2/commit/e31d61910049e097afdd3d27c37786309082bdcb.
-# By defining the crate as direct dependency we can increase it's minimal
+# By defining the crate as direct dependency we can increase its minimal
 # version making the minimal (crate) version CI happy.
 proc-macro2 = { version = "1.0.63", default-features = false }

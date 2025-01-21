@@ -1528,6 +1528,12 @@ who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "0.4.21 -> 0.4.22"
 
+[[audits.log]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "0.4.22 -> 0.4.25"
+notes = "No impact on `unsafe` usage in `lib.rs`."
+
 [[audits.memchr]]
 who = "Dustin J. Mitchell <djmitche@chromium.org>"
 criteria = "does-not-implement-crypto"
