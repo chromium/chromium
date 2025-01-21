@@ -201,13 +201,13 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemTest, AuthorizationTest) {
   EXPECT_EQ(REMOTE_SERVICE_AUTHENTICATION_REQUIRED,
             sync_engine()->GetCurrentState());
 
-  sync_engine()->OnPrimaryAccountChanged(PrimaryAccountChangeEvent(
-      PrimaryAccountChangeEvent::State(),
-      PrimaryAccountChangeEvent::State(
-          identity_manager()->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSync),
-          signin::ConsentLevel::kSync),
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN));
+  sync_engine()->OnPrimaryAccountChanged(
+      PrimaryAccountChangeEvent(PrimaryAccountChangeEvent::State(),
+                                PrimaryAccountChangeEvent::State(
+                                    identity_manager()->GetPrimaryAccountInfo(
+                                        signin::ConsentLevel::kSync),
+                                    signin::ConsentLevel::kSync),
+                                signin_metrics::AccessPoint::kUnknown));
   WaitUntilIdle();
 
   bar_created.Reply("resume");
