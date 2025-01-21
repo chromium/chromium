@@ -78,6 +78,14 @@ enum class LensEntrypoint;
     serializedViewportState:(NSString*)viewportState
               isCameraImage:(BOOL)isCameraImage;
 
+// Called when the Lens UI is added to a view hierarchy.
+- (void)lensControllerWillAppear:
+    (id<ChromeLensViewFinderController>)lensController;
+
+// Called after the Lens UI was removed from a view hierarchy.
+- (void)lensControllerWillDisappear:
+    (id<ChromeLensViewFinderController>)lensController;
+
 @end
 
 // A controller that can facilitate communication with the downstream LVF
