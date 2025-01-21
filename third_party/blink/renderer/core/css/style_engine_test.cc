@@ -7094,6 +7094,30 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraints) {
   ScopedUpdateComplexSafaAreaConstraintsForTest
       update_complex_safe_area_constraints(true);
 
+  // (a) Any styles that are not 'bottom' anchored, should not have complex
+  // safe area constraints.
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="padding-bottom: 30px" />
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="padding-bottom: env(safe-area-inset-bottom)" />
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="height: calc(env(safe-area-inset-bottom) + 30px)" />
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+
+  // (b) Any styles that are 'bottom' anchored, may have complex safe area
+  // constraints depending on the following usages.
+
   // When no style properties use env(safe-area-inset-bottom), there are no
   // complex safe area constraints.
   GetDocument().body()->setInnerHTML(R"HTML(
@@ -7105,7 +7129,7 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraints) {
   // When a style property other than 'bottom' uses env(safe-area-inset-bottom),
   // there are complex safe area constraints.
   GetDocument().body()->setInnerHTML(R"HTML(
-    <div style="padding-bottom: env(safe-area-inset-bottom)" />
+    <div style="bottom: 5px; padding-bottom: env(safe-area-inset-bottom)" />
   )HTML");
   UpdateAllLifecyclePhases();
   EXPECT_TRUE(GetStyleEngine().HasComplexSafaAreaConstraints());
@@ -7123,7 +7147,7 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraints) {
   // When a style property other than 'bottom' uses calc() with
   // env(safe-area-inset-bottom), there are complex safe area constraints.
   GetDocument().body()->setInnerHTML(R"HTML(
-    <div style="height: calc(env(safe-area-inset-bottom) + 30px)" />
+    <div style="bottom: 5px; height: calc(env(safe-area-inset-bottom) + 30px)" />
   )HTML");
   UpdateAllLifecyclePhases();
   EXPECT_TRUE(GetStyleEngine().HasComplexSafaAreaConstraints());
