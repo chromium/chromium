@@ -24078,6 +24078,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "UnoForAuto",
                         "UnoPhase2FollowUp",
                         "UseHostedDomainForManagementCheckOnSignin"
                     ]
