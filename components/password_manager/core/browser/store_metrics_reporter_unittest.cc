@@ -187,10 +187,6 @@ class StoreMetricsReporterTest : public SyncUsernameTestBase {
         prefs::kProfileStoreMigratedToOSCryptAsync, false);
     prefs_.registry()->RegisterBooleanPref(
         prefs::kAccountStoreMigratedToOSCryptAsync, false);
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-    prefs_.registry()->RegisterDictionaryPref(
-        prefs::kAccountStoragePerAccountSettings);
-#endif
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
     prefs_.registry()->RegisterBooleanPref(
         prefs::kBiometricAuthenticationBeforeFilling, false);

@@ -28,130 +28,6 @@ using signin::GaiaIdHash;
 
 namespace password_manager::features_util {
 
-namespace {
-
-PasswordForm::Store PasswordStoreFromInt(int value) {
-  switch (value) {
-    case static_cast<int>(PasswordForm::Store::kProfileStore):
-      return PasswordForm::Store::kProfileStore;
-    case static_cast<int>(PasswordForm::Store::kAccountStore):
-      return PasswordForm::Store::kAccountStore;
-  }
-  return PasswordForm::Store::kNotSet;
-}
-
-const char kAccountStorageDefaultStoreKey[] = "default_store";
-
-// Helper class for reading account storage settings for a given account.
-class AccountStorageSettingsReader {
- public:
-  AccountStorageSettingsReader(const PrefService* prefs,
-                               const GaiaIdHash& gaia_id_hash) {
-    const base::Value::Dict& global_pref =
-        prefs->GetDict(prefs::kAccountStoragePerAccountSettings);
-    account_settings_ = global_pref.FindDict(gaia_id_hash.ToBase64());
-  }
-
-  PasswordForm::Store GetDefaultStore() const {
-    if (!account_settings_) {
-      return PasswordForm::Store::kNotSet;
-    }
-    std::optional<int> value =
-        account_settings_->FindInt(kAccountStorageDefaultStoreKey);
-    if (!value) {
-      return PasswordForm::Store::kNotSet;
-    }
-    return PasswordStoreFromInt(*value);
-  }
-
- private:
-  // May be null, if no settings for this account were saved yet.
-  raw_ptr<const base::Value::Dict> account_settings_ = nullptr;
-};
-
-// Helper class for updating account storage settings for a given account. Like
-// with ScopedDictPrefUpdate, updates are only published once the instance gets
-// destroyed.
-class ScopedAccountStorageSettingsUpdate {
- public:
-  ScopedAccountStorageSettingsUpdate(PrefService* prefs,
-                                     const GaiaIdHash& gaia_id_hash)
-      : update_(prefs, prefs::kAccountStoragePerAccountSettings),
-        account_hash_(gaia_id_hash.ToBase64()) {}
-
-  base::Value::Dict* GetOrCreateAccountSettings() {
-    return update_->EnsureDict(account_hash_);
-  }
-
-  void SetDefaultStore(PasswordForm::Store default_store) {
-    base::Value::Dict* account_settings = GetOrCreateAccountSettings();
-    account_settings->Set(kAccountStorageDefaultStoreKey,
-                          static_cast<int>(default_store));
-  }
-
-  void ClearAllSettings() { update_->Remove(account_hash_); }
-
- private:
-  ScopedDictPrefUpdate update_;
-  const std::string account_hash_;
-};
-
-}  // namespace
-
-PasswordForm::Store GetDefaultPasswordStore(
-    const PrefService* pref_service,
-    const syncer::SyncService* sync_service) {
-  DCHECK(pref_service);
-
-  if (!internal::IsUserEligibleForAccountStorage(pref_service, sync_service)) {
-    return PasswordForm::Store::kProfileStore;
-  }
-
-  const GaiaId gaia_id = sync_service->GetAccountInfo().gaia;
-  if (gaia_id.empty()) {
-    return PasswordForm::Store::kProfileStore;
-  }
-
-  PasswordForm::Store default_store =
-      AccountStorageSettingsReader(pref_service,
-                                   GaiaIdHash::FromGaiaId(gaia_id))
-          .GetDefaultStore();
-  // If none of the early-outs above triggered, then we *can* save to the
-  // account store in principle (though the user might not have opted in to that
-  // yet).
-  if (default_store == PasswordForm::Store::kNotSet) {
-    // The default store depends on the opt-in state. If the user has not opted
-    // in, then saves go to the profile store by default. If the user *has*
-    // opted in, then they've chosen to save to the account, so that becomes the
-    // default.
-    bool save_to_profile_store =
-        !IsOptedInForAccountStorage(pref_service, sync_service);
-    return save_to_profile_store ? PasswordForm::Store::kProfileStore
-                                 : PasswordForm::Store::kAccountStore;
-  }
-  return default_store;
-}
-
-bool IsDefaultPasswordStoreSet(const PrefService* pref_service,
-                               const syncer::SyncService* sync_service) {
-  DCHECK(pref_service);
-
-  if (!sync_service) {
-    return false;
-  }
-
-  const GaiaId gaia_id = sync_service->GetAccountInfo().gaia;
-  if (gaia_id.empty()) {
-    return false;
-  }
-
-  PasswordForm::Store default_store =
-      AccountStorageSettingsReader(pref_service,
-                                   GaiaIdHash::FromGaiaId(gaia_id))
-          .GetDefaultStore();
-  return default_store != PasswordForm::Store::kNotSet;
-}
-
 void OptInToAccountStorage(PrefService* pref_service,
                            syncer::SyncService* sync_service) {
   DCHECK(pref_service);
@@ -174,11 +50,8 @@ void OptInToAccountStorage(PrefService* pref_service,
   sync_user_settings->SetSelectedType(syncer::UserSelectableType::kPasswords,
                                       /*is_type_on=*/true);
 
-  // Since opting out using toggle in settings explicitly sets the default store
-  // to kProfileStore, opt in needs to explicitly set it to kAccountStore.
-  ScopedAccountStorageSettingsUpdate(pref_service,
-                                     GaiaIdHash::FromGaiaId(gaia_id))
-      .SetDefaultStore(PasswordForm::Store::kAccountStore);
+  // TODO(crbug.com/369341336): Replace this and the opt-out function with
+  // direct calls to SyncUserSettings().
 }
 
 void OptOutOfAccountStorage(PrefService* pref_service,
@@ -199,64 +72,44 @@ void OptOutOfAccountStorage(PrefService* pref_service,
       sync_service->GetUserSettings();
   sync_user_settings->SetSelectedType(syncer::UserSelectableType::kPasswords,
                                       false);
-  ScopedAccountStorageSettingsUpdate(pref_service,
-                                     GaiaIdHash::FromGaiaId(gaia_id))
-      .SetDefaultStore(PasswordForm::Store::kProfileStore);
 }
 
 void SetDefaultPasswordStore(PrefService* pref_service,
                              const syncer::SyncService* sync_service,
                              PasswordForm::Store default_store) {
-  DCHECK(pref_service);
-  DCHECK(sync_service);
-  CHECK(CanCreateAccountStore(pref_service));
-
-  const GaiaId gaia_id = sync_service->GetAccountInfo().gaia;
-  if (gaia_id.empty()) {
-    // Maybe the account went away since the UI was shown. This should be rare,
-    // but is ultimately harmless - just do nothing here.
-    return;
-  }
-
-  ScopedAccountStorageSettingsUpdate(pref_service,
-                                     GaiaIdHash::FromGaiaId(gaia_id))
-      .SetDefaultStore(default_store);
-
-  base::UmaHistogramEnumeration("PasswordManager.DefaultPasswordStoreSet",
-                                default_store);
+  // TODO(crbug.com/369341336): Delete this function.
 }
 
 void KeepAccountStorageSettingsOnlyForUsers(
     PrefService* pref_service,
     const std::vector<GaiaId>& gaia_ids) {
-  DCHECK(pref_service);
-
-  // Build a set of hashes of all the Gaia IDs.
-  auto hashes_to_keep =
-      base::MakeFlatSet<std::string>(gaia_ids, {}, [](const auto& gaia_id) {
-        return GaiaIdHash::FromGaiaId(gaia_id).ToBase64();
-      });
-
-  // Now remove any settings for account that are *not* in the set of hashes.
-  // DictionaryValue doesn't allow removing elements while iterating, so first
-  // collect all the keys to remove, then actually remove them in a second pass.
-  ScopedDictPrefUpdate update(pref_service,
-                              prefs::kAccountStoragePerAccountSettings);
-  std::vector<std::string> keys_to_remove;
-  for (auto kv : *update) {
-    if (!hashes_to_keep.contains(kv.first)) {
-      keys_to_remove.push_back(kv.first);
-    }
-  }
-  for (const std::string& key_to_remove : keys_to_remove) {
-    update->Remove(key_to_remove);
-  }
+  // TODO(crbug.com/369341336): Delete this function.
 }
 
 bool ShouldShowAccountStorageSettingToggle(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service) {
   return internal::IsUserEligibleForAccountStorage(pref_service, sync_service);
+}
+
+void MigrateDefaultProfileStorePref(PrefService* pref_service) {
+  ScopedDictPrefUpdate new_pref_update(
+      pref_service, syncer::prefs::internal::kSelectedTypesPerAccount);
+  for (auto [serialized_gaia_id_hash, settings] : pref_service->GetDict(
+           prefs::kObsoleteAccountStoragePerAccountSettings)) {
+    // `settings` should be a dict but check to avoid a possible startup crash.
+    if (!settings.is_dict()) {
+      continue;
+    }
+    if (settings.GetDict().FindInt(kObsoleteAccountStorageDefaultStoreKey) ==
+        static_cast<int>(PasswordForm::Store::kProfileStore)) {
+      // kObsoleteAccountStoragePerAccountSettings' serialization for the gaia
+      // id hash was indeed base64, the same as used by sync. Tests verify it.
+      new_pref_update->EnsureDict(serialized_gaia_id_hash)
+          ->Set(syncer::prefs::internal::kSyncPasswords, false);
+    }
+  }
+  pref_service->ClearPref(prefs::kObsoleteAccountStoragePerAccountSettings);
 }
 
 // Note: See also password_manager_features_util_common.cc for shared

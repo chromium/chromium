@@ -150,15 +150,9 @@ chromium-metrics-reviews@google.com.
   <variant name=".SignedInAccountStoreUser"
       summary="signed-in user, opted in to the account storage, and saving
                passwords to the account storage."/>
-  <variant name=".SignedInAccountStoreUserSavingLocally"
-      summary="signed-in user and opted in to the account storage, but has
-               chosen to save passwords only on the device."/>
   <variant name=".SignedInUser"
       summary="signed-in user, not opted in to the account storage (but will
                save passwords to the account storage by default)."/>
-  <variant name=".SignedInUserSavingLocally"
-      summary="signed-in user, not opted in to the account storage, and has
-               explicitly chosen to save passwords only on the device."/>
   <variant name=".SignedOutUser"
       summary="signed-out user (and no account storage opt-in exists)."/>
   <variant name=".SyncUser" summary="syncing user."/>
@@ -1409,16 +1403,6 @@ chromium-metrics-reviews@google.com.
     from Android Credential Manager UI. This histogram is emitted only if
     Android Credential Manager is enabled and displayed. Recorded when the user
     selects a password from the Android Credential Manager UI.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.DefaultPasswordStoreSet"
-    enum="PasswordManager.Store" expires_after="2025-05-11">
-  <owner>mamir@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <summary>
-    The default store for newly-saved passwords (profile-scoped store or
-    account-scoped store), recorded whenever it is set explicitly.
   </summary>
 </histogram>
 

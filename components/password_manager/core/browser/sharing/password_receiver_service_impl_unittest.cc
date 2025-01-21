@@ -363,8 +363,6 @@ TEST_P(PasswordReceiverServiceImplTest,
   // matter).
   sync_service().SetSignedIn(signin::ConsentLevel::kSignin);
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  pref_service().registry()->RegisterDictionaryPref(
-      password_manager::prefs::kAccountStoragePerAccountSettings);
   features_util::OptInToAccountStorage(&pref_service(), &sync_service());
 #else
   sync_service().GetUserSettings()->SetSelectedType(
@@ -393,8 +391,6 @@ TEST_P(PasswordReceiverServiceImplTest,
   // Setup a signed-in user that opted-out from using the account store:
   sync_service().SetSignedIn(signin::ConsentLevel::kSignin);
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  pref_service().registry()->RegisterDictionaryPref(
-      password_manager::prefs::kAccountStoragePerAccountSettings);
   features_util::OptOutOfAccountStorage(&pref_service(), &sync_service());
 #else
   sync_service().GetUserSettings()->SetSelectedType(

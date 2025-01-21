@@ -379,7 +379,8 @@ void PasswordManager::RegisterProfilePrefs(
                                0.0);
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  registry->RegisterDictionaryPref(prefs::kAccountStoragePerAccountSettings);
+  registry->RegisterDictionaryPref(
+      prefs::kObsoleteAccountStoragePerAccountSettings);
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
   registry->RegisterTimePref(prefs::kProfileStoreDateLastUsedForFilling,

@@ -26,15 +26,9 @@ enum class PasswordAccountStorageUserState {
   // Signed-in non-syncing user, not opted in to the account storage (but may
   // save passwords to the account storage by default).
   kSignedInUser,
-  // Signed-in non-syncing user, not opted in to the account storage, and has
-  // explicitly chosen to save passwords only on the device.
-  kSignedInUserSavingLocally,
   // Signed-in non-syncing user, opted in to the account storage, and saving
   // passwords to the account storage.
   kSignedInAccountStoreUser,
-  // Signed-in non-syncing user and opted in to the account storage, but has
-  // chosen to save passwords only on the device.
-  kSignedInAccountStoreUserSavingLocally,
   // Syncing user.
   kSyncUser,
 };
@@ -136,7 +130,7 @@ void OptInToAccountStorage(PrefService* pref_service,
                            syncer::SyncService* sync_service);
 
 // Opts-out from using account storage for passwords for the
-// current signed-in user (unconsented primary account). Addditionally it sets
+// current signed-in user (unconsented primary account). Additionally it sets
 // the default password store to kProfileStore.
 void OptOutOfAccountStorage(PrefService* pref_service,
                             syncer::SyncService* sync_service);
@@ -161,6 +155,20 @@ void KeepAccountStorageSettingsOnlyForUsers(
 bool ShouldShowAccountStorageSettingToggle(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service);
+
+// Users opted into account storage used to have the choice of saving new
+// passwords only locally, while keeping existing account passwords available
+// for autofill. That was achieved by setting a certain "default store pref" to
+// the "profile store". This logic was removed in crbug.com/369341336.
+// MigrateDefaultProfileStorePref() migrates users in the legacy state to be
+// completely opted out of account storage instead, i.e. so they can't save nor
+// autofill account passwords. The migration affects both signed-in and
+// signed-out users (because account storage settings should survive sign-out).
+// kObsoleteAccountStorageDefaultStoreKey was part of the legacy pref's schema
+// and is exposed for testing.
+inline constexpr char kObsoleteAccountStorageDefaultStoreKey[] =
+    "default_store";
+void MigrateDefaultProfileStorePref(PrefService* pref_service);
 
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 

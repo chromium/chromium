@@ -160,6 +160,24 @@ bool IsOptedInForAccountStorage(const PrefService* pref_service,
   return true;
 }
 
+PasswordForm::Store GetDefaultPasswordStore(
+    const PrefService* pref_service,
+    const syncer::SyncService* sync_service) {
+  // TODO(crbug.com/369341336): Inline this function.
+  CHECK(pref_service);
+  return IsOptedInForAccountStorage(pref_service, sync_service)
+             ? PasswordForm::Store::kAccountStore
+             : PasswordForm::Store::kProfileStore;
+}
+
+bool IsDefaultPasswordStoreSet(const PrefService* pref_service,
+                               const syncer::SyncService* sync_service) {
+  // TODO(crbug.com/369341336): Inline this function. Returning false is correct
+  // because the only remaining caller uses the result to decide whether to show
+  // the DefaultStoreChangedBubbleController and it shouldn't be shown anymore.
+  return false;
+}
+
 PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service) {
@@ -182,23 +200,14 @@ PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
     return PasswordAccountStorageUserState::kSignedOutUser;
   }
 
-  bool saving_locally = IsDefaultPasswordStoreSet(pref_service, sync_service) &&
-                        GetDefaultPasswordStore(pref_service, sync_service) ==
-                            PasswordForm::Store::kProfileStore;
-
   // Signed in. Check for account storage opt-in.
   if (IsOptedInForAccountStorage(pref_service, sync_service)) {
-    // Signed in and opted in. Check default storage location.
-    return saving_locally
-               ? PasswordAccountStorageUserState::
-                     kSignedInAccountStoreUserSavingLocally
-               : PasswordAccountStorageUserState::kSignedInAccountStoreUser;
+    // Signed in and opted in.
+    return PasswordAccountStorageUserState::kSignedInAccountStoreUser;
   }
 
-  // Signed in but not opted in. Check default storage location.
-  return saving_locally
-             ? PasswordAccountStorageUserState::kSignedInUserSavingLocally
-             : PasswordAccountStorageUserState::kSignedInUser;
+  // Signed in but not opted in.
+  return PasswordAccountStorageUserState::kSignedInUser;
 }
 
 PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
@@ -209,10 +218,8 @@ PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
   switch (ComputePasswordAccountStorageUserState(pref_service, sync_service)) {
     case UserState::kSignedOutUser:
     case UserState::kSignedInUser:
-    case UserState::kSignedInUserSavingLocally:
       return UsageLevel::kNotUsingAccountStorage;
     case UserState::kSignedInAccountStoreUser:
-    case UserState::kSignedInAccountStoreUserSavingLocally:
       return UsageLevel::kUsingAccountStorage;
     case UserState::kSyncUser:
       return UsageLevel::kSyncing;

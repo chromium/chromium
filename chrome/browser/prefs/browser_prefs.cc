@@ -2887,6 +2887,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 12/2024.
   profile_prefs->ClearPref(kPageContentCollectionEnabled);
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Added 01/2025.
+  password_manager::features_util::MigrateDefaultProfileStorePref(
+      profile_prefs);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   // Added 01/2025.
   profile_prefs->ClearPref(kCompactModeEnabled);
 

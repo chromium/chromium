@@ -70,14 +70,8 @@ std::string GetPasswordAccountStorageUserStateHistogramSuffix(
         kSignedInUser:
       return "SignedInUser";
     case password_manager::features_util::PasswordAccountStorageUserState::
-        kSignedInUserSavingLocally:
-      return "SignedInUserSavingLocally";
-    case password_manager::features_util::PasswordAccountStorageUserState::
         kSignedInAccountStoreUser:
       return "SignedInAccountStoreUser";
-    case password_manager::features_util::PasswordAccountStorageUserState::
-        kSignedInAccountStoreUserSavingLocally:
-      return "SignedInAccountStoreUserSavingLocally";
     case password_manager::features_util::PasswordAccountStorageUserState::
         kSyncUser:
       return "SyncUser";

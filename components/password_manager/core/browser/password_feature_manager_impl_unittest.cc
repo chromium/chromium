@@ -33,8 +33,6 @@ class PasswordFeatureManagerImplTest : public ::testing::Test {
                                   &pref_service_,
                                   &sync_service_) {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-    pref_service_.registry()->RegisterDictionaryPref(
-        password_manager::prefs::kAccountStoragePerAccountSettings);
     pref_service_.registry()->RegisterBooleanPref(
         ::prefs::kExplicitBrowserSignin, false);
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
@@ -164,24 +162,6 @@ TEST_F(PasswordFeatureManagerImplTest, GenerationDisabledIfSyncPaused) {
 
   EXPECT_FALSE(password_feature_manager_.IsGenerationEnabled());
 }
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-TEST_F(PasswordFeatureManagerImplTest, ShouldChangeDefaultPasswordStore) {
-  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_);
-
-  password_feature_manager_.SetDefaultPasswordStore(
-      password_manager::PasswordForm::Store::kProfileStore);
-  EXPECT_TRUE(password_feature_manager_.ShouldChangeDefaultPasswordStore());
-}
-
-TEST_F(PasswordFeatureManagerImplTest, ShouldNotChangeDefaultPasswordStore) {
-  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_);
-
-  password_feature_manager_.SetDefaultPasswordStore(
-      password_manager::PasswordForm::Store::kAccountStore);
-  EXPECT_FALSE(password_feature_manager_.ShouldChangeDefaultPasswordStore());
-}
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 
