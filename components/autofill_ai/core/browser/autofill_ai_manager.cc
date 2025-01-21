@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -163,9 +164,20 @@ bool AutofillAiManager::HasAutofillAiDataForField(
 bool AutofillAiManager::IsEligibleForAutofillAi(
     const autofill::FormStructure& form,
     const autofill::AutofillField& field) const {
-  return IsFormAndFieldEligible(form, field) &&
-         client_->IsAutofillAiEnabledPref() && IsUserEligible() &&
-         IsURLEligibleForAutofillAi(form.main_frame_origin().GetURL());
+  // TODO(crbug.com/389629573): Remove this branch once the old implementation
+  // is deleted.
+  if (base::FeatureList::IsEnabled(kAutofillAi)) {
+    CHECK(!base::FeatureList::IsEnabled(
+        autofill::features::kAutofillAiWithDataSchema));
+    return IsFormAndFieldEligible(form, field) &&
+           client_->IsAutofillAiEnabledPref() && IsUserEligible() &&
+           IsURLEligibleForAutofillAi(form.main_frame_origin().GetURL());
+  } else if (base::FeatureList::IsEnabled(
+                 autofill::features::kAutofillAiWithDataSchema)) {
+    return field.HasServerPredictionsWithAutofillAiType() &&
+           client_->IsAutofillAiEnabledPref() && IsUserEligible();
+  }
+  return false;
 }
 
 bool AutofillAiManager::IsUserEligible() const {
