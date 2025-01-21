@@ -223,6 +223,7 @@
         "WillSendWebSocketHandshakeRequest",
         "SetDevToolsIds",
         "IsCacheDisabled",
+        "ShouldApplyDevtoolsCookieSettingOverrides",
       ]
     },
     InspectorPageAgent: {

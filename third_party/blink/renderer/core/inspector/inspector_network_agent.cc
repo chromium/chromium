@@ -2554,4 +2554,11 @@ void InspectorNetworkAgent::IsCacheDisabled(bool* is_cache_disabled) const {
     *is_cache_disabled = true;
 }
 
+void InspectorNetworkAgent::ShouldApplyDevtoolsCookieSettingOverrides(
+    bool* should_apply_devtools_overrides) const {
+  if (enabled_.Get()) {
+    *should_apply_devtools_overrides = true;
+  }
+}
+
 }  // namespace blink

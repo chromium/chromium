@@ -2054,13 +2054,17 @@ void RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker(
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  // TODO(crbug.com/390003764): Consider whether/how to apply devtools cookies
+  // setting overrides for a service worker
   // TODO(crbug.com/40247160): Consider whether/how to get cookie setting
   // overrides for a service worker.
   storage_partition_impl_->CreateRestrictedCookieManager(
       network::mojom::RestrictedCookieManagerRole::SCRIPT, storage_key.origin(),
       storage_key.ToPartialNetIsolationInfo(),
       /*is_service_worker=*/true, GetDeprecatedID(), MSG_ROUTING_NONE,
-      net::CookieSettingOverrides(), std::move(receiver),
+      /*cookie_setting_overrides=*/net::CookieSettingOverrides(),
+      /*devtools_cookie_setting_overrides=*/net::CookieSettingOverrides(),
+      std::move(receiver),
       storage_partition_impl_->CreateCookieAccessObserverForServiceWorker());
 }
 

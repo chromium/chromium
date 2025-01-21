@@ -198,6 +198,7 @@ class PrefetchedNavigationLoaderInterceptor
         *request.trusted_params->isolation_info.top_frame_origin(),
         request.storage_access_api_status, std::move(match_options),
         request.is_ad_tagged,
+        /*apply_devtools_overrides=*/false,
         /*force_disable_third_party_cookies=*/false,
         base::BindOnce(&PrefetchedNavigationLoaderInterceptor::OnGetCookies,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -454,8 +455,10 @@ PrefetchedSignedExchangeCache::MaybeCreateInterceptor(
                 : -1,
             render_frame_host ? render_frame_host->GetRoutingID()
                               : MSG_ROUTING_NONE,
+            /*cookie_setting_overrides=*/
             render_frame_host ? render_frame_host->GetCookieSettingOverrides()
                               : net::CookieSettingOverrides(),
+            /*devtools_cookie_setting_overrides=*/net::CookieSettingOverrides(),
             cookie_manager.BindNewPipeAndPassReceiver(),
             render_frame_host ? render_frame_host->CreateCookieAccessObserver()
                               : mojo::NullRemote());

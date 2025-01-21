@@ -1359,6 +1359,19 @@ bool ApplyUserAgentMetadataOverrides(
 }
 
 bool ApplyNetworkCookieControlsOverrides(
+    RenderFrameHostImpl& rfh,
+    net::CookieSettingOverrides& overrides) {
+  FrameTreeNode* ftn = rfh.frame_tree_node();
+  if (!ftn) {
+    return false;
+  }
+  DevToolsAgentHostImpl* agent_host =
+      GetDevToolsAgentHostForNetworkOverrides(ftn);
+
+  return ApplyNetworkCookieControlsOverrides(agent_host, overrides);
+}
+
+bool ApplyNetworkCookieControlsOverrides(
     DevToolsAgentHostImpl* agent_host,
     net::CookieSettingOverrides& overrides) {
   if (!agent_host) {

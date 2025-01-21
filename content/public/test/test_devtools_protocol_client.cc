@@ -12,6 +12,8 @@
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "content/browser/devtools/render_frame_devtools_agent_host.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
@@ -58,6 +60,13 @@ const base::Value::Dict* TestDevToolsProtocolClient::SendSessionCommand(
 void TestDevToolsProtocolClient::WaitForResponse() {
   waiting_for_command_result_id_ = last_sent_id_;
   RunLoopUpdatingQuitClosure();
+}
+
+void TestDevToolsProtocolClient::AttachToFrameTreeHost(RenderFrameHost* frame) {
+  FrameTreeNode* ftn =
+      FrameTreeNode::GloballyFindByID(frame->GetFrameTreeNodeId());
+  agent_host_ = RenderFrameDevToolsAgentHost::GetOrCreateFor(ftn);
+  agent_host_->AttachClient(this);
 }
 
 void TestDevToolsProtocolClient::AttachToWebContents(WebContents* wc) {

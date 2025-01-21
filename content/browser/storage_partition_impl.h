@@ -459,6 +459,7 @@ class CONTENT_EXPORT StoragePartitionImpl
       int process_id,
       int routing_id,
       net::CookieSettingOverrides cookie_setting_overrides,
+      net::CookieSettingOverrides devtools_cookie_setting_overrides,
       mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver,
       mojo::PendingRemote<network::mojom::CookieAccessObserver>
           cookie_observer);

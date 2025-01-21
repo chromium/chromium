@@ -98,6 +98,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const url::Origin& origin,
       const net::IsolationInfo& isolation_info,
       const net::CookieSettingOverrides& cookie_setting_overrides,
+      const net::CookieSettingOverrides& devtools_cookie_setting_overrides,
       mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
       net::FirstPartySetMetadata first_party_set_metadata,
       UmaMetricsUpdater* metrics_updater = nullptr);
@@ -124,6 +125,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
                     net::StorageAccessApiStatus storage_access_api_status,
                     mojom::CookieManagerGetOptionsPtr options,
                     bool is_ad_tagged,
+                    bool apply_devtools_overrides,
                     bool force_disable_third_party_cookies,
                     GetAllForUrlCallback callback) override;
 
@@ -133,6 +135,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
                           const url::Origin& top_frame_origin,
                           net::StorageAccessApiStatus storage_access_api_status,
                           net::CookieInclusionStatus status,
+                          bool apply_devtools_overrides,
                           SetCanonicalCookieCallback callback) override;
 
   void AddChangeListener(
@@ -148,6 +151,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const net::SiteForCookies& site_for_cookies,
       const url::Origin& top_frame_origin,
       net::StorageAccessApiStatus storage_access_api_status,
+      bool apply_devtools_overrides,
       const std::string& cookie,
       SetCookieFromStringCallback callback) override;
 
@@ -157,12 +161,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
                         net::StorageAccessApiStatus storage_access_api_status,
                         bool get_version_shared_memory,
                         bool is_ad_tagged,
+                        bool apply_devtools_overrides,
                         bool force_disable_third_party_cookies,
                         GetCookiesStringCallback callback) override;
   void CookiesEnabledFor(const GURL& url,
                          const net::SiteForCookies& site_for_cookies,
                          const url::Origin& top_frame_origin,
                          net::StorageAccessApiStatus storage_access_api_status,
+                         bool apply_devtools_overrides,
                          CookiesEnabledForCallback callback) override;
 
   // If this instance owns its receiver bind and store it using
@@ -271,6 +277,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   net::CookieSettingOverrides GetCookieSettingOverrides(
       net::StorageAccessApiStatus storage_access_api_status,
       bool is_ad_tagged,
+      bool apply_devtools_overrides,
       bool force_disable_third_party_cookies) const;
 
   void OnCookiesAccessed(network::mojom::CookieAccessDetailsPtr details);
@@ -286,6 +293,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   // GetCookieSettingOverrides, depending on additional factors not known at
   // construction or that may change after construction.
   const net::CookieSettingOverrides cookie_setting_overrides_;
+
+  // Overrides added by devtools. These are kept separate so that they can be
+  // conditionally applied within GetCookieSettingOverrides.
+  const net::CookieSettingOverrides devtools_cookie_setting_overrides_;
 
   url::Origin origin_;
 

@@ -491,6 +491,10 @@ void DidChangeFrameLoadingState(FrameTreeNode& ftn);
 
 // Returns true if devtools wants to override the cookie settings.
 bool ApplyNetworkCookieControlsOverrides(
+    RenderFrameHostImpl& rfh,
+    net::CookieSettingOverrides& overrides);
+
+bool ApplyNetworkCookieControlsOverrides(
     DevToolsAgentHostImpl* params,
     net::CookieSettingOverrides& overrides);
 

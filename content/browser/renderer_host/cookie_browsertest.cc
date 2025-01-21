@@ -381,11 +381,13 @@ class RestrictedCookieManagerInterceptor
       const net::SiteForCookies& site_for_cookies,
       const url::Origin& top_frame_origin,
       net::StorageAccessApiStatus storage_access_api_status,
+      bool apply_devtools_overrides,
       const std::string& cookie,
       SetCookieFromStringCallback callback) override {
     GetForwardingInterface()->SetCookieFromString(
         URLToUse(url), site_for_cookies, top_frame_origin,
-        storage_access_api_status, std::move(cookie), std::move(callback));
+        storage_access_api_status, apply_devtools_overrides, std::move(cookie),
+        std::move(callback));
   }
 
   void GetCookiesString(const GURL& url,
@@ -395,11 +397,13 @@ class RestrictedCookieManagerInterceptor
                         bool get_version_shared_memory,
                         bool is_ad_tagged,
                         bool force_disable_third_party_cookies,
+                        bool apply_devtools_overrides,
                         GetCookiesStringCallback callback) override {
     GetForwardingInterface()->GetCookiesString(
         URLToUse(url), site_for_cookies, top_frame_origin,
         storage_access_api_status, get_version_shared_memory, is_ad_tagged,
-        force_disable_third_party_cookies, std::move(callback));
+        force_disable_third_party_cookies, apply_devtools_overrides,
+        std::move(callback));
   }
 
  private:
