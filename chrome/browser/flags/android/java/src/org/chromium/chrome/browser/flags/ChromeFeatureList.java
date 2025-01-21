@@ -660,7 +660,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sDisableInstanceLimit =
             newCachedFlag(DISABLE_INSTANCE_LIMIT, false);
     public static final CachedFlag sDownloadsMigrateToJobsAPI =
-            newCachedFlag(DOWNLOADS_MIGRATE_TO_JOBS_API, false);
+            newCachedFlag(DOWNLOADS_MIGRATE_TO_JOBS_API, true);
     public static final CachedFlag sDrawKeyNativeEdgeToEdge =
             newCachedFlag(
                     DRAW_KEY_NATIVE_EDGE_TO_EDGE,

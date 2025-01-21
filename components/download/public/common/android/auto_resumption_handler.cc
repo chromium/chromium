@@ -45,10 +45,6 @@ const base::TimeDelta kDownloadImmediateRetryDelay = base::Seconds(1);
 // download will not be affected.
 const base::TimeDelta kAutoResumptionExpireInterval = base::Days(7);
 
-// The task type to use for scheduling a task.
-const download::DownloadTaskType kResumptionTaskType =
-    download::DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK;
-
 const download::DownloadTaskType kUnmeteredDownloadsTaskType =
     download::DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_UNMETERED_TASK;
 
@@ -236,43 +232,8 @@ void AutoResumptionHandler::RescheduleTaskIfNecessary() {
     return;
 
   recompute_task_params_scheduled_ = false;
-
-  if (base::FeatureList::IsEnabled(features::kDownloadsMigrateToJobsAPI)) {
-    RescheduleTaskIfNecessaryForTaskType(kUnmeteredDownloadsTaskType);
-    RescheduleTaskIfNecessaryForTaskType(kAnyNetworkDownloadsTaskType);
-    return;
-  }
-
-  DownloadTaskType task_type = kResumptionTaskType;
-
-  bool has_resumable_downloads = false;
-  bool has_actionable_downloads = false;
-  bool can_download_on_metered = false;
-
-  for (auto& pair : resumable_downloads_) {
-    download::DownloadItem* download = pair.second;
-    if (!IsAutoResumableDownload(download))
-      continue;
-
-    has_resumable_downloads = true;
-    has_actionable_downloads |= ShouldResumeNow(download);
-    can_download_on_metered |= download->AllowMetered();
-  }
-
-  if (!has_actionable_downloads) {
-    task_manager_->NotifyTaskFinished(task_type, false);
-  }
-
-  if (!has_resumable_downloads) {
-    task_manager_->UnscheduleTask(task_type);
-    return;
-  }
-
-  download::TaskManager::TaskParams task_params;
-  task_params.require_unmetered_network = !can_download_on_metered;
-  task_params.window_start_time_seconds = kWindowStartTimeSeconds;
-  task_params.window_end_time_seconds = kWindowEndTimeSeconds;
-  task_manager_->ScheduleTask(task_type, task_params);
+  RescheduleTaskIfNecessaryForTaskType(kUnmeteredDownloadsTaskType);
+  RescheduleTaskIfNecessaryForTaskType(kAnyNetworkDownloadsTaskType);
 }
 
 // Go through all the downloads. Filter out only the ones having matching

@@ -49,10 +49,7 @@ public class ChromeCachedFlagsTest {
     // change.
     //
     // DO NOT ADD FLAGS TO THIS LIST.
-    private static final Set<CachedFlag> BASELINE =
-            Set.of(
-                    ChromeFeatureList.sDownloadsMigrateToJobsAPI,
-                    ChromeFeatureList.sSafetyHubMagicStack);
+    private static final Set<CachedFlag> BASELINE = Set.of(ChromeFeatureList.sSafetyHubMagicStack);
 
     /**
      * Tests that the |defaultValueForTests| in the CachedFlag declaration matches
