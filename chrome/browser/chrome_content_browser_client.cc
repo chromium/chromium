@@ -3922,15 +3922,14 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
       ToBlinkPreferredColorScheme(native_theme->GetPreferredColorScheme());
 
   bool using_different_colored_frame = false;
-  if (Profile* profile =
-          Profile::FromBrowserContext(web_contents->GetBrowserContext())) {
-    if (ThemeService* theme_service =
-            ThemeServiceFactory::GetForProfile(profile)) {
-      using_different_colored_frame =
-          !theme_service->UsingDefaultTheme() ||
-          theme_service->GetUserColor().has_value() ||
-          theme_service->UsingDeviceTheme();
-    }
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  CHECK(profile);
+  if (ThemeService* theme_service =
+          ThemeServiceFactory::GetForProfile(profile)) {
+    using_different_colored_frame = !theme_service->UsingDefaultTheme() ||
+                                    theme_service->GetUserColor().has_value() ||
+                                    theme_service->UsingDeviceTheme();
   }
 
   // Update based on the ColorProvider associated with `web_contents`. Depends
@@ -3944,9 +3943,20 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/359577226): merge the branches for WebUI and non-WebUI
+  // contents after kContentUsesBrowserThemeColorMode is launched.
   if (content::HasWebUIScheme(url)) {
     // If color scheme is not forced, WebUI should track the color mode of the
     // ColorProvider associated with `web_contents`.
+    web_prefs->preferred_color_scheme =
+        web_contents->GetColorMode() == ui::ColorProviderKey::ColorMode::kLight
+            ? blink::mojom::PreferredColorScheme::kLight
+            : blink::mojom::PreferredColorScheme::kDark;
+  } else if (base::FeatureList::IsEnabled(
+                 features::kContentUsesBrowserThemeColorMode) &&
+             !profile->IsIncognitoProfile()) {
+    // Track the browser theme's color mode in contents.
+    // Incognito contents are not affected by the browser theme.
     web_prefs->preferred_color_scheme =
         web_contents->GetColorMode() == ui::ColorProviderKey::ColorMode::kLight
             ? blink::mojom::PreferredColorScheme::kLight
