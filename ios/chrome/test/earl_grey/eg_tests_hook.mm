@@ -12,6 +12,7 @@
 #import "base/time/time.h"
 #import "components/data_sharing/public/data_sharing_service.h"
 #import "components/data_sharing/test_support/mock_preview_server_proxy.h"
+#import "components/feature_engagement/public/feature_activation.h"
 #import "components/password_manager/core/browser/sharing/fake_recipients_fetcher.h"
 #import "components/password_manager/ios/fake_bulk_leak_check_service.h"
 #import "components/plus_addresses/fake_plus_address_service.h"
@@ -292,17 +293,14 @@ std::unique_ptr<drive::DriveService> GetOverriddenDriveService() {
   return std::make_unique<drive::TestDriveService>();
 }
 
-std::optional<std::string> FETDemoModeOverride() {
+feature_engagement::FeatureActivation FETDemoModeOverride() {
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           test_switches::kEnableIPH)) {
-    // The FET Demo Mode tracker uses the returned string here as the feature
-    // name to enable. Using a feature name that doesn't exist will disable all
-    // IPH in tests. This is the desired behavior for EG tests if no specific
-    // feature is enabled.
-    return "disable_all";
+    return feature_engagement::FeatureActivation::AllDisabled();
   }
-  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-      test_switches::kEnableIPH);
+  return feature_engagement::FeatureActivation(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          test_switches::kEnableIPH));
 }
 
 void DeleteFilesRecursively(NSString* directoryPath) {

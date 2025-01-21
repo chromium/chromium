@@ -27,6 +27,7 @@ source_set("hooks") {
     "//base",
     "//components/data_sharing:test_support",
     "//components/data_sharing/public",
+    "//components/feature_engagement/public",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/sharing:test_support",
     "//components/password_manager/ios:fake_bulk_leak_check_service",

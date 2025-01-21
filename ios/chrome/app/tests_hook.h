@@ -32,6 +32,10 @@ namespace drive {
 class DriveService;
 }  // namespace drive
 
+namespace feature_engagement {
+class FeatureActivation;
+}  // namespace feature_engagement
+
 namespace policy {
 class ConfigurationPolicyProvider;
 }  // namespace policy
@@ -182,10 +186,7 @@ base::TimeDelta GetOverriddenSnackbarDuration();
 std::unique_ptr<drive::DriveService> GetOverriddenDriveService();
 
 // Override the Feature Engagement Tracker used in tests with a demo version.
-// Returning std::nullopt will not do any override. Returning any string will
-// override with a demo tracker that only enables that feature (use empty string
-// for a demo tracker that enables all features).
-std::optional<std::string> FETDemoModeOverride();
+feature_engagement::FeatureActivation FETDemoModeOverride();
 
 // If the given argv contains `-EGTestWipeProfile`, deletes the
 // contents of the `Library` directory at the start of `main()`. This

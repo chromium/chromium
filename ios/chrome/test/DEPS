@@ -6,6 +6,7 @@ include_rules = [
   "+components/browsing_data/core",
   "+components/content_settings/core",
   "+components/crash/core/common",
+  "+components/feature_engagement/public/feature_activation.h",
   "+components/history/core/browser",
   "+components/keyed_service/core",
   "+components/language",

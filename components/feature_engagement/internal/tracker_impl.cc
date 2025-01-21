@@ -44,6 +44,7 @@
 #include "components/feature_engagement/internal/system_time_provider.h"
 #include "components/feature_engagement/internal/testing_clock_time_provider.h"
 #include "components/feature_engagement/public/configuration.h"
+#include "components/feature_engagement/public/feature_activation.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/public/group_constants.h"
@@ -78,8 +79,22 @@ void MaybeGetEventData(Tracker::EventList& result,
 }  // namespace
 
 std::unique_ptr<Tracker> CreateDemoModeTracker(
-    std::string chosen_feature_name) {
-  DVLOG(2) << "Enabling demo mode. Chosen feature: " << chosen_feature_name;
+    feature_engagement::FeatureActivation feature_activation) {
+  feature_engagement::FeatureActivation::State state =
+      feature_activation.get_state();
+
+  switch (state) {
+    case feature_engagement::FeatureActivation::State::kAllEnabled:
+      DVLOG(2) << "Enabling demo mode. All features enabled ";
+      break;
+    case feature_engagement::FeatureActivation::State::kAllDisabled:
+      DVLOG(2) << "Enabling demo mode. All features disabled ";
+      break;
+    case feature_engagement::FeatureActivation::State::kSingleFeatureEnabled:
+      DVLOG(2) << "Enabling demo mode. Chosen feature: "
+               << feature_activation.get_unique_feature_name();
+      break;
+  }
 
   std::unique_ptr<EditableConfiguration> configuration =
       std::make_unique<EditableConfiguration>();
@@ -88,14 +103,20 @@ std::unique_ptr<Tracker> CreateDemoModeTracker(
   // OnceConditionValidator acknowledges that thet meet conditions once.
   std::vector<const base::Feature*> features = GetAllFeatures();
   for (auto* feature : features) {
+    FeatureConfig feature_config;
     // If a particular feature has been chosen to use with demo mode, only
     // mark that feature with a valid configuration.
-    bool valid_config = chosen_feature_name.empty()
-                            ? true
-                            : chosen_feature_name == feature->name;
-
-    FeatureConfig feature_config;
-    feature_config.valid = valid_config;
+    switch (state) {
+      case feature_engagement::FeatureActivation::State::kAllEnabled:
+        feature_config.valid = true;
+        break;
+      case feature_engagement::FeatureActivation::State::kAllDisabled:
+        feature_config.valid = false;
+        break;
+      case feature_engagement::FeatureActivation::State::kSingleFeatureEnabled:
+        feature_config.valid =
+            feature_activation.get_unique_feature_name() == feature->name;
+    }
     feature_config.trigger.name = feature->name + std::string("_trigger");
     configuration->SetConfiguration(feature, feature_config);
   }
@@ -126,10 +147,14 @@ std::unique_ptr<Tracker> Tracker::Create(
   DVLOG(2) << "Creating Tracker";
   if (base::FeatureList::IsEnabled(kIPHDemoMode)) {
     // GetFieldTrialParamValueByFeature returns an empty string if the param is
-    // not set.
+    // not set. In this case, we want to enable all features.
     std::string chosen_feature_name = base::GetFieldTrialParamValueByFeature(
         kIPHDemoMode, kIPHDemoModeFeatureChoiceParam);
-    return CreateDemoModeTracker(chosen_feature_name);
+    feature_engagement::FeatureActivation feature_action =
+        chosen_feature_name.empty()
+            ? feature_engagement::FeatureActivation::AllEnabled()
+            : feature_engagement::FeatureActivation(chosen_feature_name);
+    return CreateDemoModeTracker(feature_action);
   }
 
   base::FilePath event_storage_dir =

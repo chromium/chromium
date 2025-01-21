@@ -8,6 +8,7 @@
 #import "base/memory/ref_counted.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
+#import "components/feature_engagement/public/feature_activation.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_promo_event_exporter.h"
@@ -26,10 +27,14 @@ namespace feature_engagement {
 
 std::unique_ptr<KeyedService> CreateFeatureEngagementTracker(
     ProfileIOS* profile) {
-  std::optional<std::string> fetDemoModeOverride =
+  feature_engagement::FeatureActivation FETDemoModeOverride =
       tests_hook::FETDemoModeOverride();
-  if (fetDemoModeOverride.has_value()) {
-    return CreateDemoModeTracker(fetDemoModeOverride.value());
+  switch (FETDemoModeOverride.get_state()) {
+    case feature_engagement::FeatureActivation::State::kAllEnabled:
+      break;
+    case feature_engagement::FeatureActivation::State::kAllDisabled:
+    case feature_engagement::FeatureActivation::State::kSingleFeatureEnabled:
+      return CreateDemoModeTracker(FETDemoModeOverride);
   }
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =
