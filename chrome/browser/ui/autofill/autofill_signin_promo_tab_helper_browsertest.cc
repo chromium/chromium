@@ -31,11 +31,10 @@ IN_PROC_BROWSER_TEST_F(AutofillSigninPromoTabHelperTest,
                        CallPasswordMoveCallbackAfterSignInFromTab) {
   // Get the sign in tab with the correct access point.
   signin_ui_util::ShowSigninPromptFromPromo(
-      browser()->profile(),
-      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
+      browser()->profile(), signin_metrics::AccessPoint::kPasswordBubble);
   content::WebContents* sign_in_tab =
       signin_ui_util::GetSignInTabWithAccessPoint(
-          browser(), signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
+          browser(), signin_metrics::AccessPoint::kPasswordBubble);
 
   // Expect the callback for enabling account storage and moving the data to be
   // called.
@@ -46,16 +45,14 @@ IN_PROC_BROWSER_TEST_F(AutofillSigninPromoTabHelperTest,
       autofill::AutofillSigninPromoTabHelper::GetForWebContents(*sign_in_tab);
   user_data->InitializeDataMoveAfterSignIn(
       /*move_callback=*/move_callback.Get(),
-      /*access_point=*/signin_metrics::AccessPoint::
-          ACCESS_POINT_PASSWORD_BUBBLE);
+      /*access_point=*/signin_metrics::AccessPoint::kPasswordBubble);
 
   // Sign in, which will execute the callback.
   signin::MakeAccountAvailable(
       IdentityManagerFactory::GetForProfile(browser()->profile()),
       signin::AccountAvailabilityOptionsBuilder()
           .AsPrimary(signin::ConsentLevel::kSignin)
-          .WithAccessPoint(
-              signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE)
+          .WithAccessPoint(signin_metrics::AccessPoint::kPasswordBubble)
           .Build("test@gmail.com"));
 }
 
@@ -68,11 +65,10 @@ IN_PROC_BROWSER_TEST_F(AutofillSigninPromoTabHelperTest,
 
   // Get the reauth tab with the correct access point.
   signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
-      browser()->profile(),
-      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE);
+      browser()->profile(), signin_metrics::AccessPoint::kAddressBubble);
   content::WebContents* reauth_tab =
       signin_ui_util::GetSignInTabWithAccessPoint(
-          browser(), signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE);
+          browser(), signin_metrics::AccessPoint::kAddressBubble);
 
   // Expect the callback for enabling account storage and moving the data to be
   // called.
@@ -83,15 +79,14 @@ IN_PROC_BROWSER_TEST_F(AutofillSigninPromoTabHelperTest,
       autofill::AutofillSigninPromoTabHelper::GetForWebContents(*reauth_tab);
   user_data->InitializeDataMoveAfterSignIn(
       /*move_callback=*/move_callback.Get(),
-      /*access_point=*/signin_metrics::AccessPoint::
-          ACCESS_POINT_ADDRESS_BUBBLE);
+      /*access_point=*/signin_metrics::AccessPoint::kAddressBubble);
 
   // Set a new refresh token for the primary account, which verifies the
   // user's identity and signs them back in. The callback will be executed.
   identity_manager()->GetAccountsMutator()->AddOrUpdateAccount(
       info.gaia, info.email, "dummy_refresh_token",
       /*is_under_advanced_protection=*/false,
-      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE,
+      signin_metrics::AccessPoint::kAddressBubble,
       signin_metrics::SourceForRefreshTokenOperation::
           kDiceResponseHandler_Signin);
 }

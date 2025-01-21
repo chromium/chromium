@@ -22,9 +22,9 @@ namespace {
 syncer::DataType GetDataTypeFromAccessPoint(
     signin_metrics::AccessPoint access_point) {
   switch (access_point) {
-    case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
+    case signin_metrics::AccessPoint::kPasswordBubble:
       return syncer::PASSWORDS;
-    case signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
+    case signin_metrics::AccessPoint::kAddressBubble:
       return syncer::CONTACT_INFO;
     default:
       NOTREACHED();
