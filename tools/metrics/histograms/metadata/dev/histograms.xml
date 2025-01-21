@@ -373,14 +373,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.RecordingAssertion" enum="DevToolsRecordingAssertion"
-    expires_after="2025-03-01">
+    expires_after="2026-03-01">
+  <owner>alexrudenko@google.com</owner>
   <owner>mathiasb@google.com</owner>
   <owner>yangguo@google.com</owner>
   <summary>Recorded when assertions are used/edited</summary>
 </histogram>
 
 <histogram name="DevTools.RecordingCodeToggled"
-    enum="DevToolsRecordingCodeToggled" expires_after="2025-03-01">
+    enum="DevToolsRecordingCodeToggled" expires_after="2026-03-01">
   <owner>alexrudenko@google.com</owner>
   <owner>mathiasb@google.com</owner>
   <owner>yangguo@google.com</owner>
@@ -390,7 +391,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.RecordingCopiedToClipboard"
-    enum="DevToolsRecordingCopiedToClipboard" expires_after="2025-03-01">
+    enum="DevToolsRecordingCopiedToClipboard" expires_after="2026-03-01">
   <owner>alexrudenko@google.com</owner>
   <owner>mathiasb@google.com</owner>
   <owner>yangguo@google.com</owner>
@@ -401,7 +402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.RecordingEdited" enum="DevToolsRecordingEdited"
-    expires_after="2025-03-01">
+    expires_after="2026-03-01">
   <owner>alexrudenko@google.com</owner>
   <owner>mathiasb@google.com</owner>
   <owner>yangguo@google.com</owner>
@@ -409,7 +410,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.RecordingExported" enum="DevToolsRecordingExported"
-    expires_after="2025-05-18">
+    expires_after="2026-03-01">
   <owner>alexrudenko@google.com</owner>
   <owner>mathiasb@google.com</owner>
   <owner>yangguo@google.com</owner>
@@ -417,7 +418,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.RecordingReplayFinished"
-    enum="DevToolsRecordingReplayFinished" expires_after="2025-07-06">
+    enum="DevToolsRecordingReplayFinished" expires_after="2026-03-01">
   <owner>alexrudenko@google.com</owner>
   <owner>mathiasb@google.com</owner>
   <owner>yangguo@google.com</owner>
@@ -425,7 +426,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.RecordingReplaySpeed"
-    enum="DevToolsRecordingReplaySpeed" expires_after="2025-05-04">
+    enum="DevToolsRecordingReplaySpeed" expires_after="2026-03-01">
   <owner>ergunsh@google.com</owner>
   <owner>alexrudenko@google.com</owner>
   <owner>mathiasb@google.com</owner>
@@ -437,7 +438,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.RecordingReplayStarted"
-    enum="DevToolsRecordingReplayStarted" expires_after="2025-03-01">
+    enum="DevToolsRecordingReplayStarted" expires_after="2026-03-01">
   <owner>alexrudenko@google.com</owner>
   <owner>mathiasb@google.com</owner>
   <owner>yangguo@google.com</owner>
@@ -445,7 +446,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.RecordingToggled" enum="DevToolsRecordingToggled"
-    expires_after="2025-03-01">
+    expires_after="2026-03-01">
   <owner>alexrudenko@google.com</owner>
   <owner>mathiasb@google.com</owner>
   <owner>yangguo@google.com</owner>
