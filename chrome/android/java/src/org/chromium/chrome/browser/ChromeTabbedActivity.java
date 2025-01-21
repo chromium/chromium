@@ -2140,8 +2140,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 IntentUtils.safeGetBooleanExtra(
                         getIntent(), IntentHandler.EXTRA_OPEN_HISTORY, false);
         if (shouldLaunchHistory) {
+            // History page is always empty if the current tab is incognito. Ensure the profile
+            // flips to the regular one when showing the history page.
             HistoryManagerUtils.showHistoryManager(
-                    this, getActivityTab(), getTabModelSelector().isIncognitoSelected());
+                    this, getActivityTab(), /* isIncognitoSelected= */ false);
         }
     }
 
