@@ -6571,6 +6571,13 @@ const char kExposeOutOfProcessVideoDecodingToLacrosDescription[] =
     "Accept media.stable.mojom.StableVideoDecoderFactory connection requests "
     "from LaCrOS and host said factories in utility processes.";
 
+const char kFastDrmMasterDropName[] =
+    "Drop DRM master tokens without disabling all the displays.";
+const char kFastDrmMasterDropDescription[] =
+    "Drop DRM master tokens after detaching all the planes off of pipes,"
+    "rather than disabling all the displays. Will not work on AMD devices as "
+    "they are unable to accept commits without a primary plane.";
+
 const char kFileTransferEnterpriseConnectorName[] =
     "Enable Files Transfer Enterprise Connector.";
 const char kFileTransferEnterpriseConnectorDescription[] =

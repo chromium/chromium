@@ -64,6 +64,10 @@ BASE_DECLARE_FEATURE(kExcludeDisplayInMirrorMode);
 
 COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsExcludeDisplayInMirrorModeEnabled();
 
+COMPONENT_EXPORT(DISPLAY_FEATURES) BASE_DECLARE_FEATURE(kFastDrmMasterDrop);
+
+COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsFastDrmMasterDropEnabled();
+
 }  // namespace features
 }  // namespace display
 
