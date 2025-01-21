@@ -12,11 +12,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.view.View;
+import android.view.ViewGroup;
 
 import org.hamcrest.Matcher;
 
@@ -215,6 +217,11 @@ public abstract class TabSwitcherStation extends HubBaseStation {
         return enterFacilitySync(
                 new TabSwitcherTabCardFacility(expectedCardIndex, tabId, title),
                 /* trigger= */ null);
+    }
+
+    /** Verify the tab switcher card count. */
+    public void verifyTabSwitcherCardCount(int count) {
+        assertEquals(((ViewGroup) mRecyclerViewElement.get()).getChildCount(), count);
     }
 
     public ViewElement getRecyclerViewElement() {

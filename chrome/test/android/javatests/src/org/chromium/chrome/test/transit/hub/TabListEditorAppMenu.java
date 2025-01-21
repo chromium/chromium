@@ -30,7 +30,7 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
     private final TabSwitcherListEditorFacility mListEditor;
     private Item<Void> mCloseMenuItem;
     private Item<NewTabGroupDialogFacility> mGroupWithDialogMenuItem;
-    private Item<Pair<TabSwitcherGroupCardFacility, UndoGroupSnackbarFacility>>
+    private Item<Pair<TabSwitcherGroupCardFacility, UndoSnackbarFacility>>
             mGroupWithoutDialogMenuItem;
 
     public TabListEditorAppMenu(TabSwitcherListEditorFacility listEditor) {
@@ -104,20 +104,21 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
      *
      * @return the new group card and the undo snackbar expected to be shown.
      */
-    public Pair<TabSwitcherGroupCardFacility, UndoGroupSnackbarFacility> groupTabsWithoutDialog() {
+    public Pair<TabSwitcherGroupCardFacility, UndoSnackbarFacility> groupTabsWithoutDialog() {
         assert mListEditor.isAnyGroupSelected();
         return mGroupWithoutDialogMenuItem.scrollToAndSelect();
     }
 
     /** Factory for the result of {@link #groupTabsWithoutDialog()}. */
-    private Pair<TabSwitcherGroupCardFacility, UndoGroupSnackbarFacility> doGroupTabsWithoutDialog(
-            ItemOnScreenFacility<Pair<TabSwitcherGroupCardFacility, UndoGroupSnackbarFacility>>
+    private Pair<TabSwitcherGroupCardFacility, UndoSnackbarFacility> doGroupTabsWithoutDialog(
+            ItemOnScreenFacility<Pair<TabSwitcherGroupCardFacility, UndoSnackbarFacility>>
                     itemOnScreen) {
         List<Integer> tabIdsSelected = mListEditor.getAllTabIdsSelected();
         String title = TabGroupUtil.getNumberOfTabsString(tabIdsSelected.size());
-        String snackbarMessage = TabGroupUtil.getSnackbarMessageString(tabIdsSelected.size());
+        String snackbarMessage =
+                TabGroupUtil.getUndoGroupTabsSnackbarMessageString(tabIdsSelected.size());
         var card = new TabSwitcherGroupCardFacility(/* cardIndex= */ null, tabIdsSelected, title);
-        var undoSnackbar = new UndoGroupSnackbarFacility(snackbarMessage);
+        var undoSnackbar = new UndoSnackbarFacility(snackbarMessage);
         mHostStation.swapFacilitiesSync(
                 List.of(this, mListEditor, itemOnScreen),
                 List.of(card, undoSnackbar),

@@ -58,6 +58,7 @@ import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherGroupCardFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
+import org.chromium.chrome.test.transit.hub.UndoSnackbarFacility;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
@@ -606,6 +607,44 @@ public class TabSwitcherLayoutPTTest {
         // Assert that the expected fields are correct
         tabSwitcher.expectGroupCard(List.of(firstTabId, secondTabId), "Test");
         verifyGroupCardColor(TabGroupColorId.BLUE);
+
+        // Open NTP PageStation for InitialStateRule to reset
+        RegularNewTabPageStation ntp = tabSwitcher.openNewTab();
+        assertFinalDestination(ntp);
+    }
+
+    @Test
+    @MediumTest
+    public void testTabGroupOverflowMenuInTabSwitcher_closeGroup() {
+        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+
+        // Open 2 tabs
+        int firstTabId = firstPage.getLoadedTab().getId();
+        RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
+        int secondTabId = secondPage.getLoadedTab().getId();
+        RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
+
+        // Group both tabs
+        TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
+        editor = editor.addTabToSelection(0, firstTabId);
+        editor = editor.addTabToSelection(1, secondTabId);
+        NewTabGroupDialogFacility dialog = editor.openAppMenuWithEditor().groupTabs();
+        dialog.pressDone();
+
+        // Close the tab group via the app menu
+        TabSwitcherGroupCardFacility tabGroupCard =
+                tabSwitcher.expectGroupCard(
+                        List.of(firstTabId, secondTabId),
+                        TabSwitcherGroupCardFacility.DEFAULT_N_TABS_TITLE);
+        UndoSnackbarFacility undoSnackbar = tabGroupCard.openAppMenu().closeRegularTabGroup();
+        tabSwitcher.verifyTabSwitcherCardCount(0);
+
+        // Press undo to verify that functionality
+        undoSnackbar.pressUndo();
+        tabSwitcher.expectGroupCard(
+                List.of(firstTabId, secondTabId),
+                TabSwitcherGroupCardFacility.DEFAULT_N_TABS_TITLE);
+        tabSwitcher.verifyTabSwitcherCardCount(1);
 
         // Open NTP PageStation for InitialStateRule to reset
         RegularNewTabPageStation ntp = tabSwitcher.openNewTab();

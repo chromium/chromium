@@ -36,7 +36,7 @@ import org.chromium.chrome.test.transit.hub.TabSwitcherGroupCardFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherTabCardFacility;
-import org.chromium.chrome.test.transit.hub.UndoGroupSnackbarFacility;
+import org.chromium.chrome.test.transit.hub.UndoSnackbarFacility;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.TabBinningUtil;
@@ -250,7 +250,7 @@ public class TabSwitcherListEditorPTTest {
         TabBinningUtil.assertBinsEqual(tabModel, group(secondTabId, firstTabId, thirdTabId));
 
         // Ungroup and revert to only first and second tabs grouped, and third tab by itself
-        UndoGroupSnackbarFacility undoSnackbar = groupMergedResult.second;
+        UndoSnackbarFacility undoSnackbar = groupMergedResult.second;
         undoSnackbar.pressUndo();
         tabSwitcher.expectGroupCard(
                 List.of(firstTabId, secondTabId),
