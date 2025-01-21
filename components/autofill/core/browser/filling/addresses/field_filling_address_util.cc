@@ -530,18 +530,17 @@ std::pair<std::u16string, FieldType> GetFillingValueAndTypeForProfile(
     const FormFieldData& field_data,
     AddressNormalizer* address_normalizer,
     std::string* failure_to_fill) {
-  AutofillType filling_type = profile.GetFillingType(field_type);
-  CHECK(IsAddressType(filling_type.GetStorableType()));
+  CHECK(IsAddressType(field_type.GetStorableType()));
   std::u16string value = GetValueForProfileForInput(
-      profile, app_locale, filling_type, field_data, failure_to_fill);
+      profile, app_locale, field_type, field_data, failure_to_fill);
 
   if (field_data.IsSelectElement() && !value.empty()) {
     value = GetValueForProfileSelectControl(
         profile, value, app_locale, field_data.options(),
-        filling_type.GetStorableType(), address_normalizer, failure_to_fill);
+        field_type.GetStorableType(), address_normalizer, failure_to_fill);
   }
 
-  return {value, filling_type.GetStorableType()};
+  return {value, field_type.GetStorableType()};
 }
 
 std::u16string GetPhoneNumberValueForInput(

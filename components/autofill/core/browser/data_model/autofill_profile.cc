@@ -1294,40 +1294,6 @@ void AutofillProfile::ClearFields(const FieldTypeSet& fields) {
   }
 }
 
-AutofillType AutofillProfile::GetFillingType(AutofillType field_type) const {
-  if (HasInfo(field_type)) {
-    return field_type;
-  }
-  switch (field_type.group()) {
-    case FieldTypeGroup::kName:
-      return AutofillType(
-          GetNameInfo().GetStructuredName().GetFallbackTypeForType(
-              field_type.GetStorableType()));
-    case FieldTypeGroup::kAddress:
-      return AutofillType(GetAddress().GetRoot().GetFallbackTypeForType(
-          field_type.GetStorableType()));
-    case FieldTypeGroup::kEmail:
-    case FieldTypeGroup::kCompany:
-    case FieldTypeGroup::kPhone:
-      return field_type;
-    // For field-by-field filling in manual fallback autofill, the field's type
-    // will not be used but the type that generated the suggested value will.
-    // This means that this function will return at the `HasInfo` since we do
-    // not suggest filling empty values.
-    case FieldTypeGroup::kNoGroup:
-    case FieldTypeGroup::kCreditCard:
-    case FieldTypeGroup::kPasswordField:
-    case FieldTypeGroup::kTransaction:
-    case FieldTypeGroup::kUsernameField:
-    case FieldTypeGroup::kUnfillable:
-    case FieldTypeGroup::kIban:
-    case FieldTypeGroup::kStandaloneCvcField:
-    case FieldTypeGroup::kAutofillAi:
-      NOTREACHED();
-  }
-  NOTREACHED();
-}
-
 UsageHistoryInformation& AutofillProfile::usage_history() {
   return usage_history_information_;
 }
