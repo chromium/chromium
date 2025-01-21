@@ -17,7 +17,7 @@ Add `bitflags` to your `Cargo.toml`:
 
 ```toml
 [dependencies.bitflags]
-version = "2.6.0"
+version = "2.8.0"
 ```
 
 ## Generating flags types
@@ -71,10 +71,10 @@ You can derive some traits on generated flags types if you enable Cargo features
 libraries are currently supported:
 
 - `serde`: Support `#[derive(Serialize, Deserialize)]`, using text for human-readable formats,
-and a raw number for binary formats.
+  and a raw number for binary formats.
 - `arbitrary`: Support `#[derive(Arbitrary)]`, only generating flags values with known bits.
 - `bytemuck`: Support `#[derive(Pod, Zeroable)]`, for casting between flags values and their
-underlying bits values.
+  underlying bits values.
 
 You can also define your own flags type outside of the [`bitflags`] macro and then use it to generate methods.
 This can be useful if you need a custom `#[derive]` attribute for a library that `bitflags` doesn't
@@ -790,6 +790,104 @@ macro_rules! __impl_bitflags {
             }
         }
     };
+}
+
+/// A macro that matches flags values, similar to Rust's `match` statement.
+///
+/// In a regular `match` statement, the syntax `Flag::A | Flag::B` is interpreted as an or-pattern,
+/// instead of the bitwise-or of `Flag::A` and `Flag::B`. This can be surprising when combined with flags types
+/// because `Flag::A | Flag::B` won't match the pattern `Flag::A | Flag::B`. This macro is an alternative to
+/// `match` for flags values that doesn't have this issue.
+///
+/// # Syntax
+///
+/// ```ignore
+/// bitflags_match!(expression, {
+///     pattern1 => result1,
+///     pattern2 => result2,
+///     ..
+///     _ => default_result,
+/// })
+/// ```
+///
+/// The final `_ => default_result` arm is required, otherwise the macro will fail to compile.
+///
+/// # Examples
+///
+/// ```rust
+/// use bitflags::{bitflags, bitflags_match};
+///
+/// bitflags! {
+///     #[derive(PartialEq)]
+///     struct Flags: u8 {
+///         const A = 1 << 0;
+///         const B = 1 << 1;
+///         const C = 1 << 2;
+///     }
+/// }
+///
+/// let flags = Flags::A | Flags::B;
+///
+/// bitflags_match!(flags, {
+///     Flags::A | Flags::B => println!("A and/or B are set"),
+///     _ => println!("neither A nor B are set"),
+/// })
+/// ```
+///
+/// # How it works
+///
+/// The macro expands to a series of `if` statements, checking equality between the input expression
+/// and each pattern. This allows for correct matching of bitflag combinations, which is not possible
+/// with a regular match expression due to the way bitflags are implemented.
+///
+/// Patterns are evaluated in order.
+#[macro_export]
+macro_rules! bitflags_match {
+    ($operation:expr, {
+        $($t:tt)*
+    }) => {
+        // Expand to a closure so we can use `return`
+        // This makes it possible to apply attributes to the "match arms"
+        (|| {
+            $crate::__bitflags_match!($operation, { $($t)* })
+        })()
+    };
+}
+
+/// Expand the `bitflags_match` macro
+#[macro_export]
+#[doc(hidden)]
+macro_rules! __bitflags_match {
+    // Eat an optional `,` following a block match arm
+    ($operation:expr, { $pattern:expr => { $($body:tt)* } , $($t:tt)+ }) => {
+        $crate::__bitflags_match!($operation, { $pattern => { $($body)* } $($t)+ })
+    };
+    // Expand a block match arm `A => { .. }`
+    ($operation:expr, { $pattern:expr => { $($body:tt)* } $($t:tt)+ }) => {
+        {
+            if $operation == $pattern {
+                return {
+                    $($body)*
+                };
+            }
+
+            $crate::__bitflags_match!($operation, { $($t)+ })
+        }
+    };
+    // Expand an expression match arm `A => x,`
+    ($operation:expr, { $pattern:expr => $body:expr , $($t:tt)+ }) => {
+        {
+            if $operation == $pattern {
+                return $body;
+            }
+
+            $crate::__bitflags_match!($operation, { $($t)+ })
+        }
+    };
+    // Expand the default case
+    ($operation:expr, { _ => $default:expr $(,)? }) => {
+        $default
+    }
 }
 
 /// A macro that processed the input to `bitflags!` and shuffles attributes around

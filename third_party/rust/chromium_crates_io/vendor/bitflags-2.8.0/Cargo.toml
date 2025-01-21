@@ -13,12 +13,18 @@
 edition = "2021"
 rust-version = "1.56.0"
 name = "bitflags"
-version = "2.6.0"
+version = "2.8.0"
 authors = ["The Rust Project Developers"]
+build = false
 exclude = [
     "/tests",
     "/.github",
 ]
+autolib = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = """
 A macro to generate structures which behave like bitflags.
 """
@@ -37,6 +43,34 @@ repository = "https://github.com/bitflags/bitflags"
 
 [package.metadata.docs.rs]
 features = ["example_generated"]
+
+[lib]
+name = "bitflags"
+path = "src/lib.rs"
+
+[[example]]
+name = "custom_bits_type"
+path = "examples/custom_bits_type.rs"
+
+[[example]]
+name = "custom_derive"
+path = "examples/custom_derive.rs"
+
+[[example]]
+name = "fmt"
+path = "examples/fmt.rs"
+
+[[example]]
+name = "macro_free"
+path = "examples/macro_free.rs"
+
+[[example]]
+name = "serde"
+path = "examples/serde.rs"
+
+[[bench]]
+name = "parse"
+path = "benches/parse.rs"
 
 [dependencies.arbitrary]
 version = "1.0"
@@ -84,7 +118,7 @@ version = "1.0.19"
 version = "1.0.18"
 
 [dev-dependencies.zerocopy]
-version = "0.7"
+version = "0.8"
 features = ["derive"]
 
 [features]

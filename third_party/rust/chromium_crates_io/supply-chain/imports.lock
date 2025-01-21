@@ -2,12 +2,6 @@
 # cargo-vet imports lock
 
 [[publisher.libc]]
-version = "0.2.168"
-when = "2024-12-09"
-user-id = 55123
-user-login = "rust-lang-owner"
-
-[[publisher.libc]]
 version = "0.2.169"
 when = "2024-12-19"
 user-id = 55123

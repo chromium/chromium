@@ -9,7 +9,7 @@ pub fn arbitrary<'a, B: Flags>(u: &mut arbitrary::Unstructured<'a>) -> arbitrary
 where
     B::Bits: arbitrary::Arbitrary<'a>,
 {
-    B::from_bits(u.arbitrary()?).ok_or_else(|| arbitrary::Error::IncorrectFormat)
+    B::from_bits(u.arbitrary()?).ok_or(arbitrary::Error::IncorrectFormat)
 }
 
 #[cfg(test)]

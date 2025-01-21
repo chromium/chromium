@@ -1,4 +1,5 @@
 mod all;
+mod bitflags_match;
 mod bits;
 mod complement;
 mod contains;
@@ -21,7 +22,9 @@ mod iter;
 mod parser;
 mod remove;
 mod symmetric_difference;
+mod truncate;
 mod union;
+mod unknown;
 
 bitflags! {
     #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]

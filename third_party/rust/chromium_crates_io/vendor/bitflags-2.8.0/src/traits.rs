@@ -152,6 +152,11 @@ pub trait Flags: Sized + 'static {
         Self::from_bits_retain(truncated)
     }
 
+    /// This method will return `true` if any unknown bits are set.
+    fn contains_unknown_bits(&self) -> bool {
+        Self::all().bits() & self.bits() != self.bits()
+    }
+
     /// Get the underlying bits value.
     ///
     /// The returned value is exactly the bits set in this flags value.
@@ -239,6 +244,14 @@ pub trait Flags: Sized + 'static {
         Self: Sized,
     {
         self.bits() & other.bits() == other.bits()
+    }
+
+    /// Remove any unknown bits from the flags.
+    fn truncate(&mut self)
+    where
+        Self: Sized,
+    {
+        *self = Self::from_bits_truncate(self.bits());
     }
 
     /// The bitwise or (`|`) of the bits in two flags values.

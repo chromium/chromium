@@ -1,3 +1,31 @@
+# 2.8.0
+
+## What's Changed
+* feat(core): Add bitflags_match macro for bitflag matching by @YuniqueUnic in https://github.com/bitflags/bitflags/pull/423
+* Finalize bitflags_match by @KodrAus in https://github.com/bitflags/bitflags/pull/431
+
+## New Contributors
+* @YuniqueUnic made their first contribution in https://github.com/bitflags/bitflags/pull/423
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.7.0...2.8.0
+
+# 2.7.0
+
+## What's Changed
+* Fix `clippy::doc_lazy_continuation` lints by @waywardmonkeys in https://github.com/bitflags/bitflags/pull/414
+* Run clippy on extra features in CI. by @waywardmonkeys in https://github.com/bitflags/bitflags/pull/415
+* Fix CI: trybuild refresh, allow some clippy restrictions. by @waywardmonkeys in https://github.com/bitflags/bitflags/pull/417
+* Update zerocopy version in example by @KodrAus in https://github.com/bitflags/bitflags/pull/422
+* Add method to check if unknown bits are set by @wysiwys in https://github.com/bitflags/bitflags/pull/426
+* Update error messages by @KodrAus in https://github.com/bitflags/bitflags/pull/427
+* Add `truncate(&mut self)` method to unset unknown bits by @wysiwys in https://github.com/bitflags/bitflags/pull/428
+* Update error messages by @KodrAus in https://github.com/bitflags/bitflags/pull/429
+
+## New Contributors
+* @wysiwys made their first contribution in https://github.com/bitflags/bitflags/pull/426
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.6.0...2.7.0
+
 # 2.6.0
 
 ## What's Changed
