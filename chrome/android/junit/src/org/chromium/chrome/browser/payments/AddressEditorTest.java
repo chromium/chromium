@@ -434,7 +434,7 @@ public class AddressEditorTest {
         assertEquals(2, editorFields.size());
 
         FieldItem countryDropdownItem = editorFields.get(0);
-        assertEquals(countryDropdownItem.type, DROPDOWN);
+        assertEquals(DROPDOWN, countryDropdownItem.type);
         assertTrue(countryDropdownItem.isFullLine);
 
         PropertyModel countryDropdown = countryDropdownItem.model;
@@ -510,7 +510,7 @@ public class AddressEditorTest {
                 containsInAnyOrder(adminAreaDropdown.get(DROPDOWN_KEY_VALUE_LIST).toArray()));
 
         assertEquals(adminAreaDropdown.get(VALUE), sProfile.getRegion());
-        assertEquals(adminAreaDropdown.get(LABEL), "admin area label");
+        assertEquals("admin area label", adminAreaDropdown.get(LABEL));
     }
 
     @Test
@@ -738,11 +738,11 @@ public class AddressEditorTest {
         AutofillAddress address = mAddressCapture.getValue();
         assertNotNull(address);
         AutofillProfile profile = address.getProfile();
-        assertEquals(profile.getStreetAddress(), "111 First St");
-        assertEquals(profile.getDependentLocality(), "");
-        assertEquals(profile.getCompanyName(), "Google");
-        assertEquals(profile.getPostalCode(), "90291");
-        assertEquals(profile.getSortingCode(), "");
+        assertEquals("111 First St", profile.getStreetAddress());
+        assertEquals("", profile.getDependentLocality());
+        assertEquals("Google", profile.getCompanyName());
+        assertEquals("90291", profile.getPostalCode());
+        assertEquals("", profile.getSortingCode());
     }
 
     @Test

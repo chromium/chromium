@@ -1728,7 +1728,7 @@ public class WebContentsAccessibilityTest {
         RectF[] result =
                 (RectF[]) extras.getParcelableArray(EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY);
         Assert.assertNotEquals(result, null);
-        Assert.assertEquals(result.length, 4);
+        Assert.assertEquals(4, result.length);
         Assert.assertEquals(result[0], result[1]);
         Assert.assertEquals(result[0], result[2]);
         Assert.assertEquals(result[0], result[3]);

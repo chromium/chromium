@@ -288,20 +288,20 @@ public class AwContentsTest extends AwParameterizedTest {
                     AwSettings awSettings = awContents.getSettings();
 
                     Assert.assertEquals(
-                            awContents.getEffectiveBackgroundColorForTesting(), Color.WHITE);
+                            Color.WHITE, awContents.getEffectiveBackgroundColorForTesting());
 
                     awSettings.setForceDarkMode(AwSettings.FORCE_DARK_ON);
                     Assert.assertTrue(awSettings.isForceDarkApplied());
                     Assert.assertEquals(
-                            awContents.getEffectiveBackgroundColorForTesting(), Color.BLACK);
+                            Color.BLACK, awContents.getEffectiveBackgroundColorForTesting());
 
                     awContents.setBackgroundColor(Color.RED);
                     Assert.assertEquals(
-                            awContents.getEffectiveBackgroundColorForTesting(), Color.RED);
+                            Color.RED, awContents.getEffectiveBackgroundColorForTesting());
 
                     awContents.destroy();
                     Assert.assertEquals(
-                            awContents.getEffectiveBackgroundColorForTesting(), Color.RED);
+                            Color.RED, awContents.getEffectiveBackgroundColorForTesting());
                 });
     }
 

@@ -180,8 +180,8 @@ public class ChromeTabbedActivityTest {
         // Verify that tab has importance MODERATE.
         Assert.assertEquals(
                 "Tab process does not have importance MODERATE",
-                importance,
-                ChildProcessImportance.MODERATE);
+                ChildProcessImportance.MODERATE,
+                importance);
         // Fake sending the activity to focused.
         importance =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -192,8 +192,8 @@ public class ChromeTabbedActivityTest {
         // Verify that tab has importance IMPORTANT.
         Assert.assertEquals(
                 "Tab process does not have importance IMPORTANT",
-                importance,
-                ChildProcessImportance.IMPORTANT);
+                ChildProcessImportance.IMPORTANT,
+                importance);
     }
 
     @Test

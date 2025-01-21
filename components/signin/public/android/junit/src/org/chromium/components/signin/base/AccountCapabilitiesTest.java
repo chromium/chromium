@@ -214,21 +214,21 @@ public final class AccountCapabilitiesTest {
     @ParameterAnnotations.UseMethodParameter(CapabilitiesTestParams.class)
     public void testCapabilityResponseException(String capabilityName) {
         AccountCapabilities capabilities = new AccountCapabilities(Map.of());
-        Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.UNKNOWN);
+        Assert.assertEquals(Tribool.UNKNOWN, getCapability(capabilityName, capabilities));
     }
 
     @Test
     @ParameterAnnotations.UseMethodParameter(CapabilitiesTestParams.class)
     public void testCapabilityResponseYes(String capabilityName) {
         AccountCapabilities capabilities = new AccountCapabilities(Map.of(capabilityName, true));
-        Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.TRUE);
+        Assert.assertEquals(Tribool.TRUE, getCapability(capabilityName, capabilities));
     }
 
     @Test
     @ParameterAnnotations.UseMethodParameter(CapabilitiesTestParams.class)
     public void testCapabilityResponseNo(String capabilityName) {
         AccountCapabilities capabilities = new AccountCapabilities(Map.of(capabilityName, false));
-        Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.FALSE);
+        Assert.assertEquals(Tribool.FALSE, getCapability(capabilityName, capabilities));
     }
 
     @Test
@@ -240,7 +240,7 @@ public final class AccountCapabilitiesTest {
 
         for (String capabilityName :
                 AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES) {
-            Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.TRUE);
+            Assert.assertEquals(Tribool.TRUE, getCapability(capabilityName, capabilities));
         }
     }
 
@@ -252,7 +252,7 @@ public final class AccountCapabilitiesTest {
 
         for (String capabilityName :
                 AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES) {
-            Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.FALSE);
+            Assert.assertEquals(Tribool.FALSE, getCapability(capabilityName, capabilities));
         }
     }
 
@@ -265,7 +265,7 @@ public final class AccountCapabilitiesTest {
 
         for (String capabilityName :
                 AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES) {
-            Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.UNKNOWN);
+            Assert.assertEquals(Tribool.UNKNOWN, getCapability(capabilityName, capabilities));
         }
     }
 }

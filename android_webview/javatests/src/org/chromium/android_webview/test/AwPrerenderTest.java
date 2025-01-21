@@ -344,7 +344,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         // Wait until the page is activated.
         onPageStartedHelper.waitForCallback(
                 currentOnPageStartedCallCount, 1, SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        Assert.assertEquals(onPageStartedHelper.getUrl(), expectedActivatedUrl);
+        Assert.assertEquals(expectedActivatedUrl, onPageStartedHelper.getUrl());
 
         // Make sure the page was actually prerendered and then activated. These checks are
         // available only for a page served from PRERENDER_URL, as these depend on JavaScript code
@@ -437,7 +437,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
         // onPageStarted should never be called for prerender initial navigation.
-        Assert.assertEquals(onPageStartedHelper.getCallCount(), 1);
+        Assert.assertEquals(1, onPageStartedHelper.getCallCount());
         Assert.assertEquals(onPageStartedHelper.getUrl(), mPageUrl);
 
         activatePage(mPrerenderingUrl, ActivationBy.JAVASCRIPT);
@@ -457,7 +457,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
         // onPageStarted should never be called for prerender initial navigation.
-        Assert.assertEquals(onPageStartedHelper.getCallCount(), 1);
+        Assert.assertEquals(1, onPageStartedHelper.getCallCount());
         Assert.assertEquals(onPageStartedHelper.getUrl(), mPageUrl);
 
         activatePage(mPrerenderingUrl, ActivationBy.LOAD_URL);
@@ -484,7 +484,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
         // onPageStarted should never be called for prerender initial navigation.
-        Assert.assertEquals(onPageStartedHelper.getCallCount(), 1);
+        Assert.assertEquals(1, onPageStartedHelper.getCallCount());
         Assert.assertEquals(onPageStartedHelper.getUrl(), mPageUrl);
 
         // Make sure that prerendering navigation has the Sec-Purpose header.
@@ -1031,7 +1031,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertNotNull(request);
         HashMap<String, String> requestHeaders = request.requestHeaders;
         Assert.assertNotNull(requestHeaders);
-        Assert.assertEquals(requestHeaders.get("Sec-Purpose"), "prefetch;prerender");
+        Assert.assertEquals("prefetch;prerender", requestHeaders.get("Sec-Purpose"));
 
         currentShouldInterceptRequestCallCount = shouldInterceptRequestHelper.getCallCount();
         activatePage(mPrerenderingUrl, ActivationBy.JAVASCRIPT);
@@ -1081,7 +1081,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertNotNull(request);
         HashMap<String, String> requestHeaders = request.requestHeaders;
         Assert.assertNotNull(requestHeaders);
-        Assert.assertEquals(requestHeaders.get("Sec-Purpose"), "prefetch;prerender");
+        Assert.assertEquals("prefetch;prerender", requestHeaders.get("Sec-Purpose"));
 
         // Check if the first subresource request (sendBeacon) was intercepted during prerendering.
         AwContentsClient.AwWebResourceRequest beaconRequest =
@@ -1089,7 +1089,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertNotNull(beaconRequest);
         HashMap<String, String> beaconRequestHeaders = beaconRequest.requestHeaders;
         Assert.assertNotNull(beaconRequestHeaders);
-        Assert.assertEquals(beaconRequestHeaders.get("Sec-Purpose"), "prefetch;prerender");
+        Assert.assertEquals("prefetch;prerender", beaconRequestHeaders.get("Sec-Purpose"));
 
         // Activate the page. This should not be intercepted.
         activatePage(prerenderingUrl, ActivationBy.JAVASCRIPT);
@@ -1185,7 +1185,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 shouldOverrideUrlLoadingHelper.requestHeaders();
         Assert.assertNotNull(requestHeadersOnShouldOverride);
         Assert.assertEquals(
-                requestHeadersOnShouldOverride.get("Sec-Purpose"), "prefetch;prerender");
+                "prefetch;prerender", requestHeadersOnShouldOverride.get("Sec-Purpose"));
 
         currentShouldOverrideUrlLoadingCallCount = shouldOverrideUrlLoadingHelper.getCallCount();
         activatePage(mPrerenderingUrl, ActivationBy.JAVASCRIPT);
@@ -1231,7 +1231,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 shouldOverrideUrlLoadingHelper.requestHeaders();
         Assert.assertNotNull(requestHeadersOnShouldOverride);
         Assert.assertEquals(
-                requestHeadersOnShouldOverride.get("Sec-Purpose"), "prefetch;prerender");
+                "prefetch;prerender", requestHeadersOnShouldOverride.get("Sec-Purpose"));
 
         // Check if the redirected prerendering navigation is also visible to
         // shouldOverrideUrlLoading.
@@ -1243,7 +1243,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         requestHeadersOnShouldOverride = shouldOverrideUrlLoadingHelper.requestHeaders();
         Assert.assertNotNull(requestHeadersOnShouldOverride);
         Assert.assertEquals(
-                requestHeadersOnShouldOverride.get("Sec-Purpose"), "prefetch;prerender");
+                "prefetch;prerender", requestHeadersOnShouldOverride.get("Sec-Purpose"));
 
         currentShouldOverrideUrlLoadingCallCount = shouldOverrideUrlLoadingHelper.getCallCount();
 
@@ -1290,7 +1290,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
             helper.waitForCallback(callCount);
             Assert.assertEquals(helper.getUrls(), Arrays.asList(prerenderUrl));
             AwContentsClient.AwWebResourceRequest request = helper.getRequestsForUrl(prerenderUrl);
-            Assert.assertEquals(request.requestHeaders.get("Sec-Purpose"), "prefetch;prerender");
+            Assert.assertEquals("prefetch;prerender", request.requestHeaders.get("Sec-Purpose"));
         }
 
         {
@@ -1300,7 +1300,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
             Assert.assertEquals(helper.getUrls(), Arrays.asList(scriptUrl));
             AwContentsClient.AwWebResourceRequest request = helper.getRequestsForUrl(scriptUrl);
             // Subframe navigation of prerendered page also has a Sec-Purpose header.
-            Assert.assertEquals(request.requestHeaders.get("Sec-Purpose"), "prefetch;prerender");
+            Assert.assertEquals("prefetch;prerender", request.requestHeaders.get("Sec-Purpose"));
         }
 
         {
@@ -1310,7 +1310,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
             Assert.assertEquals(helper.getUrls(), Arrays.asList(subframeUrl1));
             AwContentsClient.AwWebResourceRequest request = helper.getRequestsForUrl(subframeUrl1);
             // Subframe navigation of prerendered page also has a Sec-Purpose header.
-            Assert.assertEquals(request.requestHeaders.get("Sec-Purpose"), "prefetch;prerender");
+            Assert.assertEquals("prefetch;prerender", request.requestHeaders.get("Sec-Purpose"));
         }
 
         {
@@ -1351,7 +1351,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
         // onPageStarted should never be called for prerender initial navigation.
-        Assert.assertEquals(onPageStartedHelper.getCallCount(), 1);
+        Assert.assertEquals(1, onPageStartedHelper.getCallCount());
         Assert.assertEquals(onPageStartedHelper.getUrl(), mPageUrl);
 
         // This future is notified after a message is posted. However, messages posted by

@@ -347,7 +347,7 @@ public class BasicSuggestionProcessorUnitTest {
 
         final List<BaseSuggestionViewProperties.Action> actions =
                 mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
-        Assert.assertEquals(actions.size(), 1);
+        Assert.assertEquals(1, actions.size());
         final OmniboxDrawableState iconState = actions.get(0).icon;
         Assert.assertEquals(
                 R.drawable.btn_suggestion_refine,
@@ -378,7 +378,7 @@ public class BasicSuggestionProcessorUnitTest {
 
         final List<BaseSuggestionViewProperties.Action> actions =
                 mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
-        Assert.assertEquals(actions.size(), 1);
+        Assert.assertEquals(1, actions.size());
         final OmniboxDrawableState iconState = actions.get(0).icon;
         Assert.assertEquals(
                 R.drawable.switch_to_tab, shadowOf(iconState.drawable).getCreatedFromResId());
@@ -443,10 +443,10 @@ public class BasicSuggestionProcessorUnitTest {
     public void searchSuggestions_searchQueriesCanWrapAroundWithFeatureEnabled() {
         mProcessor.onNativeInitialized();
         createSearchSuggestion(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED, "");
-        Assert.assertEquals(mModel.get(SuggestionViewProperties.ALLOW_WRAP_AROUND), true);
+        Assert.assertEquals(true, mModel.get(SuggestionViewProperties.ALLOW_WRAP_AROUND));
 
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
-        Assert.assertEquals(mModel.get(SuggestionViewProperties.ALLOW_WRAP_AROUND), false);
+        Assert.assertEquals(false, mModel.get(SuggestionViewProperties.ALLOW_WRAP_AROUND));
     }
 
     @Test

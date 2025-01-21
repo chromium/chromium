@@ -343,7 +343,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
 
         // Check text summary.
         String expectedSummary = fragment.getString(R.string.identity_error_card_button_verify);
-        Assert.assertEquals(encryption.getSummary().toString(), expectedSummary);
+        Assert.assertEquals(expectedSummary, encryption.getSummary().toString());
 
         // Mimic the user tapping on Encryption.
         clickPreference(encryption);

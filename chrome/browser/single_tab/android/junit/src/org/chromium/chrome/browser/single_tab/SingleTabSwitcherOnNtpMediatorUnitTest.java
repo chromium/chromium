@@ -166,7 +166,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         eq(mUrl), eq(false), mFaviconCallbackCaptor.capture());
         verify(mTabContentManager)
                 .getTabThumbnailWithCallback(eq(mTabId), eq(thumbnailSize), any());
-        assertEquals(mPropertyModel.get(TITLE), mTitle);
+        assertEquals(mTitle, mPropertyModel.get(TITLE));
         assertEquals(mUrlHost, mPropertyModel.get(URL));
         assertTrue(mPropertyModel.get(IS_VISIBLE));
         if (moduleDelegate != null) {
@@ -244,7 +244,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
         verify(mTabListFaviconProvider)
                 .getFaviconDrawableForUrlAsync(
                         eq(mUrl), eq(false), mFaviconCallbackCaptor.capture());
-        assertEquals(mPropertyModel.get(TITLE), mTitle);
+        assertEquals(mTitle, mPropertyModel.get(TITLE));
         assertTrue(mediator.getInitialized());
 
         mediator.setMostRecentTab(mTab2);
@@ -252,7 +252,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
 
         verify(mTabListFaviconProvider, times(1))
                 .getFaviconDrawableForUrlAsync(any(), anyBoolean(), any());
-        assertEquals(mPropertyModel.get(TITLE), mTitle);
+        assertEquals(mTitle, mPropertyModel.get(TITLE));
         assertNotEquals(mPropertyModel.get(TITLE), mTitle2);
     }
 
@@ -287,7 +287,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
         verify(mTab3).addObserver(mTabObserverCaptor.capture());
         doReturn(mTitle).when(mTab3).getTitle();
         mTabObserverCaptor.getValue().onPageLoadFinished(mTab3, mUrl);
-        assertEquals(mPropertyModel.get(TITLE), mTitle);
+        assertEquals(mTitle, mPropertyModel.get(TITLE));
         verify(mTab3).removeObserver(mTabObserverCaptor.getValue());
     }
 

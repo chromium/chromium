@@ -150,13 +150,13 @@ public class NewTabAnimationLayoutUnitTest {
     @Test
     public void testConstants() {
         assertEquals(
-                mNewTabAnimationLayout.getViewportMode(),
-                ViewportMode.USE_PREVIOUS_BROWSER_CONTROLS_STATE);
+                ViewportMode.USE_PREVIOUS_BROWSER_CONTROLS_STATE,
+                mNewTabAnimationLayout.getViewportMode());
         assertTrue(mNewTabAnimationLayout.handlesTabCreating());
         assertFalse(mNewTabAnimationLayout.handlesTabClosing());
         assertThat(mNewTabAnimationLayout.getEventFilter(), instanceOf(BlackHoleEventFilter.class));
         assertThat(mNewTabAnimationLayout.getSceneLayer(), instanceOf(StaticTabSceneLayer.class));
-        assertEquals(mNewTabAnimationLayout.getLayoutType(), LayoutType.SIMPLE_ANIMATION);
+        assertEquals(LayoutType.SIMPLE_ANIMATION, mNewTabAnimationLayout.getLayoutType());
     }
 
     @Test
@@ -189,7 +189,7 @@ public class NewTabAnimationLayoutUnitTest {
         verify(mTabModel).setIndex(1, TabSelectionType.FROM_USER);
 
         assertEquals(
-                mAnimationHostView.getContentSensitivity(), View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+                View.CONTENT_SENSITIVITY_NOT_SENSITIVE, mAnimationHostView.getContentSensitivity());
     }
 
     @Test
@@ -198,7 +198,7 @@ public class NewTabAnimationLayoutUnitTest {
 
         mNewTabAnimationLayout.onTabCreating(CURRENT_TAB_ID);
         assertEquals(
-                mAnimationHostView.getContentSensitivity(), View.CONTENT_SENSITIVITY_SENSITIVE);
+                View.CONTENT_SENSITIVITY_SENSITIVE, mAnimationHostView.getContentSensitivity());
     }
 
     @Test
@@ -215,7 +215,7 @@ public class NewTabAnimationLayoutUnitTest {
                 /* originX= */ 0f,
                 /* originY= */ 0f);
         assertEquals(
-                mAnimationHostView.getContentSensitivity(), View.CONTENT_SENSITIVITY_SENSITIVE);
+                View.CONTENT_SENSITIVITY_SENSITIVE, mAnimationHostView.getContentSensitivity());
         assertFalse(mNewTabAnimationLayout.isStartingToHide());
     }
 

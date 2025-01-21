@@ -416,8 +416,8 @@ public class DetachedResourceRequestTest {
                 () -> {
                     PrefService prefs = UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     Assert.assertEquals(
-                            prefs.getInteger(COOKIE_CONTROLS_MODE),
-                            CookieControlsMode.INCOGNITO_ONLY);
+                            CookieControlsMode.INCOGNITO_ONLY,
+                            prefs.getInteger(COOKIE_CONTROLS_MODE));
                     prefs.setInteger(COOKIE_CONTROLS_MODE, CookieControlsMode.BLOCK_THIRD_PARTY);
                 });
         final Uri url = Uri.parse(mServer.getURL("/set-cookie?acookie;SameSite=none;Secure"));
@@ -462,8 +462,8 @@ public class DetachedResourceRequestTest {
                 () -> {
                     PrefService prefs = UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     Assert.assertEquals(
-                            prefs.getInteger(COOKIE_CONTROLS_MODE),
-                            CookieControlsMode.INCOGNITO_ONLY);
+                            CookieControlsMode.INCOGNITO_ONLY,
+                            prefs.getInteger(COOKIE_CONTROLS_MODE));
                 });
 
         // Of the three cookies, only one that's both SameSite=None and Secure
@@ -508,8 +508,8 @@ public class DetachedResourceRequestTest {
                 () -> {
                     PrefService prefs = UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     Assert.assertEquals(
-                            prefs.getInteger(COOKIE_CONTROLS_MODE),
-                            CookieControlsMode.INCOGNITO_ONLY);
+                            CookieControlsMode.INCOGNITO_ONLY,
+                            prefs.getInteger(COOKIE_CONTROLS_MODE));
                     prefs.setInteger(COOKIE_CONTROLS_MODE, CookieControlsMode.BLOCK_THIRD_PARTY);
                 });
         final Uri url = Uri.parse(mServer.getURL("/set-cookie?acookie"));

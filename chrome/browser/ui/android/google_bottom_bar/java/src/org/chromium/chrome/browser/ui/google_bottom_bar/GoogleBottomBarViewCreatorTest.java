@@ -691,7 +691,7 @@ public class GoogleBottomBarViewCreatorTest {
     private void assertButtonCreated(
             ImageButton button, BottomBarConfig.ButtonConfig buttonConfig) {
         assertEquals(button.getId(), buttonConfig.getId());
-        assertEquals(button.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, button.getVisibility());
         assertEquals(button.getContentDescription(), buttonConfig.getDescription());
         assertEquals(button.getDrawable(), buttonConfig.getIcon());
         assertTrue(button.hasOnClickListeners());

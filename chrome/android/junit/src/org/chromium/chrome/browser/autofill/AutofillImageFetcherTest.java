@@ -83,7 +83,7 @@ public class AutofillImageFetcherTest {
 
         // Each card art image is cached at 2 resolutions: 32x20 for the Keyboard Accessory, and
         // 40x24 on all other surfaces.
-        assertEquals(cachedImages.size(), 4);
+        assertEquals(4, cachedImages.size());
         assertTrue(treatedImageSmall.sameAs(cachedImages.get(cachedValidUrlSmall1.getSpec())));
         assertTrue(treatedImageSmall.sameAs(cachedImages.get(cachedValidUrlSmall2.getSpec())));
         assertTrue(treatedImageLarge.sameAs(cachedImages.get(cachedValidUrlLarge1.getSpec())));
@@ -136,7 +136,7 @@ public class AutofillImageFetcherTest {
         Map<String, Bitmap> cachedImages = mImageFetcher.getCachedImagesForTesting();
 
         // Verify that the images are successfully fetched and cached.
-        assertEquals(cachedImages.size(), 2);
+        assertEquals(2, cachedImages.size());
         assertTrue(treatedImage.sameAs(cachedImages.get(cachedValidUrl1.getSpec())));
         assertTrue(treatedImage.sameAs(cachedImages.get(cachedValidUrl2.getSpec())));
 
@@ -162,7 +162,7 @@ public class AutofillImageFetcherTest {
         Map<String, Bitmap> cachedImages = mImageFetcher.getCachedImagesForTesting();
 
         // Verify that the cache contains only the already cached image.
-        assertEquals(cachedImages.size(), 1);
+        assertEquals(1, cachedImages.size());
         assertTrue(TEST_CARD_ART_IMAGE.sameAs(cachedImages.get(cachedValidUrl.getSpec())));
 
         expectedHistogram.assertExpected();

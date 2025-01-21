@@ -28,48 +28,48 @@ public class BitrateAdjusterTest {
     @SmallTest
     public void testNoAdjustmentDoesNotChangeTargetBitrate() {
         assertEquals(
-                BitrateAdjuster.getTargetBitrate(Type.NO_ADJUSTMENT, BITRATE_8_KBPS, 30),
-                BITRATE_8_KBPS);
+                BITRATE_8_KBPS,
+                BitrateAdjuster.getTargetBitrate(Type.NO_ADJUSTMENT, BITRATE_8_KBPS, 30));
         assertEquals(
-                BitrateAdjuster.getTargetBitrate(Type.NO_ADJUSTMENT, BITRATE_8_KBPS, 15),
-                BITRATE_8_KBPS);
+                BITRATE_8_KBPS,
+                BitrateAdjuster.getTargetBitrate(Type.NO_ADJUSTMENT, BITRATE_8_KBPS, 15));
     }
 
     @Test
     @SmallTest
     public void testNoAdjustmentInitialFrameRateIsClamped() {
-        assertEquals(BitrateAdjuster.getInitialFrameRate(Type.NO_ADJUSTMENT, 15), 15);
-        assertEquals(BitrateAdjuster.getInitialFrameRate(Type.NO_ADJUSTMENT, 30), 30);
-        assertEquals(BitrateAdjuster.getInitialFrameRate(Type.NO_ADJUSTMENT, 60), 30);
+        assertEquals(15, BitrateAdjuster.getInitialFrameRate(Type.NO_ADJUSTMENT, 15));
+        assertEquals(30, BitrateAdjuster.getInitialFrameRate(Type.NO_ADJUSTMENT, 30));
+        assertEquals(30, BitrateAdjuster.getInitialFrameRate(Type.NO_ADJUSTMENT, 60));
     }
 
     @Test
     @SmallTest
     public void testFrameRateAdjustmentAdjustsAccordingToFrameRate() {
         assertEquals(
-                BitrateAdjuster.getTargetBitrate(Type.FRAMERATE_ADJUSTMENT, BITRATE_8_KBPS, 30),
-                BITRATE_8_KBPS);
+                BITRATE_8_KBPS,
+                BitrateAdjuster.getTargetBitrate(Type.FRAMERATE_ADJUSTMENT, BITRATE_8_KBPS, 30));
         assertEquals(
-                BitrateAdjuster.getTargetBitrate(Type.FRAMERATE_ADJUSTMENT, BITRATE_8_KBPS, 15),
-                BITRATE_16_KBPS);
+                BITRATE_16_KBPS,
+                BitrateAdjuster.getTargetBitrate(Type.FRAMERATE_ADJUSTMENT, BITRATE_8_KBPS, 15));
         assertEquals(
-                BitrateAdjuster.getTargetBitrate(Type.FRAMERATE_ADJUSTMENT, BITRATE_8_KBPS, 60),
-                BITRATE_4_KBPS);
+                BITRATE_4_KBPS,
+                BitrateAdjuster.getTargetBitrate(Type.FRAMERATE_ADJUSTMENT, BITRATE_8_KBPS, 60));
     }
 
     @Test
     @SmallTest
     public void testFrameRateAdjustmentDoesNotDivideByZero() {
         assertEquals(
-                BitrateAdjuster.getTargetBitrate(Type.FRAMERATE_ADJUSTMENT, BITRATE_8_KBPS, 0),
-                BITRATE_8_KBPS);
+                BITRATE_8_KBPS,
+                BitrateAdjuster.getTargetBitrate(Type.FRAMERATE_ADJUSTMENT, BITRATE_8_KBPS, 0));
     }
 
     @Test
     @SmallTest
     public void testFrameRateAdjustmentUsesFixedInitialFrameRate() {
-        assertEquals(BitrateAdjuster.getInitialFrameRate(Type.FRAMERATE_ADJUSTMENT, 15), 30);
-        assertEquals(BitrateAdjuster.getInitialFrameRate(Type.FRAMERATE_ADJUSTMENT, 30), 30);
-        assertEquals(BitrateAdjuster.getInitialFrameRate(Type.FRAMERATE_ADJUSTMENT, 60), 30);
+        assertEquals(30, BitrateAdjuster.getInitialFrameRate(Type.FRAMERATE_ADJUSTMENT, 15));
+        assertEquals(30, BitrateAdjuster.getInitialFrameRate(Type.FRAMERATE_ADJUSTMENT, 30));
+        assertEquals(30, BitrateAdjuster.getInitialFrameRate(Type.FRAMERATE_ADJUSTMENT, 60));
     }
 }

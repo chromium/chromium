@@ -245,7 +245,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @UiThreadTest
     public void testToolbarSideSwipeOnlyTab() {
         initializeLayoutManagerPhone(1, 0, 0, TabModel.INVALID_TAB_INDEX, false);
-        Assert.assertEquals(mTabModelSelector.getModel(false).index(), 0);
+        Assert.assertEquals(0, mTabModelSelector.getModel(false).index());
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.LEFT, 0);
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.RIGHT, 0);
     }
@@ -257,7 +257,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @UiThreadTest
     public void testToolbarSideSwipeOnlyTabIncognito() {
         initializeLayoutManagerPhone(0, 1, TabModel.INVALID_TAB_INDEX, 0, true);
-        Assert.assertEquals(mTabModelSelector.getModel(true).index(), 0);
+        Assert.assertEquals(0, mTabModelSelector.getModel(true).index());
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.LEFT, 0);
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.RIGHT, 0);
     }
@@ -269,7 +269,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @UiThreadTest
     public void testToolbarSideSwipeNextTab() {
         initializeLayoutManagerPhone(2, 0, 0, TabModel.INVALID_TAB_INDEX, false);
-        Assert.assertEquals(mTabModelSelector.getModel(false).index(), 0);
+        Assert.assertEquals(0, mTabModelSelector.getModel(false).index());
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.LEFT, 1);
     }
 
@@ -280,7 +280,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @UiThreadTest
     public void testToolbarSideSwipePrevTab() {
         initializeLayoutManagerPhone(2, 0, 1, TabModel.INVALID_TAB_INDEX, false);
-        Assert.assertEquals(mTabModelSelector.getModel(false).index(), 1);
+        Assert.assertEquals(1, mTabModelSelector.getModel(false).index());
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.RIGHT, 0);
     }
 
@@ -291,7 +291,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @UiThreadTest
     public void testToolbarSideSwipeNextTabNone() {
         initializeLayoutManagerPhone(2, 0, 1, TabModel.INVALID_TAB_INDEX, false);
-        Assert.assertEquals(mTabModelSelector.getModel(false).index(), 1);
+        Assert.assertEquals(1, mTabModelSelector.getModel(false).index());
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.LEFT, 1);
     }
 
@@ -302,7 +302,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @UiThreadTest
     public void testToolbarSideSwipePrevTabNone() {
         initializeLayoutManagerPhone(2, 0, 0, TabModel.INVALID_TAB_INDEX, false);
-        Assert.assertEquals(mTabModelSelector.getModel(false).index(), 0);
+        Assert.assertEquals(0, mTabModelSelector.getModel(false).index());
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.RIGHT, 0);
     }
 
@@ -313,7 +313,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @UiThreadTest
     public void testToolbarSideSwipeNextTabIncognito() {
         initializeLayoutManagerPhone(0, 2, TabModel.INVALID_TAB_INDEX, 0, true);
-        Assert.assertEquals(mTabModelSelector.getModel(true).index(), 0);
+        Assert.assertEquals(0, mTabModelSelector.getModel(true).index());
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.LEFT, 1);
     }
 
@@ -324,7 +324,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @UiThreadTest
     public void testToolbarSideSwipePrevTabIncognito() {
         initializeLayoutManagerPhone(0, 2, TabModel.INVALID_TAB_INDEX, 1, true);
-        Assert.assertEquals(mTabModelSelector.getModel(true).index(), 1);
+        Assert.assertEquals(1, mTabModelSelector.getModel(true).index());
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.RIGHT, 0);
     }
 
@@ -335,7 +335,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @UiThreadTest
     public void testToolbarSideSwipeNextTabNoneIncognito() {
         initializeLayoutManagerPhone(0, 2, TabModel.INVALID_TAB_INDEX, 1, true);
-        Assert.assertEquals(mTabModelSelector.getModel(true).index(), 1);
+        Assert.assertEquals(1, mTabModelSelector.getModel(true).index());
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.LEFT, 1);
     }
 
@@ -346,7 +346,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @UiThreadTest
     public void testToolbarSideSwipePrevTabNoneIncognito() {
         initializeLayoutManagerPhone(0, 2, TabModel.INVALID_TAB_INDEX, 0, true);
-        Assert.assertEquals(mTabModelSelector.getModel(true).index(), 0);
+        Assert.assertEquals(0, mTabModelSelector.getModel(true).index());
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.RIGHT, 0);
     }
 

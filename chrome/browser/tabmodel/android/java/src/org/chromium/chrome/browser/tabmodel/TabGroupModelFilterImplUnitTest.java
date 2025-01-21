@@ -2230,22 +2230,22 @@ public class TabGroupModelFilterImplUnitTest {
 
     @Test
     public void testTabGroupIds() {
-        assertEquals(mTab1.getRootId(), TAB1_ROOT_ID);
+        assertEquals(TAB1_ROOT_ID, mTab1.getRootId());
         assertEquals(mTab1.getTabGroupId(), TAB1_TAB_GROUP_ID);
 
-        assertEquals(mTab2.getRootId(), TAB2_ROOT_ID);
+        assertEquals(TAB2_ROOT_ID, mTab2.getRootId());
         assertEquals(mTab2.getTabGroupId(), TAB2_TAB_GROUP_ID);
 
-        assertEquals(mTab3.getRootId(), TAB3_ROOT_ID);
+        assertEquals(TAB3_ROOT_ID, mTab3.getRootId());
         assertEquals(mTab3.getTabGroupId(), TAB3_TAB_GROUP_ID);
 
-        assertEquals(mTab4.getRootId(), TAB4_ROOT_ID);
+        assertEquals(TAB4_ROOT_ID, mTab4.getRootId());
         assertEquals(mTab4.getTabGroupId(), TAB4_TAB_GROUP_ID);
 
-        assertEquals(mTab5.getRootId(), TAB5_ROOT_ID);
+        assertEquals(TAB5_ROOT_ID, mTab5.getRootId());
         assertEquals(mTab5.getTabGroupId(), TAB5_TAB_GROUP_ID);
 
-        assertEquals(mTab6.getRootId(), TAB6_ROOT_ID);
+        assertEquals(TAB6_ROOT_ID, mTab6.getRootId());
         assertEquals(mTab6.getTabGroupId(), TAB6_TAB_GROUP_ID);
     }
 
@@ -2268,22 +2268,22 @@ public class TabGroupModelFilterImplUnitTest {
 
         mTabGroupModelFilter.addTabGroupIdsForAllTabGroups();
 
-        assertEquals(mTab1.getRootId(), TAB1_ROOT_ID);
+        assertEquals(TAB1_ROOT_ID, mTab1.getRootId());
         assertNull(mTab1.getTabGroupId());
 
-        assertEquals(mTab2.getRootId(), TAB2_ROOT_ID);
+        assertEquals(TAB2_ROOT_ID, mTab2.getRootId());
         assertEquals(mTab2.getTabGroupId(), tabGroupIdTab2);
 
-        assertEquals(mTab3.getRootId(), TAB3_ROOT_ID);
+        assertEquals(TAB3_ROOT_ID, mTab3.getRootId());
         assertEquals(mTab3.getTabGroupId(), tabGroupIdTab2);
 
-        assertEquals(mTab4.getRootId(), TAB4_ROOT_ID);
+        assertEquals(TAB4_ROOT_ID, mTab4.getRootId());
         assertNull(mTab4.getTabGroupId());
 
-        assertEquals(mTab5.getRootId(), TAB5_ROOT_ID);
+        assertEquals(TAB5_ROOT_ID, mTab5.getRootId());
         assertEquals(mTab5.getTabGroupId(), tabGroupIdTab5);
 
-        assertEquals(mTab6.getRootId(), TAB6_ROOT_ID);
+        assertEquals(TAB6_ROOT_ID, mTab6.getRootId());
         assertEquals(mTab6.getTabGroupId(), tabGroupIdTab5);
     }
 

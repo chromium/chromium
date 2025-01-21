@@ -84,8 +84,8 @@ public class TaskManagerMediatorTest {
 
         assertArrayEquals(mHeader.get(COLUMNS), new PropertyKey[] {TASK_NAME, MEMORY_FOOTPRINT});
 
-        assertEquals(mTasks.get(0).type, RowType.TASK);
-        assertEquals(mTasks.get(0).model.get(TASK_ID), 1);
+        assertEquals(RowType.TASK, mTasks.get(0).type);
+        assertEquals(1, mTasks.get(0).model.get(TASK_ID));
     }
 
     @Test
@@ -99,24 +99,24 @@ public class TaskManagerMediatorTest {
         mObserver.onTaskAdded(2);
 
         // Tasks are added in order of addition by default.
-        assertEquals(mTasks.get(0).model.get(MEMORY_FOOTPRINT), 1_000_000L);
-        assertEquals(mTasks.get(1).model.get(MEMORY_FOOTPRINT), 2_000_000L);
+        assertEquals(1_000_000L, mTasks.get(0).model.get(MEMORY_FOOTPRINT));
+        assertEquals(2_000_000L, mTasks.get(1).model.get(MEMORY_FOOTPRINT));
 
         // Sort by memory footprint (desc).
         mMediator.cycleSortOrder(MEMORY_FOOTPRINT);
-        assertEquals(mTasks.get(0).model.get(MEMORY_FOOTPRINT), 2_000_000L);
-        assertEquals(mTasks.get(1).model.get(MEMORY_FOOTPRINT), 1_000_000L);
+        assertEquals(2_000_000L, mTasks.get(0).model.get(MEMORY_FOOTPRINT));
+        assertEquals(1_000_000L, mTasks.get(1).model.get(MEMORY_FOOTPRINT));
 
         mObserver.onTaskAdded(3);
-        assertEquals(mTasks.get(0).model.get(MEMORY_FOOTPRINT), 2_000_000L);
-        assertEquals(mTasks.get(1).model.get(MEMORY_FOOTPRINT), 1_500_000L);
-        assertEquals(mTasks.get(2).model.get(MEMORY_FOOTPRINT), 1_000_000L);
+        assertEquals(2_000_000L, mTasks.get(0).model.get(MEMORY_FOOTPRINT));
+        assertEquals(1_500_000L, mTasks.get(1).model.get(MEMORY_FOOTPRINT));
+        assertEquals(1_000_000L, mTasks.get(2).model.get(MEMORY_FOOTPRINT));
 
         when(mBridge.getMemoryFootprintUsage(3)).thenReturn(3_000_000L);
         mObserver.onTasksRefreshed(new long[] {3});
-        assertEquals(mTasks.get(0).model.get(MEMORY_FOOTPRINT), 3_000_000L);
-        assertEquals(mTasks.get(1).model.get(MEMORY_FOOTPRINT), 2_000_000L);
-        assertEquals(mTasks.get(2).model.get(MEMORY_FOOTPRINT), 1_000_000L);
+        assertEquals(3_000_000L, mTasks.get(0).model.get(MEMORY_FOOTPRINT));
+        assertEquals(2_000_000L, mTasks.get(1).model.get(MEMORY_FOOTPRINT));
+        assertEquals(1_000_000L, mTasks.get(2).model.get(MEMORY_FOOTPRINT));
     }
 
     @Test
@@ -130,19 +130,19 @@ public class TaskManagerMediatorTest {
 
         mMediator.cycleSortOrder(MEMORY_FOOTPRINT); // desc
 
-        assertEquals(mTasks.get(0).model.get(MEMORY_FOOTPRINT), 2_000_000L);
-        assertEquals(mTasks.get(1).model.get(MEMORY_FOOTPRINT), 1_000_000L);
+        assertEquals(2_000_000L, mTasks.get(0).model.get(MEMORY_FOOTPRINT));
+        assertEquals(1_000_000L, mTasks.get(1).model.get(MEMORY_FOOTPRINT));
 
         mMediator.cycleSortOrder(MEMORY_FOOTPRINT); // asc
 
-        assertEquals(mTasks.get(0).model.get(MEMORY_FOOTPRINT), 1_000_000L);
-        assertEquals(mTasks.get(1).model.get(MEMORY_FOOTPRINT), 2_000_000L);
+        assertEquals(1_000_000L, mTasks.get(0).model.get(MEMORY_FOOTPRINT));
+        assertEquals(2_000_000L, mTasks.get(1).model.get(MEMORY_FOOTPRINT));
 
         mMediator.cycleSortOrder(MEMORY_FOOTPRINT); // unspecified
         mMediator.cycleSortOrder(MEMORY_FOOTPRINT); // desc
 
-        assertEquals(mTasks.get(0).model.get(MEMORY_FOOTPRINT), 2_000_000L);
-        assertEquals(mTasks.get(1).model.get(MEMORY_FOOTPRINT), 1_000_000L);
+        assertEquals(2_000_000L, mTasks.get(0).model.get(MEMORY_FOOTPRINT));
+        assertEquals(1_000_000L, mTasks.get(1).model.get(MEMORY_FOOTPRINT));
     }
 
     @Test
@@ -158,21 +158,21 @@ public class TaskManagerMediatorTest {
 
         mMediator.cycleSortOrder(TASK_NAME); // asc
 
-        assertEquals(mTasks.get(0).model.get(TASK_NAME), "A");
-        assertEquals(mTasks.get(1).model.get(TASK_NAME), "B");
-        assertEquals(mTasks.get(2).model.get(TASK_NAME), "C");
+        assertEquals("A", mTasks.get(0).model.get(TASK_NAME));
+        assertEquals("B", mTasks.get(1).model.get(TASK_NAME));
+        assertEquals("C", mTasks.get(2).model.get(TASK_NAME));
 
         mMediator.cycleSortOrder(TASK_NAME); // desc
 
-        assertEquals(mTasks.get(0).model.get(TASK_NAME), "C");
-        assertEquals(mTasks.get(1).model.get(TASK_NAME), "B");
-        assertEquals(mTasks.get(2).model.get(TASK_NAME), "A");
+        assertEquals("C", mTasks.get(0).model.get(TASK_NAME));
+        assertEquals("B", mTasks.get(1).model.get(TASK_NAME));
+        assertEquals("A", mTasks.get(2).model.get(TASK_NAME));
 
         mMediator.cycleSortOrder(TASK_NAME); // unspecified
 
-        assertEquals(mTasks.get(0).model.get(TASK_NAME), "C");
-        assertEquals(mTasks.get(1).model.get(TASK_NAME), "B");
-        assertEquals(mTasks.get(2).model.get(TASK_NAME), "A");
+        assertEquals("C", mTasks.get(0).model.get(TASK_NAME));
+        assertEquals("B", mTasks.get(1).model.get(TASK_NAME));
+        assertEquals("A", mTasks.get(2).model.get(TASK_NAME));
     }
 
     @Test
@@ -184,7 +184,7 @@ public class TaskManagerMediatorTest {
         when(mBridge.getMemoryFootprintUsage(1)).thenReturn(3_000_000L);
         mObserver.onTasksRefreshed(new long[] {1});
 
-        assertEquals(mTasks.get(0).model.get(MEMORY_FOOTPRINT), 3_000_000);
+        assertEquals(3_000_000, mTasks.get(0).model.get(MEMORY_FOOTPRINT));
     }
 
     @Test
@@ -197,7 +197,7 @@ public class TaskManagerMediatorTest {
         mObserver.onTaskAdded(1);
         // Task 1 gets removed.
         mObserver.onTaskToBeRemoved(1);
-        assertEquals(mTasks.get(0).model.get(TASK_ID), 2);
+        assertEquals(2, mTasks.get(0).model.get(TASK_ID));
     }
 
     @Test

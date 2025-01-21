@@ -244,11 +244,11 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         ModelList itemList =
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
         assertThat(itemList.size(), is(5));
-        assertEquals(itemList.get(0).type, HEADER);
-        assertEquals(itemList.get(1).type, BANK_ACCOUNT);
-        assertEquals(itemList.get(2).type, BANK_ACCOUNT);
-        assertEquals(itemList.get(3).type, ADDITIONAL_INFO);
-        assertEquals(itemList.get(4).type, FOOTER);
+        assertEquals(HEADER, itemList.get(0).type);
+        assertEquals(BANK_ACCOUNT, itemList.get(1).type);
+        assertEquals(BANK_ACCOUNT, itemList.get(2).type);
+        assertEquals(ADDITIONAL_INFO, itemList.get(3).type);
+        assertEquals(FOOTER, itemList.get(4).type);
     }
 
     @Test
@@ -259,11 +259,11 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         ModelList itemList =
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
         assertThat(itemList.size(), is(5));
-        assertEquals(itemList.get(0).type, HEADER);
-        assertEquals(itemList.get(1).type, EWALLET);
-        assertEquals(itemList.get(2).type, EWALLET);
-        assertEquals(itemList.get(3).type, ADDITIONAL_INFO);
-        assertEquals(itemList.get(4).type, FOOTER);
+        assertEquals(HEADER, itemList.get(0).type);
+        assertEquals(EWALLET, itemList.get(1).type);
+        assertEquals(EWALLET, itemList.get(2).type);
+        assertEquals(ADDITIONAL_INFO, itemList.get(3).type);
+        assertEquals(FOOTER, itemList.get(4).type);
     }
 
     @Test
@@ -274,11 +274,11 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         ModelList itemList =
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
         assertThat(itemList.size(), is(5));
-        assertEquals(itemList.get(0).type, HEADER);
-        assertEquals(itemList.get(1).type, BANK_ACCOUNT);
-        assertEquals(itemList.get(2).type, ADDITIONAL_INFO);
-        assertEquals(itemList.get(3).type, CONTINUE_BUTTON);
-        assertEquals(itemList.get(4).type, FOOTER);
+        assertEquals(HEADER, itemList.get(0).type);
+        assertEquals(BANK_ACCOUNT, itemList.get(1).type);
+        assertEquals(ADDITIONAL_INFO, itemList.get(2).type);
+        assertEquals(CONTINUE_BUTTON, itemList.get(3).type);
+        assertEquals(FOOTER, itemList.get(4).type);
     }
 
     @Test
@@ -289,11 +289,11 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         ModelList itemList =
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
         assertThat(itemList.size(), is(5));
-        assertEquals(itemList.get(0).type, HEADER);
-        assertEquals(itemList.get(1).type, EWALLET);
-        assertEquals(itemList.get(2).type, ADDITIONAL_INFO);
-        assertEquals(itemList.get(3).type, CONTINUE_BUTTON);
-        assertEquals(itemList.get(4).type, FOOTER);
+        assertEquals(HEADER, itemList.get(0).type);
+        assertEquals(EWALLET, itemList.get(1).type);
+        assertEquals(ADDITIONAL_INFO, itemList.get(2).type);
+        assertEquals(CONTINUE_BUTTON, itemList.get(3).type);
+        assertEquals(FOOTER, itemList.get(4).type);
     }
 
     @Test
@@ -557,7 +557,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
         ModelList itemList =
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
-        assertEquals(getModelsOfType(itemList, CONTINUE_BUTTON).size(), 1);
+        assertEquals(1, getModelsOfType(itemList, CONTINUE_BUTTON).size());
     }
 
     @Test
@@ -566,7 +566,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
         ModelList itemList =
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
-        assertEquals(getModelsOfType(itemList, CONTINUE_BUTTON).size(), 1);
+        assertEquals(1, getModelsOfType(itemList, CONTINUE_BUTTON).size());
     }
 
     @Test
@@ -575,7 +575,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
         ModelList itemList =
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
-        assertEquals(getModelsOfType(itemList, CONTINUE_BUTTON).size(), 0);
+        assertEquals(0, getModelsOfType(itemList, CONTINUE_BUTTON).size());
     }
 
     @Test
@@ -584,7 +584,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
         ModelList itemList =
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
-        assertEquals(getModelsOfType(itemList, CONTINUE_BUTTON).size(), 0);
+        assertEquals(0, getModelsOfType(itemList, CONTINUE_BUTTON).size());
     }
 
     @Test
@@ -830,11 +830,11 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
         // Progress screen doesn't have any view properties.
         assertEquals(
+                0,
                 mFacilitatedPaymentsPaymentMethodsModel
                         .get(SCREEN_VIEW_MODEL)
                         .getAllProperties()
-                        .size(),
-                0);
+                        .size());
     }
 
     @Test
@@ -890,11 +890,11 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
         // Progress screen doesn't have any view properties.
         assertEquals(
+                0,
                 mFacilitatedPaymentsPaymentMethodsModel
                         .get(SCREEN_VIEW_MODEL)
                         .getAllProperties()
-                        .size(),
-                0);
+                        .size());
 
         // Verify that the UI event is relayed to the delegate. New screen shown event should be
         // triggered twice, once for each screen.

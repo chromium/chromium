@@ -245,7 +245,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         // permission is false. Since this is a new account and request permission is false, we need
         // to show UI without disclosure text so we show the account chooser.
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
-        assertEquals(mSheetAccountItems.size(), 1);
+        assertEquals(1, mSheetAccountItems.size());
         assertNotNull(mSheetAccountItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER));
     }
 
@@ -264,7 +264,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         // this is a returning account, we cannot skip directly to signing in because we have to
         // show browser UI in the flow so we show the account chooser.
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
-        assertEquals(mSheetAccountItems.size(), 1);
+        assertEquals(1, mSheetAccountItems.size());
         assertNotNull(mSheetAccountItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER));
     }
 

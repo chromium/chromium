@@ -1913,7 +1913,7 @@ public class AwSettingsTest {
         final AwContents awContents = testContainerView.getAwContents();
         AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
         final String actualUserAgentString = settings.getUserAgentString();
-        Assert.assertEquals(actualUserAgentString, AwSettings.getDefaultUserAgent());
+        Assert.assertEquals(AwSettings.getDefaultUserAgent(), actualUserAgentString);
         final String patternString =
                 "Mozilla/5\\.0 \\(Linux;( U;)? Android ([^;]+);( (\\w+)-(\\w+);)?"
                         + "\\s?(.*)\\sBuild/(.+); wv\\) "

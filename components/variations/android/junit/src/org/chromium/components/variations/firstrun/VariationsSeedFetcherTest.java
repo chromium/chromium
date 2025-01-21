@@ -337,7 +337,7 @@ public class VariationsSeedFetcherTest {
                         .build();
         SeedFetchInfo seedFetchInfo = mFetcher.downloadContent(params, curSeedInfo);
 
-        assertEquals(seedFetchInfo.seedFetchResult, HttpURLConnection.HTTP_NOT_MODIFIED);
+        assertEquals(HttpURLConnection.HTTP_NOT_MODIFIED, seedFetchInfo.seedFetchResult);
 
         SeedInfo updatedSeedInfo = seedFetchInfo.seedInfo;
         assertEquals(curSeedInfo.signature, updatedSeedInfo.signature);
@@ -346,7 +346,7 @@ public class VariationsSeedFetcherTest {
         assertEquals(67890L, updatedSeedInfo.date);
         Arrays.equals(curSeedInfo.seedData, updatedSeedInfo.seedData);
 
-        assertEquals(curSeedInfo.getParsedVariationsSeed().getSerialNumber(), "savedSerialNumber");
+        assertEquals("savedSerialNumber", curSeedInfo.getParsedVariationsSeed().getSerialNumber());
     }
 
     /** Test method for {@link VariationsSeedFetcher#downloadContent()} when IM-header is invalid. */

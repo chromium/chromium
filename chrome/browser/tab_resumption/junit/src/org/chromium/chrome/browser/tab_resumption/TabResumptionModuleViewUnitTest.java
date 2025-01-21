@@ -1111,7 +1111,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
         mModuleView.setSuggestionBundle(mSuggestionBundle);
         Assert.assertEquals(1, mTileContainerView.getChildCount());
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
-        assertEquals(entry1.getLocalTabId(), Tab.INVALID_TAB_ID);
+        assertEquals(Tab.INVALID_TAB_ID, entry1.getLocalTabId());
         verify(mOnModuleShowConfigFinalizedCallback, never()).onResult(anyInt());
 
         // Verifies that a TabResumptionTileView is created for the history suggestion.

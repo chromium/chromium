@@ -41,7 +41,7 @@ public class TabItemPropertiesUnitTest {
     @Test
     public void testForeignSessionItemProperties_initCreatesValidDefaultModel() {
         Assert.assertEquals(mModel.get(FOREIGN_SESSION_TAB), mTab);
-        Assert.assertEquals(mModel.get(IS_SELECTED), true);
+        Assert.assertEquals(true, mModel.get(IS_SELECTED));
         Assert.assertNull(mModel.get(ON_CLICK_LISTENER));
     }
 
@@ -51,8 +51,8 @@ public class TabItemPropertiesUnitTest {
         Assert.assertNotNull(mModel.get(ON_CLICK_LISTENER));
 
         boolean isSelected = mModel.get(IS_SELECTED);
-        Assert.assertEquals(isSelected, true);
+        Assert.assertEquals(true, isSelected);
         mModel.set(IS_SELECTED, !isSelected);
-        Assert.assertEquals(mModel.get(IS_SELECTED), false);
+        Assert.assertEquals(false, mModel.get(IS_SELECTED));
     }
 }

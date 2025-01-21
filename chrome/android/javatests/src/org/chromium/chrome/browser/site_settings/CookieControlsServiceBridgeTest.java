@@ -167,9 +167,9 @@ public class CookieControlsServiceBridgeTest {
 
                     Assert.assertEquals(
                             "CookieControlsMode should be incognito_only",
+                            CookieControlsMode.INCOGNITO_ONLY,
                             UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                                    .getInteger(PrefNames.COOKIE_CONTROLS_MODE),
-                            CookieControlsMode.INCOGNITO_ONLY);
+                                    .getInteger(PrefNames.COOKIE_CONTROLS_MODE));
                 });
         // One initial callback after creation, then another after the toggle change.
         mCallbackHelper.waitForCallback(currentCallCount, 2);

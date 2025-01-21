@@ -58,26 +58,26 @@ public class AsyncViewStubTest {
         mAsyncViewStub.inflate();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         // ensure callback gets called.
-        assertEquals(mEventCount.get(), 1);
+        assertEquals(1, mEventCount.get());
     }
 
     @Test
     public void testCallsListenersInOrder() {
         mAsyncViewStub.addOnInflateListener(
                 (View v) -> {
-                    assertEquals(mEventCount.incrementAndGet(), 1);
+                    assertEquals(1, mEventCount.incrementAndGet());
                 });
         mAsyncViewStub.addOnInflateListener(
                 (View v) -> {
-                    assertEquals(mEventCount.incrementAndGet(), 2);
+                    assertEquals(2, mEventCount.incrementAndGet());
                 });
         mAsyncViewStub.addOnInflateListener(
                 (View v) -> {
-                    assertEquals(mEventCount.decrementAndGet(), 1);
+                    assertEquals(1, mEventCount.decrementAndGet());
                 });
-        assertEquals(mEventCount.get(), 0);
+        assertEquals(0, mEventCount.get());
         mAsyncViewStub.inflate();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        assertEquals(mEventCount.get(), 1);
+        assertEquals(1, mEventCount.get());
     }
 }

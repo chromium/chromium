@@ -765,7 +765,7 @@ public class HistoryUiTest {
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         Assert.assertNull(toolbar.getItemById(R.id.close_menu_id));
         Assert.assertEquals(
-                toolbar.getNavigationButtonForTests(), NavigationButton.NORMAL_VIEW_BACK);
+                NavigationButton.NORMAL_VIEW_BACK, toolbar.getNavigationButtonForTests());
 
         Resources res = mActivity.getResources();
         Assert.assertEquals(
@@ -914,8 +914,8 @@ public class HistoryUiTest {
                 button);
         Assert.assertEquals(
                 "State for the MPB should be button",
-                button.getStateForTest(),
-                MoreProgressButton.State.BUTTON);
+                MoreProgressButton.State.BUTTON,
+                button.getStateForTest());
 
         // Test click, should load more items
         button.findViewById(R.id.action_button).performClick();

@@ -219,7 +219,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         mAwContents.getSettings().setBackForwardCacheEnabled(false);
         navigateForwardAndBack();
         String notRestoredReasons = getNotRestoredReasons();
-        Assert.assertEquals(extractSimpleReasonString(notRestoredReasons), "masked");
+        Assert.assertEquals("masked", extractSimpleReasonString(notRestoredReasons));
         Assert.assertFalse(isPageShowPersisted());
     }
 
@@ -244,7 +244,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
                 mAwContents, testInjectedObject, "testInjectedObject");
         navigateBack();
         String notRestoredReasons = getNotRestoredReasons();
-        Assert.assertEquals(extractSimpleReasonString(notRestoredReasons), "masked");
+        Assert.assertEquals("masked", extractSimpleReasonString(notRestoredReasons));
         Assert.assertFalse(isPageShowPersisted());
         histogramWatcher.assertExpected();
 
@@ -256,7 +256,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
                 () -> mAwContents.removeJavascriptInterface("testInjectedObject"));
         navigateBack();
         notRestoredReasons = getNotRestoredReasons();
-        Assert.assertEquals(extractSimpleReasonString(notRestoredReasons), "masked");
+        Assert.assertEquals("masked", extractSimpleReasonString(notRestoredReasons));
         Assert.assertFalse(isPageShowPersisted());
         histogramWatcher.assertExpected();
 
@@ -575,7 +575,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         Assert.assertTrue(isPageShowPersisted());
         helper.waitForCallback(originalCallCount, 1, SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         Assert.assertEquals(helper.getUrl(), mInitialUrl);
-        Assert.assertEquals(helper.getIsReload(), false);
+        Assert.assertEquals(false, helper.getIsReload());
     }
 
     @Test
@@ -626,7 +626,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         Assert.assertTrue(allowlistSetFuture.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
         navigateBack();
         String notRestoredReasons = getNotRestoredReasons();
-        Assert.assertEquals(extractSimpleReasonString(notRestoredReasons), "masked");
+        Assert.assertEquals("masked", extractSimpleReasonString(notRestoredReasons));
         Assert.assertFalse(isPageShowPersisted());
         histogramWatcher.assertExpected();
 
@@ -652,7 +652,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
                                 "console.log(\"hello world\");", new String[] {"*"}));
         navigateBack();
         String notRestoredReasons = getNotRestoredReasons();
-        Assert.assertEquals(extractSimpleReasonString(notRestoredReasons), "masked");
+        Assert.assertEquals("masked", extractSimpleReasonString(notRestoredReasons));
         Assert.assertFalse(isPageShowPersisted());
         histogramWatcher.assertExpected();
 

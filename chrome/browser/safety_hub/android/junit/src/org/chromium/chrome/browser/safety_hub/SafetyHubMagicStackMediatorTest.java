@@ -126,7 +126,7 @@ public class SafetyHubMagicStackMediatorTest {
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.TITLE),
                 mContext.getString(R.string.safety_hub_magic_stack_safe_browsing_title));
-        assertEquals(mModel.get(SafetyHubMagicStackViewProperties.SUMMARY), DESCRIPTION);
+        assertEquals(DESCRIPTION, mModel.get(SafetyHubMagicStackViewProperties.SUMMARY));
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.BUTTON_TEXT),
                 mContext.getString(R.string.safety_hub_magic_stack_safe_browsing_button_text));
@@ -161,7 +161,7 @@ public class SafetyHubMagicStackMediatorTest {
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.HEADER),
                 mContext.getString(R.string.safety_hub_magic_stack_module_name));
-        assertEquals(mModel.get(SafetyHubMagicStackViewProperties.TITLE), DESCRIPTION);
+        assertEquals(DESCRIPTION, mModel.get(SafetyHubMagicStackViewProperties.TITLE));
         assertNull(mModel.get(SafetyHubMagicStackViewProperties.SUMMARY));
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.BUTTON_TEXT),
@@ -198,7 +198,7 @@ public class SafetyHubMagicStackMediatorTest {
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.TITLE),
                 mContext.getString(R.string.safety_hub_magic_stack_notifications_title));
-        assertEquals(mModel.get(SafetyHubMagicStackViewProperties.SUMMARY), DESCRIPTION);
+        assertEquals(DESCRIPTION, mModel.get(SafetyHubMagicStackViewProperties.SUMMARY));
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.BUTTON_TEXT),
                 mContext.getString(R.string.safety_hub_magic_stack_safe_state_button_text));
@@ -233,7 +233,7 @@ public class SafetyHubMagicStackMediatorTest {
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.TITLE),
                 mContext.getString(R.string.safety_hub_magic_stack_compromised_passwords_title));
-        assertEquals(mModel.get(SafetyHubMagicStackViewProperties.SUMMARY), DESCRIPTION);
+        assertEquals(DESCRIPTION, mModel.get(SafetyHubMagicStackViewProperties.SUMMARY));
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.BUTTON_TEXT),
                 mContext.getString(R.string.safety_hub_magic_stack_compromised_passwords_title));

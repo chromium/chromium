@@ -169,16 +169,16 @@ public class OMADownloadHandlerTest {
     @Feature({"Download"})
     public void testGetSize() {
         OMADownloadHandler.OMAInfo info = new OMADownloadHandler.OMAInfo();
-        Assert.assertEquals(OMADownloadHandler.getSize(info), 0);
+        Assert.assertEquals(0, OMADownloadHandler.getSize(info));
 
         info.addAttributeValue("size", "100");
-        Assert.assertEquals(OMADownloadHandler.getSize(info), 100);
+        Assert.assertEquals(100, OMADownloadHandler.getSize(info));
 
         info.addAttributeValue("size", "100,000");
-        Assert.assertEquals(OMADownloadHandler.getSize(info), 100000);
+        Assert.assertEquals(100000, OMADownloadHandler.getSize(info));
 
         info.addAttributeValue("size", "100000");
-        Assert.assertEquals(OMADownloadHandler.getSize(info), 100000);
+        Assert.assertEquals(100000, OMADownloadHandler.getSize(info));
     }
 
     /**
@@ -195,11 +195,11 @@ public class OMADownloadHandlerTest {
         Assert.assertEquals(info.getDrmType(), null);
 
         info.addAttributeValue("type", MimeUtils.OMA_DRM_MESSAGE_MIME);
-        Assert.assertEquals(info.getDrmType(), MimeUtils.OMA_DRM_MESSAGE_MIME);
+        Assert.assertEquals(MimeUtils.OMA_DRM_MESSAGE_MIME, info.getDrmType());
 
         // Test that only the first DRM MIME type is returned.
         info.addAttributeValue("type", MimeUtils.OMA_DRM_CONTENT_MIME);
-        Assert.assertEquals(info.getDrmType(), MimeUtils.OMA_DRM_MESSAGE_MIME);
+        Assert.assertEquals(MimeUtils.OMA_DRM_MESSAGE_MIME, info.getDrmType());
     }
 
     /**
@@ -218,11 +218,11 @@ public class OMADownloadHandlerTest {
         Assert.assertEquals(OMADownloadHandler.getOpennableType(info), null);
 
         info.addAttributeValue(OMADownloadHandler.OMA_OBJECT_URI, "http://www.test.com/test.html");
-        Assert.assertEquals(OMADownloadHandler.getOpennableType(info), "text/html");
+        Assert.assertEquals("text/html", OMADownloadHandler.getOpennableType(info));
 
         // Test that only the first opennable type is returned.
         info.addAttributeValue(OMADownloadHandler.OMA_TYPE, "image/png");
-        Assert.assertEquals(OMADownloadHandler.getOpennableType(info), "text/html");
+        Assert.assertEquals("text/html", OMADownloadHandler.getOpennableType(info));
     }
 
     /**
@@ -252,13 +252,13 @@ public class OMADownloadHandlerTest {
                                 ApiCompatibilityUtils.getBytesUtf8(downloadDescriptor)));
         Assert.assertFalse(info.isEmpty());
         Assert.assertEquals(
-                info.getValue(OMADownloadHandler.OMA_OBJECT_URI), "http://test/test.dm");
-        Assert.assertEquals(info.getValue(OMADownloadHandler.OMA_DD_VERSION), "1.0");
-        Assert.assertEquals(info.getValue(OMADownloadHandler.OMA_NAME), "test.dm");
-        Assert.assertEquals(info.getValue(OMADownloadHandler.OMA_SIZE), "1,000");
-        Assert.assertEquals(info.getValue(OMADownloadHandler.OMA_VENDOR), "testvendor");
-        Assert.assertEquals(info.getValue(OMADownloadHandler.OMA_DESCRIPTION), "testjpg");
-        Assert.assertEquals(info.getValue(OMADownloadHandler.OMA_NEXT_URL), "http://nexturl.html");
+                "http://test/test.dm", info.getValue(OMADownloadHandler.OMA_OBJECT_URI));
+        Assert.assertEquals("1.0", info.getValue(OMADownloadHandler.OMA_DD_VERSION));
+        Assert.assertEquals("test.dm", info.getValue(OMADownloadHandler.OMA_NAME));
+        Assert.assertEquals("1,000", info.getValue(OMADownloadHandler.OMA_SIZE));
+        Assert.assertEquals("testvendor", info.getValue(OMADownloadHandler.OMA_VENDOR));
+        Assert.assertEquals("testjpg", info.getValue(OMADownloadHandler.OMA_DESCRIPTION));
+        Assert.assertEquals("http://nexturl.html", info.getValue(OMADownloadHandler.OMA_NEXT_URL));
         List<String> types = info.getTypes();
         assertThat(
                 types, Matchers.containsInAnyOrder("image/jpeg", MimeUtils.OMA_DRM_MESSAGE_MIME));
@@ -396,7 +396,7 @@ public class OMADownloadHandlerTest {
                         ChromeSharedPreferences.getInstance(),
                         ChromePreferenceKeys.DOWNLOAD_PENDING_OMA_DOWNLOADS);
         Assert.assertEquals(0, pendingOmaDownloads.size());
-        Assert.assertEquals(omaHandler.mNofityURI, INSTALL_NOTIFY_URI);
+        Assert.assertEquals(INSTALL_NOTIFY_URI, omaHandler.mNofityURI);
 
         manager.remove(downloadId1);
     }
@@ -447,7 +447,7 @@ public class OMADownloadHandlerTest {
         OMADownloadHandler.OMAEntry entry =
                 OMADownloadHandler.OMAEntry.parseOMAEntry((String) downloads.toArray()[0]);
         Assert.assertEquals(entry.mDownloadId, omaHandler.mDownloadId);
-        Assert.assertEquals(entry.mInstallNotifyURI, INSTALL_NOTIFY_URI);
+        Assert.assertEquals(INSTALL_NOTIFY_URI, entry.mInstallNotifyURI);
         DownloadManager manager =
                 (DownloadManager) getTestContext().getSystemService(Context.DOWNLOAD_SERVICE);
         manager.remove(omaHandler.mDownloadId);

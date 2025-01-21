@@ -535,7 +535,7 @@ public class PlayerMediatorUnitTest {
 
         // Should set playback state to paused
         mOnSeekBarChangeListener.onStartTrackingTouch(mSeekbar);
-        assertEquals(mModel.get(PlayerProperties.PLAYBACK_STATE), PAUSED);
+        assertEquals(PAUSED, mModel.get(PlayerProperties.PLAYBACK_STATE));
 
         // Should set playback state to initial state
         mOnSeekBarChangeListener.onStopTrackingTouch(mSeekbar);

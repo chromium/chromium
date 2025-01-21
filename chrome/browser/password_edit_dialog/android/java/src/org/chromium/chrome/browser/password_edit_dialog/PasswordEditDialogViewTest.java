@@ -209,8 +209,8 @@ public class PasswordEditDialogViewTest {
                 });
         Assert.assertEquals(
                 "Should display password error",
-                mPasswordInputLayout.getError().toString(),
-                PASSWORD_ERROR);
+                PASSWORD_ERROR,
+                mPasswordInputLayout.getError().toString());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

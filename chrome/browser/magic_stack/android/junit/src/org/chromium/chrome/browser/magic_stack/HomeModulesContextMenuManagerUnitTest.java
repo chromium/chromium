@@ -114,8 +114,8 @@ public class HomeModulesContextMenuManagerUnitTest {
                 ((TextView) listItemView2.findViewById(R.id.menu_item_text)).getText().toString();
 
         // Verifies if the texts inside views are expected.
-        assertEquals(listItemText1, EXPECTED_OPTION_1);
-        assertEquals(listItemText2, EXPECTED_OPTION_2);
+        assertEquals(EXPECTED_OPTION_1, listItemText1);
+        assertEquals(EXPECTED_OPTION_2, listItemText2);
     }
 
     @Test

@@ -91,6 +91,6 @@ public class AutoDarkFeedbackSourceUnitTest {
                 source.getFeedback()
                         .getOrDefault(AutoDarkFeedbackSource.AUTO_DARK_FEEDBACK_KEY, "");
         Assert.assertEquals(
-                "Expected PSD value does not match.", feedbackPsdValue, expectedPsdValue);
+                "Expected PSD value does not match.", expectedPsdValue, feedbackPsdValue);
     }
 }

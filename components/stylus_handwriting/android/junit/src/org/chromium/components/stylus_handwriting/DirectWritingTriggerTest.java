@@ -331,7 +331,7 @@ public class DirectWritingTriggerTest {
         verify(mDwServiceBinder).updateEditableBounds(scaledBounds, mContainerView, true);
         verify(mDwServiceBinder)
                 .onStopRecognition(eventReceived.capture(), eq(scaledBounds), eq(mContainerView));
-        assertEquals(eventReceived.getValue().getAction(), MotionEvent.ACTION_UP);
+        assertEquals(MotionEvent.ACTION_UP, eventReceived.getValue().getAction());
     }
 
     @Test

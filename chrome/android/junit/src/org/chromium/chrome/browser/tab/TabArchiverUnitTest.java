@@ -117,7 +117,7 @@ public class TabArchiverUnitTest {
             ChromeFeatureList.ANDROID_TAB_DECLUTTER
                     + ":android_tab_declutter_max_simultaneous_archives/20")
     public void testMaxSimultaneousArchives() {
-        assertEquals(ChromeFeatureList.sAndroidTabDeclutterMaxSimultaneousArchives.getValue(), 20);
+        assertEquals(20, ChromeFeatureList.sAndroidTabDeclutterMaxSimultaneousArchives.getValue());
 
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher("Tabs.ArchivedTabs.MaxLimitReachedAt", 20);

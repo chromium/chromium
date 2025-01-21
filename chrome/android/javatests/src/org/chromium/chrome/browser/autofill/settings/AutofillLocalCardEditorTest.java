@@ -1146,7 +1146,7 @@ public class AutofillLocalCardEditorTest {
         AutofillLocalCardEditor autofillLocalCardEditorFragment =
                 (AutofillLocalCardEditor) activity.getMainFragment();
 
-        assertEquals(autofillLocalCardEditorFragment.mScanButton.getVisibility(), View.GONE);
+        assertEquals(View.GONE, autofillLocalCardEditorFragment.mScanButton.getVisibility());
     }
 
     @Test
@@ -1157,7 +1157,7 @@ public class AutofillLocalCardEditorTest {
         AutofillLocalCardEditor autofillLocalCardEditorFragment =
                 (AutofillLocalCardEditor) activity.getMainFragment();
 
-        assertEquals(autofillLocalCardEditorFragment.mScanButton.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, autofillLocalCardEditorFragment.mScanButton.getVisibility());
     }
 
     @Test
@@ -1169,7 +1169,7 @@ public class AutofillLocalCardEditorTest {
         AutofillLocalCardEditor autofillLocalCardEditorFragment =
                 (AutofillLocalCardEditor) activity.getMainFragment();
 
-        assertEquals(autofillLocalCardEditorFragment.mScanButton.getVisibility(), View.GONE);
+        assertEquals(View.GONE, autofillLocalCardEditorFragment.mScanButton.getVisibility());
     }
 
     @Test

@@ -947,13 +947,13 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.onNativeInitialized();
         mMediator.onOmniboxSessionStateChange(true);
-        Assert.assertEquals(mMediator.getEditSessionStateForTest(), EditSessionState.INACTIVE);
+        Assert.assertEquals(EditSessionState.INACTIVE, mMediator.getEditSessionStateForTest());
         mMediator.onTextChanged("n", /* isOnFocusContext= */ false);
         Assert.assertEquals(
-                mMediator.getEditSessionStateForTest(), EditSessionState.ACTIVATED_BY_USER_INPUT);
+                EditSessionState.ACTIVATED_BY_USER_INPUT, mMediator.getEditSessionStateForTest());
 
         mMediator.onOmniboxSessionStateChange(false);
-        Assert.assertEquals(mMediator.getEditSessionStateForTest(), EditSessionState.INACTIVE);
+        Assert.assertEquals(EditSessionState.INACTIVE, mMediator.getEditSessionStateForTest());
     }
 
     @Test
@@ -1430,7 +1430,7 @@ public class AutocompleteMediatorUnitTest {
     @Test
     public void onTopResumedActivityChanged_toNonActive() {
         mMediator.onTopResumedActivityChanged(false);
-        Assert.assertEquals(mMediator.getEditSessionStateForTest(), EditSessionState.INACTIVE);
+        Assert.assertEquals(EditSessionState.INACTIVE, mMediator.getEditSessionStateForTest());
         verify(mAutocompleteDelegate, times(1)).clearOmniboxFocus();
     }
 

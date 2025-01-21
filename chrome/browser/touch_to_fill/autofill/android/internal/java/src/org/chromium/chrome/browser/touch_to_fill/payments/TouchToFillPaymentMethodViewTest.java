@@ -682,7 +682,7 @@ public class TouchToFillPaymentMethodViewTest {
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        assertEquals(getSuggestionSecondLineLabelAt(0).getVisibility(), View.GONE);
+        assertEquals(View.GONE, getSuggestionSecondLineLabelAt(0).getVisibility());
         // The benefit terms label is omitted when there are no card benefits.
         assertNull(getCreditCardBenefitsTermsLabel());
     }

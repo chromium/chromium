@@ -140,7 +140,7 @@ public class GoogleServicesSettingsTest {
                     Assert.assertTrue(snackbarManager.isShowing());
                     Snackbar currentSnackbar = snackbarManager.getCurrentSnackbarForTesting();
                     Assert.assertEquals(
-                            currentSnackbar.getIdentifierForTesting(), Snackbar.UMA_SIGN_OUT);
+                            Snackbar.UMA_SIGN_OUT, currentSnackbar.getIdentifierForTesting());
                     Assert.assertEquals(
                             currentSnackbar.getTextForTesting(),
                             mActivityTestRule

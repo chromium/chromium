@@ -358,21 +358,21 @@ public class PrivacySandboxSurveyControllerTest {
                         mProfile);
 
         // Assert that the default channel is `unknown`
-        Assert.assertEquals(controller.getChannelName(), "unknown");
+        Assert.assertEquals("unknown", controller.getChannelName());
 
         controller.overrideChannelForTesting();
 
         controller.setChannelForTesting(Channel.STABLE);
-        Assert.assertEquals(controller.getChannelName(), "stable");
+        Assert.assertEquals("stable", controller.getChannelName());
 
         controller.setChannelForTesting(Channel.BETA);
-        Assert.assertEquals(controller.getChannelName(), "beta");
+        Assert.assertEquals("beta", controller.getChannelName());
 
         controller.setChannelForTesting(Channel.DEV);
-        Assert.assertEquals(controller.getChannelName(), "dev");
+        Assert.assertEquals("dev", controller.getChannelName());
 
         controller.setChannelForTesting(Channel.CANARY);
-        Assert.assertEquals(controller.getChannelName(), "canary");
+        Assert.assertEquals("canary", controller.getChannelName());
 
         controller.destroy();
     }
@@ -893,7 +893,7 @@ public class PrivacySandboxSurveyControllerTest {
                         mMessageDispatcher,
                         mActivityTabProvider,
                         mProfile);
-        Assert.assertEquals(controller.getAdsCctDelayMilliseconds(), 12345);
+        Assert.assertEquals(12345, controller.getAdsCctDelayMilliseconds());
         controller.destroy();
     }
 
@@ -911,7 +911,7 @@ public class PrivacySandboxSurveyControllerTest {
                         mMessageDispatcher,
                         mActivityTabProvider,
                         mProfile);
-        Assert.assertEquals(controller.getAdsCctDelayMilliseconds(), 20_000);
+        Assert.assertEquals(20_000, controller.getAdsCctDelayMilliseconds());
         controller.destroy();
     }
 }

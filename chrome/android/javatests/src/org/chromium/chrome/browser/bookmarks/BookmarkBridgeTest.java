@@ -105,7 +105,7 @@ public class BookmarkBridgeTest {
         Assert.assertEquals(expectedTitle, item.getTitle());
         Assert.assertEquals(item.isFolder(), isFolder);
         if (!isFolder) Assert.assertEquals(expectedUrl, item.getUrl().getSpec());
-        Assert.assertEquals(item.getParentId(), expectedParent);
+        Assert.assertEquals(expectedParent, item.getParentId());
     }
 
     @Test

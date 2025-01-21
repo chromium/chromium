@@ -190,13 +190,13 @@ public class ChromeOriginVerifierTest {
     @SmallTest
     public void testRelationToRelationship() throws InterruptedException {
         Assert.assertEquals(
+                "delegate_permission/common.use_as_origin",
                 ChromeOriginVerifier.relationToRelationship(
-                        CustomTabsService.RELATION_USE_AS_ORIGIN),
-                "delegate_permission/common.use_as_origin");
+                        CustomTabsService.RELATION_USE_AS_ORIGIN));
         Assert.assertEquals(
+                "delegate_permission/common.handle_all_urls",
                 ChromeOriginVerifier.relationToRelationship(
-                        CustomTabsService.RELATION_HANDLE_ALL_URLS),
-                "delegate_permission/common.handle_all_urls");
+                        CustomTabsService.RELATION_HANDLE_ALL_URLS));
     }
 
     @Test

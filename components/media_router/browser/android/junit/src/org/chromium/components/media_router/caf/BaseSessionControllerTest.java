@@ -196,7 +196,7 @@ public class BaseSessionControllerTest {
         // Test that everything is supported.
         doReturn(true).when(mCastDevice).hasCapability(anyInt());
         List<String> capabilities = mController.getCapabilities();
-        assertEquals(capabilities.size(), 4);
+        assertEquals(4, capabilities.size());
         assertTrue(capabilities.contains("audio_in"));
         assertTrue(capabilities.contains("audio_out"));
         assertTrue(capabilities.contains("video_in"));

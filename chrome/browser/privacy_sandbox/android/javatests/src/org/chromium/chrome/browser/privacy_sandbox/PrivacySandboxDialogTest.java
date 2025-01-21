@@ -334,7 +334,7 @@ public final class PrivacySandboxDialogTest {
                         .getExtraHeaders();
         assertNotNull(extraHeaders);
         assertTrue(extraHeaders.containsKey("Accept-Language"));
-        assertEquals(extraHeaders.get("Accept-Language"), "fr-FR");
+        assertEquals("fr-FR", extraHeaders.get("Accept-Language"));
         Locale.setDefault(defaultLocale);
     }
 

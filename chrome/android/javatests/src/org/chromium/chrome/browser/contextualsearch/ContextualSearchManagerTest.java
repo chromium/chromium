@@ -528,7 +528,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                 });
 
         Assert.assertTrue(imageControl.getThumbnailVisible());
-        Assert.assertEquals(imageControl.getThumbnailUrl(), "http://someimageurl.com/image.png");
+        Assert.assertEquals("http://someimageurl.com/image.png", imageControl.getThumbnailUrl());
 
         ThreadUtils.runOnUiThreadBlocking(() -> imageControl.hideCustomImage(false));
 

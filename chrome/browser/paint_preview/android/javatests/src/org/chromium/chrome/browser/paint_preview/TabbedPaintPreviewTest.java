@@ -329,8 +329,8 @@ public class TabbedPaintPreviewTest {
         public int showControlsPersistent() {
             Assert.assertEquals(
                     "Lock toolbar persistence is called before releasing a " + "previous token.",
-                    mLastToken,
-                    TokenHolder.INVALID_TOKEN);
+                    TokenHolder.INVALID_TOKEN,
+                    mLastToken);
             mLastToken = super.showControlsPersistent();
             return mLastToken;
         }
@@ -358,7 +358,7 @@ public class TabbedPaintPreviewTest {
                 boolean mainFrameMode,
                 @NonNull CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback) {
-            Assert.assertEquals(nativeCaptureResultPtr, 0);
+            Assert.assertEquals(0, nativeCaptureResultPtr);
             Assert.assertFalse(mainFrameMode);
             new Handler()
                     .postDelayed(

@@ -161,10 +161,10 @@ public class AuxiliarySearchProviderTest {
         AuxiliarySearchBookmarkGroup bookmarksList =
                 mAuxiliarySearchProvider.getBookmarksSearchableDataProto();
 
-        assertEquals(bookmarksList.getBookmarkCount(), 1);
-        assertEquals(bookmarksList.getBookmark(0).getTitle(), BOOKMARK_TITLE);
-        assertEquals(bookmarksList.getBookmark(0).getUrl(), BOOKMARK_URL);
-        assertEquals(bookmarksList.getBookmark(0).getCreationTimestamp(), 1);
+        assertEquals(1, bookmarksList.getBookmarkCount());
+        assertEquals(BOOKMARK_TITLE, bookmarksList.getBookmark(0).getTitle());
+        assertEquals(BOOKMARK_URL, bookmarksList.getBookmark(0).getUrl());
+        assertEquals(1, bookmarksList.getBookmark(0).getCreationTimestamp());
         assertFalse(bookmarksList.getBookmark(0).hasLastModificationTimestamp());
         assertFalse(bookmarksList.getBookmark(0).hasLastAccessTimestamp());
     }

@@ -218,8 +218,8 @@ public class SensitiveContentTest {
                             ViewAndroidDelegate.createBasicDelegate(newContainerView);
                     assertEquals(
                             "Initially, the content view does not have sensitive content",
-                            newContainerView.getContentSensitivity(),
-                            View.CONTENT_SENSITIVITY_AUTO);
+                            View.CONTENT_SENSITIVITY_AUTO,
+                            newContainerView.getContentSensitivity());
 
                     webContents.setDelegates(
                             "",
@@ -472,7 +472,7 @@ public class SensitiveContentTest {
                 ScrollDirection.RIGHT, /* contentContainerShouldBeSensitive= */ false);
         // Even after the swipe ends, the content container should not be sensitive.
         assertEquals(
-                contentContainer.getContentSensitivity(), View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+                View.CONTENT_SENSITIVITY_NOT_SENSITIVE, contentContainer.getContentSensitivity());
 
         histogramWatcher.assertExpected();
     }
@@ -528,16 +528,18 @@ public class SensitiveContentTest {
                                     TabCreationState.LIVE_IN_BACKGROUND);
                     // The content container should become sensitive before the animation starts.
                     assertEquals(
-                            mLayoutManagerChromePhone.getContentContainer().getContentSensitivity(),
-                            View.CONTENT_SENSITIVITY_SENSITIVE);
+                            View.CONTENT_SENSITIVITY_SENSITIVE,
+                            mLayoutManagerChromePhone
+                                    .getContentContainer()
+                                    .getContentSensitivity());
 
                     assertTrue(
                             "LayoutManager took too long to finish the animations",
                             simulateTime(mLayoutManagerChromePhone, 1000));
                     assertEquals(
                             "Incorrect active LayoutType",
-                            mLayoutManagerChromePhone.getActiveLayout().getLayoutType(),
-                            LayoutType.SIMPLE_ANIMATION);
+                            LayoutType.SIMPLE_ANIMATION,
+                            mLayoutManagerChromePhone.getActiveLayout().getLayoutType());
                     assertTrue(
                             "Incorrect active Layout",
                             mLayoutManagerChromePhone.isLayoutVisible(LayoutType.SIMPLE_ANIMATION));
@@ -552,8 +554,8 @@ public class SensitiveContentTest {
 
         // Check that the content container is still sensitive before the animation finishes.
         assertEquals(
-                mLayoutManagerChromePhone.getContentContainer().getContentSensitivity(),
-                View.CONTENT_SENSITIVITY_SENSITIVE);
+                View.CONTENT_SENSITIVITY_SENSITIVE,
+                mLayoutManagerChromePhone.getContentContainer().getContentSensitivity());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Simulate hiding animation.
@@ -564,8 +566,8 @@ public class SensitiveContentTest {
         // Check that the content container is not sensitive anymore after the animation
         // finishes.
         assertEquals(
-                mLayoutManagerChromePhone.getContentContainer().getContentSensitivity(),
-                View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+                View.CONTENT_SENSITIVITY_NOT_SENSITIVE,
+                mLayoutManagerChromePhone.getContentContainer().getContentSensitivity());
 
         histogramWatcher.assertExpected();
     }
@@ -620,8 +622,8 @@ public class SensitiveContentTest {
                                         secondTabAfterFreeze[0].getWebContents()));
         assertTrue(client.getContentRestoredFromTabStateIsSensitive().orElse(false));
         assertEquals(
-                secondTabAfterFreeze[0].getContentView().getContentSensitivity(),
-                View.CONTENT_SENSITIVITY_SENSITIVE);
+                View.CONTENT_SENSITIVITY_SENSITIVE,
+                secondTabAfterFreeze[0].getContentView().getContentSensitivity());
     }
 
     private void checkContentSensitivityOfViewWithId(int viewId, boolean contentIsSensitive) {

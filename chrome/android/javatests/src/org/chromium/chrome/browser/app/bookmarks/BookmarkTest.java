@@ -758,8 +758,8 @@ public class BookmarkTest {
 
         assertEquals(
                 "Expected bookmark toolbar to be selection mode",
-                mToolbar.getCurrentViewType(),
-                ViewType.SELECTION_VIEW);
+                ViewType.SELECTION_VIEW,
+                mToolbar.getCurrentViewType());
         assertEquals(
                 "Expected more button of selected item to be gone when drag is active.",
                 View.GONE,
@@ -1539,8 +1539,8 @@ public class BookmarkTest {
                     assertEquals(2, getBookmarkCount());
                     assertEquals(
                             "Bookmark View should be back to normal view",
-                            mToolbar.getCurrentViewType(),
-                            ViewType.NORMAL_VIEW);
+                            ViewType.NORMAL_VIEW,
+                            mToolbar.getCurrentViewType());
                 });
     }
 
@@ -1584,8 +1584,8 @@ public class BookmarkTest {
                             getNthBookmarkRow(1).isSelectedForTesting());
                     assertEquals(
                             "Should stay in selection mode because there is one selected",
-                            mToolbar.getCurrentViewType(),
-                            ViewType.SELECTION_VIEW);
+                            ViewType.SELECTION_VIEW,
+                            mToolbar.getCurrentViewType());
                 });
     }
 
@@ -1917,7 +1917,7 @@ public class BookmarkTest {
     }
 
     private void exitSearch() throws Exception {
-        assertEquals(mDelegate.getCurrentUiMode(), BookmarkUiMode.SEARCHING);
+        assertEquals(BookmarkUiMode.SEARCHING, mDelegate.getCurrentUiMode());
         pressBackButton();
 
         CriteriaHelper.pollUiThread(

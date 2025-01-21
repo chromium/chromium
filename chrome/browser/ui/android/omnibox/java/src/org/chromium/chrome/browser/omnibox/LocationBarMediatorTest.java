@@ -1490,15 +1490,15 @@ public class LocationBarMediatorTest {
         mMediator.onFinishNativeInitialization();
         looper.idle();
 
-        assertEquals(sGeoHeaderPrimeCount, 1);
+        assertEquals(1, sGeoHeaderPrimeCount);
 
         mMediator.onPauseWithNative();
-        assertEquals(sGeoHeaderStopCount, 1);
-        assertEquals(sGeoHeaderPrimeCount, 1);
+        assertEquals(1, sGeoHeaderStopCount);
+        assertEquals(1, sGeoHeaderPrimeCount);
 
         mMediator.onResumeWithNative();
-        assertEquals(sGeoHeaderPrimeCount, 2);
-        assertEquals(sGeoHeaderStopCount, 1);
+        assertEquals(2, sGeoHeaderPrimeCount);
+        assertEquals(1, sGeoHeaderStopCount);
     }
 
     private ArgumentMatcher<UrlBarData> matchesUrlBarDataForQuery(String query) {

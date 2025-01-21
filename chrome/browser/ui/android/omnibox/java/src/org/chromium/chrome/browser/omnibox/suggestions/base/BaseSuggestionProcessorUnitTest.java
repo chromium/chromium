@@ -286,7 +286,7 @@ public class BaseSuggestionProcessorUnitTest {
                 /* isSearch= */ false,
                 /* hasTabMatch= */ false,
                 TEST_URL);
-        Assert.assertEquals(mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION), false);
+        Assert.assertEquals(false, mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION));
         Assert.assertEquals(
                 mModel.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING),
                 OmniboxResourceProvider.getSuggestionDecorationIconSizeWidth(mContext));
@@ -295,7 +295,7 @@ public class BaseSuggestionProcessorUnitTest {
         mModel.set(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING, 43);
 
         mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
-        Assert.assertEquals(mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION), false);
+        Assert.assertEquals(false, mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION));
         Assert.assertEquals(
                 mModel.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING),
                 OmniboxResourceProvider.getSuggestionDecorationIconSizeWidth(mContext));

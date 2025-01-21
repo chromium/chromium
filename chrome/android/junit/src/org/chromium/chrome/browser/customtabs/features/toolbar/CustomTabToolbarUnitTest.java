@@ -266,18 +266,18 @@ public class CustomTabToolbarUnitTest {
     public void testIsReadyForTextureCapture() {
         CaptureReadinessResult result = mToolbar.isReadyForTextureCapture();
         assertTrue(result.isReady);
-        assertEquals(result.snapshotDifference, ToolbarSnapshotDifference.NULL);
+        assertEquals(ToolbarSnapshotDifference.NULL, result.snapshotDifference);
 
         fakeTextureCapture();
         result = mToolbar.isReadyForTextureCapture();
-        assertEquals(result.snapshotDifference, ToolbarSnapshotDifference.NONE);
+        assertEquals(ToolbarSnapshotDifference.NONE, result.snapshotDifference);
         assertFalse(result.isReady);
 
         when(mToolbarDataProvider.getPrimaryColor()).thenReturn(Color.RED);
         mToolbar.onPrimaryColorChanged(false);
         result = mToolbar.isReadyForTextureCapture();
         assertTrue(result.isReady);
-        assertEquals(result.snapshotDifference, ToolbarSnapshotDifference.TINT);
+        assertEquals(ToolbarSnapshotDifference.TINT, result.snapshotDifference);
 
         fakeTextureCapture();
         when(mToolbarDataProvider.getTab()).thenReturn(mTab);
@@ -288,7 +288,7 @@ public class CustomTabToolbarUnitTest {
         mLocationBar.onUrlChanged();
         result = mToolbar.isReadyForTextureCapture();
         assertTrue(result.isReady);
-        assertEquals(result.snapshotDifference, ToolbarSnapshotDifference.URL_TEXT);
+        assertEquals(ToolbarSnapshotDifference.URL_TEXT, result.snapshotDifference);
 
         fakeTextureCapture();
         when(mLocationBarModel.hasTab()).thenReturn(true);
@@ -296,7 +296,7 @@ public class CustomTabToolbarUnitTest {
         mLocationBar.onTitleChanged();
         result = mToolbar.isReadyForTextureCapture();
         assertTrue(result.isReady);
-        assertEquals(result.snapshotDifference, ToolbarSnapshotDifference.TITLE_TEXT);
+        assertEquals(ToolbarSnapshotDifference.TITLE_TEXT, result.snapshotDifference);
 
         fakeTextureCapture();
         when(mLocationBarModel.getSecurityIconResource(anyBoolean()))
@@ -305,20 +305,20 @@ public class CustomTabToolbarUnitTest {
         mLocationBar.onSecurityStateChanged();
         result = mToolbar.isReadyForTextureCapture();
         assertTrue(result.isReady);
-        assertEquals(result.snapshotDifference, ToolbarSnapshotDifference.SECURITY_ICON);
+        assertEquals(ToolbarSnapshotDifference.SECURITY_ICON, result.snapshotDifference);
 
         fakeTextureCapture();
         when(mAnimationDelegate.isInAnimation()).thenReturn(true);
         result = mToolbar.isReadyForTextureCapture();
         assertTrue(result.isReady);
-        assertEquals(result.snapshotDifference, ToolbarSnapshotDifference.CCT_ANIMATION);
+        assertEquals(ToolbarSnapshotDifference.CCT_ANIMATION, result.snapshotDifference);
 
         when(mAnimationDelegate.isInAnimation()).thenReturn(false);
         fakeTextureCapture();
         mToolbar.layout(0, 0, 100, 100);
         result = mToolbar.isReadyForTextureCapture();
         assertTrue(result.isReady);
-        assertEquals(result.snapshotDifference, ToolbarSnapshotDifference.LOCATION_BAR_WIDTH);
+        assertEquals(ToolbarSnapshotDifference.LOCATION_BAR_WIDTH, result.snapshotDifference);
     }
 
     @Test
@@ -624,7 +624,7 @@ public class CustomTabToolbarUnitTest {
     }
 
     private void assertUrlBarShowingText(String expectedString) {
-        assertEquals("URL bar is not visible.", mUrlBar.getVisibility(), View.VISIBLE);
+        assertEquals("URL bar is not visible.", View.VISIBLE, mUrlBar.getVisibility());
         assertEquals("URL bar text does not match.", expectedString, mUrlBar.getText().toString());
     }
 

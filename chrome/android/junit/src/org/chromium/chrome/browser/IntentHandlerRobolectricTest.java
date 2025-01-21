@@ -428,7 +428,7 @@ public class IntentHandlerRobolectricTest {
         Context context = ApplicationProvider.getApplicationContext();
         Intent intent = IntentHandler.createTrustedOpenNewTabIntent(context, true);
 
-        Assert.assertEquals(intent.getAction(), Intent.ACTION_VIEW);
+        Assert.assertEquals(Intent.ACTION_VIEW, intent.getAction());
         Assert.assertEquals(intent.getData(), Uri.parse(UrlConstants.NTP_URL));
         Assert.assertTrue(intent.getBooleanExtra(Browser.EXTRA_CREATE_NEW_TAB, false));
         Assert.assertTrue(IntentHandler.wasIntentSenderChrome(intent));

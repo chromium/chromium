@@ -452,31 +452,31 @@ public class ToolbarPositionControllerTest {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
 
-        assertEquals(mBottomControlsStacker.getTotalHeight(), TOOLBAR_HEIGHT);
+        assertEquals(TOOLBAR_HEIGHT, mBottomControlsStacker.getTotalHeight());
         BottomControlsLayer toolbarLayer =
                 mBottomControlsStacker.getLayerForTesting(LayerType.BOTTOM_TOOLBAR);
-        assertEquals(toolbarLayer.getHeight(), TOOLBAR_HEIGHT);
-        assertEquals(toolbarLayer.getLayerVisibility(), LayerVisibility.VISIBLE);
-        assertEquals(toolbarLayer.getScrollBehavior(), LayerScrollBehavior.DEFAULT_SCROLL_OFF);
+        assertEquals(TOOLBAR_HEIGHT, toolbarLayer.getHeight());
+        assertEquals(LayerVisibility.VISIBLE, toolbarLayer.getLayerVisibility());
+        assertEquals(LayerScrollBehavior.DEFAULT_SCROLL_OFF, toolbarLayer.getScrollBehavior());
 
         toolbarLayer.onBrowserControlsOffsetUpdate(12, false);
         verify(mControlContainerView).setTranslationY(12);
-        assertEquals(mBottomToolbarOffsetSupplier.get().intValue(), 12);
+        assertEquals(12, mBottomToolbarOffsetSupplier.get().intValue());
 
         BottomControlsLayer progressBarLayer =
                 mBottomControlsStacker.getLayerForTesting(LayerType.PROGRESS_BAR);
-        assertEquals(progressBarLayer.getHeight(), 0);
-        assertEquals(progressBarLayer.getLayerVisibility(), LayerVisibility.VISIBLE);
-        assertEquals(progressBarLayer.getScrollBehavior(), LayerScrollBehavior.DEFAULT_SCROLL_OFF);
+        assertEquals(0, progressBarLayer.getHeight());
+        assertEquals(LayerVisibility.VISIBLE, progressBarLayer.getLayerVisibility());
+        assertEquals(LayerScrollBehavior.DEFAULT_SCROLL_OFF, progressBarLayer.getScrollBehavior());
 
         progressBarLayer.onBrowserControlsOffsetUpdate(-12, false);
         verify(mProgressBarContainer).setTranslationY(-12);
 
         mIsOmniboxFocused.set(true);
         assertControlsAtTop();
-        assertEquals(toolbarLayer.getLayerVisibility(), LayerVisibility.HIDDEN);
+        assertEquals(LayerVisibility.HIDDEN, toolbarLayer.getLayerVisibility());
         verify(mControlContainerView).setTranslationY(0);
-        assertEquals(progressBarLayer.getLayerVisibility(), LayerVisibility.HIDDEN);
+        assertEquals(LayerVisibility.HIDDEN, progressBarLayer.getLayerVisibility());
         verify(mProgressBarContainer).setTranslationY(0);
     }
 
@@ -704,24 +704,24 @@ public class ToolbarPositionControllerTest {
     }
 
     private void assertControlsAtBottom() {
-        assertEquals(mBrowserControlsSizer.getControlsPosition(), ControlsPosition.BOTTOM);
-        assertEquals(mBrowserControlsSizer.getTopControlsHeight(), 0);
-        assertEquals(mBrowserControlsSizer.getBottomControlsHeight(), TOOLBAR_HEIGHT);
-        assertEquals(mHairlineLayoutParams.topMargin, 0);
-        assertEquals(mControlContainerLayoutParams.gravity, Gravity.START | Gravity.BOTTOM);
-        assertEquals(mProgressBarLayoutParams.gravity, Gravity.BOTTOM);
-        assertEquals(mProgressBarLayoutParams.anchorGravity, Gravity.NO_GRAVITY);
-        assertEquals(mProgressBarLayoutParams.getAnchorId(), View.NO_ID);
+        assertEquals(ControlsPosition.BOTTOM, mBrowserControlsSizer.getControlsPosition());
+        assertEquals(0, mBrowserControlsSizer.getTopControlsHeight());
+        assertEquals(TOOLBAR_HEIGHT, mBrowserControlsSizer.getBottomControlsHeight());
+        assertEquals(0, mHairlineLayoutParams.topMargin);
+        assertEquals(Gravity.START | Gravity.BOTTOM, mControlContainerLayoutParams.gravity);
+        assertEquals(Gravity.BOTTOM, mProgressBarLayoutParams.gravity);
+        assertEquals(Gravity.NO_GRAVITY, mProgressBarLayoutParams.anchorGravity);
+        assertEquals(View.NO_ID, mProgressBarLayoutParams.getAnchorId());
     }
 
     private void assertControlsAtTop() {
-        assertEquals(mBrowserControlsSizer.getControlsPosition(), ControlsPosition.TOP);
-        assertEquals(mBrowserControlsSizer.getTopControlsHeight(), TOOLBAR_HEIGHT);
-        assertEquals(mBrowserControlsSizer.getBottomControlsHeight(), 0);
-        assertEquals(mHairlineLayoutParams.topMargin, TOOLBAR_HEIGHT);
-        assertEquals(mControlContainerLayoutParams.gravity, Gravity.START | Gravity.TOP);
-        assertEquals(mProgressBarLayoutParams.gravity, Gravity.TOP);
-        assertEquals(mProgressBarLayoutParams.anchorGravity, Gravity.BOTTOM);
-        assertEquals(mProgressBarLayoutParams.getAnchorId(), CONTROL_CONTAINER_ID);
+        assertEquals(ControlsPosition.TOP, mBrowserControlsSizer.getControlsPosition());
+        assertEquals(TOOLBAR_HEIGHT, mBrowserControlsSizer.getTopControlsHeight());
+        assertEquals(0, mBrowserControlsSizer.getBottomControlsHeight());
+        assertEquals(TOOLBAR_HEIGHT, mHairlineLayoutParams.topMargin);
+        assertEquals(Gravity.START | Gravity.TOP, mControlContainerLayoutParams.gravity);
+        assertEquals(Gravity.TOP, mProgressBarLayoutParams.gravity);
+        assertEquals(Gravity.BOTTOM, mProgressBarLayoutParams.anchorGravity);
+        assertEquals(CONTROL_CONTAINER_ID, mProgressBarLayoutParams.getAnchorId());
     }
 }

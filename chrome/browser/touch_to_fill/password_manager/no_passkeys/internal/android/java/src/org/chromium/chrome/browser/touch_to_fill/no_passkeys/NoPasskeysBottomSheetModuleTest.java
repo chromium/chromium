@@ -152,8 +152,8 @@ public class NoPasskeysBottomSheetModuleTest {
                 spannedMessage.getSpans(
                         originStartIndex, originStartIndex + TEST_ORIGIN.length(), StyleSpan.class);
 
-        assertEquals(spans.length, 1);
-        assertEquals(spans[0].getStyle(), Typeface.BOLD);
+        assertEquals(1, spans.length);
+        assertEquals(Typeface.BOLD, spans[0].getStyle());
     }
 
     private static View findOkButton(NoPasskeysBottomSheetContent content) {

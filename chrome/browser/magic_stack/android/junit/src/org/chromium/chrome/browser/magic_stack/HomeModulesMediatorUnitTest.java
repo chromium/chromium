@@ -96,7 +96,7 @@ public class HomeModulesMediatorUnitTest {
             mModuleProviders[i] = Mockito.mock(ModuleProvider.class);
         }
         mHomeModulesConfigManager = HomeModulesConfigManager.getInstance();
-        assertEquals(mHomeModulesConfigManager.getEnabledModuleSet().size(), 0);
+        assertEquals(0, mHomeModulesConfigManager.getEnabledModuleSet().size());
         mMediator =
                 new HomeModulesMediator(
                         profileSupplier,

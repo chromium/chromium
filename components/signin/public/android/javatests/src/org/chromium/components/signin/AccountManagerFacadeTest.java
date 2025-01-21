@@ -314,7 +314,7 @@ public class AccountManagerFacadeTest {
 
         // Since getAccessToken is blocked, neither of the callbacks should be invoked.
         assertFalse(tokenCallback.isReady());
-        assertEquals(pendingRequestsCompleteCallback.getCallCount(), 0);
+        assertEquals(0, pendingRequestsCompleteCallback.getCallCount());
 
         // Unblock the delegate and wait for callbacks to be invoked.
         blockingDelegate.unblockGetAuthToken();
