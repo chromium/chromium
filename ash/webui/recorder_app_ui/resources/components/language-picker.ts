@@ -5,6 +5,7 @@
 import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
 import './settings-row.js';
+import './spoken-message.js';
 import './language-list.js';
 
 import {css, html} from 'chrome://resources/mwc/lit/index.js';
@@ -108,20 +109,24 @@ export class LanguagePicker extends ReactiveLitElement {
     if (sodaState.kind !== 'installed' && sodaState.kind !== 'installing') {
       return noSelectionRow;
     }
-    const langPack = this.platformHandler.getLangPackInfo(selectedLanguage);
+    const name =
+      this.platformHandler.getLangPackInfo(selectedLanguage).displayName;
+    const status = sodaState.kind === 'installing' ?
+      i18n.languagePickerLanguageDownloadingAriaLabel(
+        name,
+        sodaState.progress,
+      ) :
+      i18n.languagePickerLanguageSelectedAriaLabel(name);
     return html`
       <settings-row>
-        <span slot="label">
-          ${langPack.displayName}
-        </span>
+        <span slot="label" aria-hidden="true">${name}</span>
+        <spoken-message slot="status">${status}</spoken-message>
       </settings-row>
     `;
   }
 
   override render(): RenderResult {
     const selectedLanguage = this.platformHandler.getSelectedLanguage();
-    // TODO: b/384418702 - Update back button aria label and language list role
-    // after spec is ready.
     return html`
       <div id="root">
         <div id="header">
@@ -151,6 +156,8 @@ export class LanguagePicker extends ReactiveLitElement {
             </h4>
             <language-list
               class="body"
+              role="region"
+              aria-label=${i18n.languagePickerLanguagesListLandmarkAriaLabel}
               .selectedLanguage=${selectedLanguage}
               @language-select-click=${this.onSelectAndDownload}
               @language-download-click=${this.onSelectAndDownload}

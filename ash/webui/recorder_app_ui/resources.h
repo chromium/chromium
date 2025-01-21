@@ -78,6 +78,8 @@ const webui::LocalizedString kLocalizedStrings[] = {
      IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_NOT_SELECTED_ARIA_LABEL},
     {"languagePickerLanguageSelectedAriaLabel",
      IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_SELECTED_ARIA_LABEL},
+    {"languagePickerLanguagesListLandmarkAriaLabel",
+     IDS_RECORDER_LANGUAGE_PICKER_LANGUAGES_LIST_LANDMARK_ARIA_LABEL},
     {"languagePickerSelectedLanguageHeader",
      IDS_RECORDER_LANGUAGE_PICKER_SELECTED_LANGUAGE_HEADER},
     {"languagePickerSelectedLanguageNoneLabel",

@@ -230,6 +230,7 @@ export class LanguageListItem extends ReactiveLitElement {
     return html`
       <div id="root"
         tabindex=${this.isFocusable() ? 0 : -1}
+        role="button"
         aria-label=${this.getAriaLabel()}
         @click=${this.activateRow}
         @keydown=${this.onKeyDown}

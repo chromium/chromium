@@ -95,6 +95,9 @@
   <message desc="Header of the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_HEADER">
     Transcription language
   </message>
+  <message desc="Accessibility label of the landmark for the list of available languages in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGES_LIST_LANDMARK_ARIA_LABEL">
+    List of available languages
+  </message>
   <message desc="Accessibility label of downloading language row in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_DOWNLOADING_ARIA_LABEL">
     <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph> transcription model <ph name="PROGRESS_PERCENTAGE">$2<ex>42</ex></ph>% downloaded
   </message>

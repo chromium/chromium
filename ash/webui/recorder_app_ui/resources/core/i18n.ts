@@ -53,6 +53,7 @@ const noArgStringNames = [
   'languagePickerLanguageDownloadButton',
   'languagePickerLanguageDownloadingButton',
   'languagePickerLanguageErrorDescription',
+  'languagePickerLanguagesListLandmarkAriaLabel',
   'languagePickerSelectedLanguageHeader',
   'languagePickerSelectedLanguageNoneLabel',
   'mainChooseMicNudge',
