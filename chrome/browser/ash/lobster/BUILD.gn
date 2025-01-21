@@ -8,8 +8,6 @@ assert(is_chromeos_ash)
 
 static_library("lobster") {
   sources = [
-    "image_fetcher.cc",
-    "image_fetcher.h",
     "lobster_bubble_coordinator.cc",
     "lobster_bubble_coordinator.h",
     "lobster_candidate_id_generator.cc",
@@ -21,6 +19,12 @@ static_library("lobster") {
     "lobster_client_impl.cc",
     "lobster_client_impl.h",
     "lobster_event_sink.h",
+    "lobster_image_fetcher.cc",
+    "lobster_image_fetcher.h",
+    "lobster_image_provider_from_memory.cc",
+    "lobster_image_provider_from_memory.h",
+    "lobster_image_provider_from_snapper.cc",
+    "lobster_image_provider_from_snapper.h",
     "lobster_insertion.cc",
     "lobster_insertion.h",
     "lobster_service.cc",
@@ -77,9 +81,9 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "image_fetcher_unittest.cc",
     "lobster_candidate_resizer_unittest.cc",
     "lobster_feedback_unittest.cc",
+    "lobster_image_provider_from_snapper_unittest.cc",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

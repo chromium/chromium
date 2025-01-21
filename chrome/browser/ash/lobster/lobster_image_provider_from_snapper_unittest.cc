@@ -1,8 +1,8 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/lobster/image_fetcher.h"
+#include "chrome/browser/ash/lobster/lobster_image_provider_from_snapper.h"
 
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
@@ -22,23 +22,27 @@ constexpr int kPreviewImageDimensionSize = 512;
 constexpr int kFullImageDimensionSize = 1024;
 constexpr int kFakeBaseGenerationSeed = 10;
 
-class ImageFetcherTest : public testing::Test {
+class LobsterImageProviderFromSnapperTest : public testing::Test {
  public:
-  ImageFetcherTest() = default;
-  ImageFetcherTest(const ImageFetcherTest&) = delete;
-  ImageFetcherTest& operator=(const ImageFetcherTest&) = delete;
+  LobsterImageProviderFromSnapperTest() = default;
+  LobsterImageProviderFromSnapperTest(
+      const LobsterImageProviderFromSnapperTest&) = delete;
+  LobsterImageProviderFromSnapperTest& operator=(
+      const LobsterImageProviderFromSnapperTest&) = delete;
 
-  ~ImageFetcherTest() override = default;
+  ~LobsterImageProviderFromSnapperTest() override = default;
 
  private:
   base::test::TaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
-TEST_F(ImageFetcherTest, RequestCandidatesCallSnapperProvider) {
+TEST_F(LobsterImageProviderFromSnapperTest,
+       RequestMultipleCandidatesCallSnapperProvider) {
   MockSnapperProvider snapper_provider;
   LobsterCandidateIdGenerator id_generator;
-  ImageFetcher image_fetcher(&snapper_provider, &id_generator);
+  LobsterImageProviderFromSnapper image_fetcher(&snapper_provider,
+                                                &id_generator);
 
   EXPECT_CALL(
       snapper_provider,
@@ -62,7 +66,7 @@ TEST_F(ImageFetcherTest, RequestCandidatesCallSnapperProvider) {
 
   base::test::TestFuture<const ash::LobsterResult&> future;
 
-  image_fetcher.RequestCandidates(
+  image_fetcher.RequestMultipleCandidates(
       /*query=*/"a lovely cake",
       /*num_candidates=*/2, future.GetCallback());
 
@@ -83,10 +87,12 @@ TEST_F(ImageFetcherTest, RequestCandidatesCallSnapperProvider) {
                                   /*expected_query=*/"a lovely cake")));
 }
 
-TEST_F(ImageFetcherTest, RequestFullSizeCandidatesCallSnapperProvider) {
+TEST_F(LobsterImageProviderFromSnapperTest,
+       RequestSingleCandidateWithSeedCallSnapperProvider) {
   MockSnapperProvider snapper_provider;
   LobsterCandidateIdGenerator id_generator;
-  ImageFetcher image_fetcher(&snapper_provider, &id_generator);
+  LobsterImageProviderFromSnapper image_fetcher(&snapper_provider,
+                                                &id_generator);
 
   EXPECT_CALL(
       snapper_provider,
@@ -110,7 +116,7 @@ TEST_F(ImageFetcherTest, RequestFullSizeCandidatesCallSnapperProvider) {
 
   base::test::TestFuture<const ash::LobsterResult&> future;
 
-  image_fetcher.RequestFullSizeCandidate(
+  image_fetcher.RequestSingleCandidateWithSeed(
       /*query=*/"a lovely cake", /*seed=*/kFakeBaseGenerationSeed,
       future.GetCallback());
 
@@ -124,11 +130,13 @@ TEST_F(ImageFetcherTest, RequestFullSizeCandidatesCallSnapperProvider) {
           /*expected_query=*/"a lovely cake")));
 }
 
-TEST_F(ImageFetcherTest,
-       RequestCandidatesReturnsUnknownErrorIfMantaProviderHasAGenericError) {
+TEST_F(
+    LobsterImageProviderFromSnapperTest,
+    RequestMultipleCandidatesReturnsUnknownErrorIfMantaProviderHasAGenericError) {
   MockSnapperProvider snapper_provider;
   LobsterCandidateIdGenerator id_generator;
-  ImageFetcher image_fetcher(&snapper_provider, &id_generator);
+  LobsterImageProviderFromSnapper image_fetcher(&snapper_provider,
+                                                &id_generator);
 
   EXPECT_CALL(
       snapper_provider,
@@ -150,7 +158,7 @@ TEST_F(ImageFetcherTest,
 
   base::test::TestFuture<const ash::LobsterResult&> future;
 
-  image_fetcher.RequestCandidates(
+  image_fetcher.RequestMultipleCandidates(
       /*query=*/"a sweet candy",
       /*num_candidates=*/2, future.GetCallback());
 

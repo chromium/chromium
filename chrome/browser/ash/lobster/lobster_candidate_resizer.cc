@@ -10,9 +10,9 @@
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "chrome/browser/ash/lobster/image_fetcher.h"
+#include "chrome/browser/ash/lobster/lobster_image_fetcher.h"
 
-LobsterCandidateResizer::LobsterCandidateResizer(ImageFetcher* fetcher)
+LobsterCandidateResizer::LobsterCandidateResizer(LobsterImageFetcher* fetcher)
     : image_fetcher_(fetcher) {}
 
 LobsterCandidateResizer::~LobsterCandidateResizer() = default;

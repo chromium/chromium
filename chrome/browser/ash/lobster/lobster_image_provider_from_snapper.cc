@@ -1,8 +1,8 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/lobster/image_fetcher.h"
+#include "chrome/browser/ash/lobster/lobster_image_provider_from_snapper.h"
 
 #include <string>
 
@@ -134,15 +134,17 @@ void SanitizePreviewJpgBytes(
 
 }  // namespace
 
-ImageFetcher::ImageFetcher(manta::SnapperProvider* provider,
-                           LobsterCandidateIdGenerator* id_generator)
+LobsterImageProviderFromSnapper::LobsterImageProviderFromSnapper(
+    manta::SnapperProvider* provider,
+    LobsterCandidateIdGenerator* id_generator)
     : provider_(provider), id_generator_(id_generator) {}
 
-ImageFetcher::~ImageFetcher() = default;
+LobsterImageProviderFromSnapper::~LobsterImageProviderFromSnapper() = default;
 
-void ImageFetcher::RequestCandidates(const std::string& query,
-                                     int num_candidates,
-                                     ash::RequestCandidatesCallback callback) {
+void LobsterImageProviderFromSnapper::RequestMultipleCandidates(
+    const std::string& query,
+    int num_candidates,
+    ash::RequestCandidatesCallback callback) {
   if (provider_ == nullptr) {
     LOG(ERROR) << "Provider is not available";
     std::move(callback).Run(base::unexpected(ash::LobsterError(
@@ -157,13 +159,14 @@ void ImageFetcher::RequestCandidates(const std::string& query,
                                     /*num_outputs=*/num_candidates);
   // TODO(b:354620949): MISSING_TRAFFIC_ANNOTATION should be resolved before
   // launch.
-  provider_->Call(request, MISSING_TRAFFIC_ANNOTATION,
-                  base::BindOnce(&ImageFetcher::OnCandidatesRequested,
-                                 weak_ptr_factory_.GetWeakPtr(), query,
-                                 std::move(callback)));
+  provider_->Call(
+      request, MISSING_TRAFFIC_ANNOTATION,
+      base::BindOnce(&LobsterImageProviderFromSnapper::OnCandidatesRequested,
+                     weak_ptr_factory_.GetWeakPtr(), query,
+                     std::move(callback)));
 }
 
-void ImageFetcher::RequestFullSizeCandidate(
+void LobsterImageProviderFromSnapper::RequestSingleCandidateWithSeed(
     const std::string& query,
     uint32_t seed,
     ash::RequestCandidatesCallback callback) {
@@ -182,13 +185,14 @@ void ImageFetcher::RequestFullSizeCandidate(
 
   // TODO(b:354620949): MISSING_TRAFFIC_ANNOTATION should be resolved before
   // launch.
-  provider_->Call(request, MISSING_TRAFFIC_ANNOTATION,
-                  base::BindOnce(&ImageFetcher::OnCandidatesRequested,
-                                 weak_ptr_factory_.GetWeakPtr(), query,
-                                 std::move(callback)));
+  provider_->Call(
+      request, MISSING_TRAFFIC_ANNOTATION,
+      base::BindOnce(&LobsterImageProviderFromSnapper::OnCandidatesRequested,
+                     weak_ptr_factory_.GetWeakPtr(), query,
+                     std::move(callback)));
 }
 
-void ImageFetcher::OnCandidatesRequested(
+void LobsterImageProviderFromSnapper::OnCandidatesRequested(
     const std::string& query,
     ash::RequestCandidatesCallback callback,
     std::unique_ptr<manta::proto::Response> response,
@@ -205,7 +209,7 @@ void ImageFetcher::OnCandidatesRequested(
   const auto barrier_callback =
       base::BarrierCallback<std::optional<ash::LobsterImageCandidate>>(
           response->output_data_size(),
-          base::BindOnce(&ImageFetcher::OnImagesSanitized,
+          base::BindOnce(&LobsterImageProviderFromSnapper::OnImagesSanitized,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
   for (auto& data : *response->mutable_output_data()) {
@@ -215,7 +219,7 @@ void ImageFetcher::OnCandidatesRequested(
   }
 }
 
-void ImageFetcher::OnImagesSanitized(
+void LobsterImageProviderFromSnapper::OnImagesSanitized(
     ash::RequestCandidatesCallback callback,
     const std::vector<std::optional<ash::LobsterImageCandidate>>&
         sanitized_image_candidates) {

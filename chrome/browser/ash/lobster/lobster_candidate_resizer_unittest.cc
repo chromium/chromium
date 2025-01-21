@@ -9,6 +9,8 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
+#include "chrome/browser/ash/lobster/lobster_image_provider_from_snapper.h"
 #include "chrome/browser/ash/lobster/lobster_test_utils.h"
 #include "chrome/browser/ash/lobster/mock/mock_snapper_provider.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -38,7 +40,9 @@ class LobsterCandidateResizerTest : public testing::Test {
 TEST_F(LobsterCandidateResizerTest, InflateImageCallsSnapperProvider) {
   MockSnapperProvider snapper_provider;
   LobsterCandidateIdGenerator id_generator;
-  ImageFetcher image_fetcher(&snapper_provider, &id_generator);
+  LobsterImageFetcher image_fetcher(
+      std::make_unique<LobsterImageProviderFromSnapper>(&snapper_provider,
+                                                        &id_generator));
   LobsterCandidateResizer resizer(&image_fetcher);
 
   EXPECT_CALL(
@@ -81,7 +85,9 @@ TEST_F(LobsterCandidateResizerTest,
        InflateImageReturnsErrorIfSnapperProviderReceivesErrorResponse) {
   MockSnapperProvider snapper_provider;
   LobsterCandidateIdGenerator id_generator;
-  ImageFetcher image_fetcher(&snapper_provider, &id_generator);
+  LobsterImageFetcher image_fetcher(
+      std::make_unique<LobsterImageProviderFromSnapper>(&snapper_provider,
+                                                        &id_generator));
   LobsterCandidateResizer resizer(&image_fetcher);
 
   EXPECT_CALL(
@@ -120,7 +126,9 @@ TEST_F(LobsterCandidateResizerTest,
        InflateImageReturnsErrorIfSnapperProviderReturnsEmptyResponse) {
   MockSnapperProvider snapper_provider;
   LobsterCandidateIdGenerator id_generator;
-  ImageFetcher image_fetcher(&snapper_provider, &id_generator);
+  LobsterImageFetcher image_fetcher(
+      std::make_unique<LobsterImageProviderFromSnapper>(&snapper_provider,
+                                                        &id_generator));
   LobsterCandidateResizer resizer(&image_fetcher);
 
   EXPECT_CALL(

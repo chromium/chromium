@@ -10,11 +10,11 @@
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/lobster/image_fetcher.h"
 #include "chrome/browser/ash/lobster/lobster_bubble_coordinator.h"
 #include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
 #include "chrome/browser/ash/lobster/lobster_candidate_resizer.h"
 #include "chrome/browser/ash/lobster/lobster_event_sink.h"
+#include "chrome/browser/ash/lobster/lobster_image_fetcher.h"
 #include "chrome/browser/ash/lobster/lobster_insertion.h"
 #include "chrome/browser/ash/lobster/lobster_system_state_provider.h"
 #include "components/account_id/account_id.h"
@@ -62,6 +62,8 @@ class LobsterService : public KeyedService, public LobsterEventSink {
   // Relevant input events
   void OnFocus(int context_id) override;
 
+  bool OverrideLobsterImageProviderForTesting();
+
  private:
   // Not owned by this class
   raw_ptr<Profile> profile_;
@@ -72,8 +74,8 @@ class LobsterService : public KeyedService, public LobsterEventSink {
 
   std::unique_ptr<manta::SnapperProvider> image_provider_;
 
-  ImageFetcher image_fetcher_;
-  LobsterCandidateResizer resizer_;
+  std::unique_ptr<LobsterImageFetcher> image_fetcher_;
+  std::unique_ptr<LobsterCandidateResizer> resizer_;
 
   LobsterSystemStateProvider system_state_provider_;
 
