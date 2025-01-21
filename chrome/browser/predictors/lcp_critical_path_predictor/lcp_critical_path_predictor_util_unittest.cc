@@ -736,6 +736,49 @@ TEST(IsValidLcppStatTest, MixedPattern) {
   EXPECT_TRUE(IsValidLcppStat(lcpp_stat));
 }
 
+TEST(PredictLcpElementLocatorsTest, Empty) {
+  LcpElementLocatorStat stat;
+  EXPECT_EQ(std::vector<std::string>(),
+            PredictLcpElementLocators(stat,
+                                      /*confidence_threshold=*/0.0));
+}
+
+TEST(PredictLcpElementLocatorsTest, ConfidenceThreshold) {
+  const std::string kElementLocator1 = "#element_locator_1";
+  const std::string kElementLocator2 = "#element_locator_2";
+  const std::string kElementLocator3 = "#element_locator_3";
+  LcpElementLocatorStat stat;
+  {
+    auto* bucket1 = stat.add_lcp_element_locator_buckets();
+    bucket1->set_lcp_element_locator(kElementLocator1);
+    bucket1->set_frequency(1);  // 10%
+    auto* bucket2 = stat.add_lcp_element_locator_buckets();
+    bucket2->set_lcp_element_locator(kElementLocator2);
+    bucket2->set_frequency(2);  // 20%
+    auto* bucket3 = stat.add_lcp_element_locator_buckets();
+    bucket3->set_lcp_element_locator(kElementLocator3);
+    bucket3->set_frequency(3);           // 30%
+    stat.set_other_bucket_frequency(4);  // 40%
+  }
+  EXPECT_EQ(std::vector<std::string>(
+                {kElementLocator3, kElementLocator2, kElementLocator1}),
+            PredictLcpElementLocators(stat,
+                                      /*confidence_threshold=*/0.0));
+  EXPECT_EQ(std::vector<std::string>(
+                {kElementLocator3, kElementLocator2, kElementLocator1}),
+            PredictLcpElementLocators(stat,
+                                      /*confidence_threshold=*/0.1));
+  EXPECT_EQ(std::vector<std::string>({kElementLocator3, kElementLocator2}),
+            PredictLcpElementLocators(stat,
+                                      /*confidence_threshold=*/0.2));
+  EXPECT_EQ(std::vector<std::string>({kElementLocator3}),
+            PredictLcpElementLocators(stat,
+                                      /*confidence_threshold=*/0.3));
+  EXPECT_EQ(std::vector<std::string>({}),
+            PredictLcpElementLocators(stat,
+                                      /*confidence_threshold=*/0.31));
+}
+
 TEST(PredictFetchedFontUrls, Empty) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(

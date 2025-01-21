@@ -13301,6 +13301,7 @@
                     "name": "MediumPriority_20240418",
                     "params": {
                         "lcpp_adjust_image_load_priority": "true",
+                        "lcpp_adjust_image_load_priority_confidence_threshold": "0.0",
                         "lcpp_adjust_image_load_priority_override_first_n_boost": "true",
                         "lcpp_enable_image_load_priority_for_htmlimageelement": "false",
                         "lcpp_enable_perf_improvements": "true",

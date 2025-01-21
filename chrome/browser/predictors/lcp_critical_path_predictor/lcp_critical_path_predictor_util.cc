@@ -71,37 +71,6 @@ bool IsValidUrlInLcppStringFrequencyStatData(const std::string& url) {
   return true;
 }
 
-// Returns LCP element locators in the past loads for a given `stat`.  The
-// returned LCP element locators are ordered by descending frequency (the
-// most frequent one comes first). If there is no data, it returns an empty
-// vector.
-std::vector<std::string> PredictLcpElementLocators(const LcppStat& stat) {
-  // We do not use `ConvertToFrequencyStringPair` for the following code
-  // because the core part of the code is converting `std::map` to
-  // `std::vector<std::pair<double, std::string>>`, which we need the different
-  // logic due to the `bytes` protobuf type.
-  const auto& buckets =
-      stat.lcp_element_locator_stat().lcp_element_locator_buckets();
-  std::vector<std::pair<double, std::string>>
-      lcp_element_locators_with_frequency;
-  lcp_element_locators_with_frequency.reserve(buckets.size());
-  for (const auto& bucket : buckets) {
-    lcp_element_locators_with_frequency.emplace_back(
-        bucket.frequency(), bucket.lcp_element_locator());
-  }
-
-  // Makes higher frequency goes first by `rbegin` and `rend`.
-  std::sort(lcp_element_locators_with_frequency.rbegin(),
-            lcp_element_locators_with_frequency.rend());
-
-  std::vector<std::string> lcp_element_locators;
-  lcp_element_locators.reserve(lcp_element_locators_with_frequency.size());
-  for (auto& bucket : lcp_element_locators_with_frequency) {
-    lcp_element_locators.push_back(std::move(bucket.second));
-  }
-  return lcp_element_locators;
-}
-
 // Returns LCP influencer scripts from past loads for a given `stat`.
 // The returned script urls are ordered by descending frequency (the most
 // frequent one comes first). If there is no data, it returns an empty
@@ -712,8 +681,10 @@ void DeleteTables(std::unique_ptr<LcppDataMap::DataTable> data_table,
 std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
 ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(
     const LcppStat& lcpp_stat) {
-  std::vector<std::string> lcp_element_locators =
-      PredictLcpElementLocators(lcpp_stat);
+  static const double kConfidenceThreshold =
+      blink::features::kLcppAdjustImageLoadPriorityConfidenceThreshold.Get();
+  std::vector<std::string> lcp_element_locators = PredictLcpElementLocators(
+      lcpp_stat.lcp_element_locator_stat(), kConfidenceThreshold);
   std::vector<GURL> lcp_influencer_scripts =
       PredictLcpInfluencerScripts(lcpp_stat);
   std::vector<GURL> fetched_fonts = PredictFetchedFontUrls(lcpp_stat);
@@ -730,6 +701,43 @@ ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(
         std::move(unused_preloads));
   }
   return std::nullopt;
+}
+
+std::vector<std::string> PredictLcpElementLocators(
+    const predictors::LcpElementLocatorStat& stat,
+    const double confidence_threshold) {
+  // We do not use `ConvertToFrequencyStringPair` for the following code
+  // because the core part of the code is converting `std::map` to
+  // `std::vector<std::pair<double, std::string>>`, which we need the different
+  // logic due to the `bytes` protobuf type.
+  const auto& buckets = stat.lcp_element_locator_buckets();
+  double sum_of_frequency = 0.0;
+  for (const auto& bucket : buckets) {
+    sum_of_frequency += bucket.frequency();
+  }
+  sum_of_frequency += stat.other_bucket_frequency();
+  std::vector<std::pair<double, std::string>>
+      lcp_element_locators_with_confidence;
+  lcp_element_locators_with_confidence.reserve(buckets.size());
+  for (const auto& bucket : buckets) {
+    double confidence = bucket.frequency() / sum_of_frequency;
+    if (confidence < confidence_threshold) {
+      continue;
+    }
+    lcp_element_locators_with_confidence.emplace_back(
+        confidence, bucket.lcp_element_locator());
+  }
+
+  // Makes higher confidence goes first by `rbegin` and `rend`.
+  std::sort(lcp_element_locators_with_confidence.rbegin(),
+            lcp_element_locators_with_confidence.rend());
+
+  std::vector<std::string> lcp_element_locators;
+  lcp_element_locators.reserve(lcp_element_locators_with_confidence.size());
+  for (auto& bucket : lcp_element_locators_with_confidence) {
+    lcp_element_locators.push_back(std::move(bucket.second));
+  }
+  return lcp_element_locators;
 }
 
 std::vector<GURL> PredictFetchedFontUrls(const LcppStat& stat) {

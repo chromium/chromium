@@ -749,6 +749,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kLCPCriticalPathAdjustImageLoadPriorityOverrideFirstNBoost);
 
+// The value must be between 0 and 1 inclusive. The prediction that is below
+// this threshold will be ignored.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kLcppAdjustImageLoadPriorityConfidenceThreshold);
+
 // The type of LCP elements recorded by LCPP.
 enum class LcppRecordedLcpElementTypes {
   kAll,
