@@ -32,6 +32,7 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -828,6 +829,9 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
   // the full image request.
   scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
       base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
+  ref_counted_logs->client_logs().set_metrics_collection_disabled(
+      !g_browser_process->GetMetricsServicesManager() ||
+      !g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
   ref_counted_logs->client_logs().set_lens_overlay_entry_point(
       LenOverlayEntryPointFromInvocationSource(invocation_source_));
 
@@ -1281,6 +1285,9 @@ void LensOverlayQueryController::SendInteraction(
   ref_counted_logs->client_logs().set_lens_overlay_entry_point(
       LenOverlayEntryPointFromInvocationSource(invocation_source_));
   ref_counted_logs->client_logs().set_paella_id(gen204_id_);
+  ref_counted_logs->client_logs().set_metrics_collection_disabled(
+      !g_browser_process->GetMetricsServicesManager() ||
+      !g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
 
   // Initialize latest_interaction_request_data_ with a new request ID to
   // ensure once the async processes finish, no new interaction request has

@@ -121,7 +121,6 @@ message Payload {
     // ZSTD compression.
     ZSTD = 1;
   }
-
   // Compression format of content_data. Currently only used for PDF data.
   CompressionType compression_type = 8;
 
