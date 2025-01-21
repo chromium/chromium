@@ -16409,13 +16409,11 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "PartitionAllocSchedulerLoopQuarantineBranchCapacity": "0",
-                        "PartitionAllocSchedulerLoopQuarantineBrowserUICapacity": "262144",
-                        "enabled-processes": "browser-only"
+                        "PartitionAllocSchedulerLoopQuarantineBranchCapacity": "262144"
                     },
                     "enable_features": [
                         "PartitionAllocSchedulerLoopQuarantine",
-                        "PartitionAllocWithAdvancedChecks"
+                        "PartitionAllocZappingByFreeFlags"
                     ]
                 }
             ]
