@@ -21,6 +21,7 @@ from typing import Optional
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.models.test_expectations import TestExpectations
+from blinkpy.web_tests.models.test_results import TestResult
 from blinkpy.web_tests.models.typ_types import ResultType
 
 logging.getLogger("urllib3").setLevel(logging.WARNING)
@@ -230,13 +231,8 @@ class TestResultSink:
         # Sort summaries to display "command" at the top of the summary.
         return sorted(summaries), ret
 
-    def sink(self, expected, result):
+    def sink(self, result: TestResult):
         """Reports the test result to ResultSink.
-
-        Args:
-            expected: True if the test was expected to fail and actually failed.
-                False, otherwise.
-            result: The TestResult object to report.
 
         Exceptions:
             requests.exceptions.ConnectionError, if there was a network
@@ -260,7 +256,7 @@ class TestResultSink:
             'artifacts': artifacts,
             'duration': '%ss' % result.total_run_time,
             # device failures are never expected.
-            'expected': not result.device_failed and expected,
+            'expected': not result.device_failed and result.is_expected,
             'status': self._status(result),
             # TODO(crbug/1093659): web_tests report TestResult with the start
             # time.

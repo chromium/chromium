@@ -446,10 +446,6 @@ class TestExpectations:
             if result in self.get_expectations(test_name).results
         }
 
-    def matches_an_expected_result(self, test, result):
-        expected_results = self.get_expectations(test).results
-        return result in expected_results
-
     def _add_expectations_from_bot(self):
         # FIXME: With mode 'very-flaky' and 'maybe-flaky', this will show
         # the expectations entry in the flakiness dashboard rows for each

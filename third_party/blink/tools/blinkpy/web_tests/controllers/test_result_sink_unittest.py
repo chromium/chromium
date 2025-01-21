@@ -63,7 +63,7 @@ class TestCreateTestResultSink(TestResultSinkTestBase):
         response.status_code = 200
         with mock.patch.object(rs._session, 'post',
                                return_value=response) as m:
-            rs.sink(True, test_results.TestResult('test'))
+            rs.sink(test_results.TestResult('test'))
             self.assertTrue(m.called)
             self.assertEqual(
                 urlparse(m.call_args[0][0]).netloc, ctx['address'])
@@ -79,8 +79,14 @@ class TestResultSinkMessage(TestResultSinkTestBase):
 
     def sink(self, expected, test_result, expectations=None):
         result_sink = CreateTestResultSink(self.port, expectations)
+        if expected:
+            test_result.expected = frozenset([test_result.type])
+        elif test_result.type == ResultType.Pass:
+            test_result.expected = frozenset([ResultType.Failure])
+        else:
+            test_result.expected = frozenset([ResultType.Pass])
         with mock.patch.object(result_sink, '_send') as mock_send:
-            result_sink.sink(expected, test_result)
+            result_sink.sink(test_result)
         self.assertTrue(mock_send.called)
         return mock_send.call_args[0][0]['testResults'][0]
 
