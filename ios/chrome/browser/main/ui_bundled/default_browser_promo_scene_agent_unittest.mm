@@ -115,7 +115,7 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(identity);
     AuthenticationServiceFactory::GetForProfile(profile_.get())
-        ->SignIn(identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+        ->SignIn(identity, signin_metrics::AccessPoint::kUnknown);
   }
 
   void SimulatePostDeviceRestore() {
