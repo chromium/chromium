@@ -2330,6 +2330,92 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
   EXPECT_EQ(theme_service()->GetUserColor(), std::nullopt);
 }
 
+TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+       ShouldUpdateOldSyncingThemePrefs) {
+  // Start syncing.
+  ASSERT_FALSE(theme_sync_service()->MergeDataAndStartSyncing(
+      syncer::THEMES, syncer::SyncDataList(),
+      std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+          fake_change_processor())));
+
+  ASSERT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kUserColorDoNotUse));
+  ASSERT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kBrowserColorVariantDoNotUse));
+  ASSERT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kGrayscaleThemeEnabledDoNotUse));
+  ASSERT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+
+  // Set user color theme.
+  theme_service()->SetUserColorAndBrowserColorVariant(
+      SK_ColorRED, ui::mojom::BrowserColorVariant::kTonalSpot);
+
+  ASSERT_TRUE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kUserColorDoNotUse));
+  ASSERT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kBrowserColorVariantDoNotUse));
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(prefs::kUserColorDoNotUse),
+            static_cast<int>(SK_ColorRED));
+  EXPECT_EQ(
+      profile()->GetPrefs()->GetInteger(prefs::kBrowserColorVariantDoNotUse),
+      static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
+
+  // Other prefs are cleared.
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kGrayscaleThemeEnabledDoNotUse));
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+
+  // Set grayscale theme.
+  theme_service()->SetIsGrayscale(true);
+
+  ASSERT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kGrayscaleThemeEnabledDoNotUse));
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetBoolean(prefs::kGrayscaleThemeEnabledDoNotUse));
+
+  // Other prefs are cleared.
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kUserColorDoNotUse));
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kBrowserColorVariantDoNotUse));
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+
+  // Set ntp background.
+  {
+    ScopedDictPrefUpdate dict(
+        profile()->GetPrefs(),
+        prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse);
+    dict->Set(kNtpCustomBackgroundURL, kTestUrl);
+  }
+
+  EXPECT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+
+  // Other prefs are left as-is.
+  EXPECT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kGrayscaleThemeEnabledDoNotUse));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kUserColorDoNotUse));
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kBrowserColorVariantDoNotUse));
+
+  // Set default theme.
+  theme_service()->UseDefaultTheme();
+
+  // All prefs are cleared.
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kUserColorDoNotUse));
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kBrowserColorVariantDoNotUse));
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kGrayscaleThemeEnabledDoNotUse));
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+}
+
 // Regression test for crbug.com/389026436.
 TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
        ClearLocalNtpBackgroundIfRemoteEmpty) {
