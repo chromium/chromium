@@ -101,9 +101,6 @@ class CrossOriginIsolationTest : public CrossOriginIsolationTestBase {
     const char* background_script = nullptr;
     const char* extension_only_keys = R"(
       "web_accessible_resources": ["test.html"],
-      "browser_action": {
-          "default_title": "foo"
-      },
     )";
     if (options.is_platform_app) {
       background_script = R"(
@@ -282,12 +279,10 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
   EXPECT_NE(coi_app_background_render_frame_host->GetProcess(),
             non_coi_background_render_frame_host->GetProcess());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that a web accessible frame from a cross origin isolated extension is
 // not cross origin isolated.
-// TODO(https://crbug.com/388110291): Port to desktop Android. The URL of the
-// extension_iframe is "about:blank#blocked" for unclear reasons. Also, the
-// chrome.browserAction API is not yet supported.
 IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
   RestrictProcessCount();
 
@@ -399,17 +394,18 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
 
   // Finally make some extension API calls to ensure both cross-origin-isolated
   // and non-cross-origin-isolated extension contexts are considered
-  // "privileged".
+  // "privileged". Use chrome.extension.isAllowedIncognitoAccess because it is
+  // supported on desktop Android.
   {
     auto verify_is_privileged_context = [](content::RenderFrameHost* host) {
       const char* kScript = R"(
         new Promise(resolve => {
-          chrome.browserAction.getTitle({}, title => {
-            resolve(title);
+          chrome.extension.isAllowedIncognitoAccess(allowed => {
+            resolve(allowed);
           });
         });
       )";
-      EXPECT_EQ("foo", content::EvalJs(host, kScript));
+      EXPECT_EQ(false, content::EvalJs(host, kScript));
     };
 
     {
@@ -424,7 +420,6 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
     }
   }
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Test that an extension service worker for a cross origin isolated extension
 // is not cross origin isolated. See crbug.com/1131404.
