@@ -2871,7 +2871,7 @@ ci.builder(
             # If you change this, make similar changes in android-x86-code-coverage
             "gl_tests_validating": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p.gl_tests.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p_10.gl_tests.filter",
                 ],
             ),
             "leveldb_unittests": targets.remove(
@@ -3338,7 +3338,7 @@ ci.builder(
             ),
             "gl_tests_validating": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p.gl_tests.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p_10.gl_tests.filter",
                 ],
             ),
             "net_unittests": targets.mixin(
