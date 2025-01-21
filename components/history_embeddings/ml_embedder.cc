@@ -31,14 +31,9 @@ MlEmbedder::~MlEmbedder() {
 }
 
 void MlEmbedder::ComputePassagesEmbeddings(
-    PassageKind kind,
+    passage_embeddings::PassagePriority priority,
     std::vector<std::string> passages,
     ComputePassagesEmbeddingsCallback callback) {
-  passage_embeddings::mojom::PassagePriority priority =
-      kind == PassageKind::QUERY
-          ? passage_embeddings::mojom::PassagePriority::kUserInitiated
-          : passage_embeddings::mojom::PassagePriority::kPassive;
-
   service_controller_->GetEmbeddings(
       std::move(passages), priority,
       base::BindOnce(

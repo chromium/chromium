@@ -34,7 +34,7 @@ MockEmbedder::MockEmbedder() = default;
 MockEmbedder::~MockEmbedder() = default;
 
 void MockEmbedder::ComputePassagesEmbeddings(
-    PassageKind kind,
+    passage_embeddings::PassagePriority priority,
     std::vector<std::string> passages,
     ComputePassagesEmbeddingsCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

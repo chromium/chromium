@@ -35,6 +35,7 @@
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
+#include "components/passage_embeddings/passage_embeddings_types.h"
 #include "url/gurl.h"
 
 namespace history_embeddings {
@@ -399,7 +400,7 @@ SearchResult HistoryEmbeddingsService::Search(
   }
 
   embedder_->ComputePassagesEmbeddings(
-      PassageKind::QUERY, {std::move(query)},
+      passage_embeddings::PassagePriority::kUserInitiated, {std::move(query)},
       base::BindOnce(&HistoryEmbeddingsService::OnQueryEmbeddingComputed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      result.Clone()));
@@ -865,7 +866,7 @@ void HistoryEmbeddingsService::ComputeAndStorePassageEmbeddingsWithExistingData(
   }
 
   embedder_->ComputePassagesEmbeddings(
-      PassageKind::PAGE_VISIT_PASSAGE, std::move(passages),
+      passage_embeddings::PassagePriority::kPassive, std::move(passages),
       base::BindOnce(&HistoryEmbeddingsService::OnPassagesEmbeddingsComputed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(embedding_cache),
                      std::move(url_data)));
@@ -1195,7 +1196,7 @@ void HistoryEmbeddingsService::RebuildAbsentEmbeddings(
     VLOG(3) << "Rebuild scheduled for url_id " << url_passages.url_id
             << " with " << passages.size() << " passages";
     embedder_->ComputePassagesEmbeddings(
-        PassageKind::REBUILD_PASSAGE, std::move(passages),
+        passage_embeddings::PassagePriority::kLatent, std::move(passages),
         base::BindOnce(&HistoryEmbeddingsService::OnPassagesEmbeddingsComputed,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::unordered_map<std::string, Embedding>(),

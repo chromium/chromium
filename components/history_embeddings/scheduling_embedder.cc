@@ -17,10 +17,16 @@
 
 namespace history_embeddings {
 
-SchedulingEmbedder::Job::Job(PassageKind kind,
+namespace {
+
+using passage_embeddings::PassagePriority;
+
+}  // namespace
+
+SchedulingEmbedder::Job::Job(passage_embeddings::PassagePriority priority,
                              std::vector<std::string> passages,
                              ComputePassagesEmbeddingsCallback callback)
-    : kind(kind),
+    : priority(priority),
       passages(std::move(passages)),
       callback(std::move(callback)) {}
 SchedulingEmbedder::Job::~Job() = default;
@@ -37,7 +43,7 @@ SchedulingEmbedder::SchedulingEmbedder(std::unique_ptr<Embedder> embedder,
 SchedulingEmbedder::~SchedulingEmbedder() = default;
 
 void SchedulingEmbedder::ComputePassagesEmbeddings(
-    PassageKind kind,
+    passage_embeddings::PassagePriority priority,
     std::vector<std::string> passages,
     ComputePassagesEmbeddingsCallback callback) {
   // Zero size jobs are expected, and can be called back immediately
@@ -53,7 +59,7 @@ void SchedulingEmbedder::ComputePassagesEmbeddings(
   // then it will continue later when embeddings are returned.
   bool submit = jobs_.empty();
 
-  jobs_.emplace_back(kind, std::move(passages), std::move(callback));
+  jobs_.emplace_back(priority, std::move(passages), std::move(callback));
 
   if (submit) {
     SubmitWorkToEmbedder();
@@ -73,13 +79,15 @@ void SchedulingEmbedder::SubmitWorkToEmbedder() {
 
   // Put higher priority jobs at the front. This may suspend partially
   // completed jobs of lower priority by pushing them toward the back.
-  std::stable_sort(jobs_.begin(), jobs_.end(),
-                   [](const Job& a, const Job& b) { return a.kind < b.kind; });
+  std::stable_sort(jobs_.begin(), jobs_.end(), [](const Job& a, const Job& b) {
+    return a.priority < b.priority;
+  });
 
   // When submitting a query, only the latest is kept, and old waiting queries
   // can be removed. They will be contiguous at the front due to above sort.
-  if (jobs_.front().kind == PassageKind::QUERY) {
-    while (jobs_.size() > 1 && jobs_.at(1).kind == PassageKind::QUERY) {
+  if (jobs_.front().priority == PassagePriority::kUserInitiated) {
+    while (jobs_.size() > 1 &&
+           jobs_.at(1).priority == PassagePriority::kUserInitiated) {
       VLOG(2) << "Dropped pending query '" << jobs_.front().passages[0]
               << "'. Next query: '" << jobs_.at(1).passages[0] << "'";
       std::move(jobs_.front().callback)
@@ -89,12 +97,12 @@ void SchedulingEmbedder::SubmitWorkToEmbedder() {
   }
 
   // Submit a batch of passages taken from jobs near the front of the queue.
-  // Only submit one kind of passage, regardless of count.
-  PassageKind kind = jobs_.front().kind;
+  // Only submit one priority type of passage, regardless of count.
+  PassagePriority priority = jobs_.front().priority;
   std::vector<std::string> passages;
   size_t job_index = 0;
   while (passages.size() < scheduled_max_ && job_index < jobs_.size() &&
-         jobs_.at(job_index).kind == kind) {
+         jobs_.at(job_index).priority == priority) {
     const Job& job = jobs_.at(job_index);
     size_t accept = std::min(scheduled_max_ - passages.size(),
                              job.passages.size() - job.embeddings.size());
@@ -111,7 +119,7 @@ void SchedulingEmbedder::SubmitWorkToEmbedder() {
     EraseNonAsciiCharacters(passages);
   }
   embedder_->ComputePassagesEmbeddings(
-      kind, std::move(passages),
+      priority, std::move(passages),
       base::BindOnce(&SchedulingEmbedder::OnEmbeddingsComputed,
                      weak_ptr_factory_.GetWeakPtr()));
 }

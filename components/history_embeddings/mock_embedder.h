@@ -16,7 +16,7 @@ class MockEmbedder : public Embedder {
 
   // Embedder:
   void ComputePassagesEmbeddings(
-      PassageKind kind,
+      passage_embeddings::PassagePriority priority,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override;
 

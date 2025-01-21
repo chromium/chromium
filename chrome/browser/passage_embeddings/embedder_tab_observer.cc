@@ -151,7 +151,7 @@ void EmbedderTabObserver::OnGotPassages(
 
   base::ElapsedTimer embeddings_computation_timer;
   ChromePassageEmbeddingsServiceController::Get()->GetEmbeddings(
-      std::move(passages), mojom::PassagePriority::kPassive,
+      std::move(passages), PassagePriority::kPassive,
       base::BindOnce(&OnGotEmbeddings,
                      std::move(embeddings_computation_timer)));
 }

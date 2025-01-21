@@ -35,7 +35,7 @@ class PassageEmbeddingsServiceController {
       std::vector<mojom::PassageEmbeddingsResultPtr> results,
       ComputeEmbeddingsStatus status)>;
   void GetEmbeddings(std::vector<std::string> passages,
-                     mojom::PassagePriority priority,
+                     PassagePriority priority,
                      GetEmbeddingsCallback callback);
 
   // Returns true if this service controller is ready for embeddings generation.
