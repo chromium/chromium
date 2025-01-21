@@ -239,7 +239,6 @@ class HardwareDisplayController {
   void UpdateCursorImage();
   void UpdateCursorLocation();
   void ResetCursor();
-  void DisableCursor();
   void InitSupportedCursorSizes();
 
   std::vector<uint64_t> GetFormatModifiers(uint32_t fourcc_format) const;
