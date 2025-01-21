@@ -294,6 +294,7 @@ def workflow(name, destination, mode):
             "**/*.dfa",
             "**/*.fst",
             "**/*.bmp",
+            "**/*.webp",
 
             # TODO: figure out what's going on with this one - may not be valid
             # UTF-8?
