@@ -3580,6 +3580,8 @@ public class AwContents implements SmartClipProvider {
         byte[] state = AwContentsJni.get().getOpaqueState(mNativeAwContents);
         if (state == null) return false;
 
+        int stateSizeKb = state.length / 1024;
+        RecordHistogram.recordCount1000Histogram("Android.WebView.SaveState.Size", stateSizeKb);
         outState.putByteArray(SAVE_RESTORE_STATE_KEY, state);
         return true;
     }

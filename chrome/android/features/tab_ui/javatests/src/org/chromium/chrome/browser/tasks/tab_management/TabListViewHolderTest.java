@@ -458,14 +458,14 @@ public class TabListViewHolderTest {
         final String title = "Surf the cool webz";
         mGridModel.set(TabProperties.TITLE, title);
         TextView textView = mTabGridView.findViewById(R.id.tab_title);
-        Assert.assertEquals(textView.getText(), title);
+        Assert.assertEquals(title, textView.getText());
 
         mSelectableModel.set(TabProperties.TITLE, title);
         textView = mSelectableTabGridView.findViewById(R.id.tab_title);
-        Assert.assertEquals(textView.getText(), title);
+        Assert.assertEquals(title, textView.getText());
 
         textView = mSelectableTabListView.findViewById(R.id.title);
-        Assert.assertEquals(textView.getText(), title);
+        Assert.assertEquals(title, textView.getText());
     }
 
     @Test
@@ -759,17 +759,17 @@ public class TabListViewHolderTest {
 
         TabCardLabelView gridLabel = mTabGridView.findViewById(R.id.tab_card_label);
         assertNotNull(gridLabel);
-        assertEquals(gridLabel.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, gridLabel.getVisibility());
         FrameLayout listContainer = mTabListView.findViewById(R.id.before_description_container);
-        assertEquals(listContainer.getChildCount(), 1);
+        assertEquals(1, listContainer.getChildCount());
         TabCardLabelView listLabel = (TabCardLabelView) listContainer.getChildAt(0);
         assertNotNull(listLabel);
-        assertEquals(listLabel.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, listLabel.getVisibility());
 
         mGridModel.set(TabProperties.TAB_CARD_LABEL_DATA, null);
 
-        assertEquals(gridLabel.getVisibility(), View.GONE);
-        assertEquals(listLabel.getVisibility(), View.GONE);
+        assertEquals(View.GONE, gridLabel.getVisibility());
+        assertEquals(View.GONE, listLabel.getVisibility());
 
         TabListViewBinder.onViewRecycled(mGridModel, mTabListView);
         assertNull(listLabel.getParent());
@@ -1136,9 +1136,9 @@ public class TabListViewHolderTest {
     public void testTabStripNotificationBubble_toggleHasNotification() {
         ImageView notificationView = mTabStripView.findViewById(R.id.tab_strip_notification_bubble);
 
-        assertEquals(notificationView.getVisibility(), View.GONE);
+        assertEquals(View.GONE, notificationView.getVisibility());
         mStripModel.set(TabProperties.HAS_NOTIFICATION_BUBBLE, true);
-        assertEquals(notificationView.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, notificationView.getVisibility());
     }
 
     @Test

@@ -51,6 +51,8 @@ SafetyClassifierVerdict ToSafetyClassifierVerdict(
       return SafetyClassifierVerdict::kInvalidInput;
     case manta::MantaStatusCode::kBackendFailure:
       return SafetyClassifierVerdict::kBackendFailure;
+    case manta::MantaStatusCode::kNoInternetConnection:
+      return SafetyClassifierVerdict::kNoInternetConnection;
     default:
       return SafetyClassifierVerdict::kGenericError;
   }

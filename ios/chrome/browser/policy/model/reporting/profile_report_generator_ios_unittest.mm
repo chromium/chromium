@@ -88,8 +88,8 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
     fake_system_identity_manager->AddIdentity(fake_identity);
-    authentication_service_->SignIn(
-        fake_identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+    authentication_service_->SignIn(fake_identity,
+                                    signin_metrics::AccessPoint::kUnknown);
     return fake_identity;
   }
 

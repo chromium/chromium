@@ -146,13 +146,13 @@ public class DefaultBrowserPromoImpressionCounterTest {
                 ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_SESSION_COUNT, testSessionCount);
 
         mCounter.onPromoShown();
-        Assert.assertEquals(mCounter.getPromoCount(), 1);
-        Assert.assertEquals(mCounter.getLastPromoInterval(), 0);
+        Assert.assertEquals(1, mCounter.getPromoCount());
+        Assert.assertEquals(0, mCounter.getLastPromoInterval());
         Assert.assertEquals(mCounter.getLastPromoSessionCount(), testSessionCount);
 
         // Advance 3 days, last interval is 3 days = 4320 minutes
         mClockRule.advanceMillis(DateUtils.DAY_IN_MILLIS * 3);
-        Assert.assertEquals(mCounter.getLastPromoInterval(), 4320);
+        Assert.assertEquals(4320, mCounter.getLastPromoInterval());
 
         // Increase session count, getLastPromoSessionCount stays the same.
         DefaultBrowserPromoUtils.incrementSessionCount();
@@ -160,8 +160,8 @@ public class DefaultBrowserPromoImpressionCounterTest {
 
         // Show another promo
         mCounter.onPromoShown();
-        Assert.assertEquals(mCounter.getPromoCount(), 2);
-        Assert.assertEquals(mCounter.getLastPromoInterval(), 0);
+        Assert.assertEquals(2, mCounter.getPromoCount());
+        Assert.assertEquals(0, mCounter.getLastPromoInterval());
         Assert.assertEquals(mCounter.getLastPromoSessionCount(), testSessionCount + 1);
     }
 
@@ -169,10 +169,10 @@ public class DefaultBrowserPromoImpressionCounterTest {
     @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID)
     public void testShouldShowPromo() {
         // Initial state, should not show promo immediately.
-        Assert.assertEquals(mCounter.getSessionCount(), 0);
-        Assert.assertEquals(mCounter.getLastPromoSessionCount(), 0);
-        Assert.assertEquals(mCounter.getLastPromoInterval(), Integer.MAX_VALUE);
-        Assert.assertEquals(mCounter.getMinPromoInterval(), 0);
+        Assert.assertEquals(0, mCounter.getSessionCount());
+        Assert.assertEquals(0, mCounter.getLastPromoSessionCount());
+        Assert.assertEquals(Integer.MAX_VALUE, mCounter.getLastPromoInterval());
+        Assert.assertEquals(0, mCounter.getMinPromoInterval());
         Assert.assertFalse(mCounter.shouldShowPromo(/* ignoreMaxCount= */ false));
 
         // Increase session to 3, can show promo

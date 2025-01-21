@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/lobster/lobster_service.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -12,8 +13,10 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
-#include "chrome/browser/ash/lobster/image_fetcher.h"
 #include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
+#include "chrome/browser/ash/lobster/lobster_image_fetcher.h"
+#include "chrome/browser/ash/lobster/lobster_image_provider_from_memory.h"
+#include "chrome/browser/ash/lobster/lobster_image_provider_from_snapper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/manta/snapper_provider.h"
@@ -27,8 +30,11 @@ LobsterService::LobsterService(
       // always return a non-null pointer.
       account_id_(CHECK_DEREF(ash::AnnotatedAccountId::Get(profile))),
       image_provider_(std::move(snapper_provider)),
-      image_fetcher_(image_provider_.get(), &candidate_id_generator_),
-      resizer_(&image_fetcher_),
+      image_fetcher_(std::make_unique<LobsterImageFetcher>(
+          std::make_unique<LobsterImageProviderFromSnapper>(
+              image_provider_.get(),
+              &candidate_id_generator_))),
+      resizer_(std::make_unique<LobsterCandidateResizer>(image_fetcher_.get())),
       system_state_provider_(profile) {}
 
 LobsterService::~LobsterService() = default;
@@ -49,13 +55,13 @@ void LobsterService::RequestCandidates(
     const std::string& query,
     int num_candidates,
     ash::RequestCandidatesCallback callback) {
-  image_fetcher_.RequestCandidates(query, num_candidates, std::move(callback));
+  image_fetcher_->RequestCandidates(query, num_candidates, std::move(callback));
 }
 
 void LobsterService::InflateCandidate(uint32_t seed,
                                       const std::string& query,
                                       ash::InflateCandidateCallback callback) {
-  resizer_.InflateImage(seed, query, std::move(callback));
+  resizer_->InflateImage(seed, query, std::move(callback));
 }
 
 void LobsterService::QueueInsertion(const std::string& image_bytes,
@@ -90,4 +96,10 @@ void LobsterService::OnFocus(int context_id) {
 
   queued_insertion_->Commit();
   queued_insertion_ = nullptr;
+}
+
+bool LobsterService::OverrideLobsterImageProviderForTesting() {
+  image_fetcher_->SetProvider(std::make_unique<LobsterImageProviderFromMemory>(
+      &candidate_id_generator_));
+  return true;
 }

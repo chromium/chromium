@@ -86,7 +86,7 @@ public class LanguagesManagerTest {
         Assert.assertTrue(containsLanguage(items, "en-GB"));
 
         // The first language should be Afrikaans.
-        Assert.assertEquals(items.get(0).getCode(), "af");
+        Assert.assertEquals("af", items.get(0).getCode());
 
         // Add "af" to front of Accept-Languages.
         items = LanguagesManager.getForProfile(mProfile).getUserAcceptLanguageItems();
@@ -127,7 +127,7 @@ public class LanguagesManagerTest {
         // Check that the first language is the system default language.
         Assert.assertTrue(AppLocaleUtils.isFollowSystemLanguage(items.get(0).getCode()));
         // Check that the second language is "en-US" from the Accept-Languages.
-        Assert.assertEquals(items.get(1).getCode(), "en-US");
+        Assert.assertEquals("en-US", items.get(1).getCode());
 
         // Set UI Language to system default.
         AppLocaleUtils.setAppLanguagePref(AppLocaleUtils.APP_LOCALE_USE_SYSTEM_LANGUAGE);
@@ -139,8 +139,8 @@ public class LanguagesManagerTest {
         // Check that system default is not on the list and that German is.
         Assert.assertFalse(containsLanguage(items, AppLocaleUtils.APP_LOCALE_USE_SYSTEM_LANGUAGE));
         // Check that the fist languages are from the Accept-Languages.
-        Assert.assertEquals(items.get(0).getCode(), "sw");
-        Assert.assertEquals(items.get(1).getCode(), "en-US");
+        Assert.assertEquals("sw", items.get(0).getCode());
+        Assert.assertEquals("en-US", items.get(1).getCode());
     }
 
     /** Tests for getting the all UI languages. */
@@ -168,7 +168,7 @@ public class LanguagesManagerTest {
         Assert.assertFalse(containsLanguage(items, "en"));
 
         // Check that the first language is "sw" from the Accept-Languages.
-        Assert.assertEquals(items.get(0).getCode(), "sw");
+        Assert.assertEquals("sw", items.get(0).getCode());
 
         // Set the target language to "fil" (Filipino) which is "tl" as a Translate language.
         TranslateBridge.setDefaultTargetLanguage(mProfile, "fil");
@@ -202,7 +202,7 @@ public class LanguagesManagerTest {
         Assert.assertTrue(containsLanguage(items, "fil"));
 
         // Check that the first language is "sw" from the Accept-Languages.
-        Assert.assertEquals(items.get(0).getCode(), "sw");
+        Assert.assertEquals("sw", items.get(0).getCode());
 
         // Add English and Filipino to always translate languages.
         TranslateBridge.setLanguageAlwaysTranslateState(mProfile, "en", true);
@@ -233,7 +233,7 @@ public class LanguagesManagerTest {
         Assert.assertTrue(containsLanguage(items, "fil"));
 
         // Check that the second language is "sw" from the Accept-Languages.
-        Assert.assertEquals(items.get(0).getCode(), "sw");
+        Assert.assertEquals("sw", items.get(0).getCode());
 
         TranslateBridge.setLanguageBlockedState(mProfile, "fil", true);
         TranslateBridge.setLanguageBlockedState(mProfile, "sw", true);

@@ -58,16 +58,6 @@ bool FormGroup::HasRawInfo(FieldType type) const {
   return !GetRawInfo(type).empty();
 }
 
-std::u16string FormGroup::GetInfo(FieldType type,
-                                  const std::string& app_locale) const {
-  return GetInfoImpl(AutofillType(type), app_locale);
-}
-
-std::u16string FormGroup::GetInfo(const AutofillType& type,
-                                  const std::string& app_locale) const {
-  return GetInfoImpl(type, app_locale);
-}
-
 VerificationStatus FormGroup::GetVerificationStatus(FieldType type) const {
   return GetVerificationStatusImpl(type);
 }
@@ -122,11 +112,6 @@ bool FormGroup::HasInfo(const AutofillType& type) const {
   // Use "en-US" as a placeholder locale. We are only interested in emptiness,
   // not in the presentation of the string.
   return !GetInfo(type, "en-US").empty();
-}
-
-std::u16string FormGroup::GetInfoImpl(const AutofillType& type,
-                                      const std::string& app_locale) const {
-  return GetRawInfo(type.GetStorableType());
 }
 
 bool FormGroup::SetInfoWithVerificationStatusImpl(const AutofillType& type,

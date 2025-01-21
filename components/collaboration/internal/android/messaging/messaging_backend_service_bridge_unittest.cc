@@ -207,6 +207,8 @@ InstantMessage CreateInstantMessage() {
   message.collaboration_event = CollaborationEvent::TAB_REMOVED;
 
   // Attribution.
+  message.attribution.id =
+      base::Uuid::ParseLowercase("cf07d904-88d4-4bc9-989d-57a9ab9e17a7");
   message.attribution.collaboration_id = data_sharing::GroupId("my group");
   // GroupMember has its own conversion utils, so only check a single field.
   message.attribution.affected_user = data_sharing::GroupMember();
@@ -498,6 +500,8 @@ TEST_F(MessagingBackendServiceBridgeTest, TestGetActivityLog) {
   activity_log_item1.time_delta_text = u"2 hours ago";
   activity_log_item1.show_favicon = true;
   activity_log_item1.action = RecentActivityAction::kReopenTab;
+  activity_log_item1.activity_metadata.id =
+      base::Uuid::ParseLowercase("1b687a61-8a17-4f98-bf9d-74d2b50abf3e");
 
   ActivityLogItem activity_log_item2;
   activity_log_item2.collaboration_event =
@@ -507,6 +511,7 @@ TEST_F(MessagingBackendServiceBridgeTest, TestGetActivityLog) {
   activity_log_item2.time_delta_text = u"3 days ago";
   activity_log_item2.show_favicon = false;
   activity_log_item2.action = RecentActivityAction::kManageSharing;
+  activity_log_item2.activity_metadata.id = std::nullopt;
 
   std::vector<ActivityLogItem> activity_log_items;
   activity_log_items.emplace_back(activity_log_item1);

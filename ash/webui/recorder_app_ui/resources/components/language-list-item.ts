@@ -21,6 +21,7 @@ import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {LangPackInfo} from '../core/soda/language_info.js';
 import {
   assertExhaustive,
+  assertExists,
   assertNotReached,
 } from '../core/utils/assert.js';
 import {stopPropagation, suppressEvent} from '../core/utils/event_handler.js';
@@ -121,11 +122,14 @@ export class LanguageListItem extends ReactiveLitElement {
   }
 
   private renderDescriptionAndAction(): RenderResult {
+    const name = assertExists(this.langPackInfo).displayName;
+    const downloadButtonAriaLabel =
+      i18n.languagePickerLanguageDownloadButtonAriaLabel(name);
     const downloadButton = html`
       <cra-button
         slot="action"
         button-style="secondary"
-        tabindex="-1"
+        aria-label=${downloadButtonAriaLabel}
         .label=${i18n.languagePickerLanguageDownloadButton}
         @keyup=${stopPropagation}
         @keydown=${stopPropagation}
@@ -140,7 +144,7 @@ export class LanguageListItem extends ReactiveLitElement {
       case 'error':
         // Shows the download button for users to try again.
         return html`
-          <span slot="description" class="error">
+          <span slot="description" class="error" aria-hidden="true">
             ${i18n.languagePickerLanguageErrorDescription}
           </span>
           ${downloadButton}
@@ -151,9 +155,12 @@ export class LanguageListItem extends ReactiveLitElement {
             this.sodaState.progress,
           );
         return html`
-          <span slot="description">${progressDescription}</span>
+          <span slot="description" aria-hidden="true">
+            ${progressDescription}
+          </span>
           <cra-button
             slot="action"
+            aria-hidden="true"
             button-style="secondary"
             .label=${i18n.languagePickerLanguageDownloadingButton}
             disabled
@@ -178,30 +185,61 @@ export class LanguageListItem extends ReactiveLitElement {
     }
   }
 
-  private isFocusable() {
-    if (this.sodaState.kind === 'installing' ||
-        (this.sodaState.kind === 'installed' && this.selected)) {
-      return false;
+  private getAriaLabel() {
+    const name = assertExists(this.langPackInfo).displayName;
+    const kind = this.sodaState.kind;
+    switch (kind) {
+      case 'notInstalled': {
+        return i18n.languagePickerLanguageNotDownloadedAriaLabel(name);
+      }
+      case 'error': {
+        return i18n.languagePickerLanguageDownloadErrorAriaLabel(name);
+      }
+      case 'installing': {
+        return i18n.languagePickerLanguageDownloadingAriaLabel(
+          name,
+          this.sodaState.progress,
+        );
+      }
+      case 'installed': {
+        if (this.selected) {
+          return i18n.languagePickerLanguageSelectedAriaLabel(name);
+        } else {
+          return i18n.languagePickerLanguageNotSelectedAriaLabel(name);
+        }
+      }
+      case 'unavailable':
+        return assertNotReached('SODA unavailable but the row is rendered.');
+      default:
+        assertExhaustive(kind);
     }
-    return true;
+  }
+
+  private isFocusable() {
+    // Focus on whole row only when there's no visible action button.
+    if (this.sodaState.kind === 'installed' && !this.selected) {
+      return true;
+    }
+    return false;
   }
 
   override render(): RenderResult {
     if (this.langPackInfo === null || this.sodaState.kind === 'unavailable') {
       return nothing;
     }
-    // TODO: b/384418702 - Add aria label of each state in #root and set
-    // settings-row aria-hidden to `true` to avoid redundant announcement by
-    // screen reader.
     return html`
       <div id="root"
         tabindex=${this.isFocusable() ? 0 : -1}
+        role="button"
+        aria-label=${this.getAriaLabel()}
         @click=${this.activateRow}
         @keydown=${this.onKeyDown}
         @keyup=${this.onKeyUp}
       >
         <settings-row>
-          <span slot="label">${this.langPackInfo.displayName}</span>
+          <span slot="label" aria-hidden="true">
+            ${this.langPackInfo.displayName}
+          </span>
           ${this.renderDescriptionAndAction()}
         </settings-row>
         ${this.isFocusable() ? html`<md-focus-ring></md-focus-ring>` : nothing}

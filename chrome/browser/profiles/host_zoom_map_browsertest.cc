@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(
     HostZoomMapBrowserTest,
     WebviewBasedSigninUsesDefaultStoragePartitionForEmbedder) {
   GURL signin_url = signin::GetEmbeddedPromoURL(
-      signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE,
+      signin_metrics::AccessPoint::kStartPage,
       signin_metrics::Reason::kForcedSigninPrimaryAccount, false);
   GURL test_url = SubstituteTestServerPort(signin_url);
   std::string test_host(test_url.host());

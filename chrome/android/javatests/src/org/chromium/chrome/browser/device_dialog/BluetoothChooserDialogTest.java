@@ -106,7 +106,7 @@ public class BluetoothChooserDialogTest {
             Assert.assertEquals(
                     nativeBluetoothChooserAndroid,
                     mBluetoothChooserDialog.mNativeBluetoothChooserDialogPtr);
-            Assert.assertEquals(mFinishedEventType, -1);
+            Assert.assertEquals(-1, mFinishedEventType);
             mFinishedEventType = eventType;
             mFinishedDeviceId = deviceId;
             // The native code calls closeDialog() when OnDialogFinished is called.

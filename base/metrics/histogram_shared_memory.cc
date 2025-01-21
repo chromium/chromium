@@ -115,7 +115,8 @@ HistogramSharedMemory::Create(int process_id,
 }
 
 // static
-bool HistogramSharedMemory::PassOnCommandLineIsEnabled(int process_type) {
+bool HistogramSharedMemory::PassOnCommandLineIsEnabled(
+    std::string_view process_type) {
   // On ChromeOS and for "utility" processes on other platforms there seems to
   // be one or more mechanisms on startup which walk through all inherited
   // shared memory regions and take a read-only handle to them. When we later
@@ -126,32 +127,40 @@ bool HistogramSharedMemory::PassOnCommandLineIsEnabled(int process_type) {
   // Example: The call to OpenSymbolFiles() in base/debug/stack_trace_posix.cc
   // grabs a read-only handle to the shmem region for some process types.
   //
-  // TODO(crbug.com/40109064): Fix ChromeOS GPU and Android utility processes.
-  // Constants from content::ProcessType;
-  [[maybe_unused]] constexpr int PROCESS_TYPE_GPU = 9;
-  [[maybe_unused]] constexpr int PROCESS_TYPE_UTILITY = 6;
+  // TODO(crbug.com/40109064): Fix ChromeOS and utility processes.
   return (FeatureList::IsEnabled(kPassHistogramSharedMemoryOnLaunch)
 #if BUILDFLAG(IS_CHROMEOS)
-          && process_type != PROCESS_TYPE_GPU
+          && process_type != "gpu-process"
 #elif BUILDFLAG(IS_ANDROID)
-          && process_type != PROCESS_TYPE_UTILITY
+          && process_type != "utility"
 #endif
   );
 }
 
 // static
 void HistogramSharedMemory::AddToLaunchParameters(
-    const UnsafeSharedMemoryRegion& histogram_shmem_region,
+    UnsafeSharedMemoryRegion histogram_shmem_region,
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
     GlobalDescriptors::Key descriptor_key,
     ScopedFD& descriptor_to_share,
 #endif
     CommandLine* command_line,
     LaunchOptions* launch_options) {
-  CHECK(histogram_shmem_region.IsValid());
   CHECK(command_line);
+
+  const std::string process_type = command_line->GetSwitchValueASCII("type");
+  const bool enabled = PassOnCommandLineIsEnabled(process_type);
+
+  DVLOG(1) << (enabled ? "A" : "Not a")
+           << "dding histogram shared memory launch parameters for "
+           << process_type << " process.";
+
+  if (!enabled) {
+    return;
+  }
+
   shared_memory::AddToLaunchParameters(::switches::kMetricsSharedMemoryHandle,
-                                       histogram_shmem_region,
+                                       std::move(histogram_shmem_region),
 #if BUILDFLAG(IS_APPLE)
                                        kRendezvousKey,
 #elif BUILDFLAG(IS_POSIX)

@@ -138,12 +138,6 @@ class TileManagerTilePriorityQueueTest : public TestLayerTreeHostBase {
   TileManager* tile_manager() { return host_impl()->tile_manager(); }
 
   class StubGpuBacking : public ResourcePool::GpuBacking {
-   public:
-    void OnMemoryDump(
-        base::trace_event::ProcessMemoryDump* pmd,
-        const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-        uint64_t tracing_process_id,
-        int importance) const override {}
   };
 };
 
@@ -1775,13 +1769,6 @@ TEST_F(TileManagerTilePriorityQueueTest, NoRasterTasksforSolidColorTiles) {
 
 class TestSoftwareBacking : public ResourcePool::SoftwareBacking {
  public:
-  // No tracing is done during these tests.
-  void OnMemoryDump(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-      uint64_t tracing_process_id,
-      int importance) const override {}
-
   std::unique_ptr<uint32_t[]> pixels;
 };
 
@@ -2568,12 +2555,6 @@ class InvalidResourceRasterBufferProvider
 
  private:
   class StubGpuBacking : public ResourcePool::GpuBacking {
-   public:
-    void OnMemoryDump(
-        base::trace_event::ProcessMemoryDump* pmd,
-        const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-        uint64_t tracing_process_id,
-        int importance) const override {}
   };
 };
 

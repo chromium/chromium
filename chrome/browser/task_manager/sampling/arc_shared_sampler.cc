@@ -8,7 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/ash/arc/process/arc_process_service.h"
+#include "chromeos/ash/experiences/arc/process/arc_process_service.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace task_manager {

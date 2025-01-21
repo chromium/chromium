@@ -100,7 +100,7 @@ public class PlusAddressesHelperTest {
         var shadowActivity = Shadows.shadowOf(mActivity);
         Intent cctIntent = shadowActivity.getNextStartedActivity();
         assertNotNull(cctIntent);
-        assertEquals(cctIntent.getDataString(), PLUS_ADDRESS_MANAGEMENT_URL);
+        assertEquals(PLUS_ADDRESS_MANAGEMENT_URL, cctIntent.getDataString());
         histogramWatcher.assertExpected();
     }
 

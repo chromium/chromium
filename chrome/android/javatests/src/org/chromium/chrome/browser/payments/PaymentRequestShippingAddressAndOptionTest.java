@@ -184,11 +184,11 @@ public class PaymentRequestShippingAddressAndOptionTest {
 
         // Make sure that the shipping label does not include the country.
         Assert.assertEquals(
+                "Seb Doe\nGoogle, 340 Main St, Los Angeles, CA 90291\n+1 650-253-0000",
                 mPaymentRequestTestRule
                         .getShippingAddressOptionRowAtIndex(0)
                         .getLabelText()
-                        .toString(),
-                "Seb Doe\nGoogle, 340 Main St, Los Angeles, CA 90291\n+1 650-253-0000");
+                        .toString());
     }
 
     /**

@@ -41,14 +41,6 @@ class BitmapSoftwareBacking : public ResourcePool::SoftwareBacking {
     }
   }
 
-  void OnMemoryDump(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-      uint64_t tracing_process_id,
-      int importance) const override {
-    shared_image->OnMemoryDump(pmd, buffer_dump_guid, importance);
-  }
-
   raw_ptr<LayerTreeFrameSink> frame_sink;
   std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
 };

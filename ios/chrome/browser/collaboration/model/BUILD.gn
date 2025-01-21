@@ -8,9 +8,9 @@ source_set("collaboration_delegate") {
     "ios_collaboration_controller_delegate.mm",
   ]
   deps = [
+    ":model",
     "//base",
     "//components/collaboration/public",
-    "//components/signin/public/identity_manager",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/saved_tab_groups/model",
@@ -57,6 +57,7 @@ source_set("unit_tests") {
     ":model",
     "//base",
     "//base/test:test_support",
+    "//components/collaboration:test_support",
     "//components/collaboration/public",
     "//components/data_sharing/public",
     "//components/saved_tab_groups/test_support",

@@ -375,14 +375,14 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
           profile,
           identity_manager->GetPrimaryAccountInfo(
               signin::ConsentLevel::kSignin),
-          signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
+          signin_metrics::AccessPoint::kAvatarBubbleSignIn);
       break;
     }
     case AvatarSyncErrorType::kSyncPaused:
       GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
       signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
           browser()->profile(),
-          signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
+          signin_metrics::AccessPoint::kAvatarBubbleSignIn);
       break;
     case AvatarSyncErrorType::kUpgradeClientError:
       chrome::OpenUpdateChromeDialog(browser());
@@ -453,8 +453,7 @@ void ProfileMenuView::OnSignoutButtonClicked() {
   }
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
   browser()->signin_view_controller()->SignoutOrReauthWithPrompt(
-      signin_metrics::AccessPoint::
-          ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT,
+      signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt,
       signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
       signin_metrics::SourceForRefreshTokenOperation::
           kUserMenu_SignOutAllAccounts);
@@ -816,7 +815,7 @@ void ProfileMenuView::BuildSyncInfo() {
   bool show_sync_badge = false;
   bool show_account_card = false;
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN;
+      signin_metrics::AccessPoint::kAvatarBubbleSignIn;
 
   signin_metrics::PromoAction promo_action =
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
@@ -844,8 +843,8 @@ void ProfileMenuView::BuildSyncInfo() {
              !account_info_for_promos.IsEmpty()) {
     // Web-only signed-in state.
     account_info = account_info_for_promos;
-    access_point = signin_metrics::AccessPoint::
-        ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO;
+    access_point =
+        signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo;
     description = l10n_util::GetStringUTF16(
         switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
             ? IDS_PROFILE_MENU_SIGNIN_PROMO_DESCRIPTION
@@ -861,8 +860,8 @@ void ProfileMenuView::BuildSyncInfo() {
   } else {
     // Not signed in state.
     if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-      access_point = signin_metrics::AccessPoint::
-          ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO;
+      access_point =
+          signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo;
       description =
           l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_DESCRIPTION);
       button_text =
@@ -969,13 +968,13 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
 
   ActionableItem button_type = ActionableItem::kSigninAccountButton;
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN;
+      signin_metrics::AccessPoint::kAvatarBubbleSignIn;
   switch (signin_util::GetSignedInState(identity_manager)) {
     case signin_util::SignedInState::kSignedOut:
       if (profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
         button_type = ActionableItem::kSigninButton;
-        access_point = signin_metrics::AccessPoint::
-            ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO;
+        access_point =
+            signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo;
         params.subtitle = l10n_util::GetStringUTF16(
             IDS_PROFILE_MENU_SIGNIN_PROMO_DESCRIPTION);
         params.button_text =
@@ -983,8 +982,8 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       }
       break;
     case signin_util::SignedInState::kWebOnlySignedIn: {
-      access_point = signin_metrics::AccessPoint::
-          ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO;
+      access_point =
+          signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo;
       AccountInfo account_info_for_promos =
           signin_ui_util::GetSingleAccountForPromos(identity_manager);
       account_info_for_signin_action = account_info_for_promos;

@@ -65,6 +65,8 @@ public class NavigationObserver extends TabModelSelectorTabObserver {
             return;
         }
 
+        TabGroupSyncUtils.updateTabRedirectChain(tab, navigationHandle);
+
         // Avoid loops if the navigation was initiated from sync.
         if (mNavigationTracker.wasNavigationFromSync(navigationHandle.getUserDataHost())) {
             return;

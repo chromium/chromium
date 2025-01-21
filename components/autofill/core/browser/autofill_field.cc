@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <iterator>
+#include <ranges>
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
@@ -239,6 +240,15 @@ FieldType AutofillField::server_type() const {
 bool AutofillField::server_type_prediction_is_override() const {
   return server_predictions_.empty() ? false
                                      : server_predictions_[0].override();
+}
+
+bool AutofillField::HasServerPredictionsWithAutofillAiType() const {
+  return std::ranges::any_of(
+      server_predictions_, [](const FieldPrediction& prediction) {
+        return GroupTypeOfFieldType(
+                   ToSafeFieldType(prediction.type(), NO_SERVER_DATA)) ==
+               FieldTypeGroup::kAutofillAi;
+      });
 }
 
 void AutofillField::set_heuristic_type(HeuristicSource s, FieldType type) {

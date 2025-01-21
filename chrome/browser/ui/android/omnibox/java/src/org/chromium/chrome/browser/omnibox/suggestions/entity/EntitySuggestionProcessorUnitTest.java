@@ -169,7 +169,7 @@ public class EntitySuggestionProcessorUnitTest {
 
         assertThat(suggHelper.getIcon(), instanceOf(ColorDrawable.class));
         ColorDrawable icon = (ColorDrawable) suggHelper.getIcon();
-        Assert.assertEquals(icon.getColor(), Color.RED);
+        Assert.assertEquals(Color.RED, icon.getColor());
     }
 
     @Test

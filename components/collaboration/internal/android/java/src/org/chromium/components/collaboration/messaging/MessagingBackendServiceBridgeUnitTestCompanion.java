@@ -161,6 +161,7 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
 
         // MessageAttribution.
         MessageAttribution attribution = message.attribution;
+        Assert.assertEquals("cf07d904-88d4-4bc9-989d-57a9ab9e17a7", attribution.id);
         Assert.assertEquals("my group", attribution.collaborationId);
         Assert.assertEquals(new GaiaId("affected"), attribution.affectedUser.gaiaId);
         Assert.assertEquals(new GaiaId("triggering"), attribution.triggeringUser.gaiaId);
@@ -200,6 +201,8 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
         Assert.assertEquals("2 hours ago", logItems.get(0).timeDeltaText);
         Assert.assertTrue(logItems.get(0).showFavicon);
         Assert.assertEquals(RecentActivityAction.REOPEN_TAB, logItems.get(0).action);
+        Assert.assertEquals(
+                "1b687a61-8a17-4f98-bf9d-74d2b50abf3e", logItems.get(0).activityMetadata.id);
 
         Assert.assertEquals(
                 CollaborationEvent.COLLABORATION_MEMBER_ADDED, logItems.get(1).collaborationEvent);
@@ -208,6 +211,7 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
         Assert.assertEquals("3 days ago", logItems.get(1).timeDeltaText);
         Assert.assertFalse(logItems.get(1).showFavicon);
         Assert.assertEquals(RecentActivityAction.MANAGE_SHARING, logItems.get(1).action);
+        Assert.assertEquals(null, logItems.get(1).activityMetadata.id);
 
         queryParams.collaborationId = "collaboration2";
         logItems = mService.getActivityLog(queryParams);

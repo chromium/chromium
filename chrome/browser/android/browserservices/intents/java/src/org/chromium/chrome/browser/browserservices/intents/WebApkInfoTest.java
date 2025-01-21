@@ -805,7 +805,7 @@ public class WebApkInfoTest {
         res.setShortcutsXmlContent(
                 "<shortcuts xmlns:android='http://schemas.android.com/apk/res/android'/>");
         WebappInfo info = createWebApkInfo(intent);
-        Assert.assertEquals(info.shortcutItems().size(), 0);
+        Assert.assertEquals(0, info.shortcutItems().size());
 
         // One shortcut case.
         String oneShortcut =
@@ -823,15 +823,15 @@ public class WebApkInfoTest {
 
         res.setShortcutsXmlContent(oneShortcut);
         info = createWebApkInfo(intent);
-        Assert.assertEquals(info.shortcutItems().size(), 1);
+        Assert.assertEquals(1, info.shortcutItems().size());
         WebApkExtras.ShortcutItem item = info.shortcutItems().get(0);
-        Assert.assertEquals(item.name, "name1");
-        Assert.assertEquals(item.shortName, "short name1");
-        Assert.assertEquals(item.launchUrl, "https://example.com/launch1");
-        Assert.assertEquals(item.iconUrl, "https://example.com/icon1.png");
-        Assert.assertEquals(item.iconHash, "1234");
+        Assert.assertEquals("name1", item.name);
+        Assert.assertEquals("short name1", item.shortName);
+        Assert.assertEquals("https://example.com/launch1", item.launchUrl);
+        Assert.assertEquals("https://example.com/icon1.png", item.iconUrl);
+        Assert.assertEquals("1234", item.iconHash);
         Assert.assertNotNull(item.icon);
-        Assert.assertEquals(item.icon.resourceIdForTesting(), 6);
+        Assert.assertEquals(6, item.icon.resourceIdForTesting());
 
         // Multiple shortcuts case.
         String twoShortcuts =
@@ -858,15 +858,15 @@ public class WebApkInfoTest {
 
         res.setShortcutsXmlContent(twoShortcuts);
         info = createWebApkInfo(intent);
-        Assert.assertEquals(info.shortcutItems().size(), 2);
+        Assert.assertEquals(2, info.shortcutItems().size());
         item = info.shortcutItems().get(1);
-        Assert.assertEquals(item.name, "name2");
-        Assert.assertEquals(item.shortName, "short name2");
-        Assert.assertEquals(item.launchUrl, "https://example.com/launch2");
-        Assert.assertEquals(item.iconUrl, "https://example.com/icon2.png");
-        Assert.assertEquals(item.iconHash, "2345");
+        Assert.assertEquals("name2", item.name);
+        Assert.assertEquals("short name2", item.shortName);
+        Assert.assertEquals("https://example.com/launch2", item.launchUrl);
+        Assert.assertEquals("https://example.com/icon2.png", item.iconUrl);
+        Assert.assertEquals("2345", item.iconHash);
         Assert.assertNotNull(item.icon);
-        Assert.assertEquals(item.icon.resourceIdForTesting(), 7);
+        Assert.assertEquals(7, item.icon.resourceIdForTesting());
     }
 
     /** Test appKey is set to the WEB_MANIFEST_URL if APP_KEY is not specified. */

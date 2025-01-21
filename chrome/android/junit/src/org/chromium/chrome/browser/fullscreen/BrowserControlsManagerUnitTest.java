@@ -253,12 +253,12 @@ public class BrowserControlsManagerUnitTest {
         mBrowserControlsManager.getControlsAnimatorForTesting().end();
         assertEquals(
                 "Min-height offset should be equal to min-height after animation.",
-                mBrowserControlsManager.getTopControlsMinHeightOffset(),
-                topControlsMinHeight);
+                topControlsMinHeight,
+                mBrowserControlsManager.getTopControlsMinHeightOffset());
         assertEquals(
                 "Content offset should be equal to controls height after animation.",
-                mBrowserControlsManager.getContentOffset(),
-                topControlsHeight);
+                topControlsHeight,
+                mBrowserControlsManager.getContentOffset());
         assertNull(mBrowserControlsManager.getControlsAnimatorForTesting());
     }
 

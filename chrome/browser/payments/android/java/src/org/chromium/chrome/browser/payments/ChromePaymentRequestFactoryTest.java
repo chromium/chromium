@@ -92,7 +92,7 @@ public class ChromePaymentRequestFactoryTest {
                 .terminateRendererDueToBadMessage(Mockito.anyInt());
         Assert.assertNull(createFactory(mRenderFrameHost).createImpl());
         // 241 == PAYMENTS_WITHOUT_PERMISSION.
-        Assert.assertEquals(isKilledReason.get(), 241);
+        Assert.assertEquals(241, isKilledReason.get());
     }
 
     @Test

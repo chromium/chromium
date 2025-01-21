@@ -222,8 +222,6 @@ viz_component("common") {
     "quads/tile_draw_quad.h",
     "quads/video_hole_draw_quad.cc",
     "quads/video_hole_draw_quad.h",
-    "resources/bitmap_allocation.cc",
-    "resources/bitmap_allocation.h",
     "resources/peak_gpu_memory_callback.cc",
     "resources/peak_gpu_memory_callback.h",
     "resources/peak_gpu_memory_tracker.h",

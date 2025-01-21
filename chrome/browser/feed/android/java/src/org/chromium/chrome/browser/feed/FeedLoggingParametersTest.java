@@ -33,10 +33,10 @@ public final class FeedLoggingParametersTest {
                         /* viewActionsEnabled= */ true,
                         /* rootEventId= */ new byte[] {5});
 
-        assertEquals(params.clientInstanceId(), "instance-id");
-        assertEquals(params.accountName(), "account");
-        assertEquals(params.loggingEnabled(), false);
-        assertEquals(params.viewActionsEnabled(), true);
+        assertEquals("instance-id", params.clientInstanceId());
+        assertEquals("account", params.accountName());
+        assertEquals(false, params.loggingEnabled());
+        assertEquals(true, params.viewActionsEnabled());
         assertArrayEquals(params.rootEventId(), new byte[] {5});
     }
 
@@ -52,10 +52,10 @@ public final class FeedLoggingParametersTest {
                         .setRootEventId(ByteString.copyFrom(new byte[] {5}))
                         .build();
         FeedLoggingParameters parsed = new FeedLoggingParameters(proto);
-        assertEquals(parsed.clientInstanceId(), "instance-id");
-        assertEquals(parsed.accountName(), "account");
-        assertEquals(parsed.loggingEnabled(), false);
-        assertEquals(parsed.viewActionsEnabled(), true);
+        assertEquals("instance-id", parsed.clientInstanceId());
+        assertEquals("account", parsed.accountName());
+        assertEquals(false, parsed.loggingEnabled());
+        assertEquals(true, parsed.viewActionsEnabled());
         assertArrayEquals(parsed.rootEventId(), new byte[] {5});
         assertEquals(proto, FeedLoggingParameters.convertToProto(parsed));
     }

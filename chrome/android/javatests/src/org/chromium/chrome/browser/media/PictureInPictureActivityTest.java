@@ -209,7 +209,7 @@ public class PictureInPictureActivityTest {
         activity.updateVisibleActions(new int[] {MediaSessionAction.PLAY});
         activity.setPlaybackState(PlaybackState.PAUSED);
         ArrayList<RemoteAction> actions = manager.getActionsForPictureInPictureParams();
-        Assert.assertEquals(actions.size(), 1);
+        Assert.assertEquals(1, actions.size());
         Assert.assertEquals(actions.get(0), manager.mPlay);
 
         activity.setPlaybackState(PlaybackState.PLAYING);
@@ -221,7 +221,7 @@ public class PictureInPictureActivityTest {
         activity.updateVisibleActions(
                 new int[] {MediaSessionAction.PLAY, MediaSessionAction.PREVIOUS_TRACK});
         actions = manager.getActionsForPictureInPictureParams();
-        Assert.assertEquals(actions.size(), 3);
+        Assert.assertEquals(3, actions.size());
         Assert.assertEquals(actions.get(0), manager.mPreviousTrack);
         Assert.assertEquals(actions.get(2), manager.mNextTrack);
         Assert.assertTrue(actions.get(0).isEnabled());
@@ -232,7 +232,7 @@ public class PictureInPictureActivityTest {
         activity.updateVisibleActions(
                 new int[] {MediaSessionAction.PLAY, MediaSessionAction.PREVIOUS_SLIDE});
         actions = manager.getActionsForPictureInPictureParams();
-        Assert.assertEquals(actions.size(), 3);
+        Assert.assertEquals(3, actions.size());
         Assert.assertEquals(actions.get(0), manager.mPreviousSlide);
         Assert.assertEquals(actions.get(2), manager.mNextSlide);
         Assert.assertTrue(actions.get(0).isEnabled());
@@ -242,7 +242,7 @@ public class PictureInPictureActivityTest {
         // android picture-in-picture from using default MediaSession.
         activity.updateVisibleActions(new int[] {});
         actions = manager.getActionsForPictureInPictureParams();
-        Assert.assertEquals(actions.size(), 1);
+        Assert.assertEquals(1, actions.size());
         Assert.assertFalse(actions.get(0).isEnabled());
         testExitOn(activity, () -> activity.close());
     }
@@ -258,17 +258,17 @@ public class PictureInPictureActivityTest {
 
         activity.updateVisibleActions(new int[] {MediaSessionAction.TOGGLE_MICROPHONE});
         ArrayList<RemoteAction> actions = manager.getActionsForPictureInPictureParams();
-        Assert.assertEquals(actions.size(), 1);
+        Assert.assertEquals(1, actions.size());
         Assert.assertEquals(actions.get(0), manager.mMicrophone.getAction());
 
         activity.updateVisibleActions(new int[] {MediaSessionAction.TOGGLE_CAMERA});
         actions = manager.getActionsForPictureInPictureParams();
-        Assert.assertEquals(actions.size(), 1);
+        Assert.assertEquals(1, actions.size());
         Assert.assertEquals(actions.get(0), manager.mCamera.getAction());
 
         activity.updateVisibleActions(new int[] {MediaSessionAction.HANG_UP});
         actions = manager.getActionsForPictureInPictureParams();
-        Assert.assertEquals(actions.size(), 1);
+        Assert.assertEquals(1, actions.size());
         Assert.assertEquals(actions.get(0), manager.mHangUp);
         testExitOn(activity, () -> activity.close());
     }

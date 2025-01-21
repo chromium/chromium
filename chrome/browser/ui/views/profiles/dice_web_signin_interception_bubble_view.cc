@@ -124,8 +124,7 @@ int GetBubbleFixedWidthForInterceptionType(bool is_chrome_signin) {
 }
 
 void RecordMetricsChromeSigninInterceptStarted() {
-  auto access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE;
+  auto access_point = signin_metrics::AccessPoint::kChromeSigninInterceptBubble;
   RecordSigninImpressionUserActionForAccessPoint(access_point);
   signin_metrics::LogSignInOffered(
       access_point, signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT);
@@ -164,8 +163,7 @@ void RecordChromeSigninInterceptResult(base::TimeTicks start_time,
   // Only record user action on successful signin inputs.
   if (result == SigninInterceptionResult::kAccepted) {
     RecordSigninUserActionForAccessPoint(
-        signin_metrics::AccessPoint::
-            ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
+        signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
   }
 }
 

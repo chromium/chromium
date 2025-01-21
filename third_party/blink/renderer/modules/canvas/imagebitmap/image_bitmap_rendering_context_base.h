@@ -47,9 +47,6 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
   gfx::ColorSpace GetColorSpace() const override {
     return gfx::ColorSpace::CreateSRGB();
   }
-  sk_sp<SkColorSpace> GetSkColorSpace() const override {
-    return SkColorSpace::MakeSRGB();
-  }
   bool IsComposited() const final { return true; }
   bool PushFrame() override;
 

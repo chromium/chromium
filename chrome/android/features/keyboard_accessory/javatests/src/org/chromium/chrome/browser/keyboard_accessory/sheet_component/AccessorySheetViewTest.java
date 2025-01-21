@@ -113,7 +113,7 @@ public class AccessorySheetViewTest {
                     mModel.set(VISIBLE, true);
                 });
         AccessorySheetView viewPager = mViewPager.take();
-        assertEquals(viewPager.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, viewPager.getVisibility());
 
         // After hiding the view, the view should still exist but be invisible.
         ThreadUtils.runOnUiThreadBlocking(

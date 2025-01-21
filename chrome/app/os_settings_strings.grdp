@@ -2741,9 +2741,6 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION" desc="List description for additional account List in Account Manager Settings page.">
     You can add your additional accounts to access websites and apps.
   </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION_V2" desc="List description for additional account list in Account Manager Settings page.">
-    You can add additional accounts to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> to use with websites and Android apps. You can also control which accounts are used with Android apps.
-  </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_CHILD_DESCRIPTION" desc="List description for additional account List in Account Manager Settings page for Child users.">
     <ph name="USER_EMAIL">$1<ex>user@example.com</ex></ph> is supervised by Family Link. You can add school accounts to access school resources with parental supervision.
   </message>

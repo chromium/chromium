@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -1178,6 +1179,21 @@ class IsFormAndFieldEligibleAutofillAiTest : public BaseAutofillAiManagerTest {
                     .heuristic_type = autofill::NAME_FIRST}}};
   }
 
+  void SetPredictionTypesForField(autofill::AutofillField& field,
+                                  autofill::FieldTypeSet types) {
+    std::vector<autofill::AutofillQueryResponse::FormSuggestion::
+                    FieldSuggestion::FieldPrediction>
+        predictions;
+    for (autofill::FieldType type : types) {
+      autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
+          FieldPrediction prediction;
+      prediction.set_type(type);
+      predictions.push_back(prediction);
+    }
+
+    field.set_server_predictions(std::move(predictions));
+  }
+
   std::unique_ptr<autofill::FormStructure> CreateEligibleForm(
       const GURL& url = GURL("https://example.com")) {
     autofill::FormData form_data;
@@ -1198,9 +1214,14 @@ class IsFormAndFieldEligibleAutofillAiTest : public BaseAutofillAiManagerTest {
   }
 };
 
-TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleIfFlagDisabled) {
+// TODO(crbug.com/389629573): Refactor tests once old implementation is deleted.
+// This will mostly entail deleting tests with a "V1_" prefix.
+TEST_F(IsFormAndFieldEligibleAutofillAiTest,
+       IsNotEligibleIfBothFlagsAreDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kAutofillAi);
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{}, /*disable_features*/ {
+          kAutofillAi, autofill::features::kAutofillAiWithDataSchema});
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
   autofill::AutofillField* prediction_improvement_field = form->field(0);
 
@@ -1208,10 +1229,26 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleIfFlagDisabled) {
       manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleIfDeciderIsNull) {
+TEST_F(IsFormAndFieldEligibleAutofillAiTest,
+       V2_IsNotEligibleIfServerPredictionHasNoAutofillAiType) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      autofill::features::kAutofillAiWithDataSchema);
+
+  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
+  autofill::AutofillField* prediction_improvement_field = form->field(0);
+  SetPredictionTypesForField(*prediction_improvement_field,
+                             {autofill::NAME_FIRST});
+
+  EXPECT_FALSE(
+      manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
+}
+
+TEST_F(IsFormAndFieldEligibleAutofillAiTest, V1_IsNotEligibleIfDeciderIsNull) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kAutofillAi, {{"skip_allowlist", "true"}});
+
   AutofillAiManager manager{&client(), nullptr, &strike_database()};
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
   autofill::AutofillField* prediction_improvement_field = form->field(0);
@@ -1220,7 +1257,8 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleIfDeciderIsNull) {
       manager.IsEligibleForAutofillAi(*form, *prediction_improvement_field));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsEligibleIfSkipAllowlistIsTrue) {
+TEST_F(IsFormAndFieldEligibleAutofillAiTest,
+       V1_IsEligibleIfSkipAllowlistIsTrue) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kAutofillAi, {{"skip_allowlist", "true"}});
@@ -1232,52 +1270,87 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsEligibleIfSkipAllowlistIsTrue) {
       manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleIfPrefIsDisabled) {
+TEST_F(IsFormAndFieldEligibleAutofillAiTest, V1_IsNotEligibleIfPrefIsDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kAutofillAi, {{"skip_allowlist", "true"}});
 
-  EXPECT_CALL(client(), IsAutofillAiEnabledPref).WillOnce(Return(false));
-
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
   autofill::AutofillField* prediction_improvement_field = form->field(0);
 
+  EXPECT_CALL(client(), IsAutofillAiEnabledPref).WillOnce(Return(false));
+  EXPECT_FALSE(
+      manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
+}
+
+TEST_F(IsFormAndFieldEligibleAutofillAiTest, V2_IsNotEligibleIfPrefIsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      autofill::features::kAutofillAiWithDataSchema);
+
+  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
+  autofill::AutofillField* prediction_improvement_field = form->field(0);
+  SetPredictionTypesForField(
+      *prediction_improvement_field,
+      {autofill::NAME_FIRST, autofill::PASSPORT_NAME_TAG});
+
+  EXPECT_CALL(client(), IsAutofillAiEnabledPref).WillOnce(Return(false));
   EXPECT_FALSE(
       manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
 }
 
 TEST_F(IsFormAndFieldEligibleAutofillAiTest,
-       IsNotEligibleIfOptimizationGuideCannotBeApplied) {
+       V1_IsNotEligibleIfOptimizationGuideCannotBeApplied) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kAutofillAi, {{"skip_allowlist", "false"}});
+
+  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
+  autofill::AutofillField* prediction_improvement_field = form->field(0);
+
   ON_CALL(decider(), CanApplyOptimization(_, _, nullptr))
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kFalse));
-
-  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
-  autofill::AutofillField* prediction_improvement_field = form->field(0);
-
   EXPECT_FALSE(
       manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
 }
 
 TEST_F(IsFormAndFieldEligibleAutofillAiTest,
-       IsEligibleIfOptimizationGuideCanBeApplied) {
+       V1_IsEligibleIfOptimizationGuideCanBeApplied) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kAutofillAi, {{"skip_allowlist", "false"}});
-  ON_CALL(decider(), CanApplyOptimization(_, _, nullptr))
-      .WillByDefault(
-          Return(optimization_guide::OptimizationGuideDecision::kTrue));
+
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
   autofill::AutofillField* prediction_improvement_field = form->field(0);
 
+  ON_CALL(decider(), CanApplyOptimization(_, _, nullptr))
+      .WillByDefault(
+          Return(optimization_guide::OptimizationGuideDecision::kTrue));
   EXPECT_TRUE(
       manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleForNotHttps) {
+TEST_F(IsFormAndFieldEligibleAutofillAiTest,
+       V2_IsEligibleIfOptimizationGuideCanBeApplied) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      autofill::features::kAutofillAiWithDataSchema);
+
+  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
+  autofill::AutofillField* prediction_improvement_field = form->field(0);
+  SetPredictionTypesForField(
+      *prediction_improvement_field,
+      {autofill::NAME_FIRST, autofill::PASSPORT_NAME_TAG});
+
+  ON_CALL(decider(), CanApplyOptimization(_, _, nullptr))
+      .WillByDefault(
+          Return(optimization_guide::OptimizationGuideDecision::kTrue));
+  EXPECT_TRUE(
+      manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
+}
+
+TEST_F(IsFormAndFieldEligibleAutofillAiTest, V1_IsNotEligibleForNotHttps) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kAutofillAi, {{"skip_allowlist", "false"}});
@@ -1290,7 +1363,7 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleForNotHttps) {
       manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleOnEmptyForm) {
+TEST_F(IsFormAndFieldEligibleAutofillAiTest, V1_IsNotEligibleOnEmptyForm) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kAutofillAi, {{"skip_allowlist", "true"}});
@@ -1302,7 +1375,8 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleOnEmptyForm) {
   EXPECT_FALSE(manager().IsEligibleForAutofillAi(form, field));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillAiTest, AutofillAiEligibility_Eligible) {
+TEST_F(IsFormAndFieldEligibleAutofillAiTest,
+       V1_AutofillAiEligibility_Eligible) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kAutofillAi, {{"skip_allowlist", "true"}});
@@ -1314,13 +1388,48 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest, AutofillAiEligibility_Eligible) {
       manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleForNonEligibleUser) {
+TEST_F(IsFormAndFieldEligibleAutofillAiTest,
+       V2_AutofillAiEligibility_Eligible) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{autofill::features::kAutofillAiWithDataSchema},
+      /*disable_features*/ {kAutofillAi});
+
+  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
+  autofill::AutofillField* prediction_improvement_field = form->field(0);
+  SetPredictionTypesForField(
+      *prediction_improvement_field,
+      {autofill::NAME_FIRST, autofill::PASSPORT_NAME_TAG});
+
+  EXPECT_TRUE(
+      manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
+}
+
+TEST_F(IsFormAndFieldEligibleAutofillAiTest,
+       V1_IsNotEligibleForNonEligibleUser) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kAutofillAi, {{"skip_allowlist", "true"}});
 
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
   autofill::AutofillField* prediction_improvement_field = form->field(0);
+
+  ON_CALL(client(), IsUserEligible).WillByDefault(Return(false));
+  EXPECT_FALSE(
+      manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
+}
+
+TEST_F(IsFormAndFieldEligibleAutofillAiTest,
+       V2_IsNotEligibleForNonEligibleUser) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      autofill::features::kAutofillAiWithDataSchema);
+
+  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
+  autofill::AutofillField* prediction_improvement_field = form->field(0);
+  SetPredictionTypesForField(
+      *prediction_improvement_field,
+      {autofill::NAME_FIRST, autofill::PASSPORT_NAME_TAG});
 
   ON_CALL(client(), IsUserEligible).WillByDefault(Return(false));
   EXPECT_FALSE(

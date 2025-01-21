@@ -796,8 +796,8 @@ public class WebappRegistryTest {
         WebappDataStorage storage =
                 WebappRegistry.getInstance().getWebappDataStorageForManifestId(testManifestId);
         assertNotNull(storage);
-        assertEquals(storage.getWebApkManifestId(), testManifestId);
-        assertEquals(storage.getWebApkPackageName(), testPackageName);
+        assertEquals(testManifestId, storage.getWebApkManifestId());
+        assertEquals(testPackageName, storage.getWebApkPackageName());
 
         final String anotherManifestId = START_URL + "/test_page.html";
         assertNull(
@@ -819,8 +819,8 @@ public class WebappRegistryTest {
         registerWebapp(intentDataProvider);
 
         assertEquals(
-                WebappRegistry.getInstance().findWebApkWithManifestId(testManifestId),
-                testPackageName);
+                testPackageName,
+                WebappRegistry.getInstance().findWebApkWithManifestId(testManifestId));
 
         final String anotherManifestId = START_URL + "/test_page.html";
         assertNull(

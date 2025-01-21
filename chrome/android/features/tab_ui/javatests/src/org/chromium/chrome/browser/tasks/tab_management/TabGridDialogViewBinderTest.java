@@ -213,7 +213,7 @@ public class TabGridDialogViewBinderTest {
         assertNotEquals(title, mTitleTextView.getText().toString());
 
         mModel.set(BINDING_TOKEN, 4);
-        assertEquals(mTabGridDialogView.getBindingToken().intValue(), 4);
+        assertEquals(4, mTabGridDialogView.getBindingToken().intValue());
         assertEquals(title, mTitleTextView.getText().toString());
     }
 
@@ -593,15 +593,15 @@ public class TabGridDialogViewBinderTest {
         mModel.set(TabGridDialogProperties.SHOW_SHARE_BUTTON, false);
         mModel.set(TabGridDialogProperties.SHARE_BUTTON_CLICK_LISTENER, mOnClickListener);
 
-        assertEquals(mShareButtonContainer.getVisibility(), View.GONE);
+        assertEquals(View.GONE, mShareButtonContainer.getVisibility());
         assertEquals("Share", mShareButton.getText());
 
         mModel.set(
                 TabGridDialogProperties.SHARE_BUTTON_STRING_RES,
                 R.string.tab_grid_manage_button_text);
         mModel.set(TabGridDialogProperties.SHOW_SHARE_BUTTON, true);
-        assertEquals(mShareButtonContainer.getVisibility(), View.VISIBLE);
-        assertEquals(mShareButton.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, mShareButtonContainer.getVisibility());
+        assertEquals(View.VISIBLE, mShareButton.getVisibility());
         assertEquals("Manage", mShareButton.getText());
 
         mShareButton.performClick();
@@ -617,10 +617,10 @@ public class TabGridDialogViewBinderTest {
         mModel.set(TabGridDialogProperties.SHOW_IMAGE_TILES, false);
         mModel.set(TabGridDialogProperties.SHARE_IMAGE_TILES_CLICK_LISTENER, mOnClickListener);
 
-        assertEquals(mImageTilesContainer.getVisibility(), View.GONE);
+        assertEquals(View.GONE, mImageTilesContainer.getVisibility());
 
         mModel.set(TabGridDialogProperties.SHOW_IMAGE_TILES, true);
-        assertEquals(mImageTilesContainer.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, mImageTilesContainer.getVisibility());
 
         mImageTilesContainer.performClick();
 

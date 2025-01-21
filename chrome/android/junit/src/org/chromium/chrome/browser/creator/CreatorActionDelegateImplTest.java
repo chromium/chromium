@@ -86,10 +86,10 @@ public class CreatorActionDelegateImplTest {
                 .createBottomSheetSigninIntentOrShowError(
                         any(), any(), configCaptor.capture(), eq(signinAccessPoint));
         BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
-        assertEquals(config.noAccountSigninMode, NoAccountSigninMode.BOTTOM_SHEET);
+        assertEquals(NoAccountSigninMode.BOTTOM_SHEET, config.noAccountSigninMode);
         assertEquals(
-                config.withAccountSigninMode, WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET);
-        assertEquals(config.historyOptInMode, HistorySyncConfig.OptInMode.NONE);
+                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET, config.withAccountSigninMode);
+        assertEquals(HistorySyncConfig.OptInMode.NONE, config.historyOptInMode);
         assertNull(config.selectedCoreAccountId);
         verify(mActivity).startActivity(mSigninIntent);
     }

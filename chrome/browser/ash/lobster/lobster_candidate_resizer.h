@@ -9,12 +9,12 @@
 
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "ash/public/cpp/lobster/lobster_result.h"
-#include "chrome/browser/ash/lobster/image_fetcher.h"
+#include "chrome/browser/ash/lobster/lobster_image_fetcher.h"
 #include "ui/gfx/geometry/size.h"
 
 class LobsterCandidateResizer {
  public:
-  explicit LobsterCandidateResizer(ImageFetcher* image_fetcher);
+  explicit LobsterCandidateResizer(LobsterImageFetcher* image_fetcher);
   ~LobsterCandidateResizer();
 
   void InflateImage(uint32_t seed,
@@ -22,7 +22,7 @@ class LobsterCandidateResizer {
                     ash::InflateCandidateCallback callback);
 
  private:
-  raw_ptr<ImageFetcher> image_fetcher_;
+  raw_ptr<LobsterImageFetcher> image_fetcher_;
 };
 
 #endif  // CHROME_BROWSER_ASH_LOBSTER_LOBSTER_CANDIDATE_RESIZER_H_

@@ -169,7 +169,7 @@ public class PasswordMigrationWarningMediatorTest {
         mModel.set(VISIBLE, true);
         mModel.set(CURRENT_SCREEN, ScreenType.INTRO_SCREEN);
         mMediator.onMoreOptions();
-        assertEquals(mModel.get(CURRENT_SCREEN), ScreenType.OPTIONS_SCREEN);
+        assertEquals(ScreenType.OPTIONS_SCREEN, mModel.get(CURRENT_SCREEN));
     }
 
     @Test

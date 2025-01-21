@@ -18,7 +18,7 @@
 #include "base/process/process.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/ash/arc/process/arc_process_service.h"
+#include "chromeos/ash/experiences/arc/process/arc_process_service.h"
 
 namespace task_manager {
 

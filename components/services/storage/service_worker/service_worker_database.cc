@@ -1254,6 +1254,8 @@ ServiceWorkerDatabase::GetRegistrationsForStorageKey(
           opt_resources_list->clear();
         break;
       }
+      // TODO(crbug.com/372879072): remove this CHECK
+      CHECK_EQ(key.origin(), url::Origin::Create(registration->scope));
       registrations->push_back(std::move(registration));
     }
   }

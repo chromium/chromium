@@ -12,12 +12,6 @@
 namespace cc {
 
 class StubGpuBacking : public ResourcePool::GpuBacking {
- public:
-  void OnMemoryDump(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-      uint64_t tracing_process_id,
-      int importance) const override {}
 };
 
 FakeRasterBufferProviderImpl::FakeRasterBufferProviderImpl() = default;

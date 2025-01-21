@@ -86,7 +86,7 @@ public class ActionConfirmationDialogUnitTest {
         assertEquals("Confirm", propertyModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
         View customView = propertyModel.get(ModalDialogProperties.CUSTOM_VIEW);
         TextView descriptionTextView = customView.findViewById(R.id.description_text_view);
-        assertEquals(descriptionTextView.getText(), "Learn more");
+        assertEquals("Learn more", descriptionTextView.getText());
     }
 
     @Test

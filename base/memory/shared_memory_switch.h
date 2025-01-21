@@ -59,7 +59,7 @@ enum class SharedMemoryError {
 // descriptor to the launch flow for the zygote.
 BASE_EXPORT void AddToLaunchParameters(
     std::string_view switch_name,
-    const ReadOnlySharedMemoryRegion& read_only_memory_region,
+    ReadOnlySharedMemoryRegion read_only_memory_region,
 #if BUILDFLAG(IS_APPLE)
     MachPortsForRendezvous::key_type rendezvous_key,
 #elif BUILDFLAG(IS_POSIX)
@@ -79,7 +79,7 @@ BASE_EXPORT void AddToLaunchParameters(
 // descriptor to the launch flow for the zygote.
 BASE_EXPORT void AddToLaunchParameters(
     std::string_view switch_name,
-    const UnsafeSharedMemoryRegion& unsafe_memory_region,
+    UnsafeSharedMemoryRegion unsafe_memory_region,
 #if BUILDFLAG(IS_APPLE)
     MachPortsForRendezvous::key_type rendezvous_key,
 #elif BUILDFLAG(IS_POSIX)

@@ -154,11 +154,8 @@ class CORE_EXPORT RuleData {
 
   unsigned Specificity() const { return specificity_; }
   unsigned LinkMatchType() const { return link_match_type_; }
-  ValidPropertyFilter GetValidPropertyFilter(
-      bool is_matching_ua_rules = false) const {
-    return is_matching_ua_rules
-               ? ValidPropertyFilter::kNoFilter
-               : static_cast<ValidPropertyFilter>(valid_property_filter_);
+  ValidPropertyFilter GetValidPropertyFilter() const {
+    return static_cast<ValidPropertyFilter>(valid_property_filter_);
   }
 
   // Member functions related to the descendant Bloom filter.

@@ -335,7 +335,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
       @"Tabs sync should be enabled.");
 
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
-      initWithAccessPoint:signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS];
+      initWithAccessPoint:signin_metrics::AccessPoint::kSettings];
   // TODO(crbug.com/41493423): We should log that the signin was offered,
   // completed and Signin.SigninStartedAccessPoint.
   expecteds.signinSignInStarted = 1;
@@ -406,7 +406,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
       @"Tabs sync should be enabled.");
 
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
-      initWithAccessPoint:signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS];
+      initWithAccessPoint:signin_metrics::AccessPoint::kSettings];
   // TODO(crbug.com/41493423): We should log that the signin was offered,
   // completed and Signin.SigninStartedAccessPoint.
   expecteds.signinSignInStarted = 1;
@@ -455,7 +455,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
       assertWithMatcher:grey_sufficientlyVisible()];
 
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
-      initWithAccessPoint:signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS];
+      initWithAccessPoint:signin_metrics::AccessPoint::kSettings];
   // TODO(crbug.com/41493423): We should log that the signin was offered,
   // completed and Signin.SigninStartedAccessPoint.
   expecteds.signinSignInStarted = 1;

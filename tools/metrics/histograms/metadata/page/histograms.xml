@@ -1531,6 +1531,64 @@ chromium-metrics-reviews@google.com.
   <token key="SafeSitesFilter" variants="SafeSitesFilterType"/>
 </histogram>
 
+<histogram name="PageLoad.Clients.LCPP.ImageLoadingPriority.ConfidenceOfLCP"
+    units="%" expires_after="2025-08-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records the confidence value of ElementLocator that became LCP actually.
+
+    The metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only when LCP is recorded.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Clients.LCPP.ImageLoadingPriority.ConfidenceOfNonLCP"
+    units="%" expires_after="2025-08-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records the confidence value of ElementLocator that didn't become LCP
+    actually.
+
+    The metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only when LCP is recorded.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Clients.LCPP.ImageLoadingPriority.FrequencyOfLCP"
+    units="Count" expires_after="2025-08-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records the frequency value of ElementLocator that became LCP actually.
+
+    The metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only when LCP is recorded.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Clients.LCPP.ImageLoadingPriority.FrequencyOfNonLCP"
+    units="Count" expires_after="2025-08-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records the frequency value of ElementLocator that didn't become LCP
+    actually.
+
+    The metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only when LCP is recorded.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.Clients.LCPP.PaintTiming.ActualLCPIndex"
     units="Index(1 origin)" expires_after="2025-06-22">
   <owner>yoichio@chromium.org</owner>

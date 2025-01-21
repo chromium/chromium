@@ -38,6 +38,14 @@ const char kHistogramLCPPSubresourceCountSameSiteRatio[] =
     HISTOGRAM_PREFIX "Subresource.Count.SameSiteRatio";
 const char kHistogramLCPPSubresourceCountType[] =
     HISTOGRAM_PREFIX "Subresource.Count.Type";
+const char kHistogramLCPPImageLoadingPriorityFrequencyOfLCP[] =
+    HISTOGRAM_PREFIX "ImageLoadingPriority.FrequencyOfLCP";
+const char kHistogramLCPPImageLoadingPriorityFrequencyOfNonLCP[] =
+    HISTOGRAM_PREFIX "ImageLoadingPriority.FrequencyOfNonLCP";
+const char kHistogramLCPPImageLoadingPriorityConfidenceOfLCP[] =
+    HISTOGRAM_PREFIX "ImageLoadingPriority.ConfidenceOfLCP";
+const char kHistogramLCPPImageLoadingPriorityConfidenceOfNonLCP[] =
+    HISTOGRAM_PREFIX "ImageLoadingPriority.ConfidenceOfNonLCP";
 }  // namespace internal
 
 namespace {
@@ -108,6 +116,47 @@ void ReportSubresourceUMA(
         base::saturated_cast<int>(same_site_count * 100 / actual_url_count);
     base::UmaHistogramPercentage(
         internal::kHistogramLCPPSubresourceCountSameSiteRatio, same_site_ratio);
+  }
+}
+
+void MaybeReportLcpElementLocatorUMA(
+    const std::optional<predictors::LcppStat>& lcpp_stat_prelearn,
+    const std::string& actual_lcp_element_locator) {
+  if (!lcpp_stat_prelearn ||
+      !lcpp_stat_prelearn->has_lcp_element_locator_stat() ||
+      actual_lcp_element_locator.empty()) {
+    return;
+  }
+
+  for (auto& bucket : lcpp_stat_prelearn->lcp_element_locator_stat()
+                          .lcp_element_locator_buckets()) {
+    if (bucket.lcp_element_locator() == actual_lcp_element_locator) {
+      // The maximum count is defined by `lcpp_histogram_sliding_window_size`.
+      // The default value is 1000.
+      base::UmaHistogramCounts1000(
+          internal::kHistogramLCPPImageLoadingPriorityFrequencyOfLCP,
+          bucket.frequency());
+    } else {
+      // The maximum count is defined by `lcpp_histogram_sliding_window_size`.
+      // The default value is 1000.
+      base::UmaHistogramCounts1000(
+          internal::kHistogramLCPPImageLoadingPriorityFrequencyOfNonLCP,
+          bucket.frequency());
+    }
+  }
+
+  for (auto& [confidence, lcp_element_locator] :
+       ConvertLcpElementLocatorStatToLcpElementLocatorsWithConfidence(
+           lcpp_stat_prelearn->lcp_element_locator_stat())) {
+    if (lcp_element_locator == actual_lcp_element_locator) {
+      base::UmaHistogramPercentage(
+          internal::kHistogramLCPPImageLoadingPriorityConfidenceOfLCP,
+          confidence);
+    } else {
+      base::UmaHistogramPercentage(
+          internal::kHistogramLCPPImageLoadingPriorityConfidenceOfNonLCP,
+          confidence);
+    }
   }
 }
 
@@ -234,6 +283,8 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
         lcpp_data_inputs_->subresource_urls,
         largest_contentful_paint.Time().value());
     ReportSubresourceUMA(*commit_url_, lcpp_stat_prelearn, *lcpp_data_inputs_);
+    MaybeReportLcpElementLocatorUMA(lcpp_stat_prelearn,
+                                    lcpp_data_inputs_->lcp_element_locator);
     predictor->LearnLcpp(initiator_origin_, *commit_url_, *lcpp_data_inputs_);
   }
 

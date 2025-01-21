@@ -324,8 +324,8 @@ public class FeedV2NewTabPageTest {
                                 Assert.assertEquals(
                                         "Feed has been scrolled to target position when NTP"
                                                 + " finished faded out",
-                                        getRecyclerView().getScrollState(),
-                                        RecyclerView.SCROLL_STATE_IDLE);
+                                        RecyclerView.SCROLL_STATE_IDLE,
+                                        getRecyclerView().getScrollState());
                                 Assert.assertEquals(
                                         "Feed has been scrolled to target position when NTP"
                                                 + " finished faded out",

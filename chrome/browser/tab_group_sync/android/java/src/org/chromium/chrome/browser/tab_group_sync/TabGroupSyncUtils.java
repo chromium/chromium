@@ -224,6 +224,22 @@ public final class TabGroupSyncUtils {
     }
 
     /**
+     * Called to update the tab redirect chain.
+     *
+     * @param tab Tab that triggers the navigation.
+     * @param navigationHandle Navigation handle to retrieve the redirect chain from.
+     */
+    public static void updateTabRedirectChain(Tab tab, NavigationHandle navigationHandle) {
+        if (tab.getTabGroupId() == null) return;
+        TabGroupSyncUtilsJni.get()
+                .updateTabRedirectChain(
+                        tab.getProfile(),
+                        getLocalTabGroupId(tab),
+                        tab.getId(),
+                        navigationHandle.nativeNavigationHandlePtr());
+    }
+
+    /**
      * Called to check if a URL is part of the redirect chain of the current tab URL.
      *
      * @param tab Tab whose URL redirect chain needs to be checked.
@@ -240,6 +256,12 @@ public final class TabGroupSyncUtils {
     @NativeMethods
     interface Natives {
         void onDidFinishNavigation(
+                @JniType("Profile*") Profile profile,
+                LocalTabGroupId groupId,
+                int tabId,
+                long navigationHandlePtr);
+
+        void updateTabRedirectChain(
                 @JniType("Profile*") Profile profile,
                 LocalTabGroupId groupId,
                 int tabId,

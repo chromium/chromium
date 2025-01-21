@@ -56,12 +56,7 @@ void LobsterView::ResizeDueToAutoResize(content::WebContents* source,
   gfx::Rect anchor = caret_bounds_;
   anchor.Outset(gfx::Outsets::VH(kLobsterAnchorVerticalPadding, 0));
 
-  gfx::Rect lobster_contents_bounds =
-      gfx::Rect(screen_work_area.x() + screen_work_area.width() / 2 -
-                    new_size.width() / 2,
-                screen_work_area.y() + screen_work_area.height() / 2 -
-                    new_size.height() / 2,
-                new_size.width(), new_size.height());
+  gfx::Rect lobster_contents_bounds = gfx::Rect(anchor.bottom_left(), new_size);
 
   // If horizontally offscreen, just move it to the right edge of the screen.
   if (lobster_contents_bounds.right() > screen_work_area.right()) {

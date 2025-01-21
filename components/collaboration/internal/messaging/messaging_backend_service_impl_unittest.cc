@@ -872,13 +872,19 @@ TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEventsFromSync) {
             last_persistent_message_chip.attribution.tab_metadata->sync_tab_id);
   EXPECT_EQ(tab_group.saved_guid(), last_persistent_message_chip.attribution
                                         .tab_group_metadata->sync_tab_group_id);
+  EXPECT_EQ(message.uuid(),
+            last_persistent_message_chip.attribution.id->AsLowercaseString());
   EXPECT_EQ(tab1_sync_id,
             last_persistent_message_dot.attribution.tab_metadata->sync_tab_id);
   EXPECT_EQ(tab_group.saved_guid(), last_persistent_message_dot.attribution
                                         .tab_group_metadata->sync_tab_group_id);
+  EXPECT_EQ(message.uuid(),
+            last_persistent_message_dot.attribution.id->AsLowercaseString());
   EXPECT_EQ(tab_group.saved_guid(),
             last_persistent_message_dot_tab_group.attribution
                 .tab_group_metadata->sync_tab_group_id);
+  EXPECT_FALSE(
+      last_persistent_message_dot_tab_group.attribution.id.has_value());
 
   // SCENARIO 2: Update a tab.
   // Should receive stored messages about tab updated, and also there should be
@@ -920,13 +926,19 @@ TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEventsFromSync) {
             last_persistent_message_chip.attribution.tab_metadata->sync_tab_id);
   EXPECT_EQ(tab_group.saved_guid(), last_persistent_message_chip.attribution
                                         .tab_group_metadata->sync_tab_group_id);
+  EXPECT_EQ(message.uuid(),
+            last_persistent_message_chip.attribution.id->AsLowercaseString());
   EXPECT_EQ(tab2_sync_id,
             last_persistent_message_dot.attribution.tab_metadata->sync_tab_id);
   EXPECT_EQ(tab_group.saved_guid(), last_persistent_message_dot.attribution
                                         .tab_group_metadata->sync_tab_group_id);
+  EXPECT_EQ(message.uuid(),
+            last_persistent_message_dot.attribution.id->AsLowercaseString());
   EXPECT_EQ(tab_group.saved_guid(),
             last_persistent_message_dot_tab_group.attribution
                 .tab_group_metadata->sync_tab_group_id);
+  EXPECT_FALSE(
+      last_persistent_message_dot_tab_group.attribution.id.has_value());
 
   // SCENARIO 3: Remove a tab.
   // Should receive stored messages about tab removed, and we should also remove
@@ -972,13 +984,19 @@ TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEventsFromSync) {
             last_persistent_message_chip.attribution.tab_metadata->sync_tab_id);
   EXPECT_EQ(tab_group.saved_guid(), last_persistent_message_chip.attribution
                                         .tab_group_metadata->sync_tab_group_id);
+  EXPECT_EQ(message.uuid(),
+            last_persistent_message_chip.attribution.id->AsLowercaseString());
   EXPECT_EQ(tab3_sync_id,
             last_persistent_message_dot.attribution.tab_metadata->sync_tab_id);
   EXPECT_EQ(tab_group.saved_guid(), last_persistent_message_dot.attribution
                                         .tab_group_metadata->sync_tab_group_id);
+  EXPECT_EQ(message.uuid(),
+            last_persistent_message_dot.attribution.id->AsLowercaseString());
   EXPECT_EQ(tab_group.saved_guid(),
             last_persistent_message_dot_tab_group.attribution
                 .tab_group_metadata->sync_tab_group_id);
+  EXPECT_FALSE(
+      last_persistent_message_dot_tab_group.attribution.id.has_value());
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestOnTabAddedFromLocal) {
@@ -1451,11 +1469,11 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabGetsRemoved) {
   // Save the last invocation of calls to the InstantMessageDelegate.
   InstantMessage message;
   MessagingBackendService::InstantMessageDelegate::SuccessCallback
-      succes_callback;
+      success_callback;
   EXPECT_CALL(*mock_instant_message_delegate_,
               DisplayInstantaneousMessage(_, _))
       .WillRepeatedly(
-          DoAll(SaveArg<0>(&message), MoveArg<1>(&succes_callback)));
+          DoAll(SaveArg<0>(&message), MoveArg<1>(&success_callback)));
 
   // Removing the currently selected tab should inform the delegate.
   tg_notifier_observer_->OnTabRemoved(*tab1, tab_groups::TriggerSource::REMOTE);
@@ -1463,6 +1481,7 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabGetsRemoved) {
   // We should have received a stored message about the removed tab.
   EXPECT_NE("", db_message.uuid());
   base::Uuid db_message_id = base::Uuid::ParseLowercase(db_message.uuid());
+  EXPECT_EQ(db_message_id, message.attribution.id);
 
   EXPECT_EQ(CollaborationEvent::TAB_REMOVED, message.collaboration_event);
   EXPECT_EQ(InstantNotificationType::CONFLICT_TAB_REMOVED, message.type);
@@ -1470,7 +1489,7 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabGetsRemoved) {
   EXPECT_CALL(*unowned_messaging_backend_store_,
               ClearDirtyMessage(db_message_id, DirtyType::kMessageOnly))
       .Times(1);
-  std::move(succes_callback).Run(true);
+  std::move(success_callback).Run(true);
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestSelectedTabAtStartupGetsRemoved) {
@@ -1498,11 +1517,11 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabAtStartupGetsRemoved) {
 
   InstantMessage message;
   MessagingBackendService::InstantMessageDelegate::SuccessCallback
-      succes_callback;
+      success_callback;
   EXPECT_CALL(*mock_instant_message_delegate_,
               DisplayInstantaneousMessage(_, _))
       .WillRepeatedly(
-          DoAll(SaveArg<0>(&message), MoveArg<1>(&succes_callback)));
+          DoAll(SaveArg<0>(&message), MoveArg<1>(&success_callback)));
   tg_notifier_observer_->OnTabRemoved(*tab1, tab_groups::TriggerSource::REMOTE);
 
   EXPECT_EQ(CollaborationEvent::TAB_REMOVED, message.collaboration_event);
@@ -1545,6 +1564,7 @@ TEST_F(MessagingBackendServiceImplTest, TestUnselectedTabGetsRemoved) {
 TEST_F(MessagingBackendServiceImplTest, TestTabGroupRemovedInstantMessage) {
   CreateAndInitializeService();
   SetupInstantMessageDelegate();
+  AddPersistentMessageObserver();
 
   data_sharing::GroupId collaboration_group_id =
       data_sharing::GroupId("my group id");
@@ -1565,19 +1585,33 @@ TEST_F(MessagingBackendServiceImplTest, TestTabGroupRemovedInstantMessage) {
   // Save the last invocation of calls to the InstantMessageDelegate.
   InstantMessage message;
   MessagingBackendService::InstantMessageDelegate::SuccessCallback
-      succes_callback;
+      success_callback;
   EXPECT_CALL(*mock_instant_message_delegate_,
               DisplayInstantaneousMessage(_, _))
       .WillRepeatedly(
-          DoAll(SaveArg<0>(&message), MoveArg<1>(&succes_callback)));
+          DoAll(SaveArg<0>(&message), MoveArg<1>(&success_callback)));
+  // Save the last invocation of DisplayPersistentMessage.
+  PersistentMessage last_persistent_message;
+  EXPECT_CALL(mock_persistent_message_observer_, DisplayPersistentMessage(_))
+      .Times(1)
+      .WillOnce(SaveArg<0>(&last_persistent_message));
 
   // Removing the tab group should inform the delegate.
   tg_notifier_observer_->OnTabGroupRemoved(tab_group,
                                            tab_groups::TriggerSource::REMOTE);
 
+  // Verify persistent notification.
+  EXPECT_EQ(PersistentNotificationType::DIRTY_TAB_GROUP_REMOVED,
+            last_persistent_message.type);
+  EXPECT_EQ(CollaborationEvent::TAB_GROUP_REMOVED,
+            last_persistent_message.collaboration_event);
+  EXPECT_EQ(tab_group.saved_guid(), last_persistent_message.attribution
+                                        .tab_group_metadata->sync_tab_group_id);
+
   // We should have received a stored message about the removed tab group.
   EXPECT_NE("", db_message.uuid());
   base::Uuid db_message_id = base::Uuid::ParseLowercase(db_message.uuid());
+  EXPECT_EQ(db_message_id, message.attribution.id);
 
   EXPECT_EQ(CollaborationEvent::TAB_GROUP_REMOVED, message.collaboration_event);
   EXPECT_EQ(tab_group.saved_guid(),
@@ -1586,7 +1620,7 @@ TEST_F(MessagingBackendServiceImplTest, TestTabGroupRemovedInstantMessage) {
   EXPECT_CALL(*unowned_messaging_backend_store_,
               ClearDirtyMessage(db_message_id, DirtyType::kMessageOnly))
       .Times(1);
-  std::move(succes_callback).Run(true);
+  std::move(success_callback).Run(true);
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestInstantMessageCallbackFails) {
@@ -1612,11 +1646,11 @@ TEST_F(MessagingBackendServiceImplTest, TestInstantMessageCallbackFails) {
   // Save the last invocation of calls to the InstantMessageDelegate.
   InstantMessage message;
   MessagingBackendService::InstantMessageDelegate::SuccessCallback
-      succes_callback;
+      success_callback;
   EXPECT_CALL(*mock_instant_message_delegate_,
               DisplayInstantaneousMessage(_, _))
       .WillRepeatedly(
-          DoAll(SaveArg<0>(&message), MoveArg<1>(&succes_callback)));
+          DoAll(SaveArg<0>(&message), MoveArg<1>(&success_callback)));
 
   // Removing the tab group should inform the delegate.
   tg_notifier_observer_->OnTabGroupRemoved(tab_group,
@@ -1625,7 +1659,7 @@ TEST_F(MessagingBackendServiceImplTest, TestInstantMessageCallbackFails) {
   // If the callback provides success=false we should not clear the bit.
   EXPECT_CALL(*unowned_messaging_backend_store_, ClearDirtyMessage(_, _))
       .Times(0);
-  std::move(succes_callback).Run(false);
+  std::move(success_callback).Run(false);
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestMemberAddedCreatesInstantMessage) {

@@ -689,6 +689,23 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
 #if BUILDFLAG(IS_ANDROID)
 
+  if (kIPHAccountSettingsHistorySync.name == feature->name) {
+    // A config that allows the history sync opt-in toggle IPH to be shown
+    // only once when a user who is signed-in but not syncing history and tabs
+    // visits the account settings page.
+
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger =
+        EventConfig("instance_switcher_iph_trigger", Comparator(LESS_THAN, 1),
+                    k10YearsInDays, k10YearsInDays);
+    config->used = EventConfig("instance_switcher_used", Comparator(EQUAL, 0),
+                               k10YearsInDays, k10YearsInDays);
+    return config;
+  }
+
   if (kIPHAndroidTabDeclutter.name == feature->name) {
     // Allows an IPH for tab declutter for the tab switcher button:
     // * Only once per week.

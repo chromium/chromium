@@ -6547,7 +6547,7 @@ TEST_F(URLRequestTestHTTP, NetworkErrorLogging_304Response) {
   EXPECT_EQ(OK, error2.type);
 
   // repeat request with end-to-end validation.  since auth-basic results in a
-  // cachable page, we expect this test to result in a 304.  in which case, the
+  // cacheable page, we expect this test to result in a 304.  in which case, the
   // response should be fetched from the cache.
   {
     TestDelegate d;
@@ -7271,7 +7271,7 @@ TEST_F(URLRequestTestHTTP, BasicAuth) {
   }
 
   // repeat request with end-to-end validation.  since auth-basic results in a
-  // cachable page, we expect this test to result in a 304.  in which case, the
+  // cacheable page, we expect this test to result in a 304.  in which case, the
   // response should be fetched from the cache.
   {
     TestDelegate d;
@@ -7385,7 +7385,7 @@ TEST_F(URLRequestTestHTTP, BasicAuthWithCookiesCancelAuth) {
   EXPECT_EQ(1, default_network_delegate().set_cookie_count());
 }
 
-// Tests the IsolationInfo is updated approiately on redirect.
+// Tests the IsolationInfo is updated appropriately on redirect.
 TEST_F(URLRequestTestHTTP, IsolationInfoUpdatedOnRedirect) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -8122,7 +8122,7 @@ TEST_F(URLRequestTestHTTP, BasicAuthLoadTiming) {
   }
 
   // Repeat request with end-to-end validation.  Since auth-basic results in a
-  // cachable page, we expect this test to result in a 304.  In which case, the
+  // cacheable page, we expect this test to result in a 304.  In which case, the
   // response should be fetched from the cache.
   {
     TestDelegate d;
@@ -8665,7 +8665,7 @@ TEST_F(URLRequestTestHTTP, DefaultAcceptEncoding) {
 }
 
 // Check that it's possible to override the default A-E header.
-TEST_F(URLRequestTestHTTP, DefaultAcceptEncodingOverriden) {
+TEST_F(URLRequestTestHTTP, DefaultAcceptEncodingOverridden) {
   ASSERT_TRUE(http_test_server()->Start());
 
   struct {
@@ -12245,8 +12245,10 @@ class ReadBufferingListener
 // as early data, sending HTTP_TOO_EARLY if enabled.
 class ZeroRTTResponse : public test_server::BasicHttpResponse {
  public:
-  ZeroRTTResponse(bool zero_rtt, bool send_too_early)
-      : zero_rtt_(zero_rtt), send_too_early_(send_too_early) {}
+  ZeroRTTResponse(bool zero_rtt, bool send_too_early, bool is_websocket = false)
+      : zero_rtt_(zero_rtt),
+        send_too_early_(send_too_early),
+        is_websocket_(is_websocket) {}
 
   ZeroRTTResponse(const ZeroRTTResponse&) = delete;
   ZeroRTTResponse& operator=(const ZeroRTTResponse&) = delete;
@@ -12266,6 +12268,13 @@ class ZeroRTTResponse : public test_server::BasicHttpResponse {
       set_content("0");
     }
 
+    if (is_websocket_ && !(zero_rtt_ && send_too_early_)) {
+      set_code(HTTP_SWITCHING_PROTOCOLS);
+      AddCustomHeader("Connection", "Upgrade");
+      AddCustomHeader("Upgrade", "websocket");
+      AddCustomHeader("Sec-WebSocket-Accept", "s3pPLMBiTxaQ9kYGzzhZRbK+xOo=");
+    }
+
     // Since the EmbeddedTestServer doesn't keep the socket open by default,
     // it is explicitly kept alive to allow the remaining leg of the 0RTT
     // handshake to be received after the early data.
@@ -12277,6 +12286,7 @@ class ZeroRTTResponse : public test_server::BasicHttpResponse {
  private:
   bool zero_rtt_;
   bool send_too_early_;
+  bool is_websocket_;
 };
 
 std::unique_ptr<test_server::HttpResponse> HandleZeroRTTRequest(
@@ -12286,7 +12296,8 @@ std::unique_ptr<test_server::HttpResponse> HandleZeroRTTRequest(
   if (request.GetURL().path() != "/zerortt")
     return nullptr;
   return std::make_unique<ZeroRTTResponse>(
-      request.ssl_info->early_data_received, false);
+      request.ssl_info->early_data_received, false,
+      request.GetURL().query() == "ws=1");
 }
 
 }  // namespace
@@ -12679,6 +12690,78 @@ TEST_F(HTTPSEarlyDataTest, TLSEarlyDataTooEarlyTest) {
     EXPECT_TRUE(sent_425);
   }
 }
+
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+TEST_F(HTTPSEarlyDataTest, WebSocketEarlyDataTooEarly) {
+  ASSERT_TRUE(test_server_.Start());
+  context().http_transaction_factory()->GetSession()->ClearSSLSessionCache();
+
+  const GURL kUrl = test_server_.GetURL("/zerortt?ws=0");
+
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r(context().CreateRequest(
+        kUrl, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+
+    d.RunUntilComplete();
+
+    EXPECT_EQ(SSL_CONNECTION_VERSION_TLS1_3,
+              SSLConnectionStatusToVersion(r->ssl_info().connection_status));
+    EXPECT_TRUE(r->ssl_info().unverified_cert.get());
+    EXPECT_TRUE(test_server_.GetCertificate()->EqualsIncludingChain(
+        r->ssl_info().cert.get()));
+
+    // The Early-Data header should be omitted in the initial request, and the
+    // handler should return "0".
+    EXPECT_EQ("0", d.data_received());
+  }
+
+  context().http_transaction_factory()->GetSession()->CloseAllConnections(
+      ERR_FAILED, "Very good reason");
+
+  // The certificate in the resumption is changed to confirm that the
+  // certificate change is observed.
+  scoped_refptr<X509Certificate> old_cert = test_server_.GetCertificate();
+  ResetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED,
+                 SSL_PROTOCOL_VERSION_TLS1_3);
+
+  GURL::Replacements replacements;
+  replacements.SetQueryStr("ws=1");
+  replacements.SetSchemeStr(url::kWssScheme);
+  const GURL wss_url = kUrl.ReplaceComponents(replacements);
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> req(context().CreateRequest(
+        wss_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
+        /*is_for_websockets=*/true));
+    EXPECT_TRUE(req->url().SchemeIsCryptographic());
+    d.set_cancel_in_response_started(true);
+
+    HttpRequestHeaders headers = WebSocketCommonTestHeaders();
+    req->SetExtraRequestHeaders(headers);
+
+    auto websocket_stream_create_helper =
+        std::make_unique<TestWebSocketHandshakeStreamCreateHelper>();
+    req->SetUserData(kWebSocketHandshakeUserDataKey,
+                     std::move(websocket_stream_create_helper));
+
+    req->Start();
+    EXPECT_TRUE(req->is_pending());
+
+    d.RunUntilComplete();
+
+    EXPECT_EQ(1, d.response_started_count());
+
+    // Validate that the WebSocket handshake was able to complete after failing
+    // the initial request in early data.
+    EXPECT_TRUE(d.response_code().has_value());
+    EXPECT_EQ(HTTP_SWITCHING_PROTOCOLS, d.response_code().value());
+  }
+}
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
 // TLSEarlyDataRejectTest tests that we gracefully handle an early data reject
 // and retry without early data.

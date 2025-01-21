@@ -929,14 +929,14 @@ public class ManualFillingControllerTest {
         // minimumVisibleHeightDp, test that the visible area is correctly deduced to be 200 - 100 <
         // minimumVisibleHeightDp so the sheet should be restricted in height.
         assertEquals(
-                (int) mController.getBottomInsetSupplier().get(), accessorySheetHeightDp * density);
+                accessorySheetHeightDp * density, (int) mController.getBottomInsetSupplier().get());
         simulateLayoutSizeChange(
                 density,
                 initialHeightDp,
                 initialWidthDp,
                 /* keyboardShown= */ false,
                 VirtualKeyboardMode.RESIZES_VISUAL);
-        assertEquals(mLastMockWebContents.getHeight(), initialWidthDp);
+        assertEquals(initialWidthDp, mLastMockWebContents.getHeight());
 
         // 200 - 128 = 72
         int expectedSheetHeightDp = initialWidthDp - minimumVisibleHeightDp;
@@ -990,14 +990,14 @@ public class ManualFillingControllerTest {
         // sheet will cause a resize to the web contents.  WebContents.getHeight <
         // minimumVisibleHeightDp so the sheet should be restricted in height.
         assertEquals(
-                (int) mController.getBottomInsetSupplier().get(), accessorySheetHeightDp * density);
+                accessorySheetHeightDp * density, (int) mController.getBottomInsetSupplier().get());
         simulateLayoutSizeChange(
                 density,
                 initialHeightDp,
                 initialWidthDp,
                 /* keyboardShown= */ false,
                 VirtualKeyboardMode.RESIZES_CONTENT);
-        assertEquals(mLastMockWebContents.getHeight(), initialWidthDp - accessorySheetHeightDp);
+        assertEquals(initialWidthDp - accessorySheetHeightDp, mLastMockWebContents.getHeight());
 
         // 200 - 128 = 72
         int expectedSheetHeightDp = initialWidthDp - minimumVisibleHeightDp;

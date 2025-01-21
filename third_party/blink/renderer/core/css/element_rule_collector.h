@@ -72,25 +72,51 @@ class MatchedRule {
               uint16_t layer_order,
               unsigned proximity,
               unsigned style_sheet_index)
-      : rule_data_(rule_data),
-        sort_key_((static_cast<uint64_t>(layer_order) << 48) |
-                  (static_cast<uint64_t>(GetRuleData()->Specificity()) << 16) |
+      : sort_key_((static_cast<uint64_t>(layer_order) << 48) |
+                  (static_cast<uint64_t>(rule_data->Specificity()) << 16) |
                   (65535 - ClampTo<uint16_t>(proximity))),
         position_((static_cast<uint64_t>(style_sheet_index)
                    << kBitsForPositionInRuleData) +
-                  rule_data->GetPosition()) {}
+                  rule_data->GetPosition()),
+        rule_(rule_data->Rule()),
+        link_match_type_(rule_data->LinkMatchType()),
+        valid_property_filter_(
+            static_cast<unsigned>(rule_data->GetValidPropertyFilter())),
+        selector_index_(rule_data->SelectorIndex()) {}
+
+  void Trace(Visitor* visitor) const { visitor->Trace(rule_); }
 
  private:
-  const RuleData* GetRuleData() const { return rule_data_; }
+  StyleRule* Rule() const { return rule_; }
   uint16_t LayerOrder() const { return sort_key_ >> 48; }
   uint64_t SortKey() const { return sort_key_; }
   uint64_t GetPosition() const { return position_; }  // Secondary sort key.
+  unsigned LinkMatchType() const { return link_match_type_; }
+  ValidPropertyFilter GetValidPropertyFilter(bool is_matching_ua_rules) const {
+    return is_matching_ua_rules
+               ? ValidPropertyFilter::kNoFilter
+               : static_cast<ValidPropertyFilter>(valid_property_filter_);
+  }
+  unsigned SelectorIndex() const { return selector_index_; }
+
+  // Used for tests only.
+  const CSSSelector& Selector() const {
+    return rule_->SelectorAt(selector_index_);
+  }
 
  private:
-  GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707046")
-  const RuleData* rule_data_;
   uint64_t sort_key_;
   uint64_t position_;
+
+  Member<StyleRule> rule_;
+
+  // NOTE: If we need some more spare bits, we can probably move some bits
+  // in position_ upwards and use some of the bottom. Right now, though,
+  // packing these better wouldn't make the struct any smaller, due to
+  // alignment/padding.
+  uint8_t link_match_type_;        // 2 bits needed.
+  uint8_t valid_property_filter_;  // ValidPropertyFilter, 3 bits needed.
+  uint16_t selector_index_;  // RuleData::kSelectorIndexBits (13) bits needed.
 
   friend class ElementRuleCollector;
   FRIEND_TEST_ALL_PREFIXES(ElementRuleCollectorTest, DirectNesting);
@@ -251,8 +277,8 @@ class CORE_EXPORT ElementRuleCollector {
                     int style_sheet_index);
 
   void AppendCSSOMWrapperForRule(const TreeScope* tree_scope_containing_rule,
-                                 const RuleData*,
-                                 wtf_size_t);
+                                 const MatchedRule& matched_rule,
+                                 wtf_size_t position);
 
   void SortMatchedRules();
 

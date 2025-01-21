@@ -112,7 +112,7 @@ public final class PlusAddressCreationMediatorTest {
     public void testUpdateProposedPlusAddress_hidesPlusAddressLoadingView() {
         mMediator.updateProposedPlusAddress(PLUS_ADDRESS);
 
-        assertEquals(mModel.get(PLUS_ADDRESS_LOADING_VIEW_VISIBLE), false);
+        assertEquals(false, mModel.get(PLUS_ADDRESS_LOADING_VIEW_VISIBLE));
     }
 
     @Test

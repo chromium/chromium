@@ -2074,8 +2074,9 @@ using UserFeedbackDataCallback =
                                                       browser:self.mainInterface
                                                                   .browser
                                                   accessPoint:
-                                                      signin_metrics::AccessPoint::
-                                                          ACCESS_POINT_WEB_SIGNIN];
+                                                      signin_metrics::
+                                                          AccessPoint::
+                                                              kWebSignin];
   if (!self.signinCoordinator) {
     return;
   }

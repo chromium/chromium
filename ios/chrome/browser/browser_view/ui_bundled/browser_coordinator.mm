@@ -3422,7 +3422,7 @@ enum class ToolbarKind {
                              initWithOperation:AuthenticationOperation::
                                                    kPrimaryAccountReauth
                                    accessPoint:signin_metrics::AccessPoint::
-                                                   ACCESS_POINT_REAUTH_INFO_BAR]
+                                                   kReauthInfoBar]
       baseViewController:self.viewController];
 }
 
@@ -3450,9 +3450,9 @@ enum class ToolbarKind {
                                               trusted_vault::SecurityDomainId::
                                                   kChromeSync
                                                    trigger:trigger
-                                               accessPoint:
-                                                   signin_metrics::AccessPoint::
-                                                       ACCESS_POINT_SETTINGS];
+                                               accessPoint:signin_metrics::
+                                                               AccessPoint::
+                                                                   kSettings];
 }
 
 - (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
@@ -3468,7 +3468,7 @@ enum class ToolbarKind {
                                                             accessPoint:
                                                                 signin_metrics::
                                                                     AccessPoint::
-                                                                        ACCESS_POINT_SETTINGS];
+                                                                        kSettings];
 }
 
 #pragma mark - SigninPresenter

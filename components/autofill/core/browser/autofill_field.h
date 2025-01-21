@@ -90,6 +90,7 @@ class AutofillField : public FormFieldData {
   server_predictions() const {
     return server_predictions_;
   }
+  bool HasServerPredictionsWithAutofillAiType() const;
   const std::vector<
       AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>&
   experimental_server_predictions() const {

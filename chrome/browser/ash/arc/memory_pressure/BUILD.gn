@@ -20,9 +20,9 @@ static_library("memory_pressure") {
     "//ash/components/arc",
     "//ash/components/arc/mojom",
     "//base",
-    "//chrome/browser/ash/arc/process",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/resourced",
+    "//chromeos/ash/experiences/arc/process",
     "//content/public/browser",
     "//content/public/common",
   ]

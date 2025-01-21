@@ -29,6 +29,7 @@
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/deferred_fetch_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
@@ -429,12 +430,7 @@ void HTMLFrameOwnerElement::UpdateDeferredFetchPolicy(const KURL& to_url) {
   }
   frame_policy_.deferred_fetch_policy =
       FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(this, to_url);
-
-  if (ContentFrame()) {
-    auto* frame = GetDocument().GetFrame();
-    frame->GetLocalFrameHostRemote().DidChangeFramePolicy(
-        ContentFrame()->GetFrameToken(), frame_policy_);
-  }
+  DidChangeContainerPolicy();
 }
 
 void HTMLFrameOwnerElement::MaybeClearDeferredFetchPolicy() {
@@ -442,15 +438,13 @@ void HTMLFrameOwnerElement::MaybeClearDeferredFetchPolicy() {
     return;
   }
 
+  // Must only be called from content frame.
   CHECK(ContentFrame());
   if (FetchLaterUtil::ShouldClearDeferredFetchPolicy(ContentFrame())) {
     frame_policy_.deferred_fetch_policy =
-        FramePolicy::DeferredFetchPolicy::kDisabled;
+        mojom::blink::DeferredFetchPolicy::kDisabled;
+    DidChangeContainerPolicy();
   }
-
-  auto* frame = GetDocument().GetFrame();
-  frame->GetLocalFrameHostRemote().DidChangeFramePolicy(
-      ContentFrame()->GetFrameToken(), frame_policy_);
 }
 
 network::mojom::blink::TrustTokenParamsPtr

@@ -76,19 +76,11 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 // TODO(http://b/333583704): Revert CL which added this include after migration.
-#include "chrome/browser/chromeos/echo/echo_util.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/startup/browser_params_proxy.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/ash/components/report/utils/time_utils.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {
 
@@ -137,38 +129,8 @@ struct LoadedConfigs {
   std::vector<std::string> errors;
 };
 
-#if BUILDFLAG(IS_CHROMEOS)
-bool IsArcAvailable() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return arc::IsArcAvailable();
-#else
-  const chromeos::BrowserParamsProxy* init_params =
-      chromeos::BrowserParamsProxy::Get();
-  return init_params->DeviceProperties() &&
-         init_params->DeviceProperties()->is_arc_available;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-bool IsTabletFormFactor() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return ash::switches::IsTabletFormFactor();
-#else
-  const chromeos::BrowserParamsProxy* init_params =
-      chromeos::BrowserParamsProxy::Get();
-  return init_params->DeviceProperties() &&
-         init_params->DeviceProperties()->is_tablet_form_factor;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 std::optional<bool> HasStylusEnabledTouchscreen() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()
-      ->DeviceProperties()
-      ->has_stylus_enabled_touchscreen;
-#else
   return DeviceHasStylusEnabledTouchscreen();
-#endif
 }
 
 LoadedConfigs LoadConfigsBlocking(
@@ -417,14 +379,15 @@ SynchronizeDecision GetSynchronizeDecision(
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (options.disable_if_arc_supported && IsArcAvailable()) {
+  if (options.disable_if_arc_supported && arc::IsArcAvailable()) {
     return {.type = SynchronizeDecision::kIgnore,
             .reason = DisabledReason::kIgnoreArcAvailable,
             .log = base::StrCat({options.install_url.spec(),
                                  " ignore because ARC is available."})};
   }
 
-  if (options.disable_if_tablet_form_factor && IsTabletFormFactor()) {
+  if (options.disable_if_tablet_form_factor &&
+      ash::switches::IsTabletFormFactor()) {
     return {.type = SynchronizeDecision::kIgnore,
             .reason = DisabledReason::kIgnoreTabletFormFactor,
             .log = base::StrCat({options.install_url.spec(),
@@ -751,13 +714,9 @@ void PreinstalledWebAppManager::LoadDeviceInfo(ConsumeDeviceInfo callback) {
 #if BUILDFLAG(IS_CHROMEOS)
   // This needs to be consistent with echo_private_api to avoid inconsistency
   // between promo offering and eligibility.
-  chromeos::echo_util::GetOobeTimestamp(base::BindOnce(
-      [](ConsumeDeviceInfo callback, std::optional<base::Time> oobe_timestamp) {
-        DeviceInfo device_info;
-        device_info.oobe_timestamp = std::move(oobe_timestamp);
-        std::move(callback).Run(std::move(device_info));
-      },
-      std::move(callback)));
+  DeviceInfo device_info;
+  device_info.oobe_timestamp = ash::report::utils::GetFirstActiveWeek();
+  std::move(callback).Run(device_info);
 #else  // BUILDFLAG(IS_CHROMEOS)
   std::move(callback).Run(DeviceInfo());
 #endif

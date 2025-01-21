@@ -106,6 +106,7 @@ class CustomManagePasswordsUIController : public ManagePasswordsUIController {
   void NotifyUnsyncedCredentialsWillBeDeleted(
       std::vector<password_manager::PasswordForm> unsynced_credentials)
       override;
+  void ShowChangePasswordBubble() override;
 
   // Should not be used for manual fallback events.
   bool IsTargetStateObserved(
@@ -260,6 +261,11 @@ void CustomManagePasswordsUIController::NotifyUnsyncedCredentialsWillBeDeleted(
       password_manager::ui::WILL_DELETE_UNSYNCED_ACCOUNT_PASSWORDS_STATE);
 }
 
+void CustomManagePasswordsUIController::ShowChangePasswordBubble() {
+  ManagePasswordsUIController::ShowChangePasswordBubble();
+  was_prompt_automatically_shown_ = true;
+}
+
 bool CustomManagePasswordsUIController::IsTargetStateObserved(
     const password_manager::ui::State target_state,
     const password_manager::ui::State current_state) const {
@@ -303,6 +309,12 @@ enum ReturnCodes {  // Possible results of the JavaScript code.
 BubbleObserver::BubbleObserver(content::WebContents* web_contents)
     : passwords_ui_controller_(
           ManagePasswordsUIController::FromWebContents(web_contents)) {}
+
+bool BubbleObserver::IsBubbleDisplayedAutomatically() const {
+  return static_cast<CustomManagePasswordsUIController*>(
+             passwords_ui_controller_)
+      ->was_prompt_automatically_shown();
+}
 
 bool BubbleObserver::IsSavePromptAvailable() const {
   return passwords_ui_controller_->GetState() ==

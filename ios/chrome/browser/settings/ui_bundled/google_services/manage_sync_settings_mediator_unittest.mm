@@ -80,9 +80,8 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
 
     AuthenticationService* authentication_service =
         AuthenticationServiceFactory::GetForProfile(profile_.get());
-    authentication_service->SignIn(
-        fake_system_identity_,
-        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+    authentication_service->SignIn(fake_system_identity_,
+                                   signin_metrics::AccessPoint::kUnknown);
   }
 
   // Creates the mediator for a given sync state.

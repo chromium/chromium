@@ -53,6 +53,7 @@ const noArgStringNames = [
   'languagePickerLanguageDownloadButton',
   'languagePickerLanguageDownloadingButton',
   'languagePickerLanguageErrorDescription',
+  'languagePickerLanguagesListLandmarkAriaLabel',
   'languagePickerSelectedLanguageHeader',
   'languagePickerSelectedLanguageNoneLabel',
   'mainChooseMicNudge',
@@ -220,7 +221,13 @@ const withArgsStringNames = {
   // Usage example:
   // Add `fooBar: withArgs<[number, string]>(),` here,
   // then `i18n.fooBar(1, '2')` works.
+  languagePickerLanguageDownloadButtonAriaLabel: withArgs<[string]>(),
+  languagePickerLanguageDownloadErrorAriaLabel: withArgs<[string]>(),
+  languagePickerLanguageDownloadingAriaLabel: withArgs<[string, number]>(),
   languagePickerLanguageDownloadingProgressDescription: withArgs<[number]>(),
+  languagePickerLanguageNotDownloadedAriaLabel: withArgs<[string]>(),
+  languagePickerLanguageNotSelectedAriaLabel: withArgs<[string]>(),
+  languagePickerLanguageSelectedAriaLabel: withArgs<[string]>(),
   recordingItemOptionsButtonAriaLabel: withArgs<[string]>(),
   recordingItemPauseButtonAriaLabel: withArgs<[string]>(),
   recordingItemPlayButtonAriaLabel: withArgs<[string]>(),

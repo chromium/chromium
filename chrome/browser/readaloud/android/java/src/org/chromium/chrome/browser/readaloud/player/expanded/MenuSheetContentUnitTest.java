@@ -104,7 +104,7 @@ public class MenuSheetContentUnitTest {
 
     @Test
     public void testGetPriority() {
-        assertEquals(mContent.getPriority(), BottomSheetContent.ContentPriority.HIGH);
+        assertEquals(BottomSheetContent.ContentPriority.HIGH, mContent.getPriority());
     }
 
     @Test
@@ -124,7 +124,7 @@ public class MenuSheetContentUnitTest {
 
     @Test
     public void testGetPeekHeight() {
-        assertEquals(mContent.getPeekHeight(), BottomSheetContent.HeightMode.DISABLED);
+        assertEquals(BottomSheetContent.HeightMode.DISABLED, mContent.getPeekHeight());
     }
 
     @Test

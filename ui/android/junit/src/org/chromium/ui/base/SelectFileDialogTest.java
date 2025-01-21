@@ -949,8 +949,8 @@ public class SelectFileDialogTest {
                 selectFileDialog
                 .new GetDisplayNameTask(ContextUtils.getApplicationContext(), true, filePathArray);
         task.doInBackground();
-        assertEquals(task.mFilePaths[0].toString(), "///storage/emulated/0/DCIM/Camera/IMG_0.jpg");
-        assertEquals(task.mFilePaths[1].toString(), "///storage/emulated/0/DCIM/Camera/IMG_1.jpg");
+        assertEquals("///storage/emulated/0/DCIM/Camera/IMG_0.jpg", task.mFilePaths[0].toString());
+        assertEquals("///storage/emulated/0/DCIM/Camera/IMG_1.jpg", task.mFilePaths[1].toString());
     }
 
     private void testFilePath(

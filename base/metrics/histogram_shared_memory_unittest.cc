@@ -53,46 +53,34 @@ TEST(HistogramSharedMemoryTest, Create) {
   EXPECT_EQ(kArbitrarySize, shared_memory->allocator->size());
 }
 
-namespace {
-// Constants from content::ProcessType;
-constexpr int PROCESS_TYPE_RENDERER = 3;
-constexpr int PROCESS_TYPE_GPU = 9;
-constexpr int PROCESS_TYPE_UTILITY = 6;
-}  // namespace
-
-TEST(HistogramSharedMemoryTest, PassOnCommandLineIsDisabled) {
+TEST(HistogramSharedMemoryTest, PassSharedMemoryRegion_Disabled) {
+  // Ensure the feature is disabled.
   test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kPassHistogramSharedMemoryOnLaunch);
 
-  EXPECT_FALSE(
-      HistogramSharedMemory::PassOnCommandLineIsEnabled(PROCESS_TYPE_RENDERER));
-  EXPECT_FALSE(
-      HistogramSharedMemory::PassOnCommandLineIsEnabled(PROCESS_TYPE_GPU));
-  EXPECT_FALSE(
-      HistogramSharedMemory::PassOnCommandLineIsEnabled(PROCESS_TYPE_UTILITY));
-}
+  // Create a shared memory region to pass.
+  auto memory = UnsafeSharedMemoryRegion::Create(kArbitrarySize);
+  ASSERT_TRUE(memory.IsValid());
 
-TEST(HistogramSharedMemoryTest, PassOnCommandLineIsEnabled) {
-  test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kPassHistogramSharedMemoryOnLaunch);
+  // Initialize the command line and launch options.
+  CommandLine command_line = GetMultiProcessTestChildBaseCommandLine();
+  command_line.AppendSwitchASCII("type", "test-child");
+  LaunchOptions launch_options;
 
-  EXPECT_TRUE(
-      HistogramSharedMemory::PassOnCommandLineIsEnabled(PROCESS_TYPE_RENDERER));
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_FALSE(
-      HistogramSharedMemory::PassOnCommandLineIsEnabled(PROCESS_TYPE_GPU));
-#else   // !BUILDFLAG(IS_CHROMEOS)
-  EXPECT_TRUE(
-      HistogramSharedMemory::PassOnCommandLineIsEnabled(PROCESS_TYPE_GPU));
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+  ScopedFD descriptor_to_share;
+#endif
 
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_FALSE(
-      HistogramSharedMemory::PassOnCommandLineIsEnabled(PROCESS_TYPE_UTILITY));
-#else   // !BUILDFLAG(IS_ANDROID)
-  EXPECT_TRUE(
-      HistogramSharedMemory::PassOnCommandLineIsEnabled(PROCESS_TYPE_UTILITY));
-#endif  // !BUILDFLAG(IS_ANDROID)
+  // Update the launch parameters.
+  HistogramSharedMemory::AddToLaunchParameters(memory.Duplicate(),
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+                                               kArbitraryDescriptorKey,
+                                               descriptor_to_share,
+#endif  // BUILDFLAG(IS_POSIX)
+                                               &command_line, &launch_options);
+
+  // The metrics shared memory handle should NOT be added to the command line.
+  EXPECT_FALSE(command_line.HasSwitch(switches::kMetricsSharedMemoryHandle));
 }
 
 MULTIPROCESS_TEST_MAIN(InitFromLaunchParameters) {
@@ -154,7 +142,7 @@ TEST_P(HistogramSharedMemoryTest, PassSharedMemoryRegion_Enabled) {
 #endif
 
   // Update the launch parameters.
-  HistogramSharedMemory::AddToLaunchParameters(memory,
+  HistogramSharedMemory::AddToLaunchParameters(memory.Duplicate(),
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
                                                kArbitraryDescriptorKey,
                                                descriptor_to_share,

@@ -205,7 +205,7 @@ TestRenderFrameHost* TestRenderFrameHost::AppendChildWithPolicy(
       blink::FramePolicy({network::mojom::WebSandboxFlags::kNone,
                           allow,
                           {},
-                          blink::FramePolicy::DeferredFetchPolicy::kDisabled}),
+                          blink::mojom::DeferredFetchPolicy::kDisabled}),
       blink::mojom::FrameOwnerProperties(),
       blink::FrameOwnerElementType::kIframe, ukm::kInvalidSourceId);
   return static_cast<TestRenderFrameHost*>(

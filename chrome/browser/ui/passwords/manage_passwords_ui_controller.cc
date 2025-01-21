@@ -1058,12 +1058,6 @@ void ManagePasswordsUIController::ChangePassword(
   }
   password_change_service->StartPasswordChange(url, username, password,
                                                web_contents());
-
-  if (password_change_service->GetPasswordChangeDelegate(web_contents())
-          ->GetCurrentState() ==
-      PasswordChangeDelegate::State::kWaitingForAgreement) {
-    bubble_status_ = BubbleStatus::SHOULD_POP_UP;
-  }
   UpdateBubbleAndIconVisibility();
 }
 
@@ -1149,6 +1143,12 @@ void ManagePasswordsUIController::HidePasswordBubble() {
   if (TabDialogs* tab_dialogs = TabDialogs::FromWebContents(web_contents())) {
     tab_dialogs->HideManagePasswordsBubble();
   }
+}
+
+void ManagePasswordsUIController::ShowChangePasswordBubble() {
+  CHECK_EQ(password_manager::ui::PASSWORD_CHANGE_STATE, GetState());
+  bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+  UpdateBubbleAndIconVisibility();
 }
 
 void ManagePasswordsUIController::UpdateBubbleAndIconVisibility() {

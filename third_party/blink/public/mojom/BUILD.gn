@@ -1348,6 +1348,7 @@ mojom("mojom_core") {
     # mojom GN targets to match better the core/platform separation in C++.
     "frame/back_forward_cache_controller.mojom",
     "frame/blocked_navigation_types.mojom",
+    "frame/deferred_fetch_policy.mojom",
     "frame/find_in_page.mojom",
     "frame/frame.mojom",
     "frame/frame_owner_properties.mojom",

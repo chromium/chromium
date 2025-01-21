@@ -5,7 +5,7 @@
 import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
 import './settings-row.js';
-import './language-list-item.js';
+import './spoken-message.js';
 import './language-list.js';
 
 import {createRef, css, html, ref} from 'chrome://resources/mwc/lit/index.js';
@@ -148,18 +148,23 @@ export class LanguagePickerDialog extends ReactiveLitElement {
     if (this.selectedLanguage.value === null) {
       return noSelectionRow;
     }
-    const sodaState =
-      this.platformHandler.getSodaState(this.selectedLanguage.value).value;
+    const selectedLanguage = this.selectedLanguage.value;
+    const sodaState = this.platformHandler.getSodaState(selectedLanguage).value;
     if (sodaState.kind !== 'installed' && sodaState.kind !== 'installing') {
       return noSelectionRow;
     }
-    const langPack =
-      this.platformHandler.getLangPackInfo(this.selectedLanguage.value);
+    const name =
+      this.platformHandler.getLangPackInfo(selectedLanguage).displayName;
+    const status = sodaState.kind === 'installing' ?
+      i18n.languagePickerLanguageDownloadingAriaLabel(
+        name,
+        sodaState.progress,
+      ) :
+      i18n.languagePickerLanguageSelectedAriaLabel(name);
     return html`
       <settings-row>
-        <span slot="label">
-          ${langPack.displayName}
-        </span>
+        <span slot="label" aria-hidden="true">${name}</span>
+        <spoken-message slot="status">${status}</spoken-message>
       </settings-row>
     `;
   }
@@ -195,6 +200,8 @@ export class LanguagePickerDialog extends ReactiveLitElement {
             </h3>
             <language-list
               class="body"
+              role="region"
+              aria-label=${i18n.languagePickerLanguagesListLandmarkAriaLabel}
               .selectedLanguage=${this.selectedLanguage.value}
               @language-select-click=${this.onLanguageSelect}
               @language-download-click=${this.onLanguageDownloadClick}

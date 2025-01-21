@@ -1362,7 +1362,7 @@ public class TabListMediatorUnitTest {
         doReturn(Arrays.asList(mTab2)).when(mTabGroupModelFilter).getRelatedTabList(TAB2_ID);
         doReturn(Arrays.asList(newTab)).when(mTabGroupModelFilter).getRelatedTabList(TAB3_ID);
         doReturn(3).when(mTabGroupModelFilter).getCount();
-        assertEquals(mModelList.size(), 2);
+        assertEquals(2, mModelList.size());
 
         // Add tab marked as delayed.
         mTabModelObserverCaptor

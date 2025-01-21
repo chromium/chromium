@@ -77,9 +77,12 @@ enum class PersistentNotificationType {
   CHIP,
   // A marker that a tab has been changed and the user has not seen it yet.
   DIRTY_TAB,
-  // A marker that something in the tab group has changed and the user has not
-  // seen it yet.
+  // A marker that one or more tabs in the tab group has changed and the user
+  // has not seen it yet.
   DIRTY_TAB_GROUP,
+  // A marker that a tab group has been deleted and the user has not
+  // seen it yet.
+  DIRTY_TAB_GROUP_REMOVED,
 };
 
 // Metadata about the tab group a message is attributed to.
@@ -133,6 +136,10 @@ struct MessageAttribution {
   MessageAttribution();
   MessageAttribution(const MessageAttribution& other);
   ~MessageAttribution();
+
+  // The id of this message. Non-empty if there is a corresponding entry in the
+  // database, empty for synthetic messages.
+  std::optional<base::Uuid> id;
 
   // The collaboration this message is associated with (if any).
   data_sharing::GroupId collaboration_id;

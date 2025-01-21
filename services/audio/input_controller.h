@@ -28,7 +28,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/audio/stream_monitor.h"
 
 namespace media {
 class AecdumpRecordingManager;
@@ -43,7 +42,6 @@ class AudioProcessorHandler;
 class AudioCallback;
 class DeviceOutputListener;
 class OutputTapper;
-class Snoopable;
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 class ProcessingAudioFifo;
@@ -84,14 +82,14 @@ class ProcessingAudioFifo;
 //     AudioInputStream format to |params| provided to
 //     InputController::Create().
 //
-class InputController final : public StreamMonitor {
+class InputController final {
  public:
   // Error codes to make native logging more clear. These error codes are added
   // to generic error strings to provide a higher degree of details.
   // Changing these values can lead to problems when matching native debug
   // logs with the actual cause of error.
   enum ErrorCode {
-    // An unspecified error occured.
+    // An unspecified error occurred.
     UNKNOWN_ERROR = 0,
 
     // Failed to create an audio input stream.
@@ -178,7 +176,7 @@ class InputController final : public StreamMonitor {
   InputController(const InputController&) = delete;
   InputController& operator=(const InputController&) = delete;
 
-  ~InputController() final;
+  ~InputController();
 
   media::AudioInputStream* stream_for_testing() { return stream_; }
 
@@ -207,10 +205,6 @@ class InputController final : public StreamMonitor {
   // Sets the output device which will be used to cancel audio from, if this
   // input device supports echo cancellation.
   void SetOutputDeviceForAec(const std::string& output_device_id);
-
-  // StreamMonitor implementation
-  void OnStreamActive(Snoopable* snoopable) override;
-  void OnStreamInactive(Snoopable* snoopable) override;
 
  private:
   friend class InputControllerTestHelper;

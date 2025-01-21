@@ -357,68 +357,6 @@ class PrerenderOmniboxSearchSuggestionBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-class PrerenderOmniboxSearchSuggestionReloadBrowserTest
-    : public PrerenderOmniboxSearchSuggestionBrowserTest {
- public:
-  PrerenderOmniboxSearchSuggestionReloadBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSupportSearchSuggestionForPrerender2, {{}}},
-         {kSearchPrefetchServicePrefetching,
-          {{"device_memory_threshold_MB", "0"}}}},
-        // Disable BFCache, to test the HTTP Cache path.
-        {features::kBackForwardCache});
-  }
-
-  // TODO(crbug.com/40285326): This fails with the field trial testing config.
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PrerenderOmniboxSearchSuggestionBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch("disable-field-trial-config");
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Test back or forward navigations can use the HTTP Cache.
-IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionReloadBrowserTest,
-                       BackNavigationHitsHttpCache) {
-  base::HistogramTester histogram_tester;
-  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
-  ASSERT_TRUE(GetActiveWebContents());
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
-  InitializePrerenderManager();
-
-  // 1. Prerender the first page.
-  std::string search_terms_1 = "prerender2222";
-  GURL expected_prefetched_url_1 =
-      GetSearchSuggestionUrl(search_terms_1, /*with_parameter=*/true);
-  GURL expected_activated_url_1 =
-      GetSearchSuggestionUrl(search_terms_1, /*with_parameter=*/false);
-  PrerenderAndActivate(search_terms_1);
-  EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_activated_url_1));
-  EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetched_url_1));
-
-  // 2. Prerender and activate another page.
-  std::string search_terms_2 = "prefetch233";
-  GURL expected_prefetched_url_2 =
-      GetSearchSuggestionUrl(search_terms_2, /*with_parameter=*/true);
-  GURL expected_activated_url_2 =
-      GetSearchSuggestionUrl(search_terms_2, /*with_parameter=*/false);
-  PrerenderAndActivate(search_terms_2);
-  EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_activated_url_2));
-  EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetched_url_2));
-
-  // 3. Navigate back. Chrome is supposed to read the response from the cache,
-  // instead of sending another request.
-  content::TestNavigationObserver back_load_observer(GetActiveWebContents());
-  GetActiveWebContents()->GetController().GoBack();
-  back_load_observer.Wait();
-  EXPECT_EQ(expected_activated_url_1,
-            GetActiveWebContents()->GetLastCommittedURL());
-  EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_activated_url_1));
-  EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetched_url_1));
-}
-
 class PrerenderOmniboxSearchSuggestionExpiryBrowserTest
     : public PrerenderOmniboxSearchSuggestionBrowserTest {
  public:

@@ -89,7 +89,7 @@ public class WebappLauncherActivityTest {
         Intent launchIntent = getNextStartedActivity();
         assertEquals(
                 SameTaskWebApkActivity.class.getName(), launchIntent.getComponent().getClassName());
-        assertEquals(launchIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK, 0);
+        assertEquals(0, launchIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK);
         assertNotNull(WebApkIntentDataProviderFactory.create(launchIntent));
     }
 

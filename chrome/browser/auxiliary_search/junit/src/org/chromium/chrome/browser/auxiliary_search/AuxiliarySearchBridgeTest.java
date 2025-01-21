@@ -95,8 +95,8 @@ public final class AuxiliarySearchBridgeTest {
 
         AuxiliarySearchBookmarkGroup group = bridge.getBookmarksSearchableData();
 
-        assertEquals(group.getBookmarkCount(), 1);
-        assertEquals(group.getBookmark(0).getTitle(), BOOKMARK_TITLE);
-        assertEquals(group.getBookmark(0).getUrl(), BOOKMARK_URL);
+        assertEquals(1, group.getBookmarkCount());
+        assertEquals(BOOKMARK_TITLE, group.getBookmark(0).getTitle());
+        assertEquals(BOOKMARK_URL, group.getBookmark(0).getUrl());
     }
 }

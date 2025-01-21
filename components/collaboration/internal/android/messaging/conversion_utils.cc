@@ -52,6 +52,10 @@ ScopedJavaLocalRef<jobject> MessageAttributionToJava(
   ScopedJavaLocalRef<jobject> j_local_tab_group_id = nullptr;
   ScopedJavaLocalRef<jstring> j_sync_tab_group_id = nullptr;
   ScopedJavaLocalRef<jstring> j_last_known_tab_group_title = nullptr;
+
+  ScopedJavaLocalRef<jstring> j_id =
+      OptionalUuidToLowercaseJavaString(env, attribution.id);
+
   jint j_last_known_tab_group_color = -1;
   if (attribution.tab_group_metadata.has_value()) {
     j_local_tab_group_id =
@@ -96,7 +100,7 @@ ScopedJavaLocalRef<jobject> MessageAttributionToJava(
   }
 
   return Java_ConversionUtils_createAttributionFrom(
-      env, j_collaboration_id, j_local_tab_group_id, j_sync_tab_group_id,
+      env, j_id, j_collaboration_id, j_local_tab_group_id, j_sync_tab_group_id,
       j_last_known_tab_group_title, j_last_known_tab_group_color,
       j_local_tab_id, j_sync_tab_id, j_last_known_tab_title,
       j_last_known_tab_url, j_affected_user, attribution.affected_user_is_self,

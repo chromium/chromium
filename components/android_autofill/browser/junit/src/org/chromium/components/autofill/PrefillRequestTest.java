@@ -45,8 +45,8 @@ public class PrefillRequestTest {
         String expectedFirstPredictions = "name_first,name_last";
         String expectedSecondPredictions =
                 FormFieldData.getEmptyServerPredictionsString().toLowerCase();
-        Assert.assertEquals(hintResults.valueAt(0).getAutofillHints()[0], expectedFirstPredictions);
+        Assert.assertEquals(expectedFirstPredictions, hintResults.valueAt(0).getAutofillHints()[0]);
         Assert.assertEquals(
-                hintResults.valueAt(1).getAutofillHints()[0], expectedSecondPredictions);
+                expectedSecondPredictions, hintResults.valueAt(1).getAutofillHints()[0]);
     }
 }

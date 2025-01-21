@@ -56,6 +56,9 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   PasswordChangeDelegateImpl& operator=(const PasswordChangeDelegateImpl&) =
       delete;
 
+  // Initiates password change flow.
+  void Init();
+
   base::WeakPtr<PasswordChangeDelegate> AsWeakPtr() override;
 
  private:

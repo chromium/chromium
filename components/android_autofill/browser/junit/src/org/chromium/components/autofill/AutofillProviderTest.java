@@ -286,7 +286,7 @@ public class AutofillProviderTest {
         // showAutofillDialog should be called so it has to hold the correct virtualId.
         assertEquals(mDialogVirtualId, virtualId);
         // notifyVirtualViewEntered shouldn't be called so this has to be unset.
-        assertEquals(mFocusVirtualId, 0);
+        assertEquals(0, mFocusVirtualId);
 
         verify(mNativeMock)
                 .onShowBottomSheetResult(
@@ -382,7 +382,7 @@ public class AutofillProviderTest {
                 /* hasServerPrediction= */ false);
 
         // showAutofillDialog shouldn't be called so this has to be 0.
-        assertEquals(mDialogVirtualId, 0);
+        assertEquals(0, mDialogVirtualId);
         // notifyVirtualViewEntered should be called so this has to hold the correct virtualId.
         assertEquals(mFocusVirtualId, FormData.toFieldVirtualId(newSessionId, (short) focus));
 

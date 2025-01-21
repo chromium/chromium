@@ -586,6 +586,15 @@ void MessagingBackendServiceImpl::OnTabGroupRemoved(
       collaboration_pb::TAB_GROUP_REMOVED, DirtyType::kNone);
   store_->AddMessage(message);
 
+  PersistentMessage persistent_message = CreatePersistentMessage(
+      message, removed_group, std::nullopt,
+      PersistentNotificationType::DIRTY_TAB_GROUP_REMOVED);
+  persistent_message.collaboration_event =
+      CollaborationEvent::TAB_GROUP_REMOVED;
+  NotifyDisplayPersistentMessagesForTypes(
+      persistent_message,
+      {PersistentNotificationType::DIRTY_TAB_GROUP_REMOVED});
+
   if (instant_message_delegate_) {
     InstantMessage instant_message;
     instant_message.attribution = CreateMessageAttributionForTabUpdates(
@@ -708,6 +717,9 @@ void MessagingBackendServiceImpl::OnTabRemoved(
     instant_message_base.collaboration_event = CollaborationEvent::TAB_REMOVED;
     instant_message_base.type = InstantNotificationType::CONFLICT_TAB_REMOVED;
 
+    // TODO(crbug.com/390794240): Remove the id argument to
+    // DisplayInstantMessage as it's now contained inside the
+    // MessageAttribution.
     DisplayInstantMessage(base::Uuid::ParseLowercase(message.uuid()),
                           instant_message_base,
                           {InstantNotificationLevel::BROWSER});
@@ -1073,6 +1085,7 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
       GetRecentActivityActionFromCollaborationEvent(item.collaboration_event);
 
   item.activity_metadata = MessageAttribution();
+  item.activity_metadata.id = base::Uuid::ParseLowercase(message.uuid());
   item.activity_metadata.collaboration_id = collaboration_group_id;
 
   // The code below needs to fill in `activity_metadata`, and optionally
@@ -1375,6 +1388,8 @@ void MessagingBackendServiceImpl::DisplayOrHideTabGroupDirtyDotForTabGroup(
   PersistentMessage persistent_message;
 
   persistent_message.attribution = MessageAttribution();
+  // We leave the attribution.id field empty for synthetic messages, as we don't
+  // have a corresponding stored collaboration_pb::Message available.
   persistent_message.attribution.collaboration_id = collaboration_group_id;
 
   if (tab_group) {
@@ -1414,6 +1429,8 @@ MessagingBackendServiceImpl::CreateMessageAttributionForTabUpdates(
     const std::optional<tab_groups::SavedTabGroup>& tab_group,
     const std::optional<tab_groups::SavedTabGroupTab>& tab) {
   MessageAttribution attribution;
+  attribution.id = base::Uuid::ParseLowercase(message.uuid());
+
   attribution.collaboration_id =
       data_sharing::GroupId(message.collaboration_id());
   std::optional<tab_groups::SavedTabGroup> stack_tab_group = tab_group;
@@ -1470,6 +1487,9 @@ MessagingBackendServiceImpl::CreatePersistentMessageFromTabGroupAndTab(
   PersistentMessage persistent_message;
   persistent_message.collaboration_event = collaboration_event;
   persistent_message.attribution = MessageAttribution();
+  // We leave the attribution.id field empty for synthetic messages, as we don't
+  // have a corresponding stored collaboration_pb::Message available.
+
   persistent_message.attribution.collaboration_id = collaboration_group_id;
   if (tab_group) {
     persistent_message.attribution.tab_group_metadata =

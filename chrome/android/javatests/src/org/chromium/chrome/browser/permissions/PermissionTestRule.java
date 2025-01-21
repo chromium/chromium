@@ -286,7 +286,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
                     PermissionDialogController.getInstance().isDialogShownForTest());
         } else {
             Assert.assertEquals(
-                    "Permission infobar shown when none expected", getInfoBars().size(), 0);
+                    "Permission infobar shown when none expected", 0, getInfoBars().size());
         }
     }
 

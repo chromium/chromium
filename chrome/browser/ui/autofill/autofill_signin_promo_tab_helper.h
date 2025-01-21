@@ -71,7 +71,7 @@ class AutofillSigninPromoTabHelper
         identity_manager_observation_;
     base::OnceClosure move_callback_;
     signin_metrics::AccessPoint access_point_ =
-        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
+        signin_metrics::AccessPoint::kUnknown;
     base::Time initialization_time_;
     base::TimeDelta time_limit_;
     bool is_initialized_ = false;

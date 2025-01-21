@@ -24,10 +24,16 @@ class WebStateList;
 // Space reserved at the top for the toolbar.
 @property(nonatomic, assign) CGFloat topMargin;
 
+// Inits with the view `frame`, top `margin` and `webStateList`.
 - (instancetype)initWithFrame:(CGRect)frame
                     topMargin:(CGFloat)margin
                  webStateList:(WebStateList*)webStateList;
+
+// Sets up left and right card views depending on current WebState and swipe
+// direction.
 - (void)updateViewsForDirection:(UISwipeGestureRecognizerDirection)direction;
+
+// Update layout with new touch event.
 - (void)handleHorizontalPan:(SideSwipeGestureRecognizer*)gesture
       actionBeforeTabSwitch:(TabSwipeHandler)completionHandler;
 

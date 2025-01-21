@@ -49,7 +49,7 @@ public class AllPlusAddressesBottomSheetMediatorTest {
     public void testShowAndHideBottomSheet() {
         mMediator.showPlusProfiles(List.of(PROFILE_1));
 
-        assertEquals(mModel.get(PLUS_PROFILES).size(), 1);
+        assertEquals(1, mModel.get(PLUS_PROFILES).size());
         assertEquals(mModel.get(PLUS_PROFILES).get(0).model.get(PLUS_PROFILE), PROFILE_1);
     }
 }

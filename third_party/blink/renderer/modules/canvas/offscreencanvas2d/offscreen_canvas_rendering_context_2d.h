@@ -71,10 +71,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
     return color_params_.GetSkColorType();
   }
   gfx::ColorSpace GetColorSpace() const override {
-    return SkColorSpaceToGfxColorSpace(GetSkColorSpace());
-  }
-  sk_sp<SkColorSpace> GetSkColorSpace() const override {
-    return color_params_.GetSkColorSpace();
+    return color_params_.GetGfxColorSpace();
   }
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) final;
   void Reset() override;

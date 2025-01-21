@@ -173,17 +173,15 @@ void PhoneNumber::GetMatchingTypesWithProfileSources(
 //   (650)2345678 -> 6502345678
 //   1-800-FLOWERS -> 18003569377
 // If the phone cannot be normalized, returns the stored value verbatim.
-std::u16string PhoneNumber::GetInfoImpl(const AutofillType& type,
-                                        const std::string& app_locale) const {
-  FieldType storable_type = type.GetStorableType();
+std::u16string PhoneNumber::GetInfo(FieldType type,
+                                    const std::string& app_locale) const {
   UpdateCacheIfNeeded(app_locale);
 
   // When the phone number autofill has stored cannot be normalized, it
   // responds to queries for complete numbers with whatever the raw stored value
   // is, and simply return empty string for any queries for phone components.
   if (!cached_parsed_phone_.IsValidNumber()) {
-    if (storable_type == PHONE_HOME_WHOLE_NUMBER ||
-        storable_type == PHONE_HOME_CITY_AND_NUMBER) {
+    if (type == PHONE_HOME_WHOLE_NUMBER || type == PHONE_HOME_CITY_AND_NUMBER) {
       return cached_parsed_phone_.GetWholeNumber();
     }
     return std::u16string();
@@ -197,7 +195,7 @@ std::u16string PhoneNumber::GetInfoImpl(const AutofillType& type,
         0, national_number.find(cached_parsed_phone_.city_code()));
   };
 
-  switch (storable_type) {
+  switch (type) {
     case PHONE_HOME_WHOLE_NUMBER:
       return cached_parsed_phone_.GetWholeNumber();
 
@@ -269,6 +267,11 @@ std::u16string PhoneNumber::GetInfoImpl(const AutofillType& type,
     default:
       NOTREACHED();
   }
+}
+
+std::u16string PhoneNumber::GetInfo(const AutofillType& type,
+                                    const std::string& app_locale) const {
+  return GetInfo(type.GetStorableType(), app_locale);
 }
 
 bool PhoneNumber::SetInfoWithVerificationStatusImpl(

@@ -65,8 +65,8 @@ public class PageZoomIphControllerTest {
         IphCommand command = mIphCommandCaptor.getValue();
         Assert.assertEquals(
                 "IphCommand feature should match.",
-                command.featureName,
-                FeatureConstants.PAGE_ZOOM_FEATURE);
+                FeatureConstants.PAGE_ZOOM_FEATURE,
+                command.featureName);
         Assert.assertEquals(
                 "IphCommand stringId should match.",
                 R.string.page_zoom_iph_message,

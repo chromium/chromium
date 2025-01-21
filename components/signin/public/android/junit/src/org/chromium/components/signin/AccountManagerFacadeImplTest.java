@@ -555,12 +555,14 @@ public class AccountManagerFacadeImplTest {
                 .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
 
         AccountCapabilities capabilities = facade.getAccountCapabilities(accountInfo).getResult();
-        Assert.assertEquals(capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice(), Tribool.TRUE);
-        Assert.assertEquals(capabilities.isSubjectToParentalControls(), Tribool.TRUE);
-        Assert.assertEquals(capabilities.canRunChromePrivacySandboxTrials(), Tribool.TRUE);
         Assert.assertEquals(
-                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice(),
-                Tribool.TRUE);
+                Tribool.TRUE,
+                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice());
+        Assert.assertEquals(Tribool.TRUE, capabilities.isSubjectToParentalControls());
+        Assert.assertEquals(Tribool.TRUE, capabilities.canRunChromePrivacySandboxTrials());
+        Assert.assertEquals(
+                Tribool.TRUE,
+                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice());
     }
 
     @Test
@@ -573,12 +575,14 @@ public class AccountManagerFacadeImplTest {
                 .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
 
         AccountCapabilities capabilities = facade.getAccountCapabilities(accountInfo).getResult();
-        Assert.assertEquals(capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice(), Tribool.FALSE);
-        Assert.assertEquals(capabilities.isSubjectToParentalControls(), Tribool.FALSE);
-        Assert.assertEquals(capabilities.canRunChromePrivacySandboxTrials(), Tribool.FALSE);
         Assert.assertEquals(
-                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice(),
-                Tribool.FALSE);
+                Tribool.FALSE,
+                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice());
+        Assert.assertEquals(Tribool.FALSE, capabilities.isSubjectToParentalControls());
+        Assert.assertEquals(Tribool.FALSE, capabilities.canRunChromePrivacySandboxTrials());
+        Assert.assertEquals(
+                Tribool.FALSE,
+                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice());
     }
 
     @Test
@@ -591,12 +595,14 @@ public class AccountManagerFacadeImplTest {
                 .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
 
         AccountCapabilities capabilities = facade.getAccountCapabilities(accountInfo).getResult();
-        Assert.assertEquals(capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice(), Tribool.UNKNOWN);
-        Assert.assertEquals(capabilities.isSubjectToParentalControls(), Tribool.UNKNOWN);
-        Assert.assertEquals(capabilities.canRunChromePrivacySandboxTrials(), Tribool.UNKNOWN);
         Assert.assertEquals(
-                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice(),
-                Tribool.UNKNOWN);
+                Tribool.UNKNOWN,
+                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice());
+        Assert.assertEquals(Tribool.UNKNOWN, capabilities.isSubjectToParentalControls());
+        Assert.assertEquals(Tribool.UNKNOWN, capabilities.canRunChromePrivacySandboxTrials());
+        Assert.assertEquals(
+                Tribool.UNKNOWN,
+                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice());
     }
 
     private CoreAccountInfo setFeaturesForAccount(String email, String... features) {

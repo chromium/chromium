@@ -50,7 +50,7 @@ namespace {
 constexpr base::TimeDelta kDefaultBrowserCheckTimeout = base::Seconds(2);
 
 const signin_metrics::AccessPoint kAccessPoint =
-    signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE;
+    signin_metrics::AccessPoint::kForYouFRE;
 
 enum class ShowDefaultBrowserStep {
   // The default browser step should be shown as appropriate.

@@ -232,10 +232,15 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
     return pending_frame_policy_;
   }
 
-  // Update this frame's sandbox flags and container policy.  This is called
-  // when a parent frame updates the "sandbox" attribute in the <iframe> element
-  // for this frame, or any of the attributes which affect the container policy
-  // ("allowfullscreen", "allowpaymentrequest", "allow", and "src".)
+  // Update this frame's sandbox flags, container policy and deferred fetch
+  // policy.
+  // This is called when either
+  // - a parent frame updates the "sandbox" attribute in the <iframe> element
+  //   for this frame
+  // - any of the attributes which affect the container policy
+  //   ("allowfullscreen", "allowpaymentrequest", "allow", and "src".)
+  // - a frame begins navigation which leads to calculation of deferred fetch
+  //   policy.
   // These policies won't take effect until next navigation.  If this frame's
   // parent is itself sandboxed, the parent's sandbox flags are combined with
   // those in |frame_policy|.
@@ -882,12 +887,17 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   const blink::mojom::TreeScopeType tree_scope_type_ =
       blink::mojom::TreeScopeType::kDocument;
 
-  // Track the pending sandbox flags and container policy for this frame. When a
-  // parent frame dynamically updates 'sandbox', 'allow', 'allowfullscreen',
-  // 'allowpaymentrequest' or 'src' attributes, the updated policy for the frame
-  // is stored here, and transferred into
+  // Track the pending sandbox flags, container policy, and deferred fetch
+  // policy for this frame.
+  // When a parent frame dynamically updates 'sandbox', 'allow',
+  // 'allowfullscreen', 'allowpaymentrequest' or 'src' attributes, the updated
+  // policy for the frame is stored here, and transferred into
   // render_manager_.current_replication_state().frame_policy when they take
   // effect on the next frame navigation.
+  //
+  // Note that updates to FramePolicy from the renderer side must be explicitly
+  // set in this field via `SetPendingFramePolicy()`; Otherwise, the browser
+  // side won't have it saved and can't pass it to new RenderFrameHost.
   blink::FramePolicy pending_frame_policy_;
 
   // Whether the frame was created by javascript.  This is useful to prune

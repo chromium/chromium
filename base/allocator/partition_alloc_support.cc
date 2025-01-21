@@ -880,43 +880,28 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
   // TODO(bartekn): Switch to DCHECK once confirmed there are no issues.
   CHECK(base::FeatureList::GetInstance());
 
-  bool process_affected_by_brp_flag = false;
-#if (PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&          \
-     PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&          \
-     !PA_BUILDFLAG(FORCE_DISABLE_BACKUP_REF_PTR_FEATURE)) || \
-    PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
-  if (base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocBackupRefPtr)) {
-    // No specified process type means this is the Browser process.
-    process_affected_by_brp_flag = ShouldEnableFeatureOnProcess(
-        base::features::kBackupRefPtrEnabledProcessesParam.Get(), process_type);
-  }
-#endif  // (PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)&&
-        // !PA_BUILDFLAG(FORCE_DISABLE_BACKUP_REF_PTR_FEATURE)) ||
-        // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
-
-  const bool enable_brp =
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-      // kDisabled is equivalent to !IsEnabled(kPartitionAllocBackupRefPtr).
-      process_affected_by_brp_flag &&
+    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
+    !PA_BUILDFLAG(FORCE_DISABLE_BACKUP_REF_PTR_FEATURE)
+
+  if (base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocBackupRefPtr) &&
       base::features::kBackupRefPtrModeParam.Get() !=
-          base::features::BackupRefPtrMode::kDisabled;
-#else
-      false;
+          base::features::BackupRefPtrMode::kDisabled &&
+      ShouldEnableFeatureOnProcess(
+          base::features::kBackupRefPtrEnabledProcessesParam.Get(),
+          process_type)) {
+    return {
+        .enable_brp = true,
+        .extra_extras_size = static_cast<size_t>(
+            base::features::kBackupRefPtrExtraExtrasSizeParam.Get()),
+    };
+  }
 #endif
 
-  size_t extra_extras_size = 0;
-  if (enable_brp) {
-    extra_extras_size = static_cast<size_t>(
-        base::features::kBackupRefPtrExtraExtrasSizeParam.Get());
-  }
-
   return {
-      enable_brp,
-      process_affected_by_brp_flag,
-      extra_extras_size,
+      .enable_brp = false,
+      .extra_extras_size = 0,
   };
 }
 
@@ -1019,8 +1004,15 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   [[maybe_unused]] BrpConfiguration brp_config =
       GetBrpConfiguration(process_type);
 
-#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
-  if (brp_config.process_affected_by_brp_flag) {
+  // Configure ASAN hooks to report the `MiraclePtr status`. This is enabled
+  // only if BackupRefPtr is normally enabled in the current process for the
+  // current platform. Note that CastOS and iOS aren't protected by BackupRefPtr
+  // a the moment, so they are excluded.
+#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && !PA_BUILDFLAG(IS_CASTOS) && \
+    !PA_BUILDFLAG(IS_IOS)
+  if (ShouldEnableFeatureOnProcess(
+          base::features::kBackupRefPtrEnabledProcessesParam.Get(),
+          process_type)) {
     base::RawPtrAsanService::GetInstance().Configure(
         base::EnableDereferenceCheck(
             base::features::kBackupRefPtrAsanEnableDereferenceCheckParam.Get()),

@@ -810,15 +810,14 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest, ContinueAs) {
   testing::StrictMock<MockSigninUiDelegate> mock_signin_ui_delegate;
   base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_auto_reset =
       signin_ui_util::SetSigninUiDelegateForTesting(&mock_signin_ui_delegate);
-  EXPECT_CALL(
-      mock_signin_ui_delegate,
-      ShowTurnSyncOnUI(browser()->profile(),
-                       signin_metrics::AccessPoint::
-                           ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO,
-                       signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
-                       account_info_.account_id,
-                       TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-                       /*is_sync_promo=*/true));
+  EXPECT_CALL(mock_signin_ui_delegate,
+              ShowTurnSyncOnUI(
+                  browser()->profile(),
+                  signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo,
+                  signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
+                  account_info_.account_id,
+                  TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+                  /*is_sync_promo=*/true));
   ClickSigninButton();
 }
 
@@ -862,7 +861,7 @@ class ProfileMenuViewSigninPendingTest : public ProfileMenuViewTestBase,
         ->OnSigninButtonClicked(
             account_info(),
             ProfileMenuViewBase::ActionableItem::kSigninReauthButton,
-            signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
+            signin_metrics::AccessPoint::kAvatarBubbleSignIn);
     histogram_tester.ExpectUniqueSample(
         "Profile.Menu.ClickedActionableItem",
         ProfileMenuViewBase::ActionableItem::kSigninReauthButton,
@@ -1324,8 +1323,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
   signin::AccountAvailabilityOptionsBuilder builder;
   AccountInfo account_info = signin::MakeAccountAvailable(
       identity_manager,
-      builder
-          .WithAccessPoint(signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN)
+      builder.WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
           .Build(kTestEmail));
   ASSERT_FALSE(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));

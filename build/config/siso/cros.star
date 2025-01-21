@@ -138,6 +138,8 @@ def __step_config(ctx, step_config):
                 "action": "(.*_)?cxx",
                 "command_prefix": path.join("../../", cros_target_cxx),
                 "remote": True,
+                # fast-deps is not safe with cros toolchain. crbug.com/391160876
+                "no_fast_deps": True,
                 "canonicalize_dir": True,
                 "timeout": "5m",
             },
@@ -151,6 +153,8 @@ def __step_config(ctx, step_config):
                 "action": "(.*_)?cc",
                 "command_prefix": path.join("../../", cros_target_cc),
                 "remote": True,
+                # fast-deps is not safe with cros toolchain. crbug.com/391160876
+                "no_fast_deps": True,
                 "canonicalize_dir": True,
                 "timeout": "5m",
             },

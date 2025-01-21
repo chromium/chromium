@@ -67,8 +67,8 @@ public class AwSensitiveContentTest {
     public void testWebViewHasSensitiveContentWhileSensitiveFieldsArePresent() throws Exception {
         Assert.assertEquals(
                 "Initially, the page does not have sensitive content",
-                mTestContainerView.getContentSensitivity(),
-                View.CONTENT_SENSITIVITY_AUTO);
+                View.CONTENT_SENSITIVITY_AUTO,
+                mTestContainerView.getContentSensitivity());
 
         sActivityTestRule.loadUrlAsync(mAwContents, mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(
@@ -100,8 +100,8 @@ public class AwSensitiveContentTest {
                 ViewAndroidDelegate.createBasicDelegate(newContainerView);
         Assert.assertEquals(
                 "Initially, the content view does not have sensitive content",
-                newContainerView.getContentSensitivity(),
-                View.CONTENT_SENSITIVITY_AUTO);
+                View.CONTENT_SENSITIVITY_AUTO,
+                newContainerView.getContentSensitivity());
 
         webContents.setDelegates(
                 "",

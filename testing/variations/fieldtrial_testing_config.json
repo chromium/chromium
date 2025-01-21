@@ -13301,6 +13301,7 @@
                     "name": "MediumPriority_20240418",
                     "params": {
                         "lcpp_adjust_image_load_priority": "true",
+                        "lcpp_adjust_image_load_priority_confidence_threshold": "0.0",
                         "lcpp_adjust_image_load_priority_override_first_n_boost": "true",
                         "lcpp_enable_image_load_priority_for_htmlimageelement": "false",
                         "lcpp_enable_perf_improvements": "true",
@@ -16408,13 +16409,11 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "PartitionAllocSchedulerLoopQuarantineBranchCapacity": "0",
-                        "PartitionAllocSchedulerLoopQuarantineBrowserUICapacity": "262144",
-                        "enabled-processes": "browser-only"
+                        "PartitionAllocSchedulerLoopQuarantineBranchCapacity": "262144"
                     },
                     "enable_features": [
                         "PartitionAllocSchedulerLoopQuarantine",
-                        "PartitionAllocWithAdvancedChecks"
+                        "PartitionAllocZappingByFreeFlags"
                     ]
                 }
             ]
@@ -24079,6 +24078,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "UnoForAuto",
                         "UnoPhase2FollowUp",
                         "UseHostedDomainForManagementCheckOnSignin"
                     ]
@@ -24115,22 +24115,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UploadOfficeToCloud"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UseAdHocSigningForWebAppShims": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MachPortRendezvousValidatePeerRequirements",
-                        "UseAdHocSigningForWebAppShims"
                     ]
                 }
             ]

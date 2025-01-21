@@ -424,69 +424,6 @@ class PasswordManagerSyncTest : public SyncTest {
 };
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ChooseDestinationStore) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-  content::WebContents* web_contents = GetNewTab(GetBrowser(0));
-
-  SetupSyncTransportWithPasswordAccountStorage();
-
-  // Part 1: Save a password; it should go into the account store by default.
-  {
-    // Navigate to a page with a password form, fill it out, and submit it.
-    NavigateToFile(web_contents, kExampleHostname,
-                   "/password/password_form.html");
-    FillAndSubmitPasswordForm(web_contents, "accountuser", "accountpass");
-
-    // Save the password and check the store.
-    BubbleObserver bubble_observer(web_contents);
-    ASSERT_TRUE(bubble_observer.IsSavePromptShownAutomatically());
-    bubble_observer.AcceptSavePrompt();
-
-    std::vector<std::unique_ptr<password_manager::PasswordForm>>
-        account_credentials = GetAllLoginsFromAccountPasswordStore();
-    EXPECT_THAT(account_credentials,
-                ElementsAre(MatchesLogin("accountuser", "accountpass")));
-  }
-
-  // Part 2: Mimic the user choosing to save locally; now a newly saved password
-  // should end up in the profile store.
-  password_manager::features_util::SetDefaultPasswordStore(
-      GetProfile(0)->GetPrefs(), GetSyncService(0),
-      password_manager::PasswordForm::Store::kProfileStore);
-  {
-    // Navigate to a page with a password form, fill it out, and submit it.
-    // TODO(crbug.com/40121096): If we use the same URL as in part 1 here, then
-    // the test fails because the *account* data gets filled and submitted
-    // again. This is because the password manager is "smart" and prefers
-    // user-typed values (including autofilled-on-pageload ones) over
-    // script-provided values, see
-    // https://cs.chromium.org/chromium/src/components/autofill/content/renderer/form_autofill_util.cc?rcl=e38f0c99fe45ef81bd09d97f235c3dee64e2bd9f&l=1749
-    // and
-    // https://cs.chromium.org/chromium/src/components/autofill/content/renderer/password_autofill_agent.cc?rcl=63830d3f4b7f5fceec9609d83cf909d0cad04bb2&l=1855
-    // Some PasswordManager browser tests work around this by disabling
-    // autofill on pageload, see PasswordManagerBrowserTestWithAutofillDisabled.
-    // NavigateToFile(web_contents, "/password/password_form.html");
-    NavigateToFile(web_contents, kExampleHostname,
-                   "/password/simple_password.html");
-    FillAndSubmitPasswordForm(web_contents, "localuser", "localpass");
-
-    // Save the password and check the store.
-    BubbleObserver bubble_observer(web_contents);
-
-    EXPECT_TRUE(
-        bubble_observer.IsDefaultStoreChangedPromptShownAutomatically());
-    bubble_observer.AcknowledgeDefaultStoreChange();
-
-    ASSERT_TRUE(bubble_observer.IsSavePromptShownAutomatically());
-    bubble_observer.AcceptSavePrompt();
-
-    EXPECT_THAT(GetAllLoginsFromAccountPasswordStore(),
-                testing::Contains(MatchesLogin("localuser", "localpass")));
-  }
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
-
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, UpdateInProfileStore) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 

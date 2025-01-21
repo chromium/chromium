@@ -232,9 +232,9 @@ public class SigninPromoCoordinatorTest {
                         configCaptor.capture(),
                         eq(accessPoint));
         BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
-        assertEquals(config.noAccountSigninMode, NoAccountSigninMode.BOTTOM_SHEET);
+        assertEquals(NoAccountSigninMode.BOTTOM_SHEET, config.noAccountSigninMode);
         assertEquals(
-                config.withAccountSigninMode, WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET);
+                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET, config.withAccountSigninMode);
         assertEquals(config.historyOptInMode, historyOptInMode);
         assertNull(config.selectedCoreAccountId);
         histogramWatcher.assertExpected();
@@ -297,10 +297,10 @@ public class SigninPromoCoordinatorTest {
                         configCaptor.capture(),
                         eq(accessPoint));
         BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
-        assertEquals(config.noAccountSigninMode, NoAccountSigninMode.BOTTOM_SHEET);
+        assertEquals(NoAccountSigninMode.BOTTOM_SHEET, config.noAccountSigninMode);
         assertEquals(
-                config.withAccountSigninMode, WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET);
-        assertEquals(config.historyOptInMode, HistorySyncConfig.OptInMode.NONE);
+                WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET, config.withAccountSigninMode);
+        assertEquals(HistorySyncConfig.OptInMode.NONE, config.historyOptInMode);
         assertNull(config.selectedCoreAccountId);
         histogramWatcher.assertExpected();
     }

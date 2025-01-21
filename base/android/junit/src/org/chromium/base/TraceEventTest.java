@@ -80,8 +80,8 @@ public class TraceEventTest {
                 TraceEvent.BasicLooperMonitor.LOOPER_TASK_PREFIX
                         + "org.chromium.myClass.myMethod(org.chromium.myOtherClass.instance)";
         Assert.assertEquals(
-                TraceEvent.BasicLooperMonitor.getTraceEventName(realEventName),
-                TraceEvent.BasicLooperMonitor.FILTERED_EVENT_NAME);
+                TraceEvent.BasicLooperMonitor.FILTERED_EVENT_NAME,
+                TraceEvent.BasicLooperMonitor.getTraceEventName(realEventName));
     }
 
     @Test

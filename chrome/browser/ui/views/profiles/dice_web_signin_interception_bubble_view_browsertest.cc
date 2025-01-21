@@ -537,8 +537,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
                                       SigninInterceptionResult::kAccepted, 1);
   histogram_tester.ExpectUniqueSample(
       "Signin.SignIn.Offered",
-      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE,
-      1);
+      signin_metrics::AccessPoint::kChromeSigninInterceptBubble, 1);
   base::HistogramTester::CountsMap expected_time_histogram_total_count = {
       {"Signin.Intercept.ChromeSignin.ResponseTimeAccepted", 1},
   };
@@ -592,8 +591,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
                                       SigninInterceptionResult::kDeclined, 1);
   histogram_tester.ExpectUniqueSample(
       "Signin.SignIn.Offered",
-      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE,
-      1);
+      signin_metrics::AccessPoint::kChromeSigninInterceptBubble, 1);
   base::HistogramTester::CountsMap expected_time_histogram_total_count = {
       {"Signin.Intercept.ChromeSignin.ResponseTimeDeclined", 1},
   };

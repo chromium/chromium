@@ -143,6 +143,6 @@ public class AwContentsClientGetDefaultVideoPosterTest extends AwParameterizedTe
                 handler.shouldInterceptRequest(handler.getDefaultVideoPosterUrl());
         Assert.assertTrue(requestData.getMimeType().equals("image/png"));
         InputStream in = requestData.getData();
-        Assert.assertEquals("Should get -1", in.read(), -1);
+        Assert.assertEquals("Should get -1", -1, in.read());
     }
 }

@@ -289,7 +289,7 @@ public class AppBannerManagerTest {
         rule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         navigateToUrlAndWaitForBannerManager(rule, url);
         waitUntilAppDetailsRetrieved(rule, 1);
-        Assert.assertEquals(mDetailsDelegate.mReferrer, expectedReferrer);
+        Assert.assertEquals(expectedReferrer, mDetailsDelegate.mReferrer);
 
         final ChromeActivity activity = rule.getActivity();
         tapAndWaitForModalBanner(activity.getActivityTab());

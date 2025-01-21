@@ -1488,6 +1488,7 @@ void ChromePasswordManagerClient::ShowPasswordEditingPopup(
     const autofill::FormData& form_data,
     autofill::FieldRendererId field_renderer_id,
     const std::u16string& password_value) {
+// TODO(crbug.com/40619484): Stop compiling this method on Android.
 #if BUILDFLAG(IS_ANDROID)
   // The popup obscures part of the page and the bottom sheet already displays
   // the same information before generation.
@@ -1529,6 +1530,8 @@ void ChromePasswordManagerClient::ShowPasswordEditingPopup(
 }
 
 void ChromePasswordManagerClient::PasswordGenerationRejectedByTyping() {
+// TODO(crbug.com/40619484): Stop compiling this method on Android.
+#if !BUILDFLAG(IS_ANDROID)
   content::RenderFrameHost* rfh =
       password_generation_driver_receivers_.GetCurrentTargetFrame();
   if (!password_manager::bad_message::CheckFrameNotPrerendering(rfh)) {
@@ -1537,6 +1540,7 @@ void ChromePasswordManagerClient::PasswordGenerationRejectedByTyping() {
   if (popup_controller_) {
     popup_controller_->GeneratedPasswordRejected();
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ChromePasswordManagerClient::PresaveGeneratedPassword(
@@ -1548,9 +1552,11 @@ void ChromePasswordManagerClient::PresaveGeneratedPassword(
     return;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   if (popup_controller_) {
     popup_controller_->UpdateGeneratedPassword(password_value);
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   PasswordManagerDriver* driver =
       password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
@@ -1584,15 +1590,19 @@ void ChromePasswordManagerClient::PasswordNoLongerGenerated(
                   password_generation_driver_receivers_.GetCurrentTargetFrame(),
                   form_data));
 
+#if !BUILDFLAG(IS_ANDROID)
   PasswordGenerationPopupController* controller = popup_controller_.get();
   if (controller &&
       controller->state() ==
           PasswordGenerationPopupController::kEditGeneratedPassword) {
     popup_controller_->GeneratedPasswordRejected();
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ChromePasswordManagerClient::FrameWasScrolled() {
+// TODO(crbug.com/40619484): Stop compiling this method on Android.
+#if !BUILDFLAG(IS_ANDROID)
   content::RenderFrameHost* rfh =
       password_generation_driver_receivers_.GetCurrentTargetFrame();
   if (!password_manager::bad_message::CheckFrameNotPrerendering(rfh)) {
@@ -1601,9 +1611,12 @@ void ChromePasswordManagerClient::FrameWasScrolled() {
   if (popup_controller_) {
     popup_controller_->FrameWasScrolled();
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ChromePasswordManagerClient::GenerationElementLostFocus() {
+// TODO(crbug.com/40619484): Stop compiling this method on Android.
+#if !BUILDFLAG(IS_ANDROID)
   content::RenderFrameHost* rfh =
       password_generation_driver_receivers_.GetCurrentTargetFrame();
   if (!password_manager::bad_message::CheckFrameNotPrerendering(rfh)) {
@@ -1614,6 +1627,7 @@ void ChromePasswordManagerClient::GenerationElementLostFocus() {
   if (popup_controller_) {
     popup_controller_->GenerationElementLostFocus();
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ChromePasswordManagerClient::SetTestObserver(
@@ -2003,6 +2017,7 @@ void ChromePasswordManagerClient::ShowPasswordGenerationPopup(
     PasswordGenerationType type,
     password_manager::ContentPasswordManagerDriver* driver,
     const autofill::password_generation::PasswordGenerationUIData& ui_data) {
+#if !BUILDFLAG(IS_ANDROID)
   gfx::RectF element_bounds_in_top_frame_space =
       TransformToRootCoordinates(driver->render_frame_host(), ui_data.bounds);
 
@@ -2025,6 +2040,7 @@ void ChromePasswordManagerClient::ShowPasswordGenerationPopup(
       popup_controller_ && popup_controller_->IsVisible()
           ? autofill::mojom::AutofillSuggestionAvailability::kAutofillAvailable
           : autofill::mojom::AutofillSuggestionAvailability::kNoSuggestions);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 gfx::RectF ChromePasswordManagerClient::TransformToRootCoordinates(

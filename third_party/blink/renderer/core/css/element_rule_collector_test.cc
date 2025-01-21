@@ -99,7 +99,8 @@ class ElementRuleCollectorTest : public PageTestBase {
     return link_match_type;
   }
 
-  Vector<MatchedRule> GetAllMatchedRules(Element* element, RuleSet* rule_set) {
+  HeapVector<MatchedRule> GetAllMatchedRules(Element* element,
+                                             RuleSet* rule_set) {
     ElementResolveContext context(*element);
     SelectorFilter filter;
     MatchResult result;
@@ -109,7 +110,7 @@ class ElementRuleCollectorTest : public PageTestBase {
     MatchRequest request(rule_set, {});
 
     collector.CollectMatchingRules(request, /*part_names*/ nullptr);
-    return Vector<MatchedRule>{collector.MatchedRulesForTest()};
+    return HeapVector<MatchedRule>{collector.MatchedRulesForTest()};
   }
 
   RuleIndexList* GetMatchedCSSRuleList(Element* element,
@@ -433,16 +434,16 @@ TEST_F(ElementRuleCollectorTest, DirectNesting) {
   ASSERT_NE(nullptr, bar);
   ASSERT_NE(nullptr, baz);
 
-  Vector<MatchedRule> foo_rules = GetAllMatchedRules(foo, rule_set);
+  HeapVector<MatchedRule> foo_rules = GetAllMatchedRules(foo, rule_set);
   ASSERT_EQ(2u, foo_rules.size());
-  EXPECT_EQ("#foo", foo_rules[0].GetRuleData()->Selector().SelectorText());
-  EXPECT_EQ("&.a", foo_rules[1].GetRuleData()->Selector().SelectorText());
+  EXPECT_EQ("#foo", foo_rules[0].Selector().SelectorText());
+  EXPECT_EQ("&.a", foo_rules[1].Selector().SelectorText());
 
-  Vector<MatchedRule> bar_rules = GetAllMatchedRules(bar, rule_set);
+  HeapVector<MatchedRule> bar_rules = GetAllMatchedRules(bar, rule_set);
   ASSERT_EQ(1u, bar_rules.size());
-  EXPECT_EQ("& > .b", bar_rules[0].GetRuleData()->Selector().SelectorText());
+  EXPECT_EQ("& > .b", bar_rules[0].Selector().SelectorText());
 
-  Vector<MatchedRule> baz_rules = GetAllMatchedRules(baz, rule_set);
+  HeapVector<MatchedRule> baz_rules = GetAllMatchedRules(baz, rule_set);
   ASSERT_EQ(0u, baz_rules.size());
 }
 
@@ -465,13 +466,13 @@ TEST_F(ElementRuleCollectorTest, RuleNotStartingWithAmpersand) {
   ASSERT_NE(nullptr, foo);
   ASSERT_NE(nullptr, bar);
 
-  Vector<MatchedRule> foo_rules = GetAllMatchedRules(foo, rule_set);
+  HeapVector<MatchedRule> foo_rules = GetAllMatchedRules(foo, rule_set);
   ASSERT_EQ(1u, foo_rules.size());
-  EXPECT_EQ("#foo", foo_rules[0].GetRuleData()->Selector().SelectorText());
+  EXPECT_EQ("#foo", foo_rules[0].Selector().SelectorText());
 
-  Vector<MatchedRule> bar_rules = GetAllMatchedRules(bar, rule_set);
+  HeapVector<MatchedRule> bar_rules = GetAllMatchedRules(bar, rule_set);
   ASSERT_EQ(1u, bar_rules.size());
-  EXPECT_EQ(":not(&)", bar_rules[0].GetRuleData()->Selector().SelectorText());
+  EXPECT_EQ(":not(&)", bar_rules[0].Selector().SelectorText());
 }
 
 TEST_F(ElementRuleCollectorTest, NestingAtToplevelMatchesNothing) {
@@ -487,7 +488,7 @@ TEST_F(ElementRuleCollectorTest, NestingAtToplevelMatchesNothing) {
   Element* foo = GetDocument().getElementById(AtomicString("foo"));
   ASSERT_NE(nullptr, foo);
 
-  Vector<MatchedRule> foo_rules = GetAllMatchedRules(foo, rule_set);
+  HeapVector<MatchedRule> foo_rules = GetAllMatchedRules(foo, rule_set);
   EXPECT_EQ(0u, foo_rules.size());
 }
 
@@ -514,15 +515,15 @@ TEST_F(ElementRuleCollectorTest, NestedRulesInMediaQuery) {
   ASSERT_NE(nullptr, bar);
   ASSERT_NE(nullptr, baz);
 
-  Vector<MatchedRule> foo_rules = GetAllMatchedRules(foo, rule_set);
+  HeapVector<MatchedRule> foo_rules = GetAllMatchedRules(foo, rule_set);
   ASSERT_EQ(1u, foo_rules.size());
-  EXPECT_EQ("#foo", foo_rules[0].GetRuleData()->Selector().SelectorText());
+  EXPECT_EQ("#foo", foo_rules[0].Selector().SelectorText());
 
-  Vector<MatchedRule> bar_rules = GetAllMatchedRules(bar, rule_set);
+  HeapVector<MatchedRule> bar_rules = GetAllMatchedRules(bar, rule_set);
   ASSERT_EQ(1u, bar_rules.size());
-  EXPECT_EQ("& .c", bar_rules[0].GetRuleData()->Selector().SelectorText());
+  EXPECT_EQ("& .c", bar_rules[0].Selector().SelectorText());
 
-  Vector<MatchedRule> baz_rules = GetAllMatchedRules(baz, rule_set);
+  HeapVector<MatchedRule> baz_rules = GetAllMatchedRules(baz, rule_set);
   EXPECT_EQ(0u, baz_rules.size());
 }
 

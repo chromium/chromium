@@ -144,15 +144,15 @@ public class TripUnitTest {
         try {
             transitionThread.start();
             destinationStation.mDeclareElementsCallbackHelper.waitForNext();
-            assertEquals(destinationStation.mDeclareElementsCallbackHelper.getCallCount(), 1);
-            assertEquals(destinationStation.mOuterCallbackHelper.getCallCount(), 0);
-            assertEquals(destinationStation.mInnerCallbackHelper.getCallCount(), 0);
+            assertEquals(1, destinationStation.mDeclareElementsCallbackHelper.getCallCount());
+            assertEquals(0, destinationStation.mOuterCallbackHelper.getCallCount());
+            assertEquals(0, destinationStation.mInnerCallbackHelper.getCallCount());
 
             outerCondition.setConditionStatus(Condition.fulfilled());
             destinationStation.mOuterCallbackHelper.waitForNext();
-            assertEquals(destinationStation.mDeclareElementsCallbackHelper.getCallCount(), 1);
-            assertEquals(destinationStation.mOuterCallbackHelper.getCallCount(), 1);
-            assertEquals(destinationStation.mInnerCallbackHelper.getCallCount(), 0);
+            assertEquals(1, destinationStation.mDeclareElementsCallbackHelper.getCallCount());
+            assertEquals(1, destinationStation.mOuterCallbackHelper.getCallCount());
+            assertEquals(0, destinationStation.mInnerCallbackHelper.getCallCount());
 
             innerCondition.setConditionStatus(Condition.fulfilled());
             destinationStation.mInnerCallbackHelper.waitForNext();
@@ -187,8 +187,8 @@ public class TripUnitTest {
                 innerCondition.mHasStoppedMonitoringForTesting);
 
         // Factory delayed declarations should only be called once.
-        assertEquals(destinationStation.mDeclareElementsCallbackHelper.getCallCount(), 1);
-        assertEquals(destinationStation.mOuterCallbackHelper.getCallCount(), 1);
-        assertEquals(destinationStation.mInnerCallbackHelper.getCallCount(), 1);
+        assertEquals(1, destinationStation.mDeclareElementsCallbackHelper.getCallCount());
+        assertEquals(1, destinationStation.mOuterCallbackHelper.getCallCount());
+        assertEquals(1, destinationStation.mInnerCallbackHelper.getCallCount());
     }
 }

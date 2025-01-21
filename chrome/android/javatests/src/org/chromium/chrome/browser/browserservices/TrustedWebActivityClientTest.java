@@ -175,8 +175,8 @@ public class TrustedWebActivityClientTest {
         Assert.assertTrue(mResponseHandler.mGetSmallIconId.getCallCount() >= 1);
         // getIconId() can be called directly and also indirectly via getIconBitmap().
 
-        Assert.assertEquals(mResponseHandler.mNotificationTag, NOTIFICATION_TAG);
-        Assert.assertEquals(mResponseHandler.mNotificationId, NOTIFICATION_ID);
+        Assert.assertEquals(NOTIFICATION_TAG, mResponseHandler.mNotificationTag);
+        Assert.assertEquals(NOTIFICATION_ID, mResponseHandler.mNotificationId);
         Assert.assertEquals(
                 mResponseHandler.mNotificationChannel,
                 mTargetContext.getString(R.string.notification_category_group_general));
@@ -213,8 +213,8 @@ public class TrustedWebActivityClientTest {
 
         mResponseHandler.mCancelNotification.waitForOnly();
 
-        Assert.assertEquals(mResponseHandler.mNotificationTag, NOTIFICATION_TAG);
-        Assert.assertEquals(mResponseHandler.mNotificationId, NOTIFICATION_ID);
+        Assert.assertEquals(NOTIFICATION_TAG, mResponseHandler.mNotificationTag);
+        Assert.assertEquals(NOTIFICATION_ID, mResponseHandler.mNotificationId);
     }
 
     /**

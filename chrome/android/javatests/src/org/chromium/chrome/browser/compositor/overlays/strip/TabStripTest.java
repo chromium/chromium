@@ -91,8 +91,8 @@ public class TabStripTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertEquals(
                 "Expected original tab to be selected",
-                sActivityTestRule.getActivity().getTabModelSelector().getModel(false).index(),
-                0);
+                0,
+                sActivityTestRule.getActivity().getTabModelSelector().getModel(false).index());
 
         ChromeTabUtils.clickNewTabButton(
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
@@ -100,13 +100,13 @@ public class TabStripTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertEquals(
                 "Expected two tabs to exist",
-                sActivityTestRule.getActivity().getTabModelSelector().getModel(false).getCount(),
-                2);
+                2,
+                sActivityTestRule.getActivity().getTabModelSelector().getModel(false).getCount());
         compareAllTabStripsWithModel();
         Assert.assertEquals(
                 "Expected second tab to be selected",
-                sActivityTestRule.getActivity().getTabModelSelector().getModel(false).index(),
-                1);
+                1,
+                sActivityTestRule.getActivity().getTabModelSelector().getModel(false).index());
     }
 
     /**
@@ -136,8 +136,8 @@ public class TabStripTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertEquals(
                 "Expected original tab to be selected",
-                sActivityTestRule.getActivity().getTabModelSelector().getModel(false).index(),
-                0);
+                0,
+                sActivityTestRule.getActivity().getTabModelSelector().getModel(false).index());
         compareAllTabStripsWithModel();
 
         ChromeTabUtils.clickNewTabButton(
@@ -146,12 +146,12 @@ public class TabStripTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertEquals(
                 "Expected five tabs to exist",
-                sActivityTestRule.getActivity().getTabModelSelector().getModel(false).getCount(),
-                5);
+                5,
+                sActivityTestRule.getActivity().getTabModelSelector().getModel(false).getCount());
         Assert.assertEquals(
                 "Expected last tab to be selected",
-                sActivityTestRule.getActivity().getTabModelSelector().getModel(false).index(),
-                4);
+                4,
+                sActivityTestRule.getActivity().getTabModelSelector().getModel(false).index());
         compareAllTabStripsWithModel();
     }
 
@@ -169,8 +169,8 @@ public class TabStripTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertEquals(
                 "Expected two tabs to exist",
-                sActivityTestRule.getActivity().getTabModelSelector().getModel(false).getCount(),
-                2);
+                2,
+                sActivityTestRule.getActivity().getTabModelSelector().getModel(false).getCount());
         compareAllTabStripsWithModel();
     }
 
@@ -196,12 +196,12 @@ public class TabStripTest {
                 sActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
         Assert.assertEquals(
                 "Expected normal model to have one tab",
-                sActivityTestRule.getActivity().getTabModelSelector().getModel(false).getCount(),
-                1);
+                1,
+                sActivityTestRule.getActivity().getTabModelSelector().getModel(false).getCount());
         Assert.assertEquals(
                 "Expected incognito model to have one tab",
-                sActivityTestRule.getActivity().getTabModelSelector().getModel(false).getCount(),
-                1);
+                1,
+                sActivityTestRule.getActivity().getTabModelSelector().getModel(false).getCount());
     }
 
     /** Tests that selecting a tab properly selects the new tab. */
@@ -215,14 +215,14 @@ public class TabStripTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertEquals(
                 "The second tab is not selected",
-                sActivityTestRule.getActivity().getCurrentTabModel().index(),
-                1);
+                1,
+                sActivityTestRule.getActivity().getCurrentTabModel().index());
         selectTab(false, sActivityTestRule.getActivity().getCurrentTabModel().getTabAt(0).getId());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertEquals(
                 "The first tab is not selected",
-                sActivityTestRule.getActivity().getCurrentTabModel().index(),
-                0);
+                0,
+                sActivityTestRule.getActivity().getCurrentTabModel().index());
         compareAllTabStripsWithModel();
     }
 
@@ -240,8 +240,8 @@ public class TabStripTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertEquals(
                 "The last tab is not selected",
-                sActivityTestRule.getActivity().getCurrentTabModel().index(),
-                4);
+                4,
+                sActivityTestRule.getActivity().getCurrentTabModel().index());
         compareAllTabStripsWithModel();
         // Note: if the tab is not visible, this will fail. Currently that's not a problem, because
         // the devices we test on are wide enough.
@@ -249,8 +249,8 @@ public class TabStripTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertEquals(
                 "The middle tab is not selected",
-                sActivityTestRule.getActivity().getCurrentTabModel().index(),
-                0);
+                0,
+                sActivityTestRule.getActivity().getCurrentTabModel().index());
         compareAllTabStripsWithModel();
     }
 
@@ -268,23 +268,23 @@ public class TabStripTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertEquals(
                 "There are not two tabs present",
-                sActivityTestRule.getActivity().getCurrentTabModel().getCount(),
-                2);
+                2,
+                sActivityTestRule.getActivity().getCurrentTabModel().getCount());
         Assert.assertEquals(
                 "The second tab is not selected",
-                sActivityTestRule.getActivity().getCurrentTabModel().index(),
-                1);
+                1,
+                sActivityTestRule.getActivity().getCurrentTabModel().index());
         int initialSelectedId = sActivityTestRule.getActivity().getActivityTab().getId();
         closeTab(false, sActivityTestRule.getActivity().getCurrentTabModel().getTabAt(0).getId());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertEquals(
                 "There is not one tab present",
-                sActivityTestRule.getActivity().getCurrentTabModel().getCount(),
-                1);
+                1,
+                sActivityTestRule.getActivity().getCurrentTabModel().getCount());
         Assert.assertEquals(
                 "The wrong tab index is selected after close",
-                sActivityTestRule.getActivity().getCurrentTabModel().index(),
-                0);
+                0,
+                sActivityTestRule.getActivity().getCurrentTabModel().index());
         Assert.assertEquals(
                 "Same tab not still selected",
                 initialSelectedId,
@@ -307,12 +307,12 @@ public class TabStripTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertEquals(
                 "There are not five tabs present",
-                sActivityTestRule.getActivity().getCurrentTabModel().getCount(),
-                5);
+                5,
+                sActivityTestRule.getActivity().getCurrentTabModel().getCount());
         Assert.assertEquals(
                 "The last tab is not selected",
-                sActivityTestRule.getActivity().getCurrentTabModel().index(),
-                4);
+                4,
+                sActivityTestRule.getActivity().getCurrentTabModel().index());
         int initialSelectedId = sActivityTestRule.getActivity().getActivityTab().getId();
         // Note: if the tab is not visible, this will fail. Currently that's not a problem, because
         // the devices we test on are wide enough.
@@ -320,12 +320,12 @@ public class TabStripTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertEquals(
                 "There are not four tabs present",
-                sActivityTestRule.getActivity().getCurrentTabModel().getCount(),
-                4);
+                4,
+                sActivityTestRule.getActivity().getCurrentTabModel().getCount());
         Assert.assertEquals(
                 "The wrong tab index is selected after close",
-                sActivityTestRule.getActivity().getCurrentTabModel().index(),
-                3);
+                3,
+                sActivityTestRule.getActivity().getCurrentTabModel().index());
         Assert.assertEquals(
                 "Same tab not still selected",
                 initialSelectedId,
@@ -347,24 +347,24 @@ public class TabStripTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertEquals(
                 "There are not two tabs present",
-                sActivityTestRule.getActivity().getCurrentTabModel().getCount(),
-                2);
+                2,
+                sActivityTestRule.getActivity().getCurrentTabModel().getCount());
         Assert.assertEquals(
                 "The second tab is not selected",
-                sActivityTestRule.getActivity().getCurrentTabModel().index(),
-                1);
+                1,
+                sActivityTestRule.getActivity().getCurrentTabModel().index());
         int newSelectionId =
                 sActivityTestRule.getActivity().getCurrentTabModel().getTabAt(0).getId();
         closeTab(false, sActivityTestRule.getActivity().getCurrentTabModel().getTabAt(1).getId());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertEquals(
                 "There is not one tab present",
-                sActivityTestRule.getActivity().getCurrentTabModel().getCount(),
-                1);
+                1,
+                sActivityTestRule.getActivity().getCurrentTabModel().getCount());
         Assert.assertEquals(
                 "The wrong tab index is selected after close",
-                sActivityTestRule.getActivity().getCurrentTabModel().index(),
-                0);
+                0,
+                sActivityTestRule.getActivity().getCurrentTabModel().index());
         Assert.assertEquals(
                 "New tab not selected",
                 newSelectionId,
@@ -531,8 +531,8 @@ public class TabStripTest {
                 sActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
         Assert.assertEquals(
                 "Expected incognito strip to have no tabs",
-                sActivityTestRule.getActivity().getTabModelSelector().getModel(true).getCount(),
-                0);
+                0,
+                sActivityTestRule.getActivity().getTabModelSelector().getModel(true).getCount());
     }
 
     /**
@@ -970,8 +970,8 @@ public class TabStripTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertEquals(
                 "Expected two tabs to exist",
-                sActivityTestRule.getActivity().getTabModelSelector().getModel(false).getCount(),
-                2);
+                2,
+                sActivityTestRule.getActivity().getTabModelSelector().getModel(false).getCount());
 
         assertWaitForKeyboardStatus(false);
     }

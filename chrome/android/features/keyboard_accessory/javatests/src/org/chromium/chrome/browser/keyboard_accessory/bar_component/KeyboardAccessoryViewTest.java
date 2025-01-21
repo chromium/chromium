@@ -273,7 +273,7 @@ public class KeyboardAccessoryViewTest {
                     mModel.set(VISIBLE, true);
                 });
         KeyboardAccessoryView view = mKeyboardAccessoryView.take();
-        assertEquals(view.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, view.getVisibility());
 
         // After hiding the view, the view should still exist but be invisible.
         ThreadUtils.runOnUiThreadBlocking(

@@ -20,6 +20,9 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/accessibility/accessibility_state_utils.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_observer.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_view.h"
@@ -35,6 +38,8 @@
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host.h"
@@ -44,14 +49,6 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/text_utils.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/accessibility/accessibility_state_utils.h"  // nogncheck
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 using autofill::SuggestionHidingReason;
 using autofill::password_generation::PasswordGenerationType;
@@ -141,20 +138,14 @@ PasswordGenerationPopupControllerImpl::PasswordGenerationPopupControllerImpl(
                          web_contents->GetNativeView()),
       state_(kOfferGeneration),
       key_press_handler_manager_(new KeyPressRegistrator(frame)) {
-#if !BUILDFLAG(IS_ANDROID)
   // There may not always be a ZoomController, e.g. in tests.
   if (auto* zoom_controller =
           zoom::ZoomController::FromWebContents(web_contents)) {
     zoom_observation_.Observe(zoom_controller);
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
   help_text_ = l10n_util::GetStringUTF16(
       IDS_PASSWORD_GENERATION_PROMPT_GOOGLE_PASSWORD_MANAGER);
-#else
-  help_text_ = l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_PROMPT);
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 PasswordGenerationPopupControllerImpl::
@@ -167,16 +158,10 @@ PasswordGenerationPopupControllerImpl::GetWeakPtr() {
 
 bool PasswordGenerationPopupControllerImpl::HandleKeyPressEvent(
     const input::NativeWebKeyboardEvent& event) {
-  bool nudge_password_enabled = false;
-  // Password generation experiments are defined for Desktop only.
-#if !BUILDFLAG(IS_ANDROID)
-  nudge_password_enabled = ShouldShowNudgePassword();
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   switch (event.windows_key_code) {
     case ui::VKEY_UP:
     case ui::VKEY_DOWN:
-      if (nudge_password_enabled) {
+      if (ShouldShowNudgePassword()) {
         SelectElement(
             cancel_button_selected()
                 ? PasswordGenerationPopupElement::kNudgePasswordAcceptButton
@@ -310,7 +295,6 @@ void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
 
   // With `kPasswordGenerationSoftNudge` feature enabled password is previewed
   // straight away in offer generation state.
-#if !BUILDFLAG(IS_ANDROID)
   if (ShouldShowNudgePassword()) {
     driver_->PreviewGenerationSuggestion(current_generated_password_);
     // For the screen reader users, move the focus to the accept button on show.
@@ -318,7 +302,6 @@ void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
       SelectElement(PasswordGenerationPopupElement::kNudgePasswordAcceptButton);
     }
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (observer_) {
     observer_->OnPopupShown(state_);
@@ -354,7 +337,6 @@ void PasswordGenerationPopupControllerImpl::PrimaryPageChanged(
   HideImpl();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void PasswordGenerationPopupControllerImpl::OnZoomControllerDestroyed(
     zoom::ZoomController* zoom_controller) {
   zoom_observation_.Reset();
@@ -364,7 +346,6 @@ void PasswordGenerationPopupControllerImpl::OnZoomChanged(
     const zoom::ZoomController::ZoomChangedEventData& data) {
   HideImpl();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void PasswordGenerationPopupControllerImpl::Hide(SuggestionHidingReason) {
   HideImpl();
@@ -384,7 +365,6 @@ void PasswordGenerationPopupControllerImpl::SetSelected() {
   SelectElement(PasswordGenerationPopupElement::kUseStrongPassword);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 std::u16string PasswordGenerationPopupControllerImpl::GetPrimaryAccountEmail() {
   content::WebContents* web_contents = GetWebContents();
   if (!web_contents) {
@@ -407,7 +387,6 @@ bool PasswordGenerationPopupControllerImpl::ShouldShowNudgePassword() const {
          base::FeatureList::IsEnabled(
              password_manager::features::kPasswordGenerationSoftNudge);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 gfx::NativeView PasswordGenerationPopupControllerImpl::container_view() const {
   return controller_common_.container_view;

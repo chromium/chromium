@@ -172,7 +172,6 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
     return;
   }
 
-  UpdateTabRedirectChain(navigation_handle);
   TabGroupSyncUtils::RecordSavedTabGroupNavigationUkmMetrics(
       local_tab_id(),
       group->collaboration_id() ? SavedTabGroupType::SHARED
@@ -182,6 +181,9 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
   // If the navigation was the result of a sync update we don't want to update
   // the SavedTabGroupModel.
   if (WasNavigationInitiatedFromSync(navigation_handle)) {
+    // Update the redirect chain if the navigation is from sync, so that the
+    // sync update of the same URL later will be ignored.
+    UpdateTabRedirectChain(navigation_handle);
     // Create a tab state to indicate that the tab is restricted.
     TabGroupSyncTabState::Create(contents());
     return;
@@ -195,6 +197,12 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
   if (!TabGroupSyncUtils::IsSaveableNavigation(navigation_handle)) {
     return;
   }
+
+  // Only update the redirect chain for navigations that are sent to sync so
+  // that the redirect chain will match the entry stored in sync db. This will
+  // prevent the case that if a renderer initiated navigation changes the tab
+  // URL, a sync update will not reload the page.
+  UpdateTabRedirectChain(navigation_handle);
 
   SavedTabGroupTab* tab = group->GetTab(local_tab_id());
   CHECK(tab);

@@ -116,7 +116,7 @@ public class BackButtonToolbarTest {
         // Check that the automotive toolbar is present with only a back button.
         Toolbar toolbar = dialog.findViewById(R.id.back_button_toolbar);
         assertNotNull(toolbar);
-        assertEquals("Toolbar not visible", toolbar.getVisibility(), View.VISIBLE);
+        assertEquals("Toolbar not visible", View.VISIBLE, toolbar.getVisibility());
         assertEquals("Toolbar should only contain a back button", 1, toolbar.getChildCount());
         assertThat(toolbar.getChildAt(0), instanceOf(AppCompatImageButton.class));
 
@@ -146,7 +146,7 @@ public class BackButtonToolbarTest {
         // Check that the automotive toolbar is present with only a back button.
         Toolbar toolbar = dialog.findViewById(R.id.back_button_toolbar);
         assertNotNull(toolbar);
-        assertEquals("Toolbar not visible", toolbar.getVisibility(), View.VISIBLE);
+        assertEquals("Toolbar not visible", View.VISIBLE, toolbar.getVisibility());
         assertEquals("Toolbar should only contain a back button", 1, toolbar.getChildCount());
         assertThat(toolbar.getChildAt(0), instanceOf(AppCompatImageButton.class));
 
@@ -175,7 +175,7 @@ public class BackButtonToolbarTest {
         // Check that the automotive toolbar is present with only a back button.
         Toolbar toolbar = dialog.findViewById(R.id.back_button_toolbar);
         assertNotNull(toolbar);
-        assertEquals("Toolbar not visible", toolbar.getVisibility(), View.VISIBLE);
+        assertEquals("Toolbar not visible", View.VISIBLE, toolbar.getVisibility());
         assertEquals("Toolbar should only contain a back button", 1, toolbar.getChildCount());
         assertThat(toolbar.getChildAt(0), instanceOf(AppCompatImageButton.class));
 
@@ -204,7 +204,7 @@ public class BackButtonToolbarTest {
         // Check that the automotive toolbar is present with only a back button.
         Toolbar toolbar = dialog.findViewById(R.id.back_button_toolbar);
         assertNotNull(toolbar);
-        assertEquals("Toolbar not visible", toolbar.getVisibility(), View.VISIBLE);
+        assertEquals("Toolbar not visible", View.VISIBLE, toolbar.getVisibility());
         assertEquals("Toolbar should only contain a back button", 1, toolbar.getChildCount());
         assertThat(toolbar.getChildAt(0), instanceOf(AppCompatImageButton.class));
 

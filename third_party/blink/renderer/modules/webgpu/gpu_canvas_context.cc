@@ -126,10 +126,6 @@ gfx::ColorSpace GPUCanvasContext::GetColorSpace() const {
   return PredefinedColorSpaceToGfxColorSpace(color_space_);
 }
 
-sk_sp<SkColorSpace> GPUCanvasContext::GetSkColorSpace() const {
-  return GetColorSpace().ToSkColorSpace();
-}
-
 void GPUCanvasContext::Stop() {
   ReplaceDrawingBuffer(/*destroy_swap_buffers*/ true);
   stopped_ = true;
@@ -926,8 +922,7 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
   // usually related to OffscreenCanvas; in cases where the image created from
   // this Snapshot will be sent eventually to the Display Compositor.
   auto resource_provider = CanvasResourceProvider::CreateWebGPUImageProvider(
-      size, GetSkColorType(), GetAlphaType(),
-      SkColorSpaceToGfxColorSpace(GetSkColorSpace()),
+      size, GetSkColorType(), GetAlphaType(), GetColorSpace(),
       swap_buffers_->GetSharedImageUsagesForDisplay());
   if (!resource_provider)
     return nullptr;

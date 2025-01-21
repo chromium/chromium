@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_RESOLVED_FONT_FEATURES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_RESOLVED_FONT_FEATURES_H_
 
-#include <utility>
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {

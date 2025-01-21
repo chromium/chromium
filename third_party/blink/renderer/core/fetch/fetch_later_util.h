@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/gtest_prod_util.h"
-#include "third_party/blink/public/common/frame/frame_policy.h"
+#include "third_party/blink/public/mojom/frame/deferred_fetch_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
@@ -17,8 +17,10 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
+class FetchRequestData;
 class Frame;
 class FrameOwner;
+class CalculateRequestSizeTestBase;
 class CountDescendantsWithReservedMinimalQuotaTest;
 
 // The ResourceType of FetchLater requests.
@@ -38,8 +40,17 @@ inline constexpr uint32_t kNormalReservedDeferredFetchQuota = 64 * 1024;
 // https://whatpr.org/fetch/1647.html#quota-reserved-for-deferred-fetch-minimal
 inline constexpr uint32_t kQuotaReservedForDeferredFetchMinimal = 128 * 1024;
 
+// 64 kibibytes.
+inline constexpr uint32_t kMaxPerRequestOriginScheduledDeferredBytes =
+    64 * 1024;
+
+// 640 kibibytes.
+inline constexpr uint32_t kMaxScheduledDeferredBytes = 640 * 1024;
+
 // Tells whether the FetchLater API should use subframe deferred fetch
 // policy to decide whether a frame show allow using the API.
+// Related discussions:
+// https://github.com/WICG/pending-beacon/issues/87#issuecomment-2315624105
 bool CORE_EXPORT IsFetchLaterUseDeferredFetchPolicyEnabled();
 
 // Computes resource loader priority for a FetchLater request.
@@ -61,7 +72,7 @@ class CORE_EXPORT FetchLaterUtil {
   //
   // This must be called during "Beginning navigation" as described in
   // https://whatpr.org/html/10903/d1c086a...0e0afb3/browsing-the-web.html#beginning-navigation
-  static FramePolicy::DeferredFetchPolicy
+  static mojom::blink::DeferredFetchPolicy
   GetContainerDeferredFetchPolicyOnNavigation(FrameOwner* container_frame,
                                               const KURL& to_url);
 
@@ -81,7 +92,23 @@ class CORE_EXPORT FetchLaterUtil {
   // https://whatpr.org/html/10903/d1c086a...0e0afb3/document-lifecycle.html
   static bool ShouldClearDeferredFetchPolicy(Frame* frame);
 
+  // Performs the calculation of "available deferred fetch quota" algorithm
+  // that requires a control document and a request URL.
+  //
+  // `frame` must be the frame of a control document obtained from
+  // `GetDeferredFetchControlFrame()`, i.e. the spec wording "control document"
+  // means `frame->GetDocument()`.
+  // `url` is the request URL to calculate the deferred fetch quota for.
+  //
+  // https://whatpr.org/fetch/1647.html#available-deferred-fetch-quota
+  static uint64_t GetAvailableDeferredFetchQuota(Frame* frame, const KURL& url);
+
+  // Calculates the total size of a given request using
+  // https://whatpr.org/fetch/1647.html#total-request-length
+  static uint64_t CalculateRequestSize(const FetchRequestData& request);
+
  private:
+  friend class CalculateRequestSizeTestBase;
   friend class CountDescendantsWithReservedMinimalQuotaTest;
   FRIEND_TEST_ALL_PREFIXES(AreSameOriginTest,
                            MultipleDifferentOriginSiblingFrames);
@@ -100,11 +127,14 @@ class CORE_EXPORT FetchLaterUtil {
   FRIEND_TEST_ALL_PREFIXES(ToReservedDeferredFetchQuotaTest,
                            PolicyDeferredFetchMinimal);
 
+  // Returns the length of `url` without any fragment parts.
+  static uint64_t GetUrlLengthWithoutFragment(const KURL& url);
+
   // Converts `policy` to one of possible values of reserved deferred-fetch
   // quota.
   // https://whatpr.org/fetch/1647.html#reserved-deferred-fetch-quota
   static uint32_t ToReservedDeferredFetchQuota(
-      FramePolicy::DeferredFetchPolicy policy);
+      mojom::blink::DeferredFetchPolicy policy);
 
   // Tells if the given two frames shares the same origin.
   // https://html.spec.whatwg.org/multipage/browsers.html#same-origin
@@ -127,6 +157,13 @@ class CORE_EXPORT FetchLaterUtil {
   // * When `control_frame` = frame-3 or frame-4, the result is 2.
   static uint32_t CountDescendantsWithReservedMinimalQuota(
       const Frame* control_frame);
+
+  // Returns corresponding reserved deferred-fetch quota on a control document
+  // `frame`.
+  //
+  // This method implements Step 1~5 of the following algorithm:
+  // https://whatpr.org/fetch/1647.html#available-deferred-fetch-quota
+  static uint32_t GetReservedDeferredFetchQuota(const Frame* frame);
 };
 
 }  // namespace blink

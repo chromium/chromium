@@ -247,8 +247,7 @@
                      showUserEmail:!dedicatedSignInDone
                  signOutIfDeclined:dedicatedSignInDone
                         isOptional:NO
-                       accessPoint:signin_metrics::AccessPoint::
-                                       ACCESS_POINT_RECENT_TABS];
+                       accessPoint:signin_metrics::AccessPoint::kRecentTabs];
     _historySyncPopupCoordinator.delegate = self;
     [_historySyncPopupCoordinator start];
   }

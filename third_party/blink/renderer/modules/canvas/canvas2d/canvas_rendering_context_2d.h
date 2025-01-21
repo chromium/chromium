@@ -201,9 +201,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   gfx::ColorSpace GetColorSpace() const override {
     return color_params_.GetGfxColorSpace();
   }
-  sk_sp<SkColorSpace> GetSkColorSpace() const override {
-    return GetColorSpace().ToSkColorSpace();
-  }
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) final;
 
   sk_sp<PaintFilter> StateGetFilter() final;

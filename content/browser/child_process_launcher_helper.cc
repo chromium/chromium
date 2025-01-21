@@ -68,13 +68,18 @@ void RecordHistogramsOnLauncherThread(base::TimeDelta launch_time) {
 //
 // This function is NOP if the platform does not use Blink.
 void PassHistogramSharedMemoryHandle(
-    [[maybe_unused]] const base::UnsafeSharedMemoryRegion*
-        histogram_memory_region,
+    [[maybe_unused]] base::UnsafeSharedMemoryRegion histogram_memory_region,
     [[maybe_unused]] base::CommandLine* command_line,
     [[maybe_unused]] base::LaunchOptions* launch_options,
     [[maybe_unused]] FileMappedForLaunch* files_to_register) {
-#if BUILDFLAG(USE_BLINK)
+  // TODO(crbug.com/40109064): Once all process types support histogram shared
+  // memory being passed at launch, remove this if.
+  if (!histogram_memory_region.IsValid()) {
+    return;
+  }
+
   CHECK(command_line);
+  CHECK(histogram_memory_region.IsValid());
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
   // TODO(crbug.com/40109064): content::FileMappedForLaunch (POSIX) is redundant
   // wrt the base::LaunchOptions::<platform-specific-handles-to-transfer>
@@ -89,21 +94,12 @@ void PassHistogramSharedMemoryHandle(
   base::ScopedFD descriptor_to_transfer;
 #else
   CHECK(launch_options);
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+#endif
 
-  // TODO(crbug.com/40109064): Once all process types support histogram shared
-  // memory being passed at launch, remove this if.
-  const bool enabled =
-      histogram_memory_region && histogram_memory_region->IsValid();
-  DVLOG(1) << (enabled ? "A" : "Not a")
-           << "dding histogram shared memory launch parameters for "
-           << command_line->GetSwitchValueASCII(::switches::kProcessType)
-           << " process.";
-  if (!enabled) {
-    return;
-  }
+#if BUILDFLAG(USE_BLINK)
+  DCHECK(histogram_memory_region.IsValid());
   base::HistogramSharedMemory::AddToLaunchParameters(
-      *histogram_memory_region,
+      std::move(histogram_memory_region),
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
       /*descriptor_key=*/kHistogramSharedMemoryDescriptor,
       /*descriptor_to_share=*/descriptor_to_transfer,
@@ -127,7 +123,6 @@ void PassFieldTrialSharedMemoryHandle(
     [[maybe_unused]] base::CommandLine* command_line,
     [[maybe_unused]] base::LaunchOptions* launch_options,
     [[maybe_unused]] FileMappedForLaunch* files_to_register) {
-#if BUILDFLAG(USE_BLINK)
   CHECK(command_line);
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
   // TODO(crbug.com/40109064): content::FileMappedForLaunch (POSIX) is redundant
@@ -145,6 +140,7 @@ void PassFieldTrialSharedMemoryHandle(
   CHECK(launch_options);
 #endif
 
+#if BUILDFLAG(USE_BLINK)
   variations::PopulateLaunchOptionsWithVariationsInfo(
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
       /*descriptor_key=*/kFieldTrialDescriptor,
@@ -162,17 +158,16 @@ void PassFieldTrialSharedMemoryHandle(
 }
 
 void PassStartupTracingConfigSharedMemoryHandle(
-    [[maybe_unused]] const base::ReadOnlySharedMemoryRegion*
-        read_only_memory_region,
+    [[maybe_unused]] base::ReadOnlySharedMemoryRegion read_only_memory_region,
     [[maybe_unused]] base::CommandLine* command_line,
     [[maybe_unused]] base::LaunchOptions* launch_options,
     [[maybe_unused]] FileMappedForLaunch* files_to_register) {
-#if BUILDFLAG(USE_BLINK)
   CHECK(command_line);
-  if (!read_only_memory_region || !read_only_memory_region->IsValid()) {
+  if (!read_only_memory_region.IsValid()) {
     return;
   }
 
+  CHECK(read_only_memory_region.IsValid());
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
   CHECK(files_to_register);
   base::ScopedFD descriptor_to_transfer;
@@ -180,11 +175,12 @@ void PassStartupTracingConfigSharedMemoryHandle(
   CHECK(launch_options);
 #endif
 
-  tracing::AddTraceConfigToLaunchParameters(*read_only_memory_region,
+#if BUILDFLAG(USE_BLINK)
+  tracing::AddTraceConfigToLaunchParameters(std::move(read_only_memory_region),
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
                                             kTraceConfigSharedMemoryDescriptor,
                                             descriptor_to_transfer,
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+#endif
                                             command_line, launch_options);
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
@@ -231,10 +227,8 @@ ChildProcessLauncherHelper::ChildProcessLauncherHelper(
     mojo::OutgoingInvitation mojo_invitation,
     const mojo::ProcessErrorCallback& process_error_callback,
     std::unique_ptr<ChildProcessLauncherFileData> file_data,
-    scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
-        histogram_memory_region,
-    scoped_refptr<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>
-        tracing_config_memory_region)
+    base::UnsafeSharedMemoryRegion histogram_memory_region,
+    base::ReadOnlySharedMemoryRegion tracing_config_memory_region)
     : child_process_id_(child_process_id),
       client_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       command_line_(std::move(command_line)),
@@ -320,15 +314,14 @@ void ChildProcessLauncherHelper::LaunchOnLauncherThread() {
 
   // Update the command line and launch options to pass the histogram and
   // field trial shared memory region handles.
-  PassHistogramSharedMemoryHandle(
-      histogram_memory_region_ ? &histogram_memory_region_->data : nullptr,
-      command_line(), options_ptr, files_to_register.get());
+  PassHistogramSharedMemoryHandle(std::move(histogram_memory_region_),
+                                  command_line(), options_ptr,
+                                  files_to_register.get());
   PassFieldTrialSharedMemoryHandle(command_line(), options_ptr,
                                    files_to_register.get());
   PassStartupTracingConfigSharedMemoryHandle(
-      tracing_config_memory_region_ ? &tracing_config_memory_region_->data
-                                    : nullptr,
-      command_line(), options_ptr, files_to_register.get());
+      std::move(tracing_config_memory_region_), command_line(), options_ptr,
+      files_to_register.get());
 
   // Transfer logging switches & handles if necessary.
   PassLoggingSwitches(options_ptr, command_line());

@@ -258,8 +258,8 @@ public class AwVariationsSeedFetcherTest {
             Assert.assertTrue("Fast mode jobs should be persisted", pendingJob.isPersisted());
             Assert.assertEquals(
                     "Fast Mode backoff policy should be linear.",
-                    pendingJob.getBackoffPolicy(),
-                    JobInfo.BACKOFF_POLICY_LINEAR);
+                    JobInfo.BACKOFF_POLICY_LINEAR,
+                    pendingJob.getBackoffPolicy());
         } finally {
             mScheduler.clear();
         }
@@ -515,7 +515,7 @@ public class AwVariationsSeedFetcherTest {
                     fetcher.getFinishedJobParameters()
                             .getExtras()
                             .getInt(AwVariationsSeedFetcher.JOB_REQUEST_COUNT_KEY);
-            Assert.assertEquals("Request count should have increased", requestCount, 1);
+            Assert.assertEquals("Request count should have increased", 1, requestCount);
 
         } finally {
             VariationsTestUtils.deleteSeeds(); // Remove the stamp file.

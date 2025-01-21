@@ -204,8 +204,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestModelSignedInSyncOff) {
   test_sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
 
   AuthenticationServiceFactory::GetForProfile(profile_.get())
-      ->SignIn(fake_identity(),
-               signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+      ->SignIn(fake_identity(), signin_metrics::AccessPoint::kSettings);
 
   [manager_ loadModel:model_];
 
@@ -354,8 +353,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestOnPreferenceChanged) {
 
 TEST_F(ClearBrowsingDataManagerTest, TestGoogleDSETextSignedIn) {
   AuthenticationServiceFactory::GetForProfile(profile_.get())
-      ->SignIn(fake_identity(),
-               signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+      ->SignIn(fake_identity(), signin_metrics::AccessPoint::kSettings);
 
   [manager_ loadModel:model_];
 
@@ -385,8 +383,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestGoogleDSETextSignedOut) {
 
 TEST_F(ClearBrowsingDataManagerTest, TestPrepopulatedTextSignedIn) {
   AuthenticationServiceFactory::GetForProfile(profile_.get())
-      ->SignIn(fake_identity(),
-               signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+      ->SignIn(fake_identity(), signin_metrics::AccessPoint::kSettings);
 
   // Set DSE to one from "prepoulated list".
   const std::string kEngineP1Name = "prepopulated-1";
@@ -452,8 +449,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestPrepopulatedTextSignedOut) {
 
 TEST_F(ClearBrowsingDataManagerTest, TestCustomTextSignedIn) {
   AuthenticationServiceFactory::GetForProfile(profile_.get())
-      ->SignIn(fake_identity(),
-               signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+      ->SignIn(fake_identity(), signin_metrics::AccessPoint::kSettings);
 
   // Set DSE to a be fully custom.
   const std::string kEngineC1Name = "custom-1";

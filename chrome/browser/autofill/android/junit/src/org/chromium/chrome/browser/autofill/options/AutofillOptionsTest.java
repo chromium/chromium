@@ -320,7 +320,7 @@ public class AutofillOptionsTest {
     @SmallTest
     public void updateSettingsFromPrefOnViewCreated() {
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
-        assertEquals(getRadioButtonComponent().getSelectedOption(), DEFAULT); // Not updated!
+        assertEquals(DEFAULT, getRadioButtonComponent().getSelectedOption()); // Not updated!
 
         // Update on initial binding. Fail if that triggers the dialog or restarting!
         AutofillOptionsCoordinator.createFor(mFragment, this::assertModalNotUsed, Assert::fail);
@@ -421,8 +421,8 @@ public class AutofillOptionsTest {
         AutofillOptionsCoordinator.createFor(mFragment, this::assertModalNotUsed, Assert::fail);
 
         assertEquals(
-                getRadioButtonComponent().getKey(),
-                AutofillOptionsFragment.PREF_AUTOFILL_THIRD_PARTY_FILLING);
+                AutofillOptionsFragment.PREF_AUTOFILL_THIRD_PARTY_FILLING,
+                getRadioButtonComponent().getKey());
         assertEquals(
                 getRadioButtonComponent().getDefaultButton().getPrimaryText(),
                 getString(R.string.autofill_third_party_filling_default));

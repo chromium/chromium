@@ -7161,6 +7161,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.SaveState.Size" units="KB"
+    expires_after="2026-01-01">
+  <owner>peconn@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Recorded whenever an embedder calls WebView#saveState, it records the size
+    of that state in KB. The size isn't expected to exceed 1MB, as that is the
+    limit for Android saveInstanceState.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.ScheduleOnVizAndBlockTime"
     units="microseconds" expires_after="2024-11-20">
   <owner>cduvall@chromium.org</owner>
@@ -7478,7 +7489,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.UsedInPopupWindow"
-    enum="WebViewUsedInPopupWindow" expires_after="2025-03-01">
+    enum="WebViewUsedInPopupWindow" expires_after="2025-09-01">
   <owner>peconn@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>

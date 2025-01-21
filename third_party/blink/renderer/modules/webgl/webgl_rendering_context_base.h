@@ -635,7 +635,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   SkAlphaType GetAlphaType() const override;
   SkColorType GetSkColorType() const override;
   gfx::ColorSpace GetColorSpace() const override;
-  sk_sp<SkColorSpace> GetSkColorSpace() const override;
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) override;
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) override;
 

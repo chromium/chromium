@@ -304,7 +304,7 @@ public class ContextMenuTest extends AwParameterizedTest {
 
         String actualHeaderTitle = headerCoordinator.getTitle();
 
-        Assert.assertEquals(actualHeaderTitle, expectedHeaderText);
+        Assert.assertEquals(expectedHeaderText, actualHeaderTitle);
     }
 
     private void loadUrlSync(String url) throws Exception {

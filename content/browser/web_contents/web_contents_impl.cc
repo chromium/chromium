@@ -189,6 +189,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/common/widget/constants.h"
+#include "third_party/blink/public/mojom/frame/deferred_fetch_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/image_downloader/image_downloader.mojom.h"
@@ -1501,7 +1502,7 @@ std::unique_ptr<WebContentsImpl> WebContentsImpl::CreateWithOpener(
           {opener_flags,
            {} /* container_policy */,
            {} /* required_document_policy */,
-           blink::FramePolicy::DeferredFetchPolicy::kDisabled});
+           blink::mojom::DeferredFetchPolicy::kDisabled});
     }
     new_root->SetInitialPopupURL(params.initial_popup_url);
     new_root->SetPopupCreatorOrigin(opener_rfh->GetLastCommittedOrigin());

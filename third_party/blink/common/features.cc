@@ -1248,6 +1248,12 @@ BASE_FEATURE_PARAM(bool,
                    "lcpp_adjust_image_load_priority_override_first_n_boost",
                    false);
 
+BASE_FEATURE_PARAM(double,
+                   kLcppAdjustImageLoadPriorityConfidenceThreshold,
+                   &kLCPCriticalPathPredictor,
+                   "lcpp_adjust_image_load_priority_confidence_threshold",
+                   0);
+
 const base::FeatureParam<LcppRecordedLcpElementTypes>::Option
     lcpp_recorded_element_types[] = {
         {LcppRecordedLcpElementTypes::kAll, "all"},

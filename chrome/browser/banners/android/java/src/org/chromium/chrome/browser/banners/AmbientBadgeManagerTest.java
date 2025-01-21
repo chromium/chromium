@@ -296,7 +296,7 @@ public class AmbientBadgeManagerTest {
         navigateToUrlAndWaitForBannerManager(rule, url);
         waitUntilAppDetailsRetrieved(rule, 1);
         waitUntilAmbientBadgePromptAppears(rule);
-        Assert.assertEquals(mDetailsDelegate.mReferrer, expectedReferrer);
+        Assert.assertEquals(expectedReferrer, mDetailsDelegate.mReferrer);
 
         dismissAmbientBadgeMessage(rule, true);
         final ChromeActivity activity = rule.getActivity();

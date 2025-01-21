@@ -76,7 +76,7 @@ public class ShoppingAccessoryCoordinatorTest {
         Assert.assertNotNull(coordinator.getView());
 
         PropertyModel model = coordinator.getModel();
-        Assert.assertEquals(model.get(ShoppingAccessoryViewProperties.PRICE_TRACKED), true);
+        Assert.assertEquals(true, model.get(ShoppingAccessoryViewProperties.PRICE_TRACKED));
 
         PriceInfo info = model.get(ShoppingAccessoryViewProperties.PRICE_INFO);
         Assert.assertEquals(false, info.isPriceDrop());

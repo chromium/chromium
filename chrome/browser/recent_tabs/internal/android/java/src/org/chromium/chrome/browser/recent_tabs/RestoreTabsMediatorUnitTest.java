@@ -95,14 +95,14 @@ public class RestoreTabsMediatorUnitTest {
 
     @Test
     public void testRestoreTabsMediator_initCreatesValidDefaultModel() {
-        Assert.assertEquals(mModel.get(VISIBLE), false);
+        Assert.assertEquals(false, mModel.get(VISIBLE));
         Assert.assertNotNull(mModel.get(HOME_SCREEN_DELEGATE));
         assertThat(
                 mModel.get(HOME_SCREEN_DELEGATE),
                 instanceOf(RestoreTabsPromoScreenCoordinator.Delegate.class));
         Assert.assertNotNull(mModel.get(DETAIL_SCREEN_BACK_CLICK_HANDLER));
-        Assert.assertEquals(mModel.get(CURRENT_SCREEN), UNINITIALIZED);
-        Assert.assertEquals(mModel.get(NUM_TABS_DESELECTED), 0);
+        Assert.assertEquals(UNINITIALIZED, mModel.get(CURRENT_SCREEN));
+        Assert.assertEquals(0, mModel.get(NUM_TABS_DESELECTED));
     }
 
     @Test
@@ -114,10 +114,10 @@ public class RestoreTabsMediatorUnitTest {
         testSessions.add(session);
 
         mMediator.showHomeScreen(mForeignSessionHelper, testSessions, mDelegate);
-        Assert.assertEquals(mModel.get(VISIBLE), true);
+        Assert.assertEquals(true, mModel.get(VISIBLE));
         mMediator.dismiss();
         verify(mDelegate).onDismissed();
-        Assert.assertEquals(mModel.get(VISIBLE), false);
+        Assert.assertEquals(false, mModel.get(VISIBLE));
     }
 
     @Test
@@ -150,8 +150,8 @@ public class RestoreTabsMediatorUnitTest {
         testSessions.add(session);
 
         mMediator.showHomeScreen(mForeignSessionHelper, testSessions, mDelegate);
-        Assert.assertEquals(mModel.get(VISIBLE), true);
-        Assert.assertEquals(mModel.get(CURRENT_SCREEN), HOME_SCREEN);
+        Assert.assertEquals(true, mModel.get(VISIBLE));
+        Assert.assertEquals(HOME_SCREEN, mModel.get(CURRENT_SCREEN));
         Assert.assertEquals(mModel.get(SELECTED_DEVICE), testSessions.get(0));
     }
 
@@ -161,11 +161,11 @@ public class RestoreTabsMediatorUnitTest {
 
         // Testing the onShowDeviceList member function.
         delegate.onShowDeviceList();
-        Assert.assertEquals(mModel.get(CURRENT_SCREEN), DEVICE_SCREEN);
+        Assert.assertEquals(DEVICE_SCREEN, mModel.get(CURRENT_SCREEN));
 
         // Testing the onReviewTabsChosen member function.
         delegate.onReviewTabsChosen();
-        Assert.assertEquals(mModel.get(CURRENT_SCREEN), REVIEW_TABS_SCREEN);
+        Assert.assertEquals(REVIEW_TABS_SCREEN, mModel.get(CURRENT_SCREEN));
     }
 
     @Test
@@ -204,7 +204,7 @@ public class RestoreTabsMediatorUnitTest {
                 .openForeignSessionTabsAsBackgroundTabs(
                         tabs, mModel.get(SELECTED_DEVICE), mTabCreatorManager);
         verify(mTracker).notifyEvent(eq(RESTORE_TABS_USED));
-        Assert.assertEquals(mModel.get(VISIBLE), false);
+        Assert.assertEquals(false, mModel.get(VISIBLE));
         verify(mDelegate).scrollGTSToRestoredTabs(0);
         RestoreTabsMetricsHelper.setPromoShownCount(0);
     }
@@ -268,7 +268,7 @@ public class RestoreTabsMediatorUnitTest {
         ModelList tabItems = mModel.get(REVIEW_TABS_MODEL_LIST);
         tabItems.add(new ListItem(DetailItemType.TAB, model1));
 
-        Assert.assertEquals(tabItems.size(), 1);
+        Assert.assertEquals(1, tabItems.size());
 
         // Add two new tabs to check they are not the same as the one above.
         ForeignSessionTab tab2 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title2", 32L, 32L, 0);
@@ -287,10 +287,10 @@ public class RestoreTabsMediatorUnitTest {
         mMediator.setSelectedDeviceItem(session);
 
         Assert.assertEquals(mModel.get(SELECTED_DEVICE), session);
-        Assert.assertEquals(tabItems.size(), 2);
+        Assert.assertEquals(2, tabItems.size());
         Assert.assertEquals(tabItems.get(0).model.get(TabItemProperties.FOREIGN_SESSION_TAB), tab2);
         Assert.assertEquals(tabItems.get(1).model.get(TabItemProperties.FOREIGN_SESSION_TAB), tab3);
-        Assert.assertEquals(mModel.get(NUM_TABS_DESELECTED), 0);
+        Assert.assertEquals(0, mModel.get(NUM_TABS_DESELECTED));
     }
 
     @Test
@@ -301,7 +301,7 @@ public class RestoreTabsMediatorUnitTest {
         Assert.assertEquals(
                 mModel.get(DETAIL_SCREEN_TITLE), R.string.restore_tabs_device_screen_sheet_title);
         Assert.assertNull(mModel.get(REVIEW_TABS_SCREEN_DELEGATE));
-        Assert.assertEquals(mModel.get(CURRENT_SCREEN), DEVICE_SCREEN);
+        Assert.assertEquals(DEVICE_SCREEN, mModel.get(CURRENT_SCREEN));
     }
 
     @Test
@@ -317,7 +317,7 @@ public class RestoreTabsMediatorUnitTest {
         assertThat(
                 mModel.get(REVIEW_TABS_SCREEN_DELEGATE),
                 instanceOf(RestoreTabsDetailScreenCoordinator.Delegate.class));
-        Assert.assertEquals(mModel.get(CURRENT_SCREEN), REVIEW_TABS_SCREEN);
+        Assert.assertEquals(REVIEW_TABS_SCREEN, mModel.get(CURRENT_SCREEN));
     }
 
     @Test
@@ -325,7 +325,7 @@ public class RestoreTabsMediatorUnitTest {
         mMediator.setCurrentScreen(HOME_SCREEN);
 
         Assert.assertNull(mModel.get(DETAIL_SCREEN_MODEL_LIST));
-        Assert.assertEquals(mModel.get(CURRENT_SCREEN), HOME_SCREEN);
+        Assert.assertEquals(HOME_SCREEN, mModel.get(CURRENT_SCREEN));
     }
 
     @Test
@@ -343,7 +343,7 @@ public class RestoreTabsMediatorUnitTest {
         mMediator.setTabListItems();
 
         ModelList tabItems = mModel.get(REVIEW_TABS_MODEL_LIST);
-        Assert.assertEquals(tabItems.size(), 1);
+        Assert.assertEquals(1, tabItems.size());
     }
 
     @Test
@@ -352,8 +352,8 @@ public class RestoreTabsMediatorUnitTest {
         PropertyModel model = TabItemProperties.create(tab, true);
         mMediator.toggleTabSelectedState(model);
 
-        Assert.assertEquals(model.get(TabItemProperties.IS_SELECTED), false);
-        Assert.assertEquals(mModel.get(NUM_TABS_DESELECTED), 1);
+        Assert.assertEquals(false, model.get(TabItemProperties.IS_SELECTED));
+        Assert.assertEquals(1, mModel.get(NUM_TABS_DESELECTED));
     }
 
     @Test
@@ -362,8 +362,8 @@ public class RestoreTabsMediatorUnitTest {
         PropertyModel model = TabItemProperties.create(tab, false);
         mMediator.toggleTabSelectedState(model);
 
-        Assert.assertEquals(model.get(TabItemProperties.IS_SELECTED), true);
-        Assert.assertEquals(mModel.get(NUM_TABS_DESELECTED), -1);
+        Assert.assertEquals(true, model.get(TabItemProperties.IS_SELECTED));
+        Assert.assertEquals(-1, mModel.get(NUM_TABS_DESELECTED));
     }
 
     @Test
@@ -375,7 +375,7 @@ public class RestoreTabsMediatorUnitTest {
         // Testing the onChangeSelectionStateForAllTabs function with a deselected tab.
         mModel.set(NUM_TABS_DESELECTED, 1);
         delegate.onChangeSelectionStateForAllTabs();
-        Assert.assertEquals(mModel.get(NUM_TABS_DESELECTED), 0);
+        Assert.assertEquals(0, mModel.get(NUM_TABS_DESELECTED));
 
         // Testing the onChangeSelectionStateForAllTabs function with no deselected tabs.
         ForeignSessionTab tab = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 32L, 0);
@@ -422,7 +422,7 @@ public class RestoreTabsMediatorUnitTest {
                 .openForeignSessionTabsAsBackgroundTabs(
                         tabs, mModel.get(SELECTED_DEVICE), mTabCreatorManager);
         verify(mTracker).notifyEvent(eq(RESTORE_TABS_USED));
-        Assert.assertEquals(mModel.get(VISIBLE), false);
+        Assert.assertEquals(false, mModel.get(VISIBLE));
         verify(mDelegate).scrollGTSToRestoredTabs(0);
         RestoreTabsMetricsHelper.setPromoShownCount(0);
     }
@@ -448,13 +448,13 @@ public class RestoreTabsMediatorUnitTest {
         mMediator.toggleTabSelectedState(model2);
         mMediator.toggleTabSelectedState(model3);
 
-        Assert.assertEquals(mModel.get(NUM_TABS_DESELECTED), 3);
+        Assert.assertEquals(3, mModel.get(NUM_TABS_DESELECTED));
 
         RestoreTabsDetailScreenCoordinator.Delegate delegate =
                 mModel.get(REVIEW_TABS_SCREEN_DELEGATE);
 
         delegate.onChangeSelectionStateForAllTabs();
-        Assert.assertEquals(mModel.get(NUM_TABS_DESELECTED), 0);
+        Assert.assertEquals(0, mModel.get(NUM_TABS_DESELECTED));
     }
 
     @Test
@@ -479,7 +479,7 @@ public class RestoreTabsMediatorUnitTest {
         mMediator.toggleTabSelectedState(model2);
         mMediator.toggleTabSelectedState(model3);
 
-        Assert.assertEquals(mModel.get(NUM_TABS_DESELECTED), 0);
+        Assert.assertEquals(0, mModel.get(NUM_TABS_DESELECTED));
 
         RestoreTabsDetailScreenCoordinator.Delegate delegate =
                 mModel.get(REVIEW_TABS_SCREEN_DELEGATE);
@@ -510,13 +510,13 @@ public class RestoreTabsMediatorUnitTest {
         mMediator.toggleTabSelectedState(model2);
         mMediator.toggleTabSelectedState(model3);
 
-        Assert.assertEquals(mModel.get(NUM_TABS_DESELECTED), 2);
+        Assert.assertEquals(2, mModel.get(NUM_TABS_DESELECTED));
 
         RestoreTabsDetailScreenCoordinator.Delegate delegate =
                 mModel.get(REVIEW_TABS_SCREEN_DELEGATE);
 
         delegate.onChangeSelectionStateForAllTabs();
-        Assert.assertEquals(mModel.get(NUM_TABS_DESELECTED), 0);
+        Assert.assertEquals(0, mModel.get(NUM_TABS_DESELECTED));
     }
 
     @Test
@@ -539,12 +539,12 @@ public class RestoreTabsMediatorUnitTest {
         mMediator.toggleTabSelectedState(model1);
         mMediator.toggleTabSelectedState(model3);
 
-        Assert.assertEquals(mModel.get(NUM_TABS_DESELECTED), 2);
+        Assert.assertEquals(2, mModel.get(NUM_TABS_DESELECTED));
 
         RestoreTabsDetailScreenCoordinator.Delegate delegate =
                 mModel.get(REVIEW_TABS_SCREEN_DELEGATE);
 
         delegate.onChangeSelectionStateForAllTabs();
-        Assert.assertEquals(mModel.get(NUM_TABS_DESELECTED), 0);
+        Assert.assertEquals(0, mModel.get(NUM_TABS_DESELECTED));
     }
 }

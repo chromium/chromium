@@ -5246,8 +5246,8 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.WebRequest.ProxyDecision"
-    enum="WebRequest.ProxyDecision" expires_after="2025-03-01">
-  <owner>toyoshima@chromium.org</owner>
+    enum="WebRequest.ProxyDecision" expires_after="2025-07-01">
+  <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     Records the decision of whether to proxy the request for the WebRequest API.

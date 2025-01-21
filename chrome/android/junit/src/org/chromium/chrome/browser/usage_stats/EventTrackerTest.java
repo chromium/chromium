@@ -65,31 +65,31 @@ public class EventTrackerTest {
                 .queryWebsiteEvents(0L, 50L)
                 .then(
                         (result) -> {
-                            assertEquals(result.size(), 25);
+                            assertEquals(25, result.size());
                         });
         mEventTracker
                 .queryWebsiteEvents(0L, 49L)
                 .then(
                         (result) -> {
-                            assertEquals(result.size(), 24);
+                            assertEquals(24, result.size());
                         });
         mEventTracker
                 .queryWebsiteEvents(0L, 51L)
                 .then(
                         (result) -> {
-                            assertEquals(result.size(), 25);
+                            assertEquals(25, result.size());
                         });
         mEventTracker
                 .queryWebsiteEvents(0L, 1000L)
                 .then(
                         (result) -> {
-                            assertEquals(result.size(), 100);
+                            assertEquals(100, result.size());
                         });
         mEventTracker
                 .queryWebsiteEvents(1L, 99L)
                 .then(
                         (result) -> {
-                            assertEquals(result.size(), 49);
+                            assertEquals(49, result.size());
                         });
     }
 
@@ -105,7 +105,7 @@ public class EventTrackerTest {
                                     .queryWebsiteEvents(0L, 1000L)
                                     .then(
                                             (result) -> {
-                                                assertEquals(result.size(), 0);
+                                                assertEquals(0, result.size());
                                             });
                         });
 
@@ -125,13 +125,13 @@ public class EventTrackerTest {
                                     .queryWebsiteEvents(0L, 50L)
                                     .then(
                                             (result) -> {
-                                                assertEquals(result.size(), 0);
+                                                assertEquals(0, result.size());
                                             });
                             mEventTracker
                                     .queryWebsiteEvents(50L, 1000L)
                                     .then(
                                             (result) -> {
-                                                assertEquals(result.size(), 50);
+                                                assertEquals(50, result.size());
                                             });
                         });
 
@@ -157,19 +157,19 @@ public class EventTrackerTest {
                                     .queryWebsiteEvents(0L, 40L)
                                     .then(
                                             (result) -> {
-                                                assertEquals(result.size(), 20);
+                                                assertEquals(20, result.size());
                                                 for (WebsiteEvent event : result.subList(0, 10)) {
-                                                    assertEquals(event.getFqdn(), "a.com");
+                                                    assertEquals("a.com", event.getFqdn());
                                                 }
                                                 for (WebsiteEvent event : result.subList(10, 20)) {
-                                                    assertEquals(event.getFqdn(), "c.com");
+                                                    assertEquals("c.com", event.getFqdn());
                                                 }
                                             });
                             mEventTracker
                                     .queryWebsiteEvents(0L, 1000L)
                                     .then(
                                             (result) -> {
-                                                assertEquals(result.size(), 20);
+                                                assertEquals(20, result.size());
                                             });
                         });
 

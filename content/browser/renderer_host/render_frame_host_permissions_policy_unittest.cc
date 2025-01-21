@@ -13,6 +13,7 @@
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/mojom/frame/deferred_fetch_policy.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -90,7 +91,7 @@ class RenderFrameHostPermissionsPolicyTest
         frame_token, {network::mojom::WebSandboxFlags::kNone,
                       CreateFPHeader(feature, origins),
                       {} /* required_document_policy */,
-                      blink::FramePolicy::DeferredFetchPolicy::kDisabled});
+                      blink::mojom::DeferredFetchPolicy::kDisabled});
   }
 
   void SimulateNavigation(RenderFrameHost** rfh, const GURL& url) {

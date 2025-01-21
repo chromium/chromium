@@ -164,7 +164,7 @@ public class QuickDeleteDialogDelegateUnitTest {
         TextViewWithClickableSpans searchHistoryDisambiguation =
                 mQuickDeleteView.findViewById(R.id.search_history_disambiguation);
 
-        assertEquals(searchHistoryDisambiguation.getClickableSpans().length, 2);
+        assertEquals(2, searchHistoryDisambiguation.getClickableSpans().length);
         searchHistoryDisambiguation.getClickableSpans()[0].onClick(searchHistoryDisambiguation);
 
         ArgumentCaptor<LoadUrlParams> argument = ArgumentCaptor.forClass(LoadUrlParams.class);
@@ -196,7 +196,7 @@ public class QuickDeleteDialogDelegateUnitTest {
         TextViewWithClickableSpans searchHistoryDisambiguation =
                 mQuickDeleteView.findViewById(R.id.search_history_disambiguation);
 
-        assertEquals(searchHistoryDisambiguation.getClickableSpans().length, 2);
+        assertEquals(2, searchHistoryDisambiguation.getClickableSpans().length);
         searchHistoryDisambiguation.getClickableSpans()[1].onClick(searchHistoryDisambiguation);
 
         ArgumentCaptor<LoadUrlParams> argument = ArgumentCaptor.forClass(LoadUrlParams.class);

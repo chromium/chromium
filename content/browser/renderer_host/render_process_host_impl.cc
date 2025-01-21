@@ -1772,9 +1772,8 @@ bool RenderProcessHostImpl::Init() {
         std::make_unique<RendererSandboxedProcessLauncherDelegate>();
 #endif
 
-    tracing_config_memory_region_ =
-        MakeRefCounted<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>(
-            tracing::CreateTracingConfigSharedMemory());
+    auto tracing_config_memory_region =
+        tracing::CreateTracingConfigSharedMemory();
 
     auto file_data = std::make_unique<ChildProcessLauncherFileData>();
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
@@ -1788,12 +1787,8 @@ bool RenderProcessHostImpl::Init() {
         std::move(sandbox_delegate), std::move(cmd_line), GetDeprecatedID(),
         this, std::move(mojo_invitation_),
         base::BindRepeating(&RenderProcessHostImpl::OnMojoError, id_),
-        std::move(file_data),
-        base::HistogramSharedMemory::PassOnCommandLineIsEnabled(
-            PROCESS_TYPE_RENDERER)
-            ? metrics_memory_region_
-            : nullptr,
-        tracing_config_memory_region_);
+        std::move(file_data), metrics_memory_region_.Duplicate(),
+        std::move(tracing_config_memory_region));
     channel_->Pause();
 
     // In single process mode, browser-side tracing and memory will cover the
@@ -4936,40 +4931,15 @@ void RenderProcessHostImpl::CreateMetricsAllocator() {
   auto shared_memory = base::HistogramSharedMemory::Create(
       GetDeprecatedID(), shared_memory_config.value());
   if (shared_memory.has_value()) {
-    metrics_memory_region_ =
-        MakeRefCounted<base::RefCountedData<base::UnsafeSharedMemoryRegion>>(
-            std::move(shared_memory->region));
+    metrics_memory_region_ = std::move(shared_memory->region);
     metrics_allocator_ = std::move(shared_memory->allocator);
   }
 }
 
 void RenderProcessHostImpl::ShareMetricsMemoryRegion() {
-  // If passing the shared memory region on the command line is NOT enabled
-  // then we pass it here via the renderer's HistogramController; otherwise,
-  // give the HistogramController a default (invalid) region.
-  // TODO(crbug.com/40818143): simplify to always pass an empty region or to
-  // elide that param once passing the region via the command line if fully
-  // launched.
-  auto memory_region =
-      metrics_memory_region_ &&
-              !base::HistogramSharedMemory::PassOnCommandLineIsEnabled(
-                  PROCESS_TYPE_RENDERER)
-          ? std::move(metrics_memory_region_->data)
-          : base::UnsafeSharedMemoryRegion();
-
-  // Pass the shared memory region to use for future histogram transmission
-  // (an invalid region if the region was already passed via the command line)
-  // and ask the renderer to transmit any early histograms that did not get
-  // stored in shared memory. This happens exactly once for each render process.
   metrics::HistogramController::GetInstance()->SetHistogramMemory(
-      this, std::move(memory_region),
+      this, std::move(metrics_memory_region_),
       metrics::HistogramController::ChildProcessMode::kGetHistogramData);
-
-  // At this point the shared memory region has either been shared via command
-  // line, or it has been given (moved) to the histogram controller. The render
-  // process host no longer needs to track it. We can safely release the host's
-  // reference.
-  metrics_memory_region_.reset();
 }
 
 ChildProcessTerminationInfo RenderProcessHostImpl::GetChildTerminationInfo(
@@ -5045,7 +5015,7 @@ void RenderProcessHostImpl::ProcessDied(
     }
   }
 
-  // Initialize a new ChannelProxy in case this host is reused for a new
+  // Initialize a new ChannelProxy in case this host is re-used for a new
   // process. This ensures that new messages can be sent on the host ASAP
   // (even before Init()) and they'll eventually reach the new process.
   //
@@ -5294,7 +5264,7 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
   if (!run_renderer_in_process() && (!child_process_launcher_.get() ||
                                      child_process_launcher_->IsStarting())) {
     // This path can be hit early (no-op) or on ProcessDied(). Reset
-    // |priority_| to defaults in case this RenderProcessHostImpl is reused.
+    // |priority_| to defaults in case this RenderProcessHostImpl is re-used.
     priority_.visible = !blink::kLaunchingProcessIsBackgrounded;
     priority_.boost_for_pending_views = true;
     return;

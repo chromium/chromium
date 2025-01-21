@@ -203,7 +203,7 @@ public class TemplateUrlServiceTest {
 
         // Outside of the EEA, where prepopulated engines are always sorted by ID, Google has the
         // lowest ID and will be at the index 0 in the sorted list.
-        Assert.assertEquals(defaultSearchEngine.getPrepopulatedId(), /* Google's ID: */ 1);
+        Assert.assertEquals(1, /* Google's ID: */ defaultSearchEngine.getPrepopulatedId());
         Assert.assertEquals(searchEngines.get(0), defaultSearchEngine);
 
         // Set search engine index and verify it stuck.

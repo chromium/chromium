@@ -257,7 +257,7 @@ Feature::Availability SimpleFeature::IsAvailableToContextImpl(
         HasDelegatedAvailabilityCheckHandler()
             ? RunDelegatedAvailabilityCheck(extension, context, url, platform,
                                             context_id, check_developer_mode,
-                                            std::move(context_data))
+                                            context_data)
             : CreateAvailability(MISSING_DELEGATED_AVAILABILITY_CHECK);
 
     if (!delegated_availibility.is_available()) {

@@ -54,12 +54,18 @@ void ChromePasswordChangeService::StartPasswordChange(
   GURL change_pwd_url = affiliation_service_->GetChangePasswordURL(url);
   CHECK(change_pwd_url.is_valid());
 
-  std::unique_ptr<PasswordChangeDelegate> controller =
+  std::unique_ptr<PasswordChangeDelegate> delegate =
       std::make_unique<PasswordChangeDelegateImpl>(
           std::move(change_pwd_url), username, password, web_contents,
           new_tab_callback_);
-  controller->AddObserver(this);
-  password_change_delegates_.push_back(std::move(controller));
+  delegate->AddObserver(this);
+  password_change_delegates_.push_back(std::move(delegate));
+
+  // Init only after `delegate` was added to the vector, so it can be
+  // immediately returned by GetPasswordChangeDelegate() when the flow starts.
+  static_cast<PasswordChangeDelegateImpl*>(
+      password_change_delegates_.back().get())
+      ->Init();
 }
 
 PasswordChangeDelegate* ChromePasswordChangeService::GetPasswordChangeDelegate(

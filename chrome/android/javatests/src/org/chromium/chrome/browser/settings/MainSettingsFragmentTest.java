@@ -482,10 +482,10 @@ public class MainSettingsFragmentTest {
                         configCaptor.capture(),
                         eq(SigninAccessPoint.SETTINGS));
         BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
-        assertEquals(config.noAccountSigninMode, NoAccountSigninMode.BOTTOM_SHEET);
+        assertEquals(NoAccountSigninMode.BOTTOM_SHEET, config.noAccountSigninMode);
         assertEquals(
-                config.withAccountSigninMode, WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET);
-        assertEquals(config.historyOptInMode, HistorySyncConfig.OptInMode.OPTIONAL);
+                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET, config.withAccountSigninMode);
+        assertEquals(HistorySyncConfig.OptInMode.OPTIONAL, config.historyOptInMode);
         assertNull(config.selectedCoreAccountId);
     }
 
@@ -795,7 +795,7 @@ public class MainSettingsFragmentTest {
         Preference preference = mMainSettings.findPreference(MainSettings.PREF_PLUS_ADDRESSES);
         Assert.assertNotNull(preference);
         Assert.assertTrue(preference.isVisible());
-        Assert.assertEquals(preference.getTitle(), "PlusAddressesTestTitle");
+        Assert.assertEquals("PlusAddressesTestTitle", preference.getTitle());
         onView(withId(R.id.recycler_view))
                 .perform(scrollTo(hasDescendant(withText("PlusAddressesTestTitle"))));
         onView(withText("PlusAddressesTestTitle")).perform(click());

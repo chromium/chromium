@@ -240,7 +240,7 @@ public class ToolbarPhoneTest {
                                     0,
                                     false));
                     // Make sure the button is visible in the beginning of the test.
-                    assertEquals(realMenuButtonCoordinator.isVisible(), true);
+                    assertEquals(true, realMenuButtonCoordinator.isVisible());
 
                     // Make the ancestors of the menu button invisible.
                     mToolbarButtonsContainer.setVisibility(View.INVISIBLE);
@@ -248,14 +248,14 @@ public class ToolbarPhoneTest {
                     // Ancestor's invisibility doesn't affect menu button's visibility.
                     assertEquals(
                             "Menu button should be visible even if its parents are not",
-                            realMenuButtonCoordinator.isVisible(),
-                            true);
+                            true,
+                            realMenuButtonCoordinator.isVisible());
                     float offsetWhenParentInvisible =
                             mToolbar.getLocationBarWidthOffsetForOptionalButton();
 
                     // Make menu's ancestors visible.
                     mToolbarButtonsContainer.setVisibility(View.VISIBLE);
-                    assertEquals(realMenuButtonCoordinator.isVisible(), true);
+                    assertEquals(true, realMenuButtonCoordinator.isVisible());
                     float offsetWhenParentVisible =
                             mToolbar.getLocationBarWidthOffsetForOptionalButton();
 
@@ -268,7 +268,7 @@ public class ToolbarPhoneTest {
 
                     // Confidence check that the offset is different when menu button is invisible.
                     realMenuButtonCoordinator.getMenuButton().setVisibility(View.INVISIBLE);
-                    assertEquals(realMenuButtonCoordinator.isVisible(), false);
+                    assertEquals(false, realMenuButtonCoordinator.isVisible());
                     float offsetWhenButtonInvisible =
                             mToolbar.getLocationBarWidthOffsetForOptionalButton();
                     assertNotEquals(
