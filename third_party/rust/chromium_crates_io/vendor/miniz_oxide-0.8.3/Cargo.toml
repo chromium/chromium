@@ -12,10 +12,11 @@
 [package]
 edition = "2021"
 name = "miniz_oxide"
-version = "0.8.2"
+version = "0.8.3"
 authors = [
     "Frommi <daniil.liferenko@gmail.com>",
     "oyvindln <oyvindln@users.noreply.github.com>",
+    "Rich Geldreich richgel99@gmail.com",
 ]
 build = false
 exclude = [
@@ -68,6 +69,8 @@ package = "rustc-std-workspace-core"
 version = "0.3.3"
 optional = true
 default-features = false
+
+[dev-dependencies]
 
 [features]
 default = ["with-alloc"]
