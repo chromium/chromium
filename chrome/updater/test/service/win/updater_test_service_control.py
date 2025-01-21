@@ -152,8 +152,7 @@ def InstallService():
 
         logging.info('Installing service with script: %s', service_main)
         command = [
-            sys.executable, service_main, '--interactive', '--startup', 'auto',
-            'install'
+            sys.executable, service_main, '--startup', 'auto', 'install'
         ]
         if _RunCommand(command):
             logging.info('Service [%s] installed.', _UPDATER_TEST_SERVICE_NAME)
