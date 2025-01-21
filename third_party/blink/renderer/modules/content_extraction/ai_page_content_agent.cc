@@ -214,11 +214,20 @@ bool IsVisible(const LayoutObject& object) {
 }
 
 bool ShouldSkipSubtree(const LayoutObject& object) {
-  // Skip embedded content that is not an iframe.
-  // TODO(crbug.com/381273397): Add content for embed and object.
   auto* layout_embedded_content = DynamicTo<LayoutEmbeddedContent>(object);
-  if (layout_embedded_content && !GetIFrame(object)) {
-    return true;
+  if (layout_embedded_content) {
+    auto* layout_iframe = GetIFrame(object);
+
+    // Skip embedded content that is not an iframe.
+    // TODO(crbug.com/381273397): Add content for embed and object.
+    if (!layout_iframe) {
+      return true;
+    }
+
+    // Skip iframe nodes which don't have a Document.
+    if (!layout_iframe->ChildFrameView()) {
+      return true;
+    }
   }
 
   // List markers are communicated by the kOrderedList and kUnorderedList
