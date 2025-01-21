@@ -456,12 +456,26 @@ impl<'a> FreeTypeScaler<'a> {
         glyph_id: GlyphId,
     ) -> Result<ScaledOutline<'a, F26Dot6>, DrawError> {
         self.load(glyph, glyph_id, 0)?;
+        // Use hdmx if hinting is requested and backward compatibility mode
+        // is not enabled.
+        // <https://gitlab.freedesktop.org/freetype/freetype/-/blob/80a507a6b8e3d2906ad2c8ba69329bd2fb2a85ef/src/truetype/ttgload.c#L2559>
+        let hdmx_width = if self.is_hinted
+            && self
+                .hinter
+                .as_ref()
+                .map(|hinter| !hinter.backward_compatibility())
+                .unwrap_or(true)
+        {
+            self.outlines.hdmx_width(self.ppem, glyph_id)
+        } else {
+            None
+        };
         Ok(ScaledOutline::new(
             &mut self.memory.scaled[..self.point_count],
             self.phantom,
             &mut self.memory.flags[..self.point_count],
             &mut self.memory.contours[..self.contour_count],
-            self.outlines.hdmx_width(self.ppem, glyph_id),
+            hdmx_width,
         ))
     }
 }

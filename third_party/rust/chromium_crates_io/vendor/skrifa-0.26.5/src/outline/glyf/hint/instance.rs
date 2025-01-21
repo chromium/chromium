@@ -236,6 +236,17 @@ impl HintInstance {
 }
 
 #[cfg(test)]
+impl HintInstance {
+    /// Enable instruct control bit 1 which effectively disables hinting.
+    ///
+    /// This mimics what the `prep` table might do for various configurations
+    /// and font sizes. Used for testing.    
+    pub fn simulate_prep_flag_suppress_hinting(&mut self) {
+        self.graphics.instruct_control |= 1;
+    }
+}
+
+#[cfg(test)]
 mod tests {
     use super::{super::super::Outlines, HintInstance};
     use read_fonts::{types::F2Dot14, FontRef};

@@ -526,3 +526,74 @@ impl Target {
         )
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        outline::{pen::NullPen, DrawSettings},
+        raw::TableProvider,
+        FontRef, MetadataProvider,
+    };
+
+    // FreeType ignores the hdmx table when backward compatibility mode
+    // is enabled in the TrueType interpreter.
+    #[test]
+    fn ignore_hdmx_when_back_compat_enabled() {
+        let font = FontRef::new(font_test_data::TINOS_SUBSET).unwrap();
+        let outlines = font.outline_glyphs();
+        // Double quote was the most egregious failure
+        let gid = font.charmap().map('"').unwrap();
+        let font_size = 16;
+        let hinter = HintingInstance::new(
+            &outlines,
+            Size::new(font_size as f32),
+            LocationRef::default(),
+            HintingOptions::default(),
+        )
+        .unwrap();
+        let HinterKind::Glyf(tt_hinter) = &hinter.kind else {
+            panic!("this is definitely a TrueType hinter");
+        };
+        // Make sure backward compatibility mode is enabled
+        assert!(tt_hinter.backward_compatibility());
+        let outline = outlines.get(gid).unwrap();
+        let metrics = outline.draw(&hinter, &mut NullPen).unwrap();
+        // FreeType computes an advance width of 7 when hinting but hdmx contains 5
+        let scaler_advance = metrics.advance_width.unwrap();
+        assert_eq!(scaler_advance, 7.0);
+        let hdmx_advance = font
+            .hdmx()
+            .unwrap()
+            .record_for_size(font_size)
+            .unwrap()
+            .widths()[gid.to_u32() as usize];
+        assert_eq!(hdmx_advance, 5);
+    }
+
+    // When hinting is disabled by the prep table, FreeType still returns
+    // rounded advance widths
+    #[test]
+    fn round_advance_when_prep_disables_hinting() {
+        let font = FontRef::new(font_test_data::TINOS_SUBSET).unwrap();
+        let outlines = font.outline_glyphs();
+        let gid = font.charmap().map('"').unwrap();
+        let size = Size::new(16.0);
+        let location = LocationRef::default();
+        let mut hinter =
+            HintingInstance::new(&outlines, size, location, HintingOptions::default()).unwrap();
+        let HinterKind::Glyf(tt_hinter) = &mut hinter.kind else {
+            panic!("this is definitely a TrueType hinter");
+        };
+        tt_hinter.simulate_prep_flag_suppress_hinting();
+        let outline = outlines.get(gid).unwrap();
+        // And we still have a rounded advance
+        let metrics = outline.draw(&hinter, &mut NullPen).unwrap();
+        assert_eq!(metrics.advance_width, Some(7.0));
+        // Unhinted advance has some fractional bits
+        let metrics = outline
+            .draw(DrawSettings::unhinted(size, location), &mut NullPen)
+            .unwrap();
+        assert_eq!(metrics.advance_width, Some(6.53125));
+    }
+}

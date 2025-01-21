@@ -1,4 +1,4 @@
-. 9 5
+. 7 4
 ash/ambient/managed 2 1
 ash/components/arc 1 1
 ash/components/arc/mojom 1 1
@@ -18,7 +18,6 @@ base/sampling_heap_profiler 1 1
 base/synchronization 3 2
 base/test 1 1
 base/test/data/pe_image_reader 1 1
-build 10 3
 build/android 4 2
 build/android/docs 1 1
 build/android/gyp 2 2
@@ -59,6 +58,7 @@ chrome/browser/password_manager 1 1
 chrome/browser/predictors 1 1
 chrome/browser/prefs 1 1
 chrome/browser/privacy 1 1
+chrome/browser/renderer_context_menu 1 1
 chrome/browser/resources/chromeos/network_ui/third_party 1 1
 chrome/browser/resources/settings/site_settings 1 1
 chrome/browser/speech/extension_api 1 1
@@ -133,6 +133,7 @@ components/os_crypt/sync 1 1
 components/page_info 2 2
 components/password_manager/core/browser 1 1
 components/payments/core 2 2
+components/permissions 1 1
 components/policy/core/browser 2 1
 components/policy/core/common 1 1
 components/policy/proto 2 1
@@ -209,6 +210,7 @@ google_apis/gaia 1 1
 gpu/config 1 1
 infra 5 3
 infra/config/generated/luci 1 1
+infra/config/generators 2 1
 infra/config/gn_args 1 1
 infra/config/subprojects/webrtc/consoles 1 1
 ios/build/bots/scripts 13 2
@@ -279,7 +281,7 @@ testing/buildbot/filters 1 1
 testing/libfuzzer 5 3
 testing/libfuzzer/proto 1 1
 testing/merge_scripts/code_coverage 1 1
-testing/scripts 2 2
+testing/scripts 1 1
 testing/scripts/variations_smoke_test_data/http_server 1 1
 third_party/abseil-cpp 20 3
 third_party/abseil-cpp/absl/base 1 1
@@ -358,7 +360,7 @@ third_party/blink/perf_tests/speedometer21/resources/todomvc/dependency-examples
 third_party/blink/perf_tests/speedometer21/resources/todomvc/labs/architecture-examples/react/bower_components/director 6 1
 third_party/blink/perf_tests/speedometer21/resources/todomvc/labs/architecture-examples/react/bower_components/react 1 1
 third_party/blink/public/common/fenced_frame 1 1
-third_party/blink/public/common/permissions_policy 1 1
+third_party/blink/public/common/permissions_policy 2 2
 third_party/blink/public/common/storage_key 1 1
 third_party/blink/public/devtools_protocol 5 2
 third_party/blink/public/mojom/fenced_frame 1 1
@@ -842,7 +844,7 @@ ui/gfx/geometry 1 1
 ui/gfx/x 1 1
 ui/gfx/x/generated_protos 6 2
 ui/gtk 2 1
-ui/ozone/platform/drm/common 2 2
-ui/ozone/platform/drm/gpu 2 1
+ui/ozone/platform/drm/common 6 2
+ui/ozone/platform/drm/gpu 3 2
 ui/ozone/platform/drm/host 2 2
 ui/views/controls/tabbed_pane 1 1
