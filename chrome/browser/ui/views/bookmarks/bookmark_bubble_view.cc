@@ -465,8 +465,7 @@ void BookmarkBubbleView::ShowBubble(
     // TODO(pbos): Consider updating ::SetFootnoteView so that it can resize the
     // widget to account for it.
     bubble->SetFootnoteView(std::make_unique<BubbleSignInPromoView>(
-        profile, delegate_ptr,
-        signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
+        profile, delegate_ptr, signin_metrics::AccessPoint::kBookmarkBubble,
         IDS_BOOKMARK_DICE_PROMO_SYNC_MESSAGE, ui::ButtonStyle::kDefault));
 #endif
   }

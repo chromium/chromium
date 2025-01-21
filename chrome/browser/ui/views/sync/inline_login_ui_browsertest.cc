@@ -126,7 +126,7 @@ ACTION(ReturnNewWebUI) {
 
 GURL GetSigninPromoURL() {
   return signin::GetEmbeddedPromoURL(
-      signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE,
+      signin_metrics::AccessPoint::kStartPage,
       signin_metrics::Reason::kForcedSigninPrimaryAccount, false);
 }
 
@@ -906,7 +906,7 @@ class InlineLoginCorrectGaiaUrlBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(InlineLoginCorrectGaiaUrlBrowserTest,
                        FetchLstOnlyEndpointForSignin) {
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON;
+      signin_metrics::AccessPoint::kMachineLogon;
   signin_metrics::Reason reason = signin_metrics::Reason::kFetchLstOnly;
 
   auto signin_url = signin::GetEmbeddedPromoURL(access_point, reason, false);
@@ -929,7 +929,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginCorrectGaiaUrlBrowserTest,
 IN_PROC_BROWSER_TEST_F(InlineLoginCorrectGaiaUrlBrowserTest,
                        FetchLstOnlyEndpointForReauth) {
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON;
+      signin_metrics::AccessPoint::kMachineLogon;
   signin_metrics::Reason reason = signin_metrics::Reason::kFetchLstOnly;
 
   static const std::string email = "foo@gmail.com";

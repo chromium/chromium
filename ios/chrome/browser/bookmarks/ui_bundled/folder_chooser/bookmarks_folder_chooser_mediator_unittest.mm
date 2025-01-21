@@ -40,8 +40,7 @@ class BookmarksFolderChooserMediatorUnitTest
     FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
     system_identity_manager->AddIdentity(fake_identity);
     authentication_service_->SignIn(
-        fake_identity,
-        signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER);
+        fake_identity, signin_metrics::AccessPoint::kBookmarkManager);
 
     sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
 

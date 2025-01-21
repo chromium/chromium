@@ -332,8 +332,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
       ShowSigninCommand* command = [[ShowSigninCommand alloc]
           initWithOperation:AuthenticationOperation::kSigninOnly
                    identity:nil
-                accessPoint:signin_metrics::AccessPoint::
-                                ACCESS_POINT_SEND_TAB_TO_SELF_PROMO
+                accessPoint:signin_metrics::AccessPoint::kSendTabToSelfPromo
                 promoAction:signin_metrics::PromoAction::
                                 PROMO_ACTION_NO_SIGNIN_PROMO
                  completion:completion];

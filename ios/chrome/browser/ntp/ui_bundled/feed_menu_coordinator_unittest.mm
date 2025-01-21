@@ -85,8 +85,7 @@ class FeedMenuCoordinatorTest : public PlatformTest {
     system_identity_manager->AddIdentity(identity);
     AuthenticationService* auth_service =
         AuthenticationServiceFactory::GetForProfile(profile_.get());
-    auth_service->SignIn(identity,
-                         signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+    auth_service->SignIn(identity, signin_metrics::AccessPoint::kUnknown);
   }
 
   // Expects that the action attributes match the given `items`.

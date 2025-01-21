@@ -46,8 +46,7 @@ constexpr int kTitleMaxWidth = 218;
 int GetSubtitleID(signin_metrics::AccessPoint access_point,
                   SignedInState signed_in_state,
                   int default_subtitle_id) {
-  if (access_point ==
-      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE) {
+  if (access_point == signin_metrics::AccessPoint::kPasswordBubble) {
     switch (signed_in_state) {
       case SignedInState::kSignedOut:
       case SignedInState::kWebOnlySignedIn:
@@ -59,8 +58,7 @@ int GetSubtitleID(signin_metrics::AccessPoint access_point,
     }
   }
 
-  if (access_point ==
-      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE) {
+  if (access_point == signin_metrics::AccessPoint::kAddressBubble) {
     switch (signed_in_state) {
       case SignedInState::kSignedOut:
       case SignedInState::kWebOnlySignedIn:
@@ -173,8 +171,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
       GetPromoAction(is_autofill_promo, signed_in_state);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (access_point ==
-      signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE) {
+  if (access_point == signin_metrics::AccessPoint::kExtensionInstallBubble) {
     if (extensions::sync_util::IsExtensionsExplicitSigninEnabled()) {
       button_text =
           account.given_name.empty()

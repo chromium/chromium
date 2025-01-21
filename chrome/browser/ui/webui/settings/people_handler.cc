@@ -667,8 +667,7 @@ void PeopleHandler::HandleStartSyncingWithEmail(const base::Value::List& args) {
       IdentityManagerFactory::GetForProfile(profile_)
           ->FindExtendedAccountInfoByEmailAddress(email.GetString());
   signin_ui_util::EnableSyncFromMultiAccountPromo(
-      profile_, maybe_account,
-      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
+      profile_, maybe_account, signin_metrics::AccessPoint::kSettings,
       is_default_promo_account.GetBool());
 #else
   NOTIMPLEMENTED();
@@ -796,7 +795,7 @@ void PeopleHandler::HandleStartSignin(const base::Value::List& args) {
   syncer::SyncService* service = GetSyncService();
   DCHECK(IsProfileAuthNeededOrHasErrors() ||
          (service && service->HasUnrecoverableError()));
-  DisplayGaiaLogin(signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  DisplayGaiaLogin(signin_metrics::AccessPoint::kSettings);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -836,8 +835,7 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
     return;
   }
   browser->signin_view_controller()->SignoutOrReauthWithPrompt(
-      signin_metrics::AccessPoint::
-          ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT,
+      signin_metrics::AccessPoint::kSettingsSignoutConfirmationPrompt,
       signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
       signin_metrics::SourceForRefreshTokenOperation::kSettings_Signout);
 }

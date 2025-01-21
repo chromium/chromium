@@ -1282,7 +1282,7 @@ using segmentation_platform::TipIdentifier;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:operation
                identity:nil
-            accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST
+            accessPoint:signin_metrics::AccessPoint::kSetUpList
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:completion];

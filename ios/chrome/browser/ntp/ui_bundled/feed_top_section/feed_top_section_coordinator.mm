@@ -108,8 +108,7 @@ using base::UserMetricsAction;
                                      profile)
                      prefService:profile->GetPrefs()
                      syncService:syncService
-                     accessPoint:signin_metrics::AccessPoint::
-                                     ACCESS_POINT_NTP_FEED_TOP_PROMO
+                     accessPoint:signin_metrics::AccessPoint::kNTPFeedTopPromo
                  signinPresenter:self
         accountSettingsPresenter:nil];
 

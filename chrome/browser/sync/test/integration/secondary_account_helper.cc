@@ -127,8 +127,8 @@ AccountInfo ImplicitSignInUnconsentedAccount(
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
           .AsPrimary(signin::ConsentLevel::kSignin)
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-        // `ACCESS_POINT_WEB_SIGNIN` is not explicit signin.
-          .WithAccessPoint(signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN)
+        // `kWebSignin` is not explicit signin.
+          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
           .Build(email));
   SetCookieForGaiaId(account_info.gaia, account_info.email,
                      /*signed_out=*/false, identity_manager,

@@ -103,7 +103,7 @@ TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionTypeTransportMode) {
   identity_test_env_profile_adaptor->identity_test_env()->MakeAccountAvailable(
       signin::AccountAvailabilityOptionsBuilder()
           .AsPrimary(signin::ConsentLevel::kSignin)
-          .WithAccessPoint(signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN)
+          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
           .Build("testy@mctestface.com"));
 
   // The extension's AccountExtensionType is `kLocal` because the user has not

@@ -92,7 +92,7 @@ class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   GURL GetWebViewEnabledWebUIURL() const {
     return GURL(signin::GetEmbeddedPromoURL(
-        signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE,
+        signin_metrics::AccessPoint::kStartPage,
         signin_metrics::Reason::kForcedSigninPrimaryAccount, false));
   }
 #endif

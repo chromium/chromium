@@ -330,7 +330,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   } else {
     [self.imageUpdater setSignedOutAccountImage];
     signin_metrics::LogSignInOffered(
-        signin_metrics::AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON,
+        signin_metrics::AccessPoint::kNTPSignedOutIcon,
         signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
   }
 }

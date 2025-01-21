@@ -440,7 +440,7 @@ TEST_F(PeopleHandlerTest, DisplayBasicLogin) {
 
   EXPECT_CALL(mock_signin_ui_delegate,
               ShowSigninUI(profile(), /*enable_sync=*/true,
-                           signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
+                           signin_metrics::AccessPoint::kSettings,
                            signin_metrics::PromoAction::
                                PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT));
   handler_->HandleStartSignin(base::Value::List());
@@ -1617,7 +1617,7 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, HandleStartSigninManaged) {
   EXPECT_CALL(
       mock_signin_ui_delegate,
       ShowReauthUI(profile(), kManagedEmail, /*enable_sync=*/false,
-                   signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
+                   signin_metrics::AccessPoint::kSettings,
                    signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO));
   web_ui_.HandleReceivedMessage("SyncSetupStartSignIn", base::Value::List());
 }
