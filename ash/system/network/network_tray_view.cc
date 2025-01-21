@@ -41,7 +41,7 @@ NetworkTrayView::~NetworkTrayView() {
 }
 
 std::u16string NetworkTrayView::GetAccessibleNameString() const {
-  return GetCachedTooltipText();
+  return GetTooltipText();
 }
 
 views::View* NetworkTrayView::GetTooltipHandlerForPoint(
@@ -125,7 +125,7 @@ void NetworkTrayView::UpdateConnectionStatus(bool notify_a11y) {
     GetViewAccessibility().RemoveDescription();
   }
 
-  SetCachedTooltipText(tooltip);
+  SetTooltipText(tooltip);
 }
 
 network_icon::IconType NetworkTrayView::GetIconType() {

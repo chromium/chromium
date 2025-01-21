@@ -55,6 +55,8 @@ LoginShelfButton::LoginShelfButton(PressedCallback callback,
   SetBorder(views::CreateThemedRoundedRectBorder(
       kButtonHighlightWidthDp, kButtonHighlightRadiusDp,
       ui::kColorCrosSystemHighlight));
+  // PillButton has some custom tooltip logic that runs, but we don't want here.
+  SetUseLabelAsDefaultTooltip(false);
   UpdateTooltipText(label());
   label()->AddDisplayTextTruncationCallback(base::BindRepeating(
       &LoginShelfButton::UpdateTooltipText, weak_ptr_factory_.GetWeakPtr()));
@@ -120,9 +122,9 @@ bool LoginShelfButton::GetIsActive() const {
 
 void LoginShelfButton::UpdateTooltipText(views::Label* label) {
   if (label->IsDisplayTextTruncated()) {
-    SetCachedTooltipText(GetText());
+    SetTooltipText(GetText());
   } else {
-    SetCachedTooltipText(std::u16string());
+    SetTooltipText(std::u16string());
   }
 }
 

@@ -130,7 +130,7 @@ void ReloadButton::OnMouseExited(const ui::MouseEvent& event) {
 void ReloadButton::UpdateCachedTooltipText() {
   int reload_tooltip =
       menu_enabled_ ? IDS_TOOLTIP_RELOAD_WITH_MENU : IDS_TOOLTIP_RELOAD;
-  SetCachedTooltipText(l10n_util::GetStringUTF16(
+  SetTooltipText(l10n_util::GetStringUTF16(
       visible_mode_ == Mode::kReload ? reload_tooltip : IDS_TOOLTIP_STOP));
 }
 

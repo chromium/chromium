@@ -455,7 +455,7 @@ TEST_F(NotificationIconsControllerTest, NotificationCenterTrayAccessibleName) {
     EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
               controller->notification_counter_view()
                   ->image_view()
-                  ->GetCachedTooltipText());
+                  ->GetTooltipText());
   }
 
   // If the NotificationCounterView's image tooltip text is updated, the tray

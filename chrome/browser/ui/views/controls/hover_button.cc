@@ -381,7 +381,7 @@ views::View* HoverButton::GetTooltipHandlerForPoint(const gfx::Point& point) {
     if (handler) {
       gfx::Point point_in_handler_view(point);
       ConvertPointToTarget(this, handler, &point_in_handler_view);
-      if (!handler->GetTooltipText(point_in_secondary_view).empty()) {
+      if (!handler->GetRenderedTooltipText(point_in_secondary_view).empty()) {
         return handler;
       }
     }

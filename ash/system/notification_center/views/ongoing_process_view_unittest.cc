@@ -460,20 +460,23 @@ TEST_F(OngoingProcessViewTest, PillButtonTooltipText) {
   auto* pill_button = GetPillButton(ongoing_process_view);
   EXPECT_TRUE(pill_button);
 
-  EXPECT_EQ(pill_button->GetTooltipText(gfx::Point()), sample_text);
+  EXPECT_EQ(pill_button->GetRenderedTooltipText(gfx::Point()), sample_text);
 
   pill_button->SetTooltipText(u"");
-  EXPECT_EQ(pill_button->GetTooltipText(gfx::Point()), pill_button->GetText());
+  EXPECT_EQ(pill_button->GetRenderedTooltipText(gfx::Point()),
+            pill_button->GetText());
 
   pill_button->SetText(u"This is Label's Tooltip Text");
-  EXPECT_EQ(pill_button->GetTooltipText(gfx::Point()), pill_button->GetText());
+  EXPECT_EQ(pill_button->GetRenderedTooltipText(gfx::Point()),
+            pill_button->GetText());
 
   pill_button->SetUseLabelAsDefaultTooltip(false);
-  EXPECT_EQ(pill_button->GetTooltipText(gfx::Point()), u"");
+  EXPECT_EQ(pill_button->GetRenderedTooltipText(gfx::Point()), u"");
 
   pill_button->SetTooltipText(sample_text);
-  EXPECT_NE(pill_button->GetTooltipText(gfx::Point()), pill_button->GetText());
-  EXPECT_EQ(pill_button->GetTooltipText(gfx::Point()), sample_text);
+  EXPECT_NE(pill_button->GetRenderedTooltipText(gfx::Point()),
+            pill_button->GetText());
+  EXPECT_EQ(pill_button->GetRenderedTooltipText(gfx::Point()), sample_text);
 }
 
 TEST_F(OngoingProcessViewTest, PillButtonTooltipTextAccessibility) {
@@ -501,46 +504,46 @@ TEST_F(OngoingProcessViewTest, PillButtonTooltipTextAccessibility) {
   ui::AXNodeData node_data;
   pill_button->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            pill_button->GetTooltipText(gfx::Point()));
+            pill_button->GetRenderedTooltipText(gfx::Point()));
   EXPECT_NE(
       node_data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-      pill_button->GetTooltipText(gfx::Point()));
+      pill_button->GetRenderedTooltipText(gfx::Point()));
 
   pill_button->SetTooltipText(u"");
   node_data = ui::AXNodeData();
   pill_button->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            pill_button->GetTooltipText(gfx::Point()));
+            pill_button->GetRenderedTooltipText(gfx::Point()));
   EXPECT_NE(
       node_data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-      pill_button->GetTooltipText(gfx::Point()));
+      pill_button->GetRenderedTooltipText(gfx::Point()));
 
   pill_button->SetText(u"This is Label's Tooltip Text");
   node_data = ui::AXNodeData();
   pill_button->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            pill_button->GetTooltipText(gfx::Point()));
+            pill_button->GetRenderedTooltipText(gfx::Point()));
   EXPECT_NE(
       node_data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-      pill_button->GetTooltipText(gfx::Point()));
+      pill_button->GetRenderedTooltipText(gfx::Point()));
 
   pill_button->SetUseLabelAsDefaultTooltip(false);
   node_data = ui::AXNodeData();
   pill_button->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_NE(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            pill_button->GetTooltipText(gfx::Point()));
+            pill_button->GetRenderedTooltipText(gfx::Point()));
   EXPECT_EQ(
       node_data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-      pill_button->GetTooltipText(gfx::Point()));
+      pill_button->GetRenderedTooltipText(gfx::Point()));
 
   pill_button->SetTooltipText(sample_text);
   node_data = ui::AXNodeData();
   pill_button->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_NE(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            pill_button->GetTooltipText(gfx::Point()));
+            pill_button->GetRenderedTooltipText(gfx::Point()));
   EXPECT_EQ(
       node_data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-      pill_button->GetTooltipText(gfx::Point()));
+      pill_button->GetRenderedTooltipText(gfx::Point()));
 }
 
 }  // namespace ash

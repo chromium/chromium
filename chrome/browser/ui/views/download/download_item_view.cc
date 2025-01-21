@@ -165,7 +165,13 @@ class TransparentButton : public views::Button {
                       views::style::STYLE_PRIMARY)));
         },
         this));
+    tooltip_text_changed_subscription_ =
+        parent->AddTooltipTextChangedCallback(base::BindRepeating(
+            &TransparentButton::OnTooltipTextUpdated, base::Unretained(this)));
+
+    SetTooltipText(parent->GetTooltipText());
   }
+
   ~TransparentButton() override = default;
 
   // Forward dragging and capture loss events, since this class doesn't have
@@ -181,9 +187,10 @@ class TransparentButton : public views::Button {
     Button::OnMouseCaptureLost();
   }
 
-  std::u16string GetTooltipText(const gfx::Point& point) const override {
-    return parent()->GetTooltipText(point);
-  }
+  void OnTooltipTextUpdated() { parent()->GetTooltipText(); }
+
+ private:
+  base::CallbackListSubscription tooltip_text_changed_subscription_;
 };
 
 BEGIN_METADATA(TransparentButton)
@@ -475,12 +482,12 @@ void DownloadItemView::OnMouseCaptureLost() {
 
 void DownloadItemView::UpdateTooltipText() {
   if (has_warning_label(mode_)) {
-    SetCachedTooltipText(std::u16string());
+    SetTooltipText(std::u16string());
     return;
   }
 
   const std::u16string new_tooltip_text = model_->GetTooltipText();
-  SetCachedTooltipText(new_tooltip_text);
+  SetTooltipText(new_tooltip_text);
 }
 
 void DownloadItemView::ShowContextMenuForViewImpl(

@@ -1494,7 +1494,7 @@ TEST_F(UnifiedSystemTrayAccessibilityTest, NetworkTrayUpdatesName) {
                   IDS_ASH_STATUS_TRAY_ACCESSIBLE_DESCRIPTION, status, nullptr));
   }
 
-  network_tray_view()->SetCachedTooltipText(u"Test network tooltip");
+  network_tray_view()->SetTooltipText(u"Test network tooltip");
   UpdatePartOfStatus(&status, u"Test network tooltip",
                      StatusType::kNetworkHotspot);
 
@@ -1518,7 +1518,7 @@ TEST_F(UnifiedSystemTrayAccessibilityTest, HotspotTrayUpdatesName) {
 
   hotspot_tray_view()->SetVisible(true);
   EXPECT_TRUE(hotspot_tray_view()->GetVisible());
-  hotspot_tray_view()->SetCachedTooltipText(u"Test hotspot tooltip");
+  hotspot_tray_view()->SetTooltipText(u"Test hotspot tooltip");
   UpdatePartOfStatus(&status, u"Test hotspot tooltip",
                      StatusType::kNetworkHotspot);
 
@@ -1539,12 +1539,12 @@ TEST_F(UnifiedSystemTrayAccessibilityTest, HotspotAndNetworkCombinedInName) {
   hotspot_tray_view()->SetVisible(true);
   EXPECT_TRUE(hotspot_tray_view()->GetVisible());
   std::u16string hotspot_string = u"Test hotspot tooltip";
-  hotspot_tray_view()->SetCachedTooltipText(hotspot_string);
+  hotspot_tray_view()->SetTooltipText(hotspot_string);
 
   network_tray_view()->SetVisible(true);
   EXPECT_TRUE(network_tray_view()->GetVisible());
   std::u16string network_string = u"Test network tooltip";
-  network_tray_view()->SetCachedTooltipText(network_string);
+  network_tray_view()->SetTooltipText(network_string);
 
   UpdatePartOfStatus(&status,
                      l10n_util::GetStringFUTF16(

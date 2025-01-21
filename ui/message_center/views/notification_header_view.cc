@@ -95,7 +95,7 @@ class ExpandButton : public views::ImageView {
   void OnFocus() override;
   void OnBlur() override;
   void OnThemeChanged() override;
-  void SetTooltipText(const std::u16string& tooltip) override;
+  void OnTooltipTextChanged(const std::u16string& old_tooltip_text) override;
 
  private:
   std::unique_ptr<views::Painter> focus_painter_;
@@ -137,9 +137,9 @@ void ExpandButton::OnThemeChanged() {
       gfx::Insets::TLBR(0, 0, 1, 1));
 }
 
-void ExpandButton::SetTooltipText(const std::u16string& tooltip) {
-  views::ImageView::SetTooltipText(tooltip);
-
+void ExpandButton::OnTooltipTextChanged(
+    const std::u16string& old_tooltip_text) {
+  ImageView::OnTooltipTextChanged(old_tooltip_text);
   if (GetTooltipText().empty()) {
     GetViewAccessibility().SetName(
         GetTooltipText(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);

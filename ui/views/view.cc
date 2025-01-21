@@ -2009,14 +2009,21 @@ FocusTraversable* View::GetPaneFocusTraversable() {
 
 // Tooltips --------------------------------------------------------------------
 
-void View::SetCachedTooltipText(const std::u16string& text) {
+void View::SetTooltipText(const std::u16string& text) {
   if (cached_tooltip_text_ == text) {
     return;
   }
 
-  GetViewAccessibility().OnTooltipTextChanged(
-      std::exchange(cached_tooltip_text_, text));
+  std::u16string previous_tooltip_text = std::move(cached_tooltip_text_);
+
+  cached_tooltip_text_ = text;
+
+  OnTooltipTextChanged(previous_tooltip_text);
+}
+
+void View::OnTooltipTextChanged(const std::u16string& old_tooltip_text) {
   TooltipTextChanged();
+  GetViewAccessibility().OnTooltipTextChanged(old_tooltip_text);
 }
 
 base::CallbackListSubscription View::AddTooltipTextChangedCallback(
@@ -2024,11 +2031,11 @@ base::CallbackListSubscription View::AddTooltipTextChangedCallback(
   return AddPropertyChangedCallback(&cached_tooltip_text_, std::move(callback));
 }
 
-std::u16string View::GetTooltipText(const gfx::Point& p) const {
-  return GetCachedTooltipText();
+std::u16string View::GetRenderedTooltipText(const gfx::Point& p) const {
+  return GetTooltipText();
 }
 
-const std::u16string& View::GetCachedTooltipText() const {
+const std::u16string& View::GetTooltipText() const {
   return cached_tooltip_text_;
 }
 
@@ -2798,7 +2805,7 @@ void View::SetHeight(int height) {
 }
 
 std::u16string View::GetTooltip() const {
-  return GetTooltipText(gfx::Point());
+  return GetTooltipText();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -3853,6 +3860,7 @@ ADD_PROPERTY_METADATA(bool, UseDefaultFillLayout)
 ADD_PROPERTY_METADATA(int, Width)
 ADD_PROPERTY_METADATA(int, X)
 ADD_PROPERTY_METADATA(int, Y)
+ADD_PROPERTY_METADATA(std::u16string, TooltipText)
 ADD_CLASS_PROPERTY_METADATA(gfx::Insets, kMarginsKey)
 ADD_CLASS_PROPERTY_METADATA(gfx::Insets, kInternalPaddingKey)
 ADD_CLASS_PROPERTY_METADATA(LayoutAlignment, kCrossAxisAlignmentKey)

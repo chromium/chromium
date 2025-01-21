@@ -29,7 +29,7 @@ class UrlLabel : public views::Label {
     // these are allowed to be of arbitrary length (since they aren't
     // constrained by the visual layout) and should give the user the full URL.
     GetViewAccessibility().SetName(GetText());
-    SetTooltipText(GetText());
+    SetCustomTooltipText(GetText());
   }
   ~UrlLabel() override = default;
 

@@ -79,7 +79,7 @@ LegendEntry::LegendEntry(const Legend::Entry& data)
       std::make_unique<views::Label>(data.label, views::style::CONTEXT_LABEL));
   label->SetEnabledColor(kHUDDefaultColor);
   if (!data.tooltip.empty())
-    label->SetTooltipText(data.tooltip);
+    label->SetCustomTooltipText(data.tooltip);
 
   constexpr int kLabelToValueSpece = 5;
   value_ = AddChildView(std::make_unique<views::Label>(

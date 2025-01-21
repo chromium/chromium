@@ -118,7 +118,7 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
                                        ? cros_tokens::kCrosSysOnSurface
                                        : cros_tokens::kCrosSysDisabled);
     task_title_->SetText(title);
-    task_title_->SetTooltipText(title);
+    task_title_->SetCustomTooltipText(title);
     task_title_->SetBorder(views::CreateEmptyBorder(kTaskTitleLabelInsets));
     task_title_->SetEnabled(is_network_connected);
   }
@@ -136,7 +136,7 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
   void UpdateTitle(const std::u16string& title) {
     radio_button_->GetViewAccessibility().SetDescription(title);
     task_title_->SetText(title);
-    task_title_->SetTooltipText(title);
+    task_title_->SetCustomTooltipText(title);
   }
 
   // Sets `radio_button_` as toggled which will update the button with a check
@@ -707,7 +707,7 @@ void FocusModeTray::CloseBubbleAndMaybeReset(bool should_reset) {
 void FocusModeTray::UpdateAccessibleName() {
   if (!session_snapshot_) {
     GetViewAccessibility().RemoveName();
-    image_view_->SetCachedTooltipText(std::u16string());
+    image_view_->SetTooltipText(std::u16string());
     return;
   }
 

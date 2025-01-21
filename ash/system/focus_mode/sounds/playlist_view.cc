@@ -102,7 +102,7 @@ void PlaylistView::UpdateContents(
   if (const auto text = base::UTF8ToUTF16(playlist_data_.title);
       !text.empty()) {
     title_label_->SetText(text);
-    title_label_->SetTooltipText(text);
+    title_label_->SetCustomTooltipText(text);
     title_label_->GetViewAccessibility().SetName(text);
     playlist_image_button_->SetTooltipText(text);
     playlist_image_button_->GetViewAccessibility().SetName(

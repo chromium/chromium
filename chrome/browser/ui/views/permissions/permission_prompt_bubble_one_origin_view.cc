@@ -317,7 +317,7 @@ void PermissionPromptBubbleOneOriginView::OnAudioDevicesChanged(
       IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT_WITH_COUNT,
       base::NumberToString16(real_device_names.size())));
 
-  mic_permission_label_->SetTooltipText(
+  mic_permission_label_->SetCustomTooltipText(
       base::UTF8ToUTF16(base::JoinString(real_device_names, "\n")));
 }
 
@@ -342,7 +342,7 @@ void PermissionPromptBubbleOneOriginView::OnVideoDevicesChanged(
       media_effects::GetRealVideoDeviceNames(device_infos.value());
   camera_label->SetText(l10n_util::GetStringFUTF16(
       message_id, base::NumberToString16(real_device_names.size())));
-  camera_label->SetTooltipText(
+  camera_label->SetCustomTooltipText(
       base::UTF8ToUTF16(base::JoinString(real_device_names, "\n")));
 }
 #endif

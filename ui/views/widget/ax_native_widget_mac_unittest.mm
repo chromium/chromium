@@ -342,7 +342,7 @@ TEST_F(AXNativeWidgetMacTest, TooltipText) {
   Label* label = new Label(base::SysNSStringToUTF16(kTestStringValue));
   label->SetSize(GetWidgetBounds().size());
   EXPECT_NSEQ(nil, A11yElementAtMidpoint().accessibilityHelp);
-  label->SetTooltipText(base::SysNSStringToUTF16(kTestPlaceholderText));
+  label->SetCustomTooltipText(base::SysNSStringToUTF16(kTestPlaceholderText));
   widget()->GetContentsView()->AddChildView(label);
 
   // The tooltip is exposed in accessibilityCustomContent. This is because the

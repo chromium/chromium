@@ -93,12 +93,13 @@ TEST_F(ExtensionMenuItemViewTest, UpdatesToDisplayCorrectActionTitle) {
 }
 
 TEST_F(ExtensionMenuItemViewTest, UpdatesToDisplayTooltip) {
-  EXPECT_EQ(primary_button()->GetTooltipText(gfx::Point()), initial_tooltip_);
+  EXPECT_EQ(primary_button()->GetRenderedTooltipText(gfx::Point()),
+            initial_tooltip_);
 
   std::u16string tooltip = u"New Tooltip";
   controller_->SetTooltip(tooltip);
 
-  EXPECT_EQ(primary_button()->GetTooltipText(gfx::Point()), tooltip);
+  EXPECT_EQ(primary_button()->GetRenderedTooltipText(gfx::Point()), tooltip);
 }
 
 TEST_F(ExtensionMenuItemViewTest, ButtonMatchesEnabledStateOfExtension) {

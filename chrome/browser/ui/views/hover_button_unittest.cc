@@ -132,7 +132,7 @@ TEST_F(HoverButtonTest, TooltipAndAccessibleName) {
     EXPECT_EQ(expected, GetAccessibleName(*button));
 
     EXPECT_EQ(pair.tooltip ? expected : std::u16string(),
-              button->GetTooltipText(gfx::Point()));
+              button->GetRenderedTooltipText(gfx::Point()));
   }
 }
 
@@ -150,7 +150,7 @@ TEST_F(HoverButtonTest, TooltipAndAccessibleNameWithFooter) {
       button->GetViewAccessibility());
 
   EXPECT_EQ(expected, GetAccessibleName(*button));
-  EXPECT_EQ(std::u16string(), button->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(std::u16string(), button->GetRenderedTooltipText(gfx::Point()));
 }
 
 TEST_F(HoverButtonTest, TooltipAndAccessibleName_DynamicTextUpdate) {

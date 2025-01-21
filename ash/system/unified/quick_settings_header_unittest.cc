@@ -288,7 +288,8 @@ TEST_F(QuickSettingsHeaderTest, EnterpriseManagedDeviceVisible) {
 
   EXPECT_TRUE(GetManagedButton()->GetVisible());
   EXPECT_EQ(GetManagedButtonLabel()->GetText(), u"Managed by example.com");
-  EXPECT_EQ(GetManagedButton()->GetTooltipText({}), u"Managed by example.com");
+  EXPECT_EQ(GetManagedButton()->GetRenderedTooltipText({}),
+            u"Managed by example.com");
   EXPECT_TRUE(header_->GetVisible());
 }
 
@@ -300,7 +301,8 @@ TEST_F(QuickSettingsHeaderTest, EnterpriseManagedAccountVisible) {
 
   EXPECT_TRUE(GetManagedButton()->GetVisible());
   EXPECT_EQ(GetManagedButtonLabel()->GetText(), u"Managed by example.com");
-  EXPECT_EQ(GetManagedButton()->GetTooltipText({}), u"Managed by example.com");
+  EXPECT_EQ(GetManagedButton()->GetRenderedTooltipText({}),
+            u"Managed by example.com");
   EXPECT_TRUE(header_->GetVisible());
 }
 
@@ -315,7 +317,8 @@ TEST_F(QuickSettingsHeaderTest, BothChannelAndEnterpriseVisible) {
   EXPECT_TRUE(GetManagedButton()->GetVisible());
   // The label is the shorter "Managed" due to the two-column layout.
   EXPECT_EQ(GetManagedButtonLabel()->GetText(), u"Managed");
-  EXPECT_EQ(GetManagedButton()->GetTooltipText({}), u"Managed by example.com");
+  EXPECT_EQ(GetManagedButton()->GetRenderedTooltipText({}),
+            u"Managed by example.com");
   EXPECT_TRUE(header_->channel_view_for_test());
   EXPECT_TRUE(header_->GetVisible());
 }
@@ -331,7 +334,8 @@ TEST_F(QuickSettingsHeaderTest, BothEolNoticeAndEnterpriseVisible) {
   EXPECT_TRUE(GetManagedButton()->GetVisible());
   // The label is the shorter "Managed" due to the two-column layout.
   EXPECT_EQ(GetManagedButtonLabel()->GetText(), u"Managed");
-  EXPECT_EQ(GetManagedButton()->GetTooltipText({}), u"Managed by example.com");
+  EXPECT_EQ(GetManagedButton()->GetRenderedTooltipText({}),
+            u"Managed by example.com");
   EXPECT_TRUE(header_->GetVisible());
   EolNoticeQuickSettingsView* eol_notice = header_->eol_notice_for_test();
   ASSERT_TRUE(eol_notice);
@@ -365,7 +369,7 @@ TEST_F(QuickSettingsHeaderTest, ChildVisible) {
   // Now the supervised user view is visible.
   EXPECT_TRUE(GetSupervisedButton()->GetVisible());
   EXPECT_EQ(GetSupervisedButtonLabel()->GetText(), u"Supervised user");
-  EXPECT_EQ(GetSupervisedButton()->GetTooltipText({}),
+  EXPECT_EQ(GetSupervisedButton()->GetRenderedTooltipText({}),
             u"Account managed by parent@test.com");
   EXPECT_TRUE(header_->GetVisible());
 

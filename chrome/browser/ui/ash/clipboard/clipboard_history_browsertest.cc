@@ -258,10 +258,10 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
 
     GetEventGenerator()->MoveMouseTo(
         delete_button->GetBoundsInScreen().CenterPoint());
-    EXPECT_EQ(
-        delete_button->GetTooltipText(delete_button->bounds().CenterPoint()),
-        l10n_util::GetStringUTF16(
-            IDS_CLIPBOARD_HISTORY_DELETE_BUTTON_HOVER_TEXT));
+    EXPECT_EQ(delete_button->GetRenderedTooltipText(
+                  delete_button->bounds().CenterPoint()),
+              l10n_util::GetStringUTF16(
+                  IDS_CLIPBOARD_HISTORY_DELETE_BUTTON_HOVER_TEXT));
     EXPECT_EQ(
         delete_button->GetViewAccessibility().GetCachedName(),
         l10n_util::GetStringFUTF16(IDS_CLIPBOARD_HISTORY_DELETE_ITEM_TEXT,

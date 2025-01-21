@@ -130,7 +130,7 @@ class ColorPickerElementView : public views::Button {
     return parent()->GetSelectedViewForGroup(group);
   }
 
-  void UpdateCachedTooltipText() { SetCachedTooltipText(color_name_); }
+  void UpdateCachedTooltipText() { SetTooltipText(color_name_); }
 
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override {

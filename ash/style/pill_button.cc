@@ -292,15 +292,20 @@ void PillButton::SetText(const std::u16string& text) {
   // Using our `UpdateTooltip()` function as-is would produce incorrect results
   // because the cache contains a value that did not originate from the parent
   // `LabelButton`.
-  if (use_label_as_default_tooltip_ &&
-      old_label_text == GetCachedTooltipText()) {
-    SetCachedTooltipText(GetText());
+  if (use_label_as_default_tooltip_ && old_label_text == GetTooltipText()) {
+    SetTooltipText(GetText());
   }
 }
 
 void PillButton::OnSetTooltipText(const std::u16string& tooltip_text) {
   views::LabelButton::OnSetTooltipText(tooltip_text);
-  original_tooltip_text_ = GetCachedTooltipText();
+  // We only update the `original_tooltip_text_` if the tooltip is not the
+  // label's text.
+  if (GetTooltipText() == GetText()) {
+    return;
+  }
+
+  original_tooltip_text_ = GetTooltipText();
   UpdateTooltipText();
 }
 
@@ -460,13 +465,13 @@ int PillButton::GetHorizontalSpacingWithIcon() const {
 }
 
 void PillButton::UpdateTooltipText() {
-  const auto& tooltip = GetCachedTooltipText();
+  const auto& tooltip = GetTooltipText();
   if (use_label_as_default_tooltip_ && tooltip.empty()) {
-    SetCachedTooltipText(GetText());
+    SetTooltipText(GetText());
   } else {
     // Only use the old value if we were using Label's Text as tooltip before.
     if (tooltip == GetText()) {
-      SetCachedTooltipText(original_tooltip_text_);
+      SetTooltipText(original_tooltip_text_);
     }
   }
 }

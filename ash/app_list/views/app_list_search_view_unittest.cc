@@ -841,7 +841,7 @@ TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemTooltips) {
   GetSearchBoxView()->GetWidget()->LayoutRootViewIfNecessary();
   views::ImageButton* filter_button = GetSearchBoxView()->filter_button();
   EXPECT_TRUE(filter_button->GetVisible());
-  EXPECT_EQ(filter_button->GetTooltipText({}),
+  EXPECT_EQ(filter_button->GetRenderedTooltipText({}),
             u"Toggle search result categories");
   LeftClickOn(filter_button);
   EXPECT_TRUE(GetSearchBoxView()->IsFilterMenuOpen());
@@ -850,7 +850,7 @@ TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemTooltips) {
                            std::u16string tooltip) {
     EXPECT_EQ(GetSearchBoxView()
                   ->GetFilterMenuItemByCategory(category)
-                  ->GetTooltipText({}),
+                  ->GetRenderedTooltipText({}),
               tooltip);
   };
 

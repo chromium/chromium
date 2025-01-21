@@ -144,7 +144,7 @@ void BookmarkButton::UpdateTooltipText() {
   const views::TooltipManager* tooltip_manager =
       GetWidget()->GetTooltipManager();
   if (tooltip_manager) {
-    SetCachedTooltipText(BookmarkBarView::CreateToolTipForURLAndTitle(
+    SetTooltipText(BookmarkBarView::CreateToolTipForURLAndTitle(
         max_tooltip_width_, tooltip_manager->GetFontList(), *url_, GetText()));
   }
 }

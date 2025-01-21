@@ -658,10 +658,10 @@ TEST_P(DesksTest, DesksTextfieldAddTooltipText) {
   auto* desks_bar_view =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
   auto* desk_name_view1 = desks_bar_view->mini_views()[0]->desk_name_view();
-  EXPECT_TRUE(desk_name_view1->GetTooltipText(gfx::Point()).empty());
+  EXPECT_TRUE(desk_name_view1->GetRenderedTooltipText(gfx::Point()).empty());
 
   auto* desk_name_view2 = desks_bar_view->mini_views()[1]->desk_name_view();
-  EXPECT_EQ(desk_name2, desk_name_view2->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(desk_name2, desk_name_view2->GetRenderedTooltipText(gfx::Point()));
 }
 
 TEST_P(DesksTest, DesksBarViewDeskCreation) {

@@ -70,7 +70,7 @@ class MockNamedTestView : public views::View {
  public:
   MockNamedTestView() {
     // For custom properties test.
-    SetCachedTooltipText(u"This is the tooltip");
+    SetTooltipText(u"This is the tooltip");
   }
 
   int GetBoolProperty() const { return bool_property_; }

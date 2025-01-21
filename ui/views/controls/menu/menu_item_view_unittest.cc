@@ -952,9 +952,10 @@ TEST_F(MenuItemViewA11yTest, TooltipText) {
                                   std::nullopt, std::nullopt, std::nullopt);
 
   menu_item_view()->SetTooltip(u"Tooltip", id);
-  EXPECT_EQ(menu_item_view()->GetMenuItemByID(id)->GetCachedTooltipText(),
+  EXPECT_EQ(menu_item_view()->GetMenuItemByID(id)->GetTooltipText(),
             u"Tooltip");
-  EXPECT_EQ(menu_item_view()->GetMenuItemByID(id)->GetTooltipText(gfx::Point()),
+  EXPECT_EQ(menu_item_view()->GetMenuItemByID(id)->GetRenderedTooltipText(
+                gfx::Point()),
             u"Tooltip");
 }
 
@@ -974,7 +975,7 @@ TEST_F(MenuItemViewA11yTest, TooltipTextAccessibility) {
       ->GetMenuItemByID(id)
       ->GetViewAccessibility()
       .GetAccessibleNodeData(&data);
-  EXPECT_EQ(menu_item_view()->GetMenuItemByID(id)->GetCachedTooltipText(),
+  EXPECT_EQ(menu_item_view()->GetMenuItemByID(id)->GetTooltipText(),
             u"Tooltip");
   // When no description is explicitly set, the tooltip should be used.
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),

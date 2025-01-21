@@ -246,7 +246,7 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
   BookmarkFolderButton(const BookmarkFolderButton&) = delete;
   BookmarkFolderButton& operator=(const BookmarkFolderButton&) = delete;
 
-  void UpdateCachedTooltipText() { SetCachedTooltipText(GetAccessibleText()); }
+  void UpdateCachedTooltipText() { SetTooltipText(GetAccessibleText()); }
 
   bool OnMousePressed(const ui::MouseEvent& event) override {
     if (event.IsOnlyLeftMouseButton()) {

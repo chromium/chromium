@@ -85,7 +85,7 @@ TEST_F(HoldingSpaceItemChipViewTest, TooltipText) {
   constexpr gfx::Point p;
 
   // Case: Empty primary tooltip, empty secondary tooltip.
-  EXPECT_TRUE(view()->GetTooltipText(p).empty());
+  EXPECT_TRUE(view()->GetRenderedTooltipText(p).empty());
 
   // Populate secondary text.
   // NOTE: Text must be long enough to force a tooltip in the underlying label.
@@ -93,7 +93,8 @@ TEST_F(HoldingSpaceItemChipViewTest, TooltipText) {
   FlushMessageLoop();
 
   // Case: Empty primary tooltip, populated secondary tooltip.
-  EXPECT_EQ(view()->GetTooltipText(p), u"file_path, secondary secondary");
+  EXPECT_EQ(view()->GetRenderedTooltipText(p),
+            u"file_path, secondary secondary");
 
   // Populate primary text.
   // NOTE: Text must be long enough to force a tooltip in the underlying label.
@@ -101,14 +102,15 @@ TEST_F(HoldingSpaceItemChipViewTest, TooltipText) {
   FlushMessageLoop();
 
   // Case: Populated primary tooltip, populated secondary tooltip.
-  EXPECT_EQ(view()->GetTooltipText(p), u"primary primary, secondary secondary");
+  EXPECT_EQ(view()->GetRenderedTooltipText(p),
+            u"primary primary, secondary secondary");
 
   // Clear secondary text.
   model()->UpdateItem(item()->id())->SetSecondaryText(std::nullopt);
   FlushMessageLoop();
 
   // Case: Populated primary tooltip, empty secondary tooltip.
-  EXPECT_EQ(view()->GetTooltipText(p), u"primary primary");
+  EXPECT_EQ(view()->GetRenderedTooltipText(p), u"primary primary");
 }
 
 }  // namespace ash

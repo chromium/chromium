@@ -177,21 +177,21 @@ TEST_F(PageActionIconViewTest, ShouldResetSlideAnimationWhenHideIcons) {
 TEST_F(PageActionIconViewTest, TooltipText) {
   view()->AnimateIn(std::nullopt);
   EXPECT_FALSE(view()->IsBubbleShowing());
-  EXPECT_EQ(view()->GetTooltipText(gfx::Point()),
+  EXPECT_EQ(view()->GetRenderedTooltipText(gfx::Point()),
             view()->GetTextForTooltipAndAccessibleName());
-  EXPECT_EQ(view()->GetTooltipText(gfx::Point()), u"TestTooltip");
+  EXPECT_EQ(view()->GetRenderedTooltipText(gfx::Point()), u"TestTooltip");
 
   view()->GetViewAccessibility().SetName(u"NewTooltip");
 
   EXPECT_FALSE(view()->IsBubbleShowing());
-  EXPECT_EQ(view()->GetTooltipText(gfx::Point()),
+  EXPECT_EQ(view()->GetRenderedTooltipText(gfx::Point()),
             view()->GetTextForTooltipAndAccessibleName());
-  EXPECT_EQ(view()->GetTooltipText(gfx::Point()), u"NewTooltip");
+  EXPECT_EQ(view()->GetRenderedTooltipText(gfx::Point()), u"NewTooltip");
 
   view()->SetIsBubbleShowingOverride(true);
 
   EXPECT_TRUE(view()->IsBubbleShowing());
-  EXPECT_EQ(view()->GetTooltipText(gfx::Point()), u"");
+  EXPECT_EQ(view()->GetRenderedTooltipText(gfx::Point()), u"");
 }
 
 TEST_F(PageActionIconViewTest, TooltipTextAccessibility) {

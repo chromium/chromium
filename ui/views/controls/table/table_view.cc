@@ -814,7 +814,7 @@ void TableView::OnGestureEvent(ui::GestureEvent* event) {
   SetSelectionModel(std::move(new_model));
 }
 
-std::u16string TableView::GetTooltipText(const gfx::Point& p) const {
+std::u16string TableView::GetRenderedTooltipText(const gfx::Point& p) const {
   const int row = p.y() / row_height_;
   if (row < 0 || static_cast<size_t>(row) >= GetRowCount() ||
       visible_columns_.empty()) {

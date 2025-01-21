@@ -175,21 +175,21 @@ void MenuItemView::ViewHierarchyChanged(
 void MenuItemView::UpdateTooltipText(std::optional<std::u16string> new_text) {
   if (new_text.has_value()) {
     custom_tooltip_ = new_text.value();
-    SetCachedTooltipText(custom_tooltip_);
+    SetTooltipText(custom_tooltip_);
     return;
   }
 
   if (!custom_tooltip_.empty()) {
-    SetCachedTooltipText(custom_tooltip_);
+    SetTooltipText(custom_tooltip_);
     return;
   }
 
-  SetCachedTooltipText(std::u16string());
+  SetTooltipText(std::u16string());
 }
 
-std::u16string MenuItemView::GetTooltipText(const gfx::Point& p) const {
-  if (!GetCachedTooltipText().empty()) {
-    return GetCachedTooltipText();
+std::u16string MenuItemView::GetRenderedTooltipText(const gfx::Point& p) const {
+  if (!GetTooltipText().empty()) {
+    return GetTooltipText();
   }
 
   const MenuDelegate* delegate = GetDelegate();

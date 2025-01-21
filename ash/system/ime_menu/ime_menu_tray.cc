@@ -499,7 +499,8 @@ void ImeMenuTray::HandleLocaleChange() {
   }
 
   if (label_) {
-    label_->SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME));
+    label_->SetCustomTooltipText(
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME));
   }
 }
 
@@ -652,7 +653,8 @@ void ImeMenuTray::CreateLabel() {
   label_ = new ImeMenuLabel();
   SetupLabelForTray(label_);
   label_->SetElideBehavior(gfx::TRUNCATE);
-  label_->SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME));
+  label_->SetCustomTooltipText(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME));
   tray_container()->AddChildView(label_.get());
 }
 

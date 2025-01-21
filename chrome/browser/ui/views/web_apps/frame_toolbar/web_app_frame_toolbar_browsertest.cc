@@ -396,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
 
   EXPECT_EQ(menu_button->GetViewAccessibility().GetCachedName(),
             u"Customize and control A minimal-ui app");
-  EXPECT_EQ(menu_button->GetTooltipText(gfx::Point()),
+  EXPECT_EQ(menu_button->GetRenderedTooltipText(gfx::Point()),
             u"Customize and control A minimal-ui app");
 }
 

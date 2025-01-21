@@ -88,7 +88,7 @@ class TooltipTestView : public views::View {
   ~TooltipTestView() override;
 
   void set_tooltip_text(std::u16string tooltip_text) {
-    SetCachedTooltipText(tooltip_text);
+    SetTooltipText(tooltip_text);
   }
 };
 

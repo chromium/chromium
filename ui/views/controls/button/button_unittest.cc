@@ -989,7 +989,7 @@ TEST_F(ButtonTest, SetTooltipTextNotifiesAccessibilityEvent) {
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
   button()->SetTooltipText(test_tooltip_text);
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged));
-  EXPECT_EQ(test_tooltip_text, button()->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(test_tooltip_text, button()->GetRenderedTooltipText(gfx::Point()));
   ui::AXNodeData data;
   button()->GetViewAccessibility().GetAccessibleNodeData(&data);
   const std::string& name =
@@ -1019,7 +1019,7 @@ TEST_F(ButtonTest, SetTooltipTextAccessibleName) {
   std::u16string test_tooltip_text = u"Test Tooltip Text";
   button()->SetTooltipText(test_tooltip_text);
   button()->SetAccessibleName(std::u16string());
-  EXPECT_EQ(test_tooltip_text, button()->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(test_tooltip_text, button()->GetRenderedTooltipText(gfx::Point()));
   ui::AXNodeData data;
   button()->GetViewAccessibility().GetAccessibleNodeData(&data);
   const std::string& name =
@@ -1033,7 +1033,7 @@ TEST_F(ButtonTest, SetTooltipTextAccessibleDescription) {
   std::u16string test_name = u"Test Name";
   button()->SetTooltipText(test_tooltip_text);
   button()->SetAccessibleName(test_name);
-  EXPECT_EQ(test_tooltip_text, button()->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(test_tooltip_text, button()->GetRenderedTooltipText(gfx::Point()));
   ui::AXNodeData data;
   button()->GetViewAccessibility().GetAccessibleNodeData(&data);
   const std::string& name =

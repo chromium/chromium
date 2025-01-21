@@ -1203,14 +1203,14 @@ TEST_F(TabContainerTest, TabGroupHeaderTooltipText) {
 
   group_header->title_->SetText(u"Non empty title text");
   EXPECT_EQ(
-      group_header->GetTooltipText(gfx::Point()),
+      group_header->GetRenderedTooltipText(gfx::Point()),
       l10n_util::GetStringFUTF16(
           IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP, group_header->title_->GetText(),
           group_header->tab_slot_controller_->GetGroupContentString(
               group_header->group().value())));
 
   group_header->title_->SetText(std::u16string());
-  EXPECT_EQ(group_header->GetTooltipText(gfx::Point()),
+  EXPECT_EQ(group_header->GetRenderedTooltipText(gfx::Point()),
             l10n_util::GetStringFUTF16(
                 IDS_TAB_GROUPS_UNNAMED_GROUP_TOOLTIP,
                 group_header->tab_slot_controller_->GetGroupContentString(
@@ -1227,7 +1227,7 @@ TEST_F(TabContainerTest, TabGroupHeaderTooltipTextAccessibility) {
 
   group_header->title_->SetText(u"Non empty title text");
   EXPECT_EQ(
-      group_header->GetTooltipText(gfx::Point()),
+      group_header->GetRenderedTooltipText(gfx::Point()),
       l10n_util::GetStringFUTF16(
           IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP, group_header->title_->GetText(),
           group_header->tab_slot_controller_->GetGroupContentString(
@@ -1237,7 +1237,7 @@ TEST_F(TabContainerTest, TabGroupHeaderTooltipTextAccessibility) {
 
   group_header->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            group_header->GetTooltipText(gfx::Point()));
+            group_header->GetRenderedTooltipText(gfx::Point()));
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-            group_header->GetTooltipText(gfx::Point()));
+            group_header->GetRenderedTooltipText(gfx::Point()));
 }

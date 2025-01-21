@@ -327,7 +327,7 @@ void PageInfoPermissionContentView::SetTitleTextAndTooltip(
     const std::vector<std::string>& device_names) {
   title_->SetText(l10n_util::GetStringFUTF16(
       message_id, base::NumberToString16(device_names.size())));
-  title_->SetTooltipText(
+  title_->SetCustomTooltipText(
       base::UTF8ToUTF16(base::JoinString(device_names, "\n")));
 }
 #endif

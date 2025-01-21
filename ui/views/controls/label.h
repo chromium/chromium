@@ -241,12 +241,11 @@ class VIEWS_EXPORT Label : public View,
   gfx::ElideBehavior GetElideBehavior() const;
   void SetElideBehavior(gfx::ElideBehavior elide_behavior);
 
-  // Gets/Sets the custom local tooltip text.  Default behavior for a label
+  // Sets the custom local tooltip text.  Default behavior for a label
   // (single-line) is to show the full text if it is wider than its bounds.
   // Calling this overrides the default behavior and lets you set a custom
   // tooltip.  To revert to default behavior, call this with an empty string.
-  std::u16string GetTooltipText() const;
-  void SetTooltipText(const std::u16string& tooltip_text);
+  void SetCustomTooltipText(const std::u16string& tooltip_text);
 
   // Updates the tooltip text cached on the View.
   void UpdateTooltipText();
@@ -342,7 +341,7 @@ class VIEWS_EXPORT Label : public View,
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   bool GetCanProcessEventsWithinSubtree() const override;
   WordLookupClient* GetWordLookupClient() override;
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
+
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
   void OnAccessibilityInitializing(ui::AXNodeData* data) override;
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)

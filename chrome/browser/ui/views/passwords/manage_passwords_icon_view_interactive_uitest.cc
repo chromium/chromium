@@ -50,7 +50,7 @@ class ManagePasswordsIconViewTest : public ManagePasswordsTest {
   }
 
   std::u16string GetTooltipText() {
-    return GetView()->GetTooltipText(gfx::Point());
+    return GetView()->GetRenderedTooltipText(gfx::Point());
   }
 };
 

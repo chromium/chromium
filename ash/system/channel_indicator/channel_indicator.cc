@@ -115,7 +115,7 @@ void ChannelIndicatorView::Update() {
 
   SetImageOrText();
   SetVisible(true);
-  SetCachedTooltipText(l10n_util::GetStringUTF16(
+  SetTooltipText(l10n_util::GetStringUTF16(
       channel_indicator_utils::GetChannelNameStringResourceID(
           channel_, /*append_channel=*/true)));
 

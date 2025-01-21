@@ -594,7 +594,7 @@ std::unique_ptr<Label> StyledLabel::CreateLabel(
     result->SetEnabledColorId(default_enabled_color_id_);
   }
   if (!style_info.tooltip.empty()) {
-    result->SetTooltipText(style_info.tooltip);
+    result->SetCustomTooltipText(style_info.tooltip);
   }
   if (!style_info.accessible_name.empty()) {
     result->GetViewAccessibility().SetName(style_info.accessible_name);
