@@ -2513,6 +2513,7 @@
     {
       name: "InterestGroupsInSharedStorageWorklet",
       public: true,
+      status: "stable",
     },
     {
       name: "InteroperablePrivateAttribution",
