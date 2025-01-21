@@ -417,7 +417,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void GetSnapshotFromBrowser(GetSnapshotFromBrowserCallback callback,
                               bool from_surface);
 
-  // Sets the View of this RenderWidgetHost.
+  // Sets the View of this RenderWidgetHost.  It is called just once when a new
+  // RenderWidgetHostView for a RWH is created.  If the corresponding renderer
+  // process crashes and then be recreated, SetView is called first with a
+  // nullptr and then with the new RenderWidgetHostView.
   void SetView(RenderWidgetHostViewBase* view);
 
   RenderWidgetHostDelegate* delegate() const { return delegate_; }
@@ -1234,7 +1237,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void CreateSyntheticGestureControllerIfNecessary();
 
   // Converts the |window_point| from the coordinates in native window in DIP
-  // to Blink's Viewport coordinates. They're identical in tradional world,
+  // to Blink's Viewport coordinates. They're identical in traditional world,
   // but will differ when use-zoom-for-dsf feature is enabled.
   // TODO(oshima): Update the comment when the migration is completed.
   gfx::PointF ConvertWindowPointToViewport(const gfx::PointF& window_point);
@@ -1311,7 +1314,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // process_->UpdateClientPriority when this value changes.
   bool is_hidden_ = true;
 
-  // Indicates whether the page is ever shown to the user so far.  This state
+  // Indicates whether the widget is ever shown to the user so far.  This state
   // remains `false` until `is_hidden_` becomes `false` for the first time.
   bool was_ever_shown_ = false;
 
@@ -1326,6 +1329,12 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Records the time when `first_content_metadata_received_` above becomes
   // `true` for the first time.
   base::TimeTicks first_content_metadata_time_;
+
+  // True if both of the following conditions are met:
+  // - This widget is for either a frame that is the main frame of the outermost
+  //   frame tree, or a non-frame widget (e.g. for a <select> menu).
+  // - A RenderWidgetHostView has been attached to this widget using `SetView`.
+  bool is_topmost_widget_with_view_ = false;
 
   // For a widget that does not have an associated RenderFrame/View, assume it
   // is depth 1, ie just below the root widget.
