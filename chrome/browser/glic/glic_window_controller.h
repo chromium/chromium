@@ -121,6 +121,8 @@ class GlicWindowController : public views::WidgetObserver {
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
   GlicView* GetGlicView();
+  views::Widget* GetGlicWidgetForTesting() { return glic_window_widget_.get(); }
+
  private:
   void ShowPhase2();
   void ShowFinish();
