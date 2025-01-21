@@ -28,6 +28,8 @@ extern const char
 extern const char
     kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration[];
 extern const char
+    kHistogramUserInteractionLatencyHighPercentile2MaxEventDurationIncognito[];
+extern const char
     kHistogramSumOfUserInteractionLatencyOverBudgetMaxEventDuration[];
 extern const char kHistogramWorstUserInteractionLatencyMaxEventDuration[];
 extern const char kHistogramInpOffset[];

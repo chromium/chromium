@@ -3431,6 +3431,32 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="PageLoad.InteractiveTiming.{NormalizedResponsivenessMetric}.{UserInteractionLatency}{PageLoadType}.Incognito"
+    units="ms" expires_after="2025-06-21">
+  <owner>kjarosz@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    The {NormalizedResponsivenessMetric} of a {PageLoadType} page load, in ms.
+    For this metric, we measure the latency of a user interaction by the
+    {UserInteractionLatency} within the user interaction.
+
+    This metric is a version of
+    PageLoad.InteractiveTiming.{NormalizedResponsivenessMetric}.{UserInteractionLatency}{PageLoadType},
+    that is recorded only in incognito mode, see its description for details.
+
+    This histogram is of special interest to polonium@google.com. Do not modify
+    it without talking to them first.
+  </summary>
+  <token key="PageLoadType" variants="PageLoadType"/>
+  <token key="NormalizedResponsivenessMetric">
+    <variant name="UserInteractionLatency.HighPercentile2"/>
+  </token>
+  <token key="UserInteractionLatency">
+    <variant name="MaxEventDuration"/>
+  </token>
+</histogram>
+
 <histogram name="PageLoad.Internal.ErrorCode" enum="InternalErrorLoadEvent"
     expires_after="2025-06-01">
   <owner>csharrison@chromium.org</owner>

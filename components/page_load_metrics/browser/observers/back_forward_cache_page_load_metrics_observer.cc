@@ -51,6 +51,12 @@ const char
              "UserInteractionLatency."
              "HighPercentile2.MaxEventDuration.AfterBackForwardCacheRestore";
 const char
+    kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore_Incognito
+        [] = "PageLoad.InteractiveTiming."
+             "UserInteractionLatency."
+             "HighPercentile2.MaxEventDuration.AfterBackForwardCacheRestore."
+             "Incognito";
+const char
     kWorstUserInteractionLatency_MaxEventDuration_AfterBackForwardCacheRestore
         [] = "PageLoad.InteractiveTiming."
              "WorstUserInteractionLatency."
@@ -388,6 +394,15 @@ void BackForwardCachePageLoadMetricsObserver::
           kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore,
       high_percentile2_max_event_duration, base::Milliseconds(1),
       base::Seconds(60), 50);
+
+  if (is_incognito_) {
+    UmaHistogramCustomTimes(
+        internal::
+            kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore_Incognito,
+        high_percentile2_max_event_duration, base::Milliseconds(1),
+        base::Seconds(60), 50);
+  }
+
   base::UmaHistogramCounts1000(
       internal::kNumInteractions_AfterBackForwardCacheRestore,
       responsiveness_metrics_normalization.num_user_interactions());
