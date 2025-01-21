@@ -9,6 +9,8 @@
 namespace autofill::payments {
 
 namespace {
+using Dict = base::Value::Dict;
+
 const char kGetBnplPaymentInstrumentForFetchingVcnRequestPath[] =
     "payments/apis/chromepaymentsservice/getpaymentinstrument";
 }  // namespace
@@ -36,48 +38,45 @@ GetBnplPaymentInstrumentForFetchingVcnRequest::GetRequestContentType() {
 }
 
 std::string GetBnplPaymentInstrumentForFetchingVcnRequest::GetRequestContent() {
-  base::Value::Dict request_dict =
-      base::Value::Dict()
-          .Set("chrome_user_context",
-               base::Value::Dict().Set("full_sync_enabled", full_sync_enabled_))
+  Dict request_dict =
+      Dict()
           .Set("context",
-               base::Value::Dict()
+               Dict()
                    .Set("billable_service",
                         payments::kUnmaskPaymentMethodBillableServiceNumber)
                    .Set("customer_context",
                         BuildCustomerContextDictionary(
                             request_details_.billing_customer_number)))
+          .Set("chrome_user_context",
+               Dict().Set("full_sync_enabled", full_sync_enabled_))
+          .Set("instrument_id", request_details_.instrument_id)
           .Set("risk_data_encoded",
                BuildRiskDictionary(request_details_.risk_data))
-          .Set("instrument_id", request_details_.instrument_id)
           .Set("buy_now_pay_later_info",
-               base::Value::Dict().Set(
-                   "retrieve_buy_now_pay_later_vcn_request_info",
-                   base::Value::Dict()
-                       .Set("get_payment_instrument_context_token",
-                            request_details_.context_token)
-                       .Set("redirect_response_url",
-                            request_details_.redirect_url.spec())));
+               Dict().Set("retrieve_buy_now_pay_later_vcn_request_info",
+                          Dict()
+                              .Set("get_payment_instrument_context_token",
+                                   request_details_.context_token)
+                              .Set("redirect_response_url",
+                                   request_details_.redirect_url.spec())));
 
   return base::WriteJson(request_dict).value();
 }
 
 void GetBnplPaymentInstrumentForFetchingVcnRequest::ParseResponse(
-    const base::Value::Dict& response) {
-  const base::Value::Dict* bnpl_value =
-      response.FindDict("buy_now_pay_later_info");
+    const Dict& response) {
+  const Dict* bnpl_value = response.FindDict("buy_now_pay_later_info");
   if (!bnpl_value) {
     return;
   }
 
-  const base::Value::Dict* vcn_response_value =
+  const Dict* vcn_response_value =
       bnpl_value->FindDict("get_vcn_response_info");
   if (!vcn_response_value) {
     return;
   }
 
-  const base::Value::Dict* card =
-      vcn_response_value->FindDict("virtual_card_info");
+  const Dict* card = vcn_response_value->FindDict("virtual_card_info");
   if (!card) {
     return;
   }
@@ -88,7 +87,7 @@ void GetBnplPaymentInstrumentForFetchingVcnRequest::ParseResponse(
   const std::string* cvv = card->FindString("cvv");
   response_details_.cvv = cvv ? *cvv : std::string();
 
-  const base::Value::Dict* expiration = card->FindDict("expiration");
+  const Dict* expiration = card->FindDict("expiration");
   if (expiration) {
     if (std::optional<int> month = expiration->FindInt("month")) {
       response_details_.expiration_month = base::NumberToString(month.value());
