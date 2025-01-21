@@ -288,7 +288,7 @@ using segmentation_platform::TipIdentifier;
   DCHECK(self.browser);
   DCHECK(self.NTPActionsDelegate);
   if (self.started) {
-    // Prevent this coordinator from being started twice in a row
+    // Prevent this coordinator from being started twice in a row.
     return;
   }
   _started = YES;
@@ -337,9 +337,6 @@ using segmentation_platform::TipIdentifier;
 
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
 
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(profile);
-
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
 
@@ -350,13 +347,16 @@ using segmentation_platform::TipIdentifier;
 
   NSMutableArray* moduleMediators = [NSMutableArray array];
 
+  id<SystemIdentity> identity =
+      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+
   _mostVisitedTilesMediator = [[MostVisitedTilesMediator alloc]
       initWithMostVisitedSite:std::move(mostVisitedFactory)
                   prefService:prefs
              largeIconService:largeIconService
                largeIconCache:cache
-       URLLoadingBrowserAgent:UrlLoadingBrowserAgent::FromBrowser(
-                                  self.browser)];
+       URLLoadingBrowserAgent:UrlLoadingBrowserAgent::FromBrowser(self.browser)
+                     identity:identity];
   _mostVisitedTilesMediator.contentSuggestionsDelegate = self.delegate;
   _mostVisitedTilesMediator.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
@@ -374,7 +374,7 @@ using segmentation_platform::TipIdentifier;
       initWithReadingListModel:readingListModel
       featureEngagementTracker:feature_engagement::TrackerFactory::
                                    GetForProfile(profile)
-                   authService:authenticationService];
+                   authService:self.authService];
   _shortcutsMediator.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
   _shortcutsMediator.NTPActionsDelegate = self.NTPActionsDelegate;
@@ -395,7 +395,7 @@ using segmentation_platform::TipIdentifier;
         self.contentSuggestionsMetricsRecorder;
     [moduleMediators addObject:_tabResumptionMediator];
   }
-  if (IsPriceTrackingPromoCardEnabled(shoppingService, authenticationService,
+  if (IsPriceTrackingPromoCardEnabled(shoppingService, self.authService,
                                       prefs)) {
     _priceTrackingPromoMediator = [[PriceTrackingPromoMediator alloc]
         initWithShoppingService:commerce::ShoppingServiceFactory::GetForProfile(
@@ -496,7 +496,7 @@ using segmentation_platform::TipIdentifier;
                    initWithPrefService:prefs
                            syncService:syncService
                        identityManager:identityManager
-                 authenticationService:authenticationService
+                 authenticationService:self.authService
                             sceneState:self.browser->GetSceneState()
                  isDefaultSearchEngine:isDefaultSearchEngine
                    segmentationService:_segmentationService

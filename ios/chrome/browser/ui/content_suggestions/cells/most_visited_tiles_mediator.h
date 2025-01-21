@@ -30,6 +30,7 @@ class LargeIconCache;
 @class MostVisitedTilesConfig;
 @protocol NewTabPageActionsDelegate;
 class PrefService;
+@protocol SystemIdentity;
 @protocol SnackbarCommands;
 class UrlLoadingBrowserAgent;
 
@@ -95,6 +96,7 @@ class UrlLoadingBrowserAgent;
            largeIconService:(favicon::LargeIconService*)largeIconService
              largeIconCache:(LargeIconCache*)largeIconCache
      URLLoadingBrowserAgent:(UrlLoadingBrowserAgent*)URLLoadingBrowserAgent
+                   identity:(id<SystemIdentity>)identity
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

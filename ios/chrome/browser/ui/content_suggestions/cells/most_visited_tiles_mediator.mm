@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_constants.h"
@@ -85,6 +86,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   // Consumer of model updates when MVTs are in the Magic Stack.
   id<MostVisitedTilesStackViewConsumer> _stackViewConsumer;
   PrefBackedBoolean* _mostVisitedTilesInMagicStackEnabled;
+  id<SystemIdentity> _identity;
 }
 
 @synthesize inMagicStack = _inMagicStack;
@@ -95,12 +97,14 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
                 prefService:(PrefService*)prefService
            largeIconService:(favicon::LargeIconService*)largeIconService
              largeIconCache:(LargeIconCache*)largeIconCache
-     URLLoadingBrowserAgent:(UrlLoadingBrowserAgent*)URLLoadingBrowserAgent {
+     URLLoadingBrowserAgent:(UrlLoadingBrowserAgent*)URLLoadingBrowserAgent
+                   identity:(id<SystemIdentity>)identity {
   self = [super init];
   if (self) {
     _prefService = prefService;
     _prefChangeRegistrar.Init(_prefService);
     _URLLoadingBrowserAgent = URLLoadingBrowserAgent;
+    _identity = identity;
     _incognitoAvailable = !IsIncognitoModeDisabled(prefService);
     _inMagicStack = ShouldPutMostVisitedSitesInMagicStack(
         FeedActivityBucketForPrefs(prefService));
@@ -161,7 +165,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   // This is used by the content widget.
   content_suggestions_tile_saver::SaveMostVisitedToDisk(
       mostVisited, _mostVisitedAttributesProvider,
-      app_group::ShortcutsWidgetFaviconsFolder());
+      app_group::ShortcutsWidgetFaviconsFolder(), _identity.gaiaID);
 
   _freshMostVisitedItems = [NSMutableArray array];
   int index = 0;
@@ -189,7 +193,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   // This is used by the content widget.
   content_suggestions_tile_saver::UpdateSingleFavicon(
       siteURL, _mostVisitedAttributesProvider,
-      app_group::ShortcutsWidgetFaviconsFolder());
+      app_group::ShortcutsWidgetFaviconsFolder(), _identity.gaiaID);
 
   for (ContentSuggestionsMostVisitedItem* item in _mostVisitedConfig
            .mostVisitedItems) {
