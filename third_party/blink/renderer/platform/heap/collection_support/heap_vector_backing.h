@@ -228,6 +228,15 @@ struct TraceTrait<blink::HeapVectorBacking<T, Traits>> {
   }
 
   static void Trace(Visitor* visitor, const void* self) {
+    static_assert(!WTF::IsWeak<T>::value,
+                  "Weakness is not supported in HeapVector and HeapDeque");
+
+    // Early bailout for non-traceable types. `GetTraceDescriptor()` doesn't
+    // support returning a null callback, so this is the best we can do for now.
+    if (!WTF::IsTraceable<T>::value) {
+      return;
+    }
+
     if (!Traits::kCanTraceConcurrently && self) {
       if (visitor->DeferTraceToMutatorThreadIfConcurrent(
               self, &Trace,
@@ -237,13 +246,9 @@ struct TraceTrait<blink::HeapVectorBacking<T, Traits>> {
       }
     }
 
-    static_assert(!WTF::IsWeak<T>::value,
-                  "Weakness is not supported in HeapVector and HeapDeque");
-    if (WTF::IsTraceable<T>::value) {
-      WTF::TraceInCollectionTrait<WTF::kNoWeakHandling,
-                                  blink::HeapVectorBacking<T, Traits>,
-                                  void>::Trace(visitor, self);
-    }
+    WTF::TraceInCollectionTrait<WTF::kNoWeakHandling,
+                                blink::HeapVectorBacking<T, Traits>,
+                                void>::Trace(visitor, self);
   }
 };
 
