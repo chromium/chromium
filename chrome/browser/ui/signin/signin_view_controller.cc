@@ -216,7 +216,7 @@ GURL GetSigninUrlForDiceSigninTab(
   // Note: It is expected with the below sign in reason and access point
   // that there is no primary account. Maybe move to a `CHECK` later.
   if (signin_reason == signin_metrics::Reason::kAddSecondaryAccount &&
-      access_point == signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS &&
+      access_point == signin_metrics::AccessPoint::kExtensions &&
       !identity_manager.HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
       switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
     // Extensions wants the user to sign in to Chrome.
@@ -505,7 +505,7 @@ void SigninViewController::ShowDiceSigninTab(
       signin_reason, email_hint, continue_url);
 
   content::WebContents* active_contents = nullptr;
-  if (access_point == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE) {
+  if (access_point == signin_metrics::AccessPoint::kStartPage) {
     active_contents = browser_->tab_strip_model()->GetActiveWebContents();
     content::OpenURLParams params(signin_url, content::Referrer(),
                                   WindowOpenDisposition::CURRENT_TAB,
@@ -516,8 +516,7 @@ void SigninViewController::ShowDiceSigninTab(
     TabStripModel* tab_strip = browser_->tab_strip_model();
     int dice_tab_index = FindDiceSigninTab(tab_strip, signin_url);
     if (dice_tab_index != -1) {
-      if (access_point !=
-          signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS) {
+      if (access_point != signin_metrics::AccessPoint::kExtensions) {
         // Extensions do not activate the tab to prevent misbehaving
         // extensions to keep focusing the signin tab.
         tab_strip->ActivateTabAt(
@@ -706,7 +705,7 @@ void SigninViewController::ShowChromeSigninDialogForExtensions(
         if (identity_manager) {
           identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
               account_id, signin::ConsentLevel::kSignin,
-              signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS);
+              signin_metrics::AccessPoint::kExtensions);
         }
       },
       browser_->profile()->GetWeakPtr(), account_info_for_promos.account_id);
