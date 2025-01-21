@@ -795,4 +795,10 @@ void CSSToStyleMap::MapNinePieceImageRepeat(StyleResolverState&,
   image.SetVerticalRule(vertical_rule);
 }
 
+EAnimationTriggerType CSSToStyleMap::MapAnimationTriggerType(
+    StyleResolverState&,
+    const CSSValue& value) {
+  return To<CSSIdentifierValue>(value).ConvertTo<EAnimationTriggerType>();
+}
+
 }  // namespace blink

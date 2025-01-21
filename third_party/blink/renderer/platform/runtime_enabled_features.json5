@@ -999,6 +999,10 @@
       status: "stable",
     },
     {
+      name: "CSSAnimationTriggerType",
+      status: "test",
+    },
+    {
       // Support for <string> syntax in @property
       // https://drafts.css-houdini.org/css-properties-values-api-1/#syntax-strings
       name: "CSSAtPropertyStringSyntax",

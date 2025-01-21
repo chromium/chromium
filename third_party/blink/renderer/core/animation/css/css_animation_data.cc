@@ -18,6 +18,7 @@ CSSAnimationData::CSSAnimationData() : CSSTimingData(InitialDuration()) {
   range_start_list_.push_back(InitialRangeStart());
   range_end_list_.push_back(InitialRangeEnd());
   composition_list_.push_back(InitialComposition());
+  trigger_type_list_.push_back(InitialTriggerType());
 }
 
 CSSAnimationData::CSSAnimationData(const CSSAnimationData& other) = default;

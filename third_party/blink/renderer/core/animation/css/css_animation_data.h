@@ -59,6 +59,9 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   const Vector<EffectModel::CompositeOperation>& CompositionList() const {
     return composition_list_;
   }
+  const Vector<EAnimationTriggerType>& TriggerTypeList() const {
+    return trigger_type_list_;
+  }
 
   EffectModel::CompositeOperation GetComposition(size_t animation_index) const {
     if (!composition_list_.size()) {
@@ -74,6 +77,9 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   Vector<Timing::PlaybackDirection>& DirectionList() { return direction_list_; }
   Vector<Timing::FillMode>& FillModeList() { return fill_mode_list_; }
   Vector<EAnimPlayState>& PlayStateList() { return play_state_list_; }
+  Vector<EAnimationTriggerType>& TriggerTypeList() {
+    return trigger_type_list_;
+  }
 
   Vector<std::optional<TimelineOffset>>& RangeStartList() {
     return range_start_list_;
@@ -116,6 +122,9 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   static EffectModel::CompositeOperation InitialComposition() {
     return EffectModel::CompositeOperation::kCompositeReplace;
   }
+  static EAnimationTriggerType InitialTriggerType() {
+    return EAnimationTriggerType::kOnce;
+  }
 
  private:
   Vector<AtomicString> name_list_;
@@ -127,6 +136,7 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   Vector<Timing::FillMode> fill_mode_list_;
   Vector<EAnimPlayState> play_state_list_;
   Vector<EffectModel::CompositeOperation> composition_list_;
+  Vector<EAnimationTriggerType> trigger_type_list_;
 };
 
 }  // namespace blink
