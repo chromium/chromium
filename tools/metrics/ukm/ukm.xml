@@ -8656,6 +8656,32 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="FingerprintingProtectionException" singular="True">
+  <owner>trishalfonso@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <summary>
+    Recorded per navigation where the Fingerprinting Protection Filter (FPF) is
+    enabled and an exception mechanism allows the current first-party site to
+    bypass filtering.
+  </summary>
+  <metric name="Source" enum="FingerprintingProtectionExceptionSource">
+    <summary>
+      Indicates the source from which the exception originates. Exceptions are
+      only emitted when `ActivationDecision` is &quot;URL allowlisted&quot; -
+      never in dry_run mode.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="FingerprintingProtectionUsage" singular="True">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>

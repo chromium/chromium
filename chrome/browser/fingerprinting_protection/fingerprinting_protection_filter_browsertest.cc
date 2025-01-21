@@ -8,6 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/fingerprinting_protection/fingerprinting_protection_filter_browser_test_harness.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_page_activation_throttle.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features_test_support.h"
@@ -105,20 +106,13 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
 
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
-  // Check test UKM recorder contains event with expected metrics.
-  const auto& entries = test_ukm_recorder.GetEntriesByName(
-      ukm::builders::FingerprintingProtection::kEntryName);
-  // 1 entry for every frame_with_included_script.html (2 from initial load, 1
-  // from redirect)
-  EXPECT_EQ(3u, entries.size());
-  for (const ukm::mojom::UkmEntry* entry : entries) {
-    test_ukm_recorder.ExpectEntryMetric(
-        entry, ukm::builders::FingerprintingProtection::kActivationDecisionName,
-        static_cast<int64_t>(
-            subresource_filter::ActivationDecision::ACTIVATED));
-    EXPECT_FALSE(test_ukm_recorder.EntryHasMetric(
-        entry, ukm::builders::FingerprintingProtection::kDryRunName));
-  }
+  // Check that `ACTIVATED` UKM events logged 1 entry for every
+  // frame_with_included_script.html (2 from initial load, 1 from redirect)
+  ExpectFpfActivatedUkms(test_ukm_recorder, 3u,
+                         /*is_dry_run=*/false);
+
+  // Check no exceptions have been found and logged to UKM.
+  ExpectNoFpfExceptionUkms(test_ukm_recorder);
 
   histogram_tester.ExpectBucketCount(
       ActivationDecisionHistogramName,
@@ -191,20 +185,13 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterDryRunBrowserTest,
   EXPECT_EQ(disallowed_subdocument_url, frame->GetLastCommittedURL());
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
 
-  // Check test UKM recorder contains event with expected metrics.
-  const auto& entries = test_ukm_recorder.GetEntriesByName(
-      ukm::builders::FingerprintingProtection::kEntryName);
-  // 1 entry for every frame_with_included_script.html (2 from initial load, 1
-  // from redirect)
-  EXPECT_EQ(3u, entries.size());
-  for (const ukm::mojom::UkmEntry* entry : entries) {
-    test_ukm_recorder.ExpectEntryMetric(
-        entry, ukm::builders::FingerprintingProtection::kActivationDecisionName,
-        static_cast<int64_t>(
-            subresource_filter::ActivationDecision::ACTIVATED));
-    EXPECT_TRUE(test_ukm_recorder.EntryHasMetric(
-        entry, ukm::builders::FingerprintingProtection::kDryRunName));
-  }
+  // Check that `ACTIVATED` UKM events logged 1 entry for every
+  // frame_with_included_script.html (2 from initial load, 1 from redirect)
+  ExpectFpfActivatedUkms(test_ukm_recorder, 3u,
+                         /*is_dry_run=*/true);
+
+  // Check no exceptions have been found and logged to UKM.
+  ExpectNoFpfExceptionUkms(test_ukm_recorder);
 
   histogram_tester.ExpectBucketCount(
       ActivationDecisionHistogramName,
@@ -357,20 +344,13 @@ IN_PROC_BROWSER_TEST_F(
 
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
-  // Check test UKM recorder contains event with expected metrics.
-  const auto& entries = test_ukm_recorder.GetEntriesByName(
-      ukm::builders::FingerprintingProtection::kEntryName);
-  // 1 entry for every frame_with_included_script.html (2 from initial load, 1
-  // from redirect)
-  EXPECT_EQ(3u, entries.size());
-  for (const ukm::mojom::UkmEntry* entry : entries) {
-    test_ukm_recorder.ExpectEntryMetric(
-        entry, ukm::builders::FingerprintingProtection::kActivationDecisionName,
-        static_cast<int64_t>(
-            subresource_filter::ActivationDecision::ACTIVATED));
-    EXPECT_FALSE(test_ukm_recorder.EntryHasMetric(
-        entry, ukm::builders::FingerprintingProtection::kDryRunName));
-  }
+  // Check that `ACTIVATED` UKM events logged 1 entry for every
+  // frame_with_included_script.html (2 from initial load, 1 from redirect)
+  ExpectFpfActivatedUkms(test_ukm_recorder, 3u,
+                         /*is_dry_run=*/false);
+
+  // Check no exceptions have been found and logged to UKM.
+  ExpectNoFpfExceptionUkms(test_ukm_recorder);
 
   histogram_tester.ExpectBucketCount(
       ActivationDecisionHistogramName,
@@ -481,6 +461,7 @@ class FPFRefreshHeuristicExceptionBrowserTestParamEnabledOnlyNonIncognito
 IN_PROC_BROWSER_TEST_F(
     FPFRefreshHeuristicExceptionBrowserTestParamEnabledOnlyNonIncognito,
     ExceptionIsAddedInNonIncognito) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // Refresh exception code depends on eTLD+1, so we need to navigate to a
   // host with a domain name.
   GURL url(embedded_test_server()->GetURL("google.test", kTestFrameSetPath));
@@ -498,6 +479,14 @@ IN_PROC_BROWSER_TEST_F(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
+  // Check that UKM contains all entries where a resource's load policy is
+  // `DISALLOW`, subframe "one" and "three".
+  ExpectFpfActivatedUkms(test_ukm_recorder, 2u,
+                         /*is_dry_run=*/false);
+
+  // Check that no exception UKMs are logged.
+  ExpectNoFpfExceptionUkms(test_ukm_recorder);
+
   // Reload
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
@@ -506,6 +495,10 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // +2 activation UKMs for subframes "one" and "three" again.
+  ExpectFpfActivatedUkms(test_ukm_recorder, 4u,
+                         /*is_dry_run=*/false);
 
   // Reload again
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
@@ -516,11 +509,21 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectAllSubframes));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
+
+  // +0 activation UKMs since refresh heuristic is applied.
+  ExpectFpfActivatedUkms(test_ukm_recorder, 4u,
+                         /*is_dry_run=*/false);
+
+  // Check that exception UKM is logged, as refresh heuristic is applied.
+  ExpectFpfExceptionUkms(
+      test_ukm_recorder, 1u,
+      static_cast<int64_t>(ExceptionSource::REFRESH_HEURISTIC));
 }
 
 IN_PROC_BROWSER_TEST_F(
     FPFRefreshHeuristicExceptionBrowserTestParamEnabledOnlyNonIncognito,
     ExceptionIsNotAddedInIncognito) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // Close normal browser and switch the test's browser instance to an incognito
   // instance.
   Browser* incognito = CreateIncognitoBrowser(browser()->profile());
@@ -562,6 +565,14 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // Expect 2 activation UKMS, one each for blocked subframes "one" and "three",
+  // x3 loads.
+  ExpectFpfActivatedUkms(test_ukm_recorder, 6u,
+                         /*is_dry_run=*/false);
+
+  // Check that no exception UKMs are logged.
+  ExpectNoFpfExceptionUkms(test_ukm_recorder);
 }
 
 class FPFRefreshHeuristicExceptionBrowserTestParamEnabledOnlyIncognito
@@ -584,6 +595,7 @@ class FPFRefreshHeuristicExceptionBrowserTestParamEnabledOnlyIncognito
 IN_PROC_BROWSER_TEST_F(
     FPFRefreshHeuristicExceptionBrowserTestParamEnabledOnlyIncognito,
     ExceptionIsNotAddedInNonIncognito) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // Refresh exception code depends on eTLD+1, so we need to navigate to a
   // host with a domain name.
   GURL url(embedded_test_server()->GetURL("google.test", kTestFrameSetPath));
@@ -618,11 +630,20 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // Expect 2 activation UKMS, one each for blocked subframes "one" and "three",
+  // x3 loads.
+  ExpectFpfActivatedUkms(test_ukm_recorder, 6u,
+                         /*is_dry_run=*/false);
+
+  // Check that no exception UKMs are logged.
+  ExpectNoFpfExceptionUkms(test_ukm_recorder);
 }
 
 IN_PROC_BROWSER_TEST_F(
     FPFRefreshHeuristicExceptionBrowserTestParamEnabledOnlyIncognito,
     ExceptionIsAddedInIncognito) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // Close normal browser and switch the test's browser instance to an incognito
   // instance.
   Browser* incognito = CreateIncognitoBrowser(browser()->profile());
@@ -647,6 +668,11 @@ IN_PROC_BROWSER_TEST_F(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
+  // Check that activated UKMs are logged, 1 for each subframe "one" and "three"
+  // containing "included_script.html"
+  ExpectFpfActivatedUkms(test_ukm_recorder, 2u,
+                         /*is_dry_run=*/false);
+
   // Reload
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
@@ -655,6 +681,10 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // +2 activation UKMs for subframes "one" and "three" again.
+  ExpectFpfActivatedUkms(test_ukm_recorder, 4u,
+                         /*is_dry_run=*/false);
 
   // Reload again
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
@@ -665,6 +695,15 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectAllSubframes));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
+
+  // +0 activation UKMs since refresh heuristic is applied.
+  ExpectFpfActivatedUkms(test_ukm_recorder, 4u,
+                         /*is_dry_run=*/false);
+
+  // Check that exception UKM is logged, as refresh heuristic is applied.
+  ExpectFpfExceptionUkms(
+      test_ukm_recorder, 1u,
+      static_cast<int64_t>(ExceptionSource::REFRESH_HEURISTIC));
 }
 
 class FPFRefreshHeuristicExceptionBrowserTestParamEnabledBoth
@@ -687,6 +726,7 @@ class FPFRefreshHeuristicExceptionBrowserTestParamEnabledBoth
 
 IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamEnabledBoth,
                        ExceptionAddedInNonIncognitoPersistsIntoIncognito) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // Refresh exception code depends on eTLD+1, so we need to navigate to a
   // host with a domain name.
   GURL url(embedded_test_server()->GetURL("google.test", kTestFrameSetPath));
@@ -704,6 +744,12 @@ IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamEnabledBoth,
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
+  // Check that UKM is logged, one per frame with included_script.html ("one"
+  // and "three").
+  ExpectFpfActivatedUkms(test_ukm_recorder, 2u,
+                         /*is_dry_run=*/false);
+  ExpectNoFpfExceptionUkms(test_ukm_recorder);
+
   // Reload twice
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
@@ -716,6 +762,15 @@ IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamEnabledBoth,
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectAllSubframes));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
+
+  // +2 for frames "one" and "three" again.
+  ExpectFpfActivatedUkms(test_ukm_recorder, 4u,
+                         /*is_dry_run=*/false);
+
+  // Check that exception UKM is logged, as refresh heuristic is applied.
+  ExpectFpfExceptionUkms(
+      test_ukm_recorder, 1u,
+      static_cast<int64_t>(ExceptionSource::REFRESH_HEURISTIC));
 
   // Close normal browser and switch the test's browser instance to an incognito
   // instance.
@@ -730,11 +785,20 @@ IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamEnabledBoth,
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectAllSubframes));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
+
+  // +0 since refresh heuristic exception persists.
+  ExpectFpfActivatedUkms(test_ukm_recorder, 4u,
+                         /*is_dry_run=*/false);
+  // +1 for the persisted refresh heuristic  applied to navigation in incognito.
+  ExpectFpfExceptionUkms(
+      test_ukm_recorder, 2u,
+      static_cast<int64_t>(ExceptionSource::REFRESH_HEURISTIC));
 }
 
 IN_PROC_BROWSER_TEST_F(
     FPFRefreshHeuristicExceptionBrowserTestParamEnabledBoth,
     ExceptionAddedInIncognitoDoesNotPersistIntoNonIncognito) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // Hold a reference to the nonincognito profile so we can create another
   // nonincognito window later.
   Profile* nonincognito_profile = browser()->profile();
@@ -775,6 +839,17 @@ IN_PROC_BROWSER_TEST_F(
       kSubframeNames, kExpectAllSubframes));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
 
+  // Check that UKM is logged, one for each frame with "included_script.html" is
+  // blocked,until exception is present.
+  ExpectFpfActivatedUkms(test_ukm_recorder, 4u,
+                         /*is_dry_run=*/false);
+
+  // Check that exception UKM is logged, for incognito, as refresh heuristic is
+  // applied.
+  ExpectFpfExceptionUkms(
+      test_ukm_recorder, 1u,
+      static_cast<int64_t>(ExceptionSource::REFRESH_HEURISTIC));
+
   // Close incognito and open nonincognito browser instance.
   Browser* nonincognito = CreateBrowser(nonincognito_profile);
   CloseBrowserSynchronously(browser());
@@ -788,6 +863,16 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // Expect 2 activation UKMS, one each for blocked subframes "one" and "three",
+  // x3 loads.
+  ExpectFpfActivatedUkms(test_ukm_recorder, 6u,
+                         /*is_dry_run=*/false);
+  // Check that the UKM exception log is unchanged, not persisted and relogged
+  // in non-incognito.
+  ExpectFpfExceptionUkms(
+      test_ukm_recorder, 1u,
+      static_cast<int64_t>(ExceptionSource::REFRESH_HEURISTIC));
 }
 
 class FPFRefreshHeuristicExceptionBrowserTestParamDisabledBoth
@@ -808,6 +893,7 @@ class FPFRefreshHeuristicExceptionBrowserTestParamDisabledBoth
 
 IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamDisabledBoth,
                        NoExceptionAddedInNonIncognito) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // Refresh exception code depends on eTLD+1, so we need to navigate to a
   // host with a domain name.
   GURL url(embedded_test_server()->GetURL("google.test", kTestFrameSetPath));
@@ -842,10 +928,19 @@ IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamDisabledBoth,
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // Expect 2 activation UKMS, one each for blocked subframes "one" and "three",
+  // x3 loads.
+  ExpectFpfActivatedUkms(test_ukm_recorder, 6u,
+                         /*is_dry_run=*/false);
+
+  // Check that no exception UKMs are logged.
+  ExpectNoFpfExceptionUkms(test_ukm_recorder);
 }
 
 IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamDisabledBoth,
                        NoExceptionAddedInIncognito) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // Close normal browser and switch the test's browser instance to an incognito
   // instance.
   Browser* incognito = CreateIncognitoBrowser(browser()->profile());
@@ -887,6 +982,14 @@ IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamDisabledBoth,
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // Expect 2 activation UKMS, one each for blocked subframes "one" and "three",
+  // x3 loads.
+  ExpectFpfActivatedUkms(test_ukm_recorder, 6u,
+                         /*is_dry_run=*/false);
+
+  // Check that no exception UKMs are logged.
+  ExpectNoFpfExceptionUkms(test_ukm_recorder);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

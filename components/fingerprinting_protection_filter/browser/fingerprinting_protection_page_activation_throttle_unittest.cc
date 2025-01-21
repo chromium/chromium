@@ -24,10 +24,13 @@
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom-shared.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "components/ukm/content/source_url_recorder.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -250,6 +253,9 @@ TEST_F(FPFPageActivationThrottleTest,
 TEST_F(FPFPageActivationThrottleTest,
        DefaultActivatedParams_TrackingProtectionException_IsAllowlisted) {
   base::HistogramTester histograms;
+  ukm::InitializeSourceUrlRecorderForWebContents(
+      mock_nav_handle_->GetWebContents());
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
   // Enable the feature with disabling params, i.e. activation_level = disabled.
   scoped_feature_list_.InitAndEnableFeature(
@@ -273,11 +279,21 @@ TEST_F(FPFPageActivationThrottleTest,
   histograms.ExpectBucketCount(
       ActivationLevelHistogramName,
       subresource_filter::mojom::ActivationLevel::kDisabled, 1);
+
+  const auto& entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::FingerprintingProtectionException::kEntryName);
+  EXPECT_EQ(1u, test_ukm_recorder.entries_count());
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::FingerprintingProtectionException::kSourceName,
+      static_cast<int64_t>(ExceptionSource::USER_BYPASS));
 }
 
 TEST_F(FPFPageActivationThrottleTest,
        DefaultActivatedParams_CookieException_IsAllowlisted) {
   base::HistogramTester histograms;
+  ukm::InitializeSourceUrlRecorderForWebContents(
+      mock_nav_handle_->GetWebContents());
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   scoped_feature_list_.InitWithFeatures(
       {features::kEnableFingerprintingProtectionFilter},
       {privacy_sandbox::kActUserBypassUx});
@@ -302,6 +318,12 @@ TEST_F(FPFPageActivationThrottleTest,
   histograms.ExpectBucketCount(
       ActivationLevelHistogramName,
       subresource_filter::mojom::ActivationLevel::kDisabled, 1);
+  const auto& entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::FingerprintingProtectionException::kEntryName);
+  EXPECT_EQ(1u, test_ukm_recorder.entries_count());
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::FingerprintingProtectionException::kSourceName,
+      static_cast<int64_t>(ExceptionSource::COOKIES));
 }
 
 TEST_F(
@@ -337,6 +359,9 @@ TEST_F(
 TEST_F(FPFPageActivationThrottleTest,
        IncognitoFlagEnabledDefaultParams_CookieException_IsAllowlisted) {
   base::HistogramTester histograms;
+  ukm::InitializeSourceUrlRecorderForWebContents(
+      mock_nav_handle_->GetWebContents());
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
       features::kEnableFingerprintingProtectionFilterInIncognito,
@@ -362,6 +387,12 @@ TEST_F(FPFPageActivationThrottleTest,
   histograms.ExpectBucketCount(
       ActivationLevelHistogramName,
       subresource_filter::mojom::ActivationLevel::kDisabled, 1);
+  const auto& entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::FingerprintingProtectionException::kEntryName);
+  EXPECT_EQ(1u, test_ukm_recorder.entries_count());
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::FingerprintingProtectionException::kSourceName,
+      static_cast<int64_t>(ExceptionSource::COOKIES));
 }
 
 MATCHER_P(HasEnableLogging,
@@ -528,6 +559,9 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(FPFPageActivationThrottleTestRefreshHeuristicUmaTest,
        RefreshHeuristicUmasAreLoggedCorrectly) {
   base::HistogramTester histograms;
+  ukm::InitializeSourceUrlRecorderForWebContents(
+      mock_nav_handle_->GetWebContents());
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   const FPFRefreshHeuristicUmaTestCase& test_case = GetParam();
 
   // Initialize feature flags and params.
@@ -550,6 +584,13 @@ TEST_P(FPFPageActivationThrottleTestRefreshHeuristicUmaTest,
   if (test_case.expect_has_exception_uma) {
     histograms.ExpectTotalCount(HasRefreshCountExceptionHistogramName, 1);
     histograms.ExpectUniqueSample(HasRefreshCountExceptionHistogramName, 1, 1);
+    const auto& entries = test_ukm_recorder.GetEntriesByName(
+        ukm::builders::FingerprintingProtectionException::kEntryName);
+    EXPECT_EQ(1u, test_ukm_recorder.entries_count());
+    test_ukm_recorder.ExpectEntryMetric(
+        entries[0],
+        ukm::builders::FingerprintingProtectionException::kSourceName,
+        static_cast<int64_t>(ExceptionSource::REFRESH_HEURISTIC));
   } else {
     histograms.ExpectTotalCount(HasRefreshCountExceptionHistogramName, 0);
   }
@@ -815,5 +856,10 @@ TEST_P(FPFPageActivationThrottleTestGetActivationTest,
   EXPECT_EQ(activation.level, test_case.expected_level);
   EXPECT_EQ(activation.decision, test_case.expected_decision);
 }
+
+// TODO(crbug.com/366267410): Add unittest to check the equivalence of the
+// ExceptionSource enum defined in
+// `fingerprinting_protection_activatoin_throttle.h` with the associated
+// definition in `enums.xml`
 
 }  // namespace fingerprinting_protection_filter

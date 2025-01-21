@@ -16,15 +16,19 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_page_activation_throttle.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features_test_support.h"
+#include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -43,6 +47,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
                        ActiveFilter_AllowsOnUserBypassException) {
   ASSERT_TRUE(embedded_test_server()->Start());
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // TODO(https://crbug.com/358371545): Test console messaging for subframe
   // blocking once its implementation is resolved.
   GURL url(GetTestUrl(kTestFrameSetPath));
@@ -60,6 +65,11 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
+  // Check that activated UKMs logged, one per load with "included_script.html",
+  // frame "one" and it's child.
+  ExpectFpfActivatedUkms(test_ukm_recorder, 2u,
+                         /*is_dry_run=*/false);
+
   // Simulate an explicit allowlisting via content settings.
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
@@ -75,7 +85,14 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   histogram_tester.ExpectBucketCount(
       ActivationLevelHistogramName,
       subresource_filter::mojom::ActivationLevel::kDisabled, 1);
-  // TODO(https://crbug.com/366267410): Add testing for UKM.
+
+  // +0 activated UKMs, as User Bypass grants exceptions.
+  ExpectFpfActivatedUkms(test_ukm_recorder, 2u,
+                         /*is_dry_run=*/false);
+
+  // Check that exception UKM is logged as User Bypass is applied.
+  ExpectFpfExceptionUkms(test_ukm_recorder, 1u,
+                         static_cast<int64_t>(ExceptionSource::USER_BYPASS));
 
   const std::vector<bool> kExpectAllSubframes{true, true};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
@@ -87,6 +104,7 @@ IN_PROC_BROWSER_TEST_F(
     FingerprintingProtectionFilterEnabledInIncognitoBrowserTest,
     ActiveFilter_AllowsOnUserBypassException) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // TODO(https://crbug.com/358371545): Test console messaging for subframe
   // blocking once its implementation is resolved.
   GURL url(GetTestUrl(kTestFrameSetPath));
@@ -111,6 +129,11 @@ IN_PROC_BROWSER_TEST_F(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
+  // Check that activated UKMs logged, one per load with "included_script.html",
+  // frame "one" and it's child.
+  ExpectFpfActivatedUkms(test_ukm_recorder, 2u,
+                         /*is_dry_run=*/false);
+
   // Simulate an explicit allowlisting via content settings.
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
@@ -127,6 +150,14 @@ IN_PROC_BROWSER_TEST_F(
       ActivationLevelHistogramName,
       subresource_filter::mojom::ActivationLevel::kDisabled, 1);
 
+  // +0 activated UKMs, as User Bypass grants exceptions.
+  ExpectFpfActivatedUkms(test_ukm_recorder, 2u,
+                         /*is_dry_run=*/false);
+
+  // Check that exception UKM is logged as User Bypass is applied.
+  ExpectFpfExceptionUkms(test_ukm_recorder, 1u,
+                         static_cast<int64_t>(ExceptionSource::USER_BYPASS));
+
   const std::vector<bool> kExpectAllSubframes{true, true};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectAllSubframes));
@@ -136,6 +167,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterDryRunBrowserTest,
                        ActiveFilter_UserByPassException_DoesNotBlock) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // TODO(https://crbug.com/358371545): Test console messaging for subframe
   // blocking once its implementation is resolved.
   GURL url(GetTestUrl(kTestFrameSetPath));
@@ -153,16 +185,27 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterDryRunBrowserTest,
       kSubframeNames, kExpectAllSubframes));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
 
+  // Check that UKM contains entries for each subframe with
+  // "included_script.html" ("one" and "two").
+  ExpectFpfActivatedUkms(test_ukm_recorder, 2u,
+                         /*is_dry_run=*/true);
+
   // Simulate an explicit allowlisting via content settings.
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   AllowlistViaContentSettings(settings_map, url);
 
   // Re-do the navigation after User Bypass is enabled and verify all frames are
-  // still loaded as bypass exception should have no impact.
+  // still loaded as bypass exception should have no impact in dry_run mode.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // TODO(https://crbug.com/366267410): Add testing for UKM.
+  // +2 UKM logs as User Bypass has no impact in dry_run mode.
+  ExpectFpfActivatedUkms(test_ukm_recorder, 4u,
+                         /*is_dry_run=*/true);
+
+  // Check that no exceptions UKMs are logged, as User Bypass has no impact in
+  // dry_run mode.
+  ExpectNoFpfExceptionUkms(test_ukm_recorder);
 
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectAllSubframes));
@@ -195,6 +238,7 @@ IN_PROC_BROWSER_TEST_F(
     FingerprintingProtectionFilterEnabled3PCookiesBlockedBrowserTest,
     UserBypassException_ThirdPartyCookiesBlockingPrefOn_DoNotActivateFilter) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // TODO(https://crbug.com/358371545): Test console messaging for subframe
   // blocking once its implementation is resolved.
   GURL url(GetTestUrl(kTestFrameSetPath));
@@ -230,6 +274,17 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectBucketCount(
       ActivationLevelHistogramName,
       subresource_filter::mojom::ActivationLevel::kDisabled, 1);
+
+  // Check test UKM recorder contains no FingerprintingProtection ukm event,
+  // i.e. no resource was (or would be) blocked
+  EXPECT_EQ(0u, test_ukm_recorder
+                    .GetEntriesByName(
+                        ukm::builders::FingerprintingProtection::kEntryName)
+                    .size());
+
+  // Check that exception UKM is logged as User Bypass is applied..
+  ExpectFpfExceptionUkms(test_ukm_recorder, 1u,
+                         static_cast<int64_t>(ExceptionSource::USER_BYPASS));
 }
 
 IN_PROC_BROWSER_TEST_F(

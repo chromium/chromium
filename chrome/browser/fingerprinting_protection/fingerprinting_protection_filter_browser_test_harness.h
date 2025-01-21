@@ -69,7 +69,6 @@ class FingerprintingProtectionFilterBrowserTest
       "TotalCPUDuration";
 
  protected:
-
   void SetUpOnMainThread() override;
 
   void SetRulesetToDisallowURLsWithPathSuffix(const std::string& suffix);
@@ -79,6 +78,24 @@ class FingerprintingProtectionFilterBrowserTest
   void AssertUrlContained(const GURL& full_url, const GURL& sub_url);
 
   bool NavigateToDestination(const GURL& url);
+
+  // Check that UKM, logged only when a resource's load policy is either
+  // `DISALLOW` or `WOULD_DISALLOW`, contains `expected_count` log entries and
+  // `is_dry_run` metric value.
+  void ExpectFpfActivatedUkms(const ukm::TestAutoSetUkmRecorder& recorder,
+                              const unsigned long& expected_count,
+                              bool is_dry_run);
+
+  // Check that UKM, logged only when an exception to an activated filter is
+  // found, is not logged; i.e. an exception is not found.
+  void ExpectNoFpfExceptionUkms(const ukm::TestAutoSetUkmRecorder& recorder);
+
+  // Check that UKM, logged only when an exception to an activated filter is
+  // found, is logged `expected_count` number of times, with the source metric
+  // matching `expected_source`.
+  void ExpectFpfExceptionUkms(const ukm::TestAutoSetUkmRecorder& recorder,
+                              const unsigned long& expected_count,
+                              const int64_t& expected_source);
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
