@@ -121,9 +121,9 @@ rewrite_imports("cros_components_ts") {
 
   deps = [
     ":cros_components__ts_library",
-    ":rename_tsconfig",
     "//third_party/material_web_components:mwc_rewrite",
   ]
+  public_deps = [ ":rename_tsconfig" ]
 }
 
 generate_grd("cros_components_grdp") {
