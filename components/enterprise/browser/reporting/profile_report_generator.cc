@@ -80,7 +80,6 @@ ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
 
   if (is_machine_scope_) {
     delegate_->GetExtensionRequest(report_.get());
-    delegate_->GetProfileId(report_.get());
   }
 
   if (policies_enabled_) {

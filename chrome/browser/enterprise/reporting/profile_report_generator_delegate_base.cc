@@ -10,13 +10,11 @@
 #include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/browser/reporting/profile_report_generator.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
@@ -55,9 +53,8 @@ void ProfileReportGeneratorDelegateBase::GetSigninUserInfo(
   auto account_info =
       IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo(
           consent_level);
-  if (account_info.IsEmpty()) {
+  if (account_info.IsEmpty())
     return;
-  }
   auto* signed_in_user_info = report->mutable_chrome_signed_in_user();
   signed_in_user_info->set_email(account_info.email);
   signed_in_user_info->set_obfuscated_gaia_id(account_info.gaia.ToString());
@@ -107,15 +104,6 @@ void ProfileReportGeneratorDelegateBase::GetAffiliationInfo(
       break;
   }
   return;
-}
-
-void ProfileReportGeneratorDelegateBase::GetProfileId(
-    em::ChromeUserProfileInfo* report) {
-  auto profile_id = enterprise::ProfileIdServiceFactory::GetForProfile(profile_)
-                        ->GetProfileId();
-  if (profile_id) {
-    report->set_profile_id(*profile_id);
-  }
 }
 
 policy::CloudPolicyManager*

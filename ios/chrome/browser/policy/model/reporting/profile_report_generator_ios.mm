@@ -67,11 +67,6 @@ void ProfileReportGeneratorIOS::GetExtensionRequest(
   // Extensions aren't supported on iOS.
 }
 
-void ProfileReportGeneratorIOS::GetProfileId(
-    enterprise_management::ChromeUserProfileInfo* report) {
-  // TODO(crbug.com/389974117): Profile ID is currently unavailable on iOS.
-}
-
 std::unique_ptr<policy::PolicyConversionsClient>
 ProfileReportGeneratorIOS::MakePolicyConversionsClient(bool is_machine_scope) {
   // Note that profile reporting is not supported on iOS yet, hence we igore
