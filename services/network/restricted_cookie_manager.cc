@@ -649,8 +649,8 @@ void RestrictedCookieManager::SetCanonicalCookie(
     // e.g. via Android Webview APIs, we need to manually add exclusion reason
     // in this case.
     if (status.IsInclude()) {
-      status.AddExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+      status.AddExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                    EXCLUDE_USER_PREFERENCES);
     }
   }
 
@@ -658,7 +658,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
   // This probably never happens.
   if (!net::cookie_util::DomainIsHostOnly(url.host()))
     status.AddExclusionReason(
-        net::CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN);
+        net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN);
 
   // For better safety, we use isolated_info_.top_frame_origin() instead of
   // top_frame_origin to create the CookieAccessDetails , eventually
@@ -785,9 +785,11 @@ void RestrictedCookieManager::SetCanonicalCookieResult(
   // TODO(crbug.com/40632967): Only report pure INCLUDE once samesite
   // tightening up is rolled out.
   DCHECK(!access_result.status.HasExclusionReason(
-             net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES) &&
+             net::CookieInclusionStatus::ExclusionReason::
+                 EXCLUDE_USER_PREFERENCES) &&
          !access_result.status.HasExclusionReason(
-             net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT));
+             net::CookieInclusionStatus::ExclusionReason::
+                 EXCLUDE_THIRD_PARTY_PHASEOUT));
 
   if (access_result.status.IsInclude() || access_result.status.ShouldWarn()) {
     if (cookie_observer_) {

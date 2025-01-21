@@ -243,11 +243,13 @@ bool NetworkServiceNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
       // 3PCs that were not allowed. If that is the case, we should still
       // preserve partitioned cookies.
       if (url_loader->CookiesDisabled()) {
-        ExcludeAllCookies(net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+        ExcludeAllCookies(net::CookieInclusionStatus::ExclusionReason::
+                              EXCLUDE_USER_PREFERENCES,
                           maybe_included_cookies, excluded_cookies);
       } else {
         ExcludeAllCookiesExceptPartitioned(
-            net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+            net::CookieInclusionStatus::ExclusionReason::
+                EXCLUDE_USER_PREFERENCES,
             maybe_included_cookies, excluded_cookies);
       }
     }
@@ -258,7 +260,8 @@ bool NetworkServiceNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
       allowed = web_socket->AllowCookies(request.url());
       // TODO(crbug/324211435): Fix partitioned cookies for web sockets.
       if (!allowed) {
-        ExcludeAllCookies(net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+        ExcludeAllCookies(net::CookieInclusionStatus::ExclusionReason::
+                              EXCLUDE_USER_PREFERENCES,
                           maybe_included_cookies, excluded_cookies);
       }
     }

@@ -5899,7 +5899,8 @@ TEST_P(ParameterizedURLLoaderTest, RawRequestCookiesFlagged) {
     EXPECT_EQ("b", devtools_observer.raw_request_cookies()[0].cookie.Value());
     EXPECT_TRUE(devtools_observer.raw_request_cookies()[0]
                     .access_result.status.HasExactlyExclusionReasonsForTesting(
-                        {net::CookieInclusionStatus::EXCLUDE_NOT_ON_PATH}));
+                        {net::CookieInclusionStatus::ExclusionReason::
+                             EXCLUDE_NOT_ON_PATH}));
 
     EXPECT_EQ("TEST", devtools_observer.devtools_request_id());
   }
@@ -5972,10 +5973,10 @@ TEST_P(ParameterizedURLLoaderTest, RawResponseCookiesInvalid) {
     EXPECT_EQ(200, devtools_observer.raw_response_http_status_code());
     // On these failures the cookie object is not created
     EXPECT_FALSE(devtools_observer.raw_response_cookies()[0].cookie);
-    EXPECT_TRUE(
-        devtools_observer.raw_response_cookies()[0]
-            .access_result.status.HasExactlyExclusionReasonsForTesting(
-                {net::CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER}));
+    EXPECT_TRUE(devtools_observer.raw_response_cookies()[0]
+                    .access_result.status.HasExactlyExclusionReasonsForTesting(
+                        {net::CookieInclusionStatus::ExclusionReason::
+                             EXCLUDE_DISALLOWED_CHARACTER}));
 
     EXPECT_EQ("TEST", devtools_observer.devtools_request_id());
   }
@@ -6067,7 +6068,8 @@ TEST_P(ParameterizedURLLoaderTest, RawResponseCookiesRedirect) {
         devtools_observer.raw_response_cookies()[0].cookie->SecureAttribute());
     EXPECT_TRUE(devtools_observer.raw_response_cookies()[0]
                     .access_result.status.HasExactlyExclusionReasonsForTesting(
-                        {net::CookieInclusionStatus::EXCLUDE_SECURE_ONLY}));
+                        {net::CookieInclusionStatus::ExclusionReason::
+                             EXCLUDE_SECURE_ONLY}));
   }
 }
 
@@ -6148,7 +6150,8 @@ TEST_P(ParameterizedURLLoaderTest, RawResponseCookiesAuth) {
         devtools_observer.raw_response_cookies()[0].cookie->SecureAttribute());
     EXPECT_TRUE(devtools_observer.raw_response_cookies()[0]
                     .access_result.status.HasExactlyExclusionReasonsForTesting(
-                        {net::CookieInclusionStatus::EXCLUDE_SECURE_ONLY}));
+                        {net::CookieInclusionStatus::ExclusionReason::
+                             EXCLUDE_SECURE_ONLY}));
 
     EXPECT_EQ("TEST", devtools_observer.devtools_request_id());
   }
@@ -6294,7 +6297,7 @@ TEST_P(ParameterizedURLLoaderTest, CookieReportingCategories) {
                     false /* is_included */)));
     EXPECT_TRUE(cookie_observer.observed_cookies()[0]
                     .status.HasExactlyExclusionReasonsForTesting(
-                        {net::CookieInclusionStatus::
+                        {net::CookieInclusionStatus::ExclusionReason::
                              EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
     EXPECT_TRUE(cookie_observer.observed_cookies()[0].status.HasWarningReason(
         net::CookieInclusionStatus::WarningReason::
@@ -6338,10 +6341,10 @@ TEST_P(ParameterizedURLLoaderTest, CookieReportingCategories) {
         testing::ElementsAre(MatchesCookieDetails(
             CookieAccessType::kChange,
             CookieOrLine("a=b", mojom::CookieOrLine::Tag::kCookie), false)));
-    EXPECT_TRUE(
-        cookie_observer.observed_cookies()[0]
-            .status.HasExactlyExclusionReasonsForTesting(
-                {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}));
+    EXPECT_TRUE(cookie_observer.observed_cookies()[0]
+                    .status.HasExactlyExclusionReasonsForTesting(
+                        {net::CookieInclusionStatus::ExclusionReason::
+                             EXCLUDE_USER_PREFERENCES}));
 
     test_network_delegate()->set_cookie_options(0);
   }

@@ -76,8 +76,8 @@ DelayedCookieMonster::DelayedCookieMonster()
                                                       nullptr /* netlog */)),
       result_(
           CookieAccessResult(CookieInclusionStatus::MakeFromReasonsForTesting(
-              /*exclusions=*/{
-                  CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}))) {}
+              /*exclusions=*/{CookieInclusionStatus::ExclusionReason::
+                                  EXCLUDE_FAILURE_TO_STORE}))) {}
 
 DelayedCookieMonster::~DelayedCookieMonster() = default;
 

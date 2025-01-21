@@ -57,9 +57,9 @@ TEST(CookieManagerSharedMojomTraitsTest, Roundtrips_CookieInclusionStatus) {
   // arbitrary selection of values to test the serialization/deserialization.
   net::CookieInclusionStatus original =
       net::CookieInclusionStatus::MakeFromReasonsForTesting(
-          {net::CookieInclusionStatus::EXCLUDE_SAMESITE_LAX,
-           net::CookieInclusionStatus::EXCLUDE_INVALID_PREFIX,
-           net::CookieInclusionStatus::EXCLUDE_SECURE_ONLY},
+          {net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_LAX,
+           net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX,
+           net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SECURE_ONLY},
           {net::CookieInclusionStatus::
                WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT,
            net::CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE,
@@ -71,9 +71,9 @@ TEST(CookieManagerSharedMojomTraitsTest, Roundtrips_CookieInclusionStatus) {
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
               network::mojom::CookieInclusionStatus>(original, copied));
   EXPECT_TRUE(copied.HasExactlyExclusionReasonsForTesting(
-      {net::CookieInclusionStatus::EXCLUDE_SAMESITE_LAX,
-       net::CookieInclusionStatus::EXCLUDE_INVALID_PREFIX,
-       net::CookieInclusionStatus::EXCLUDE_SECURE_ONLY}));
+      {net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_LAX,
+       net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX,
+       net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SECURE_ONLY}));
   EXPECT_TRUE(copied.HasExactlyWarningReasonsForTesting(
       {net::CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT,
        net::CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE,

@@ -2203,21 +2203,24 @@ TEST_F(URLRequestHttpJobTest, PrivacyMode_ExclusionReason) {
               MatchesCookieAccessResult(
                   HasExactlyExclusionReasonsForTesting(
                       std::vector<CookieInclusionStatus::ExclusionReason>{
-                          CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
+                          CookieInclusionStatus::ExclusionReason::
+                              EXCLUDE_USER_PREFERENCES}),
                   _, _, _)),
           MatchesCookieWithAccessResult(
               MatchesCookieWithNameSourceType("two", CookieSourceType::kHTTP),
               MatchesCookieAccessResult(
                   HasExactlyExclusionReasonsForTesting(
                       std::vector<CookieInclusionStatus::ExclusionReason>{
-                          CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
+                          CookieInclusionStatus::ExclusionReason::
+                              EXCLUDE_USER_PREFERENCES}),
                   _, _, _)),
           MatchesCookieWithAccessResult(
               MatchesCookieWithNameSourceType("three", CookieSourceType::kHTTP),
               MatchesCookieAccessResult(
                   HasExactlyExclusionReasonsForTesting(
                       std::vector<CookieInclusionStatus::ExclusionReason>{
-                          CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
+                          CookieInclusionStatus::ExclusionReason::
+                              EXCLUDE_USER_PREFERENCES}),
                   _, _, _))));
 
   EXPECT_EQ(0, network_delegate.annotate_cookies_called_count());
@@ -2268,7 +2271,8 @@ TEST_F(URLRequestHttpJobTest, IndividuallyBlockedCookies) {
               MatchesCookieAccessResult(
                   HasExactlyExclusionReasonsForTesting(
                       std::vector<CookieInclusionStatus::ExclusionReason>{
-                          CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
+                          CookieInclusionStatus::ExclusionReason::
+                              EXCLUDE_USER_PREFERENCES}),
                   _, _, _)),
           MatchesCookieWithAccessResult(
               MatchesCookieWithNameSourceType("blocked_two",
@@ -2276,7 +2280,8 @@ TEST_F(URLRequestHttpJobTest, IndividuallyBlockedCookies) {
               MatchesCookieAccessResult(
                   HasExactlyExclusionReasonsForTesting(
                       std::vector<CookieInclusionStatus::ExclusionReason>{
-                          CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
+                          CookieInclusionStatus::ExclusionReason::
+                              EXCLUDE_USER_PREFERENCES}),
                   _, _, _)),
           MatchesCookieWithAccessResult(
               MatchesCookieWithNameSourceType("allowed",
@@ -2514,7 +2519,8 @@ TEST_F(URLRequestHttpJobTest, PartitionedCookiePrivacyMode) {
                 MatchesCookieAccessResult(
                     HasExactlyExclusionReasonsForTesting(
                         std::vector<CookieInclusionStatus::ExclusionReason>{
-                            CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
+                            CookieInclusionStatus::ExclusionReason::
+                                EXCLUDE_USER_PREFERENCES}),
                     _, _, _))));
   }
 
@@ -2539,7 +2545,8 @@ TEST_F(URLRequestHttpJobTest, PartitionedCookiePrivacyMode) {
                 MatchesCookieAccessResult(
                     HasExactlyExclusionReasonsForTesting(
                         std::vector<CookieInclusionStatus::ExclusionReason>{
-                            CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
+                            CookieInclusionStatus::ExclusionReason::
+                                EXCLUDE_USER_PREFERENCES}),
                     _, _, _)),
             MatchesCookieWithAccessResult(
                 MatchesCookieWithNameSourceType("__Host-unpartitioned",
@@ -2547,7 +2554,8 @@ TEST_F(URLRequestHttpJobTest, PartitionedCookiePrivacyMode) {
                 MatchesCookieAccessResult(
                     HasExactlyExclusionReasonsForTesting(
                         std::vector<CookieInclusionStatus::ExclusionReason>{
-                            CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
+                            CookieInclusionStatus::ExclusionReason::
+                                EXCLUDE_USER_PREFERENCES}),
                     _, _, _))));
   }
 }

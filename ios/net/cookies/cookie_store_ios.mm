@@ -242,7 +242,7 @@ void CookieStoreIOS::SetCanonicalCookieAsync(
       access_scheme == CookieAccessScheme::kNonCryptographic) {
     if (!callback.is_null()) {
       access_result.status.AddExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_SECURE_ONLY);
+          net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SECURE_ONLY);
       std::move(callback).Run(access_result);
     }
     return;
@@ -259,7 +259,7 @@ void CookieStoreIOS::SetCanonicalCookieAsync(
 
   if (!callback.is_null()) {
     access_result.status.AddExclusionReason(
-        net::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+        net::CookieInclusionStatus::ExclusionReason::EXCLUDE_FAILURE_TO_STORE);
     std::move(callback).Run(access_result);
   }
 }

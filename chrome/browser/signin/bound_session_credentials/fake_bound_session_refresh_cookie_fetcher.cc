@@ -113,8 +113,8 @@ void FakeBoundSessionRefreshCookieFetcher::InsertCookieInCookieJar(
           std::move(callback),
           net::CookieAccessResult(
               net::CookieInclusionStatus::MakeFromReasonsForTesting(
-                  /*exclusions=*/{
-                      net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR}))));
+                  /*exclusions=*/{net::CookieInclusionStatus::ExclusionReason::
+                                      EXCLUDE_UNKNOWN_ERROR}))));
 }
 
 void FakeBoundSessionRefreshCookieFetcher::OnCookieSet(

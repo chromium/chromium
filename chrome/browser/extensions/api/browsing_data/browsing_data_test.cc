@@ -109,8 +109,8 @@ bool SetGaiaCookieForProfile(Profile* profile) {
           set_cookie_future.GetCallback(),
           net::CookieAccessResult(
               net::CookieInclusionStatus::MakeFromReasonsForTesting(
-                  /*exclusions=*/{
-                      net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR}))));
+                  /*exclusions=*/{net::CookieInclusionStatus::ExclusionReason::
+                                      EXCLUDE_UNKNOWN_ERROR}))));
   return set_cookie_future.Get().status.IsInclude();
 }
 #endif

@@ -337,16 +337,16 @@ bool ShouldNotifyAboutCookie(net::CookieInclusionStatus status) {
           WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME);
 
   return status.IsInclude() || status.ShouldWarn() ||
-         status.HasExclusionReason(
-             net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES) ||
-         status.HasExclusionReason(
-             net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT) ||
-         status.HasExclusionReason(
-             net::CookieInclusionStatus::EXCLUDE_DOMAIN_NON_ASCII) ||
-         status.HasExclusionReason(
-             net::CookieInclusionStatus::EXCLUDE_PORT_MISMATCH) ||
-         status.HasExclusionReason(
-             net::CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH);
+         status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                       EXCLUDE_USER_PREFERENCES) ||
+         status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                       EXCLUDE_THIRD_PARTY_PHASEOUT) ||
+         status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                       EXCLUDE_DOMAIN_NON_ASCII) ||
+         status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                       EXCLUDE_PORT_MISMATCH) ||
+         status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                       EXCLUDE_SCHEME_MISMATCH);
 }
 
 // Parses AcceptCHFrame and removes client hints already in the headers.

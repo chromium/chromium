@@ -28,7 +28,7 @@ namespace net {
 class NET_EXPORT CookieInclusionStatus {
  public:
   // Types of reasons why a cookie might be excluded.
-  enum ExclusionReason {
+  enum class ExclusionReason {
     EXCLUDE_UNKNOWN_ERROR = 0,
 
     // Statuses applied when accessing a cookie (either sending or setting):
@@ -120,7 +120,7 @@ class NET_EXPORT CookieInclusionStatus {
   // Mojom and some tests assume that all the exclusion reasons will fit within
   // a uint32_t. Once that's not longer true those assumptions need to be
   // updated (along with this assert).
-  static_assert(ExclusionReason::NUM_EXCLUSION_REASONS <= 32,
+  static_assert(static_cast<int>(ExclusionReason::NUM_EXCLUSION_REASONS) <= 32,
                 "Expanding ExclusionReasons past 32 reasons requires updating "
                 "usage assumptions.");
 
@@ -297,7 +297,7 @@ class NET_EXPORT CookieInclusionStatus {
   };
 
   using ExclusionReasonBitset =
-      std::bitset<ExclusionReason::NUM_EXCLUSION_REASONS>;
+      std::bitset<static_cast<int>(ExclusionReason::NUM_EXCLUSION_REASONS)>;
   using WarningReasonBitset = std::bitset<WarningReason::NUM_WARNING_REASONS>;
 
   // Makes a status that says include and should not warn.

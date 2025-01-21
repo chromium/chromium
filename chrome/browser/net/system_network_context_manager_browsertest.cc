@@ -665,10 +665,11 @@ IN_PROC_BROWSER_TEST_F(
   // If the sites are in the same Related Website Sets, we're expecting the
   // EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET exclusion reason.
   expected_third_party_inclusion_status.AddExclusionReason(
-      net::CookieInclusionStatus::
+      net::CookieInclusionStatus::ExclusionReason::
           EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
   expected_third_party_inclusion_status.AddExclusionReason(
-      net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
+      net::CookieInclusionStatus::ExclusionReason::
+          EXCLUDE_THIRD_PARTY_PHASEOUT);
   expected_third_party_inclusion_status.AddWarningReason(
       net::CookieInclusionStatus::WARN_PORT_MISMATCH);
   const CookieAccess expected_third_party_access{

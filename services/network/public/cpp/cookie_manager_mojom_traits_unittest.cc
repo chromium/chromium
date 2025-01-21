@@ -93,7 +93,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieAccessResult) {
   net::CookieAccessResult original = net::CookieAccessResult(
       net::CookieEffectiveSameSite::LAX_MODE,
       net::CookieInclusionStatus::MakeFromReasonsForTesting(
-          {net::CookieInclusionStatus::
+          {net::CookieInclusionStatus::ExclusionReason::
                EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX},
           {net::CookieInclusionStatus::
                WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT}),
@@ -106,7 +106,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieAccessResult) {
 
   EXPECT_EQ(original.effective_same_site, copied.effective_same_site);
   EXPECT_TRUE(copied.status.HasExactlyExclusionReasonsForTesting(
-      {net::CookieInclusionStatus::
+      {net::CookieInclusionStatus::ExclusionReason::
            EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
   EXPECT_TRUE(copied.status.HasExactlyWarningReasonsForTesting(
       {net::CookieInclusionStatus::

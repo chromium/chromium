@@ -608,7 +608,8 @@ TEST_F(CookieManagerTest, GetCookieList) {
   EXPECT_EQ("F", excluded_cookies[0].cookie.Value());
   EXPECT_TRUE(excluded_cookies[0]
                   .access_result.status.HasExactlyExclusionReasonsForTesting(
-                      {net::CookieInclusionStatus::EXCLUDE_HTTP_ONLY}));
+                      {net::CookieInclusionStatus::ExclusionReason::
+                           EXCLUDE_HTTP_ONLY}));
 }
 
 TEST_F(CookieManagerTest, GetCookieListHttpOnly) {
@@ -977,7 +978,7 @@ TEST_F(CookieManagerTest, ConfirmSecureSetFails) {
           "http", false);
 
   EXPECT_TRUE(access_result.status.HasExactlyExclusionReasonsForTesting(
-      {net::CookieInclusionStatus::EXCLUDE_SECURE_ONLY}));
+      {net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SECURE_ONLY}));
   EXPECT_EQ(access_result.effective_same_site,
             net::CookieEffectiveSameSite::NO_RESTRICTION);
   std::vector<net::CanonicalCookie> cookies =
@@ -1021,7 +1022,8 @@ TEST_F(CookieManagerTest, SecureCookieNonCryptographicPotentiallyTrustworthy) {
           ->SetCanonicalCookieFromUrlWithStatus(
               *http_other_cookie, http_other_url, false /* modify_http_only */)
           .HasExactlyExclusionReasonsForTesting(
-              {net::CookieInclusionStatus::EXCLUDE_SECURE_ONLY}));
+              {net::CookieInclusionStatus::ExclusionReason::
+                   EXCLUDE_SECURE_ONLY}));
 
   // Set a CookieAccessDelegateImpl which allows other origins registered
   // as trustworthy to set a Secure cookie.
@@ -1065,7 +1067,7 @@ TEST_F(CookieManagerTest, ConfirmHttpOnlySetFails) {
           "http", false);
 
   EXPECT_TRUE(access_result.status.HasExactlyExclusionReasonsForTesting(
-      {net::CookieInclusionStatus::EXCLUDE_HTTP_ONLY}));
+      {net::CookieInclusionStatus::ExclusionReason::EXCLUDE_HTTP_ONLY}));
   EXPECT_EQ(access_result.effective_same_site,
             net::CookieEffectiveSameSite::LAX_MODE);
   std::vector<net::CanonicalCookie> cookies =
@@ -1094,7 +1096,7 @@ TEST_F(CookieManagerTest, ConfirmSecureOverwriteFails) {
           "http", false);
 
   EXPECT_TRUE(access_result.status.HasExactlyExclusionReasonsForTesting(
-      {net::CookieInclusionStatus::EXCLUDE_OVERWRITE_SECURE}));
+      {net::CookieInclusionStatus::ExclusionReason::EXCLUDE_OVERWRITE_SECURE}));
   EXPECT_EQ(access_result.effective_same_site,
             net::CookieEffectiveSameSite::LAX_MODE);
 
@@ -1126,7 +1128,8 @@ TEST_F(CookieManagerTest, ConfirmHttpOnlyOverwriteFails) {
           "https", false);
 
   EXPECT_TRUE(access_result.status.HasExactlyExclusionReasonsForTesting(
-      {net::CookieInclusionStatus::EXCLUDE_OVERWRITE_HTTP_ONLY}));
+      {net::CookieInclusionStatus::ExclusionReason::
+           EXCLUDE_OVERWRITE_HTTP_ONLY}));
   EXPECT_EQ(access_result.effective_same_site,
             net::CookieEffectiveSameSite::LAX_MODE);
 

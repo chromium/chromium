@@ -9,8 +9,8 @@
 namespace net {
 
 TEST(CookieInclusionStatusTest, IncludeStatus) {
-  int num_exclusion_reasons =
-      static_cast<int>(CookieInclusionStatus::NUM_EXCLUSION_REASONS);
+  int num_exclusion_reasons = static_cast<int>(
+      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS);
   int num_warning_reasons =
       static_cast<int>(CookieInclusionStatus::NUM_WARNING_REASONS);
   // Zero-argument constructor
@@ -24,18 +24,19 @@ TEST(CookieInclusionStatusTest, IncludeStatus) {
     EXPECT_FALSE(status.HasWarningReason(
         static_cast<CookieInclusionStatus::WarningReason>(i)));
   }
-  EXPECT_FALSE(
-      status.HasExclusionReason(CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR));
+  EXPECT_FALSE(status.HasExclusionReason(
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_UNKNOWN_ERROR));
 }
 
 TEST(CookieInclusionStatusTest, ExcludeStatus) {
-  int num_exclusion_reasons =
-      static_cast<int>(CookieInclusionStatus::NUM_EXCLUSION_REASONS);
+  int num_exclusion_reasons = static_cast<int>(
+      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS);
   // Test exactly one exclusion reason and multiple (two) exclusion reasons.
   for (int i = 0; i < num_exclusion_reasons; ++i) {
     auto reason1 = static_cast<CookieInclusionStatus::ExclusionReason>(i);
-    if (reason1 != CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT &&
-        reason1 != CookieInclusionStatus::
+    if (reason1 != CookieInclusionStatus::ExclusionReason::
+                       EXCLUDE_THIRD_PARTY_PHASEOUT &&
+        reason1 != CookieInclusionStatus::ExclusionReason::
                        EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET) {
       continue;
     }
@@ -50,8 +51,9 @@ TEST(CookieInclusionStatusTest, ExcludeStatus) {
       if (i == j)
         continue;
       auto reason2 = static_cast<CookieInclusionStatus::ExclusionReason>(j);
-      if (reason2 != CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT &&
-          reason2 != CookieInclusionStatus::
+      if (reason2 != CookieInclusionStatus::ExclusionReason::
+                         EXCLUDE_THIRD_PARTY_PHASEOUT &&
+          reason2 != CookieInclusionStatus::ExclusionReason::
                          EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET) {
         continue;
       }
@@ -62,8 +64,10 @@ TEST(CookieInclusionStatusTest, ExcludeStatus) {
       status_two_reasons.AddExclusionReason(reason2);
       EXPECT_FALSE(status_two_reasons.IsInclude());
 
-      if (reason1 != CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT &&
-          reason2 != CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT) {
+      if (reason1 != CookieInclusionStatus::ExclusionReason::
+                         EXCLUDE_THIRD_PARTY_PHASEOUT &&
+          reason2 != CookieInclusionStatus::ExclusionReason::
+                         EXCLUDE_THIRD_PARTY_PHASEOUT) {
         EXPECT_TRUE(status_two_reasons.HasExclusionReason(reason1));
         EXPECT_TRUE(status_two_reasons.HasExclusionReason(reason2));
       }
@@ -73,10 +77,10 @@ TEST(CookieInclusionStatusTest, ExcludeStatus) {
 
 TEST(CookieInclusionStatusTest,
      ExcludeStatus_MaybeClearThirdPartyPhaseoutReason) {
-  int num_exclusion_reasons =
-      static_cast<int>(CookieInclusionStatus::NUM_EXCLUSION_REASONS);
+  int num_exclusion_reasons = static_cast<int>(
+      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS);
   CookieInclusionStatus::ExclusionReason reason1 =
-      CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT;
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT;
   const CookieInclusionStatus status_one_reason =
       CookieInclusionStatus::MakeFromReasonsForTesting(
           /*exclusions=*/{reason1});
@@ -88,13 +92,13 @@ TEST(CookieInclusionStatusTest,
     if (reason1 == reason2) {
       continue;
     }
-    EXPECT_FALSE(status_one_reason.HasExclusionReason(reason2)) << reason2;
+    EXPECT_FALSE(status_one_reason.HasExclusionReason(reason2)) << j;
 
     CookieInclusionStatus status_two_reasons = status_one_reason;
     status_two_reasons.AddExclusionReason(reason2);
     EXPECT_FALSE(status_two_reasons.IsInclude());
 
-    if (reason2 == CookieInclusionStatus::
+    if (reason2 == CookieInclusionStatus::ExclusionReason::
                        EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET) {
       EXPECT_TRUE(status_two_reasons.HasExclusionReason(reason1));
       EXPECT_TRUE(status_two_reasons.HasExclusionReason(reason2));
@@ -113,24 +117,25 @@ TEST(CookieInclusionStatusTest,
       {CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT}));
   // Adding an exclusion reason should clear 3PCD warning reason.
   status.AddExclusionReason(
-      CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT);
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT}));
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT}));
   EXPECT_FALSE(status.ShouldWarn());
 
   status.AddExclusionReason(
-      CookieInclusionStatus::
+      CookieInclusionStatus::ExclusionReason::
           EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT,
-       CookieInclusionStatus::
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT,
+       CookieInclusionStatus::ExclusionReason::
            EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET}));
   // Adding an exclusion reason unrelated with 3PCD should clear 3PCD related
   // exclusion reasons.
   status.AddExclusionReason(
-      CookieInclusionStatus::EXCLUDE_SAMESITE_NONE_INSECURE);
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_NONE_INSECURE);
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_SAMESITE_NONE_INSECURE}));
+      {CookieInclusionStatus::ExclusionReason::
+           EXCLUDE_SAMESITE_NONE_INSECURE}));
   EXPECT_FALSE(status.IsInclude());
 }
 
@@ -138,9 +143,10 @@ TEST(CookieInclusionStatusTest, AddExclusionReason) {
   CookieInclusionStatus status;
   status.AddWarningReason(
       CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE);
-  status.AddExclusionReason(CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR);
+  status.AddExclusionReason(
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_UNKNOWN_ERROR);
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR}));
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_UNKNOWN_ERROR}));
   // Adding an exclusion reason other than
   // EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX or
   // EXCLUDE_SAMESITE_NONE_INSECURE should clear any SameSite warning.
@@ -149,10 +155,11 @@ TEST(CookieInclusionStatusTest, AddExclusionReason) {
   status = CookieInclusionStatus();
   status.AddWarningReason(
       CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT);
-  status.AddExclusionReason(
-      CookieInclusionStatus::EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX);
+  status.AddExclusionReason(CookieInclusionStatus::ExclusionReason::
+                                EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX);
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
+      {CookieInclusionStatus::ExclusionReason::
+           EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
   EXPECT_TRUE(status.HasExactlyWarningReasonsForTesting(
       {CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT}));
 }
@@ -174,7 +181,8 @@ TEST(CookieInclusionStatusTest, ExemptionReason) {
             CookieInclusionStatus::ExemptionReason::k3PCDMetadata);
 
   // Adding an exclusion reason resets the exemption reason.
-  status.AddExclusionReason(CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR);
+  status.AddExclusionReason(
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_UNKNOWN_ERROR);
   EXPECT_EQ(status.exemption_reason(),
             CookieInclusionStatus::ExemptionReason::kNone);
 
@@ -212,26 +220,29 @@ TEST(CookieInclusionStatusTest, CheckEachWarningReason) {
 TEST(CookieInclusionStatusTest, RemoveExclusionReason) {
   CookieInclusionStatus status =
       CookieInclusionStatus::MakeFromReasonsForTesting(
-          /*exclusions=*/{CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR});
-  ASSERT_TRUE(
-      status.HasExclusionReason(CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR));
+          /*exclusions=*/{
+              CookieInclusionStatus::ExclusionReason::EXCLUDE_UNKNOWN_ERROR});
+  ASSERT_TRUE(status.HasExclusionReason(
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_UNKNOWN_ERROR));
 
-  status.RemoveExclusionReason(CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR);
-  EXPECT_FALSE(
-      status.HasExclusionReason(CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR));
+  status.RemoveExclusionReason(
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_UNKNOWN_ERROR);
+  EXPECT_FALSE(status.HasExclusionReason(
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_UNKNOWN_ERROR));
 
   // Removing a nonexistent exclusion reason doesn't do anything.
-  ASSERT_FALSE(
-      status.HasExclusionReason(CookieInclusionStatus::NUM_EXCLUSION_REASONS));
-  status.RemoveExclusionReason(CookieInclusionStatus::NUM_EXCLUSION_REASONS);
-  EXPECT_FALSE(
-      status.HasExclusionReason(CookieInclusionStatus::NUM_EXCLUSION_REASONS));
+  ASSERT_FALSE(status.HasExclusionReason(
+      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS));
+  status.RemoveExclusionReason(
+      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS);
+  EXPECT_FALSE(status.HasExclusionReason(
+      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS));
 }
 
 TEST(CookieInclusionStatusTest, RemoveWarningReason) {
   CookieInclusionStatus status =
       CookieInclusionStatus::MakeFromReasonsForTesting(
-          {CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR},
+          {CookieInclusionStatus::ExclusionReason::EXCLUDE_UNKNOWN_ERROR},
           {CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE});
   EXPECT_TRUE(status.ShouldWarn());
   ASSERT_TRUE(status.HasWarningReason(
@@ -284,68 +295,74 @@ TEST(CookieInclusionStatusTest, ShouldRecordDowngradeMetrics) {
   EXPECT_TRUE(CookieInclusionStatus::MakeFromReasonsForTesting({})
                   .ShouldRecordDowngradeMetrics());
 
-  EXPECT_TRUE(CookieInclusionStatus::MakeFromReasonsForTesting(
-                  {
-                      CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT,
-                  })
-                  .ShouldRecordDowngradeMetrics());
+  EXPECT_TRUE(
+      CookieInclusionStatus::MakeFromReasonsForTesting(
+          {
+              CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_STRICT,
+          })
+          .ShouldRecordDowngradeMetrics());
+
+  EXPECT_TRUE(
+      CookieInclusionStatus::MakeFromReasonsForTesting(
+          {
+              CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_LAX,
+          })
+          .ShouldRecordDowngradeMetrics());
 
   EXPECT_TRUE(CookieInclusionStatus::MakeFromReasonsForTesting(
                   {
-                      CookieInclusionStatus::EXCLUDE_SAMESITE_LAX,
-                  })
-                  .ShouldRecordDowngradeMetrics());
-
-  EXPECT_TRUE(CookieInclusionStatus::MakeFromReasonsForTesting(
-                  {
-                      CookieInclusionStatus::
+                      CookieInclusionStatus::ExclusionReason::
                           EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
                   })
                   .ShouldRecordDowngradeMetrics());
 
   // Note: the following cases cannot occur under normal circumstances.
-  EXPECT_TRUE(CookieInclusionStatus::MakeFromReasonsForTesting(
-                  {
-                      CookieInclusionStatus::
-                          EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
-                      CookieInclusionStatus::EXCLUDE_SAMESITE_LAX,
-                  })
-                  .ShouldRecordDowngradeMetrics());
-  EXPECT_FALSE(CookieInclusionStatus::MakeFromReasonsForTesting(
-                   {
-                       CookieInclusionStatus::EXCLUDE_SAMESITE_NONE_INSECURE,
-                       CookieInclusionStatus::EXCLUDE_SAMESITE_LAX,
-                   })
-                   .ShouldRecordDowngradeMetrics());
+  EXPECT_TRUE(
+      CookieInclusionStatus::MakeFromReasonsForTesting(
+          {
+              CookieInclusionStatus::ExclusionReason::
+                  EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
+              CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_LAX,
+          })
+          .ShouldRecordDowngradeMetrics());
+  EXPECT_FALSE(
+      CookieInclusionStatus::MakeFromReasonsForTesting(
+          {
+              CookieInclusionStatus::ExclusionReason::
+                  EXCLUDE_SAMESITE_NONE_INSECURE,
+              CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_LAX,
+          })
+          .ShouldRecordDowngradeMetrics());
 }
 
 TEST(CookieInclusionStatusTest, RemoveExclusionReasons) {
   CookieInclusionStatus status =
       CookieInclusionStatus::MakeFromReasonsForTesting({
-          CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR,
-          CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT,
-          CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+          CookieInclusionStatus::ExclusionReason::EXCLUDE_UNKNOWN_ERROR,
+          CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_STRICT,
+          CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES,
       });
   ASSERT_TRUE(status.HasExactlyExclusionReasonsForTesting({
-      CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR,
-      CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT,
-      CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_UNKNOWN_ERROR,
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_STRICT,
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES,
   }));
 
   status.RemoveExclusionReasons(
-      {CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR,
-       CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR,
-       CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT});
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_UNKNOWN_ERROR,
+       CookieInclusionStatus::ExclusionReason::EXCLUDE_UNKNOWN_ERROR,
+       CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_STRICT});
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({
-      CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES,
   }));
 
   // Removing a nonexistent exclusion reason doesn't do anything.
-  ASSERT_FALSE(
-      status.HasExclusionReason(CookieInclusionStatus::NUM_EXCLUSION_REASONS));
-  status.RemoveExclusionReasons({CookieInclusionStatus::NUM_EXCLUSION_REASONS});
+  ASSERT_FALSE(status.HasExclusionReason(
+      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS));
+  status.RemoveExclusionReasons(
+      {CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS});
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({
-      CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES,
   }));
 }
 
@@ -365,18 +382,25 @@ TEST(CookieInclusionStatusTest, ValidateExclusionAndWarningFromWire) {
   EXPECT_FALSE(CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
       0u, warning_reasons));
 
-  exclusion_reasons = (1u << CookieInclusionStatus::EXCLUDE_DOMAIN_MISMATCH);
+  exclusion_reasons =
+      (1u << static_cast<int>(
+           CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH));
   warning_reasons = (1u << CookieInclusionStatus::WARN_PORT_MISMATCH);
   EXPECT_TRUE(CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
       exclusion_reasons, warning_reasons));
 
-  exclusion_reasons = (1u << CookieInclusionStatus::NUM_EXCLUSION_REASONS);
+  exclusion_reasons =
+      (1u << static_cast<int>(
+           CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS));
   warning_reasons = (1u << CookieInclusionStatus::NUM_WARNING_REASONS);
   EXPECT_FALSE(CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
       exclusion_reasons, warning_reasons));
 
   exclusion_reasons =
-      (1u << (CookieInclusionStatus::NUM_EXCLUSION_REASONS - 1));
+      (1u
+       << (static_cast<int>(
+               CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS) -
+           1));
   warning_reasons = (1u << (CookieInclusionStatus::NUM_WARNING_REASONS - 1));
   EXPECT_TRUE(CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
       exclusion_reasons, warning_reasons));
@@ -422,16 +446,18 @@ TEST(CookieInclusionStatusTest, InvalidExclusionReason) {
   CookieInclusionStatus status;
   // Ensure adding, removing, and checking invalid exclusion reasons
   // works as expected.
-  status.AddExclusionReason(CookieInclusionStatus::NUM_EXCLUSION_REASONS);
+  status.AddExclusionReason(
+      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS);
   status.AddExclusionReason(
       static_cast<CookieInclusionStatus::ExclusionReason>(-1));
-  EXPECT_FALSE(
-      status.HasExclusionReason(CookieInclusionStatus::NUM_EXCLUSION_REASONS));
-  status.RemoveExclusionReason(CookieInclusionStatus::NUM_EXCLUSION_REASONS);
-  EXPECT_FALSE(
-      status.HasExclusionReason(CookieInclusionStatus::NUM_EXCLUSION_REASONS));
+  EXPECT_FALSE(status.HasExclusionReason(
+      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS));
+  status.RemoveExclusionReason(
+      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS);
+  EXPECT_FALSE(status.HasExclusionReason(
+      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS));
   EXPECT_FALSE(status.HasOnlyExclusionReason(
-      CookieInclusionStatus::NUM_EXCLUSION_REASONS));
+      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS));
 }
 
 TEST(CookieInclusionStatusTest, InvalidWarningReason) {
