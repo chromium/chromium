@@ -129,6 +129,7 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
       {"errorDialogContent", IDS_DATA_SHARING_SHARE_ERROR_BODY},
       {"moreOptions", IDS_DATA_SHARING_MORE_OPTIONS},
       {"moreOptionsDescription", IDS_DATA_SHARING_MORE_OPTIONS_DESCRIPTION},
+      {"activityLog", IDS_DATA_SHARING_MANAGE_ACTIVITY_LOG_OPTION},
 
       // dynamic messages:
       {"shareGroupShareAs", IDS_DATA_SHARING_SHARE_GROUP_SHARE_AS},
