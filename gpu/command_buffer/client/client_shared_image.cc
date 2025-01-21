@@ -59,13 +59,6 @@ class ScopedMappingSharedMemoryMapping
     return viz::SinglePlaneSharedImageFormatToBufferFormat(metadata_.format);
   }
   bool IsSharedMemory() override { return true; }
-  void OnMemoryDump(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-      uint64_t tracing_process_id,
-      int importance) override {
-    NOTREACHED();
-  }
 
  private:
   SharedImageMetadata metadata_;
@@ -124,14 +117,6 @@ class ScopedMappingGpuMemoryBuffer : public ClientSharedImage::ScopedMapping {
   bool IsSharedMemory() override {
     CHECK(buffer_);
     return buffer_->GetType() == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
-  }
-  void OnMemoryDump(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-      uint64_t tracing_process_id,
-      int importance) override {
-    buffer_->OnMemoryDump(pmd, buffer_dump_guid, tracing_process_id,
-                          importance);
   }
   bool Init(gfx::GpuMemoryBuffer* gpu_memory_buffer, bool is_already_mapped) {
     if (!gpu_memory_buffer) {

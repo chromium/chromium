@@ -53,12 +53,7 @@ class ZeroCopyGpuBacking : public ResourcePool::GpuBacking {
     if (!shared_image) {
       return;
     }
-    auto mapping = shared_image->Map();
-    if (!mapping) {
-      return;
-    }
-    mapping->OnMemoryDump(pmd, buffer_dump_guid, tracing_process_id,
-                          importance);
+    shared_image->OnMemoryDump(pmd, buffer_dump_guid, importance);
   }
 
   // The SharedImageInterface used to clean up the shared image.
