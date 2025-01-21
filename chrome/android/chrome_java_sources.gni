@@ -245,6 +245,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsProvider.java",
   "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarMediator.java",
   "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarProperties.java",
+  "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtils.java",
   "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarViewBinder.java",
   "java/src/org/chromium/chrome/browser/bookmarkswidget/BookmarkWidgetProvider.java",
   "java/src/org/chromium/chrome/browser/bookmarkswidget/BookmarkWidgetProxy.java",
