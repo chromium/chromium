@@ -1,7 +1,4 @@
-arichiv@chromium.org
-iclelland@chromium.org
-vogelheim@chromium.org
-
+file://third_party/blink/public/common/permissions_policy/OWNERS
 
 per-file *_mojom_traits*.*=set noparent
 per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS
