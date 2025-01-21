@@ -126,6 +126,29 @@ void GridTrackSizingAlgorithm::CacheGridItemsProperties(
 }
 
 // static
+LayoutUnit GridTrackSizingAlgorithm::CalculateGutterSize(
+    const ComputedStyle& container_style,
+    const LogicalSize& container_available_size,
+    GridTrackSizingDirection track_direction,
+    LayoutUnit parent_gutter_size) {
+  const bool is_for_columns = track_direction == kForColumns;
+  const auto& gutter_size =
+      is_for_columns ? container_style.ColumnGap() : container_style.RowGap();
+
+  if (!gutter_size) {
+    // No specified gutter size means we must use the "normal" gap behavior:
+    //   - For standalone grids `parent_gutter_size` will default to zero.
+    //   - For subgrids we must provide the parent grid's gutter size.
+    return parent_gutter_size;
+  }
+
+  return MinimumValueForLength(
+      *gutter_size, (is_for_columns ? container_available_size.inline_size
+                                    : container_available_size.block_size)
+                        .ClampIndefiniteToZero());
+}
+
+// static
 GridTrackSizingAlgorithm::FirstSetGeometry
 GridTrackSizingAlgorithm::ComputeFirstSetGeometry(
     const GridSizingTrackCollection& track_collection,

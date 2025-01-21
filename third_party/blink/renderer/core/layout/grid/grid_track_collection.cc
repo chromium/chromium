@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_line_resolver.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -996,16 +997,21 @@ void GridSizingTrackCollection::SetMinorBaseline(
     baselines_->minor[set_index] = candidate_baseline;
 }
 
-void GridSizingTrackCollection::BuildSets(const ComputedStyle& grid_style,
-                                          LayoutUnit grid_available_size,
-                                          LayoutUnit gutter_size) {
-  gutter_size_ = gutter_size;
+void GridSizingTrackCollection::BuildSets(
+    const ComputedStyle& grid_style,
+    const LogicalSize& grid_available_size) {
+  gutter_size_ = GridTrackSizingAlgorithm::CalculateGutterSize(
+      grid_style, grid_available_size, track_direction_);
+
+  const auto& available_size = (track_direction_ == kForColumns)
+                                   ? grid_available_size.inline_size
+                                   : grid_available_size.block_size;
 
   BuildSets(grid_style.TemplateTracks(track_direction_).track_list,
             (track_direction_ == kForColumns) ? grid_style.GridAutoColumns()
                                               : grid_style.GridAutoRows(),
-            grid_available_size == kIndefiniteSize);
-  InitializeSets(grid_available_size);
+            available_size == kIndefiniteSize);
+  InitializeSets(available_size);
 }
 
 void GridSizingTrackCollection::BuildSets(
