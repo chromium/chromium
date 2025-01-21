@@ -1631,11 +1631,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "crabbyavif",
-    "owners": [ "vigneshv@google.com", "image-codecs-eng@google.com" ],
-    "expiry_milestone": 133
-  },
-  {
     "name": "cras-processor-wav-dump",
     "owners": ["aaronyu@google.com", "chromeos-audio@google.com" ],
     "expiry_milestone": 150
