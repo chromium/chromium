@@ -359,6 +359,12 @@ MessagingBackendServiceImpl::~MessagingBackendServiceImpl() = default;
 
 void MessagingBackendServiceImpl::SetInstantMessageDelegate(
     InstantMessageDelegate* instant_message_delegate) {
+  // We must be either setting a delegate where there was none before or
+  // we should be resetting a non-null delegate.
+  CHECK((instant_message_delegate_ == nullptr &&
+         instant_message_delegate != nullptr) ||
+        (instant_message_delegate_ != nullptr &&
+         instant_message_delegate == nullptr));
   instant_message_delegate_ = instant_message_delegate;
 }
 
