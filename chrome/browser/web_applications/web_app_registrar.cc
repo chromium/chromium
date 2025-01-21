@@ -894,38 +894,6 @@ std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
   return best_app_id;
 }
 
-// DEPRECATED:
-// Returns all apps that have the given `url` in scope and are in one of the
-// given `states`.
-std::vector<webapps::AppId> WebAppRegistrar::FindAllAppsNestedInUrl(
-    const GURL& outer_scope,
-    std::initializer_list<proto::InstallState> states) const {
-  CHECK_NE(states.size(), 0ul);
-  if (!outer_scope.is_valid()) {
-    return {};
-  }
-  std::string outer_scope_spec = outer_scope.spec();
-
-  std::vector<webapps::AppId> apps_in_outer_scope;
-  for (const auto& app_id : GetAppIdsForAppSet(GetAppsIncludingStubs())) {
-    if (!IsInstallState(app_id, states)) {
-      continue;
-    }
-
-    std::string app_scope = GetAppScope(app_id).spec();
-    DCHECK(!app_scope.empty());
-
-    if (!base::StartsWith(app_scope, outer_scope_spec,
-                          base::CompareCase::SENSITIVE)) {
-      continue;
-    }
-
-    apps_in_outer_scope.push_back(app_id);
-  }
-
-  return apps_in_outer_scope;
-}
-
 // Returns all apps that have the given `url` in scope and match the filter.
 std::vector<webapps::AppId> WebAppRegistrar::FindAllAppsNestedInUrl(
     const GURL& outer_scope,
