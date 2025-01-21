@@ -371,6 +371,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://read-later.top-chrome",
     "chrome://reset-password",
     "chrome://safe-browsing",
+    "chrome://saved-tab-groups-unsupported",
     "chrome://search-engine-choice",
     "chrome://serviceworker-internals",
     "chrome://segmentation-internals",
