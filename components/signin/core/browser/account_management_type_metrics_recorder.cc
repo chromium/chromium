@@ -10,10 +10,22 @@ namespace signin {
 
 namespace {
 
-using AccountManagementTypesSummary =
-    AccountManagementTypeMetricsRecorder::AccountManagementTypesSummary;
+void RecordAccountTypeMetrics(AccountManagedStatusFinder::Outcome outcome) {
+  base::UmaHistogramEnumeration("Signin.AccountManagementType", outcome);
+}
 
-AccountManagementTypesSummary GetAccountTypesSummary(
+void RecordAccountTypeSummaryMetrics(size_t num_consumer_accounts,
+                                     size_t num_enterprise_accounts) {
+  base::UmaHistogramEnumeration(
+      "Signin.AccountManagementTypesSummary",
+      AccountManagementTypeMetricsRecorder::GetAccountTypesSummary(
+          num_consumer_accounts, num_enterprise_accounts));
+}
+
+}  // namespace
+
+AccountManagementTypeMetricsRecorder::AccountManagementTypesSummary
+AccountManagementTypeMetricsRecorder::GetAccountTypesSummary(
     size_t num_consumer_accounts,
     size_t num_enterprise_accounts) {
   switch (num_consumer_accounts) {
@@ -46,19 +58,6 @@ AccountManagementTypesSummary GetAccountTypesSummary(
       }
   }
 }
-
-void RecordAccountTypeMetrics(AccountManagedStatusFinder::Outcome outcome) {
-  base::UmaHistogramEnumeration("Signin.AccountManagementType", outcome);
-}
-
-void RecordAccountTypeSummaryMetrics(size_t num_consumer_accounts,
-                                     size_t num_enterprise_accounts) {
-  base::UmaHistogramEnumeration(
-      "Signin.AccountManagementTypesSummary",
-      GetAccountTypesSummary(num_consumer_accounts, num_enterprise_accounts));
-}
-
-}  // namespace
 
 AccountManagementTypeMetricsRecorder::AccountManagementTypeMetricsRecorder(
     IdentityManager& identity_manager) {

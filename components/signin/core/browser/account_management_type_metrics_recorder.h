@@ -45,6 +45,10 @@ class AccountManagementTypeMetricsRecorder : public IdentityManager::Observer {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountManagementTypesSummary)
 
+  static AccountManagementTypesSummary GetAccountTypesSummary(
+      size_t num_consumer_accounts,
+      size_t num_enterprise_accounts);
+
  private:
   void QueryAccountTypes(IdentityManager& identity_manager);
 
