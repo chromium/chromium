@@ -1030,6 +1030,9 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.SPECULATIVE_IMAGE_DECODES,
                 "Start decoding in-viewport images as soon as they have loaded, "
                         + "rather than waiting for them to appear in a raster task."),
+        Flag.baseFeature(
+                BlinkFeatures.WEB_SQL_WEBVIEW_ACCESS,
+                "If false, prevents access to WebSQL on webview."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
