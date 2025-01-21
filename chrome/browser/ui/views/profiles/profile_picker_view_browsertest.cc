@@ -460,7 +460,7 @@ class ProfilePickerCreationFlowBrowserTest
     DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(web_contents());
     CHECK(tab_helper);
     EXPECT_EQ(tab_helper->signin_access_point(),
-              signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER);
+              signin_metrics::AccessPoint::kUserManager);
 
     return static_cast<Profile*>(web_contents()->GetBrowserContext());
   }
@@ -485,8 +485,7 @@ class ProfilePickerCreationFlowBrowserTest
     CoreAccountInfo core_account_info = signin::MakeAccountAvailable(
         identity_manager,
         signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
-            .WithAccessPoint(
-                signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER)
+            .WithAccessPoint(signin_metrics::AccessPoint::kUserManager)
             .Build(email));
     EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(
         core_account_info.account_id));
@@ -683,7 +682,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
       GetSyncConfirmationURL(), "joe.consumer@gmail.com", "Joe");
 
   signin_metrics::AccessPoint expected_access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER;
+      signin_metrics::AccessPoint::kUserManager;
 
   histogram_tester.ExpectUniqueSample("Signin.SignIn.Completed",
                                       expected_access_point, 1);
@@ -2458,8 +2457,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   CoreAccountInfo core_account_info = signin::MakeAccountAvailable(
       identity_manager,
       signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
-          .WithAccessPoint(
-              signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER)
+          .WithAccessPoint(signin_metrics::AccessPoint::kUserManager)
           .Build("joe.acme@gmail.com"));
   EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(
       core_account_info.account_id));
@@ -2469,7 +2467,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
       /*account_info=*/FillAccountInfo(core_account_info, "Joe", "acme.com"));
   identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
       core_account_info.account_id, signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+      signin_metrics::AccessPoint::kWebSignin);
 
   // Redirect the web contents to a the two factor intersitial authentication
   // page.

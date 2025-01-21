@@ -1628,7 +1628,7 @@ void AvatarToolbarButtonDelegate::OnPrimaryAccountChanged(
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
           signin::PrimaryAccountChangeEvent::Type::kSet ||
       event_details.GetSetPrimaryAccountAccessPoint() !=
-          signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED) {
+          signin_metrics::AccessPoint::kSigninChoiceRemembered) {
     return;
   }
 

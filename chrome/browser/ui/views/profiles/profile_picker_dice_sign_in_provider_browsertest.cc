@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDiceSignInProviderBrowserTest,
 
   {
     ProfilePickerDiceSignInProvider provider{
-        host(), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN};
+        host(), signin_metrics::AccessPoint::kUnknown};
 
     EXPECT_CALL(*host(), ShowScreen(_, _, _))
         .WillOnce([&](content::WebContents* contents, const GURL& url,
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDiceSignInProviderBrowserTest,
 
   {
     ProfilePickerDiceSignInProvider provider{
-        host(), signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE,
+        host(), signin_metrics::AccessPoint::kForYouFRE,
         browser()->profile()->GetPath()};
 
     EXPECT_CALL(*host(), ShowScreen(_, _, _))

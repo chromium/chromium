@@ -59,7 +59,7 @@
 namespace {
 
 const signin_metrics::AccessPoint kAccessPoint =
-    signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER;
+    signin_metrics::AccessPoint::kUserManager;
 
 // Returns the URL to load as initial content for the profile picker. If an
 // empty URL is returned, the profile picker should not be shown until
