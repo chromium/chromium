@@ -8,13 +8,15 @@
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/collaboration/public/collaboration_service.h"
+#import "components/collaboration/public/service_status.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
-#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_action_context.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
@@ -30,7 +32,6 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
-#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -114,12 +115,25 @@ void IOSCollaborationControllerDelegate::Cancel(ResultCallback result) {
 
 void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
     ResultCallback result) {
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(browser_->GetProfile());
-  AuthenticationOperation operation =
-      identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)
-          ? AuthenticationOperation::kHistorySync
-          : AuthenticationOperation::kSheetSigninAndHistorySync;
+  CollaborationService* collaboration_service =
+      CollaborationServiceFactory::GetForProfile(browser_->GetProfile());
+  ServiceStatus service_status = collaboration_service->GetServiceStatus();
+
+  AuthenticationOperation operation;
+
+  switch (service_status.signin_status) {
+    case SigninStatus::kNotSignedIn:
+      operation = AuthenticationOperation::kSheetSigninAndHistorySync;
+      break;
+
+    case SigninStatus::kSignedInPaused:
+      // TODO(crbug.com/390153810): Handle the sign in paused.
+      NOTREACHED();
+
+    case SigninStatus::kSignedIn:
+      operation = AuthenticationOperation::kHistorySync;
+      break;
+  }
 
   id<ApplicationCommands> application_handler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);

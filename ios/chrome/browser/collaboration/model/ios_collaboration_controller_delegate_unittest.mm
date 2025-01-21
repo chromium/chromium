@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/test/mock_callback.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/collaboration/test_support/mock_collaboration_service.h"
 #import "components/data_sharing/public/features.h"
 #import "components/data_sharing/public/group_data.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
@@ -14,6 +15,7 @@
 #import "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/test/test_sync_service.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/fake_share_kit_flow_view_controller.h"
@@ -40,9 +42,14 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+
+using testing::Return;
+
+namespace collaboration {
 
 namespace {
 std::unique_ptr<KeyedService> BuildTestShareKitService(
@@ -64,9 +71,12 @@ std::unique_ptr<KeyedService> BuildTestSyncService(web::BrowserState* context) {
   return std::make_unique<syncer::TestSyncService>();
 }
 
-}  // namespace
+std::unique_ptr<KeyedService> BuildMockCollaborationService(
+    web::BrowserState* context) {
+  return std::make_unique<MockCollaborationService>();
+}
 
-namespace collaboration {
+}  // namespace
 
 // Test fixture for the iOS collaboration controller delegate.
 class IOSCollaborationControllerDelegateTest : public PlatformTest {
@@ -91,6 +101,9 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
         base::BindRepeating(&BuildTestSyncService));
+    test_cbs_builder.AddTestingFactory(
+        CollaborationServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildMockCollaborationService));
     test_cbs_builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
         base::BindRepeating(&BuildFakeTabGroupSyncService));
@@ -126,6 +139,11 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
                      forProtocol:@protocol(ApplicationCommands)];
     share_kit_service_ = ShareKitServiceFactory::GetForProfile(profile_.get());
     base_view_controller_ = [[FakeUIViewController alloc] init];
+
+    mock_collaboration_service_ = static_cast<MockCollaborationService*>(
+        CollaborationServiceFactory::GetForProfile(profile_.get()));
+
+    collaboration_status_.sync_status = SyncStatus::kSyncWithoutTabGroup;
   }
 
   // Init the delegate for a flow.
@@ -136,6 +154,10 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
 
   // Sign in in the authentication service with a fake identity.
   void SignIn() {
+    collaboration_status_.signin_status = SigninStatus::kSignedIn;
+    ON_CALL(*mock_collaboration_service_, GetServiceStatus())
+        .WillByDefault(Return(collaboration_status_));
+
     FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
     FakeSystemIdentityManager* system_identity_manager =
         FakeSystemIdentityManager::FromSystemIdentityManager(
@@ -148,6 +170,10 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
   // Updates the selected types to pretend that the user accepted to sync
   // everything.
   void AcceptSyncOptIn() {
+    collaboration_status_.sync_status = SyncStatus::kSyncEnabled;
+    ON_CALL(*mock_collaboration_service_, GetServiceStatus())
+        .WillByDefault(Return(collaboration_status_));
+
     syncer::SyncService* sync_service =
         SyncServiceFactory::GetForProfile(browser_->GetProfile());
     syncer::SyncUserSettings* user_settings = sync_service->GetUserSettings();
@@ -158,6 +184,10 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
   // Updates the selected types to pretend that the user refused to sync
   // anything.
   void DenySyncOptIn() {
+    collaboration_status_.sync_status = SyncStatus::kSyncWithoutTabGroup;
+    ON_CALL(*mock_collaboration_service_, GetServiceStatus())
+        .WillByDefault(Return(collaboration_status_));
+
     syncer::SyncService* sync_service =
         SyncServiceFactory::GetForProfile(browser_->GetProfile());
     syncer::SyncUserSettings* user_settings = sync_service->GetUserSettings();
@@ -194,6 +224,7 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
+  raw_ptr<MockCollaborationService> mock_collaboration_service_;
   std::unique_ptr<IOSCollaborationControllerDelegate> delegate_;
   raw_ptr<WebStateList> web_state_list_;
   id application_commands_mock_;
@@ -202,6 +233,7 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
   UIViewController* base_view_controller_;
   raw_ptr<const TabGroup> tab_group_;
   raw_ptr<ShareKitService> share_kit_service_;
+  ServiceStatus collaboration_status_;
 };
 
 // Tests `ShowShareDialog` with a valid tabGroup.
