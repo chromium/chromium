@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,15 +59,18 @@ public class HubToolbarView extends LinearLayout {
     public Callback<Integer> mToolbarOverviewColorSetter;
     private OnTabSelectedListener mOnTabSelectedListener;
     private boolean mBlockTabSelectionCallback;
+    private boolean mApplyDelayForSearchBoxAnimation;
     private final AnimationHandler mColorBlendAnimatorHandler;
     private final AnimationHandler mHubSearchAnimatorHandler;
     private final HubColorBlendAnimatorSetHelper mAnimatorSetBuilder;
+    private final Handler mHandler;
 
     /** Default {@link LinearLayout} constructor called by inflation. */
     public HubToolbarView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
         mColorBlendAnimatorHandler = new AnimationHandler();
         mHubSearchAnimatorHandler = new AnimationHandler();
+        mHandler = new Handler();
         mAnimatorSetBuilder = new HubColorBlendAnimatorSetHelper();
         mToolbarOverviewColorSetter = (color) -> {};
     }
@@ -295,6 +299,10 @@ public class HubToolbarView extends LinearLayout {
         mHubSearchAnimatorHandler.startAnimation(hubSearchTransitionAnimation);
     }
 
+    void setApplyDelayForSearchBoxAnimation(boolean applyDelay) {
+        mApplyDelayForSearchBoxAnimation = applyDelay;
+    }
+
     public void setSearchLoupeVisible(boolean visible) {
         mSearchLoupeView.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
@@ -345,7 +353,18 @@ public class HubToolbarView extends LinearLayout {
                 isIncognito
                         ? R.string.hub_search_empty_hint_incognito
                         : R.string.hub_search_empty_hint;
-        mSearchBoxTextView.setHint(context.getString(emptyHintRes));
+
+        // Delay the text from changing until the hub search animation is finished to prevent the
+        // incorrect text from showing too early on pane toggles.
+        if (mApplyDelayForSearchBoxAnimation) {
+            mHandler.postDelayed(
+                    () -> {
+                        mSearchBoxTextView.setHint(context.getString(emptyHintRes));
+                    },
+                    PANE_FADE_ANIMATION_DURATION_MS);
+        } else {
+            mSearchBoxTextView.setHint(context.getString(emptyHintRes));
+        }
     }
 
     private AnimatorSet getHubSearchBoxTransitionAnimation(boolean visible) {

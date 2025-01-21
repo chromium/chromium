@@ -46,6 +46,9 @@ class HubToolbarProperties {
 
     public static final WritableBooleanPropertyKey IS_INCOGNITO = new WritableBooleanPropertyKey();
 
+    public static final WritableBooleanPropertyKey APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION =
+            new WritableBooleanPropertyKey();
+
     @FunctionalInterface
     public interface PaneButtonLookup {
         View get(int index);
@@ -70,5 +73,6 @@ class HubToolbarProperties {
         SEARCH_LISTENER,
         IS_INCOGNITO,
         TOOLBAR_OVERVIEW_COLOR_SETTER,
+        APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION,
     };
 }
