@@ -522,8 +522,8 @@ public abstract class XrTestFramework {
         Assert.assertEquals(
                 "Page did not load correctly. Load result enum: "
                         + String.valueOf(result.tabLoadStatus),
-                result.tabLoadStatus,
-                Tab.TabLoadStatus.DEFAULT_PAGE_LOAD);
+                Tab.TabLoadStatus.DEFAULT_PAGE_LOAD,
+                result.tabLoadStatus);
         if (!pollJavaScriptBoolean(
                 "isInitializationComplete()", POLL_TIMEOUT_LONG_MS, mRule.getWebContents())) {
             Log.e(
