@@ -17,6 +17,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 
 class PermanentFolderOrderingTracker;
+class Browser;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -141,9 +142,13 @@ class BookmarkMergedSurfaceService : public KeyedService {
   //   within the `BookmarkPermanentFolderOrderingTracker`.
   // Note: There are two possible target indices (index) that result in a no-op.
   //   This is similar to what `BookmarkModel::Move()` does.
+  // - If the storages of `node` and `new_parent` don't match, the user will be
+  //   asked to confirm their choice first before moving the bookmark. For this,
+  //   a `browser` is needed.
   void Move(const bookmarks::BookmarkNode* node,
             const BookmarkParentFolder& new_parent,
-            size_t index);
+            size_t index,
+            Browser* browser);
 
   // Copies nodes in `elements` to be new child nodes of `new_parent` starting
   // at `index`. If `BookmarkParentFolder` is a permanent bookmark folder,
@@ -163,6 +168,14 @@ class BookmarkMergedSurfaceService : public KeyedService {
 
   bookmarks::BookmarkModel* bookmark_model() { return model_; }
 
+  using ShowMoveStorageDialogCallback =
+      base::RepeatingCallback<void(Browser* browser,
+                                   const bookmarks::BookmarkNode* node,
+                                   const bookmarks::BookmarkNode* target_node,
+                                   size_t index)>;
+  void SetShowMoveStorageDialogCallbackForTesting(
+      ShowMoveStorageDialogCallback show_move_storage_dialog_for_testing);
+
  private:
   const bookmarks::BookmarkNode* managed_permanent_node() const;
 
@@ -180,6 +193,8 @@ class BookmarkMergedSurfaceService : public KeyedService {
 
   // Used in `GetChildren()` to return empty when managed node is null.
   const bookmarks::BookmarkNode dummy_empty_node_;
+
+  ShowMoveStorageDialogCallback show_move_storage_dialog_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_BOOKMARKS_BOOKMARK_MERGED_SURFACE_SERVICE_H_

@@ -80,7 +80,8 @@ ui::mojom::DragOperation BookmarkUIOperationsHelper::DropBookmarks(
     const bookmarks::BookmarkNodeData& data,
     size_t index,
     bool copy,
-    BookmarkReorderDropTarget target) {
+    chrome::BookmarkReorderDropTarget target,
+    Browser* browser) {
   CHECK(target_parent());
   CHECK(!target_parent()->IsManaged());
   if (!data.IsFromProfilePath(profile->GetPath())) {
@@ -128,7 +129,7 @@ ui::mojom::DragOperation BookmarkUIOperationsHelper::DropBookmarks(
     return DragOperation::kCopy;
   }
 
-  MoveBookmarkNodeData(data, profile->GetPath(), index);
+  MoveBookmarkNodeData(data, profile->GetPath(), index, browser);
   return DragOperation::kMove;
 }
 
@@ -344,7 +345,8 @@ void BookmarkUIOperationsHelperNonMergedSurfaces::AddNodesAsCopiesOfNodeData(
 void BookmarkUIOperationsHelperNonMergedSurfaces::MoveBookmarkNodeData(
     const bookmarks::BookmarkNodeData& data,
     const base::FilePath& profile_path,
-    size_t index_to_add_at) {
+    size_t index_to_add_at,
+    Browser* browser) {
   CHECK(parent_node());
   const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
       moved_nodes = data.GetNodes(model_, profile_path);
@@ -488,12 +490,15 @@ void BookmarkUIOperationsHelperMergedSurfaces::AddNodesAsCopiesOfNodeData(
 void BookmarkUIOperationsHelperMergedSurfaces::MoveBookmarkNodeData(
     const bookmarks::BookmarkNodeData& data,
     const base::FilePath& profile_path,
-    size_t index_to_add_at) {
+    size_t index_to_add_at,
+    Browser* browser) {
   CHECK_EQ(data.size(), 1u);
   const BookmarkNode* moved_node = data.GetFirstNode(model(), profile_path);
   CHECK(moved_node);
   CHECK(!merged_surface_service_->IsNodeManaged(moved_node));
-  merged_surface_service_->Move(moved_node, *parent_folder(), index_to_add_at);
+
+  merged_surface_service_->Move(moved_node, *parent_folder(), index_to_add_at,
+                                browser);
 }
 
 const internal::BookmarkUIOperationsHelper::TargetParent*

@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -114,16 +115,16 @@ bool ShouldBuildPermanentNode(const BookmarkMergedSurfaceService* service,
 // BookmarkMenuDelegate and needs a separate class.
 class BookmarkModelDropObserver : public bookmarks::BaseBookmarkModelObserver {
  public:
-  BookmarkModelDropObserver(Profile* profile,
+  BookmarkModelDropObserver(Browser* browser,
                             const bookmarks::BookmarkNodeData drop_data,
                             const BookmarkParentFolder& drop_parent,
                             const size_t index_to_drop_at)
-      : profile_(profile),
+      : browser_(browser->AsWeakPtr()),
         drop_data_(std::move(drop_data)),
         drop_parent_(drop_parent),
         index_to_drop_at_(index_to_drop_at),
-        bookmark_service_(
-            BookmarkMergedSurfaceServiceFactory::GetForProfile(profile)) {
+        bookmark_service_(BookmarkMergedSurfaceServiceFactory::GetForProfile(
+            browser->profile())) {
     DCHECK(drop_data_.is_valid());
     CHECK(bookmark_service_);
     bookmark_model_observation_.Observe(bookmark_service_->bookmark_model());
@@ -136,7 +137,7 @@ class BookmarkModelDropObserver : public bookmarks::BaseBookmarkModelObserver {
 
   void Drop(const ui::DropTargetEvent& event,
             ui::mojom::DragOperation& output_drag_op) {
-    if (!bookmark_service_) {  // Don't drop
+    if (!bookmark_service_ || !browser_) {  // Don't drop
       return;
     }
 
@@ -144,8 +145,10 @@ class BookmarkModelDropObserver : public bookmarks::BaseBookmarkModelObserver {
     output_drag_op =
         BookmarkUIOperationsHelperMergedSurfaces(bookmark_service_,
                                                  &drop_parent_)
-            .DropBookmarks(profile_, drop_data_, index_to_drop_at_, copy,
-                           chrome::BookmarkReorderDropTarget::kBookmarkMenu);
+            .DropBookmarks(browser_->profile(), drop_data_, index_to_drop_at_,
+                           copy,
+                           chrome::BookmarkReorderDropTarget::kBookmarkMenu,
+                           browser_.get());
   }
 
  private:
@@ -158,7 +161,7 @@ class BookmarkModelDropObserver : public bookmarks::BaseBookmarkModelObserver {
     bookmark_service_ = nullptr;
   }
 
-  const raw_ptr<Profile> profile_;
+  const base::WeakPtr<Browser> browser_;
   const bookmarks::BookmarkNodeData drop_data_;
   BookmarkParentFolder drop_parent_;
   const size_t index_to_drop_at_;
@@ -509,7 +512,7 @@ views::View::DropCallback BookmarkMenuDelegate::GetDropCallback(
 
   std::unique_ptr<BookmarkModelDropObserver> drop_observer =
       std::make_unique<BookmarkModelDropObserver>(
-          profile_, std::move(drop_data_), drop_params->drop_parent,
+          browser_, std::move(drop_data_), drop_params->drop_parent,
           drop_params->index_to_drop_at);
   return base::BindOnce(
       [](BookmarkModelDropObserver* drop_observer,

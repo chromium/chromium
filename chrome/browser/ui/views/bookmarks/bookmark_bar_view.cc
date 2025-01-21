@@ -2212,7 +2212,8 @@ void BookmarkBarView::PerformDrop(
       BookmarkUIOperationsHelperMergedSurfaces(bookmark_service_,
                                                &parent_folder)
           .DropBookmarks(browser_->profile(), data, index, copy,
-                         chrome::BookmarkReorderDropTarget::kBookmarkBarView);
+                         chrome::BookmarkReorderDropTarget::kBookmarkBarView,
+                         browser_);
 }
 
 int BookmarkBarView::GetDropLocationModelIndexForTesting() const {
