@@ -47,7 +47,7 @@ class ParcelTrackingUtilTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(fake_identity_);
     auth_service_->SignIn(fake_identity_,
-                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+                          signin_metrics::AccessPoint::kUnknown);
   }
 
   void SignOut() {
