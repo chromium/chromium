@@ -607,8 +607,12 @@ void ChromeContentBrowserClient::
             BindReceiver(std::move(receiver), render_frame_host);
       },
       &render_frame_host));
+
+  Profile* profile =
+      Profile::FromBrowserContext(render_frame_host.GetBrowserContext());
   if (fingerprinting_protection_filter::features::
-          IsFingerprintingProtectionFeatureEnabled()) {
+          IsFingerprintingProtectionEnabledForIncognitoState(
+              profile ? profile->IsIncognitoProfile() : false)) {
     associated_registry.AddInterface<
         fingerprinting_protection_filter::mojom::FingerprintingProtectionHost>(
         base::BindRepeating(

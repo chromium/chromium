@@ -74,7 +74,8 @@ FingerprintingProtectionPageActivationThrottle::GetNameForLogging() {
 
 GetActivationResult
 FingerprintingProtectionPageActivationThrottle::GetActivation() const {
-  if (!features::IsFingerprintingProtectionFeatureEnabled()) {
+  if (!features::IsFingerprintingProtectionEnabledForIncognitoState(
+          is_incognito_)) {
     // Feature flag disabled.
     return {.level = ActivationLevel::kDisabled,
             .decision = ActivationDecision::UNKNOWN};

@@ -377,7 +377,8 @@ TEST_F(FPFPageActivationThrottleTest,
 
   auto throttle = FingerprintingProtectionPageActivationThrottle(
       mock_nav_handle_.get(), test_support_.content_settings(),
-      test_support_.tracking_protection_settings(), test_support_.prefs());
+      test_support_.tracking_protection_settings(), test_support_.prefs(),
+      /*is_incognito=*/true);
 
   throttle.WillProcessResponse();
 
@@ -437,7 +438,8 @@ TEST_F(FPFPageActivationThrottleTest,
   auto mock_throttle =
       MockActivationThrottleMockingNotifyPageActivationComputed(
           mock_nav_handle_.get(), test_support_.content_settings(),
-          test_support_.tracking_protection_settings(), test_support_.prefs());
+          test_support_.tracking_protection_settings(), test_support_.prefs(),
+          /*is_incognito=*/true);
 
   // Expect that NotifyPageActivationComputed is called with an ActivationState
   // with enable_logging == true.

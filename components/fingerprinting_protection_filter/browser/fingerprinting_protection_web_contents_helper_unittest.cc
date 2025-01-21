@@ -467,8 +467,11 @@ class FingerprintingProtectionRefreshCountMetricsTest
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
     // Enable feature flag - necessary for creating FPWebContentsHelper.
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kEnableFingerprintingProtectionFilter);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {features::kEnableFingerprintingProtectionFilter,
+         features::kEnableFingerprintingProtectionFilterInIncognito},
+        /*disabled_features=*/{});
   }
 
   void InitializeWebContentsHelper(bool is_incognito) {
