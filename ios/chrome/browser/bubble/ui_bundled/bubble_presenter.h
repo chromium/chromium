@@ -143,6 +143,9 @@ class DeviceSwitcherResultDispatcher;
 // Dismisses all bubbles.
 - (void)hideAllHelpBubbles;
 
+// Dismisses Omnibox relative bubbles.
+- (void)hideBubblesPointingToOmnibox;
+
 // Stops observing all objects.
 - (void)disconnect;
 
