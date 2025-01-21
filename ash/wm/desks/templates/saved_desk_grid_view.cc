@@ -94,7 +94,7 @@ void SavedDeskGridView::SortEntries(const base::Uuid& order_first_uuid) {
 
   // If there is a uuid that is to be placed first, move that saved desk to the
   // front of the grid, and sort the rest of the entries after it.
-  auto rest = base::ranges::partition(
+  auto rest = std::ranges::partition(
       grid_items_,
       [&order_first_uuid](const base::Uuid& uuid) {
         return uuid == order_first_uuid;
@@ -102,7 +102,7 @@ void SavedDeskGridView::SortEntries(const base::Uuid& order_first_uuid) {
       &SavedDeskItemView::uuid);
 
   std::sort(
-      rest, grid_items_.end(),
+      rest.begin(), rest.end(),
       [&collator](const SavedDeskItemView* a, const SavedDeskItemView* b) {
         return base::i18n::CompareString16WithCollator(
                    *collator, a->name_view()->GetText(),

@@ -378,9 +378,10 @@ std::optional<int> ClipboardHistoryMenuModelAdapter::GetFirstMenuItemCommand() {
     return std::nullopt;
   }
 
-  return base::ranges::min(item_views_by_command_id_, /*comp=*/{},
-                           /*proj=*/[](const auto& kv) { return kv.first; })
-      .first;
+  return base::ranges::min_element(
+             item_views_by_command_id_, /*comp=*/{},
+             /*proj=*/[](const auto& kv) { return kv.first; })
+      ->first;
 }
 
 std::optional<int>
