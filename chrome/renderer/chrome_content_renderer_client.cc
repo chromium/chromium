@@ -610,7 +610,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
 
   auto content_settings_delegate =
       std::make_unique<ChromeContentSettingsAgentDelegate>(render_frame);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   content_settings_delegate->SetExtensionDispatcher(
       extensions::ExtensionsRendererClient::Get()->dispatcher());
 #endif
@@ -1445,7 +1445,7 @@ ChromeContentRendererClient::GetProtocolHandlerSecurityLevel(
   if (origin.scheme() == chrome::kIsolatedAppScheme) {
     return blink::ProtocolHandlerSecurityLevel::kSameOrigin;
   }
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return extensions::ExtensionsRendererClient::Get()
       ->GetProtocolHandlerSecurityLevel();
 #else
@@ -1461,7 +1461,7 @@ void ChromeContentRendererClient::WillSendRequest(
     const net::SiteForCookies& site_for_cookies,
     const url::Origin* initiator_origin,
     GURL* new_url) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Check whether the request should be allowed. If not allowed, we reset the
   // URL to something invalid to prevent the request and cause an error.
   extensions::ExtensionsRendererClient::Get()->WillSendRequest(
@@ -1625,7 +1625,7 @@ ChromeContentRendererClient::GetSupportedKeySystems(
 
 bool ChromeContentRendererClient::ShouldReportDetailedMessageForSource(
     const std::u16string& source) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return extensions::IsSourceFromAnExtension(source);
 #else
   return false;

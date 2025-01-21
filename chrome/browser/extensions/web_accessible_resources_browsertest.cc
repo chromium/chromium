@@ -134,11 +134,8 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
   ASSERT_TRUE(content::EvalJs(web_contents, script).ExtractBool());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // Exercise these resources being used in iframes in a web page. The navigation
 // flow goes through a different path than resource fetching.
-// TODO(crbug.com/390687767): Port to desktop Android. Fails due to a navigation
-// to about:blank#blocked.
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
                        UseDynamicUrlInIframe) {
   // Load an extension that has one web accessible resource.
@@ -155,9 +152,8 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
     // Navigate the main frame with a browser initiated navigation to a blank
     // web page. This should succeed.
     const GURL gurl = embedded_test_server()->GetURL("/iframe_blank.html");
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* web_contents = GetActiveWebContents();
+    EXPECT_TRUE(content::NavigateToURL(web_contents, gurl));
     content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
     content::RenderFrameHost* iframe = content::ChildFrameAt(main_frame, 0);
     EXPECT_TRUE(iframe);
@@ -203,8 +199,6 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
 // Tests that navigating a main frame via location.href works if and only if
 // the target resource is accessible to the main frame.
 // Regression test for https://crbug.com/374503948.
-// TODO(crbug.com/390687767): Port to desktop Android. Fails due to a navigation
-// to about:blank#blocked.
 IN_PROC_BROWSER_TEST_F(
     WebAccessibleResourcesBrowserTest,
     MainFrameLocationHrefUpdatesAreSubjectToAccessibleResources) {
@@ -276,13 +270,12 @@ IN_PROC_BROWSER_TEST_F(
       {untrusted_site, static_inaccessible_url, invalid_extension_url, nullptr},
   };
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(testing::Message() << "Site URL: " << test_case.site_url
                                     << "Target URL: " << test_case.target_url
                                     << "Final URL: " << test_case.final_url);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_case.site_url));
+    ASSERT_TRUE(content::NavigateToURL(web_contents, test_case.site_url));
     EXPECT_EQ(test_case.site_url, web_contents->GetLastCommittedURL());
 
     ASSERT_TRUE(content::ExecJs(
@@ -296,7 +289,6 @@ IN_PROC_BROWSER_TEST_F(
     }
   }
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // A test suite that will run both with and without the dynamic URL feature
 // enabled.

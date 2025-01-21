@@ -17,7 +17,7 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/context_type.mojom.h"
@@ -52,7 +52,7 @@ ChromeContentSettingsAgentDelegate::ChromeContentSettingsAgentDelegate(
 ChromeContentSettingsAgentDelegate::~ChromeContentSettingsAgentDelegate() =
     default;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 void ChromeContentSettingsAgentDelegate::SetExtensionDispatcher(
     extensions::Dispatcher* extension_dispatcher) {
   DCHECK(!extension_dispatcher_)
@@ -94,7 +94,7 @@ bool ChromeContentSettingsAgentDelegate::IsFrameAllowlistedForStorageAccess(
 
 bool ChromeContentSettingsAgentDelegate::IsSchemeAllowlisted(
     const std::string& scheme) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return scheme == extensions::kExtensionScheme;
 #else
   return false;
@@ -102,7 +102,7 @@ bool ChromeContentSettingsAgentDelegate::IsSchemeAllowlisted(
 }
 
 bool ChromeContentSettingsAgentDelegate::AllowReadFromClipboard() {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extensions::ScriptContext* current_context =
       extension_dispatcher_->script_context_set().GetCurrent();
   if (current_context &&
@@ -119,7 +119,7 @@ bool ChromeContentSettingsAgentDelegate::AllowReadFromClipboard() {
 }
 
 bool ChromeContentSettingsAgentDelegate::AllowWriteToClipboard() {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // All blessed extension pages could historically write to the clipboard, so
   // preserve that for compatibility.
   extensions::ScriptContext* current_context =
@@ -180,7 +180,7 @@ bool ChromeContentSettingsAgentDelegate::IsAllowListedSystemWebApp() {
   return false;
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 const extensions::Extension* ChromeContentSettingsAgentDelegate::GetExtension(
     const blink::WebSecurityOrigin& origin) const {
   if (origin.Protocol().Ascii() != extensions::kExtensionScheme)
