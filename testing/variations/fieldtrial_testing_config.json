@@ -18464,6 +18464,25 @@
             ]
         }
     ],
+    "ProtectedAudienceBidderUseBalancingThreadSelector": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FledgeBidderUseBalancingThreadSelector"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProtectedAudienceDealsSupport": [
         {
             "platforms": [

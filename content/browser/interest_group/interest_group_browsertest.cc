@@ -18613,7 +18613,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ExecutionModeGroupByOrigin) {
     }
   )";
 
-  const int kNumGroups = 10;  // as many ads in each group, too.
+  // Keep this number relatively low so that the groups don't get divided
+  // among multiple threads.
+  const int kNumGroups = 3;  // as many ads in each group, too.
   GURL test_url =
       embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
@@ -18651,7 +18653,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ExecutionModeGroupByOrigin) {
                 .Build()));
   }
 
-  EXPECT_EQ(embedded_https_test_server().GetURL("c.test", "/echo?10"),
+  EXPECT_EQ(embedded_https_test_server().GetURL("c.test", "/echo?3"),
             RunAuctionAndWaitForUrl(JsReplace(
                 R"({
                   seller: $1,

@@ -20,11 +20,9 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/hash/hash.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -39,6 +37,7 @@
 #include "content/services/auction_worklet/auction_v8_logger.h"
 #include "content/services/auction_worklet/auction_worklet_util.h"
 #include "content/services/auction_worklet/bidder_lazy_filler.h"
+#include "content/services/auction_worklet/bidder_worklet_thread_selector.h"
 #include "content/services/auction_worklet/deprecated_url_lazy_filler.h"
 #include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
@@ -355,7 +354,7 @@ BidderWorklet::BidderWorklet(
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     std::optional<uint16_t> experiment_group_id,
     mojom::TrustedSignalsPublicKeyPtr public_key)
-    : join_origin_hash_salt_(base::NumberToString(base::RandUint64())),
+    : thread_selector_(v8_helpers.size()),
       url_loader_factory_(std::move(pending_url_loader_factory)),
       trusted_signals_kvv2_manager_(trusted_signals_kvv2_manager),
       script_source_url_(script_source_url),
@@ -382,20 +381,24 @@ BidderWorklet::BidderWorklet(
         base::OnTaskRunnerDeleter(v8_runners_[i])));
   }
 
-  trusted_signals_request_manager_ =
-      (trusted_bidding_signals_url
-           ? std::make_unique<TrustedSignalsRequestManager>(
-                 TrustedSignalsRequestManager::Type::kBiddingSignals,
-                 url_loader_factory_.get(),
-                 /*auction_network_events_handler=*/
-                 CreateNewAuctionNetworkEventsHandlerRemote(
-                     auction_network_events_handler_),
-                 /*automatically_send_requests=*/false, top_window_origin,
-                 *trusted_bidding_signals_url, experiment_group_id,
-                 trusted_bidding_signals_slot_size_param, std::move(public_key),
-                 /*send_creative_scanning_metadata=*/false,
-                 v8_helpers_[GetNextThreadIndex()].get())
-           : nullptr);
+  if (trusted_bidding_signals_url) {
+    size_t signals_request_thread = thread_selector_.GetThread();
+    trusted_signals_request_manager_ =
+        std::make_unique<TrustedSignalsRequestManager>(
+            TrustedSignalsRequestManager::Type::kBiddingSignals,
+            url_loader_factory_.get(),
+            /*auction_network_events_handler=*/
+            CreateNewAuctionNetworkEventsHandlerRemote(
+                auction_network_events_handler_),
+            /*automatically_send_requests=*/false, top_window_origin,
+            *trusted_bidding_signals_url, experiment_group_id,
+            trusted_bidding_signals_slot_size_param, std::move(public_key),
+            /*send_creative_scanning_metadata=*/false,
+            v8_helpers_[signals_request_thread].get());
+    // Consider this task complete for bookkeeping purposes because it's
+    // relatively cheap compared to executing worklet scripts.
+    thread_selector_.TaskCompletedOnThread(signals_request_thread);
+  }
 
   paused_ = pause_for_debugger_on_start;
   if (!paused_) {
@@ -417,13 +420,6 @@ std::vector<int> BidderWorklet::context_group_ids_for_testing() const {
     results.push_back(debug_id->context_group_id());
   }
   return results;
-}
-
-size_t BidderWorklet::GetNextThreadIndex() {
-  size_t result = next_thread_index_;
-  next_thread_index_++;
-  next_thread_index_ %= v8_helpers_.size();
-  return result;
 }
 
 // static
@@ -2471,19 +2467,14 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
           base::BindOnce(&BidderWorklet::CleanUpBidTaskOnUserThread,
                          weak_ptr_factory_.GetWeakPtr(), task));
 
-  // In 'group-by-origin' mode, make the thread assignment sticky to
-  // join_origin. This favors context reuse to save memory. The per-worklet
-  // random salt is added to make sure certain origins won't always be grouped
-  // together.
-  int thread_index = 0;
+  // The thread selector only needs to worry about grouping tasks by origin
+  // when they're in group-by-origin mode.
+  std::optional<url::Origin> maybe_joining_origin;
   if (task->bidder_worklet_non_shared_params->execution_mode ==
       blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode) {
-    size_t join_origin_hash = base::FastHash(
-        join_origin_hash_salt_ + task->interest_group_join_origin.Serialize());
-    thread_index = join_origin_hash % v8_helpers_.size();
-  } else {
-    thread_index = GetNextThreadIndex();
+    maybe_joining_origin = task->interest_group_join_origin;
   }
+  size_t thread_index = thread_selector_.GetThread(maybe_joining_origin);
 
   // Other than the `generate_bid_client` and `task_id` fields, no fields of
   // `task` are needed after this point, so can consume them instead of copying
@@ -2519,7 +2510,7 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
           task->trusted_bidding_signals_fetch_failed, task->trace_id,
           base::ScopedClosureRunner(std::move(cleanup_generate_bid_task)),
           base::BindOnce(&BidderWorklet::DeliverBidCallbackOnUserThread,
-                         weak_ptr_factory_.GetWeakPtr(), task)));
+                         weak_ptr_factory_.GetWeakPtr(), task, thread_index)));
 }
 
 void BidderWorklet::OnDirectFromSellerPerBuyerSignalsDownloadedReportWin(
@@ -2583,7 +2574,7 @@ void BidderWorklet::RunReportWinIfReady(ReportWinTaskList::iterator task) {
 
   // Other than the callback field, no fields of `task` are needed after this
   // point, so can consume them instead of copying them.
-  size_t thread_index = GetNextThreadIndex();
+  size_t thread_index = thread_selector_.GetThread();
   cancelable_task_tracker_.PostTask(
       v8_runners_[thread_index].get(), FROM_HERE,
       base::BindOnce(
@@ -2618,11 +2609,12 @@ void BidderWorklet::RunReportWinIfReady(ReportWinTaskList::iterator task) {
           std::move(task->bidding_signals_data_version),
           std::move(task->aggregate_win_signals), task->trace_id,
           base::BindOnce(&BidderWorklet::DeliverReportWinOnUserThread,
-                         weak_ptr_factory_.GetWeakPtr(), task)));
+                         weak_ptr_factory_.GetWeakPtr(), task, thread_index)));
 }
 
 void BidderWorklet::DeliverBidCallbackOnUserThread(
     GenerateBidTaskList::iterator task,
+    size_t thread_index_used_for_task,
     std::vector<mojom::BidderWorkletBidPtr> bids,
     std::optional<uint32_t> bidding_signals_data_version,
     std::optional<GURL> debug_loss_report_url,
@@ -2642,6 +2634,8 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
   // TODO(https://crbug.com): Remove once bug is identified and fixed.
   CHECK(!debug_loss_report_url || debug_loss_report_url->is_valid());
   CHECK(!debug_win_report_url || debug_win_report_url->is_valid());
+
+  thread_selector_.TaskCompletedOnThread(thread_index_used_for_task);
 
   error_msgs.insert(error_msgs.end(), load_code_error_msgs_.begin(),
                     load_code_error_msgs_.end());
@@ -2687,6 +2681,7 @@ void BidderWorklet::CleanUpBidTaskOnUserThread(
 
 void BidderWorklet::DeliverReportWinOnUserThread(
     ReportWinTaskList::iterator task,
+    size_t thread_index_used_for_task,
     std::optional<GURL> report_url,
     base::flat_map<std::string, GURL> ad_beacon_map,
     base::flat_map<std::string, std::string> ad_macro_map,
@@ -2695,6 +2690,7 @@ void BidderWorklet::DeliverReportWinOnUserThread(
     bool script_timed_out,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+  thread_selector_.TaskCompletedOnThread(thread_index_used_for_task);
   errors.insert(errors.end(), load_code_error_msgs_.begin(),
                 load_code_error_msgs_.end());
   std::move(task->callback)
