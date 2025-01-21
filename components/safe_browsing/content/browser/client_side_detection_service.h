@@ -111,6 +111,7 @@ class ClientSideDetectionService
     virtual std::unique_ptr<
         optimization_guide::OptimizationGuideModelExecutor::Session>
     GetModelExecutorSession() = 0;
+    virtual void LogOnDeviceModelEligibilityReason() = 0;
   };
 
   ClientSideDetectionService(
