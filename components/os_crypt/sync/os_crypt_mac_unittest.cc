@@ -8,8 +8,14 @@
 #include "crypto/mock_apple_keychain.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-TEST(OSCryptMacTest, KnownAnswers) {
-  OSCryptMocker::SetUp();
+class OSCryptMacTest : public ::testing::Test {
+ public:
+  void SetUp() override { OSCryptMocker::SetUp(); }
+
+  void TearDown() override { OSCryptMocker::TearDown(); }
+};
+
+TEST_F(OSCryptMacTest, KnownAnswers) {
   // This plaintext is deliberately more than one AES block long.
   constexpr auto kPlaintext = std::to_array<uint8_t>({
       0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a,
@@ -51,6 +57,16 @@ TEST(OSCryptMacTest, KnownAnswers) {
   std::string plaintext;
   ASSERT_TRUE(OSCryptImpl::GetInstance()->DecryptString(ciphertext, &plaintext));
   EXPECT_EQ(base::as_byte_span(kPlaintext), base::as_byte_span(plaintext));
+}
 
-  OSCryptMocker::TearDown();
+TEST_F(OSCryptMacTest, SetAndGetRaw) {
+  OSCryptImpl oscrypt1;
+  OSCryptImpl oscrypt2;
+
+  oscrypt1.UseMockKeychainForTesting(true);
+  oscrypt2.UseMockKeychainForTesting(true);
+
+  oscrypt2.SetRawEncryptionKey(oscrypt1.GetRawEncryptionKey());
+  EXPECT_GT(oscrypt1.GetRawEncryptionKey().size(), 0u);
+  EXPECT_EQ(oscrypt1.GetRawEncryptionKey(), oscrypt2.GetRawEncryptionKey());
 }
