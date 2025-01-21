@@ -7,8 +7,10 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/version.h"
+#include "components/autofill/core/browser/metrics/payments/amount_extraction_metrics.h"
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.h"
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.pb.h"
 #include "components/component_updater/mock_component_updater_service.h"
@@ -23,6 +25,8 @@ constexpr char kAmountExtractionHeuristicRegexesVersion[] = "1";
 const base::FilePath::CharType
     kAmountExtractionHeuristicRegexesBinaryPbFileName[] =
         FILE_PATH_LITERAL("heuristic_regexes.binarypb");
+const char* kAmountExtractionComponentInstallationResultMetric =
+    "Autofill.AmountExtraction.HeuristicRegexesComponentInstallationResult";
 }  // namespace
 
 class AmountExtractionHeuristicRegexesInstallerPolicyTest
@@ -60,6 +64,19 @@ class AmountExtractionHeuristicRegexesInstallerPolicyTest
     RunUntilIdle();
   }
 
+  bool VerifyInstallation(const base::Value::Dict& manifest,
+                          const base::FilePath& install_dir) {
+    return policy_.VerifyInstallation(manifest, install_dir);
+  }
+
+  void AssertWriteMetrics(
+      autofill::autofill_metrics::AmountExtractionComponentInstallationResult
+          result,
+      int count) {
+    histogram_tester_.ExpectBucketCount(
+        kAmountExtractionComponentInstallationResultMetric, result, count);
+  }
+
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  protected:
@@ -67,6 +84,7 @@ class AmountExtractionHeuristicRegexesInstallerPolicyTest
   base::ScopedTempDir component_install_dir_;
   MockComponentUpdateService component_update_service_;
   AmountExtractionHeuristicRegexesInstallerPolicy policy_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(AmountExtractionHeuristicRegexesInstallerPolicyTest,
@@ -111,6 +129,37 @@ TEST_F(AmountExtractionHeuristicRegexesInstallerPolicyTest, LoadFileWithData) {
   EXPECT_EQ(regex_data.keyword_pattern(), "^(Total Amount):?$");
   EXPECT_EQ(regex_data.amount_pattern(), R"regexp(\$\d+\.\d{2})regexp");
   EXPECT_EQ(regex_data.number_of_ancestor_levels_to_search(), 4u);
+
+  AssertWriteMetrics(
+      autofill::autofill_metrics::AmountExtractionComponentInstallationResult::
+          kSuccessful,
+      1);
+}
+
+TEST_F(AmountExtractionHeuristicRegexesInstallerPolicyTest,
+       WriteMetrics_InvalidInstallationPath) {
+  ASSERT_FALSE(VerifyInstallation(
+      base::Value::Dict(), base::FilePath(FILE_PATH_LITERAL("invalid_dir"))));
+
+  AssertWriteMetrics(
+      autofill::autofill_metrics::AmountExtractionComponentInstallationResult::
+          kInvalidInstallationPath,
+      1);
+}
+
+TEST_F(AmountExtractionHeuristicRegexesInstallerPolicyTest,
+       WriteMetrics_EmptyBinaryFile) {
+  autofill::payments::AmountExtractionHeuristicRegexes::GetInstance()
+      .ResetRegexStringPatternsForTesting();
+  HeuristicRegexes heuristic_regexes;
+  ASSERT_TRUE(CreateTestAmountExtractionHeuristicRegexesData(
+      heuristic_regexes.SerializeAsString()));
+  ASSERT_NO_FATAL_FAILURE(LoadTestAmountExtractionHeuristicRegexesData());
+
+  AssertWriteMetrics(
+      autofill::autofill_metrics::AmountExtractionComponentInstallationResult::
+          kEmptyBinaryFile,
+      1);
 }
 
 }  // namespace component_updater

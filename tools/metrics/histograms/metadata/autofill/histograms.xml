@@ -1038,6 +1038,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram
+    name="Autofill.AmountExtraction.HeuristicRegexesComponentInstallationResult"
+    enum="AmountExtractionComponentInstallationResult"
+    expires_after="2025-07-01">
+  <owner>longsheng@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The result from Amount Extraction Heuristic Regexes component installation.
+    This metric is recorded every time when a new regexes version is installed.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.AndroidAutofillAvailabilityStatus"
     enum="AndroidAutofillAvailabilityStatus" expires_after="2025-05-18">
   <owner>friedrichh@chromium.org</owner>
