@@ -8331,7 +8331,6 @@ test("unit_tests") {
       "../browser/speech/cros_speech_recognition_service_factory_unittest.cc",
       "../browser/speech/tts_chromeos_unittest.cc",
       "../browser/speech/tts_controller_delegate_impl_unittest.cc",
-      "../browser/task_manager/providers/crosapi/crosapi_task_provider_ash_unittest.cc",
       "../browser/ui/ash/editor_menu/editor_menu_card_context_unittest.cc",
       "../browser/ui/ash/editor_menu/editor_menu_view_unittest.cc",
       "../browser/ui/ash/editor_menu/utils/pre_target_handler_unittest.cc",

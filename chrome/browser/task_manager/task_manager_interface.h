@@ -256,7 +256,6 @@ class TaskManagerInterface {
   void NotifyObserversOnRefreshWithBackgroundCalculations(
       const TaskIdList& task_ids);
   void NotifyObserversOnTaskUnresponsive(TaskId id);
-  void NotifyObserversOnActiveTaskFetched(TaskId id);
 
   // Refresh all the enabled resources usage of all the available tasks.
   virtual void Refresh() = 0;

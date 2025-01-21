@@ -56,9 +56,6 @@ class Task {
     DEDICATED_WORKER, /* A dedicated worker running on the renderer process. */
     SHARED_WORKER,    /* A shared worker running on the renderer process. */
     SERVICE_WORKER,   /* A service worker running on the renderer process. */
-
-    /* Lacros task. */
-    LACROS, /* A task from lacros-chrome */
   };
 
   // Additional Type Information about a Task.

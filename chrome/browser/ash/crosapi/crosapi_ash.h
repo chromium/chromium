@@ -18,7 +18,6 @@
 #include "chromeos/crosapi/mojom/magic_boost.mojom-forward.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
 #include "chromeos/crosapi/mojom/print_preview_cros.mojom-forward.h"
-#include "chromeos/crosapi/mojom/task_manager.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "media/gpu/buildflags.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
@@ -115,7 +114,6 @@ class ScreenAIDownloaderAsh;
 class SearchProviderAsh;
 class StructuredMetricsServiceAsh;
 class SuggestionServiceAsh;
-class TaskManagerAsh;
 class TimeZoneServiceAsh;
 class VpnServiceAsh;
 class WebAppServiceAsh;
@@ -321,8 +319,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::SuggestionService> receiver) override;
   void BindSyncService(
       mojo::PendingReceiver<mojom::SyncService> receiver) override;
-  void BindTaskManager(
-      mojo::PendingReceiver<mojom::TaskManager> receiver) override;
   void BindTelemetryDiagnosticRoutinesService(
       mojo::PendingReceiver<mojom::TelemetryDiagnosticRoutinesService> receiver)
       override;
@@ -518,8 +514,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return suggestion_service_ash_.get();
   }
 
-  TaskManagerAsh* task_manager_ash() { return task_manager_ash_.get(); }
-
   WebAppServiceAsh* web_app_service_ash() { return web_app_service_ash_.get(); }
 
   WebKioskServiceAsh* web_kiosk_service_ash() {
@@ -621,7 +615,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<SearchProviderAsh> search_provider_ash_;
   std::unique_ptr<StructuredMetricsServiceAsh> structured_metrics_service_ash_;
   std::unique_ptr<SuggestionServiceAsh> suggestion_service_ash_;
-  std::unique_ptr<TaskManagerAsh> task_manager_ash_;
   std::unique_ptr<TimeZoneServiceAsh> time_zone_service_ash_;
   std::unique_ptr<ash::VideoConferenceManagerAsh> video_conference_manager_ash_;
   std::unique_ptr<VirtualKeyboardAsh> virtual_keyboard_ash_;

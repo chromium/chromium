@@ -22,10 +22,6 @@ using TaskIdList = std::vector<TaskId>;
 
 // Defines a list of types of resources that an observer needs to be refreshed
 // on every task manager refresh cycle.
-// Note: task_manager.mojom API SetRefreshFlags passes the bit flags
-// (|refresh_flags|) of RefreshType as an argument, which requires that
-// RefreshType must be stablized. Therefore, we can never reorder or delete
-// old types.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.task_manager
 // GENERATED_JAVA_PREFIX_TO_STRIP: REFRESH_TYPE_
 // GENERATED_JAVA_IS_FLAG: true

@@ -81,7 +81,6 @@ import "chromeos/crosapi/mojom/structured_metrics_service.mojom";
 import "chromeos/crosapi/mojom/suggestion_service.mojom";
 import "chromeos/crosapi/mojom/sync.mojom";
 import "chromeos/crosapi/mojom/system_display.mojom";
-import "chromeos/crosapi/mojom/task_manager.mojom";
 import "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_event_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_management_service.mojom";
@@ -624,10 +623,7 @@ interface Crosapi {
   [MinVersion=24] REMOVED_29@29(
       pending_receiver<SystemDisplayDeprecated> receiver);
 
-  // Binds the Task Manager interface for integrating lacros tasks in ash
-  // task manager.
-  // Added in M91.
-  [MinVersion=19] BindTaskManager@24(pending_receiver<TaskManager> receiver);
+  // BindTaskManager@24 was removed.
 
   // Binds the TelemetryDiagnosticRoutineService interface to allow Lacros to
   // initiate diagnostic routines from Ash.
