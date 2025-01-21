@@ -84,7 +84,7 @@ FakeSystemIdentity* const kPrimaryIdentity = [FakeSystemIdentity fakeIdentity1];
 
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
       initWithAccessPoint:signin_metrics::AccessPoint::
-                              ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO];
+                              kPostDeviceRestoreSigninPromo];
   // TODO(crbug.com/41493423): We should log that the signin was offered,
   // and started.
   [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
@@ -108,7 +108,7 @@ FakeSystemIdentity* const kPrimaryIdentity = [FakeSystemIdentity fakeIdentity1];
 
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
       initWithAccessPoint:signin_metrics::AccessPoint::
-                              ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO];
+                              kPostDeviceRestoreSigninPromo];
   // TODO(crbug.com/41493423): We should log that the signin was offered.
   [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }

@@ -175,7 +175,7 @@
       initWithOperation:AuthenticationOperation::kResignin
                identity:nil
             accessPoint:signin_metrics::AccessPoint::
-                            ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO
+                            kPostDeviceRestoreSigninPromo
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:completion];
