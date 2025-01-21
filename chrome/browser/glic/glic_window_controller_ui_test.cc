@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/memory_pressure_monitor.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_view.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
@@ -35,10 +37,24 @@ class GlicWindowControllerTest : public InteractiveBrowserTest {
   GlicWindowControllerTest() {
     features_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kGlic, features::kTabstripComboButton},
+        {features::kGlic, features::kTabstripComboButton,
+         features::kGlicWarming},
         /*disabled_features=*/{});
   }
   ~GlicWindowControllerTest() override = default;
+
+  void SetUp() override {
+    // This will temporarily disable preloading to ensure that we don't load the
+    // web client before we've initialized the embedded test server and can set
+    // the correct URL.
+    GlicProfileManager::ForceMemoryPressureForTesting(&forced_memory_pressure_);
+    InteractiveBrowserTest::SetUp();
+  }
+
+  void TearDown() override {
+    InteractiveBrowserTest::TearDown();
+    GlicProfileManager::ForceMemoryPressureForTesting(nullptr);
+  }
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
@@ -69,7 +85,16 @@ class GlicWindowControllerTest : public InteractiveBrowserTest {
     return glic_service()->window_controller();
   }
 
+  void ResetMemoryPressure() {
+    forced_memory_pressure_ = base::MemoryPressureMonitor::MemoryPressureLevel::
+        MEMORY_PRESSURE_LEVEL_NONE;
+  }
+
  private:
+  base::MemoryPressureMonitor::MemoryPressureLevel forced_memory_pressure_ =
+      base::MemoryPressureMonitor::MemoryPressureLevel::
+          MEMORY_PRESSURE_LEVEL_CRITICAL;
+
   base::test::ScopedFeatureList features_;
 };
 
@@ -99,6 +124,14 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, ShowAndCloseDetachedWidget) {
                       }),
                       Do([this]() { window_controller().Close(); }),
                       WaitForHide(kGlicViewElementId))));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, Preload) {
+  ResetMemoryPressure();
+  glic_service()->TryPreload();
+  EXPECT_TRUE(window_controller().IsWarmed());
+  RunTestSequence(PressButton(kGlicButtonElementId),
+                  InAnyContext(WaitForShow(kGlicViewElementId)));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, DoNotCrashOnBrowserClose) {

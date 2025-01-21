@@ -47,6 +47,12 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller)
       kColorNewTabButtonCRBackgroundFrameInactive);
 
   UpdateColors();
+
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+      tab_strip_controller_->GetProfile())
+      ->TryPreload();
+#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
 GlicButton::~GlicButton() = default;

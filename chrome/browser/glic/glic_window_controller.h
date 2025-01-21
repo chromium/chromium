@@ -107,6 +107,13 @@ class GlicWindowController : public views::WidgetObserver {
   base::CallbackListSubscription AddWindowActivationChangedCallback(
       WindowActivationChangedCallback callback);
 
+  // Warms the glic web contents.
+  void Preload();
+
+  // Returns whether or not the glic web contents are loaded (this can also be
+  // true if `IsActive()` (i.e., if the contents are loaded in the glic window).
+  bool IsWarmed();
+
   // Returns a WeakPtr to this instance. It can be destroyed at any time if the
   // profile is deleted or if the browser shuts down.
   base::WeakPtr<GlicWindowController> GetWeakPtr();
@@ -224,6 +231,9 @@ class GlicWindowController : public views::WidgetObserver {
   std::unique_ptr<views::Widget> glic_window_widget_;
   std::unique_ptr<GlicWindowResizeAnimation> window_resize_animation_;
   bool glic_window_widget_visible_ = false;
+
+  // True if we've hit a login page (and have not yet shown).
+  bool login_page_committed_ = false;
 
   // Indicates `Show()` has been called, but not `FinishShow()`.
   bool will_show_ = false;

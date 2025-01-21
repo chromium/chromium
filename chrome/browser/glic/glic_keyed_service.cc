@@ -174,6 +174,17 @@ base::CallbackListSubscription GlicKeyedService::AddWebClientCreatedCallback(
   return web_client_created_callbacks_.Add(std::move(callback));
 }
 
+void GlicKeyedService::TryPreload() {
+  CHECK(GlicEnabling::IsEnabledForProfile(
+      Profile::FromBrowserContext(browser_context_)));
+  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  if (!profile_manager_->ShouldPreloadForProfile(profile)) {
+    return;
+  }
+
+  window_controller_.Preload();
+}
+
 base::WeakPtr<GlicKeyedService> GlicKeyedService::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

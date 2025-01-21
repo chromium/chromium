@@ -116,6 +116,10 @@ class GlicKeyedService : public KeyedService {
   base::CallbackListSubscription AddWebClientCreatedCallback(
       base::OnceCallback<void()> callback);
 
+  void TryPreload();
+
+  GlicProfileManager* GetProfileManagerForTesting() { return profile_manager_; }
+
   base::WeakPtr<GlicKeyedService> GetWeakPtr();
 
  private:
