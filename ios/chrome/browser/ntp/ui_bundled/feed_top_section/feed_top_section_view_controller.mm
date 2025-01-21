@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_view_controller.h"
 
 #import "base/check.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
@@ -214,6 +215,9 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
 }
 
 - (SigninPromoView*)createSigninPromoView {
+  signin_metrics::LogSignInOffered(
+      signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO,
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
   SigninPromoView* promoView =
       [[SigninPromoView alloc] initWithFrame:CGRectZero];
   promoView.translatesAutoresizingMaskIntoConstraints = NO;
