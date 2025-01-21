@@ -76,7 +76,20 @@ int WebSocketHttp3HandshakeStream::InitializeStream(
   priority_ = priority;
   net_log_ = net_log;
   request_time_ = base::Time::Now();
-  return OK;
+
+  int ret = OK;
+  if (!can_send_early) {
+    ret = session_->WaitForHandshakeConfirmation(
+        base::BindOnce(&WebSocketHttp3HandshakeStream::OnHandshakeConfirmed,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+  return ret;
+}
+
+void WebSocketHttp3HandshakeStream::OnHandshakeConfirmed(
+    CompletionOnceCallback callback,
+    int rv) {
+  std::move(callback).Run(rv);
 }
 
 int WebSocketHttp3HandshakeStream::SendRequest(

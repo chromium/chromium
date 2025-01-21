@@ -329,6 +329,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     friend class QuicChromiumClientSession;
     friend class QuicChromiumClientSession::StreamRequest;
 
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+    friend class WebSocketHttp3HandshakeStream;
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
+
     // Waits for the handshake to be confirmed and invokes |callback| when
     // that happens. If the handshake has already been confirmed, returns OK.
     // If the connection has already been closed, returns a net error. If the

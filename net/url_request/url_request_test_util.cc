@@ -221,6 +221,10 @@ void TestDelegate::OnResponseStarted(URLRequest* request, int net_error) {
   DCHECK_NE(ERR_IO_PENDING, net_error);
   EXPECT_FALSE(request->is_redirecting());
 
+  if (net_error == OK) {
+    response_code_ = request->GetResponseCode();
+  }
+
   response_started_count_++;
   request_status_ = net_error;
   if (cancel_in_rs_) {

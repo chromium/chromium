@@ -17,6 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/ip_endpoint.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_request_info.h"
@@ -79,7 +80,20 @@ int WebSocketHttp2HandshakeStream::InitializeStream(
     CompletionOnceCallback callback) {
   priority_ = priority;
   net_log_ = net_log;
-  return OK;
+
+  int ret = OK;
+  if (!can_send_early) {
+    ret = session_->ConfirmHandshake(
+        base::BindOnce(&WebSocketHttp2HandshakeStream::OnHandshakeConfirmed,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+  return ret;
+}
+
+void WebSocketHttp2HandshakeStream::OnHandshakeConfirmed(
+    CompletionOnceCallback callback,
+    int rv) {
+  std::move(callback).Run(rv);
 }
 
 int WebSocketHttp2HandshakeStream::SendRequest(
