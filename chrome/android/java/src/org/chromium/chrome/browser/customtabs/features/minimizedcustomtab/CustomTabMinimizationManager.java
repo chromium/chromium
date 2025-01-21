@@ -235,6 +235,7 @@ public class CustomTabMinimizationManager
     }
 
     @Override
+    @SuppressWarnings("TimeUnitMismatch") // Using seconds; recordTimesHistogram wants milliseconds.
     public void accept(PictureInPictureModeChangedInfo pictureInPictureModeChangedInfo) {
         if (!mMinimized) return;
 
