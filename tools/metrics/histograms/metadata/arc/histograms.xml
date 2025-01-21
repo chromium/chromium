@@ -2860,7 +2860,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.WM.WindowClosedDelayTimeV2.ArcApp" units="ms"
-    expires_after="2025-02-02">
+    expires_after="2026-02-02">
   <owner>lingyufeng@google.com</owner>
   <owner>arc-framework@google.com</owner>
   <summary>
@@ -2870,7 +2870,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.WM.WindowDragResizeTime" units="ms"
-    expires_after="2025-02-23">
+    expires_after="2026-02-23">
   <owner>lingyufeng@google.com</owner>
   <owner>arc-framework@google.com</owner>
   <summary>
@@ -2907,7 +2907,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.WM.WindowMaximizedDelayTimeV2.{ChromeOSAppType}"
-    units="ms" expires_after="2025-02-02">
+    units="ms" expires_after="2026-02-02">
   <owner>lingyufeng@google.com</owner>
   <owner>arc-framework@google.com</owner>
   <summary>
@@ -2919,7 +2919,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.WM.WindowMinimizedDelayTime.{ChromeOSAppType}" units="ms"
-    expires_after="2025-02-10">
+    expires_after="2026-02-10">
   <owner>lingyufeng@google.com</owner>
   <owner>arc-framework@google.com</owner>
   <summary>
@@ -2931,7 +2931,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.WM.WindowRotateDelayTime.{ChromeOSAppType}" units="ms"
-    expires_after="2025-02-02">
+    expires_after="2026-02-02">
   <owner>lingyufeng@google.com</owner>
   <owner>arc-framework@google.com</owner>
   <summary>
