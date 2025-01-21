@@ -24,18 +24,21 @@ TEST(AnchorElementProviderTest,
   AnchorElementProviderCommon provider(kTestElementId1);
 
   // No visible element, so returns null.
-  EXPECT_EQ(nullptr, provider.GetAnchorElement(kTestElementContext1));
+  EXPECT_EQ(nullptr,
+            provider.GetAnchorElement(kTestElementContext1, std::nullopt));
   el.Show();
 
   // Finds visible element.
-  EXPECT_EQ(&el, provider.GetAnchorElement(kTestElementContext1));
+  EXPECT_EQ(&el, provider.GetAnchorElement(kTestElementContext1, std::nullopt));
 
   // Does not find element in the wrong context.
-  EXPECT_EQ(nullptr, provider.GetAnchorElement(kTestElementContext2));
+  EXPECT_EQ(nullptr,
+            provider.GetAnchorElement(kTestElementContext2, std::nullopt));
 
   // Wrong ID does not find element.
   AnchorElementProviderCommon provider2(kTestElementId2);
-  EXPECT_EQ(nullptr, provider2.GetAnchorElement(kTestElementContext1));
+  EXPECT_EQ(nullptr,
+            provider2.GetAnchorElement(kTestElementContext1, std::nullopt));
 }
 
 }  // namespace user_education

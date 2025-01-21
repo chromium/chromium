@@ -315,10 +315,14 @@ FeaturePromoResult FeaturePromoController25::ShowPromo(PromoData& promo_data) {
   const base::Feature& feature = promo_data.GetFeature();
   const bool in_demo_mode =
       (GetFeatureEngagementDemoFeatureName() == feature.name);
-  auto* const display_spec =
-      spec->promo_type() == FeaturePromoSpecification::PromoType::kRotating
-          ? &*spec->rotating_promos().at(lifecycle->GetPromoIndex())
-          : spec;
+  auto* const index = internal::PreconditionData::Get(
+      promo_data.eligible_promo->cached_data,
+      AnchorElementPrecondition::kRotatingPromoIndex);
+  auto* display_spec = spec;
+  if (index && index->has_value()) {
+    lifecycle->SetPromoIndex(index->value());
+    display_spec = &*spec->rotating_promos().at(index->value());
+  }
 
   // Construct the parameters for the promotion.
   ShowPromoBubbleParams show_params;
@@ -501,8 +505,16 @@ void FeaturePromoController25::AddDemoPreconditionProviders(
            const FeaturePromoSpecification& spec, const FeaturePromoParams&) {
           FeaturePromoPreconditionList list;
           if (auto* const ptr = controller.get()) {
+            // In demos, when repeating the same repeating promo to test it, the
+            // index should cycle. However, the updated index is not written
+            // until the previous promo is ended, which happens later. In order
+            // to simulate this, base the starting index off the one being used
+            // by the previous promo.
+            const bool pre_increment =
+                ptr->current_promo() &&
+                ptr->current_promo()->iph_feature() == spec.feature();
             list.AddPrecondition(std::make_unique<AnchorElementPrecondition>(
-                spec, ptr->GetAnchorContext()));
+                spec, ptr->GetAnchorContext(), pre_increment));
           }
           return list;
         },
@@ -549,7 +561,7 @@ void FeaturePromoController25::AddPreconditionProviders(
           FeaturePromoPreconditionList list;
           if (auto* const ptr = controller.get()) {
             list.AddPrecondition(std::make_unique<AnchorElementPrecondition>(
-                spec, controller->GetAnchorContext()));
+                spec, controller->GetAnchorContext(), false));
             // Wait-for state *does* take the current promo into account, since
             // a higher-weight promo might block a lower-weight promo.
             list.AddPrecondition(std::make_unique<SessionPolicyPrecondition>(

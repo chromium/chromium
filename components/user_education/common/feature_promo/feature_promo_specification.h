@@ -404,12 +404,10 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
   // unique context.
   FeaturePromoSpecification& SetInAnyContext(bool in_any_context);
 
-  // Get the anchor element based on `anchor_element_id`,
-  // `anchor_element_filter`, and `context`.
-  //
-  // For rotating promos, call this method on the specific sub-promo.
-  ui::TrackedElement* GetAnchorElement(
-      ui::ElementContext context) const override;
+  // AnchorElementProvider:
+  ui::TrackedElement* GetAnchorElement(ui::ElementContext context,
+                                       std::optional<int> index) const override;
+  int GetNextValidIndex(int index) const override;
 
   const base::Feature* feature() const { return feature_; }
   PromoType promo_type() const { return promo_type_; }

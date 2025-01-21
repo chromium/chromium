@@ -18,6 +18,7 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/omnibox_view.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/impl/common_preconditions.h"
@@ -47,6 +48,10 @@ WindowActivePrecondition::~WindowActivePrecondition() = default;
 
 user_education::FeaturePromoResult WindowActivePrecondition::CheckPrecondition(
     ComputedData& data) const {
+  if (user_education::FeaturePromoControllerCommon::
+          active_window_check_blocked()) {
+    return user_education::FeaturePromoResult::Success();
+  }
   auto& element_ref =
       data.Get(user_education::AnchorElementPrecondition::kAnchorElement);
   views::Widget* widget = nullptr;

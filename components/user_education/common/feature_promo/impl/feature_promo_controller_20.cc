@@ -188,32 +188,27 @@ FeaturePromoResult FeaturePromoController20::CanShowPromoCommon(
   // For rotating promos, cycle forward to the next valid index.
   auto* anchor_spec = spec;
   if (spec->promo_type() == FeaturePromoSpecification::PromoType::kRotating) {
-    int current_index = lifecycle->GetPromoIndex();
+    int index = lifecycle->GetPromoIndex();
     // In demos, when repeating the same repeating promo to test it, the index
     // should cycle. However, the updated index is not written until the
     // previous promo is ended, which happens later. In order to simulate this,
     // base the starting index off the one being used by the previous promo.
     if (current_promo() && current_promo()->iph_feature() == &*params.feature) {
-      current_index = (current_promo()->GetPromoIndex() + 1) %
-                      spec->rotating_promos().size();
+      index = (current_promo()->GetPromoIndex() + 1) %
+              spec->rotating_promos().size();
     }
 
     // Find the next index in the rotation that has a valid promo. This is the
     // actual index that will be used.
-    int index = current_index;
-    while (!spec->rotating_promos().at(index).has_value()) {
-      index = (index + 1) % spec->rotating_promos().size();
-      CHECK_NE(index, current_index)
-          << "Wrapped around while looking for a valid rotating promo; this "
-             "should have been caught during promo registration.";
-    }
+    index = spec->GetNextValidIndex(index);
     lifecycle->SetPromoIndex(index);
     anchor_spec = &*spec->rotating_promos().at(index);
   }
 
-  // Fetch the anchor element. For now, assume all elements are Views.
+  // Fetch the anchor element. Instead of using the index parameter, use the
+  // anchor spec that has already been found.
   ui::TrackedElement* const anchor_element =
-      anchor_spec->GetAnchorElement(GetAnchorContext());
+      anchor_spec->GetAnchorElement(GetAnchorContext(), std::nullopt);
   if (!anchor_element) {
     return FeaturePromoResult::kBlockedByUi;
   }
