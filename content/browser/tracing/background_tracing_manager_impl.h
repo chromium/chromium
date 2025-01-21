@@ -189,8 +189,6 @@ class BackgroundTracingManagerImpl
   void AddAgentObserver(AgentObserver* observer);
   void RemoveAgentObserver(AgentObserver* observer);
 
-  void AddMetadataGeneratorFunction();
-
   void OnStartTracingDone();
   void OnProtoDataComplete(std::string&& serialized_trace,
                            const std::string& scenario_name,
@@ -228,6 +226,7 @@ class BackgroundTracingManagerImpl
 #endif
 
   bool RequestActivateScenario();
+  void AddMetadataGeneratorFunction();
 
   // Named triggers
   bool DoEmitNamedTrigger(const std::string& trigger_name,
