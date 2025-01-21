@@ -7,11 +7,13 @@
 #include <ostream>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,11 +26,13 @@
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/supervised_user/browser_user.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/test_accounts.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/test_support/account_repository.h"
 #include "components/supervised_user/test_support/family_link_settings_state_management.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/interaction/interactive_test_internal.h"
@@ -44,6 +48,11 @@ const char* kWaitForSyncInvalidationReadySwitch =
 // When enabled, the browser opens extra debugging tabs & the logging is more
 // detailed.
 const char* kDebugSwitch = "supervised-tests-debug-features";
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+constexpr signin_metrics::AccessPoint kTestAccessPoint =
+    signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt;
+#endif
 
 bool IsSwitchEnabled(const char* flag) {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(flag);
@@ -119,6 +128,7 @@ FamilyLiveTest::FamilyLiveTest(
     : extra_enabled_hosts_(extra_enabled_hosts.begin(),
                            extra_enabled_hosts.end()),
       rpc_mode_(rpc_mode) {}
+
 FamilyLiveTest::~FamilyLiveTest() = default;
 
 BrowserUser& FamilyLiveTest::head_of_household() const {
@@ -237,6 +247,19 @@ void FamilyLiveTest::SetUpOnMainThread() {
                << kChildCredentialsSwitch << ".";
 }
 void FamilyLiveTest::TearDownOnMainThread() {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  for (const BrowserUser* user : {child_.get(), head_of_household_.get()}) {
+    if (!user) {
+      continue;
+    }
+    user->browser().signin_view_controller()->SignoutOrReauthWithPrompt(
+        kTestAccessPoint,
+        signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
+        signin_metrics::SourceForRefreshTokenOperation::
+            kUserMenu_SignOutAllAccounts);
+  }
+#endif
+
   head_of_household_.reset();
   child_.reset();
   signin::test::LiveTest::TearDownOnMainThread();
@@ -315,7 +338,12 @@ InteractiveFamilyLiveTest::WaitForStateSeeding(
                           browser_user.GetAccountId().ToString());
              }),
              PollState(
-                 id, [&]() { return state.Check(browser_user.GetServices()); },
+                 id,
+                 [&]() {
+                   SyncServiceFactory::GetForProfile(&browser_user.profile())
+                       ->TriggerRefresh(syncer::DataTypeSet::All());
+                   return state.Check(browser_user.GetServices());
+                 },
                  /*polling_interval=*/base::Seconds(2)),
              WaitForState(id, true), StopObservingState(id)),
          /*else_steps=*/
