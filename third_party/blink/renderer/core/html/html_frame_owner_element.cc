@@ -201,11 +201,7 @@ Node::InsertionNotificationRequest HTMLFrameOwnerElement::InsertedInto(
   // perform some bookkeeping that ordinarily would only be done deeper in the
   // frame setup logic that gets triggered in the *NON* state-preserving atomic
   // move flow.
-  if (GetDocument().StatePreservingAtomicMoveInProgress()) {
-    // State-preserving atomic moves can only be in-progress when all elements
-    // are connected, and when `HTMLFrameOwnerElement` is connected, it must
-    // have a non-null `ContentFrame()`.
-    CHECK(ContentFrame());
+  if (GetDocument().StatePreservingAtomicMoveInProgress() && ContentFrame()) {
     // During a state-preserving atomic move, we must specifically inform all of
     // `this`'s ancestor nodes of the new connected frame they are adopting.
     //
@@ -231,7 +227,8 @@ void HTMLFrameOwnerElement::RemovedFrom(ContainerNode& insertion_point) {
   // Not doing (1) is a good thing, since we're trying to preserve the frame,
   // but we still have to do (2) manually to maintain bookkeeping consistency
   // among the ancestor nodes.
-  if (GetDocument().StatePreservingAtomicMoveInProgress()) {
+  if (GetDocument().StatePreservingAtomicMoveInProgress() &&
+      insertion_point.isConnected()) {
     // `this` is no longer connected, so we have to decrement our subframe count
     // separately from our old ancestors's subframe count (i.e.,
     // `insertion_point`).
