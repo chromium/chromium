@@ -1008,6 +1008,9 @@ void ServiceWorkerContainerHostForClient::GetRegistrationsComplete(
 
   for (const auto& registration : registrations) {
     DCHECK(registration.get());
+    // TODO(crbug.com/372879072): remove this CHECK
+    CHECK_EQ(service_worker_client().key().origin(),
+             url::Origin::Create(registration->scope()));
     if (!registration->is_uninstalling()) {
       object_infos.push_back(
           registration_object_manager().CreateInfo(std::move(registration)));
