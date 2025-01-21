@@ -10,17 +10,15 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/glic_settings_util.h"
 #include "chrome/browser/glic/launcher/glic_controller.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "glic_status_icon.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -36,6 +34,8 @@ gfx::ImageSkia GetIconForTheme(const ui::NativeTheme* native_theme) {
           : SK_ColorBLACK);
 }
 }  // namespace
+
+namespace glic {
 
 GlicStatusIcon::GlicStatusIcon(GlicController* controller,
                                StatusTray* status_tray)
@@ -70,23 +70,6 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
   status_icon_->SetContextMenu(std::move(menu));
 }
 
-std::unique_ptr<StatusIconMenuModel> GlicStatusIcon::CreateStatusIconMenu() {
-  std::unique_ptr<StatusIconMenuModel> menu(new StatusIconMenuModel(this));
-  menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_SHOW,
-                l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_SHOW));
-  menu->AddSeparator(ui::NORMAL_SEPARATOR);
-
-  menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT,
-                l10n_util::GetStringUTF16(
-                    IDS_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT));
-  menu->AddItem(
-      IDC_GLIC_STATUS_ICON_MENU_REMOVE_ICON,
-      l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_REMOVE_ICON));
-  menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_SETTINGS,
-                l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_SETTINGS));
-  return menu;
-}
-
 GlicStatusIcon::~GlicStatusIcon() {
   context_menu_ = nullptr;
   if (status_icon_) {
@@ -104,37 +87,22 @@ void GlicStatusIcon::OnStatusIconClicked() {
 }
 
 void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
+  Profile* profile = GlicProfileManager::GetInstance()->GetProfileForLaunch();
   switch (command_id) {
     case IDC_GLIC_STATUS_ICON_MENU_SHOW: {
       controller_->Show();
       break;
     }
     case IDC_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT: {
-      ShowPromoInPage::Params params;
-      params.bubble_anchor_id = kGlicOsWidgetKeyboardShortcutElementId;
-      params.bubble_arrow = user_education::HelpBubbleArrow::kBottomRight;
-      params.bubble_text = l10n_util::GetStringUTF16(
-          IDS_GLIC_OS_WIDGET_KEYBOARD_SHORTCUT_HELP_BUBBLE);
-      chrome::ShowPageWithPromoForProfile(
-          glic::GlicProfileManager::GetInstance()->GetProfileForLaunch(),
-          chrome::GetSettingsUrl(chrome::kChromeUIGlicHost), std::move(params));
+      OpenGlicKeyboardShortcutSetting(profile);
       break;
     }
     case IDC_GLIC_STATUS_ICON_MENU_REMOVE_ICON: {
-      ShowPromoInPage::Params params;
-      params.bubble_anchor_id = kGlicOsToggleElementId;
-      params.bubble_arrow = user_education::HelpBubbleArrow::kBottomRight;
-      params.bubble_text =
-          l10n_util::GetStringUTF16(IDS_GLIC_OS_WIDGET_TOGGLE_HELP_BUBBLE);
-      chrome::ShowPageWithPromoForProfile(
-          glic::GlicProfileManager::GetInstance()->GetProfileForLaunch(),
-          chrome::GetSettingsUrl(chrome::kChromeUIGlicHost), std::move(params));
+      OpenGlicOsToggleSetting(profile);
       break;
     }
     case IDC_GLIC_STATUS_ICON_MENU_SETTINGS: {
-      chrome::ShowSettingsSubPageForProfile(
-          glic::GlicProfileManager::GetInstance()->GetProfileForLaunch(),
-          chrome::kChromeUIGlicHost);
+      OpenGlicSettingsPage(profile);
       break;
     }
     default: {
@@ -157,3 +125,22 @@ void GlicStatusIcon::UpdateHotkey(const ui::Accelerator& hotkey) {
   context_menu_->SetForceShowAcceleratorForItemAt(show_menu_item_index.value(),
                                                   !hotkey.IsEmpty());
 }
+
+std::unique_ptr<StatusIconMenuModel> GlicStatusIcon::CreateStatusIconMenu() {
+  std::unique_ptr<StatusIconMenuModel> menu(new StatusIconMenuModel(this));
+  menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_SHOW,
+                l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_SHOW));
+  menu->AddSeparator(ui::NORMAL_SEPARATOR);
+
+  menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT,
+                l10n_util::GetStringUTF16(
+                    IDS_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT));
+  menu->AddItem(
+      IDC_GLIC_STATUS_ICON_MENU_REMOVE_ICON,
+      l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_REMOVE_ICON));
+  menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_SETTINGS,
+                l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_SETTINGS));
+  return menu;
+}
+
+}  // namespace glic

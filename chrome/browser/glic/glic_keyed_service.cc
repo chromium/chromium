@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/glic_settings_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -86,11 +87,7 @@ void GlicKeyedService::CreateTab(
 }
 
 void GlicKeyedService::OpenGlicSettingsPage() {
-  NavigateParams params(Profile::FromBrowserContext(browser_context_),
-                        GURL("chrome://settings/glic"),
-                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  Navigate(&params);
+  ::glic::OpenGlicSettingsPage(Profile::FromBrowserContext(browser_context_));
 }
 
 void GlicKeyedService::ClosePanel() {

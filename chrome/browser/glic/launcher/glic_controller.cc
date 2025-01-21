@@ -7,6 +7,8 @@
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 
+namespace glic {
+
 GlicController::GlicController() = default;
 GlicController::~GlicController() = default;
 
@@ -27,3 +29,5 @@ void GlicController::Show() {
 void GlicController::Hide() {
   glic::GlicProfileManager::GetInstance()->CloseGlicWindow();
 }
+
+}  // namespace glic
