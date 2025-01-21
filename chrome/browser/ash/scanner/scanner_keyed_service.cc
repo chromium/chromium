@@ -80,32 +80,39 @@ specialized_features::FeatureAccessConfig CreateFeatureAccessConfig() {
   specialized_features::FeatureAccessConfig config;
   config.settings_toggle_pref = ash::prefs::kSunfishEnabled;
   config.disabled_in_kiosk_mode = true;
-  if (!base::FeatureList::IsEnabled(ash::features::kScannerDogfood)) {
-    config.feature_management_flag = &ash::features::kFeatureManagementScanner;
-    config.capability_callback =
-        base::BindRepeating([](AccountCapabilities capabilities) {
-          return capabilities.can_use_manta_service();
-        });
-    config.country_codes = {
-        "ae", "ag", "ai", "am", "ao", "aq", "ar", "as", "at", "au", "aw", "az",
-        "bb", "bd", "be", "bf", "bg", "bh", "bi", "bj", "bl", "bm", "bn", "bo",
-        "bq", "br", "bs", "bt", "bw", "bz", "ca", "cc", "cd", "cf", "cg", "ch",
-        "ci", "ck", "cl", "cm", "co", "cr", "cv", "cw", "cx", "cy", "cz", "de",
-        "dj", "dk", "dm", "do", "dz", "ec", "ee", "eg", "eh", "er", "es", "et",
-        "fi", "fj", "fk", "fm", "fr", "ga", "gb", "gd", "ge", "gg", "gh", "gi",
-        "gm", "gn", "gq", "gr", "gs", "gt", "gu", "gw", "gy", "hm", "hn", "hr",
-        "ht", "hu", "id", "ie", "il", "im", "in", "io", "iq", "is", "it", "je",
-        "jm", "jo", "jp", "ke", "kg", "kh", "ki", "km", "kn", "kr", "kw", "ky",
-        "kz", "la", "lb", "lc", "li", "lk", "lr", "ls", "lt", "lu", "lv", "ly",
-        "ma", "mg", "mh", "ml", "mn", "mp", "mr", "ms", "mt", "mu", "mv", "mw",
-        "mx", "my", "mz", "na", "nc", "ne", "nf", "ng", "ni", "nl", "no", "np",
-        "nr", "nu", "nz", "om", "pa", "pe", "pg", "ph", "pk", "pl", "pm", "pn",
-        "pr", "ps", "pt", "pw", "py", "qa", "ro", "rw", "sa", "sb", "sc", "sd",
-        "se", "sg", "sh", "si", "sk", "sl", "sn", "so", "sr", "ss", "st", "sv",
-        "sz", "tc", "td", "tg", "th", "tj", "tk", "tl", "tm", "tn", "to", "tr",
-        "tt", "tv", "tw", "tz", "ug", "um", "us", "uy", "uz", "vc", "ve", "vg",
-        "vi", "vn", "vu", "wf", "ws", "ye", "za", "zm", "zw"};
+
+  // Dogfood devices ignore all other checks.
+  // On actual launch, we will be using the ScannerUpdate flag instead of
+  // Dogfood which includes all extra checks.
+  if (base::FeatureList::IsEnabled(ash::features::kScannerDogfood)) {
+    return config;
   }
+
+  config.feature_flag = &ash::features::kScannerUpdate;
+  config.feature_management_flag = &ash::features::kFeatureManagementScanner;
+  config.capability_callback =
+      base::BindRepeating([](AccountCapabilities capabilities) {
+        return capabilities.can_use_manta_service();
+      });
+  config.country_codes = {
+      "ae", "ag", "ai", "am", "ao", "aq", "ar", "as", "at", "au", "aw", "az",
+      "bb", "bd", "be", "bf", "bg", "bh", "bi", "bj", "bl", "bm", "bn", "bo",
+      "bq", "br", "bs", "bt", "bw", "bz", "ca", "cc", "cd", "cf", "cg", "ch",
+      "ci", "ck", "cl", "cm", "co", "cr", "cv", "cw", "cx", "cy", "cz", "de",
+      "dj", "dk", "dm", "do", "dz", "ec", "ee", "eg", "eh", "er", "es", "et",
+      "fi", "fj", "fk", "fm", "fr", "ga", "gb", "gd", "ge", "gg", "gh", "gi",
+      "gm", "gn", "gq", "gr", "gs", "gt", "gu", "gw", "gy", "hm", "hn", "hr",
+      "ht", "hu", "id", "ie", "il", "im", "in", "io", "iq", "is", "it", "je",
+      "jm", "jo", "jp", "ke", "kg", "kh", "ki", "km", "kn", "kr", "kw", "ky",
+      "kz", "la", "lb", "lc", "li", "lk", "lr", "ls", "lt", "lu", "lv", "ly",
+      "ma", "mg", "mh", "ml", "mn", "mp", "mr", "ms", "mt", "mu", "mv", "mw",
+      "mx", "my", "mz", "na", "nc", "ne", "nf", "ng", "ni", "nl", "no", "np",
+      "nr", "nu", "nz", "om", "pa", "pe", "pg", "ph", "pk", "pl", "pm", "pn",
+      "pr", "ps", "pt", "pw", "py", "qa", "ro", "rw", "sa", "sb", "sc", "sd",
+      "se", "sg", "sh", "si", "sk", "sl", "sn", "so", "sr", "ss", "st", "sv",
+      "sz", "tc", "td", "tg", "th", "tj", "tk", "tl", "tm", "tn", "to", "tr",
+      "tt", "tv", "tw", "tz", "ug", "um", "us", "uy", "uz", "vc", "ve", "vg",
+      "vi", "vn", "vu", "wf", "ws", "ye", "za", "zm", "zw"};
   return config;
 }
 
