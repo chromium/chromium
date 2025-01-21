@@ -356,7 +356,6 @@ try/targets-config-verifier
 try/tricium-clang-tidy
 try/tricium-metrics-analysis
 try/tricium-oilpan-analysis
-try/tricium-simple
 try/win-angle-chromium-x64-try
 try/win-angle-chromium-x86-try
 try/win-annotator-rel
