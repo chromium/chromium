@@ -16610,6 +16610,24 @@
             ]
         }
     ],
+    "PasswordsSyncErrorMessageAlternatives": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "VersionOne",
+                    "params": {
+                        "version": "1"
+                    },
+                    "enable_features": [
+                        "EnablePasswordsSyncErrorMessageAlternative"
+                    ]
+                }
+            ]
+        }
+    ],
     "Path2DPaintCache": [
         {
             "platforms": [

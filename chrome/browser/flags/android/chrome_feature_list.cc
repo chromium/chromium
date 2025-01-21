@@ -409,6 +409,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &syncer::kEnableBatchUploadFromSettings,
     &syncer::kWebApkBackupAndRestoreBackend,
     &syncer::kUnoPhase2FollowUp,
+    &syncer::kSyncEnablePasswordsSyncErrorMessageAlternative,
     &tab_groups::kTabGroupSyncAndroid,
     &tab_groups::kTabGroupPaneAndroid,
     &tab_groups::kTabGroupSyncAutoOpenKillSwitch,
