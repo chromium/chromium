@@ -62,11 +62,6 @@ public class DigitalIdentitySafetyInterstitialController {
                 interstitialType == DigitalIdentityInterstitialType.HIGH_RISK
                         ? R.string.digital_identity_interstitial_high_risk_negative_button_text
                         : R.string.digital_identity_interstitial_low_risk_negative_button_text;
-        @ModalDialogProperties.ButtonStyles
-        int buttonStyles =
-                interstitialType == DigitalIdentityInterstitialType.HIGH_RISK
-                        ? ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED
-                        : ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE;
 
         Context context = ContextUtils.getApplicationContext();
         String bodyText =
@@ -92,7 +87,9 @@ public class DigitalIdentitySafetyInterstitialController {
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 resources,
                                 negativeButtonTextResourceId)
-                        .with(ModalDialogProperties.BUTTON_STYLES, buttonStyles)
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE)
                         .with(
                                 ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
                                 UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS);
