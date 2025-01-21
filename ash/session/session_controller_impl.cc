@@ -518,6 +518,7 @@ void SessionControllerImpl::RunUnlockAnimation(
 }
 
 void SessionControllerImpl::NotifyChromeTerminating() {
+  is_chrome_terminating_ = true;
   for (auto& observer : observers_)
     observer.OnChromeTerminating();
 }

@@ -661,6 +661,10 @@ void StatusAreaWidget::SetOpenShelfPodBubble(
       /*bubble_shown=*/open_shelf_pod_bubble_);
 }
 
+void StatusAreaWidget::InitializeAccessibleProperties() {
+  status_area_widget_delegate()->UpdateAccessiblePreviousAndNextFocus();
+}
+
 void StatusAreaWidget::OnViewIsDeleting(views::View* observed_view) {
   CHECK(observed_view == notification_center_tray_);
   notification_center_tray_->RemoveObserver(this);
