@@ -58,6 +58,9 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
 
         mEdgeToEdgeColorHelper.setNavigationBarColor(Color.RED);
         verify(mWindow).setNavigationBarColor(Color.RED);
+
+        mEdgeToEdgeColorHelper.setStatusBarColor(Color.RED);
+        verify(mWindow).setStatusBarColor(Color.RED);
     }
 
     @Test
@@ -68,6 +71,9 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
 
         mEdgeToEdgeColorHelper.setNavigationBarColor(Color.RED);
         verify(mWindow).setNavigationBarColor(Color.RED);
+
+        mEdgeToEdgeColorHelper.setStatusBarColor(Color.RED);
+        verify(mWindow).setStatusBarColor(Color.RED);
     }
 
     @Test
@@ -77,6 +83,10 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
 
         mEdgeToEdgeColorHelper.setNavigationBarColor(Color.RED);
         verify(mWindow, times(0)).setNavigationBarColor(Color.RED);
+
+        // When delegateHelper is null, the window sets statusBarColor to mStatusBarColor.
+        mEdgeToEdgeColorHelper.setStatusBarColor(Color.RED);
+        verify(mWindow).setStatusBarColor(Color.RED);
     }
 
     @Test
@@ -87,6 +97,9 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
 
         mEdgeToEdgeColorHelper.setNavigationBarColor(Color.RED);
         verify(mDelegateColorHelper).setNavigationBarColor(Color.RED);
+
+        mEdgeToEdgeColorHelper.setStatusBarColor(Color.RED);
+        verify(mDelegateColorHelper).setStatusBarColor(Color.RED);
     }
 
     @Test
@@ -97,15 +110,22 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         verify(mWindow).setNavigationBarColor(Color.RED);
         verify(mDelegateColorHelper, times(0)).setNavigationBarColor(anyInt());
         verify(mWindow).setNavigationBarContrastEnforced(true);
+        mEdgeToEdgeColorHelper.setStatusBarColor(Color.RED);
+        verify(mDelegateColorHelper, times(0)).setStatusBarColor(anyInt());
+        verify(mWindow).setStatusBarContrastEnforced(true);
 
         clearInvocations(mWindow);
         doReturn(Color.RED).when(mWindow).getNavigationBarColor();
+        doReturn(Color.RED).when(mWindow).getStatusBarColor();
 
         // Color will switch automatically when edge to edge mode changed.
         mShouldContentFitsWindowInsetsSupplier.set(false);
         verify(mDelegateColorHelper).setNavigationBarColor(Color.RED);
+        verify(mDelegateColorHelper).setStatusBarColor(Color.RED);
         verify(mWindow).setNavigationBarColor(Color.TRANSPARENT);
+        verify(mWindow).setStatusBarColor(Color.TRANSPARENT);
         verify(mWindow).setNavigationBarContrastEnforced(false);
+        verify(mWindow).setStatusBarContrastEnforced(false);
     }
 
     @Test
@@ -117,13 +137,19 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         verify(mDelegateColorHelper).setNavigationBarColor(Color.RED);
         verify(mWindow, times(0)).setNavigationBarColor(Color.TRANSPARENT);
         verify(mWindow).setNavigationBarContrastEnforced(false);
+        mEdgeToEdgeColorHelper.setStatusBarColor(Color.RED);
+        verify(mDelegateColorHelper).setStatusBarColor(Color.RED);
+        verify(mWindow, times(0)).setStatusBarColor(Color.TRANSPARENT);
+        verify(mWindow).setStatusBarContrastEnforced(false);
 
         // Color will switch automatically when leaving edge to edge mode.
         clearInvocations(mDelegateColorHelper);
         mShouldContentFitsWindowInsetsSupplier.set(true);
         verify(mWindow).setNavigationBarColor(Color.RED);
+        verify(mWindow).setStatusBarColor(Color.RED);
         verifyNoMoreInteractions(mDelegateColorHelper);
         verify(mWindow).setNavigationBarContrastEnforced(true);
+        verify(mWindow).setStatusBarContrastEnforced(true);
     }
 
     private void initEdgeToEdgeColorHelper() {

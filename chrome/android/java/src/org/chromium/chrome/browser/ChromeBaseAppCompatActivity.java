@@ -240,6 +240,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         defaultStatusBarColor =
                 (defaultStatusBarColor != 0) ? defaultStatusBarColor : defaultBgColor;
 
+        // TODO(crbug.com/389161492): Fix status bar color for DownloadActivity.
         mEdgeToEdgeManager
                 .getEdgeToEdgeSystemBarColorHelper()
                 .setStatusBarColor(defaultStatusBarColor);

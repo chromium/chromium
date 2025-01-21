@@ -9,9 +9,6 @@ import android.graphics.Color;
 import android.os.Build;
 import android.view.Window;
 
-import org.chromium.ui.UiUtils;
-import org.chromium.ui.util.ColorUtils;
-
 /** A wrapper class around {@link Window} to change the system bar colors. */
 public final class WindowSystemBarColorHelper extends BaseSystemBarColorHelper {
     private final Window mWindow;
@@ -38,9 +35,7 @@ public final class WindowSystemBarColorHelper extends BaseSystemBarColorHelper {
     @Override
     protected void applyStatusBarColor() {
         mWindow.setStatusBarColor(mStatusBarColor);
-        UiUtils.setStatusBarIconColor(
-                mWindow.getDecorView(),
-                ColorUtils.isHighLuminance(ColorUtils.calculateLuminance(mStatusBarColor)));
+        updateStatusBarIconColor(mWindow.getDecorView());
     }
 
     @Override
@@ -52,10 +47,7 @@ public final class WindowSystemBarColorHelper extends BaseSystemBarColorHelper {
     @Override
     protected void applyNavBarColor() {
         mWindow.setNavigationBarColor(mNavBarColor);
-        // TODO(crbug.com/380292043): Move icon color logic to the E2ESystemBarColorHelper.
-        UiUtils.setNavigationBarIconColor(
-                mWindow.getDecorView(),
-                ColorUtils.isHighLuminance(ColorUtils.calculateLuminance(mNavBarColor)));
+        updateNavigationBarIconColor(mWindow.getDecorView());
     }
 
     @Override
@@ -88,6 +80,13 @@ public final class WindowSystemBarColorHelper extends BaseSystemBarColorHelper {
     public void setNavigationBarContrastEnforced(boolean enforced) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             mWindow.setNavigationBarContrastEnforced(enforced);
+        }
+    }
+
+    /** Wrapper call to {@link Window#setStatusBarContrastEnforced(boolean)}. */
+    public void setStatusBarContrastEnforced(boolean enforced) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            mWindow.setStatusBarContrastEnforced(enforced);
         }
     }
 }
