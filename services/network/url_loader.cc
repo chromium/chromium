@@ -333,7 +333,7 @@ bool ShouldNotifyAboutCookie(net::CookieInclusionStatus status) {
   // Filter out tentative secure source scheme warnings. They're used for netlog
   // debugging and not something we want to inform cookie observers about.
   status.RemoveWarningReason(
-      net::CookieInclusionStatus::
+      net::CookieInclusionStatus::WarningReason::
           WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME);
 
   return status.IsInclude() || status.ShouldWarn() ||

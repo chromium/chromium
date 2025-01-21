@@ -951,10 +951,10 @@ TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
             mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
             net::SiteForCookies(),
             CookieOrLine(cookie_name_field, mojom::CookieOrLine::Tag::kCookie),
-            AllOf(
-                net::IsInclude(),
-                net::HasWarningReason(
-                    net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT)))));
+            AllOf(net::IsInclude(),
+                  net::HasWarningReason(
+                      net::CookieInclusionStatus::WarningReason::
+                          WARN_THIRD_PARTY_PHASEOUT)))));
   }
 
   {
@@ -975,10 +975,10 @@ TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
             mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
             net::SiteForCookies(),
             CookieOrLine(cookie_name_field, mojom::CookieOrLine::Tag::kCookie),
-            AllOf(
-                net::IsInclude(),
-                net::HasWarningReason(
-                    net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT)))));
+            AllOf(net::IsInclude(),
+                  net::HasWarningReason(
+                      net::CookieInclusionStatus::WarningReason::
+                          WARN_THIRD_PARTY_PHASEOUT)))));
   }
 
   // Change the cookie with a new value so that a cookie access
@@ -1030,10 +1030,10 @@ TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
             mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
             net::SiteForCookies(),
             CookieOrLine(cookie_name_field, mojom::CookieOrLine::Tag::kCookie),
-            AllOf(
-                net::IsInclude(),
-                net::HasWarningReason(
-                    net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT)))));
+            AllOf(net::IsInclude(),
+                  net::HasWarningReason(
+                      net::CookieInclusionStatus::WarningReason::
+                          WARN_THIRD_PARTY_PHASEOUT)))));
   }
 }
 
@@ -1396,7 +1396,7 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieWithInclusionStatus) {
   net::CookieInclusionStatus status_warning =
       net::CookieInclusionStatus::MakeFromReasonsForTesting(
           /*exclusions=*/{},
-          /*warnings=*/{net::CookieInclusionStatus::
+          /*warnings=*/{net::CookieInclusionStatus::WarningReason::
                             WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE});
   EXPECT_TRUE(sync_service_->SetCanonicalCookie(
       *net::CanonicalCookie::CreateUnsafeCookieForTesting(
@@ -1415,7 +1415,7 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieWithInclusionStatus) {
           kDefaultSiteForCookies,
           CookieOrLine("new-name=new-value", mojom::CookieOrLine::Tag::kCookie),
           net::CookieInclusionStatus::MakeFromReasonsForTesting(
-              {}, {net::CookieInclusionStatus::
+              {}, {net::CookieInclusionStatus::WarningReason::
                        WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE}))));
 }
 

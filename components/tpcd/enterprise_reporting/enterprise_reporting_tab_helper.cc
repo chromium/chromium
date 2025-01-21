@@ -47,8 +47,8 @@ bool ShouldReport(const net::CookieInclusionStatus& status) {
                  EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET) ||
          status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
                                        EXCLUDE_THIRD_PARTY_PHASEOUT) ||
-         status.HasWarningReason(
-             net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
+         status.HasWarningReason(net::CookieInclusionStatus::WarningReason::
+                                     WARN_THIRD_PARTY_PHASEOUT);
 }
 
 std::string GetReportType(const net::CookieInclusionStatus& status) {
@@ -60,7 +60,7 @@ std::string GetReportType(const net::CookieInclusionStatus& status) {
     return kEnterpriseErrorReportType;
   } else {
     DCHECK(status.HasWarningReason(
-        net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
+        net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT));
     return kEnterpriseWarningReportType;
   }
 }

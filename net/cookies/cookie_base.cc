@@ -105,8 +105,8 @@ void ApplySameSiteCookieWarningToStatus(
   if (samesite == CookieSameSite::UNSPECIFIED &&
       same_site_context.GetContextForCookieInclusion() <
           CookieOptions::SameSiteCookieContext::ContextType::SAME_SITE_LAX) {
-    status->AddWarningReason(
-        CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT);
+    status->AddWarningReason(CookieInclusionStatus::WarningReason::
+                                 WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT);
   }
   if (effective_samesite == CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE &&
       same_site_context.GetContextForCookieInclusion() ==
@@ -115,13 +115,14 @@ void ApplySameSiteCookieWarningToStatus(
     // This warning is more specific so remove the previous, more general,
     // warning.
     status->RemoveWarningReason(
-        CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT);
-    status->AddWarningReason(
-        CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE);
+        CookieInclusionStatus::WarningReason::
+            WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT);
+    status->AddWarningReason(CookieInclusionStatus::WarningReason::
+                                 WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE);
   }
   if (samesite == CookieSameSite::NO_RESTRICTION && !is_secure) {
     status->AddWarningReason(
-        CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE);
+        CookieInclusionStatus::WarningReason::WARN_SAMESITE_NONE_INSECURE);
   }
 
   // Add a warning if the cookie would be accessible in
@@ -130,19 +131,19 @@ void ApplySameSiteCookieWarningToStatus(
   if (IsBreakingStrictToLaxDowngrade(same_site_context.context(),
                                      same_site_context.schemeful_context(),
                                      effective_samesite, is_cookie_being_set)) {
-    status->AddWarningReason(
-        CookieInclusionStatus::WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE);
+    status->AddWarningReason(CookieInclusionStatus::WarningReason::
+                                 WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE);
   } else if (IsBreakingStrictToCrossDowngrade(
                  same_site_context.context(),
                  same_site_context.schemeful_context(), effective_samesite)) {
     // Which warning to apply depends on the SameSite value.
     if (effective_samesite == CookieEffectiveSameSite::STRICT_MODE) {
-      status->AddWarningReason(
-          CookieInclusionStatus::WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE);
+      status->AddWarningReason(CookieInclusionStatus::WarningReason::
+                                   WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE);
     } else {
       // LAX_MODE or LAX_MODE_ALLOW_UNSAFE.
-      status->AddWarningReason(
-          CookieInclusionStatus::WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE);
+      status->AddWarningReason(CookieInclusionStatus::WarningReason::
+                                   WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE);
     }
 
   } else if (IsBreakingLaxToCrossDowngrade(
@@ -151,13 +152,13 @@ void ApplySameSiteCookieWarningToStatus(
                  is_cookie_being_set)) {
     // Which warning to apply depends on the SameSite value.
     if (effective_samesite == CookieEffectiveSameSite::STRICT_MODE) {
-      status->AddWarningReason(
-          CookieInclusionStatus::WARN_LAX_CROSS_DOWNGRADE_STRICT_SAMESITE);
+      status->AddWarningReason(CookieInclusionStatus::WarningReason::
+                                   WARN_LAX_CROSS_DOWNGRADE_STRICT_SAMESITE);
     } else {
       // LAX_MODE or LAX_MODE_ALLOW_UNSAFE.
       // This warning applies to both set/send.
-      status->AddWarningReason(
-          CookieInclusionStatus::WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE);
+      status->AddWarningReason(CookieInclusionStatus::WarningReason::
+                                   WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE);
     }
   }
 
@@ -197,7 +198,7 @@ void ApplySameSiteCookieWarningToStatus(
   }
   if (apply_cross_site_redirect_downgrade_warning) {
     status->AddWarningReason(
-        CookieInclusionStatus::
+        CookieInclusionStatus::WarningReason::
             WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION);
   }
 
@@ -243,7 +244,7 @@ CookieAccessResult CookieBase::IncludeForRequestURL(
            source_scheme_ == CookieSourceScheme::kSecure &&
            params.scope_semantics != net::CookieScopeSemantics::LEGACY)) {
         status.AddWarningReason(
-            CookieInclusionStatus::
+            CookieInclusionStatus::WarningReason::
                 WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC);
       }
       break;
@@ -277,7 +278,8 @@ CookieAccessResult CookieBase::IncludeForRequestURL(
       status.AddExclusionReason(
           CookieInclusionStatus::ExclusionReason::EXCLUDE_SCHEME_MISMATCH);
     } else {
-      status.AddWarningReason(CookieInclusionStatus::WARN_SCHEME_MISMATCH);
+      status.AddWarningReason(
+          CookieInclusionStatus::WarningReason::WARN_SCHEME_MISMATCH);
     }
   }
   // A cookie with a source scheme of kNonSecure shouldn't be accessible by
@@ -289,7 +291,8 @@ CookieAccessResult CookieBase::IncludeForRequestURL(
       status.AddExclusionReason(
           CookieInclusionStatus::ExclusionReason::EXCLUDE_SCHEME_MISMATCH);
     } else {
-      status.AddWarningReason(CookieInclusionStatus::WARN_SCHEME_MISMATCH);
+      status.AddWarningReason(
+          CookieInclusionStatus::WarningReason::WARN_SCHEME_MISMATCH);
     }
   }
   // Else, the cookie has a source scheme of kUnset or the access scheme is
@@ -313,7 +316,8 @@ CookieAccessResult CookieBase::IncludeForRequestURL(
       status.AddExclusionReason(
           CookieInclusionStatus::ExclusionReason::EXCLUDE_PORT_MISMATCH);
     } else {
-      status.AddWarningReason(CookieInclusionStatus::WARN_PORT_MISMATCH);
+      status.AddWarningReason(
+          CookieInclusionStatus::WarningReason::WARN_PORT_MISMATCH);
     }
   }
 
@@ -453,7 +457,7 @@ CookieAccessResult CookieBase::IsSetPermittedInContext(
         // when they also specify "Secure" this if statement will already apply
         // to them.
         access_result.status.AddWarningReason(
-            CookieInclusionStatus::
+            CookieInclusionStatus::WarningReason::
                 WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC);
       }
       break;

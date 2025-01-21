@@ -4310,7 +4310,8 @@ TEST_F(CookieMonsterTest, SecureCookieLocalhost) {
             .status;
     EXPECT_TRUE(status.IsInclude());
     EXPECT_TRUE(status.HasExactlyWarningReasonsForTesting(
-        {CookieInclusionStatus::WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC}));
+        {CookieInclusionStatus::WarningReason::
+             WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC}));
   }
   // Secure localhost can set secure cookie, and warning is not attached to
   // status.
@@ -4340,7 +4341,7 @@ TEST_F(CookieMonsterTest, SecureCookieLocalhost) {
       EXPECT_TRUE(cookie_item.access_result.status.IsInclude());
       EXPECT_TRUE(
           cookie_item.access_result.status.HasExactlyWarningReasonsForTesting(
-              {CookieInclusionStatus::
+              {CookieInclusionStatus::WarningReason::
                    WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC}));
     }
   }
@@ -6000,7 +6001,8 @@ TEST_F(CookieMonsterTest, CookiesWithoutSameSiteMustBeSecure) {
        CookieInclusionStatus::MakeFromReasonsForTesting(
            {CookieInclusionStatus::ExclusionReason::
                 EXCLUDE_SAMESITE_NONE_INSECURE},
-           {CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE})},
+           {CookieInclusionStatus::WarningReason::
+                WARN_SAMESITE_NONE_INSECURE})},
       // Cookie set from an insecure URL which defaults into LAX_MODE is not
       // rejected.
       {false, "A=B",  // recently-set session cookie.
@@ -7147,7 +7149,7 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsExcludeShadowingDomains) {
   EXPECT_TRUE(
       CookieListsMatch(included, {*port_origin_cookie1, *domain_cookie1}));
   EXPECT_TRUE(included[0].access_result.status.HasWarningReason(
-      CookieInclusionStatus::WARN_PORT_MISMATCH));
+      CookieInclusionStatus::WarningReason::WARN_PORT_MISMATCH));
   reset();
 
   auto port_insecure_origin_cookie1 =
@@ -7162,7 +7164,7 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsExcludeShadowingDomains) {
   EXPECT_TRUE(CookieListsMatch(included, {*domain_cookie1}));
   EXPECT_TRUE(
       excluded[0].access_result.status.HasExactlyWarningReasonsForTesting(
-          {CookieInclusionStatus::WARN_PORT_MISMATCH}));
+          {CookieInclusionStatus::WarningReason::WARN_PORT_MISMATCH}));
   EXPECT_TRUE(
       excluded[0].access_result.status.HasExactlyExclusionReasonsForTesting(
           {CookieInclusionStatus::ExclusionReason::EXCLUDE_SCHEME_MISMATCH}));
@@ -7243,7 +7245,8 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsWarnShadowingDomains) {
           // entry with an empty status which will always fail the check. I.e.:
           // return false.
           if (!cookie_result_map[cookie].HasWarningReason(
-                  CookieInclusionStatus::WARN_SHADOWING_DOMAIN)) {
+                  CookieInclusionStatus::WarningReason::
+                      WARN_SHADOWING_DOMAIN)) {
             return false;
           }
 
@@ -7254,7 +7257,8 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsWarnShadowingDomains) {
         // If any of the remaining cookies have the warning, return false.
         for (const auto& item : cookie_result_map) {
           if (item.second.HasWarningReason(
-                  CookieInclusionStatus::WARN_SHADOWING_DOMAIN)) {
+                  CookieInclusionStatus::WarningReason::
+                      WARN_SHADOWING_DOMAIN)) {
             return false;
           }
         }
@@ -7384,7 +7388,7 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsWarnShadowingDomains) {
   EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
   EXPECT_TRUE(DomainCookiesHaveWarnings(included, {}));
   EXPECT_TRUE(included[0].access_result.status.HasWarningReason(
-      CookieInclusionStatus::WARN_SCHEME_MISMATCH));
+      CookieInclusionStatus::WarningReason::WARN_SCHEME_MISMATCH));
   reset();
 
   auto insecure_domain_cookie1 = CanonicalCookie::CreateForTesting(
@@ -7401,7 +7405,7 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsWarnShadowingDomains) {
   EXPECT_TRUE(DomainCookiesHaveWarnings(included, {}));
   EXPECT_TRUE(
       included[1].access_result.status.HasExactlyWarningReasonsForTesting(
-          {CookieInclusionStatus::WARN_SCHEME_MISMATCH}));
+          {CookieInclusionStatus::WarningReason::WARN_SCHEME_MISMATCH}));
   reset();
 
   // If both domain and origin cookie have warnings due to scheme binding then
@@ -7412,10 +7416,10 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsWarnShadowingDomains) {
   EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
   EXPECT_TRUE(DomainCookiesHaveWarnings(included, {}));
   EXPECT_TRUE(included[0].access_result.status.HasWarningReason(
-      CookieInclusionStatus::WARN_SCHEME_MISMATCH));
+      CookieInclusionStatus::WarningReason::WARN_SCHEME_MISMATCH));
   EXPECT_TRUE(
       included[1].access_result.status.HasExactlyWarningReasonsForTesting(
-          {CookieInclusionStatus::WARN_SCHEME_MISMATCH}));
+          {CookieInclusionStatus::WarningReason::WARN_SCHEME_MISMATCH}));
   reset();
 
   cm->SetCookieAccessDelegate(std::make_unique<TestCookieAccessDelegate>());
@@ -7484,7 +7488,7 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsWarnShadowingDomains) {
   EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
   EXPECT_TRUE(DomainCookiesHaveWarnings(included, {}));
   EXPECT_TRUE(included[0].access_result.status.HasWarningReason(
-      CookieInclusionStatus::WARN_PORT_MISMATCH));
+      CookieInclusionStatus::WarningReason::WARN_PORT_MISMATCH));
   reset();
 
   auto port_insecure_origin_cookie1 =
@@ -7500,8 +7504,8 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsWarnShadowingDomains) {
   EXPECT_TRUE(DomainCookiesHaveWarnings(included, {}));
   EXPECT_TRUE(
       included[0].access_result.status.HasExactlyWarningReasonsForTesting(
-          {CookieInclusionStatus::WARN_SCHEME_MISMATCH,
-           CookieInclusionStatus::WARN_PORT_MISMATCH}));
+          {CookieInclusionStatus::WarningReason::WARN_SCHEME_MISMATCH,
+           CookieInclusionStatus::WarningReason::WARN_PORT_MISMATCH}));
   reset();
 
   // Enable port binding to test with port exclusions.
@@ -7535,7 +7539,7 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsWarnShadowingDomains) {
       excluded[0].access_result.status.HasExactlyExclusionReasonsForTesting(
           {CookieInclusionStatus::ExclusionReason::EXCLUDE_PORT_MISMATCH}));
   EXPECT_TRUE(excluded[0].access_result.status.HasWarningReason(
-      CookieInclusionStatus::WARN_SCHEME_MISMATCH));
+      CookieInclusionStatus::WarningReason::WARN_SCHEME_MISMATCH));
   reset();
 }
 

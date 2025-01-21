@@ -7819,7 +7819,7 @@ TEST_F(URLRequestTest, NoCookieInclusionStatusWarningIfWouldBeExcludedAnyway) {
                              EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
     EXPECT_TRUE(req->maybe_stored_cookies()[1]
                     .access_result.status.HasExactlyWarningReasonsForTesting(
-                        {CookieInclusionStatus::
+                        {CookieInclusionStatus::WarningReason::
                              WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT}));
 
     // Cookie that is blocked because of invalid Secure attribute is not warned
@@ -7833,7 +7833,7 @@ TEST_F(URLRequestTest, NoCookieInclusionStatusWarningIfWouldBeExcludedAnyway) {
                      EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
     EXPECT_TRUE(req->maybe_stored_cookies()[2]
                     .access_result.status.HasExactlyWarningReasonsForTesting(
-                        {CookieInclusionStatus::
+                        {CookieInclusionStatus::WarningReason::
                              WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME}));
   }
 
@@ -7933,7 +7933,7 @@ TEST_F(URLRequestTest, NoCookieInclusionStatusWarningIfWouldBeExcludedAnyway) {
                              EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
     EXPECT_TRUE(req->maybe_sent_cookies()[1]
                     .access_result.status.HasExactlyWarningReasonsForTesting(
-                        {CookieInclusionStatus::
+                        {CookieInclusionStatus::WarningReason::
                              WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT}));
   }
 }

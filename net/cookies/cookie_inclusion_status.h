@@ -127,7 +127,7 @@ class NET_EXPORT CookieInclusionStatus {
   // Reason to warn about a cookie. Any information contained in
   // WarningReason of an included cookie may be passed to an untrusted
   // renderer.
-  enum WarningReason {
+  enum class WarningReason {
     // Of the following 3 SameSite warnings, there will be, at most, a single
     // active one.
 
@@ -238,7 +238,7 @@ class NET_EXPORT CookieInclusionStatus {
   // Mojom and some tests assume that all the warning reasons will fit within
   // a uint32_t. Once that's not longer true those assumptions need to be
   // updated (along with this assert).
-  static_assert(WarningReason::NUM_WARNING_REASONS <= 32,
+  static_assert(static_cast<int>(WarningReason::NUM_WARNING_REASONS) <= 32,
                 "Expanding WarningReasons past 32 reasons requires updating "
                 "usage assumptions.");
 
@@ -298,7 +298,8 @@ class NET_EXPORT CookieInclusionStatus {
 
   using ExclusionReasonBitset =
       std::bitset<static_cast<int>(ExclusionReason::NUM_EXCLUSION_REASONS)>;
-  using WarningReasonBitset = std::bitset<WarningReason::NUM_WARNING_REASONS>;
+  using WarningReasonBitset =
+      std::bitset<static_cast<int>(WarningReason::NUM_WARNING_REASONS)>;
 
   // Makes a status that says include and should not warn.
   CookieInclusionStatus();

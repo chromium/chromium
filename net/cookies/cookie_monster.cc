@@ -1393,8 +1393,9 @@ void CookieMonster::FilterCookiesWithOptions(
     bool exclusion_or_warning =
         !status_copy.IsInclude() ||
         status_copy.HasWarningReason(
-            CookieInclusionStatus::WARN_SCHEME_MISMATCH) ||
-        status_copy.HasWarningReason(CookieInclusionStatus::WARN_PORT_MISMATCH);
+            CookieInclusionStatus::WarningReason::WARN_SCHEME_MISMATCH) ||
+        status_copy.HasWarningReason(
+            CookieInclusionStatus::WarningReason::WARN_PORT_MISMATCH);
 
     if (!exclusion_or_warning && cookie_ptr->IsHostCookie()) {
       origin_cookie_names.insert(cookie_ptr->Name());
@@ -1476,11 +1477,12 @@ void CookieMonster::FilterCookiesWithOptions(
       // is already being excluded/warned for scheme matching reasons (Note,
       // domain cookies match every port so they'll never get excluded/warned
       // for port reasons).
-      bool scheme_mismatch = access_result.status.HasExclusionReason(
-                                 CookieInclusionStatus::ExclusionReason::
-                                     EXCLUDE_SCHEME_MISMATCH) ||
-                             access_result.status.HasWarningReason(
-                                 CookieInclusionStatus::WARN_SCHEME_MISMATCH);
+      bool scheme_mismatch =
+          access_result.status.HasExclusionReason(
+              CookieInclusionStatus::ExclusionReason::
+                  EXCLUDE_SCHEME_MISMATCH) ||
+          access_result.status.HasWarningReason(
+              CookieInclusionStatus::WarningReason::WARN_SCHEME_MISMATCH);
 
       if (cookie_ptr->IsDomainCookie() && !scheme_mismatch &&
           origin_cookie_names.count(cookie_ptr->Name())) {
@@ -1489,7 +1491,7 @@ void CookieMonster::FilterCookiesWithOptions(
               CookieInclusionStatus::ExclusionReason::EXCLUDE_SHADOWING_DOMAIN);
         } else {
           access_result.status.AddWarningReason(
-              CookieInclusionStatus::WARN_SHADOWING_DOMAIN);
+              CookieInclusionStatus::WarningReason::WARN_SHADOWING_DOMAIN);
         }
       }
     }
@@ -1938,7 +1940,7 @@ void CookieMonster::SetCanonicalCookie(
     // If the cookie would be excluded, don't bother warning about the 3p cookie
     // phaseout.
     access_result.status.RemoveWarningReason(
-        net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
+        net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT);
   }
 
   // TODO(chlily): Log metrics.

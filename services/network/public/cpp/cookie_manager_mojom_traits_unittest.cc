@@ -95,7 +95,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieAccessResult) {
       net::CookieInclusionStatus::MakeFromReasonsForTesting(
           {net::CookieInclusionStatus::ExclusionReason::
                EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX},
-          {net::CookieInclusionStatus::
+          {net::CookieInclusionStatus::WarningReason::
                WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT}),
       net::CookieAccessSemantics::LEGACY, net::CookieScopeSemantics::LEGACY,
       true /* is_allowed_to_access_secure_cookies */);
@@ -109,7 +109,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieAccessResult) {
       {net::CookieInclusionStatus::ExclusionReason::
            EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
   EXPECT_TRUE(copied.status.HasExactlyWarningReasonsForTesting(
-      {net::CookieInclusionStatus::
+      {net::CookieInclusionStatus::WarningReason::
            WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT}));
   EXPECT_EQ(original.is_allowed_to_access_secure_cookies,
             copied.is_allowed_to_access_secure_cookies);

@@ -17,13 +17,14 @@
 namespace net {
 
 using ExclusionReason = CookieInclusionStatus::ExclusionReason;
+using WarningReason = CookieInclusionStatus::WarningReason;
 
 namespace {
 // Check that the given `reason` is valid, i.e., is within the range of values
 // allowed by the `CookieInclusionStatus::WarningReason` enum.
-bool IsWarningReasonOutOfBounds(CookieInclusionStatus::WarningReason reason) {
-  return reason < 0 ||
-         reason >= CookieInclusionStatus::WarningReason::NUM_WARNING_REASONS;
+bool IsWarningReasonOutOfBounds(WarningReason reason) {
+  return static_cast<int>(reason) < 0 ||
+         reason >= WarningReason::NUM_WARNING_REASONS;
 }
 
 // Check that the given `reason` is valid, i.e., is within the range of values
@@ -119,25 +120,32 @@ void CookieInclusionStatus::MaybeClearSameSiteWarning() {
           ExclusionReason::EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
           ExclusionReason::EXCLUDE_SAMESITE_NONE_INSECURE,
       }) != 0u) {
-    RemoveWarningReason(WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT);
-    RemoveWarningReason(WARN_SAMESITE_NONE_INSECURE);
-    RemoveWarningReason(WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE);
+    RemoveWarningReason(
+        WarningReason::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT);
+    RemoveWarningReason(WarningReason::WARN_SAMESITE_NONE_INSECURE);
+    RemoveWarningReason(
+        WarningReason::WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE);
   }
 
   if (!ShouldRecordDowngradeMetrics()) {
-    RemoveWarningReason(WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE);
-    RemoveWarningReason(WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE);
-    RemoveWarningReason(WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE);
-    RemoveWarningReason(WARN_LAX_CROSS_DOWNGRADE_STRICT_SAMESITE);
-    RemoveWarningReason(WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE);
+    RemoveWarningReason(
+        WarningReason::WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE);
+    RemoveWarningReason(
+        WarningReason::WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE);
+    RemoveWarningReason(
+        WarningReason::WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE);
+    RemoveWarningReason(
+        WarningReason::WARN_LAX_CROSS_DOWNGRADE_STRICT_SAMESITE);
+    RemoveWarningReason(WarningReason::WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE);
 
-    RemoveWarningReason(WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION);
+    RemoveWarningReason(
+        WarningReason::WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION);
   }
 }
 
 void CookieInclusionStatus::MaybeClearThirdPartyPhaseoutReason() {
   if (!IsInclude()) {
-    RemoveWarningReason(WARN_THIRD_PARTY_PHASEOUT);
+    RemoveWarningReason(WarningReason::WARN_THIRD_PARTY_PHASEOUT);
   }
   if (ExclusionReasonsWithout(
           {ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT,
@@ -165,20 +173,20 @@ bool CookieInclusionStatus::HasWarningReason(WarningReason reason) const {
   if (IsWarningReasonOutOfBounds(reason)) {
     return false;
   }
-  return warning_reasons_[reason];
+  return warning_reasons_[static_cast<int>(reason)];
 }
 
 bool CookieInclusionStatus::HasSchemefulDowngradeWarning(
-    CookieInclusionStatus::WarningReason* reason) const {
+    WarningReason* reason) const {
   if (!ShouldWarn())
     return false;
 
-  const CookieInclusionStatus::WarningReason kDowngradeWarnings[] = {
-      WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE,
-      WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE,
-      WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE,
-      WARN_LAX_CROSS_DOWNGRADE_STRICT_SAMESITE,
-      WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE,
+  const WarningReason kDowngradeWarnings[] = {
+      WarningReason::WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE,
+      WarningReason::WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE,
+      WarningReason::WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE,
+      WarningReason::WARN_LAX_CROSS_DOWNGRADE_STRICT_SAMESITE,
+      WarningReason::WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE,
   };
 
   for (auto warning : kDowngradeWarnings) {
@@ -198,14 +206,14 @@ void CookieInclusionStatus::AddWarningReason(WarningReason reason) {
   if (IsWarningReasonOutOfBounds(reason)) {
     return;
   }
-  warning_reasons_[reason] = true;
+  warning_reasons_[static_cast<int>(reason)] = true;
 }
 
 void CookieInclusionStatus::RemoveWarningReason(WarningReason reason) {
   if (IsWarningReasonOutOfBounds(reason)) {
     return;
   }
-  warning_reasons_[reason] = false;
+  warning_reasons_[static_cast<int>(reason)] = false;
 }
 
 CookieInclusionStatus::ContextDowngradeMetricValues
@@ -311,39 +319,40 @@ std::string CookieInclusionStatus::GetDebugString() const {
   }
 
   constexpr std::pair<WarningReason, const char*> warning_reasons[] = {
-      {WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT,
+      {WarningReason::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT,
        "WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT"},
-      {WARN_SAMESITE_NONE_INSECURE, "WARN_SAMESITE_NONE_INSECURE"},
-      {WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE,
+      {WarningReason::WARN_SAMESITE_NONE_INSECURE,
+       "WARN_SAMESITE_NONE_INSECURE"},
+      {WarningReason::WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE,
        "WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE"},
-      {WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE,
+      {WarningReason::WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE,
        "WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE"},
-      {WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE,
+      {WarningReason::WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE,
        "WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE"},
-      {WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE,
+      {WarningReason::WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE,
        "WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE"},
-      {WARN_LAX_CROSS_DOWNGRADE_STRICT_SAMESITE,
+      {WarningReason::WARN_LAX_CROSS_DOWNGRADE_STRICT_SAMESITE,
        "WARN_LAX_CROSS_DOWNGRADE_STRICT_SAMESITE"},
-      {WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE,
+      {WarningReason::WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE,
        "WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE"},
-      {WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC,
+      {WarningReason::WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC,
        "WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC"},
-      {WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION,
+      {WarningReason::WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION,
        "WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION"},
-      {WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE,
+      {WarningReason::WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE,
        "WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE"},
-      {WARN_DOMAIN_NON_ASCII, "WARN_DOMAIN_NON_ASCII"},
-      {WARN_PORT_MISMATCH, "WARN_PORT_MISMATCH"},
-      {WARN_SCHEME_MISMATCH, "WARN_SCHEME_MISMATCH"},
-      {WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME,
+      {WarningReason::WARN_DOMAIN_NON_ASCII, "WARN_DOMAIN_NON_ASCII"},
+      {WarningReason::WARN_PORT_MISMATCH, "WARN_PORT_MISMATCH"},
+      {WarningReason::WARN_SCHEME_MISMATCH, "WARN_SCHEME_MISMATCH"},
+      {WarningReason::WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME,
        "WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME"},
-      {WARN_SHADOWING_DOMAIN, "WARN_SHADOWING_DOMAIN"},
-      {WARN_THIRD_PARTY_PHASEOUT, "WARN_THIRD_PARTY_PHASEOUT"},
+      {WarningReason::WARN_SHADOWING_DOMAIN, "WARN_SHADOWING_DOMAIN"},
+      {WarningReason::WARN_THIRD_PARTY_PHASEOUT, "WARN_THIRD_PARTY_PHASEOUT"},
   };
-  static_assert(
-      std::size(warning_reasons) == WarningReason::NUM_WARNING_REASONS,
-      "Please ensure all WarningReason variants are enumerated in "
-      "GetDebugString");
+  static_assert(std::size(warning_reasons) ==
+                    static_cast<int>(WarningReason::NUM_WARNING_REASONS),
+                "Please ensure all WarningReason variants are enumerated in "
+                "GetDebugString");
   static_assert(base::ranges::is_sorted(warning_reasons),
                 "Please keep the WarningReason variants sorted in numerical "
                 "order in GetDebugString");
@@ -414,8 +423,8 @@ bool CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
     uint32_t warning_reasons) {
   uint32_t exclusion_mask = static_cast<uint32_t>(
       ~0ul << static_cast<int>(ExclusionReason::NUM_EXCLUSION_REASONS));
-  uint32_t warning_mask =
-      static_cast<uint32_t>(~0ul << WarningReason::NUM_WARNING_REASONS);
+  uint32_t warning_mask = static_cast<uint32_t>(
+      ~0ul << static_cast<int>(WarningReason::NUM_WARNING_REASONS));
   return (exclusion_reasons & exclusion_mask) == 0 &&
          (warning_reasons & warning_mask) == 0;
 }
@@ -440,7 +449,7 @@ CookieInclusionStatus CookieInclusionStatus::MakeFromReasonsForTesting(
   CHECK_EQ(status.exclusion_reasons_.count(), exclusions.size());
   for (auto reason : warnings) {
     CHECK(status.HasWarningReason(reason))
-        << "Warning " << reason << " could not be applied";
+        << "Warning " << static_cast<int>(reason) << " could not be applied";
   }
   CHECK_EQ(status.warning_reasons_.count(), warnings.size());
   CHECK_EQ(status.exemption_reason(), exemption)

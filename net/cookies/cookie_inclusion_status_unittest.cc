@@ -11,8 +11,8 @@ namespace net {
 TEST(CookieInclusionStatusTest, IncludeStatus) {
   int num_exclusion_reasons = static_cast<int>(
       CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS);
-  int num_warning_reasons =
-      static_cast<int>(CookieInclusionStatus::NUM_WARNING_REASONS);
+  int num_warning_reasons = static_cast<int>(
+      CookieInclusionStatus::WarningReason::NUM_WARNING_REASONS);
   // Zero-argument constructor
   CookieInclusionStatus status;
   EXPECT_TRUE(status.IsInclude());
@@ -111,10 +111,11 @@ TEST(CookieInclusionStatusTest,
 TEST(CookieInclusionStatusTest,
      AddExclusionReason_MaybeClearThirdPartyPhaseoutReason) {
   CookieInclusionStatus status;
-  status.AddWarningReason(CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
+  status.AddWarningReason(
+      CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT);
   ASSERT_TRUE(status.ShouldWarn());
   ASSERT_TRUE(status.HasExactlyWarningReasonsForTesting(
-      {CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT}));
+      {CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT}));
   // Adding an exclusion reason should clear 3PCD warning reason.
   status.AddExclusionReason(
       CookieInclusionStatus::ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT);
@@ -141,8 +142,8 @@ TEST(CookieInclusionStatusTest,
 
 TEST(CookieInclusionStatusTest, AddExclusionReason) {
   CookieInclusionStatus status;
-  status.AddWarningReason(
-      CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE);
+  status.AddWarningReason(CookieInclusionStatus::WarningReason::
+                              WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE);
   status.AddExclusionReason(
       CookieInclusionStatus::ExclusionReason::EXCLUDE_UNKNOWN_ERROR);
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
@@ -153,15 +154,16 @@ TEST(CookieInclusionStatusTest, AddExclusionReason) {
   EXPECT_FALSE(status.ShouldWarn());
 
   status = CookieInclusionStatus();
-  status.AddWarningReason(
-      CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT);
+  status.AddWarningReason(CookieInclusionStatus::WarningReason::
+                              WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT);
   status.AddExclusionReason(CookieInclusionStatus::ExclusionReason::
                                 EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX);
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::ExclusionReason::
            EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
   EXPECT_TRUE(status.HasExactlyWarningReasonsForTesting(
-      {CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT}));
+      {CookieInclusionStatus::WarningReason::
+           WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT}));
 }
 
 TEST(CookieInclusionStatusTest, ExemptionReason) {
@@ -197,8 +199,8 @@ TEST(CookieInclusionStatusTest, ExemptionReason) {
 TEST(CookieInclusionStatusTest, CheckEachWarningReason) {
   CookieInclusionStatus status;
 
-  int num_warning_reasons =
-      static_cast<int>(CookieInclusionStatus::NUM_WARNING_REASONS);
+  int num_warning_reasons = static_cast<int>(
+      CookieInclusionStatus::WarningReason::NUM_WARNING_REASONS);
   EXPECT_FALSE(status.ShouldWarn());
   for (int i = 0; i < num_warning_reasons; ++i) {
     auto reason = static_cast<CookieInclusionStatus::WarningReason>(i);
@@ -243,34 +245,41 @@ TEST(CookieInclusionStatusTest, RemoveWarningReason) {
   CookieInclusionStatus status =
       CookieInclusionStatus::MakeFromReasonsForTesting(
           {CookieInclusionStatus::ExclusionReason::EXCLUDE_UNKNOWN_ERROR},
-          {CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE});
+          {CookieInclusionStatus::WarningReason::WARN_SAMESITE_NONE_INSECURE});
   EXPECT_TRUE(status.ShouldWarn());
   ASSERT_TRUE(status.HasWarningReason(
-      CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE));
+      CookieInclusionStatus::WarningReason::WARN_SAMESITE_NONE_INSECURE));
 
   status.RemoveWarningReason(
-      CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE);
+      CookieInclusionStatus::WarningReason::WARN_SAMESITE_NONE_INSECURE);
   EXPECT_FALSE(status.ShouldWarn());
   EXPECT_FALSE(status.HasWarningReason(
-      CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE));
+      CookieInclusionStatus::WarningReason::WARN_SAMESITE_NONE_INSECURE));
 
   // Removing a nonexistent warning reason doesn't do anything.
   ASSERT_FALSE(status.HasWarningReason(
-      CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT));
-  status.RemoveWarningReason(
-      CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT);
+      CookieInclusionStatus::WarningReason::
+          WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT));
+  status.RemoveWarningReason(CookieInclusionStatus::WarningReason::
+                                 WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT);
   EXPECT_FALSE(status.ShouldWarn());
   EXPECT_FALSE(status.HasWarningReason(
-      CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT));
+      CookieInclusionStatus::WarningReason::
+          WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT));
 }
 
 TEST(CookieInclusionStatusTest, HasSchemefulDowngradeWarning) {
   std::vector<CookieInclusionStatus::WarningReason> downgrade_warnings = {
-      CookieInclusionStatus::WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE,
-      CookieInclusionStatus::WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE,
-      CookieInclusionStatus::WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE,
-      CookieInclusionStatus::WARN_LAX_CROSS_DOWNGRADE_STRICT_SAMESITE,
-      CookieInclusionStatus::WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE,
+      CookieInclusionStatus::WarningReason::
+          WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE,
+      CookieInclusionStatus::WarningReason::
+          WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE,
+      CookieInclusionStatus::WarningReason::
+          WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE,
+      CookieInclusionStatus::WarningReason::
+          WARN_LAX_CROSS_DOWNGRADE_STRICT_SAMESITE,
+      CookieInclusionStatus::WarningReason::
+          WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE,
   };
 
   CookieInclusionStatus empty_status;
@@ -278,7 +287,8 @@ TEST(CookieInclusionStatusTest, HasSchemefulDowngradeWarning) {
 
   CookieInclusionStatus not_downgrade;
   not_downgrade.AddWarningReason(
-      CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT);
+      CookieInclusionStatus::WarningReason::
+          WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT);
   EXPECT_FALSE(not_downgrade.HasSchemefulDowngradeWarning());
 
   for (auto warning : downgrade_warnings) {
@@ -385,14 +395,18 @@ TEST(CookieInclusionStatusTest, ValidateExclusionAndWarningFromWire) {
   exclusion_reasons =
       (1u << static_cast<int>(
            CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH));
-  warning_reasons = (1u << CookieInclusionStatus::WARN_PORT_MISMATCH);
+  warning_reasons =
+      (1u << static_cast<int>(
+           CookieInclusionStatus::WarningReason::WARN_PORT_MISMATCH));
   EXPECT_TRUE(CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
       exclusion_reasons, warning_reasons));
 
   exclusion_reasons =
       (1u << static_cast<int>(
            CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS));
-  warning_reasons = (1u << CookieInclusionStatus::NUM_WARNING_REASONS);
+  warning_reasons =
+      (1u << static_cast<int>(
+           CookieInclusionStatus::WarningReason::NUM_WARNING_REASONS));
   EXPECT_FALSE(CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
       exclusion_reasons, warning_reasons));
 
@@ -401,7 +415,10 @@ TEST(CookieInclusionStatusTest, ValidateExclusionAndWarningFromWire) {
        << (static_cast<int>(
                CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS) -
            1));
-  warning_reasons = (1u << (CookieInclusionStatus::NUM_WARNING_REASONS - 1));
+  warning_reasons =
+      (1u << (static_cast<int>(
+                  CookieInclusionStatus::WarningReason::NUM_WARNING_REASONS) -
+              1));
   EXPECT_TRUE(CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
       exclusion_reasons, warning_reasons));
 }
@@ -464,14 +481,16 @@ TEST(CookieInclusionStatusTest, InvalidWarningReason) {
   CookieInclusionStatus status;
   // Ensure adding, removing, and checking invalid warning reasons
   // works as expected.
-  status.AddWarningReason(CookieInclusionStatus::NUM_WARNING_REASONS);
+  status.AddWarningReason(
+      CookieInclusionStatus::WarningReason::NUM_WARNING_REASONS);
   status.AddWarningReason(
       static_cast<CookieInclusionStatus::WarningReason>(-1));
-  EXPECT_FALSE(
-      status.HasWarningReason(CookieInclusionStatus::NUM_WARNING_REASONS));
-  status.RemoveWarningReason(CookieInclusionStatus::NUM_WARNING_REASONS);
-  EXPECT_FALSE(
-      status.HasWarningReason(CookieInclusionStatus::NUM_WARNING_REASONS));
+  EXPECT_FALSE(status.HasWarningReason(
+      CookieInclusionStatus::WarningReason::NUM_WARNING_REASONS));
+  status.RemoveWarningReason(
+      CookieInclusionStatus::WarningReason::NUM_WARNING_REASONS);
+  EXPECT_FALSE(status.HasWarningReason(
+      CookieInclusionStatus::WarningReason::NUM_WARNING_REASONS));
 }
 
 }  // namespace net

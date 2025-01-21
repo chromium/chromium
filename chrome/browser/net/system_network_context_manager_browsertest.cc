@@ -646,7 +646,8 @@ IN_PROC_BROWSER_TEST_F(
           net::CookieEffectiveSameSite::NO_RESTRICTION,
           net::CookieInclusionStatus::MakeFromReasonsForTesting(
               /*exclusions=*/{},
-              /*warnings=*/{net::CookieInclusionStatus::WARN_PORT_MISMATCH}),
+              /*warnings=*/{net::CookieInclusionStatus::WarningReason::
+                                WARN_PORT_MISMATCH}),
           net::CookieAccessSemantics::NONLEGACY,
           net::CookieScopeSemantics::UNKNOWN, true)};
   EXPECT_THAT(cookie_tracker.cookie_accesses(),
@@ -671,7 +672,7 @@ IN_PROC_BROWSER_TEST_F(
       net::CookieInclusionStatus::ExclusionReason::
           EXCLUDE_THIRD_PARTY_PHASEOUT);
   expected_third_party_inclusion_status.AddWarningReason(
-      net::CookieInclusionStatus::WARN_PORT_MISMATCH);
+      net::CookieInclusionStatus::WarningReason::WARN_PORT_MISMATCH);
   const CookieAccess expected_third_party_access{
       content::CookieAccessDetails::Type::kRead, "Cookie", "1",
       net::CookieAccessResult(net::CookieEffectiveSameSite::NO_RESTRICTION,

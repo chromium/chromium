@@ -356,7 +356,8 @@ std::optional<std::string> GetCookieDomainWithString(
           CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_NON_ASCII);
       return std::nullopt;
     }
-    status.AddWarningReason(CookieInclusionStatus::WARN_DOMAIN_NON_ASCII);
+    status.AddWarningReason(
+        CookieInclusionStatus::WarningReason::WARN_DOMAIN_NON_ASCII);
   }
 
   const std::string url_host(url.host());

@@ -432,7 +432,7 @@ void CookieSettings::AugmentInclusionStatus(
       // The cookie should be allowed by default to have this warning
       // reason.
       out_status.AddWarningReason(
-          net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
+          net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT);
     }
     return;
   }

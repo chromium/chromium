@@ -90,13 +90,14 @@ void PotentiallyRecordCookieOriginMismatch(
     return;
   }
   const bool port_mismatch =
-      status.HasWarningReason(net::CookieInclusionStatus::WARN_PORT_MISMATCH) ||
+      status.HasWarningReason(
+          net::CookieInclusionStatus::WarningReason::WARN_PORT_MISMATCH) ||
       status.HasExclusionReason(
           net::CookieInclusionStatus::ExclusionReason::EXCLUDE_PORT_MISMATCH);
 
   const bool scheme_mismatch =
       status.HasWarningReason(
-          net::CookieInclusionStatus::WARN_SCHEME_MISMATCH) ||
+          net::CookieInclusionStatus::WarningReason::WARN_SCHEME_MISMATCH) ||
       status.HasExclusionReason(
           net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SCHEME_MISMATCH);
 
@@ -379,8 +380,8 @@ void EmitCookieWarningsAndMetrics(
       if (status.HasExclusionReason(
               net::CookieInclusionStatus::ExclusionReason::
                   EXCLUDE_THIRD_PARTY_PHASEOUT) ||
-          status.HasWarningReason(
-              net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT)) {
+          status.HasWarningReason(net::CookieInclusionStatus::WarningReason::
+                                      WARN_THIRD_PARTY_PHASEOUT)) {
         devtools_issue_id = base::UnguessableToken::Create().ToString();
       }
       devtools_instrumentation::ReportCookieIssue(
@@ -396,34 +397,34 @@ void EmitCookieWarningsAndMetrics(
       samesite_treated_as_lax_cookies =
           samesite_treated_as_lax_cookies ||
           status.HasWarningReason(
-              net::CookieInclusionStatus::
+              net::CookieInclusionStatus::WarningReason::
                   WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT) ||
           status.HasWarningReason(
-              net::CookieInclusionStatus::
+              net::CookieInclusionStatus::WarningReason::
                   WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE);
 
       samesite_none_insecure_cookies =
           samesite_none_insecure_cookies ||
-          status.HasWarningReason(
-              net::CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE);
+          status.HasWarningReason(net::CookieInclusionStatus::WarningReason::
+                                      WARN_SAMESITE_NONE_INSECURE);
 
       lax_allow_unsafe_cookies =
           lax_allow_unsafe_cookies ||
           status.HasWarningReason(
-              net::CookieInclusionStatus::
+              net::CookieInclusionStatus::WarningReason::
                   WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE);
 
       samesite_cookie_inclusion_changed_by_cross_site_redirect =
           samesite_cookie_inclusion_changed_by_cross_site_redirect ||
           status.HasWarningReason(
-              net::CookieInclusionStatus::
+              net::CookieInclusionStatus::WarningReason::
                   WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION);
     }
 
     cookie_has_domain_non_ascii =
         cookie_has_domain_non_ascii ||
         status.HasWarningReason(
-            net::CookieInclusionStatus::WARN_DOMAIN_NON_ASCII) ||
+            net::CookieInclusionStatus::WarningReason::WARN_DOMAIN_NON_ASCII) ||
         status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
                                       EXCLUDE_DOMAIN_NON_ASCII);
 
@@ -458,7 +459,7 @@ void EmitCookieWarningsAndMetrics(
     }
 
     if (status.HasWarningReason(
-            net::CookieInclusionStatus::
+            net::CookieInclusionStatus::WarningReason::
                 WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION) &&
         cookie->cookie_or_line->is_cookie()) {
       RecordRedirectContextDowngradeUKM(rfh, cookie_details->type,

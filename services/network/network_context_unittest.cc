@@ -5155,7 +5155,7 @@ TEST_F(NetworkContextTest, CanSetCookieFalseIfCookiesBlocked) {
           *request, *cookie, /* options */ nullptr,
           net::FirstPartySetMetadata(), &status));
   EXPECT_FALSE(status.HasWarningReason(
-      net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
+      net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT));
 }
 
 TEST_F(NetworkContextTest, CanSetCookieTrueIfCookiesAllowed) {
@@ -5179,7 +5179,7 @@ TEST_F(NetworkContextTest, CanSetCookieTrueIfCookiesAllowed) {
           net::FirstPartySetMetadata(), &status));
 
   EXPECT_TRUE(status.HasWarningReason(
-      net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
+      net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT));
 }
 
 using NetworkContextAnnotateAndMoveUserBlockedCookiesTest = NetworkContextTest;

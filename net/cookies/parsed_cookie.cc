@@ -614,8 +614,8 @@ void ParsedCookie::ParseTokenValuePairs(std::string_view cookie_line,
       if (!CookieAttributeValueHasValidSize(pair.second)) {
         // If the attribute value is too large, it should be ignored.
         ignore_pair = true;
-        status_out.AddWarningReason(
-            CookieInclusionStatus::WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE);
+        status_out.AddWarningReason(CookieInclusionStatus::WarningReason::
+                                        WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE);
       }
     }
 

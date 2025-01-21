@@ -539,7 +539,7 @@ TEST_F(CookieSettingsTest,
   // Third-party cookie is accessible with no source blocking it.
   ASSERT_TRUE(is_third_party_cookie_accessible(net::CookieSettingOverrides()));
   ASSERT_TRUE(status.HasWarningReason(
-      net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
+      net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT));
 
   status.ResetForTesting();
   // Third-party cookies are blocked by overrides.
@@ -613,7 +613,7 @@ TEST_F(CookieSettingsTest, IsCookieAccessible_AlwaysAllowCookieNotAffected) {
       url::Origin::Create(GURL(kChromeSchemedURL)),
       net::FirstPartySetMetadata(), net::CookieSettingOverrides(), &status));
   EXPECT_FALSE(status.HasWarningReason(
-      net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
+      net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT));
 }
 
 TEST_P(CookieSettingsTestP,
@@ -1374,7 +1374,7 @@ TEST_P(CookieSettingsTestP, IsCookieAccessible_SameSiteNoneCookie) {
       url::Origin::Create(GURL(kOtherURL)), net::FirstPartySetMetadata(),
       GetCookieSettingOverrides(), &status));
   EXPECT_TRUE(status.HasWarningReason(
-      net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
+      net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT));
 
   settings.set_block_third_party_cookies(true);
   if (IsTrackingProtectionEnabledFor3pcd()) {
@@ -1389,7 +1389,7 @@ TEST_P(CookieSettingsTestP, IsCookieAccessible_SameSiteNoneCookie) {
       url::Origin::Create(GURL(kOtherURL)), net::FirstPartySetMetadata(),
       GetCookieSettingOverrides(), &status));
   EXPECT_FALSE(status.HasWarningReason(
-      net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
+      net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT));
   EXPECT_TRUE(status.HasExclusionReason(
       IsTPCDEnabled() ? net::CookieInclusionStatus::ExclusionReason::
                             EXCLUDE_THIRD_PARTY_PHASEOUT
@@ -1458,7 +1458,7 @@ TEST_P(CookieSettingsTestP, IsCookieAccessible_SameSiteLaxCookie) {
       url::Origin::Create(GURL(kOtherURL)), net::FirstPartySetMetadata(),
       GetCookieSettingOverrides(), &status));
   EXPECT_FALSE(status.HasWarningReason(
-      net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
+      net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT));
 
   settings.set_block_third_party_cookies(true);
   if (IsTrackingProtectionEnabledFor3pcd()) {
@@ -1475,7 +1475,7 @@ TEST_P(CookieSettingsTestP, IsCookieAccessible_SameSiteLaxCookie) {
     // This cookie is blocked due to SameSite=Lax, thus the following reasons
     // are irrelevant.
     EXPECT_FALSE(status.HasWarningReason(
-        net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
+        net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT));
     EXPECT_FALSE(
         status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
                                       EXCLUDE_THIRD_PARTY_PHASEOUT));
@@ -1601,7 +1601,7 @@ TEST_P(CookieSettingsTestP, IsCookieAccessible_PartitionedCookies) {
   // Partitioned cookies are not affected by 3pc phaseout, so the
   // *_THIRD_PARTY_PHASEOUT warning/exclusion reason is irrelevant.
   EXPECT_FALSE(status.HasWarningReason(
-      net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
+      net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT));
   EXPECT_FALSE(
       status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
                                     EXCLUDE_THIRD_PARTY_PHASEOUT));
@@ -2162,12 +2162,12 @@ TEST_P(CookieSettingsTestP,
             // non-SameSite=None cookies, we don't expect an exclusion reason
             // for this cookie.
             MatchesCookieAccessResult(
-                AllOf(
-                    net::IsInclude(),
-                    Not(net::HasWarningReason(
-                        net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT)),
-                    net::HasExactlyExemptionReason(
-                        net::CookieInclusionStatus::ExemptionReason::kNone)),
+                AllOf(net::IsInclude(),
+                      Not(net::HasWarningReason(
+                          net::CookieInclusionStatus::WarningReason::
+                              WARN_THIRD_PARTY_PHASEOUT)),
+                      net::HasExactlyExemptionReason(
+                          net::CookieInclusionStatus::ExemptionReason::kNone)),
                 _, _, _))));
     EXPECT_THAT(
         excluded_cookies,
@@ -2304,7 +2304,7 @@ TEST_P(
       GetCookieSettingOverrides(), &status));
 
   EXPECT_TRUE(status.HasWarningReason(
-      net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
+      net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT));
 
   // Now we enable third-party-cookie-blocking, and verify that the right
   // exclusion reasons are still applied.

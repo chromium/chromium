@@ -411,7 +411,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
 
     if (!url.SchemeIsCryptographic()) {
       status->AddWarningReason(
-          CookieInclusionStatus::
+          CookieInclusionStatus::WarningReason::
               WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME);
     }
   } else {
@@ -593,7 +593,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
     if (source_scheme == CookieSourceScheme::kSecure &&
         !url.SchemeIsCryptographic()) {
       status->AddWarningReason(
-          CookieInclusionStatus::
+          CookieInclusionStatus::WarningReason::
               WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME);
     }
   }
@@ -832,7 +832,7 @@ void CanonicalCookie::PostIncludeForRequestURL(
   }
 
   if (access_result.status.HasWarningReason(
-          CookieInclusionStatus::
+          CookieInclusionStatus::WarningReason::
               WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION)) {
     UMA_HISTOGRAM_ENUMERATION(
         "Cookie.CrossSiteRedirectDowngradeChangesInclusion2.Read",
@@ -862,7 +862,7 @@ void CanonicalCookie::PostIsSetPermittedInContext(
   }
 
   if (access_result.status.HasWarningReason(
-          CookieInclusionStatus::
+          CookieInclusionStatus::WarningReason::
               WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION)) {
     UMA_HISTOGRAM_ENUMERATION(
         "Cookie.CrossSiteRedirectDowngradeChangesInclusion2.Write",

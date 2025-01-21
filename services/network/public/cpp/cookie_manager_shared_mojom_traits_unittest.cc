@@ -60,10 +60,11 @@ TEST(CookieManagerSharedMojomTraitsTest, Roundtrips_CookieInclusionStatus) {
           {net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_LAX,
            net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX,
            net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SECURE_ONLY},
-          {net::CookieInclusionStatus::
+          {net::CookieInclusionStatus::WarningReason::
                WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT,
-           net::CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE,
-           net::CookieInclusionStatus::
+           net::CookieInclusionStatus::WarningReason::
+               WARN_SAMESITE_NONE_INSECURE,
+           net::CookieInclusionStatus::WarningReason::
                WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE},
           net::CookieInclusionStatus::ExemptionReason::kNone);
 
@@ -75,9 +76,10 @@ TEST(CookieManagerSharedMojomTraitsTest, Roundtrips_CookieInclusionStatus) {
        net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX,
        net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SECURE_ONLY}));
   EXPECT_TRUE(copied.HasExactlyWarningReasonsForTesting(
-      {net::CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT,
-       net::CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE,
-       net::CookieInclusionStatus::
+      {net::CookieInclusionStatus::WarningReason::
+           WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT,
+       net::CookieInclusionStatus::WarningReason::WARN_SAMESITE_NONE_INSECURE,
+       net::CookieInclusionStatus::WarningReason::
            WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE}));
   EXPECT_EQ(copied.exemption_reason(),
             net::CookieInclusionStatus::ExemptionReason::kNone);
@@ -90,7 +92,7 @@ TEST(CookieManagerSharedMojomTraitsTest,
   net::CookieInclusionStatus original =
       net::CookieInclusionStatus::MakeFromReasonsForTesting(
           {},
-          {net::CookieInclusionStatus::
+          {net::CookieInclusionStatus::WarningReason::
                WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT},
           net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial);
 
@@ -99,7 +101,7 @@ TEST(CookieManagerSharedMojomTraitsTest,
               network::mojom::CookieInclusionStatus>(original, copied));
   EXPECT_TRUE(copied.IsInclude());
   EXPECT_TRUE(copied.HasExactlyWarningReasonsForTesting(
-      {net::CookieInclusionStatus::
+      {net::CookieInclusionStatus::WarningReason::
            WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT}));
   EXPECT_EQ(copied.exemption_reason(),
             net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial);
