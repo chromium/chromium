@@ -2981,7 +2981,7 @@ class AudioResultsViewer {
   if (location.search) {
     let matches = location.search.match(/\?json=([^&]*)/);
     if (matches[1])
-      jsonpUrl = decodeURIComponent(matches[1]);
+      jsonpUrl = matches[1];
   }
   let slashPos = jsonpUrl.lastIndexOf('/');
   if (slashPos != -1) {
