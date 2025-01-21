@@ -1661,6 +1661,9 @@
     'netinfo': {
       'filepath': '/netinfo/',
     },
+    'network_context': {
+      'filepath': 'services/network/network_context\.(cc|h)$',
+    },
     'network_service': {
       'filepath': 'services/network/',
     },
@@ -3081,6 +3084,7 @@
     'net_spdy': ['bnc+watch@chromium.org'],
     'net_websockets': ['ricea+watch@chromium.org'],
     'netinfo': ['jkarlin+watch@chromium.org'],
+    'network_context': ['fenced-frames-reviews@chromium.org'],
     'network_service': ['network-service-reviews@chromium.org'],
     'nfc': ['mattreynolds+watch@chromium.org',
             'rijubrata.bhaumik@intel.com'],
