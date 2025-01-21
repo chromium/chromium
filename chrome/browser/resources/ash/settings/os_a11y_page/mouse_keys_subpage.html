@@ -94,7 +94,7 @@
       <p>$i18n{primaryKeyTitle}</p>
         <div class="grid-container">
           <template is="dom-repeat"
-            items="[[primaryKeyboardRightHandPreviewOptions_]]"
+            items="[[getPrimaryKeyboardPreviewOptions_(prefs.settings.a11y.mouse_keys.dominant_hand.value)]]"
             as="option">
               <div class="grid-item">
                 <iron-icon icon="[[option.icon]]"
