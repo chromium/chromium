@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -189,17 +188,8 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_ACCOUNT_MANAGER_STOP_USING_IN_ARC_BUTTON_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
-
-  if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
-    html_source->AddString("accountListDescription",
-                           l10n_util::GetStringFUTF16(
-                               IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION_V2,
-                               ui::GetChromeOSDeviceName()));
-  } else {
-    html_source->AddLocalizedString(
-        "accountListDescription",
-        IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION);
-  }
+  html_source->AddLocalizedString(
+      "accountListDescription", IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION);
 
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
   DCHECK(user);
@@ -221,11 +211,8 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
       "accountManagerDescription",
       l10n_util::GetStringFUTF16(IDS_SETTINGS_ACCOUNT_MANAGER_DESCRIPTION_V2,
                                  ui::GetChromeOSDeviceName()));
-  html_source->AddBoolean("lacrosEnabled",
-                          crosapi::browser_util::IsLacrosEnabled());
-  html_source->AddBoolean(
-      "arcAccountRestrictionsEnabled",
-      AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
+  html_source->AddBoolean("lacrosEnabled", false);
+  html_source->AddBoolean("arcAccountRestrictionsEnabled", false);
 }
 
 void AddLockScreenPageStrings(content::WebUIDataSource* html_source,

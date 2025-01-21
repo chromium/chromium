@@ -212,9 +212,7 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
       "secondaryGoogleAccountSigninAllowed",
       profile->GetPrefs()->GetBoolean(
           ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed));
-  source->AddBoolean(
-      "isArcAccountRestrictionsEnabled",
-      ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
+  source->AddBoolean("isArcAccountRestrictionsEnabled", false);
   // The "Apps Settings" link points to Apps > Manage your apps.
   source->AddString(
       "accountManagerDialogArcToggleLabel",
@@ -231,65 +229,25 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
           base::UTF8ToUTF16(chrome::GetOSSettingsUrl(
                                 chromeos::settings::mojom::kPeopleSectionPath)
                                 .spec())));
-  source->AddBoolean(
-      "shouldSkipWelcomePage",
-      ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()
-          ? false
-          : profile->GetPrefs()->GetBoolean(
-                ash::prefs::kShouldSkipInlineLoginWelcomePage));
-  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
-    int message_id = IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2_WITHOUT_GUEST;
-    // Offer browser guest mode or device guest mode, if available.
-    if (profiles::IsGuestModeEnabled()) {
-      message_id = IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2_WITH_GUEST_MODE;
-    } else if (user_manager::UserManager::Get()->IsGuestSessionAllowed()) {
-      message_id =
-          IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2_WITH_DEVICE_GUEST_MODE;
-    }
+  source->AddBoolean("shouldSkipWelcomePage",
+                     profile->GetPrefs()->GetBoolean(
+                         ash::prefs::kShouldSkipInlineLoginWelcomePage));
 
-    source->AddString(
-        "accountManagerDialogWelcomeBody",
-        l10n_util::GetStringFUTF16(
-            message_id,
-            // "add a new person" link:
-            chrome::kAddNewUserURL,
-            // Device type:
-            ui::GetChromeOSDeviceName(),
-            // Settings > Accounts link:
-            base::UTF8ToUTF16(chrome::GetOSSettingsUrl(
-                                  chromeos::settings::mojom::kPeopleSectionPath)
-                                  .spec())));
-
-    source->AddString(
-        "accountManagerDialogWelcomeBodyArc",
-        l10n_util::GetStringFUTF16(
-            IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_ARC,
-            // "add a new person" link:
-            chrome::kAddNewUserURL,
-            // Device type:
-            ui::GetChromeOSDeviceName(),
-            // "Apps Settings" link:
-            base::UTF8ToUTF16(
-                chrome::GetOSSettingsUrl(
-                    chromeos::settings::mojom::kAppManagementSubpagePath)
-                    .spec())));
-  } else {
-    bool is_incognito_enabled =
-        (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
-         policy::IncognitoModeAvailability::kDisabled);
-    int message_id =
-        is_incognito_enabled
-            ? IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY
-            : IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_WITHOUT_INCOGNITO;
-    source->AddString(
-        "accountManagerDialogWelcomeBody",
-        l10n_util::GetStringFUTF16(
-            message_id,
-            base::UTF8ToUTF16(chrome::GetOSSettingsUrl(
-                                  chromeos::settings::mojom::kPeopleSectionPath)
-                                  .spec()),
-            ui::GetChromeOSDeviceName()));
-  }
+  bool is_incognito_enabled =
+      (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
+       policy::IncognitoModeAvailability::kDisabled);
+  int message_id =
+      is_incognito_enabled
+          ? IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY
+          : IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_WITHOUT_INCOGNITO;
+  source->AddString(
+      "accountManagerDialogWelcomeBody",
+      l10n_util::GetStringFUTF16(
+          message_id,
+          base::UTF8ToUTF16(chrome::GetOSSettingsUrl(
+                                chromeos::settings::mojom::kPeopleSectionPath)
+                                .spec()),
+          ui::GetChromeOSDeviceName()));
 
   source->AddBoolean("isChild",
                      user_manager::UserManager::Get()->IsLoggedInAsChildUser());
