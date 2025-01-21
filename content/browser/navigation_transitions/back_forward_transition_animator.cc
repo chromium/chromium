@@ -1978,17 +1978,14 @@ void BackForwardTransitionAnimator::UnregisterNewFrameActivationObserver() {
 }
 
 int BackForwardTransitionAnimator::GetViewportWidthPx() const {
-  return animation_manager_->web_contents_view_android()
-      ->GetNativeView()
-      ->GetPhysicalBackingSize()
-      .width();
+  return DipToPx(
+      animation_manager_->web_contents_view_android()->GetViewBounds().width());
 }
 
 int BackForwardTransitionAnimator::GetViewportHeightPx() const {
-  return animation_manager_->web_contents_view_android()
-      ->GetNativeView()
-      ->GetPhysicalBackingSize()
-      .height();
+  return DipToPx(animation_manager_->web_contents_view_android()
+                     ->GetViewBounds()
+                     .height());
 }
 
 void BackForwardTransitionAnimator::StartInputSuppression(
