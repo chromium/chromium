@@ -223,8 +223,7 @@ void ShowExtensionSigninPrompt(Profile* profile,
   if (email_hint.empty()) {
     // Add a new account.
     GetSigninUiDelegate()->ShowSigninUI(
-        profile, enable_sync,
-        signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS,
+        profile, enable_sync, signin_metrics::AccessPoint::kExtensions,
         signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
     return;
   }
@@ -232,7 +231,7 @@ void ShowExtensionSigninPrompt(Profile* profile,
   // Re-authenticate an existing account.
   GetSigninUiDelegate()->ShowReauthUI(
       profile, email_hint, enable_sync,
-      signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS,
+      signin_metrics::AccessPoint::kExtensions,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
@@ -242,7 +241,7 @@ void ShowSigninPromptFromPromo(Profile* profile,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   NOTREACHED();
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
-  CHECK_NE(signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN, access_point);
+  CHECK_NE(signin_metrics::AccessPoint::kUnknown, access_point);
   CHECK(!profile->IsOffTheRecord());
 
   signin::IdentityManager* identity_manager =
@@ -263,7 +262,7 @@ void SignInFromSingleAccountPromo(Profile* profile,
                                   const CoreAccountInfo& account,
                                   signin_metrics::AccessPoint access_point) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  DCHECK_NE(signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN, access_point);
+  DCHECK_NE(signin_metrics::AccessPoint::kUnknown, access_point);
   DCHECK(!profile->IsOffTheRecord());
 
   signin::IdentityManager* identity_manager =
@@ -333,7 +332,7 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
                                      signin_metrics::AccessPoint access_point,
                                      bool is_default_promo_account) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  DCHECK_NE(signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN, access_point);
+  DCHECK_NE(signin_metrics::AccessPoint::kUnknown, access_point);
   DCHECK(!profile->IsOffTheRecord());
 
   signin::IdentityManager* identity_manager =
@@ -385,13 +384,12 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
   // still want the user to be signed in, having sync as optional.
   // Aborting the sync confirmation for a secondary account reverts the original
   // primary account as primary, and keeps the secondary account.
-  bool is_sync_promo = access_point ==
-                       signin_metrics::AccessPoint::
-                           ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO;
+  bool is_sync_promo =
+      access_point ==
+      signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo;
   if (switches::IsImprovedSettingsUIOnDesktopEnabled()) {
     is_sync_promo =
-        is_sync_promo ||
-        access_point == signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
+        is_sync_promo || access_point == signin_metrics::AccessPoint::kSettings;
   }
   TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode =
       switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&

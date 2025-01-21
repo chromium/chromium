@@ -232,14 +232,14 @@ ShouldShowChromeSigninBubbleWithReason MaybeShouldShowChromeSigninBubble(
     signin_metrics::AccessPoint access_point) {
   // If the access point is not set, we cannot accurately know if we have to
   // show the bubble or not, so we will not show it.
-  if (access_point == signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN) {
+  if (access_point == signin_metrics::AccessPoint::kUnknown) {
     return ShouldShowChromeSigninBubbleWithReason::
         kShouldNotShowUnknownAccessPoint;
   }
 
   // Only show the Chrome Signin Bubble when the signin event occurred through
   // a regular web signin in (not triggered through a chrome feature).
-  if (access_point != signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
+  if (access_point != signin_metrics::AccessPoint::kWebSignin) {
     return ShouldShowChromeSigninBubbleWithReason::
         kShouldNotShowNotFromWebSignin;
   }
@@ -1238,8 +1238,8 @@ void DiceWebSigninInterceptor::OnChromeSigninChoice(
       RecordChromeSigninNumberOfDismissesForAccount(account_info.gaia,
                                                     processed_result);
 
-      auto access_point = signin_metrics::AccessPoint::
-          ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE;
+      auto access_point =
+          signin_metrics::AccessPoint::kChromeSigninInterceptBubble;
       signin_metrics::LogSignInStarted(access_point);
       identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
           account_info.account_id, signin::ConsentLevel::kSignin, access_point);
@@ -1309,7 +1309,7 @@ void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
               ->GetPrimaryAccountMutator();
       primary_account_mutator->SetPrimaryAccount(
           state_->account_id_, signin::ConsentLevel::kSignin,
-          signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+          signin_metrics::AccessPoint::kWebSignin);
     }
 
     // Set the ChromeSignin setting to always signin following accepting the
@@ -1371,8 +1371,7 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
     if (GetPrimaryAccountInfo(identity_manager_).IsEmpty()) {
       identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
           account_info.account_id, signin::ConsentLevel::kSignin,
-          signin_metrics::AccessPoint::
-              ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
+          signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
     } else {
       DCHECK_EQ(GetPrimaryAccountInfo(identity_manager_).account_id,
                 account_info.account_id);

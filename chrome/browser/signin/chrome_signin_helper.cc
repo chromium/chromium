@@ -317,7 +317,7 @@ void ProcessMirrorHeader(
     // Display a re-authentication dialog.
     signin_ui_util::ShowReauthForAccount(
         profile, manage_accounts_params.email,
-        signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+        signin_metrics::AccessPoint::kWebSignin);
     return;
   }
 

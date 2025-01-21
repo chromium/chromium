@@ -149,18 +149,16 @@ signin_metrics::ProfileSignout kAlwaysAllowedSignoutSources[] = {
 std::string_view NameOfGroupedAccessPointHistogram(
     signin_metrics::AccessPoint access_point) {
   switch (access_point) {
-    case signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN:
+    case signin_metrics::AccessPoint::kWebSignin:
       return ".PreUnoWebSignin";
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
+    case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
       return ".UnoSigninBubble";
-    case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
-    case signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
+    case signin_metrics::AccessPoint::kUserManager:
+    case signin_metrics::AccessPoint::kForYouFRE:
+    case signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience:
+    case signin_metrics::AccessPoint::kStartPage:
       return ".ProfileCreation";
-    case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
+    case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
       return ".ProfileMenu";
     default:
       return ".Other";

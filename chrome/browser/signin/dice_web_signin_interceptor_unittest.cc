@@ -202,8 +202,7 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
   // compatible with interception.
   void MaybeIntercept(CoreAccountId account_id) {
     interceptor()->MaybeInterceptWebSignin(
-        web_contents(), account_id,
-        signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
+        web_contents(), account_id, signin_metrics::AccessPoint::kWebSignin,
         /*is_new_account=*/true,
         /*is_sync_signin=*/false);
   }
@@ -223,7 +222,7 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
     base::HistogramTester histogram_tester;
     interceptor()->MaybeInterceptWebSignin(
         web_contents(), account_info.account_id,
-        signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, is_new_account,
+        signin_metrics::AccessPoint::kWebSignin, is_new_account,
         is_sync_signin);
     testing::Mock::VerifyAndClearExpectations(mock_delegate());
     histogram_tester.ExpectUniqueSample("Signin.Intercept.HeuristicOutcome",
@@ -250,7 +249,7 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
     base::HistogramTester histogram_tester;
     interceptor()->MaybeInterceptWebSignin(
         web_contents(), account_info.account_id,
-        signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, is_new_account,
+        signin_metrics::AccessPoint::kWebSignin, is_new_account,
         is_sync_signin);
     testing::Mock::VerifyAndClearExpectations(mock_delegate());
     histogram_tester.ExpectUniqueSample("Signin.Intercept.HeuristicOutcome",
@@ -1136,7 +1135,7 @@ TEST_F(DiceWebSigninInterceptorTest, TabClosed) {
   base::HistogramTester histogram_tester;
   interceptor()->MaybeInterceptWebSignin(
       /*web_contents=*/nullptr, CoreAccountId(),
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
+      signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/true, /*is_sync_signin=*/false);
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.HeuristicOutcome",
@@ -1990,7 +1989,7 @@ TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
   base::HistogramTester histogram_tester;
   interceptor()->MaybeInterceptWebSignin(
       web_contents(), account_info.account_id,
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
+      signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/true, /*is_sync_signin=*/false);
   EXPECT_EQ(
       interceptor()->GetHeuristicOutcome(/*is_new_account=*/true,
@@ -2038,7 +2037,7 @@ TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
   base::HistogramTester histogram_tester;
   interceptor()->MaybeInterceptWebSignin(
       web_contents(), account_info.account_id,
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
+      signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/false, /*is_sync_signin=*/false);
   EXPECT_EQ(
       interceptor()->GetHeuristicOutcome(/*is_new_account=*/true,
@@ -2100,7 +2099,7 @@ TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
   base::HistogramTester histogram_tester;
   interceptor()->MaybeInterceptWebSignin(
       web_contents(), account_info.account_id,
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
+      signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/true, /*is_sync_signin=*/false);
   EXPECT_EQ(interceptor()->is_interception_in_progress(), true);
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
@@ -2157,7 +2156,7 @@ TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
   base::HistogramTester histogram_tester;
   interceptor()->MaybeInterceptWebSignin(
       web_contents(), account_info.account_id,
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
+      signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/true, /*is_sync_signin=*/false);
   EXPECT_EQ(
       interceptor()->GetHeuristicOutcome(/*is_new_account=*/true,
@@ -2191,11 +2190,11 @@ TEST_F(DiceWebSigninInterceptorTest,
   EXPECT_CALL(*mock_delegate(), ShowSigninInterceptionBubble(
                                     web_contents(), testing::_, testing::_))
       .Times(0);
-  interceptor()->MaybeInterceptWebSignin(
-      web_contents(), account_info.account_id,
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
-      /*is_new_account=*/true,
-      /*is_sync_signin=*/false);
+  interceptor()->MaybeInterceptWebSignin(web_contents(),
+                                         account_info.account_id,
+                                         signin_metrics::AccessPoint::kUnknown,
+                                         /*is_new_account=*/true,
+                                         /*is_sync_signin=*/false);
   // Delegate was not called yet.
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
 
@@ -2248,7 +2247,7 @@ TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
   base::HistogramTester histogram_tester;
   interceptor()->MaybeInterceptWebSignin(
       web_contents(), second_account_info.account_id,
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
+      signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/true, /*is_sync_signin=*/false);
   EXPECT_EQ(interceptor()->GetHeuristicOutcome(/*is_new_account=*/true,
                                                /*is_sync_signin=*/false,
@@ -2299,7 +2298,7 @@ TEST_F(DiceWebSigninInterceptorTestWithUnoDisabled,
   base::HistogramTester histogram_tester;
   interceptor()->MaybeInterceptWebSignin(
       web_contents(), account_info.account_id,
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
+      signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/true, /*is_sync_signin=*/false);
   EXPECT_EQ(interceptor()->GetHeuristicOutcome(/*is_new_account=*/true,
                                                /*is_sync_signin=*/false,

@@ -41,7 +41,7 @@ constexpr char kSyncPausedStartTimePrefForTesting[] =
     "signin.sync_paused_start_time";
 
 const signin_metrics::AccessPoint kDefaultTestAccessPoint =
-    signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
+    signin_metrics::AccessPoint::kSettings;
 
 }  // namespace
 
@@ -94,8 +94,7 @@ class SigninMetricsServiceTest : public ::testing::Test {
     return signin::MakeAccountAvailable(
         identity_manager(),
         signin::AccountAvailabilityOptionsBuilder()
-            .WithAccessPoint(
-                signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN)
+            .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
             .Build(email));
   }
 
@@ -132,8 +131,7 @@ class SigninMetricsServiceTest : public ::testing::Test {
       case Resolution::kWebSignin: {
         AccountInfo account_info =
             identity_manager()->FindExtendedAccountInfo(core_account_info);
-        account_info.access_point =
-            signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN;
+        account_info.access_point = signin_metrics::AccessPoint::kWebSignin;
         identity_test_environment_.UpdateAccountInfoForAccount(account_info);
         identity_test_environment_.SetRefreshTokenForPrimaryAccount();
         break;
@@ -417,14 +415,13 @@ struct AccessPointParam {
 };
 
 const AccessPointParam params[] = {
-    {signin_metrics::AccessPoint::
-         ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO,
+    {signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo,
      "Signin.WebSignin.TimeToChromeSignin.ProfileMenu"},
-    {signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE,
+    {signin_metrics::AccessPoint::kPasswordBubble,
      "Signin.WebSignin.TimeToChromeSignin.PasswordSigninPromo"},
-    {signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE,
+    {signin_metrics::AccessPoint::kAddressBubble,
      "Signin.WebSignin.TimeToChromeSignin.AddressSigninPromo"},
-    {signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS, ""},
+    {signin_metrics::AccessPoint::kSettings, ""},
 };
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -476,8 +473,8 @@ TEST_F(SigninMetricsServiceTest, WebSigninToChromeSigninAfterRestart) {
   DestroySigninMetricsService();
   CreateSigninMetricsService();
 
-  Signin(account.email, signin_metrics::AccessPoint::
-                            ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO);
+  Signin(account.email,
+         signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo);
 
   histogram_tester.ExpectTotalCount(
       "Signin.WebSignin.TimeToChromeSignin.ProfileMenu", 1);
@@ -502,7 +499,7 @@ TEST_F(SigninMetricsServiceTest, WebSigninWithMultipleAccounts) {
 
   // Secondary accounts through the settings page, this is a real use case.
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
+      signin_metrics::AccessPoint::kSettings;
   Signin(second_account.email, access_point);
 
   // Pref should be cleared and metrics should be measured even with the
@@ -542,10 +539,10 @@ TEST_F(SigninMetricsServiceTest, WebSigninForSigninPendingResolution) {
 
   histogram_tester.ExpectBucketCount(
       "Signin.SigninPending.ResolutionSourceStarted",
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
+      signin_metrics::AccessPoint::kWebSignin, 1);
   histogram_tester.ExpectBucketCount(
       "Signin.SigninPending.ResolutionSourceCompleted",
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
+      signin_metrics::AccessPoint::kWebSignin, 1);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -559,8 +556,7 @@ TEST_F(SigninMetricsServiceTest, ExplicitSigninMigration) {
         /*expected_bucket_count=*/1);
   }
 
-  Signin("test@gmail.com",
-         signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+  Signin("test@gmail.com", signin_metrics::AccessPoint::kWebSignin);
   ASSERT_FALSE(pref_service().GetBoolean(prefs::kExplicitBrowserSignin));
 
   {
@@ -600,7 +596,7 @@ TEST_F(SigninMetricsServiceTest, ChromeSigninSettingOnSignin) {
   CreateSigninMetricsService();
 
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN;
+      signin_metrics::AccessPoint::kAvatarBubbleSignIn;
   AccountInfo account = Signin("test@gmail.com", access_point);
 
   // Default user choice is no choice.

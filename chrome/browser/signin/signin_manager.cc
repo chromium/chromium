@@ -136,12 +136,11 @@ void SigninManager::UpdateUnconsentedPrimaryAccount(
           !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
       // The access point is the point from where the last authentication
       // happened, either through adding the account or a reauth. If it is
-      // unknown, report `ACCESS_POINT_DESKTOP_SIGNIN_MANAGER` instead.
+      // unknown, report `kDesktopSigninManager` instead.
       signin_metrics::AccessPoint access_point =
           identity_manager_->FindExtendedAccountInfo(account).access_point;
-      if (access_point == signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN) {
-        access_point =
-            signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER;
+      if (access_point == signin_metrics::AccessPoint::kUnknown) {
+        access_point = signin_metrics::AccessPoint::kDesktopSigninManager;
       }
       base::UmaHistogramEnumeration("Signin.SigninManager.SigninAccessPoint",
                                     access_point);

@@ -200,8 +200,7 @@ void DiceSignedInProfileCreator::OnNewProfileTokensLoaded(
       new_profile_identity_manager->GetPrimaryAccountMutator()
           ->SetPrimaryAccount(
               account_id_, signin::ConsentLevel::kSignin,
-              signin_metrics::AccessPoint::
-                  ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE);
+              signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience);
     }
   }
 
