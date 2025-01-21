@@ -36,7 +36,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './app.html.js';
 import type {BuyingOptions} from './buying_options_section.js';
-import type {ComparisonTableDetails, ComparisonTableListElement} from './comparison_table_list.js';
+import type {ComparisonTableListElement} from './comparison_table_list.js';
 import type {ComparisonTableListItemClickEvent, ComparisonTableListItemDeleteEvent, ComparisonTableListItemRenameEvent} from './comparison_table_list_item.js';
 import type {ProductDescription} from './description_section.js';
 import type {HeaderElement} from './header.js';
@@ -234,13 +234,13 @@ export class ProductSpecificationsElement extends PolymerElement {
         computed: 'computeAppState_(productSpecificationsFeatureState_.*,' +
             ' loadingState_.loading, showEmptyState_)',
       },
-      comparisonTableDetails_: Array,
+      sets_: Array,
       loadingState_: Object,
       setName_: String,
       showComparisonTableList_: {
         type: Boolean,
         computed: 'computeShowComparisonTableList_(showEmptyState_,' +
-            ' comparisonTableDetails_)',
+            ' sets_)',
       },
       showTableDataUnavailableContainer_: {
         type: Boolean,
@@ -252,9 +252,9 @@ export class ProductSpecificationsElement extends PolymerElement {
   }
 
   private appState_: AppState = AppState.NO_CONTENT;
-  private comparisonTableDetails_: ComparisonTableDetails[] = [];
   private loadingState_: LoadingState = {loading: false, urlCount: 0};
   private setName_: string|null = null;
+  private sets_: ProductSpecificationsSet[] = [];
   private showComparisonTableList_: boolean = false;
   private showTableDataUnavailableContainer_: boolean;
   private tableColumns_: TableColumn[] = [];
@@ -465,8 +465,7 @@ export class ProductSpecificationsElement extends PolymerElement {
       return false;
     }
 
-    return this.showEmptyState_ && this.id_ === null &&
-        this.comparisonTableDetails_.length > 0;
+    return this.showEmptyState_ && this.id_ === null && this.sets_.length > 0;
   }
 
   private canShowFooter_(
@@ -666,39 +665,6 @@ export class ProductSpecificationsElement extends PolymerElement {
     }
   }
 
-  private async fetchComparisonTableDetails_() {
-    const {sets} = await this.shoppingApi_.getAllProductSpecificationsSets();
-
-    if (sets.length === 0 && this.comparisonTableDetails_.length === 0) {
-      return;
-    }
-
-    this.comparisonTableDetails_ = await Promise.all(
-        sets.map(async set => this.createTableDetailsFromSet_(set)));
-  }
-
-  private async createTableDetailsFromSet_(set: ProductSpecificationsSet):
-      Promise<ComparisonTableDetails> {
-    // Find the first product with an image to use as the list item image.
-    let imageUrl = null;
-    for (let i = 0; i < set.urls.length; i++) {
-      const {productInfo} =
-          await this.shoppingApi_.getProductInfoForUrl(set.urls[i]);
-
-      if (productInfo.imageUrl.url) {
-        imageUrl = productInfo.imageUrl;
-        break;
-      }
-    }
-
-    return {
-      name: set.name,
-      uuid: set.uuid,
-      numUrls: set.urls.length,
-      imageUrl,
-    };
-  }
-
   private seeAllSets_() {
     if (loadTimeData.getBoolean('comparisonTableListEnabled')) {
       this.productSpecificationsProxy_.showComparePage(true);
@@ -853,11 +819,10 @@ export class ProductSpecificationsElement extends PolymerElement {
 
   private async updateSet_(set: ProductSpecificationsSet) {
     if (this.showEmptyState_) {
-      const tableIndex = this.comparisonTableDetails_.findIndex(
-          table => table.uuid.value === set.uuid.value);
+      const tableIndex =
+          this.sets_.findIndex(table => table.uuid.value === set.uuid.value);
       if (tableIndex !== -1) {
-        this.comparisonTableDetails_ = this.comparisonTableDetails_.toSpliced(
-            tableIndex, 1, await this.createTableDetailsFromSet_(set));
+        this.sets_ = this.sets_.toSpliced(tableIndex, 1, set);
       }
     }
 
@@ -909,8 +874,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     }
 
     if (this.showEmptyState_) {
-      this.comparisonTableDetails_ = this.comparisonTableDetails_.filter(
-          table => table.uuid.value !== id.value);
+      this.sets_ = this.sets_.filter(table => table.uuid.value !== id.value);
     }
   }
 
@@ -934,9 +898,7 @@ export class ProductSpecificationsElement extends PolymerElement {
 
   private async onSetAdded_(set: ProductSpecificationsSet) {
     if (this.showEmptyState_) {
-      this.comparisonTableDetails_ =
-          [await this.createTableDetailsFromSet_(set)].concat(
-              this.comparisonTableDetails_);
+      this.sets_ = [set].concat(this.sets_);
     }
   }
 
@@ -1020,14 +982,15 @@ export class ProductSpecificationsElement extends PolymerElement {
         LOADING_END_EVENT_TYPE, {bubbles: true, composed: true}));
   }
 
-  private updateEmptyState_(shouldShow: boolean) {
+  private async updateEmptyState_(shouldShow: boolean) {
     this.showEmptyState_ = shouldShow;
 
     // If we show the empty state and there are no comparison tables, try to
     // fetch them.
     if (loadTimeData.getBoolean('comparisonTableListEnabled') &&
-        this.showEmptyState_ && this.comparisonTableDetails_.length === 0) {
-      this.fetchComparisonTableDetails_();
+        this.showEmptyState_ && this.sets_.length === 0) {
+      const {sets} = await this.shoppingApi_.getAllProductSpecificationsSets();
+      this.sets_ = sets;
     }
   }
 

@@ -30,8 +30,7 @@ import type {ComparisonTableListItemCheckboxChangeEvent} from './comparison_tabl
 export interface ComparisonTableDetails {
   name: string;
   uuid: Uuid;
-  numUrls: number;
-  imageUrl: Url|null;
+  urls: Url[];
 }
 
 export interface ComparisonTableListElement {

@@ -28,14 +28,19 @@ suite('ComparisonTableListTest', () => {
     {
       name: 'abc',
       uuid: {value: '123'},
-      numUrls: 3,
-      imageUrl: {url: 'http://example.com/image1.png'},
+      urls: [
+        {url: 'https://example1.com'},
+        {url: 'https://example2.com'},
+        {url: 'https://example3.com'},
+      ],
     },
     {
       name: 'xyz',
       uuid: {value: '456'},
-      numUrls: 2,
-      imageUrl: {url: 'http://example.com/image2.png'},
+      urls: [
+        {url: 'https://example1.com'},
+        {url: 'https://example2.com'},
+      ],
     },
   ];
 
@@ -65,6 +70,11 @@ suite('ComparisonTableListTest', () => {
     shoppingServiceApi.reset();
     shoppingServiceApi.setResultFor(
         'deleteProductSpecificationsSet', Promise.resolve());
+    shoppingServiceApi.setResultFor('getProductInfoForUrl', Promise.resolve({
+      productInfo: {
+        imageUrl: {url: 'https://example.com/image.png'},
+      },
+    }));
     ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -83,8 +93,7 @@ suite('ComparisonTableListTest', () => {
     for (let i = 0; i < TABLES.length; i++) {
       assertEquals(TABLES[i]!.name, items[i]!.name);
       assertEquals(TABLES[i]!.uuid, items[i]!.uuid);
-      assertEquals(TABLES[i]!.numUrls, items[i]!.numUrls);
-      assertEquals(TABLES[i]!.imageUrl, items[i]!.imageUrl);
+      assertArrayEquals(TABLES[i]!.urls, items[i]!.urls);
     }
   });
 
