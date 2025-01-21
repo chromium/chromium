@@ -24,17 +24,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect_f.h"
-
-#if !BUILDFLAG(IS_ANDROID)
 #include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace password_manager {
 namespace {
 
-using autofill::password_generation::PasswordGenerationType;
-using autofill::password_generation::PasswordGenerationUIData;
+using ::autofill::password_generation::PasswordGenerationType;
+using ::autofill::password_generation::PasswordGenerationUIData;
 using ::testing::_;
 using ::testing::Return;
 
@@ -347,7 +344,6 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
   controller->PasswordRejected();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordGenerationPopupControllerImplTest,
        PreviewsGeneratedPasswordOnShowInNudgePassword) {
   base::test::ScopedFeatureList feature_list;
@@ -372,7 +368,5 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
   controller->Show(
       PasswordGenerationPopupController::GenerationUIState::kOfferGeneration);
 }
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager

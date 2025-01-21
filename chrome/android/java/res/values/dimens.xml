@@ -80,11 +80,6 @@ found in the LICENSE file.
     <dimen name="password_entry_editor_field_large_top_margin">16dp</dimen>
     <dimen name="password_entry_editor_field_top_margin">8dp</dimen>
 
-    <!-- Password generation popup dimensions -->
-    <dimen name="password_generation_text_size">14sp</dimen>
-    <dimen name="password_generation_horizontal_margin">10dp</dimen>
-    <dimen name="password_generation_text_vertical_margin">12dp</dimen>
-
     <!-- Password manager illustration dialogs -->
     <dimen name="password_manager_dialog_padding">8dp</dimen>
     <dimen name="password_manager_dialog_illustration_height">156dp</dimen>

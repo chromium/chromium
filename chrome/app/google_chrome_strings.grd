@@ -562,10 +562,6 @@ Google Chrome is unable to recover your settings.
         </message>
       </if>
 
-      <!-- Password generation strings -->
-      <message name="IDS_PASSWORD_GENERATION_PROMPT" desc="Autofill dropdown text describing password generation.">
-        Chrome will save this password in your Google Account. You won’t have to remember it.
-      </message>
       <!-- Password manager onboarding strings -->
       <message name="IDS_PASSWORD_MANAGER_ONBOARDING_DETAILS_C" desc="The explanation text that is shown below the title in the password manager onboarding dialog.">
         Chrome lets you know if your passwords are ever compromised

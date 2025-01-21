@@ -31,10 +31,6 @@ class PasswordGenerationPopupController
   // Called by the view when the password was cleared.
   virtual void SelectionCleared() = 0;
 
-// Only on Desktop, the password generation promo contains an indicator of which
-// Google account passwords are saved to. Therefore, the following method isn't
-// relevant for Android.
-#if !BUILDFLAG(IS_ANDROID)
   // Returns the email of current primary account. Returns empty string if no
   // account is signed in.
   virtual std::u16string GetPrimaryAccountEmail() = 0;
@@ -42,7 +38,6 @@ class PasswordGenerationPopupController
   // Returns whether `kNudgePassword` Desktop experiment is enabled and whether
   // it was not rejected enough times already.
   virtual bool ShouldShowNudgePassword() const = 0;
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Accessors
   virtual GenerationUIState state() const = 0;
