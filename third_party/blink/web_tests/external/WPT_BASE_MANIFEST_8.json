@@ -261344,6 +261344,19 @@
         {}
        ]
       ],
+      "input-range-zero-inline-size.html": [
+       "2779a2e73efa227ed335d2fc3293dddab54023d7",
+       [
+        null,
+        [
+         [
+          "/css/css-writing-modes/forms/input-range-zero-inline-size-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "meter-appearance-native-horizontal-rtl.optional.html": [
        "65bbd653b5c7e2bfdf25595a2504a1a741c348cd",
        [
@@ -365943,6 +365956,10 @@
        "abf068f0345672218c423c377d6d1af73b67fab9",
        []
       ],
+      "input-range-zero-inline-size-ref.html": [
+       "f5900394ca6517009d5fd84273b4efaf0dae1d4d",
+       []
+      ],
       "manual": {
        "support": {
         "form-controls-slr.png": [
@@ -371952,10 +371969,6 @@
      []
     ],
     "events": {
-     "Event-constructors.any.worker-expected.txt": [
-      "0e2e456c275260ba7bc7e15e3eac051568c7dfe1",
-      []
-     ],
      "Event-dispatch-click.tentative-expected.txt": [
       "f837ba2ecae23faa496ab7f5060193d9df664c2b",
       []
@@ -378285,7 +378298,7 @@
       ],
       "resources": {
        "helper.js": [
-        "502e07aa4b51f9d935aba290c711d7a71803cd91",
+        "5cbb183acf1d7e295ff84d17706c681c634e9b2e",
         []
        ],
        "permissions-policy-deferred-fetch.html": [
@@ -378294,37 +378307,13 @@
        ]
       }
      },
-     "quota": {
-      "README.md": [
-       "fc59ea73f4e46d7fc9b92ecc9e755335732bad4d",
-       []
-      ],
-      "cross-origin-iframe": {
-       "README.md": [
-        "bd802f0b2d2c8d30e97015a8d69804ccac564f5e",
-        []
-       ]
-      },
-      "resources": {
-       "helper.js": [
-        "bd9571c82f58459ec0a9f27d50370bc9ca7913b7",
-        []
-       ]
-      },
-      "same-origin-iframe": {
-       "README.md": [
-        "025422314edc35e6b84f05b63a31b607a7dcd7c0",
-        []
-       ]
-      }
-     },
      "resources": {
       "fetch-later-helper.js": [
-       "ef1d7090a8f5e6f81d0db9572d7d2d4cc8dd7658",
+       "566b3e0a1a4d0d57f857f5972fc99f2bb57e742b",
        []
       ],
       "fetch-later.html": [
-       "b295be116c731c5ceec2d222ecd999fc5342d5c6",
+       "b569e1a076ac210d87d01b51ded0a8943476eac0",
        []
       ],
       "get_beacon.py": [
@@ -477175,6 +477164,34 @@
         {}
        ]
       ],
+      "animation-trigger-timeline-parsing.tentative.html": [
+       "5d47a1e5e45693b365e863643bf57350ba16a835",
+       [
+        null,
+        {}
+       ]
+      ],
+      "animation-trigger-type-computed.tentative.html": [
+       "073758a28b94fd17326665075bfb884ace73e1a6",
+       [
+        null,
+        {}
+       ]
+      ],
+      "animation-trigger-type-invalid.tentative.html": [
+       "9c669021c736e17fa4fd7f3b70a40eb003eea931",
+       [
+        null,
+        {}
+       ]
+      ],
+      "animation-trigger-type-valid.tentative.html": [
+       "a94e8ec88994e36de12d25703908f0c4a0ea5ad4",
+       [
+        null,
+        {}
+       ]
+      ],
       "animation-valid.html": [
        "e0b54dca2f2655f2da3cd7fa7794cf71d3d7186f",
        [
@@ -511387,6 +511404,20 @@
       ],
       "file-input-computed-style.html": [
        "73ecdb6997655cc6c61faf5155fedb1c96779585",
+       [
+        null,
+        {}
+       ]
+      ],
+      "input-range-block-size.html": [
+       "142a946cf562f3aa02f165277a65f6dcc55f2ed2",
+       [
+        null,
+        {}
+       ]
+      ],
+      "input-range-inline-size.html": [
+       "57068039383a89cae61595446009c383db863ee1",
        [
         null,
         {}
@@ -556031,7 +556062,7 @@
       ]
      },
      "iframe.tentative.https.window.js": [
-      "b30156b41b2ac9fc934003a83b1be97f935ef4e8",
+      "4f2610863604f0a235524a80f7988212355e5ab9",
       [
        "fetch/fetch-later/iframe.tentative.https.window.html",
        {
@@ -556053,7 +556084,7 @@
       ]
      ],
      "new-window.tentative.https.window.js": [
-      "8b1b6aacd30b2772b395b2f8c2458c6705351dec",
+      "27922f462665b550e1c5520112051178ef45782b",
       [
        "fetch/fetch-later/new-window.tentative.https.window.html",
        {
@@ -556083,7 +556114,7 @@
      ],
      "permissions-policy": {
       "deferred-fetch-allowed-by-permissions-policy-attribute-redirect.tentative.https.window.js": [
-       "13870bc94b0ec7ff3066b94345dc5c163ecfe51b",
+       "707d6d1fa54c10e39187a71bfb06bc987c756ae1",
        [
         "fetch/fetch-later/permissions-policy/deferred-fetch-allowed-by-permissions-policy-attribute-redirect.tentative.https.window.html",
         {
@@ -556200,7 +556231,7 @@
        ]
       ],
       "deferred-fetch-default-permissions-policy.tentative.https.window.js": [
-       "4982221952ff980674f459a382858e2726f28ec5",
+       "a4cc45ef6be4f158164b5f222ebcb4b241a138cb",
        [
         "fetch/fetch-later/permissions-policy/deferred-fetch-default-permissions-policy.tentative.https.window.html",
         {
@@ -556239,7 +556270,7 @@
        ]
       ],
       "deferred-fetch-supported-by-permissions-policy.tentative.window.js": [
-       "385b0e054ed172ac778b7df961bfb0ad5f31a434",
+       "e89f1edb8567092bcf6146d772a93789e2dbc9f8",
        [
         "fetch/fetch-later/permissions-policy/deferred-fetch-supported-by-permissions-policy.tentative.window.html",
         {
@@ -556338,456 +556369,28 @@
        ]
       ]
      },
-     "quota": {
-      "accumulated-oversized-payload.tentative.https.window.js": [
-       "6439b392e2a0230a3ff819e4e80b42341dc0c389",
-       [
-        "fetch/fetch-later/quota/accumulated-oversized-payload.tentative.https.window.html",
-        {
-         "script_metadata": [
-          [
-           "script",
-           "/common/get-host-info.sub.js"
-          ],
-          [
-           "script",
-           "/common/utils.js"
-          ],
-          [
-           "script",
-           "/fetch/fetch-later/resources/fetch-later-helper.js"
-          ],
-          [
-           "script",
-           "/fetch/fetch-later/quota/resources/helper.js"
-          ]
+     "quota.tentative.https.window.js": [
+      "400be4050955a96c96df49f5976cc5a8b43246ce",
+      [
+       "fetch/fetch-later/quota.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/fetch/fetch-later/resources/fetch-later-helper.js"
          ]
-        }
-       ]
-      ],
-      "cross-origin-iframe": {
-       "accumulated-oversized-payload.tentative.https.window.js": [
-        "071a9c600b7a3230f7e72952521bebc695a2a447",
-        [
-         "fetch/fetch-later/quota/cross-origin-iframe/accumulated-oversized-payload.tentative.https.window.html",
-         {
-          "script_metadata": [
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/fetch/fetch-later/resources/fetch-later-helper.js"
-           ],
-           [
-            "script",
-            "/fetch/fetch-later/quota/resources/helper.js"
-           ]
-          ]
-         }
         ]
-       ],
-       "empty-payload.tentative.https.window.js": [
-        "6c7becfacaf45048c69c815940460d1dbe084a67",
-        [
-         "fetch/fetch-later/quota/cross-origin-iframe/empty-payload.tentative.https.window.html",
-         {
-          "script_metadata": [
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/fetch/fetch-later/resources/fetch-later-helper.js"
-           ]
-          ]
-         }
-        ]
-       ],
-       "max-payload.tentative.https.window.js": [
-        "480f90988bf552ca915032e3e7f0b60c59cd0604",
-        [
-         "fetch/fetch-later/quota/cross-origin-iframe/max-payload.tentative.https.window.html",
-         {
-          "script_metadata": [
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/fetch/fetch-later/resources/fetch-later-helper.js"
-           ],
-           [
-            "script",
-            "/fetch/fetch-later/quota/resources/helper.js"
-           ]
-          ]
-         }
-        ]
-       ],
-       "multiple-iframes.tentative.https.window.js": [
-        "3538c73a3966e3a00a513fe958a69df622446232",
-        [
-         "fetch/fetch-later/quota/cross-origin-iframe/multiple-iframes.tentative.https.window.html",
-         {
-          "script_metadata": [
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/fetch/fetch-later/resources/fetch-later-helper.js"
-           ],
-           [
-            "script",
-            "/fetch/fetch-later/quota/resources/helper.js"
-           ]
-          ]
-         }
-        ]
-       ],
-       "oversized-payload.tentative.https.window.js": [
-        "43a605151342a9825095ed6c20e921a663e741cb",
-        [
-         "fetch/fetch-later/quota/cross-origin-iframe/oversized-payload.tentative.https.window.html",
-         {
-          "script_metadata": [
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/fetch/fetch-later/resources/fetch-later-helper.js"
-           ],
-           [
-            "script",
-            "/fetch/fetch-later/quota/resources/helper.js"
-           ]
-          ]
-         }
-        ]
-       ],
-       "small-payload.tentative.https.window.js": [
-        "ad73db5516e687b1ade0f1cc3588780f15f2dd30",
-        [
-         "fetch/fetch-later/quota/cross-origin-iframe/small-payload.tentative.https.window.html",
-         {
-          "script_metadata": [
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/fetch/fetch-later/resources/fetch-later-helper.js"
-           ]
-          ]
-         }
-        ]
-       ]
-      },
-      "empty-payload.tentative.https.window.js": [
-       "c2c4dd50326c0a75b2c82d152995329ccc0cd252",
-       [
-        "fetch/fetch-later/quota/empty-payload.tentative.https.window.html",
-        {
-         "script_metadata": [
-          [
-           "script",
-           "/common/get-host-info.sub.js"
-          ],
-          [
-           "script",
-           "/common/utils.js"
-          ],
-          [
-           "script",
-           "/fetch/fetch-later/resources/fetch-later-helper.js"
-          ]
-         ]
-        }
-       ]
-      ],
-      "max-payload.tentative.https.window.js": [
-       "8457060797ac2d140c85af6c657f79389288c356",
-       [
-        "fetch/fetch-later/quota/max-payload.tentative.https.window.html",
-        {
-         "script_metadata": [
-          [
-           "script",
-           "/common/get-host-info.sub.js"
-          ],
-          [
-           "script",
-           "/common/utils.js"
-          ],
-          [
-           "script",
-           "/fetch/fetch-later/resources/fetch-later-helper.js"
-          ],
-          [
-           "script",
-           "/fetch/fetch-later/quota/resources/helper.js"
-          ]
-         ]
-        }
-       ]
-      ],
-      "multiple-origins.tentative.https.window.js": [
-       "5849068e4d5780a31ad0562854eba818d031af75",
-       [
-        "fetch/fetch-later/quota/multiple-origins.tentative.https.window.html",
-        {
-         "script_metadata": [
-          [
-           "script",
-           "/common/get-host-info.sub.js"
-          ],
-          [
-           "script",
-           "/common/utils.js"
-          ],
-          [
-           "script",
-           "/fetch/fetch-later/resources/fetch-later-helper.js"
-          ],
-          [
-           "script",
-           "/fetch/fetch-later/quota/resources/helper.js"
-          ]
-         ]
-        }
-       ]
-      ],
-      "oversized-payload.tentative.https.window.js": [
-       "0036d040d8e201d8d621c6615e4e7c49daf45fff",
-       [
-        "fetch/fetch-later/quota/oversized-payload.tentative.https.window.html",
-        {
-         "script_metadata": [
-          [
-           "script",
-           "/common/get-host-info.sub.js"
-          ],
-          [
-           "script",
-           "/common/utils.js"
-          ],
-          [
-           "script",
-           "/fetch/fetch-later/resources/fetch-later-helper.js"
-          ],
-          [
-           "script",
-           "/fetch/fetch-later/quota/resources/helper.js"
-          ]
-         ]
-        }
-       ]
-      ],
-      "same-origin-iframe": {
-       "accumulated-oversized-payload.tentative.https.window.js": [
-        "8b894c011ad29c3e984022ec601578bcfc701e2b",
-        [
-         "fetch/fetch-later/quota/same-origin-iframe/accumulated-oversized-payload.tentative.https.window.html",
-         {
-          "script_metadata": [
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/fetch/fetch-later/resources/fetch-later-helper.js"
-           ],
-           [
-            "script",
-            "/fetch/fetch-later/quota/resources/helper.js"
-           ]
-          ]
-         }
-        ]
-       ],
-       "empty-payload.tentative.https.window.js": [
-        "53cae60047eaefd2b01a3bd45c84239fa3752bf9",
-        [
-         "fetch/fetch-later/quota/same-origin-iframe/empty-payload.tentative.https.window.html",
-         {
-          "script_metadata": [
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/fetch/fetch-later/resources/fetch-later-helper.js"
-           ]
-          ]
-         }
-        ]
-       ],
-       "max-payload.tentative.https.window.js": [
-        "9d865eeb5ee55b80aabcc87ebbd579c3787f1ec1",
-        [
-         "fetch/fetch-later/quota/same-origin-iframe/max-payload.tentative.https.window.html",
-         {
-          "script_metadata": [
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/fetch/fetch-later/resources/fetch-later-helper.js"
-           ],
-           [
-            "script",
-            "/fetch/fetch-later/quota/resources/helper.js"
-           ]
-          ]
-         }
-        ]
-       ],
-       "multiple-iframes.tentative.https.window.js": [
-        "3f46f84a5fc18a1d7fbaca3fdc0a3d7b6a5f2d64",
-        [
-         "fetch/fetch-later/quota/same-origin-iframe/multiple-iframes.tentative.https.window.html",
-         {
-          "script_metadata": [
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/fetch/fetch-later/resources/fetch-later-helper.js"
-           ],
-           [
-            "script",
-            "/fetch/fetch-later/quota/resources/helper.js"
-           ]
-          ]
-         }
-        ]
-       ],
-       "oversized-payload.tentative.https.window.js": [
-        "d71b87190cea15f8e439129f844bab107235237a",
-        [
-         "fetch/fetch-later/quota/same-origin-iframe/oversized-payload.tentative.https.window.html",
-         {
-          "script_metadata": [
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/fetch/fetch-later/resources/fetch-later-helper.js"
-           ],
-           [
-            "script",
-            "/fetch/fetch-later/quota/resources/helper.js"
-           ]
-          ]
-         }
-        ]
-       ],
-       "small-payload.tentative.https.window.js": [
-        "2b20a6fc62965e0d4d8ad5a4014aeb6679653584",
-        [
-         "fetch/fetch-later/quota/same-origin-iframe/small-payload.tentative.https.window.html",
-         {
-          "script_metadata": [
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/fetch/fetch-later/resources/fetch-later-helper.js"
-           ]
-          ]
-         }
-        ]
-       ]
-      },
-      "small-payload.tentative.https.window.js": [
-       "862ca09affdb49c7e461cf9bdfc833b9c2ce09f9",
-       [
-        "fetch/fetch-later/quota/small-payload.tentative.https.window.html",
-        {
-         "script_metadata": [
-          [
-           "script",
-           "/common/get-host-info.sub.js"
-          ],
-          [
-           "script",
-           "/common/utils.js"
-          ],
-          [
-           "script",
-           "/fetch/fetch-later/resources/fetch-later-helper.js"
-          ]
-         ]
-        }
-       ]
+       }
       ]
-     },
+     ],
      "send-on-deactivate-with-background-sync.tentative.https.window.js": [
       "881bdd23f9371ac684b4aa58c2be23ac402cf4fe",
       [
