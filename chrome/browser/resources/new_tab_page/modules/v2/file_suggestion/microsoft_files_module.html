@@ -10,7 +10,9 @@
     @info-button-click="${this.onInfoButtonClick_}">
 </ntp-module-header-v2>
 <!-- TODO(crbug.com/372725915): Render files and their icons. -->
-<ntp-file-suggestion module-name="MicrosoftFiles">
+<ntp-file-suggestion module-name="MicrosoftFiles"
+    id="microsoft-files"
+    .files="${this.files_}">
 </ntp-file-suggestion>
 ${this.showInfoDialog_ ? html`
   <ntp-info-dialog show-on-attach

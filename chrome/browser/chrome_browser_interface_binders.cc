@@ -151,6 +151,7 @@
 #else
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_suggestion.mojom.h"
+#include "chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/authentication/microsoft_auth.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar.mojom.h"
@@ -1160,6 +1161,11 @@ void PopulateChromeWebUIFrameBinders(
     RegisterWebUIControllerInterfaceBinder<
         ntp::authentication::mojom::MicrosoftAuthPageHandler, NewTabPageUI>(
         map);
+  }
+
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpSharepointModule)) {
+    RegisterWebUIControllerInterfaceBinder<
+        file_suggestion::mojom::MicrosoftFilesPageHandler, NewTabPageUI>(map);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -44,6 +44,7 @@ export {DriveModuleElement as DriveModuleV2Element, driveModuleV2Descriptor} fro
 export {FileProxy} from './modules/v2/file_suggestion/file_module_proxy.js';
 export {FileSuggestionElement} from './modules/v2/file_suggestion/file_suggestion.js';
 export {microsoftFilesModuleDescriptor, MicrosoftFilesModuleElement} from './modules/v2/file_suggestion/microsoft_files_module.js';
+export {MicrosoftFilesProxyImpl} from './modules/v2/file_suggestion/microsoft_files_proxy.js';
 export {ModuleHeaderElement as ModuleHeaderElementV2} from './modules/v2/module_header.js';
 export {DisableModuleEvent, DismissModuleElementEvent, DismissModuleInstanceEvent, MODULE_CUSTOMIZE_ELEMENT_ID, ModulesV2Element, NamedWidth, SUPPORTED_MODULE_WIDTHS} from './modules/v2/modules.js';
 export {ModuleElement as MostRelevantTabResumptionModuleElement, mostRelevantTabResumptionDescriptor} from './modules/v2/most_relevant_tab_resumption/module.js';

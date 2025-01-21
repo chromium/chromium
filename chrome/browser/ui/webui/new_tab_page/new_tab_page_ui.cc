@@ -22,6 +22,7 @@
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_suggestion_handler.h"
+#include "chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/authentication/microsoft_auth_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar_page_handler.h"
@@ -706,6 +707,13 @@ void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<ntp::authentication::mojom::MicrosoftAuthPageHandler>
         pending_page_handler) {
   microsoft_auth_handler_ = std::make_unique<MicrosoftAuthPageHandler>(
+      std::move(pending_page_handler), profile_);
+}
+
+void NewTabPageUI::BindInterface(
+    mojo::PendingReceiver<file_suggestion::mojom::MicrosoftFilesPageHandler>
+        pending_page_handler) {
+  microsoft_files_handler_ = std::make_unique<MicrosoftFilesPageHandler>(
       std::move(pending_page_handler), profile_);
 }
 

@@ -53,6 +53,7 @@ if (optimize_webui) {
     "file_suggestion.mojom-webui.js",
     "google_calendar.mojom-webui.js",
     "microsoft_auth.mojom-webui.js",
+    "microsoft_files.mojom-webui.js",
     "most_relevant_tab_resumption.mojom-webui.js",
     "new_tab_page.mojom-webui.js",
     "ntp_microsoft_auth_shared_ui.mojom-webui.js",

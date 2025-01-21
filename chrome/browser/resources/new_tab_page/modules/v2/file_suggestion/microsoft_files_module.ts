@@ -8,14 +8,19 @@ import './file_suggestion.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import type {File} from '../../../file_suggestion.mojom-webui.js';
 import {I18nMixinLit, loadTimeData} from '../../../i18n_setup.js';
+import type {MicrosoftFilesPageHandlerRemote} from '../../../microsoft_files.mojom-webui.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
+import type {FileSuggestionElement} from './file_suggestion.js';
 import {getHtml} from './microsoft_files_module.html.js';
+import {MicrosoftFilesProxyImpl} from './microsoft_files_proxy.js';
 
 export interface MicrosoftFilesModuleElement {
   $: {
+    fileSuggestion: FileSuggestionElement,
     moduleHeaderElementV2: ModuleHeaderElement,
   };
 }
@@ -38,11 +43,21 @@ export class MicrosoftFilesModuleElement extends
 
   static override get properties() {
     return {
+      files_: {type: Array},
       showInfoDialog_: {type: Boolean},
     };
   }
 
+  protected files_: File[] = [];
   protected showInfoDialog_: boolean = false;
+
+  private handler_: MicrosoftFilesPageHandlerRemote;
+
+  constructor(files: File[]) {
+    super();
+    this.handler_ = MicrosoftFilesProxyImpl.getInstance().handler;
+    this.files_ = files;
+  }
 
   protected getMenuItemGroups_(): MenuItem[][] {
     return [
@@ -108,10 +123,10 @@ customElements.define(
     MicrosoftFilesModuleElement.is, MicrosoftFilesModuleElement);
 
 async function createMicrosoftFilesElement():
-    Promise<MicrosoftFilesModuleElement> {
-  // TODO(crbug.com/329492316): Retrieve files from the backend, and return null
-  // if there are no files.
-  return new MicrosoftFilesModuleElement();
+    Promise<MicrosoftFilesModuleElement|null> {
+  const {files} =
+      await MicrosoftFilesProxyImpl.getInstance().handler.getFiles();
+  return files.length > 0 ? new MicrosoftFilesModuleElement(files) : null;
 }
 
 export const microsoftFilesModuleDescriptor: ModuleDescriptor =
