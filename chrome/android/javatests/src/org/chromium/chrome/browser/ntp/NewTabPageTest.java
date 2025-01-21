@@ -209,11 +209,9 @@ public class NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
-    @DisableFeatures({ChromeFeatureList.LOGO_POLISH})
     // Disable sign-in to suppress sync promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
-    @DisabledTest(message = "crbug.com/388253192")
-    public void testRender_FocusFakeBoxT() throws Exception {
+    public void testRender_FocusFakeBox() throws Exception {
         ScrimCoordinator scrimCoordinator =
                 mActivityTestRule
                         .getActivity()
@@ -221,9 +219,9 @@ public class NewTabPageTest {
                         .getScrimCoordinatorForTesting();
         scrimCoordinator.disableAnimationForTesting(true);
         onView(withId(R.id.search_box)).perform(click());
-        ChromeRenderTestRule.sanitize(mNtp.getView().getRootView());
-        mRenderTestRule.render(
-                mNtp.getView().getRootView(), "focus_fake_box_with_scrollable_mvt_v2");
+        View view = mNtp.getView().findViewById(R.id.search_box);
+        ChromeRenderTestRule.sanitize(view);
+        mRenderTestRule.render(view, "focus_fake_box");
         scrimCoordinator.disableAnimationForTesting(false);
     }
 
