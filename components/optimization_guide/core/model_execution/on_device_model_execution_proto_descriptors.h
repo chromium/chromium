@@ -17,6 +17,11 @@
 
 namespace optimization_guide {
 
+enum class ProtoStatus {
+  kOk = 0,
+  kError = 1,
+};
+
 // A utility object for iterating over nested messages as MessageLite objects.
 // This is basically a workaround for the fact that there is no public common
 // base class for RepeatedPtrField<Msg>.
@@ -82,6 +87,11 @@ std::unique_ptr<google::protobuf::MessageLite> GetProtoFromAny(
 std::optional<proto::Any> SetProtoValue(const std::string& proto_name,
                                         const proto::ProtoField& proto_field,
                                         const std::string& value);
+
+// Set the field of 'msg' with the given 'tag' to have provided 'value'.
+ProtoStatus SetProtoField(google::protobuf::MessageLite* msg,
+                          int32_t tag,
+                          const std::string& value);
 
 // Returns all of the values of some repeated field.
 //

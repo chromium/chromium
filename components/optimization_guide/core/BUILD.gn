@@ -529,6 +529,7 @@ source_set("unit_tests") {
       "model_execution/model_execution_manager_unittest.cc",
       "model_execution/on_device_model_adaptation_loader_unittest.cc",
       "model_execution/on_device_model_component_unittest.cc",
+      "model_execution/on_device_model_execution_proto_descriptors_unittest.cc",
       "model_execution/on_device_model_execution_proto_value_utils_unittest.cc",
       "model_execution/on_device_model_feature_adapter_unittest.cc",
       "model_execution/on_device_model_metadata_unittest.cc",
