@@ -32,10 +32,6 @@
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
 
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-#endif
-
 namespace gfx {
 class FontList;
 }  // namespace gfx

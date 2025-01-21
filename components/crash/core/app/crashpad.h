@@ -21,7 +21,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include <windows.h>
+#include "base/win/windows_types.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

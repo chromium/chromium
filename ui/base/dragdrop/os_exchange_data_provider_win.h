@@ -5,14 +5,17 @@
 #ifndef UI_BASE_DRAGDROP_OS_EXCHANGE_DATA_PROVIDER_WIN_H_
 #define UI_BASE_DRAGDROP_OS_EXCHANGE_DATA_PROVIDER_WIN_H_
 
+#include <windows.h>
+#undef LoadBitmap  // Conflicts with ui/ API name.
+
 #include <objidl.h>
 #include <shlobj.h>
 #include <stddef.h>
 #include <wrl/client.h>
-#include <utility>
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/component_export.h"
