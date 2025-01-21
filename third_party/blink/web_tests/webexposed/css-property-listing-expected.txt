@@ -63,6 +63,7 @@ All changes to this list should go through Blink's feature review process: http:
     animation-range-start
     animation-timeline
     animation-timing-function
+    animation-trigger-timeline
     animation-trigger-type
     app-region
     appearance

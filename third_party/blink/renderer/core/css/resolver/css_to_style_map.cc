@@ -801,4 +801,10 @@ EAnimationTriggerType CSSToStyleMap::MapAnimationTriggerType(
   return To<CSSIdentifierValue>(value).ConvertTo<EAnimationTriggerType>();
 }
 
+StyleTimeline CSSToStyleMap::MapAnimationTriggerTimeline(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  return MapAnimationTimeline(state, value);
+}
+
 }  // namespace blink

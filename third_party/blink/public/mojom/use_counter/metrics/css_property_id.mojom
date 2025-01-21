@@ -874,6 +874,7 @@ enum CSSSampleId {
     kMasonryAutoTracks = 815,
     kResult = 816,
     kAnimationTriggerType = 817,
+    kAnimationTriggerTimeline = 818,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

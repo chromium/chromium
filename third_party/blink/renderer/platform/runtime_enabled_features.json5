@@ -999,6 +999,10 @@
       status: "stable",
     },
     {
+      name: "CSSAnimationTriggerTimeline",
+      status: "test",
+    },
+    {
       name: "CSSAnimationTriggerType",
       status: "test",
     },

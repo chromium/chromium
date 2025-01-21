@@ -37,6 +37,11 @@ const StyleTimeline& CSSAnimationData::InitialTimeline() {
   return timeline;
 }
 
+const StyleTimeline& CSSAnimationData::InitialTriggerTimeline() {
+  DEFINE_STATIC_LOCAL(const StyleTimeline, timeline, (CSSValueID::kAuto));
+  return timeline;
+}
+
 bool CSSAnimationData::AnimationsMatchForStyleRecalc(
     const CSSAnimationData& other) const {
   return name_list_ == other.name_list_ &&

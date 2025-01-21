@@ -120,6 +120,8 @@ class CSSToStyleMap {
                                       NinePieceImage&);
   static EAnimationTriggerType MapAnimationTriggerType(StyleResolverState&,
                                                        const CSSValue&);
+  static StyleTimeline MapAnimationTriggerTimeline(StyleResolverState&,
+                                                   const CSSValue&);
 };
 
 }  // namespace blink
