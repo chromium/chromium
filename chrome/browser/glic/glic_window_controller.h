@@ -134,6 +134,8 @@ class GlicWindowController : public views::WidgetObserver {
   void ShowPhase2();
   void ShowFinish();
 
+  void SetWebContents();
+
   // Determines the correct position for the glic window when attached to a
   // browser window.
   gfx::Point GetTopRightPositionForAttachedGlicWindow(
@@ -208,6 +210,13 @@ class GlicWindowController : public views::WidgetObserver {
   // Called when the programmatic resize has finished.
   void ResizeFinished();
 
+  // Sets target bounds for the widget and creates a WindowResizeAnimation
+  // instance to begin a new animation. Blocks any calls to animate if the
+  // widget it not yet visible.
+  void AnimateBounds(const gfx::Rect& target_bounds,
+                     base::TimeDelta duration,
+                     base::OnceClosure callback);
+
   AttachedTargetWidgetObserver attached_target_widget_observer_{this};
   base::WeakPtr<Browser> attached_browser_;
 
@@ -234,6 +243,8 @@ class GlicWindowController : public views::WidgetObserver {
 
   // True if we've hit a login page (and have not yet shown).
   bool login_page_committed_ = false;
+
+  gfx::Rect final_widget_bounds_;
 
   // Indicates `Show()` has been called, but not `FinishShow()`.
   bool will_show_ = false;
