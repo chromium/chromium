@@ -157,15 +157,6 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
 
   uint32_t FetchCount() const override { return fetch_count_; }
 
-  void UpdateDeferredBytesQuota(const KURL& url,
-                                uint64_t& quota_for_url_origin,
-                                uint64_t& total_quota) const override {
-    DCHECK(base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI));
-    CHECK(fetch_later_manager_);
-    return fetch_later_manager_->UpdateDeferredBytesQuota(
-        url, quota_for_url_origin, total_quota);
-  }
-
   void Trace(Visitor* visitor) const override {
     visitor->Trace(fetch_manager_);
     visitor->Trace(fetch_later_manager_);
@@ -192,13 +183,6 @@ FetchLaterResult* GlobalFetch::ScopedFetcher::FetchLater(
     const V8RequestInfo* input,
     const DeferredRequestInit* init,
     ExceptionState& exception_state) {
-  NOTREACHED();
-}
-
-void GlobalFetch::ScopedFetcher::UpdateDeferredBytesQuota(
-    const KURL& url,
-    uint64_t& quota_for_url_origin,
-    uint64_t& total_quota) const {
   NOTREACHED();
 }
 

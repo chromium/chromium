@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_init.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/fetch/fetch_later_result.h"
-#include "third_party/blink/renderer/core/fetch/fetch_later_test_util.h"
 #include "third_party/blink/renderer/core/fetch/fetch_request_data.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
@@ -184,6 +183,54 @@ MATCHER_P(MatchNetworkResourceRequest,
   return true;
 }
 
+class MockFetchLaterLoaderFactory
+    : public blink::mojom::FetchLaterLoaderFactory {
+ public:
+  MockFetchLaterLoaderFactory() = default;
+
+  mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
+  BindNewEndpointAndPassDedicatedRemote() {
+    return receiver_.BindNewEndpointAndPassDedicatedRemote();
+  }
+
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
+  // blink::mojom::FetchLaterLoaderFactory overrides:
+  MOCK_METHOD(void,
+              CreateLoader,
+              (mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoader>,
+               int32_t,
+               uint32_t,
+               const network::ResourceRequest&,
+               const net::MutableNetworkTrafficAnnotationTag&),
+              (override));
+  MOCK_METHOD(
+      void,
+      Clone,
+      (mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoaderFactory>),
+      (override));
+
+ private:
+  mojo::AssociatedReceiver<blink::mojom::FetchLaterLoaderFactory> receiver_{
+      this};
+};
+
+// A fake LocalFrameClient that provides non-null ChildURLLoaderFactoryBundle.
+class FakeLocalFrameClient : public EmptyLocalFrameClient {
+ public:
+  FakeLocalFrameClient()
+      : loader_factory_bundle_(
+            base::MakeRefCounted<blink::ChildURLLoaderFactoryBundle>()) {}
+
+  // EmptyLocalFrameClient overrides:
+  blink::ChildURLLoaderFactoryBundle* GetLoaderFactoryBundle() override {
+    return loader_factory_bundle_.get();
+  }
+
+ private:
+  scoped_refptr<blink::ChildURLLoaderFactoryBundle> loader_factory_bundle_;
+};
+
 }  // namespace
 
 class FetchLaterTest : public testing::Test {
@@ -261,9 +308,21 @@ class FetchLaterTest : public testing::Test {
   base::HistogramTester histogram_;
 };
 
+class FetchLaterTestingScope : public V8TestingScope {
+  STACK_ALLOCATED();
+
+ public:
+  explicit FetchLaterTestingScope(LocalFrameClient* frame_client)
+      : V8TestingScope(DummyPageHolder::CreateAndCommitNavigation(
+            KURL(FetchLaterTest::GetSourcePageURL()),
+            /*initial_view_size=*/gfx::Size(),
+            /*chrome_client=*/nullptr,
+            frame_client)) {}
+};
+
 // A FetchLater request where its URL has same-origin as its execution context.
 TEST_F(FetchLaterTest, CreateSameOriginFetchLaterRequest) {
-  FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
+  FetchLaterTestingScope scope(FrameClient());
   auto& exception_state = scope.GetExceptionState();
   auto target_url = AtomicString("/");
   url_test_helpers::RegisterMockedURLLoad(KURL(GetSourcePageURL() + target_url),
@@ -297,7 +356,7 @@ TEST_F(FetchLaterTest, CreateSameOriginFetchLaterRequest) {
 }
 
 TEST_F(FetchLaterTest, NegativeActivateAfterThrowRangeError) {
-  FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
+  FetchLaterTestingScope scope(FrameClient());
   auto& exception_state = scope.GetExceptionState();
   auto target_url = AtomicString("/");
   url_test_helpers::RegisterMockedURLLoad(KURL(GetSourcePageURL() + target_url),
@@ -325,7 +384,7 @@ TEST_F(FetchLaterTest, NegativeActivateAfterThrowRangeError) {
 // Test to cover when a FetchLaterManager::FetchLater() call is provided with an
 // AbortSignal that has been aborted.
 TEST_F(FetchLaterTest, AbortBeforeFetchLater) {
-  FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
+  FetchLaterTestingScope scope(FrameClient());
   auto& exception_state = scope.GetExceptionState();
   auto target_url = AtomicString("/");
   url_test_helpers::RegisterMockedURLLoad(KURL(GetSourcePageURL() + target_url),
@@ -354,7 +413,7 @@ TEST_F(FetchLaterTest, AbortBeforeFetchLater) {
 // Test to cover when a FetchLaterManager::FetchLater() is aborted after being
 // called.
 TEST_F(FetchLaterTest, AbortAfterFetchLater) {
-  FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
+  FetchLaterTestingScope scope(FrameClient());
   auto& exception_state = scope.GetExceptionState();
   auto target_url = AtomicString("/");
   url_test_helpers::RegisterMockedURLLoad(KURL(GetSourcePageURL() + target_url),
@@ -388,7 +447,7 @@ TEST_F(FetchLaterTest, AbortAfterFetchLater) {
 
 // Test to cover a FetchLaterManager::FetchLater() with custom activateAfter.
 TEST_F(FetchLaterTest, ActivateAfter) {
-  FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
+  FetchLaterTestingScope scope(FrameClient());
   DOMHighResTimeStamp activate_after_ms = 3000;
   auto& exception_state = scope.GetExceptionState();
   auto target_url = AtomicString("/");
@@ -427,7 +486,7 @@ TEST_F(FetchLaterTest, ActivateAfter) {
 // Test to cover when a FetchLaterManager::FetchLater()'s execution context is
 // destroyed.
 TEST_F(FetchLaterTest, ContextDestroyed) {
-  FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
+  FetchLaterTestingScope scope(FrameClient());
   auto& exception_state = scope.GetExceptionState();
   auto target_url = AtomicString("/");
   url_test_helpers::RegisterMockedURLLoad(KURL(GetSourcePageURL() + target_url),
@@ -462,7 +521,7 @@ TEST_F(FetchLaterTest, ContextDestroyed) {
 // method when its context enters BackForwardCache with BackgroundSync
 // permission off.
 TEST_F(FetchLaterTest, ForcedSendingWithBackgroundSyncOff) {
-  FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
+  FetchLaterTestingScope scope(FrameClient());
   auto& exception_state = scope.GetExceptionState();
   auto target_url = AtomicString("/");
   url_test_helpers::RegisterMockedURLLoad(KURL(GetSourcePageURL() + target_url),
