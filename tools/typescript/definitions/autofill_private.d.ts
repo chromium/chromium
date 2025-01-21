@@ -198,12 +198,6 @@ declare global {
         metadata?: AutofillMetadata;
       }
 
-      export interface ValidatePhoneParams {
-        phoneNumbers: string[];
-        indexOfNewNumber: number;
-        countryCode: string;
-      }
-
       export interface UserAnnotationsEntry {
         entryId: number;
         key: string;
@@ -220,8 +214,6 @@ declare global {
       export function saveCreditCard(card: CreditCardEntry): void;
       export function saveIban(iban: IbanEntry): void;
       export function removeEntry(guid: string): void;
-      export function validatePhoneNumbers(
-          params: ValidatePhoneParams): Promise<string[]>;
       export function getCreditCardList(): Promise<CreditCardEntry[]>;
       export function getIbanList(): Promise<IbanEntry[]>;
       export function isValidIban(ibanValue: string): Promise<boolean>;
