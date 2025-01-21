@@ -1297,7 +1297,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gpu.PassthroughProgramCacheLoadHitInCache"
-    enum="BooleanSuccess" expires_after="2025-05-18">
+    enum="BooleanSuccess" expires_after="2025-07-20">
   <owner>geofflang@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
