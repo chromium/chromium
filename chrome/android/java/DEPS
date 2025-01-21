@@ -54,6 +54,8 @@ include_rules = [
   "+components/offline_items_collection/core/android/java",
   "+components/omnibox/browser/android/java",
   "+components/paint_preview/browser/android/java/src/org/chromium/components/paintpreview",
+  "+components/payments/content/android/java/src/org/chromium/components/payments",
+  "+components/payments/content/android/spc/java/src/org/chromium/components/payments/secure_payment_confirmation",
   "+components/payments/content/android/ui/java/src/org/chromium/components/payments/ui",
   "+components/permissions/android/java/src/org/chromium/components/permissions",
   "+components/saved_tab_groups/android/java/src/org/chromium/components/tab_group_sync",
