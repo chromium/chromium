@@ -736,8 +736,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
                                      profile)
                      prefService:profile->GetPrefs()
                      syncService:self.syncService
-                     accessPoint:signin_metrics::AccessPoint::
-                                     ACCESS_POINT_RECENT_TABS
+                     accessPoint:signin_metrics::AccessPoint::kRecentTabs
                  signinPresenter:self
         accountSettingsPresenter:nil];
     self.signinPromoViewMediator.signinPromoAction =
@@ -1788,7 +1787,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
                              initWithOperation:AuthenticationOperation::
                                                    kPrimaryAccountReauth
                                    accessPoint:signin_metrics::AccessPoint::
-                                                   ACCESS_POINT_RECENT_TABS]
+                                                   kRecentTabs]
       baseViewController:self];
 }
 
@@ -1810,7 +1809,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   trusted_vault::SecurityDomainId securityDomainID =
       trusted_vault::SecurityDomainId::kChromeSync;
   signin_metrics::AccessPoint accessPoint =
-      signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS;
+      signin_metrics::AccessPoint::kRecentTabs;
   [self.applicationHandler
       showTrustedVaultReauthForFetchKeysFromViewController:self
                                           securityDomainID:securityDomainID
@@ -1823,7 +1822,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   trusted_vault::SecurityDomainId securityDomainID =
       trusted_vault::SecurityDomainId::kChromeSync;
   signin_metrics::AccessPoint accessPoint =
-      signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS;
+      signin_metrics::AccessPoint::kRecentTabs;
   [self.applicationHandler
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:self
                                                        securityDomainID:

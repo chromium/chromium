@@ -199,7 +199,7 @@ class SettingsTableViewControllerTest
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(fake_identity_);
     auth_service_->SignIn(fake_identity_,
-                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+                          signin_metrics::AccessPoint::kUnknown);
 
     // Make sure there is no pre-existing policy present.
     [[NSUserDefaults standardUserDefaults]
@@ -316,8 +316,7 @@ class SettingsTableViewControllerTest
 // on sync during sign-in.
 TEST_F(SettingsTableViewControllerTest, SyncOn) {
   SetupSyncServiceEnabledExpectations();
-  auth_service_->SignIn(fake_identity_,
-                        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  auth_service_->SignIn(fake_identity_, signin_metrics::AccessPoint::kUnknown);
 
   CreateController();
   CheckController();
@@ -345,8 +344,7 @@ TEST_F(SettingsTableViewControllerTest, SyncPasswordError) {
   ON_CALL(*sync_service_mock_, GetUserActionableError())
       .WillByDefault(
           Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
-  auth_service_->SignIn(fake_identity_,
-                        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  auth_service_->SignIn(fake_identity_, signin_metrics::AccessPoint::kUnknown);
 
   CreateController();
   CheckController();
@@ -388,8 +386,7 @@ TEST_F(SettingsTableViewControllerTest,
           IsInitialSyncFeatureSetupComplete())
       .WillByDefault(Return(true));
   ON_CALL(*sync_service_mock_, HasSyncConsent()).WillByDefault(Return(true));
-  auth_service_->SignIn(fake_identity_,
-                        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  auth_service_->SignIn(fake_identity_, signin_metrics::AccessPoint::kUnknown);
 
   CreateController();
   CheckController();
@@ -424,8 +421,7 @@ TEST_F(SettingsTableViewControllerTest, AccountSectionIfSignedInNonSyncing) {
   ON_CALL(*sync_service_mock_->GetMockUserSettings(),
           IsInitialSyncFeatureSetupComplete())
       .WillByDefault(Return(false));
-  auth_service_->SignIn(fake_identity_,
-                        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  auth_service_->SignIn(fake_identity_, signin_metrics::AccessPoint::kUnknown);
 
   CreateController();
   CheckController();
@@ -475,8 +471,7 @@ TEST_F(SettingsTableViewControllerTest, HoldAccountStorageErrorWhenEligible) {
       .WillByDefault(
           Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
 
-  auth_service_->SignIn(fake_identity_,
-                        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  auth_service_->SignIn(fake_identity_, signin_metrics::AccessPoint::kUnknown);
 
   CreateController();
   CheckController();
@@ -500,8 +495,7 @@ TEST_F(SettingsTableViewControllerTest, ClearAccountStorageErrorWhenResolved) {
       .WillByDefault(
           Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
 
-  auth_service_->SignIn(fake_identity_,
-                        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  auth_service_->SignIn(fake_identity_, signin_metrics::AccessPoint::kUnknown);
 
   CreateController();
   CheckController();
@@ -544,8 +538,7 @@ TEST_F(SettingsTableViewControllerTest, DontHoldAccountErrorWhenIneligible) {
       .WillByDefault(
           Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
 
-  auth_service_->SignIn(fake_identity_,
-                        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  auth_service_->SignIn(fake_identity_, signin_metrics::AccessPoint::kUnknown);
 
   CreateController();
   CheckController();
@@ -569,8 +562,7 @@ TEST_F(SettingsTableViewControllerTest, DontHoldAccountErrorWhenNoError) {
   ON_CALL(*sync_service_mock_, GetUserActionableError())
       .WillByDefault(Return(syncer::SyncService::UserActionableError::kNone));
 
-  auth_service_->SignIn(fake_identity_,
-                        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  auth_service_->SignIn(fake_identity_, signin_metrics::AccessPoint::kUnknown);
 
   CreateController();
   CheckController();

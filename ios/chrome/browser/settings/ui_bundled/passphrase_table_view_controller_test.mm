@@ -109,7 +109,7 @@ void PassphraseTableViewControllerTest::SetUp() {
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForProfile(profile_.get());
   auth_service->SignIn(account_manager_service->GetDefaultIdentity(),
-                       signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+                       signin_metrics::AccessPoint::kUnknown);
 }
 
 void PassphraseTableViewControllerTest::TearDown() {

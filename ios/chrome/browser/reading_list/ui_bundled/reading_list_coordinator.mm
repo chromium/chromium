@@ -207,8 +207,7 @@
                    authService:_authService
                    prefService:_prefService
                    syncService:_syncService
-                   accessPoint:signin_metrics::AccessPoint::
-                                   ACCESS_POINT_READING_LIST
+                   accessPoint:signin_metrics::AccessPoint::kReadingList
                signinPresenter:self
       accountSettingsPresenter:self];
   _signinPromoViewMediator.signinPromoAction =
@@ -616,7 +615,7 @@
   }
   if (![SigninPromoViewMediator
           shouldDisplaySigninPromoViewWithAccessPoint:
-              signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST
+              signin_metrics::AccessPoint::kReadingList
                                     signinPromoAction:signinPromoAction
                                 authenticationService:_authService
                                           prefService:_prefService]) {

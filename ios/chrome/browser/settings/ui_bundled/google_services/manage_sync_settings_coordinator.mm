@@ -566,7 +566,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
       trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA settingsTrigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
-  AccessPoint settingsAccessPoint = AccessPoint::ACCESS_POINT_SETTINGS;
+  AccessPoint settingsAccessPoint = AccessPoint::kSettings;
   [applicationCommands
       showTrustedVaultReauthForFetchKeysFromViewController:self.viewController
                                           securityDomainID:chromeSyncID
@@ -582,7 +582,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
       trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA settingsTrigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
-  AccessPoint settingsAccessPoint = AccessPoint::ACCESS_POINT_SETTINGS;
+  AccessPoint settingsAccessPoint = AccessPoint::kSettings;
   [applicationCommands
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
           self.viewController
@@ -604,7 +604,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
           self.browser->GetCommandDispatcher());
   ShowSigninCommand* signinCommand = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kPrimaryAccountReauth
-            accessPoint:AccessPoint::ACCESS_POINT_SETTINGS];
+            accessPoint:AccessPoint::kSettings];
   [applicationCommands showSignin:signinCommand
                baseViewController:self.viewController];
 }

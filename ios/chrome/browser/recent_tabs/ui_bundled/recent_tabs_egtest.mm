@@ -311,8 +311,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
-      initWithAccessPoint:signin_metrics::AccessPoint::
-                              ACCESS_POINT_RECENT_TABS];
+      initWithAccessPoint:signin_metrics::AccessPoint::kRecentTabs];
   // TODO(crbug.com/41493423) Should log Signin.SignIn.Offered, and
   // Signin.SigninStartedAccessPoint
   expecteds.signinSignInStarted = 1;

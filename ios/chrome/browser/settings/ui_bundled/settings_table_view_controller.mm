@@ -649,7 +649,7 @@ struct EnhancedSafeBrowsingActivePromoData
       // Once the Settings are open, this button impression will at most be
       // recorded once until they are closed.
       signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
-          signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+          signin_metrics::AccessPoint::kSettings);
       _hasRecordedSigninImpression = YES;
     }
 
@@ -1307,7 +1307,7 @@ struct EnhancedSafeBrowsingActivePromoData
   switch (itemType) {
     case SettingsItemTypeSignInButton:
       signin_metrics::RecordSigninUserActionForAccessPoint(
-          signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+          signin_metrics::AccessPoint::kSettings);
       [self showSignIn];
       break;
     case SettingsItemTypeAccount: {
@@ -2200,7 +2200,7 @@ struct EnhancedSafeBrowsingActivePromoData
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kSheetSigninAndHistorySync
                identity:nil
-            accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
+            accessPoint:signin_metrics::AccessPoint::kSettings
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:^(SigninCoordinatorResult result,
