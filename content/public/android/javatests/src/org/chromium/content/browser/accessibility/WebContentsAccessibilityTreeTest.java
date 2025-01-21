@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
@@ -1505,6 +1506,20 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_caption() {
         performHtmlTest("caption.html");
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add({"enable-experimental-web-platform-features"})
+    public void test_carouselNoTabs() {
+        performCssTest("carousel-no-tabs.html");
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add({"enable-experimental-web-platform-features"})
+    public void test_carouselWithTabs() {
+        performCssTest("carousel-with-tabs.html");
     }
 
     @Test

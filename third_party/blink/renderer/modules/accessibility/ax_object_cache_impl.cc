@@ -560,14 +560,6 @@ bool IsSubtreePrunedForAccessibility(const Element* node) {
   if (IsA<HTMLTitleElement>(node))
     return true;
 
-  // ::scroll-marker pseudo elements are attached to the
-  // ::scroll-marker-group's layout object, so don't create them
-  // here, instead they will be created as part of the
-  // AXNodeObject::AddPseudoElementChildrenFromLayoutTree.
-  if (node->IsScrollMarkerPseudoElement()) {
-    return true;
-  }
-
   return false;
 }
 
@@ -1261,6 +1253,11 @@ bool AXObjectCacheImpl::IsRelevantPseudoElement(const Node& node) {
   // ::first-letter subtrees. The text of ::first-letter is already available in
   // the child text node of the element that the CSS ::first letter applied to.
   if (To<PseudoElement>(node).CanGenerateContent()) {
+    // ::scroll-marker gains a kTab role, so it's relevant regardless of the
+    // type of content it contains since it has a layout object (checked above).
+    if (node.IsScrollMarkerPseudoElement()) {
+      return true;
+    }
     // Ignore non-inline whitespace content, which is used by many pages as
     // a "Micro Clearfix Hack" to clear floats without extra HTML tags. See
     // http://nicolasgallagher.com/micro-clearfix-hack/

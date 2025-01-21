@@ -1193,4 +1193,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest, MAYBE_DeleteSubtree) {
   RunEventTest(FILE_PATH_LITERAL("delete-subtree.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithExperimentalWebFeaturesTest,
+                       CarouselWithTabs) {
+  RunEventTest(FILE_PATH_LITERAL("carousel-with-tabs.html"));
+}
+
 }  // namespace content

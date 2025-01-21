@@ -416,6 +416,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   void AddValidationMessageChild();
   void AddAccessibleNodeChildren();
   void AddOwnedChildren();
+  void AddScrollMarkerGroupChildren();
 #if DCHECK_IS_ON()
   void CheckValidChild(AXObject* child);
 #endif

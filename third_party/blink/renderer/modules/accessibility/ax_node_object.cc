@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -524,6 +525,19 @@ bool ElementHasAnyAriaRelation(Element& element) {
          AXObject::HasAriaAttribute(element, html_names::kAriaOwnsAttr);
 }
 
+bool IsAddedOnlyViaSpecialTraversal(const Node* node) {
+  // ::scroll-markers have their layout object nested under
+  // ::scroll-marker-group, which isn't related to its node traversal. So we
+  // shouldn't use node or layout traversals for this. Instead this is handled
+  // in AXNodeObject::AddScrollMarkerGroupChildren, and any time we walk the
+  // layout tree starting from ::scroll-marker-group. See the comment in
+  // AXNodeObject::AddScrollMarkerGroupChildren for a more detailed explanation.
+  if (node->IsScrollMarkerPseudoElement()) {
+    return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 using html_names::kAltAttr;
@@ -779,6 +793,13 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
       return kIncludeObject;
 
     return kDefaultBehavior;
+  }
+
+  // Include carousel controls.
+  if (node->IsScrollMarkerGroupPseudoElement() ||
+      node->IsScrollMarkerPseudoElement() ||
+      node->IsScrollButtonPseudoElement()) {
+    return kIncludeObject;
   }
 
   // Avoid double speech. The ruby text describes pronunciation of the ruby
@@ -2107,6 +2128,16 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
       return ax::mojom::blink::Role::kButton;
     }
 
+    // Carousel ::scroll-marker-group is a kTabList.
+    if (GetNode()->IsScrollMarkerGroupPseudoElement()) {
+      return ax::mojom::blink::Role::kTabList;
+    }
+
+    // Carousel ::scroll-marker within a group is a kTab.
+    if (GetNode()->IsScrollMarkerPseudoElement()) {
+      return ax::mojom::blink::Role::kTab;
+    }
+
     if (GetCSSAltText(GetElement())) {
       const ComputedStyle* style = GetElement()->GetComputedStyle();
       ContentData* content_data = style->GetContentData();
@@ -2912,6 +2943,7 @@ AccessibilitySelectedState AXNodeObject::IsSelected() const {
     return (option_element->Selected()) ? kSelectedStateTrue
                                         : kSelectedStateFalse;
   }
+
   // Selection follows focus, but ONLY in single selection containers, and only
   // if aria-selected was not present to override.
   return IsSelectedFromFocus() ? kSelectedStateTrue : kSelectedStateFalse;
@@ -2981,6 +3013,10 @@ bool AXNodeObject::IsNotUserSelectable() const {
 bool AXNodeObject::IsTabItemSelected() const {
   if (!IsTabItem() || !GetLayoutObject())
     return false;
+
+  if (GetNode()->IsScrollMarkerPseudoElement()) {
+    return To<ScrollMarkerPseudoElement>(GetNode())->IsSelected();
+  }
 
   Node* node = GetNode();
   if (!node || !node->IsElementNode())
@@ -5727,6 +5763,10 @@ void AXNodeObject::AddNodeChildren() {
     // Add all reading flow items first, in the reading flow order.
     for (Node* reading_flow_item :
          closest_layout_parent->GetLayoutBox()->ReadingFlowNodes()) {
+      if (IsAddedOnlyViaSpecialTraversal(reading_flow_item)) {
+        continue;
+      }
+
       // reading_flow_item or its parent (for example, display: contents) might
       // be a child of element. Loop the parents and only add the node if its
       // LayoutTreeBuilderTraversal::Parent is this element.
@@ -5746,6 +5786,9 @@ void AXNodeObject::AddNodeChildren() {
     // Add all non-reading flow items at the end of the reading flow.
     for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
          child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
+      if (IsAddedOnlyViaSpecialTraversal(child)) {
+        continue;
+      }
       if (ax_children_added.insert(child).is_new_entry) {
         AddNodeChild(child);
       }
@@ -5756,6 +5799,9 @@ void AXNodeObject::AddNodeChildren() {
     size_t num_layout_tree_children = 0;
     for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
          child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
+      if (IsAddedOnlyViaSpecialTraversal(child)) {
+        continue;
+      }
       DCHECK(ax_children_added.Contains(child));
       ++num_layout_tree_children;
     }
@@ -5764,6 +5810,9 @@ void AXNodeObject::AddNodeChildren() {
   } else {
     for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
          child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
+      if (IsAddedOnlyViaSpecialTraversal(child)) {
+        continue;
+      }
       AddNodeChild(child);
     }
   }
@@ -5864,6 +5913,8 @@ void AXNodeObject::AddChildrenImpl() {
     AddMenuListPopupChildren();
   } else if (HasValidHTMLTableStructureAndLayout()) {
     AddTableChildren();
+  } else if (GetNode() && GetNode()->IsScrollMarkerGroupPseudoElement()) {
+    AddScrollMarkerGroupChildren();
   } else if (ShouldUseLayoutObjectTraversalForChildren()) {
     AddPseudoElementChildrenFromLayoutTree();
   } else {
@@ -5876,6 +5927,56 @@ void AXNodeObject::AddChildrenImpl() {
 
   AddOwnedChildren();
   CHECK_ATTACHED();
+}
+
+void AXNodeObject::AddScrollMarkerGroupChildren() {
+  DCHECK(GetNode() && GetNode()->IsScrollMarkerGroupPseudoElement());
+
+  if (!IsVisible() || !GetLayoutObject()) {
+    DCHECK(GetNode());
+    DCHECK(GetNode()->IsPseudoElement());
+    // Can't add children for hidden or display-locked pseudo elements.
+    return;
+  }
+
+  // In the DOM tree, a carousel looks like the following
+  // Scroller
+  //   Item
+  //     ::scroll-marker
+  //   ::scroll-marker-group
+  //
+  // The following is the corresponding layout tree:
+  // Scroller
+  //   Item
+  // ::scroll-marker-group
+  //   Anonymous layout object
+  //     ::scroll-marker
+  //
+  // The desired AX tree is the following:
+  // Scroller
+  //   Item
+  //   ::scroll-marker-group
+  //     ::scroll-marker
+  //
+  // So far, we added items as they appeared in the DOM or Layout tree, with the
+  // exception that we pruned ::scroll-markers any time we saw them (see
+  // IsAddedOnlyViaSpecialTraversal). Now, we've reached ::scroll-marker-group.
+  // From here, we use the layout object walk skipping any anonymous layout
+  // objects. In fact, we only add ::scroll-markers. When this function is done,
+  // we should have our desired AX tree.
+  //
+  LayoutObject* child = GetLayoutObject()->SlowFirstChild();
+  while (child) {
+    DCHECK(
+        child->IsAnonymous() ||
+        (child->GetNode() && child->GetNode()->IsScrollMarkerPseudoElement()));
+
+    if (child->GetNode() && child->GetNode()->IsScrollMarkerPseudoElement()) {
+      AddNodeChild(child->GetNode());
+    }
+    // Iterate the whole subtree staying within the ::scroll-marker-group.
+    child = child->NextInPreOrder(GetLayoutObject());
+  }
 }
 
 void AXNodeObject::AddChildren() {
