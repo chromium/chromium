@@ -2458,6 +2458,18 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasskeysArrivedAfterAutofillDisplay"
+    enum="Boolean" expires_after="2025-12-31">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Recorded the first time passkeys become available for use by the password
+    manager on a page, if the passkey list is non-empty. It records true if an
+    autofill surface has already attempted to display the passkeys, and they
+    arrived too late. It records false otherwise.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordAccessLossWarningDialog.Shown"
     enum="PasswordAccessLossWarningType" expires_after="2025-07-06">
   <owner>izuzic@google.com</owner>

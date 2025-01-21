@@ -36,6 +36,7 @@ class MockWebAuthnCredentialsDelegate : public WebAuthnCredentialsDelegate {
               GetPasskeys,
               (),
               (const override));
+  MOCK_METHOD(void, NotifyForPasskeysDisplay, (), (override));
   MOCK_METHOD(bool, IsSecurityKeyOrHybridFlowAvailable, (), (const override));
   MOCK_METHOD(void, RetrievePasskeys, (base::OnceClosure), (override));
   MOCK_METHOD(bool, HasPendingPasskeySelection, (), (override));

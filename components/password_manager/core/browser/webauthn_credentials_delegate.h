@@ -41,6 +41,11 @@ class WebAuthnCredentialsDelegate {
   virtual const std::optional<std::vector<PasskeyCredential>>& GetPasskeys()
       const = 0;
 
+  // Called when a passkey consumer is displaying a UI surface that will
+  // include passkeys, if any are available. This is for metrics recording
+  // purposes.
+  virtual void NotifyForPasskeysDisplay() = 0;
+
   // Returns whether an option to use a passkey on a security key or another
   // device (e.g. phone via hybrid) should be offered. This option can be used
   // to trigger `LaunchSecurityKeyOrHybridFlow`.

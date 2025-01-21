@@ -275,6 +275,7 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
           driver_supplier_.Run((&GetWebContents()))) {
     if (password_manager::WebAuthnCredentialsDelegate* credentials_delegate =
             password_client_->GetWebAuthnCredentialsDelegateForDriver(driver)) {
+      credentials_delegate->NotifyForPasskeysDisplay();
       if (auto passkeys = credentials_delegate->GetPasskeys()) {
         passkeys_to_add.reserve(passkeys->size());
         for (const password_manager::PasskeyCredential& passkey :

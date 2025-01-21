@@ -276,25 +276,27 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
   // passkey on another device. On Android this is always false. It also will
   // not be set on iOS since |show_webauthn_credentials| is always false.
   bool uses_passkeys = false;
-  if (show_webauthn_credentials && delegate &&
-      delegate->GetPasskeys().has_value()) {
+  if (show_webauthn_credentials && delegate) {
+    delegate->NotifyForPasskeysDisplay();
+    if (delegate->GetPasskeys().has_value()) {
 #if !BUILDFLAG(IS_ANDROID)
-    uses_passkeys = true;
+      uses_passkeys = true;
 #endif
-    base::ranges::transform(
-        *delegate->GetPasskeys(), std::back_inserter(suggestions),
-        [&page_favicon](const auto& passkey) {
-          Suggestion suggestion(
-              base::UTF16ToUTF8(ToUsernameString(passkey.username())),
-              /*label=*/"", Suggestion::Icon::kGlobe,
-              SuggestionType::kWebauthnCredential);
-          suggestion.custom_icon = page_favicon;
-          suggestion.payload =
-              Suggestion::Guid(base::Base64Encode(passkey.credential_id()));
-          suggestion.labels = {
-              {Suggestion::Text(passkey.GetAuthenticatorLabel())}};
-          return suggestion;
-        });
+      base::ranges::transform(
+          *delegate->GetPasskeys(), std::back_inserter(suggestions),
+          [&page_favicon](const auto& passkey) {
+            Suggestion suggestion(
+                base::UTF16ToUTF8(ToUsernameString(passkey.username())),
+                /*label=*/"", Suggestion::Icon::kGlobe,
+                SuggestionType::kWebauthnCredential);
+            suggestion.custom_icon = page_favicon;
+            suggestion.payload =
+                Suggestion::Guid(base::Base64Encode(passkey.credential_id()));
+            suggestion.labels = {
+                {Suggestion::Text(passkey.GetAuthenticatorLabel())}};
+            return suggestion;
+          });
+    }
   }
 
   if (!fill_data.has_value() && !uses_passkeys && suggestions.empty()) {

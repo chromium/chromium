@@ -55,6 +55,7 @@ class ChromeWebAuthnCredentialsDelegate final :
           callback) override;
   const std::optional<std::vector<password_manager::PasskeyCredential>>&
   GetPasskeys() const override;
+  void NotifyForPasskeysDisplay() override;
   bool IsSecurityKeyOrHybridFlowAvailable() const override;
   void RetrievePasskeys(base::OnceClosure callback) override;
   bool HasPendingPasskeySelection() override;
@@ -112,6 +113,15 @@ class ChromeWebAuthnCredentialsDelegate final :
       authenticator_observation_{this};
   base::OneShotTimer flickering_timer_;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Set to true when an autofill surface that could have contained passkeys
+  // has been displayed for the current page. Used for the
+  // PasskeysArrivedAfterAutofillDisplay metric.
+  bool passkey_display_has_happened_ = false;
+
+  // Set to true when the PasskeysArrivedAfterAutofillDisplay metric has been
+  // recorded.
+  bool passkeys_after_fill_recorded_ = false;
 
   base::WeakPtrFactory<ChromeWebAuthnCredentialsDelegate> weak_ptr_factory_{
       this};

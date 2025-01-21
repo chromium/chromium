@@ -41,8 +41,8 @@ constexpr base::TimeDelta kFlickerDuration = base::Milliseconds(300);
 bool IsGpmPasskeyAuthenticatorType(AuthenticatorType type) {
   return type == AuthenticatorType::kEnclave;
 }
-
 #endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 using password_manager::PasskeyCredential;
@@ -123,6 +123,10 @@ ChromeWebAuthnCredentialsDelegate::GetPasskeys() const {
   return passkeys_;
 }
 
+void ChromeWebAuthnCredentialsDelegate::NotifyForPasskeysDisplay() {
+  passkey_display_has_happened_ = true;
+}
+
 base::WeakPtr<password_manager::WebAuthnCredentialsDelegate>
 ChromeWebAuthnCredentialsDelegate::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
@@ -176,6 +180,13 @@ void ChromeWebAuthnCredentialsDelegate::RetrievePasskeys(
 void ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived(
     std::vector<PasskeyCredential> credentials,
     SecurityKeyOrHybridFlowAvailable security_key_or_hybrid_flow_available) {
+  if (!credentials.empty() && !passkeys_after_fill_recorded_) {
+    passkeys_after_fill_recorded_ = true;
+    base::UmaHistogramBoolean(
+        "PasswordManager.PasskeysArrivedAfterAutofillDisplay",
+        passkey_display_has_happened_);
+  }
+
   passkeys_ = std::move(credentials);
   security_key_or_hybrid_flow_available_ =
       security_key_or_hybrid_flow_available;

@@ -100,6 +100,10 @@ class WebAuthnCredManDelegate {
   base::OnceCallback<void(const std::u16string&, const std::u16string&)>
       filling_callback_;
 
+  // Trakcks whether the PasskeysArrivedAfterAutofillDisplay metric has been
+  // recorded.
+  bool passkeys_after_fill_recorded_ = false;
+
   static std::optional<int> cred_man_support_;
 };
 
