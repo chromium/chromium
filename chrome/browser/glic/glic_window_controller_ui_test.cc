@@ -73,6 +73,34 @@ class GlicWindowControllerTest : public InteractiveBrowserTest {
   base::test::ScopedFeatureList features_;
 };
 
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, ShowAndCloseAttachedWidget) {
+  RunTestSequence(PressButton(kGlicButtonElementId),
+                  InAnyContext(WaitForShow(kGlicViewElementId)),
+                  InSameContext(Steps(
+                      Check([this]() {
+                        return window_controller().GetGlicWidgetForTesting() !=
+                               nullptr;
+                      }),
+                      Do([this]() { window_controller().Close(); }),
+                      WaitForHide(kGlicViewElementId))));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, ShowAndCloseDetachedWidget) {
+  RunTestSequence(Do([this]() {
+                    // Simulate showing the glic widget detached (without
+                    // glic_button_view).
+                    window_controller().Show(nullptr);
+                  }),
+                  InAnyContext(WaitForShow(kGlicViewElementId)),
+                  InSameContext(Steps(
+                      Check([this]() {
+                        return window_controller().GetGlicWidgetForTesting() !=
+                               nullptr;
+                      }),
+                      Do([this]() { window_controller().Close(); }),
+                      WaitForHide(kGlicViewElementId))));
+}
+
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, DoNotCrashOnBrowserClose) {
   RunTestSequence(PressButton(kGlicButtonElementId),
                   InAnyContext(WaitForShow(kGlicViewElementId)),

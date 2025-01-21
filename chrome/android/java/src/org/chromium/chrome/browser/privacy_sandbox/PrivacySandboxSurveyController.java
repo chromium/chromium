@@ -86,6 +86,7 @@ public class PrivacySandboxSurveyController {
         CctAdsNoticeSurveyFailures.INVALID_EEA_CONTROL_SURVEY_CONFIG,
         CctAdsNoticeSurveyFailures.INVALID_ROW_ACKNOWLEDGED_SURVEY_CONFIG,
         CctAdsNoticeSurveyFailures.INVALID_ROW_CONTROL_SURVEY_CONFIG,
+        CctAdsNoticeSurveyFailures.MAX_VALUE,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface CctAdsNoticeSurveyFailures {
@@ -105,6 +106,7 @@ public class PrivacySandboxSurveyController {
         int INVALID_EEA_CONTROL_SURVEY_CONFIG = 6;
         int INVALID_ROW_ACKNOWLEDGED_SURVEY_CONFIG = 7;
         int INVALID_ROW_CONTROL_SURVEY_CONFIG = 8;
+        int MAX_VALUE = INVALID_ROW_CONTROL_SURVEY_CONFIG;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/enums.xml:PrivacySandboxCctAdsNoticeSurveyFailures)
@@ -433,14 +435,14 @@ public class PrivacySandboxSurveyController {
         RecordHistogram.recordEnumeratedHistogram(
                 "PrivacySandbox.SentimentSurvey.Status",
                 status,
-                PrivacySandboxSentimentSurveyStatus.MAX_VALUE + 1);
+                PrivacySandboxSentimentSurveyStatus.MAX_VALUE);
     }
 
     private static void recordCctAdsNoticeSurveyFailures(@CctAdsNoticeSurveyFailures int failure) {
         RecordHistogram.recordEnumeratedHistogram(
                 "PrivacySandbox.Surveys.CctAdsNoticeSurvey.Failures",
                 failure,
-                CctAdsNoticeSurveyFailures.INVALID_ROW_CONTROL_SURVEY_CONFIG + 1);
+                CctAdsNoticeSurveyFailures.MAX_VALUE);
     }
 
     private static void emitInvalidSurveyConfigHistogram(@PrivacySandboxSurveyType int surveyType) {

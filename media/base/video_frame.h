@@ -609,11 +609,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Only call if `HasMappableGpuBuffer() == true`.
   bool AsyncMappingIsNonBlocking() const;
 
-  // Gets the GpuMemoryBufferHandle backing the VideoFrame. Note that most of
-  // VideoFrame clients currently use ::GetGpuMemoryBuffer() above only to clone
-  // a handle from it. Those clients will be switched to using this new api.
-  // This will help with MappableSI work which intends to remove all direct
-  // usage of GpuMemoryBuffer.
+  // Gets the GpuMemoryBufferHandle backing the VideoFrame.
   gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() const;
 
   // Returns true if the video frame was created with the given parameters.
@@ -837,14 +833,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
                                     const gfx::Size& natural_size);
 
  private:
-  // Friend class and methods which are currently using
-  // VideoFrame::GetGpuMemorybuffer() until they are fully converted to use
-  // MappableSI.
-  // TODO(crbug.com/40263579): Remove below friends as well as
-  // ::GetGpuMemoryBuffer() and ::GetGpuMemoryBufferForTesting() once all
-  // friends and tests are converted.
-  friend class VideoEncodeAcceleratorAdapter;
-
   // The constructor of VideoFrame should use IsValidConfigInternal()
   // instead of the public IsValidConfig() to check the config, because we can
   // create special video frames that won't pass the check by IsValidConfig().
@@ -921,12 +909,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   template <typename T>
   base::span<T> GetVisibleDataInternal(base::span<T> data, size_t plane) const;
-
-  // Meant to be only used by friends until they are fully converted to use
-  // MappableSI instead. Note that all the clients should use
-  // VideoFrame::MapGMBOrSharedImage() instead since direct use of
-  // GpuMemoryBuffers are being deprecated as a part of MappableSI.
-  gfx::GpuMemoryBuffer* GetGpuMemoryBuffer() const;
 
   // VideFrameLayout (includes format, coded_size, and strides).
   const VideoFrameLayout layout_;

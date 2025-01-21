@@ -183,6 +183,15 @@ BASE_DECLARE_FEATURE(kWebApkBackupAndRestoreBackend);
 // in but has not turned on full sync).
 BASE_DECLARE_FEATURE(kSyncEnableExtensionsInTransportMode);
 
+#if BUILDFLAG(IS_ANDROID)
+// Flag to test different alternatives for the passwords sync error message
+// content.
+BASE_DECLARE_FEATURE(kSyncEnablePasswordsSyncErrorMessageAlternative);
+inline constexpr base::FeatureParam<int>
+    kSyncEnablePasswordsSyncErrorMessageAlternativeVersion{
+        &kSyncEnablePasswordsSyncErrorMessageAlternative, "version", 1};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

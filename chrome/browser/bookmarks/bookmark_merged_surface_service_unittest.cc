@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -104,6 +105,13 @@ class BookmarkMergedSurfaceServiceTest : public testing::Test {
   bookmarks::BookmarkModel& model() { return *model_; }
   const BookmarkNode* managed_node() const {
     return managed_bookmark_service_->managed_node();
+  }
+
+  void PerformMoveAction(Browser* browser,
+                         const bookmarks::BookmarkNode* node,
+                         const bookmarks::BookmarkNode* target_node,
+                         size_t index) {
+    model_->Move(node, target_node, index);
   }
 
  private:
@@ -306,7 +314,8 @@ TEST_F(BookmarkMergedSurfaceServiceTest, MoveToPermanentFolder) {
 
   // Move node "2" in bookmark bar to be after "4" in other node.
   const BookmarkNode* node = model().bookmark_bar_node()->children()[1].get();
-  service().Move(node, BookmarkParentFolder::OtherFolder(), 1);
+  service().Move(node, BookmarkParentFolder::OtherFolder(), 1,
+                 /*browser=*/nullptr);
   EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()), "1 3 ");
   EXPECT_EQ(ModelStringFromNode(model().other_node()), "4 2 5 6 ");
 }
@@ -326,14 +335,16 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
   // Move from local bookmark bar to local other node.
   // Move node "2" in bookmark bar to be after "4" in other node.
   const BookmarkNode* node = model().bookmark_bar_node()->children()[1].get();
-  service().Move(node, BookmarkParentFolder::OtherFolder(), 1);
+  service().Move(node, BookmarkParentFolder::OtherFolder(), 1,
+                 /*browser=*/nullptr);
   EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()), "1 3 ");
   EXPECT_EQ(ModelStringFromNode(model().other_node()), "2 4 5 6 ");
   EXPECT_EQ(service().GetIndexOf(node), 1u);
 
   // Move within bookmark bar.
   node = model().bookmark_bar_node()->children()[1].get();
-  service().Move(node, BookmarkParentFolder::BookmarkBarFolder(), 1);
+  service().Move(node, BookmarkParentFolder::BookmarkBarFolder(), 1,
+                 /*browser=*/nullptr);
   EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()), "3 1 ");
   EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()),
             "A1 A2 A3 ");
@@ -342,7 +353,8 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
 
   // Move from account other node to account bookmark bar.
   node = model().account_other_node()->children()[0].get();
-  service().Move(node, BookmarkParentFolder::BookmarkBarFolder(), 2);
+  service().Move(node, BookmarkParentFolder::BookmarkBarFolder(), 2,
+                 /*browser=*/nullptr);
   EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()), "3 1 ");
   EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()),
             "A1 A4 A2 A3 ");
@@ -365,11 +377,72 @@ TEST_F(BookmarkMergedSurfaceServiceTest, MoveToBookmarkNode) {
   const BookmarkNode* destination =
       model().bookmark_bar_node()->children()[3].get();
   service().Move(node_to_move,
-                 BookmarkParentFolder::FromFolderNode(destination), 1);
+                 BookmarkParentFolder::FromFolderNode(destination), 1,
+                 /*browser=*/nullptr);
 
   EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()),
             "1 2 3 f1:[ 4 8 5 ] ");
   EXPECT_EQ(ModelStringFromNode(model().other_node()), "6 7 ");
+}
+
+TEST_F(BookmarkMergedSurfaceServiceTest, MoveFromAccountToLocalStorage) {
+  LoadBookmarkModel();
+  model().CreateAccountPermanentFolders();
+
+  AddNodesFromModelString(&model(), model().bookmark_bar_node(), "f1:[ 1 2 ] ");
+  AddNodesFromModelString(&model(), model().account_bookmark_bar_node(),
+                          "A1 A2 A3 ");
+
+  const BookmarkNode* node =
+      model().account_bookmark_bar_node()->children()[0].get();
+  const BookmarkNode* destination =
+      model().bookmark_bar_node()->children()[0].get();
+
+  // Bypass the move storage dialog and directly move the bookmark.
+  base::MockCallback<
+      BookmarkMergedSurfaceService::ShowMoveStorageDialogCallback>
+      move_storage_callback;
+  service().SetShowMoveStorageDialogCallbackForTesting(
+      move_storage_callback.Get());
+  EXPECT_CALL(move_storage_callback, Run(testing::_, node, destination, 1))
+      .WillOnce(testing::Invoke(
+          this, &BookmarkMergedSurfaceServiceTest::PerformMoveAction));
+
+  service().Move(node, BookmarkParentFolder::FromFolderNode(destination), 1,
+                 /*browser=*/nullptr);
+
+  EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()), "f1:[ 1 A1 2 ] ");
+  EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()), "A2 A3 ");
+}
+
+TEST_F(BookmarkMergedSurfaceServiceTest, MoveFromLocalToAccountStorage) {
+  LoadBookmarkModel();
+  model().CreateAccountPermanentFolders();
+
+  AddNodesFromModelString(&model(), model().bookmark_bar_node(), "1 2 3 ");
+  AddNodesFromModelString(&model(), model().account_bookmark_bar_node(),
+                          "f1:[ A1 A2 ] ");
+
+  const BookmarkNode* node = model().bookmark_bar_node()->children()[0].get();
+  const BookmarkNode* destination =
+      model().account_bookmark_bar_node()->children()[0].get();
+
+  // Bypass the move storage dialog and directly move the bookmark.
+  base::MockCallback<
+      BookmarkMergedSurfaceService::ShowMoveStorageDialogCallback>
+      move_storage_callback;
+  service().SetShowMoveStorageDialogCallbackForTesting(
+      move_storage_callback.Get());
+  EXPECT_CALL(move_storage_callback, Run(testing::_, node, destination, 1))
+      .WillOnce(testing::Invoke(
+          this, &BookmarkMergedSurfaceServiceTest::PerformMoveAction));
+
+  service().Move(node, BookmarkParentFolder::FromFolderNode(destination), 1,
+                 /*browser=*/nullptr);
+
+  EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()), "2 3 ");
+  EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()),
+            "f1:[ A1 1 A2 ] ");
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeData) {

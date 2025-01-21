@@ -45,6 +45,7 @@ class MerchantPromoCodeManager;
 class MigratableCreditCard;
 struct OfferNotificationOptions;
 class OtpUnmaskDelegate;
+class PaymentsDataManager;
 enum class OtpUnmaskResult;
 class TouchToFillDelegate;
 struct VirtualCardEnrollmentFields;
@@ -560,6 +561,14 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // currently shown. Should be called only if the feature is supported by the
   // platform.
   virtual void HideTouchToFillPaymentMethod();
+
+  // Return the `PaymentsDataManager` which is payments-specific version of
+  // PersonalDataManager. It has two main responsibilities:
+  // - Caching the payments related data stored in `AutofillTable` for
+  // synchronous retrieval.
+  // - Posting changes to `AutofillTable` via the `AutofillWebDataService`
+  //   and updating its state accordingly.
+  virtual const PaymentsDataManager& GetPaymentsDataManager() const = 0;
 
 #if !BUILDFLAG(IS_IOS)
   // Creates the appropriate implementation of InternalAuthenticator. May be

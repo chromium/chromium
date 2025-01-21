@@ -215,7 +215,7 @@ std::unique_ptr<syncer::EntityChange> CreateEntityChange(
       return syncer::EntityChange::CreateUpdate(guid,
                                                 CreateEntityData(specific));
     case syncer::EntityChange::ACTION_DELETE:
-      return syncer::EntityChange::CreateDelete(guid);
+      return syncer::EntityChange::CreateDelete(guid, syncer::EntityData());
   }
 }
 

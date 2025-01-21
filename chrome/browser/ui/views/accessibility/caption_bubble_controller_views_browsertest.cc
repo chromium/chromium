@@ -234,7 +234,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
     // passing by side effect of the AccessibilityChecker's checks. The full
     // analysis can be found in the bug.
     if (auto* label = GetLabel()) {
-      label->GetTooltipText(gfx::Point());
+      label->GetRenderedTooltipText(gfx::Point());
     }
 
     return OnPartialTranscription(text, GetCaptionBubbleContext());
@@ -251,7 +251,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
     // passing by side effect of the AccessibilityChecker's checks. The full
     // analysis can be found in the bug.
     if (auto* label = GetLabel()) {
-      label->GetTooltipText(gfx::Point());
+      label->GetRenderedTooltipText(gfx::Point());
     }
 
     return OnFinalTranscription(text, GetCaptionBubbleContext());

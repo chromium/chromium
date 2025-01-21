@@ -136,8 +136,8 @@ TEST_F(LegacyAccountsTableViewControllerTest, AddChromeIdentity) {
   fake_system_identity_manager()->AddIdentity(fake_identity);
 
   // Simulates a credential reload.
-  authentication_service()->SignIn(
-      fake_identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  authentication_service()->SignIn(fake_identity,
+                                   signin_metrics::AccessPoint::kSettings);
   fake_system_identity_manager()->FireSystemIdentityReloaded();
   base::RunLoop().RunUntilIdle();
 
@@ -156,8 +156,8 @@ TEST_F(LegacyAccountsTableViewControllerTest, IgnoreMismatchWithAccountInfo) {
   fake_system_identity_manager()->AddIdentity(fake_identity2);
 
   // Simulates a credential reload.
-  authentication_service()->SignIn(
-      fake_identity1, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  authentication_service()->SignIn(fake_identity1,
+                                   signin_metrics::AccessPoint::kSettings);
   fake_system_identity_manager()->FireSystemIdentityReloaded();
   base::RunLoop().RunUntilIdle();
 
@@ -189,14 +189,14 @@ TEST_F(LegacyAccountsTableViewControllerTest, DontHoldPassphraseError) {
   fake_system_identity_manager()->AddIdentity(fake_identity);
 
   // Simulate a credential reload.
-  authentication_service()->SignIn(
-      fake_identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  authentication_service()->SignIn(fake_identity,
+                                   signin_metrics::AccessPoint::kSettings);
   fake_system_identity_manager()->FireSystemIdentityReloaded();
   base::RunLoop().RunUntilIdle();
 
   CoreAccountInfo account;
   account.email = base::SysNSStringToUTF8(fake_identity.userEmail);
-  account.gaia = base::SysNSStringToUTF8(fake_identity.gaiaID);
+  account.gaia = GaiaId(fake_identity.gaiaID);
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
   test_sync_service()->SetSignedIn(signin::ConsentLevel::kSignin, account);
   test_sync_service()->GetUserSettings()->SetPassphraseRequired();
@@ -215,14 +215,14 @@ TEST_F(LegacyAccountsTableViewControllerTest,
   fake_system_identity_manager()->AddIdentity(fake_identity);
 
   // Simulate a credential reload.
-  authentication_service()->SignIn(
-      fake_identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  authentication_service()->SignIn(fake_identity,
+                                   signin_metrics::AccessPoint::kSettings);
   fake_system_identity_manager()->FireSystemIdentityReloaded();
   base::RunLoop().RunUntilIdle();
 
   CoreAccountInfo account;
   account.email = base::SysNSStringToUTF8(fake_identity.userEmail);
-  account.gaia = base::SysNSStringToUTF8(fake_identity.gaiaID);
+  account.gaia = GaiaId(fake_identity.gaiaID);
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
   test_sync_service()->SetSignedIn(signin::ConsentLevel::kSync, account);
   ASSERT_FALSE(test_sync_service()->GetUserSettings()->IsPassphraseRequired());

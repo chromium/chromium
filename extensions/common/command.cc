@@ -9,6 +9,8 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -30,6 +32,9 @@ namespace values = manifest_values;
 
 namespace {
 
+using AcceleratorParseErrorCallback =
+    base::OnceCallback<void(ui::AcceleratorParseError)>;
+
 static const char kMissing[] = "Missing";
 
 static const char kCommandKeyNotSupported[] =
@@ -50,28 +55,25 @@ bool DoesRequireModifier(std::string_view accelerator) {
          accelerator != values::kKeyMediaStop;
 }
 
-// Parse an |accelerator| for a given platform (specified by |platform_key|) and
-// return the result as a ui::Accelerator if successful, or VKEY_UNKNOWN if not.
-// |index| is used when constructing an |error| messages to show which command
-// in the manifest is failing and |should_parse_media_keys| specifies whether
-// media keys are to be considered for parsing.
+// Parse an |accelerator| for a given platform (specified by |platform_key|)
+// and return the result as a ui::Accelerator if successful, or VKEY_UNKNOWN
+// if not. |should_parse_media_keys| specifies whether media keys are to be
+// considered for parsing. |error_callback| is called when there is an issue
+// with parsing |accelerator| and the reason why parsing failed is passed in.
 // Note: If the parsing rules here are changed, make sure to update the
-// corresponding extension_command_list.js validation, which validates the user
-// input for chrome://extensions/configureCommands.
+// corresponding shortcut_input.ts validation, which validates the user input
+// for the CrShortcutInput WebUI component.
 ui::Accelerator ParseImpl(std::string_view accelerator,
                           std::string_view platform_key,
-                          int index,
                           bool should_parse_media_keys,
-                          std::u16string* error) {
-  error->clear();
+                          AcceleratorParseErrorCallback error_callback) {
   if (platform_key != values::kKeybindingPlatformWin &&
       platform_key != values::kKeybindingPlatformMac &&
       platform_key != values::kKeybindingPlatformChromeOs &&
       platform_key != values::kKeybindingPlatformLinux &&
       platform_key != values::kKeybindingPlatformDefault) {
-    *error = ErrorUtils::FormatErrorMessageUTF16(
-        errors::kInvalidKeyBindingUnknownPlatform, base::NumberToString(index),
-        platform_key);
+    std::move(error_callback)
+        .Run(ui::AcceleratorParseError::kUnsupportedPlatform);
     return ui::Accelerator();
   }
 
@@ -80,19 +82,17 @@ ui::Accelerator ParseImpl(std::string_view accelerator,
   if (tokens.size() == 0 ||
       (tokens.size() == 1 && DoesRequireModifier(accelerator)) ||
       tokens.size() > kMaxTokenSize) {
-    *error = ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidKeyBinding,
-                                                 base::NumberToString(index),
-                                                 platform_key, accelerator);
+    std::move(error_callback).Run(ui::AcceleratorParseError::kMalformedInput);
     return ui::Accelerator();
   }
 
   // Now, parse it into an accelerator.
   int modifiers = ui::EF_NONE;
   ui::KeyboardCode key = ui::VKEY_UNKNOWN;
-  for (size_t i = 0; i < tokens.size(); i++) {
-    if (tokens[i] == values::kKeyCtrl) {
+  for (const std::string& token : tokens) {
+    if (token == values::kKeyCtrl) {
       modifiers |= ui::EF_CONTROL_DOWN;
-    } else if (tokens[i] == values::kKeyCommand) {
+    } else if (token == values::kKeyCommand) {
       if (platform_key == values::kKeybindingPlatformMac) {
         // Either the developer specified Command+foo in the manifest for Mac or
         // they specified Ctrl and it got normalized to Command (to get Ctrl on
@@ -112,7 +112,7 @@ ui::Accelerator ParseImpl(std::string_view accelerator,
         key = ui::VKEY_UNKNOWN;
         break;
       }
-    } else if (tokens[i] == values::kKeySearch) {
+    } else if (token == values::kKeySearch) {
       // Search is a special modifier only on ChromeOS and maps to 'Command'.
       if (platform_key == values::kKeybindingPlatformChromeOs) {
         modifiers |= ui::EF_COMMAND_DOWN;
@@ -121,81 +121,77 @@ ui::Accelerator ParseImpl(std::string_view accelerator,
         key = ui::VKEY_UNKNOWN;
         break;
       }
-    } else if (tokens[i] == values::kKeyAlt) {
+    } else if (token == values::kKeyAlt) {
       modifiers |= ui::EF_ALT_DOWN;
-    } else if (tokens[i] == values::kKeyShift) {
+    } else if (token == values::kKeyShift) {
       modifiers |= ui::EF_SHIFT_DOWN;
-    } else if (tokens[i].size() == 1 ||  // A-Z, 0-9.
-               tokens[i] == values::kKeyComma ||
-               tokens[i] == values::kKeyPeriod || tokens[i] == values::kKeyUp ||
-               tokens[i] == values::kKeyDown || tokens[i] == values::kKeyLeft ||
-               tokens[i] == values::kKeyRight || tokens[i] == values::kKeyIns ||
-               tokens[i] == values::kKeyDel || tokens[i] == values::kKeyHome ||
-               tokens[i] == values::kKeyEnd || tokens[i] == values::kKeyPgUp ||
-               tokens[i] == values::kKeyPgDwn ||
-               tokens[i] == values::kKeySpace || tokens[i] == values::kKeyTab ||
-               tokens[i] == values::kKeyMediaNextTrack ||
-               tokens[i] == values::kKeyMediaPlayPause ||
-               tokens[i] == values::kKeyMediaPrevTrack ||
-               tokens[i] == values::kKeyMediaStop) {
+    } else if (token.size() == 1 ||  // A-Z, 0-9.
+               token == values::kKeyComma || token == values::kKeyPeriod ||
+               token == values::kKeyUp || token == values::kKeyDown ||
+               token == values::kKeyLeft || token == values::kKeyRight ||
+               token == values::kKeyIns || token == values::kKeyDel ||
+               token == values::kKeyHome || token == values::kKeyEnd ||
+               token == values::kKeyPgUp || token == values::kKeyPgDwn ||
+               token == values::kKeySpace || token == values::kKeyTab ||
+               token == values::kKeyMediaNextTrack ||
+               token == values::kKeyMediaPlayPause ||
+               token == values::kKeyMediaPrevTrack ||
+               token == values::kKeyMediaStop) {
       if (key != ui::VKEY_UNKNOWN) {
         // Multiple key assignments.
         key = ui::VKEY_UNKNOWN;
         break;
       }
 
-      if (tokens[i] == values::kKeyComma) {
+      if (token == values::kKeyComma) {
         key = ui::VKEY_OEM_COMMA;
-      } else if (tokens[i] == values::kKeyPeriod) {
+      } else if (token == values::kKeyPeriod) {
         key = ui::VKEY_OEM_PERIOD;
-      } else if (tokens[i] == values::kKeyUp) {
+      } else if (token == values::kKeyUp) {
         key = ui::VKEY_UP;
-      } else if (tokens[i] == values::kKeyDown) {
+      } else if (token == values::kKeyDown) {
         key = ui::VKEY_DOWN;
-      } else if (tokens[i] == values::kKeyLeft) {
+      } else if (token == values::kKeyLeft) {
         key = ui::VKEY_LEFT;
-      } else if (tokens[i] == values::kKeyRight) {
+      } else if (token == values::kKeyRight) {
         key = ui::VKEY_RIGHT;
-      } else if (tokens[i] == values::kKeyIns) {
+      } else if (token == values::kKeyIns) {
         key = ui::VKEY_INSERT;
-      } else if (tokens[i] == values::kKeyDel) {
+      } else if (token == values::kKeyDel) {
         key = ui::VKEY_DELETE;
-      } else if (tokens[i] == values::kKeyHome) {
+      } else if (token == values::kKeyHome) {
         key = ui::VKEY_HOME;
-      } else if (tokens[i] == values::kKeyEnd) {
+      } else if (token == values::kKeyEnd) {
         key = ui::VKEY_END;
-      } else if (tokens[i] == values::kKeyPgUp) {
+      } else if (token == values::kKeyPgUp) {
         key = ui::VKEY_PRIOR;
-      } else if (tokens[i] == values::kKeyPgDwn) {
+      } else if (token == values::kKeyPgDwn) {
         key = ui::VKEY_NEXT;
-      } else if (tokens[i] == values::kKeySpace) {
+      } else if (token == values::kKeySpace) {
         key = ui::VKEY_SPACE;
-      } else if (tokens[i] == values::kKeyTab) {
+      } else if (token == values::kKeyTab) {
         key = ui::VKEY_TAB;
-      } else if (tokens[i] == values::kKeyMediaNextTrack &&
+      } else if (token == values::kKeyMediaNextTrack &&
                  should_parse_media_keys) {
         key = ui::VKEY_MEDIA_NEXT_TRACK;
-      } else if (tokens[i] == values::kKeyMediaPlayPause &&
+      } else if (token == values::kKeyMediaPlayPause &&
                  should_parse_media_keys) {
         key = ui::VKEY_MEDIA_PLAY_PAUSE;
-      } else if (tokens[i] == values::kKeyMediaPrevTrack &&
+      } else if (token == values::kKeyMediaPrevTrack &&
                  should_parse_media_keys) {
         key = ui::VKEY_MEDIA_PREV_TRACK;
-      } else if (tokens[i] == values::kKeyMediaStop &&
-                 should_parse_media_keys) {
+      } else if (token == values::kKeyMediaStop && should_parse_media_keys) {
         key = ui::VKEY_MEDIA_STOP;
-      } else if (tokens[i].size() == 1 && base::IsAsciiUpper(tokens[i][0])) {
-        key = static_cast<ui::KeyboardCode>(ui::VKEY_A + (tokens[i][0] - 'A'));
-      } else if (tokens[i].size() == 1 && base::IsAsciiDigit(tokens[i][0])) {
-        key = static_cast<ui::KeyboardCode>(ui::VKEY_0 + (tokens[i][0] - '0'));
+      } else if (token.size() == 1 && base::IsAsciiUpper(token[0])) {
+        key = static_cast<ui::KeyboardCode>(ui::VKEY_A + (token[0] - 'A'));
+      } else if (token.size() == 1 && base::IsAsciiDigit(token[0])) {
+        key = static_cast<ui::KeyboardCode>(ui::VKEY_0 + (token[0] - '0'));
       } else {
         key = ui::VKEY_UNKNOWN;
         break;
       }
     } else {
-      *error = ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidKeyBinding,
-                                                   base::NumberToString(index),
-                                                   platform_key, accelerator);
+      std::move(error_callback).Run(ui::AcceleratorParseError::kMalformedInput);
       return ui::Accelerator();
     }
   }
@@ -213,17 +209,14 @@ ui::Accelerator ParseImpl(std::string_view accelerator,
   // as a modifier.
   if (key == ui::VKEY_UNKNOWN || (ctrl && alt) || (command && alt) ||
       (shift && !ctrl && !alt && !command)) {
-    *error = ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidKeyBinding,
-                                                 base::NumberToString(index),
-                                                 platform_key, accelerator);
+    std::move(error_callback).Run(ui::AcceleratorParseError::kMalformedInput);
     return ui::Accelerator();
   }
 
   if (ui::MediaKeysListener::IsMediaKeycode(key) &&
       (shift || ctrl || alt || command)) {
-    *error = ErrorUtils::FormatErrorMessageUTF16(
-        errors::kInvalidKeyBindingMediaKeyWithModifier,
-        base::NumberToString(index), platform_key, accelerator);
+    std::move(error_callback)
+        .Run(ui::AcceleratorParseError::kMediaKeyWithModifier);
     return ui::Accelerator();
   }
 
@@ -259,6 +252,31 @@ std::string NormalizeShortcutSuggestion(std::string_view suggestion,
   return base::JoinString(tokens, "+");
 }
 
+void SetAcceleratorParseErrorMessage(std::u16string* error,
+                                     int index,
+                                     std::string_view platform_key,
+                                     std::string_view accelerator_string,
+                                     ui::AcceleratorParseError parse_error) {
+  error->clear();
+  switch (parse_error) {
+    case ui::AcceleratorParseError::kMalformedInput:
+      *error = ErrorUtils::FormatErrorMessageUTF16(
+          errors::kInvalidKeyBinding, base::NumberToString(index), platform_key,
+          accelerator_string);
+      break;
+    case ui::AcceleratorParseError::kMediaKeyWithModifier:
+      *error = ErrorUtils::FormatErrorMessageUTF16(
+          errors::kInvalidKeyBindingMediaKeyWithModifier,
+          base::NumberToString(index), platform_key, accelerator_string);
+      break;
+    case ui::AcceleratorParseError::kUnsupportedPlatform:
+      *error = ErrorUtils::FormatErrorMessageUTF16(
+          errors::kInvalidKeyBindingUnknownPlatform,
+          base::NumberToString(index), platform_key);
+      break;
+  }
+}
+
 }  // namespace
 
 Command::Command(std::string_view command_name,
@@ -268,8 +286,12 @@ Command::Command(std::string_view command_name,
     : ui::Command(command_name, description, global) {
   if (!accelerator.empty()) {
     std::u16string error;
-    set_accelerator(ParseImpl(accelerator, CommandPlatform(), 0,
-                              !IsActionRelatedCommand(command_name), &error));
+    AcceleratorParseErrorCallback on_parse_error =
+        base::BindOnce(SetAcceleratorParseErrorMessage, &error, 0,
+                       CommandPlatform(), accelerator);
+    set_accelerator(ParseImpl(accelerator, CommandPlatform(),
+                              !IsActionRelatedCommand(command_name),
+                              std::move(on_parse_error)));
   }
 }
 
@@ -300,9 +322,12 @@ std::string Command::CommandPlatform() {
 ui::Accelerator Command::StringToAccelerator(std::string_view accelerator,
                                              std::string_view command_name) {
   std::u16string error;
-  ui::Accelerator parsed =
-      ParseImpl(accelerator, Command::CommandPlatform(), 0,
-                !IsActionRelatedCommand(command_name), &error);
+  AcceleratorParseErrorCallback on_parse_error =
+      base::BindOnce(SetAcceleratorParseErrorMessage, &error, 0,
+                     CommandPlatform(), accelerator);
+  ui::Accelerator parsed = ParseImpl(accelerator, CommandPlatform(),
+                                     !IsActionRelatedCommand(command_name),
+                                     std::move(on_parse_error));
   return parsed;
 }
 
@@ -505,8 +530,12 @@ bool Command::Parse(const base::Value::Dict& command,
     if (!iter->second.empty()) {
       // Note that we pass iter->first to pretend we are on a platform we're not
       // on.
-      accelerator = ParseImpl(iter->second, iter->first, index,
-                              !IsActionRelatedCommand(command_name), error);
+      AcceleratorParseErrorCallback on_parse_error =
+          base::BindOnce(SetAcceleratorParseErrorMessage, error, index,
+                         iter->first, iter->second);
+      accelerator = ParseImpl(iter->second, iter->first,
+                              !IsActionRelatedCommand(command_name),
+                              std::move(on_parse_error));
       if (accelerator.key_code() == ui::VKEY_UNKNOWN) {
         if (error->empty()) {
           *error = ErrorUtils::FormatErrorMessageUTF16(

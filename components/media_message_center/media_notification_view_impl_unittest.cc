@@ -341,7 +341,7 @@ TEST_F(MediaNotificationViewImplTest, PlayPauseButtonTooltipCheck) {
   EXPECT_CALL(container(), OnMediaSessionInfoChanged(_));
 
   auto* button = GetButtonForAction(MediaSessionAction::kPlay);
-  std::u16string tooltip = button->GetTooltipText(gfx::Point());
+  std::u16string tooltip = button->GetRenderedTooltipText(gfx::Point());
   EXPECT_FALSE(tooltip.empty());
 
   media_session::mojom::MediaSessionInfoPtr session_info(
@@ -351,7 +351,7 @@ TEST_F(MediaNotificationViewImplTest, PlayPauseButtonTooltipCheck) {
   session_info->is_controllable = true;
   view()->UpdateWithMediaSessionInfo(std::move(session_info));
 
-  std::u16string new_tooltip = button->GetTooltipText(gfx::Point());
+  std::u16string new_tooltip = button->GetRenderedTooltipText(gfx::Point());
   EXPECT_FALSE(new_tooltip.empty());
   EXPECT_NE(tooltip, new_tooltip);
 }

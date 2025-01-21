@@ -925,9 +925,27 @@ const gfx::Image* PaymentsDataManager::GetCachedCardArtImageForUrl(
   return !image->IsEmpty() ? image : nullptr;
 }
 
-const std::vector<BnplIssuer>& PaymentsDataManager::GetUnlinkedBnplIssuers()
+base::span<const BnplIssuer> PaymentsDataManager::GetUnlinkedBnplIssuers()
     const {
+  if (!IsAutofillPaymentMethodsEnabled()) {
+    return {};
+  }
   return unlinked_bnpl_issuers_;
+}
+
+std::vector<BnplIssuer> PaymentsDataManager::GetBnplIssuers() const {
+  if (!IsAutofillPaymentMethodsEnabled()) {
+    return {};
+  }
+
+  std::vector<BnplIssuer> result;
+  result.reserve(linked_bnpl_issuers_.size() + unlinked_bnpl_issuers_.size());
+  result.insert(result.end(), linked_bnpl_issuers_.begin(),
+                linked_bnpl_issuers_.end());
+  result.insert(result.end(), unlinked_bnpl_issuers_.begin(),
+                unlinked_bnpl_issuers_.end());
+
+  return result;
 }
 
 void PaymentsDataManager::SetPrefService(PrefService* pref_service) {

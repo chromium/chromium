@@ -252,8 +252,7 @@ void AuthenticationService::Initialize(
     return;
   }
   // TODO(crbug.com/375605572): Need to set the right access point.
-  SignIn(identities_for_profile[0],
-         signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  SignIn(identities_for_profile[0], signin_metrics::AccessPoint::kUnknown);
 }
 
 void AuthenticationService::Shutdown() {
@@ -458,8 +457,7 @@ void AuthenticationService::GrantSyncConsent(
   // TODO(crbug.com/40067025): Turn sync on was deprecated. Remove
   // `GrantSyncConsent()` as it is obsolete.
   DUMP_WILL_BE_CHECK(access_point !=
-                     signin_metrics::AccessPoint::
-                         ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO)
+                     signin_metrics::AccessPoint::kPostDeviceRestoreSigninPromo)
       << "Turn sync on should not be available as sync promos are deprecated "
          "[access point = "
       << int(access_point) << "]";

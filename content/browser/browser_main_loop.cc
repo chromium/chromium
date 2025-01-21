@@ -968,9 +968,6 @@ int BrowserMainLoop::CreateThreads() {
 int BrowserMainLoop::PostCreateThreads() {
   TRACE_EVENT0("startup", "BrowserMainLoop::PostCreateThreads");
 
-  BackgroundTracingManagerImpl::GetInstance()
-      .AddMetadataGeneratorFunction();
-
   if (parts_)
     parts_->PostCreateThreads();
 

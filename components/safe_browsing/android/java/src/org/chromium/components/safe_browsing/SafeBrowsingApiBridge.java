@@ -189,7 +189,7 @@ public final class SafeBrowsingApiBridge {
                 int threatType,
                 int[] threatAttributes,
                 int responseStatus,
-                long checkDelta) {
+                long checkDeltaUs) {
             if (callbackId == CALLBACK_ID_FOR_STARTUP) {
                 // Not delivering the callback result to native if this is the call for startup. The
                 // native library may not be ready, and there is no one on the native side listening
@@ -198,7 +198,7 @@ public final class SafeBrowsingApiBridge {
             }
             synchronized (sSafeBrowsingApiHandlerLock) {
                 if (sSafeBrowsingApiUrlCheckTimeObserver != null) {
-                    sSafeBrowsingApiUrlCheckTimeObserver.onUrlCheckTime(checkDelta);
+                    sSafeBrowsingApiUrlCheckTimeObserver.onUrlCheckTime(checkDeltaUs);
                     sSafeBrowsingApiUrlCheckTimeObserver = null;
                 }
                 SafeBrowsingApiBridgeJni.get()
@@ -208,7 +208,7 @@ public final class SafeBrowsingApiBridge {
                                 threatType,
                                 threatAttributes,
                                 responseStatus,
-                                checkDelta);
+                                checkDeltaUs);
             }
         }
     }
@@ -297,7 +297,7 @@ public final class SafeBrowsingApiBridge {
                 int threatType,
                 int[] threatAttributes,
                 int responseStatus,
-                long checkDelta);
+                long checkDeltaUs);
 
         void onVerifyAppsEnabledDone(long callbackId, int result);
     }

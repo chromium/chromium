@@ -115,12 +115,28 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
 
     AuctionHandle* auction_handle() { return auction_handle_.Get(); }
 
+    // This should be called from all ::React functions of derived classes. It
+    // keeps track of how many input promises remain to be resolved for metrics.
+    void OnResolved() {
+      if (input_promise_) {
+        auction_handle_->InputPromiseResolved();
+      }
+    }
+
    protected:
-    explicit AuctionHandleFunction(AuctionHandle* auction_handle)
-        : auction_handle_(auction_handle) {}
+    // `input_promise`: True if this AuctionHandleFunction is tracking a promise
+    // for data supplied by the auction caller that the auction may eventually
+    // wait on.
+    AuctionHandleFunction(AuctionHandle* auction_handle, bool input_promise)
+        : auction_handle_(auction_handle), input_promise_(input_promise) {
+      if (input_promise_) {
+        auction_handle_->IncrementPendingInputPromises();
+      }
+    }
 
    private:
     Member<AuctionHandle> auction_handle_;
+    bool input_promise_;
   };
 
   template <typename IDLType, typename Derived>
@@ -128,8 +144,10 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
                                     public AuctionHandleFunction {
    public:
     AuctionHandleFunctionImpl(AuctionHandle* auction_handle,
-                              const MemberScriptPromise<IDLType>& promise)
-        : AuctionHandleFunction(auction_handle), promise_(promise) {
+                              const MemberScriptPromise<IDLType>& promise,
+                              bool input_promise)
+        : AuctionHandleFunction(auction_handle, input_promise),
+          promise_(promise) {
       ThenCallable<IDLType, Derived>::SetExceptionContext(
           ExceptionContext(v8::ExceptionContext::kOperation, "NavigatorAuction",
                            "runAdAuction"));
@@ -352,7 +370,8 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
    public:
     explicit Rejected(AuctionHandle* auction_handle)
         : AuctionHandleFunctionImpl(auction_handle,
-                                    MemberScriptPromise<IDLAny>()) {}
+                                    MemberScriptPromise<IDLAny>(),
+                                    /*input_promise=*/false) {}
 
     // Abort the auction if any input promise rejects
     void React(ScriptState*, ScriptValue) { auction_handle()->Abort(); }
@@ -372,6 +391,10 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
   }
 
   void AttachQueuedPromises(ScriptState* script_state) {
+    if (outstanding_input_promises_ == 0) {
+      time_of_final_input_promise_resolved_ = base::TimeTicks::Now();
+    }
+
     auto* rejected = MakeGarbageCollected<Rejected>(this);
     for (auto& success_helper : queued_promises_) {
       success_helper->Attach(script_state, rejected);
@@ -407,9 +430,27 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
     return abortable_ad_auction_.get();
   }
 
+  // Keeps track of input promises resolving and once the last one has resolved
+  // it records the time.
+  void InputPromiseResolved() {
+    DCHECK_LE(1u, outstanding_input_promises_);
+    outstanding_input_promises_ -= 1;
+    if (outstanding_input_promises_ == 0) {
+      time_of_final_input_promise_resolved_ = base::TimeTicks::Now();
+    }
+  }
+
+  void IncrementPendingInputPromises() { outstanding_input_promises_ += 1; }
+
  private:
   HeapVector<Member<AuctionHandleFunction>> queued_promises_;
   HeapMojoRemote<mojom::blink::AbortableAdAuction> abortable_ad_auction_;
+
+  // The number of input promises yet to resolve.
+  size_t outstanding_input_promises_;
+
+  // The time that the final input promise was provided to the auction.
+  std::optional<base::TimeTicks> time_of_final_input_promise_resolved_;
 
   std::optional<bool> resolve_to_config_;
   Member<
@@ -3048,7 +3089,7 @@ NavigatorAuction::AuctionHandle::JsonResolved::JsonResolved(
     mojom::blink::AuctionAdConfigField field,
     const String& seller_name,
     const char* field_name)
-    : AuctionHandleFunctionImpl(auction_handle, promise),
+    : AuctionHandleFunctionImpl(auction_handle, promise, /*is_input=*/false),
       auction_id_(std::move(auction_id)),
       field_(field),
       seller_name_(seller_name),
@@ -3057,6 +3098,8 @@ NavigatorAuction::AuctionHandle::JsonResolved::JsonResolved(
 void NavigatorAuction::AuctionHandle::JsonResolved::React(
     ScriptState* script_state,
     ScriptValue value) {
+  OnResolved();
+
   if (!script_state->ContextIsValid()) {
     return;
   }
@@ -3094,7 +3137,7 @@ NavigatorAuction::AuctionHandle::PerBuyerSignalsResolved::
             promise,
         mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
         const String& seller_name)
-    : AuctionHandleFunctionImpl(auction_handle, promise),
+    : AuctionHandleFunctionImpl(auction_handle, promise, /*is_input=*/true),
       auction_id_(std::move(auction_id)),
       seller_name_(seller_name) {}
 
@@ -3102,9 +3145,12 @@ void NavigatorAuction::AuctionHandle::PerBuyerSignalsResolved::React(
     ScriptState* script_state,
     const std::optional<HeapVector<std::pair<String, blink::ScriptValue>>>&
         value) {
+  OnResolved();
+
   if (!script_state->ContextIsValid()) {
     return;
   }
+
   auto per_buyer_signals = ConvertNonPromisePerBuyerSignalsFromV8ToMojo(
       script_state, seller_name_, value);
 
@@ -3123,13 +3169,14 @@ NavigatorAuction::AuctionHandle::DeprecatedRenderURLReplacementsResolved::
             IDLNullable<IDLRecord<IDLUSVString, IDLUSVString>>>& promise,
         mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
         const String& seller_name)
-    : AuctionHandleFunctionImpl(auction_handle, promise),
+    : AuctionHandleFunctionImpl(auction_handle, promise, /*is_input=*/true),
       auction_id_(std::move(auction_id)),
       seller_name_(seller_name) {}
 
 void NavigatorAuction::AuctionHandle::DeprecatedRenderURLReplacementsResolved::
     React(ScriptState* script_state,
           const std::optional<Vector<std::pair<String, String>>>& value) {
+  OnResolved();
   if (!script_state->ContextIsValid()) {
     return;
   }
@@ -3160,7 +3207,7 @@ NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved::BuyerTimeoutsResolved(
     mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
     mojom::blink::AuctionAdConfigBuyerTimeoutField field,
     const String& seller_name)
-    : AuctionHandleFunctionImpl(auction_handle, promise),
+    : AuctionHandleFunctionImpl(auction_handle, promise, /*is_input=*/true),
       auction_id_(std::move(auction_id)),
       field_(field),
       seller_name_(seller_name) {}
@@ -3168,6 +3215,8 @@ NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved::BuyerTimeoutsResolved(
 void NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved::React(
     ScriptState* script_state,
     const std::optional<Vector<std::pair<String, uint64_t>>>& value) {
+  OnResolved();
+
   if (!script_state->ContextIsValid()) {
     return;
   }
@@ -3190,13 +3239,15 @@ NavigatorAuction::AuctionHandle::BuyerCurrenciesResolved::
             IDLNullable<IDLRecord<IDLUSVString, IDLUSVString>>>& promise,
         mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
         const String& seller_name)
-    : AuctionHandleFunctionImpl(auction_handle, promise),
+    : AuctionHandleFunctionImpl(auction_handle, promise, /*is_input=*/true),
       auction_id_(std::move(auction_id)),
       seller_name_(seller_name) {}
 
 void NavigatorAuction::AuctionHandle::BuyerCurrenciesResolved::React(
     ScriptState* script_state,
     const std::optional<Vector<std::pair<String, String>>>& value) {
+  OnResolved();
+
   if (!script_state->ContextIsValid()) {
     return;
   }
@@ -3221,7 +3272,7 @@ NavigatorAuction::AuctionHandle::DirectFromSellerSignalsResolved::
         const scoped_refptr<const SecurityOrigin>& seller_origin,
         const std::optional<Vector<scoped_refptr<const SecurityOrigin>>>&
             interest_group_buyers)
-    : AuctionHandleFunctionImpl(auction_handle, promise),
+    : AuctionHandleFunctionImpl(auction_handle, promise, /*is_input=*/true),
       auction_id_(std::move(auction_id)),
       seller_name_(seller_name),
       seller_origin_(seller_origin),
@@ -3230,6 +3281,8 @@ NavigatorAuction::AuctionHandle::DirectFromSellerSignalsResolved::
 void NavigatorAuction::AuctionHandle::DirectFromSellerSignalsResolved::React(
     ScriptState* script_state,
     const String& value) {
+  OnResolved();
+
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context) {
     return;
@@ -3256,7 +3309,7 @@ NavigatorAuction::AuctionHandle::DirectFromSellerSignalsHeaderAdSlotResolved::
         const MemberScriptPromise<IDLNullable<IDLString>>& promise,
         mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
         const String& seller_name)
-    : AuctionHandleFunctionImpl(auction_handle, promise),
+    : AuctionHandleFunctionImpl(auction_handle, promise, /*is_input=*/true),
       auction_id_(std::move(auction_id)),
       seller_name_(seller_name) {}
 
@@ -3264,6 +3317,8 @@ void NavigatorAuction::AuctionHandle::
     DirectFromSellerSignalsHeaderAdSlotResolved::React(
         ScriptState* script_state,
         const String& value) {
+  OnResolved();
+
   if (!script_state->ContextIsValid()) {
     return;
   }
@@ -3278,13 +3333,15 @@ NavigatorAuction::AuctionHandle::ServerResponseResolved::ServerResponseResolved(
     const MemberScriptPromise<NotShared<DOMUint8Array>>& promise,
     mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
     const String& seller_name)
-    : AuctionHandleFunctionImpl(auction_handle, promise),
+    : AuctionHandleFunctionImpl(auction_handle, promise, /*is_input=*/true),
       auction_id_(std::move(auction_id)),
       seller_name_(seller_name) {}
 
 void NavigatorAuction::AuctionHandle::ServerResponseResolved::React(
     ScriptState* script_state,
     NotShared<DOMUint8Array> value) {
+  OnResolved();
+
   if (!script_state->ContextIsValid()) {
     return;
   }
@@ -3297,12 +3354,14 @@ NavigatorAuction::AuctionHandle::AdditionalBidsResolved::AdditionalBidsResolved(
     const MemberScriptPromise<IDLUndefined>& promise,
     mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
     const String& seller_name)
-    : AuctionHandleFunctionImpl(auction_handle, promise),
+    : AuctionHandleFunctionImpl(auction_handle, promise, /*is_input=*/true),
       auction_id_(std::move(auction_id)),
       seller_name_(seller_name) {}
 
 void NavigatorAuction::AuctionHandle::AdditionalBidsResolved::React(
     ScriptState* script_state) {
+  OnResolved();
+
   if (!script_state->ContextIsValid()) {
     return;
   }
@@ -3312,7 +3371,8 @@ void NavigatorAuction::AuctionHandle::AdditionalBidsResolved::React(
 NavigatorAuction::AuctionHandle::ResolveToConfigResolved::
     ResolveToConfigResolved(AuctionHandle* auction_handle,
                             const MemberScriptPromise<IDLBoolean>& promise)
-    : AuctionHandleFunction(auction_handle), promise_(promise) {
+    : AuctionHandleFunction(auction_handle, /*is_input=*/false),
+      promise_(promise) {
   ThenCallable<IDLAny, ResolveToConfigResolved>::SetExceptionContext(
       ExceptionContext(v8::ExceptionContext::kOperation, "NavigatorAuction",
                        "runAdAuction"));
@@ -3321,6 +3381,8 @@ NavigatorAuction::AuctionHandle::ResolveToConfigResolved::
 void NavigatorAuction::AuctionHandle::ResolveToConfigResolved::React(
     ScriptState* script_state,
     ScriptValue value) {
+  OnResolved();
+
   if (!script_state->ContextIsValid()) {
     return;
   }
@@ -4296,8 +4358,14 @@ void NavigatorAuction::AuctionHandle::AuctionComplete(
     if (is_server_auction) {
       uma_prefix = "Ads.InterestGroup.ServerAuction.";
     }
+    base::TimeTicks end_time = base::TimeTicks::Now();
+
     base::UmaHistogramTimes(uma_prefix + "TimeToResolve",
-                            base::TimeTicks::Now() - start_time);
+                            end_time - start_time);
+
+    base::UmaHistogramTimes(
+        uma_prefix + "TimeFromInputsResolvedToAuctionResolved",
+        end_time - *time_of_final_input_promise_resolved_);
   }
 }
 

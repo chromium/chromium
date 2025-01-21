@@ -1983,7 +1983,7 @@ public class RootUiCoordinator
         UmaSessionStats.registerSyntheticFieldTrial(
                 "EdgeToEdgeChinEligibility", eligible ? "Eligible" : "Not Eligible");
 
-        if (supportsEdgeToEdge()) {
+        if (supportsEdgeToEdge() && EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()) {
             mEdgeToEdgeController =
                     EdgeToEdgeControllerFactory.create(
                             mActivity,
@@ -1994,10 +1994,7 @@ public class RootUiCoordinator
                             mLayoutManagerSupplier,
                             mFullscreenManager);
             mEdgeToEdgeControllerSupplier.set(mEdgeToEdgeController);
-
-            if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()) {
-                mEdgeToEdgeBottomChin = createEdgeToEdgeBottomChin();
-            }
+            mEdgeToEdgeBottomChin = createEdgeToEdgeBottomChin();
         }
     }
 

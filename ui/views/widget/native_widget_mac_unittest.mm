@@ -280,7 +280,7 @@ class CustomTooltipView : public View, public ViewObserver {
 
  public:
   CustomTooltipView(const std::u16string& tooltip, View* tooltip_handler) {
-    SetCachedTooltipText(tooltip);
+    SetTooltipText(tooltip);
     if (tooltip_handler) {
       tooltip_handler_observation_.Observe(tooltip_handler);
     }

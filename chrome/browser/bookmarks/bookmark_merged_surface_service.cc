@@ -7,10 +7,12 @@
 #include <optional>
 #include <variant>
 
+#include "base/check_is_test.h"
 #include "base/notreached.h"
 #include "base/uuid.h"
 #include "chrome/browser/bookmarks/bookmark_parent_folder_children.h"
 #include "chrome/browser/bookmarks/permanent_folder_ordering_tracker.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_account_storage_move_dialog.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -254,14 +256,44 @@ BookmarkMergedSurfaceService::GetDefaultParentForNewNodes(
 
 void BookmarkMergedSurfaceService::Move(const bookmarks::BookmarkNode* node,
                                         const BookmarkParentFolder& new_parent,
-                                        size_t index) {
+                                        size_t index,
+                                        Browser* browser) {
   CHECK(!IsParentFolderManaged(new_parent));
+
   if (new_parent.as_permanent_folder()) {
     GetPermanentFolderOrderingTracker(*new_parent.as_permanent_folder())
         .MoveToIndex(node, index);
-  } else {
-    model_->Move(node, new_parent.as_non_permanent_folder(), index);
+    return;
   }
+
+  bool node_and_parent_have_same_storage =
+      model_->IsLocalOnlyNode(*node) ==
+      model_->IsLocalOnlyNode(*new_parent.as_non_permanent_folder());
+
+  // Move the bookmark if no user action is required.
+  if (node_and_parent_have_same_storage) {
+    model_->Move(node, new_parent.as_non_permanent_folder(), index);
+    return;
+  }
+
+  if (show_move_storage_dialog_for_testing_) {
+    show_move_storage_dialog_for_testing_.Run(
+        browser, node, new_parent.as_non_permanent_folder(), index);
+    return;
+  }
+
+  // This will show a dialog which asks the user to confirm whether they would
+  // like to move their bookmark to a different storage.
+  CHECK(browser);
+  ShowBookmarkAccountStorageMoveDialog(
+      browser, node, new_parent.as_non_permanent_folder(), index);
+}
+
+void BookmarkMergedSurfaceService::SetShowMoveStorageDialogCallbackForTesting(
+    ShowMoveStorageDialogCallback show_move_storage_dialog_for_testing) {
+  CHECK_IS_TEST();
+  show_move_storage_dialog_for_testing_ =
+      std::move(show_move_storage_dialog_for_testing);
 }
 
 void BookmarkMergedSurfaceService::AddNodesAsCopiesOfNodeData(

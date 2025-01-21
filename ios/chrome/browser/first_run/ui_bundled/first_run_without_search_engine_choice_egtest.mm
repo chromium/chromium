@@ -990,7 +990,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
-      initWithAccessPoint:signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE];
+      initWithAccessPoint:signin_metrics::AccessPoint::kStartPage];
   // TODO(crbug.com/41493423): We should log Signin is started. Maybe also that
   // it’s offered.
   expecteds.signinSigninCompletedAccessPoint = 1;

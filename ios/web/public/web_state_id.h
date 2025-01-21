@@ -45,6 +45,14 @@ class WebStateID {
   // `valid()` returns false.
   SessionID ToSessionID() const;
 
+  friend constexpr bool operator==(WebStateID lhs, WebStateID rhs) {
+    return lhs.identifier_ == rhs.identifier_;
+  }
+
+  friend constexpr auto operator<=>(WebStateID lhs, WebStateID rhs) {
+    return lhs.identifier_ <=> rhs.identifier_;
+  }
+
  private:
   template <typename T>
   friend struct std::hash;
@@ -53,21 +61,6 @@ class WebStateID {
 
   int32_t identifier_ = 0;
 };
-
-// Equality comparison function.
-constexpr bool operator==(WebStateID lhs, WebStateID rhs) {
-  return lhs.identifier() == rhs.identifier();
-}
-
-// Inequality comparison function.
-constexpr bool operator!=(WebStateID lhs, WebStateID rhs) {
-  return lhs.identifier() != rhs.identifier();
-}
-
-// Ordering function used for sorted containers.
-constexpr bool operator<(WebStateID lhs, WebStateID rhs) {
-  return lhs.identifier() < rhs.identifier();
-}
 
 // To work with CHECK-s and logs.
 std::ostream& operator<<(std::ostream& out, WebStateID id);

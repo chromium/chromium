@@ -192,7 +192,7 @@ class BackgroundMetadataDataSource
   static void Register() {
     perfetto::DataSourceDescriptor desc;
     desc.set_name("org.chromium.background_scenario_metadata");
-    perfetto::DataSource<BackgroundMetadataDataSource>::Register(desc);
+    CHECK(perfetto::DataSource<BackgroundMetadataDataSource>::Register(desc));
   }
 
   static void EmitMetadata(TracingScenario* scenario) {
@@ -267,6 +267,9 @@ BackgroundTracingManagerImpl::BackgroundTracingManagerImpl()
   NamedTriggerManager::SetInstance(this);
   g_background_tracing_manager_impl = this;
   preferences_ = std::make_unique<PreferenceManagerImpl>();
+  if (perfetto::Tracing::IsInitialized()) {
+    AddMetadataGeneratorFunction();
+  }
 }
 
 BackgroundTracingManagerImpl::~BackgroundTracingManagerImpl() {

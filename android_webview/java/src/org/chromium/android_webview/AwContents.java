@@ -509,10 +509,6 @@ public class AwContents implements SmartClipProvider {
     private AwViewMethods mAwViewMethods;
     private final FullScreenTransitionsState mFullScreenTransitionsState;
 
-    // This is a workaround for some qualcomm devices discarding buffer on
-    // Activity restore.
-    private boolean mInvalidateRootViewOnNextDraw;
-
     // The framework may temporarily detach our container view, for example during layout if
     // we are a child of a ListView. This may cause many toggles of View focus, which we suppress
     // when in this state.
@@ -4381,11 +4377,6 @@ public class AwContents implements SmartClipProvider {
                             mScrollOffsetManager.computeMaximumHorizontalScrollOffset(),
                             mScrollOffsetManager.computeMaximumVerticalScrollOffset())) {
                 mContainerView.postInvalidateOnAnimation();
-            }
-
-            if (mInvalidateRootViewOnNextDraw) {
-                mContainerView.getRootView().invalidate();
-                mInvalidateRootViewOnNextDraw = false;
             }
 
             // Tint everything one color, to make WebViews easier to spot.

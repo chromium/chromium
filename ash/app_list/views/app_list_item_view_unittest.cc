@@ -142,13 +142,13 @@ TEST_F(AppListItemViewTest, NewInstallDot) {
   views::View* new_install_dot = GetNewInstallDot(item_view);
   ASSERT_TRUE(new_install_dot);
   EXPECT_FALSE(new_install_dot->GetVisible());
-  EXPECT_EQ(item_view->GetTooltipText({}), u"Google Buzz");
+  EXPECT_EQ(item_view->GetRenderedTooltipText({}), u"Google Buzz");
   EXPECT_EQ(item_view->GetViewAccessibility().GetCachedDescription(), u"");
 
   // When the app is a new install the dot is visible and the tooltip changes.
   item->SetIsNewInstall(true);
   EXPECT_TRUE(new_install_dot->GetVisible());
-  EXPECT_EQ(item_view->GetTooltipText({}), u"Google Buzz\nNew install");
+  EXPECT_EQ(item_view->GetRenderedTooltipText({}), u"Google Buzz\nNew install");
 
   EXPECT_EQ(item_view->GetViewAccessibility().GetCachedDescription(),
             l10n_util::GetStringUTF16(
@@ -536,17 +536,17 @@ TEST_F(AppListItemViewTest, AppListItemViewTooltipText) {
   EXPECT_FALSE(new_install_dot->GetVisible());
 
   // Initially default tooltip is not used.
-  EXPECT_EQ(view->GetTooltipText(gfx::Point()), u"");
+  EXPECT_EQ(view->GetRenderedTooltipText(gfx::Point()), u"");
 
-  view->title()->SetTooltipText(u"Sample Text");
+  view->title()->SetCustomTooltipText(u"Sample Text");
 
-  EXPECT_EQ(view->GetTooltipText(gfx::Point()), u"Sample Text");
+  EXPECT_EQ(view->GetRenderedTooltipText(gfx::Point()), u"Sample Text");
 
   // When the app is a new install the dot is visible and the tooltip changes.
   item->SetIsNewInstall(true);
   EXPECT_TRUE(new_install_dot->GetVisible());
   EXPECT_EQ(
-      view->GetTooltipText(gfx::Point()),
+      view->GetRenderedTooltipText(gfx::Point()),
       l10n_util::GetStringFUTF16(IDS_APP_LIST_NEW_INSTALL, u"Sample Text"));
 }
 
@@ -565,18 +565,18 @@ TEST_F(AppListItemViewTest, AppListItemViewTooltipTextAccessibility) {
   ui::AXNodeData data;
   view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            view->GetTooltipText(gfx::Point()));
+            view->GetRenderedTooltipText(gfx::Point()));
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-            view->GetTooltipText(gfx::Point()));
+            view->GetRenderedTooltipText(gfx::Point()));
 
-  view->title()->SetTooltipText(u"Sample Text");
+  view->title()->SetCustomTooltipText(u"Sample Text");
 
   data = ui::AXNodeData();
   view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            view->GetTooltipText(gfx::Point()));
+            view->GetRenderedTooltipText(gfx::Point()));
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-            view->GetTooltipText(gfx::Point()));
+            view->GetRenderedTooltipText(gfx::Point()));
 
   // When the app is a new install the dot is visible and the tooltip changes.
   item->SetIsNewInstall(true);
@@ -584,11 +584,11 @@ TEST_F(AppListItemViewTest, AppListItemViewTooltipTextAccessibility) {
   data = ui::AXNodeData();
   view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            view->GetTooltipText(gfx::Point()));
+            view->GetRenderedTooltipText(gfx::Point()));
   // Description itself changes during new installation so tooltip info is not
   // used.
   EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-            view->GetTooltipText(gfx::Point()));
+            view->GetRenderedTooltipText(gfx::Point()));
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
             l10n_util::GetStringUTF16(
                 IDS_APP_LIST_NEW_INSTALL_ACCESSIBILE_DESCRIPTION));

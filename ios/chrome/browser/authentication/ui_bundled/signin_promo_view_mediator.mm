@@ -59,89 +59,76 @@ constexpr int kTopOfFeedSessionTimeInterval = 60 * 30;
 // Returns true if the sign-in promo is supported for `access_point`.
 bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
   switch (access_point) {
-    case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER:
-    case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST:
+    case signin_metrics::AccessPoint::kBookmarkManager:
+    case signin_metrics::AccessPoint::kRecentTabs:
+    case signin_metrics::AccessPoint::kNTPFeedTopPromo:
+    case signin_metrics::AccessPoint::kReadingList:
       return true;
-    case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
-    // TODO(crbug.com/40280655): Pass ACCESS_POINT_TAB_SWITCHER and not recent
+    case signin_metrics::AccessPoint::kSettings:
+    // TODO(crbug.com/40280655): Pass kTabSwitcher and not recent
     // tabs in the tab switcher promo.
-    case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_LINK:
-    case signin_metrics::AccessPoint::ACCESS_POINT_MENU:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER:
-    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
-    case signin_metrics::AccessPoint::ACCESS_POINT_DEVICES_PAGE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
-    case signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON:
-    case signin_metrics::AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SYNC_ERROR_CARD:
-    case signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
-    case signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SAFETY_CHECK:
-    case signin_metrics::AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
-    case signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
-    case signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW:
-    case signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
-    case signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_IDENTITY_DISC:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
-    case signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
+    case signin_metrics::AccessPoint::kTabSwitcher:
+    case signin_metrics::AccessPoint::kPostDeviceRestoreSigninPromo:
+    case signin_metrics::AccessPoint::kNTPFeedCardMenuPromo:
+    case signin_metrics::AccessPoint::kNTPFeedBottomPromo:
+    case signin_metrics::AccessPoint::kStartPage:
+    case signin_metrics::AccessPoint::kNTPLink:
+    case signin_metrics::AccessPoint::kMenu:
+    case signin_metrics::AccessPoint::kSupervisedUser:
+    case signin_metrics::AccessPoint::kExtensionInstallBubble:
+    case signin_metrics::AccessPoint::kExtensions:
+    case signin_metrics::AccessPoint::kBookmarkBubble:
+    case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
+    case signin_metrics::AccessPoint::kUserManager:
+    case signin_metrics::AccessPoint::kDevicesPage:
+    case signin_metrics::AccessPoint::kSigninPromo:
+    case signin_metrics::AccessPoint::kUnknown:
+    case signin_metrics::AccessPoint::kPasswordBubble:
+    case signin_metrics::AccessPoint::kAutofillDropdown:
+    case signin_metrics::AccessPoint::kResigninInfobar:
+    case signin_metrics::AccessPoint::kMachineLogon:
+    case signin_metrics::AccessPoint::kGoogleServicesSettings:
+    case signin_metrics::AccessPoint::kSyncErrorCard:
+    case signin_metrics::AccessPoint::kForcedSignin:
+    case signin_metrics::AccessPoint::kAccountRenamed:
+    case signin_metrics::AccessPoint::kWebSignin:
+    case signin_metrics::AccessPoint::kSafetyCheck:
+    case signin_metrics::AccessPoint::kKaleidoscope:
+    case signin_metrics::AccessPoint::kEnterpriseSignoutCoordinator:
+    case signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience:
+    case signin_metrics::AccessPoint::kSendTabToSelfPromo:
+    case signin_metrics::AccessPoint::kSettingsSyncOffRow:
+    case signin_metrics::AccessPoint::kPostDeviceRestoreBackgroundSignin:
+    case signin_metrics::AccessPoint::kNTPSignedOutIcon:
+    case signin_metrics::AccessPoint::kDesktopSigninManager:
+    case signin_metrics::AccessPoint::kForYouFRE:
+    case signin_metrics::AccessPoint::kCreatorFeedFollow:
+    case signin_metrics::AccessPoint::kReauthInfoBar:
+    case signin_metrics::AccessPoint::kAccountConsistencyService:
+    case signin_metrics::AccessPoint::kSearchCompanion:
+    case signin_metrics::AccessPoint::kSetUpList:
+    case signin_metrics::AccessPoint::kPasswordMigrationWarningAndroid:
+    case signin_metrics::AccessPoint::kSaveToDriveIOS:
+    case signin_metrics::AccessPoint::kSaveToPhotosIOS:
+    case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
+    case signin_metrics::AccessPoint::kRestorePrimaryAccountOnProfileLoad:
+    case signin_metrics::AccessPoint::kTabOrganization:
+    case signin_metrics::AccessPoint::kTipsNotification:
+    case signin_metrics::AccessPoint::kNotificationsOptInScreenContentToggle:
+    case signin_metrics::AccessPoint::kSigninChoiceRemembered:
+    case signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt:
+    case signin_metrics::AccessPoint::kSettingsSignoutConfirmationPrompt:
+    case signin_metrics::AccessPoint::kNTPIdentityDisc:
+    case signin_metrics::AccessPoint::kOIDCRedirectionInterception:
+    case signin_metrics::AccessPoint::kWebauthnModalDialog:
+    case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
+    case signin_metrics::AccessPoint::kAccountMenu:
+    case signin_metrics::AccessPoint::kAccountMenuFailedSwitch:
+    case signin_metrics::AccessPoint::kProductSpecifications:
+    case signin_metrics::AccessPoint::kAddressBubble:
+    case signin_metrics::AccessPoint::kCCTAccountMismatchNotification:
+    case signin_metrics::AccessPoint::kDriveFilePickerIOS:
+    case signin_metrics::AccessPoint::kCollaborationTabGroup:
 
       return false;
   }
@@ -153,98 +140,85 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     signin_metrics::AccessPoint access_point,
     int displayed_count) {
   switch (access_point) {
-    case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER:
+    case signin_metrics::AccessPoint::kBookmarkManager:
       base::UmaHistogramCounts100(
           "MobileSignInPromo.BookmarkManager.ImpressionsTilSigninButtons",
           displayed_count);
       break;
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+    case signin_metrics::AccessPoint::kNTPFeedTopPromo:
       base::UmaHistogramCounts100(
           "MobileSignInPromo.NTPFeedTop.ImpressionsTilSigninButtons",
           displayed_count);
       break;
-    case signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST:
+    case signin_metrics::AccessPoint::kReadingList:
       base::UmaHistogramCounts100(
           "MobileSignInPromo.ReadingList.ImpressionsTilSigninButtons",
           displayed_count);
       break;
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
-    case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_LINK:
-    case signin_metrics::AccessPoint::ACCESS_POINT_MENU:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER:
-    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
-    case signin_metrics::AccessPoint::ACCESS_POINT_DEVICES_PAGE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
-    case signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON:
-    case signin_metrics::AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SYNC_ERROR_CARD:
-    case signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
-    case signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SAFETY_CHECK:
-    case signin_metrics::AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
-    case signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW:
-    case signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
-    case signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_IDENTITY_DISC:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
-    case signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
+    case signin_metrics::AccessPoint::kEnterpriseSignoutCoordinator:
+    case signin_metrics::AccessPoint::kSettings:
+    case signin_metrics::AccessPoint::kRecentTabs:
+    case signin_metrics::AccessPoint::kTabSwitcher:
+    case signin_metrics::AccessPoint::kStartPage:
+    case signin_metrics::AccessPoint::kNTPLink:
+    case signin_metrics::AccessPoint::kMenu:
+    case signin_metrics::AccessPoint::kSupervisedUser:
+    case signin_metrics::AccessPoint::kExtensionInstallBubble:
+    case signin_metrics::AccessPoint::kExtensions:
+    case signin_metrics::AccessPoint::kBookmarkBubble:
+    case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
+    case signin_metrics::AccessPoint::kUserManager:
+    case signin_metrics::AccessPoint::kDevicesPage:
+    case signin_metrics::AccessPoint::kSigninPromo:
+    case signin_metrics::AccessPoint::kUnknown:
+    case signin_metrics::AccessPoint::kPasswordBubble:
+    case signin_metrics::AccessPoint::kAutofillDropdown:
+    case signin_metrics::AccessPoint::kResigninInfobar:
+    case signin_metrics::AccessPoint::kMachineLogon:
+    case signin_metrics::AccessPoint::kGoogleServicesSettings:
+    case signin_metrics::AccessPoint::kSyncErrorCard:
+    case signin_metrics::AccessPoint::kForcedSignin:
+    case signin_metrics::AccessPoint::kAccountRenamed:
+    case signin_metrics::AccessPoint::kWebSignin:
+    case signin_metrics::AccessPoint::kSafetyCheck:
+    case signin_metrics::AccessPoint::kKaleidoscope:
+    case signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience:
+    case signin_metrics::AccessPoint::kSendTabToSelfPromo:
+    case signin_metrics::AccessPoint::kSettingsSyncOffRow:
+    case signin_metrics::AccessPoint::kPostDeviceRestoreSigninPromo:
+    case signin_metrics::AccessPoint::kPostDeviceRestoreBackgroundSignin:
+    case signin_metrics::AccessPoint::kNTPSignedOutIcon:
+    case signin_metrics::AccessPoint::kNTPFeedCardMenuPromo:
+    case signin_metrics::AccessPoint::kNTPFeedBottomPromo:
+    case signin_metrics::AccessPoint::kDesktopSigninManager:
+    case signin_metrics::AccessPoint::kForYouFRE:
+    case signin_metrics::AccessPoint::kCreatorFeedFollow:
+    case signin_metrics::AccessPoint::kReauthInfoBar:
+    case signin_metrics::AccessPoint::kAccountConsistencyService:
+    case signin_metrics::AccessPoint::kSearchCompanion:
+    case signin_metrics::AccessPoint::kSetUpList:
+    case signin_metrics::AccessPoint::kPasswordMigrationWarningAndroid:
+    case signin_metrics::AccessPoint::kSaveToDriveIOS:
+    case signin_metrics::AccessPoint::kSaveToPhotosIOS:
+    case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
+    case signin_metrics::AccessPoint::kRestorePrimaryAccountOnProfileLoad:
+    case signin_metrics::AccessPoint::kTabOrganization:
+    case signin_metrics::AccessPoint::kTipsNotification:
+    case signin_metrics::AccessPoint::kNotificationsOptInScreenContentToggle:
+    case signin_metrics::AccessPoint::kSigninChoiceRemembered:
+    case signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt:
+    case signin_metrics::AccessPoint::kSettingsSignoutConfirmationPrompt:
+    case signin_metrics::AccessPoint::kNTPIdentityDisc:
+    case signin_metrics::AccessPoint::kOIDCRedirectionInterception:
+    case signin_metrics::AccessPoint::kWebauthnModalDialog:
+    case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
+    case signin_metrics::AccessPoint::kAccountMenu:
+    case signin_metrics::AccessPoint::kAccountMenuFailedSwitch:
+    case signin_metrics::AccessPoint::kProductSpecifications:
+    case signin_metrics::AccessPoint::kAddressBubble:
+    case signin_metrics::AccessPoint::kCCTAccountMismatchNotification:
+    case signin_metrics::AccessPoint::kDriveFilePickerIOS:
+    case signin_metrics::AccessPoint::kCollaborationTabGroup:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
   }
@@ -256,98 +230,85 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     signin_metrics::AccessPoint access_point,
     int displayed_count) {
   switch (access_point) {
-    case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER:
+    case signin_metrics::AccessPoint::kBookmarkManager:
       base::UmaHistogramCounts100(
           "MobileSignInPromo.BookmarkManager.ImpressionsTilXButton",
           displayed_count);
       break;
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+    case signin_metrics::AccessPoint::kNTPFeedTopPromo:
       base::UmaHistogramCounts100(
           "MobileSignInPromo.NTPFeedTop.ImpressionsTilXButton",
           displayed_count);
       break;
-    case signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST:
+    case signin_metrics::AccessPoint::kReadingList:
       base::UmaHistogramCounts100(
           "MobileSignInPromo.ReadingList.ImpressionsTilXButton",
           displayed_count);
       break;
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
-    case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_LINK:
-    case signin_metrics::AccessPoint::ACCESS_POINT_MENU:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER:
-    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
-    case signin_metrics::AccessPoint::ACCESS_POINT_DEVICES_PAGE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
-    case signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON:
-    case signin_metrics::AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SYNC_ERROR_CARD:
-    case signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
-    case signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SAFETY_CHECK:
-    case signin_metrics::AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
-    case signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW:
-    case signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
-    case signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_IDENTITY_DISC:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
-    case signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
+    case signin_metrics::AccessPoint::kEnterpriseSignoutCoordinator:
+    case signin_metrics::AccessPoint::kSettings:
+    case signin_metrics::AccessPoint::kRecentTabs:
+    case signin_metrics::AccessPoint::kTabSwitcher:
+    case signin_metrics::AccessPoint::kStartPage:
+    case signin_metrics::AccessPoint::kNTPLink:
+    case signin_metrics::AccessPoint::kMenu:
+    case signin_metrics::AccessPoint::kSupervisedUser:
+    case signin_metrics::AccessPoint::kExtensionInstallBubble:
+    case signin_metrics::AccessPoint::kExtensions:
+    case signin_metrics::AccessPoint::kBookmarkBubble:
+    case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
+    case signin_metrics::AccessPoint::kUserManager:
+    case signin_metrics::AccessPoint::kDevicesPage:
+    case signin_metrics::AccessPoint::kSigninPromo:
+    case signin_metrics::AccessPoint::kUnknown:
+    case signin_metrics::AccessPoint::kPasswordBubble:
+    case signin_metrics::AccessPoint::kAutofillDropdown:
+    case signin_metrics::AccessPoint::kResigninInfobar:
+    case signin_metrics::AccessPoint::kMachineLogon:
+    case signin_metrics::AccessPoint::kGoogleServicesSettings:
+    case signin_metrics::AccessPoint::kSyncErrorCard:
+    case signin_metrics::AccessPoint::kForcedSignin:
+    case signin_metrics::AccessPoint::kAccountRenamed:
+    case signin_metrics::AccessPoint::kWebSignin:
+    case signin_metrics::AccessPoint::kSafetyCheck:
+    case signin_metrics::AccessPoint::kKaleidoscope:
+    case signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience:
+    case signin_metrics::AccessPoint::kSendTabToSelfPromo:
+    case signin_metrics::AccessPoint::kSettingsSyncOffRow:
+    case signin_metrics::AccessPoint::kPostDeviceRestoreSigninPromo:
+    case signin_metrics::AccessPoint::kPostDeviceRestoreBackgroundSignin:
+    case signin_metrics::AccessPoint::kNTPSignedOutIcon:
+    case signin_metrics::AccessPoint::kNTPFeedCardMenuPromo:
+    case signin_metrics::AccessPoint::kNTPFeedBottomPromo:
+    case signin_metrics::AccessPoint::kDesktopSigninManager:
+    case signin_metrics::AccessPoint::kForYouFRE:
+    case signin_metrics::AccessPoint::kCreatorFeedFollow:
+    case signin_metrics::AccessPoint::kReauthInfoBar:
+    case signin_metrics::AccessPoint::kAccountConsistencyService:
+    case signin_metrics::AccessPoint::kSearchCompanion:
+    case signin_metrics::AccessPoint::kSetUpList:
+    case signin_metrics::AccessPoint::kPasswordMigrationWarningAndroid:
+    case signin_metrics::AccessPoint::kSaveToDriveIOS:
+    case signin_metrics::AccessPoint::kSaveToPhotosIOS:
+    case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
+    case signin_metrics::AccessPoint::kRestorePrimaryAccountOnProfileLoad:
+    case signin_metrics::AccessPoint::kTabOrganization:
+    case signin_metrics::AccessPoint::kTipsNotification:
+    case signin_metrics::AccessPoint::kNotificationsOptInScreenContentToggle:
+    case signin_metrics::AccessPoint::kSigninChoiceRemembered:
+    case signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt:
+    case signin_metrics::AccessPoint::kSettingsSignoutConfirmationPrompt:
+    case signin_metrics::AccessPoint::kNTPIdentityDisc:
+    case signin_metrics::AccessPoint::kOIDCRedirectionInterception:
+    case signin_metrics::AccessPoint::kWebauthnModalDialog:
+    case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
+    case signin_metrics::AccessPoint::kAccountMenu:
+    case signin_metrics::AccessPoint::kAccountMenuFailedSwitch:
+    case signin_metrics::AccessPoint::kProductSpecifications:
+    case signin_metrics::AccessPoint::kAddressBubble:
+    case signin_metrics::AccessPoint::kCCTAccountMismatchNotification:
+    case signin_metrics::AccessPoint::kDriveFilePickerIOS:
+    case signin_metrics::AccessPoint::kCollaborationTabGroup:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
   }
@@ -357,89 +318,76 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
 const char* DisplayedCountPreferenceKey(
     signin_metrics::AccessPoint access_point) {
   switch (access_point) {
-    case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER:
+    case signin_metrics::AccessPoint::kBookmarkManager:
       return prefs::kIosBookmarkSigninPromoDisplayedCount;
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+    case signin_metrics::AccessPoint::kNTPFeedTopPromo:
       return prefs::kIosNtpFeedTopSigninPromoDisplayedCount;
-    case signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST:
+    case signin_metrics::AccessPoint::kReadingList:
       return prefs::kIosReadingListSigninPromoDisplayedCount;
-    case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
-    case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_LINK:
-    case signin_metrics::AccessPoint::ACCESS_POINT_MENU:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER:
-    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
-    case signin_metrics::AccessPoint::ACCESS_POINT_DEVICES_PAGE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
-    case signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON:
-    case signin_metrics::AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SYNC_ERROR_CARD:
-    case signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
-    case signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SAFETY_CHECK:
-    case signin_metrics::AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
-    case signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW:
-    case signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
-    case signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_IDENTITY_DISC:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
-    case signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
+    case signin_metrics::AccessPoint::kSettings:
+    case signin_metrics::AccessPoint::kRecentTabs:
+    case signin_metrics::AccessPoint::kTabSwitcher:
+    case signin_metrics::AccessPoint::kStartPage:
+    case signin_metrics::AccessPoint::kNTPLink:
+    case signin_metrics::AccessPoint::kMenu:
+    case signin_metrics::AccessPoint::kSupervisedUser:
+    case signin_metrics::AccessPoint::kExtensionInstallBubble:
+    case signin_metrics::AccessPoint::kExtensions:
+    case signin_metrics::AccessPoint::kBookmarkBubble:
+    case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
+    case signin_metrics::AccessPoint::kUserManager:
+    case signin_metrics::AccessPoint::kDevicesPage:
+    case signin_metrics::AccessPoint::kSigninPromo:
+    case signin_metrics::AccessPoint::kUnknown:
+    case signin_metrics::AccessPoint::kPasswordBubble:
+    case signin_metrics::AccessPoint::kAutofillDropdown:
+    case signin_metrics::AccessPoint::kResigninInfobar:
+    case signin_metrics::AccessPoint::kMachineLogon:
+    case signin_metrics::AccessPoint::kGoogleServicesSettings:
+    case signin_metrics::AccessPoint::kSyncErrorCard:
+    case signin_metrics::AccessPoint::kForcedSignin:
+    case signin_metrics::AccessPoint::kAccountRenamed:
+    case signin_metrics::AccessPoint::kWebSignin:
+    case signin_metrics::AccessPoint::kSafetyCheck:
+    case signin_metrics::AccessPoint::kKaleidoscope:
+    case signin_metrics::AccessPoint::kEnterpriseSignoutCoordinator:
+    case signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience:
+    case signin_metrics::AccessPoint::kSendTabToSelfPromo:
+    case signin_metrics::AccessPoint::kSettingsSyncOffRow:
+    case signin_metrics::AccessPoint::kPostDeviceRestoreSigninPromo:
+    case signin_metrics::AccessPoint::kPostDeviceRestoreBackgroundSignin:
+    case signin_metrics::AccessPoint::kNTPSignedOutIcon:
+    case signin_metrics::AccessPoint::kNTPFeedCardMenuPromo:
+    case signin_metrics::AccessPoint::kNTPFeedBottomPromo:
+    case signin_metrics::AccessPoint::kDesktopSigninManager:
+    case signin_metrics::AccessPoint::kForYouFRE:
+    case signin_metrics::AccessPoint::kCreatorFeedFollow:
+    case signin_metrics::AccessPoint::kReauthInfoBar:
+    case signin_metrics::AccessPoint::kAccountConsistencyService:
+    case signin_metrics::AccessPoint::kSearchCompanion:
+    case signin_metrics::AccessPoint::kSetUpList:
+    case signin_metrics::AccessPoint::kPasswordMigrationWarningAndroid:
+    case signin_metrics::AccessPoint::kSaveToDriveIOS:
+    case signin_metrics::AccessPoint::kSaveToPhotosIOS:
+    case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
+    case signin_metrics::AccessPoint::kRestorePrimaryAccountOnProfileLoad:
+    case signin_metrics::AccessPoint::kTabOrganization:
+    case signin_metrics::AccessPoint::kTipsNotification:
+    case signin_metrics::AccessPoint::kNotificationsOptInScreenContentToggle:
+    case signin_metrics::AccessPoint::kSigninChoiceRemembered:
+    case signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt:
+    case signin_metrics::AccessPoint::kSettingsSignoutConfirmationPrompt:
+    case signin_metrics::AccessPoint::kNTPIdentityDisc:
+    case signin_metrics::AccessPoint::kOIDCRedirectionInterception:
+    case signin_metrics::AccessPoint::kWebauthnModalDialog:
+    case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
+    case signin_metrics::AccessPoint::kAccountMenu:
+    case signin_metrics::AccessPoint::kAccountMenuFailedSwitch:
+    case signin_metrics::AccessPoint::kProductSpecifications:
+    case signin_metrics::AccessPoint::kAddressBubble:
+    case signin_metrics::AccessPoint::kCCTAccountMismatchNotification:
+    case signin_metrics::AccessPoint::kDriveFilePickerIOS:
+    case signin_metrics::AccessPoint::kCollaborationTabGroup:
       return nullptr;
   }
 }
@@ -448,89 +396,76 @@ const char* DisplayedCountPreferenceKey(
 const char* AlreadySeenSigninViewPreferenceKey(
     signin_metrics::AccessPoint access_point) {
   switch (access_point) {
-    case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER:
+    case signin_metrics::AccessPoint::kBookmarkManager:
       return prefs::kIosBookmarkPromoAlreadySeen;
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+    case signin_metrics::AccessPoint::kNTPFeedTopPromo:
       return prefs::kIosNtpFeedTopPromoAlreadySeen;
-    case signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST:
+    case signin_metrics::AccessPoint::kReadingList:
       return prefs::kIosReadingListPromoAlreadySeen;
-    case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
-    case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_LINK:
-    case signin_metrics::AccessPoint::ACCESS_POINT_MENU:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER:
-    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
-    case signin_metrics::AccessPoint::ACCESS_POINT_DEVICES_PAGE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
-    case signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON:
-    case signin_metrics::AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SYNC_ERROR_CARD:
-    case signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
-    case signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SAFETY_CHECK:
-    case signin_metrics::AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
-    case signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW:
-    case signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
-    case signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_IDENTITY_DISC:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
-    case signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
+    case signin_metrics::AccessPoint::kSettings:
+    case signin_metrics::AccessPoint::kRecentTabs:
+    case signin_metrics::AccessPoint::kTabSwitcher:
+    case signin_metrics::AccessPoint::kStartPage:
+    case signin_metrics::AccessPoint::kNTPLink:
+    case signin_metrics::AccessPoint::kMenu:
+    case signin_metrics::AccessPoint::kSupervisedUser:
+    case signin_metrics::AccessPoint::kExtensionInstallBubble:
+    case signin_metrics::AccessPoint::kExtensions:
+    case signin_metrics::AccessPoint::kBookmarkBubble:
+    case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
+    case signin_metrics::AccessPoint::kUserManager:
+    case signin_metrics::AccessPoint::kDevicesPage:
+    case signin_metrics::AccessPoint::kSigninPromo:
+    case signin_metrics::AccessPoint::kUnknown:
+    case signin_metrics::AccessPoint::kPasswordBubble:
+    case signin_metrics::AccessPoint::kAutofillDropdown:
+    case signin_metrics::AccessPoint::kResigninInfobar:
+    case signin_metrics::AccessPoint::kMachineLogon:
+    case signin_metrics::AccessPoint::kGoogleServicesSettings:
+    case signin_metrics::AccessPoint::kSyncErrorCard:
+    case signin_metrics::AccessPoint::kForcedSignin:
+    case signin_metrics::AccessPoint::kAccountRenamed:
+    case signin_metrics::AccessPoint::kWebSignin:
+    case signin_metrics::AccessPoint::kSafetyCheck:
+    case signin_metrics::AccessPoint::kKaleidoscope:
+    case signin_metrics::AccessPoint::kEnterpriseSignoutCoordinator:
+    case signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience:
+    case signin_metrics::AccessPoint::kSendTabToSelfPromo:
+    case signin_metrics::AccessPoint::kSettingsSyncOffRow:
+    case signin_metrics::AccessPoint::kPostDeviceRestoreSigninPromo:
+    case signin_metrics::AccessPoint::kPostDeviceRestoreBackgroundSignin:
+    case signin_metrics::AccessPoint::kNTPSignedOutIcon:
+    case signin_metrics::AccessPoint::kNTPFeedCardMenuPromo:
+    case signin_metrics::AccessPoint::kNTPFeedBottomPromo:
+    case signin_metrics::AccessPoint::kDesktopSigninManager:
+    case signin_metrics::AccessPoint::kForYouFRE:
+    case signin_metrics::AccessPoint::kCreatorFeedFollow:
+    case signin_metrics::AccessPoint::kReauthInfoBar:
+    case signin_metrics::AccessPoint::kAccountConsistencyService:
+    case signin_metrics::AccessPoint::kSearchCompanion:
+    case signin_metrics::AccessPoint::kSetUpList:
+    case signin_metrics::AccessPoint::kPasswordMigrationWarningAndroid:
+    case signin_metrics::AccessPoint::kSaveToDriveIOS:
+    case signin_metrics::AccessPoint::kSaveToPhotosIOS:
+    case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
+    case signin_metrics::AccessPoint::kRestorePrimaryAccountOnProfileLoad:
+    case signin_metrics::AccessPoint::kTabOrganization:
+    case signin_metrics::AccessPoint::kTipsNotification:
+    case signin_metrics::AccessPoint::kNotificationsOptInScreenContentToggle:
+    case signin_metrics::AccessPoint::kSigninChoiceRemembered:
+    case signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt:
+    case signin_metrics::AccessPoint::kSettingsSignoutConfirmationPrompt:
+    case signin_metrics::AccessPoint::kNTPIdentityDisc:
+    case signin_metrics::AccessPoint::kOIDCRedirectionInterception:
+    case signin_metrics::AccessPoint::kWebauthnModalDialog:
+    case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
+    case signin_metrics::AccessPoint::kAccountMenu:
+    case signin_metrics::AccessPoint::kAccountMenuFailedSwitch:
+    case signin_metrics::AccessPoint::kProductSpecifications:
+    case signin_metrics::AccessPoint::kAddressBubble:
+    case signin_metrics::AccessPoint::kCCTAccountMismatchNotification:
+    case signin_metrics::AccessPoint::kDriveFilePickerIOS:
+    case signin_metrics::AccessPoint::kCollaborationTabGroup:
       return nullptr;
   }
 }
@@ -543,11 +478,9 @@ const char* AlreadySeenSigninViewPreferenceKey(
   const char* pref_key = nullptr;
   switch (promo_action) {
     case SigninPromoAction::kReviewAccountSettings: {
-      if (access_point ==
-          signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER) {
+      if (access_point == signin_metrics::AccessPoint::kBookmarkManager) {
         pref_key = prefs::kIosBookmarkSettingsPromoAlreadySeen;
-      } else if (access_point ==
-                 signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST) {
+      } else if (access_point == signin_metrics::AccessPoint::kReadingList) {
         pref_key = prefs::kIosReadingListSettingsPromoAlreadySeen;
       }
       break;
@@ -677,8 +610,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   }
 
   // Always show the feed signin promo if the experimental setting is enabled.
-  if (accessPoint ==
-          signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO &&
+  if (accessPoint == signin_metrics::AccessPoint::kNTPFeedTopPromo &&
       experimental_flags::ShouldForceFeedSigninPromo()) {
     return YES;
   }
@@ -686,8 +618,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   if (signinPromoAction != SigninPromoAction::kReviewAccountSettings) {
     // Checks if the user has exceeded the max impression count.
     const int maxDisplayedCount =
-        accessPoint ==
-                signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO
+        accessPoint == signin_metrics::AccessPoint::kNTPFeedTopPromo
             ? kFeedSyncPromoAutodismissCount
             : kAutomaticSigninPromoViewDismissCount;
     const char* displayedCountPreferenceKey =
@@ -701,8 +632,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   }
 
   // For the top-of-feed promo, the user must have engaged with a feed first.
-  if (accessPoint ==
-          signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO &&
+  if (accessPoint == signin_metrics::AccessPoint::kNTPFeedTopPromo &&
       (![[NSUserDefaults standardUserDefaults]
           boolForKey:kEngagedWithFeedKey])) {
     return NO;
@@ -849,12 +779,11 @@ id<SystemIdentity> GetDisplayedIdentity(
   self.signinPromoViewVisible = YES;
   switch (self.signinPromoAction) {
     case SigninPromoAction::kReviewAccountSettings:
-      if (self.accessPoint ==
-          signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER) {
+      if (self.accessPoint == signin_metrics::AccessPoint::kBookmarkManager) {
         base::RecordAction(base::UserMetricsAction(
             "ReviewAccountSettings_Impression_FromBookmarkManager"));
       } else if (self.accessPoint ==
-                 signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST) {
+                 signin_metrics::AccessPoint::kReadingList) {
         base::RecordAction(base::UserMetricsAction(
             "ReviewAccountSettings_Impression_FromReadingListManager"));
       }
@@ -878,8 +807,7 @@ id<SystemIdentity> GetDisplayedIdentity(
 
   // For the top-of-feed promo, we only record 1 impression per session. For all
   // other promos, we record 1 impression per view.
-  if (self.accessPoint ==
-      signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO) {
+  if (self.accessPoint == signin_metrics::AccessPoint::kNTPFeedTopPromo) {
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
     NSDate* lastImpressionIncrementedDate =
         [defaults objectForKey:kLastSigninImpressionTopOfFeedKey];
@@ -1151,8 +1079,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   // The promo on top of the feed is only logged as visible when most of it can
   // be seen, so it can be used without `self.signinPromoViewVisible`.
   DCHECK(self.signinPromoViewVisible ||
-         self.accessPoint ==
-             signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO)
+         self.accessPoint == signin_metrics::AccessPoint::kNTPFeedTopPromo)
       << base::SysNSStringToUTF8([self description]);
   DCHECK(!self.invalidClosedOrNeverVisible)
       << base::SysNSStringToUTF8([self description]);
@@ -1204,12 +1131,11 @@ id<SystemIdentity> GetDisplayedIdentity(
                                        PROMO_ACTION_WITH_DEFAULT];
       return;
     case SigninPromoAction::kReviewAccountSettings:
-      if (self.accessPoint ==
-          signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER) {
+      if (self.accessPoint == signin_metrics::AccessPoint::kBookmarkManager) {
         base::RecordAction(base::UserMetricsAction(
             "ReviewAccountSettings_Tapped_FromBookmarkManager"));
       } else if (self.accessPoint ==
-                 signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST) {
+                 signin_metrics::AccessPoint::kReadingList) {
         base::RecordAction(base::UserMetricsAction(
             "ReviewAccountSettings_Tapped_FromReadingListManager"));
       }
@@ -1255,8 +1181,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   // The promo on top of the feed is only logged as visible when most of it can
   // be seen, so it can be dismissed without `self.signinPromoViewVisible`.
   DCHECK(self.signinPromoViewVisible ||
-         self.accessPoint ==
-             signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO)
+         self.accessPoint == signin_metrics::AccessPoint::kNTPFeedTopPromo)
       << base::SysNSStringToUTF8([self description]);
   base::RecordAction(base::UserMetricsAction("Signin_Promo_Close"));
   self.signinPromoViewState = SigninPromoViewState::kClosed;

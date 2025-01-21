@@ -132,7 +132,8 @@ std::unique_ptr<ThrottleManager> ThrottleManager::CreateForNewPage(
     content::NavigationHandle& initiating_navigation_handle,
     bool is_incognito) {
   CHECK(IsInSubresourceFilterRoot(&initiating_navigation_handle));
-  if (!features::IsFingerprintingProtectionFeatureEnabled()) {
+  if (!features::IsFingerprintingProtectionEnabledForIncognitoState(
+          is_incognito)) {
     return nullptr;
   }
 

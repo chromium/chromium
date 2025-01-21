@@ -33,6 +33,7 @@
 #include "ash/login/ui/login_user_view.h"
 #include "ash/login/ui/scrollable_users_list_view.h"
 #include "ash/login/ui/views_utils.h"
+#include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/reauth_reason.h"
@@ -48,6 +49,7 @@
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/power/power_button_controller.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/status_area_widget_delegate.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -482,6 +484,32 @@ TEST_F(LockContentsViewKeyboardUnitTest,
 
   ASSERT_NO_FATAL_FAILURE(HideKeyboard());
   EXPECT_EQ(contents->height(), users_list->height());
+}
+
+TEST_F(LockContentsViewKeyboardUnitTest,
+       StatusAreaWidgetDelegateAccessiblePrevAndNextFocus) {
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      ambient::prefs::kAmbientModeEnabled, true);
+
+  ASSERT_NO_FATAL_FAILURE(ShowLockScreen());
+  LockContentsView* contents =
+      LockScreen::TestApi(LockScreen::Get()).contents_view();
+  ASSERT_NE(nullptr, contents);
+  SetUserCount(1);
+
+  StatusAreaWidgetDelegate* delegate =
+      RootWindowController::ForWindow(contents->GetWidget()->GetNativeWindow())
+          ->GetStatusAreaWidget()
+          ->status_area_widget_delegate();
+
+  // Check if the next focus is set correctly to the lock screen widget.
+  EXPECT_EQ(delegate->GetViewAccessibility().GetNextWindowFocus(),
+            LockScreen::Get()->widget());
+
+  // Check if the previous focus is set correctly to the shelf widget.
+  EXPECT_EQ(delegate->GetViewAccessibility().GetPreviousWindowFocus(),
+            Shelf::ForWindow(delegate->GetWidget()->GetNativeWindow())
+                ->shelf_widget());
 }
 
 TEST_F(LockContentsViewKeyboardUnitTest, AutoLayoutSmallUsersListForKeyboard) {

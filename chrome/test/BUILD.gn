@@ -1347,6 +1347,7 @@ source_set("platform_browser_tests") {
     "//components/content_settings/core/common",
     "//components/content_settings/core/common:features",
     "//components/enterprise:test_support",
+    "//components/fingerprinting_protection_filter/browser:browser",
     "//components/fingerprinting_protection_filter/common:features",
     "//components/flags_ui:switches",
     "//components/invalidation:test_support",
@@ -4378,7 +4379,6 @@ if (!is_android) {
 
       if (is_win || is_linux || is_mac) {
         sources += [
-          "../browser/extensions/api/system_indicator/system_indicator_apitest.cc",
           "../browser/extensions/api/web_authentication_proxy/web_authentication_proxy_apitest.cc",
           "../browser/supervised_user/supervised_user_pending_state_navigation_browsertest.cc",
           "../browser/ui/views/web_apps/file_handler_launch_dialog_browsertest.cc",
@@ -7978,6 +7978,7 @@ test("unit_tests") {
       "../browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper_unittest.cc",
       "../browser/new_tab_page/microsoft_auth/microsoft_auth_service_unittest.cc",
       "../browser/new_tab_page/modules/file_suggestion/drive_service_unittest.cc",
+      "../browser/new_tab_page/modules/file_suggestion/microsoft_files_page_handler_unittest.cc",
       "../browser/new_tab_page/modules/new_tab_page_modules_unittest.cc",
       "../browser/new_tab_page/modules/safe_browsing/safe_browsing_handler_unittest.cc",
       "../browser/new_tab_page/modules/test_support.cc",
@@ -9037,7 +9038,6 @@ test("unit_tests") {
         "../browser/enterprise/connectors/analysis/local_binary_upload_service_unittest.cc",
         "../browser/enterprise/data_protection/print_utils_unittest.cc",
         "../browser/policy/local_sync_policy_handler_unittest.cc",
-        "../common/extensions/api/system_indicator/system_indicator_handler_unittest.cc",
       ]
 
       deps += [ "../browser/enterprise/connectors/test:test_support" ]

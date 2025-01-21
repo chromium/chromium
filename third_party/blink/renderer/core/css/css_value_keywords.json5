@@ -1968,5 +1968,11 @@
 
     // @function
     "returns",
+
+    // animation-trigger-type
+    // repeat
+    // alternate
+    "once",
+    "state",
   ],
 }

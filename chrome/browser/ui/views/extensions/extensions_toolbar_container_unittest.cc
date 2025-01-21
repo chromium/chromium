@@ -716,7 +716,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest, RequestAccessButton_TooltipText) {
           current_site) +
       u"\n" + u"Extension A\n" + u"Extension B";
 
-  EXPECT_EQ(request_access_button()->GetTooltipText(gfx::Point()),
+  EXPECT_EQ(request_access_button()->GetRenderedTooltipText(gfx::Point()),
             expected_tooltip);
   RemoveHostAccessRequest(*extension_B,
                           browser()->tab_strip_model()->GetActiveWebContents());
@@ -725,7 +725,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest, RequestAccessButton_TooltipText) {
           IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS,
           current_site) +
       u"\n" + u"Extension A";
-  EXPECT_EQ(request_access_button()->GetTooltipText(gfx::Point()),
+  EXPECT_EQ(request_access_button()->GetRenderedTooltipText(gfx::Point()),
             expected_tooltip);
 }
 
@@ -755,9 +755,9 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   ui::AXNodeData data;
   request_access_button()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            request_access_button()->GetTooltipText(gfx::Point()));
+            request_access_button()->GetRenderedTooltipText(gfx::Point()));
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-            request_access_button()->GetTooltipText(gfx::Point()));
+            request_access_button()->GetRenderedTooltipText(gfx::Point()));
 
   RemoveHostAccessRequest(*extension_B,
                           browser()->tab_strip_model()->GetActiveWebContents());
@@ -765,9 +765,9 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   data = ui::AXNodeData();
   request_access_button()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            request_access_button()->GetTooltipText(gfx::Point()));
+            request_access_button()->GetRenderedTooltipText(gfx::Point()));
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-            request_access_button()->GetTooltipText(gfx::Point()));
+            request_access_button()->GetRenderedTooltipText(gfx::Point()));
 }
 
 // Tests that an extension appears in the request access button iff it has a

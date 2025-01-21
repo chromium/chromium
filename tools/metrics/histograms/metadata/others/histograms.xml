@@ -2411,6 +2411,33 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Ads.InterestGroup.{AuctionType}.TimeFromInputsResolvedToAuctionResolved"
+    units="ms" expires_after="2026-01-16">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The length of time it took to resolve a navigator.runAdAuction request after
+    all of the promise inputs to runAdAuction have been resolved. This is
+    measured on the renderer side, and is meant to measure the total time that
+    the caller is blocked on runAdAuction. This is only recorded when the
+    auction is successfully resolved.
+
+    See
+    https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
+    for the latest version of the Protected Audience Bidding &amp; Auction
+    Services explainer.
+  </summary>
+  <token key="AuctionType">
+    <variant name="Auction" summary="FLEDGE"/>
+    <variant name="ServerAuction" summary="Bidding and Auction Services">
+      <owner>behamilton@google.com</owner>
+      <owner>pauljensen@chromium.org</owner>
+      <owner>privacy-sandbox-dev@chromium.org</owner>
+    </variant>
+  </token>
+</histogram>
+
 <histogram name="Ads.InterestGroup.{AuctionType}.TimeToResolve" units="ms"
     expires_after="2025-07-06">
   <owner>abigailkatcoff@chromium.org</owner>
@@ -8547,7 +8574,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="Servicification.Startup2" enum="ServicificationStartupMode"
-    expires_after="2025-03-02">
+    expires_after="2025-09-02">
   <owner>hanxi@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <owner>hnakashima@chromium.org</owner>
@@ -10333,7 +10360,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebController.CertVerificationErrorsCacheHit"
-    enum="BooleanCacheHit" expires_after="2025-02-12">
+    enum="BooleanCacheHit" expires_after="2026-02-12">
   <owner>gambard@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>

@@ -148,10 +148,13 @@ source_set("bottom_sheet_egtest") {
   deps = [
     "//components/autofill/core/browser:test_support",
     "//components/autofill/ios/common",
+    "//components/strings",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/model:features",
     "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/autofill/ui_bundled/authentication:card_unmask_authentication_selection_constants",
+    "//ios/chrome/browser/autofill/ui_bundled/manual_fill:eg_test_support+eg2",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled:settings_root_constants",
     "//ios/chrome/browser/shared/public/features",

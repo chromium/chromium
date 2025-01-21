@@ -109,7 +109,7 @@ void AccountConsistencyBrowserAgent::OnAddAccount() {
     ShowSigninCommand* command = [[ShowSigninCommand alloc]
         initWithOperation:AuthenticationOperation::kAddAccount
               accessPoint:signin_metrics::AccessPoint::
-                              ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE];
+                              kAccountConsistencyService];
     command.skipIfUINotAvailable = YES;
     [application_handler_ showSignin:command
                   baseViewController:base_view_controller_];

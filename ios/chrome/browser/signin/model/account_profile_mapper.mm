@@ -7,7 +7,9 @@
 #import "base/check_is_test.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/signin/core/browser/account_management_type_metrics_recorder.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
@@ -538,6 +540,38 @@ AccountProfileMapper::AccountProfileMapper(
       base::BindRepeating(
           &AccountProfileMapper::IdentityAccessTokenRefreshFailed,
           base::Unretained(this)));
+
+  size_t num_consumer_accounts = 0;
+  size_t num_managed_accounts = 0;
+  size_t num_unknown_accounts = 0;
+  IterateOverAllIdentitiesOnDevice(base::BindRepeating(
+      [](SystemIdentityManager* system_identity_manager,
+         size_t& num_consumer_accounts, size_t& num_managed_accounts,
+         size_t& num_unknown_accounts, id<SystemIdentity> identity) {
+        NSString* hosted_domain =
+            system_identity_manager->GetCachedHostedDomainForIdentity(identity);
+        if (hosted_domain) {
+          bool is_managed_account = hosted_domain.length > 0;
+          if (is_managed_account) {
+            ++num_managed_accounts;
+          } else {
+            ++num_consumer_accounts;
+          }
+        } else {
+          ++num_unknown_accounts;
+        }
+        return IteratorResult::kContinueIteration;
+      },
+      system_identity_manager_, std::ref(num_consumer_accounts),
+      std::ref(num_managed_accounts), std::ref(num_unknown_accounts)));
+
+  base::UmaHistogramEnumeration(
+      "Signin.IOSAccountsOnDeviceManagementTypesSummary",
+      signin::AccountManagementTypeMetricsRecorder::GetAccountTypesSummary(
+          num_consumer_accounts, num_managed_accounts));
+  base::UmaHistogramBoolean(
+      "Signin.IOSAccountsOnDeviceManagementTypesHadUnknownTypes",
+      num_unknown_accounts > 0);
 }
 
 AccountProfileMapper::~AccountProfileMapper() {

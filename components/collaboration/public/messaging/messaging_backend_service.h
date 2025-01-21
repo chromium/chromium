@@ -94,6 +94,9 @@ class MessagingBackendService : public KeyedService,
   virtual void ClearDirtyTabMessagesForGroup(
       tab_groups::EitherGroupID group_id) = 0;
 
+  // Invoked to remove a list of given messages from the backend storage.
+  virtual void RemoveMessages(const std::vector<base::Uuid>& message_ids) = 0;
+
   // Testing-only API for setting activity log.
   virtual void AddActivityLogForTesting(
       data_sharing::GroupId collaboration_id,

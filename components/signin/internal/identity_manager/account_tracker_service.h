@@ -106,11 +106,10 @@ class AccountTrackerService {
   // Seeds the account whose account_id is given by PickAccountIdForAccount()
   // with its corresponding gaia id and email address.  Returns the same
   // value PickAccountIdForAccount() when given the same arguments.
-  CoreAccountId SeedAccountInfo(
-      const GaiaId& gaia,
-      const std::string& email,
-      signin_metrics::AccessPoint access_point =
-          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  CoreAccountId SeedAccountInfo(const GaiaId& gaia,
+                                const std::string& email,
+                                signin_metrics::AccessPoint access_point =
+                                    signin_metrics::AccessPoint::kUnknown);
 
   // Seeds the account represented by |info|. If the account is already tracked
   // and compatible, the empty fields will be updated with values from |info|.

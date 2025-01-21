@@ -11950,6 +11950,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             <message name ="IDS_DATA_SHARING_MANAGE_STOP_SHARING_OPTION" desc="The Label for the manage flow stop sharing option and confirmation button.">
               Stop Sharing
             </message>
+            <message name ="IDS_DATA_SHARING_MANAGE_ACTIVITY_LOG_OPTION" desc="The Label for the manage flow stop sharing option and confirmation button.">
+              Activity Log
+            </message>
           <!-- !Data Sharing Owner Manage Flow -->
 
           <!-- Data Sharing Owner Stop Sharing Dialog -->
@@ -12098,6 +12101,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             </message>
             <message name ="IDS_DATA_SHARING_MANAGE_STOP_SHARING_OPTION" desc="The Label for the manage flow stop sharing option and confirmation button.">
               Stop sharing
+            </message>
+            <message name ="IDS_DATA_SHARING_MANAGE_ACTIVITY_LOG_OPTION" desc="The Label for the manage flow stop sharing option and confirmation button.">
+              Activity log
             </message>
           <!-- !Data Sharing Owner Manage Flow -->
 

@@ -270,7 +270,7 @@ using signin_metrics::PromoAction;
     ShowSigninCommand* command = [[ShowSigninCommand alloc]
         initWithOperation:AuthenticationOperation::kAddAccount
                  identity:nil
-              accessPoint:AccessPoint::ACCESS_POINT_SETTINGS
+              accessPoint:AccessPoint::kSettings
               promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
                completion:^(SigninCoordinatorResult result,
                             id<SystemIdentity> completionIdentity) {

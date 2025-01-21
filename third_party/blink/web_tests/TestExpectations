@@ -7121,8 +7121,8 @@ crbug.com/378787482 external/wpt/pointerevents/compat/pointerevent_touch_target_
 crbug.com/1413770 wpt_internal/storage/estimate-usage-details-filesystem.https.tentative.any.worker.html [ Failure Pass ]
 
 
-# Flaky tests but only on Windows.
-crbug.com/1412866 [ Win ] http/tests/inspector-protocol/tracing/advanced-painting-instrumentation.js [ Failure Pass ]
+# Flaky tests. Disabling while investigating a deflake solution.
+crbug.com/1412866 http/tests/inspector-protocol/tracing/advanced-painting-instrumentation.js [ Failure Pass ]
 
 # Sheriff 2023-02-14
 crbug.com/1417178 [ Linux ] external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/same-document-traversal-cross-document-nav.html [ Failure Pass ]
@@ -8626,6 +8626,12 @@ crbug.com/324441376 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling
 # Temporarily disabled to unblock https://crrev.com/c/6157257
 crbug.com/388445687 http/tests/devtools/console/console-copy-treeoutline.js [ Failure Pass ]
 crbug.com/388445687 http/tests/devtools/console/console-viewport-selection.js [ Failure Pass ]
+
+# Temporarily disabled to unblock https://crrev.com/c/6184803
+crbug.com/391381439 http/tests/devtools/security/blocked-mixed-content.js [ Failure Pass ]
+crbug.com/391381439 http/tests/devtools/security/mixed-content-active-and-passive-reload.js [ Failure Pass ]
+crbug.com/391381439 http/tests/devtools/security/mixed-content-reload.js [ Failure Pass ]
+crbug.com/391381439 http/tests/devtools/security/security-blocked-mixed-content.js [ Failure Pass ]
 
 # Temporarily disabled to unblock https://crrev.com/c/6164904
 crbug.com/388445687 http/tests/devtools/a11y-axe-core/performance/settings-pane-a11y-test.js [ Failure Pass ]

@@ -600,10 +600,13 @@ void ChromePasswordManagerClient::
   auto* webauthn_delegate = GetWebAuthnCredentialsDelegateForDriver(driver);
   std::vector<password_manager::PasskeyCredential> passkeys;
   bool should_show_hybrid_option = false;
-  if (webauthn_delegate && webauthn_delegate->GetPasskeys().has_value()) {
-    passkeys = *webauthn_delegate->GetPasskeys();
-    should_show_hybrid_option =
-        webauthn_delegate->IsSecurityKeyOrHybridFlowAvailable();
+  if (webauthn_delegate) {
+    webauthn_delegate->NotifyForPasskeysDisplay();
+    if (webauthn_delegate->GetPasskeys().has_value()) {
+      passkeys = *webauthn_delegate->GetPasskeys();
+      should_show_hybrid_option =
+          webauthn_delegate->IsSecurityKeyOrHybridFlowAvailable();
+    }
   }
   auto filler =
       std::make_unique<password_manager::PasswordCredentialFillerImpl>(

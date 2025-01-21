@@ -999,6 +999,14 @@
       status: "stable",
     },
     {
+      name: "CSSAnimationTriggerTimeline",
+      status: "test",
+    },
+    {
+      name: "CSSAnimationTriggerType",
+      status: "test",
+    },
+    {
       // Support for <string> syntax in @property
       // https://drafts.css-houdini.org/css-properties-values-api-1/#syntax-strings
       name: "CSSAtPropertyStringSyntax",
@@ -1207,7 +1215,7 @@
     {
       // crbug.com/359616070
       name: "CSSRelativeColorLateResolveAlways",
-      status: "stable",
+      status: "experimental",
     },
     {
       // crbug.com/365818844
@@ -2505,6 +2513,7 @@
     {
       name: "InterestGroupsInSharedStorageWorklet",
       public: true,
+      status: "stable",
     },
     {
       name: "InteroperablePrivateAttribution",

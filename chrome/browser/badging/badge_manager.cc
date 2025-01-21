@@ -298,14 +298,8 @@ BadgeManager::ServiceWorkerBindingContext::GetAppIdsAndUrlsForBadging() const {
 
   const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
   std::vector<std::tuple<webapps::AppId, GURL>> app_ids_urls{};
-  // TODO(crbug.com/379916273): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   for (const auto& app_id : registrar.FindAllAppsNestedInUrl(
-           scope_,
-           {
-               web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-               web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           })) {
+           scope_, web_app::WebAppFilter::DisplaysBadgeOnOs())) {
     app_ids_urls.push_back(
         std::make_tuple(app_id, registrar.GetAppStartUrl(app_id)));
   }

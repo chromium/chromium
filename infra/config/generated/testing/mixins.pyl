@@ -172,14 +172,6 @@
       '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.reven.chromeos_integration_tests.filter',
     ],
   },
-  'dawn_end2end_gpu_test': {
-    'args': [
-      '--use-gpu-in-tests',
-      '--exclusive-device-type-preference=discrete,integrated',
-      '--test-launcher-retry-limit=0',
-      '--test-launcher-batch-limit=512',
-    ],
-  },
   'experiments': {
     'experiment_percentage': 100,
   },
@@ -415,11 +407,6 @@
         'pool': 'chromium.tests.gpu',
       },
     },
-  },
-  'linux_vulkan': {
-    'linux_args': [
-      '--extra-browser-args=--enable-features=Vulkan',
-    ],
   },
   'long_skylab_timeout': {
     'skylab': {
@@ -660,22 +647,10 @@
       'io_timeout': 900,
     },
   },
-  'timeout_30m': {
-    'swarming': {
-      'hard_timeout': 1800,
-      'io_timeout': 1800,
-    },
-  },
   'vaapi_unittest_args': {
     'args': [
       '--stop-ui',
       '--gtest_filter="VaapiTest.*"',
-    ],
-  },
-  'webgpu_telemetry_cts': {
-    'args': [
-      '--extra-browser-args=--force_high_performance_gpu',
-      '--use-webgpu-power-preference=default-high-performance',
     ],
   },
   'win-arm64': {

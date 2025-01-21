@@ -35,7 +35,7 @@ using signin_metrics::Reason;
 namespace {
 
 signin_metrics::AccessPoint kTestAccessPoint =
-    signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE;
+    signin_metrics::AccessPoint::kBookmarkBubble;
 
 signin_metrics::PromoAction kTestPromoAction =
     signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
@@ -184,8 +184,7 @@ class ProcessDiceHeaderDelegateImplTest
       // error callback.
       return std::make_unique<ProcessDiceHeaderDelegateImpl>(
           web_contents(), /*is_sync_signin_tab=*/false,
-          signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
-          kTestPromoAction, GURL(),
+          signin_metrics::AccessPoint::kWebSignin, kTestPromoAction, GURL(),
           ProcessDiceHeaderDelegateImpl::EnableSyncCallback(),
           base::BindRepeating(
               &ProcessDiceHeaderDelegateImplTest::OnSigninHeaderReceived,
@@ -460,7 +459,7 @@ struct TokenExchangeSuccessConfiguration {
   // Expected value for the MaybeInterceptWebSigin call.
   bool sync_signin = false;
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
+      signin_metrics::AccessPoint::kUnknown;
 };
 
 TokenExchangeSuccessConfiguration kHandleTokenExchangeSuccessTestCases[] = {
@@ -468,15 +467,15 @@ TokenExchangeSuccessConfiguration kHandleTokenExchangeSuccessTestCases[] = {
     // is_reauth | signin_tab |       reason               |
     //      sync_signin  | access_point
     {  false,      false,     Reason::kSigninPrimaryAccount,
-            false, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN },
+            false, signin_metrics::AccessPoint::kWebSignin },
     {  false,      true,      Reason::kSigninPrimaryAccount,
-            true, signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE },
+            true, signin_metrics::AccessPoint::kBookmarkBubble },
     {  false,      true,      Reason::kAddSecondaryAccount,
-            false, signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE },
+            false, signin_metrics::AccessPoint::kBookmarkBubble },
     {  true,       false,     Reason::kSigninPrimaryAccount,
-            false, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN },
+            false, signin_metrics::AccessPoint::kWebSignin },
     {  true,       true,      Reason::kSigninPrimaryAccount,
-            true, signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE },
+            true, signin_metrics::AccessPoint::kBookmarkBubble },
 
     // clang-format on
 };

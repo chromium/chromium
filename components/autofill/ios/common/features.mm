@@ -13,6 +13,14 @@ BASE_FEATURE(kAutofillDynamicallyLoadsFieldsForAddressInput,
              "AutofillDynamicallyLoadsFieldsForAddressInput",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// LINT.IfChange(autofill_fix_post_filling_payment_sheet)
+// Enables fixing the issue where the payment sheet spams after dismissing a
+// modal dialog that was triggered from the KA (e.g. filling a suggestion).
+BASE_FEATURE(kAutofillFixPaymentSheetSpam,
+             "AutofillFixPostFillingPaymentSheet",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// LINT.ThenChange(/components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_fix_post_filling_payment_sheet)
+
 // LINT.IfChange(autofill_isolated_content_world)
 // Controls whether to use the isolated content world instead of the page
 // content world for the Autofill JS feature scripts.

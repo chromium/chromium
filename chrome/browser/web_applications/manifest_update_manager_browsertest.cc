@@ -2268,9 +2268,12 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
     "client_mode": "focus-existing"
   })"});
   webapps::AppId app_id = InstallWebApp();
+  auto expected_launch_handler =
+      LaunchHandler{LaunchHandler::ClientMode::kFocusExisting};
   EXPECT_EQ(
-      GetProvider().registrar_unsafe().GetAppById(app_id)->launch_handler(),
-      (LaunchHandler{LaunchHandler::ClientMode::kFocusExisting}));
+      expected_launch_handler,
+      GetProvider().registrar_unsafe().GetAppById(app_id)->launch_handler());
+  EXPECT_TRUE(expected_launch_handler.client_mode_valid_and_specified());
 
   // New launch_handler syntax.
   OverrideManifest(kManifestTemplate, {kInstallableIconList, R"({
@@ -2286,9 +2289,13 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                                  {{96, kWin}, kInstallableIconTopLeftColor},
                                  {{128, kAll}, kInstallableIconTopLeftColor},
                                  {{256, kAll}, kInstallableIconTopLeftColor}});
+
+  expected_launch_handler =
+      LaunchHandler{LaunchHandler::ClientMode::kNavigateExisting};
   EXPECT_EQ(
-      GetProvider().registrar_unsafe().GetAppById(app_id)->launch_handler(),
-      (LaunchHandler{LaunchHandler::ClientMode::kNavigateExisting}));
+      expected_launch_handler,
+      GetProvider().registrar_unsafe().GetAppById(app_id)->launch_handler());
+  EXPECT_TRUE(expected_launch_handler.client_mode_valid_and_specified());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -1388,13 +1388,14 @@ void CookieMonster::FilterCookiesWithOptions(
     // reasons, so we'll remove any potential path exclusions.
     CookieInclusionStatus status_copy = access_result.status;
     status_copy.RemoveExclusionReason(
-        CookieInclusionStatus::EXCLUDE_NOT_ON_PATH);
+        CookieInclusionStatus::ExclusionReason::EXCLUDE_NOT_ON_PATH);
 
     bool exclusion_or_warning =
         !status_copy.IsInclude() ||
         status_copy.HasWarningReason(
-            CookieInclusionStatus::WARN_SCHEME_MISMATCH) ||
-        status_copy.HasWarningReason(CookieInclusionStatus::WARN_PORT_MISMATCH);
+            CookieInclusionStatus::WarningReason::WARN_SCHEME_MISMATCH) ||
+        status_copy.HasWarningReason(
+            CookieInclusionStatus::WarningReason::WARN_PORT_MISMATCH);
 
     if (!exclusion_or_warning && cookie_ptr->IsHostCookie()) {
       origin_cookie_names.insert(cookie_ptr->Name());
@@ -1462,12 +1463,12 @@ void CookieMonster::FilterCookiesWithOptions(
         if (cookie_ptr->CreationDate() >
             existing_alias->second->first->CreationDate()) {
           existing_alias->second->second.status.AddExclusionReason(
-              CookieInclusionStatus::EXCLUDE_ALIASING);
+              CookieInclusionStatus::ExclusionReason::EXCLUDE_ALIASING);
           latest_aliasing_cookies[cookie_ptr->LegacyUniqueKey()] =
               &cookie_result;
         } else {
           access_result.status.AddExclusionReason(
-              CookieInclusionStatus::EXCLUDE_ALIASING);
+              CookieInclusionStatus::ExclusionReason::EXCLUDE_ALIASING);
         }
       }
     } else {
@@ -1478,18 +1479,19 @@ void CookieMonster::FilterCookiesWithOptions(
       // for port reasons).
       bool scheme_mismatch =
           access_result.status.HasExclusionReason(
-              CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH) ||
+              CookieInclusionStatus::ExclusionReason::
+                  EXCLUDE_SCHEME_MISMATCH) ||
           access_result.status.HasWarningReason(
-              CookieInclusionStatus::WARN_SCHEME_MISMATCH);
+              CookieInclusionStatus::WarningReason::WARN_SCHEME_MISMATCH);
 
       if (cookie_ptr->IsDomainCookie() && !scheme_mismatch &&
           origin_cookie_names.count(cookie_ptr->Name())) {
         if (cookie_util::IsSchemeBoundCookiesEnabled()) {
           access_result.status.AddExclusionReason(
-              CookieInclusionStatus::EXCLUDE_SHADOWING_DOMAIN);
+              CookieInclusionStatus::ExclusionReason::EXCLUDE_SHADOWING_DOMAIN);
         } else {
           access_result.status.AddWarningReason(
-              CookieInclusionStatus::WARN_SHADOWING_DOMAIN);
+              CookieInclusionStatus::WarningReason::WARN_SHADOWING_DOMAIN);
         }
       }
     }
@@ -1527,9 +1529,9 @@ void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
     std::optional<PartitionedCookieMap::iterator> cookie_partition_it) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!status->HasExclusionReason(
-      CookieInclusionStatus::EXCLUDE_OVERWRITE_SECURE));
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_OVERWRITE_SECURE));
   DCHECK(!status->HasExclusionReason(
-      CookieInclusionStatus::EXCLUDE_OVERWRITE_HTTP_ONLY));
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_OVERWRITE_HTTP_ONLY));
 
   CookieMap* cookie_map = &cookies_;
   if (cookie_partition_it) {
@@ -1579,7 +1581,7 @@ void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
                               capture_mode);
                         });
       status->AddExclusionReason(
-          CookieInclusionStatus::EXCLUDE_OVERWRITE_SECURE);
+          CookieInclusionStatus::ExclusionReason::EXCLUDE_OVERWRITE_SECURE);
     }
 
     if (cookie_being_set.IsEquivalent(*cur_existing_cookie)) {
@@ -1599,8 +1601,8 @@ void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
               return NetLogCookieMonsterCookieRejectedHttponly(
                   cur_existing_cookie, &cookie_being_set, capture_mode);
             });
-        status->AddExclusionReason(
-            CookieInclusionStatus::EXCLUDE_OVERWRITE_HTTP_ONLY);
+        status->AddExclusionReason(CookieInclusionStatus::ExclusionReason::
+                                       EXCLUDE_OVERWRITE_HTTP_ONLY);
       } else {
         deletion_candidate_it = cur_it;
         if (!most_recently_created_deletion_candidate ||
@@ -1652,7 +1654,8 @@ void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
                                              : DELETE_COOKIE_OVERWRITE);
       }
     } else if (status->HasExclusionReason(
-                   CookieInclusionStatus::EXCLUDE_OVERWRITE_SECURE)) {
+                   CookieInclusionStatus::ExclusionReason::
+                       EXCLUDE_OVERWRITE_SECURE)) {
       // Log that we preserved a cookie that would have been deleted due to
       // Leave Secure Cookies Alone. This arbitrarily only logs the last
       // |skipped_secure_cookie| that we were left with after the for loop, even
@@ -1859,9 +1862,10 @@ void CookieMonster::SetCanonicalCookie(
   }
 
   if (access_result.status.HasExclusionReason(
-          CookieInclusionStatus::EXCLUDE_OVERWRITE_SECURE) ||
+          CookieInclusionStatus::ExclusionReason::EXCLUDE_OVERWRITE_SECURE) ||
       access_result.status.HasExclusionReason(
-          CookieInclusionStatus::EXCLUDE_OVERWRITE_HTTP_ONLY)) {
+          CookieInclusionStatus::ExclusionReason::
+              EXCLUDE_OVERWRITE_HTTP_ONLY)) {
     DVLOG(net::cookie_util::kVlogSetCookies)
         << "SetCookie() not clobbering httponly cookie or secure cookie for "
            "insecure scheme";
@@ -1936,7 +1940,7 @@ void CookieMonster::SetCanonicalCookie(
     // If the cookie would be excluded, don't bother warning about the 3p cookie
     // phaseout.
     access_result.status.RemoveWarningReason(
-        net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
+        net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT);
   }
 
   // TODO(chlily): Log metrics.

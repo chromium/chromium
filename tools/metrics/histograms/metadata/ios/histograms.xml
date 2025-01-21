@@ -3329,7 +3329,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PageLoad.DefaultModeMobile" enum="Boolean"
-    expires_after="2025-01-28">
+    expires_after="2026-01-28">
   <owner>gambard@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>

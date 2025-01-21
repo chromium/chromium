@@ -219,7 +219,7 @@ class MetricsSubSampler;
 //
 // WARNING: This is not the generator you are looking for. This has significant
 // caveats:
-//   - It is non-cryptographic, so easy to miuse
+//   - It is non-cryptographic, so easy to misuse
 //   - It is neither fork() nor clone()-safe.
 //   - Synchronization is up to the client.
 //
@@ -246,15 +246,16 @@ class BASE_EXPORT InsecureRandomGenerator {
   // Never use outside testing, not enough entropy.
   void ReseedForTesting(uint64_t seed);
 
-  uint32_t RandUint32();
-  uint64_t RandUint64();
+  uint32_t RandUint32() const;
+  uint64_t RandUint64() const;
   // In [0, 1).
-  double RandDouble();
+  double RandDouble() const;
 
  private:
   InsecureRandomGenerator();
-  // State.
-  uint64_t a_ = 0, b_ = 0;
+  // State. These are mutable to allow Rand* functions to be declared as const.
+  // This, in turn, enables use of `MetricsSubSampler` in const contexts.
+  mutable uint64_t a_ = 0, b_ = 0;
 
   // Before adding a new friend class, make sure that the overhead of
   // base::Rand*() is too high, using something more representative than a
@@ -277,7 +278,7 @@ class BASE_EXPORT InsecureRandomGenerator {
 class BASE_EXPORT MetricsSubSampler {
  public:
   MetricsSubSampler();
-  bool ShouldSample(double probability);
+  bool ShouldSample(double probability) const;
 
   // Make any call to ShouldSample for any instance of MetricsSubSampler
   // return true for testing. Cannot be used in conjunction with

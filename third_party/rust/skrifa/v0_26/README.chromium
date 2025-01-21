@@ -1,9 +1,9 @@
 Name: skrifa
 URL: https://crates.io/crates/skrifa
-Version: 0.26.4
-Revision: 39cf22e27f859b72c536610529ef67ba002c1e3f
+Version: 0.26.5
+Revision: 57715f398fdc5c4444cd19eb07105fc0df56316c
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/skrifa-0.26.4/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/skrifa-0.26.5/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes
 

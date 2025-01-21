@@ -27,6 +27,7 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
   TestDevToolsProtocolClient();
   ~TestDevToolsProtocolClient() override;
 
+  void AttachToFrameTreeHost(RenderFrameHost* frame);
   void AttachToWebContents(WebContents* web_contents);
   void AttachToTabTarget(WebContents* web_contents);
   void AttachToBrowserTarget();
@@ -64,6 +65,14 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
     }
   }
 
+  void ClearNotifications() { notifications_.clear(); }
+
+  // Waits for a notification whose params, when passed to |matcher|, returns
+  // true. Existing notifications are allowed.
+  base::Value::Dict WaitForMatchingNotification(
+      const std::string& notification,
+      const NotificationMatcher& matcher);
+
  protected:
   bool HasExistingNotification() const { return !notifications_.empty(); }
   bool HasExistingNotification(const std::string& notification) const;
@@ -76,14 +85,6 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
   base::Value::Dict WaitForNotification(const std::string& notification) {
     return WaitForNotification(notification, false);
   }
-
-  // Waits for a notification whose params, when passed to |matcher|, returns
-  // true. Existing notifications are allowed.
-  base::Value::Dict WaitForMatchingNotification(
-      const std::string& notification,
-      const NotificationMatcher& matcher);
-
-  void ClearNotifications() { notifications_.clear(); }
 
   void set_agent_host_can_close() { agent_host_can_close_ = true; }
 

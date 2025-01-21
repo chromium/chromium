@@ -564,10 +564,6 @@ std::u16string SavedDeskItemView::ComputeAccessibleName() const {
                                     saved_desk_->template_name());
 }
 
-void SavedDeskItemView::SetTooltipText(const std::u16string& tooltip_text) {
-  NOTREACHED();
-}
-
 void SavedDeskItemView::AnimateHover(ui::Layer* layer_to_show,
                                      ui::Layer* layer_to_hide) {
   views::AnimationBuilder()

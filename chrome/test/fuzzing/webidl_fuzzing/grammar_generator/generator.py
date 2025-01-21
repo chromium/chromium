@@ -212,11 +212,16 @@ def get_idl_type(builder: DomatoGrammarBuilder,
 def build_argument_rule(
     builder: DomatoGrammarBuilder,
     argument: web_idl.argument.Argument) -> DomatoType:
-  if argument.is_optional:
-    return get_idl_type(builder, argument.idl_type)
   if argument.is_variadic:
-    return get_idl_type(builder, argument.idl_type.element_type)
-  return get_idl_type(builder, argument.idl_type)
+    idl_type = get_idl_type(builder, argument.idl_type.element_type)
+  else:
+    idl_type = get_idl_type(builder, argument.idl_type)
+  if argument.default_value is not None:
+    n = DomatoType(name=f'Argument{argument.identifier}OrDefaultValue')
+    builder.add_rule(Rule(n, [argument.default_value.literal]))
+    builder.add_rule(Rule(n, [idl_type]))
+    return n
+  return idl_type
 
 
 def get_functionlike_types(
@@ -304,12 +309,23 @@ def build_constructor_rules(builder: DomatoGrammarBuilder,
   builder.add_helper_line(Rule(lhs, rule))
 
 
+def build_dictionary_member(builder: DomatoGrammarBuilder,
+                            member: web_idl.dictionary.DictionaryMember):
+  idl_type = get_idl_type(builder, member.idl_type)
+  if member.default_value:
+    n = DomatoType(f'DictionaryMember{member.identifier}OrDefaultValue')
+    builder.add_rule(Rule(n, [member.default_value.literal]))
+    builder.add_rule(Rule(n, [idl_type]))
+    return n
+  return idl_type
+
+
 def build_dictionary_rules(builder: DomatoGrammarBuilder,
                            dictionary: web_idl.dictionary.Dictionary):
   # Dictionaries are declared like this:
   #     <new DictionaryName> = { "member1.identifier": <Member1TypeName>, ... }
   members = dictionary.members
-  combination = [get_idl_type(builder, member.idl_type) for member in members]
+  combination = [build_dictionary_member(builder, member) for member in members]
   identifiers = [m.identifier for m in dictionary.members]
   lhs = DomatoType(dictionary.identifier, should_record=True)
   rhs = itertools.chain.from_iterable(

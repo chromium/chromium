@@ -2490,6 +2490,22 @@ suite('AppTest', () => {
   });
 
   suite('Comparison table list', () => {
+    const SPECS_SETS = [
+      {
+        name: 'abc',
+        uuid: {value: '123'},
+        urls: [
+          {url: 'http://example1.com'},
+          {url: 'http://example2.com'},
+        ],
+      },
+      {
+        name: 'xyz',
+        uuid: {value: '456'},
+        urls: [{url: 'http://example3.com'}],
+      },
+    ];
+
     setup(() => {
       // Used by the item elements in the list.
       const pluralStringProxy = new TestPluralStringProxy();
@@ -2501,21 +2517,7 @@ suite('AppTest', () => {
 
       shoppingServiceApi.setResultFor(
           'getAllProductSpecificationsSets', Promise.resolve({
-            sets: [
-              {
-                name: 'abc',
-                uuid: {value: '123'},
-                urls: [
-                  {url: 'http://example1.com'},
-                  {url: 'http://example2.com'},
-                ],
-              },
-              {
-                name: 'xyz',
-                uuid: {value: '456'},
-                urls: [{url: 'http://example3.com'}],
-              },
-            ],
+            sets: SPECS_SETS,
           }));
       shoppingServiceApi.setResultMapperFor(
           'getProductInfoForUrl', (url: Url) => {
@@ -2555,95 +2557,46 @@ suite('AppTest', () => {
       assertFalse(isVisible(listElement));
     });
 
-    test(
-        'list displays available tables and uses first product image',
-        async () => {
-          const appElement = await createAppElement();
-          await flushTasks();
-
-          const listElement = appElement.$.comparisonTableList;
-          assertArrayEquals(
-              [
-                {
-                  name: 'abc',
-                  uuid: {value: '123'},
-                  numUrls: 2,
-                  imageUrl: {url: 'http://example1.com/image.png'},
-                },
-                {
-                  name: 'xyz',
-                  uuid: {value: '456'},
-                  numUrls: 1,
-                  imageUrl: {url: 'http://example3.com/image.png'},
-                },
-              ],
-              listElement.tables);
-        });
-
-    test('list updates on set updated', async () => {
+    test('list displays available tables', async () => {
       const appElement = await createAppElement();
       await flushTasks();
 
-      focusWindowAndTriggerSetUpdate({
+      const listElement = appElement.$.comparisonTableList;
+      assertArrayEquals(SPECS_SETS, listElement.tables);
+    });
+
+    test('list updates on set updated', async () => {
+      const renamedSet = {
         name: 'def',
         uuid: {value: '123'},
         urls: [{url: 'http://example2.com'}],
-      });
-      await flushTasks();
+      };
 
-      const listElement = appElement.$.comparisonTableList;
-      assertArrayEquals(
-          [
-            {
-              name: 'def',
-              uuid: {value: '123'},
-              numUrls: 1,
-              imageUrl: {url: 'http://example2.com/image.png'},
-            },
-            {
-              name: 'xyz',
-              uuid: {value: '456'},
-              numUrls: 1,
-              imageUrl: {url: 'http://example3.com/image.png'},
-            },
-          ],
-          listElement.tables);
-    });
-
-    test('list updates on set added', async () => {
       const appElement = await createAppElement();
       await flushTasks();
 
-      callbackRouterRemote.onProductSpecificationsSetAdded({
-        name: 'def',
-        uuid: {value: '789'},
-        urls: [{url: 'http://example5.com'}],
-      });
+      focusWindowAndTriggerSetUpdate(renamedSet);
       await flushTasks();
 
       const listElement = appElement.$.comparisonTableList;
-      assertArrayEquals(
-          [
-            {
-              name: 'def',
-              uuid: {value: '789'},
-              numUrls: 1,
-              imageUrl: {url: 'http://example5.com/image.png'},
-            },
-            {
-              name: 'abc',
-              uuid: {value: '123'},
-              numUrls: 2,
-              imageUrl: {url: 'http://example1.com/image.png'},
-            },
-            {
-              name: 'xyz',
-              uuid: {value: '456'},
-              numUrls: 1,
-              imageUrl: {url: 'http://example3.com/image.png'},
-            },
-          ],
-          listElement.tables);
+      assertArrayEquals([renamedSet, SPECS_SETS[1]!], listElement.tables);
+    });
+
+    test('list updates on set added', async () => {
+      const newSet = {
+        name: 'def',
+        uuid: {value: '789'},
+        urls: [{url: 'http://example5.com'}],
+      };
+
+      const appElement = await createAppElement();
+      await flushTasks();
+
+      callbackRouterRemote.onProductSpecificationsSetAdded(newSet);
+      await flushTasks();
+
+      const listElement = appElement.$.comparisonTableList;
+      assertArrayEquals([newSet].concat(SPECS_SETS), listElement.tables);
     });
 
     test('list updates on set removed', async () => {
@@ -2654,16 +2607,7 @@ suite('AppTest', () => {
       await flushTasks();
 
       const listElement = appElement.$.comparisonTableList;
-      assertArrayEquals(
-          [
-            {
-              name: 'xyz',
-              uuid: {value: '456'},
-              numUrls: 1,
-              imageUrl: {url: 'http://example3.com/image.png'},
-            },
-          ],
-          listElement.tables);
+      assertArrayEquals([SPECS_SETS[1]!], listElement.tables);
     });
 
     test('table is populated when an item is clicked', async () => {

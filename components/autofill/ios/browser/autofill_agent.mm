@@ -76,8 +76,6 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -653,7 +651,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
       if (!popup_suggestion.labels.empty() &&
           !popup_suggestion.labels.front().empty() &&
-          IsKeyboardAccessoryUpgradeEnabled()) {
+          _delegate.isKeyboardAccessoryUpgradeEnabled) {
         displayDescription =
             SysUTF16ToNSString(popup_suggestion.labels[0][0].value);
       }
@@ -724,9 +722,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 
 - (void)showPlusAddressEmailOverrideNotification:
     (base::OnceClosure)emailOverrideUndoCallback {
-  CHECK(self.snackbarHandler);
-
-  [self.snackbarHandler
+  CHECK(_delegate);
+  [_delegate
       showSnackbarWithMessage:
           l10n_util::GetNSString(
               IDS_PLUS_ADDRESS_SNACKBAR_UNDO_EMAIL_SWAP_DESCRIPTION_TEXT_IOS)

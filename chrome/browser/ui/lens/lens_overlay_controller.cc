@@ -1861,7 +1861,7 @@ void LensOverlayController::ShowOverlay() {
   std::unique_ptr<views::View> host_view = CreateViewForOverlay();
 
   // Ensure our view starts with the correct bounds.
-  host_view->SetBoundsRect(contents_web_view->GetLocalBounds());
+  host_view->SetBoundsRect(contents_web_view->bounds());
 
   auto* parent_view = contents_web_view->parent();
   // Add the view as a sibling of the view housing the tab contents. The
@@ -2223,10 +2223,14 @@ void LensOverlayController::OnViewBoundsChanged(views::View* observed_view) {
     SetLiveBlur(true);
   }
 
-  gfx::Rect bounds = observed_view->GetLocalBounds();
-  overlay_view_->SetBoundsRect(bounds);
+  // Set our view to the same bounds as the contents web view so it always
+  // covers the tab contents.
+  overlay_view_->SetBoundsRect(observed_view->bounds());
   if (lens_overlay_blur_layer_delegate_) {
-    lens_overlay_blur_layer_delegate_->layer()->SetBounds(bounds);
+    // Set the blur to have the same bounds as our view, but since it is in our
+    // views local coordinate system, the blur should be positioned at (0,0).
+    lens_overlay_blur_layer_delegate_->layer()->SetBounds(
+        overlay_view_->GetLocalBounds());
   }
 }
 

@@ -673,11 +673,12 @@ TEST_F(BookmarkBarViewTest, BookmarkFolderButtonTooltipText) {
   auto* folder_button = test_helper_->managed_bookmarks_button();
   folder_button->SetText(u"Managed Bookmarks");
 
-  EXPECT_EQ(u"Managed Bookmarks", folder_button->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(u"Managed Bookmarks",
+            folder_button->GetRenderedTooltipText(gfx::Point()));
 
   folder_button->SetText(std::u16string());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_UNNAMED_BOOKMARK_FOLDER),
-            folder_button->GetTooltipText(gfx::Point()));
+            folder_button->GetRenderedTooltipText(gfx::Point()));
 }
 
 TEST_F(BookmarkBarViewTest, ButtonSeparatorViewAccessibleProperties) {
@@ -701,9 +702,9 @@ TEST_F(BookmarkBarViewInWidgetTest, UpdateTooltipText) {
   views::LabelButton* button = test_helper_->GetBookmarkButton(0);
   ASSERT_TRUE(button);
   gfx::Point p;
-  EXPECT_EQ(u"a\na.com", button->GetTooltipText(p));
+  EXPECT_EQ(u"a\na.com", button->GetRenderedTooltipText(p));
   button->SetText(u"new title");
-  EXPECT_EQ(u"new title\na.com", button->GetTooltipText(p));
+  EXPECT_EQ(u"new title\na.com", button->GetRenderedTooltipText(p));
 }
 
 // Regression test for https://crbug.com/385805737. When BookmarkButton receives

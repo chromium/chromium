@@ -350,7 +350,7 @@ class TestProcessDiceHeaderDelegate : public ProcessDiceHeaderDelegate {
   }
 
   signin_metrics::AccessPoint GetAccessPoint() override {
-    return signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
+    return signin_metrics::AccessPoint::kSettings;
   }
 
   void OnDiceSigninHeaderReceived() override {}
@@ -444,7 +444,7 @@ TEST_F(DiceResponseHandlerTest, Signin) {
   EXPECT_TRUE(extended_account_info.is_under_advanced_protection);
   // Check that the AccessPoint was propagated from the delegate.
   EXPECT_EQ(extended_account_info.access_point,
-            signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+            signin_metrics::AccessPoint::kSettings);
   EXPECT_EQ(
       identity_test_env_.GetNumCallsToPrepareForFetchingAccountCapabilities(),
       1);

@@ -114,7 +114,7 @@ class BasePinButton : public views::View {
     SetBackground(holding_space_util::CreateCircleBackground(
         cros_tokens::kCrosSysSystemBaseElevated, kButtonBackgroundDiameter));
 
-    SetCachedTooltipText(accessible_name);
+    SetTooltipText(accessible_name);
 
     auto layout = std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical);

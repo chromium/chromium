@@ -73,6 +73,8 @@ export function createTranslationMap(): TranslationMap {
       [StaticMessageKey.LOADING]: loadTimeData.getString('loading'),
       [StaticMessageKey.SOMETHING_WENT_WRONG]:
           loadTimeData.getString('somethingWrong'),
+      [StaticMessageKey.FAIL_TO_UPDATE_ACCESS]:
+          loadTimeData.getString('somethingWrongBody'),
       [StaticMessageKey.THERE_WAS_AN_ERROR]:
           loadTimeData.getString('somethingWrongBody'),
       [StaticMessageKey.THERE_WAS_AN_ISSUE]:
@@ -137,6 +139,7 @@ export function createTranslationMap(): TranslationMap {
       [StaticMessageKey.GROUP_FULL_TITLE]: loadTimeData.getString('groupFull'),
       [StaticMessageKey.GROUP_FULL_CONTENT]:
           loadTimeData.getString('ownerCannotShare'),
+      [StaticMessageKey.ACTIVITY_LOGS]: loadTimeData.getString('activityLog'),
     },
     dynamic: {
       /** Invite flow */

@@ -88,7 +88,7 @@ DialogText GetPromptDialogTextFromStatus(
 void ShowSignInAndSyncUi(Profile* profile) {
   signin_ui_util::EnableSyncFromSingleAccountPromo(
       profile, GetAccountInfoFromProfile(profile),
-      signin_metrics::AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP);
+      signin_metrics::AccessPoint::kCollaborationTabGroup);
 }
 
 }  // namespace

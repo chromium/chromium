@@ -105,11 +105,10 @@ class CookieClearOnExitMigrationNoticeBrowserTest
 
   AccountInfo SetPrimaryAccount(signin::ConsentLevel consent_level,
                                 bool is_explicit_signin) {
-    // `ACCESS_POINT_WEB_SIGNIN` is not explicit signin.
+    // `kWebSignin` is not explicit signin.
     signin_metrics::AccessPoint access_point =
-        is_explicit_signin
-            ? signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
-            : signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN;
+        is_explicit_signin ? signin_metrics::AccessPoint::kSettings
+                           : signin_metrics::AccessPoint::kWebSignin;
     signin::AccountAvailabilityOptionsBuilder builder =
         identity_test_env()->CreateAccountAvailabilityOptionsBuilder();
     AccountInfo account_info = signin::MakeAccountAvailable(

@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_session_manager.h"
 #include "chromeos/ash/components/browser_context_helper/fake_browser_context_helper_delegate.h"
 #include "components/account_id/account_id.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
@@ -108,11 +109,11 @@ class BocaManagerTest : public testing::Test {
         std::make_unique<StrictMock<MockSessionClientImpl>>(nullptr);
     boca_session_manager_ = std::make_unique<boca::BocaSessionManager>(
         session_client_impl_.get(), AccountId::FromUserEmail(kTestEmail),
-        /*is_producer*/ false);
+        /*is_producer=*/false);
     invalidation_service_impl_ =
         std::make_unique<boca::InvalidationServiceImpl>(
-            /*=gcm_driver*/ &fake_gcm_driver_,
-            /*=instance_id_driver*/ &mock_instance_id_driver_,
+            /*gcm_driver=*/&fake_gcm_driver_,
+            /*instance_id_driver=*/&mock_instance_id_driver_,
             AccountId::FromUserEmail(kTestEmail), boca_session_manager_.get(),
             session_client_impl_.get());
   }
@@ -159,7 +160,9 @@ class BocaManagerProducerTest : public BocaManagerTest {
             identity_test_env_.identity_manager(),
             url_loader_factory_.GetSafeWeakWrapper(),
             GetBabelOrcaControllerFactory()),
-        std::make_unique<boca::BocaMetricsManager>(/*is_producer*/ true));
+        std::make_unique<boca::BocaMetricsManager>(/*is_producer=*/true),
+        std::make_unique<boca::SpotlightSessionManager>(
+            /*spotlight_crd_manager=*/nullptr, /*spotlight_service=*/nullptr));
   }
   std::unique_ptr<BocaManager> boca_manager_;
 };
@@ -185,15 +188,21 @@ TEST_F(BocaManagerProducerTest, VerifyBocaMetricsManagerWasAddedForProducer) {
       boca_manager_->GetBocaMetricsManagerForTesting()));
 }
 
+TEST_F(BocaManagerProducerTest,
+       VerifySpotlightSessionManagerWasAddedForProducer) {
+  ASSERT_TRUE(boca_manager_->GetBocaSessionManager()->observers().HasObserver(
+      boca_manager_->GetSpotlightSessionManagerForTesting()));
+}
+
 class BocaManagerConsumerTest : public BocaManagerTest {
  protected:
   BocaManagerConsumerTest() = default;
   void SetUp() override {
     BocaManagerTest::SetUp();
     scoped_feature_list_.InitWithFeatures(
-        /* enabled_features */ {ash::features::kBoca,
-                                ash::features::kBocaConsumer},
-        /* disabled_features */ {});
+        /* enabled_features=*/{ash::features::kBoca,
+                               ash::features::kBocaConsumer},
+        /* disabled_features=*/{});
 
     boca_manager_ = std::make_unique<BocaManager>(
         std::make_unique<boca::OnTaskSessionManager>(
@@ -204,7 +213,9 @@ class BocaManagerConsumerTest : public BocaManagerTest {
             identity_test_env_.identity_manager(),
             url_loader_factory_.GetSafeWeakWrapper(),
             GetBabelOrcaControllerFactory()),
-        std::make_unique<boca::BocaMetricsManager>(/*is_producer*/ false));
+        std::make_unique<boca::BocaMetricsManager>(/*is_producer=*/false),
+        std::make_unique<boca::SpotlightSessionManager>(
+            /*spotlight_crd_manager=*/nullptr, /*spotlight_service=*/nullptr));
   }
   std::unique_ptr<BocaManager> boca_manager_;
 };
@@ -222,6 +233,12 @@ TEST_F(BocaManagerConsumerTest, VerifyBabelOrcaObserverHasAddedForConsumer) {
 TEST_F(BocaManagerConsumerTest, VerifyBocaMetricsManagerWasAddedForConsumer) {
   ASSERT_TRUE(boca_manager_->GetBocaSessionManager()->observers().HasObserver(
       boca_manager_->GetBocaMetricsManagerForTesting()));
+}
+
+TEST_F(BocaManagerProducerTest,
+       VerifySpotlightSessionManagerWasAddedForConsumer) {
+  ASSERT_TRUE(boca_manager_->GetBocaSessionManager()->observers().HasObserver(
+      boca_manager_->GetSpotlightSessionManagerForTesting()));
 }
 
 TEST_F(BocaManagerConsumerTest, VerifyDependenciesTearDownProperly) {

@@ -9,6 +9,7 @@
 #import "base/metrics/field_trial_params.h"
 
 BASE_DECLARE_FEATURE(kAutofillDynamicallyLoadsFieldsForAddressInput);
+BASE_DECLARE_FEATURE(kAutofillFixPaymentSheetSpam);
 BASE_DECLARE_FEATURE(kAutofillIsolatedWorldForJavascriptIos);
 BASE_DECLARE_FEATURE(kAutofillPaymentsSheetV2Ios);
 BASE_DECLARE_FEATURE(kAutofillPaymentsSheetV3Ios);

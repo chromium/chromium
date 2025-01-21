@@ -16,7 +16,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 /**
  * Helper class that coordinates whether to apply the color changes to system window, or external
  * delegate based on the edge to edge status for the current activity window. When the window switch
- * to drawing edge to edge, the window's nav bar will be set to Color.TRANSPARENT.
+ * to drawing edge to edge, the window's nav bar and status bar will be set to Color.TRANSPARENT.
  *
  * <p>This instance is meant to be created at the based activity level, and one instance per
  * activity. This class will use the window's bar color when it's initialized.
@@ -61,33 +61,38 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
 
     @Override
     protected void applyStatusBarColor() {
-        // Don't support color status bar yet. Delegate to the window directly.
-        mWindowColorHelper.setStatusBarColor(mStatusBarColor);
+        updateStatusBarColor();
     }
 
     @Override
     protected void applyNavBarColor() {
-        updateColors();
+        updateNavBarColors();
     }
 
     @Override
     protected void applyNavigationBarDividerColor() {
-        updateColors();
+        updateNavBarColors();
     }
 
     private void onContentFitsWindowChanged(Boolean contentFitsWindow) {
         boolean toEdge = Boolean.FALSE.equals(contentFitsWindow);
         if (mIsActivityEdgeToEdge != toEdge) {
             mIsActivityEdgeToEdge = toEdge;
-            updateColors();
+            updateNavBarColors();
+            updateStatusBarColor();
         }
     }
 
     private void onDelegateColorHelperChanged(@NonNull SystemBarColorHelper delegate) {
-        updateColors();
+        // In ChromeActivity, the delegate is EdgeToEdgeBottomChinCoordinator which does not have
+        // coloring the status bar enabled. So #updateStatusBarColor() is not called here because
+        // the window's status bar would be transparent. This works for other activity because
+        // delegate is always ready when this class is initialized.
+        // TODO(crbug.com/390262712): Color status bar in ChromeActivity.
+        updateNavBarColors();
     }
 
-    private void updateColors() {
+    private void updateNavBarColors() {
         int windowNavColor = mIsActivityEdgeToEdge ? Color.TRANSPARENT : mNavBarColor;
         int windowNavDividerColor = mIsActivityEdgeToEdge ? Color.TRANSPARENT : mNavBarDividerColor;
         mWindowColorHelper.setNavigationBarColor(windowNavColor);
@@ -101,6 +106,20 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
             delegateHelper.setNavigationBarColor(mNavBarColor);
             delegateHelper.setNavigationBarDividerColor(mNavBarDividerColor);
         }
+    }
+
+    private void updateStatusBarColor() {
+        SystemBarColorHelper delegateHelper = mEdgeToEdgeDelegateHelperSupplier.get();
+        // In ChromeTabbedActivity the delegate is null because native has not initialized. Prevents
+        // setting the window status bar to transparent when the delegate is null.
+        int windowStatusBarColor = mStatusBarColor;
+        if (delegateHelper != null && mIsActivityEdgeToEdge) {
+            delegateHelper.setStatusBarColor(mStatusBarColor);
+            windowStatusBarColor = Color.TRANSPARENT;
+        }
+
+        mWindowColorHelper.setStatusBarColor(windowStatusBarColor);
+        mWindowColorHelper.setStatusBarContrastEnforced(!mIsActivityEdgeToEdge);
     }
 
     WindowSystemBarColorHelper getWindowHelperForTesting() {

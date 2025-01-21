@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
   auto owned_delegate = std::make_unique<Delegate>(choices);
   base::WeakPtr<Delegate> delegate = owned_delegate->GetWeakPtr();
   new TurnSyncOnHelper(
-      profile, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      profile, signin_metrics::AccessPoint::kUnknown,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
       second_account_id, aborted_mode(), std::move(owned_delegate),
       run_loop.QuitClosure());
@@ -365,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(TurnSyncOnHelperBrowserTest, UndoSyncRemoveAccount) {
   auto owned_delegate = std::make_unique<Delegate>(choices);
   base::WeakPtr<Delegate> delegate = owned_delegate->GetWeakPtr();
   new TurnSyncOnHelper(
-      profile, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      profile, signin_metrics::AccessPoint::kUnknown,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO, account_id,
       TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT,
       std::move(owned_delegate), run_loop.QuitClosure());
@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(TurnSyncOnHelperBrowserTestWithUnoDesktop,
   auto owned_delegate = std::make_unique<Delegate>(choices);
   base::WeakPtr<Delegate> delegate = owned_delegate->GetWeakPtr();
   new TurnSyncOnHelper(
-      profile, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      profile, signin_metrics::AccessPoint::kUnknown,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
       first_account_id,
       TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY,
@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(
   auto owned_delegate = std::make_unique<Delegate>(choices);
   base::WeakPtr<Delegate> delegate = owned_delegate->GetWeakPtr();
   new TurnSyncOnHelper(
-      profile, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      profile, signin_metrics::AccessPoint::kUnknown,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
       second_account_id,
       TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY,
@@ -551,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(
   auto owned_delegate = std::make_unique<Delegate>(choices);
   base::WeakPtr<Delegate> delegate = owned_delegate->GetWeakPtr();
   new TurnSyncOnHelper(
-      profile, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      profile, signin_metrics::AccessPoint::kUnknown,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
       second_account_id, TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT,
       std::move(owned_delegate), run_loop.QuitClosure());

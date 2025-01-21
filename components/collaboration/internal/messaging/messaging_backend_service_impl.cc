@@ -359,6 +359,12 @@ MessagingBackendServiceImpl::~MessagingBackendServiceImpl() = default;
 
 void MessagingBackendServiceImpl::SetInstantMessageDelegate(
     InstantMessageDelegate* instant_message_delegate) {
+  // We must be either setting a delegate where there was none before or
+  // we should be resetting a non-null delegate.
+  CHECK((instant_message_delegate_ == nullptr &&
+         instant_message_delegate != nullptr) ||
+        (instant_message_delegate_ != nullptr &&
+         instant_message_delegate == nullptr));
   instant_message_delegate_ = instant_message_delegate;
 }
 
@@ -951,6 +957,13 @@ void MessagingBackendServiceImpl::OnGroupMemberRemoved(
         *user_display_name);
   }
   store_->AddMessage(message);
+}
+
+void MessagingBackendServiceImpl::RemoveMessages(
+    const std::vector<base::Uuid>& message_ids) {
+  for (const base::Uuid& message_id : message_ids) {
+    store_->RemoveMessage(message_id.AsLowercaseString());
+  }
 }
 
 void MessagingBackendServiceImpl::AddActivityLogForTesting(

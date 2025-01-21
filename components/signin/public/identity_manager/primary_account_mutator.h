@@ -88,7 +88,7 @@ class PrimaryAccountMutator {
       const CoreAccountId& account_id,
       ConsentLevel consent_level,
       signin_metrics::AccessPoint access_point =
-          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+          signin_metrics::AccessPoint::kUnknown,
       base::OnceClosure prefs_committed_callback = base::NullCallback()) = 0;
 
 #if !BUILDFLAG(IS_CHROMEOS)

@@ -465,7 +465,7 @@ void PinnedActionToolbarButtonActionViewInterface::OnViewChangedImpl(
   // Set the accessible name. Fall back to the tooltip if one is not provided.
   // If pinned, the pinned state is added to the accessible name.
   auto accessible_name = action_item->GetAccessibleName().empty()
-                             ? action_view_->GetTooltipText(gfx::Point())
+                             ? action_view_->GetTooltipText()
                              : action_item->GetAccessibleName();
   auto stateful_accessible_name =
       action_view_->IsPinned()

@@ -33,7 +33,7 @@ class SigninUtilTest : public PlatformTest {
   AccountInfo FakeAccountFull() {
     AccountInfo account;
     account.account_id = CoreAccountId::FromString("account_id");
-    account.gaia = "gaia";
+    account.gaia = GaiaId("gaia");
     account.email = "person@example.org";
     account.full_name = "Full Name";
     account.given_name = "Given Name";
@@ -43,7 +43,7 @@ class SigninUtilTest : public PlatformTest {
 
   AccountInfo FakeAccountMinimal() {
     AccountInfo account;
-    account.gaia = "gaia";
+    account.gaia = GaiaId("gaia");
     account.email = "person@example.org";
     return account;
   }

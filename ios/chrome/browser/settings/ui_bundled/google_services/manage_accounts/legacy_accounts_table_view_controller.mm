@@ -525,7 +525,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kAddAccount
                identity:nil
-            accessPoint:AccessPoint::ACCESS_POINT_SETTINGS
+            accessPoint:AccessPoint::kSettings
             promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
              completion:^(SigninCoordinatorResult result,
                           id<SystemIdentity> completionIdentity) {
@@ -841,7 +841,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
   signin_metrics::AccessPoint accessPoint =
-      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
+      signin_metrics::AccessPoint::kSettings;
   [_applicationHandler
       showTrustedVaultReauthForFetchKeysFromViewController:self
                                           securityDomainID:securityDomainID
@@ -856,7 +856,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
   signin_metrics::AccessPoint accessPoint =
-      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
+      signin_metrics::AccessPoint::kSettings;
   [_applicationHandler
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:self
                                                        securityDomainID:

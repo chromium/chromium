@@ -20,20 +20,16 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.background_task_scheduler.ChromeNativeBackgroundTaskDelegate;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.DownloadNotificationService;
 import org.chromium.chrome.browser.download.DownloadUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
@@ -48,7 +44,6 @@ import org.chromium.components.download.DownloadTaskType;
 /** Unit tests for {@link org.chromium.chrome.browser.download.service.DownloadBackgroundTask}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-@EnableFeatures(ChromeFeatureList.DOWNLOADS_MIGRATE_TO_JOBS_API)
 public class DownloadBackgroundTaskTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -87,7 +82,6 @@ public class DownloadBackgroundTaskTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         DownloadBackgroundTaskJni.setInstanceForTesting(mNativeMock);
         DownloadManagerService.setDownloadManagerService(mDownloadManagerService);
         DownloadNotificationService.setInstanceForTests(mDownloadNotificationService);
@@ -160,23 +154,6 @@ public class DownloadBackgroundTaskTest {
     @Feature({"Download"})
     @Config(sdk = 30)
     public void testIsUserInitiatedJobForLowerAndroidVersions() {
-        Assert.assertFalse(
-                DownloadUtils.isUserInitiatedJob(
-                        TaskIds.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_JOB_ID));
-        Assert.assertFalse(
-                DownloadUtils.isUserInitiatedJob(
-                        TaskIds.DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_JOB_ID));
-        Assert.assertFalse(
-                DownloadUtils.isUserInitiatedJob(TaskIds.DOWNLOAD_AUTO_RESUMPTION_JOB_ID));
-        Assert.assertFalse(DownloadUtils.isUserInitiatedJob(TaskIds.DOWNLOAD_SERVICE_JOB_ID));
-        Assert.assertFalse(DownloadUtils.isUserInitiatedJob(TaskIds.DOWNLOAD_CLEANUP_JOB_ID));
-        Assert.assertFalse(DownloadUtils.isUserInitiatedJob(TaskIds.DOWNLOAD_LATER_JOB_ID));
-    }
-
-    @Test
-    @Feature({"Download"})
-    @DisableFeatures(ChromeFeatureList.DOWNLOADS_MIGRATE_TO_JOBS_API)
-    public void testIsUserInitiatedJobForDisabledFeature() {
         Assert.assertFalse(
                 DownloadUtils.isUserInitiatedJob(
                         TaskIds.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_JOB_ID));

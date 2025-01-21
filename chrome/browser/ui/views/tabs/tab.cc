@@ -277,7 +277,7 @@ Tab::Tab(TabSlotController* controller)
   UpdateAccessibleName();
 
   // Tab hover cards replace tooltips for tabs.
-  SetCachedTooltipText(std::u16string());
+  SetTooltipText(std::u16string());
 
   root_name_changed_subscription_ =
       GetViewAccessibility().AddStringAttributeChangedCallback(

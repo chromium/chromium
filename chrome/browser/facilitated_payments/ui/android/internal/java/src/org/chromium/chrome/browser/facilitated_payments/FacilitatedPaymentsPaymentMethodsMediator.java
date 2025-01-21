@@ -402,7 +402,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         RecordHistogram.recordEnumeratedHistogram(
                 histogramName,
                 FopSelectorAction.MANAGE_PAYMENT_METHODS_OPTION_SELECTED,
-                FopSelectorAction.MAX_VALUE + 1);
+                FopSelectorAction.MAX_VALUE);
     }
 
     private void onTurnOffPaymentPromptLinkClicked(String histogramName) {
@@ -411,7 +411,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         RecordHistogram.recordEnumeratedHistogram(
                 histogramName,
                 FopSelectorAction.TURN_OFF_PAYMENT_PROMPT_LINK_CLICKED,
-                FopSelectorAction.MAX_VALUE + 1);
+                FopSelectorAction.MAX_VALUE);
     }
 
     private String getEwalletFopSelectorUserActionHistogram(List<Ewallet> ewallets) {

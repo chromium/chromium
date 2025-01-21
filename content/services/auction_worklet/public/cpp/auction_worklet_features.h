@@ -46,6 +46,14 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kFledgeBidderContextsDivisor);
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kFledgeBidderContextsMultiplier);
 
+// Instead of using a hash to assign group-by-origin IGs to threads, use
+// a round robin on joining-origin while ensuring a maximum allowed imbalance
+// is respected.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeBidderUseBalancingThreadSelector);
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kFledgeBidderThreadSelectorMaxImbalance);
+
 // Prepare seller contexts, including running top level scripts, before
 // we're ready to score a worklet's first ad.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgePrepareSellerContextsInAdvance);

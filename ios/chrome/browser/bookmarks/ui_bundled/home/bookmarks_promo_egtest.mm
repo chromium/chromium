@@ -293,8 +293,7 @@ using chrome_test_util::SettingsDoneButton;
   // TODO(crbug.com/41493423): There should be log for SigninStartedAccessPoint,
   // Signin.SignIn.Offered and Signin.SigninCompletedAccessPoint.NotDefault
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
-      initWithAccessPoint:signin_metrics::AccessPoint::
-                              ACCESS_POINT_BOOKMARK_MANAGER];
+      initWithAccessPoint:signin_metrics::AccessPoint::kBookmarkManager];
   expecteds.signinSignInStarted = 1;
   [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }

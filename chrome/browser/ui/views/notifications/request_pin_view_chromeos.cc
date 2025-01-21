@@ -77,7 +77,7 @@ bool RequestPinView::Accept() {
   error_label_->SetVisible(true);
   error_label_->SetText(
       l10n_util::GetStringUTF16(IDS_REQUEST_PIN_DIALOG_PROCESSING));
-  error_label_->SetTooltipText(error_label_->GetText());
+  error_label_->SetCustomTooltipText(error_label_->GetText());
   error_label_->SetTextStyle(views::style::STYLE_SECONDARY);
   error_label_->SizeToPreferredSize();
   // The |textfield_| and OK button become disabled, but the user still can
@@ -217,7 +217,7 @@ void RequestPinView::SetErrorMessage(
 
   error_label_->SetVisible(true);
   error_label_->SetText(error_message);
-  error_label_->SetTooltipText(error_message);
+  error_label_->SetCustomTooltipText(error_message);
   error_label_->SetTextStyle(STYLE_RED);
   error_label_->SizeToPreferredSize();
   textfield_->SetInvalid(true);

@@ -182,11 +182,6 @@ class AddressComponent {
   // Returns the autofill storage type stored in |storage_type_|.
   FieldType GetStorageType() const;
 
-  // Returns the type to be used instead of `field_type` when this type does
-  // not contain information. It is assumed that `field_type` is a supported
-  // type of the node,
-  FieldType GetFallbackType(FieldType field_type) const;
-
   // Returns the string representation of |storage_type_|.
   std::string GetStorageTypeName() const;
 
@@ -250,11 +245,6 @@ class AddressComponent {
   // Convenience method to get the verification status of `field_type`.
   // Returns |VerificationStatus::kNoStatus| if `field_type` is not supported.
   VerificationStatus GetVerificationStatusForType(FieldType field_type) const;
-
-  // Convenience method to get the fallback type of a specific node whose
-  // supported type include `field_type`. Returns `field_type` in case it could
-  // not find a `field_type` node.
-  FieldType GetFallbackTypeForType(FieldType field_type) const;
 
   // Returns true if the |value| and |verification_status| were successfully
   // unset for |type|.

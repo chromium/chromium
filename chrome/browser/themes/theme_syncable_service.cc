@@ -860,7 +860,9 @@ std::optional<syncer::ModelError> ThemeSyncableService::ProcessNewTheme(
       }
       if (const base::Value* value =
               prefs->GetUserPrefValue(pref_names.non_syncing_pref_name)) {
-        prefs->Set(pref_names.syncing_pref_name, value->Clone());
+        prefs->Set(pref_names.syncing_pref_name, *value);
+      } else {
+        prefs->ClearPref(pref_names.syncing_pref_name);
       }
     }
   }

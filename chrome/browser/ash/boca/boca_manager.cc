@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/boca/babelorca/caption_bubble_context_boca.h"
 #include "chrome/browser/ash/boca/on_task/on_task_extensions_manager_impl.h"
 #include "chrome/browser/ash/boca/on_task/on_task_system_web_app_manager_impl.h"
+#include "chrome/browser/ash/boca/spotlight/spotlight_crd_manager_impl.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,6 +29,8 @@
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
 #include "chromeos/ash/components/boca/on_task/on_task_session_manager.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_crd_manager.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_session_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/gcm_profile_service.h"
@@ -89,13 +92,15 @@ BocaManager::BocaManager(
     std::unique_ptr<boca::BocaSessionManager> boca_session_manager,
     std::unique_ptr<boca::InvalidationServiceImpl> invalidation_service_impl,
     std::unique_ptr<boca::BabelOrcaManager> babel_orca_manager,
-    std::unique_ptr<boca::BocaMetricsManager> boca_metrics_manager)
+    std::unique_ptr<boca::BocaMetricsManager> boca_metrics_manager,
+    std::unique_ptr<boca::SpotlightSessionManager> spotlight_session_manager)
     : on_task_session_manager_(std::move(on_task_session_manager)),
       session_client_impl_(std::move(session_client_impl)),
       boca_session_manager_(std::move(boca_session_manager)),
       invalidation_service_impl_(std::move(invalidation_service_impl)),
       babel_orca_manager_(std::move(babel_orca_manager)),
-      boca_metrics_manager_(std::move(boca_metrics_manager)) {
+      boca_metrics_manager_(std::move(boca_metrics_manager)),
+      spotlight_session_manager_(std::move(spotlight_session_manager)) {
   AddObservers(nullptr);
 }
 
@@ -119,6 +124,9 @@ BocaManager::BocaManager(Profile* profile,
   }
   boca_metrics_manager_ =
       std::make_unique<boca::BocaMetricsManager>(/*is_producer*/ !is_consumer);
+
+  spotlight_session_manager_ = std::make_unique<boca::SpotlightSessionManager>(
+      std::make_unique<boca::SpotlightCrdManagerImpl>(profile->GetPrefs()));
 
   gcm::GCMDriver* gcm_driver =
       gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver();
@@ -152,6 +160,7 @@ void BocaManager::AddObservers(const user_manager::User* user) {
     boca_session_manager_->AddObserver(on_task_session_manager_.get());
   }
   boca_session_manager_->AddObserver(boca_metrics_manager_.get());
+  boca_session_manager_->AddObserver(spotlight_session_manager_.get());
 }
 
 }  // namespace ash

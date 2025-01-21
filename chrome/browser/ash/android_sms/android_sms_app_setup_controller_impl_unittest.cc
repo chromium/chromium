@@ -84,7 +84,7 @@ class FakeCookieManager : public network::TestCookieManager {
 
     if (!success) {
       access_result.status.AddExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR);
+          net::CookieInclusionStatus::ExclusionReason::EXCLUDE_UNKNOWN_ERROR);
     }
 
     std::move(std::get<3>(params)).Run(access_result);

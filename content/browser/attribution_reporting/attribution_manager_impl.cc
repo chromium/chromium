@@ -407,19 +407,61 @@ void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
       report.data());
 }
 
+void RecordTimeSinceLastNavigationOnReportComplete(
+    base::Time last_navigation,
+    SendResult::Status status,
+    std::string_view report_type_string) {
+  base::Time now = base::Time::Now();
+  switch (status) {
+    case SendResult::Status::kSent:
+      base::UmaHistogramCustomTimes(
+          base::StrCat(
+              {"Conversions.TimeFromLastNavigationToDelivery_Succeeded.",
+               report_type_string}),
+          now - last_navigation, base::Seconds(1), base::Days(24),
+          /*buckets=*/100);
+      break;
+    case SendResult::Status::kTransientFailure:
+    case SendResult::Status::kFailure:
+      base::UmaHistogramCustomTimes(
+          base::StrCat({"Conversions.TimeFromLastNavigationToDelivery_Failed.",
+                        report_type_string}),
+          now - last_navigation, base::Seconds(1), base::Days(24),
+          /*buckets=*/100);
+      break;
+    case SendResult::Status::kDropped:
+    case SendResult::Status::kAssemblyFailure:
+    case SendResult::Status::kTransientAssemblyFailure:
+      break;
+  }
+}
+
 // Called when |report| is sent, failed or dropped, for logging metrics.
 void LogMetricsOnReportCompleted(const AttributionReport& report,
-                                 SendResult::Status status) {
+                                 SendResult::Status status,
+                                 std::optional<base::Time> last_navigation) {
   switch (report.GetReportType()) {
     case AttributionReport::Type::kEventLevel:
       base::UmaHistogramEnumeration(
           "Conversions.ReportSendOutcome3",
           ConvertToConversionReportSendOutcome(status));
+
+      if (last_navigation.has_value()) {
+        RecordTimeSinceLastNavigationOnReportComplete(
+            *last_navigation, status,
+            /*report_type_string=*/"EventLevelReport");
+      }
       break;
     case AttributionReport::Type::kAggregatableAttribution:
       base::UmaHistogramEnumeration(
           "Conversions.AggregatableReport.ReportSendOutcome2",
           ConvertToConversionReportSendOutcome(status));
+
+      if (last_navigation.has_value()) {
+        RecordTimeSinceLastNavigationOnReportComplete(
+            *last_navigation, status,
+            /*report_type_string=*/"AggregatableReport");
+      }
       break;
     case AttributionReport::Type::kNullAggregatable:
       break;
@@ -1052,6 +1094,11 @@ void AttributionManagerImpl::RemoveAttributionDataByDataKey(
           weak_factory_.GetWeakPtr(), /*was_user_visible=*/true)));
 }
 
+void AttributionManagerImpl::UpdateLastNavigationTime(
+    base::Time navigation_time) {
+  last_navigation_time_ = navigation_time;
+}
+
 void AttributionManagerImpl::GetReportsToSend() {
   // We only get the next report time strictly after now, because if we are
   // sending a report now but haven't finished doing so and it is still present
@@ -1238,7 +1285,7 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
       .WithArgs(report.id())
       .Then(std::move(then));
 
-  LogMetricsOnReportCompleted(report, info.status());
+  LogMetricsOnReportCompleted(report, info.status(), last_navigation_time_);
 }
 
 void AttributionManagerImpl::NotifyReportSent(bool is_debug_report,

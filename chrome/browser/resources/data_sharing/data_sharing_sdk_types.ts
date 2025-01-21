@@ -86,6 +86,7 @@ export const enum StaticMessageKey {
   BACK,
   ERROR_DIALOG_CONTENT,
   SOMETHING_WENT_WRONG,
+  FAIL_TO_UPDATE_ACCESS,
   THERE_WAS_AN_ERROR,
   THERE_WAS_AN_ISSUE,
   MORE_OPTIONS,
@@ -123,6 +124,7 @@ export const enum StaticMessageKey {
   PEOPLE_WITH_ACCESS_SUBTITLE_MANAGE_FLOW,
   GROUP_FULL_TITLE,
   GROUP_FULL_CONTENT,
+  ACTIVITY_LOGS,
 }
 export const enum DynamicMessageKey {
 

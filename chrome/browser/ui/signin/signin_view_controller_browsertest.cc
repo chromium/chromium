@@ -49,8 +49,8 @@
 namespace {
 
 constexpr char kTestEmail[] = "email@gmail.com";
-constexpr signin_metrics::AccessPoint kTestAccessPoint = signin_metrics::
-    AccessPoint::ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT;
+constexpr signin_metrics::AccessPoint kTestAccessPoint =
+    signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt;
 
 constexpr char kConfirmationNoUnsyncedHistogramName[] =
     "Signin.ChromeSignoutConfirmationPrompt.NoUnsynced";
@@ -568,23 +568,21 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
                        UpdateAccessPointOfSignInTab) {
   // Request a sign in tab, which will open a new tab.
   browser()->signin_view_controller()->ShowDiceAddAccountTab(
-      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, std::string());
-  EXPECT_TRUE(
-      IsSigninTab(browser()->tab_strip_model()->GetActiveWebContents(),
-                  signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE));
+      signin_metrics::AccessPoint::kPasswordBubble, std::string());
+  EXPECT_TRUE(IsSigninTab(browser()->tab_strip_model()->GetActiveWebContents(),
+                          signin_metrics::AccessPoint::kPasswordBubble));
 
   // Request a sign in tab with a different access point, which will update the
   // existing sign in tab's access point.
   browser()->signin_view_controller()->ShowDiceAddAccountTab(
-      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, std::string());
-  EXPECT_TRUE(
-      IsSigninTab(browser()->tab_strip_model()->GetActiveWebContents(),
-                  signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE));
+      signin_metrics::AccessPoint::kAddressBubble, std::string());
+  EXPECT_TRUE(IsSigninTab(browser()->tab_strip_model()->GetActiveWebContents(),
+                          signin_metrics::AccessPoint::kAddressBubble));
 
   EXPECT_TRUE(signin_ui_util::GetSignInTabWithAccessPoint(
-      browser(), signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE));
+      browser(), signin_metrics::AccessPoint::kAddressBubble));
   EXPECT_FALSE(signin_ui_util::GetSignInTabWithAccessPoint(
-      browser(), signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE));
+      browser(), signin_metrics::AccessPoint::kPasswordBubble));
 }
 
 IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,

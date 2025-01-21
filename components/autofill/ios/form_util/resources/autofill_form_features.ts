@@ -32,6 +32,14 @@ let autofillAcrossIframesThrottling: boolean = false;
 let autofillIsolatedContentWorld: boolean = false;
 // LINT.ThenChange(//components/autofill/ios/common/features.cc:autofill_isolated_content_world)
 
+// LINT.IfChange(autofill_fix_post_filling_payment_sheet)
+/**
+Enables fixing the issue where the payment sheet spams after dismissing a
+modal dialog that was triggered from the KA (e.g. filling a suggestion).
+ */
+let autofillFixPaymentSheetSpam: boolean = false;
+// LINT.ThenChange(//ios/chrome/browser/autofill/model/features.mm:autofill_fix_post_filling_payment_sheet)
+
 /**
  * @see autofillAcrossIframes
  */
@@ -74,6 +82,20 @@ function isAutofillIsolatedContentWorldEnabled(): boolean {
   return autofillIsolatedContentWorld;
 }
 
+/**
+ * @see autofillFixPaymentSheetSpam
+ */
+function setAutofillFixPaymentSheetSpam(enabled: boolean): void {
+  autofillFixPaymentSheetSpam = enabled;
+}
+
+/**
+ * @see autofillFixPaymentSheetSpam
+ */
+function isAutofillFixPaymentSheetSpamEnabled(): boolean {
+  return autofillFixPaymentSheetSpam;
+}
+
 // Expose globally via `gCrWeb` instead of `export` to ensure state (feature
 // on/off) is maintained across imports.
 gCrWeb.autofill_form_features = {
@@ -83,4 +105,6 @@ gCrWeb.autofill_form_features = {
   isAutofillAcrossIframesThrottlingEnabled,
   setAutofillIsolatedContentWorld,
   isAutofillIsolatedContentWorldEnabled,
+  setAutofillFixPaymentSheetSpam,
+  isAutofillFixPaymentSheetSpamEnabled,
 };

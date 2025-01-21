@@ -591,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostIdentityBrowserTest,
           IdentityManager()->GetPrimaryAccountInfo(
               signin::ConsentLevel::kSignin),
           signin::ConsentLevel::kSignin),
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN));
+      signin_metrics::AccessPoint::kUnknown));
 #endif
 
   // Verify that cooldown timers in the network context have been reset and

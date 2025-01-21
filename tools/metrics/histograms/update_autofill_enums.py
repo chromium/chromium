@@ -189,3 +189,11 @@ if __name__ == '__main__':
       'FillingAcceptanceByFieldType',
       GenerateFillingAcceptanceByFieldType(server_field_types),
       FIELD_TYPES_PATH, os.path.basename(__file__))
+
+  update_histogram_enum.UpdateHistogramFromDict(
+      'tools/metrics/histograms/metadata/autofill/histograms.xml',
+      'AutofillFieldType',
+      server_field_types,
+      FIELD_TYPES_PATH,
+      os.path.basename(__file__),
+      update_comment=False)

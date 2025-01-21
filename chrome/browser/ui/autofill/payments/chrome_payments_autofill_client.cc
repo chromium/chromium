@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/autofill/risk_util.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -946,6 +947,11 @@ payments::BnplManager* ChromePaymentsAutofillClient::GetPaymentsBnplManager() {
   }
 
   return bnpl_manager_.get();
+}
+
+const PaymentsDataManager&
+ChromePaymentsAutofillClient::GetPaymentsDataManager() const {
+  return client_->GetPersonalDataManager().payments_data_manager();
 }
 
 #if BUILDFLAG(IS_ANDROID)

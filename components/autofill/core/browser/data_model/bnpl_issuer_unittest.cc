@@ -14,7 +14,7 @@ namespace autofill {
 
 // Test for getting and setting the issuer id for the BNPL issuer data model.
 TEST(BnplIssuerTest, GetAndSetIssuerId) {
-  BnplIssuer issuer = test::GetTestBnplIssuer();
+  BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
   issuer.set_issuer_id("new_issuer");
   EXPECT_EQ(issuer.issuer_id(), "new_issuer");
 }
@@ -22,7 +22,7 @@ TEST(BnplIssuerTest, GetAndSetIssuerId) {
 // Test for getting and setting the payment instrument for the BNPL issuer data
 // model.
 TEST(BnplIssuerTest, SetAndGetPaymentInstrument) {
-  BnplIssuer issuer = test::GetTestBnplIssuer();
+  BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
   PaymentInstrument new_payment_instrument = PaymentInstrument(
       /*instrument_id=*/123456789, /*nickname=*/u"new payment instrument",
       GURL::EmptyGURL(),
@@ -36,7 +36,7 @@ TEST(BnplIssuerTest, SetAndGetPaymentInstrument) {
 // Test for getting and setting the price lower bound for the BNPL issuer data
 // model.
 TEST(BnplIssuerTest, SetAndGetPriceLowerBound) {
-  BnplIssuer issuer = test::GetTestBnplIssuer();
+  BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
   uint64_t price_lower_bound = 20000000;
   ASSERT_NE(issuer.eligible_price_ranges()[0].price_lower_bound,
             price_lower_bound);
@@ -51,7 +51,7 @@ TEST(BnplIssuerTest, SetAndGetPriceLowerBound) {
 // Test for getting and setting the price upper bound for the BNPL issuer data
 // model.
 TEST(BnplIssuerTest, SetAndGetPriceUpperBound) {
-  BnplIssuer issuer = test::GetTestBnplIssuer();
+  BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
   uint64_t price_upper_bound = 300000000;
   ASSERT_NE(issuer.eligible_price_ranges()[0].price_upper_bound,
             price_upper_bound);
@@ -65,15 +65,15 @@ TEST(BnplIssuerTest, SetAndGetPriceUpperBound) {
 
 // Test for the equality operator for the BNPL issuer data model.
 TEST(BnplIssuerTest, EqualityOperator) {
-  BnplIssuer issuer1 = test::GetTestBnplIssuer();
-  BnplIssuer issuer2 = test::GetTestBnplIssuer();
+  BnplIssuer issuer1 = test::GetTestLinkedBnplIssuer();
+  BnplIssuer issuer2 = test::GetTestLinkedBnplIssuer();
 
   EXPECT_TRUE(issuer1 == issuer2);
 
   issuer2.set_issuer_id("different_issuer");
   EXPECT_FALSE(issuer1 == issuer2);
 
-  issuer2 = test::GetTestBnplIssuer();
+  issuer2 = test::GetTestLinkedBnplIssuer();
   issuer2.set_payment_instrument(PaymentInstrument(
       /*instrument_id=*/123456789, /*nickname=*/u"new payment instrument",
       /*display_icon_url=*/GURL::EmptyGURL(),
@@ -82,7 +82,7 @@ TEST(BnplIssuerTest, EqualityOperator) {
           {PaymentInstrument::PaymentRail::kCardNumber})));
   EXPECT_FALSE(issuer1 == issuer2);
 
-  issuer2 = test::GetTestBnplIssuer();
+  issuer2 = test::GetTestLinkedBnplIssuer();
   BnplIssuer::EligiblePriceRange price_range(
       /*currency=*/"USD", /*price_lower_bound=*/100000000,
       /*price_upper_bound=*/
@@ -90,7 +90,7 @@ TEST(BnplIssuerTest, EqualityOperator) {
   issuer2.set_eligible_price_ranges({price_range});
   EXPECT_FALSE(issuer1 == issuer2);
 
-  issuer2 = test::GetTestBnplIssuer();
+  issuer2 = test::GetTestLinkedBnplIssuer();
   price_range.price_lower_bound =
       issuer2.eligible_price_ranges()[0].price_lower_bound;
   price_range.price_upper_bound = 10000000000;

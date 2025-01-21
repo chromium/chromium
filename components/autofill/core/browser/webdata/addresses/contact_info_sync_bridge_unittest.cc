@@ -208,7 +208,8 @@ TEST_F(ContactInfoSyncBridgeTest, ApplyIncrementalSyncChanges) {
 
   // Delete the existing local profile and add + update `remote`.
   syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(syncer::EntityChange::CreateDelete(kGUID1));
+  entity_change_list.push_back(
+      syncer::EntityChange::CreateDelete(kGUID1, syncer::EntityData()));
   entity_change_list.push_back(
       syncer::EntityChange::CreateAdd(kGUID2, ProfileToEntity(remote)));
   remote.SetRawInfo(EMAIL_ADDRESS, u"test@example.com");

@@ -61,9 +61,7 @@ public class EdgeToEdgeUtils {
      * drawing edge to edge on start up.
      */
     public static boolean isEnabled() {
-        return isEdgeToEdgeBottomChinEnabled()
-                || isEdgeToEdgeWebOptInEnabled()
-                || isEdgeToEdgeEverywhereEnabled();
+        return isEdgeToEdgeBottomChinEnabled() || isEdgeToEdgeEverywhereEnabled();
     }
 
     /**
@@ -81,7 +79,7 @@ public class EdgeToEdgeUtils {
      * bottom chin.
      */
     public static boolean isEdgeToEdgeWebOptInEnabled() {
-        return ChromeFeatureList.sEdgeToEdgeWebOptIn.isEnabled();
+        return isEdgeToEdgeBottomChinEnabled() && ChromeFeatureList.sEdgeToEdgeWebOptIn.isEnabled();
     }
 
     /** Whether edge-to-edge should be enabled everywhere. */
@@ -91,7 +89,8 @@ public class EdgeToEdgeUtils {
 
     /** Whether key native pages should draw to edge. */
     public static boolean isDrawKeyNativePageToEdgeEnabled() {
-        return isEnabled() && ChromeFeatureList.sDrawKeyNativeEdgeToEdge.isEnabled();
+        return isEdgeToEdgeBottomChinEnabled()
+                && ChromeFeatureList.sDrawKeyNativeEdgeToEdge.isEnabled();
     }
 
     /**
@@ -223,7 +222,7 @@ public class EdgeToEdgeUtils {
 
     /** Whether a native tab will be drawn edge to to edge. */
     static boolean isNativeTabDrawingToEdge(Tab activeTab) {
-        if (!ChromeFeatureList.sDrawKeyNativeEdgeToEdge.isEnabled()) return false;
+        if (!isDrawKeyNativePageToEdgeEnabled()) return false;
 
         // TODO(crbug.com/339025702): Check if we are in tab switcher when activeTab is null.
         if (activeTab == null) return false;

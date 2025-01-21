@@ -50,7 +50,7 @@ MediaGalleryCheckboxView::MediaGalleryCheckboxView(
   }
   secondary_text_->SetVisible(details.length() > 0);
   secondary_text_->SetElideBehavior(gfx::ELIDE_HEAD);
-  secondary_text_->SetTooltipText(tooltip_text);
+  secondary_text_->SetCustomTooltipText(tooltip_text);
   secondary_text_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       0, provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL),
       0, 0)));

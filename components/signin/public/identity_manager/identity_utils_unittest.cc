@@ -109,7 +109,7 @@ TEST_F(IdentityUtilsTest, AreGoogleCookiesRebuiltAfterClearingWhenSignedIn) {
   // Sync.
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       identity_manager()->GetPrimaryAccountId(ConsentLevel::kSignin),
-      ConsentLevel::kSync, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+      ConsentLevel::kSync, signin_metrics::AccessPoint::kSettings);
   EXPECT_FALSE(AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
       *identity_manager(), *pref_service()));
 }

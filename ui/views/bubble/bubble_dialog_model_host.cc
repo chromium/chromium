@@ -546,6 +546,8 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
                   combobox->SetInvalid(true);
                   if (error_label) {
                     error_label->SetVisible(true);
+                    error_label->GetViewAccessibility().AnnounceAlert(
+                        error_label->GetText());
                   }
                 },
                 password_combobox.get(), error_label.get())));

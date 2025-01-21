@@ -218,6 +218,15 @@ void AttributionHost::DidRedirectNavigation(
 }
 
 void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
+  auto* attribution_manager =
+      AttributionManager::FromWebContents(web_contents());
+
+  base::Time now = base::Time::Now();
+
+  if (attribution_manager && navigation_handle->GetNetErrorCode() == net::OK) {
+    attribution_manager->UpdateLastNavigationTime(now);
+  }
+
   if (navigation_handle->IsInPrimaryMainFrame() &&
       !navigation_handle->IsSameDocument()) {
     if (primary_main_frame_data_.has_value()) {
@@ -226,7 +235,7 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     }
 
     // Sets current time to detect further client redirects.
-    last_navigation_time_ = base::Time::Now();
+    last_navigation_time_ = now;
 
     if (navigation_handle->HasCommitted()) {
       primary_main_frame_data_ = PrimaryMainFrameData();
@@ -240,8 +249,6 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
 
   NotifyNavigationRegistrationData(navigation_handle);
 
-  auto* attribution_manager =
-      AttributionManager::FromWebContents(web_contents());
   CHECK(attribution_manager);
   attribution_manager->GetDataHostManager()
       ->NotifyNavigationRegistrationCompleted(

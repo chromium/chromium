@@ -87,6 +87,7 @@ aggregate_vector_icons("components_vector_icons") {
     "extension_off.icon",
     "extension_on.icon",
     "family_link.icon",
+    "feedback.icon",
     "file_download.icon",
     "file_download_chrome_refresh.icon",
     "file_download_off_chrome_refresh.icon",

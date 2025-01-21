@@ -361,6 +361,9 @@ struct CookieDeletionFilter {
   bool partitioned_state_only;
 };
 
+// Interface used to register event listeners in processes like the Browser and
+// privileged Renderer processes to receive synchronous cookie change
+// notifications from the Network Service's CookieStore.
 interface CookieChangeListener {
   // TODO(rdsmith): Should this be made a batch interface?
   OnCookieChange(CookieChangeInfo change);

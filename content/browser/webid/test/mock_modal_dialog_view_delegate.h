@@ -5,15 +5,14 @@
 #ifndef CONTENT_BROWSER_WEBID_TEST_MOCK_MODAL_DIALOG_VIEW_DELEGATE_H_
 #define CONTENT_BROWSER_WEBID_TEST_MOCK_MODAL_DIALOG_VIEW_DELEGATE_H_
 
+#include "content/browser/webid/identity_registry_delegate.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/federated_identity_modal_dialog_view_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
 namespace content {
 
-class MockModalDialogViewDelegate
-    : public FederatedIdentityModalDialogViewDelegate {
+class MockModalDialogViewDelegate : public IdentityRegistryDelegate {
  public:
   MockModalDialogViewDelegate();
 

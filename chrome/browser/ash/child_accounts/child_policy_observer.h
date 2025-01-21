@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 
@@ -89,6 +90,10 @@ class ChildPolicyObserver : public policy::CloudPolicyService::Observer {
   // Callback to be invoked when child policy refresh finshed (successfully,
   // with an error or timed out). Notifies the requester that policy is ready.
   PolicyReadyCallback on_policy_ready_;
+
+  base::ScopedObservation<policy::CloudPolicyService,
+                          policy::CloudPolicyService::Observer>
+      cloud_policy_service_observation_{this};
 
   // Profile of the child user, not owned.
   const raw_ptr<Profile> profile_;

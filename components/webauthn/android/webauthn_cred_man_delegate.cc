@@ -10,6 +10,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "components/webauthn/android/cred_man_support.h"
 #include "content/public/browser/web_contents.h"
@@ -45,6 +46,13 @@ void WebAuthnCredManDelegate::OnCredManUiClosed(bool success) {
 
 void WebAuthnCredManDelegate::TriggerCredManUi(
     RequestPasswords request_passwords) {
+  if (!passkeys_after_fill_recorded_) {
+    passkeys_after_fill_recorded_ = true;
+    base::UmaHistogramBoolean(
+        "PasswordManager.PasskeysArrivedAfterAutofillDisplay",
+        has_passkeys_ == kNotReady);
+  }
+
   if (show_cred_man_ui_callback_.is_null()) {
     return;
   }

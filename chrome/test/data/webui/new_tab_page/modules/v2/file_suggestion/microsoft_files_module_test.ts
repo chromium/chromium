@@ -2,23 +2,52 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {File} from 'chrome://new-tab-page/file_suggestion.mojom-webui.js';
 import type {DisableModuleEvent, MicrosoftFilesModuleElement} from 'chrome://new-tab-page/lazy_load.js';
-import {microsoftFilesModuleDescriptor} from 'chrome://new-tab-page/lazy_load.js';
+import {microsoftFilesModuleDescriptor, MicrosoftFilesProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
+import {MicrosoftFilesPageHandlerRemote} from 'chrome://new-tab-page/microsoft_files.mojom-webui.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import type {TestMock} from 'chrome://webui-test/test_mock.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {installMock} from '../../../test_support.js';
 
 suite('MicrosoftFilesModule', () => {
+  let handler: TestMock<MicrosoftFilesPageHandlerRemote>;
+  const modulesSharepointName = 'SharePoint';
+
   setup(async () => {
+    loadTimeData.overrideValues({modulesSharepointName: modulesSharepointName});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    handler = installMock(
+        MicrosoftFilesPageHandlerRemote,
+        mock => MicrosoftFilesProxyImpl.setInstance(
+            new MicrosoftFilesProxyImpl(mock)));
   });
+
+  function createFiles(numFiles: number): File[] {
+    const files: File[] = [];
+    for (let i = 0; i < numFiles; i++) {
+      files.push({
+        justificationText: 'Trending in your organization',
+        title: `Document ${i}`,
+        id: `${i}`,
+        iconUrl: {url: 'https://foo.com/'},
+        itemUrl: {url: `https://foo.com/${i}`},
+      });
+    }
+    return files;
+  }
 
   test('clicking the info button opens the ntp info dialog box', async () => {
     // Arrange.
+    handler.setResultFor('getFiles', Promise.resolve({files: createFiles(6)}));
     const microsoftFilesModule =
         await microsoftFilesModuleDescriptor.initialize(0) as
         MicrosoftFilesModuleElement;
+    assertTrue(!!microsoftFilesModule);
     document.body.append(microsoftFilesModule);
     await microtasksFinished();
     assertFalse(!!$$(microsoftFilesModule, 'ntp-info-dialog'));
@@ -36,11 +65,11 @@ suite('MicrosoftFilesModule', () => {
 
   test('clicking the disable button fires a disable module event', async () => {
     // Arrange.
-    const modulesSharepointName = 'SharePoint';
-    loadTimeData.overrideValues({modulesSharepointName: modulesSharepointName});
+    handler.setResultFor('getFiles', Promise.resolve({files: createFiles(6)}));
     const microsoftFilesModule =
         await microsoftFilesModuleDescriptor.initialize(0) as
         MicrosoftFilesModuleElement;
+    assertTrue(!!microsoftFilesModule);
     document.body.append(microsoftFilesModule);
     await microtasksFinished();
 
@@ -57,5 +86,31 @@ suite('MicrosoftFilesModule', () => {
     assertEquals(
         ('You won\'t see ' + modulesSharepointName + ' on this page again'),
         event.detail.message);
+  });
+
+  test('creates module', async () => {
+    // Set up module.
+    handler.setResultFor('getFiles', Promise.resolve({files: createFiles(6)}));
+    const microsoftFilesModule =
+        await microsoftFilesModuleDescriptor.initialize(0) as
+        MicrosoftFilesModuleElement;
+    assertTrue(!!microsoftFilesModule);
+    document.body.append(microsoftFilesModule);
+    await microtasksFinished();
+
+    // Assert.
+    assertTrue(isVisible(microsoftFilesModule.$.moduleHeaderElementV2));
+    assertEquals(
+        microsoftFilesModule.$.moduleHeaderElementV2.headerText,
+        modulesSharepointName);
+  });
+
+  test('module not created when there are no files', async () => {
+    handler.setResultFor('getFiles', Promise.resolve({files: createFiles(0)}));
+    const microsoftFilesModule =
+        await microsoftFilesModuleDescriptor.initialize(0) as
+        MicrosoftFilesModuleElement;
+
+    assertEquals(microsoftFilesModule, null);
   });
 });

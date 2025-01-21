@@ -227,6 +227,8 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf)
   }
   SetProperty(views::kElementIdentifierKey, kHoldingSpaceTrayElementId);
 
+  SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE));
+
   // Accessibility.
   GetViewAccessibility().SetName(GetAccessibleNameForBubble());
 
@@ -304,10 +306,6 @@ views::View* HoldingSpaceTray::GetTooltipHandlerForPoint(
     const gfx::Point& point) {
   // Tooltip events should be handled top level, not by descendents.
   return HitTestPoint(point) ? this : nullptr;
-}
-
-std::u16string HoldingSpaceTray::GetTooltipText(const gfx::Point& point) const {
-  return l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE);
 }
 
 void HoldingSpaceTray::HandleLocaleChange() {

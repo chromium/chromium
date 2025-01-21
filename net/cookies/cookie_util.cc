@@ -353,10 +353,11 @@ std::optional<std::string> GetCookieDomainWithString(
   if (!base::IsStringASCII(domain_string)) {
     if (base::FeatureList::IsEnabled(features::kCookieDomainRejectNonASCII)) {
       status.AddExclusionReason(
-          CookieInclusionStatus::EXCLUDE_DOMAIN_NON_ASCII);
+          CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_NON_ASCII);
       return std::nullopt;
     }
-    status.AddWarningReason(CookieInclusionStatus::WARN_DOMAIN_NON_ASCII);
+    status.AddWarningReason(
+        CookieInclusionStatus::WarningReason::WARN_DOMAIN_NON_ASCII);
   }
 
   const std::string url_host(url.host());

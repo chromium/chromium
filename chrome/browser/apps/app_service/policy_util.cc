@@ -12,6 +12,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
+#include "base/ranges/functional.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -73,9 +74,10 @@ constexpr auto kSystemWebAppsMapping =
          {"graduation", ash::SystemWebAppType::GRADUATION}});
 
 constexpr ash::SystemWebAppType GetMaxSystemWebAppType() {
-  return base::ranges::max(kSystemWebAppsMapping, base::ranges::less{},
-                           &decltype(kSystemWebAppsMapping)::value_type::second)
-      .second;
+  return base::ranges::max_element(
+             kSystemWebAppsMapping, base::ranges::less{},
+             &decltype(kSystemWebAppsMapping)::value_type::second)
+      ->second;
 }
 
 static_assert(GetMaxSystemWebAppType() == ash::SystemWebAppType::kMaxValue,

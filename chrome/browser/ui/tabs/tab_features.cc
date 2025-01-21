@@ -197,7 +197,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           &tab, side_panel_registry_.get());
 
   if (fingerprinting_protection_filter::features::
-          IsFingerprintingProtectionFeatureEnabled()) {
+          IsFingerprintingProtectionEnabledForIncognitoState(
+              profile->IsIncognitoProfile())) {
     CreateFingerprintingProtectionWebContentsHelper(
         tab.GetContents(), profile->GetPrefs(),
         HostContentSettingsMapFactory::GetForProfile(profile),

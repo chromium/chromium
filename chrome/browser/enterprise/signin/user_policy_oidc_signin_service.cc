@@ -285,8 +285,7 @@ void UserPolicyOidcSigninService::OnPolicyFetchCompleteInNewProfile(
         signin_util::SetPrimaryAccountWithInvalidToken(
             profile_, user_email, gaia_id,
             /*is_under_advanced_protection=*/false,
-            signin_metrics::AccessPoint::
-                ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION,
+            signin_metrics::AccessPoint::kOIDCRedirectionInterception,
             signin_metrics::SourceForRefreshTokenOperation::
                 kMachineLogon_CredentialProvider);
 

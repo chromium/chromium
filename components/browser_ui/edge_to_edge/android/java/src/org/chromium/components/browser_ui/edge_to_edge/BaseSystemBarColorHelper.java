@@ -5,9 +5,13 @@
 package org.chromium.components.browser_ui.edge_to_edge;
 
 import android.graphics.Color;
+import android.view.View;
 import android.view.Window;
 
 import androidx.annotation.ColorInt;
+
+import org.chromium.ui.UiUtils;
+import org.chromium.ui.util.ColorUtils;
 
 /** Base implementation of a {@link SystemBarColorHelper} that tracks colors internally. */
 public abstract class BaseSystemBarColorHelper implements SystemBarColorHelper {
@@ -45,6 +49,29 @@ public abstract class BaseSystemBarColorHelper implements SystemBarColorHelper {
     /** Return the current nav bar color tracked by this instance. */
     public @ColorInt int getNavigationBarColor() {
         return mNavBarColor;
+    }
+
+    /**
+     * Sets the status bar icons to dark or light based on the luminance of mStatusBarColor to
+     * ensure enough contrast.
+     */
+    public void updateStatusBarIconColor(View rootView) {
+        // TODO(crbug.com/390261112): Handle coloring Status bar and Nav bar icon colors in
+        //  BaseSystemColorHelper.
+        UiUtils.setStatusBarIconColor(
+                rootView,
+                ColorUtils.isHighLuminance(ColorUtils.calculateLuminance(mStatusBarColor)));
+    }
+
+    /**
+     * Sets the navigation bar icons to dark or light based on the luminance of mNavBarColor to
+     * ensure enough contrast.
+     */
+    public void updateNavigationBarIconColor(View rootView) {
+        // TODO(crbug.com/390261112): Handle coloring Status bar and Nav bar icon colors in
+        //  BaseSystemColorHelper.
+        UiUtils.setNavigationBarIconColor(
+                rootView, ColorUtils.isHighLuminance(ColorUtils.calculateLuminance(mNavBarColor)));
     }
 
     /** Return the current nav bar divider color tracked by this instance. */

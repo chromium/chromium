@@ -50,10 +50,18 @@ inline float ResolveWidthForRatio(float height,
                                   const gfx::SizeF& natural_ratio) {
   return height * natural_ratio.width() / natural_ratio.height();
 }
+inline LayoutUnit ResolveWidthForRatio(LayoutUnit height,
+                                       const PhysicalSize& natural_ratio) {
+  return height.MulDiv(natural_ratio.width, natural_ratio.height);
+}
 
 inline float ResolveHeightForRatio(float width,
                                    const gfx::SizeF& natural_ratio) {
   return width * natural_ratio.height() / natural_ratio.width();
+}
+inline LayoutUnit ResolveHeightForRatio(LayoutUnit width,
+                                        const PhysicalSize& natural_ratio) {
+  return width.MulDiv(natural_ratio.height, natural_ratio.width);
 }
 
 // Implements the algorithm at

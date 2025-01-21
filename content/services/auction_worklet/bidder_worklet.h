@@ -26,6 +26,7 @@
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/bidder_worklet_thread_selector.h"
 #include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
@@ -145,10 +146,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   std::vector<int> context_group_ids_for_testing() const;
 
   const std::string& join_origin_hash_salt_for_testing() const {
-    return join_origin_hash_salt_;
+    return thread_selector_.join_origin_hash_salt_for_testing();
   }
-
-  size_t GetNextThreadIndex();
 
   static bool IsKAnon(const mojom::BidderWorkletNonSharedParams*
                           bidder_worklet_non_shared_params,
@@ -764,6 +763,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   // `task` from `generate_bid_tasks_`.
   void DeliverBidCallbackOnUserThread(
       GenerateBidTaskList::iterator task,
+      size_t thread_index_used_for_task,
       std::vector<mojom::BidderWorkletBidPtr> bids,
       std::optional<uint32_t> bidding_signals_data_version,
       std::optional<GURL> debug_loss_report_url,
@@ -788,6 +788,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   // `task` from `report_win_tasks_`.
   void DeliverReportWinOnUserThread(
       ReportWinTaskList::iterator task,
+      size_t thread_index_used_for_task,
       std::optional<GURL> report_url,
       base::flat_map<std::string, GURL> ad_beacon_map,
       base::flat_map<std::string, std::string> ad_macro_map,
@@ -804,15 +805,10 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers_;
   std::vector<scoped_refptr<AuctionV8Helper::DebugId>> debug_ids_;
 
-  // The next therad index to use for parsing trusted signals, for handling
+  // Generates the thread index to use for parsing trusted signals, for handling
   // `generateBid` when the execution mode is not group-by-origin, and for
   // `reportWin`.
-  size_t next_thread_index_ = 0;
-
-  // A salt value used to hash `join_origin` from `generateBid` when the
-  // execution mode is 'group-by-origin'. The hash will determine the thread
-  // responsible for handling 'generateBid'.
-  std::string join_origin_hash_salt_;
+  BidderWorkletThreadSelector thread_selector_;
 
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
   // Owned by the AuctionWorkletService that owns `this`.

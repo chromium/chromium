@@ -95,10 +95,6 @@ group("api_implementations") {
         "//chrome/browser/extensions/api/shared_storage",
       ]
     }
-
-    if (is_linux || is_mac || is_win) {
-      public_deps += [ "//chrome/browser/extensions/api/system_indicator" ]
-    }
   }  # if (enable_extensions)
 }
 

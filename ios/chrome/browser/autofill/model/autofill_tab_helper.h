@@ -13,6 +13,7 @@
 #import "ios/web/public/web_state_user_data.h"
 
 @class AutofillAgent;
+@protocol AutofillAgentDelegate;
 @protocol AutofillCommands;
 @protocol FormSuggestionProvider;
 class ProfileIOS;
@@ -59,6 +60,9 @@ class AutofillTabHelper : public web::WebStateObserver,
 
   // The BrowserState associated with this WebState.
   raw_ptr<ProfileIOS> profile_;
+
+  // The delegate for the AutofillAgent.
+  __strong id<AutofillAgentDelegate> autofill_agent_delegate_;
 
   // The Objective-C AutofillAgent instance.
   __strong AutofillAgent* autofill_agent_;

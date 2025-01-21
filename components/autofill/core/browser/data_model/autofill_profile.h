@@ -338,13 +338,6 @@ class AutofillProfile : public FormGroup {
   const ProfileTokenQuality& token_quality() const { return token_quality_; }
   ProfileTokenQuality& token_quality() { return token_quality_; }
 
-  // Returns the type that should be used to fill a field given `field_type`.
-  // It is possible that this type is not necessarily `field_type`, if it does
-  // not yield a value for filling.
-  // TODO(crbug.com/40264633): Pass and return a `FieldType` instead of
-  // `AutofillType`.
-  AutofillType GetFillingType(AutofillType field_type) const;
-
   UsageHistoryInformation& usage_history();
   const UsageHistoryInformation& usage_history() const;
 

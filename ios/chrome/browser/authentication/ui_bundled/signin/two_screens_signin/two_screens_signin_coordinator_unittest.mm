@@ -64,8 +64,7 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
     coordinator_ = [[TwoScreensSigninCoordinator alloc]
         initWithBaseViewController:window_.rootViewController
                            browser:browser_.get()
-                       accessPoint:signin_metrics::AccessPoint::
-                                       ACCESS_POINT_SETTINGS
+                       accessPoint:signin_metrics::AccessPoint::kSettings
                        promoAction:signin_metrics::PromoAction::
                                        PROMO_ACTION_NO_SIGNIN_PROMO];
   }
@@ -85,7 +84,7 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
   }
 
   // Expects no preferences or metrics related to upgrade promo since the access
-  // point is not `ACCESS_POINT_SIGNIN_PROMO`.
+  // point is not `kSigninPromo`.
   void ExpectNoUpgradePromoHistogram(base::HistogramTester* histogram_tester) {
     histogram_tester->ExpectTotalCount(kUMASSORecallAccountsAvailable, 0);
     histogram_tester->ExpectTotalCount(kUMASSORecallPromoSeenCount, 0);
@@ -106,8 +105,7 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
   void SigninFakeIdentity() {
     AuthenticationService* auth_service =
         AuthenticationServiceFactory::GetForProfile(profile_.get());
-    auth_service->SignIn(fake_identity_,
-                         signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+    auth_service->SignIn(fake_identity_, signin_metrics::AccessPoint::kUnknown);
   }
 
   // Advances the coordinator to the next screen.

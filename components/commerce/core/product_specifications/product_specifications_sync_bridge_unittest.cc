@@ -491,8 +491,8 @@ TEST_F(ProductSpecificationsSyncBridgeTest, TestDelete) {
   sync_pb::ProductComparisonSpecifics deleted_specifics =
       entries().begin()->second;
 
-  update_changes.push_back(
-      syncer::EntityChange::CreateDelete(deleted_specifics.uuid()));
+  update_changes.push_back(syncer::EntityChange::CreateDelete(
+      deleted_specifics.uuid(), syncer::EntityData()));
   auto metadata_change_list =
       std::make_unique<syncer::InMemoryMetadataChangeList>();
 

@@ -126,13 +126,6 @@ class FakeChromeUserManager : public user_manager::UserManagerImpl {
   // Just make it public for tests.
   using UserManagerImpl::SetOwnerId;
 
-  // UserManager:
-  void SetUserAffiliated(const AccountId& account_id,
-                         bool is_affiliated) override;
-  // TODO(b/278643115): merged into SetUserAffiliated.
-  void SetUserAffiliationForTesting(const AccountId& account_id,
-                                    bool is_affliated);
-
   // Just make it public for tests.
   using UserManagerImpl::SetEphemeralModeConfig;
 

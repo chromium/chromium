@@ -13,7 +13,10 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -22,12 +25,13 @@
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ui/base/device_form_factor.h"
 
-@interface BubblePresenterCoordinator () <HelpCommands>
+@interface BubblePresenterCoordinator () <HelpCommands, BooleanObserver>
 
 @end
 
 @implementation BubblePresenterCoordinator {
   BubblePresenter* _presenter;
+  PrefBackedBoolean* _bottomOmniboxEnabled;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser {
@@ -59,11 +63,21 @@
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(HelpCommands)];
+
+  _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
+      initWithPrefService:GetApplicationContext()->GetLocalState()
+                 prefName:prefs::kBottomOmnibox];
+  [_bottomOmniboxEnabled setObserver:self];
 }
 
 - (void)stop {
   [self.browser->GetCommandDispatcher()
       stopDispatchingForProtocol:@protocol(HelpCommands)];
+
+  [_bottomOmniboxEnabled stop];
+  [_bottomOmniboxEnabled setObserver:nil];
+  _bottomOmniboxEnabled = nil;
+
   [_presenter hideAllHelpBubbles];
   [_presenter disconnect];
   _presenter = nil;
@@ -167,6 +181,14 @@
 
 - (void)handleToolbarSwipeGesture {
   [_presenter handleToolbarSwipeGesture];
+}
+
+#pragma mark - Boolean Observer
+
+- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
+  if (observableBoolean == _bottomOmniboxEnabled) {
+    [_presenter hideBubblesPointingToOmnibox];
+  }
 }
 
 @end

@@ -117,7 +117,7 @@ void CookieControlsIconView::UpdateImpl() {
 
 void CookieControlsIconView::UpdateTooltipText() {
   if (!custom_tooltip_text_.empty()) {
-    SetCachedTooltipText(custom_tooltip_text_);
+    SetTooltipText(custom_tooltip_text_);
   } else {
     PageActionIconView::UpdateTooltipText();
   }

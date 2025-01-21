@@ -2167,7 +2167,7 @@ TEST_F(HoldingSpaceTrayTest, TrayButtonWithRefreshIcon) {
 TEST_F(HoldingSpaceTrayTest, CheckTrayTooltipText) {
   StartSession(/*pre_mark_time_of_first_add=*/true);
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
-  EXPECT_EQ(GetTray()->GetTooltipText(gfx::Point()), u"Tote");
+  EXPECT_EQ(GetTray()->GetRenderedTooltipText(gfx::Point()), u"Tote");
 }
 
 TEST_F(HoldingSpaceTrayTest, AccessibleNames) {

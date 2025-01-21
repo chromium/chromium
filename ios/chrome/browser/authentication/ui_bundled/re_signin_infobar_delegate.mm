@@ -54,7 +54,7 @@ std::unique_ptr<ReSignInInfoBarDelegate> ReSignInInfoBarDelegate::Create(
   }
 
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
-      signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR);
+      signin_metrics::AccessPoint::kResigninInfobar);
   return base::WrapUnique(new ReSignInInfoBarDelegate(
       authentication_service, identity_manager, signin_presenter));
 }
@@ -109,11 +109,10 @@ ui::ImageModel ReSignInInfoBarDelegate::GetIcon() const {
 
 bool ReSignInInfoBarDelegate::Accept() {
   signin_metrics::RecordSigninUserActionForAccessPoint(
-      signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR);
+      signin_metrics::AccessPoint::kResigninInfobar);
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kResignin
-            accessPoint:signin_metrics::AccessPoint::
-                            ACCESS_POINT_RESIGNIN_INFOBAR];
+            accessPoint:signin_metrics::AccessPoint::kResigninInfobar];
   [signin_presenter_ showSignin:command];
 
   // Stop displaying the infobar once user interacted with it.

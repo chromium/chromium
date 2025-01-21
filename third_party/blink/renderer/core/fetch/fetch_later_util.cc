@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/core/fetch/fetch_later_util.h"
 
-#include <algorithm>
-
 #include "base/check.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
@@ -15,7 +13,6 @@
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/fetch/fetch_header_list.h"
 #include "third_party/blink/renderer/core/fetch/fetch_request_data.h"
-#include "third_party/blink/renderer/core/fetch/global_fetch.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -31,24 +28,7 @@ namespace {
 constexpr uint32_t kMaxContainersWithMinimalQuota =
     kQuotaReservedForDeferredFetchMinimal / kMinimalReservedDeferredFetchQuota;
 
-// A convenient helper to tell if `feature` is enabled for `frame`.
-bool IsFeatureEnabledForFrame(const Frame* frame,
-                              mojom::blink::PermissionsPolicyFeature feature) {
-  CHECK(frame);
-  CHECK(frame->DomWindow());
-  CHECK(frame->DomWindow()->IsLocalDOMWindow());
-  auto* ec = frame->DomWindow()->ToLocalDOMWindow()->GetExecutionContext();
-  return ec->IsFeatureEnabled(feature);
-}
-
 }  // namespace
-
-// static
-uint64_t FetchLaterUtil::GetUrlLengthWithoutFragment(const KURL& url) {
-  KURL cloned_url = url;
-  cloned_url.RemoveFragmentIdentifier();
-  return cloned_url.GetString().length();
-}
 
 // static
 uint32_t FetchLaterUtil::ToReservedDeferredFetchQuota(
@@ -94,76 +74,9 @@ uint32_t FetchLaterUtil::CountDescendantsWithReservedMinimalQuota(
   return count;
 }
 
-// static
-uint32_t FetchLaterUtil::GetReservedDeferredFetchQuota(const Frame* frame) {
-  CHECK(frame);
-
-  // 2. Let isTopLevel be true if controlDocument’s node navigable is a
-  // top-level traversable; otherwise false.
-  bool is_top_level = frame->IsOutermostMainFrame();
-
-  // 3. Let deferredFetchAllowed be true if controlDocument is allowed to use
-  // the policy-controlled feature "deferred-fetch"; otherwise false.
-  bool is_deferred_fetch_allowed = IsFeatureEnabledForFrame(
-      frame, mojom::blink::PermissionsPolicyFeature::kDeferredFetch);
-
-  // 4. Let deferredFetchMinimalAllowed be true if controlDocument is allowed to
-  // use the policy-controlled feature "deferred-fetch-minimal"; otherwise
-  // false.
-  bool is_deferred_fetch_minimal_allowed = IsFeatureEnabledForFrame(
-      frame, mojom::blink::PermissionsPolicyFeature::kDeferredFetchMinimal);
-
-  // 5. Let quota be the result of the first matching statement:
-
-  // 5-1. isTopLevel is true and deferredFetchAllowed is false
-  // 5-2. isTopLevel is false, and deferredFetchAllowed is false, and
-  // deferredFetchMinimalAllowed is false => 0.
-  if ((is_top_level && !is_deferred_fetch_allowed) ||
-      (!is_top_level && !is_deferred_fetch_allowed &&
-       !is_deferred_fetch_minimal_allowed)) {
-    return 0;
-  }
-
-  // 5-3. isTopLevel is true and deferredFetchMinimalAllowed is false =>
-  // 640 kibibytes.
-  if (is_top_level && !is_deferred_fetch_minimal_allowed) {
-    return kMaxScheduledDeferredBytes;
-  }
-
-  // 5-4. isTopLevel is true => 512 kibibytes.
-  if (is_top_level) {
-    return kMaxScheduledDeferredBytes - kQuotaReservedForDeferredFetchMinimal;
-  }
-
-  // `frame` is not top-level.
-  CHECK(frame->Owner());
-  auto container_policy =
-      frame->Owner()->GetFramePolicy().deferred_fetch_policy;
-  uint32_t container_reserved_quota =
-      ToReservedDeferredFetchQuota(container_policy);
-
-  // 5-5. deferredFetchAllowed is true, and navigable’s navigable container’s
-  // reserved deferred-fetch quota is normal quota => normal quota.
-  if (is_deferred_fetch_allowed &&
-      container_reserved_quota == kNormalReservedDeferredFetchQuota) {
-    return kNormalReservedDeferredFetchQuota;
-  }
-
-  // 5-6. deferredFetchMinimalAllowed is true, and navigable’s navigable
-  // container’s reserved deferred-fetch quota is minimal quota => minimal
-  // quota.
-  if (is_deferred_fetch_minimal_allowed &&
-      container_reserved_quota == kMinimalReservedDeferredFetchQuota) {
-    return kMinimalReservedDeferredFetchQuota;
-  }
-
-  // 5-7. Otherwise => 0.
-  return 0;
-}
-
 bool IsFetchLaterUseDeferredFetchPolicyEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
-      features::kFetchLaterAPI, "use_deferred_fetch_policy", true);
+      features::kFetchLaterAPI, "use_deferred_fetch_policy", false);
 }
 
 ResourceLoadPriority ComputeFetchLaterLoadPriority(
@@ -225,7 +138,8 @@ FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
       GetDeferredFetchControlFrame(container_frame->ContentFrame()->Parent());
 
   // 3. If the "inherited policy" for "deferred-fetch", container and
-  // originToNavigateTo is Enabled, and the available deferred-fetch quota for
+  // originToNavigateTo is Enabled,
+  // TODO(crbug.com/40276121): and the available deferred-fetch quota for
   // controlDocument is equal or greater than normal quota:
   auto deferred_fetch_it =
       feature_list.find(mojom::blink::PermissionsPolicyFeature::kDeferredFetch);
@@ -273,80 +187,6 @@ bool FetchLaterUtil::ShouldClearDeferredFetchPolicy(Frame* frame) {
   // then set document’s node navigable’s navigable container’s reserved
   // deferred-fetch quota to 0.
   return frame->Parent() && AreSameOrigin(frame, frame->Parent());
-}
-
-// static
-uint64_t FetchLaterUtil::GetAvailableDeferredFetchQuota(Frame* frame,
-                                                        const KURL& url) {
-  CHECK(frame);
-
-  // 1. Let navigable be controlDocument’s node navigable `frame`.
-  uint64_t quota = GetReservedDeferredFetchQuota(frame);
-
-  // 6. For each navigable in controlDocument’s node navigable’s descendant
-  // navigables:
-  for (auto* navigable = frame->Tree().TraverseNext(frame); navigable;
-       navigable = navigable->Tree().TraverseNext(frame)) {
-    // whose container document’s deferred-fetch control document is
-    // controlDocument,
-    if (GetDeferredFetchControlFrame(navigable) == frame) {
-      // decrement quota by navigable’s navigable container’s reserved
-      // deferred-fetch quota.
-      quota -= std::min(
-          quota,
-          static_cast<uint64_t>(ToReservedDeferredFetchQuota(
-              navigable->Owner()->GetFramePolicy().deferred_fetch_policy)));
-    }
-  }
-
-  // 7. If quota is equal or less than 0, then return 0.
-  if (quota == 0) {
-    return 0;
-  }
-
-  // 8. Let quotaForRequestOrigin be 64 kibibytes.
-  uint64_t quota_for_request_origin =
-      kMaxPerRequestOriginScheduledDeferredBytes;
-
-  // 9. For each deferred fetch record deferredRecord of controlDocument’s fetch
-  // group’s deferred fetch records:
-  auto* scoped_fetcher = GlobalFetch::ScopedFetcher::From(
-      *DynamicTo<LocalDOMWindow>(frame->DomWindow()));
-  scoped_fetcher->UpdateDeferredBytesQuota(url, quota_for_request_origin,
-                                           quota);
-
-  // 10. If quota is equal or less than 0, then return 0.
-  if (quota == 0) {
-    return 0;
-  }
-
-  // 11. If quota is less than quotaForRequestOrigin, then return quota.
-  // 12. Return quotaForRequestOrigin.
-  return quota < quota_for_request_origin ? quota : quota_for_request_origin;
-}
-
-uint64_t FetchLaterUtil::CalculateRequestSize(const FetchRequestData& request) {
-  CHECK(!request.Buffer() || request.BufferByteLength() != 0);
-
-  // 1. Let totalRequestLength be the length of request’s URL, serialized
-  // with exclude fragment set to true.
-  uint64_t total_request_length = GetUrlLengthWithoutFragment(request.Url());
-
-  // 2. Increment totalRequestLength by the length of request’s referrer,
-  // serialized.
-  total_request_length += request.ReferrerString().Ascii().length();
-
-  // 3. For each (name, value) in header list, increment totalRequestLength
-  // by name’s length + value’s length.
-  for (const auto& header : request.HeaderList()->List()) {
-    total_request_length += header.first.length() + header.second.length();
-  }
-
-  // 4. Increment totalRequestLength by request’s body’s length.
-  total_request_length += request.BufferByteLength();
-
-  // 5. Return totalRequestLength.
-  return total_request_length;
 }
 
 }  // namespace blink

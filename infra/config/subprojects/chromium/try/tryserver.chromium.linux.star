@@ -968,11 +968,6 @@ try_.builder(
     executable = "recipe:tricium_oilpan",
 )
 
-try_.builder(
-    name = "tricium-simple",
-    executable = "recipe:tricium_simple",
-)
-
 try_.gpu.optional_tests_builder(
     name = "linux_optional_gpu_tests_rel",
     branch_selector = branches.selector.LINUX_BRANCHES,

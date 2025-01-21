@@ -16,6 +16,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/circular_deque.h"
 #include "base/ranges/algorithm.h"
+#include "base/ranges/functional.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 

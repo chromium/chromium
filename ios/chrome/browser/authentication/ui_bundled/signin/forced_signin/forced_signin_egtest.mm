@@ -371,8 +371,7 @@ void CompleteSigninFlow() {
                                    IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN))]
       assertWithMatcher:grey_nil()];
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
-      initWithAccessPoint:signin_metrics::AccessPoint::
-                              ACCESS_POINT_FORCED_SIGNIN];
+      initWithAccessPoint:signin_metrics::AccessPoint::kForcedSignin];
   // TODO(crbug.com/41493423): We should log Signin is started. Maybe also that
   // it’s offered.
   [SigninEarlGrey assertExpectedSigninHistograms:expecteds];

@@ -1952,7 +1952,6 @@ component("base") {
       "propsys.lib",
       "setupapi.lib",
       "shcore.lib",
-      "tbs.lib",
       "userenv.lib",
       "wbemuuid.lib",
       "winmm.lib",

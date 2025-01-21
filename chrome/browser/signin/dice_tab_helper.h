@@ -140,7 +140,7 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
     // By default the access point refers to web signin, as after a reset the
     // user may sign in again in the same tab.
     signin_metrics::AccessPoint signin_access_point =
-        signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN;
+        signin_metrics::AccessPoint::kWebSignin;
 
     signin_metrics::PromoAction signin_promo_action =
         signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;

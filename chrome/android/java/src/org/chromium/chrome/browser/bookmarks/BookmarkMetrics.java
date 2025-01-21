@@ -66,10 +66,10 @@ public class BookmarkMetrics {
     /** Report when a bookmark has been added through {@link BookmarkUtils#addBookmarkInternal}. */
     public static void recordBookmarkAdded(Profile profile, BookmarkId bookmarkId) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Bookmarks.AddBookmarkType", bookmarkId.getType(), BookmarkType.LAST + 1);
+                "Bookmarks.AddBookmarkType", bookmarkId.getType(), BookmarkType.LAST);
 
         @BrowserProfileType int type = Profile.getBrowserProfileTypeFromProfile(profile);
         RecordHistogram.recordEnumeratedHistogram(
-                "Bookmarks.AddedPerProfileType", type, BrowserProfileType.MAX_VALUE + 1);
+                "Bookmarks.AddedPerProfileType", type, BrowserProfileType.MAX_VALUE);
     }
 }

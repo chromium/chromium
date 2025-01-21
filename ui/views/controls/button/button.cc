@@ -197,23 +197,15 @@ Button::ButtonState Button::GetButtonStateFrom(ui::NativeTheme::State state) {
 
 Button::~Button() = default;
 
-void Button::SetTooltipText(const std::u16string& tooltip_text) {
-  std::u16string current_tooltip_text = GetCachedTooltipText();
-  if (tooltip_text == current_tooltip_text) {
-    return;
+void Button::OnTooltipTextChanged(const std::u16string& old_tooltip_text) {
+  View::OnTooltipTextChanged(old_tooltip_text);
+  if ((GetViewAccessibility().GetCachedName().empty() ||
+       GetViewAccessibility().GetCachedName() == old_tooltip_text) &&
+      !GetTooltipText().empty()) {
+    GetViewAccessibility().SetName(GetTooltipText());
   }
 
-  if (GetViewAccessibility().GetCachedName().empty() ||
-      GetViewAccessibility().GetCachedName() == current_tooltip_text) {
-    GetViewAccessibility().SetName(tooltip_text);
-  }
-
-  SetCachedTooltipText(tooltip_text);
-  OnSetTooltipText(tooltip_text);
-}
-
-const std::u16string& Button::GetTooltipText() const {
-  return GetCachedTooltipText();
+  OnSetTooltipText(GetTooltipText());
 }
 
 void Button::SetCallback(PressedCallback callback) {
@@ -228,7 +220,7 @@ void Button::AdjustAccessibleName(std::u16string& new_name,
 }
 
 std::u16string Button::GetAlternativeAccessibleName() const {
-  return GetCachedTooltipText();
+  return GetTooltipText();
 }
 
 Button::ButtonState Button::GetState() const {
@@ -581,10 +573,6 @@ bool Button::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
   return GetKeyClickActionForEvent(event) != KeyClickAction::kNone;
 }
 
-std::u16string Button::GetTooltipText(const gfx::Point& p) const {
-  return GetCachedTooltipText();
-}
-
 void Button::ShowContextMenu(const gfx::Point& p,
                              ui::mojom::MenuSourceType source_type) {
   if (!context_menu_controller()) {
@@ -870,7 +858,6 @@ ADD_PROPERTY_METADATA(bool, InstallFocusRingOnFocus)
 ADD_PROPERTY_METADATA(bool, RequestFocusOnPress)
 ADD_PROPERTY_METADATA(ButtonState, State)
 ADD_PROPERTY_METADATA(int, Tag)
-ADD_PROPERTY_METADATA(std::u16string, TooltipText)
 ADD_PROPERTY_METADATA(int, TriggerableEventFlags)
 END_METADATA
 

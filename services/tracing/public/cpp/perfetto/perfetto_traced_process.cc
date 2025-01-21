@@ -238,6 +238,7 @@ void PerfettoTracedProcess::SetupForTesting(
 void PerfettoTracedProcess::ResetForTesting() {
   task_runner_ = nullptr;
   tracing_backend_.reset();
+  startup_tracing_needed_ = false;
   // TODO(skyostil): We only uninitialize Perfetto for now, but there may also
   // be other tracing-related state which should not leak between tests.
   perfetto::Tracing::ResetForTesting();

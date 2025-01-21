@@ -249,7 +249,8 @@ TEST_F(UserEventSyncBridgeTest, ApplyIncrementalSyncChanges) {
   EXPECT_THAT(GetAllDataForDebugging(), SizeIs(2));
 
   syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(EntityChange::CreateDelete(storage_key1));
+  entity_change_list.push_back(
+      EntityChange::CreateDelete(storage_key1, syncer::EntityData()));
   auto error_on_delete = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
   EXPECT_FALSE(error_on_delete);
@@ -285,7 +286,8 @@ TEST_F(UserEventSyncBridgeTest, HandleGlobalIdChange) {
               ElementsAre(Pair(storage_key, MatchesUserEvent(CreateSpecifics(
                                                 1u, third_id, 2u)))));
   syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(EntityChange::CreateDelete(storage_key));
+  entity_change_list.push_back(
+      EntityChange::CreateDelete(storage_key, syncer::EntityData()));
   auto error_on_delete = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
   EXPECT_FALSE(error_on_delete);

@@ -70,7 +70,7 @@ TEST(CookieUtilTest, GetCookieDomainWithString_NonASCII) {
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
       GURL("http://éxample.com"), "éxample.com", status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_DOMAIN_NON_ASCII}));
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_NON_ASCII}));
 }
 
 // An empty domain string results in the domain from the URL.
@@ -1786,7 +1786,8 @@ INSTANTIATE_TEST_SUITE_P(/* no label */,
 TEST(CookieUtilTest, IsCookieAccessResultInclude) {
   EXPECT_FALSE(cookie_util::IsCookieAccessResultInclude(
       CookieAccessResult(CookieInclusionStatus::MakeFromReasonsForTesting(
-          /*exclusions=*/{CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR}))));
+          /*exclusions=*/{CookieInclusionStatus::ExclusionReason::
+                              EXCLUDE_UNKNOWN_ERROR}))));
 
   EXPECT_TRUE(cookie_util::IsCookieAccessResultInclude(CookieAccessResult()));
 }

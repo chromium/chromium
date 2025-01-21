@@ -428,7 +428,9 @@ void ProductSpecificationsSyncBridge::ApplyIncrementalSyncChangesForTesting(
             specifics.uuid(), MakeEntityData(specifics)));
         break;
       case syncer::EntityChange::ACTION_DELETE:
-        changes.push_back(syncer::EntityChange::CreateDelete(specifics.uuid()));
+        changes.push_back(syncer::EntityChange::CreateDelete(
+            specifics.uuid(),
+            MakeEntityData(sync_pb::ProductComparisonSpecifics())));
         break;
       default:
         DCHECK(0) << "EntityChange " << change_type << "not supported\n";

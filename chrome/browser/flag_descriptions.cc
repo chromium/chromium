@@ -3012,21 +3012,6 @@ const char kCrosSystemLevelPermissionBlockedWarningsDescription[] =
     "disabled in the OS.";
 #endif
 
-const char kPermissionPredictionsName[] = "Permission Predictions";
-const char kPermissionPredictionsDescription[] =
-    "Use the Permission Predictions Service to surface permission requests "
-    "using a quieter UI when the likelihood of the user granting the "
-    "permission is predicted to be low. Requires "
-    "chrome://flags/#quiet-notification-prompts and `Safe Browsing` to be "
-    "enabled.";
-
-const char kPermissionPredictionsV3Name[] = "Permission Predictions V3";
-const char kPermissionPredictionsV3Description[] =
-    "Use the Permission Predictions Service V3 to surface permission requests "
-    "using a quieter UI when the likelihood of the user granting the "
-    "permission is predicted to be low. Requires `Make Searches and Browsing "
-    "Better` to be enabled.";
-
 const char kPermissionsAIv1Name[] = "PermissionsAI";
 const char kPermissionsAIv1Description[] =
     "Use the Permission Predictions Service and Gemini Nano v2 to surface "
@@ -4403,7 +4388,7 @@ const char kDrawCutoutEdgeToEdgeDescription[] =
 const char kDrawKeyNativeEdgeToEdgeName[] = "DrawKeyNativeEdgeToEdge";
 const char kDrawKeyNativeEdgeToEdgeDescription[] =
     "Enables the Android feature Edge-to-Edge and forces a draw ToEdge on "
-    "select native pages.";
+    "select native pages. No effect when EdgeToEdgeBottomChin is disabled";
 
 const char kEdgeToEdgeBottomChinName[] = "EdgeToEdgeBottomChin";
 const char kEdgeToEdgeBottomChinDescription[] =
@@ -4426,7 +4411,7 @@ const char kEdgeToEdgeWebOptInName[] = "EdgeToEdgeWebOptIn";
 const char kEdgeToEdgeWebOptInDescription[] =
     "Enables Chrome to draw below the Nav Bar on websites that have explicitly "
     "opted into Edge-to-Edge. Requires DrawCutoutEdgeToEdge to also be "
-    "enabled.";
+    "enabled. No effect when EdgeToEdgeBottomChin is disabled";
 
 const char kTabClosureMethodRefactorName[] = "Tab closure method refactor";
 const char kTabClosureMethodRefactorDescription[] =

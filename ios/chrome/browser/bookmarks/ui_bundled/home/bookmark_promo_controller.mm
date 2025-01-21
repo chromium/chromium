@@ -64,8 +64,7 @@
                                      profile)
                      prefService:profile->GetPrefs()
                      syncService:syncService
-                     accessPoint:signin_metrics::AccessPoint::
-                                     ACCESS_POINT_BOOKMARK_MANAGER
+                     accessPoint:signin_metrics::AccessPoint::kBookmarkManager
                  signinPresenter:signinPresenter
         accountSettingsPresenter:accountSettingsPresenter];
     _signinPromoViewMediator.consumer = self;
@@ -136,7 +135,7 @@
   CHECK(signinPromoAction.has_value());
   if (![SigninPromoViewMediator
           shouldDisplaySigninPromoViewWithAccessPoint:
-              signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER
+              signin_metrics::AccessPoint::kBookmarkManager
                                     signinPromoAction:signinPromoAction.value()
                                 authenticationService:authenticationService
                                           prefService:profile->GetPrefs()]) {

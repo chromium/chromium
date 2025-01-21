@@ -56,6 +56,7 @@ build_webui("build") {
   mojo_files = [
     "$root_gen_dir/chrome/browser/new_tab_page/modules/file_suggestion/drive_suggestion.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/authentication/microsoft_auth.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom-webui.ts",

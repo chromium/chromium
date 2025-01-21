@@ -1,0 +1,9 @@
+[Signin]Rename AccessPoint enum entries
+
+See go/access_point_shorter to see how those patches were generated.
+
+This allows to remove at least 13 characters per line and avoid the
+redundant double "access point" when the entry is used.
+
+R: droger
+Bug: 389192722

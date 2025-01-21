@@ -135,10 +135,10 @@ void Label::SetText(const std::u16string& new_text) {
 
   // If we were previously using the label's text as the tooltip text,
   // we must make sure to update it. The existing behavior is to call
-  // SetTooltipText with an empty string if we want to use the default
+  // SetCustomTooltipText with an empty string if we want to use the default
   // behavior of using the label's text as the tooltip text.
-  if (current_text == GetCachedTooltipText()) {
-    SetTooltipText(std::u16string());
+  if (current_text == GetTooltipText()) {
+    SetCustomTooltipText(std::u16string());
   }
 
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
@@ -555,11 +555,7 @@ void Label::SetElideBehavior(gfx::ElideBehavior elide_behavior) {
   OnDisplayTextTruncation();
 }
 
-std::u16string Label::GetTooltipText() const {
-  return GetCachedTooltipText();
-}
-
-void Label::SetTooltipText(const std::u16string& tooltip_text) {
+void Label::SetCustomTooltipText(const std::u16string& tooltip_text) {
   custom_tooltip_text_ = tooltip_text;
 
   UpdateTooltipText();
@@ -567,10 +563,10 @@ void Label::SetTooltipText(const std::u16string& tooltip_text) {
 
 void Label::UpdateTooltipText() {
   if (GetHandlesTooltips()) {
-    SetCachedTooltipText(GetComputedTooltip());
+    SetTooltipText(GetComputedTooltip());
     suppressed_tooltip_text_.clear();
   } else {
-    SetCachedTooltipText(std::u16string());
+    SetTooltipText(std::u16string());
     suppressed_tooltip_text_ = GetComputedTooltip();
   }
 
@@ -859,7 +855,7 @@ int Label::GetLabelHeightForWidth(int w) const {
 
 View* Label::GetTooltipHandlerForPoint(const gfx::Point& point) {
   if (!handles_tooltips_ ||
-      (GetCachedTooltipText().empty() && !ShouldShowDefaultTooltip())) {
+      (GetTooltipText().empty() && !ShouldShowDefaultTooltip())) {
     return nullptr;
   }
 
@@ -872,10 +868,6 @@ bool Label::GetCanProcessEventsWithinSubtree() const {
 
 WordLookupClient* Label::GetWordLookupClient() {
   return this;
-}
-
-std::u16string Label::GetTooltipText(const gfx::Point& p) const {
-  return GetCachedTooltipText();
 }
 
 std::unique_ptr<gfx::RenderText> Label::CreateRenderText() const {
@@ -1597,7 +1589,6 @@ ADD_PROPERTY_METADATA(bool, MultiLine)
 ADD_PROPERTY_METADATA(size_t, MaxLines)
 ADD_PROPERTY_METADATA(bool, Obscured)
 ADD_PROPERTY_METADATA(bool, AllowCharacterBreak)
-ADD_PROPERTY_METADATA(std::u16string, TooltipText)
 ADD_PROPERTY_METADATA(bool, HandlesTooltips)
 ADD_PROPERTY_METADATA(bool, CollapseWhenHidden)
 ADD_PROPERTY_METADATA(int, MaximumWidth)

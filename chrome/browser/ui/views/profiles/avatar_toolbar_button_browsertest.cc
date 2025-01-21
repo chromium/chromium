@@ -904,12 +904,12 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, TooltipText) {
 
   AddSignedInImage(account_info.account_id);
 
-  EXPECT_EQ(avatar->GetTooltipText(gfx::Point()), account_name);
+  EXPECT_EQ(avatar->GetRenderedTooltipText(gfx::Point()), account_name);
 
   avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
 
   // Tooltip is the same after hiding the name.
-  EXPECT_EQ(avatar->GetTooltipText(gfx::Point()), account_name);
+  EXPECT_EQ(avatar->GetRenderedTooltipText(gfx::Point()), account_name);
 }
 
 // TODO(b/331746545): Check flaky test issue on windows.

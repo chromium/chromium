@@ -183,6 +183,10 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                                                       kUnknown];
 }
 
+- (void)hideBubblesPointingToOmnibox {
+  [_lensOverlayEntrypointBubblePresenter dismissAnimated:NO];
+}
+
 - (void)handleTapOutsideOfVisibleGestureInProductHelp {
   [self hideAllGestureInProductHelpViewsForReason:
             IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView];

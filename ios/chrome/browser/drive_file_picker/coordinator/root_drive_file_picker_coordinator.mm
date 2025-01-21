@@ -327,8 +327,7 @@
   ShowSigninCommand* addAccountCommand = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kAddAccount
                identity:nil
-            accessPoint:signin_metrics::AccessPoint::
-                            ACCESS_POINT_DRIVE_FILE_PICKER_IOS
+            accessPoint:signin_metrics::AccessPoint::kDriveFilePickerIOS
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:^(SigninCoordinatorResult result,

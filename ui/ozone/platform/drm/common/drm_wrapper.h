@@ -135,6 +135,7 @@ class DrmWrapper {
 
   virtual bool SetMaster();
   virtual bool DropMaster();
+  virtual bool has_master() const;
 
   /**************
    * Dumb Buffers
@@ -309,6 +310,11 @@ class DrmWrapper {
   bool is_atomic_ = false;
 
   const bool is_primary_device_;
+
+  // DRM master for a device is initially acquired implicitly in Chrome by
+  // opening the device node when no one else is holding the master, not through
+  // set master ioctl.
+  bool has_master_ = true;
 };
 
 }  // namespace ui

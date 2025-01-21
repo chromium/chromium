@@ -5332,7 +5332,8 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   }
 
   if (fingerprinting_protection_filter::features::
-          IsFingerprintingProtectionFeatureEnabled()) {
+          IsFingerprintingProtectionEnabledForIncognitoState(
+              profile ? profile->IsIncognitoProfile() : false)) {
     if (auto* throttle_manager = fingerprinting_protection_filter::
             ThrottleManager::FromNavigationHandle(*handle)) {
       throttle_manager->MaybeAppendNavigationThrottles(handle, &throttles);
@@ -7832,7 +7833,8 @@ bool ChromeContentBrowserClient::IsJitDisabledForSite(
 bool ChromeContentBrowserClient::AreV8OptimizationsDisabledForSite(
     content::BrowserContext* browser_context,
     const GURL& site_url) {
-  // Only disable optimizations for schemes that might atually load web content.
+  // Only disable optimizations for schemes that might actually load web
+  // content.
   auto* policy = ChildProcessSecurityPolicy::GetInstance();
   if (!site_url.is_empty() && !policy->IsWebSafeScheme(site_url.scheme())) {
     return false;

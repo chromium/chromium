@@ -341,9 +341,15 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
             mFaviconSize = mContext.getResources().getDimensionPixelSize(sizeResId);
         }
 
+        /** Destroys the native favicon helper. */
+        public void destroy() {
+            mFaviconHelper.destroy();
+        }
+
         /**
          * Generates a favicon for a given URL. If no favicon was could be found or generated from
          * the URL, a default favicon will be shown.
+         *
          * @param url The URL for which favicon is to be generated.
          * @param callback The callback to be invoked to display the final image.
          * @param profile The profile for which favicon service is used.

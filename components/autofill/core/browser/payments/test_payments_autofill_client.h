@@ -120,6 +120,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
 #endif
   MockMandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
       override;
+  const PaymentsDataManager& GetPaymentsDataManager() const override;
 
   bool GetMandatoryReauthOptInPromptWasShown();
 

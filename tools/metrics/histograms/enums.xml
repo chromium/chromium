@@ -11562,6 +11562,17 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="kEnabled"/>
 </enum>
 
+<!-- LINT.IfChange(FingerprintingProtectionExceptionSource) -->
+
+<enum name="FingerprintingProtectionExceptionSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="User bypass exception"/>
+  <int value="2" label="Cookies exception"/>
+  <int value="3" label="Refresh heuristic exception"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/fingerprinting_protection_filter/browser/fingerprinting_protection_page_activation_throttle:ExceptionSource) -->
+
 <enum name="FirebaseConfiguredState">
   <int value="0" label="Disabled"/>
   <int value="1" label="Enabled, at First Run"/>
@@ -26976,6 +26987,8 @@ Called by update_use_counter_css.py.-->
   <int value="814" label="masonry-flow"/>
   <int value="815" label="masonry-auto-tracks"/>
   <int value="816" label="result"/>
+  <int value="817" label="animation-trigger-type"/>
+  <int value="818" label="animation-trigger-timeline"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

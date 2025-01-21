@@ -427,27 +427,27 @@ TEST_F(PowerButtonTest, UserItemButtonTooltipText) {
   gfx::Size zero_size;
 
   for (const auto& button : user_chooser_view->user_item_buttons_) {
-    EXPECT_EQ(button->GetTooltipText(gfx::Point()),
+    EXPECT_EQ(button->GetRenderedTooltipText(gfx::Point()),
               user_chooser_view->GetUserItemAccessibleStringForTesting(
                   button->user_index_for_testing()));
     data = ui::AXNodeData();
     button->GetViewAccessibility().GetAccessibleNodeData(&data);
     EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-              button->GetTooltipText(gfx::Point()));
+              button->GetRenderedTooltipText(gfx::Point()));
     EXPECT_NE(
         data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-        button->GetTooltipText(gfx::Point()));
+        button->GetRenderedTooltipText(gfx::Point()));
 
     button->SetBoundsRect(gfx::Rect(zero_size));
 
-    EXPECT_EQ(button->GetTooltipText(gfx::Point()), u"");
+    EXPECT_EQ(button->GetRenderedTooltipText(gfx::Point()), u"");
     data = ui::AXNodeData();
     button->GetViewAccessibility().GetAccessibleNodeData(&data);
     EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-              button->GetTooltipText(gfx::Point()));
+              button->GetRenderedTooltipText(gfx::Point()));
     EXPECT_EQ(
         data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-        button->GetTooltipText(gfx::Point()));
+        button->GetRenderedTooltipText(gfx::Point()));
   }
 }
 

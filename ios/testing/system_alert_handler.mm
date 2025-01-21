@@ -63,7 +63,7 @@ NSDictionary<NSString*, NSArray<NSString*>*>* TextToButtonsOfKnownSystemAlerts(
       @"Edit Home Screen" : @[ @"Dismiss" ],
       @"Apple ID Verification" : @[ @"Not Now" ],
       @"iPhone is not Activated" : @[ @"Dismiss" ],
-      @"Apple Account Verification" : @[ @"Not Now" ],
+      @"Account Verification" : @[ @"Not Now" ],
       @"to find devices on local networks" : @[ @"Allow" ],
       @"Not Installed" : @[ @"OK" ],
       @"No SIM Card Installed" : @[ @"OK" ],

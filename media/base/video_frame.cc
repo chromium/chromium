@@ -109,10 +109,7 @@ bool VideoFrame::IsStorageTypeMappable(VideoFrame::StorageType storage_type) {
       // level, DmaBufs are not mappable from userspace.
       storage_type != VideoFrame::STORAGE_DMABUFS &&
 #endif
-      // GpuMemoryBuffer is not mappable at VideoFrame level. In most places
-      // GpuMemoryBuffer is opaque to the CPU, and for places that really need
-      // to access the data on CPU they can get the buffer with
-      // GetGpuMemoryBuffer() and call gfx::GpuMemoryBuffer::Map().
+      // GpuMemoryBuffer is not mappable at VideoFrame level.
       (storage_type == VideoFrame::STORAGE_UNOWNED_MEMORY ||
        storage_type == VideoFrame::STORAGE_OWNED_MEMORY ||
        storage_type == VideoFrame::STORAGE_SHMEM);
@@ -1382,12 +1379,10 @@ bool VideoFrame::HasNativeGpuMemoryBuffer() const {
 }
 
 gfx::GpuMemoryBuffer* VideoFrame::GetGpuMemoryBufferForTesting() const {
-  return GetGpuMemoryBuffer();
-}
-
-gfx::GpuMemoryBuffer* VideoFrame::GetGpuMemoryBuffer() const {
-  return wrapped_frame_ ? wrapped_frame_->GetGpuMemoryBuffer()
-                        : gpu_memory_buffer_.get();
+  if (wrapped_frame_) {
+    return wrapped_frame_->GetGpuMemoryBufferForTesting();  // IN-TEST
+  }
+  return gpu_memory_buffer_.get();
 }
 
 std::unique_ptr<VideoFrame::ScopedMapping> VideoFrame::MapGMBOrSharedImage()

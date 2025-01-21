@@ -92,8 +92,7 @@ class AccessTokenFetcherTest
                                   ConsentLevel consent_level) {
     CoreAccountInfo account_info = AddAccount(gaia_id, email);
     primary_account_manager_->SetPrimaryAccountInfo(
-        account_info, consent_level,
-        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+        account_info, consent_level, signin_metrics::AccessPoint::kUnknown);
 
     return account_info.account_id;
   }

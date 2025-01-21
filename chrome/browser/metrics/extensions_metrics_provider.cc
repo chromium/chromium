@@ -198,8 +198,6 @@ ExtensionInstallProto::ActionType GetActionType(const Manifest& manifest) {
     return ExtensionInstallProto::BROWSER_ACTION;
   if (manifest.FindKey(extensions::manifest_keys::kPageAction))
     return ExtensionInstallProto::PAGE_ACTION;
-  if (manifest.FindKey(extensions::manifest_keys::kSystemIndicator))
-    return ExtensionInstallProto::SYSTEM_INDICATOR;
   return ExtensionInstallProto::NO_ACTION;
 }
 

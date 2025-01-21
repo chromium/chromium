@@ -213,6 +213,8 @@ class CORE_EXPORT InspectorNetworkAgent final
 
   void SetDevToolsIds(ResourceRequest& request, const FetchInitiatorInfo&);
   void IsCacheDisabled(bool* is_cache_disabled) const;
+  void ShouldApplyDevtoolsCookieSettingOverrides(
+      bool* should_apply_devtools_overrides) const;
 
   // Called from frontend
   protocol::Response enable(std::optional<int> total_buffer_size,

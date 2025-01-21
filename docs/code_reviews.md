@@ -247,10 +247,15 @@ file (and line) in the patch has been appropriately reviewed.
 For one-off CLs, API owners of `base`, `build`, `content`,
 `third_party/blink/public` and `url` can `Owners-Override +1` a change to their
 APIs to avoid waiting for rubberstamp +1s from affected directories' owners.
-This should only be used for mechanical updates to the affected directories.
+This should only be used for mechanical updates, but global approvers are free
+to use their judgement in determining which mechanical changes they understand
+well enough to approve (rather than limit strictly to calls into code
+they own).
 
-If you are making one-off CLs that touch many directories and cannot be
-handled by the global approvers, you can ask one of Chrome ATLs.
+For a change that impacts many directories but doesn't need area-specific
+expertise to review, please ask any global approver or Chrome ATL to
+approve the change rather than incur unnecessary review cost on a larger number
+of reviewers.
 
 ### Large Scale Changes
 You can use the [Large Scale Changes](process/lsc/large_scale_changes.md)

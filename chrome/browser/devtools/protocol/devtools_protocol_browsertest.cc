@@ -27,6 +27,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/data_saver/data_saver.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -37,7 +38,9 @@
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
+#include "chrome/browser/tpcd/metadata/manager_factory.h"
 #include "chrome/browser/tpcd/support/trial_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
@@ -1663,6 +1666,134 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_RelatedWebsiteSets,
     EXPECT_EQ(*error()->FindString("message"),
               "Failed fetching RelatedWebsiteSets");
   }
+}
+
+class GetAffectedUrlsForThirdPartyCookieMetadataTest
+    : public DevToolsProtocolTest {
+ protected:
+  tpcd::metadata::Manager* GetTpcdManager() {
+    return tpcd::metadata::ManagerFactory::GetForProfile(
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(GetAffectedUrlsForThirdPartyCookieMetadataTest,
+                       InvalidFirstParty) {
+  Attach();
+
+  base::Value::Dict params;
+  params.Set("firstPartyUrl", "");
+  params.Set("thirdPartyUrls", base::Value::List());
+
+  SendCommandSync("Storage.getAffectedUrlsForThirdPartyCookieMetadata",
+                  std::move(params));
+
+  EXPECT_EQ(*error()->FindString("message"),
+            "Invalid first-party URL provided.");
+}
+
+IN_PROC_BROWSER_TEST_F(GetAffectedUrlsForThirdPartyCookieMetadataTest,
+                       InvalidThirdParty) {
+  Attach();
+
+  base::Value::Dict params;
+  params.Set("firstPartyUrl", "https://a.test");
+  params.Set("thirdPartyUrls", base::Value::List().Append(""));
+
+  SendCommandSync("Storage.getAffectedUrlsForThirdPartyCookieMetadata",
+                  std::move(params));
+
+  EXPECT_EQ(*error()->FindString("message"),
+            "Invalid third-party URL provided.");
+}
+
+IN_PROC_BROWSER_TEST_F(GetAffectedUrlsForThirdPartyCookieMetadataTest,
+                       NoMatch) {
+  Attach();
+
+  ContentSettingsForOneType tpcd_metadata_grants;
+  tpcd_metadata_grants.emplace_back(
+      ContentSettingsPattern::FromString("*"),
+      ContentSettingsPattern::FromURLNoWildcard(GURL("https://a.test")),
+      base::Value(ContentSetting::CONTENT_SETTING_ALLOW),
+      content_settings::ProviderType::kNone, false);
+
+  tpcd::metadata::Manager* tpcd_metadata_manager = GetTpcdManager();
+  tpcd_metadata_manager->SetGrantsForTesting(tpcd_metadata_grants);
+
+  base::Value::Dict params;
+  params.Set("firstPartyUrl", "https://b.test");
+  params.Set("thirdPartyUrls", base::Value::List());
+
+  SendCommandSync("Storage.getAffectedUrlsForThirdPartyCookieMetadata",
+                  std::move(params));
+
+  EXPECT_TRUE((*(result()->FindList("matchedUrls"))).empty());
+}
+
+IN_PROC_BROWSER_TEST_F(GetAffectedUrlsForThirdPartyCookieMetadataTest,
+                       FirstPartyMatch) {
+  Attach();
+
+  const std::string first_party_url = "https://a.test";
+  ContentSettingsForOneType tpcd_metadata_grants;
+  tpcd_metadata_grants.emplace_back(
+      ContentSettingsPattern::FromString("*"),
+      ContentSettingsPattern::FromURLNoWildcard(GURL(first_party_url)),
+      base::Value(ContentSetting::CONTENT_SETTING_ALLOW),
+      content_settings::ProviderType::kNone, false);
+
+  tpcd::metadata::Manager* tpcd_metadata_manager = GetTpcdManager();
+  tpcd_metadata_manager->SetGrantsForTesting(tpcd_metadata_grants);
+
+  base::Value::Dict params;
+  params.Set("firstPartyUrl", first_party_url);
+  params.Set("thirdPartyUrls", base::Value::List());
+
+  SendCommandSync("Storage.getAffectedUrlsForThirdPartyCookieMetadata",
+                  std::move(params));
+
+  EXPECT_EQ(*(result()->FindList("matchedUrls")),
+            base::Value::List().Append(base::Value(first_party_url)));
+}
+
+IN_PROC_BROWSER_TEST_F(GetAffectedUrlsForThirdPartyCookieMetadataTest,
+                       ThirdPartyMatches) {
+  Attach();
+
+  const std::string first_party_url = "https://a.test";
+  const std::string third_party_url_v1 = "https://b.test";
+
+  ContentSettingsForOneType tpcd_metadata_grants;
+  tpcd_metadata_grants.emplace_back(
+      ContentSettingsPattern::FromURLNoWildcard(GURL(third_party_url_v1)),
+      ContentSettingsPattern::FromURLNoWildcard(GURL(first_party_url)),
+      base::Value(ContentSetting::CONTENT_SETTING_ALLOW),
+      content_settings::ProviderType::kNone, false);
+
+  const std::string third_party_url_v2 = "https://c.test";
+  tpcd_metadata_grants.emplace_back(
+      ContentSettingsPattern::FromURLNoWildcard(GURL(third_party_url_v2)),
+      ContentSettingsPattern::FromURLNoWildcard(GURL(first_party_url)),
+      base::Value(ContentSetting::CONTENT_SETTING_ALLOW),
+      content_settings::ProviderType::kNone, false);
+
+  tpcd::metadata::Manager* tpcd_metadata_manager = GetTpcdManager();
+  tpcd_metadata_manager->SetGrantsForTesting(tpcd_metadata_grants);
+
+  base::Value::Dict params;
+  params.Set("firstPartyUrl", first_party_url);
+  params.Set("thirdPartyUrls", base::Value::List()
+                                   .Append(third_party_url_v1)
+                                   .Append(third_party_url_v2)
+                                   .Append("https://d.test"));
+
+  SendCommandSync("Storage.getAffectedUrlsForThirdPartyCookieMetadata",
+                  std::move(params));
+
+  base::Value::List expected =
+      base::Value::List().Append(third_party_url_v1).Append(third_party_url_v2);
+  EXPECT_EQ(*(result()->FindList("matchedUrls")), expected);
 }
 
 }  // namespace

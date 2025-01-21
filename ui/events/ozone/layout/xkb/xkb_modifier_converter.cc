@@ -11,6 +11,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/ranges/algorithm.h"
 #include "ui/events/event_constants.h"
 

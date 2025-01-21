@@ -10,6 +10,7 @@
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
+#import "ios/chrome/browser/autofill/model/autofill_agent_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -40,7 +41,14 @@ void AutofillTabHelper::SetAutofillHandler(
 
 void AutofillTabHelper::SetSnackbarHandler(
     id<SnackbarCommands> snackbar_handler) {
-  autofill_agent_.snackbarHandler = snackbar_handler;
+  if (snackbar_handler) {
+    autofill_agent_delegate_ =
+        [[AutofillAgentDelegate alloc] initWithCommandHandler:snackbar_handler];
+    autofill_agent_.delegate = autofill_agent_delegate_;
+  } else {
+    autofill_agent_delegate_ = nil;
+    autofill_agent_.delegate = nil;
+  }
 }
 
 id<FormSuggestionProvider> AutofillTabHelper::GetSuggestionProvider() {

@@ -17,7 +17,6 @@ public abstract class DefaultPaymentFeatureConfig {
         FeatureOverrides.newBuilder()
                 .enable(PaymentFeatureList.WEB_PAYMENTS)
                 .enable(PaymentFeatureList.WEB_PAYMENTS_SINGLE_APP_UI_SKIP)
-                .enable(PaymentFeatureList.GPAY_APP_DYNAMIC_UPDATE)
                 .enable(PaymentFeatureList.WEB_PAYMENTS_EXPERIMENTAL_FEATURES)
                 .disable(PaymentFeatureList.OMIT_PARAMETERS_IN_READY_TO_PAY)
                 .applyWithoutOverwrite();

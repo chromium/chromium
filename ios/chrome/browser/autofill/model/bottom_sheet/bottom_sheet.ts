@@ -135,8 +135,14 @@ function attachListeners(
     // observing it.
     if (element && isObservable_(element) &&
         !observedElements_.find(elem => elem === element)) {
-      elementsToObserve.push(element);
-      if (document.activeElement === element) {
+      const autofocused = document.activeElement === element;
+      if (allow_autofocus || !autofocused ||
+          !gCrWeb.autofill_form_features
+               .isAutofillFixPaymentSheetSpamEnabled()) {
+        // Observe element if eligible.
+        elementsToObserve.push(element);
+      }
+      if (autofocused) {
         // Check if the field is empty (ignoring white spaces).
         if (element.value.trim() != '') {
           // The user has already started filling the active field, so bail out

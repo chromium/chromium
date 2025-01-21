@@ -199,9 +199,7 @@ class ProtocolV2 : public ProtocolV1 {
         GetAESSubKey(*shared_key.to_fixed_extent<kSharedKeyLength>());
 
     std::vector<uint8_t> result(AES_BLOCK_SIZE + plaintext.size());
-    const base::span<uint8_t> iv = base::span(result).first<AES_BLOCK_SIZE>();
-    const base::span<uint8_t> ciphertext =
-        base::span(result).subspan<AES_BLOCK_SIZE>();
+    const auto [iv, ciphertext] = base::span(result).split_at<AES_BLOCK_SIZE>();
 
     crypto::RandBytes(iv);
 
@@ -223,9 +221,7 @@ class ProtocolV2 : public ProtocolV1 {
 
     const base::span<const uint8_t, kAESKeyLength> aes_key =
         GetAESSubKey(*shared_key.to_fixed_extent<kSharedKeyLength>());
-    const base::span<const uint8_t> iv = input.first<AES_BLOCK_SIZE>();
-    const base::span<const uint8_t> ciphertext =
-        input.subspan<AES_BLOCK_SIZE>();
+    const auto [iv, ciphertext] = input.split_at<AES_BLOCK_SIZE>();
     std::vector<uint8_t> plaintext(ciphertext.size());
 
     EVP_CIPHER_CTX aes_ctx;

@@ -23,8 +23,7 @@ export function getHtml(this: ComparisonTableListElement) {
         <comparison-table-list-item
           name="${table.name}"
           .uuid="${table.uuid}"
-          num-urls="${table.numUrls}"
-          .imageUrl="${table.imageUrl}"
+          .urls="${table.urls}"
           ?has-checkbox="${this.isEditing_}"
           @checkbox-change="${this.onCheckboxChange_}"
           @delete-table="${this.stopEditing_}">

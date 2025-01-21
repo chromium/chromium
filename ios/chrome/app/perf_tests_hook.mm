@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/app/tests_hook.h"
-
 #import <Foundation/Foundation.h>
 #import <os/log.h>
 #import <os/signpost.h>
 
 #import "base/time/time.h"
+#import "components/feature_engagement/public/feature_activation.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/public/provider/chrome/browser/primes/primes_api.h"
 
 namespace tests_hook {
@@ -135,8 +135,8 @@ std::unique_ptr<drive::DriveService> GetOverriddenDriveService() {
   return nullptr;
 }
 
-std::optional<std::string> FETDemoModeOverride() {
-  return std::nullopt;
+feature_engagement::FeatureActivation FETDemoModeOverride() {
+  return feature_engagement::FeatureActivation::AllEnabled();
 }
 
 void WipeProfileIfRequested(int argc, char* argv[]) {

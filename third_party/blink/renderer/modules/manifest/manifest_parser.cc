@@ -2057,8 +2057,7 @@ mojom::blink::ManifestLaunchHandlerPtr ManifestParser::ParseLaunchHandler(
   return mojom::blink::ManifestLaunchHandler::New(
       ParseFirstValidEnum<std::optional<ClientMode>>(
           launch_handler_object, "client_mode", &ClientModeFromString,
-          /*invalid_value=*/std::nullopt)
-          .value_or(ClientMode::kAuto));
+          /*invalid_value=*/std::nullopt));
 }
 
 HashMap<String, mojom::blink::ManifestTranslationItemPtr>

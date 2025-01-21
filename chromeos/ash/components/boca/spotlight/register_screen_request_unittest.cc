@@ -114,7 +114,8 @@ TEST_F(RegisterScreenRequestTest, InitRegisterScreenRequestSucceed) {
   std::unique_ptr<RegisterScreenRequest> request =
       std::make_unique<RegisterScreenRequest>(
           request_sender(), std::move(session_id),
-          RegisterScreenParam("123456", "1", "d1"), future.GetCallback());
+          RegisterScreenParam("123456", "1", "d1"), kSchoolToolsApiBaseUrl,
+          future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
@@ -146,7 +147,8 @@ TEST_F(RegisterScreenRequestTest, InitRegisterScreenAndFail) {
   std::unique_ptr<RegisterScreenRequest> request =
       std::make_unique<RegisterScreenRequest>(
           request_sender(), std::move(session_id),
-          RegisterScreenParam("123456", "1", "d1"), future.GetCallback());
+          RegisterScreenParam("123456", "1", "d1"), kSchoolToolsApiBaseUrl,
+          future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());
 

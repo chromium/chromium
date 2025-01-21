@@ -11,6 +11,8 @@ source_set("client") {
     "//base",
     "//components/prefs",
     "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
   ]
   frameworks = [ "UserNotifications.framework" ]
 }

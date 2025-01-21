@@ -819,6 +819,7 @@
   "dawn_end2end_tests": {
     "label": "//third_party/dawn/src/dawn/tests:dawn_end2end_tests",
     "type": "windowed_test_launcher",
+    "skip_usage_check": True,
   },
   "dawn_perf_tests": {
     "label": "//third_party/dawn/src/dawn/tests:dawn_perf_tests",
@@ -967,10 +968,12 @@
   "gl_tests": {
     "label": "//gpu:gl_tests",
     "type": "windowed_test_launcher",
+    "skip_usage_check": True,
   },
   "gl_unittests": {
     "label": "//ui/gl:gl_unittests",
     "type": "windowed_test_launcher",
+    "skip_usage_check": True,
   },
   "gl_unittests_ozone": {
     "label": "//ui/gl:gl_unittests_ozone",

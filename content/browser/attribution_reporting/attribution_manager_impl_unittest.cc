@@ -2124,6 +2124,51 @@ TEST_F(AttributionManagerImplTest, SendReport_RecordsSchedulerReportDelay) {
       1);
 }
 
+TEST_F(AttributionManagerImplTest,
+       SendReport_RecordsTimeFromLastNavigation_Successful) {
+  base::HistogramTester histograms;
+
+  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+      .WillOnce(InvokeReportSentCallback(SentResult::kSent));
+
+  base::Time start = base::Time::Now();
+  attribution_manager_->UpdateLastNavigationTime(start);
+
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build(), kFrameId);
+  attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
+
+  task_environment_.FastForwardBy(kFirstReportingWindow + base::Minutes(20));
+
+  histograms.ExpectTotalCount(
+      "Conversions.TimeFromLastNavigationToDelivery_Succeeded.EventLevelReport",
+      1);
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 0, 1);
+}
+
+TEST_F(AttributionManagerImplTest,
+       SendReport_RecordsTimeFromLastNavigation_Failure) {
+  base::HistogramTester histograms;
+
+  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+      .WillRepeatedly(InvokeReportSentCallback(SentResult::kTransientFailure));
+
+  base::Time start = base::Time::Now();
+  attribution_manager_->UpdateLastNavigationTime(start);
+
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build(), kFrameId);
+  attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
+
+  // Reporting window + both retry attempts.
+  task_environment_.FastForwardBy(kFirstReportingWindow + base::Minutes(20));
+
+  histograms.ExpectTotalCount(
+      "Conversions.TimeFromLastNavigationToDelivery_Failed.EventLevelReport",
+      1);
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 1, 1);
+}
+
 TEST_F(AttributionManagerImplTest, SendReportsFromWebUI_DoesNotRecordMetrics) {
   base::HistogramTester histograms;
 

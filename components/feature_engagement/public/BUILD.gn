@@ -36,6 +36,8 @@ static_library("public") {
     "default_session_controller.h",
     "event_constants.cc",
     "event_constants.h",
+    "feature_activation.cc",
+    "feature_activation.h",
     "feature_configurations.cc",
     "feature_configurations.h",
     "field_trial_configuration_provider.cc",

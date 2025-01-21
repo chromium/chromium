@@ -106,7 +106,7 @@ void ImeModeView::Update() {
   std::u16string description =
       l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_INDICATOR_IME_TOOLTIP,
                                  ime_controller->current_ime().name);
-  label()->SetTooltipText(description);
+  label()->SetCustomTooltipText(description);
   label()->SetCustomAccessibleName(description);
   label()->SetElideBehavior(gfx::NO_ELIDE);
 

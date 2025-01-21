@@ -2100,6 +2100,11 @@
     "expiry_milestone": 85
   },
   {
+      "name": "download-auto-deletion",
+      "owners": [ "danieltwhite@google.com", "bling-flags@google.com" ],
+      "expiry_milestone": 137
+  },
+  {
     "name": "download-notification-service-unified-api",
     "owners": ["shaktisahu@chromium.org", "qinmin@chromium.org"],
     "expiry_milestone": 125
@@ -6827,14 +6832,6 @@
       "//components/permissions/PERMISSIONS_OWNERS"
     ],
     "expiry_milestone": 144
-  },
-  {
-    "name": "permission-predictions-v3",
-    "owners": [
-      "elklm@chromium.org",
-      "//components/permissions/PERMISSIONS_OWNERS"
-    ],
-    "expiry_milestone": 140
   },
   {
     "name": "permission-site-settings-radio-button",

@@ -315,11 +315,11 @@ void UserItemButton::UpdateTooltipText() {
           name_->width() &&
       email_->GetPreferredSize(views::SizeBounds(email_->width(), {}))
               .width() <= email_->width()) {
-    suppressed_tooltip_text_ = GetCachedTooltipText();
-    SetCachedTooltipText(std::u16string());
+    suppressed_tooltip_text_ = GetTooltipText();
+    SetTooltipText(std::u16string());
   } else {
-    if (GetCachedTooltipText().empty()) {
-      SetCachedTooltipText(suppressed_tooltip_text_);
+    if (GetTooltipText().empty()) {
+      SetTooltipText(suppressed_tooltip_text_);
     }
     suppressed_tooltip_text_ = std::u16string();
   }

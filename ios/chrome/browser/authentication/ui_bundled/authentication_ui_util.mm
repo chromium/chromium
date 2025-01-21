@@ -182,7 +182,7 @@ BOOL ShouldShowManagedConfirmationForHostedDomain(
     return NO;
   }
 
-  if (access_point == signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU &&
+  if (access_point == signin_metrics::AccessPoint::kAccountMenu &&
       base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
     // Only show the dialog once per account, when switching from the Account
     // Menu.

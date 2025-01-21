@@ -118,7 +118,7 @@ void PowerTrayView::UpdateStatus(bool icon_color_changed) {
   UpdateImage(icon_color_changed);
   SetVisible(PowerStatus::Get()->IsBatteryPresent());
   UpdateAccessibleName();
-  SetCachedTooltipText(PowerStatus::Get()->GetInlinedStatusString());
+  SetTooltipText(PowerStatus::Get()->GetInlinedStatusString());
   // Currently ChromeVox only reads the inner view when touching the icon.
   // As a result this node's accessible node data will not be read.
   // TODO(crbug.com/325137417): This line should not be needed. Investigate to

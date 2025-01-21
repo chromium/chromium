@@ -12,28 +12,28 @@ namespace signin_ui_util {
 account_manager::AccountManagerFacade::AccountAdditionSource
 GetAddAccountSourceFromAccessPoint(signin_metrics::AccessPoint access_point) {
   switch (access_point) {
-    case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
+    case signin_metrics::AccessPoint::kSettings:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kChromeSettingsTurnOnSyncButton;
-    case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
+    case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kAvatarBubbleTurnOnSyncAddAccount;
-    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
+    case signin_metrics::AccessPoint::kExtensions:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kChromeExtensionAddAccount;
-    case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
+    case signin_metrics::AccessPoint::kBookmarkBubble:
+    case signin_metrics::AccessPoint::kPasswordBubble:
+    case signin_metrics::AccessPoint::kExtensionInstallBubble:
+    case signin_metrics::AccessPoint::kRecentTabs:
+    case signin_metrics::AccessPoint::kTabOrganization:
+    case signin_metrics::AccessPoint::kSearchCompanion:
+    case signin_metrics::AccessPoint::kWebauthnModalDialog:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kChromeSyncPromoAddAccount;
-    case signin_metrics::AccessPoint::ACCESS_POINT_MENU:
+    case signin_metrics::AccessPoint::kMenu:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kChromeMenuTurnOnSync;
-    case signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
+    case signin_metrics::AccessPoint::kAutofillDropdown:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kChromeSigninPromoAddAccount;
     default:
@@ -46,28 +46,28 @@ account_manager::AccountManagerFacade::AccountAdditionSource
 GetAccountReauthSourceFromAccessPoint(
     signin_metrics::AccessPoint access_point) {
   switch (access_point) {
-    case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
+    case signin_metrics::AccessPoint::kSettings:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kChromeSettingsReauthAccountButton;
-    case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
+    case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kAvatarBubbleReauthAccountButton;
-    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
+    case signin_metrics::AccessPoint::kExtensions:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kChromeExtensionReauth;
-    case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
+    case signin_metrics::AccessPoint::kBookmarkBubble:
+    case signin_metrics::AccessPoint::kPasswordBubble:
+    case signin_metrics::AccessPoint::kExtensionInstallBubble:
+    case signin_metrics::AccessPoint::kRecentTabs:
+    case signin_metrics::AccessPoint::kTabOrganization:
+    case signin_metrics::AccessPoint::kSearchCompanion:
+    case signin_metrics::AccessPoint::kWebauthnModalDialog:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kChromeSyncPromoReauth;
-    case signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN:
+    case signin_metrics::AccessPoint::kWebSignin:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kContentAreaReauth;
-    case signin_metrics::AccessPoint::ACCESS_POINT_MENU:
+    case signin_metrics::AccessPoint::kMenu:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kChromeMenuTurnOnSync;
     default:

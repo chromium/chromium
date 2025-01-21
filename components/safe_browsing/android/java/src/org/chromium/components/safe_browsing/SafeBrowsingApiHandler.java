@@ -18,13 +18,14 @@ public interface SafeBrowsingApiHandler {
     interface Observer {
         /**
          * Called when the SafeBrowsingApiHandler gets a response from the SafeBrowsing API.
+         *
          * @param callbackId The same ID provided when {@link #startUriLookup(long, String, int[],
-         *         int)} is called.
+         *     int)} is called.
          * @param lookupResult The result of the API call. Self-defined.
          * @param threatType The threatType that is returned from the API.
          * @param threatAttributes The threatAttributes that is returned from the API.
          * @param responseStatus The responseStatus that is returned from the API.
-         * @param checkDeltaMs The time the remote call took in microseconds.
+         * @param checkDeltaUs The time the remote call took in microseconds.
          */
         void onUrlCheckDone(
                 long callbackId,
@@ -32,7 +33,7 @@ public interface SafeBrowsingApiHandler {
                 int threatType,
                 int[] threatAttributes,
                 int responseStatus,
-                long checkDeltaMs);
+                long checkDeltaUs);
     }
 
     // Possible values for lookupResult. Native side has the same definitions. See the native side

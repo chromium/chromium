@@ -96,12 +96,12 @@ class TestRunResults(object):
     def interrupted(self) -> bool:
         return self.interrupt_reason is not None
 
-    def add(self, test_result, expected, test_is_slow):
+    def add(self, test_result, test_is_slow):
         result_type_for_stats = test_result.type
         self.tests_by_expectation[result_type_for_stats].add(
             test_result.test_name)
         if self.result_sink:
-            self.result_sink.sink(expected, test_result, self.expectations)
+            self.result_sink.sink(test_result)
 
         self.results_by_name[test_result.test_name] = test_result
         if test_result.type != ResultType.Skip:
@@ -110,7 +110,7 @@ class TestRunResults(object):
         if len(test_result.failures):
             self.total_failures += 1
             self.failures_by_name[test_result.test_name] = test_result.failures
-        if expected:
+        if test_result.is_expected:
             self.expected += 1
             if test_result.type == ResultType.Skip:
                 self.expected_skips += 1
@@ -345,7 +345,7 @@ def summarize_results(port_obj,
         # once they pass), this is equivalent to saying that all of the
         # results were unexpected failures.
         last_result = actual_types[-1]
-        if not expectations.matches_an_expected_result(test_name, last_result):
+        if last_result not in expected_results:
             test_dict['is_unexpected'] = True
             if last_result != ResultType.Pass:
                 test_dict['is_regression'] = True

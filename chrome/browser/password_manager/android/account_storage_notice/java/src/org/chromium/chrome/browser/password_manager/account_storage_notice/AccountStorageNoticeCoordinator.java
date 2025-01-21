@@ -146,7 +146,7 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
             mCloseReason = CloseReason.USER_DISMISSED;
         }
         RecordHistogram.recordEnumeratedHistogram(
-                CLOSE_REASON_METRIC, mCloseReason, CloseReason.MAX_VALUE + 1);
+                CLOSE_REASON_METRIC, mCloseReason, CloseReason.MAX_VALUE);
 
         if (mNativeCoordinatorObserver != 0) {
             AccountStorageNoticeCoordinatorJni.get().onClosed(mNativeCoordinatorObserver);

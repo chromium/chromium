@@ -185,7 +185,7 @@ class SafetyCheckMediator {
                                 RecordHistogram.recordEnumeratedHistogram(
                                         "Settings.SafetyCheck.UpdatesResult",
                                         SafetyCheckProperties.updatesStateToNative(status),
-                                        UpdateStatus.MAX_VALUE + 1);
+                                        UpdateStatus.MAX_VALUE);
                                 mSafetyCheckModel.set(SafetyCheckProperties.UPDATES_STATE, status);
                             }
                         });
@@ -316,7 +316,7 @@ class SafetyCheckMediator {
                             RecordHistogram.recordEnumeratedHistogram(
                                     SAFETY_CHECK_INTERACTIONS,
                                     SafetyCheckInteractions.SAFE_BROWSING_MANAGE,
-                                    SafetyCheckInteractions.MAX_VALUE + 1);
+                                    SafetyCheckInteractions.MAX_VALUE);
                             // Open the Safe Browsing settings.
                             Intent intent =
                                     SettingsNavigationFactory.createSettingsNavigation()
@@ -408,7 +408,7 @@ class SafetyCheckMediator {
         RecordHistogram.recordEnumeratedHistogram(
                 SAFETY_CHECK_INTERACTIONS,
                 SafetyCheckInteractions.STARTED,
-                SafetyCheckInteractions.MAX_VALUE + 1);
+                SafetyCheckInteractions.MAX_VALUE);
         // Record the start time for tracking 1 second checking delay in the UI.
         mCheckStartTime = SystemClock.elapsedRealtime();
         // Record the absolute start time for showing when the last Safety check was performed.
@@ -479,7 +479,7 @@ class SafetyCheckMediator {
                         RecordHistogram.recordEnumeratedHistogram(
                                 "Settings.SafetyCheck.SafeBrowsingResult",
                                 status,
-                                SafeBrowsingStatus.MAX_VALUE + 1);
+                                SafeBrowsingStatus.MAX_VALUE);
                         mSafetyCheckModel.set(
                                 SafetyCheckProperties.SAFE_BROWSING_STATE,
                                 SafetyCheckProperties.safeBrowsingStateFromNative(status));
@@ -527,7 +527,7 @@ class SafetyCheckMediator {
             RecordHistogram.recordEnumeratedHistogram(
                     "Settings.SafetyCheck.PasswordsResult2",
                     passwordsStateToNative(passwordsState),
-                    PasswordsStatus.MAX_VALUE + 1);
+                    PasswordsStatus.MAX_VALUE);
         }
 
         passwordsCheckModel.set(PasswordsCheckPreferenceProperties.PASSWORDS_STATE, passwordsState);
@@ -546,7 +546,7 @@ class SafetyCheckMediator {
             RecordHistogram.recordEnumeratedHistogram(
                     "Settings.SafetyCheck.PasswordsResult2",
                     PasswordsStatus.SIGNED_OUT,
-                    PasswordsStatus.MAX_VALUE + 1);
+                    PasswordsStatus.MAX_VALUE);
             return passwordsState;
         }
         if (!mShowSafePasswordState) {
@@ -624,7 +624,7 @@ class SafetyCheckMediator {
                         RecordHistogram.recordEnumeratedHistogram(
                                 SAFETY_CHECK_INTERACTIONS,
                                 SafetyCheckInteractions.PASSWORDS_MANAGE,
-                                SafetyCheckInteractions.MAX_VALUE + 1);
+                                SafetyCheckInteractions.MAX_VALUE);
                         // Open the Password Check UI.
                         if (!mPasswordManagerHelper.canUseUpm()) {
                             PasswordCheckFactory.getOrCreate()
@@ -712,7 +712,7 @@ class SafetyCheckMediator {
         RecordHistogram.recordEnumeratedHistogram(
                 "Settings.SafetyCheck.PasswordsResult2",
                 PasswordsCheckPreferenceProperties.passwordsStateToNative(PasswordsState.ERROR),
-                PasswordsStatus.MAX_VALUE + 1);
+                PasswordsStatus.MAX_VALUE);
         determinePasswordStateOnLoadComplete(
                 new PasswordCheckResult(new Exception(error)), passwordStorageType, isInitialLoad);
     }

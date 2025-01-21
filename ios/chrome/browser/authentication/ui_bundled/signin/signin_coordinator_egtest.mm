@@ -545,7 +545,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [ChromeEarlGreyUI waitForAppToIdle];
 
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
-      initWithAccessPoint:signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS];
+      initWithAccessPoint:signin_metrics::AccessPoint::kSettings];
   // TODO(crbug.com/41493423): We should log Signin offered and
   // Signin.SigninStartedAccessPoint.
   expecteds.signinSignInStarted = 1;
@@ -562,7 +562,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // TODO(crbug.com/41493423): We should log signin started. Ideally that signin
   // was offered, but this is probably not possible on the web.
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
-      initWithAccessPoint:signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN];
+      initWithAccessPoint:signin_metrics::AccessPoint::kWebSignin];
   [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 
@@ -915,8 +915,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
-      initWithAccessPoint:signin_metrics::AccessPoint::
-                              ACCESS_POINT_NTP_SIGNED_OUT_ICON];
+      initWithAccessPoint:signin_metrics::AccessPoint::kNTPSignedOutIcon];
   expecteds.signinSignInStarted = 1;
   [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }

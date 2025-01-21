@@ -141,6 +141,10 @@ suite('Speech', () => {
               utterance => utterance.lang === expectedLang),
           '4');
     });
+
+    test('speechPlayingState initialized correctly', () => {
+      assertFalse(app.speechPlayingState.isSpeechBeingRepositioned);
+    });
   });
 
   suite('with text selected', () => {
@@ -343,6 +347,101 @@ suite('Speech', () => {
     assertEquals(1, speechSynthesis.spokenUtterances.length);
     assertEquals(
         paragraph2.at(-2)!, speechSynthesis.spokenUtterances[0]!.text.trim());
+  });
+
+  test(
+      'after previous granularity, onstart stops repositioning for speech',
+      async () => {
+        speechSynthesis.setMaxSegments(7);
+        chrome.readingMode.initAxPositionWithNode(2);
+        app.playSpeech();
+        speechSynthesis.clearSpokenUtterances();
+
+        speechSynthesis.setMaxSegments(1);
+        emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
+        await microtasksFinished();
+
+        assertTrue(app.speechPlayingState.isSpeechBeingRepositioned);
+        app.playSpeech();
+        assertFalse(app.speechPlayingState.isSpeechBeingRepositioned);
+      });
+
+  test(
+      'after next granularity, onstart stops repositioning for speech',
+      async () => {
+        speechSynthesis.setMaxSegments(1);
+        chrome.readingMode.initAxPositionWithNode(2);
+        app.playSpeech();
+        speechSynthesis.clearSpokenUtterances();
+
+        speechSynthesis.setMaxSegments(1);
+        emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
+        await microtasksFinished();
+
+        assertTrue(app.speechPlayingState.isSpeechBeingRepositioned);
+        app.playSpeech();
+        assertFalse(app.speechPlayingState.isSpeechBeingRepositioned);
+      });
+
+  test(
+      'interrupt error after next granularity keeps playing speech',
+      async () => {
+        speechSynthesis.setMaxSegments(1);
+        chrome.readingMode.initAxPositionWithNode(2);
+        app.playSpeech();
+        speechSynthesis.clearSpokenUtterances();
+
+        app.speechPlayingState.isSpeechTreeInitialized = true;
+        app.speechPlayingState.isAudioCurrentlyPlaying = true;
+
+        speechSynthesis.setMaxSegments(1);
+        speechSynthesis.triggerErrorEventOnNextSpeak('interrupted');
+        emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
+        await microtasksFinished();
+
+        assertTrue(app.speechPlayingState.isAudioCurrentlyPlaying);
+        assertTrue(app.speechPlayingState.isSpeechActive);
+
+        // Because we triggered onerror in fake_speech_synthesis, onstart was
+        // never triggered on the current utterance, so this should still be
+        // true after the next button press.
+        assertTrue(app.speechPlayingState.isSpeechBeingRepositioned);
+      });
+
+  test(
+      'interrupt error after previous granularity keeps playing speech',
+      async () => {
+        speechSynthesis.setMaxSegments(7);
+        chrome.readingMode.initAxPositionWithNode(2);
+        app.playSpeech();
+        speechSynthesis.clearSpokenUtterances();
+        app.speechPlayingState.isSpeechTreeInitialized = true;
+        app.speechPlayingState.isAudioCurrentlyPlaying = true;
+
+        speechSynthesis.setMaxSegments(1);
+        speechSynthesis.triggerErrorEventOnNextSpeak('interrupted');
+        emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
+        await microtasksFinished();
+
+        assertTrue(app.speechPlayingState.isAudioCurrentlyPlaying);
+        assertTrue(app.speechPlayingState.isSpeechActive);
+        // Because we triggered onerror in fake_speech_synthesis, onstart was
+        // never triggered on the current utterance, so this should still be
+        // true after the previous button press.
+        assertTrue(app.speechPlayingState.isSpeechBeingRepositioned);
+      });
+
+  test('interrupt error stops speech', async () => {
+    speechSynthesis.setMaxSegments(7);
+    chrome.readingMode.initAxPositionWithNode(2);
+    speechSynthesis.triggerErrorEventOnNextSpeak('interrupted');
+    app.speechPlayingState.isSpeechTreeInitialized = true;
+    app.speechPlayingState.isAudioCurrentlyPlaying = true;
+    app.playSpeech();
+
+    assertFalse(app.speechPlayingState.isAudioCurrentlyPlaying);
+    assertFalse(app.speechPlayingState.isSpeechActive);
+    assertFalse(app.speechPlayingState.isSpeechBeingRepositioned);
   });
 
 

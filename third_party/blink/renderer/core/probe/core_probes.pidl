@@ -215,6 +215,7 @@ interface CoreProbes {
   void GetDisabledImageTypes(ExecutionContext*, HashSet<String>* result);
   void OnContentSecurityPolicyViolation(ExecutionContext* context, const blink::ContentSecurityPolicyViolationType violationType);
   void IsCacheDisabled(ExecutionContext*, bool* is_cache_disabled);
+  void ShouldApplyDevtoolsCookieSettingOverrides(ExecutionContext*, bool* is_network_enabled);
   void PerformanceEntryAdded([Keep] ExecutionContext*, PerformanceEntry*);
   void ApplyAutomationOverride(ExecutionContext*, bool& enabled);
   void DidAddSpeculationRuleSet([Keep] Document&, const SpeculationRuleSet& rule_set);

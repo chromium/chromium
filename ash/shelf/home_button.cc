@@ -440,10 +440,6 @@ void HomeButton::OnGestureEvent(ui::GestureEvent* event) {
     Button::OnGestureEvent(event);
 }
 
-std::u16string HomeButton::GetTooltipText(const gfx::Point& p) const {
-  return GetCachedTooltipText();
-}
-
 void HomeButton::OnShelfButtonAboutToRequestFocusFromTabTraversal(
     ShelfButton* button,
     bool reverse) {
@@ -682,9 +678,8 @@ void HomeButton::CreateExpandableContainer() {
 
 void HomeButton::UpdateTooltipText() {
   // Don't show a tooltip if we're already showing the app list.
-  SetCachedTooltipText(IsShowingAppList()
-                           ? std::u16string()
-                           : GetViewAccessibility().GetCachedName());
+  SetTooltipText(IsShowingAppList() ? std::u16string()
+                                    : GetViewAccessibility().GetCachedName());
 }
 
 void HomeButton::CreateNudgeLabel() {

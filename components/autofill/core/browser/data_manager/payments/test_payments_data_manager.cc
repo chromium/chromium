@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
+#include "components/autofill/core/browser/data_model/bnpl_issuer.h"
 
 namespace autofill {
 
@@ -276,6 +277,25 @@ void TestPaymentsDataManager::AddServerCreditCard(
   std::unique_ptr<CreditCard> server_credit_card =
       std::make_unique<CreditCard>(credit_card);
   server_credit_cards_.push_back(std::move(server_credit_card));
+  NotifyObservers();
+}
+
+void TestPaymentsDataManager::AddBnplIssuer(const BnplIssuer& bnpl_issuer) {
+  // No duplicated issuer should be inserted into the BNPL issuer list.
+  CHECK(!std::ranges::any_of(
+      linked_bnpl_issuers_, [&](const BnplIssuer& saved_bnpl_issuer) {
+        return saved_bnpl_issuer.issuer_id() == bnpl_issuer.issuer_id();
+      }));
+  CHECK(!std::ranges::any_of(
+      unlinked_bnpl_issuers_, [&](const BnplIssuer& saved_bnpl_issuer) {
+        return saved_bnpl_issuer.issuer_id() == bnpl_issuer.issuer_id();
+      }));
+
+  if (bnpl_issuer.payment_instrument().has_value()) {
+    linked_bnpl_issuers_.push_back(bnpl_issuer);
+  } else {
+    unlinked_bnpl_issuers_.push_back(bnpl_issuer);
+  }
   NotifyObservers();
 }
 

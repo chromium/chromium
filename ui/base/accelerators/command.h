@@ -14,6 +14,17 @@
 
 namespace ui {
 
+// Denotes the reason why parsing a string to a valid global accelerator fails.
+enum class AcceleratorParseError {
+  // The platform key used must be for a known platform.
+  kUnsupportedPlatform,
+  // The string sent to the parser cannot be parsed into a valid global
+  // accelerator.
+  kMalformedInput,
+  // Media keys may not have modifiers.
+  kMediaKeyWithModifier
+};
+
 class COMPONENT_EXPORT(UI_BASE) Command {
  public:
   Command() = default;

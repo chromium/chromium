@@ -23,12 +23,10 @@ ChildPolicyObserver::ChildPolicyObserver(Profile* profile) : profile_(profile) {
                       ? InitialPolicyRefreshResult::kPolicyRefreshed
                       : InitialPolicyRefreshResult::kPolicyRefreshError);
   }
-  cloud_policy_service->AddObserver(this);
+  cloud_policy_service_observation_.Observe(cloud_policy_service);
 }
 
-ChildPolicyObserver::~ChildPolicyObserver() {
-  GetUserCloudPolicyManager()->core()->service()->RemoveObserver(this);
-}
+ChildPolicyObserver::~ChildPolicyObserver() = default;
 
 void ChildPolicyObserver::NotifyWhenPolicyReady(
     PolicyReadyCallback on_policy_ready,

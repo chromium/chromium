@@ -258,41 +258,6 @@ INSTANTIATE_TEST_SUITE_P(/* no label */,
                                            48000,
                                            384000));
 
-TEST_F(AudioDestinationTest, NoUnderrunsWithOutputBufferBypass) {
-  // Test that calling Render() after the destination is stopped will not
-  // generate underruns when the destination is in output buffer bypass mode.
-  blink::WebRuntimeFeatures::EnableFeatureFromString(
-      "WebAudioBypassOutputBuffering", true);
-  ScopedTestingPlatformSupport<TestPlatform> platform;
-
-  const std::optional<float> sample_rate = 44100;
-  const WebAudioLatencyHint latency_hint(
-      WebAudioLatencyHint::kCategoryInteractive);
-  const int channel_count = Platform::Current()->AudioHardwareOutputChannels();
-  const size_t request_frames = Platform::Current()->AudioHardwareBufferSize();
-  const WebAudioSinkDescriptor sink_descriptor(WebString::FromUTF8(""),
-                                               kFrameToken);
-  const int render_quantum_frames = 128;
-
-  scoped_refptr<AudioDestination> destination = AudioDestination::Create(
-      callback_, sink_descriptor, channel_count, latency_hint, sample_rate,
-      render_quantum_frames);
-
-  auto audio_bus = media::AudioBus::Create(channel_count, request_frames);
-
-  destination->Start();
-  destination->Render(base::Milliseconds(90), base::TimeTicks::Now(),
-                      media::AudioGlitchInfo(), audio_bus.get());
-  destination->Stop();
-  destination->Render(base::Milliseconds(90), base::TimeTicks::Now(),
-                      media::AudioGlitchInfo(), audio_bus.get());
-
-  EXPECT_EQ((destination->GetPushPullFIFOStateForTest()).overflow_count,
-            unsigned{0});
-  EXPECT_EQ((destination->GetPushPullFIFOStateForTest()).underflow_count,
-            unsigned{0});
-}
-
 }  // namespace
 
 }  // namespace blink

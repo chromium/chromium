@@ -322,9 +322,8 @@ void PageActionIconView::UpdateBorder() {
 }
 
 void PageActionIconView::UpdateTooltipText() {
-  SetCachedTooltipText(IsBubbleShowing()
-                           ? std::u16string()
-                           : GetTextForTooltipAndAccessibleName());
+  SetTooltipText(IsBubbleShowing() ? std::u16string()
+                                   : GetTextForTooltipAndAccessibleName());
 }
 
 void PageActionIconView::InstallLoadingIndicator() {

@@ -243,11 +243,11 @@ bool ShouldPresentWebSignin(ProfileIOS* profile) {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::
             SUPPRESSED_ALREADY_SIGNED_IN,
-        signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+        signin_metrics::AccessPoint::kWebSignin);
     return false;
   }
   signin_metrics::AccessPoint web_signin_access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN;
+      signin_metrics::AccessPoint::kWebSignin;
   // Skip the bottom sheet sign-in dialog if the user cannot sign-in.
   switch (authentication_service->GetServiceStatus()) {
     case AuthenticationService::ServiceStatus::SigninForcedByPolicy:

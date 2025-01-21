@@ -15,7 +15,7 @@ namespace content {
 void TriggersDataSource::Register() {
   perfetto::DataSourceDescriptor desc;
   desc.set_name("org.chromium.triggers");
-  perfetto::DataSource<TriggersDataSource>::Register(desc);
+  CHECK(perfetto::DataSource<TriggersDataSource>::Register(desc));
 }
 
 void TriggersDataSource::EmitTrigger(

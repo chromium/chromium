@@ -359,7 +359,8 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       for (const bookmarks::BookmarkNode* node : selection_) {
         bookmark_service_->Move(node, BookmarkParentFolder::BookmarkBarFolder(),
                                 bookmark_service_->GetChildrenCount(
-                                    BookmarkParentFolder::BookmarkBarFolder()));
+                                    BookmarkParentFolder::BookmarkBarFolder()),
+                                browser_);
       }
       break;
     }
@@ -370,7 +371,8 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       for (const bookmarks::BookmarkNode* node : selection_) {
         bookmark_service_->Move(node, BookmarkParentFolder::OtherFolder(),
                                 bookmark_service_->GetChildrenCount(
-                                    BookmarkParentFolder::OtherFolder()));
+                                    BookmarkParentFolder::OtherFolder()),
+                                browser_);
       }
       break;
     }

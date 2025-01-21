@@ -12,6 +12,8 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 
 import {ShowSetDisposition} from '//resources/cr_components/commerce/product_specifications.mojom-webui.js';
+import {ShoppingServiceBrowserProxyImpl} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
+import type {ShoppingServiceBrowserProxy} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
@@ -69,9 +71,9 @@ export class ComparisonTableListItemElement extends CrLitElement {
     return {
       name: {type: String},
       uuid: {type: Object},
-      numUrls: {type: Number},
-      imageUrl: {type: Object},
+      urls: {type: Array},
       hasCheckbox: {type: Boolean},
+      imageUrl_: {type: Object},
       tableUrl_: {type: Object},
       numItemsString_: {type: String},
       isMenuOpen_: {type: Boolean},
@@ -81,10 +83,10 @@ export class ComparisonTableListItemElement extends CrLitElement {
 
   name: string = '';
   uuid: Uuid = {value: ''};
-  numUrls: number = 0;
-  imageUrl: Url|null = null;
+  urls: Url[] = [];
   hasCheckbox: boolean = false;
 
+  protected imageUrl_: Url|null = null;
   protected tableUrl_: Url = {url: ''};
   protected numItemsString_: string = '';
   protected isMenuOpen_: boolean = false;
@@ -93,6 +95,8 @@ export class ComparisonTableListItemElement extends CrLitElement {
       ProductSpecificationsBrowserProxyImpl.getInstance();
   private pluralStringProxy_: PluralStringProxy =
       PluralStringProxyImpl.getInstance();
+  private shoppingApi_: ShoppingServiceBrowserProxy =
+      ShoppingServiceBrowserProxyImpl.getInstance();
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -106,13 +110,15 @@ export class ComparisonTableListItemElement extends CrLitElement {
             this.uuid);
     this.tableUrl_ = url;
 
+    this.updateImage_();
     this.updateNumItemsString_();
   }
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    if (changedProperties.has('numUrls')) {
+    if (changedProperties.has('urls')) {
+      this.updateImage_();
       this.updateNumItemsString_();
     }
   }
@@ -121,9 +127,33 @@ export class ComparisonTableListItemElement extends CrLitElement {
     return loadTimeData.getStringF('tableListItemTitle', this.name);
   }
 
+  protected getFaviconUrl_() {
+    // Display the favicon for the first product if no product images are
+    // available. If there are no URLs, display the Compare favicon.
+    return this.urls.length > 0 ? this.urls[0].url : this.tableUrl_.url;
+  }
+
   protected async updateNumItemsString_() {
-    this.numItemsString_ =
-        await this.pluralStringProxy_.getPluralString('numItems', this.numUrls);
+    this.numItemsString_ = await this.pluralStringProxy_.getPluralString(
+        'numItems', this.urls.length);
+    this.fire('num-items-updated-for-testing');
+  }
+
+  protected async updateImage_() {
+    // Find the first product with an image to use as the item's image.
+    let imageUrl = null;
+    for (let i = 0; i < this.urls.length; i++) {
+      const {productInfo} =
+          await this.shoppingApi_.getProductInfoForUrl(this.urls[i]);
+
+      if (productInfo.imageUrl.url) {
+        imageUrl = productInfo.imageUrl;
+        break;
+      }
+    }
+
+    this.imageUrl_ = imageUrl;
+    this.fire('image-updated-for-testing');
   }
 
   protected onClick_(event: MouseEvent) {

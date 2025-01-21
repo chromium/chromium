@@ -27,6 +27,20 @@ enum class ActivationLevel;
 
 namespace fingerprinting_protection_filter {
 
+// These values are persisted to logs
+// `tools/metrics/ukm/ukm.xml:FingerprintingProtectionException`. Entries should
+// not be renumbered and numeric values should never be reused.
+//
+// LINT.IfChange(ExceptionSource)
+enum class ExceptionSource : int {
+  UNKNOWN = 0,
+  USER_BYPASS = 1,
+  COOKIES = 2,
+  REFRESH_HEURISTIC = 3,
+  EXCEPTION_SOURCE_MAX = 4,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:FingerprintingProtectionExceptionSource)
+
 struct GetActivationResult {
   subresource_filter::mojom::ActivationLevel level;
   subresource_filter::ActivationDecision decision;

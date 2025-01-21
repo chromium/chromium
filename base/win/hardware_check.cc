@@ -14,6 +14,7 @@
 #include "base/cpu.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/scoped_native_library.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/win/registry.h"
@@ -84,13 +85,24 @@ bool IsUEFISecureBootCapable() {
 }
 
 bool IsTPM20Supported() {
-  TPM_DEVICE_INFO tpm_info{};
-
-  if (::Tbsi_GetDeviceInfo(sizeof(tpm_info), &tpm_info) != TBS_SUCCESS) {
+  // Using dynamic loading instead of using linker support for delay
+  // loading to prevent failed loads being treated as a fatal failure which
+  // can happen in rare cases due to missing or corrupted DLL file.
+  ScopedNativeLibrary tbs_library(LoadSystemLibrary(L"tbs.dll"));
+  if (!tbs_library.is_valid()) {
     return false;
   }
 
-  return tpm_info.tpmVersion >= TPM_VERSION_20;
+  decltype(Tbsi_GetDeviceInfo)* tbsi_get_device_info_proc =
+      reinterpret_cast<decltype(Tbsi_GetDeviceInfo)*>(
+          tbs_library.GetFunctionPointer("Tbsi_GetDeviceInfo"));
+  if (!tbsi_get_device_info_proc) {
+    return false;
+  }
+
+  TPM_DEVICE_INFO tpm_info{};
+  TBS_RESULT result = tbsi_get_device_info_proc(sizeof(tpm_info), &tpm_info);
+  return result == TBS_SUCCESS && tpm_info.tpmVersion >= TPM_VERSION_20;
 }
 
 }  // namespace

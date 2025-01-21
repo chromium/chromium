@@ -503,14 +503,13 @@ void WindowCycleList::MakeSameAppOnly() {
   if (!mru_window_app_id) {
     return;
   }
-  windows_.erase(
-      base::ranges::remove_if(windows_.begin(), windows_.end(),
-                              [&mru_window_app_id](aura::Window* window) {
-                                const auto* const app_id =
-                                    window->GetProperty(kAppIDKey);
-                                return !app_id || *app_id != *mru_window_app_id;
-                              }),
-      windows_.end());
+  auto to_remove = std::ranges::remove_if(
+      windows_.begin(), windows_.end(),
+      [&mru_window_app_id](aura::Window* window) {
+        const auto* const app_id = window->GetProperty(kAppIDKey);
+        return !app_id || *app_id != *mru_window_app_id;
+      });
+  windows_.erase(to_remove.begin(), to_remove.end());
 }
 
 int WindowCycleList::GetOffsettedWindowIndex(int offset) const {

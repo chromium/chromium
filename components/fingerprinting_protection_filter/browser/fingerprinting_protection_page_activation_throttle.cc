@@ -25,6 +25,9 @@
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source.h"
 
 namespace fingerprinting_protection_filter {
 
@@ -71,7 +74,8 @@ FingerprintingProtectionPageActivationThrottle::GetNameForLogging() {
 
 GetActivationResult
 FingerprintingProtectionPageActivationThrottle::GetActivation() const {
-  if (!features::IsFingerprintingProtectionFeatureEnabled()) {
+  if (!features::IsFingerprintingProtectionEnabledForIncognitoState(
+          is_incognito_)) {
     // Feature flag disabled.
     return {.level = ActivationLevel::kDisabled,
             .decision = ActivationDecision::UNKNOWN};
@@ -97,6 +101,12 @@ FingerprintingProtectionPageActivationThrottle::GetActivation() const {
   }
   if (has_breakage_exception) {
     UMA_HISTOGRAM_BOOLEAN(HasRefreshCountExceptionHistogramName, true);
+    ukm::SourceId source_id =
+        ukm::ConvertToSourceId(navigation_handle()->GetNavigationId(),
+                               ukm::SourceIdType::NAVIGATION_ID);
+    ukm::builders::FingerprintingProtectionException(source_id)
+        .SetSource(static_cast<int64_t>(ExceptionSource::REFRESH_HEURISTIC))
+        .Record(ukm::UkmRecorder::Get());
     // Disabled by breakage exception.
     return {.level = ActivationLevel::kDisabled,
             .decision = ActivationDecision::URL_ALLOWLISTED};
@@ -133,6 +143,15 @@ FingerprintingProtectionPageActivationThrottle::GetActivation() const {
   if ((!base::FeatureList::IsEnabled(privacy_sandbox::kActUserBypassUx) &&
        HasContentSettingsCookieException()) ||
       HasTrackingProtectionException()) {
+    ukm::SourceId source_id =
+        ukm::ConvertToSourceId(navigation_handle()->GetNavigationId(),
+                               ukm::SourceIdType::NAVIGATION_ID);
+    ExceptionSource exception_source = HasTrackingProtectionException()
+                                           ? ExceptionSource::USER_BYPASS
+                                           : ExceptionSource::COOKIES;
+    ukm::builders::FingerprintingProtectionException(source_id)
+        .SetSource(static_cast<int64_t>(exception_source))
+        .Record(ukm::UkmRecorder::Get());
     return {.level = ActivationLevel::kDisabled,
             .decision = ActivationDecision::URL_ALLOWLISTED};
   }

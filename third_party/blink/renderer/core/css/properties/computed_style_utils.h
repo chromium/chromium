@@ -210,6 +210,10 @@ class CORE_EXPORT ComputedStyleUtils {
                                                    TimelineAxis,
                                                    std::optional<TimelineInset>,
                                                    const ComputedStyle&);
+  static CSSValue* ValueForAnimationTriggerType(const EAnimationTriggerType);
+  static CSSValue* ValueForAnimationTriggerTypeList(const CSSAnimationData*);
+  static CSSValue* ValueForAnimationTriggerTimelineList(
+      const CSSAnimationData*);
   static CSSValueList* ValuesForBorderRadiusCorner(const LengthSize&,
                                                    const ComputedStyle&);
   static CSSValue* ValueForBorderRadiusCorner(const LengthSize&,

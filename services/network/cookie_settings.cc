@@ -432,7 +432,7 @@ void CookieSettings::AugmentInclusionStatus(
       // The cookie should be allowed by default to have this warning
       // reason.
       out_status.AddWarningReason(
-          net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
+          net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT);
     }
     return;
   }
@@ -449,11 +449,12 @@ void CookieSettings::AugmentInclusionStatus(
         return;
       }
       out_status.AddExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
+          net::CookieInclusionStatus::ExclusionReason::
+              EXCLUDE_THIRD_PARTY_PHASEOUT);
 
       if (first_party_set_metadata.AreSitesInSameFirstPartySet()) {
         out_status.AddExclusionReason(
-            net::CookieInclusionStatus::
+            net::CookieInclusionStatus::ExclusionReason::
                 EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
       }
       return;
@@ -462,7 +463,7 @@ void CookieSettings::AugmentInclusionStatus(
 
   // The cookie is blocked, but not by 3PCD.
   out_status.AddExclusionReason(
-      net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+      net::CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES);
 }
 
 bool CookieSettings::IsStorageAccessHeadersEnabled(

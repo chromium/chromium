@@ -107,7 +107,7 @@ class PrivacyIndicatorsTrayItemViewTest
   ~PrivacyIndicatorsTrayItemViewTest() override = default;
 
   std::u16string GetTooltipText() {
-    return privacy_indicators_view()->GetTooltipText(gfx::Point());
+    return privacy_indicators_view()->GetRenderedTooltipText(gfx::Point());
   }
 
   views::BoxLayout* GetLayoutManager(

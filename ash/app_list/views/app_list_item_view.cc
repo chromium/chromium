@@ -2321,7 +2321,7 @@ void AppListItemView::UpdateTooltipText() {
     // Tooltip becomes two lines: "App Name" + "New install".
     tooltip = l10n_util::GetStringFUTF16(IDS_APP_LIST_NEW_INSTALL, tooltip);
   }
-  SetCachedTooltipText(tooltip);
+  SetTooltipText(tooltip);
 }
 
 BEGIN_METADATA(AppListItemView)

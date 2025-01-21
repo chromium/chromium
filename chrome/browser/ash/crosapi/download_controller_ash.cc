@@ -6,6 +6,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/containers/extend.h"
+#include "base/ranges/functional.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace crosapi {

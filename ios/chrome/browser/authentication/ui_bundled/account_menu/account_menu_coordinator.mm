@@ -116,8 +116,8 @@ void ChangeProfileSignInContinuation(id<SystemIdentity> identity,
   // necessary.
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
-  authentication_service->SignIn(
-      identity, signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU);
+  authentication_service->SignIn(identity,
+                                 signin_metrics::AccessPoint::kAccountMenu);
   std::move(closure).Run();
 }
 
@@ -165,10 +165,10 @@ void ChangeProfileSignInContinuation(id<SystemIdentity> identity,
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser {
-  return [super initWithBaseViewController:viewController
-                                   browser:browser
-                               accessPoint:signin_metrics::AccessPoint::
-                                               ACCESS_POINT_ACCOUNT_MENU];
+  return [super
+      initWithBaseViewController:viewController
+                         browser:browser
+                     accessPoint:signin_metrics::AccessPoint::kAccountMenu];
 }
 
 - (void)dealloc {
@@ -362,8 +362,7 @@ void ChangeProfileSignInContinuation(id<SystemIdentity> identity,
   AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
                initWithBrowser:self.browser
                       identity:identity
-                   accessPoint:signin_metrics::AccessPoint::
-                                   ACCESS_POINT_ACCOUNT_MENU
+                   accessPoint:signin_metrics::AccessPoint::kAccountMenu
              postSignInActions:PostSignInActionSet({PostSignInAction::kNone})
       presentingViewController:_navigationController];
 
@@ -438,7 +437,7 @@ void ChangeProfileSignInContinuation(id<SystemIdentity> identity,
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kAccountMenu;
   signin_metrics::AccessPoint accessPoint =
-      signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU;
+      signin_metrics::AccessPoint::kAccountMenu;
   SigninTrustedVaultDialogIntent intent =
       SigninTrustedVaultDialogIntentFetchKeys;
   _signinCoordinator = [SigninCoordinator
@@ -460,7 +459,7 @@ void ChangeProfileSignInContinuation(id<SystemIdentity> identity,
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kAccountMenu;
   signin_metrics::AccessPoint accessPoint =
-      signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU;
+      signin_metrics::AccessPoint::kAccountMenu;
   SigninTrustedVaultDialogIntent intent =
       SigninTrustedVaultDialogIntentDegradedRecoverability;
   _signinCoordinator = [SigninCoordinator
@@ -482,7 +481,7 @@ void ChangeProfileSignInContinuation(id<SystemIdentity> identity,
 
 - (void)openPrimaryAccountReauthDialog {
   signin_metrics::AccessPoint accessPoint =
-      signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU;
+      signin_metrics::AccessPoint::kAccountMenu;
   signin_metrics::PromoAction promoAction =
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
   _signinCoordinator = [SigninCoordinator

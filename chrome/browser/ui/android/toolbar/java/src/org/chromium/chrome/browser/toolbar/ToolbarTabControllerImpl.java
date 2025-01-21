@@ -158,6 +158,6 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
         Profile profile = tab.getProfile();
         @BrowserProfileType int type = Profile.getBrowserProfileTypeFromProfile(profile);
         RecordHistogram.recordEnumeratedHistogram(
-                "Android.HomeButton.PerProfileType", type, BrowserProfileType.MAX_VALUE + 1);
+                "Android.HomeButton.PerProfileType", type, BrowserProfileType.MAX_VALUE);
     }
 }

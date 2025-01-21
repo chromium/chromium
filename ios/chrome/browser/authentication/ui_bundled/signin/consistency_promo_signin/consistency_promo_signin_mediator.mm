@@ -33,7 +33,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   // Closure to trigger the sign-in time out error. This closure exists to make
   // sure the user doesn't wait too long before to get the cookies available
   // on the web. This is used only when `_accessPoint` is equal to
-  // `ACCESS_POINT_WEB_SIGNIN`.
+  // `kWebSignin`.
   base::CancelableOnceClosure _cookieTimeoutClosure;
   AuthenticationFlow* _authenticationFlow;
   // True if the mediator was initialized with no existing account on device.
@@ -173,8 +173,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   _authenticationFlow = authenticationFlow;
   self.signingIdentity = authenticationFlow.identity;
   // Reset dismissal count if the user wants to sign-in.
-  if (self.accessPoint ==
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
+  if (self.accessPoint == signin_metrics::AccessPoint::kWebSignin) {
     self.userPrefService->SetInteger(prefs::kSigninWebSignDismissalCount, 0);
   }
   __weak __typeof(self) weakSelf = self;
@@ -200,7 +199,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
     [self.delegate consistencyPromoSigninMediatorSignInCancelled:self];
     return;
   }
-  if (_accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
+  if (_accessPoint == signin_metrics::AccessPoint::kWebSignin) {
     // `-[ConsistencyPromoSigninMediator onAccountsInCookieUpdated:error:]` will
     // be called when the cookies will be ready, and then the sign-in can be
     // finished. Or `_cookieTimeoutClosure` will be called if it takes too long.
@@ -273,7 +272,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
             (const signin::AccountsInCookieJarInfo&)accountsInCookieJarInfo
                             error:(const GoogleServiceAuthError&)error {
   if (_authenticationFlow ||
-      _accessPoint != signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
+      _accessPoint != signin_metrics::AccessPoint::kWebSignin) {
     // Ignore if `_authenticationFlow` is in progress since
     // `onAccountsInCookieUpdated` may be called when data is cleared on
     // sign-in.
@@ -297,8 +296,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
       accountsInCookieJarInfo.GetPotentiallyInvalidSignedInAccounts().size() >
           0) {
     // Reset dismissal count.
-    if (self.accessPoint ==
-        signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
+    if (self.accessPoint == signin_metrics::AccessPoint::kWebSignin) {
       self.userPrefService->SetInteger(prefs::kSigninWebSignDismissalCount, 0);
     }
     [self.delegate consistencyPromoSigninMediatorSignInDone:self

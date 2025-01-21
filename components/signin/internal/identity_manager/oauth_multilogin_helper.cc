@@ -298,7 +298,7 @@ void OAuthMultiloginHelper::StartSettingCookies(
           net::CookieOptions::SameSiteCookieContext::MakeInclusive());
       net::CookieInclusionStatus cookie_inclusion_status;
       cookie_inclusion_status.AddExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR);
+          net::CookieInclusionStatus::ExclusionReason::EXCLUDE_UNKNOWN_ERROR);
       cookie_manager->SetCanonicalCookie(
           cookie, net::cookie_util::SimulatedCookieSource(cookie, "https"),
           options,

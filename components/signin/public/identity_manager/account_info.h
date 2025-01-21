@@ -76,7 +76,7 @@ struct AccountInfo : public CoreAccountInfo {
   // token is updated or refreshed. This field is not consistently set on all
   // platforms.
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
+      signin_metrics::AccessPoint::kUnknown;
 
   AccountCapabilities capabilities;
   signin::Tribool is_child_account = signin::Tribool::kUnknown;

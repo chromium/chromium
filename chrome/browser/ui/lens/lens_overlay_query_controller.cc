@@ -135,6 +135,16 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
         }
       )");
 
+// Creates a request id with an invalid (negative) sequence id. This is used to
+// indicate that the request id is invalid, e.g. to indicate that there is no
+// valid interaction data associated with a text-only query in
+// IsCurrentInteractionSequence.
+std::unique_ptr<lens::LensOverlayRequestId> CreateInvalidRequestId() {
+  auto request_id = std::make_unique<lens::LensOverlayRequestId>();
+  request_id->set_sequence_id(-1);
+  return request_id;
+}
+
 lens::CoordinateType ConvertToServerCoordinateType(
     lens::mojom::CenterRotatedBox_CoordinateType type) {
   switch (type) {
@@ -413,8 +423,7 @@ void LensOverlayQueryController::StartQueryFlow(
 
 void LensOverlayQueryController::EndQuery() {
   ResetPageContentData();
-  gen204_controller_->OnQueryFlowEnd(
-      request_id_generator_->GetBase32EncodedAnalyticsId());
+  gen204_controller_->OnQueryFlowEnd(latest_encoded_analytics_id_);
   full_image_endpoint_fetcher_.reset();
   interaction_endpoint_fetcher_.reset();
   pending_interaction_callback_.Reset();
@@ -542,7 +551,7 @@ void LensOverlayQueryController::SendTextOnlyQuery(
   // should replace any in-flight interaction requests to cancel previously
   // issued fetches.
   latest_interaction_request_data_ = std::make_unique<LensServerFetchRequest>(
-      GetNextRequestId(RequestIdUpdateMode::kInteractionRequest),
+      CreateInvalidRequestId(),
       /*query_start_time_ms=*/base::TimeTicks::Now());
 
   // Add the start time to the query params now, so that any additional
@@ -593,8 +602,7 @@ void LensOverlayQueryController::SendMultimodalRequest(
 
 void LensOverlayQueryController::SendTaskCompletionGen204IfEnabled(
     lens::mojom::UserAction user_action) {
-  gen204_controller_->SendTaskCompletionGen204IfEnabled(
-      request_id_generator_->GetBase32EncodedAnalyticsId(), user_action);
+  SendTaskCompletionGen204IfEnabled(latest_encoded_analytics_id_, user_action);
 }
 
 void LensOverlayQueryController::SendSemanticEventGen204IfEnabled(
@@ -654,6 +662,13 @@ void LensOverlayQueryController::SendLatencyGen204IfEnabled(
       cluster_info_latency, encoded_analytics_id);
 }
 
+void LensOverlayQueryController::SendTaskCompletionGen204IfEnabled(
+    std::string encoded_analytics_id,
+    lens::mojom::UserAction user_action) {
+  gen204_controller_->SendTaskCompletionGen204IfEnabled(encoded_analytics_id,
+                                                        user_action);
+}
+
 LensOverlayQueryController::LensServerFetchRequest::LensServerFetchRequest(
     std::unique_ptr<lens::LensOverlayRequestId> request_id,
     base::TimeTicks query_start_time)
@@ -665,6 +680,7 @@ std::unique_ptr<lens::LensOverlayRequestId>
 LensOverlayQueryController::GetNextRequestId(RequestIdUpdateMode update_mode) {
   std::unique_ptr<lens::LensOverlayRequestId> request_id =
       request_id_generator_->GetNextRequestId(update_mode);
+  latest_encoded_analytics_id_ = request_id_generator_->GetBase32EncodedAnalyticsId();
   std::string serialized_request_id;
   CHECK(request_id->SerializeToString(&serialized_request_id));
   std::string encoded_request_id;
@@ -1516,7 +1532,9 @@ void LensOverlayQueryController::InteractionFetchResponseHandler(
   }
 
   // Attach the analytics id associated with the interaction request to the
-  // latency gen204 ping.
+  // latency gen204 ping. This may differ from latest_encoded_analytics_id_ if
+  // the user makes an objects request while the interaction request is in
+  // flight.
   std::string encoded_analytics_id = base32::Base32Encode(
       base::as_byte_span(
           latest_interaction_request_data_->request_id_.get()->analytics_id()),

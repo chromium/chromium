@@ -5826,7 +5826,7 @@ TEST_F(ManifestParserTest, LaunchHandlerParseRules) {
     auto& manifest = ParseManifest(R"({
       "launch_handler": {}
     })");
-    EXPECT_EQ(manifest->launch_handler->client_mode, ClientMode::kAuto);
+    EXPECT_EQ(manifest->launch_handler->client_mode, std::nullopt);
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -5837,7 +5837,7 @@ TEST_F(ManifestParserTest, LaunchHandlerParseRules) {
         "client_mode": []
       }
     })");
-    EXPECT_EQ(manifest->launch_handler->client_mode, ClientMode::kAuto);
+    EXPECT_EQ(manifest->launch_handler->client_mode, std::nullopt);
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -5848,7 +5848,7 @@ TEST_F(ManifestParserTest, LaunchHandlerParseRules) {
         "client_mode": "space"
       }
     })");
-    EXPECT_EQ(manifest->launch_handler->client_mode, ClientMode::kAuto);
+    EXPECT_EQ(manifest->launch_handler->client_mode, std::nullopt);
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("client_mode value 'space' ignored, unknown value.", errors()[0]);
   }

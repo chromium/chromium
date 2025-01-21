@@ -281,11 +281,11 @@ void TabGroupHeader::OnFocus() {
 
 void TabGroupHeader::UpdateTooltipText() {
   if (!title_->GetText().empty()) {
-    SetCachedTooltipText(l10n_util::GetStringFUTF16(
+    SetTooltipText(l10n_util::GetStringFUTF16(
         IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP, title_->GetText(),
         tab_slot_controller_->GetGroupContentString(group().value())));
   } else {
-    SetCachedTooltipText(l10n_util::GetStringFUTF16(
+    SetTooltipText(l10n_util::GetStringFUTF16(
         IDS_TAB_GROUPS_UNNAMED_GROUP_TOOLTIP,
         tab_slot_controller_->GetGroupContentString(group().value())));
   }

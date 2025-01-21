@@ -42,6 +42,7 @@ suite('LoadingScreen', () => {
       isSpeechTreeInitialized: true,
       isAudioCurrentlyPlaying: true,
       hasSpeechBeenTriggered: true,
+      isSpeechBeingRepositioned: false,
     };
 
     app.showLoading();

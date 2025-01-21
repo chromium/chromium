@@ -246,7 +246,7 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
   BookmarkFolderButton(const BookmarkFolderButton&) = delete;
   BookmarkFolderButton& operator=(const BookmarkFolderButton&) = delete;
 
-  void UpdateCachedTooltipText() { SetCachedTooltipText(GetAccessibleText()); }
+  void UpdateCachedTooltipText() { SetTooltipText(GetAccessibleText()); }
 
   bool OnMousePressed(const ui::MouseEvent& event) override {
     if (event.IsOnlyLeftMouseButton()) {
@@ -2212,7 +2212,8 @@ void BookmarkBarView::PerformDrop(
       BookmarkUIOperationsHelperMergedSurfaces(bookmark_service_,
                                                &parent_folder)
           .DropBookmarks(browser_->profile(), data, index, copy,
-                         chrome::BookmarkReorderDropTarget::kBookmarkBarView);
+                         chrome::BookmarkReorderDropTarget::kBookmarkBarView,
+                         browser_);
 }
 
 int BookmarkBarView::GetDropLocationModelIndexForTesting() const {

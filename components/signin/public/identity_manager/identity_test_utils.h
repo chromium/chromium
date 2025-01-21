@@ -174,7 +174,7 @@ struct AccountAvailabilityOptions {
       nullptr;
 
   const signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
+      signin_metrics::AccessPoint::kSettings;
 
   explicit AccountAvailabilityOptions(std::string_view email);
   ~AccountAvailabilityOptions();
@@ -258,7 +258,7 @@ class AccountAvailabilityOptionsBuilder {
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   bool with_cookie_ = false;
   signin_metrics::AccessPoint access_point_ =
-      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
+      signin_metrics::AccessPoint::kSettings;
 };
 
 // Sets up an account identified by `email` according to options provided. See

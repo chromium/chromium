@@ -503,9 +503,9 @@ TEST_F(StyledLabelTest, StyledRangeWithTooltip) {
             styled->children()[3]->x());
 
   std::u16string tooltip =
-      styled->children()[1]->GetTooltipText(gfx::Point(1, 1));
+      styled->children()[1]->GetRenderedTooltipText(gfx::Point(1, 1));
   EXPECT_EQ(u"tooltip", tooltip);
-  tooltip = styled->children()[2]->GetTooltipText(gfx::Point(1, 1));
+  tooltip = styled->children()[2]->GetRenderedTooltipText(gfx::Point(1, 1));
   EXPECT_EQ(u"tooltip", tooltip);
 }
 

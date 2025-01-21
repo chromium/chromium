@@ -81,6 +81,7 @@ interface RestrictedCookieManager {
       StorageAccessApiStatus storage_access_api_status,
       CookieManagerGetOptions options,
       bool is_ad_tagged,
+      bool apply_devtools_overrides,
       // Proxied restricted cookie managers need a way to signal to the
       // restricted cookie manager that we need to filter out 3PCs.
       // This is because we know of at least one case where this can
@@ -98,7 +99,8 @@ interface RestrictedCookieManager {
                      SiteForCookies site_for_cookies,
                      url.mojom.Origin top_frame_origin,
                      StorageAccessApiStatus storage_access_api_status,
-                     CookieInclusionStatus status) => (bool success);
+                     CookieInclusionStatus status,
+                     bool apply_devtools_overrides) => (bool success);
 
   // Subscribes to changes in the cookies transmitted in a request to an URL.
   //
@@ -120,6 +122,7 @@ interface RestrictedCookieManager {
   SetCookieFromString(url.mojom.Url url, SiteForCookies site_for_cookies,
                       url.mojom.Origin top_frame_origin,
                       StorageAccessApiStatus storage_access_api_status,
+                      bool apply_devtools_overrides,
                       string cookie) => ();
 
   // Used to get cookies for the given URL. Cookies that are blocked by user
@@ -148,6 +151,7 @@ interface RestrictedCookieManager {
                    StorageAccessApiStatus storage_access_api_status,
                    bool get_version_shared_memory,
                    bool is_ad_tagged,
+                   bool apply_devtools_overrides,
                    // Proxied restricted cookie managers need a way to signal to
                    // the restricted cookie manager that we need to filter out
                    // 3PCs.
@@ -170,6 +174,7 @@ interface RestrictedCookieManager {
       url.mojom.Url url,
       SiteForCookies site_for_cookies,
       url.mojom.Origin top_frame_origin,
-      StorageAccessApiStatus storage_access_api_status)
+      StorageAccessApiStatus storage_access_api_status,
+      bool apply_devtools_overrides)
       => (bool cookies_enabled);
 };

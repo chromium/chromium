@@ -692,14 +692,13 @@ void HoldingSpaceItemChipView::UpdateSecondaryAction() {
 }
 
 void HoldingSpaceItemChipView::UpdateTooltipText() {
-  constexpr gfx::Point p;
-  std::u16string primary_tooltip = primary_label_->GetTooltipText(p);
-  std::u16string secondary_tooltip = secondary_label_->GetTooltipText(p);
+  std::u16string primary_tooltip = primary_label_->GetTooltipText();
+  std::u16string secondary_tooltip = secondary_label_->GetTooltipText();
 
   // If there is neither a primary nor a secondary tooltip which should be
   // shown, then there is no tooltip to be shown at all.
   if (primary_tooltip.empty() && secondary_tooltip.empty()) {
-    SetCachedTooltipText(std::u16string());
+    SetTooltipText(std::u16string());
     return;
   }
 
@@ -718,13 +717,13 @@ void HoldingSpaceItemChipView::UpdateTooltipText() {
   // If there still is no secondary tooltip, only the primary tooltip should be
   // shown. This would occur if there is no visible `secondary_label_`.
   if (secondary_tooltip.empty()) {
-    SetCachedTooltipText(primary_tooltip);
+    SetTooltipText(primary_tooltip);
     return;
   }
 
   // Otherwise, concatenate and return the primary and secondary tooltips. This
   // will look something of the form: "filename.txt, Paused, 10/100 MB".
-  SetCachedTooltipText(l10n_util::GetStringFUTF16(
+  SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_ASH_HOLDING_SPACE_ITEM_A11Y_NAME_AND_TOOLTIP, primary_tooltip,
       secondary_tooltip));
 }

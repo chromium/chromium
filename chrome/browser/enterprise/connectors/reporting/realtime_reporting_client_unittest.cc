@@ -27,6 +27,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/test_event_router.h"
+#include "net/base/network_interfaces.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -290,6 +291,18 @@ TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadFails) {
       "Enterprise.ReportingEventUploadFailure",
       EnterpriseReportingEventType::kExtensionInstallEvent, 1);
   histogram_.ExpectTotalCount("Enterprise.ReportingEventUploadSuccess", 0);
+}
+
+TEST_F(RealtimeReportingClientUmaTest, TestEventLocalIp) {
+  base::Value::List local_ips = reporting_client_->GetLocalIpAddresses();
+  EXPECT_FALSE(local_ips.empty());
+  for (const auto& ip_address : local_ips) {
+    std::string_view str_view(ip_address.GetString());
+    std::optional<net::IPAddress> local_ip =
+        net::IPAddress::FromIPLiteral(str_view);
+    EXPECT_TRUE(local_ip->IsValid());
+    EXPECT_FALSE(local_ip->IsZero());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All, RealtimeReportingClientUmaTest, testing::Bool());

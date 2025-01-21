@@ -259,10 +259,10 @@ void HoverHighlightView::Reset() {
 
 void HoverHighlightView::OnSetTooltipText(const std::u16string& tooltip_text) {
   if (text_label_) {
-    text_label_->SetTooltipText(tooltip_text);
+    text_label_->SetCustomTooltipText(tooltip_text);
   }
   if (sub_text_label_) {
-    sub_text_label_->SetTooltipText(tooltip_text);
+    sub_text_label_->SetCustomTooltipText(tooltip_text);
   }
   if (left_view_) {
     DCHECK(views::IsViewClass<views::ImageView>(left_view_));

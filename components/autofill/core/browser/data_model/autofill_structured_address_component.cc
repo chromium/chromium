@@ -99,12 +99,6 @@ FieldType AddressComponent::GetStorageType() const {
   return storage_type_;
 }
 
-FieldType AddressComponent::GetFallbackType(FieldType field_type) const {
-  CHECK(IsSupportedType(field_type));
-  // TODO(crbug.com/40275657): Add logic for i18n fallback types.
-  return field_type;
-}
-
 std::string AddressComponent::GetStorageTypeName() const {
   return FieldTypeToString(storage_type_);
 }
@@ -460,12 +454,6 @@ VerificationStatus AddressComponent::GetVerificationStatusForType(
   const AddressComponent* node_for_type = GetNodeForType(field_type);
   return node_for_type ? node_for_type->GetVerificationStatus()
                        : VerificationStatus::kNoStatus;
-}
-
-FieldType AddressComponent::GetFallbackTypeForType(FieldType field_type) const {
-  const AddressComponent* node_for_type = GetNodeForType(field_type);
-  return node_for_type ? node_for_type->GetFallbackType(field_type)
-                       : field_type;
 }
 
 bool AddressComponent::UnsetValueForTypeIfSupported(FieldType field_type) {

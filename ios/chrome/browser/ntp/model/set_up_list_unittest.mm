@@ -89,10 +89,9 @@ class SetUpListTest : public PlatformTest {
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(identity);
-    auth_service_->SignIn(identity,
-                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-    auth_service_->GrantSyncConsent(
-        identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+    auth_service_->SignIn(identity, signin_metrics::AccessPoint::kUnknown);
+    auth_service_->GrantSyncConsent(identity,
+                                    signin_metrics::AccessPoint::kUnknown);
 
     profile_manager_.GetProfileAttributesStorage()
         ->UpdateAttributesForProfileWithName(
@@ -100,7 +99,7 @@ class SetUpListTest : public PlatformTest {
             base::BindOnce(
                 [](id<SystemIdentity> identity, ProfileAttributesIOS attr) {
                   attr.SetAuthenticationInfo(
-                      base::SysNSStringToUTF8(identity.gaiaID),
+                      GaiaId(identity.gaiaID),
                       base::SysNSStringToUTF8(identity.userEmail));
                   return attr;
                 },

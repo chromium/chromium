@@ -8,6 +8,7 @@
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/ios/device_accounts_provider.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -76,7 +77,7 @@ TEST_F(DeviceAccountsProviderImplTest, TestFetchWithUnknownIdentity) {
         run_loop->Quit();
       },
       &run_loop);
-  provider->GetAccessToken("UnknownGaiaID", kClientID, scopes,
+  provider->GetAccessToken(GaiaId("UnknownGaiaID"), kClientID, scopes,
                            std::move(callback));
   run_loop.Run();
 }
@@ -95,7 +96,7 @@ TEST_F(DeviceAccountsProviderImplTest, TestFetchWithFakeIdentity) {
         run_loop->Quit();
       },
       &run_loop);
-  std::string gaia_id = base::SysNSStringToUTF8(fake_identity.gaiaID);
+  GaiaId gaia_id(fake_identity.gaiaID);
   provider->GetAccessToken(gaia_id, kClientID, scopes, std::move(callback));
   run_loop.Run();
 }

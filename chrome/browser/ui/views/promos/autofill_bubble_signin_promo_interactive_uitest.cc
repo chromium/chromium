@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
 
   // Simulate a sign in event with the correct access point, which should call
   // `SelectTypeAndMigrateLocalDataItemsWhenActive()`.
-  SignIn(signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
+  SignIn(signin_metrics::AccessPoint::kPasswordBubble);
 
   // Check that the sign in was successful.
   EXPECT_TRUE(IsSignedIn());
@@ -273,23 +273,21 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
   // Signin metrics - Offered/Started/Completed are recorded, but no values for
   // WebSignin (WithDefault).
   histogram_tester.ExpectBucketCount(
-      "Signin.SignIn.Offered",
-      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
+      "Signin.SignIn.Offered", signin_metrics::AccessPoint::kPasswordBubble, 1);
   histogram_tester.ExpectBucketCount(
       "Signin.SignIn.Offered.NewAccountNoExistingAccount",
-      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
+      signin_metrics::AccessPoint::kPasswordBubble, 1);
   histogram_tester.ExpectTotalCount("Signin.SignIn.Offered.WithDefault", 0);
   histogram_tester.ExpectBucketCount(
-      "Signin.SignIn.Started",
-      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
+      "Signin.SignIn.Started", signin_metrics::AccessPoint::kPasswordBubble, 1);
   histogram_tester.ExpectBucketCount(
-      "Signin.SignIn.Completed",
-      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
+      "Signin.SignIn.Completed", signin_metrics::AccessPoint::kPasswordBubble,
+      1);
   histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
 
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.Accepted",
-      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
+      signin_metrics::AccessPoint::kPasswordBubble, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
@@ -302,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
       identity_manager(),
       signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
           .WithCookie()
-          .WithAccessPoint(signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN)
+          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
           .Build("test@email.com"));
   ExtendAccountInfo(info);
 
@@ -348,27 +346,25 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
 
   // Signin metrics - WebSignin (WithDefault) metrics are also recorded.
   histogram_tester.ExpectBucketCount(
-      "Signin.SignIn.Offered",
-      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
+      "Signin.SignIn.Offered", signin_metrics::AccessPoint::kPasswordBubble, 1);
   histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
   histogram_tester.ExpectBucketCount(
-      "Signin.SignIn.Completed",
-      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
+      "Signin.SignIn.Completed", signin_metrics::AccessPoint::kPasswordBubble,
+      1);
   histogram_tester.ExpectBucketCount(
-      "Signin.SignIn.Offered",
-      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
+      "Signin.SignIn.Offered", signin_metrics::AccessPoint::kPasswordBubble, 1);
   histogram_tester.ExpectBucketCount(
       "Signin.SignIn.Offered.WithDefault",
-      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
+      signin_metrics::AccessPoint::kPasswordBubble, 1);
   histogram_tester.ExpectTotalCount(
       "Signin.SignIn.Offered.NewAccountNoExistingAccount", 0);
   histogram_tester.ExpectBucketCount(
       "Signin.WebSignin.SourceToChromeSignin",
-      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
+      signin_metrics::AccessPoint::kPasswordBubble, 1);
 
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.Accepted",
-      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
+      signin_metrics::AccessPoint::kPasswordBubble, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
@@ -429,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
   identity_manager()->GetAccountsMutator()->AddOrUpdateAccount(
       info.gaia, info.email, "dummy_refresh_token",
       /*is_under_advanced_protection=*/false,
-      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE,
+      signin_metrics::AccessPoint::kPasswordBubble,
       signin_metrics::SourceForRefreshTokenOperation::
           kDiceResponseHandler_Signin);
 
@@ -447,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
 
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.Accepted",
-      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
+      signin_metrics::AccessPoint::kPasswordBubble, 1);
 }
 
 /////////////////////////////////////////////////////////////////
@@ -496,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
 
   // Simulate a sign in event with the correct access point, which will move the
   // address.
-  SignIn(signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE);
+  SignIn(signin_metrics::AccessPoint::kAddressBubble);
 
   // Check that the sign in was successful.
   EXPECT_TRUE(IsSignedIn());
@@ -504,23 +500,21 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
   // Signin metrics - Offered/Started/Completed are recorded, but no values for
   // WebSignin (WithDefault).
   histogram_tester.ExpectBucketCount(
-      "Signin.SignIn.Offered",
-      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+      "Signin.SignIn.Offered", signin_metrics::AccessPoint::kAddressBubble, 1);
   histogram_tester.ExpectBucketCount(
       "Signin.SignIn.Offered.NewAccountNoExistingAccount",
-      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+      signin_metrics::AccessPoint::kAddressBubble, 1);
   histogram_tester.ExpectTotalCount("Signin.SignIn.Offered.WithDefault", 0);
   histogram_tester.ExpectBucketCount(
-      "Signin.SignIn.Started",
-      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+      "Signin.SignIn.Started", signin_metrics::AccessPoint::kAddressBubble, 1);
   histogram_tester.ExpectBucketCount(
-      "Signin.SignIn.Completed",
-      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+      "Signin.SignIn.Completed", signin_metrics::AccessPoint::kAddressBubble,
+      1);
   histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
 
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.Accepted",
-      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+      signin_metrics::AccessPoint::kAddressBubble, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
@@ -533,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
       identity_manager(),
       signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
           .WithCookie()
-          .WithAccessPoint(signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN)
+          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
           .Build("test@email.com"));
   ExtendAccountInfo(info);
 
@@ -578,27 +572,25 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
 
   // Signin metrics - WebSignin (WithDefault) metrics are also recorded.
   histogram_tester.ExpectBucketCount(
-      "Signin.SignIn.Offered",
-      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+      "Signin.SignIn.Offered", signin_metrics::AccessPoint::kAddressBubble, 1);
   histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
   histogram_tester.ExpectBucketCount(
-      "Signin.SignIn.Completed",
-      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+      "Signin.SignIn.Completed", signin_metrics::AccessPoint::kAddressBubble,
+      1);
   histogram_tester.ExpectBucketCount(
-      "Signin.SignIn.Offered",
-      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+      "Signin.SignIn.Offered", signin_metrics::AccessPoint::kAddressBubble, 1);
   histogram_tester.ExpectBucketCount(
       "Signin.SignIn.Offered.WithDefault",
-      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+      signin_metrics::AccessPoint::kAddressBubble, 1);
   histogram_tester.ExpectTotalCount(
       "Signin.SignIn.Offered.NewAccountNoExistingAccount", 0);
   histogram_tester.ExpectBucketCount(
       "Signin.WebSignin.SourceToChromeSignin",
-      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+      signin_metrics::AccessPoint::kAddressBubble, 1);
 
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.Accepted",
-      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+      signin_metrics::AccessPoint::kAddressBubble, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
@@ -657,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
   identity_manager()->GetAccountsMutator()->AddOrUpdateAccount(
       info.gaia, info.email, "dummy_refresh_token",
       /*is_under_advanced_protection=*/false,
-      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE,
+      signin_metrics::AccessPoint::kAddressBubble,
       signin_metrics::SourceForRefreshTokenOperation::
           kDiceResponseHandler_Signin);
 
@@ -675,7 +667,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
 
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.Accepted",
-      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+      signin_metrics::AccessPoint::kAddressBubble, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
@@ -706,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
 
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.DismissedEscapeKey",
-      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+      signin_metrics::AccessPoint::kAddressBubble, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
@@ -737,5 +729,5 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
 
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.DismissedCloseButton",
-      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+      signin_metrics::AccessPoint::kAddressBubble, 1);
 }

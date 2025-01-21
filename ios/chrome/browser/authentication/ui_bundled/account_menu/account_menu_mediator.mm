@@ -482,7 +482,7 @@
     // restart using the account menu.
     _authenticationService->SignIn(
         previousIdentity,
-        signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH);
+        signin_metrics::AccessPoint::kAccountMenuFailedSwitch);
     self.userInteractionsBlocked = NO;
     [self restartUpdates];
   } else {

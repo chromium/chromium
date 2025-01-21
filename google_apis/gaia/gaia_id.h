@@ -30,14 +30,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaId {
 
   // Constructs an empty instance.
   GaiaId() = default;
-  // Temporarily allow implicit conversion on iOS to allow splitting code
-  // changes.
-  // TODO(crbug.com/380416867): Make the constructor explicit on iOS tests too.
-#if BUILDFLAG(IS_IOS) && defined(UNIT_TEST)
-  GaiaId(std::string value);
-#else
+  // Explicit construction from std::string.
   explicit GaiaId(std::string value);
-#endif  // BUILDFLAG(IS_IOS) && defined(UNIT_TEST)
   // On iOS, allow direct construction from NSString, which is fairly common.
 #if BUILDFLAG(IS_IOS) && defined(__OBJC__)
   explicit GaiaId(NSString* value);
@@ -48,21 +42,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaId {
 
   GaiaId& operator=(const GaiaId&) = default;
   GaiaId& operator=(GaiaId&&) noexcept = default;
-
-#if BUILDFLAG(IS_IOS) && defined(UNIT_TEST)
-  // Temporary implicit conversion to allow splitting code changes.
-  // TODO(crbug.com/380416867): Remove implicit conversions.
-  GaiaId(const char gaia_id[]) { id_ = gaia_id; }
-  operator const std::string&() const { return id_; }
-  operator std::string_view() const { return id_; }
-
-  // Convenience functions to allow a more gradual adoption of this class where
-  // std::string was used previously.
-  // TODO(crbug.com/380416867): Remove convenience functions.
-  const char* c_str() const { return id_.c_str(); }
-  std::string::const_iterator begin() const { return id_.begin(); }
-  std::string::const_iterator end() const { return id_.end(); }
-#endif  // BUILDFLAG(IS_IOS) && defined(UNIT_TEST)
 
   // Checks if the ID is valid or not.
   bool empty() const;

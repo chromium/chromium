@@ -146,7 +146,6 @@ inline constexpr char kShortName[] = "short_name";
 inline constexpr char kSockets[] = "sockets";
 inline constexpr char kStorageManagedSchema[] = "storage.managed_schema";
 inline constexpr char kSuggestedKey[] = "suggested_key";
-inline constexpr char kSystemIndicator[] = "system_indicator";
 inline constexpr char kTheme[] = "theme";
 inline constexpr char kThemeColors[] = "colors";
 inline constexpr char kThemeDisplayProperties[] = "properties";
@@ -589,8 +588,6 @@ inline constexpr char16_t kInvalidShortName[] =
     u"Invalid value for 'short_name'.";
 inline constexpr char kInvalidStartupOverrideURL[] =
     "Invalid value for overriding startup URL: '[*]'.";
-inline constexpr char16_t kInvalidSystemIndicator[] =
-    u"Invalid value for 'system_indicator'.";
 inline constexpr char16_t kInvalidTheme[] = u"Invalid value for 'theme'.";
 inline constexpr char16_t kInvalidThemeColors[] =
     u"Invalid value for theme colors - colors must be integers";

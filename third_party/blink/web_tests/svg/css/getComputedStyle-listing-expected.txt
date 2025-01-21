@@ -56,6 +56,8 @@ animation-range-end: normal
 animation-range-start: normal
 animation-timeline: auto
 animation-timing-function: ease
+animation-trigger-timeline: auto
+animation-trigger-type: once
 app-region: none
 appearance: none
 backdrop-filter: none

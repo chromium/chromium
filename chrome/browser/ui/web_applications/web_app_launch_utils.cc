@@ -893,9 +893,10 @@ void RecordAppWindowLaunchMetric(Profile* profile,
 
   // Reparenting launches don't respect the launch_handler setting.
   if (launch_source != apps::LaunchSource::kFromReparenting) {
-    base::UmaHistogramEnumeration(
-        "Launch.WebAppLaunchHandlerClientMode",
-        web_app->launch_handler().value_or(LaunchHandler()).client_mode);
+    base::UmaHistogramEnumeration("Launch.WebAppLaunchHandlerClientMode",
+                                  web_app->launch_handler()
+                                      .value_or(LaunchHandler())
+                                      .parsed_client_mode());
   }
 
   RecordDiyOrCraftedAppLaunch(*web_app);
@@ -931,7 +932,9 @@ void RecordAppTabLaunchMetric(Profile* profile,
   if (launch_source != apps::LaunchSource::kFromReparenting) {
     base::UmaHistogramEnumeration(
         "Launch.BrowserTab.WebAppLaunchHandlerClientMode",
-        web_app->launch_handler().value_or(LaunchHandler()).client_mode);
+        web_app->launch_handler()
+            .value_or(LaunchHandler())
+            .parsed_client_mode());
   }
 
   RecordDiyOrCraftedAppLaunch(*web_app);
@@ -1083,7 +1086,7 @@ ClientModeAndBrowser GetEffectiveClientModeAndBrowserForCapturing(
   result.effective_client_mode = registrar.GetAppById(app_id)
                                      ->launch_handler()
                                      .value_or(LaunchHandler())
-                                     .client_mode;
+                                     .parsed_client_mode();
   if (result.effective_client_mode == LaunchHandler::ClientMode::kAuto) {
     result.effective_client_mode = LaunchHandler::ClientMode::kNavigateNew;
   }

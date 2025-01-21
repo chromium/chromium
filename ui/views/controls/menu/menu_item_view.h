@@ -138,7 +138,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   ~MenuItemView() override;
 
   // Overridden from View:
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetRenderedTooltipText(const gfx::Point& p) const override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   FocusBehavior GetFocusBehavior() const override;
 

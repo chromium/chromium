@@ -317,8 +317,10 @@ def _run_gn_gen(out_dir: pathlib.Path) -> float:
     return _run_and_time_cmd([str(_GN_PATH), 'gen', '-C', str(out_dir)])
 
 
-def _compile(out_dir: pathlib.Path, target: str) -> float:
+def _compile(out_dir: pathlib.Path, target: str, skip_re_cache: bool) -> float:
     cmd = gn_helpers.CreateBuildCommand(str(out_dir))
+    if skip_re_cache:
+        cmd += ['-re_cache_enable_read=false']
     return _run_and_time_cmd(cmd + [target])
 
 
@@ -337,10 +339,11 @@ def _run_install(out_dir: pathlib.Path, target: str,
     return _run_and_time_cmd(cmd)
 
 
-def _run_and_maybe_install(
-        out_dir: pathlib.Path, target: str,
-        emulator: Optional[device_utils.DeviceUtils]) -> float:
-    total_time = _compile(out_dir, target)
+def _run_and_maybe_install(out_dir: pathlib.Path,
+                           target: str,
+                           emulator: Optional[device_utils.DeviceUtils],
+                           skip_re_cache: bool = False) -> float:
+    total_time = _compile(out_dir, target, skip_re_cache)
     if emulator:
         total_time += _run_install(out_dir, target, emulator.serial)
     return total_time
@@ -366,7 +369,12 @@ def _run_benchmark(benchmark: Benchmark, out_dir: pathlib.Path, target: str,
                 f'Need to update {benchmark.from_string} in '
                 f'{benchmark.change_file}')
             f.write(new_content)
-        return _run_and_maybe_install(out_dir, target, emulator)
+        # The actual benchmark run needs to be more deterministic, and RBE cache
+        # hits make the timing non-deterministic: https://crbug.com/391348954
+        return _run_and_maybe_install(out_dir,
+                                      target,
+                                      emulator,
+                                      skip_re_cache=True)
 
 
 def _format_result(time_taken: List[float]) -> str:

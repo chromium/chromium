@@ -5,8 +5,6 @@ include_rules = [
   "+components/plus_addresses/features.h",
   "+components/plus_addresses/grit/plus_addresses_strings.h",
   "+components/ukm/ios",
-  "+ios/chrome/browser/shared/public/commands/snackbar_commands.h",
-  "+ios/chrome/browser/shared/public/features/features.h",
   "+ios/web/common",
   "+ios/web/public",
   "+services/metrics/public",

@@ -268,11 +268,9 @@
       _promoAction == signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT
           ? PostSignInActionSet({PostSignInAction::kShowSnackbar})
           : PostSignInActionSet({PostSignInAction::kNone});
-  if (self.accessPoint ==
-      signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER) {
+  if (self.accessPoint == signin_metrics::AccessPoint::kBookmarkManager) {
     postSigninActions.Put(PostSignInAction::kEnableUserSelectableTypeBookmarks);
-  } else if (self.accessPoint ==
-             signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST) {
+  } else if (self.accessPoint == signin_metrics::AccessPoint::kReadingList) {
     postSigninActions.Put(
         PostSignInAction::kEnableUserSelectableTypeReadingList);
   }

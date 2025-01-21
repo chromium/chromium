@@ -987,10 +987,10 @@ void TabSearchPageHandler::TriggerSignIn() {
   if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           primary_account_id)) {
     signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
-        profile, signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION);
+        profile, signin_metrics::AccessPoint::kTabOrganization);
   } else {
     signin_ui_util::ShowSigninPromptFromPromo(
-        profile, signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION);
+        profile, signin_metrics::AccessPoint::kTabOrganization);
   }
 }
 

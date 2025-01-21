@@ -5,15 +5,18 @@
 import 'chrome://compare/comparison_table_list_item.js';
 
 import {ProductSpecificationsBrowserProxyImpl} from '//resources/cr_components/commerce/product_specifications_browser_proxy.js';
+import {ShoppingServiceBrowserProxyImpl} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
+import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import type {ComparisonTableListItemElement} from 'chrome://compare/comparison_table_list_item.js';
 import {ShowSetDisposition} from 'chrome://compare/product_specifications.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -29,11 +32,16 @@ suite('ComparisonTableListItemTest', () => {
   let itemElement: ComparisonTableListItemElement;
   const productSpecsProxy: TestProductSpecificationsBrowserProxy =
       new TestProductSpecificationsBrowserProxy();
+  const shoppingServiceApi =
+      TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
 
   const TABLE_NAME = 'abc';
   const TABLE_UUID = {value: '123'};
-  const TABLE_NUM_URLS = 3;
-  const TABLE_IMAGE_URL = {url: 'http://example.com/image.png'};
+  const TABLE_URLS = [
+    {url: 'https://example1.com'},
+    {url: 'https://example2.com'},
+    {url: 'https://example3.com'},
+  ];
   const TABLE_URL = {url: `chrome://compare/?id=${TABLE_UUID.value}`};
 
   function getTrailingIconButton() {
@@ -49,6 +57,22 @@ suite('ComparisonTableListItemTest', () => {
     return checkbox;
   }
 
+  async function createItemElement() {
+    const imageUpdatedPromise =
+        eventToPromise('image-updated-for-testing', document);
+    const numItemsUpdatedPromise =
+        eventToPromise('num-items-updated-for-testing', document);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    itemElement = document.createElement('comparison-table-list-item');
+    itemElement.name = TABLE_NAME;
+    itemElement.uuid = TABLE_UUID;
+    itemElement.urls = TABLE_URLS;
+    document.body.appendChild(itemElement);
+
+    await Promise.all([imageUpdatedPromise, numItemsUpdatedPromise]);
+  }
+
   setup(async () => {
     loadTimeData.overrideValues({
       'tableListItemTitle': `Compare ${TABLE_NAME}`,
@@ -60,26 +84,74 @@ suite('ComparisonTableListItemTest', () => {
     productSpecsProxy.reset();
     ProductSpecificationsBrowserProxyImpl.setInstance(productSpecsProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    itemElement = document.createElement('comparison-table-list-item');
-    itemElement.name = TABLE_NAME;
-    itemElement.uuid = TABLE_UUID;
-    itemElement.numUrls = TABLE_NUM_URLS;
-    itemElement.imageUrl = TABLE_IMAGE_URL;
-    document.body.appendChild(itemElement);
-
-    await microtasksFinished();
+    shoppingServiceApi.reset();
+    shoppingServiceApi.setResultMapperFor(
+        'getProductInfoForUrl', (url: Url) => {
+          return Promise.resolve({
+            productInfo: {
+              imageUrl: {url: `${url.url}/image.png`},
+            },
+          });
+        });
+    ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
   });
 
   test('name, link, number of URLS, and image are displayed', async () => {
+    await createItemElement();
     const urlListItem = itemElement.$.item;
 
     assertStringContains(urlListItem.title, TABLE_NAME);
-    assertEquals(TABLE_URL.url, urlListItem.url);
+    assertEquals(TABLE_URL.url, urlListItem.description);
     assertTrue(!!itemElement.$.numItems.textContent);
     assertStringContains(
-        itemElement.$.numItems.textContent, `${TABLE_NUM_URLS}`);
-    assertTrue(urlListItem.imageUrls.includes(TABLE_IMAGE_URL.url));
+        itemElement.$.numItems.textContent, `${TABLE_URLS.length}`);
+    assertTrue(
+        urlListItem.imageUrls.includes(`${TABLE_URLS[0]!.url}/image.png`));
+  });
+
+  test('first available product image is used', async () => {
+    shoppingServiceApi.setResultMapperFor(
+        'getProductInfoForUrl', (url: Url) => {
+          // First product has no image.
+          if (url.url === TABLE_URLS[0]!.url) {
+            return {
+              productInfo: {
+                imageUrl: '',
+              },
+            };
+          }
+
+          // Other products have an image.
+          return Promise.resolve({
+            productInfo: {
+              imageUrl: {url: `${url.url}/image.png`},
+            },
+          });
+        });
+    await createItemElement();
+    const urlListItem = itemElement.$.item;
+
+    // Second product image should be used.
+    assertTrue(
+        urlListItem.imageUrls.includes(`${TABLE_URLS[1]!.url}/image.png`));
+  });
+
+  test('favicon is used if no product image is available', async () => {
+    shoppingServiceApi.setResultMapperFor('getProductInfoForUrl', () => {
+      // No products have an image.
+      return Promise.resolve({
+        productInfo: {
+          imageUrl: '',
+        },
+      });
+    });
+    await createItemElement();
+    const urlListItem = itemElement.$.item;
+
+    // If image URL is empty but URL is not, the favicon of the URL is
+    // displayed.
+    assertEquals(0, urlListItem.imageUrls.length);
+    assertEquals(TABLE_URLS[0]!.url, urlListItem.url);
   });
 
   test('click emits event with UUID', async () => {

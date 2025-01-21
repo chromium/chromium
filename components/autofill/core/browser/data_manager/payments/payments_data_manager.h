@@ -257,7 +257,10 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Returns the unlinked buy-now-pay-later issuers. This is a list of BNPL
   // issuers that are available to be used but have NOT been linked to the
   // payments account by the user.
-  const std::vector<BnplIssuer>& GetUnlinkedBnplIssuers() const;
+  base::span<const BnplIssuer> GetUnlinkedBnplIssuers() const;
+
+  // Returns all BNPL issuers, both linked and unlinked.
+  std::vector<BnplIssuer> GetBnplIssuers() const;
 
   // Adds `iban` to the web database as a local IBAN. Returns the guid of
   // `iban` if the add is successful, or an empty string otherwise.

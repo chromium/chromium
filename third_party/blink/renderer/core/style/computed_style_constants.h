@@ -521,6 +521,13 @@ enum class TryTactic : uint8_t {
   kFlipStart,
 };
 
+enum class EAnimationTriggerType : uint8_t {
+  kOnce,
+  kRepeat,
+  kAlternate,
+  kState,
+};
+
 // TODO(crbug.com/332933527): Support anchors-valid.
 static const size_t kPositionVisibilityBits = 2;
 enum class PositionVisibility : uint8_t {

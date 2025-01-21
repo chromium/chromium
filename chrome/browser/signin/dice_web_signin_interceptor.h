@@ -397,7 +397,7 @@ class DiceWebSigninInterceptor : public KeyedService,
     std::optional<WebSigninInterceptor::SigninInterceptionType>
         interception_type_;
     signin_metrics::AccessPoint access_point_ =
-        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
+        signin_metrics::AccessPoint::kUnknown;
     std::optional<ShouldShowChromeSigninBubbleWithReason>
         should_show_chrome_signin_bubble_;
 

@@ -95,18 +95,18 @@
         "android-15-x64-rel": {
             "android_browsertests": {
                 "debug": {
-                    "avg_num_builds_per_peak_hour": 69,
-                    "estimated_bot_hour_delta": -35.42,
-                    "prev_avg_pending_time_sec": 12.3,
+                    "avg_num_builds_per_peak_hour": 90,
+                    "estimated_bot_hour_delta": 0.6,
+                    "prev_avg_pending_time_sec": 11.5,
                     "prev_p50_pending_time_sec": 1.0,
-                    "prev_p90_pending_time_sec": 29.0,
-                    "prev_percentile_duration_minutes": 12.41,
-                    "prev_shard_count": 14,
-                    "simulated_max_shard_duration": 14.29,
-                    "test_overhead_min": 7.7,
+                    "prev_p90_pending_time_sec": 34.0,
+                    "prev_percentile_duration_minutes": 17.69,
+                    "prev_shard_count": 10,
+                    "simulated_max_shard_duration": 14.78,
+                    "test_overhead_min": 0.2,
                     "try_builder": "android-x64-rel"
                 },
-                "shards": 10
+                "shards": 12
             },
             "components_browsertests": {
                 "debug": {
@@ -484,6 +484,21 @@
                     "try_builder": "linux-rel"
                 },
                 "shards": 2
+            },
+            "headless_shell_wpt_tests": {
+                "debug": {
+                    "avg_num_builds_per_peak_hour": 87,
+                    "estimated_bot_hour_delta": 5.37,
+                    "prev_avg_pending_time_sec": 20.1,
+                    "prev_p50_pending_time_sec": 1.0,
+                    "prev_p90_pending_time_sec": 74.0,
+                    "prev_percentile_duration_minutes": 16.02,
+                    "prev_shard_count": 18,
+                    "simulated_max_shard_duration": 14.6,
+                    "test_overhead_min": 1.85,
+                    "try_builder": "linux-rel"
+                },
+                "shards": 20
             },
             "interactive_ui_tests": {
                 "debug": {

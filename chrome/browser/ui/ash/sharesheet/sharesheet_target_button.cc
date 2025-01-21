@@ -147,7 +147,7 @@ void SharesheetTargetButton::SetLabelProperties(views::Label* label) {
   label->SetMultiLine(true);
   label->SetMaximumWidth(kButtonTextMaxWidth);
   label->SetHandlesTooltips(true);
-  label->SetTooltipText(label->GetText());
+  label->SetCustomTooltipText(label->GetText());
   label->SetAutoColorReadabilityEnabled(false);
   label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
 }

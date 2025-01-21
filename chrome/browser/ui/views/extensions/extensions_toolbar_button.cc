@@ -226,7 +226,7 @@ void ExtensionsToolbarButton::UpdateCachedTooltipText() {
       message_id = IDS_TOOLTIP_EXTENSIONS_BUTTON_ANY_EXTENSION_HAS_ACCESS;
       break;
   }
-  SetCachedTooltipText(l10n_util::GetStringUTF16(message_id));
+  SetTooltipText(l10n_util::GetStringUTF16(message_id));
 }
 
 BEGIN_METADATA(ExtensionsToolbarButton)

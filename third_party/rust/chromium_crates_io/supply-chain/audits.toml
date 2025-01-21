@@ -2660,6 +2660,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.26.3 -> 0.26.4"
 notes = "Improvements for computing advances for hinted variable fonts, when hvar is missing."
 
+[[audits.skrifa]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.26.4 -> 0.26.5"
+notes = "Contains fixes for hdmx metrics for fonts such as Arimo, Tinos, Market Sans."
+
 [[audits.small_ctor]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

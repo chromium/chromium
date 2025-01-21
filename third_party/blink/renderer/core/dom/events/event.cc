@@ -38,6 +38,8 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
+#include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -350,15 +352,23 @@ EventTarget* Event::currentTarget() const {
 }
 
 double Event::timeStamp(ScriptState* script_state) const {
-  double time_stamp = 0;
-  if (script_state && LocalDOMWindow::From(script_state)) {
-    WindowPerformance* performance =
-        DOMWindowPerformance::performance(*LocalDOMWindow::From(script_state));
-    time_stamp =
-        performance->MonotonicTimeToDOMHighResTimeStamp(platform_time_stamp_);
+  if (!script_state) {
+    return 0;
   }
 
-  return time_stamp;
+  if (auto* window = LocalDOMWindow::From(script_state)) {
+    Performance* performance = DOMWindowPerformance::performance(*window);
+    return performance->MonotonicTimeToDOMHighResTimeStamp(
+        platform_time_stamp_);
+  } else if (auto* worker = DynamicTo<WorkerGlobalScope>(
+                 ExecutionContext::From(script_state))) {
+    Performance* performance =
+        WorkerGlobalScopePerformance::performance(*worker);
+    return performance->MonotonicTimeToDOMHighResTimeStamp(
+        platform_time_stamp_);
+  }
+
+  return 0;
 }
 
 void Event::setCancelBubble(ScriptState* script_state, bool cancel) {

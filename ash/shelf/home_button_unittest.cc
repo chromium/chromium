@@ -377,7 +377,7 @@ TEST_F(HomeButtonWithQuickAppAccess, AccessibleTooltipText) {
   // Initially no target is visible
   EXPECT_FALSE(home_button()->IsShowingAppList());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_SHELF_APP_LIST_LAUNCHER_TITLE),
-            home_button()->GetTooltipText(gfx::Point()));
+            home_button()->GetRenderedTooltipText(gfx::Point()));
 
   // The description will be empty because the name is being used as the
   // TooltipText
@@ -388,7 +388,7 @@ TEST_F(HomeButtonWithQuickAppAccess, AccessibleTooltipText) {
   controller->ToggleAppList(home_button()->GetDisplayId(),
                             AppListShowSource::kShelfButton, base::TimeTicks());
   EXPECT_TRUE(home_button()->IsShowingAppList());
-  EXPECT_EQ(u"", home_button()->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(u"", home_button()->GetRenderedTooltipText(gfx::Point()));
 
   // Add secondary display
   UpdateDisplay("10+10-500x400,600+10-1000x600/r");
@@ -403,18 +403,18 @@ TEST_F(HomeButtonWithQuickAppAccess, AccessibleTooltipText) {
   // hidden.
   EXPECT_FALSE(second_home_button->IsShowingAppList());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_SHELF_APP_LIST_LAUNCHER_TITLE),
-            second_home_button->GetTooltipText(gfx::Point()));
+            second_home_button->GetRenderedTooltipText(gfx::Point()));
 
   controller->ToggleAppList(home_button()->GetDisplayId(),
                             AppListShowSource::kShelfButton, base::TimeTicks());
   EXPECT_FALSE(home_button()->IsShowingAppList());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_SHELF_APP_LIST_LAUNCHER_TITLE),
-            home_button()->GetTooltipText(gfx::Point()));
+            home_button()->GetRenderedTooltipText(gfx::Point()));
 
   controller->ToggleAppList(second_home_button->GetDisplayId(),
                             AppListShowSource::kShelfButton, base::TimeTicks());
   EXPECT_TRUE(second_home_button->IsShowingAppList());
-  EXPECT_EQ(u"", second_home_button->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(u"", second_home_button->GetRenderedTooltipText(gfx::Point()));
 }
 
 // Test that setting an empty string as the quick app id hides the existing

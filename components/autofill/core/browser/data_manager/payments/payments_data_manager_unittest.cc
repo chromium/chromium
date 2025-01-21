@@ -3653,6 +3653,47 @@ TEST_F(
   // The number of unlinked BNPL issuers should remain the same.
   EXPECT_EQ(payments_data_manager().GetUnlinkedBnplIssuers().size(), 1u);
 }
+
+// Tests that `GetBnplIssuers` returns all linked and unlinked buy-now-pay-later
+// issuers.
+TEST_F(PaymentsDataManagerTest, GetBnplIssuers) {
+  // Add two linked issuers and one unlinked issuer to payments data manager.
+  BnplIssuer linked_issuer1 = test::GetTestLinkedBnplIssuer();
+  BnplIssuer linked_issuer2 =
+      BnplIssuer(/*instrument_id=*/5678, /*issuer_id=*/"dummy",
+                 {BnplIssuer::EligiblePriceRange(/*currency= */ "USD",
+                                                 /*price_lower_bound=*/50,
+                                                 /*price_upper_bound=*/200)});
+  BnplIssuer unlinked_issuer = test::GetTestUnlinkedBnplIssuer();
+  test_api(payments_data_manager()).AddBnplIssuer(linked_issuer1);
+  test_api(payments_data_manager()).AddBnplIssuer(linked_issuer2);
+  test_api(payments_data_manager()).AddBnplIssuer(unlinked_issuer);
+
+  EXPECT_THAT(payments_data_manager().GetBnplIssuers(),
+              testing::UnorderedElementsAreArray(
+                  {linked_issuer1, linked_issuer2, unlinked_issuer}));
+}
+
+// Tests that Buy-now-pay-later issuer getters does not return any issuers if
+// `IsAutofillPaymentMethodsEnabled()` returns `false`.
+TEST_F(PaymentsDataManagerTest,
+       BnplIssuerGetters_AutofillPaymentMethodsDisabled) {
+  test_api(payments_data_manager())
+      .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+  test_api(payments_data_manager())
+      .AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
+
+  ASSERT_EQ(2U, payments_data_manager().GetBnplIssuers().size());
+  ASSERT_EQ(1U, payments_data_manager().GetUnlinkedBnplIssuers().size());
+  ASSERT_EQ(1U, payments_data_manager().GetLinkedBnplIssuers().size());
+
+  prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
+
+  EXPECT_TRUE(payments_data_manager().GetBnplIssuers().empty());
+  EXPECT_TRUE(payments_data_manager().GetUnlinkedBnplIssuers().empty());
+  EXPECT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

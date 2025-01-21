@@ -214,11 +214,6 @@ public class WebContentsDelegateAndroid {
                 });
     }
 
-    @CalledByNative
-    public boolean supportsForwardTransitionAnimation() {
-        return false;
-    }
-
     /**
      * Used to fetch the color info to compose the fallback UX for the navigation transitions when
      * no valid screenshots are available.

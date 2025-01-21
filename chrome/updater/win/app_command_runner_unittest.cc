@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/updater/win/app_command_runner.h"
 
 #include <windows.h>
@@ -20,6 +15,8 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
@@ -351,7 +348,11 @@ TEST_P(AppCommandFormatComponentsAndCommandLineTest, TestCases) {
                          << "' which unexpectedly did not parse to a single "
                          << "argument.";
 
-  EXPECT_EQ(argv_handle.get()[1], GetParam().substitutions[0])
+  // SAFETY: the unsafe buffer is present because ::CommandLineToArgvW call. The
+  // code is safe because `num_args` is checked as a size_t value.
+  UNSAFE_BUFFERS(const base::span<wchar_t*> safe_argv_handle{
+      argv_handle.get(), base::checked_cast<size_t>(num_args)});
+  EXPECT_EQ(safe_argv_handle[1], GetParam().substitutions[0])
       << "substitution '" << GetParam().substitutions[0]
       << "' gave command line '" << cmd << "' which did not parse back to the "
       << "original substitution";

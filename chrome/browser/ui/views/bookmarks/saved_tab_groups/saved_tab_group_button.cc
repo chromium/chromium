@@ -216,7 +216,7 @@ std::u16string SavedTabGroupButton::GetAccessibleNameForButton() const {
 }
 
 void SavedTabGroupButton::UpdateCachedTooltipText() {
-  SetCachedTooltipText(GetAccessibleNameForButton());
+  SetTooltipText(GetAccessibleNameForButton());
 }
 
 void SavedTabGroupButton::UpdateAccessibleName() {

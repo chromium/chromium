@@ -119,9 +119,9 @@ void DeskTextfield::PreferredSizeChanged() {
 
 void DeskTextfield::UpdateTooltipText() {
   if (GetPreferredSize().width() > width()) {
-    SetCachedTooltipText(GetText());
+    SetTooltipText(GetText());
   } else {
-    SetCachedTooltipText(std::u16string());
+    SetTooltipText(std::u16string());
   }
 }
 

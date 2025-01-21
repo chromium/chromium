@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
                 .registrar_unsafe()
                 .GetAppById(result_id)
                 ->launch_handler()
-                ->client_mode,
+                ->parsed_client_mode(),
             blink::Manifest::LaunchHandler::ClientMode::kFocusExisting);
   SkColor icon_color =
       IconManagerReadAppIconPixel(provider().icon_manager(), result_id, 96);

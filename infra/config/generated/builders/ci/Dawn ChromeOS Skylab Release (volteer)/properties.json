@@ -55,7 +55,8 @@
           "builder": "dawn-try-chromeos-volteer-rel",
           "group": "tryserver.chromium.dawn"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn ChromeOS Skylab Release (volteer)/targets"
     }
   },
   "$build/reclient": {

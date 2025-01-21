@@ -62,6 +62,15 @@ BASE_FEATURE_PARAM(int,
                    "BidderContextsMultiplier",
                    1);
 
+BASE_FEATURE(kFledgeBidderUseBalancingThreadSelector,
+             "FledgeBidderUseBalancingThreadSelector",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(int,
+                   kFledgeBidderThreadSelectorMaxImbalance,
+                   &kFledgeBidderUseBalancingThreadSelector,
+                   "BidderThreadSelectorMaxImbalance",
+                   4);
+
 BASE_FEATURE(kFledgePrepareSellerContextsInAdvance,
              "FledgePrepareSellerContextsInAdvance",
              base::FEATURE_DISABLED_BY_DEFAULT);

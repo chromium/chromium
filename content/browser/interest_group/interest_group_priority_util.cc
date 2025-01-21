@@ -37,7 +37,6 @@ double CalculateInterestGroupPriority(
   age = std::max(age, base::TimeDelta());
   age = std::min(age, base::Days(30));
 
-  // TODO(crbug.com/40231372): Add browserSignals.age.
   base::flat_map<std::string, double> browser_signals{
       {"browserSignals.one", 1},
       {"browserSignals.basePriority", interest_group.priority},

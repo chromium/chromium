@@ -184,8 +184,8 @@ TEST_F(FloatingSsoSyncBridgeTest, IncrementalDeleteAndAdd) {
 
   // Delete the first entity.
   syncer::EntityChangeList delete_first;
-  delete_first.push_back(
-      syncer::EntityChange::CreateDelete(kUniqueKeysForTests[0]));
+  delete_first.push_back(syncer::EntityChange::CreateDelete(
+      kUniqueKeysForTests[0], syncer::EntityData()));
   EXPECT_CALL(mock_observer(), OnCookiesRemovedRemotely(SizeIs(1)));
   EXPECT_CALL(mock_observer(), OnCookiesAddedOrUpdatedRemotely(_)).Times(0);
   bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
@@ -250,8 +250,8 @@ TEST_F(FloatingSsoSyncBridgeTest, ServerAsksToDeleteNonPresentCookie) {
   // Create a change asking to delete a cookie which is not present in the
   // store.
   syncer::EntityChangeList change_list;
-  change_list.push_back(
-      syncer::EntityChange::CreateDelete("key not present in the store"));
+  change_list.push_back(syncer::EntityChange::CreateDelete(
+      "key not present in the store", syncer::EntityData()));
   // Expect that we are not passing a deletion to observers in case when
   // there is nothing to delete.
   EXPECT_CALL(mock_observer(), OnCookiesRemovedRemotely(_)).Times(0);

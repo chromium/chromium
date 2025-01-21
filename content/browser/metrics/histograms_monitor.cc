@@ -13,22 +13,19 @@ HistogramsMonitor::HistogramsMonitor() = default;
 
 HistogramsMonitor::~HistogramsMonitor() = default;
 
-void HistogramsMonitor::StartMonitoring(std::string_view query) {
-  query_ = query;
+void HistogramsMonitor::StartMonitoring() {
   histograms_snapshot_.clear();
   // Save a snapshot of all current histograms that will be used as a baseline.
-  for (const auto* const histogram : base::StatisticsRecorder::WithName(
-           base::StatisticsRecorder::GetHistograms(), query_,
-           /*case_sensitive=*/false)) {
+  for (const auto* histogram : base::StatisticsRecorder::GetHistograms()) {
     histograms_snapshot_[histogram->histogram_name()] =
         histogram->SnapshotSamples();
   }
 }
 
-base::Value::List HistogramsMonitor::GetDiff() {
+base::Value::List HistogramsMonitor::GetDiff(const std::string& query) {
   base::StatisticsRecorder::Histograms histograms =
       base::StatisticsRecorder::Sort(base::StatisticsRecorder::WithName(
-          base::StatisticsRecorder::GetHistograms(), query_,
+          base::StatisticsRecorder::GetHistograms(), query,
           /*case_sensitive=*/false));
   return GetDiffInternal(histograms);
 }

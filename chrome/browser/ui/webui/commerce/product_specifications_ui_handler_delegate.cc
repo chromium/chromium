@@ -137,7 +137,7 @@ void ProductSpecificationsUIHandlerDelegate::ShowSyncSetupFlow() {
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   signin_ui_util::EnableSyncFromSingleAccountPromo(
       Profile::FromWebUI(web_ui_), account_info,
-      signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS);
+      signin_metrics::AccessPoint::kProductSpecifications);
 }
 
 content::WebContents* ProductSpecificationsUIHandlerDelegate::

@@ -190,14 +190,6 @@ class WebAppRegistrar {
       std::initializer_list<proto::InstallState> allowed_states,
       AppFilterOptions options) const;
 
-  // DEPRECATED: Use `FindAllAppsNestedInUrl(GURL, WebAppFilter)` instead.
-  // Finds all apps that have scopes that are nested within the given
-  // `outer_scope`, and are in one of the given `allowed_states`. Will
-  // CHECK-fail if `allowed_states` is empty.
-  std::vector<webapps::AppId> FindAllAppsNestedInUrl(
-      const GURL& outer_scope,
-      std::initializer_list<proto::InstallState> allowed_states) const;
-
   // Finds all apps that have scopes that are nested within the given
   // `outer_scope`, and match the specified filter.
   std::vector<webapps::AppId> FindAllAppsNestedInUrl(

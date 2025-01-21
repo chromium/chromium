@@ -138,15 +138,13 @@ class SigninManagerTest
   void SigninImplicitlyWithAccount(
       const std::string& email,
       ConsentLevel consent_level = ConsentLevel::kSignin) {
-    Signin(email, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
-           consent_level);
+    Signin(email, signin_metrics::AccessPoint::kWebSignin, consent_level);
   }
 
   void SigninExplicitlyWithAccount(const std::string& email) {
     CHECK(base::FeatureList::IsEnabled(
         switches::kExplicitBrowserSigninUIOnDesktop));
-    Signin(email,
-           signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
+    Signin(email, signin_metrics::AccessPoint::kAvatarBubbleSignIn,
            ConsentLevel::kSignin);
   }
 
@@ -211,7 +209,7 @@ class SigninManagerTest
   AccountInfo MakeAccountAvailableWithCookies(
       const std::string& email,
       signin_metrics::AccessPoint access_point =
-          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN) {
+          signin_metrics::AccessPoint::kUnknown) {
     AccountAvailabilityOptionsBuilder builder =
         identity_test_env()
             ->CreateAccountAvailabilityOptionsBuilder()
@@ -645,7 +643,7 @@ TEST_P(SigninManagerTest, UnconsentedPrimaryAccountUpdatedOnHandleDestroyed) {
   AccountAvailabilityOptionsBuilder builder =
       identity_test_env()
           ->CreateAccountAvailabilityOptionsBuilder()
-          .WithAccessPoint(signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+          .WithAccessPoint(signin_metrics::AccessPoint::kUnknown);
   AccountInfo first_account =
       identity_test_env()->MakeAccountAvailable(builder.Build(kTestEmail));
   AccountInfo second_account =
@@ -654,10 +652,10 @@ TEST_P(SigninManagerTest, UnconsentedPrimaryAccountUpdatedOnHandleDestroyed) {
       {{first_account.email, first_account.gaia},
        {second_account.email, second_account.gaia}});
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER;
+      signin_metrics::AccessPoint::kDesktopSigninManager;
   if (explicit_browser_signin()) {
     SigninImplicitlyWithAccount(first_account.email);
-    access_point = signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN;
+    access_point = signin_metrics::AccessPoint::kWebSignin;
   }
   ASSERT_EQ(first_account,
             identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin));
@@ -684,7 +682,7 @@ TEST_P(SigninManagerTest, UnconsentedPrimaryAccountUpdatedOnHandleDestroyed) {
     // TODO(crbug.com/40202341): The change should be logged in some way.
     histogram_tester.ExpectUniqueSample(
         "Signin.SignIn.Completed",
-        signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER, 1);
+        signin_metrics::AccessPoint::kDesktopSigninManager, 1);
     histogram_tester.ExpectTotalCount("Signin.SignOut.Completed", 0);
   }
   observer().Reset();
@@ -718,7 +716,7 @@ TEST_P(SigninManagerTest, UnconsentedPrimaryAccountUpdatedOnHandleDestroyed) {
   if (!explicit_browser_signin()) {
     histogram_tester.ExpectUniqueSample(
         "Signin.SignIn.Completed",
-        signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER, 1);
+        signin_metrics::AccessPoint::kDesktopSigninManager, 1);
     histogram_tester.ExpectTotalCount("Signin.SignOut.Completed", 0);
   }
 }
@@ -774,7 +772,7 @@ TEST_P(SigninManagerTest, SigninCompletedMetric) {
   base::HistogramTester histogram_tester;
 
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
+      signin_metrics::AccessPoint::kSettings;
   AccountInfo account =
       MakeAccountAvailableWithCookies(kTestEmail, access_point);
   ExpectUnconsentedPrimaryAccountSetEvent(account);

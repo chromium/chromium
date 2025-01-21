@@ -11,6 +11,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shelf/shelf_widget.h"
@@ -153,9 +154,11 @@ void StatusAreaWidgetDelegate::Shutdown() {
   RemoveAllChildViews();
 }
 
-void StatusAreaWidgetDelegate::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  AccessiblePaneView::GetAccessibleNodeData(node_data);
+void StatusAreaWidgetDelegate::UpdateAccessiblePreviousAndNextFocus() {
+  if (Shell::Get()->session_controller()->is_chrome_terminating()) {
+    return;
+  }
+
   // If OOBE dialog is visible it should be the next accessible widget,
   // otherwise it should be LockScreen.
   if (!!LoginScreen::Get()->GetLoginWindowWidget() &&
@@ -164,7 +167,10 @@ void StatusAreaWidgetDelegate::GetAccessibleNodeData(
         LoginScreen::Get()->GetLoginWindowWidget());
   } else if (LockScreen::HasInstance()) {
     GetViewAccessibility().SetNextFocus(LockScreen::Get()->widget());
+  } else {
+    GetViewAccessibility().SetNextFocus(nullptr);
   }
+
   Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
   GetViewAccessibility().SetPreviousFocus(shelf->shelf_widget());
 }

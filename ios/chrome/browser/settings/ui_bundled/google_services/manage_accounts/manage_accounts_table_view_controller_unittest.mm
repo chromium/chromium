@@ -128,8 +128,8 @@ TEST_F(ManageAccountsTableViewControllerTest, OfferSignOut) {
   fake_system_identity_manager()->AddIdentity(fake_identity);
 
   // Simulates a credential reload.
-  authentication_service()->SignIn(
-      fake_identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  authentication_service()->SignIn(fake_identity,
+                                   signin_metrics::AccessPoint::kSettings);
   fake_system_identity_manager()->FireSystemIdentityReloaded();
 
   CreateController();
@@ -144,8 +144,8 @@ TEST_F(ManageAccountsTableViewControllerTest, ShouldNotOfferSignOut) {
   fake_system_identity_manager()->AddIdentity(fake_identity);
 
   // Simulates a credential reload.
-  authentication_service()->SignIn(
-      fake_identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  authentication_service()->SignIn(fake_identity,
+                                   signin_metrics::AccessPoint::kSettings);
   fake_system_identity_manager()->FireSystemIdentityReloaded();
 
   CreateController();

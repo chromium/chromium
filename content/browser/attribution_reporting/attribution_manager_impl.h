@@ -153,6 +153,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   void HandleOsRegistration(OsRegistration) override;
 
+  void UpdateLastNavigationTime(base::Time navigation_time) override;
+
  private:
   friend class AttributionManagerImplTest;
 
@@ -293,6 +295,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   // `FeatureList::IsEnabled(kAttributionReportDeliveryThirdRetryAttempt` check
   // as to reduce large map lookups.
   bool third_retry_enabled_ = false;
+
+  std::optional<base::Time> last_navigation_time_;
 
   base::WeakPtrFactory<AttributionManagerImpl> weak_factory_{this};
 };

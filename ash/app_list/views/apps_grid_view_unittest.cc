@@ -1459,7 +1459,8 @@ TEST_F(AppsGridViewTest, ItemTooltip) {
   ASSERT_TRUE(item_view);
   const views::Label* title_label = item_view->title();
   EXPECT_TRUE(
-      title_label->GetTooltipText(title_label->bounds().CenterPoint()).empty());
+      title_label->GetRenderedTooltipText(title_label->bounds().CenterPoint())
+          .empty());
   EXPECT_EQ(base::ASCIIToUTF16(title), title_label->GetText());
 }
 

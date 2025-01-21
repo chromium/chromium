@@ -535,7 +535,8 @@ LensOverlaySidePanelCoordinator::GetMoreInfoMenuModel() {
                                      ui::SimpleMenuModel::kDefaultIconSize));
   menu_model->AddItemWithIcon(
       COMMAND_SEND_FEEDBACK, l10n_util::GetStringUTF16(IDS_LENS_SEND_FEEDBACK),
-      ui::ImageModel::FromVectorIcon(kSubmitFeedbackIcon, ui::kColorMenuIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kFeedbackIcon,
+                                     ui::kColorMenuIcon,
                                      ui::SimpleMenuModel::kDefaultIconSize));
   return menu_model;
 }

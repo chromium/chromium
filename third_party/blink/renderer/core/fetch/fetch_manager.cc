@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/fetch/fetch_manager.h"
 
-#include <inttypes.h>
 #include <stdint.h>
 
 #include <algorithm>
@@ -124,6 +123,9 @@ namespace blink {
 
 namespace {
 
+// 64 kilobytes.
+constexpr uint64_t kMaxScheduledDeferredBytesPerOrigin = 64 * 1024;
+
 constexpr TextResourceDecoderOptions::ContentType kFetchLaterContentType =
     TextResourceDecoderOptions::kPlainTextContent;
 
@@ -193,6 +195,14 @@ bool IsFetchLaterUseBackgroundSyncPermissionEnabled() {
 bool IsFetchLaterSendOnEnterBackForwardCacheEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(features::kFetchLaterAPI,
                                                  "send_on_enter_bfcache", true);
+}
+
+// Tells whether the FetchLater should use the "deferred-fetch" policy.
+// Defaults to false until the discussion is finalized.
+// https://github.com/WICG/pending-beacon/issues/87#issuecomment-2315624105
+bool IsFetchLaterUsePermissionsPolicyEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kFetchLaterAPI, "use_permissions_policy", false);
 }
 
 bool HasNonEmptyLocationHeader(const FetchHeaderList* headers) {
@@ -361,6 +371,13 @@ void ResponseResolver::RejectBecauseFailed(
 void ResponseResolver::Clear() {
   resolver_.Clear();
   exception_.Clear();
+}
+
+// Returns the length of `url` without any fragment parts.
+uint64_t GetUrlLengthWithoutFragment(const KURL& url) {
+  KURL cloned_url = url;
+  cloned_url.RemoveFragmentIdentifier();
+  return url.GetString().length();
 }
 
 }  // namespace
@@ -1349,14 +1366,12 @@ class FetchLaterManager::DeferredLoader final
   DeferredLoader(ExecutionContext* ec,
                  FetchLaterManager* fetch_later_manager,
                  FetchRequestData* fetch_request_data,
-                 uint64_t total_request_size,
                  ScriptState* script_state,
                  AbortSignal* signal,
                  const std::optional<base::TimeDelta>& activate_after)
       : FetchLoaderBase(ec, fetch_request_data, script_state, signal),
         fetch_later_manager_(fetch_later_manager),
         fetch_later_result_(MakeGarbageCollected<FetchLaterResult>()),
-        total_request_size_(total_request_size),
         activate_after_(activate_after),
         timer_(ec->GetTaskRunner(FetchLaterManager::kTaskType),
                this,
@@ -1381,8 +1396,7 @@ class FetchLaterManager::DeferredLoader final
   }
 
   void Process(const FetchLaterRendererMetricType& metric_type) {
-    // TODO(crbug.com/40276121): Update the following implementation.
-    // https://whatpr.org/fetch/1647.html#process-a-deferred-fetch
+    // https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#process-a-deferred-fetch
     // To process a deferred fetch deferredRecord:
     // 1. If deferredRecord’s invoke state is not "deferred", then return.
     if (invoke_state_ != InvokeState::DEFERRED) {
@@ -1397,16 +1411,16 @@ class FetchLaterManager::DeferredLoader final
     }
   }
 
-  // Returns this loader's total request size if `url` is "same origin" with
-  // this loader's request URL.
+  // Returns this loader's request body length if the followings are all true:
+  // - this loader's request has a non-null body.
+  // - `url` is "same origin" with this loader's request URL.
   uint64_t GetDeferredBytesForUrlOrigin(const KURL& url) const {
-    return SecurityOrigin::AreSameOrigin(GetFetchRequestData()->Url(), url)
-               ? GetDeferredBytes()
+    return GetFetchRequestData()->Buffer() &&
+                   SecurityOrigin::AreSameOrigin(GetFetchRequestData()->Url(),
+                                                 url)
+               ? GetFetchRequestData()->BufferByteLength()
                : 0;
   }
-
-  // Returns the total length of the request queued by this loader.
-  uint64_t GetDeferredBytes() const { return total_request_size_; }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(fetch_later_manager_);
@@ -1500,20 +1514,14 @@ class FetchLaterManager::DeferredLoader final
     loader_.set_disconnect_handler(WTF::BindOnce(
         &DeferredLoader::NotifyFinished, WrapWeakPersistent(this)));
 
-    // https://whatpr.org/fetch/1647.html#queue-a-deferred-fetch
-    // Continued with "queue a deferred fetch"
-    // 6. If `activate_after_` is not null, then run the following steps in
+    // https://whatpr.org/fetch/1647.html#request-a-deferred-fetch
+    // Continued with "request a deferred fetch"
+    // 12. If `activate_after_` is not null, then run the following steps in
     // parallel:
     if (activate_after_.has_value()) {
-      // 6-1. The user agent should wait until any of the following conditions
-      // is met:
-      // - At least activateAfter milliseconds have passed: Implementation
-      //   followed by `TimerFired()`.
-      // - The user agent has a reason to believe that it is about to lose the
-      //   opportunity to execute scripts, e.g., when the browser is moved to
-      //   the background, or when request’s client is a Document that had a
-      //   "hidden" visibility state for a long period of time: Implementation
-      //   followed by `ContextEnteredBackForwardCache()`.
+      // 12-1. The user agent should wait until `activate_after_`
+      // milliseconds have passed ...
+      // Implementation followed by `TimerFired()`.
       timer_.StartOneShot(*activate_after_, FROM_HERE);
     }
   }
@@ -1536,12 +1544,9 @@ class FetchLaterManager::DeferredLoader final
 
   // Triggered by `timer_`.
   void TimerFired(TimerBase*) {
-    // https://whatpr.org/fetch/1647.html#queue-a-deferred-fetch
-    // Continued with "queue a deferred fetch":
-    // 6-2. If the result of calling process a deferred fetch given
-    // deferredRecord returns true, then queue a global task on the deferred
-    // fetch task source with request’s client’s global object and
-    // onActivatedWithoutTermination.
+    // https://whatpr.org/fetch/1647.html#request-a-deferred-fetch
+    // Continued with "request a deferred fetch":
+    // 12-3. Process a deferred fetch given deferredRecord.
     Process(FetchLaterRendererMetricType::kActivatedByTimeout);
     NotifyFinished();
   }
@@ -1560,9 +1565,6 @@ class FetchLaterManager::DeferredLoader final
   //
   // This field should be updated whenever `invoke_state_` changes.
   Member<FetchLaterResult> fetch_later_result_;
-
-  // The total size of the request queued by this loader.
-  const uint64_t total_request_size_;
 
   // The "activateAfter" to request a deferred fetch.
   // https://whatpr.org/fetch/1647.html#request-a-deferred-fetch
@@ -1628,7 +1630,13 @@ FetchLaterResult* FetchLaterManager::FetchLater(
     }
   }
 
-  // 7. If request’s client is not a fully active Document, then throw an
+  // 7. Let deferredRecord be the result of calling "request a deferred fetch"
+  // given `request` and `activate_after`. This may throw an exception.
+  //
+  // "request a deferred fetch":
+  // https://whatpr.org/fetch/1647.html#request-a-deferred-fetch
+
+  // 1. If request’s client is not a fully active Document, then throw an
   // "InvalidStateError" DOMException.
   if (!DomWindow() || GetExecutionContext()->is_in_back_forward_cache()) {
     exception_state.ThrowDOMException(
@@ -1637,13 +1645,13 @@ FetchLaterResult* FetchLaterManager::FetchLater(
     return nullptr;
   }
 
-  // 8. If request’s URL’s scheme is not an HTTPS scheme, then throw a
+  // 2. If request’s URL’s scheme is not an HTTPS scheme, then throw a
   // TypeError.
   if (!request->Url().ProtocolIs(WTF::g_https_atom)) {
     exception_state.ThrowTypeError("fetchLater is only supported over HTTPS.");
     return nullptr;
   }
-  // 9. If request’s URL is not a potentially trustworthy url, then throw a
+  // 3. If request’s URL is not a potentially trustworthy url, then throw a
   // "SecurityError" DOMException.
   if (!network::IsUrlPotentiallyTrustworthy(GURL(request->Url()))) {
     exception_state.ThrowSecurityError(
@@ -1651,65 +1659,99 @@ FetchLaterResult* FetchLaterManager::FetchLater(
     return nullptr;
   }
 
-  // 10. If request’s body is not null, and request's body length is null, then
-  // throw a TypeError.
-  if (request->Buffer() && request->BufferByteLength() == 0) {
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kFetchLaterErrorUnknownBodyLength);
-    exception_state.ThrowTypeError(
-        "fetchLater doesn't support body with unknown length.");
+  // TODO(crbug.com/40276121): Remove this after implementing Step 7.
+  if (IsFetchLaterUsePermissionsPolicyEnabled() &&
+      !GetExecutionContext()->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kDeferredFetch,
+          ReportOptions::kReportOnFailure)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Access to fetchLater requires the permissions policy "
+        "\"deferred-fetch\" be enabled for the origin of this document.");
     return nullptr;
   }
 
-  // 11 Let controlDocument be request’s client’s deferred-fetch control
-  // document.
-  CHECK(DomWindow());
-  auto* control_frame =
-      FetchLaterUtil::GetDeferredFetchControlFrame(DomWindow()->GetFrame());
+  // 4. Let `total_request_length` be the length of request’s URL, serialized
+  // with exclude fragment set to true.
+  uint64_t total_request_length = GetUrlLengthWithoutFragment(request->Url());
 
-  // 12. If the available deferred-fetch quota given controlDocument and
-  // request’s URL’s origin is less than request’s total request length, then
-  // throw a "QuotaExceededError" DOMException.
-  auto available_quota = FetchLaterUtil::GetAvailableDeferredFetchQuota(
-      DynamicTo<LocalFrame>(control_frame), request->Url());
-  auto total_request_length = FetchLaterUtil::CalculateRequestSize(*request);
-  if (available_quota < total_request_length) {
+  // 5. For each (name, value) in header list, increment `total_request_length`
+  // by name’s length + value’s length.
+  for (const auto& header : request->HeaderList()->List()) {
+    total_request_length += header.first.length() + header.second.length();
+  }
+
+  // 6. If request’s body is not null then:
+  if (request->Buffer()) {
+    // 6-1. If request’s body’s length is null, then throw a TypeError.
+    if (request->BufferByteLength() == 0) {
+      UseCounter::Count(GetExecutionContext(),
+                        WebFeature::kFetchLaterErrorUnknownBodyLength);
+      exception_state.ThrowTypeError(
+          "fetchLater doesn't support body with unknown length.");
+      return nullptr;
+    }
+    // 6-2. If request’s body’s source is null, then throw a TypeError.
+    // This disallows sending deferred fetches with a live ReadableStream.
+    // NOTE: Equivalent to Step 6-1 above, as implementation does not set
+    // BufferByteLength() for ReadableStream.
+
+    // 6-3 Increment totalRequestLength by request’s body’s length.
+    total_request_length += request->BufferByteLength();
+  }
+
+  // TODO(crbug.com/40276121): Update the following steps.
+  // Run Step 9 below for potential early termination. It also caps
+  // `bytes_per_origin`.
+  if (total_request_length > kMaxScheduledDeferredBytesPerOrigin) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kFetchLaterErrorQuotaExceeded);
     exception_state.ThrowDOMException(
         DOMExceptionCode::kQuotaExceededError,
-        String::Format(
-            "fetchLater exceeds its quota for the origin: got %" PRIu64 " "
-            "bytes, expected less than %" PRIu64 " bytes.",
-            total_request_length, available_quota));
+        "fetchLater exceeds its quota for the origin.");
     return nullptr;
   }
 
-  // 14. Let deferredRecord be the result of calling queue a deferred fetch
-  // given request, controlDocument’s fetch group, activateAfter, and the
-  // following step: set activated to true.
+  // 8. For each deferredRecord in request’s client’s fetch group’s deferred
+  // fetch records: if deferredRecord’s request’s body is not null and
+  // deferredRecord’s request’s URL’s origin is same origin with request’s
+  // URL’s origin, then increment `bytes_for_origin` by deferredRecord’s
+  // request’s body’s length.
+  for (const auto& deferred_loader : deferred_loaders_) {
+    // `bytes_for_orign` is capped below the max (64 kilobytes), and the value
+    // returned by every deferred_loader has run through the same cap. Hence,
+    // the sum here is guaranteed to be <= 128 kilobytes.
+    total_request_length +=
+        deferred_loader->GetDeferredBytesForUrlOrigin(request->Url());
+    // 9. If `bytes_for_origin` is greater than 64 kilobytes, then throw a
+    // QuotaExceededError.
+    if (total_request_length > kMaxScheduledDeferredBytesPerOrigin) {
+      UseCounter::Count(GetExecutionContext(),
+                        WebFeature::kFetchLaterErrorQuotaExceeded);
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kQuotaExceededError,
+          "fetchLater exceeds its quota for the origin.");
+      return nullptr;
+    }
+  }
 
-  // "To queue a deferred fetch ..."
-  // https://whatpr.org/fetch/1647.html#queue-a-deferred-fetch
-
-  // 2. Set request’s service-workers mode to "none".
+  // 8. Set request’s service-workers mode to "none".
   // NOTE: Done in `FetchLoaderBase::PerformHTTPFetch()`.
 
   request->SetDestination(network::mojom::RequestDestination::kEmpty);
-  // 3. Set request’s keepalive to true.
+  // 9. Set request’s keepalive to true.
   request->SetKeepalive(true);
 
-  // 4. Let deferredRecord be a new deferred fetch record whose request is
-  // request.
+  // 10. Let deferredRecord be a new deferred fetch record whose request is
+  // `request`.
   auto* deferred_loader = MakeGarbageCollected<DeferredLoader>(
-      GetExecutionContext(), this, request, total_request_length, script_state,
-      signal, activate_after);
-  // 5. Append deferredRecord to fetchGroup’s deferred fetch records.
+      GetExecutionContext(), this, request, script_state, signal,
+      activate_after);
+  // 11. Append deferredRecord to request’s client’s fetch group’s deferred
+  // fetch records.
   deferred_loaders_.insert(deferred_loader);
 
   deferred_loader->Start(exception_state);
-  // 15. Return a new FetchLaterResult whose activated getter steps are to
-  // return activated.
   return deferred_loader->fetch_later_result();
 }
 
@@ -1881,34 +1923,6 @@ FetchLaterManager::PrepareNetworkRequest(
       std::move(params.MutableResourceRequest().MutableBody()),
       network_resource_request.get());
   return network_resource_request;
-}
-
-void FetchLaterManager::UpdateDeferredBytesQuota(const KURL& url,
-                                                 uint64_t& quota_for_url_origin,
-                                                 uint64_t& total_quota) const {
-  CHECK_LE(quota_for_url_origin, kMaxPerRequestOriginScheduledDeferredBytes);
-  CHECK_LE(total_quota, kMaxScheduledDeferredBytes);
-
-  // https://whatpr.org/fetch/1647.html#available-deferred-fetch-quota
-  // 9. For each deferred fetch record deferredRecord of controlDocument’s fetch
-  // group’s deferred fetch records:
-  for (const auto& deferred_loader : deferred_loaders_) {
-    if (quota_for_url_origin == 0 && total_quota == 0) {
-      // Early termination.
-      return;
-    }
-
-    // 9-1. Let requestLength be the total request length of deferredRecord’s
-    // request.
-    // 9-2. Decrement quota by requestLength.
-    total_quota -= std::min(total_quota, deferred_loader->GetDeferredBytes());
-
-    // 9-3. If deferredRecord’s request’s URL’s origin is same origin with
-    // origin, then decrement quotaForRequestOrigin by requestLength.
-    quota_for_url_origin -=
-        std::min(quota_for_url_origin,
-                 deferred_loader->GetDeferredBytesForUrlOrigin(url));
-  }
 }
 
 void FetchLaterManager::Trace(Visitor* visitor) const {
