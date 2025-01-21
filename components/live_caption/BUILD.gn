@@ -12,6 +12,7 @@ if (!is_android && !is_ios) {
       "caption_bubble_context_remote.h",
       "caption_bubble_controller.h",
       "caption_bubble_session_observer.h",
+      "caption_bubble_settings.h",
       "live_caption_controller.cc",
       "live_caption_controller.h",
     ]
