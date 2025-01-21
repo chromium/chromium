@@ -9,7 +9,7 @@ import type {HistoryEmbeddingsFilterChips, Suggestion} from 'chrome://resources/
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('cr-history-embeddings-filter-chips', () => {
   let element: HistoryEmbeddingsFilterChips;
@@ -29,16 +29,19 @@ suite('cr-history-embeddings-filter-chips', () => {
     return flushTasks();
   });
 
-  test('TogglesVisbilityOfShowResultsByGroupOption', () => {
+  test('TogglesVisbilityOfShowResultsByGroupOption', async () => {
     element.enableShowResultsByGroupOption = false;
+    await microtasksFinished();
     assertFalse(isVisible(element.$.showByGroupSelectMenu));
     element.enableShowResultsByGroupOption = true;
+    await microtasksFinished();
     assertTrue(isVisible(element.$.showByGroupSelectMenu));
   });
 
-  test('UpdatesShowByMenuByBinding', () => {
+  test('UpdatesShowByMenuByBinding', async () => {
     assertEquals('false', element.$.showByGroupSelectMenu.value);
     element.showResultsByGroup = true;
+    await microtasksFinished();
     assertEquals('true', element.$.showByGroupSelectMenu.value);
   });
 

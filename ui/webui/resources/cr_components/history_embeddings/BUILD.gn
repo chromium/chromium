@@ -27,7 +27,10 @@ build_webui("build") {
     "result_image.html.ts",
     "result_image.ts",
   ]
-  css_files = [ "result_image.css" ]
+  css_files = [
+    "filter_chips.css",
+    "result_image.css",
+  ]
   icons_html_files = [ "icons.html" ]
   html_to_wrapper_template = "detect"
 
