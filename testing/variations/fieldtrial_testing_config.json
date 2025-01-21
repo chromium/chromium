@@ -9201,6 +9201,24 @@
             ]
         }
     ],
+    "EnablePrintWatermark": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "enable_features": [
+                        "EnablePrintWatermark"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableSessionSerializationOptimizations": [
         {
             "platforms": [
