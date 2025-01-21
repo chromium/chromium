@@ -130,8 +130,9 @@ public class CastWebContentsServiceTest {
     public void testNotificationTitleMatchesWebContentsTitle() {
         mServiceLifecycle.bind();
         Notification notification = mShadowService.getLastForegroundNotification();
-        assertEquals(notification.extras.getCharSequence(Notification.EXTRA_TITLE).toString(),
-                WEBCONTENTS_TITLE);
+        assertEquals(
+                WEBCONTENTS_TITLE,
+                notification.extras.getCharSequence(Notification.EXTRA_TITLE).toString());
     }
 
     @Test
