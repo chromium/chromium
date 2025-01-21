@@ -412,33 +412,6 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // Returns search metadata if |url| is a valid Search URL.
   std::optional<SearchMetadata> ExtractSearchMetadata(const GURL& url) const;
 
-  // Returns true if the default search provider supports the side search
-  // feature.
-  bool IsSideSearchSupportedForDefaultSearchProvider() const;
-
-  // Returns true if the default search provider supports the opening
-  // image search requests in the side panel.
-  bool IsSideImageSearchSupportedForDefaultSearchProvider() const;
-
-  // Generates a side search URL for the default search provider's search url.
-  GURL GenerateSideSearchURLForDefaultSearchProvider(
-      const GURL& search_url,
-      const std::string& version) const;
-
-  // Takes a search URL that belongs to this side search in the side panel and
-  // removes the side search param from the URL.
-  GURL RemoveSideSearchParamFromURL(const GURL& side_search_url) const;
-
-  // Generates a side image search URL for the default search provider's image
-  // search url.
-  GURL GenerateSideImageSearchURLForDefaultSearchProvider(
-      const GURL& image_search_url,
-      const std::string& version) const;
-
-  // Takes a search URL that belongs to this image search in the side panel and
-  // removes the side image search param from the URL.
-  GURL RemoveSideImageSearchParamFromURL(const GURL& image_search_url) const;
-
   // Returns true if the default search is managed through group policy.
   bool is_default_search_managed() const {
     return default_search_provider_source_ == DefaultSearchManager::FROM_POLICY;

@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 // This file is used by json_to_struct.py to generate prepopulated_engines.h/cc.
-// Any time you modify this file regenerate the .h/.cc. See
-// prepopulated_engines.json for details.
+// See prepopulated_engines.json for details.
 
 {
   "type_name": "PrepopulatedEngine",
@@ -52,12 +51,6 @@
     { "field": "search_url_post_params", "type": "string", "optional": true },
     { "field": "suggest_url_post_params", "type": "string", "optional": true },
     { "field": "image_url_post_params", "type": "string", "optional": true },
-    // The parameter appended to the engine's search URL when constructing the
-    // URL for the side search side panel.
-    { "field": "side_search_param", "type": "string", "optional": true },
-    // The parameter appended to the engine's |image_url| URL when constructing the
-    // URL for the image search entry in the side panel.
-    { "field": "side_image_search_param", "type": "string", "optional": true },
     // The key of the parameter identifying the source language for an image
     // translation. For example, if set to "sourcelang", the template parameter
     // "{imageTranslateSourceLocale}" would be replaced with "sourcelang=en"

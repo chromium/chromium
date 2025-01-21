@@ -54,9 +54,9 @@
 
 namespace {
 // The TemplateURLRef has any number of terms that need to be replaced. Each of
-// the terms is enclosed in braces. If the character preceeding the final
-// brace is a ?, it indicates the term is optional and can be replaced with
-// an empty string.
+// the terms is enclosed in braces. If the character preceding the final brace
+// is a ?, it indicates the term is optional and can be replaced with an empty
+// string.
 const char kStartParameter = '{';
 const char kEndParameter = '}';
 const char kOptional = '?';
@@ -2023,53 +2023,6 @@ const TemplateURLData::RegulatoryExtension* TemplateURL::GetRegulatoryExtension(
   return extension;
 }
 
-bool TemplateURL::IsSideSearchSupported() const {
-  return !side_search_param().empty();
-}
-
-bool TemplateURL::IsSideImageSearchSupported() const {
-  return !side_image_search_param().empty();
-}
-
-GURL TemplateURL::GenerateSideSearchURL(
-    const GURL& search_url,
-    const std::string& version,
-    const SearchTermsData& search_terms_data) const {
-  DCHECK(IsSideSearchSupported());
-  DCHECK(IsSearchURL(search_url, search_terms_data));
-  return net::AppendOrReplaceQueryParameter(search_url, side_search_param(),
-                                            version);
-}
-
-GURL TemplateURL::RemoveSideSearchParamFromURL(
-    const GURL& side_search_url) const {
-  if (!IsSideSearchSupported())
-    return side_search_url;
-  return net::AppendOrReplaceQueryParameter(side_search_url,
-                                            side_search_param(), std::nullopt);
-}
-
-GURL TemplateURL::GenerateSideImageSearchURL(const GURL& image_search_url,
-                                             const std::string& version) const {
-  DCHECK(IsSideImageSearchSupported());
-  std::string value;
-  if (net::GetValueForKeyInQuery(image_search_url, side_image_search_param(),
-                                 &value) &&
-      value == version)
-    return image_search_url;
-
-  return net::AppendOrReplaceQueryParameter(image_search_url,
-                                            side_image_search_param(), version);
-}
-
-GURL TemplateURL::RemoveSideImageSearchParamFromURL(
-    const GURL& image_search_url) const {
-  if (!IsSideImageSearchSupported())
-    return image_search_url;
-  return net::AppendOrReplaceQueryParameter(
-      image_search_url, side_image_search_param(), std::nullopt);
-}
-
 void TemplateURL::CopyFrom(const TemplateURL& other) {
   if (this == &other)
     return;
@@ -2179,23 +2132,6 @@ bool TemplateURL::FindSearchTermsInURL(
     }
   }
   return false;
-}
-
-bool TemplateURL::ContainsSideSearchParam(const GURL& url) const {
-  std::string side_search_value;
-  if (!IsSideSearchSupported())
-    return false;
-  net::GetValueForKeyInQuery(url, side_search_param(), &side_search_value);
-  return !side_search_value.empty();
-}
-
-bool TemplateURL::ContainsSideImageSearchParam(const GURL& url) const {
-  std::string side_image_search_value;
-  if (!IsSideSearchSupported())
-    return false;
-  net::GetValueForKeyInQuery(url, side_image_search_param(),
-                             &side_image_search_value);
-  return !side_image_search_value.empty();
 }
 
 const TemplateURLData& TemplateURL::data() const {

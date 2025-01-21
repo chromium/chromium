@@ -53,8 +53,6 @@ struct TemplateURLData {
                   std::string_view search_url_post_params,
                   std::string_view suggest_url_post_params,
                   std::string_view image_url_post_params,
-                  std::string_view side_search_param,
-                  std::string_view side_image_search_param,
                   std::string_view image_translate_source_language_param_key,
                   std::string_view image_translate_target_language_param_key,
                   std::vector<std::string> search_intent_params,
@@ -124,14 +122,6 @@ struct TemplateURLData {
   std::string search_url_post_params;
   std::string suggestions_url_post_params;
   std::string image_url_post_params;
-
-  // The parameter appended to the engine's search URL when constructing the URL
-  // for the side search side panel.
-  std::string side_search_param;
-
-  // The parameter appended to the engine's image URL when constructing the
-  // URL for the image search entry in the side panel.
-  std::string side_image_search_param;
 
   // The key of the parameter identifying the source language for an image
   // translation.

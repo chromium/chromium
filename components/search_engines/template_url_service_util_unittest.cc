@@ -41,7 +41,6 @@ std::unique_ptr<TemplateURLData> CreatePrepopulateTemplateURLData(
       "" /* new_tab_url */, "" /* contextual_search_url */, "" /* logo_url */,
       "" /* doodle_url */, "" /* search_url_post_params */,
       "" /* suggest_url_post_params */, "" /* image_url_post_params */,
-      "" /* side_search_param */, "" /* side_image_search_param */,
       "" /* image_translate_source_language_param_key */,
       "" /* image_translate_target_language_param_key */,
       std::vector<std::string>() /* search_intent_params */,

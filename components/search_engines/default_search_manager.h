@@ -62,8 +62,6 @@ class DefaultSearchManager
   static const char kSearchURLPostParams[];
   static const char kSuggestionsURLPostParams[];
   static const char kImageURLPostParams[];
-  static const char kSideSearchParam[];
-  static const char kSideImageSearchParam[];
   static const char kImageSearchBrandingLabel[];
   static const char kSearchIntentParams[];
   static const char kImageTranslateSourceLanguageParamKey[];
@@ -92,7 +90,7 @@ class DefaultSearchManager
 
   enum Source {
     // Default search engine chosen either from prepopulated engines set for
-    // current country or overriden from kSearchProviderOverrides preference.
+    // current country or overridden from kSearchProviderOverrides preference.
     FROM_FALLBACK = 0,
     // User selected engine.
     FROM_USER,
