@@ -71,8 +71,7 @@ class RootDriveFilePickerCoordinatorTest : public PlatformTest {
     system_identity_manager->AddIdentity(fake_identity);
     AuthenticationService* auth_service =
         AuthenticationServiceFactory::GetForProfile(profile_.get());
-    auth_service->SignIn(fake_identity,
-                         signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+    auth_service->SignIn(fake_identity, signin_metrics::AccessPoint::kUnknown);
   }
 
   void TearDown() final {
