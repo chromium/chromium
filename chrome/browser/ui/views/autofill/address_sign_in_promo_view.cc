@@ -33,7 +33,7 @@ AddressSignInPromoView::AddressSignInPromoView(
 
   // Show the sign in promo.
   AddChildView(std::make_unique<AutofillBubbleSignInPromoView>(
-      web_contents, signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE,
+      web_contents, signin_metrics::AccessPoint::kAddressBubble,
       syncer::LocalDataItemModel::DataId(autofill_profile.guid())));
 
   // Notify the screen reader that the bubble changed.
