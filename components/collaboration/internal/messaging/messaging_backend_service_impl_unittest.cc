@@ -198,6 +198,7 @@ class MockMessagingBackendStore : public MessagingBackendStore {
               AddMessage,
               (const collaboration_pb::Message& message),
               (override));
+  MOCK_METHOD(void, RemoveMessage, (const std::string& message_id), (override));
   MOCK_METHOD(base::TimeDelta, GetRecentMessageCutoffDuration, (), (override));
   MOCK_METHOD(void,
               SetRecentMessageCutoffDuration,
@@ -1390,6 +1391,22 @@ TEST_F(MessagingBackendServiceImplTest,
       .Times(1);
   service_->ClearDirtyTabMessagesForGroup(
       tab_groups::EitherGroupID(tab_group.saved_guid()));
+}
+
+TEST_F(MessagingBackendServiceImplTest, TestRemoveMessages) {
+  CreateAndInitializeService();
+
+  base::Uuid uuid1 = base::Uuid::GenerateRandomV4();
+  base::Uuid uuid2 = base::Uuid::GenerateRandomV4();
+
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              RemoveMessage(Eq(uuid1.AsLowercaseString())))
+      .Times(1);
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              RemoveMessage(Eq(uuid2.AsLowercaseString())))
+      .Times(1);
+
+  service_->RemoveMessages({uuid1, uuid2});
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestGetMessagesForTab) {

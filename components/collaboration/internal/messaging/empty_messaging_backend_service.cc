@@ -55,6 +55,9 @@ std::vector<ActivityLogItem> EmptyMessagingBackendService::GetActivityLog(
 void EmptyMessagingBackendService::ClearDirtyTabMessagesForGroup(
     tab_groups::EitherGroupID group_id) {}
 
+void EmptyMessagingBackendService::RemoveMessages(
+    const std::vector<base::Uuid>& message_ids) {}
+
 void EmptyMessagingBackendService::AddActivityLogForTesting(
     data_sharing::GroupId collaboration_id,
     const std::vector<ActivityLogItem>& activity_log) {}

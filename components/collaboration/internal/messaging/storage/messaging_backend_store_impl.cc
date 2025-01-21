@@ -262,6 +262,10 @@ void MessagingBackendStoreImpl::AddMessage(
   }
 }
 
+void MessagingBackendStoreImpl::RemoveMessage(const std::string& message_id) {
+  // TODO(crbug.com/389948455): Implement.
+}
+
 std::optional<MessagesPerGroup*>
 MessagingBackendStoreImpl::GetMessagesPerGroupForTesting(
     const data_sharing::GroupId& collaboration_id) {

@@ -953,6 +953,13 @@ void MessagingBackendServiceImpl::OnGroupMemberRemoved(
   store_->AddMessage(message);
 }
 
+void MessagingBackendServiceImpl::RemoveMessages(
+    const std::vector<base::Uuid>& message_ids) {
+  for (const base::Uuid& message_id : message_ids) {
+    store_->RemoveMessage(message_id.AsLowercaseString());
+  }
+}
+
 void MessagingBackendServiceImpl::AddActivityLogForTesting(
     data_sharing::GroupId collaboration_id,
     const std::vector<ActivityLogItem>& activity_log) {

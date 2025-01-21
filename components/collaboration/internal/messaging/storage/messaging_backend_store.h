@@ -77,6 +77,9 @@ class MessagingBackendStore {
 
   // Add a message to the store.
   virtual void AddMessage(const collaboration_pb::Message& message) = 0;
+
+  // Remove a message from the store.
+  virtual void RemoveMessage(const std::string& message_id) = 0;
 };
 
 }  // namespace collaboration::messaging
