@@ -4846,7 +4846,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordProtection.PasswordProtectionResponseOrErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-10-28">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-10-28">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -4854,7 +4854,8 @@ useful for Chirp alerts (go/crca-alerts). -->
     receives response of PasswordProtectionRequest from Safe Browsing service.
 
     Note: In M98 the error code HTTP_RESPONSE_CODE_FAILURE was changed to log
-    the actual HTTP response code.
+    the actual HTTP response code. Warning: this histogram expired from
+    2024-10-28 to 2025-01-21; data may be missing.
   </summary>
 </histogram>
 
