@@ -140,8 +140,8 @@ class BookmarkBarItemsProvider extends BookmarkModelObserver
     }
 
     @Override
-    public void onBookmarkItemUpdated(int observationId, @NonNull BookmarkItem item) {
-        mObserver.onBookmarkItemUpdated(observationId, item);
+    public void onBookmarkItemUpdated(int observationId, @NonNull BookmarkItem item, int index) {
+        mObserver.onBookmarkItemUpdated(observationId, item, index + getStartIndex(observationId));
     }
 
     @Override

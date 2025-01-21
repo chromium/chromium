@@ -319,16 +319,19 @@ public class BookmarkBarItemsProviderTest {
     @Test
     @SmallTest
     public void testOnBookmarkItemUpdatedWithinAccountFolder() {
-        mAccountFolderObserver.onBookmarkItemUpdated(ACCOUNT, mAccountFolderItem1);
-        verify(mObserver).onBookmarkItemUpdated(ACCOUNT, mAccountFolderItem1);
+        final int index = 10;
+        mAccountFolderObserver.onBookmarkItemUpdated(ACCOUNT, mAccountFolderItem1, 10);
+        verify(mObserver).onBookmarkItemUpdated(ACCOUNT, mAccountFolderItem1, index);
         verifyNoMoreInteractions(mObserver);
     }
 
     @Test
     @SmallTest
     public void testOnBookmarkItemUpdatedWithinLocalFolder() {
-        mLocalFolderObserver.onBookmarkItemUpdated(LOCAL, mLocalFolderItem1);
-        verify(mObserver).onBookmarkItemUpdated(LOCAL, mLocalFolderItem1);
+        final int index = 10;
+        final int startIndex = mAccountFolderItems.size();
+        mLocalFolderObserver.onBookmarkItemUpdated(LOCAL, mLocalFolderItem1, index);
+        verify(mObserver).onBookmarkItemUpdated(LOCAL, mLocalFolderItem1, index + startIndex);
         verifyNoMoreInteractions(mObserver);
     }
 
