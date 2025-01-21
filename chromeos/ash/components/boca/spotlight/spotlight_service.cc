@@ -4,11 +4,13 @@
 
 #include "chromeos/ash/components/boca/spotlight/spotlight_service.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
+#include "chromeos/ash/components/boca/spotlight/register_screen_request.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/common/auth_service.h"
 #include "google_apis/common/request_sender.h"
@@ -84,5 +86,31 @@ void SpotlightService::ViewScreen(std::string student_gaia_id,
       sender_.get(), current_session->session_id(),
       std::move(view_screen_param), std::move(url_base), std::move(callback));
   sender_->StartRequestWithAuthRetry(std::move(view_screen_request));
+}
+
+void SpotlightService::RegisterScreen(const std::string& connection_code,
+                                      std::string url_base,
+                                      RegisterScreenRequestCallback callback) {
+  auto* const current_session =
+      BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
+  if (!current_session) {
+    std::move(callback).Run(
+        base::unexpected(google_apis::ApiErrorCode::CANCELLED));
+    return;
+  }
+
+  RegisterScreenParam register_screen_param(
+      connection_code,
+      BocaAppClient::Get()
+          ->GetSessionManager()
+          ->account_id()
+          .GetGaiaId()
+          .ToString(),
+      BocaAppClient::Get()->GetDeviceId());
+  auto register_screen_request = std::make_unique<RegisterScreenRequest>(
+      sender_.get(), current_session->session_id(),
+      std::move(register_screen_param), std::move(url_base),
+      std::move(callback));
+  sender_->StartRequestWithAuthRetry(std::move(register_screen_request));
 }
 }  // namespace ash::boca

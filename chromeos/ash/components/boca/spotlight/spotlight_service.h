@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "chromeos/ash/components/boca/spotlight/register_screen_request.h"
 #include "chromeos/ash/components/boca/spotlight/view_screen_request.h"
 
 namespace google_apis {
@@ -30,6 +31,10 @@ class SpotlightService {
   virtual void ViewScreen(std::string student_gaia_id,
                           std::string url_base,
                           ViewScreenRequestCallback callback);
+
+  virtual void RegisterScreen(const std::string& connection_code,
+                              std::string url_base,
+                              RegisterScreenRequestCallback callback);
 
   google_apis::RequestSender* sender() { return sender_.get(); }
 

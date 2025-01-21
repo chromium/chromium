@@ -13,6 +13,11 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash::boca {
+namespace {
+// Used for testing Boca producer via emulator.
+inline static constexpr char kDummyDeviceId[] = "kDummyDeviceId";
+}  // namespace
+
 BocaAppClientImpl::BocaAppClientImpl() = default;
 
 BocaAppClientImpl::~BocaAppClientImpl() = default;
@@ -33,7 +38,7 @@ std::string BocaAppClientImpl::GetDeviceId() {
     return std::string();
   }
   if (auto* policy = ash::DeviceSettingsService::Get()->policy_data()) {
-    return policy->device_id();
+    return policy->device_id().empty() ? kDummyDeviceId : policy->device_id();
   }
   return std::string();
 }

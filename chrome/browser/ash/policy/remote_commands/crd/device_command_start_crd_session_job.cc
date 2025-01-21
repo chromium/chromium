@@ -60,6 +60,10 @@ const char kCrdSessionTypeFieldName[] = "crdSessionType";
 // The admin's email address.
 const char kAdminEmailFieldName[] = "adminEmail";
 
+// True if CRD should show a confirmation dialog to the user to allow them
+// to confirm/reject the admin session.
+const char kShowConfirmationDialogFieldName[] = "showConfirmationDialog";
+
 // Result payload fields:
 
 // Integer value containing DeviceCommandStartCrdSessionJob::ResultCode
@@ -209,6 +213,9 @@ bool DeviceCommandStartCrdSessionJob::ParseCommandPayload(
                                 CrdSessionType::REMOTE_SUPPORT_SESSION);
 
   admin_email_ = FindString(root_dict, kAdminEmailFieldName);
+
+  show_confirmation_dialog_ =
+      root_dict.FindBool(kShowConfirmationDialogFieldName);
 
   curtain_local_user_session_ =
       (crd_session_type == CrdSessionType::REMOTE_ACCESS_SESSION);
@@ -371,6 +378,9 @@ bool DeviceCommandStartCrdSessionJob::IsDeviceIdle() const {
 }
 
 bool DeviceCommandStartCrdSessionJob::ShouldShowConfirmationDialog() const {
+  if (show_confirmation_dialog_.has_value()) {
+    return show_confirmation_dialog_.value();
+  }
   switch (GetCurrentUserSessionType()) {
     case UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION:
     case UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION:

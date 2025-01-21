@@ -12,6 +12,7 @@
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
 #include "chromeos/ash/components/boca/on_task/on_task_session_manager.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_session_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -31,7 +32,8 @@ class BocaManager : public KeyedService {
       std::unique_ptr<boca::BocaSessionManager> boca_session_manager,
       std::unique_ptr<boca::InvalidationServiceImpl> invalidation_service_impl,
       std::unique_ptr<boca::BabelOrcaManager> babel_orca_manager,
-      std::unique_ptr<boca::BocaMetricsManager> boca_metrics_manager);
+      std::unique_ptr<boca::BocaMetricsManager> boca_metrics_manager,
+      std::unique_ptr<boca::SpotlightSessionManager> spotlight_session_manager);
 
   BocaManager(Profile* profile, const std::string& application_locale);
   ~BocaManager() override;
@@ -54,6 +56,10 @@ class BocaManager : public KeyedService {
     return boca_metrics_manager_.get();
   }
 
+  boca::SpotlightSessionManager* GetSpotlightSessionManagerForTesting() {
+    return spotlight_session_manager_.get();
+  }
+
  private:
   void AddObservers(const user_manager::User* user);
 
@@ -63,6 +69,7 @@ class BocaManager : public KeyedService {
   std::unique_ptr<boca::InvalidationServiceImpl> invalidation_service_impl_;
   std::unique_ptr<boca::BabelOrcaManager> babel_orca_manager_;
   std::unique_ptr<boca::BocaMetricsManager> boca_metrics_manager_;
+  std::unique_ptr<boca::SpotlightSessionManager> spotlight_session_manager_;
 };
 }  // namespace ash
 

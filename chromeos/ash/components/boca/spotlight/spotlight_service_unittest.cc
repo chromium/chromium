@@ -12,6 +12,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/common/dummy_auth_service.h"
 #include "google_apis/common/request_sender.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -39,6 +40,7 @@ constexpr char kUserEmail[] = "cat@gmail.com";
 constexpr char kDeviceId[] = "device0";
 constexpr char kStudentDeviceId[] = "device1";
 constexpr char kStudentId[] = "student";
+constexpr char kConnectionCode[] = "456";
 
 ::boca::Session GetCommonTestSession() {
   ::boca::Session session;
@@ -85,10 +87,12 @@ class MockBocaAppClient : public BocaAppClient {
 class MockSessionManager : public BocaSessionManager {
  public:
   explicit MockSessionManager(SessionClientImpl* session_client_impl)
-      : BocaSessionManager(session_client_impl,
-                           AccountId::FromUserEmail(kUserEmail),
-                           /*=is_producer*/ false) {}
+      : BocaSessionManager(
+            session_client_impl,
+            AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kGaiaId)),
+            /*=is_producer*/ false) {}
   MOCK_METHOD((::boca::Session*), GetCurrentSession, (), (override));
+
   ~MockSessionManager() override = default;
 };
 
@@ -200,6 +204,48 @@ TEST_F(SpotlightServiceTest, TestViewScreenWithEmptyDeviceList) {
       future;
   spotlight_service_.ViewScreen(kStudentId, test_server_.base_url().spec(),
                                 future.GetCallback());
+  auto result = future.Get();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(google_apis::ApiErrorCode::CANCELLED, result.error());
+}
+
+TEST_F(SpotlightServiceTest, TestRegisterScreenSucceed) {
+  auto session = GetCommonTestSession();
+  EXPECT_CALL(*boca_session_manager_, GetCurrentSession())
+      .WillOnce(Return(&session));
+  base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
+      future;
+
+  net::test_server::HttpRequest http_request;
+  EXPECT_CALL(request_handler_, HandleRequest(_))
+      .WillOnce(DoAll(SaveArg<0>(&http_request),
+                      Return(MockRequestHandler::CreateSuccessfulResponse())));
+
+  spotlight_service_.RegisterScreen(
+      kConnectionCode, test_server_.base_url().spec(), future.GetCallback());
+  auto result = future.Get();
+  EXPECT_EQ(net::test_server::METHOD_POST, http_request.method);
+
+  EXPECT_EQ("/v1/sessions/session_id/viewScreen:register",
+            http_request.relative_url);
+  EXPECT_EQ("application/json", http_request.headers["Content-Type"]);
+  auto* contentData =
+      "{\"connectionParam\":{\"connectionCode\":\"456\"},\"hostDevice\":{"
+      "\"deviceInfo\":{"
+      "\"deviceId\":\"device0\"},\"user\":{\"gaiaId\":\"123\"}}}";
+  ASSERT_TRUE(http_request.has_content);
+  EXPECT_EQ(contentData, http_request.content);
+  EXPECT_TRUE(result.value());
+}
+
+TEST_F(SpotlightServiceTest, TestRegisterScreenWithEmptySession) {
+  EXPECT_CALL(*boca_session_manager_, GetCurrentSession())
+      .WillOnce(Return(nullptr));
+  base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
+      future;
+
+  spotlight_service_.RegisterScreen(
+      kConnectionCode, test_server_.base_url().spec(), future.GetCallback());
   auto result = future.Get();
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(google_apis::ApiErrorCode::CANCELLED, result.error());

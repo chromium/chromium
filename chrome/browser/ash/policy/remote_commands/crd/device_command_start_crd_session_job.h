@@ -82,6 +82,9 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   // True if the admin requested a curtained remote access session.
   bool curtain_local_user_session_ = false;
 
+  // True if the host needs to allow the admin to start the session.
+  std::optional<bool> show_confirmation_dialog_;
+
   // The email address of the admin user who issued the remote command.
   std::optional<std::string> admin_email_;
 
