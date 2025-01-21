@@ -220,5 +220,5 @@ struct AIPageContentOptions {
 interface AIPageContentAgent {
   // Provides the AIPageContent representation for this LocalFrame and all
   // LocalFrames accessible from the LocalFrameRoot.
-  GetAIPageContent(AIPageContentOptions request) => (AIPageContent page_content);
+  GetAIPageContent(AIPageContentOptions request) => (AIPageContent? page_content);
 };
