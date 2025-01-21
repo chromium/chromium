@@ -398,6 +398,10 @@ class FakeDrmDevice : public DrmDevice {
   void SetDriverName(std::optional<std::string> name);
   uint32_t GetFramebufferForCrtc(uint32_t crtc_id) const;
 
+  bool SetMaster() override;
+  bool DropMaster() override;
+  bool has_master() const override;
+
   // There is a circular reference between DrmDevice and
   // HardwareDisplayPlaneManager, as described in https://crbug.com/40263526.
   // This function can be used to break the cycle in unittests. It must be
@@ -508,6 +512,8 @@ class FakeDrmDevice : public DrmDevice {
 
   uint64_t system_watermark_limitations_ = std::numeric_limits<uint64_t>::max();
   base::flat_map<uint64_t /*modifier*/, int /*overhead*/> modifiers_overhead_;
+
+  bool has_master_ = true;
 };
 
 }  // namespace ui

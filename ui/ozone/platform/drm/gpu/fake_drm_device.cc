@@ -961,6 +961,20 @@ uint32_t FakeDrmDevice::GetFramebufferForCrtc(uint32_t crtc_id) const {
   return it != crtc_fb_.end() ? it->second : 0u;
 }
 
+bool FakeDrmDevice::SetMaster() {
+  has_master_ = true;
+  return true;
+}
+
+bool FakeDrmDevice::DropMaster() {
+  has_master_ = false;
+  return true;
+}
+
+bool FakeDrmDevice::has_master() const {
+  return has_master_;
+}
+
 void FakeDrmDevice::RunCallbacks() {
   while (!callbacks_.empty()) {
     PageFlipCallback callback = std::move(callbacks_.front());
