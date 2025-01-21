@@ -14,7 +14,11 @@
     gap: 10px;
   }
 
-  .illustration-keyboard {
+  h2 {
+    margin-bottom: 20px;
+  }
+
+  .illustration {
     height: 135px;
     width: 344px;
   }
@@ -24,6 +28,11 @@
     padding-right: var(--cr-section-padding);
     padding-left: var(--cr-section-padding);
     padding-bottom: 0;
+  }
+
+  .keyboard-preview-separator {
+    border-top: var(--cr-separator-line);
+    margin: 0 20px;
   }
 
   settings-toggle-button {
@@ -89,21 +98,36 @@
   </settings-card>
   <settings-card>
     <div id="primaryKeysPreview"
-      class="keyboard-preview"
+      class="keyboard-preview" 
       hidden$="[[!prefs.settings.a11y.mouse_keys.use_primary_keys.value]]">
-      <p>$i18n{primaryKeyTitle}</p>
+      <h2>$i18n{primaryKeyTitle}</h2>
         <div class="grid-container">
           <template is="dom-repeat"
             items="[[getPrimaryKeyboardPreviewOptions_(prefs.settings.a11y.mouse_keys.dominant_hand.value)]]"
             as="option">
               <div class="grid-item">
                 <iron-icon icon="[[option.icon]]"
-                  class="illustration-keyboard">
+                  class="illustration">
                 </iron-icon>
                 <p>[[option.label]]</p>
               </div>
           </template>
         </div>
+    </div>
+    <div class="keyboard-preview-separator"></div>
+    <div class="keyboard-preview">
+      <h2>$i18n{numKeypadTitle}</h2>
+      <div class="grid-container">
+        <template is="dom-repeat"
+          items="[[numKeypadPreviewOptions]]" as="option">
+            <div class="grid-item">
+              <iron-icon icon="[[option.icon]]"
+                class="illustration">
+              </iron-icon>
+              <p>[[option.label]]</p>
+            </div>
+        </template>
+      </div>
     </div>
   </settings-card>
 </div>

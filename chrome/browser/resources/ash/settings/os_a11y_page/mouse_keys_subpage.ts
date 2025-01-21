@@ -164,6 +164,42 @@ export class SettingsMouseKeysSubpageElement extends
           ];
         },
       },
+
+      numKeypadPreviewOptions: {
+        readOnly: true,
+        type: Array,
+        value() {
+          return [
+            {
+              icon: 'os-settings-illo:mouse-keys-num-keypad-cursor-control',
+              label: loadTimeData.getString('numPadKeyMoveCursor'),
+            },
+            {
+              icon: 'os-settings-illo:mouse-keys-num-keypad-press-mouse-button',
+              label: loadTimeData.getString('numPadKeyPressMouseButton'),
+            },
+            {
+              icon:
+                  'os-settings-illo:mouse-keys-num-keypad-change-mouse-button',
+              label: loadTimeData.getString('numPadKeySelectMouseButton'),
+            },
+            {
+              icon: 'os-settings-illo:mouse-keys-num-keypad-double-click',
+              label: loadTimeData.getString('numPadKeyDoubleClick'),
+            },
+            {
+              icon: 'os-settings-illo:mouse-keys-num-keypad-hold-mouse-button',
+              label: loadTimeData.getString('numPadKeyHoldMouseButton'),
+            },
+            {
+              icon:
+                  'os-settings-illo:mouse-keys-num-keypad-release-mouse-button',
+              label: loadTimeData.getString('numPadKeyReleaseMouseButton'),
+            },
+          ];
+        },
+      },
+
     };
   }
 
