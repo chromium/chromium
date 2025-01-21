@@ -844,7 +844,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // ::GetGpuMemoryBuffer() and ::GetGpuMemoryBufferForTesting() once all
   // friends and tests are converted.
   friend class VideoEncodeAcceleratorAdapter;
-  friend gfx::GenericSharedMemoryId GetSharedMemoryId(const VideoFrame& frame);
 
   // The constructor of VideoFrame should use IsValidConfigInternal()
   // instead of the public IsValidConfig() to check the config, because we can

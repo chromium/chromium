@@ -537,16 +537,6 @@ scoped_refptr<gfx::NativePixmapDmaBuf> CreateNativePixmapDmaBuf(
   return native_pixmap;
 }
 
-gfx::GenericSharedMemoryId GetSharedMemoryId(const VideoFrame& frame) {
-  if (auto* gmb = frame.GetGpuMemoryBuffer()) {
-    return gmb->GetId();
-  }
-  if (frame.HasDmaBufs()) {
-    return gfx::GenericSharedMemoryId(frame.GetDmabufFd(0));
-  }
-  NOTREACHED() << "The frame is not backed by shared memory";
-}
-
 bool CanImportGpuMemoryBufferHandle(
     const gfx::Size& size,
     gfx::BufferFormat format,
