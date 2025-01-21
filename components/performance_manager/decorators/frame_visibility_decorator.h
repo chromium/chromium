@@ -55,7 +55,6 @@ class FrameVisibilityDecorator : public GraphOwnedDefaultImpl,
   void OnIsCapturingWindowChanged(const PageNode* page_node) override {}
   void OnIsCapturingDisplayChanged(const PageNode* page_node) override {}
   void OnIsAutoDiscardableChanged(const PageNode* page_node) override {}
-  void OnWasDiscardedChanged(const PageNode* page_node) override {}
   void OnIsActiveTabChanged(const PageNode* page_node) override {}
   void OnIsPinnedTabChanged(const PageNode* page_node) override {}
   void OnIsDevToolsOpenChanged(const PageNode* page_node) override {}

@@ -54,7 +54,6 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
     kOnIsCapturingWindowChanged,
     kOnIsCapturingDisplayChanged,
     kOnIsAutoDiscardableChanged,
-    kOnWasDiscardedChanged,
     kOnIsActiveTabChanged,
     kOnIsPinnedTabChanged,
     kOnIsDevToolsOpenChanged,
@@ -104,10 +103,6 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
   }
   void OnIsAutoDiscardableChanged(const PageNode* page_node) override {
     latest_function_called_ = ObserverFunction::kOnIsAutoDiscardableChanged;
-    page_node_passed_ = page_node;
-  }
-  void OnWasDiscardedChanged(const PageNode* page_node) override {
-    latest_function_called_ = ObserverFunction::kOnWasDiscardedChanged;
     page_node_passed_ = page_node;
   }
   void OnIsActiveTabChanged(const PageNode* page_node) override {
@@ -333,16 +328,6 @@ TEST_F(PageLiveStateDecoratorTest, SetIsAutoDiscardable) {
       /*default_state=*/true);
   VerifyObserverExpectationOnPMSequence(
       TestPageLiveStateObserver::ObserverFunction::kOnIsAutoDiscardableChanged);
-}
-
-TEST_F(PageLiveStateDecoratorTest, OnWasDiscardedChanged) {
-  testing::EndToEndBooleanPropertyTest(
-      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
-      &PageLiveStateDecorator::Data::WasDiscarded,
-      &PageLiveStateDecorator::SetWasDiscarded,
-      /*default_state=*/false);
-  VerifyObserverExpectationOnPMSequence(
-      TestPageLiveStateObserver::ObserverFunction::kOnWasDiscardedChanged);
 }
 
 TEST_F(PageLiveStateDecoratorTest, OnIsActiveTabChanged) {

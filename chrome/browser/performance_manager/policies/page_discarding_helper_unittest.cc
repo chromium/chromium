@@ -369,7 +369,9 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardIsConnectedToUSBDevice) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageMultipleTimes) {
+// TODO(crbug.com/391179510): Remove this test if the WasDiscarded() property is
+// removed.
+TEST_F(PageDiscardingHelperTest, DISABLED_TestCannotDiscardPageMultipleTimes) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetWasDiscardedForTesting(true);
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::URGENT));

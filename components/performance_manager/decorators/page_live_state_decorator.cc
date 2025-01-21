@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/decorators/decorators_utils.h"
@@ -241,8 +242,6 @@ class PageLiveStateDataImpl
     if (was_discarded_ == was_discarded)
       return;
     was_discarded_ = was_discarded;
-    for (auto& obs : observers_)
-      obs.OnWasDiscardedChanged(page_node_);
   }
   void set_is_active_tab(bool is_active_tab) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -410,6 +409,11 @@ void PageLiveStateDecorator::SetIsAutoDiscardable(
 // static
 void PageLiveStateDecorator::SetWasDiscarded(content::WebContents* contents,
                                              bool was_discarded) {
+  // TODO(crbug.com/391179510): This check validates the assumption that the
+  // WasDiscarded() property is not set correctly. If that assumption holds,
+  // remove all code that depends on it as discussed on the bug.
+  CHECK(!was_discarded, base::NotFatalUntil::M136);
+
   SetPropertyForWebContentsPageNode(
       contents, &PageLiveStateDataImpl::set_was_discarded, was_discarded);
 }
