@@ -88,11 +88,11 @@ source_set("task_manager") {
     ]
     public_deps += [
       "//ash/components/arc/mojom",
-      "//chrome/browser/ash/arc/process",
       "//chromeos/ash/components/dbus/concierge",
       "//chromeos/ash/components/dbus/concierge:concierge_proto",
       "//chromeos/ash/components/process_snapshot",
       "//chromeos/ash/experiences/arc/intent_helper",
+      "//chromeos/ash/experiences/arc/process",
       "//chromeos/ash/experiences/arc/session:connection_holder",
       "//chromeos/crosapi/mojom",
     ]
@@ -231,12 +231,12 @@ source_set("impl") {
     deps += [
       "//ash/components/arc:arc_base_utils",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
-      "//chrome/browser/ash/arc/process",
       "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/crostini",
       "//chrome/browser/ash/plugin_vm",
       "//chromeos/ash/components/dbus/concierge",
       "//chromeos/ash/experiences/arc/intent_helper",
+      "//chromeos/ash/experiences/arc/process",
       "//chromeos/ash/experiences/arc/session",
     ]
   }

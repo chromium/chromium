@@ -17,10 +17,10 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/arc/process/arc_process_service.h"
 #include "chrome/browser/performance_manager/mechanisms/working_set_trimmer_chromeos.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy.h"
+#include "chromeos/ash/experiences/arc/process/arc_process_service.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "content/public/browser/browser_thread.h"
 

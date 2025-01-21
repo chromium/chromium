@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ARC_PROCESS_ARC_PROCESS_SERVICE_H_
-#define CHROME_BROWSER_ASH_ARC_PROCESS_ARC_PROCESS_SERVICE_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_PROCESS_ARC_PROCESS_SERVICE_H_
+#define CHROMEOS_ASH_EXPERIENCES_ARC_PROCESS_ARC_PROCESS_SERVICE_H_
 
 #include <map>
 #include <memory>
@@ -19,8 +19,8 @@
 #include "base/process/process_iterator.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/arc/process/arc_process.h"
 #include "chromeos/ash/components/process_snapshot/process_snapshot_server.h"
+#include "chromeos/ash/experiences/arc/process/arc_process.h"
 #include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -215,4 +215,4 @@ class ArcProcessService : public KeyedService,
 
 }  // namespace arc
 
-#endif  // CHROME_BROWSER_ASH_ARC_PROCESS_ARC_PROCESS_SERVICE_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_PROCESS_ARC_PROCESS_SERVICE_H_

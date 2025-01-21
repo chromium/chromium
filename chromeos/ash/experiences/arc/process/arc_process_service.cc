@@ -7,7 +7,7 @@
 // used. All read/write of its internal data structure (i.e., the mapping)
 // should be on this thread.
 
-#include "chrome/browser/ash/arc/process/arc_process_service.h"
+#include "chromeos/ash/experiences/arc/process/arc_process_service.h"
 
 #include <algorithm>
 #include <set>
