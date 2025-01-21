@@ -261,8 +261,7 @@ class DeviceCommandFetchSupportPacketBrowserTestParameterized
     ash::FakeChromeUserManager* fake_user_manager =
         static_cast<ash::FakeChromeUserManager*>(
             user_manager::UserManager::Get());
-    fake_user_manager->SetUserAffiliationForTesting(user.account_id,
-                                                    is_affiliated);
+    fake_user_manager->SetUserAffiliated(user.account_id, is_affiliated);
   }
 
   void LaunchMGS() {

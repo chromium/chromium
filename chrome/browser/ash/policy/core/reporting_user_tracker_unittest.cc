@@ -55,9 +55,9 @@ TEST_F(ReportingUserTrackerTest, RegularUserAffiliation) {
 
   // Only users marked as affiliated are the target for reporting.
   EXPECT_FALSE(tracker().ShouldReportUser(kUserEmail));
-  user_manager().SetUserAffiliationForTesting(account_id, true);
+  user_manager().SetUserAffiliated(account_id, true);
   EXPECT_TRUE(tracker().ShouldReportUser(kUserEmail));
-  user_manager().SetUserAffiliationForTesting(account_id, false);
+  user_manager().SetUserAffiliated(account_id, false);
   EXPECT_FALSE(tracker().ShouldReportUser(kUserEmail));
 }
 
@@ -66,10 +66,10 @@ TEST_F(ReportingUserTrackerTest, NonRegularUserAffiliation) {
   const auto account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager().AddChildUser(account_id);
   EXPECT_FALSE(tracker().ShouldReportUser(kUserEmail));
-  user_manager().SetUserAffiliationForTesting(account_id, true);
+  user_manager().SetUserAffiliated(account_id, true);
   // No impact on setting affiliation.
   EXPECT_FALSE(tracker().ShouldReportUser(kUserEmail));
-  user_manager().SetUserAffiliationForTesting(account_id, false);
+  user_manager().SetUserAffiliated(account_id, false);
   EXPECT_FALSE(tracker().ShouldReportUser(kUserEmail));
 }
 
@@ -77,7 +77,7 @@ TEST_F(ReportingUserTrackerTest, Persistency) {
   constexpr char kUserEmail[] = "test@test";
   const auto account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager().AddUser(account_id);
-  user_manager().SetUserAffiliationForTesting(account_id, true);
+  user_manager().SetUserAffiliated(account_id, true);
   EXPECT_TRUE(tracker().ShouldReportUser(kUserEmail));
 
   // Whether or not to report is persistent.
@@ -94,7 +94,7 @@ TEST_F(ReportingUserTrackerTest, UserRemoval) {
   // When user is removed, ShouldReportUser should be updated, too.
   const auto account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager().AddUser(account_id);
-  user_manager().SetUserAffiliationForTesting(account_id, true);
+  user_manager().SetUserAffiliated(account_id, true);
   EXPECT_TRUE(tracker().ShouldReportUser(kUserEmail));
 
   user_manager().RemoveUser(account_id,

@@ -499,20 +499,6 @@ bool FakeChromeUserManager::IsDeviceLocalAccountMarkedForRemoval(
   return false;
 }
 
-void FakeChromeUserManager::SetUserAffiliated(const AccountId& account_id,
-                                              bool is_affiliated) {}
-
-void FakeChromeUserManager::SetUserAffiliationForTesting(
-    const AccountId& account_id,
-    bool is_affiliated) {
-  auto* user = FindUserAndModify(account_id);
-  if (!user) {
-    return;
-  }
-  user->SetAffiliated(is_affiliated);
-  NotifyUserAffiliationUpdated(*user);
-}
-
 user_manager::User* FakeChromeUserManager::GetActiveUserInternal() const {
   if (active_user_ != nullptr) {
     return active_user_;
