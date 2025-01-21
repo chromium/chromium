@@ -237,7 +237,6 @@ void HttpStreamPool::Group::ReleaseStreamSocket(
 
 void HttpStreamPool::Group::AddIdleStreamSocket(
     std::unique_ptr<StreamSocket> socket) {
-  CHECK(socket->IsConnectedAndIdle());
   CHECK(IsNegotiatedProtocolTextBased(socket->GetNegotiatedProtocol()));
   CHECK_LE(ActiveStreamSocketCount(), pool_->max_stream_sockets_per_group());
 
