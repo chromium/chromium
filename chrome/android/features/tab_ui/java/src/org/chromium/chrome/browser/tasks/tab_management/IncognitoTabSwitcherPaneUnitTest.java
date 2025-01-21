@@ -46,6 +46,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.LoadHint;
@@ -87,6 +88,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
             mIncognitoReauthControllerSupplier = new OneshotSupplierImpl<>();
     private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<CompositorViewHolder> mCompositorViewHolderSupplier =
+            new ObservableSupplierImpl<>();
 
     private Context mContext;
     private IncognitoTabSwitcherPane mIncognitoTabSwitcherPane;
@@ -125,7 +128,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
                         mIncognitoReauthControllerSupplier,
                         mOnAlphaChange,
                         mUserEducationHelper,
-                        mEdgeToEdgeSupplier);
+                        mEdgeToEdgeSupplier,
+                        mCompositorViewHolderSupplier);
     }
 
     @After

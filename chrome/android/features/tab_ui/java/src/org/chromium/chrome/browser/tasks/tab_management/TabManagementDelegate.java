@@ -19,6 +19,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
@@ -105,6 +106,7 @@ public interface TabManagementDelegate {
      * @param desktopWindowStateManager Manager to get desktop window and app header state.
      * @param tabModelNotificationDotSupplier Supplier for whether the notification dot should show
      *     on the tab switcher drawable.
+     * @param compositorViewHolderSupplier Supplier to the {@link CompositorViewHolder} instance.
      */
     Pair<TabSwitcher, Pane> createTabSwitcherPane(
             @NonNull Activity activity,
@@ -127,7 +129,8 @@ public interface TabManagementDelegate {
             @NonNull BackPressManager backPressManager,
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            @NonNull ObservableSupplier<Boolean> tabModelNotificationDotSupplier);
+            @NonNull ObservableSupplier<Boolean> tabModelNotificationDotSupplier,
+            @NonNull ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier);
 
     /**
      * Create a {@link TabGroupsPane} for the Hub.
