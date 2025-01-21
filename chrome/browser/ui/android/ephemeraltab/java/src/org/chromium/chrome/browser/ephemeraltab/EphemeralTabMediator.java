@@ -279,5 +279,6 @@ public class EphemeralTabMediator {
         mSheetContent = null;
         mProfile = null;
         clearObservers();
+        mFaviconLoader.destroy();
     }
 }
