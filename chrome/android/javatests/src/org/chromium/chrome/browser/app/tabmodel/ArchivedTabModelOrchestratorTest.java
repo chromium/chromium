@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.chrome.browser.tabmodel.TabList.INVALID_TAB_INDEX;
@@ -31,6 +32,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -51,6 +53,8 @@ import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabArchiverImpl;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -102,6 +106,7 @@ public class ArchivedTabModelOrchestratorTest {
     @Mock private ObservableSupplierImpl<Boolean> mSkipSaveTabListSupplier;
     @Mock private TabPersistentStore mArchivedTabPersistentStore;
     @Mock private TabPersistentStore mNormalTabPersistentStore;
+    @Mock private TabModelSelectorBase mTabModelSelector;
 
     private Profile mProfile;
     private FakeDeferredStartupHandler mDeferredStartupHandler;
@@ -291,7 +296,6 @@ public class ArchivedTabModelOrchestratorTest {
                                                 .getActivity()
                                                 .getTabModelOrchestratorSupplier()
                                                 .get()));
-
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
 
@@ -342,7 +346,6 @@ public class ArchivedTabModelOrchestratorTest {
                                                 .getActivity()
                                                 .getTabModelOrchestratorSupplier()
                                                 .get()));
-
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
 
@@ -380,9 +383,15 @@ public class ArchivedTabModelOrchestratorTest {
         mActivityTestRule.loadUrlInNewTab(
                 mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
 
+        assertEquals(2, mRegularTabModel.getCount());
+
         setupDeclutterSettingsForTest();
         runOnUiThreadBlocking(
                 () -> {
+                    when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+                    ArgumentCaptor<TabModelSelectorObserver> observerCaptor =
+                            ArgumentCaptor.forClass(TabModelSelectorObserver.class);
+                    mOrchestrator.setTabModelSelectorForTesting(mTabModelSelector);
                     mOrchestrator.doDeclutterPass(
                             (TabbedModeTabModelOrchestrator)
                                     mActivityTestRule
@@ -392,6 +401,8 @@ public class ArchivedTabModelOrchestratorTest {
                     // Destroying this after a task has been queued should destroy the callback
                     // controller and skip the declutter process.
                     ArchivedTabModelOrchestrator.destroyProfileKeyedMap();
+                    verify(mTabModelSelector).addObserver(observerCaptor.capture());
+                    observerCaptor.getValue().onTabStateInitialized();
                 });
 
         assertEquals(2, mRegularTabModel.getCount());

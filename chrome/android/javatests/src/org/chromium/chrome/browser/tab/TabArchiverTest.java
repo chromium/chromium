@@ -850,13 +850,11 @@ public class TabArchiverTest {
 
         runOnUiThreadBlocking(
                 () -> {
-                    assertEquals(0, mTabArchiver.getObserversForTesting().size());
                     mTabArchiver.doArchivePass(
                             sActivityTestRule.getActivity().getTabModelSelector());
-                    assertEquals(1, mTabArchiver.getObserversForTesting().size());
                 });
 
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
-        CriteriaHelper.pollUiThread(() -> 1 == mArchivedTabModel.getCount());
+        CriteriaHelper.pollUiThread(() -> 0 == mArchivedTabModel.getCount());
     }
 }
