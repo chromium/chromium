@@ -127,6 +127,7 @@ robolectric_library("junit") {
     "//components/segmentation_platform/public:public_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appsearch_appsearch_builtin_types_java",
     "//third_party/androidx:androidx_appsearch_appsearch_java",
     "//third_party/androidx:androidx_test_core_java",
