@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_socket.h"
 
-#include "base/barrier_callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -256,14 +255,14 @@ void TCPSocket::FinishOpenOrAccept(
   socket_observer_.set_disconnect_handler(
       WTF::BindOnce(&TCPSocket::OnSocketConnectionError, WrapPersistent(this)));
 
-  auto close_callback = base::BarrierCallback<ScriptValue>(
-      /*num_callbacks=*/2,
-      WTF::BindOnce(&TCPSocket::OnBothStreamsClosed, WrapWeakPersistent(this)));
-
   readable_stream_wrapper_ = MakeGarbageCollected<TCPReadableStreamWrapper>(
-      GetScriptState(), close_callback, std::move(receive_stream));
+      GetScriptState(),
+      WTF::BindOnce(&TCPSocket::OnStreamClosed, WrapWeakPersistent(this)),
+      std::move(receive_stream));
   writable_stream_wrapper_ = MakeGarbageCollected<TCPWritableStreamWrapper>(
-      GetScriptState(), close_callback, std::move(send_stream));
+      GetScriptState(),
+      WTF::BindOnce(&TCPSocket::OnStreamClosed, WrapWeakPersistent(this)),
+      std::move(send_stream));
 
   auto* open_info = TCPSocketOpenInfo::Create();
 
@@ -321,6 +320,7 @@ void TCPSocket::Trace(Visitor* visitor) const {
   visitor->Trace(opened_);
   visitor->Trace(readable_stream_wrapper_);
   visitor->Trace(writable_stream_wrapper_);
+  visitor->Trace(stream_error_);
 
   ScriptWrappable::Trace(visitor);
   Socket::Trace(visitor);
@@ -338,16 +338,29 @@ void TCPSocket::ContextDestroyed() {
   ReleaseResources();
 }
 
-void TCPSocket::OnBothStreamsClosed(std::vector<ScriptValue> args) {
+void TCPSocket::OnStreamClosed(v8::Local<v8::Value> exception) {
   DCHECK_EQ(GetState(), State::kOpen);
-  DCHECK_EQ(args.size(), 2U);
+  DCHECK_LE(streams_closed_count_, 1);
 
-  // Finds first actual exception and rejects |closed| with it.
+  if (stream_error_.IsEmpty() && !exception.IsEmpty()) {
+    stream_error_.Reset(GetScriptState()->GetIsolate(), exception);
+  }
+
+  if (++streams_closed_count_ == 2) {
+    OnBothStreamsClosed();
+  }
+}
+
+void TCPSocket::OnBothStreamsClosed() {
+  // If one of the streams was errored, rejects |closed| with the first
+  // exception.
   // If neither stream was errored, resolves |closed|.
-  if (auto it = base::ranges::find_if_not(args, &ScriptValue::IsEmpty);
-      it != args.end()) {
-    GetClosedProperty().Reject(*it);
+  if (!stream_error_.IsEmpty()) {
+    auto* isolate = GetScriptState()->GetIsolate();
+    GetClosedProperty().Reject(
+        ScriptValue(isolate, stream_error_.Get(isolate)));
     SetState(State::kAborted);
+    stream_error_.Reset();
   } else {
     GetClosedProperty().ResolveWithUndefined();
     SetState(State::kClosed);

@@ -91,7 +91,7 @@ void UDPReadableStreamWrapper::CloseStream() {
 
   socket_listener_.reset();
 
-  std::move(on_close_).Run(/*exception=*/ScriptValue());
+  std::move(on_close_).Run(/*exception=*/v8::Local<v8::Value>());
 }
 
 void UDPReadableStreamWrapper::ErrorStream(int32_t error_code) {
@@ -111,14 +111,12 @@ void UDPReadableStreamWrapper::ErrorStream(int32_t error_code) {
   // ScriptValue.
   ScriptState::Scope scope{script_state};
 
-  auto exception = ScriptValue(
-      script_state->GetIsolate(),
-      V8ThrowDOMException::CreateOrDie(script_state->GetIsolate(),
-                                       DOMExceptionCode::kNetworkError,
-                                       String{"Stream aborted by the remote: " +
-                                              net::ErrorToString(error_code)}));
+  auto exception = V8ThrowDOMException::CreateOrDie(
+      script_state->GetIsolate(), DOMExceptionCode::kNetworkError,
+      String{"Stream aborted by the remote: " +
+             net::ErrorToString(error_code)});
 
-  Controller()->Error(exception.V8Value());
+  Controller()->Error(exception);
 
   std::move(on_close_).Run(exception);
 }

@@ -107,7 +107,10 @@ class MODULES_EXPORT UDPSocket final : public ScriptWrappable,
   // Resets mojo resources held by this class.
   void ReleaseResources();
 
-  void OnBothStreamsClosed(std::vector<ScriptValue> args);
+  // Invoked when one of the streams (readable or writable) closes.
+  // `exception` is non-empty iff the stream closed with an error.
+  void OnStreamClosed(v8::Local<v8::Value> exception);
+  void OnBothStreamsClosed();
 
   Member<UDPSocketMojoRemote> udp_socket_;
 
@@ -115,6 +118,13 @@ class MODULES_EXPORT UDPSocket final : public ScriptWrappable,
 
   Member<UDPReadableStreamWrapper> readable_stream_wrapper_;
   Member<UDPWritableStreamWrapper> writable_stream_wrapper_;
+
+  // Always less or equal to 2 (readable + writable).
+  int streams_closed_count_ = 0;
+
+  // Stores the first encountered stream error to be reported after both streams
+  // close.
+  TraceWrapperV8Reference<v8::Value> stream_error_;
 };
 
 }  // namespace blink
