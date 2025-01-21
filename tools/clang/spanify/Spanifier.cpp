@@ -29,6 +29,11 @@ using namespace clang::ast_matchers;
 
 namespace {
 
+// Forward declarations
+std::string GetArraySize(const clang::ArrayTypeLoc& array_type_loc,
+                         const clang::SourceManager& source_manager,
+                         const clang::ASTContext& ast_context);
+
 // Special keywords:
 constexpr char kEmptyKeyword[] = "<empty>";
 
@@ -63,6 +68,10 @@ AST_MATCHER_P(clang::FunctionDecl,
   }
   *Builder = std::move(result);
   return is_matching;
+}
+
+AST_MATCHER(clang::ParmVarDecl, isArrayParm) {
+  return Node.getOriginalType()->isArrayType();
 }
 
 std::string EscapeReplacementText(std::string text) {
@@ -248,35 +257,6 @@ std::string GetTypeAsString(const clang::QualType& qual_type,
   return qual_type.getAsString(printing_policy);
 }
 
-// This functions generates a string representing the converted type from a
-// raw pointer type to a base::span type. It handles preservation of
-// const/volatile qualifiers and uses a specific printing policy to format the
-// underlying pointee type.
-// This functions generates a string representing the converted type from a
-// raw pointer type to a base::span type. It handles preservation of
-// const/volatile qualifiers and uses a specific printing policy to format the
-// underlying pointee type.
-std::string GenerateSpanType(clang::SourceManager& source_manager,
-                             const clang::ASTContext& ast_context,
-                             const clang::DeclaratorDecl& decl) {
-  // Preserve qualifiers.
-  const clang::QualType& pointer_type = decl.getType();
-  std::ostringstream qualifiers;
-  qualifiers << (pointer_type.isConstQualified() ? "const " : "")
-             << (pointer_type.isVolatileQualified() ? "volatile " : "");
-
-  // If the original type cannot be recovered from the source, we need to
-  // consult the clang deduced type.
-  //
-  // Please note that the deduced type may not be the same as the original type.
-  // For example, if we have the following code:
-  //   const auto* p = get_buffer<uint16_t>();
-  // we will get:`unsigned short` instead of `uint16_t`.
-  std::string type =
-      GetTypeAsString(pointer_type->getPointeeType(), ast_context);
-  return qualifiers.str() + llvm::formatv("base::span<{0}>", type).str();
-}
-
 // It is intentional that this function ignores cast expressions and applies
 // the `.data()` addition to the internal expression. if we have:
 // type* ptr = reinterpret_cast<type*>(buf);  where buf needs to be rewritten
@@ -419,9 +399,66 @@ static Node getNodeFromDecl(const clang::DeclaratorDecl* decl,
                             const MatchFinder::MatchResult& result) {
   clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
+
+  // By default, the replacement_range includes type only and doesn't include
+  // the identifier. E.g. "const int*" of "const int* ptr".
+  // However, in case of array types, it'll be expanded to include the
+  // identifier and brackets. E.g. "const int arr[3]" as the entire thing.
   clang::SourceRange replacement_range{decl->getBeginLoc(),
                                        decl->getLocation()};
-  auto replacement_text = GenerateSpanType(source_manager, ast_context, *decl);
+  std::string replacement_text;
+
+  // Preserve qualifiers.
+  const clang::QualType& qual_type = decl->getType();
+  std::ostringstream qualifiers;
+  qualifiers << (qual_type.isConstQualified() ? "const " : "")
+             << (qual_type.isVolatileQualified() ? "volatile " : "");
+
+  // If the original type cannot be recovered from the source, we need to
+  // consult the clang deduced type.
+  //
+  // Please note that the deduced type may not be the same as the original type.
+  // For example, if we have the following code:
+  //   const auto* p = get_buffer<uint16_t>();
+  // we will get:`unsigned short` instead of `uint16_t`.
+  std::string type = GetTypeAsString(qual_type->getPointeeType(), ast_context);
+
+  // Assume the original type is a pointer type. When this is not the case, it
+  // is mutated below.
+  replacement_text =
+      qualifiers.str() + llvm::formatv("base::span<{0}>", type).str();
+
+  // If the declaration is a function parameter of an array type, try to extract
+  // the exact span size.
+  if (auto* parm_var_decl = clang::dyn_cast_or_null<clang::ParmVarDecl>(decl)) {
+    const auto* type_loc =
+        result.Nodes.getNodeAs<clang::TypeLoc>("array_type_loc");
+    if (const clang::QualType& array_type = parm_var_decl->getOriginalType();
+        array_type->isArrayType() && type_loc) {
+      if (const clang::ArrayTypeLoc& array_type_loc =
+              type_loc->getUnqualifiedLoc().getAs<clang::ArrayTypeLoc>();
+          !array_type_loc.isNull()) {
+        const std::string& array_size_as_string =
+            GetArraySize(array_type_loc, source_manager, ast_context);
+        std::string span_type;
+        if (array_size_as_string.empty()) {
+          span_type = llvm::formatv("base::span<{0}> ", type).str();
+        } else {
+          span_type =
+              llvm::formatv("base::span<{0}, {1}> ", type, array_size_as_string)
+                  .str();
+        }
+        // In case of array types, replacement_range is expanded to include the
+        // brackets, and replacement_text includes the identifier accordingly.
+        // E.g. "const int arr[3]" and "const base::span<int, 3> arr".
+        replacement_range.setEnd(
+            array_type_loc.getRBracketLoc().getLocWithOffset(1));
+        replacement_text =
+            qualifiers.str() + span_type + decl->getNameAsString();
+      }
+    }
+  }
+
   auto replacement_and_include_pair = GetReplacementAndIncludeDirectives(
       replacement_range, replacement_text, source_manager);
   Node n;
@@ -1451,10 +1488,26 @@ class Spanifier {
     auto rhs_var = varDecl(rhs_type_loc, unless(exclusions)).bind("rhs_begin");
 
     auto lhs_param =
-        parmVarDecl(lhs_type_loc, unless(exclusions)).bind("lhs_begin");
+        parmVarDecl(
+            anyOf(lhs_type_loc,
+                  // In addition to pointer type params, we'd like to rewrite
+                  // array type params with base::span<T, size>.
+                  allOf(isArrayParm(),
+                        hasTypeLoc(
+                            loc(qualType(anything())).bind("array_type_loc")))),
+            unless(exclusions))
+            .bind("lhs_begin");
 
     auto rhs_param =
-        parmVarDecl(rhs_type_loc, unless(exclusions)).bind("rhs_begin");
+        parmVarDecl(
+            anyOf(rhs_type_loc,
+                  // In addition to pointer type params, we'd like to rewrite
+                  // array type params with base::span<T, size>.
+                  allOf(isArrayParm(),
+                        hasTypeLoc(
+                            loc(qualType(anything())).bind("array_type_loc")))),
+            unless(exclusions))
+            .bind("rhs_begin");
 
     // Exclude functions returning literal strings as these need to become
     // string_view.
