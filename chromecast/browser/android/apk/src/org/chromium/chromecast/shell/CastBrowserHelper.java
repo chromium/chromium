@@ -40,7 +40,7 @@ public class CastBrowserHelper {
                         new BrowserStartupController.StartupCallback() {
                             @Override
                             public void onSuccess() {
-                                Log.e(TAG, "Browser initialization succeeded");
+                                Log.i(TAG, "Browser initialization succeeded");
                                 NetworkChangeNotifier.init();
                                 // Cast shell always expects to receive notifications to track
                                 // network state.
