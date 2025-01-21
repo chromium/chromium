@@ -49,13 +49,36 @@ TEST_F(MicrosoftAuthServiceTest, SetAccessToken) {
   auth_service().SetAccessToken(std::move(access_token));
 
   EXPECT_EQ(auth_service().GetAccessToken(), "1234");
+  EXPECT_EQ(auth_service().GetAuthState(),
+            new_tab_page::mojom::AuthState::kSuccess);
 
   // Wait for 30 seconds before expiration.
   task_environment().AdvanceClock(base::Minutes(4.5));
 
   EXPECT_TRUE(auth_service().GetAccessToken().empty());
+  EXPECT_EQ(auth_service().GetAuthState(),
+            new_tab_page::mojom::AuthState::kNone);
 }
 
 TEST_F(MicrosoftAuthServiceTest, GetEmptyAccessToken) {
   EXPECT_TRUE(auth_service().GetAccessToken().empty());
+}
+
+TEST_F(MicrosoftAuthServiceTest, GetAuthState) {
+  EXPECT_EQ(auth_service().GetAuthState(),
+            new_tab_page::mojom::AuthState::kNone);
+
+  auth_service().SetAuthStateError();
+
+  EXPECT_EQ(auth_service().GetAuthState(),
+            new_tab_page::mojom::AuthState::kError);
+
+  new_tab_page::mojom::AccessTokenPtr access_token =
+      new_tab_page::mojom::AccessToken::New();
+  access_token->token = "1234";
+  access_token->expiration = base::Time::Now() + base::Minutes(5);
+  auth_service().SetAccessToken(std::move(access_token));
+
+  EXPECT_EQ(auth_service().GetAuthState(),
+            new_tab_page::mojom::AuthState::kSuccess);
 }
