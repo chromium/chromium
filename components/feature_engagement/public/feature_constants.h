@@ -113,6 +113,7 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHBackNavigationMenuFeature);
 // should also be declared in:
 // org.chromium.components.feature_engagement.FeatureConstants.
 #if BUILDFLAG(IS_ANDROID)
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHAccountSettingsHistorySync);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHAndroidTabDeclutter);
 FEATURE_CONSTANTS_DECLARE_FEATURE(
     kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature);

@@ -21,6 +21,7 @@ namespace {
 const base::Feature* const kAllFeatures[] = {
     &kIPHDummyFeature,  // Ensures non-empty array for all platforms.
 #if BUILDFLAG(IS_ANDROID)
+    &kIPHAccountSettingsHistorySync,
     &kIPHAndroidTabDeclutter,
     &kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature,
     &kIPHAdaptiveButtonInTopToolbarCustomizationShareFeature,
