@@ -1564,6 +1564,7 @@ TEST_F(MessagingBackendServiceImplTest, TestUnselectedTabGetsRemoved) {
 TEST_F(MessagingBackendServiceImplTest, TestTabGroupRemovedInstantMessage) {
   CreateAndInitializeService();
   SetupInstantMessageDelegate();
+  AddPersistentMessageObserver();
 
   data_sharing::GroupId collaboration_group_id =
       data_sharing::GroupId("my group id");
@@ -1589,10 +1590,23 @@ TEST_F(MessagingBackendServiceImplTest, TestTabGroupRemovedInstantMessage) {
               DisplayInstantaneousMessage(_, _))
       .WillRepeatedly(
           DoAll(SaveArg<0>(&message), MoveArg<1>(&success_callback)));
+  // Save the last invocation of DisplayPersistentMessage.
+  PersistentMessage last_persistent_message;
+  EXPECT_CALL(mock_persistent_message_observer_, DisplayPersistentMessage(_))
+      .Times(1)
+      .WillOnce(SaveArg<0>(&last_persistent_message));
 
   // Removing the tab group should inform the delegate.
   tg_notifier_observer_->OnTabGroupRemoved(tab_group,
                                            tab_groups::TriggerSource::REMOTE);
+
+  // Verify persistent notification.
+  EXPECT_EQ(PersistentNotificationType::DIRTY_TAB_GROUP_REMOVED,
+            last_persistent_message.type);
+  EXPECT_EQ(CollaborationEvent::TAB_GROUP_REMOVED,
+            last_persistent_message.collaboration_event);
+  EXPECT_EQ(tab_group.saved_guid(), last_persistent_message.attribution
+                                        .tab_group_metadata->sync_tab_group_id);
 
   // We should have received a stored message about the removed tab group.
   EXPECT_NE("", db_message.uuid());

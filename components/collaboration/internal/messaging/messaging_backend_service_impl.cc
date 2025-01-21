@@ -586,6 +586,15 @@ void MessagingBackendServiceImpl::OnTabGroupRemoved(
       collaboration_pb::TAB_GROUP_REMOVED, DirtyType::kNone);
   store_->AddMessage(message);
 
+  PersistentMessage persistent_message = CreatePersistentMessage(
+      message, removed_group, std::nullopt,
+      PersistentNotificationType::DIRTY_TAB_GROUP_REMOVED);
+  persistent_message.collaboration_event =
+      CollaborationEvent::TAB_GROUP_REMOVED;
+  NotifyDisplayPersistentMessagesForTypes(
+      persistent_message,
+      {PersistentNotificationType::DIRTY_TAB_GROUP_REMOVED});
+
   if (instant_message_delegate_) {
     InstantMessage instant_message;
     instant_message.attribution = CreateMessageAttributionForTabUpdates(

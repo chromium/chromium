@@ -77,9 +77,12 @@ enum class PersistentNotificationType {
   CHIP,
   // A marker that a tab has been changed and the user has not seen it yet.
   DIRTY_TAB,
-  // A marker that something in the tab group has changed and the user has not
-  // seen it yet.
+  // A marker that one or more tabs in the tab group has changed and the user
+  // has not seen it yet.
   DIRTY_TAB_GROUP,
+  // A marker that a tab group has been deleted and the user has not
+  // seen it yet.
+  DIRTY_TAB_GROUP_REMOVED,
 };
 
 // Metadata about the tab group a message is attributed to.
