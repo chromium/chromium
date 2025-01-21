@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/events/ash/top_row_action_keys.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -33,6 +32,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/ranges/functional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -44,6 +44,7 @@
 #include "ui/events/ash/keyboard_layout_util.h"
 #include "ui/events/ash/mojom/meta_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
+#include "ui/events/ash/top_row_action_keys.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/input_device_event_observer.h"

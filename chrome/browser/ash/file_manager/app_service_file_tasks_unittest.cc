@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/functional.h"
 #include "base/strings/escape.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"

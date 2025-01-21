@@ -13,6 +13,7 @@
 #include "ash/quick_insert/views/quick_insert_traversable_item_container.h"
 #include "base/notimplemented.h"
 #include "base/ranges/algorithm.h"
+#include "base/ranges/functional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"

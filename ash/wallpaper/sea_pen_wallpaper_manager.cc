@@ -31,6 +31,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "base/ranges/functional.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
