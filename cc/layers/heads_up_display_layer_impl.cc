@@ -174,18 +174,6 @@ class HudSoftwareBacking : public ResourcePool::SoftwareBacking {
     shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
   }
 
-  void OnMemoryDump(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-      uint64_t tracing_process_id,
-      int importance) const override {
-    if (!shared_image) {
-      return;
-    }
-
-    shared_image->OnMemoryDump(pmd, buffer_dump_guid, importance);
-  }
-
   raw_ptr<LayerTreeFrameSink> layer_tree_frame_sink;
 };
 

@@ -1775,13 +1775,6 @@ TEST_F(TileManagerTilePriorityQueueTest, NoRasterTasksforSolidColorTiles) {
 
 class TestSoftwareBacking : public ResourcePool::SoftwareBacking {
  public:
-  // No tracing is done during these tests.
-  void OnMemoryDump(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-      uint64_t tracing_process_id,
-      int importance) const override {}
-
   std::unique_ptr<uint32_t[]> pixels;
 };
 
