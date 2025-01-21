@@ -5939,6 +5939,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "Ads.InterestGroup.ServerAuction.TimeToResolve", 0);
   histogram_tester.ExpectTotalCount("Ads.InterestGroup.Auction.TimeToResolve",
                                     1);
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.ServerAuction.TimeFromInputsResolvedToAuctionResolved",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.Auction.TimeFromInputsResolvedToAuctionResolved", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
@@ -5987,6 +5992,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "Ads.InterestGroup.ServerAuction.TimeToResolve", 0);
   histogram_tester.ExpectTotalCount("Ads.InterestGroup.Auction.TimeToResolve",
                                     0);
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.ServerAuction.TimeFromInputsResolvedToAuctionResolved",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.Auction.TimeFromInputsResolvedToAuctionResolved", 0);
 }
 
 // Exercise rejection path in the renderer for promise-delivered auction
@@ -15047,6 +15057,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupComponentWorkletValidationBrowserTest,
 
   for (bool use_promise : {false, true}) {
     SCOPED_TRACE(use_promise);
+    base::HistogramTester histogram_tester;
 
     const url::Origin top_frame_origin = url::Origin::Create(
         embedded_https_test_server().GetURL(kTopFrameHost, "/echo"));
@@ -15310,6 +15321,34 @@ IN_PROC_BROWSER_TEST_P(InterestGroupComponentWorkletValidationBrowserTest,
          /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt,
          component_seller_origin},
     });
+
+    // Ensure that TimeFromInputsResolvedToAuctionResolved was recorded, and is
+    // a value less than TimeToResolve since we had promise-based values to wait
+    // on.
+    content::FetchHistogramsFromChildProcesses();
+    histogram_tester.ExpectTotalCount(
+        "Ads.InterestGroup.Auction.TimeFromInputsResolvedToAuctionResolved", 1);
+    histogram_tester.ExpectTotalCount("Ads.InterestGroup.Auction.TimeToResolve",
+                                      1);
+    EXPECT_LT(0u, histogram_tester.GetTotalSum(
+                      "Ads.InterestGroup.Auction.TimeToResolve"));
+
+    // If this fails, either the auction mechanics ran amazingly fast (flake),
+    // or someone added or changed an AuctionHandleFunction and forgot to call
+    // AuctionHandle::OnResolved (bug).
+    EXPECT_LT(0u, histogram_tester.GetTotalSum(
+                      "Ads.InterestGroup.Auction."
+                      "TimeFromInputsResolvedToAuctionResolved"));
+
+    // It's possible that both fell into the same bucket (flake), in which case
+    // add some delay after the input promises have resolved. Otherwise, this is
+    // a sign that something is wrong wih
+    // TimeFromInputsResolvedToAuctionResolved.
+    EXPECT_GT(
+        histogram_tester.GetTotalSum("Ads.InterestGroup.Auction.TimeToResolve"),
+        histogram_tester.GetTotalSum(
+            "Ads.InterestGroup.Auction."
+            "TimeFromInputsResolvedToAuctionResolved"));
   }
 }
 
