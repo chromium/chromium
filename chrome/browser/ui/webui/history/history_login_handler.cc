@@ -78,6 +78,5 @@ void HistoryLoginHandler::HandleTurnOnSyncFlow(
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   signin_ui_util::EnableSyncFromSingleAccountPromo(
-      profile, account_info,
-      signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
+      profile, account_info, signin_metrics::AccessPoint::kRecentTabs);
 }
