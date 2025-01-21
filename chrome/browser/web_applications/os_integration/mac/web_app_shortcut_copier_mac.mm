@@ -13,6 +13,7 @@
 #include "base/apple/mach_port_rendezvous.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/debug/leak_annotations.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -90,7 +91,12 @@ void InitializeFeatureState() {
   const auto& command_line = *base::CommandLine::ForCurrentProcess();
   base::HistogramSharedMemory::InitFromLaunchParameters(command_line);
 
-  base::FieldTrialList field_trial_list;
+  // This is intentionally leaked since it needs to live for the duration of
+  // the process and there's no benefit in cleaning it up at exit.
+  base::FieldTrialList* leaked_field_trial_list = new base::FieldTrialList();
+  ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
+  std::ignore = leaked_field_trial_list;
+
   base::FieldTrialList::CreateTrialsInChildProcess(command_line);
   auto feature_list = std::make_unique<base::FeatureList>();
   base::FieldTrialList::ApplyFeatureOverridesInChildProcess(feature_list.get());
