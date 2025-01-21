@@ -87,6 +87,11 @@ public class EdgeToEdgeUtils {
         return ChromeFeatureList.sEdgeToEdgeEverywhere.isEnabled();
     }
 
+    /** Whether turn on the debug paint for edge to edge layout. */
+    public static boolean isEdgeToEdgeEverywhereDebugging() {
+        return ChromeFeatureList.sEdgeToEdgeEverywhereIsDebugging.getValue();
+    }
+
     /** Whether key native pages should draw to edge. */
     public static boolean isDrawKeyNativePageToEdgeEnabled() {
         return isEdgeToEdgeBottomChinEnabled()

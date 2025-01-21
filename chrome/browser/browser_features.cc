@@ -71,6 +71,17 @@ BASE_FEATURE(kCertVerificationNetworkTime,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
+// Uses the browser theme's color mode for web contents.
+// The theme can have three modes: light, dark, and device.
+// When the mode is light or dark, the browser theme's color mode will be
+// applied to web contents.
+// When the mode is device, web contents will use the device color mode.
+// Pages in incognito mode are not affected by this feature. They will continue
+// to follow the device color mode.
+BASE_FEATURE(kContentUsesBrowserThemeColorMode,
+             "ContentUsesBrowserThemeColorMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_LINUX)
 // Enables usage of os_crypt_async::SecretPortalKeyProvider.  Once
 // `kSecretPortalKeyProviderUseForEncryption` is enabled, this flag cannot be

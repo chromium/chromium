@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
@@ -594,6 +595,11 @@ class PrefersColorSchemeTest
   }
 
   const char* ExpectedColorScheme() const {
+    const char* color_provider_color_mode =
+        GetIsDarkColorProviderColorMode() ? "dark" : "light";
+    const char* native_theme_color_mode =
+        GetIsDarkNativeTheme() ? "dark" : "light";
+
     // WebUI's preferred color scheme should reflect the color mode of their
     // associated ColorProvider, and not the preferred color scheme of the web
     // NativeTheme.
@@ -602,9 +608,21 @@ class PrefersColorSchemeTest
                                          ->GetActiveWebContents()
                                          ->GetLastCommittedURL();
     if (content::HasWebUIScheme(last_committed_url)) {
-      return GetIsDarkColorProviderColorMode() ? "dark" : "light";
+      return color_provider_color_mode;
     }
-    return GetIsDarkNativeTheme() ? "dark" : "light";
+
+    // Pages in incognito profiles should follow the device theme.
+    if (browser()->profile()->IsIncognitoProfile()) {
+      return native_theme_color_mode;
+    }
+
+    // Pages in regular profiles should follow the browser theme, reflected by
+    // the color mode of the associated ColorProvider, if the feature is
+    // enabled.
+    return base::FeatureList::IsEnabled(
+               features::kContentUsesBrowserThemeColorMode)
+               ? color_provider_color_mode
+               : native_theme_color_mode;
   }
 
   void SetUpOnMainThread() override {

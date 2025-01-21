@@ -33,6 +33,7 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
     private final Activity mActivity;
     private final @Nullable InsetObserver mInsetObserver;
     private @Nullable EdgeToEdgeBaseLayout mView;
+    private boolean mIsDebugging;
 
     /**
      * Construct the coordinator used to handle padding and color for the Edge to edge layout.
@@ -44,6 +45,12 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
             @NonNull Activity activity, @Nullable InsetObserver insetObserver) {
         mActivity = activity;
         mInsetObserver = insetObserver;
+    }
+
+    /** Whether enable the debug layer for edge to edge layout. */
+    public void setIsDebugging(boolean isDebugging) {
+        mIsDebugging = isDebugging;
+        if (mView != null) mView.setIsDebugging(mIsDebugging);
     }
 
     /**
@@ -140,6 +147,8 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
         } else {
             ViewCompat.setOnApplyWindowInsetsListener(mView, this);
         }
+
+        mView.setIsDebugging(mIsDebugging);
 
         applyStatusBarColor();
         applyNavBarColor();

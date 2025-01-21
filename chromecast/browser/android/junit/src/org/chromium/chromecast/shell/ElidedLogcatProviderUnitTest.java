@@ -87,6 +87,6 @@ public class ElidedLogcatProviderUnitTest {
                 "04-30 16:30:11.030 15721 15721 E libc    : Access denied finding property \"persist.mtk.mlog2logcat\"");
 
         String elided = ElidedLogcatProvider.elideLogcat(concatLines(lines));
-        assertEquals(elided, "");
+        assertEquals("", elided);
     }
 }

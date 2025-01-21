@@ -348,6 +348,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     public EdgeToEdgeLayoutCoordinator ensureEdgeToEdgeLayoutCoordinator() {
         if (mEdgeToEdgeLayoutCoordinator == null) {
             mEdgeToEdgeLayoutCoordinator = new EdgeToEdgeLayoutCoordinator(this, mInsetObserver);
+            mEdgeToEdgeLayoutCoordinator.setIsDebugging(
+                    EdgeToEdgeUtils.isEdgeToEdgeEverywhereDebugging());
         }
         return mEdgeToEdgeLayoutCoordinator;
     }
