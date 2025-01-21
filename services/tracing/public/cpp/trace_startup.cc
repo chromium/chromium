@@ -146,7 +146,7 @@ base::ReadOnlySharedMemoryRegion CreateTracingConfigSharedMemory() {
 }
 
 void COMPONENT_EXPORT(TRACING_CPP) AddTraceConfigToLaunchParameters(
-    const base::ReadOnlySharedMemoryRegion& read_only_memory_region,
+    base::ReadOnlySharedMemoryRegion read_only_memory_region,
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
     base::GlobalDescriptors::Key descriptor_key,
     base::ScopedFD& out_descriptor_to_share,
@@ -154,7 +154,7 @@ void COMPONENT_EXPORT(TRACING_CPP) AddTraceConfigToLaunchParameters(
     base::CommandLine* command_line,
     base::LaunchOptions* launch_options) {
   base::shared_memory::AddToLaunchParameters(switches::kTraceConfigHandle,
-                                             read_only_memory_region,
+                                             std::move(read_only_memory_region),
 #if BUILDFLAG(IS_APPLE)
                                              kTraceConfigRendezvousKey,
 #elif BUILDFLAG(IS_POSIX)

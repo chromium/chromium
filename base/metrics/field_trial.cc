@@ -627,7 +627,7 @@ std::string FieldTrialList::AllParamsToString(EscapeDataFunc encode_data_func) {
     if (params_associator->GetFieldTrialParamsWithoutFallback(
             *trial.trial_name, *trial.group_name, &params)) {
       if (params.size() > 0) {
-        // Add comma to separate from previous entry if it exists.
+        // Add comma to seprate from previous entry if it exists.
         if (!output.empty()) {
           output.append(1, ',');
         }
@@ -760,14 +760,15 @@ void FieldTrialList::PopulateLaunchOptionsWithFieldTrialState(
   CHECK(global_->readonly_allocator_region_.IsValid());
 
   global_->field_trial_allocator_->UpdateTrackingHistograms();
-  shared_memory::AddToLaunchParameters(switches::kFieldTrialHandle,
-                                       global_->readonly_allocator_region_,
+  shared_memory::AddToLaunchParameters(
+      switches::kFieldTrialHandle,
+      global_->readonly_allocator_region_.Duplicate(),
 #if BUILDFLAG(IS_APPLE)
-                                       kFieldTrialRendezvousKey,
+      kFieldTrialRendezvousKey,
 #elif BUILDFLAG(IS_POSIX)
-                                       descriptor_key, descriptor_to_share,
+      descriptor_key, descriptor_to_share,
 #endif
-                                       command_line, launch_options);
+      command_line, launch_options);
 
   // Append --enable-features and --disable-features switches corresponding
   // to the features enabled on the command-line, so that child and browser
