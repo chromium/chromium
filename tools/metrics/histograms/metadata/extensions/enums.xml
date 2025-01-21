@@ -408,7 +408,7 @@ Called by update_extension_histograms.py.-->
   <int value="243" label="SYNC_FILE_SYSTEM_ON_FILE_STATUS_CHANGED"/>
   <int value="244" label="SYNC_FILE_SYSTEM_ON_SERVICE_STATUS_CHANGED"/>
   <int value="245" label="SYSTEM_DISPLAY_ON_DISPLAY_CHANGED"/>
-  <int value="246" label="SYSTEM_INDICATOR_ON_CLICKED"/>
+  <int value="246" label="DELETED_SYSTEM_INDICATOR_ON_CLICKED"/>
   <int value="247" label="SYSTEM_PRIVATE_ON_BRIGHTNESS_CHANGED"/>
   <int value="248" label="SYSTEM_PRIVATE_ON_SCREEN_UNLOCKED"/>
   <int value="249" label="SYSTEM_PRIVATE_ON_VOLUME_CHANGED"/>
@@ -916,7 +916,7 @@ Called by update_extension_histograms.py.-->
   <int value="127" label="WEBREQUEST_HANDLERBEHAVIORCHANGED"/>
   <int value="128" label="INPUT_IME_SETCURSORPOSITION"/>
   <int value="129" label="OMNIBOX_SENDSUGGESTIONS"/>
-  <int value="130" label="SYSTEMINDICATOR_ENABLE"/>
+  <int value="130" label="DELETED_SYSTEMINDICATOR_ENABLE"/>
   <int value="131" label="EVENTS_GETRULES"/>
   <int value="132" label="BOOKMARKMANAGERPRIVATE_COPY"/>
   <int value="133" label="SOCKET_RECVFROM"/>
@@ -1116,7 +1116,7 @@ Called by update_extension_histograms.py.-->
   <int value="326" label="ALARMS_CLEARALL"/>
   <int value="327" label="FONTSETTINGS_GETDEFAULTFIXEDFONTSIZE"/>
   <int value="328" label="FILEMANAGERPRIVATEINTERNAL_ZIPSELECTION"/>
-  <int value="329" label="SYSTEMINDICATOR_DISABLE"/>
+  <int value="329" label="DELETED_SYSTEMINDICATOR_DISABLE"/>
   <int value="330" label="DELETED_SCRIPTBADGE_SETPOPUP"/>
   <int value="331" label="EXTENSION_ISALLOWEDFILESCHEMEACCESS"/>
   <int value="332" label="EXPERIMENTAL_IDENTITY_LAUNCHWEBAUTHFLOW"/>
@@ -1166,7 +1166,7 @@ Called by update_extension_histograms.py.-->
   <int value="376" label="APP_WINDOW_CREATE"/>
   <int value="377" label="RUNTIME_RELOAD"/>
   <int value="378" label="EXPERIMENTAL_POWER_REQUESTKEEPAWAKE"/>
-  <int value="379" label="SYSTEMINDICATOR_SETICON"/>
+  <int value="379" label="DELETED_SYSTEMINDICATOR_SETICON"/>
   <int value="380" label="FILEMANAGERPRIVATE_ADDMOUNT"/>
   <int value="381" label="APP_CURRENTWINDOWINTERNAL_FOCUS"/>
   <int value="382" label="EVENTS_REMOVERULES"/>

@@ -887,10 +887,6 @@
     "dependencies": ["permission:speechRecognitionPrivate"],
     "contexts": ["privileged_extension"]
   },
-  "systemIndicator": {
-    "dependencies": ["manifest:system_indicator"],
-    "contexts": ["privileged_extension"]
-  },
   "systemLog": {
     "dependencies": ["permission:systemLog"],
     "contexts": ["privileged_extension"]

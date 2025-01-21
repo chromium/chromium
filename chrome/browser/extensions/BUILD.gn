@@ -969,13 +969,6 @@ source_set("extensions") {
       "//url",
     ]
 
-    if (is_linux || is_mac || is_win) {
-      sources += [
-        "api/system_indicator/system_indicator_manager.cc",
-        "api/system_indicator/system_indicator_manager.h",
-      ]
-    }
-
     if (is_chromeos) {
       sources += [
         "api/certificate_provider/certificate_provider_api.cc",

@@ -143,8 +143,6 @@ void ChromeExtensionsRendererAPIProvider::PopulateSourceMap(
                              IDR_PAGE_CAPTURE_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("syncFileSystem",
                              IDR_SYNC_FILE_SYSTEM_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("systemIndicator",
-                             IDR_SYSTEM_INDICATOR_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("tabCapture", IDR_TAB_CAPTURE_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("tts", IDR_TTS_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("ttsEngine", IDR_TTS_ENGINE_CUSTOM_BINDINGS_JS);

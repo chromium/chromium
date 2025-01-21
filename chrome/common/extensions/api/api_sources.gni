@@ -156,10 +156,6 @@ if (enable_extensions) {
     schema_sources_ += [ "mdns.idl" ]
   }
 
-  if (is_linux || is_mac || is_win) {
-    schema_sources_ += [ "system_indicator.idl" ]
-  }
-
   if (enable_pdf) {
     schema_sources_ += [ "pdf_viewer_private.idl" ]
   }

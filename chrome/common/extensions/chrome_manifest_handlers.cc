@@ -21,7 +21,6 @@
 #include "chrome/common/extensions/api/side_panel/side_panel_info.h"
 #include "chrome/common/extensions/api/speech/tts_engine_manifest_handler.h"
 #include "chrome/common/extensions/api/storage/storage_schema_manifest_handler.h"
-#include "chrome/common/extensions/api/system_indicator/system_indicator_handler.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #endif
 
@@ -48,7 +47,6 @@ void RegisterChromeManifestHandlers() {
   registry->RegisterHandler(std::make_unique<OmniboxHandler>());
   registry->RegisterHandler(std::make_unique<SidePanelManifestHandler>());
   registry->RegisterHandler(std::make_unique<StorageSchemaManifestHandler>());
-  registry->RegisterHandler(std::make_unique<SystemIndicatorHandler>());
   registry->RegisterHandler(std::make_unique<TtsEngineManifestHandler>());
   registry->RegisterHandler(std::make_unique<UrlHandlersParser>());
 #endif

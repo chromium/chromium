@@ -4379,7 +4379,6 @@ if (!is_android) {
 
       if (is_win || is_linux || is_mac) {
         sources += [
-          "../browser/extensions/api/system_indicator/system_indicator_apitest.cc",
           "../browser/extensions/api/web_authentication_proxy/web_authentication_proxy_apitest.cc",
           "../browser/supervised_user/supervised_user_pending_state_navigation_browsertest.cc",
           "../browser/ui/views/web_apps/file_handler_launch_dialog_browsertest.cc",
@@ -9039,7 +9038,6 @@ test("unit_tests") {
         "../browser/enterprise/connectors/analysis/local_binary_upload_service_unittest.cc",
         "../browser/enterprise/data_protection/print_utils_unittest.cc",
         "../browser/policy/local_sync_policy_handler_unittest.cc",
-        "../common/extensions/api/system_indicator/system_indicator_handler_unittest.cc",
       ]
 
       deps += [ "../browser/enterprise/connectors/test:test_support" ]
