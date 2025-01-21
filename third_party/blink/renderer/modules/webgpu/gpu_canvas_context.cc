@@ -126,10 +126,6 @@ gfx::ColorSpace GPUCanvasContext::GetColorSpace() const {
   return PredefinedColorSpaceToGfxColorSpace(color_space_);
 }
 
-sk_sp<SkColorSpace> GPUCanvasContext::GetSkColorSpace() const {
-  return GetColorSpace().ToSkColorSpace();
-}
-
 void GPUCanvasContext::Stop() {
   ReplaceDrawingBuffer(/*destroy_swap_buffers*/ true);
   stopped_ = true;

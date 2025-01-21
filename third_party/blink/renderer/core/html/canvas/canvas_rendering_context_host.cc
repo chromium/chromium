@@ -357,8 +357,7 @@ SkColorType CanvasRenderingContextHost::GetRenderingContextSkColorType() const {
 
 sk_sp<SkColorSpace>
 CanvasRenderingContextHost::GetRenderingContextSkColorSpace() const {
-  return RenderingContext() ? RenderingContext()->GetSkColorSpace()
-                            : SkColorSpace::MakeSRGB();
+  return GetRenderingContextColorSpace().ToSkColorSpace();
 }
 
 gfx::ColorSpace CanvasRenderingContextHost::GetRenderingContextColorSpace()

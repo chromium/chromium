@@ -73,9 +73,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   gfx::ColorSpace GetColorSpace() const override {
     return color_params_.GetGfxColorSpace();
   }
-  sk_sp<SkColorSpace> GetSkColorSpace() const override {
-    return GetColorSpace().ToSkColorSpace();
-  }
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) final;
   void Reset() override;
   void RestoreCanvasMatrixClipStack(cc::PaintCanvas* c) const override {

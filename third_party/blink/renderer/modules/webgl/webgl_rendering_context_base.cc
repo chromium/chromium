@@ -5635,10 +5635,6 @@ gfx::ColorSpace WebGLRenderingContextBase::GetColorSpace() const {
   return PredefinedColorSpaceToGfxColorSpace(drawing_buffer_color_space_);
 }
 
-sk_sp<SkColorSpace> WebGLRenderingContextBase::GetSkColorSpace() const {
-  return GetColorSpace().ToSkColorSpace();
-}
-
 gfx::Rect WebGLRenderingContextBase::GetImageDataSize(ImageData* pixels) {
   DCHECK(pixels);
   return GetTextureSourceSize(pixels);

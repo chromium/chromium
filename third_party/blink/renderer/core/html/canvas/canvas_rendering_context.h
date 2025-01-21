@@ -181,7 +181,6 @@ class CORE_EXPORT CanvasRenderingContext
   virtual SkAlphaType GetAlphaType() const = 0;
   virtual SkColorType GetSkColorType() const = 0;
   virtual gfx::ColorSpace GetColorSpace() const = 0;
-  virtual sk_sp<SkColorSpace> GetSkColorSpace() const = 0;
 
   virtual scoped_refptr<StaticBitmapImage> GetImage(FlushReason) = 0;
   virtual bool IsComposited() const = 0;
