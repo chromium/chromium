@@ -210,6 +210,9 @@ crbug.com/384605105 [ mac intel no-asan ] ContextLost_WebGLContextRestoredInHidd
 crbug.com/384605105 [ win intel ] ContextLost_WebGLContextRestoredInHiddenTab [ RetryOnFailure ]
 crbug.com/384605105 [ win nvidia ] ContextLost_WebGLContextRestoredInHiddenTab [ RetryOnFailure ]
 
+# Flaky Timed out while waiting 60s for IsJavaScriptExpressionTrue
+crbug.com/365565140 [ mac ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
