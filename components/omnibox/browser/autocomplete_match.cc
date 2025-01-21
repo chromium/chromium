@@ -1189,10 +1189,6 @@ void AutocompleteMatch::LogSearchEngineUsed(
   } else if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION) {
     // The omnibox API only allows for keyword/site search entries, not default
     // search engines so only one type of histogram needs to be recorded here.
-    //
-    // TODO(crbug.com/367330704): Figure out why this code path isn't being
-    //   reached when issuing an omnibox API extension search. Tested with
-    //   https://chromewebstore.google.com/detail/github-omnibox/pdifemobhgmmnjlfjigebjkkbhllgcgp
     UMA_HISTOGRAM_ENUMERATION(
         "Omnibox.SearchEngineType.SetByExtension.OmniboxAPI",
         search_engine_type, SEARCH_ENGINE_MAX);

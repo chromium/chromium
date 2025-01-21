@@ -130,8 +130,8 @@ const char kFocusToOpenTimeHistogram[] =
 const char kAcceptedKeywordSuggestionHistogram[] =
     "Omnibox.AcceptedKeywordSuggestion";
 
-// Histogram name which counts the number of times the user completes a search
-// in keyword mode, enumerated by the type of search engine.
+// Histogram name which counts the number of times the user enters the keyword
+// mode, enumerated by the type of search engine.
 const char kKeywordModeUsageByEngineTypeEnteredHistogramName[] =
     "Omnibox.KeywordModeUsageByEngineType.Entered";
 
@@ -2576,17 +2576,23 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
                                           now - last_omnibox_focus_);
   }
 
-  TemplateURLService* service = controller_->client()->GetTemplateURLService();
-  TemplateURL* template_url = match.GetTemplateURL(service, false);
+  TemplateURLService* turl_service =
+      controller_->client()->GetTemplateURLService();
+  TemplateURL* template_url = match.GetTemplateURL(turl_service, false);
   if (template_url) {
+    AutocompleteMatch::LogSearchEngineUsed(match, turl_service);
+
     if (ui::PageTransitionTypeIncludingQualifiersIs(
             match.transition, ui::PAGE_TRANSITION_KEYWORD) ||
         match.provider->type() ==
             AutocompleteProvider::TYPE_UNSCOPED_EXTENSION) {
-      // The user is using a non-substituting keyword or is explicitly in
-      // keyword mode.
+      // User is in keyword mode or accepted an unscoped extension suggestion.
+      base::RecordAction(base::UserMetricsAction("AcceptedKeyword"));
+      EmitAcceptedKeywordSuggestionHistogram(keyword_mode_entry_method_,
+                                             template_url);
+      controller_->client()->GetTemplateURLService()->IncrementUsageCount(
+          template_url);
 
-      // Don't increment usage count for extension keywords.
       if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION) {
         controller_->client()->ProcessExtensionMatch(input_text, template_url,
                                                      match, disposition);
@@ -2594,14 +2600,10 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
           base::AutoReset<bool> tmp(&in_revert_, true);
           view_->RevertAll();
         }
+        // Avoid calling `OmniboxClient::OnAutocompleteAccept()`. The extension
+        // was notfied of the accepted input and will handle the navigation.
         return;
       }
-
-      base::RecordAction(base::UserMetricsAction("AcceptedKeyword"));
-      EmitAcceptedKeywordSuggestionHistogram(keyword_mode_entry_method_,
-                                             template_url);
-      controller_->client()->GetTemplateURLService()->IncrementUsageCount(
-          template_url);
     } else {
       DCHECK(ui::PageTransitionTypeIncludingQualifiersIs(
                  match.transition, ui::PAGE_TRANSITION_GENERATED) ||
@@ -2611,8 +2613,6 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
       // search engine here like we do for explicit keywords above; see comments
       // in template_url.h.
     }
-
-    AutocompleteMatch::LogSearchEngineUsed(match, service);
   } else {
     // |match| is a URL navigation, not a search.
     // For logging the below histogram, only record uses that depend on the
