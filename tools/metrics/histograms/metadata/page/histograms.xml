@@ -4038,6 +4038,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.PaintTiming.NavigationToFirstPaint.BFCachePolyfillSecond.Incognito"
+    units="ms" expires_after="2025-06-21">
+  <owner>kjarosz@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    Measures the time duration between the page restore from BFcache and the
+    second requestAnimationFrame time. This is recorded only in incognito.
+
+    This metric is a version of
+    PageLoad.PaintTiming.NavigationToFirstPaint.BFCachePolyfillSecond, that is
+    recorded only in incognito mode.
+
+    This histogram is of special interest to polonium@google.com. Do not modify
+    it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.PaintTiming.NavigationToFirstPaint.BFCachePolyfill{Count}"
     units="ms" expires_after="never">
 <!-- expires-never: used in server pipeline to derive additional metrics -->
