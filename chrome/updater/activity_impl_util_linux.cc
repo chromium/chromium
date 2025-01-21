@@ -41,7 +41,7 @@ std::vector<base::FilePath> ReadHomeDirsFromPasswd() {
                                    : base::FilePath();
       });
   // Remove invalid paths
-  base::ranges::remove(home_dirs, base::FilePath());
+  std::erase(home_dirs, base::FilePath());
   return home_dirs;
 }
 }  // namespace
