@@ -71,6 +71,7 @@
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/base32/base32.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
@@ -4284,6 +4285,137 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Overlay should close
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOff; }));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       CorrectAnalyticsIdSentWithGen204s) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  // When the overlay is bound, it should start the query flow which returns a
+  // response for the full image callback.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  auto* fake_query_controller =
+      static_cast<lens::TestLensOverlayQueryController*>(
+          controller->get_lens_overlay_query_controller_for_testing());
+
+  EXPECT_EQ(fake_query_controller->latency_gen_204_counter(
+                lens::LensOverlayGen204Controller::LatencyType::
+                    kFullPageObjectsRequestFetchLatency),
+            1);
+
+  // Objects request latency should not have an analytics id associated with it.
+  EXPECT_FALSE(
+      fake_query_controller->last_latency_gen204_analytics_id().has_value());
+
+  std::string encoded_sent_objects_analytics_id = base32::Base32Encode(
+      base::as_byte_span(
+          fake_query_controller->sent_request_id().analytics_id()),
+      base32::Base32EncodePolicy::OMIT_PADDING);
+
+  // Log a copy text user task completion event.
+  controller->RecordUkmAndTaskCompletionForLensOverlayInteractionForTesting(
+      lens::mojom::UserAction::kCopyText);
+
+  // The objects request and the task completion gen204 should have the same
+  // analytics id.
+  EXPECT_EQ(fake_query_controller->last_user_action(),
+            lens::mojom::UserAction::kCopyText);
+  EXPECT_TRUE(fake_query_controller->last_task_completion_gen204_analytics_id()
+                  .has_value());
+  EXPECT_EQ(
+      fake_query_controller->last_task_completion_gen204_analytics_id().value(),
+      encoded_sent_objects_analytics_id);
+
+  // Issue a text selection request and record the task completion.
+  controller->IssueTextSelectionRequestForTesting("oranges", 20, 200);
+  controller->RecordUkmAndTaskCompletionForLensOverlayInteractionForTesting(
+      lens::mojom::UserAction::kTextSelection);
+
+  // The text selection request should trigger the side panel to load new
+  // search query.
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // The objects request and the task completion gen204 should have the same
+  // analytics id.
+  EXPECT_EQ(fake_query_controller->last_user_action(),
+            lens::mojom::UserAction::kTextSelection);
+  EXPECT_TRUE(fake_query_controller->last_task_completion_gen204_analytics_id()
+                  .has_value());
+  EXPECT_EQ(
+      fake_query_controller->last_task_completion_gen204_analytics_id().value(),
+      encoded_sent_objects_analytics_id);
+
+  // Issue a region search request, which should trigger an interaction request.
+  // Use a navigation observer to wait for the side panel to load, since
+  // WaitForLoadStop only works once.
+  content::TestNavigationObserver region_search_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->IssueLensRegionRequestForTesting(kTestRegion->Clone(),
+                                               /*is_click=*/false);
+  region_search_observer.Wait();
+
+  // The interaction request should have a different analytics id than the
+  // objects request.
+  std::string encoded_sent_interaction_analytics_id = base32::Base32Encode(
+      base::as_byte_span(
+          fake_query_controller->sent_request_id().analytics_id()),
+      base32::Base32EncodePolicy::OMIT_PADDING);
+  EXPECT_NE(encoded_sent_interaction_analytics_id, encoded_sent_objects_analytics_id);
+
+  // The interaction request and latency gen204 should have the same analytics
+  // id.
+  EXPECT_EQ(fake_query_controller->latency_gen_204_counter(
+                lens::LensOverlayGen204Controller::LatencyType::
+                    kInteractionRequestFetchLatency),
+            1);
+  EXPECT_EQ(encoded_sent_interaction_analytics_id,
+            fake_query_controller->last_latency_gen204_analytics_id().value());
+
+  // Log a copy text user task completion event.
+  controller->RecordUkmAndTaskCompletionForLensOverlayInteractionForTesting(
+      lens::mojom::UserAction::kCopyText);
+
+  // The interaction request and the task completion gen204 should have the same
+  // analytics id.
+  EXPECT_EQ(fake_query_controller->last_user_action(),
+            lens::mojom::UserAction::kCopyText);
+  EXPECT_TRUE(fake_query_controller->last_task_completion_gen204_analytics_id()
+                  .has_value());
+  EXPECT_EQ(
+      fake_query_controller->last_task_completion_gen204_analytics_id().value(),
+      encoded_sent_interaction_analytics_id);
+
+  // Issue a text selection request and record the task completion.
+  content::TestNavigationObserver text_selection_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->IssueTextSelectionRequestForTesting("oranges", 20, 200);
+  controller->RecordUkmAndTaskCompletionForLensOverlayInteractionForTesting(
+      lens::mojom::UserAction::kTextSelection);
+
+  // The text selection request should trigger the side panel to load new
+  // search query.
+  text_selection_observer.Wait();
+
+  // The interaction request and the task completion gen204 should have the same
+  // analytics id.
+  EXPECT_EQ(fake_query_controller->last_user_action(),
+            lens::mojom::UserAction::kTextSelection);
+  EXPECT_TRUE(fake_query_controller->last_task_completion_gen204_analytics_id()
+                  .has_value());
+  EXPECT_EQ(
+      fake_query_controller->last_task_completion_gen204_analytics_id().value(),
+      encoded_sent_interaction_analytics_id);
 }
 
 class LensOverlayControllerBrowserStartQueryFlowOptimization
