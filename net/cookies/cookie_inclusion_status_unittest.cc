@@ -9,10 +9,10 @@
 namespace net {
 
 TEST(CookieInclusionStatusTest, IncludeStatus) {
-  int num_exclusion_reasons = static_cast<int>(
-      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS);
-  int num_warning_reasons = static_cast<int>(
-      CookieInclusionStatus::WarningReason::NUM_WARNING_REASONS);
+  int num_exclusion_reasons =
+      CookieInclusionStatus::ExclusionReasonBitset::kValueCount;
+  int num_warning_reasons =
+      CookieInclusionStatus::WarningReasonBitset::kValueCount;
   // Zero-argument constructor
   CookieInclusionStatus status;
   EXPECT_TRUE(status.IsInclude());
@@ -29,8 +29,8 @@ TEST(CookieInclusionStatusTest, IncludeStatus) {
 }
 
 TEST(CookieInclusionStatusTest, ExcludeStatus) {
-  int num_exclusion_reasons = static_cast<int>(
-      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS);
+  int num_exclusion_reasons =
+      CookieInclusionStatus::ExclusionReasonBitset::kValueCount;
   // Test exactly one exclusion reason and multiple (two) exclusion reasons.
   for (int i = 0; i < num_exclusion_reasons; ++i) {
     auto reason1 = static_cast<CookieInclusionStatus::ExclusionReason>(i);
@@ -77,8 +77,8 @@ TEST(CookieInclusionStatusTest, ExcludeStatus) {
 
 TEST(CookieInclusionStatusTest,
      ExcludeStatus_MaybeClearThirdPartyPhaseoutReason) {
-  int num_exclusion_reasons = static_cast<int>(
-      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS);
+  int num_exclusion_reasons =
+      CookieInclusionStatus::ExclusionReasonBitset::kValueCount;
   CookieInclusionStatus::ExclusionReason reason1 =
       CookieInclusionStatus::ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT;
   const CookieInclusionStatus status_one_reason =
@@ -199,8 +199,8 @@ TEST(CookieInclusionStatusTest, ExemptionReason) {
 TEST(CookieInclusionStatusTest, CheckEachWarningReason) {
   CookieInclusionStatus status;
 
-  int num_warning_reasons = static_cast<int>(
-      CookieInclusionStatus::WarningReason::NUM_WARNING_REASONS);
+  int num_warning_reasons =
+      CookieInclusionStatus::WarningReasonBitset::kValueCount;
   EXPECT_FALSE(status.ShouldWarn());
   for (int i = 0; i < num_warning_reasons; ++i) {
     auto reason = static_cast<CookieInclusionStatus::WarningReason>(i);
@@ -231,14 +231,6 @@ TEST(CookieInclusionStatusTest, RemoveExclusionReason) {
       CookieInclusionStatus::ExclusionReason::EXCLUDE_UNKNOWN_ERROR);
   EXPECT_FALSE(status.HasExclusionReason(
       CookieInclusionStatus::ExclusionReason::EXCLUDE_UNKNOWN_ERROR));
-
-  // Removing a nonexistent exclusion reason doesn't do anything.
-  ASSERT_FALSE(status.HasExclusionReason(
-      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS));
-  status.RemoveExclusionReason(
-      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS);
-  EXPECT_FALSE(status.HasExclusionReason(
-      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS));
 }
 
 TEST(CookieInclusionStatusTest, RemoveWarningReason) {
@@ -365,62 +357,6 @@ TEST(CookieInclusionStatusTest, RemoveExclusionReasons) {
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({
       CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES,
   }));
-
-  // Removing a nonexistent exclusion reason doesn't do anything.
-  ASSERT_FALSE(status.HasExclusionReason(
-      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS));
-  status.RemoveExclusionReasons(
-      {CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS});
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({
-      CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES,
-  }));
-}
-
-TEST(CookieInclusionStatusTest, ValidateExclusionAndWarningFromWire) {
-  uint32_t exclusion_reasons = 0ul;
-  uint32_t warning_reasons = 0ul;
-
-  EXPECT_TRUE(CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
-      exclusion_reasons, warning_reasons));
-
-  exclusion_reasons = static_cast<uint32_t>(~0ul);
-  warning_reasons = static_cast<uint32_t>(~0ul);
-  EXPECT_FALSE(CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
-      exclusion_reasons, warning_reasons));
-  EXPECT_FALSE(CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
-      exclusion_reasons, 0u));
-  EXPECT_FALSE(CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
-      0u, warning_reasons));
-
-  exclusion_reasons =
-      (1u << static_cast<int>(
-           CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH));
-  warning_reasons =
-      (1u << static_cast<int>(
-           CookieInclusionStatus::WarningReason::WARN_PORT_MISMATCH));
-  EXPECT_TRUE(CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
-      exclusion_reasons, warning_reasons));
-
-  exclusion_reasons =
-      (1u << static_cast<int>(
-           CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS));
-  warning_reasons =
-      (1u << static_cast<int>(
-           CookieInclusionStatus::WarningReason::NUM_WARNING_REASONS));
-  EXPECT_FALSE(CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
-      exclusion_reasons, warning_reasons));
-
-  exclusion_reasons =
-      (1u
-       << (static_cast<int>(
-               CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS) -
-           1));
-  warning_reasons =
-      (1u << (static_cast<int>(
-                  CookieInclusionStatus::WarningReason::NUM_WARNING_REASONS) -
-              1));
-  EXPECT_TRUE(CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
-      exclusion_reasons, warning_reasons));
 }
 
 TEST(CookieInclusionStatusTest, ExcludedByUserPreferencesOrTPCD) {
@@ -461,36 +397,28 @@ TEST(CookieInclusionStatusTest, ExcludedByUserPreferencesOrTPCD) {
 
 TEST(CookieInclusionStatusTest, InvalidExclusionReason) {
   CookieInclusionStatus status;
-  // Ensure adding, removing, and checking invalid exclusion reasons
-  // works as expected.
-  status.AddExclusionReason(
-      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS);
-  status.AddExclusionReason(
-      static_cast<CookieInclusionStatus::ExclusionReason>(-1));
-  EXPECT_FALSE(status.HasExclusionReason(
-      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS));
-  status.RemoveExclusionReason(
-      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS);
-  EXPECT_FALSE(status.HasExclusionReason(
-      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS));
-  EXPECT_FALSE(status.HasOnlyExclusionReason(
-      CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS));
+  // Ensure checking invalid exclusion reasons works as expected.
+  CookieInclusionStatus::ExclusionReason illegal =
+      static_cast<CookieInclusionStatus::ExclusionReason>(
+          1 + CookieInclusionStatus::ExclusionReasonBitset::kValueCount);
+  EXPECT_FALSE(status.HasExclusionReason(illegal));
+  EXPECT_FALSE(status.HasOnlyExclusionReason(illegal));
+
+  illegal = static_cast<CookieInclusionStatus::ExclusionReason>(-1);
+  EXPECT_FALSE(status.HasExclusionReason(illegal));
+  EXPECT_FALSE(status.HasOnlyExclusionReason(illegal));
 }
 
 TEST(CookieInclusionStatusTest, InvalidWarningReason) {
   CookieInclusionStatus status;
-  // Ensure adding, removing, and checking invalid warning reasons
-  // works as expected.
-  status.AddWarningReason(
-      CookieInclusionStatus::WarningReason::NUM_WARNING_REASONS);
-  status.AddWarningReason(
-      static_cast<CookieInclusionStatus::WarningReason>(-1));
-  EXPECT_FALSE(status.HasWarningReason(
-      CookieInclusionStatus::WarningReason::NUM_WARNING_REASONS));
-  status.RemoveWarningReason(
-      CookieInclusionStatus::WarningReason::NUM_WARNING_REASONS);
-  EXPECT_FALSE(status.HasWarningReason(
-      CookieInclusionStatus::WarningReason::NUM_WARNING_REASONS));
+  // Ensure checking invalid warning reasons works as expected.
+  CookieInclusionStatus::WarningReason illegal =
+      static_cast<CookieInclusionStatus::WarningReason>(
+          1 + CookieInclusionStatus::WarningReasonBitset::kValueCount);
+  EXPECT_FALSE(status.HasWarningReason(illegal));
+
+  illegal = static_cast<CookieInclusionStatus::WarningReason>(-1);
+  EXPECT_FALSE(status.HasWarningReason(illegal));
 }
 
 }  // namespace net

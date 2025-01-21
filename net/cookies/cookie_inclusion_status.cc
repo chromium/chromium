@@ -9,6 +9,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/containers/enum_set.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -18,22 +19,6 @@ namespace net {
 
 using ExclusionReason = CookieInclusionStatus::ExclusionReason;
 using WarningReason = CookieInclusionStatus::WarningReason;
-
-namespace {
-// Check that the given `reason` is valid, i.e., is within the range of values
-// allowed by the `CookieInclusionStatus::WarningReason` enum.
-bool IsWarningReasonOutOfBounds(WarningReason reason) {
-  return static_cast<int>(reason) < 0 ||
-         reason >= WarningReason::NUM_WARNING_REASONS;
-}
-
-// Check that the given `reason` is valid, i.e., is within the range of values
-// allowed by the `CookieInclusionStatus::ExclusionReason` enum.
-bool IsExclusionReasonOutOfBounds(ExclusionReason reason) {
-  return static_cast<int>(reason) < 0 ||
-         reason >= ExclusionReason::NUM_EXCLUSION_REASONS;
-}
-}  // namespace
 
 CookieInclusionStatus::CookieInclusionStatus() = default;
 
@@ -50,31 +35,20 @@ bool CookieInclusionStatus::operator!=(
     const CookieInclusionStatus& other) const = default;
 
 bool CookieInclusionStatus::IsInclude() const {
-  return exclusion_reasons_.none();
+  return exclusion_reasons_.empty();
 }
 
 bool CookieInclusionStatus::HasExclusionReason(ExclusionReason reason) const {
-  if (IsExclusionReasonOutOfBounds(reason)) {
-    return false;
-  }
-  return exclusion_reasons_[static_cast<int>(reason)];
+  return exclusion_reasons_.Has(reason);
 }
 
 bool CookieInclusionStatus::HasOnlyExclusionReason(
     ExclusionReason reason) const {
-  if (IsExclusionReasonOutOfBounds(reason)) {
-    return false;
-  }
-  return exclusion_reasons_[static_cast<int>(reason)] &&
-         exclusion_reasons_.count() == 1;
+  return exclusion_reasons_.Has(reason) && exclusion_reasons_.size() == 1;
 }
 
 void CookieInclusionStatus::AddExclusionReason(ExclusionReason reason) {
-  if (IsExclusionReasonOutOfBounds(reason)) {
-    return;
-  }
-
-  exclusion_reasons_[static_cast<int>(reason)] = true;
+  exclusion_reasons_.Put(reason);
   // If the cookie would be excluded for reasons other than the new SameSite
   // rules, don't bother warning about it.
   MaybeClearSameSiteWarning();
@@ -86,14 +60,11 @@ void CookieInclusionStatus::AddExclusionReason(ExclusionReason reason) {
 }
 
 void CookieInclusionStatus::RemoveExclusionReason(ExclusionReason reason) {
-  if (IsExclusionReasonOutOfBounds(reason)) {
-    return;
-  }
-  exclusion_reasons_[static_cast<int>(reason)] = false;
+  exclusion_reasons_.Remove(reason);
 }
 
 void CookieInclusionStatus::RemoveExclusionReasons(
-    const std::vector<ExclusionReason>& reasons) {
+    ExclusionReasonBitset reasons) {
   exclusion_reasons_ = ExclusionReasonsWithout(reasons);
 }
 
@@ -105,21 +76,19 @@ void CookieInclusionStatus::MaybeSetExemptionReason(ExemptionReason reason) {
 
 CookieInclusionStatus::ExclusionReasonBitset
 CookieInclusionStatus::ExclusionReasonsWithout(
-    const std::vector<ExclusionReason>& reasons) const {
+    ExclusionReasonBitset reasons) const {
   CookieInclusionStatus::ExclusionReasonBitset result(exclusion_reasons_);
-  for (const ExclusionReason reason : reasons) {
-    if (!IsExclusionReasonOutOfBounds(reason)) {
-      result[static_cast<int>(reason)] = false;
-    }
-  }
+  result.RemoveAll(reasons);
   return result;
 }
 
 void CookieInclusionStatus::MaybeClearSameSiteWarning() {
-  if (ExclusionReasonsWithout({
-          ExclusionReason::EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
-          ExclusionReason::EXCLUDE_SAMESITE_NONE_INSECURE,
-      }) != 0u) {
+  if (!ExclusionReasonsWithout(
+           {
+               ExclusionReason::EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
+               ExclusionReason::EXCLUDE_SAMESITE_NONE_INSECURE,
+           })
+           .empty()) {
     RemoveWarningReason(
         WarningReason::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT);
     RemoveWarningReason(WarningReason::WARN_SAMESITE_NONE_INSECURE);
@@ -147,33 +116,33 @@ void CookieInclusionStatus::MaybeClearThirdPartyPhaseoutReason() {
   if (!IsInclude()) {
     RemoveWarningReason(WarningReason::WARN_THIRD_PARTY_PHASEOUT);
   }
-  if (ExclusionReasonsWithout(
-          {ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT,
-           ExclusionReason::
-               EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET}) != 0u) {
-    RemoveExclusionReason(ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT);
-    RemoveExclusionReason(
-        ExclusionReason::EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
+  if (!ExclusionReasonsWithout(
+           {ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT,
+            ExclusionReason::
+                EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET})
+           .empty()) {
+    RemoveExclusionReasons(
+        {ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT,
+         ExclusionReason::EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET});
   }
 }
 
 bool CookieInclusionStatus::ShouldRecordDowngradeMetrics() const {
-  return ExclusionReasonsWithout({
-             ExclusionReason::EXCLUDE_SAMESITE_STRICT,
-             ExclusionReason::EXCLUDE_SAMESITE_LAX,
-             ExclusionReason::EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
-         }) == 0u;
+  return ExclusionReasonsWithout(
+             {
+                 ExclusionReason::EXCLUDE_SAMESITE_STRICT,
+                 ExclusionReason::EXCLUDE_SAMESITE_LAX,
+                 ExclusionReason::EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
+             })
+      .empty();
 }
 
 bool CookieInclusionStatus::ShouldWarn() const {
-  return warning_reasons_.any();
+  return !warning_reasons_.empty();
 }
 
 bool CookieInclusionStatus::HasWarningReason(WarningReason reason) const {
-  if (IsWarningReasonOutOfBounds(reason)) {
-    return false;
-  }
-  return warning_reasons_[static_cast<int>(reason)];
+  return warning_reasons_.Has(reason);
 }
 
 bool CookieInclusionStatus::HasSchemefulDowngradeWarning(
@@ -203,17 +172,11 @@ bool CookieInclusionStatus::HasSchemefulDowngradeWarning(
 }
 
 void CookieInclusionStatus::AddWarningReason(WarningReason reason) {
-  if (IsWarningReasonOutOfBounds(reason)) {
-    return;
-  }
-  warning_reasons_[static_cast<int>(reason)] = true;
+  warning_reasons_.Put(reason);
 }
 
 void CookieInclusionStatus::RemoveWarningReason(WarningReason reason) {
-  if (IsWarningReasonOutOfBounds(reason)) {
-    return;
-  }
-  warning_reasons_[static_cast<int>(reason)] = false;
+  warning_reasons_.Remove(reason);
 }
 
 CookieInclusionStatus::ContextDowngradeMetricValues
@@ -222,7 +185,7 @@ CookieInclusionStatus::GetBreakingDowngradeMetricsEnumValue(
   bool url_is_secure = url.SchemeIsCryptographic();
 
   // Start the |reason| as something other than the downgrade warnings.
-  WarningReason reason = WarningReason::NUM_WARNING_REASONS;
+  WarningReason reason = WarningReason::MAX_WARNING_REASON;
 
   // Don't bother checking the return value because the default switch case
   // will handle if no reason was found.
@@ -300,10 +263,10 @@ std::string CookieInclusionStatus::GetDebugString() const {
       {ExclusionReason::EXCLUDE_NO_COOKIE_CONTENT, "EXCLUDE_NO_COOKIE_CONTENT"},
       {ExclusionReason::EXCLUDE_ALIASING, "EXCLUDE_ALIASING"},
   };
-  static_assert(std::size(exclusion_reasons) ==
-                    static_cast<int>(ExclusionReason::NUM_EXCLUSION_REASONS),
-                "Please ensure all ExclusionReason variants are enumerated in "
-                "GetDebugString");
+  static_assert(
+      std::size(exclusion_reasons) == ExclusionReasonBitset::kValueCount,
+      "Please ensure all ExclusionReason variants are enumerated in "
+      "GetDebugString");
   static_assert(base::ranges::is_sorted(exclusion_reasons),
                 "Please keep the ExclusionReason variants sorted in numerical "
                 "order in GetDebugString");
@@ -349,8 +312,7 @@ std::string CookieInclusionStatus::GetDebugString() const {
       {WarningReason::WARN_SHADOWING_DOMAIN, "WARN_SHADOWING_DOMAIN"},
       {WarningReason::WARN_THIRD_PARTY_PHASEOUT, "WARN_THIRD_PARTY_PHASEOUT"},
   };
-  static_assert(std::size(warning_reasons) ==
-                    static_cast<int>(WarningReason::NUM_WARNING_REASONS),
+  static_assert(std::size(warning_reasons) == WarningReasonBitset::kValueCount,
                 "Please ensure all WarningReason variants are enumerated in "
                 "GetDebugString");
   static_assert(base::ranges::is_sorted(warning_reasons),
@@ -417,18 +379,6 @@ bool CookieInclusionStatus::HasExactlyWarningReasonsForTesting(
   return expected.warning_reasons_ == warning_reasons_;
 }
 
-// static
-bool CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
-    uint32_t exclusion_reasons,
-    uint32_t warning_reasons) {
-  uint32_t exclusion_mask = static_cast<uint32_t>(
-      ~0ul << static_cast<int>(ExclusionReason::NUM_EXCLUSION_REASONS));
-  uint32_t warning_mask = static_cast<uint32_t>(
-      ~0ul << static_cast<int>(WarningReason::NUM_WARNING_REASONS));
-  return (exclusion_reasons & exclusion_mask) == 0 &&
-         (warning_reasons & warning_mask) == 0;
-}
-
 CookieInclusionStatus CookieInclusionStatus::MakeFromReasonsForTesting(
     const std::vector<ExclusionReason>& exclusions,
     const std::vector<WarningReason>& warnings,
@@ -446,15 +396,36 @@ CookieInclusionStatus CookieInclusionStatus::MakeFromReasonsForTesting(
     CHECK(status.HasExclusionReason(reason))
         << "Exemption " << static_cast<int>(reason) << " could not be applied";
   }
-  CHECK_EQ(status.exclusion_reasons_.count(), exclusions.size());
+  CHECK_EQ(status.exclusion_reasons_.size(), exclusions.size());
   for (auto reason : warnings) {
     CHECK(status.HasWarningReason(reason))
         << "Warning " << static_cast<int>(reason) << " could not be applied";
   }
-  CHECK_EQ(status.warning_reasons_.count(), warnings.size());
+  CHECK_EQ(status.warning_reasons_.size(), warnings.size());
   CHECK_EQ(status.exemption_reason(), exemption)
       << "Exemption " << static_cast<int>(exemption) << " could not be applied";
 
+  return status;
+}
+
+std::optional<CookieInclusionStatus> CookieInclusionStatus::MakeFromComponents(
+    ExclusionReasonBitset exclusions,
+    WarningReasonBitset warnings,
+    ExemptionReason exemption) {
+  CookieInclusionStatus status;
+  for (ExclusionReason reason : exclusions) {
+    status.AddExclusionReason(reason);
+  }
+  for (WarningReason warning : warnings) {
+    status.AddWarningReason(warning);
+  }
+  status.MaybeSetExemptionReason(exemption);
+
+  if (status.exclusion_reasons() != exclusions ||
+      status.warning_reasons() != warnings ||
+      status.exemption_reason() != exemption) {
+    return std::nullopt;
+  }
   return status;
 }
 
@@ -463,12 +434,11 @@ bool CookieInclusionStatus::ExcludedByUserPreferencesOrTPCD() const {
       HasOnlyExclusionReason(ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT)) {
     return true;
   }
-  return exclusion_reasons_.count() == 2 &&
-         exclusion_reasons_[static_cast<int>(
-             ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT)] &&
-         exclusion_reasons_[static_cast<int>(
-             ExclusionReason::
-                 EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET)];
+  return exclusion_reasons_ ==
+         ExclusionReasonBitset(
+             {ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT,
+              ExclusionReason::
+                  EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET});
 }
 
 }  // namespace net
