@@ -142,10 +142,10 @@
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
-#include "chrome/browser/net/server_certificate_database.h"     // nogncheck
-#include "chrome/browser/net/server_certificate_database.pb.h"  // nogncheck
-#include "chrome/browser/net/server_certificate_database_service.h"  // nogncheck
 #include "chrome/browser/net/server_certificate_database_service_factory.h"  // nogncheck
+#include "components/server_certificate_database/server_certificate_database.h"  // nogncheck
+#include "components/server_certificate_database/server_certificate_database.pb.h"  // nogncheck
+#include "components/server_certificate_database/server_certificate_database_service.h"  // nogncheck
 #endif
 
 namespace {

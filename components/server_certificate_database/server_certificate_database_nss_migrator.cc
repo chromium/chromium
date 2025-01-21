@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/net/server_certificate_database_nss_migrator.h"
+#include "components/server_certificate_database/server_certificate_database_nss_migrator.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/net/server_certificate_database_service.h"
+#include "components/server_certificate_database/server_certificate_database_service.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/sha2.h"
 #include "net/cert/internal/trust_store_nss.h"

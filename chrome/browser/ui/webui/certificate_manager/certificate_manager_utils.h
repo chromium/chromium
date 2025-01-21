@@ -7,10 +7,10 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/net/server_certificate_database.h"
-#include "chrome/browser/net/server_certificate_database.pb.h"
 #include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_webui.h"
 #include "components/prefs/pref_service.h"
+#include "components/server_certificate_database/server_certificate_database.h"
+#include "components/server_certificate_database/server_certificate_database.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 

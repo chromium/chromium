@@ -2,24 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NET_SERVER_CERTIFICATE_DATABASE_SERVICE_H_
-#define CHROME_BROWSER_NET_SERVER_CERTIFICATE_DATABASE_SERVICE_H_
+#ifndef COMPONENTS_SERVER_CERTIFICATE_DATABASE_SERVER_CERTIFICATE_DATABASE_SERVICE_H_
+#define COMPONENTS_SERVER_CERTIFICATE_DATABASE_SERVER_CERTIFICATE_DATABASE_SERVICE_H_
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
-#include "chrome/browser/net/server_certificate_database.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/server_certificate_database/server_certificate_database.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/net/server_certificate_database_nss_migrator.h"
+#include "components/server_certificate_database/server_certificate_database_nss_migrator.h"
 #endif
 
 class PrefRegistrySimple;
 class PrefService;
 
 namespace net {
+
+#if BUILDFLAG(IS_CHROMEOS)
+namespace prefs {
+// Integer that indicates whether the user's NSS certificates have been
+// migrated to ServerCertificateDatabase. The value is a
+// ServerCertificateDatabaseService::NSSMigrationResultPref enum.
+inline constexpr char kNSSCertsMigratedToServerCertDb[] =
+    "certificates.nss_certs_migrated_to_server_cert_db";
+}  //  namespace prefs
+#endif
 
 // KeyedService that loads and provides policies around usage of Certificates
 // for TLS.
@@ -127,4 +137,4 @@ class ServerCertificateDatabaseService : public KeyedService {
 
 }  // namespace net
 
-#endif  // CHROME_BROWSER_NET_SERVER_CERTIFICATE_DATABASE_SERVICE_H_
+#endif  // COMPONENTS_SERVER_CERTIFICATE_DATABASE_SERVER_CERTIFICATE_DATABASE_SERVICE_H_

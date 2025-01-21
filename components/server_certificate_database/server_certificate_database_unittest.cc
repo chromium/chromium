@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/net/server_certificate_database.h"
+#include "components/server_certificate_database/server_certificate_database.h"
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/net/server_certificate_database.pb.h"
-#include "chrome/browser/net/server_certificate_database_test_util.h"
+#include "components/server_certificate_database/server_certificate_database.pb.h"
+#include "components/server_certificate_database/server_certificate_database_test_util.h"
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

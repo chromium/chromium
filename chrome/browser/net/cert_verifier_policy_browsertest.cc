@@ -47,15 +47,15 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
-#include "chrome/browser/net/server_certificate_database.h"     // nogncheck
-#include "chrome/browser/net/server_certificate_database.pb.h"  // nogncheck
-#include "chrome/browser/net/server_certificate_database_service.h"  // nogncheck
 #include "chrome/browser/net/server_certificate_database_service_factory.h"  // nogncheck
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/server_certificate_database/server_certificate_database.h"  // nogncheck
+#include "components/server_certificate_database/server_certificate_database.pb.h"  // nogncheck
+#include "components/server_certificate_database/server_certificate_database_service.h"  // nogncheck
 #include "crypto/sha2.h"
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 

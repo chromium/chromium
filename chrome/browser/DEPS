@@ -277,6 +277,7 @@ include_rules = [
   "+components/performance_manager/test_support",
   "+components/permissions",
   "+components/sampling_profiler",
+  "+components/server_certificate_database",
   "+components/webid",
   "+components/pdf/browser",
   "+components/pdf/common",

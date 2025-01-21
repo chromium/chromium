@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NET_SERVER_CERTIFICATE_DATABASE_TEST_UTIL_H_
-#define CHROME_BROWSER_NET_SERVER_CERTIFICATE_DATABASE_TEST_UTIL_H_
+#ifndef COMPONENTS_SERVER_CERTIFICATE_DATABASE_SERVER_CERTIFICATE_DATABASE_TEST_UTIL_H_
+#define COMPONENTS_SERVER_CERTIFICATE_DATABASE_SERVER_CERTIFICATE_DATABASE_TEST_UTIL_H_
 
 #include <string_view>
 
 #include "base/test/protobuf_matchers.h"
-#include "chrome/browser/net/server_certificate_database.h"
+#include "components/server_certificate_database/server_certificate_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -27,4 +27,4 @@ ServerCertificateDatabase::CertInformation MakeCertInfo(
 
 }  // namespace net
 
-#endif  // CHROME_BROWSER_NET_SERVER_CERTIFICATE_DATABASE_TEST_UTIL_H_
+#endif  // COMPONENTS_SERVER_CERTIFICATE_DATABASE_SERVER_CERTIFICATE_DATABASE_TEST_UTIL_H_

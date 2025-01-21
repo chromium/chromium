@@ -37,7 +37,7 @@
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
-#include "chrome/browser/net/server_certificate_database.h"  // nogncheck
+#include "components/server_certificate_database/server_certificate_database.h"  // nogncheck
 #endif
 
 class PrefRegistrySimple;

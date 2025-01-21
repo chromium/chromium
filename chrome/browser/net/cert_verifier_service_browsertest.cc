@@ -37,15 +37,15 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
-#include "chrome/browser/net/server_certificate_database.h"     // nogncheck
-#include "chrome/browser/net/server_certificate_database.pb.h"  // nogncheck
-#include "chrome/browser/net/server_certificate_database_service.h"  // nogncheck
 #include "chrome/browser/net/server_certificate_database_service_factory.h"  // nogncheck
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/server_certificate_database/server_certificate_database.h"  // nogncheck
+#include "components/server_certificate_database/server_certificate_database.pb.h"  // nogncheck
+#include "components/server_certificate_database/server_certificate_database_service.h"  // nogncheck
 #include "crypto/sha2.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
@@ -54,7 +54,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "net/cert/cert_type.h"
 #include "net/cert/nss_cert_database.h"
@@ -591,7 +590,7 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest,
 
   // Migration pref should be false.
   EXPECT_EQ(browser()->profile()->GetPrefs()->GetInteger(
-                prefs::kNSSCertsMigratedToServerCertDb),
+                net::prefs::kNSSCertsMigratedToServerCertDb),
             static_cast<int>(net::ServerCertificateDatabaseService::
                                  NSSMigrationResultPref::kNotMigrated));
   histogram_tester_.ExpectTotalCount("Net.CertVerifier.NSSCertMigrationResult",
@@ -625,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest, PRE_TestNSSCertMigration) {
   // Migration pref should be true now.
   EXPECT_EQ(
       browser()->profile()->GetPrefs()->GetInteger(
-          prefs::kNSSCertsMigratedToServerCertDb),
+          net::prefs::kNSSCertsMigratedToServerCertDb),
       static_cast<int>(net::ServerCertificateDatabaseService::
                            NSSMigrationResultPref::kMigratedSuccessfully));
 
@@ -666,7 +665,7 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest, TestNSSCertMigration) {
   // Migration pref should already be true.
   EXPECT_EQ(
       browser()->profile()->GetPrefs()->GetInteger(
-          prefs::kNSSCertsMigratedToServerCertDb),
+          net::prefs::kNSSCertsMigratedToServerCertDb),
       static_cast<int>(net::ServerCertificateDatabaseService::
                            NSSMigrationResultPref::kMigratedSuccessfully));
 

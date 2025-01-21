@@ -247,7 +247,7 @@ source_set("browser_tests") {
   if (enable_webui_certificate_viewer) {
     sources +=
         [ "certificate_viewer_dialog/certificate_viewer_dialog_browsertest.cc" ]
-    deps += [ "//chrome/browser/net:server_certificate_database_test_support" ]
+    deps += [ "//components/server_certificate_database:test_support" ]
   }
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/net/server_certificate_database.h"
+#include "components/server_certificate_database/server_certificate_database.h"
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"

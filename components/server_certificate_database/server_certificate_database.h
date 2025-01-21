@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NET_SERVER_CERTIFICATE_DATABASE_H_
-#define CHROME_BROWSER_NET_SERVER_CERTIFICATE_DATABASE_H_
+#ifndef COMPONENTS_SERVER_CERTIFICATE_DATABASE_SERVER_CERTIFICATE_DATABASE_H_
+#define COMPONENTS_SERVER_CERTIFICATE_DATABASE_SERVER_CERTIFICATE_DATABASE_H_
 
 #include <optional>
 
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "chrome/browser/net/server_certificate_database.pb.h"
+#include "components/server_certificate_database/server_certificate_database.pb.h"
 #include "sql/database.h"
 #include "sql/init_status.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
@@ -77,4 +77,4 @@ class ServerCertificateDatabase {
 
 }  // namespace net
 
-#endif  // CHROME_BROWSER_NET_SERVER_CERTIFICATE_DATABASE_H_
+#endif  // COMPONENTS_SERVER_CERTIFICATE_DATABASE_SERVER_CERTIFICATE_DATABASE_H_

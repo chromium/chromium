@@ -5,9 +5,9 @@
 #include "chrome/browser/net/server_certificate_database_service_factory.h"
 
 #include "base/feature_list.h"
-#include "chrome/browser/net/server_certificate_database_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
+#include "components/server_certificate_database/server_certificate_database_service.h"
 #include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

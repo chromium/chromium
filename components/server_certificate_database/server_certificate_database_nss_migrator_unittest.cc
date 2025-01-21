@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/net/server_certificate_database_nss_migrator.h"
+#include "components/server_certificate_database/server_certificate_database_nss_migrator.h"
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/net/server_certificate_database.h"
-#include "chrome/browser/net/server_certificate_database.pb.h"
-#include "chrome/browser/net/server_certificate_database_service.h"
-#include "chrome/browser/net/server_certificate_database_test_util.h"
-#include "chrome/common/chrome_features.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/server_certificate_database/server_certificate_database.h"
+#include "components/server_certificate_database/server_certificate_database.pb.h"
+#include "components/server_certificate_database/server_certificate_database_service.h"
+#include "components/server_certificate_database/server_certificate_database_test_util.h"
 #include "crypto/scoped_test_nss_db.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/x509_util_nss.h"
@@ -64,8 +62,6 @@ class ServerCertificateDatabaseNSSMigratorTest : public testing::Test {
   NSSCertDatabase* nss_cert_database() { return nss_cert_database_.get(); }
 
  private:
-  base::test::ScopedFeatureList feature_list_{
-      features::kEnableCertManagementUIV2Write};
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_profile_dir_;
   TestingPrefServiceSimple pref_service_;

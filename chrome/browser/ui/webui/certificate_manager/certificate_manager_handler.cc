@@ -14,8 +14,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
-#include "chrome/browser/net/server_certificate_database.pb.h"
-#include "chrome/browser/net/server_certificate_database_service.h"
 #include "chrome/browser/net/server_certificate_database_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"
@@ -26,6 +24,8 @@
 #include "chrome/browser/ui/webui/certificate_manager/user_cert_sources.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "components/server_certificate_database/server_certificate_database.pb.h"
+#include "components/server_certificate_database/server_certificate_database_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
 

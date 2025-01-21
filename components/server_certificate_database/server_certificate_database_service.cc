@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/net/server_certificate_database_service.h"
+#include "components/server_certificate_database/server_certificate_database_service.h"
 
 #include <string>
 #include <string_view>
@@ -13,14 +13,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/common/chrome_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/net/server_certificate_database_nss_migrator.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/server_certificate_database/server_certificate_database_nss_migrator.h"
 #endif
 
 namespace net {
@@ -39,14 +37,11 @@ ServerCertificateDatabaseService::ServerCertificateDatabaseService(
     : profile_path_(std::move(profile_path))
 #endif
 {
-  if (base::FeatureList::IsEnabled(
-          ::features::kEnableCertManagementUIV2Write)) {
-    server_cert_database_ = base::SequenceBound<net::ServerCertificateDatabase>(
-        base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-             base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-        profile_path_);
-  }
+  server_cert_database_ = base::SequenceBound<net::ServerCertificateDatabase>(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+      profile_path_);
 }
 
 ServerCertificateDatabaseService::~ServerCertificateDatabaseService() = default;

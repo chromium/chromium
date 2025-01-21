@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/net/server_certificate_database.pb.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_handler.h"
+#include "components/server_certificate_database/server_certificate_database.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
