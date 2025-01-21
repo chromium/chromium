@@ -892,6 +892,12 @@ void Node::moveBefore(Node* new_child,
 
   insertBefore(new_child, ref_child, exception_state);
   GetDocument().SetStatePreservingAtomicMoveInProgress(false);
+
+  if (exception_state.HadException()) {
+    return;
+  }
+
+  DCHECK(old_parent);
   new_child->MovedFrom(*old_parent);
 }
 
