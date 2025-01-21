@@ -205,7 +205,6 @@ ci.builder(
             "minimal_symbols",
             "x64",
             "strip_debug_info",
-            "android_fastbuild",
             "webview_trichrome",
             "webview_shell",
         ],

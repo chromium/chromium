@@ -1,6 +1,5 @@
 {
   "gn_args": {
-    "android_static_analysis": "off",
     "dcheck_always_on": false,
     "debuggable_apks": false,
     "ffmpeg_branding": "Chrome",
