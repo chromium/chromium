@@ -6589,6 +6589,7 @@ data/fetch-keepalive.html
 data/fetch_event_octet_stream.js
 data/fetch_event_passthrough.js
 data/fetch_event_respond_with_fetch.js
+data/fetch_later.html
 data/file_chooser/linked_dir/bar.txt
 data/file_chooser/linked_text_file.txt
 data/file_input.html
