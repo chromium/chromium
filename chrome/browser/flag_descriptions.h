@@ -1735,12 +1735,6 @@ extern const char kPerformanceInterventionUiDescription[];
 extern const char kPerformanceInterventionDemoModeName[];
 extern const char kPerformanceInterventionDemoModeDescription[];
 
-extern const char kPermissionPredictionsName[];
-extern const char kPermissionPredictionsDescription[];
-
-extern const char kPermissionPredictionsV3Name[];
-extern const char kPermissionPredictionsV3Description[];
-
 extern const char kPermissionsAIv1Name[];
 extern const char kPermissionsAIv1Description[];
 

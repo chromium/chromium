@@ -11187,11 +11187,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDevToolsPrivacyUIDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDevToolsPrivacyUI)},
 
-    {"permission-predictions-v3",
-     flag_descriptions::kPermissionPredictionsV3Name,
-     flag_descriptions::kPermissionPredictionsV3Description, kOsAll,
-     FEATURE_VALUE_TYPE(permissions::features::kPermissionPredictionsV3)},
-
     {"permissions-ai-v1", flag_descriptions::kPermissionsAIv1Name,
      flag_descriptions::kPermissionsAIv1Description, kOsDesktop,
      FEATURE_VALUE_TYPE(permissions::features::kPermissionsAIv1)},

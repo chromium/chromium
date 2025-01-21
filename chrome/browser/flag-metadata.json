@@ -6829,14 +6829,6 @@
     "expiry_milestone": 144
   },
   {
-    "name": "permission-predictions-v3",
-    "owners": [
-      "elklm@chromium.org",
-      "//components/permissions/PERMISSIONS_OWNERS"
-    ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "permission-site-settings-radio-button",
     "owners": [
       "lyf@chromium.org",

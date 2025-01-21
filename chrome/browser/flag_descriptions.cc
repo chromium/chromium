@@ -3012,21 +3012,6 @@ const char kCrosSystemLevelPermissionBlockedWarningsDescription[] =
     "disabled in the OS.";
 #endif
 
-const char kPermissionPredictionsName[] = "Permission Predictions";
-const char kPermissionPredictionsDescription[] =
-    "Use the Permission Predictions Service to surface permission requests "
-    "using a quieter UI when the likelihood of the user granting the "
-    "permission is predicted to be low. Requires "
-    "chrome://flags/#quiet-notification-prompts and `Safe Browsing` to be "
-    "enabled.";
-
-const char kPermissionPredictionsV3Name[] = "Permission Predictions V3";
-const char kPermissionPredictionsV3Description[] =
-    "Use the Permission Predictions Service V3 to surface permission requests "
-    "using a quieter UI when the likelihood of the user granting the "
-    "permission is predicted to be low. Requires `Make Searches and Browsing "
-    "Better` to be enabled.";
-
 const char kPermissionsAIv1Name[] = "PermissionsAI";
 const char kPermissionsAIv1Description[] =
     "Use the Permission Predictions Service and Gemini Nano v2 to surface "
