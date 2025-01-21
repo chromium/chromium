@@ -107,9 +107,11 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      * @param idpData is the data of the IDP.
      * @param isAutoReauthn represents whether this is an auto re-authn flow.
      * @param newAccounts represents the newly logged in accounts.
+     * @return whether the invocation is successful. If false is returned, the caller must assume
+     *     that onDismiss was called and must return early.
      */
     @CalledByNative
-    private void showAccounts(
+    private boolean showAccounts(
             @JniType("std::string") String rpForDisplay,
             @JniType("std::string") String idpForDisplay,
             Account[] accounts,
@@ -117,7 +119,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
             boolean isAutoReauthn,
             Account[] newAccounts) {
         assert accounts != null && accounts.length > 0;
-        mAccountSelectionComponent.showAccounts(
+        return mAccountSelectionComponent.showAccounts(
                 rpForDisplay,
                 idpForDisplay,
                 Arrays.asList(accounts),
@@ -135,14 +137,16 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      * @param idpMetadata is the metadata of the IDP.
      * @param rpContext is an enum representing the desired text to be used in the title of the
      *     FedCM prompt: "signin", "continue", etc.
+     * @return whether the invocation is successful. If false is returned, the caller must assume
+     *     that onDismiss was called and must return early.
      */
     @CalledByNative
-    private void showFailureDialog(
+    private boolean showFailureDialog(
             @JniType("std::string") String rpForDisplay,
             @JniType("std::string") String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
             @RpContext.EnumType int rpContext) {
-        mAccountSelectionComponent.showFailureDialog(
+        return mAccountSelectionComponent.showFailureDialog(
                 rpForDisplay, idpForDisplay, idpMetadata, rpContext);
     }
 
@@ -157,15 +161,17 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      *     the FedCM prompt: "signin", "continue", etc.
      * @param IdentityCredentialTokenError is contains the error code and url to display in the
      *     FedCM prompt.
+     * @return whether the invocation is successful. If false is returned, the caller must assume
+     *     that onDismiss was called and must return early.
      */
     @CalledByNative
-    private void showErrorDialog(
+    private boolean showErrorDialog(
             @JniType("std::string") String rpForDisplay,
             @JniType("std::string") String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
             @RpContext.EnumType int rpContext,
             IdentityCredentialTokenError error) {
-        mAccountSelectionComponent.showErrorDialog(
+        return mAccountSelectionComponent.showErrorDialog(
                 rpForDisplay, idpForDisplay, idpMetadata, rpContext, error);
     }
 
@@ -177,13 +183,15 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param rpContext is a {@link String} representing the desired text to be used in the title of
      *     the FedCM prompt: "signin", "continue", etc.
+     * @return whether the invocation is successful. If false is returned, the caller must assume
+     *     that onDismiss was called and must return early.
      */
     @CalledByNative
-    private void showLoadingDialog(
+    private boolean showLoadingDialog(
             @JniType("std::string") String rpForDisplay,
             @JniType("std::string") String idpForDisplay,
             @RpContext.EnumType int rpContext) {
-        mAccountSelectionComponent.showLoadingDialog(rpForDisplay, idpForDisplay, rpContext);
+        return mAccountSelectionComponent.showLoadingDialog(rpForDisplay, idpForDisplay, rpContext);
     }
 
     @CalledByNative

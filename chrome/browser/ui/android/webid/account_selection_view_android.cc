@@ -233,11 +233,10 @@ bool AccountSelectionViewAndroid::Show(
   ScopedJavaLocalRef<jobject> idp_obj =
       ConvertToJavaIdentityProviderData(env, idp_list[0].get());
 
-  Java_AccountSelectionBridge_showAccounts(
+  return Java_AccountSelectionBridge_showAccounts(
       env, java_object_internal_, rp_for_display, idp_list[0]->idp_for_display,
       accounts_obj, idp_obj, sign_in_mode == Account::SignInMode::kAuto,
       new_accounts_obj);
-  return true;
 }
 
 bool AccountSelectionViewAndroid::ShowFailureDialog(
@@ -260,10 +259,9 @@ bool AccountSelectionViewAndroid::ShowFailureDialog(
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> idp_metadata_obj =
       ConvertToJavaIdentityProviderMetadata(env, idp_metadata);
-  Java_AccountSelectionBridge_showFailureDialog(
+  return Java_AccountSelectionBridge_showFailureDialog(
       env, java_object_internal_, rp_for_display, idp_for_display,
       idp_metadata_obj, static_cast<jint>(rp_context));
-  return true;
 }
 
 bool AccountSelectionViewAndroid::ShowErrorDialog(
@@ -283,11 +281,10 @@ bool AccountSelectionViewAndroid::ShowErrorDialog(
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> idp_metadata_obj =
       ConvertToJavaIdentityProviderMetadata(env, idp_metadata);
-  Java_AccountSelectionBridge_showErrorDialog(
+  return Java_AccountSelectionBridge_showErrorDialog(
       env, java_object_internal_, rp_for_display, idp_for_display,
       idp_metadata_obj, static_cast<jint>(rp_context),
       ConvertToJavaIdentityCredentialTokenError(env, error));
-  return true;
 }
 
 bool AccountSelectionViewAndroid::ShowLoadingDialog(
@@ -303,10 +300,9 @@ bool AccountSelectionViewAndroid::ShowLoadingDialog(
     return false;
   }
   JNIEnv* env = AttachCurrentThread();
-  Java_AccountSelectionBridge_showLoadingDialog(env, java_object_internal_,
-                                                rp_for_display, idp_for_display,
-                                                static_cast<jint>(rp_context));
-  return true;
+  return Java_AccountSelectionBridge_showLoadingDialog(
+      env, java_object_internal_, rp_for_display, idp_for_display,
+      static_cast<jint>(rp_context));
 }
 
 std::string AccountSelectionViewAndroid::GetTitle() const {

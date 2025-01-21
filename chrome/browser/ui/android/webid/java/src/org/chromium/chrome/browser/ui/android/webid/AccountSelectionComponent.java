@@ -70,8 +70,10 @@ public interface AccountSelectionComponent {
      * @param idpData The information about the identity provider.
      * @param isAutoReauthn A {@link boolean} that represents whether this is an auto re-authn flow.
      * @param newAccounts The newly logged in accounts.
+     * @return whether the invocation is successful. If false is returned, the caller must assume
+     *     that onDismiss was called and must return early.
      */
-    void showAccounts(
+    boolean showAccounts(
             String rpEtldPlusOne,
             String idpEtldPlusOne,
             List<Account> accounts,
@@ -89,8 +91,10 @@ public interface AccountSelectionComponent {
      * @param idpMetadata is the metadata of the IDP.
      * @param rpContext is an enum representing the desired text to be used in the title of the
      *     FedCM prompt: "signin", "continue", etc.
+     * @return whether the invocation is successful. If false is returned, the caller must assume
+     *     that onDismiss was called and must return early.
      */
-    void showFailureDialog(
+    boolean showFailureDialog(
             String rpForDisplay,
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
@@ -107,8 +111,10 @@ public interface AccountSelectionComponent {
      *     FedCM prompt: "signin", "continue", etc.
      * @param IdentityCredentialTokenError is contains the error code and url to display in the
      *     FedCM prompt.
+     * @return whether the invocation is successful. If false is returned, the caller must assume
+     *     that onDismiss was called and must return early.
      */
-    void showErrorDialog(
+    boolean showErrorDialog(
             String rpForDisplay,
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
@@ -122,8 +128,10 @@ public interface AccountSelectionComponent {
      * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param rpContext is an enum representing the desired text to be used in the title of the
      *     FedCM prompt: "signin", "continue", etc.
+     * @return whether the invocation is successful. If false is returned, the caller must assume
+     *     that onDismiss was called and must return early.
      */
-    void showLoadingDialog(
+    boolean showLoadingDialog(
             String rpForDisplay, String idpForDisplay, @RpContext.EnumType int rpContext);
 
     /**

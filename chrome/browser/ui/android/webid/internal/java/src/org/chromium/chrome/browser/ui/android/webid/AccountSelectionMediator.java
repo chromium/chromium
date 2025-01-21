@@ -685,26 +685,32 @@ class AccountSelectionMediator {
         mDisclosureDialogState = null;
     }
 
-    void showVerifySheet(Account account) {
+    boolean showVerifySheet(Account account) {
         if (mHeaderType == HeaderType.SIGN_IN || mHeaderType == HeaderType.REQUEST_PERMISSION) {
             if (mHeaderType == HeaderType.REQUEST_PERMISSION) {
                 mDisclosureDialogState = DisclosureDialogResult.CONTINUE;
                 maybeRecordDisclosureDialogResult();
             }
             mHeaderType = HeaderType.VERIFY;
-            updateSheet(Arrays.asList(account), /* areAccountsClickable= */ false);
+            if (!updateSheet(Arrays.asList(account), /* areAccountsClickable= */ false)) {
+                return false;
+            }
             updateBackPressBehavior();
         } else {
             // We call showVerifySheet() from updateSheet()->onAccountSelected() in this case, so do
             // not invoke updateSheet() as that would cause a loop and isn't needed.
             assert mHeaderType == HeaderType.VERIFY_AUTO_REAUTHN;
         }
+        return true;
     }
 
-    void showRequestPermissionSheet(Account account) {
+    boolean showRequestPermissionSheet(Account account) {
         mHeaderType = HeaderType.REQUEST_PERMISSION;
-        updateSheet(Arrays.asList(account), /* areAccountsClickable= */ false);
+        if (!updateSheet(Arrays.asList(account), /* areAccountsClickable= */ false)) {
+            return false;
+        }
         updateBackPressBehavior();
+        return true;
     }
 
     // Dismisses content without notifying the delegate. Should only be invoked during destruction.
@@ -712,7 +718,7 @@ class AccountSelectionMediator {
         if (!mWasDismissed) dismissContent();
     }
 
-    void showAccounts(
+    boolean showAccounts(
             String rpForDisplay,
             String idpForDisplay,
             List<Account> accounts,
@@ -747,7 +753,7 @@ class AccountSelectionMediator {
         // Auto re-authn in active mode does not update the loading UI.
         if (mRpMode == RpMode.ACTIVE && isAutoReauthn) {
             mDelegate.onAccountSelected(mIdpMetadata.getConfigUrl(), mSelectedAccount);
-            return;
+            return true;
         }
 
         fetchBrandIcon(mIdpMetadata.getBrandIconUrl(), bitmap -> updateIdpBrandIcon(bitmap));
@@ -756,11 +762,14 @@ class AccountSelectionMediator {
             fetchBrandIcon(mClientMetadata.getBrandIconUrl(), bitmap -> updateRpBrandIcon(bitmap));
         }
 
-        showAccountsInternal(newAccounts);
+        if (!showAccountsInternal(newAccounts)) {
+            return false;
+        }
         setComponentShowTime(SystemClock.elapsedRealtime());
+        return true;
     }
 
-    void showFailureDialog(
+    boolean showFailureDialog(
             String rpForDisplay,
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
@@ -771,12 +780,15 @@ class AccountSelectionMediator {
         mIdpMetadata = idpMetadata;
         mRpContext = rpContext;
         mHeaderType = HeaderProperties.HeaderType.SIGN_IN_TO_IDP_STATIC;
-        updateSheet(/* accounts= */ null, /* areAccountsClickable= */ false);
+        if (!updateSheet(/* accounts= */ null, /* areAccountsClickable= */ false)) {
+            return false;
+        }
         setComponentShowTime(SystemClock.elapsedRealtime());
         fetchBrandIcon(idpMetadata.getBrandIconUrl(), bitmap -> updateIdpBrandIcon(bitmap));
+        return true;
     }
 
-    void showErrorDialog(
+    boolean showErrorDialog(
             String rpForDisplay,
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
@@ -793,9 +805,11 @@ class AccountSelectionMediator {
         // Update the bottom sheet into an error bottom sheet for passive mode.
         if (mRpMode == RpMode.PASSIVE) {
             showPlaceholderIcon(idpMetadata);
-            updateSheet(/* accounts= */ null, /* areAccountsClickable= */ false);
+            if (!updateSheet(/* accounts= */ null, /* areAccountsClickable= */ false)) {
+                return false;
+            }
             fetchBrandIcon(idpMetadata.getBrandIconUrl(), bitmap -> updateIdpBrandIcon(bitmap));
-            return;
+            return true;
         }
 
         // Hide the bottom sheet and show an error modal dialog for active mode.
@@ -844,16 +858,20 @@ class AccountSelectionMediator {
         }
         PropertyModel model = builder.build();
         mModalDialogManager.showDialog(model, ModalDialogManager.ModalDialogType.APP);
+        return true;
     }
 
-    void showLoadingDialog(
+    boolean showLoadingDialog(
             String rpForDisplay, String idpForDisplay, @RpContext.EnumType int rpContext) {
         mRpForDisplay = rpForDisplay;
         mIdpForDisplay = idpForDisplay;
         mRpContext = rpContext;
         mHeaderType = HeaderProperties.HeaderType.LOADING;
-        updateSheet(/* accounts= */ null, /* areAccountsClickable= */ false);
+        if (!updateSheet(/* accounts= */ null, /* areAccountsClickable= */ false)) {
+            return false;
+        }
         setComponentShowTime(SystemClock.elapsedRealtime());
+        return true;
     }
 
     void showUrl(Context context, @IdentityRequestDialogLinkType int linkType, GURL url) {
@@ -895,7 +913,7 @@ class AccountSelectionMediator {
         return mHeaderType;
     }
 
-    private void showAccountsInternal(@Nullable List<Account> newAccounts) {
+    private boolean showAccountsInternal(@Nullable List<Account> newAccounts) {
         // TODO(crbug.com/356665527): Handle multiple newly signed-in accounts.
         Account newlySignedInAccount =
                 newAccounts != null
@@ -918,8 +936,7 @@ class AccountSelectionMediator {
             if (shouldShowVerifyingSheet) {
                 mHeaderType = HeaderType.SIGN_IN;
                 mDelegate.onAccountSelected(mIdpMetadata.getConfigUrl(), mSelectedAccount);
-                showVerifySheet(mSelectedAccount);
-                return;
+                return showVerifySheet(mSelectedAccount);
             }
 
             // The IDP claimed login state controls whether we show disclosure text,
@@ -928,8 +945,7 @@ class AccountSelectionMediator {
             boolean shouldShowRequestPermissionDialog =
                     !newlySignedInAccount.isSignIn() && mDisclosureFields.length > 0;
             if (shouldShowRequestPermissionDialog) {
-                showRequestPermissionSheet(mSelectedAccount);
-                return;
+                return showRequestPermissionSheet(mSelectedAccount);
             }
 
             // Else:
@@ -941,11 +957,13 @@ class AccountSelectionMediator {
         // We want the accounts to be clickable if there is no preselected account or if we're not
         // going to show the disclosure text, which happens when the account is a signIn or when
         // fields is empty.
-        updateSheet(
+        if (!updateSheet(
                 mSelectedAccount != null ? Arrays.asList(mSelectedAccount) : mAccounts,
                 /* areAccountsClickable= */ mSelectedAccount == null
                         || mSelectedAccount.isSignIn()
-                        || mDisclosureFields.length == 0);
+                        || mDisclosureFields.length == 0)) {
+            return false;
+        }
         updateBackPressBehavior();
 
         // This is a placeholder assuming the tab containing the account chooser will be closed.
@@ -961,9 +979,10 @@ class AccountSelectionMediator {
             }
             mAccountChooserState = AccountChooserResult.TAB_CLOSED;
         }
+        return true;
     }
 
-    private void updateSheet(List<Account> accounts, boolean areAccountsClickable) {
+    private boolean updateSheet(List<Account> accounts, boolean areAccountsClickable) {
         boolean showUseDifferentAccountButton =
                 mHeaderType == HeaderType.SIGN_IN
                         && areAccountsClickable
@@ -1085,7 +1104,10 @@ class AccountSelectionMediator {
         // When a user opens a page that invokes the FedCM API in a new tab, the tab will be hidden
         // and we should not show the bottom sheet to avoid confusion.
         mTab.addObserver(mTabObserver);
-        if (!mTab.isHidden()) showContent();
+        if (!mTab.isHidden()) {
+            return showContent();
+        }
+        return true;
     }
 
     private void updateHeader() {
@@ -1099,9 +1121,10 @@ class AccountSelectionMediator {
      * (e.g., higher priority content is being shown) it removes the request from the bottom sheet
      * controller queue and notifies the delegate of the dismissal.
      */
-    private void showContent() {
-        if (mWasDismissed) return;
-        if (mIsModalDialogOpen) return;
+    private boolean showContent() {
+        if (mWasDismissed || mIsModalDialogOpen) {
+            return true;
+        }
         // When active mode is triggered, if there's a pending passive mode request, we should
         // prioritize the active mode since it's gated by user intention. With the UI code, both
         // button flow bottom sheet and widget flow bottom sheet have the same predefined priority
@@ -1109,23 +1132,24 @@ class AccountSelectionMediator {
         // calculation and prioritize the button flow request.
         boolean prioritizeActiveMode =
                 mRpMode == RpMode.ACTIVE && mHeaderType == HeaderType.LOADING;
-        if (mBottomSheetController.requestShowContent(mBottomSheetContent, true)
-                || prioritizeActiveMode) {
-            if (mRegisteredObservers) return;
-
-            mRegisteredObservers = true;
-            if (mHeaderType == HeaderType.SIGN_IN
-                    || mHeaderType == HeaderType.VERIFY
-                    || mHeaderType == HeaderType.VERIFY_AUTO_REAUTHN) {
-                mDelegate.onAccountsDisplayed();
-            }
-            mBottomSheetController.addObserver(mBottomSheetObserver);
-            KeyboardVisibilityDelegate.getInstance()
-                    .addKeyboardVisibilityListener(mKeyboardVisibilityListener);
-            if (!mTab.hasObserver(mTabObserver)) mTab.addObserver(mTabObserver);
-        } else {
+        if (!mBottomSheetController.requestShowContent(mBottomSheetContent, true)
+                && !prioritizeActiveMode) {
             onDismissed(IdentityRequestDialogDismissReason.OTHER);
+            return false;
         }
+        if (mRegisteredObservers) return true;
+
+        mRegisteredObservers = true;
+        if (mHeaderType == HeaderType.SIGN_IN
+                || mHeaderType == HeaderType.VERIFY
+                || mHeaderType == HeaderType.VERIFY_AUTO_REAUTHN) {
+            mDelegate.onAccountsDisplayed();
+        }
+        mBottomSheetController.addObserver(mBottomSheetObserver);
+        KeyboardVisibilityDelegate.getInstance()
+                .addKeyboardVisibilityListener(mKeyboardVisibilityListener);
+        if (!mTab.hasObserver(mTabObserver)) mTab.addObserver(mTabObserver);
+        return true;
     }
 
     /** Requests to dismiss bottomsheet. */
