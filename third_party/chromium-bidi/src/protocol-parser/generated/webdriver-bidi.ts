@@ -2338,6 +2338,7 @@ export namespace Script {
         .array(BrowsingContext.BrowsingContextSchema)
         .min(1)
         .optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
       sandbox: z.string().optional(),
     }),
   );
