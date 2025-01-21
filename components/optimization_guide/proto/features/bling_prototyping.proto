@@ -6,6 +6,8 @@ syntax = "proto3";
 
 package optimization_guide.proto;
 
+import "components/optimization_guide/proto/features/common_quality_data.proto";
+
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.features.proto";
 
@@ -27,13 +29,20 @@ message BlingPrototypingLoggingData {
 }
 
 // The request to execute a prototyping prompt in Bling.
-// Next ID: 3
+// Next ID: 5
 message BlingPrototypingRequest {
-  // The name of the user executing the prompt.
-  string name = 1;
+  // TODO(crbug.com/390633314): Consider cleaning up this field (reserving).
+  // Deprecated. The name of the user executing the prompt.
+  string name = 1 [deprecated = true];
 
-  // The query to execute.
+  // The prompt to pass to the model.
   string query = 2;
+
+  // The page context of the current tab.
+  PageContext page_context = 3;
+
+  // The system instructions to pass to the model.
+  string system_instructions = 4;
 }
 
 // The response from executing a prototyping prompt in Bling.

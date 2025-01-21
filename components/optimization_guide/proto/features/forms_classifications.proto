@@ -53,6 +53,9 @@ message FieldTypeResponse {
   // request and response.
   string field_global_id = 1;
 
+  // The predicted type for the field.
+  int32 field_type = 2;
+
   // Optional formatting metadata for downstream use.
   // Example formats: "dd/mm/yyyy" for dates, "NAME_FIRST_LAST" for names.
   string formatting_meta = 3;
@@ -60,8 +63,6 @@ message FieldTypeResponse {
   // The confidence score for the prediction, ranging from 0.0 to 1.0.
   // Higher values indicate greater confidence in the predicted type.
   float confidence = 4;
-
-  reserved 2;
 }
 
 message FormTypeQuality {
