@@ -299,14 +299,13 @@ SelectorStatisticsRuleMap& GetSelectorStatisticsRuleMap() {
 void AggregateRulePerfData(
     const TreeScope* tree_scope_containing_rule,
     const StyleEngine& style_engine,
-    const Vector<RulePerfDataPerRequest>& rules_statistics) {
+    const HeapVector<RulePerfDataPerRequest>& rules_statistics) {
   SelectorStatisticsRuleMap& map = GetSelectorStatisticsRuleMap();
   for (const auto& rule_stats : rules_statistics) {
-    const RuleData* rule = rule_stats.rule;
-    const CSSStyleSheet* style_sheet =
-        FindStyleSheet(tree_scope_containing_rule, style_engine, rule->Rule());
+    const CSSStyleSheet* style_sheet = FindStyleSheet(
+        tree_scope_containing_rule, style_engine, rule_stats.style_rule);
     CumulativeRulePerfKey key{
-        rule->Selector().SelectorText(),
+        rule_stats.selector_text,
         IdentifiersFactory::IdForCSSStyleSheet(style_sheet)};
     auto it = map.find(key);
     if (it == map.end()) {
