@@ -6,6 +6,7 @@ package org.chromium.device.bluetooth;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanFilter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -29,17 +30,19 @@ import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.device.bluetooth.wrapper.BluetoothAdapterWrapper;
 import org.chromium.device.bluetooth.wrapper.BluetoothDeviceWrapper;
+import org.chromium.device.bluetooth.wrapper.DeviceBondStateReceiverWrapper;
 import org.chromium.device.bluetooth.wrapper.ScanResultWrapper;
+import org.chromium.device.bluetooth.wrapper.ThreadUtilsWrapper;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
- * Exposes android.bluetooth.BluetoothAdapter as necessary for C++
- * device::BluetoothAdapterAndroid, which implements the cross platform
- * device::BluetoothAdapter.
+ * Exposes android.bluetooth.BluetoothAdapter as necessary for C++ device::BluetoothAdapterAndroid,
+ * which implements the cross platform device::BluetoothAdapter.
  *
- * Lifetime is controlled by device::BluetoothAdapterAndroid.
+ * <p>Lifetime is controlled by device::BluetoothAdapterAndroid.
  */
 @JNINamespace("device")
 @NullMarked
@@ -50,6 +53,8 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
     // mAdapter is final to ensure registerReceiver is followed by unregisterReceiver.
     private final @Nullable BluetoothAdapterWrapper mAdapter;
     private final @Nullable ChromeBluetoothLeScanner mLeScanner;
+
+    private @Nullable DeviceBondStateReceiverWrapper mDeviceBondStateReceiver;
 
     // ---------------------------------------------------------------------------------------------
     // Construction and handler for C++ object destruction.
@@ -87,6 +92,9 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
         stopScan();
         mNativeBluetoothAdapterAndroid = 0;
         unregisterBroadcastReceiver();
+        if (mDeviceBondStateReceiver != null && mAdapter != null) {
+            mAdapter.getContext().unregisterReceiver(mDeviceBondStateReceiver);
+        }
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -188,6 +196,56 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
         return mLeScanner.stopScan();
     }
 
+    /**
+     * Populates paired devices and starts listening to newly bonded devices.
+     *
+     * @return True if successfully fetched bonded devices, and posted a task to register the
+     *     listener.
+     */
+    @CalledByNative
+    private boolean startListingPairedDevices() {
+        if (!isPresent()) {
+            return false;
+        }
+
+        if (!mAdapter.hasBluetoothFeature()) {
+            return false;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            Context context = mAdapter.getContext();
+            if (context.checkCallingOrSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)
+                    != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+
+        final Set<BluetoothDeviceWrapper> devices = mAdapter.getBondedDevices();
+        if (devices == null) {
+            return false;
+        }
+
+        ThreadUtilsWrapper.getInstance()
+                .postOnUiThread(
+                        () -> {
+                            for (BluetoothDeviceWrapper device : devices) {
+                                populatePairedDevice(device);
+                            }
+
+                            if (mDeviceBondStateReceiver != null) {
+                                return;
+                            }
+                            mDeviceBondStateReceiver =
+                                    mAdapter.createDeviceBondStateReceiver(
+                                            new DeviceBondStateCallback());
+                            ContextUtils.registerProtectedBroadcastReceiver(
+                                    mAdapter.getContext(),
+                                    mDeviceBondStateReceiver,
+                                    new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED));
+                        });
+        return true;
+    }
+
     // ---------------------------------------------------------------------------------------------
     // Implementation details:
 
@@ -233,6 +291,15 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
         if (mAdapter != null) {
             mAdapter.getContext().unregisterReceiver(this);
         }
+    }
+
+    private void populatePairedDevice(BluetoothDeviceWrapper deviceWrapper) {
+        ChromeBluetoothAdapterJni.get()
+                .populatePairedDevice(
+                        mNativeBluetoothAdapterAndroid,
+                        this,
+                        deviceWrapper.getAddress(),
+                        deviceWrapper);
     }
 
     /**
@@ -326,6 +393,16 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
         }
     }
 
+    /** The callback to add newly bonded devices to native code. */
+    private class DeviceBondStateCallback implements DeviceBondStateReceiverWrapper.Callback {
+        @Override
+        public void onDeviceBondStateChanged(BluetoothDeviceWrapper device, int bondState) {
+            if (bondState == BluetoothDevice.BOND_BONDED) {
+                populatePairedDevice(device);
+            }
+        }
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
@@ -395,6 +472,13 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
                 int[] manufacturerDataKeys,
                 Object[] manufacturerDataValues,
                 int advertiseFlags);
+
+        // Binds to BluetoothAdapterAndroid::PopulatePairedDevice.
+        void populatePairedDevice(
+                long nativeBluetoothAdapterAndroid,
+                ChromeBluetoothAdapter caller,
+                String address,
+                BluetoothDeviceWrapper deviceWrapper);
 
         // Binds to BluetoothAdapterAndroid::nativeOnAdapterStateChanged
         void onAdapterStateChanged(

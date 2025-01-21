@@ -51,6 +51,8 @@ const char BluetoothTestBase::kTestUUIDHeartRate[] =
     "0000180d-0000-1000-8000-00805f9b34fb";
 const char BluetoothTestBase::kTestUUIDU2f[] =
     "0000fffd-0000-1000-8000-00805f9b34fb";
+const char BluetoothTestBase::kTestUUIDSerial[] =
+    "00001101-0000-1000-8000-00805f9b34fb";
 // Characteristic UUIDs
 const char BluetoothTestBase::kTestUUIDDeviceName[] =
     "00002a00-0000-1000-8000-00805f9b34fb";

@@ -4,10 +4,20 @@
 
 #include "device/bluetooth/bluetooth_device_android.h"
 
+#include <jni.h>
+
+#include <vector>
+
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
+#include "base/stl_util.h"
+#include "device/base/features.h"
 #include "device/bluetooth/bluetooth_adapter_android.h"
+#include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -47,6 +57,13 @@ BluetoothDeviceAndroid::GetJavaObject() {
 uint32_t BluetoothDeviceAndroid::GetBluetoothClass() const {
   return Java_ChromeBluetoothDevice_getBluetoothClass(AttachCurrentThread(),
                                                       j_device_);
+}
+
+BluetoothTransport BluetoothDeviceAndroid::GetType() const {
+  // Device types in Android BluetoothDevice share the same value as
+  // BluetoothTransport.
+  return static_cast<BluetoothTransport>(
+      Java_ChromeBluetoothDevice_getType(AttachCurrentThread(), j_device_));
 }
 
 std::string BluetoothDeviceAndroid::GetAddress() const {
@@ -115,6 +132,37 @@ bool BluetoothDeviceAndroid::IsConnectable() const {
 bool BluetoothDeviceAndroid::IsConnecting() const {
   NOTIMPLEMENTED();
   return false;
+}
+
+BluetoothDevice::UUIDSet BluetoothDeviceAndroid::GetUUIDs() const {
+  if (!base::FeatureList::IsEnabled(features::kBluetoothRfcommAndroid)) {
+    return BluetoothDevice::GetUUIDs();
+  }
+
+  BluetoothTransport device_type = GetType();
+  if (device_type == BLUETOOTH_TRANSPORT_LE ||
+      device_type == BLUETOOTH_TRANSPORT_INVALID) {
+    return BluetoothDevice::GetUUIDs();
+  }
+
+  // Java type: String[]
+  base::android::ScopedJavaLocalRef<jobjectArray> sdp_uuids =
+      Java_ChromeBluetoothDevice_getUuids(AttachCurrentThread(), j_device_);
+  std::vector<std::string> sdp_uuid_strings;
+  base::android::AppendJavaStringArrayToStringVector(
+      AttachCurrentThread(), sdp_uuids, &sdp_uuid_strings);
+  BluetoothDevice::UUIDSet sdp_bluetooth_uuids;
+  for (std::string& uuid : sdp_uuid_strings) {
+    sdp_bluetooth_uuids.insert(BluetoothUUID(std::move(uuid)));
+  }
+
+  if (device_type == BLUETOOTH_TRANSPORT_CLASSIC) {
+    return sdp_bluetooth_uuids;
+  }
+
+  // Dual transport device
+  return base::STLSetUnion<BluetoothDevice::UUIDSet>(
+      sdp_bluetooth_uuids, BluetoothDevice::GetUUIDs());
 }
 
 bool BluetoothDeviceAndroid::ExpectingPinCode() const {
