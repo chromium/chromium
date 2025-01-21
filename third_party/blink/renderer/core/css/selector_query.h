@@ -27,7 +27,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECTOR_QUERY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECTOR_QUERY_H_
 
-#include <memory>
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
@@ -107,14 +110,18 @@ class CORE_EXPORT SelectorQuery {
 
   bool SelectorListMatches(ContainerNode& root_node, Element&) const;
 
+  const CSSSelector* StartOfComplexSelector(unsigned index) const {
+    return selector_list_->First() + selector_start_offsets_[index];
+  }
+
   // TODO(sesse): Consider moving SelectorQuery to Oilpan.
   Persistent<CSSSelectorList> selector_list_;
-  // Contains the list of CSSSelector's to match, but without ones that could
-  // never match like pseudo elements, div::before. This can be empty, while
-  // |selector_list_| will never be empty as SelectorQueryCache::add would have
-  // thrown an exception.
-  GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707046")
-  Vector<const CSSSelector*> selectors_;
+  // Contains the start of each complex selector (relative to the first selector
+  // in selector_list_; we cannot store pointers due to Oilpan restrictions),
+  // but without ones that could never match like pseudo elements, div::before.
+  // This can be empty, while |selector_list_| will never be empty, as
+  // SelectorQueryCache::add would have thrown an exception.
+  Vector<unsigned, 4> selector_start_offsets_;
   AtomicString selector_id_;
   bool selector_id_is_rightmost_ : 1;
   bool selector_id_affected_by_sibling_combinator_ : 1;
