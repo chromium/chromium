@@ -23,7 +23,8 @@ namespace ai {
 TabOrganizationServiceImpl::TabOrganizationServiceImpl(
     mojo::PendingReceiver<mojom::TabOrganizationService> receiver,
     WebStateList* web_state_list,
-    bool start_on_device) {
+    bool start_on_device)
+    : receiver_(this, std::move(receiver)) {
   web_state_list_ = web_state_list;
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   service_ = OptimizationGuideServiceFactory::GetForProfile(

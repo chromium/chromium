@@ -109,6 +109,11 @@
 - (void)executeGroupTabsWithStrategy:
     (optimization_guide::proto::
          TabOrganizationRequest_TabOrganizationModelStrategy)strategy {
+  // Ensure that tabOrganizationRequestWrapper is reset from previous attempts.
+  if (_tabOrganizationRequestWrapper) {
+    _tabOrganizationRequestWrapper = nil;
+  }
+
   __weak __typeof(self) weakSelf = self;
 
   // Create return callback for `_tab_organization_service`.
@@ -118,6 +123,13 @@
             [weakSelf.consumer
                 updateQueryResult:base::SysUTF8ToNSString(response_string)
                        forFeature:AIPrototypingFeature::kTabOrganization];
+
+            // Assign to a strong variable to avoid race condition when setting
+            // `_tabOrganizationRequestWrapper` to nil.
+            AIPrototypingMediator* strongSelf = weakSelf;
+            if (strongSelf) {
+              strongSelf->_tabOrganizationRequestWrapper = nil;
+            }
           });
 
   // Create completion callback for TabOrganization request wrapper.
@@ -145,8 +157,6 @@
                      groupingStrategy:strategy
                    completionCallback:std::move(completion_callback)];
   [_tabOrganizationRequestWrapper populateRequestFieldsAsync];
-  _tabOrganizationRequestWrapper = nil;
-
 }
 
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
