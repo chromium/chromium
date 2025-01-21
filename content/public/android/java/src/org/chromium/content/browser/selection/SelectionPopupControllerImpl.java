@@ -525,7 +525,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.ShowSelectionMenuSourceType",
                 sourceType,
-                MenuSourceType.ADJUST_SELECTION_RESET + 1);
+                MenuSourceType.MAX_VALUE);
 
         int offsetBottom = bottom;
         offsetBottom += handleHeight;

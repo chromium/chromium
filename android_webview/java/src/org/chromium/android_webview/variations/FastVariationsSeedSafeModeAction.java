@@ -214,7 +214,7 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
             RecordHistogram.recordEnumeratedHistogram(
                     "Variations.SafeMode.LoadSafeSeed.Result",
                     result,
-                    LoadSeedResult.MAX_VALUE + 1);
+                    LoadSeedResult.MAX_VALUE);
         }
     }
 

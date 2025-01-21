@@ -2371,7 +2371,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             RecordHistogram.recordEnumeratedHistogram(
                     "Settings.OpenSettingsFromMenu.PerProfileType",
                     type,
-                    BrowserProfileType.MAX_VALUE + 1);
+                    BrowserProfileType.MAX_VALUE);
             return true;
         }
 
@@ -2403,7 +2403,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             RecordHistogram.recordEnumeratedHistogram(
                     "Android.OpenHistoryFromMenu.PerProfileType",
                     type,
-                    BrowserProfileType.MAX_VALUE + 1);
+                    BrowserProfileType.MAX_VALUE);
             return true;
         }
 

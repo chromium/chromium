@@ -2968,7 +2968,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             RecordHistogram.recordEnumeratedHistogram(
                     "Bookmarks.OpenBookmarkManager.PerProfileType",
                     type,
-                    BrowserProfileType.MAX_VALUE + 1);
+                    BrowserProfileType.MAX_VALUE);
 
             RecordUserAction.record("MobileMenuAllBookmarks");
         } else if (id == R.id.recent_tabs_menu_id) {

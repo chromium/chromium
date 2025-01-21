@@ -53,12 +53,12 @@ public class DownloadMetrics {
         Profile profile = tab.getProfile();
         @BrowserProfileType int type = Profile.getBrowserProfileTypeFromProfile(profile);
         RecordHistogram.recordEnumeratedHistogram(
-                "Download.OpenDownloads.PerProfileType", type, BrowserProfileType.MAX_VALUE + 1);
+                "Download.OpenDownloads.PerProfileType", type, BrowserProfileType.MAX_VALUE);
         if (source == DownloadOpenSource.MENU) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Download.OpenDownloadsFromMenu.PerProfileType",
                     type,
-                    BrowserProfileType.MAX_VALUE + 1);
+                    BrowserProfileType.MAX_VALUE);
         }
     }
 }

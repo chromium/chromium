@@ -158,7 +158,7 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
         RecordHistogram.recordEnumeratedHistogram(
                 "Signin.AccountCapabilities.GetFromSystemLibraryResult",
                 FetchAccountCapabilitiesFromSystemLibraryResult.API_NOT_AVAILABLE,
-                FetchAccountCapabilitiesFromSystemLibraryResult.MAX_VALUE + 1);
+                FetchAccountCapabilitiesFromSystemLibraryResult.MAX_VALUE);
         return CapabilityResponse.EXCEPTION;
     }
 

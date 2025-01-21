@@ -189,7 +189,7 @@ public class BookmarkOpener {
 
     private void recordTypeOpened(BookmarkItem item, String histogram) {
         RecordHistogram.recordEnumeratedHistogram(
-                histogram, item.getId().getType(), BookmarkType.LAST + 1);
+                histogram, item.getId().getType(), BookmarkType.LAST);
     }
 
     private void recordTimeSinceAdded(BookmarkItem item, String histogramPrefix) {
