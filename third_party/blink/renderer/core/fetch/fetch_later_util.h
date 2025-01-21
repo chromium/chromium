@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/gtest_prod_util.h"
-#include "third_party/blink/public/common/frame/frame_policy.h"
+#include "third_party/blink/public/mojom/frame/deferred_fetch_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
@@ -61,7 +61,7 @@ class CORE_EXPORT FetchLaterUtil {
   //
   // This must be called during "Beginning navigation" as described in
   // https://whatpr.org/html/10903/d1c086a...0e0afb3/browsing-the-web.html#beginning-navigation
-  static FramePolicy::DeferredFetchPolicy
+  static mojom::blink::DeferredFetchPolicy
   GetContainerDeferredFetchPolicyOnNavigation(FrameOwner* container_frame,
                                               const KURL& to_url);
 
@@ -104,7 +104,7 @@ class CORE_EXPORT FetchLaterUtil {
   // quota.
   // https://whatpr.org/fetch/1647.html#reserved-deferred-fetch-quota
   static uint32_t ToReservedDeferredFetchQuota(
-      FramePolicy::DeferredFetchPolicy policy);
+      mojom::blink::DeferredFetchPolicy policy);
 
   // Tells if the given two frames shares the same origin.
   // https://html.spec.whatwg.org/multipage/browsers.html#same-origin

@@ -32,6 +32,11 @@ class BLINK_COMMON_EXPORT
     return frame_policy.required_document_policy;
   }
 
+  static const blink::mojom::DeferredFetchPolicy& deferred_fetch_policy(
+      const blink::FramePolicy& frame_policy) {
+    return frame_policy.deferred_fetch_policy;
+  }
+
   static bool Read(blink::mojom::FramePolicyDataView in,
                    blink::FramePolicy* out);
 };

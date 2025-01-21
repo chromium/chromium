@@ -32,13 +32,13 @@ constexpr uint32_t kMaxContainersWithMinimalQuota =
 
 // static
 uint32_t FetchLaterUtil::ToReservedDeferredFetchQuota(
-    FramePolicy::DeferredFetchPolicy policy) {
+    mojom::blink::DeferredFetchPolicy policy) {
   switch (policy) {
-    case FramePolicy::DeferredFetchPolicy::kDisabled:
+    case mojom::blink::DeferredFetchPolicy::kDisabled:
       return 0;
-    case FramePolicy::DeferredFetchPolicy::kDeferredFetch:
+    case mojom::blink::DeferredFetchPolicy::kDeferredFetch:
       return kNormalReservedDeferredFetchQuota;
-    case FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal:
+    case mojom::blink::DeferredFetchPolicy::kDeferredFetchMinimal:
       return kMinimalReservedDeferredFetchQuota;
   }
 }
@@ -66,7 +66,7 @@ uint32_t FetchLaterUtil::CountDescendantsWithReservedMinimalQuota(
     if (auto* navigable_container = navigable->Owner();
         navigable_container &&
         navigable_container->GetFramePolicy().deferred_fetch_policy ==
-            FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal) {
+            mojom::blink::DeferredFetchPolicy::kDeferredFetchMinimal) {
       count++;
     }
   }
@@ -107,7 +107,7 @@ Frame* FetchLaterUtil::GetDeferredFetchControlFrame(Frame* frame) {
 }
 
 // static
-FramePolicy::DeferredFetchPolicy
+mojom::blink::DeferredFetchPolicy
 FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
     FrameOwner* container_frame,
     const KURL& to_url) {
@@ -149,14 +149,14 @@ FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
           container_frame->GetFramePolicy().container_policy)) {
     // then set container’s reserved deferred-fetch quota to normal quota and
     // return.
-    return FramePolicy::DeferredFetchPolicy::kDeferredFetch;
+    return mojom::blink::DeferredFetchPolicy::kDeferredFetch;
   }
 
   // 4. If all of the following conditions are true:
 
   // 4-1. controlDocument’s node navigable is a top-level traversable.
   if (!control_frame->IsOutermostMainFrame()) {
-    return FramePolicy::DeferredFetchPolicy::kDisabled;
+    return mojom::blink::DeferredFetchPolicy::kDisabled;
   }
   // 4-2. The "inherited policy" for "deferred-fetch-minimal", container and
   // originToNavigateTo is Enabled.
@@ -167,7 +167,7 @@ FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
           to_url_origin, parent_permissions_policy, *deferred_fetch_minimal_it,
           container_frame->GetFramePolicy().container_policy)) {
     // then return.
-    return FramePolicy::DeferredFetchPolicy::kDisabled;
+    return mojom::blink::DeferredFetchPolicy::kDisabled;
   }
 
   // 4-3. The size of controlDocument’s ...
@@ -175,8 +175,8 @@ FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
   // then set container’s reserved deferred-fetch quota to minimal quota.
   return CountDescendantsWithReservedMinimalQuota(control_frame) <
                  kMaxContainersWithMinimalQuota
-             ? FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal
-             : FramePolicy::DeferredFetchPolicy::kDisabled;
+             ? mojom::blink::DeferredFetchPolicy::kDeferredFetchMinimal
+             : mojom::blink::DeferredFetchPolicy::kDisabled;
 }
 
 // static

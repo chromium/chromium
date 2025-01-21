@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/deferred_fetch_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -301,12 +302,12 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest, SingleSameOriginFrame) {
   // that, `ShouldClearDeferredFetchPolicy()` leads A to clear its policy.
   // Hence, the final value is `kDisabled.
   EXPECT_EQ(frame_a->Owner()->GetFramePolicy().deferred_fetch_policy,
-            FramePolicy::DeferredFetchPolicy::kDisabled);
+            mojom::blink::DeferredFetchPolicy::kDisabled);
   // Manually calling `GetContainerDeferredFetchPolicyOnNavigation()` again to
   // verify it actually returns `kDeferredFetch`.
   EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
                 frame_a->Owner(), KURL(frame_a_url)),
-            FramePolicy::DeferredFetchPolicy::kDeferredFetch);
+            mojom::blink::DeferredFetchPolicy::kDeferredFetch);
 }
 
 // Tests the default behavior of a document with a same-origin iframe.
@@ -328,7 +329,7 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest,
 
   EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
                 frame_a->Owner(), KURL(frame_a_url)),
-            FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal);
+            mojom::blink::DeferredFetchPolicy::kDeferredFetchMinimal);
 }
 
 TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest,
@@ -360,18 +361,18 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest,
 
   EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
                 frame_a->Owner(), KURL(frame_a_url)),
-            FramePolicy::DeferredFetchPolicy::kDeferredFetch);
+            mojom::blink::DeferredFetchPolicy::kDeferredFetch);
   EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
                 frame_b->Owner(), KURL(frame_b_url)),
-            FramePolicy::DeferredFetchPolicy::kDeferredFetch);
+            mojom::blink::DeferredFetchPolicy::kDeferredFetch);
 
   // Frame C and Frame D should have minimal quota policy set.
   EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
                 frame_c->Owner(), KURL(frame_c_url)),
-            FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal);
+            mojom::blink::DeferredFetchPolicy::kDeferredFetchMinimal);
   EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
                 frame_d->Owner(), KURL(frame_d_url)),
-            FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal);
+            mojom::blink::DeferredFetchPolicy::kDeferredFetchMinimal);
 }
 
 TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest, MultipleLevelFrames) {
@@ -398,7 +399,7 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest, MultipleLevelFrames) {
 
   EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
                 frame_a->Owner(), KURL(frame_a_url)),
-            FramePolicy::DeferredFetchPolicy::kDeferredFetch);
+            mojom::blink::DeferredFetchPolicy::kDeferredFetch);
   // Frame B will have NO quota, as
   // (1) its "inherited policy" from its parent Frame D, which is a cross-origin
   // iframe, will not have "deferred-fetch" policy enabled by default but only
@@ -406,15 +407,15 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest, MultipleLevelFrames) {
   // (2) its parent Frame D does not share same quota with root frame.
   EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
                 frame_b->Owner(), KURL(frame_b_url)),
-            FramePolicy::DeferredFetchPolicy::kDisabled);
+            mojom::blink::DeferredFetchPolicy::kDisabled);
 
   // Frame C and Frame D should have minimal quota policy set.
   EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
                 frame_c->Owner(), KURL(frame_c_url)),
-            FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal);
+            mojom::blink::DeferredFetchPolicy::kDeferredFetchMinimal);
   EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
                 frame_d->Owner(), KURL(frame_d_url)),
-            FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal);
+            mojom::blink::DeferredFetchPolicy::kDeferredFetchMinimal);
 }
 
 // Tests the default behavior of a document with 17 cross-origin sibling
@@ -445,7 +446,7 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest, ManyCrossOriginFrames) {
   size_t i = 0;
   while (i < kNumCrossOriginFrames - 1 && frame) {
     EXPECT_EQ(frame->Owner()->GetFramePolicy().deferred_fetch_policy,
-              FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal)
+              mojom::blink::DeferredFetchPolicy::kDeferredFetchMinimal)
         << i + 1 << "-th cross-origin iframe";
     frame = frame->Tree().NextSibling();
     i++;
@@ -453,7 +454,7 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest, ManyCrossOriginFrames) {
 
   // The last cross-origin iframe should have `kDisabled` set.
   EXPECT_EQ(frame->Owner()->GetFramePolicy().deferred_fetch_policy,
-            FramePolicy::DeferredFetchPolicy::kDisabled)
+            mojom::blink::DeferredFetchPolicy::kDisabled)
       << i + 1 << "-th cross-origin iframe";
 }
 
@@ -563,19 +564,19 @@ class ToReservedDeferredFetchQuotaTest : public DeferredFetchPolicyTestBase {};
 
 TEST_F(ToReservedDeferredFetchQuotaTest, PolicyDisabled) {
   EXPECT_EQ(FetchLaterUtil::ToReservedDeferredFetchQuota(
-                FramePolicy::DeferredFetchPolicy::kDisabled),
+                mojom::blink::DeferredFetchPolicy::kDisabled),
             0u);
 }
 
 TEST_F(ToReservedDeferredFetchQuotaTest, PolicyDeferredFetch) {
   EXPECT_EQ(FetchLaterUtil::ToReservedDeferredFetchQuota(
-                FramePolicy::DeferredFetchPolicy::kDeferredFetch),
+                mojom::blink::DeferredFetchPolicy::kDeferredFetch),
             kNormalReservedDeferredFetchQuota);
 }
 
 TEST_F(ToReservedDeferredFetchQuotaTest, PolicyDeferredFetchMinimal) {
   EXPECT_EQ(FetchLaterUtil::ToReservedDeferredFetchQuota(
-                FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal),
+                mojom::blink::DeferredFetchPolicy::kDeferredFetchMinimal),
             kMinimalReservedDeferredFetchQuota);
 }
 
