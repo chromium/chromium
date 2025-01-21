@@ -69,6 +69,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
@@ -1189,6 +1190,7 @@ public class TabGridDialogMediatorUnitTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.FORCE_LIST_TAB_SWITCHER})
+    @DisableFeatures({ChromeFeatureList.DISABLE_LIST_TAB_SWITCHER})
     public void showDialog_FromListGts() {
         // Mock that the dialog is hidden and animation source view, header title and scrim click
         // runnable are all null.

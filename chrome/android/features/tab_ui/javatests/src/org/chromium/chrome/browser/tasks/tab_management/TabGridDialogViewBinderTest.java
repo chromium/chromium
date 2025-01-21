@@ -21,6 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.hamcrest.MockitoHamcrest.intThat;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.DISABLE_LIST_TAB_SWITCHER;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.FORCE_LIST_TAB_SWITCHER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.BINDING_TOKEN;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.areAnimatorsEnabled;
@@ -696,6 +697,7 @@ public class TabGridDialogViewBinderTest {
     @SmallTest
     @UiThreadTest
     @EnableFeatures(FORCE_LIST_TAB_SWITCHER)
+    @DisableFeatures(DISABLE_LIST_TAB_SWITCHER)
     public void testSetAnimationBackgroundColor() {
         int color = ContextCompat.getColor(sActivity, R.color.baseline_primary_80);
 

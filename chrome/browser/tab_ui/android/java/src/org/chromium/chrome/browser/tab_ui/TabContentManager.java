@@ -27,7 +27,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.PathUtils;
-import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
@@ -188,7 +187,7 @@ public class TabContentManager {
                                 mFullResThumbnailsMaxSize,
                                 compressionQueueMaxSize,
                                 writeQueueMaxSize,
-                                /* saveJpegThumbnails= */ !SysUtils.isLowEndDevice());
+                                mSnapshotsEnabled);
     }
 
     /** Destroy the native component. */

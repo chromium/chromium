@@ -22,6 +22,7 @@ import org.chromium.base.BaseSwitches;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -61,6 +62,7 @@ public class TabUiFeatureUtilitiesUnitTest {
 
     @Test
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
+    @DisableFeatures(ChromeFeatureList.DISABLE_LIST_TAB_SWITCHER)
     public void testCacheGridTabSwitcher_LowEnd() {
         assertTrue(TabUiFeatureUtilities.shouldUseListMode());
 
@@ -68,6 +70,18 @@ public class TabUiFeatureUtilitiesUnitTest {
         DeviceClassManager.resetForTesting();
 
         assertTrue(TabUiFeatureUtilities.shouldUseListMode());
+    }
+
+    @Test
+    @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
+    @EnableFeatures(ChromeFeatureList.DISABLE_LIST_TAB_SWITCHER)
+    public void testCacheGridTabSwitcher_LowEnd_ListDisabled() {
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode());
+
+        setAccessibilityEnabledForTesting(true);
+        DeviceClassManager.resetForTesting();
+
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode());
     }
 
     @Test
