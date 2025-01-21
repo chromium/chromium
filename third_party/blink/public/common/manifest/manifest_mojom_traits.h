@@ -202,9 +202,9 @@ template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::ManifestLaunchHandlerDataView,
                  ::blink::Manifest::LaunchHandler> {
-  static blink::mojom::ManifestLaunchHandler::ClientMode client_mode(
-      const ::blink::Manifest::LaunchHandler& launch_handler) {
-    return launch_handler.client_mode;
+  static std::optional<blink::mojom::ManifestLaunchHandler::ClientMode>
+  client_mode(const ::blink::Manifest::LaunchHandler& launch_handler) {
+    return launch_handler.client_mode_;
   }
 
   static bool Read(blink::mojom::ManifestLaunchHandlerDataView data,

@@ -1216,7 +1216,7 @@ bool WebAppRegistrar::CapturesLinksInScope(const webapps::AppId& app_id) const {
                    is_preinstalled_browser_tab_app,
                .client_mode = web_app->launch_handler()
                                   .value_or(LaunchHandler())
-                                  .client_mode})) {
+                                  .parsed_client_mode()})) {
         return false;
       }
       break;

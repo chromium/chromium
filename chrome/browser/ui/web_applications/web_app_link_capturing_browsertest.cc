@@ -259,8 +259,10 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
   const auto [app_id, in_scope_1, _, scope] = InstallTestApp(
       "/web_apps/get_manifest.html?"
       "launch_handler_client_mode_navigate_existing.json");
-  EXPECT_EQ(GetLaunchHandler(app_id),
-            (LaunchHandler{ClientMode::kNavigateExisting}));
+  auto launch_handler = GetLaunchHandler(app_id);
+  EXPECT_EQ(ClientMode::kNavigateExisting,
+            launch_handler->parsed_client_mode());
+  EXPECT_TRUE(launch_handler->client_mode_valid_and_specified());
 
   ASSERT_EQ(apps::test::EnableLinkCapturingByUser(profile(), app_id),
             base::ok());

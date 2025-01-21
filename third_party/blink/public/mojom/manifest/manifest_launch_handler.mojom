@@ -23,6 +23,5 @@ struct ManifestLaunchHandler {
     // document's LaunchQueue.
     kFocusExisting = 3,
   };
-  ClientMode client_mode;
+  ClientMode? client_mode;
 };
-

@@ -359,13 +359,15 @@ std::unique_ptr<WebAppInstallInfo> WebAppInstallInfo::CreateForTesting(
     const GURL& start_url,
     blink::mojom::DisplayMode display,
     mojom::UserDisplayMode user_mode,
-    blink::mojom::ManifestLaunchHandler_ClientMode client_mode) {
+    std::optional<blink::mojom::ManifestLaunchHandler_ClientMode> client_mode) {
   CHECK_IS_TEST();
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = base::ASCIIToUTF16(start_url.PathForRequest());
   info->display_mode = display;
   info->user_display_mode = user_mode;
   info->launch_handler = blink::Manifest::LaunchHandler(client_mode);
+  CHECK_EQ(info->launch_handler->client_mode_valid_and_specified(),
+           client_mode.has_value());
   return info;
 }
 

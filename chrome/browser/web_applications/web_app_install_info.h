@@ -260,8 +260,8 @@ struct WebAppInstallInfo {
       blink::mojom::DisplayMode display = blink::mojom::DisplayMode::kMinimalUi,
       mojom::UserDisplayMode user_display_mode =
           mojom::UserDisplayMode::kStandalone,
-      blink::mojom::ManifestLaunchHandler_ClientMode client_mode =
-          blink::mojom::ManifestLaunchHandler_ClientMode::kAuto);
+      std::optional<blink::mojom::ManifestLaunchHandler_ClientMode>
+          client_mode = std::nullopt);
 
   // The `manifest_id` and the `start_url` MUST be valid and same-origin. The
   // `manifest_id` MUST NOT contain refs (e.g. '#refs').

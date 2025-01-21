@@ -819,9 +819,11 @@ TEST_P(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
 
   std::unique_ptr<WebApp> new_navigate_app =
       WebAppDatabase::CreateWebApp(old_navigate_proto);
-  EXPECT_EQ(new_navigate_app->launch_handler(),
-            (LaunchHandler{LaunchHandler::ClientMode::kNavigateExisting}))
-      << new_navigate_app->launch_handler()->client_mode;
+  EXPECT_EQ(LaunchHandler::ClientMode::kNavigateExisting,
+            new_navigate_app->launch_handler()->parsed_client_mode())
+      << new_navigate_app->launch_handler()->parsed_client_mode();
+  EXPECT_TRUE(
+      new_navigate_app->launch_handler()->client_mode_valid_and_specified());
 
   std::unique_ptr<WebAppProto> new_navigate_proto =
       WebAppDatabase::CreateWebAppProto(*new_navigate_app);
@@ -851,8 +853,12 @@ TEST_P(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
 
   std::unique_ptr<WebApp> new_focus_app =
       WebAppDatabase::CreateWebApp(old_focus_proto);
-  EXPECT_EQ(new_focus_app->launch_handler(),
-            (LaunchHandler{LaunchHandler::ClientMode::kFocusExisting}));
+
+  EXPECT_EQ(LaunchHandler::ClientMode::kFocusExisting,
+            new_focus_app->launch_handler()->parsed_client_mode())
+      << new_focus_app->launch_handler()->parsed_client_mode();
+  EXPECT_TRUE(
+      new_focus_app->launch_handler()->client_mode_valid_and_specified());
 
   std::unique_ptr<WebAppProto> new_focus_proto =
       WebAppDatabase::CreateWebAppProto(*new_focus_app);

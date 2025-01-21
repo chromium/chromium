@@ -330,7 +330,7 @@ void GotManifest(std::optional<std::string> manifest_id,
     manifest.SetLaunchHandler(
         Page::LaunchHandler::Create()
             .SetClientMode(base::ToString(
-                input_manifest->launch_handler.value().client_mode))
+                input_manifest->launch_handler.value().parsed_client_mode()))
             .Build());
   }
   if (input_manifest->name) {

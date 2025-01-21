@@ -140,41 +140,47 @@ WebAppProto::CaptureLinks CaptureLinksToProto(
   }
 }
 
-LaunchHandler::ClientMode ProtoLaunchHandlerToLaunchHandlerClientMode(
+LaunchHandler ProtoLaunchHandlerToLaunchHandlerClientMode(
     LaunchHandlerProto::DeprecatedRouteTo route_to,
     LaunchHandlerProto::DeprecatedNavigateExistingClient
         navigate_existing_client,
-    LaunchHandlerProto::ClientMode client_mode) {
+    LaunchHandlerProto::ClientMode client_mode,
+    std::optional<bool> client_mode_valid_and_specified) {
+  // When migrating from a database that doesn't have the
+  // client_mode_valid_and_specified field saved yet, set it to `true` when the
+  // client mode is non-auto. If the site did set the client_mode to 'auto',
+  // then this is corrected on the next manifest update.
   switch (client_mode) {
     case LaunchHandlerProto_ClientMode_AUTO:
-      return LaunchHandler::ClientMode::kAuto;
+      return LaunchHandler{LaunchHandler::ClientMode::kAuto};
     case LaunchHandlerProto_ClientMode_NAVIGATE_NEW:
-      return LaunchHandler::ClientMode::kNavigateNew;
+      return LaunchHandler{LaunchHandler::ClientMode::kNavigateNew};
     case LaunchHandlerProto_ClientMode_NAVIGATE_EXISTING:
-      return LaunchHandler::ClientMode::kNavigateExisting;
+      return LaunchHandler{LaunchHandler::ClientMode::kNavigateExisting};
     case LaunchHandlerProto_ClientMode_FOCUS_EXISTING:
-      return LaunchHandler::ClientMode::kFocusExisting;
+      return LaunchHandler{LaunchHandler::ClientMode::kFocusExisting};
     case LaunchHandlerProto_ClientMode_UNSPECIFIED_CLIENT_MODE: {
       // route_to was removed in favor of client_mode, fall back to it if client
       // mode is unset.
       switch (route_to) {
         case LaunchHandlerProto_DeprecatedRouteTo_UNSPECIFIED_ROUTE:
         case LaunchHandlerProto_DeprecatedRouteTo_AUTO_ROUTE:
-          return LaunchHandler::ClientMode::kAuto;
+          return LaunchHandler{std::nullopt};
         case LaunchHandlerProto_DeprecatedRouteTo_NEW_CLIENT:
-          return LaunchHandler::ClientMode::kNavigateNew;
+          return LaunchHandler{LaunchHandler::ClientMode::kNavigateNew};
         case LaunchHandlerProto_DeprecatedRouteTo_EXISTING_CLIENT:
-          // route_to: existing-client and navigate_existing_client were removed
-          // in favor of existing-client-navigate and existing-client-retain.
+          // route_to: existing-client and navigate_existing_client were
+          // removed in favor of existing-client-navigate and
+          // existing-client-retain.
           if (navigate_existing_client ==
               LaunchHandlerProto_DeprecatedNavigateExistingClient_NEVER) {
-            return LaunchHandler::ClientMode::kFocusExisting;
+            return LaunchHandler{LaunchHandler::ClientMode::kFocusExisting};
           }
-          return LaunchHandler::ClientMode::kNavigateExisting;
+          return LaunchHandler{LaunchHandler::ClientMode::kNavigateExisting};
         case LaunchHandlerProto_DeprecatedRouteTo_EXISTING_CLIENT_NAVIGATE:
-          return LaunchHandler::ClientMode::kNavigateExisting;
+          return LaunchHandler{LaunchHandler::ClientMode::kNavigateExisting};
         case LaunchHandlerProto_DeprecatedRouteTo_EXISTING_CLIENT_RETAIN:
-          return LaunchHandler::ClientMode::kFocusExisting;
+          return LaunchHandler{LaunchHandler::ClientMode::kFocusExisting};
       }
     }
   }
@@ -779,7 +785,10 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
 
   if (web_app.launch_handler()) {
     local_data->mutable_launch_handler()->set_client_mode(
-        LaunchHandlerClientModeToProto(web_app.launch_handler()->client_mode));
+        LaunchHandlerClientModeToProto(
+            web_app.launch_handler()->parsed_client_mode()));
+    local_data->mutable_launch_handler()->set_client_mode_valid_and_specified(
+        web_app.launch_handler()->client_mode_valid_and_specified());
   }
 
   if (web_app.parent_app_id_) {
@@ -1568,11 +1577,15 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   if (local_data.has_launch_handler()) {
     const LaunchHandlerProto& launch_handler_proto =
         local_data.launch_handler();
-    web_app->SetLaunchHandler(
-        LaunchHandler{ProtoLaunchHandlerToLaunchHandlerClientMode(
-            launch_handler_proto.route_to(),
-            launch_handler_proto.navigate_existing_client(),
-            launch_handler_proto.client_mode())});
+    LaunchHandler launch_handler = ProtoLaunchHandlerToLaunchHandlerClientMode(
+        launch_handler_proto.route_to(),
+        launch_handler_proto.navigate_existing_client(),
+        launch_handler_proto.client_mode(),
+        launch_handler_proto.has_client_mode_valid_and_specified()
+            ? std::optional(
+                  launch_handler_proto.client_mode_valid_and_specified())
+            : std::nullopt);
+    web_app->SetLaunchHandler(launch_handler);
   }
 
   if (local_data.has_parent_app_id()) {
