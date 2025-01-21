@@ -23,8 +23,7 @@ BookmarkBubbleSignInDelegate::~BookmarkBubbleSignInDelegate() = default;
 
 void BookmarkBubbleSignInDelegate::OnSignIn(const AccountInfo& account) {
   signin_ui_util::EnableSyncFromSingleAccountPromo(
-      profile_, account,
-      signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE);
+      profile_, account, signin_metrics::AccessPoint::kBookmarkBubble);
 
   // TODO(msarda): Close the bookmarks bubble once the enable sync flow has
   // started.
