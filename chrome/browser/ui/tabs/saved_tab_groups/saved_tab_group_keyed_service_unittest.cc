@@ -925,8 +925,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
                                       ->ListTabs();
   EXPECT_EQ(2u, grouped_tabs.length());
   for (auto index = grouped_tabs.start(); index < grouped_tabs.end(); ++index) {
-    EXPECT_TRUE(IsURLValidForSavedTabGroups(
-        tabstrip->GetWebContentsAt(index)->GetURL()));
+    EXPECT_EQ(tabstrip->GetWebContentsAt(index)->GetURL(),
+              GURL(chrome::kChromeUINewTabURL));
   }
 }
 
@@ -951,18 +951,16 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   EXPECT_NE(tabstrip->GetWebContentsAt(0)->GetURL(), url);
 }
 
-// Local
-// Creation of Bad tab is NTP
-// Navigation of Bad tab doesnt update
-
-TEST_F(SavedTabGroupKeyedServiceUnitTest, AddedBadTabIsNTPInstead) {
+// Tests that unsupported tab URL is saved.
+TEST_F(SavedTabGroupKeyedServiceUnitTest, UnsupportedTabURLSaved) {
   Browser* browser_1 = AddBrowser();
+  GURL url("file://1");
 
   // Create a saved tab group with one tab.
   ASSERT_EQ(0, browser_1->tab_strip_model()->count());
   tabs::TabInterface* added_tab = AddTabToBrowser(browser_1, 0);
   added_tab->GetContents()->GetController().LoadURLWithParams(
-      content::NavigationController::LoadURLParams(GURL("file://1")));
+      content::NavigationController::LoadURLParams(url));
   tab_groups::TabGroupId group_id =
       browser_1->tab_strip_model()->AddToNewGroup({0});
   if (!IsTabGroupsSaveV2Enabled()) {
@@ -971,13 +969,12 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, AddedBadTabIsNTPInstead) {
 
   const SavedTabGroup* const saved_group = service()->model()->Get(group_id);
 
-  // The SavedTabGroups should be at the new tab page instead of the settings
-  // page.
-  EXPECT_EQ(saved_group->saved_tabs().at(0).url(), chrome::kChromeUINewTabURL);
+  // The URL should be saved into the tab group.
+  EXPECT_EQ(saved_group->saved_tabs().at(0).url(), url);
 }
 
 TEST_F(SavedTabGroupKeyedServiceUnitTest,
-       TabLocalNavigationToBadURLDoesntUpdateModel) {
+       TabLocalNavigationToBadURLUpdateModel) {
   Browser* browser_1 = AddBrowser();
 
   // Create a saved tab group with one good tab.
@@ -1000,8 +997,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   // Navigate to a bad tab.
   tester->NavigateAndCommit(bad_gurl);
 
-  // The SavedTabGroupTab should still be at the good URL not the bad one.
-  EXPECT_EQ(saved_group->saved_tabs().at(0).url(), good_gurl);
+  // The SavedTabGroupTab should be changed to the bad one.
+  EXPECT_EQ(saved_group->saved_tabs().at(0).url(), bad_gurl);
 }
 
 TEST_F(SavedTabGroupKeyedServiceUnitTest,

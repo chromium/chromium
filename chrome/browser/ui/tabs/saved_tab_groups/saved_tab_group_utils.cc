@@ -517,17 +517,10 @@ SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel(
 SavedTabGroupTab SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
     content::WebContents* contents,
     base::Uuid saved_tab_group_id) {
-  // in order to protect from filesystem access or chrome settings page use,
-  // replace the URL with the new tab page, when creating from sync or an
-  // unsaved group.
-  if (!IsURLValidForSavedTabGroups(contents->GetVisibleURL())) {
-    return SavedTabGroupTab(GURL(chrome::kChromeUINewTabURL), u"Unsavable tab",
-                            saved_tab_group_id,
-                            /*position=*/std::nullopt);
-  }
-
-  SavedTabGroupTab tab(contents->GetVisibleURL(), contents->GetTitle(),
-                       saved_tab_group_id, /*position=*/std::nullopt);
+  SavedTabGroupTab tab(
+      contents->GetVisibleURL().is_empty() ? GURL(chrome::kChromeUINewTabURL)
+                                           : contents->GetVisibleURL(),
+      contents->GetTitle(), saved_tab_group_id, /*position=*/std::nullopt);
   tab.SetFavicon(favicon::TabFaviconFromWebContents(contents));
   return tab;
 }

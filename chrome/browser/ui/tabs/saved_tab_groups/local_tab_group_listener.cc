@@ -118,7 +118,9 @@ void LocalTabGroupListener::AddTabFromLocal(tabs::TabInterface* local_tab,
   SavedTabGroupTab tab =
       SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
           local_tab->GetContents(), saved_guid_);
-  if (!IsURLValidForSavedTabGroups(tab.url())) {
+  // Non-empty URLs will be saved into the tab group, and will be converted
+  // to an unsupported URL later when sending to sync.
+  if (tab.url().is_empty()) {
     tab.SetURL(GURL(chrome::kChromeUINewTabURL));
   }
 
