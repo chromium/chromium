@@ -162,18 +162,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Compositing.DidMainThreadBlockDuringCommit" enum="Boolean"
-    expires_after="2025-07-13">
-  <owner>szager@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <owner>sky@chromium.org</owner>
-  <summary>
-    Recorded on every commit. Indicates whether the renderer's main thread was
-    blocked waiting for the impl thread to commit. True indicates the main
-    thread did block.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.DirectRenderer.DrawnRectAssignmentType"
     enum="RenderPassDrawRectAssign" expires_after="2025-07-06">
   <owner>petermcneeley@chromium.org</owner>
@@ -686,38 +674,6 @@ chromium-metrics-reviews@google.com.
     FrameRateDecider. This is logged at 1/1000 probability of frames with
     video(s) on screen. This aims to determine how frequently Chormium is
     rendering single video with perfect cadence to the supported frame rates.
-  </summary>
-</histogram>
-
-<histogram name="Compositing.MainThreadBlockedDuringCommitTime"
-    units="microseconds" expires_after="2025-01-05">
-  <owner>szager@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <owner>sky@chromium.org</owner>
-  <summary>
-    The time that the renderer's main thread blocked waiting for the impl thread
-    to commit. This is only reported if the main thread blocked.
-
-    Drops reports on clients with low-resolution clocks, biasing to a portion of
-    the population on Windows. See Windows.HasHighResolutionTimeTicks for the
-    affected sample.
-  </summary>
-</histogram>
-
-<histogram
-    name="Compositing.MainThreadBlockedDuringCommitTime.ApplyCompositorChanges"
-    units="microseconds" expires_after="2023-10-08">
-  <owner>szager@chromium.org</owner>
-  <owner>pdr@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    The time that ApplyCompositorChanges is blocked waiting for the impl thread
-    to commit. This is a subset of the total time spent in
-    Compositing.MainThreadBlockedDuringCommitTime.
-
-    Drops reports on clients with low-resolution clocks, biasing to a portion of
-    the population on Windows. See Windows.HasHighResolutionTimeTicks for the
-    affected sample.
   </summary>
 </histogram>
 
