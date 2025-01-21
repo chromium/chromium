@@ -24,7 +24,6 @@
 
 namespace ip_protection {
 namespace {
-using ::masked_domain_list::PublicSuffixListRule;
 using ::masked_domain_list::Resource;
 using ::masked_domain_list::ResourceOwner;
 using ::network::mojom::IpProtectionProxyBypassPolicy;
@@ -68,8 +67,7 @@ bool MaskedDomainListManager::IsEnabled() const {
 }
 
 bool MaskedDomainListManager::IsPopulated() const {
-  return url_matcher_with_bypass_.IsPopulated() ||
-         !public_suffix_list_matcher_.rules().empty();
+  return url_matcher_with_bypass_.IsPopulated();
 }
 
 size_t MaskedDomainListManager::EstimateMemoryUsage() const {
@@ -145,19 +143,8 @@ bool MaskedDomainListManager::Matches(
           network_anonymization_key.IsTransient());
       break;
   }
-  switch (match_result) {
-    case UrlMatcherWithBypassResult::kMatchAndBypass:
-      return false;
-    case UrlMatcherWithBypassResult::kMatchAndNoBypass:
-      return true;
-    case UrlMatcherWithBypassResult::kNoMatch:
-      // The resource could have been listed in the Public Suffix List and
-      // been removed from the MDL's owned resources. Requests to it should be
-      // proxied if it was present in the PSL (i.e. matched by the PSL matcher),
-      // as those domains and their subdomains should always be considered
-      // third-party.
-      return MatchesPublicSuffixList(request_url_ref);
-  }
+
+  return match_result == UrlMatcherWithBypassResult::kMatchAndNoBypass;
 }
 
 void MaskedDomainListManager::UpdateMaskedDomainList(
@@ -171,7 +158,6 @@ void MaskedDomainListManager::UpdateMaskedDomainList(
 
   // Clear the existing matchers.
   url_matcher_with_bypass_.Clear();
-  public_suffix_list_matcher_.Clear();
 
   // Only construct the exclusion set if the policy is kExclusionList.
   const std::unordered_set<std::string> exclusion_set =
@@ -189,51 +175,7 @@ void MaskedDomainListManager::UpdateMaskedDomainList(
             IpProtectionProxyBypassPolicy::kFirstPartyToTopLevelFrame);
   }
 
-  // Collect the PSL private domains in a set for efficient querying.
-  std::set<std::string> psl_private_domains;
-  std::transform(
-      mdl.public_suffix_list_rules().begin(),
-      mdl.public_suffix_list_rules().end(),
-      std::inserter(psl_private_domains, psl_private_domains.end()),
-      [](const PublicSuffixListRule& pslr) { return pslr.private_domain(); });
-  AddPublicSuffixListRules(psl_private_domains);
-
   Telemetry().MdlEstimatedMemoryUsage(EstimateMemoryUsage());
-}
-
-bool MaskedDomainListManager::MatchesPublicSuffixList(
-    const GURL& resource_url) const {
-  return public_suffix_list_matcher_.Evaluate(resource_url) !=
-         net::SchemeHostPortMatcherResult::kNoMatch;
-}
-
-void MaskedDomainListManager::AddPublicSuffixListRules(
-    const std::set<std::string>& domains) {
-  for (const std::string& domain : domains) {
-    auto domain_rule =
-        net::SchemeHostPortMatcherRule::FromUntrimmedRawString(domain);
-
-    if (domain_rule) {
-      public_suffix_list_matcher_.AddAsLastRule(std::move(domain_rule));
-    } else {
-      return;
-    }
-
-    const bool domain_covers_subdomains =
-        domain.starts_with(".") || domain.starts_with("*");
-    if (!domain_covers_subdomains) {
-      // Domain doesn't cover its subdomains so add them manually.
-      std::string subdomain = base::StrCat({".", domain});
-      auto subdomain_rule =
-          net::SchemeHostPortMatcherRule::FromUntrimmedRawString(subdomain);
-
-      if (subdomain_rule) {
-        public_suffix_list_matcher_.AddAsLastRule(std::move(subdomain_rule));
-      } else {
-        return;
-      }
-    }
-  }
 }
 
 const GURL& MaskedDomainListManager::SanitizeURLIfNeeded(

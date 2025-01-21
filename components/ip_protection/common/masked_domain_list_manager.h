@@ -63,13 +63,6 @@ class MaskedDomainListManager {
                               const std::vector<std::string>& exclusion_list);
 
  private:
-  // Determines whether or not the resource URL matches any URL listed in the
-  // public suffix list.
-  bool MatchesPublicSuffixList(const GURL& resource_url) const;
-
-  // Add domains to the `public_suffix_list_matcher_`.
-  void AddPublicSuffixListRules(const std::set<std::string>& domains);
-
   // Sanitizes the given URL by removing a trailing dot from its host if
   // present. Returns a reference to either the modified sanitized URL or the
   // original URL if no changes were made.
@@ -80,9 +73,6 @@ class MaskedDomainListManager {
 
   // Contains match rules from the Masked Domain List.
   UrlMatcherWithBypass url_matcher_with_bypass_;
-
-  // Matcher which matches against the public suffix list domains.
-  net::SchemeHostPortMatcher public_suffix_list_matcher_;
 
   // If UpdateMaskedDomainList has not yet been called, stores the time at which
   // the manager was created. The first call to UpdateMaskedDomainList clears
