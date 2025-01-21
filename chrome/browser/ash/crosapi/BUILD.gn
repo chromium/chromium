@@ -246,7 +246,6 @@ static_library("crosapi") {
     "//chrome/browser/ash/file_system_provider",
     "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/floating_workspace:utils",
-    "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/kcer",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/app_mode",
@@ -254,8 +253,6 @@ static_library("crosapi") {
     "//chrome/browser/ash/login/screens",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/magic_boost",
-    "//chrome/browser/ash/mahi",
-    "//chrome/browser/ash/mahi/media_app",
     "//chrome/browser/ash/notifications",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys/key_permissions",
@@ -312,7 +309,6 @@ static_library("crosapi") {
     "//chrome/browser/ui/ash/holding_space",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/ash/login",
-    "//chrome/browser/ui/ash/magic_boost",
     "//chrome/browser/ui/ash/session",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/browser/ui/ash/shelf/app_service",
@@ -461,9 +457,6 @@ static_library("crosapi") {
   ]
 
   allow_circular_includes_from = [
-    "//chrome/browser/ash/input_method",
-    "//chrome/browser/ash/mahi",
-    "//chrome/browser/ash/mahi/media_app",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/scalable_iph",
@@ -491,7 +484,6 @@ static_library("crosapi") {
     "//chrome/browser/ui/ash/capture_mode",
     "//chrome/browser/ui/ash/desks",
     "//chrome/browser/ui/ash/global_media_controls",
-    "//chrome/browser/ui/ash/magic_boost",
     "//chrome/browser/ui/ash/session",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/browser/ui/ash/shelf/app_service",

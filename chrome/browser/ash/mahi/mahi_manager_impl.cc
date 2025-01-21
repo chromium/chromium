@@ -31,8 +31,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/ash/mahi/mahi_availability.h"
 #include "chrome/browser/ash/mahi/mahi_cache_manager.h"
@@ -811,13 +809,10 @@ void MahiManagerImpl::InterrputRequestHandlingWithDisclaimerView(
               .Then(reset_observer_closure),
           /*on_declined_closure=*/reset_observer_closure);
 
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->magic_boost_controller_ash()
-      ->ShowDisclaimerUi(
-          display_id,
-          crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
-          OptInFeatures::kOrcaAndHmr);
+  ash::MagicBoostControllerAsh::Get()->ShowDisclaimerUi(
+      display_id,
+      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
+      OptInFeatures::kOrcaAndHmr);
 }
 
 void MahiManagerImpl::OnGetPageContent(

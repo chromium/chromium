@@ -12,8 +12,6 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_geolocation_provider.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
@@ -258,16 +256,11 @@ void EditorMediator::HandleTrigger(
 void EditorMediator::ShowNotice(
     EditorNoticeTransitionAction transition_action) {
   if (chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->magic_boost_controller_ash()
-        ->ShowDisclaimerUi(
-            /*display_id=*/display::Screen::GetScreen()
-                ->GetPrimaryDisplay()
-                .id(),
-            /*action=*/
-            ConvertToMagicBoostTransitionAction(transition_action),
-            /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
+    ash::MagicBoostControllerAsh::Get()->ShowDisclaimerUi(
+        /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+        /*action=*/
+        ConvertToMagicBoostTransitionAction(transition_action),
+        /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
     return;
   }
 
