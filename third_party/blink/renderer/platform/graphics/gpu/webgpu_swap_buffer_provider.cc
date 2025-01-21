@@ -319,14 +319,10 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
   }
 
   // Populate the output resource.
-  *out_resource = viz::TransferableResource::MakeGpu(
-      shared_image, shared_image->GetTextureTarget(), sync_token,
-      shared_image->size(), shared_image->format(),
-      shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT),
-      viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer);
-  out_resource->color_space = shared_image->color_space();
+  *out_resource = viz::TransferableResource::Make(
+      shared_image,
+      viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer, sync_token);
   out_resource->hdr_metadata = GetHDRMetadata();
-  out_resource->origin = shared_image->surface_origin();
 
   return true;
 }

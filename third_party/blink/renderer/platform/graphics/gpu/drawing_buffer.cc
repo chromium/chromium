@@ -436,14 +436,10 @@ bool DrawingBuffer::PrepareTransferableResource(
     }
 
     // Populate the output TransferableResource from the SharedImage.
-    *out_resource = viz::TransferableResource::MakeGpu(
-        shared_image, shared_image->GetTextureTarget(), sync_token,
-        shared_image->size(), shared_image->format(),
-        shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT),
-        viz::TransferableResource::ResourceSource::kDrawingBuffer);
-    out_resource->color_space = shared_image->color_space();
+    *out_resource = viz::TransferableResource::Make(
+        shared_image, viz::TransferableResource::ResourceSource::kDrawingBuffer,
+        sync_token);
     out_resource->hdr_metadata = hdr_metadata_;
-    out_resource->origin = shared_image->surface_origin();
   } else {
     // Populate the TransferableResource with a SharedImage for the software
     // compositor.
@@ -456,15 +452,21 @@ bool DrawingBuffer::PrepareTransferableResource(
     ReadFramebufferIntoBitmapPixels(
         static_cast<uint8_t*>(mapping->GetMemoryForPlane(0).data()));
 
-    *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
-        resource.shared_image, resource.sync_token, size_,
-        viz::SinglePlaneFormat::kBGRA_8888,
-        viz::TransferableResource::ResourceSource::kDrawingBuffer);
-    out_resource->color_space = back_color_buffer_->shared_image->color_space();
-    out_resource->hdr_metadata = hdr_metadata_;
+    *out_resource = viz::TransferableResource::Make(
+        resource.shared_image,
+        viz::TransferableResource::ResourceSource::kDrawingBuffer,
+        resource.sync_token,
+        /*override=*/
+        {
+            .format = viz::SinglePlaneFormat::kBGRA_8888,
+            .size = size_,
+            .color_space = back_color_buffer_->shared_image->color_space(),
+            // ReadFramebufferIntoBitmapPixels always produced bottom-Left
+            // origin.
+            .origin = kBottomLeft_GrSurfaceOrigin,
+        });
 
-    // ReadFramebufferIntoBitmapPixels always produced bottom-Left origin.
-    out_resource->origin = kBottomLeft_GrSurfaceOrigin;
+    out_resource->hdr_metadata = hdr_metadata_;
 
     // This holds a ref on the DrawingBuffer that will keep it alive until the
     // mailbox is released (and while the release callback is running). It also
