@@ -302,7 +302,7 @@ TEST_F(EditorMenuViewTest, AccessibleProperties) {
   editor_menu_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            u"Rewrite");
+            u"Refine");
 
   // Write Editor Mode
   editor_menu_widget =
