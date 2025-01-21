@@ -143,7 +143,7 @@ bool AccountInfo::UpdateWith(const AccountInfo& other) {
   modified |= UpdateField(&picture_url, other.picture_url, kNoPictureURLFound);
   modified |= UpdateField(&is_child_account, other.is_child_account);
   modified |= UpdateField(&access_point, other.access_point,
-                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+                          signin_metrics::AccessPoint::kUnknown);
   modified |= UpdateField(&is_under_advanced_protection,
                           other.is_under_advanced_protection);
   modified |= capabilities.UpdateWith(other.capabilities);

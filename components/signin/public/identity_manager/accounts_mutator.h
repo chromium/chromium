@@ -35,7 +35,7 @@ class AccountsMutator {
 
   // Updates the information of the account associated with |gaia_id|, first
   // adding that account to the system if it is not known.
-  // Passing `signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN` preserves the
+  // Passing `signin_metrics::AccessPoint::kUnknown` preserves the
   // current access point if it's already set.
   virtual CoreAccountId AddOrUpdateAccount(
       const GaiaId& gaia_id,

@@ -82,15 +82,14 @@ TEST_F(AccountInfoTest, UpdateWithNoModification) {
   info.is_child_account = signin::Tribool::kTrue;
   info.is_under_advanced_protection = true;
   info.locale = "en";
-  info.access_point = signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
+  info.access_point = signin_metrics::AccessPoint::kSettings;
 
   AccountInfo other;
   other.gaia = GaiaId("test_id");
   other.email = "test_id";
   other.account_id = CoreAccountId::FromGaiaId(other.gaia);
   EXPECT_EQ(signin::Tribool::kUnknown, other.is_child_account);
-  EXPECT_EQ(signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
-            other.access_point);
+  EXPECT_EQ(signin_metrics::AccessPoint::kUnknown, other.access_point);
   other.is_under_advanced_protection = false;
   other.locale = "en";
 
@@ -98,8 +97,7 @@ TEST_F(AccountInfoTest, UpdateWithNoModification) {
   EXPECT_EQ(GaiaId("test_id"), info.gaia);
   EXPECT_EQ("test_id", info.email);
   EXPECT_EQ("en", info.locale);
-  EXPECT_EQ(signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
-            info.access_point);
+  EXPECT_EQ(signin_metrics::AccessPoint::kSettings, info.access_point);
   EXPECT_EQ(signin::Tribool::kTrue, info.is_child_account);
   EXPECT_TRUE(info.is_under_advanced_protection);
 }
@@ -116,7 +114,7 @@ TEST_F(AccountInfoTest, UpdateWithSuccessfulUpdate) {
   other.full_name = other.given_name = "test_name";
   other.locale = "fr";
   other.is_child_account = signin::Tribool::kTrue;
-  other.access_point = signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
+  other.access_point = signin_metrics::AccessPoint::kSettings;
   AccountCapabilitiesTestMutator mutator(&other.capabilities);
   mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
       true);
@@ -127,8 +125,7 @@ TEST_F(AccountInfoTest, UpdateWithSuccessfulUpdate) {
   EXPECT_EQ("test_name", info.full_name);
   EXPECT_EQ("test_name", info.given_name);
   EXPECT_EQ("fr", info.locale);
-  EXPECT_EQ(signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
-            info.access_point);
+  EXPECT_EQ(signin_metrics::AccessPoint::kSettings, info.access_point);
   EXPECT_EQ(signin::Tribool::kTrue, info.is_child_account);
   EXPECT_EQ(
       signin::Tribool::kTrue,

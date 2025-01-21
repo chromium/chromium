@@ -134,8 +134,7 @@ TEST_F(IdentityManagerObserverBridgeTest, TestOnPrimaryAccountChanged) {
   PrimaryAccountChangeEvent::State current_state(account_info_,
                                                  signin::ConsentLevel::kSync);
   PrimaryAccountChangeEvent event_details(
-      previous_state, current_state,
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+      previous_state, current_state, signin_metrics::AccessPoint::kUnknown);
   observer_bridge_.get()->OnPrimaryAccountChanged(event_details);
   EXPECT_EQ(1, observer_bridge_delegate_.onPrimaryAccountChangedCount);
   EXPECT_EQ(event_details.GetPreviousState(),
