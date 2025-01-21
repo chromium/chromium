@@ -44,7 +44,7 @@
             },
             {
                 "domain": "Storage",
-                "include": ["runBounceTrackingMitigations", "getRelatedWebsiteSets"],
+                "include": ["runBounceTrackingMitigations", "getRelatedWebsiteSets", "getAffectedUrlsForThirdPartyCookieMetadata"],
                 "async": ["runBounceTrackingMitigations", "getRelatedWebsiteSets"]
             },
             {

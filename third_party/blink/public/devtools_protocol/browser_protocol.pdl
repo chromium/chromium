@@ -10985,6 +10985,21 @@ experimental domain Storage
     returns
       array of RelatedWebsiteSet sets
 
+  # Returns the list of URLs from a page and its embedded resources that match
+  # existing grace period URL pattern rules.
+  # https://developers.google.com/privacy-sandbox/cookies/temporary-exceptions/grace-period
+  experimental command getAffectedUrlsForThirdPartyCookieMetadata
+    parameters
+      # The URL of the page currently being visited.
+      string firstPartyUrl
+      # The list of embedded resource URLs from the page.
+      array of string thirdPartyUrls
+
+    returns
+      # Array of matching URLs. If there is a primary pattern match for the first-
+      # party URL, only the first-party URL is returned in the array.
+      array of string matchedUrls
+
 # The SystemInfo domain defines methods and events for querying low-level system information.
 experimental domain SystemInfo
 
