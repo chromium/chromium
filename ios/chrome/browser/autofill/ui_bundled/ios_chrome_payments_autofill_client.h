@@ -37,6 +37,7 @@ class CreditCardOtpAuthenticator;
 class CreditCardRiskBasedAuthenticator;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
+class PaymentsDataManager;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
 class VirtualCardEnrollUiModel;
@@ -123,6 +124,7 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
   payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
       override;
+  const PaymentsDataManager& GetPaymentsDataManager() const override;
 
   std::unique_ptr<AutofillProgressDialogControllerImpl>
   GetProgressDialogModel() {

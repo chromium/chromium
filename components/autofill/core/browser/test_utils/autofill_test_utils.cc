@@ -1151,13 +1151,23 @@ sync_pb::PaymentInstrument CreatePaymentInstrumentWithLinkedBnplIssuer(
   return payment_instrument;
 }
 
-BnplIssuer GetTestBnplIssuer() {
+BnplIssuer GetTestLinkedBnplIssuer() {
   std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
   // Currency: USD, price lower bound: $50, price upper bound: $200.
   eligible_price_ranges.emplace_back(/*currency=*/"USD",
-                                     /*price_lower_bound=*/50000000,
-                                     /*price_upper_bound=*/200000000);
-  return BnplIssuer(12345, /*issuer_id=*/"test_issuer_id",
+                                     /*price_lower_bound=*/50'000'000,
+                                     /*price_upper_bound=*/200'000'000);
+  return BnplIssuer(12345, /*issuer_id=*/"test_issuer_id1",
+                    std::move(eligible_price_ranges));
+}
+
+BnplIssuer GetTestUnlinkedBnplIssuer() {
+  std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
+  // Currency: USD, price lower bound: $35, price upper bound: $100.
+  eligible_price_ranges.emplace_back(/*currency=*/"USD",
+                                     /*price_lower_bound=*/35'000'000,
+                                     /*price_upper_bound=*/100'000'000);
+  return BnplIssuer(std::nullopt, /*issuer_id=*/"test_issuer_id2",
                     std::move(eligible_price_ranges));
 }
 

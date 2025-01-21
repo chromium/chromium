@@ -251,6 +251,11 @@ TestPaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
   return mock_payments_mandatory_reauth_manager_.get();
 }
 
+const PaymentsDataManager& TestPaymentsAutofillClient::GetPaymentsDataManager()
+    const {
+  return client_->GetPersonalDataManager().payments_data_manager();
+}
+
 bool TestPaymentsAutofillClient::GetMandatoryReauthOptInPromptWasShown() {
   return mandatory_reauth_opt_in_prompt_was_shown_;
 }

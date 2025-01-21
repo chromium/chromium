@@ -453,8 +453,11 @@ sync_pb::PaymentInstrument CreatePaymentInstrumentWithLinkedBnplIssuer(
     uint64_t min_price_in_micros,
     uint64_t max_price_in_micros);
 
-// Returns a BNPL issuer with fake data.
-BnplIssuer GetTestBnplIssuer();
+// Returns a linked BNPL issuer with fake data.
+BnplIssuer GetTestLinkedBnplIssuer();
+
+// Returns an unlinked BNPL issuer with fake data.
+BnplIssuer GetTestUnlinkedBnplIssuer();
 
 // Returns a payment instrument creation option with a BNPL issuer filled with
 // fake data using `id` as the `PaymentInstrumentCreationOption.id`.
