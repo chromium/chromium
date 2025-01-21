@@ -6186,7 +6186,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         This will delete the group from all devices signed into <ph name="USER_EMAIL">$1<ex>peter.parker@gmail.com</ex></ph>.
       </message>
       <message name="IDS_IOS_TAB_GROUP_CONFIRMATION_DELETE_TITLE" desc="Title of the confirmation to delete a tab group in the action sheet.">
-        Delete tab group?
+        Delete group?
       </message>
       <message name="IDS_IOS_TAB_GROUP_CONFIRMATION_LAST_TAB_MOVE_TITLE" desc="Title of the confirmation to move the last tab of a group and delete the group.">
         Remove tab and delete group?
