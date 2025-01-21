@@ -14,10 +14,7 @@ static_library("process") {
     "arc_process_service.h",
   ]
 
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//chromeos/ash/components/process_snapshot",
-  ]
+  public_deps = [ "//chromeos/ash/components/process_snapshot" ]
 
   deps = [
     "//ash/components/arc",

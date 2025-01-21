@@ -5574,7 +5574,6 @@ static_library("browser") {
       "//chrome/browser/ash/arc/pip",
       "//chrome/browser/ash/arc/policy",
       "//chrome/browser/ash/arc/print_spooler",
-      "//chrome/browser/ash/arc/process",
       "//chrome/browser/ash/arc/screen_capture",
       "//chrome/browser/ash/arc/session",
       "//chrome/browser/ash/arc/tracing",

@@ -90,6 +90,7 @@ source_set("task_manager") {
       "//ash/components/arc/mojom",
       "//chrome/browser/ash/arc/process",
       "//chromeos/ash/components/dbus/concierge",
+      "//chromeos/ash/components/dbus/concierge:concierge_proto",
       "//chromeos/ash/components/process_snapshot",
       "//chromeos/ash/experiences/arc/intent_helper",
       "//chromeos/ash/experiences/arc/session:connection_holder",
