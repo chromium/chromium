@@ -193,6 +193,28 @@ public class TabModelUtils {
     }
 
     /**
+     * Similar to the above function, but waits for all provided {@link TabModelSelector}s to
+     * initialize (in series).
+     */
+    public static void runOnTabStateInitialized(
+            Runnable callback, @NonNull TabModelSelector... tabModelSelectors) {
+        runOnTabStateInitializedImpl(callback, /* currentIndex= */ 0, tabModelSelectors);
+    }
+
+    private static void runOnTabStateInitializedImpl(
+            Runnable callback, int currentIndex, @NonNull TabModelSelector... tabModelSelectors) {
+        if (currentIndex >= tabModelSelectors.length) {
+            callback.run();
+            return;
+        }
+        runOnTabStateInitialized(
+                tabModelSelectors[currentIndex],
+                (selector) -> {
+                    runOnTabStateInitializedImpl(callback, currentIndex + 1, tabModelSelectors);
+                });
+    }
+
+    /**
      * Similar to {@link #runOnTabStateInitialized(TabModelSelector, Callback)} but instead of
      * taking a callback, it exposes a {@link OneshotSupplier}. This can be convenient for callers
      * that want to combine multiple suppliers with something like {@link
