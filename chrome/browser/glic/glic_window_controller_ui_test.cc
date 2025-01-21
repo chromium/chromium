@@ -136,26 +136,20 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, Preload) {
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, DoNotCrashOnBrowserClose) {
   RunTestSequence(PressButton(kGlicButtonElementId),
-                  InAnyContext(WaitForShow(kGlicViewElementId)),
-                  InSameContext(Steps(MoveMouseTo(kGlicViewElementId),
-                                      ActivateSurface(kGlicViewElementId))));
+                  InAnyContext(WaitForShow(kGlicViewElementId)));
   chrome::CloseAllBrowsers();
   ui_test_utils::WaitForBrowserToClose();
 }
 
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest,
-                       DISABLED_DoNotCrashWhenReopening) {
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, DoNotCrashWhenReopening) {
   RunTestSequence(
       PressButton(kGlicButtonElementId),
       // TODO(crbug.com/389729273): observe web client initialization directly.
       InAnyContext(WaitForShow(kGlicViewElementId)),
-      InSameContext(Steps(MoveMouseTo(kGlicViewElementId),
-                          ActivateSurface(kGlicViewElementId))),
-      Do([this]() { window_controller().Close(); }),
+      InSameContext(Steps(Do([this]() { window_controller().Close(); }),
+                          WaitForHide(kGlicViewElementId))),
       PressButton(kGlicButtonElementId),
-      InAnyContext(WaitForShow(kGlicViewElementId)),
-      InSameContext(Steps(MoveMouseTo(kGlicViewElementId),
-                          ActivateSurface(kGlicViewElementId))));
+      InAnyContext(WaitForShow(kGlicViewElementId)));
 }
 
 }  // namespace

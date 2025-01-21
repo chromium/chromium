@@ -17,13 +17,18 @@ class MicrosoftAuthService : public KeyedService {
   ~MicrosoftAuthService() override;
 
   virtual void SetAccessToken(new_tab_page::mojom::AccessTokenPtr access_token);
+  virtual void SetAuthStateError();
   // Get the current access token. If the current access token is expired,
   // clear it, and return an empty string.
   std::string GetAccessToken();
+  new_tab_page::mojom::AuthState GetAuthState();
 
  private:
+  void CheckAccessTokenExpiration();
+
   new_tab_page::mojom::AccessTokenPtr access_token_ =
       new_tab_page::mojom::AccessToken::New();
+  new_tab_page::mojom::AuthState state_ = new_tab_page::mojom::AuthState::kNone;
 };
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_MICROSOFT_AUTH_MICROSOFT_AUTH_SERVICE_H_

@@ -5505,6 +5505,10 @@ if (!is_android) {
     if (enable_device_bound_sessions) {
       sources += [ "../browser/net/device_bound_sessions_browsertest.cc" ]
     }
+
+    if (chrome_root_store_cert_management_ui) {
+      deps += [ "//components/server_certificate_database" ]
+    }
   }
 }
 
@@ -6859,19 +6863,10 @@ test("unit_tests") {
 
   if (chrome_root_store_cert_management_ui) {
     sources += [
-      "../browser/net/server_certificate_database_service_unittest.cc",
-      "../browser/net/server_certificate_database_unittest.cc",
       "../browser/ui/webui/certificate_manager/client_cert_sources_unittest.cc",
       "../browser/ui/webui/certificate_manager/user_cert_sources_unittest.cc",
     ]
-
-    deps += [ "//chrome/browser/net:server_certificate_database_test_support" ]
-
-    if (is_chromeos) {
-      sources += [
-        "../browser/net/server_certificate_database_nss_migrator_unittest.cc",
-      ]
-    }
+    deps += [ "//components/server_certificate_database" ]
   }
 
   if (is_chromeos) {

@@ -18,6 +18,7 @@ assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 group("resources") {
   public_deps = [
     "data_sharing_internals:resources",
+    "saved_tab_groups_unsupported:resources",
     "segmentation_internals:resources",
   ]
 

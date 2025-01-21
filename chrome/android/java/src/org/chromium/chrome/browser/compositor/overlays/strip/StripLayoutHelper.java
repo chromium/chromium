@@ -4222,6 +4222,8 @@ public class StripLayoutHelper
     void handleDragEnter(
             float currX, float lastX, boolean isSourceStrip, boolean draggedTabIncognito) {
         if (isSourceStrip) {
+            // Drag enter event after reorder was stopped. no-op.
+            if (!mReorderDelegate.getInReorderMode()) return;
             // Tab drag started reorder - update reorder to handle drag onto strip.
             mReorderDelegate.updateReorderPosition(
                     mStripViews,
@@ -4257,6 +4259,8 @@ public class StripLayoutHelper
 
     void handleDragExit(boolean isSourceStrip, boolean draggedTabIncognito) {
         if (isSourceStrip) {
+            // Drag exit event after reorder was stopped. no-op.
+            if (!mReorderDelegate.getInReorderMode()) return;
             // Tab drag started reorder - update reorder to handle drag out of strip.
             // endX is inaccurate but unused.
             mReorderDelegate.updateReorderPosition(

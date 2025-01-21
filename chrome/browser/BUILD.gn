@@ -8086,19 +8086,10 @@ static_library("browser") {
 
   if (chrome_root_store_cert_management_ui) {
     sources += [
-      "net/server_certificate_database.cc",
-      "net/server_certificate_database.h",
-      "net/server_certificate_database_service.cc",
-      "net/server_certificate_database_service.h",
       "net/server_certificate_database_service_factory.cc",
       "net/server_certificate_database_service_factory.h",
     ]
-    if (is_chromeos) {
-      sources += [
-        "net/server_certificate_database_nss_migrator.cc",
-        "net/server_certificate_database_nss_migrator.h",
-      ]
-    }
+    deps += [ "//components/server_certificate_database" ]
   }
 
   if (use_udev) {
@@ -8545,7 +8536,7 @@ static_library("browser_generated_files") {
   }
 
   if (chrome_root_store_cert_management_ui || enable_webui_certificate_viewer) {
-    public_deps += [ "//chrome/browser/net:server_certificate_database_proto" ]
+    public_deps += [ "//components/server_certificate_database:proto" ]
   }
 }
 

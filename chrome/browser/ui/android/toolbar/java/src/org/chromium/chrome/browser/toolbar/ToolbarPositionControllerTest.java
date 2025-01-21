@@ -657,6 +657,26 @@ public class ToolbarPositionControllerTest {
     }
 
     @Test
+    public void shouldShowToolbarOnTop_withIncognitoNtpUrl() {
+        Tab tab = mock(Tab.class);
+        doReturn(new GURL(UrlConstants.NTP_URL)).when(tab).getUrl();
+        doReturn(true).when(tab).isIncognitoBranded();
+
+        // By default, Toolbar should be anchored on top.
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ null);
+        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(tab));
+
+        // When the user explicitly asks for bottom toolbar the incognito NTP should show toolbar on
+        // the bottom.
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
+        assertFalse(ToolbarPositionController.shouldShowToolbarOnTop(tab));
+
+        // ... same for the explicit top toolbar.
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ true);
+        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(tab));
+    }
+
+    @Test
     public void shouldShowToolbarOnTop_withNonNtpUrl() {
         // This test does not instantiate ToolbarPositionController, meaning there is no Preference
         // observer watching for settings changes.

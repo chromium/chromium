@@ -19,6 +19,7 @@ namespace {
 class MockMicrosoftAuthService : public MicrosoftAuthService {
  public:
   MOCK_METHOD1(SetAccessToken, void(new_tab_page::mojom::AccessTokenPtr));
+  MOCK_METHOD0(SetAuthStateError, void());
 };
 
 std::unique_ptr<TestingProfile> MakeTestingProfile() {
@@ -76,4 +77,10 @@ TEST_F(NtpMicrosoftAuthUntrustedPageHandlerTest, SetAccessToken) {
   ASSERT_TRUE(access_token_arg);
   EXPECT_EQ(access_token_arg->token, "1234");
   EXPECT_EQ(access_token_arg->expiration, base::Time::Now());
+}
+
+TEST_F(NtpMicrosoftAuthUntrustedPageHandlerTest, SetAuthStateError) {
+  EXPECT_CALL(mock_auth_service(), SetAuthStateError);
+
+  handler().SetAuthStateError();
 }

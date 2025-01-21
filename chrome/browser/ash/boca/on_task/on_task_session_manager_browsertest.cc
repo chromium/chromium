@@ -37,6 +37,7 @@ namespace ash::boca {
 namespace {
 
 constexpr char kSessionId[] = "test_session_id";
+constexpr char kSessionId2[] = "test_session_id_2";
 constexpr char kTestUrl1[] = "https://test1.com";
 constexpr char kTestUrl2[] = "https://test2.com";
 
@@ -433,6 +434,49 @@ IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
             GURL(kTestUrl1));
   tab_strip_model->ActivateTabAt(2);
   EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetVisibleURL(),
+            GURL(kTestUrl2));
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
+                       ShouldOpenBocaSWAOnSessionTakeover) {
+  content::TestNavigationObserver navigation_observer((GURL(kTestUrl1)));
+  navigation_observer.StartWatchingNewWebContents();
+
+  // Start OnTask session and spawn one tab outside the homepage tab.
+  GetOnTaskSessionManager()->OnSessionStarted(kSessionId,
+                                              ::boca::UserIdentity());
+  ::boca::Bundle bundle;
+  bundle.add_content_configs()->set_url(kTestUrl1);
+  GetOnTaskSessionManager()->OnBundleUpdated(bundle);
+  navigation_observer.Wait();
+
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+  auto* const tab_strip_model = boca_app_browser->tab_strip_model();
+  ASSERT_EQ(tab_strip_model->count(), 2);
+  tab_strip_model->ActivateTabAt(1);
+  EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
+            GURL(kTestUrl1));
+
+  // End the session and start another session.
+  GetOnTaskSessionManager()->OnSessionEnded(kSessionId);
+  content::TestNavigationObserver navigation_observer_2((GURL(kTestUrl2)));
+  navigation_observer_2.StartWatchingNewWebContents();
+  GetOnTaskSessionManager()->OnSessionStarted(kSessionId2,
+                                              ::boca::UserIdentity());
+  ::boca::Bundle bundle_2;
+  bundle_2.add_content_configs()->set_url(kTestUrl2);
+  GetOnTaskSessionManager()->OnBundleUpdated(bundle_2);
+  navigation_observer_2.Wait();
+
+  Browser* const boca_app_browser_2 = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser_2, NotNull());
+  ASSERT_TRUE(boca_app_browser_2->IsLockedForOnTask());
+  auto* const tab_strip_model_2 = boca_app_browser_2->tab_strip_model();
+  ASSERT_EQ(tab_strip_model_2->count(), 2);
+  tab_strip_model_2->ActivateTabAt(1);
+  EXPECT_EQ(tab_strip_model_2->GetActiveWebContents()->GetLastCommittedURL(),
             GURL(kTestUrl2));
 }
 

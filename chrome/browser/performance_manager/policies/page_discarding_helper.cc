@@ -503,7 +503,11 @@ CanDiscardResult PageDiscardingHelper::CanDiscard(
       return CanDiscardResult::kProtected;
     }
 #if !BUILDFLAG(IS_CHROMEOS)
-    // TODO(sebmarchand): Skip this check if the Entreprise memory limit is set.
+    // TODO(crbug.com/391179510): This check validates the assumption that the
+    // WasDiscarded() property is not set correctly. If that assumption holds,
+    // remove all code that depends on it as discussed on the bug.
+    CHECK(!live_state_data->WasDiscarded(), base::NotFatalUntil::M136);
+
     if (live_state_data->WasDiscarded()) {
       return CanDiscardResult::kProtected;
     }

@@ -111,6 +111,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceApple
   bool UpdateCaptureResolution();
   void OnCaptureConfigurationChanged();
 
+  VideoFrameMetadata GetVideoFrameMetadata();
+
   // Flag indicating the internal state.
   enum InternalState { kNotInitialized, kIdle, kCapturing, kError };
 

@@ -325,6 +325,7 @@ test("components_unittests") {
     "//components/security_interstitials/core:unit_tests",
     "//components/security_state/core:unit_tests",
     "//components/segmentation_platform:unit_tests",
+    "//components/server_certificate_database:unit_tests",
     "//components/services/heap_profiling/public/cpp:unit_tests",
     "//components/services/unzip:unit_tests",
     "//components/sessions:unit_tests",

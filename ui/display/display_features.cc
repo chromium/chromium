@@ -116,5 +116,13 @@ bool IsExcludeDisplayInMirrorModeEnabled() {
   return base::FeatureList::IsEnabled(kExcludeDisplayInMirrorMode);
 }
 
+BASE_FEATURE(kFastDrmMasterDrop,
+             "FastDrmMasterDrop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsFastDrmMasterDropEnabled() {
+  return base::FeatureList::IsEnabled(kFastDrmMasterDrop);
+}
+
 }  // namespace features
 }  // namespace display

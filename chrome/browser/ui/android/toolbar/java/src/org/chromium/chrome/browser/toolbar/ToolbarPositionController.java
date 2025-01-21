@@ -403,13 +403,16 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
 
     /** Returns whether the toolbar will be shown on top for the supplied tab. */
     public static boolean shouldShowToolbarOnTop(Tab tab) {
-        boolean isNtpUrl =
-                (tab != null) && (tab.getUrl() != null) && UrlUtilities.isNtpUrl(tab.getUrl());
+        boolean isRegularNtp =
+                (tab != null)
+                        && (tab.getUrl() != null)
+                        && UrlUtilities.isNtpUrl(tab.getUrl())
+                        && !tab.isIncognitoBranded();
 
         return calculateStateTransition(
                         /* formFieldStateChanged= */ false,
                         /* prefStateChanged= */ false,
-                        /* ntpShowing= */ isNtpUrl,
+                        /* ntpShowing= */ isRegularNtp,
                         /* tabSwitcherShowing= */ false,
                         /* isOmniboxFocused= */ false,
                         /* isFindInPageShowing= */ false,

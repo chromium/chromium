@@ -296,9 +296,15 @@ delta = "2.4.2 -> 2.5.0"
 
 [[audits.bitflags]]
 who = "Adrian Taylor <adetaylor@chromium.org>"
-criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "2.5.0 -> 2.6.0"
 notes = "The changes from the previous version are negligible and thus it retains the same properties."
+
+[[audits.bitflags]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "2.6.0 -> 2.8.0"
+notes = "No changes related to `unsafe impl ... bytemuck` pieces from `src/external.rs`."
 
 [[audits.bstr]]
 who = "danakj <danakj@chromium.org>"

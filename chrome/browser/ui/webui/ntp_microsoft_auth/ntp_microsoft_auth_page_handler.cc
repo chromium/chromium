@@ -26,3 +26,7 @@ void MicrosoftAuthUntrustedPageHandler::SetAccessToken(
     new_tab_page::mojom::AccessTokenPtr token) {
   auth_service_->SetAccessToken(std::move(token));
 }
+
+void MicrosoftAuthUntrustedPageHandler::SetAuthStateError() {
+  auth_service_->SetAuthStateError();
+}

@@ -88,7 +88,7 @@ std::u16string GetEditorMenuWriteCardTitle() {
 std::u16string GetEditorMenuRewriteCardTitle() {
   return ShouldUseL10nStrings()
              ? l10n_util::GetStringUTF16(IDS_EDITOR_MENU_REWRITE_CARD_TITLE)
-             : u"Rewrite";
+             : u"Refine";
 }
 
 std::u16string

@@ -226,6 +226,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   base::Lock _lock;
   // Used to avoid UAF in -captureOutput.
   base::Lock _destructionLock;
+  base::Lock _metadataLock;
   raw_ptr<media::VideoCaptureDeviceAVFoundationFrameReceiver> _frameReceiver
       GUARDED_BY(_lock);  // weak.
   bool _capturedFirstFrame GUARDED_BY(_lock);
@@ -1232,11 +1233,12 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
 - (void)setIsPortraitEffectSupportedForTesting:
     (bool)isPortraitEffectSupportedForTesting {
+  base::AutoLock lock(_metadataLock);
   _isPortraitEffectSupportedForTesting = isPortraitEffectSupportedForTesting;
 }
 
 - (bool)isPortraitEffectSupported {
-  DCHECK(_mainThreadTaskRunner->BelongsToCurrentThread());
+  base::AutoLock lock(_metadataLock);
   if (_isPortraitEffectSupportedForTesting.has_value()) {
     return _isPortraitEffectSupportedForTesting.value();
   }
@@ -1248,6 +1250,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
 - (void)setIsPortraitEffectActiveForTesting:
     (bool)isPortraitEffectActiveForTesting {
+  base::AutoLock lock(_metadataLock);
   if (_isPortraitEffectActiveForTesting.has_value() &&
       _isPortraitEffectActiveForTesting == isPortraitEffectActiveForTesting) {
     return;
@@ -1257,7 +1260,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 }
 
 - (bool)isPortraitEffectActive {
-  DCHECK(_mainThreadTaskRunner->BelongsToCurrentThread());
+  base::AutoLock lock(_metadataLock);
   if (_isPortraitEffectActiveForTesting.has_value()) {
     return _isPortraitEffectActiveForTesting.value();
   }

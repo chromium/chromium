@@ -32,6 +32,7 @@ class MicrosoftAuthUntrustedPageHandler
   // new_tab_page::mojom::MicrosoftAuthUntrustedPageHandler:
   void SetAccessToken(
       new_tab_page::mojom::AccessTokenPtr access_token) override;
+  void SetAuthStateError() override;
 
  private:
   mojo::Receiver<new_tab_page::mojom::MicrosoftAuthUntrustedPageHandler>

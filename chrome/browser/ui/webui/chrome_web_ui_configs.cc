@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/webui/predictors/predictors_ui.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_ui.h"
 #include "chrome/browser/ui/webui/safe_browsing/chrome_safe_browsing_ui.h"
+#include "chrome/browser/ui/webui/saved_tab_groups_unsupported/saved_tab_groups_unsupported_ui.h"
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_ui.h"
 #include "chrome/browser/ui/webui/signin_internals_ui.h"
 #include "chrome/browser/ui/webui/sync_internals/sync_internals_ui.h"
@@ -242,6 +243,7 @@ void RegisterChromeWebUIConfigs() {
           security_interstitials::KnownInterceptionDisclosureUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<safe_browsing::ChromeSafeBrowsingUIConfig>());
+  map.AddWebUIConfig(std::make_unique<SavedTabGroupsUnsupportedUIConfig>());
   map.AddWebUIConfig(std::make_unique<SegmentationInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<SignInInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<SiteEngagementUIConfig>());

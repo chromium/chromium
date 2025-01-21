@@ -552,6 +552,10 @@
     "META": {"sizes": {"includes": [5],}},
     "includes": [4680],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/saved_tab_groups_unsupported/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [4690],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/search_engine_choice/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [4700],

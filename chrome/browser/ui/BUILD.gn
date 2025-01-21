@@ -245,6 +245,8 @@ static_library("ui") {
     "webui/privacy_sandbox/privacy_sandbox_internals_handler.h",
     "webui/privacy_sandbox/privacy_sandbox_internals_ui.cc",
     "webui/privacy_sandbox/privacy_sandbox_internals_ui.h",
+    "webui/saved_tab_groups_unsupported/saved_tab_groups_unsupported_ui.cc",
+    "webui/saved_tab_groups_unsupported/saved_tab_groups_unsupported_ui.h",
     "webui/segmentation_internals/segmentation_internals_page_handler_impl.cc",
     "webui/segmentation_internals/segmentation_internals_page_handler_impl.h",
     "webui/segmentation_internals/segmentation_internals_ui.cc",
@@ -5572,7 +5574,10 @@ static_library("ui") {
       "webui/certificate_manager/user_cert_sources.h",
     ]
 
-    deps += [ "//services/cert_verifier/public/mojom" ]
+    deps += [
+      "//components/server_certificate_database",
+      "//services/cert_verifier/public/mojom",
+    ]
   }
 
   if (use_udev) {

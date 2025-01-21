@@ -3849,6 +3849,9 @@ extern const char kExperimentalAccessibilitySwitchAccessTextDescription[];
 extern const char kExposeOutOfProcessVideoDecodingToLacrosName[];
 extern const char kExposeOutOfProcessVideoDecodingToLacrosDescription[];
 
+extern const char kFastDrmMasterDropName[];
+extern const char kFastDrmMasterDropDescription[];
+
 extern const char kFileTransferEnterpriseConnectorName[];
 extern const char kFileTransferEnterpriseConnectorDescription[];
 

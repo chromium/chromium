@@ -115,6 +115,8 @@ class PageLiveStateDecorator::Data {
   virtual bool IsCapturingWindow() const = 0;
   virtual bool IsCapturingDisplay() const = 0;
   virtual bool IsAutoDiscardable() const = 0;
+  // TODO(crbug.com/391179510): Remove this property which is always "false" due
+  // to a bug.
   virtual bool WasDiscarded() const = 0;
   virtual bool IsActiveTab() const = 0;
   virtual bool IsPinnedTab() const = 0;
@@ -170,7 +172,6 @@ class PageLiveStateObserver : public base::CheckedObserver {
   virtual void OnIsCapturingWindowChanged(const PageNode* page_node) = 0;
   virtual void OnIsCapturingDisplayChanged(const PageNode* page_node) = 0;
   virtual void OnIsAutoDiscardableChanged(const PageNode* page_node) = 0;
-  virtual void OnWasDiscardedChanged(const PageNode* page_node) = 0;
   virtual void OnIsActiveTabChanged(const PageNode* page_node) = 0;
   virtual void OnIsPinnedTabChanged(const PageNode* page_node) = 0;
   virtual void OnIsDevToolsOpenChanged(const PageNode* page_node) = 0;
@@ -198,7 +199,6 @@ class PageLiveStateObserverDefaultImpl : public PageLiveStateObserver {
   void OnIsCapturingWindowChanged(const PageNode* page_node) override {}
   void OnIsCapturingDisplayChanged(const PageNode* page_node) override {}
   void OnIsAutoDiscardableChanged(const PageNode* page_node) override {}
-  void OnWasDiscardedChanged(const PageNode* page_node) override {}
   void OnIsActiveTabChanged(const PageNode* page_node) override {}
   void OnIsPinnedTabChanged(const PageNode* page_node) override {}
   void OnIsDevToolsOpenChanged(const PageNode* page_node) override {}

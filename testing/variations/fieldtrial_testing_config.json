@@ -21430,46 +21430,6 @@
             ]
         }
     ],
-    "ScriptStreamingForNonHTTP": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ScriptStreamingForNonHTTP"
-                    ]
-                },
-                {
-                    "name": "Enabled_CodeCache",
-                    "params": {
-                        "RestrictedWebUICodeCacheResources": "/new_tab_page.js,/shared.rollup.js,/lit/v3_0/lit.rollup.js,/mojo/mojo/public/js/bindings.js,/polymer/v3_0/polymer/polymer_bundled.min.js,/new_tab_page.mojom-webui.js,/cr_components/searchbox/searchbox.mojom-webui.js,/cr_components/most_visited/most_visited.mojom-webui.js,/lazy_load.js,/tab_search.js"
-                    },
-                    "enable_features": [
-                        "RestrictedWebUICodeCache",
-                        "ScriptStreamingForNonHTTP",
-                        "WebUICodeCache"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "RestrictedWebUICodeCache",
-                        "ScriptStreamingForNonHTTP",
-                        "WebUICodeCache"
-                    ]
-                }
-            ]
-        }
-    ],
     "SeaPen": [
         {
             "platforms": [
@@ -26120,8 +26080,18 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_NoScriptStreaming",
                     "enable_features": [
+                        "WebUIInProcessResourceLoading"
+                    ],
+                    "disable_features": [
+                        "ScriptStreamingForNonHTTP"
+                    ]
+                },
+                {
+                    "name": "Enabled_WithScriptStreaming",
+                    "enable_features": [
+                        "ScriptStreamingForNonHTTP",
                         "WebUIInProcessResourceLoading"
                     ]
                 }

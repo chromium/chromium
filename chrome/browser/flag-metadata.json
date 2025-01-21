@@ -4370,6 +4370,15 @@
     "expiry_milestone": 132
   },
   {
+    "name": "fast-drm-master-drop",
+    "owners": [
+      "//ui/display/OWNERS",
+      "sukoo@google.com",
+      "chromeos-gfx-compositor@chromium.org"
+    ],
+    "expiry_milestone": 138
+  },
+  {
     "name": "fast-pair-debug-metadata",
     "owners": [
       "//ash/quick_pair/OWNERS",

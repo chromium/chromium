@@ -221,6 +221,8 @@ inline constexpr char kChromeUISafetyPixelbookURL[] =
     "https://g.co/Pixelbook/legal";
 inline constexpr char kChromeUISafetyPixelSlateURL[] =
     "https://g.co/PixelSlate/legal";
+inline constexpr char kChromeUISavedTabGroupsUnsupportedHost[] =
+    "saved-tab-groups-unsupported";
 inline constexpr char kChromeUISegmentationInternalsHost[] =
     "segmentation-internals";
 inline constexpr char kChromeUISensorInfoHost[] = "sensor-info";

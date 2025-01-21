@@ -19,7 +19,7 @@ function toTime(time: Date): {internalValue: bigint} {
 
 const msalConfig: typeof Configuration = {
   auth: {
-    clientId: '9d73e1f0-aa65-4233-bec4-6125c893e60e',
+    clientId: '299cf3a2-777b-4013-8072-c504d2be03a2',
     authority: 'https://login.microsoftonline.com/organizations',
     redirectUri: 'https://chromeenterprise.google/ntp-microsoft-auth',
   },
@@ -47,8 +47,14 @@ function handleAcquireTokenResponse(result: typeof AuthenticationResult|null) {
   }
 }
 
-// TODO(crbug.com/386390859): Send auth error to handler.
-function handleAuthError(_: typeof AuthError) {}
+
+function handleAuthError(_: typeof AuthError) {
+  // All authentication errors are currently treated the same:
+  // the service is marked as errored, which cancels the current
+  // authentication attempt and triggers UI updates to prompt
+  // the user to retry authenticating.
+  handler.setAuthStateError();
+}
 
 async function acquireTokenPopup(): Promise<void> {
   msalApp.acquireTokenPopup(requestConfig)

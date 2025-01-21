@@ -45,6 +45,7 @@ static_library("network_ui") {
     "//components/device_event_log",
     "//components/onc",
     "//components/policy/core/browser",
+    "//components/server_certificate_database",
     "//content/public/browser",
     "//ui/chromeos/strings:strings_provider",
     "//ui/webui",

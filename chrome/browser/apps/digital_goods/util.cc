@@ -55,14 +55,9 @@ std::string GetScope(content::RenderFrameHost* render_frame_host) {
   }
 
   const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
-  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
       render_frame_host->GetMainFrame()->GetLastCommittedURL(),
-      {
-          web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-          web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-      });
+      web_app::WebAppFilter::InstalledInChrome());
   if (!app_id) {
     return std::string();
   }

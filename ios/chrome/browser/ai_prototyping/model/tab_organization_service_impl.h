@@ -7,6 +7,7 @@
 
 #import "components/optimization_guide/optimization_guide_buildflags.h"
 #import "ios/chrome/browser/optimization_guide/mojom/tab_organization_service.mojom.h"
+#import "mojo/public/cpp/bindings/receiver.h"
 
 class OptimizationGuideService;
 class WebStateList;
@@ -43,6 +44,9 @@ class TabOrganizationServiceImpl : public mojom::TabOrganizationService {
   raw_ptr<OptimizationGuideService> service_;
 
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+
+  // Receiver throughout the TabOrganizationServiceImpl lifecycle.
+  mojo::Receiver<mojom::TabOrganizationService> receiver_;
 
   // List of web states used for tab organization.
   raw_ptr<WebStateList> web_state_list_;

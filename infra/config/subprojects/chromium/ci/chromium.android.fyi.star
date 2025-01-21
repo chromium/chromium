@@ -400,7 +400,7 @@ ci.builder(
             ),
             "gl_tests_validating": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p.gl_tests.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p_10.gl_tests.filter",
                 ],
             ),
             "net_unittests": targets.mixin(
@@ -541,6 +541,11 @@ ci.builder(
             "components_browsertests": targets.mixin(
                 swarming = targets.swarming(
                     shards = 4,
+                ),
+            ),
+            "content_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 40,
                 ),
             ),
             "content_shell_crash_test": targets.remove(

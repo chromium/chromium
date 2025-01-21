@@ -11713,6 +11713,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(syncer::kMoveThemePrefsToSpecifics)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS)
+    {"fast-drm-master-drop", flag_descriptions::kFastDrmMasterDropName,
+     flag_descriptions::kFastDrmMasterDropDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(display::features::kFastDrmMasterDrop)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
