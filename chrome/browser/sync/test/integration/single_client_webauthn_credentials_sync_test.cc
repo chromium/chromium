@@ -472,8 +472,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
   auto metadata_change_list =
       std::make_unique<syncer::InMemoryMetadataChangeList>();
   syncer::EntityChangeList entity_changes;
-  entity_changes.emplace_back(
-      syncer::EntityChange::CreateDelete("unknown-sync-id"));
+  entity_changes.emplace_back(syncer::EntityChange::CreateDelete(
+      "unknown-sync-id", syncer::EntityData()));
   ASSERT_NO_FATAL_FAILURE(GetModel().ApplyIncrementalSyncChanges(
       std::move(metadata_change_list), std::move(entity_changes)));
 }

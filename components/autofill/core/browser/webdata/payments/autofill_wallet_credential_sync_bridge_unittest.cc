@@ -283,7 +283,7 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest,
   // Delete an existing server cvc.
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(syncer::EntityChange::CreateDelete(
-      base::NumberToString(server_cvc1.instrument_id)));
+      base::NumberToString(server_cvc1.instrument_id), syncer::EntityData()));
 
   // Expect no changes to the remote server credential data.
   EXPECT_CALL(mock_processor(), Delete).Times(0);

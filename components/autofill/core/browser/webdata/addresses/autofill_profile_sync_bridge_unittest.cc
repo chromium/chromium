@@ -840,7 +840,8 @@ TEST_F(AutofillProfileSyncBridgeTest, ApplyIncrementalSyncChanges) {
   EXPECT_CALL(*backend(), CommitChanges());
 
   syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(EntityChange::CreateDelete(kGuidA));
+  entity_change_list.push_back(
+      EntityChange::CreateDelete(kGuidA, syncer::EntityData()));
   entity_change_list.push_back(
       EntityChange::CreateAdd(kGuidB, SpecificsToEntity(remote)));
   ApplyIncrementalSyncChanges(std::move(entity_change_list));

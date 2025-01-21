@@ -351,8 +351,8 @@ TEST_F(ReadingListSyncBridgeTest, ApplyIncrementalSyncChangesOneRemove) {
                             /*estimated_read_time=*/base::TimeDelta());
 
   syncer::EntityChangeList delete_changes;
-  delete_changes.push_back(
-      syncer::EntityChange::CreateDelete("http://read.example.com/"));
+  delete_changes.push_back(syncer::EntityChange::CreateDelete(
+      "http://read.example.com/", syncer::EntityData()));
 
   ASSERT_EQ(1ul, model_->size());
   auto error = bridge()->ApplyIncrementalSyncChanges(

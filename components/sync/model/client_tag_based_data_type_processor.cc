@@ -786,8 +786,10 @@ void ClientTagBasedDataTypeProcessor::OnCommitCompleted(
 
     if (CommitOnlyTypes().Has(type_)) {
       if (!entity->IsUnsynced()) {
+        // EntityData() is not used for commit-only types although it could be
+        // created from the entity metadata.
         entity_change_list.push_back(
-            EntityChange::CreateDelete(entity->storage_key()));
+            EntityChange::CreateDelete(entity->storage_key(), EntityData()));
         RemoveEntity(entity->storage_key(), metadata_change_list.get());
       }
       // If unsynced, we could theoretically update persisted metadata to have

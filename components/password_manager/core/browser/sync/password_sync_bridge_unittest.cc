@@ -701,7 +701,8 @@ TEST_F(PasswordSyncBridgeTest, ShouldApplyRemoteDeletion) {
   EXPECT_CALL(mock_processor(), Delete).Times(0);
 
   syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(syncer::EntityChange::CreateDelete(kStorageKey));
+  entity_change_list.push_back(
+      syncer::EntityChange::CreateDelete(kStorageKey, syncer::EntityData()));
   std::optional<syncer::ModelError> error =
       bridge()->ApplyIncrementalSyncChanges(
           bridge()->CreateMetadataChangeList(), std::move(entity_change_list));

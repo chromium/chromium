@@ -286,7 +286,7 @@ std::unique_ptr<syncer::EntityChange> CreateUpdateEntityChange(
 
 std::unique_ptr<syncer::EntityChange> CreateDeleteEntityChange(
     const std::string& storage_key) {
-  return syncer::EntityChange::CreateDelete(storage_key);
+  return syncer::EntityChange::CreateDelete(storage_key, syncer::EntityData());
 }
 
 std::vector<syncer::EntityData> ExtractEntityDataFromBatch(
@@ -754,7 +754,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
           .SetCollaborationId(CollaborationId("collaboration 2")));
   ASSERT_EQ(model()->Count(), 2);
 
-  ApplySingleEntityChange(syncer::EntityChange::CreateDelete(
+  ApplySingleEntityChange(CreateDeleteEntityChange(
       group_to_delete.saved_guid().AsLowercaseString()));
 
   EXPECT_THAT(
@@ -780,7 +780,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
   ASSERT_EQ(model()->Count(), 1);
   ASSERT_THAT(model()->saved_tab_groups().front().saved_tabs(), SizeIs(2));
 
-  ApplySingleEntityChange(syncer::EntityChange::CreateDelete(
+  ApplySingleEntityChange(CreateDeleteEntityChange(
       tab_to_delete.saved_tab_guid().AsLowercaseString()));
 
   ASSERT_EQ(model()->Count(), 1);

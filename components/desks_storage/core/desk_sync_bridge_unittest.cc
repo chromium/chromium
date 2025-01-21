@@ -1611,7 +1611,8 @@ TEST_F(DeskSyncBridgeTest, ApplyIncrementalSyncChangesWithOneDeletion) {
 
   // Now delete template 1.
   EntityChangeList delete_changes;
-  delete_changes.push_back(EntityChange::CreateDelete(template1.uuid()));
+  delete_changes.push_back(
+      EntityChange::CreateDelete(template1.uuid(), syncer::EntityData()));
 
   EXPECT_CALL(*mock_observer(), EntriesRemovedRemotely(SizeIs(1)));
   bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
@@ -1637,7 +1638,8 @@ TEST_F(DeskSyncBridgeTest, ApplyIncrementalSyncChangesDeleteNonexistent) {
   EXPECT_CALL(*processor(), Delete).Times(0);
 
   EntityChangeList entity_change_list;
-  entity_change_list.push_back(EntityChange::CreateDelete("no-such-uuid"));
+  entity_change_list.push_back(
+      EntityChange::CreateDelete("no-such-uuid", syncer::EntityData()));
   auto error = bridge()->ApplyIncrementalSyncChanges(
       std::move(metadata_changes), std::move(entity_change_list));
   EXPECT_FALSE(error);

@@ -911,7 +911,7 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplyIncrementalSyncChangesInMemory) {
 
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(
-      EntityChange::CreateDelete(specifics.cache_guid()));
+      EntityChange::CreateDelete(specifics.cache_guid(), syncer::EntityData()));
   auto error_on_delete = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
 
@@ -969,7 +969,8 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplyDeleteNonexistent) {
   ASSERT_EQ(1, change_count());
 
   syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(EntityChange::CreateDelete("guid"));
+  entity_change_list.push_back(
+      EntityChange::CreateDelete("guid", syncer::EntityData()));
   EXPECT_CALL(*processor(), Delete).Times(0);
   auto error = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
@@ -1673,7 +1674,8 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldRemoveDeviceInfoOnTombstone) {
   ASSERT_EQ(2u, bridge()->GetAllDeviceInfo().size());
 
   EntityChangeList changes;
-  changes.push_back(EntityChange::CreateDelete(specifics.cache_guid()));
+  changes.push_back(
+      EntityChange::CreateDelete(specifics.cache_guid(), syncer::EntityData()));
   error = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(changes));
   ASSERT_FALSE(error);
@@ -1689,8 +1691,8 @@ TEST_F(DeviceInfoSyncBridgeTest,
   ASSERT_EQ(1u, bridge()->GetAllDeviceInfo().size());
 
   EntityChangeList changes;
-  changes.push_back(
-      EntityChange::CreateDelete(CacheGuidForSuffix(kLocalSuffix)));
+  changes.push_back(EntityChange::CreateDelete(CacheGuidForSuffix(kLocalSuffix),
+                                               syncer::EntityData()));
 
   // An incoming deletion for the local device info should result in a reupload.
   // The reupload should only be triggered once, to prevent any possible
@@ -1704,8 +1706,8 @@ TEST_F(DeviceInfoSyncBridgeTest,
   EXPECT_EQ(1u, bridge()->GetAllDeviceInfo().size());
 
   changes.clear();
-  changes.push_back(
-      EntityChange::CreateDelete(CacheGuidForSuffix(kLocalSuffix)));
+  changes.push_back(EntityChange::CreateDelete(CacheGuidForSuffix(kLocalSuffix),
+                                               syncer::EntityData()));
   error = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(changes));
   ASSERT_FALSE(error);

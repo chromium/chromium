@@ -396,8 +396,8 @@ TEST_F(WifiConfigurationBridgeTest,
   EXPECT_TRUE(VectorContainsProto(networks, entry));
 
   syncer::EntityChangeList delete_changes;
-  delete_changes.push_back(
-      syncer::EntityChange::CreateDelete(id.SerializeToString()));
+  delete_changes.push_back(syncer::EntityChange::CreateDelete(
+      id.SerializeToString(), syncer::EntityData()));
 
   bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
                                         std::move(delete_changes));
@@ -435,8 +435,8 @@ TEST_F(WifiConfigurationBridgeTest,
   EXPECT_TRUE(VectorContainsProto(networks, entry));
 
   syncer::EntityChangeList delete_changes;
-  delete_changes.push_back(
-      syncer::EntityChange::CreateDelete(id.SerializeToString()));
+  delete_changes.push_back(syncer::EntityChange::CreateDelete(
+      id.SerializeToString(), syncer::EntityData()));
 
   bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
                                         std::move(delete_changes));

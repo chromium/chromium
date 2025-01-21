@@ -214,7 +214,8 @@ void ConvertAppToEntityChange(const WebApp& app,
           app.app_id(), std::move(*CreateSyncEntityData(app)));
       break;
     case syncer::EntityChange::ACTION_DELETE:
-      entity_change = syncer::EntityChange::CreateDelete(app.app_id());
+      entity_change = syncer::EntityChange::CreateDelete(app.app_id(),
+                                                         syncer::EntityData());
       break;
   }
 

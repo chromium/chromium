@@ -233,8 +233,8 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
     DCHECK(!entity->metadata().is_deleted());
     entity->RecordAcceptedRemoteUpdate(update, /*trimmed_specifics=*/{},
                                        /*unique_position=*/std::nullopt);
-    entity_changes->push_back(
-        EntityChange::CreateDelete(entity->storage_key()));
+    entity_changes->push_back(EntityChange::CreateDelete(
+        entity->storage_key(), std::move(update.entity)));
   } else if (entity->MatchesData(data)) {
     // Remote update that is a no-op, metadata should still be updated.
     entity->RecordAcceptedRemoteUpdate(
@@ -333,7 +333,8 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
         entity->RecordForcedRemoteUpdate(update,
                                          /*trimmed_specifics=*/{},
                                          /*unique_position=*/std::nullopt);
-        changes->push_back(EntityChange::CreateDelete(entity->storage_key()));
+        changes->push_back(EntityChange::CreateDelete(
+            entity->storage_key(), std::move(update.entity)));
       } else if (!entity->metadata().is_deleted()) {
         // Squash the pending commit.
         entity->RecordForcedRemoteUpdate(
