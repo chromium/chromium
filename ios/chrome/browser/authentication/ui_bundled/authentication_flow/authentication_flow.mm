@@ -638,7 +638,7 @@ enum class CancelationReason {
   _shouldConvertPersonalProfileToManaged =
       AreSeparateProfilesForManagedAccountsEnabled() &&
       (!keepBrowsingDataSeparate ||
-       _accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
+       _accessPoint == signin_metrics::AccessPoint::kStartPage);
 
   [self continueFlow];
 }
@@ -753,7 +753,7 @@ enum class CancelationReason {
           prefs::kProfileSeparationDataMigrationSettings) ==
       policy::ALWAYS_SEPARATE;
   return always_separate_browsing_data_per_policy ||
-         access_point == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE ||
+         access_point == signin_metrics::AccessPoint::kStartPage ||
          GetApplicationContext()
              ->GetAccountProfileMapper()
              ->IsProfileForGaiaIDFullyInitialized(GaiaId(gaia_id));

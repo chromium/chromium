@@ -117,7 +117,7 @@ enum class SigninScreenState {
       _hadIdentitiesAtStartup = _accountManagerService->HasIdentities();
     }
 
-    if (accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE) {
+    if (accessPoint == signin_metrics::AccessPoint::kStartPage) {
       if (!_localPrefService->GetBoolean(prefs::kEulaAccepted)) {
         _screenState = SigninScreenState::kFirstRunAsFirstScreen;
       } else {
@@ -141,8 +141,8 @@ enum class SigninScreenState {
     }
 
     _ignoreDismissGesture =
-        accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE ||
-        accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN;
+        accessPoint == signin_metrics::AccessPoint::kStartPage ||
+        accessPoint == signin_metrics::AccessPoint::kForcedSignin;
 
     [_logger logSigninStarted];
   }

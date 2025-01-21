@@ -76,7 +76,7 @@
                               browser:(Browser*)browser
                           accessPoint:(signin_metrics::AccessPoint)accessPoint {
   ProfileIOS* profile = browser->GetProfile();
-  if (accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
+  if (accessPoint == signin_metrics::AccessPoint::kWebSignin) {
     signin::IdentityManager* identityManager =
         IdentityManagerFactory::GetForProfile(profile);
     ChromeAccountManagerService* accountManagerService =
@@ -361,8 +361,7 @@
   DCHECK(!self.alertCoordinator) << base::SysNSStringToUTF8([self description]);
   ProfileIOS* profile = self.browser->GetProfile();
   PrefService* userPrefService = profile->GetPrefs();
-  if (self.accessPoint ==
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
+  if (self.accessPoint == signin_metrics::AccessPoint::kWebSignin) {
     const int skipCounter =
         userPrefService->GetInteger(prefs::kSigninWebSignDismissalCount) + 1;
     userPrefService->SetInteger(prefs::kSigninWebSignDismissalCount,

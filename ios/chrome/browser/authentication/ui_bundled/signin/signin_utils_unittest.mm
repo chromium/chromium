@@ -313,8 +313,8 @@ TEST_F(SigninUtilsTest, TestWillShowIfSignedInWithoutHistoryOptIn) {
   fake_system_identity_manager()->AddIdentity(identity);
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(profile_.get());
-  authentication_service->SignIn(
-      identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service->SignIn(identity,
+                                 signin_metrics::AccessPoint::kUnknown);
 
   const base::Version version_1_0("1.0");
   const base::Version version_3_0("3.0");
@@ -330,8 +330,8 @@ TEST_F(SigninUtilsTest, TestWillNotShowIfSignedInWithHistoryOptIn) {
   fake_system_identity_manager()->AddIdentity(identity);
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(profile_.get());
-  authentication_service->SignIn(
-      identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service->SignIn(identity,
+                                 signin_metrics::AccessPoint::kUnknown);
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_.get());
@@ -364,8 +364,8 @@ TEST_F(SigninUtilsTest, TestGetPrimaryIdentitySigninStateSignedInSyncDisabled) {
   fake_system_identity_manager()->AddIdentity(identity);
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(profile_.get());
-  authentication_service->SignIn(
-      identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service->SignIn(identity,
+                                 signin_metrics::AccessPoint::kUnknown);
 
   IdentitySigninState state =
       signin::GetPrimaryIdentitySigninState(profile_.get());
@@ -380,10 +380,10 @@ TEST_F(SigninUtilsTest,
   fake_system_identity_manager()->AddIdentity(identity);
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(profile_.get());
-  authentication_service->SignIn(
-      identity, signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO);
+  authentication_service->SignIn(identity,
+                                 signin_metrics::AccessPoint::kSigninPromo);
   authentication_service->GrantSyncConsent(
-      identity, signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO);
+      identity, signin_metrics::AccessPoint::kSigninPromo);
   profile_->GetPrefs()->SetBoolean(
       syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete, true);
 

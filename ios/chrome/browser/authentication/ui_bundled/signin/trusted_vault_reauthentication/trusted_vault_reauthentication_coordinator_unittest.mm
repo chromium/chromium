@@ -51,8 +51,8 @@ class TrustedVaultReauthenticationCoordinatorTest : public PlatformTest {
     system_identity_manager->AddIdentity(identity);
     AuthenticationService* authentication_service =
         AuthenticationServiceFactory::GetForProfile(profile_.get());
-    authentication_service->SignIn(
-        identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+    authentication_service->SignIn(identity,
+                                   signin_metrics::AccessPoint::kUnknown);
 
     browser_ = std::make_unique<TestBrowser>(profile_.get());
   }
@@ -79,7 +79,7 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestCancel) {
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
   signin_metrics::AccessPoint accessPoint =
-      signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE;
+      signin_metrics::AccessPoint::kStartPage;
   SigninCoordinator* signinCoordinator = [SigninCoordinator
       trustedVaultReAuthenticationCoordinatorWithBaseViewController:
           base_view_controller_
@@ -141,7 +141,7 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestInterruptWithDismiss) {
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
   signin_metrics::AccessPoint accessPoint =
-      signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE;
+      signin_metrics::AccessPoint::kStartPage;
   SigninCoordinator* signinCoordinator = [SigninCoordinator
       trustedVaultReAuthenticationCoordinatorWithBaseViewController:
           base_view_controller_
@@ -204,7 +204,7 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest,
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
   signin_metrics::AccessPoint accessPoint =
-      signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE;
+      signin_metrics::AccessPoint::kStartPage;
   SigninCoordinator* signinCoordinator = [SigninCoordinator
       trustedVaultReAuthenticationCoordinatorWithBaseViewController:
           base_view_controller_

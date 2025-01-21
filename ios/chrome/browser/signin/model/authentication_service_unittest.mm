@@ -295,8 +295,8 @@ TEST_P(AuthenticationServiceTest, TestDefaultGetPrimaryIdentity) {
 
 TEST_P(AuthenticationServiceTest, TestSignInAndGetPrimaryIdentity) {
   // Sign in.
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kSigninPromo);
   VerifyLastSigninTimestamp();
 
   EXPECT_NSEQ(identity(0), authentication_service()->GetPrimaryIdentity(
@@ -312,8 +312,7 @@ TEST_P(AuthenticationServiceTest, TestSignInAndGetPrimaryIdentity) {
   EXPECT_TRUE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
   histogram_tester_.ExpectUniqueSample(
-      "Signin.SignIn.Completed",
-      signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO, 1);
+      "Signin.SignIn.Completed", signin_metrics::AccessPoint::kSigninPromo, 1);
 }
 
 // Tests that reauth prompt can be set and reset.
@@ -331,10 +330,10 @@ TEST_P(AuthenticationServiceTest, TestSetReauthPromptForSignInAndSync) {
 TEST_P(AuthenticationServiceTest,
        TestHandleForgottenIdentityNoPromptSignIn_SyncingUser) {
   // Sign in.
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   authentication_service()->GrantSyncConsent(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+      identity(0), signin_metrics::AccessPoint::kUnknown);
   VerifyLastSigninTimestamp();
 
   // Set the authentication service as "In Foreground", remove identity and run
@@ -355,10 +354,10 @@ TEST_P(AuthenticationServiceTest,
 // an other app when the user was signed and syncing.
 TEST_P(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
   // Sign in.
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   authentication_service()->GrantSyncConsent(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+      identity(0), signin_metrics::AccessPoint::kUnknown);
   VerifyLastSigninTimestamp();
 
   // Set the authentication service as "In Background", remove identity and run
@@ -377,8 +376,8 @@ TEST_P(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
 TEST_P(AuthenticationServiceTest,
        TestHandleForgottenIdentityNoPromptSignIn_NonSyncingUser) {
   // Sign in.
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   VerifyLastSigninTimestamp();
 
   // Set the authentication service as "In Background", remove identity and run
@@ -396,8 +395,8 @@ TEST_P(AuthenticationServiceTest,
 // a secondary identity is added.
 TEST_P(AuthenticationServiceTest, OnAddIdentity) {
   // Sign in.
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   VerifyLastSigninTimestamp();
 
   auto account_compare_func = [](const CoreAccountInfo& first,
@@ -433,8 +432,8 @@ TEST_P(AuthenticationServiceTest, OnAddIdentity) {
 
 TEST_P(AuthenticationServiceTest, HasPrimaryIdentityBackground) {
   // Sign in.
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   EXPECT_TRUE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
   VerifyLastSigninTimestamp();
@@ -452,8 +451,8 @@ TEST_P(AuthenticationServiceTest, HasPrimaryIdentityBackground) {
 // Tests that MDM errors are correctly cleared on foregrounding, sending
 // notifications that the state of error has changed.
 TEST_P(AuthenticationServiceTest, MDMErrorsClearedOnForeground) {
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
   VerifyLastSigninTimestamp();
 
@@ -493,8 +492,8 @@ TEST_P(AuthenticationServiceTest, MDMErrorsClearedOnForeground) {
 
 // Tests that MDM errors are correctly cleared when signing out.
 TEST_P(AuthenticationServiceTest, MDMErrorsClearedOnSignout) {
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
   VerifyLastSigninTimestamp();
 
@@ -511,8 +510,8 @@ TEST_P(AuthenticationServiceTest, MDMErrorsClearedOnSignout) {
 // browsing data.
 TEST_P(AuthenticationServiceTest,
        MDMErrorsClearedOnSignoutAndClearBrowsingData) {
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
   VerifyLastSigninTimestamp();
 
@@ -538,8 +537,8 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
-  authentication_service()->SignIn(
-      identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(2),
+                                   signin_metrics::AccessPoint::kUnknown);
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSignin));
@@ -566,8 +565,8 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
-  authentication_service()->SignIn(
-      identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(2),
+                                   signin_metrics::AccessPoint::kUnknown);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSignin));
@@ -603,8 +602,8 @@ TEST_F(
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
-  authentication_service()->SignIn(
-      identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(2),
+                                   signin_metrics::AccessPoint::kUnknown);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSignin));
@@ -637,8 +636,8 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
-  authentication_service()->SignIn(
-      identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(2),
+                                   signin_metrics::AccessPoint::kUnknown);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSignin));
@@ -647,7 +646,7 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
   // Grant Sync consent.
   EXPECT_CALL(*mock_sync_service(), SetSyncFeatureRequested());
   authentication_service()->GrantSyncConsent(
-      identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+      identity(2), signin_metrics::AccessPoint::kUnknown);
 
   EXPECT_NSEQ(identity(2), authentication_service()->GetPrimaryIdentity(
                                signin::ConsentLevel::kSync));
@@ -671,8 +670,8 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
 // Tests that MDM errors do not lead to seeding empty account ids.
 // Regression test for root cause of crbug.com/1482236
 TEST_P(AuthenticationServiceTest, MDMErrorsDontSeedEmptyAccountIds) {
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
   VerifyLastSigninTimestamp();
 
@@ -717,8 +716,8 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
-  authentication_service()->SignIn(
-      identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(2),
+                                   signin_metrics::AccessPoint::kUnknown);
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSignin));
@@ -748,8 +747,8 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
-  authentication_service()->SignIn(
-      identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(2),
+                                   signin_metrics::AccessPoint::kUnknown);
   VerifyLastSigninTimestamp();
 
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
@@ -768,8 +767,8 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
 // Tests that potential MDM notifications are correctly handled and dispatched
 // to MDM service when necessary.
 TEST_P(AuthenticationServiceTest, HandleMDMNotification) {
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   VerifyLastSigninTimestamp();
 
   GoogleServiceAuthError error(
@@ -807,8 +806,8 @@ TEST_P(AuthenticationServiceTest, HandleMDMNotification) {
 // Tests that MDM blocked notifications are correctly signing out the user if
 // the primary account is blocked.
 TEST_P(AuthenticationServiceTest, HandleMDMBlockedNotification) {
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   GoogleServiceAuthError error(
       GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
@@ -856,8 +855,8 @@ TEST_P(AuthenticationServiceTest, ShowMDMErrorDialogInvalidCachedError) {
 // Tests that MDM dialog is shown when there is a cached error and a
 // corresponding error for the account.
 TEST_P(AuthenticationServiceTest, ShowMDMErrorDialog) {
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   GoogleServiceAuthError error(
       GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
@@ -878,8 +877,8 @@ TEST_P(AuthenticationServiceTest, ShowMDMErrorDialog) {
 // phase 3. See ConsentLevel::kSync documentation for details.
 TEST_P(AuthenticationServiceTest, SigninAndSyncDecoupled) {
   // Sign in.
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   VerifyLastSigninTimestamp();
 
   EXPECT_NSEQ(identity(0), authentication_service()->GetPrimaryIdentity(
@@ -894,7 +893,7 @@ TEST_P(AuthenticationServiceTest, SigninAndSyncDecoupled) {
   // Grant Sync consent.
   EXPECT_CALL(*mock_sync_service(), SetSyncFeatureRequested());
   authentication_service()->GrantSyncConsent(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+      identity(0), signin_metrics::AccessPoint::kUnknown);
 
   EXPECT_NSEQ(identity(0), authentication_service()->GetPrimaryIdentity(
                                signin::ConsentLevel::kSignin));
@@ -912,7 +911,7 @@ TEST_P(AuthenticationServiceTest, SigninDisallowedCrash) {
 
   // Attempt to sign in, and verify there is a crash.
   EXPECT_CHECK_DEATH(authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN));
+      identity(0), signin_metrics::AccessPoint::kUnknown));
 }
 
 // Tests that reauth prompt is not set if the primary identity is restricted and
@@ -921,10 +920,10 @@ TEST_P(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
   AuthenticationServiceObserverTest observer_test;
   authentication_service()->AddObserver(&observer_test);
   // Sign in.
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   authentication_service()->GrantSyncConsent(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+      identity(0), signin_metrics::AccessPoint::kUnknown);
   VerifyLastSigninTimestamp();
 
   // Set the account restriction.

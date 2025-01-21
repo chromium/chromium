@@ -84,7 +84,7 @@ using signin_metrics::PromoAction;
     upgradeSigninPromoCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                 browser:(Browser*)browser {
-  AccessPoint accessPoint = AccessPoint::ACCESS_POINT_SIGNIN_PROMO;
+  AccessPoint accessPoint = AccessPoint::kSigninPromo;
   PromoAction promoAction = PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
   return [[TwoScreensSigninCoordinator alloc]
       initWithBaseViewController:viewController

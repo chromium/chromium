@@ -258,7 +258,7 @@ TEST_F(AuthenticationFlowTest, TestSignInSimple) {
   scoped_feature_list.InitAndEnableFeature(
       policy::kUserPolicyForSigninOrSyncConsentLevel);
 
-  SignIn(identity1_, signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
+  SignIn(identity1_, signin_metrics::AccessPoint::kStartPage);
 
   histogram_tester_.ExpectUniqueSample(
       "Signin.AccountType.SigninConsent",
@@ -267,9 +267,8 @@ TEST_F(AuthenticationFlowTest, TestSignInSimple) {
 
 // Tests the fetch managed status failure case.
 TEST_F(AuthenticationFlowTest, TestFailFetchManagedStatus) {
-  CreateAuthenticationFlow(
-      PostSignInActionSet({PostSignInAction::kNone}), identity1_,
-      signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
+  CreateAuthenticationFlow(PostSignInActionSet({PostSignInAction::kNone}),
+                           identity1_, signin_metrics::AccessPoint::kStartPage);
 
   NSError* error = [NSError errorWithDomain:@"foo" code:0 userInfo:nil];
   [[[performer_ expect] andDo:^(NSInvocation*) {
@@ -300,8 +299,7 @@ TEST_F(AuthenticationFlowTest,
   base::test::ScopedFeatureList scoped_feature_list(
       policy::kUserPolicyForSigninAndNoSyncConsentLevel);
 
-  SignIn(managed_identity1_,
-         signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
+  SignIn(managed_identity1_, signin_metrics::AccessPoint::kSupervisedUser);
   histogram_tester_.ExpectUniqueSample(
       "Signin.AccountType.SigninConsent",
       signin_metrics::SigninAccountType::kManaged, 1);
@@ -328,8 +326,7 @@ TEST_F(AuthenticationFlowTest,
           base::Value("hello"), nullptr);
   enterprise_policy_helper.GetPolicyProvider()->UpdateChromePolicy(map);
 
-  SignIn(managed_identity1_,
-         signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
+  SignIn(managed_identity1_, signin_metrics::AccessPoint::kSupervisedUser);
   histogram_tester_.ExpectUniqueSample(
       "Signin.AccountType.SigninConsent",
       signin_metrics::SigninAccountType::kManaged, 1);
@@ -347,26 +344,22 @@ TEST_F(AuthenticationFlowTest, TestShowManagedConfirmationOnlyOnce) {
       {});
 
   // First signin, show the dialog.
-  SignIn(managed_identity1_,
-         signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU);
+  SignIn(managed_identity1_, signin_metrics::AccessPoint::kAccountMenu);
   EXPECT_EQ(1, managed_confirmation_dialog_shown_count_);
 
   // Second signin from the account menu, don't show the dialog.
   SignOut();
-  SignIn(managed_identity1_,
-         signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU);
+  SignIn(managed_identity1_, signin_metrics::AccessPoint::kAccountMenu);
   EXPECT_EQ(1, managed_confirmation_dialog_shown_count_);
 
   // Signin from a different UI surface, show the dialog again.
   SignOut();
-  SignIn(managed_identity1_,
-         signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
+  SignIn(managed_identity1_, signin_metrics::AccessPoint::kSupervisedUser);
   EXPECT_EQ(2, managed_confirmation_dialog_shown_count_);
 
   // Signin with a different account, show the dialog again.
   SignOut();
-  SignIn(managed_identity2_,
-         signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU);
+  SignIn(managed_identity2_, signin_metrics::AccessPoint::kAccountMenu);
   EXPECT_EQ(3, managed_confirmation_dialog_shown_count_);
 }
 
