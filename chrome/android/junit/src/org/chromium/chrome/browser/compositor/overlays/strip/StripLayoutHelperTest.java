@@ -92,6 +92,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.CompositorButto
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabStripIphController.IphType;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -104,7 +105,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIphController;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -4261,7 +4261,6 @@ public class StripLayoutHelperTest {
                         mActionConfirmationManager,
                         mModalDialogManager,
                         mDataSharingTabManager,
-                        0,
                         () -> true);
         // Initialize StackScroller
         stripLayoutHelper.onContextChanged(mActivity);
@@ -5078,7 +5077,7 @@ public class StripLayoutHelperTest {
     })
     public void testTabGroupSyncIph_Show() {
         // Setup tab group and Tab Group Sync iph.
-        TabGroupSyncIphController controller = setupTabGroupSyncIphOnTablet(4, 5);
+        TabStripIphController controller = setupTabGroupSyncIphOnTablet(4, 5);
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[4]);
 
@@ -5088,11 +5087,7 @@ public class StripLayoutHelperTest {
         // Verify iph is displayed at the correct horizontal position.
         verify(controller)
                 .maybeShowIphOnTabStrip(
-                        any(),
-                        eq(groupTitle.getDrawX()),
-                        anyFloat(),
-                        eq(SCREEN_WIDTH - groupTitle.getDrawX() - groupTitle.getWidth()),
-                        anyFloat());
+                        eq(groupTitle), any(), eq(IphType.TAB_GROUP_SYNC), anyFloat());
     }
 
     @Test
@@ -5102,7 +5097,7 @@ public class StripLayoutHelperTest {
     })
     public void testTabGroupSyncIph_DismissOnOrientationChanged() {
         // Setup tab group and Tab Group Sync iph.
-        TabGroupSyncIphController controller = setupTabGroupSyncIphOnTablet(4, 5);
+        TabStripIphController controller = setupTabGroupSyncIphOnTablet(4, 5);
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[4]);
 
@@ -5112,11 +5107,7 @@ public class StripLayoutHelperTest {
         // Verify iph is displayed at the correct horizontal position.
         verify(controller)
                 .maybeShowIphOnTabStrip(
-                        any(),
-                        eq(groupTitle.getDrawX()),
-                        anyFloat(),
-                        eq(SCREEN_WIDTH - groupTitle.getDrawX() - groupTitle.getWidth()),
-                        anyFloat());
+                        eq(groupTitle), any(), eq(IphType.TAB_GROUP_SYNC), anyFloat());
 
         // Change orientation.
         mStripLayoutHelper.onSizeChanged(
@@ -5126,8 +5117,7 @@ public class StripLayoutHelperTest {
         verify(controller).dismissTextBubble();
     }
 
-    private TabGroupSyncIphController setupTabGroupSyncIphOnTablet(
-            int startTabIndex, int endTabIndex) {
+    private TabStripIphController setupTabGroupSyncIphOnTablet(int startTabIndex, int endTabIndex) {
         initializeTest(false, false, 0, 5);
         groupTabs(startTabIndex, endTabIndex);
         mStripLayoutHelper.onSizeChanged(
@@ -5135,11 +5125,10 @@ public class StripLayoutHelperTest {
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
         // Prepare iph and required objects.
-        TabGroupSyncIphController controller = mock(TabGroupSyncIphController.class);
-        mStripLayoutHelper.setTabGroupSyncIphControllerForTesting(controller);
+        TabStripIphController controller = mock(TabStripIphController.class);
         mStripLayoutHelper.setTabModel(mModel, mTabCreator, false);
         mStripLayoutHelper.setLastSyncedGroupIdForTesting(tabs[tabs.length - 1].getTabId());
-        mStripLayoutHelper.setTabGroupSyncIphControllerForTesting(controller);
+        mStripLayoutHelper.setTabStripIphControllerForTesting(controller);
 
         return controller;
     }

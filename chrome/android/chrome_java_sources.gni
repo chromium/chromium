@@ -399,6 +399,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabDragSource.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabGroupContextMenuCoordinator.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabLoadTracker.java",
+  "java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabStripIphController.java",
   "java/src/org/chromium/chrome/browser/compositor/resources/StaticResourcePreloads.java",
   "java/src/org/chromium/chrome/browser/compositor/resources/SystemResourcePreloads.java",
   "java/src/org/chromium/chrome/browser/compositor/scene_layer/ContextualSearchSceneLayer.java",

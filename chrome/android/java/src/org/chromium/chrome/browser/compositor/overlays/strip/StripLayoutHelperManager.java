@@ -498,7 +498,6 @@ public class StripLayoutHelperManager
                         actionConfirmationManager,
                         modalDialogManager,
                         dataSharingTabManager,
-                        toolbarManager.getTabStripHeightSupplier().get(),
                         () ->
                                 !mTabStripObscured
                                         && getStripVisibilityState()
@@ -517,7 +516,6 @@ public class StripLayoutHelperManager
                         actionConfirmationManager,
                         modalDialogManager,
                         dataSharingTabManager,
-                        toolbarManager.getTabStripHeightSupplier().get(),
                         () ->
                                 !mTabStripObscured
                                         && getStripVisibilityState()
