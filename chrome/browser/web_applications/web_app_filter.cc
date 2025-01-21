@@ -35,6 +35,13 @@ WebAppFilter WebAppFilter::IsIsolatedApp() {
 }
 
 // static
+WebAppFilter WebAppFilter::IsCraftedApp() {
+  WebAppFilter filter;
+  filter.is_crafted_app_ = true;
+  return filter;
+}
+
+// static
 WebAppFilter WebAppFilter::DisplaysBadgeOnOs() {
   WebAppFilter filter;
   filter.displays_badge_on_os_ = true;

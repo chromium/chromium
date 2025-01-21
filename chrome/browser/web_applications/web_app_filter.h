@@ -20,6 +20,8 @@ class WebAppFilter {
   static WebAppFilter CapturesLinksInScope();
   // Only consider isolated web apps.
   static WebAppFilter IsIsolatedApp();
+  // Only consider crafted web apps (not DIY apps).
+  static WebAppFilter IsCraftedApp();
   // Only consider web apps that support app badging via the OS.
   static WebAppFilter DisplaysBadgeOnOs();
   // Only consider web apps that support OS notifications.
@@ -47,6 +49,7 @@ class WebAppFilter {
   bool opens_in_dedicated_window_ = false;
   bool captures_links_in_scope_ = false;
   bool is_isolated_app_ = false;
+  bool is_crafted_app_ = false;
   bool displays_badge_on_os_ = false;
   bool supports_os_notifications_ = false;
   bool installed_in_chrome_ = false;

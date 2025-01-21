@@ -787,6 +787,10 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
     return IsIsolated(app_id);
   }
 
+  if (filter.is_crafted_app_) {
+    return !IsDiyApp(app_id);
+  }
+
   if (filter.displays_badge_on_os_ || filter.supports_os_notifications_) {
     return install_state == proto::INSTALLED_WITH_OS_INTEGRATION;
   }
@@ -862,14 +866,6 @@ std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
   for (const webapps::AppId& app_id :
        GetAppIdsForAppSet(GetAppsIncludingStubs())) {
     if (!IsInstallState(app_id, states)) {
-      continue;
-    }
-    if (!options.include_open_in_browser_tab &&
-        GetAppEffectiveDisplayMode(app_id) == DisplayMode::kBrowser) {
-      continue;
-    }
-
-    if (!options.include_diy && IsDiyApp(app_id)) {
       continue;
     }
 
