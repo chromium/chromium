@@ -32844,6 +32844,19 @@
         {}
        ]
       ],
+      "border-conflict-style-107.html": [
+       "8b1c72d2bc3af7c5a7feab1d44db10c3acca1ae7",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-200px-square.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "border-dynamic-001.xht": [
        "dc73fecbfa648689495586e9baa02e7c3f480ca6",
        [
@@ -501535,7 +501548,7 @@
       ]
      ],
      "visibility-collapse-rowspan-004-dynamic.html": [
-      "e6f65c450f7cf3da4d8f745306065278f9471036",
+      "c2f1a114fb4333aaef5459989019ee6e8c858bb5",
       [
        null,
        {}
@@ -514134,6 +514147,13 @@
      ],
      "scrollWidthHeight-overflow-visible-margin-collapsing.html": [
       "322c91afc0838c17ddf9a23f2597017fa8a999fe",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scrollWidthHeight-overflow-visible-negative-margins.html": [
+      "26eb41466e4f97d408f966eb8ea116e9e0467a30",
       [
        null,
        {}
@@ -615159,7 +615179,7 @@
         ]
        ],
        "dir-auto-dynamic-changes.window.js": [
-        "26dd584869f5976678ea1b35ba1a981ebf034844",
+        "bb58548754c8ba83893a392f18f39dd46b33b20c",
         [
          "html/dom/elements/global-attributes/dir-auto-dynamic-changes.window.html",
          {
