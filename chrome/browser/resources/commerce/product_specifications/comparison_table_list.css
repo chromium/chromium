@@ -10,7 +10,7 @@
 
 :host {
   --container-padding: 8px;
-  --scrollbar-width: 6px;
+  --scrollbar-width: 5px;
   background-color: var(
       --color-product-specifications-comparison-table-list-background);
   border-radius: 12px;
@@ -19,8 +19,6 @@
   flex-direction: column;
   max-height: 100%;
   padding: var(--container-padding);
-  /* Display the scrollbar in the margins of the container. */
-  padding-inline-end: calc(var(--container-padding) - var(--scrollbar-width));
   width: var(--comparison-table-list-width);
 }
 
@@ -48,7 +46,7 @@ cr-toolbar-selection-overlay::part(clearIcon) {
 
 #edit {
   float: inline-end;
-  margin-inline-end: var(--container-padding);
+  margin-inline-end: 0;
 }
 
 #footer {
@@ -59,7 +57,6 @@ cr-toolbar-selection-overlay::part(clearIcon) {
   height: 48px;
   line-height: 16px;
   padding: var(--container-padding);
-  margin-inline-end: var(--container-padding);
   position: sticky;
 }
 
@@ -82,21 +79,23 @@ hr {
 #listContainer {
   max-height: 100%;
   overflow: scroll;
-  padding-top: 4px;
+  /* Display the scrollbar in the margins of the container. */
+  margin-inline-end: calc(-1 * var(--scrollbar-width) - 1px);
+  margin-top: 4px;
+  padding-inline-end: 1px;
   scrollbar-gutter: stable;
 }
 
 #listContainer::-webkit-scrollbar {
   background: transparent;
-  width: var(--container-padding);
   height: 0;
+  width: var(--scrollbar-width);
 }
 
 #listContainer::-webkit-scrollbar-thumb {
   background:
     var(--color-product-specifications-horizontal-carousel-scrollbar-thumb);
-  border-radius: 8px;
-  width: var(--scrollbar-width);
+  border-radius: var(--scrollbar-width);
 }
 
 #numSelected {

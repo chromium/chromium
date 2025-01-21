@@ -17,7 +17,7 @@ html {
       --table-data-unavailable-min-height));
   --column-hover-padding: 4px;
   --comparison-table-list-width: 360px;
-  --header-height: 38px;
+  --header-height: 32px;
   --header-margin-bottom: 24px;
   --summary-container-padding: 16px;
   --table-data-unavailable-min-height: 589px;
