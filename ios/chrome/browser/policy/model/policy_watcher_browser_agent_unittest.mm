@@ -92,7 +92,7 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(identity);
     AuthenticationServiceFactory::GetForProfile(profile_.get())
-        ->SignIn(identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+        ->SignIn(identity, signin_metrics::AccessPoint::kUnknown);
   }
 
   PrefService* GetLocalState() {
@@ -301,8 +301,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, UINotShownWhileSignOut) {
       FakeSystemIdentityManager::FromSystemIdentityManager(
           GetApplicationContext()->GetSystemIdentityManager());
   system_identity_manager->AddIdentity(identity);
-  authentication_service->SignIn(
-      identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service->SignIn(identity,
+                                 signin_metrics::AccessPoint::kUnknown);
   ASSERT_TRUE(authentication_service->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
 
