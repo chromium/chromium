@@ -194,8 +194,13 @@ void Address::GetSupportedTypes(FieldTypeSet* supported_types) const {
   GetRoot().GetSupportedTypes(supported_types);
 }
 
-std::u16string Address::GetInfoImpl(const AutofillType& type,
-                                    const std::string& locale) const {
+std::u16string Address::GetInfo(FieldType type,
+                                const std::string& app_locale) const {
+  return GetInfo(AutofillType(type), app_locale);
+}
+
+std::u16string Address::GetInfo(const AutofillType& type,
+                                const std::string& locale) const {
   std::string country_code =
       base::UTF16ToUTF8(GetRoot().GetValueForType(ADDRESS_HOME_COUNTRY));
 

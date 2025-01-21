@@ -500,6 +500,16 @@ bool Iban::SetMetadata(const PaymentsMetadata& metadata) {
   return true;
 }
 
+std::u16string Iban::GetInfo(FieldType type,
+                             const std::string& app_locale) const {
+  return GetRawInfo(type);
+}
+
+std::u16string Iban::GetInfo(const AutofillType& type,
+                             const std::string& app_locale) const {
+  return GetRawInfo(type.GetStorableType());
+}
+
 std::u16string Iban::GetRawInfo(FieldType type) const {
   if (type == IBAN_VALUE) {
     return value_;

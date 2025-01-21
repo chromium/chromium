@@ -1124,10 +1124,9 @@ void CreditCard::GetSupportedTypes(FieldTypeSet* supported_types) const {
   supported_types->insert(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
 }
 
-std::u16string CreditCard::GetInfoImpl(const AutofillType& type,
-                                       const std::string& app_locale) const {
-  FieldType storable_type = type.GetStorableType();
-  if (storable_type == CREDIT_CARD_NUMBER) {
+std::u16string CreditCard::GetInfo(FieldType type,
+                                   const std::string& app_locale) const {
+  if (type == CREDIT_CARD_NUMBER) {
     // Web pages should never actually be filled by a masked server card,
     // but this function is used at the preview stage.
     if (record_type() == RecordType::kMaskedServerCard) {
@@ -1135,7 +1134,12 @@ std::u16string CreditCard::GetInfoImpl(const AutofillType& type,
     }
     return StripCardNumberSeparators(number_);
   }
-  return GetRawInfo(storable_type);
+  return GetRawInfo(type);
+}
+
+std::u16string CreditCard::GetInfo(const AutofillType& type,
+                                   const std::string& app_locale) const {
+  return GetInfo(type.GetStorableType(), app_locale);
 }
 
 bool CreditCard::SetInfoWithVerificationStatusImpl(

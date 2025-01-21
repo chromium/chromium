@@ -29,6 +29,10 @@ class Address : public FormGroup {
   bool operator==(const Address& other) const;
 
   // FormGroup:
+  std::u16string GetInfo(FieldType type,
+                         const std::string& app_locale) const override;
+  std::u16string GetInfo(const AutofillType& type,
+                         const std::string& app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
   void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
@@ -83,8 +87,6 @@ class Address : public FormGroup {
  private:
   // FormGroup:
   void GetSupportedTypes(FieldTypeSet* supported_types) const override;
-  std::u16string GetInfoImpl(const AutofillType& type,
-                             const std::string& locale) const override;
   bool SetInfoWithVerificationStatusImpl(const AutofillType& type,
                                          const std::u16string& value,
                                          const std::string& locale,

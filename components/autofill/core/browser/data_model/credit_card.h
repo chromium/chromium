@@ -217,6 +217,10 @@ class CreditCard : public FormGroup {
       const std::string& app_locale,
       FieldTypeSet* matching_types,
       PossibleProfileValueSources* profile_value_sources) const override;
+  std::u16string GetInfo(FieldType type,
+                         const std::string& app_locale) const override;
+  std::u16string GetInfo(const AutofillType& type,
+                         const std::string& app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
   void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
@@ -530,8 +534,6 @@ class CreditCard : public FormGroup {
 
   // FormGroup:
   void GetSupportedTypes(FieldTypeSet* supported_types) const override;
-  std::u16string GetInfoImpl(const AutofillType& type,
-                             const std::string& app_locale) const override;
   bool SetInfoWithVerificationStatusImpl(const AutofillType& type,
                                          const std::u16string& value,
                                          const std::string& app_locale,

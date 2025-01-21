@@ -65,9 +65,10 @@ class FormGroup {
   // Returns the string that should be auto-filled into a text field given the
   // type of that field, localized to the given |app_locale| if appropriate.
   // TODO(crbug.com/40264633): Remove the `AutofillType` version.
-  std::u16string GetInfo(FieldType type, const std::string& app_locale) const;
-  std::u16string GetInfo(const AutofillType& type,
-                         const std::string& app_locale) const;
+  virtual std::u16string GetInfo(FieldType type,
+                                 const std::string& app_locale) const = 0;
+  virtual std::u16string GetInfo(const AutofillType& type,
+                                 const std::string& app_locale) const = 0;
 
   // Returns the verification status associated with the type.
   // Returns kNoStatus if the type does not support a verification status.
@@ -116,12 +117,6 @@ class FormGroup {
   // Returns a set of server field types for which this FormGroup can store
   // data. This method is additive on |supported_types|.
   virtual void GetSupportedTypes(FieldTypeSet* supported_types) const = 0;
-
-  // Returns the string that should be auto-filled into a text field given the
-  // type of that field, localized to the given |app_locale| if appropriate.
-  // TODO(crbug.com/40264633): Pass `FieldType` instead of `AutofillType`.
-  virtual std::u16string GetInfoImpl(const AutofillType& type,
-                                     const std::string& app_locale) const;
 
   // Used to populate this FormGroup object with data. Canonicalizes the data
   // according to the specified |app_locale| prior to storing, if appropriate.

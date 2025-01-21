@@ -118,6 +118,11 @@ class AutofillProfile : public FormGroup {
       FieldTypeSet* matching_types,
       PossibleProfileValueSources* profile_value_sources) const override;
 
+  std::u16string GetInfo(FieldType type,
+                         const std::string& app_locale) const override;
+  std::u16string GetInfo(const AutofillType& type,
+                         const std::string& app_locale) const override;
+
   std::u16string GetRawInfo(FieldType type) const override;
 
   void SetRawInfoWithVerificationStatus(FieldType type,
@@ -347,9 +352,6 @@ class AutofillProfile : public FormGroup {
   friend class AutofillProfileTestApi;
 
   // FormGroup:
-  std::u16string GetInfoImpl(const AutofillType& type,
-                             const std::string& app_locale) const override;
-
   VerificationStatus GetVerificationStatusImpl(
       const FieldType type) const override;
 
