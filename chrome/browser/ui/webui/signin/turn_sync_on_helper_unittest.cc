@@ -90,7 +90,7 @@ const char kEnterpriseHostedDomain[] = "managed.com";
 const char kUserAffiliationId[] = "user-affiliation-id";
 
 const signin_metrics::AccessPoint kAccessPoint =
-    signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER;
+    signin_metrics::AccessPoint::kBookmarkManager;
 const signin_metrics::PromoAction kSigninPromoAction =
     signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT;
 
@@ -1288,14 +1288,13 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountNewProfile) {
   EXPECT_FALSE(created_entry->IsOmitted());
   EXPECT_FALSE(created_entry->IsEphemeral());
   CheckDelegateCalls();
-  CheckSigninMetrics({
-      .sign_in_access_point =
-          switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-              ? signin_metrics::AccessPoint::
-                    ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE
-              : kAccessPoint,
-      .sign_in_recorded = true,
-      .sync_opt_in_started = true});
+  CheckSigninMetrics(
+      {.sign_in_access_point =
+           switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+               ? signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience
+               : kAccessPoint,
+       .sign_in_recorded = true,
+       .sync_opt_in_started = true});
 }
 
 // Abort after the enterprise confirmation prompt.
@@ -1371,14 +1370,13 @@ TEST_F(TurnSyncOnHelperTest, EnterpriseConfirmationNewProfile) {
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
   CheckDelegateCalls();
-  CheckSigninMetrics({
-      .sign_in_access_point =
-          switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-              ? signin_metrics::AccessPoint::
-                    ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE
-              : kAccessPoint,
-      .sign_in_recorded = true,
-      .sync_opt_in_started = true});
+  CheckSigninMetrics(
+      {.sign_in_access_point =
+           switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+               ? signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience
+               : kAccessPoint,
+       .sign_in_recorded = true,
+       .sync_opt_in_started = true});
 }
 
 // Wait for cloud policy to be merged before showing sync confirmation.
@@ -1435,11 +1433,10 @@ TEST_F(TurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
   UseEnterpriseAccount();
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       account_id(), signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+      signin_metrics::AccessPoint::kWebSignin);
 
   CheckSigninMetrics(
-      {.sign_in_access_point =
-           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN});
+      {.sign_in_access_point = signin_metrics::AccessPoint::kWebSignin});
 
   // Signin flow.
   ProfileWaiter profile_waiter;
@@ -1467,19 +1464,18 @@ TEST_F(TurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
   EXPECT_EQ(signin::ConsentLevel::kSignin,
             signin::GetPrimaryAccountConsentLevel(new_identity_manager));
   CheckDelegateCalls();
-  CheckSigninMetrics({
-      .sign_in_access_point =
-          switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-              ? signin_metrics::AccessPoint::
-                    ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE
-              : kAccessPoint,
-      .sign_in_recorded = true,
-      .sync_opt_in_started = true,
-      .profile_signout =
-          switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-              ? std::optional<signin_metrics::ProfileSignout>(
-                    signin_metrics::ProfileSignout::kMovePrimaryAccount)
-              : std::nullopt});
+  CheckSigninMetrics(
+      {.sign_in_access_point =
+           switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+               ? signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience
+               : kAccessPoint,
+       .sign_in_recorded = true,
+       .sync_opt_in_started = true,
+       .profile_signout =
+           switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+               ? std::optional<signin_metrics::ProfileSignout>(
+                     signin_metrics::ProfileSignout::kMovePrimaryAccount)
+               : std::nullopt});
 }
 
 // Test that the unconsented primary account is removed is not forced to have a
@@ -1500,11 +1496,10 @@ TEST_F(TurnSyncOnHelperTest,
   UseEnterpriseAccount();
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       account_id(), signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+      signin_metrics::AccessPoint::kWebSignin);
 
   CheckSigninMetrics(
-      {.sign_in_access_point =
-           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN});
+      {.sign_in_access_point = signin_metrics::AccessPoint::kWebSignin});
 
   // Signin flow.
   ProfileWaiter profile_waiter;
@@ -1538,11 +1533,10 @@ TEST_F(TurnSyncOnHelperTest,
   SetIsProfileCreationRequiredByPolicy(true);
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       account_id(), signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+      signin_metrics::AccessPoint::kWebSignin);
 
   CheckSigninMetrics(
-      {.sign_in_access_point =
-           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN});
+      {.sign_in_access_point = signin_metrics::AccessPoint::kWebSignin});
 
   // Signin flow.
   ProfileWaiter profile_waiter;
@@ -1572,11 +1566,10 @@ TEST_F(TurnSyncOnHelperTest, SearchEngineImportedToNewProfile) {
   UseEnterpriseAccount();
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       account_id(), signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+      signin_metrics::AccessPoint::kWebSignin);
 
   CheckSigninMetrics(
-      {.sign_in_access_point =
-           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN});
+      {.sign_in_access_point = signin_metrics::AccessPoint::kWebSignin});
 
   // Set some search engine in the source profile.
   const char kCustomSearchEngineDomain[] = "bar.com";
@@ -1648,10 +1641,9 @@ TEST_F(TurnSyncOnHelperTest, SignedInAccountUndoSyncRemoveAccount) {
   UseEnterpriseAccount();
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       account_id(), signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+      signin_metrics::AccessPoint::kWebSignin);
   CheckSigninMetrics(
-      {.sign_in_access_point =
-           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN});
+      {.sign_in_access_point = signin_metrics::AccessPoint::kWebSignin});
 
   // Signin flow.
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);

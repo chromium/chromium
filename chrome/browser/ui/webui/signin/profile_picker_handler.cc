@@ -571,7 +571,7 @@ void ProfilePickerHandler::OnProfileCreationFinished(
 void ProfilePickerHandler::HandleRecordSignInPromoImpression(
     const base::Value::List& /*args*/) {
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
-      signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER);
+      signin_metrics::AccessPoint::kUserManager);
 }
 
 void ProfilePickerHandler::HandleSetProfileName(const base::Value::List& args) {
