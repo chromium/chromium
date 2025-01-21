@@ -732,6 +732,7 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/382122726")
     public void testBottomBar_withTint() {
         final int numItems = 3;
         final Bitmap expectedIcon = createTestBitmap(48, 24);
