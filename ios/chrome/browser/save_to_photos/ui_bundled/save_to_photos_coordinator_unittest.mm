@@ -432,8 +432,7 @@ TEST_F(SaveToPhotosCoordinatorTest, ShowsAddAccount) {
                 EXPECT_EQ(AuthenticationOperation::kAddAccount,
                           command.operation);
                 EXPECT_FALSE(command.identity);
-                EXPECT_EQ(signin_metrics::AccessPoint::
-                              ACCESS_POINT_SAVE_TO_PHOTOS_IOS,
+                EXPECT_EQ(signin_metrics::AccessPoint::kSaveToPhotosIOS,
                           command.accessPoint);
                 EXPECT_EQ(
                     signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
