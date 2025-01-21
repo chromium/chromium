@@ -321,17 +321,17 @@ inline bool ShapeRange(hb_buffer_t* buffer,
                        hb_direction_t direction,
                        hb_language_t language,
                        float specified_size) {
-  const FontPlatformData* platform_data = &(current_font->PlatformData());
-  HarfBuzzFace* face = platform_data->GetHarfBuzzFace();
+  const FontPlatformData& platform_data = current_font->PlatformData();
+  HarfBuzzFace* face = platform_data.GetHarfBuzzFace();
   if (!face) {
     DLOG(ERROR) << "Could not create HarfBuzzFace from FontPlatformData.";
     return false;
   }
 
   FontFeatures variant_features;
-  if (!platform_data->ResolvedFeatures().empty()) {
+  if (!platform_data.ResolvedFeatures().empty()) {
     const ResolvedFontFeatures& resolved_features =
-        platform_data->ResolvedFeatures();
+        platform_data.ResolvedFeatures();
     for (const std::pair<uint32_t, uint32_t>& feature : resolved_features) {
       variant_features.Append({{feature.first, feature.second},
                                0 /* start */,
