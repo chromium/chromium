@@ -126,6 +126,8 @@ class AttributionSrcBrowserTest : public ContentBrowserTest,
     auto data_host_manager =
         std::make_unique<AttributionDataHostManagerImpl>(mock_manager.get());
     mock_manager->SetDataHostManager(std::move(data_host_manager));
+    EXPECT_CALL(*mock_manager, UpdateLastNavigationTime)
+        .Times(testing::AnyNumber());
     static_cast<StoragePartitionImpl*>(
         web_contents()->GetBrowserContext()->GetDefaultStoragePartition())
         ->OverrideAttributionManagerForTesting(std::move(mock_manager));

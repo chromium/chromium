@@ -1066,28 +1066,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.RegistrationProcessed.TimeSinceLastRegistration"
-    units="ms" expires_after="2025-06-22">
-  <owner>tquintanilla@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the amount of time passed between the last received registration and
-    a new incoming registration. Recorded when a valid header with at least one
-    registration is received.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.RegistrationProcessed.TimeSinceManagerStartup"
-    units="ms" expires_after="2025-06-22">
-  <owner>tquintanilla@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the amount of time passed the initialization of AttributionManager
-    and the first incoming registration within the session. Recorded when a
-    valid header with at least one registration is received.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.RegistrationsPerRedirectChain"
     units="registrations" expires_after="2025-06-08">
   <owner>linnan@chromium.org</owner>
@@ -1388,6 +1366,37 @@ chromium-metrics-reviews@google.com.
     Warning: this histogram was expired from 2024-07-15 to 2024-09-10; data may
     be missing.
   </summary>
+</histogram>
+
+<histogram
+    name="Conversions.TimeFromLastNavigationToDelivery_Failed.{ReportType}"
+    units="ms" expires_after="2025-06-22">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the time difference between a report failing to send (including any
+    retries) and the last navigation recorded from the user. Fires on successful
+    report delivery.
+  </summary>
+  <token key="ReportType">
+    <variant name="AggregatableReport"/>
+    <variant name="EventLevelReport"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Conversions.TimeFromLastNavigationToDelivery_Succeeded.{ReportType}"
+    units="ms" expires_after="2025-06-22">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the time difference between a report successfully sending and the
+    last navigation recorded from the user. Fires on successful report delivery.
+  </summary>
+  <token key="ReportType">
+    <variant name="AggregatableReport"/>
+    <variant name="EventLevelReport"/>
+  </token>
 </histogram>
 
 <histogram name="Conversions.TimeFromTriggerToReportSentSuccessfully"
