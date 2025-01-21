@@ -125,8 +125,8 @@ class SharingStatusMediatorTest : public PlatformTest {
 };
 
 TEST_F(SharingStatusMediatorTest, NotifiesSignedInConsumerAboutTheirAvatar) {
-  GetAuthenticationService()->SignIn(
-      fake_identity(), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  GetAuthenticationService()->SignIn(fake_identity(),
+                                     signin_metrics::AccessPoint::kUnknown);
 
   auto* consumer = [[FakeSharingStatusConsumer alloc] init];
   auto* mediator = [[SharingStatusMediator alloc]
