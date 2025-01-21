@@ -36,9 +36,17 @@ std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
 ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(
     const LcppStat& data);
 
+// Converts LcpElementLocatorStat to a list of LcpElementLocator with confidence
+// value. The returned LCP element locators are ordered by descending confidence
+// (the most confident one comes first). If there is no data, it returns an
+// empty vector.
+std::vector<std::pair<double, std::string>>
+ConvertLcpElementLocatorStatToLcpElementLocatorsWithConfidence(
+    const predictors::LcpElementLocatorStat& stat);
+
 // Returns LCP element locators in the past loads for a given `stat` that have
 // above `confidence_threshold`.  The returned LCP element locators are ordered
-// by descending frequency (the most frequent one comes first). If there is no
+// by descending confidence (the most confident one comes first). If there is no
 // data, it returns an empty vector.
 std::vector<std::string> PredictLcpElementLocators(
     const predictors::LcpElementLocatorStat& stat,

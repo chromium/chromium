@@ -703,13 +703,9 @@ ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(
   return std::nullopt;
 }
 
-std::vector<std::string> PredictLcpElementLocators(
-    const predictors::LcpElementLocatorStat& stat,
-    const double confidence_threshold) {
-  // We do not use `ConvertToFrequencyStringPair` for the following code
-  // because the core part of the code is converting `std::map` to
-  // `std::vector<std::pair<double, std::string>>`, which we need the different
-  // logic due to the `bytes` protobuf type.
+std::vector<std::pair<double, std::string>>
+ConvertLcpElementLocatorStatToLcpElementLocatorsWithConfidence(
+    const predictors::LcpElementLocatorStat& stat) {
   const auto& buckets = stat.lcp_element_locator_buckets();
   double sum_of_frequency = 0.0;
   for (const auto& bucket : buckets) {
@@ -720,22 +716,34 @@ std::vector<std::string> PredictLcpElementLocators(
       lcp_element_locators_with_confidence;
   lcp_element_locators_with_confidence.reserve(buckets.size());
   for (const auto& bucket : buckets) {
-    double confidence = bucket.frequency() / sum_of_frequency;
-    if (confidence < confidence_threshold) {
-      continue;
-    }
     lcp_element_locators_with_confidence.emplace_back(
-        confidence, bucket.lcp_element_locator());
+        /*confidence=*/bucket.frequency() / sum_of_frequency,
+        bucket.lcp_element_locator());
   }
-
   // Makes higher confidence goes first by `rbegin` and `rend`.
   std::sort(lcp_element_locators_with_confidence.rbegin(),
             lcp_element_locators_with_confidence.rend());
+  return lcp_element_locators_with_confidence;
+}
 
+std::vector<std::string> PredictLcpElementLocators(
+    const predictors::LcpElementLocatorStat& stat,
+    const double confidence_threshold) {
+  // We do not use `ConvertToFrequencyStringPair` for the following code
+  // because the core part of the code is converting `std::map` to
+  // `std::vector<std::pair<double, std::string>>`, which we need the different
+  // logic due to the `bytes` protobuf type.
+  std::vector<std::pair<double, std::string>>
+      lcp_element_locators_with_confidence =
+          ConvertLcpElementLocatorStatToLcpElementLocatorsWithConfidence(stat);
   std::vector<std::string> lcp_element_locators;
   lcp_element_locators.reserve(lcp_element_locators_with_confidence.size());
-  for (auto& bucket : lcp_element_locators_with_confidence) {
-    lcp_element_locators.push_back(std::move(bucket.second));
+  for (auto& [confidence, lcp_element_locator] :
+       lcp_element_locators_with_confidence) {
+    if (confidence < confidence_threshold) {
+      break;
+    }
+    lcp_element_locators.push_back(std::move(lcp_element_locator));
   }
   return lcp_element_locators;
 }
