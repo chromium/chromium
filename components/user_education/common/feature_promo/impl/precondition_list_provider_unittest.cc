@@ -61,14 +61,17 @@ TEST(PreconditionListProviderTest,
   // Check that the composing provider calls the inner provider and returns the
   // correct result.
   inner.SetExpectedPromoForNextQuery(spec);
-  auto result = provider.GetPreconditions(spec, params).CheckPreconditions();
+  FeaturePromoPrecondition::ComputedData data;
+  auto result =
+      provider.GetPreconditions(spec, params).CheckPreconditions(data);
   EXPECT_EQ(kFailure2, result.result());
   EXPECT_EQ(kPrecond2, result.failed_precondition());
 
   // Modify the inner provider so all its preconditions pass and try again.
   inner.SetDefault(kPrecond2, FeaturePromoResult::Success());
   inner.SetExpectedPromoForNextQuery(spec);
-  result = provider.GetPreconditions(spec, params).CheckPreconditions();
+  FeaturePromoPrecondition::ComputedData data2;
+  result = provider.GetPreconditions(spec, params).CheckPreconditions(data2);
   EXPECT_EQ(FeaturePromoResult::Success(), result.result());
 }
 
@@ -98,7 +101,9 @@ TEST(PreconditionListProviderTest,
   // correct results.
   inner.SetExpectedPromoForNextQuery(spec);
   inner2.SetExpectedPromoForNextQuery(spec);
-  auto result = provider.GetPreconditions(spec, params).CheckPreconditions();
+  FeaturePromoPrecondition::ComputedData data;
+  auto result =
+      provider.GetPreconditions(spec, params).CheckPreconditions(data);
   EXPECT_EQ(kFailure2, result.failure());
   EXPECT_EQ(kPrecond2, result.failed_precondition());
 
@@ -107,7 +112,8 @@ TEST(PreconditionListProviderTest,
   inner.SetDefault(kPrecond2, FeaturePromoResult::Success());
   inner.SetExpectedPromoForNextQuery(spec);
   inner2.SetExpectedPromoForNextQuery(spec);
-  result = provider.GetPreconditions(spec, params).CheckPreconditions();
+  FeaturePromoPrecondition::ComputedData data2;
+  result = provider.GetPreconditions(spec, params).CheckPreconditions(data2);
   EXPECT_EQ(kFailure3, result.failure());
   EXPECT_EQ(kPrecond3, result.failed_precondition());
 
@@ -115,7 +121,8 @@ TEST(PreconditionListProviderTest,
   inner2.SetDefault(kPrecond3, FeaturePromoResult::Success());
   inner.SetExpectedPromoForNextQuery(spec);
   inner2.SetExpectedPromoForNextQuery(spec);
-  result = provider.GetPreconditions(spec, params).CheckPreconditions();
+  FeaturePromoPrecondition::ComputedData data3;
+  result = provider.GetPreconditions(spec, params).CheckPreconditions(data3);
   EXPECT_EQ(FeaturePromoResult::Success(), result.result());
 }
 

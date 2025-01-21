@@ -39,6 +39,11 @@ class FeaturePromoPrecondition {
     ComputedData& operator=(ComputedData&&) noexcept;
     ~ComputedData();
 
+    // Free all references and empty the data. Required in cases where this
+    // object might outlive the preconditions which hold the data it references.
+    // Failing to release references will result in UAFs/raw_ref errors.
+    void release_all_references() { lookup_.clear(); }
+
     // Add data to the lookup.
     template <typename T>
     void Add(ui::TypedIdentifier<T> id,
@@ -257,6 +262,7 @@ class ForwardingFeaturePromoPrecondition : public FeaturePromoPrecondition {
 // used.
 class FeaturePromoPreconditionList {
  public:
+  using ComputedData = FeaturePromoPrecondition::ComputedData;
   using ListType = std::vector<std::unique_ptr<FeaturePromoPrecondition>>;
 
   // Represents the result of checking the precondition list.
@@ -308,7 +314,9 @@ class FeaturePromoPreconditionList {
   // Checks that all preconditions in the list are met, in order, and returns
   // either the `failure()` and `identifier()` of the first that does not pass,
   // or `FeaturePromoResult::Success()` if all preconditions pass.
-  CheckResult CheckPreconditions() const;
+  //
+  // Computed values will be read from/stored in `computed_data`.
+  CheckResult CheckPreconditions(ComputedData& computed_data) const;
 
   // Extracts cached data from all preconditions into `to_add_to`.
   void ExtractCachedData(internal::PreconditionData::Collection& to_add_to);
