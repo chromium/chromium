@@ -13,6 +13,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -222,16 +223,16 @@ void SystemMemoryPressureEvaluator::CheckMemoryPressure() {
 
 base::MemoryPressureListener::MemoryPressureLevel
 SystemMemoryPressureEvaluator::CalculateCurrentPressureLevel() {
-  // First to try to collect commit limit histograms. Otherwise, there's a
-  // chance of an early exit from this function (e.g. if
-  // `GetSystemMemoryStatus` fails), which would cause us to miss collecting the
-  // histogram data.
-  RecordCommitHistograms();
-
   MEMORYSTATUSEX mem_status = {};
-  if (!GetSystemMemoryStatus(&mem_status)) {
+  bool got_system_memory_status = GetSystemMemoryStatus(&mem_status);
+  // Report retrieval outcome before early returning on failure.
+  base::UmaHistogramBoolean("Memory.MemoryStatusRetrievalSuccess",
+                            got_system_memory_status);
+
+  if (!got_system_memory_status) {
     return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
   }
+  RecordCommitHistograms(mem_status);
 
   // How much system memory is actively available for use right now, in MBs.
   int phys_free = static_cast<int>(mem_status.ullAvailPhys / kMBBytes);
@@ -268,57 +269,32 @@ bool SystemMemoryPressureEvaluator::GetSystemMemoryStatus(
   return true;
 }
 
-void SystemMemoryPressureEvaluator::RecordCommitHistograms() {
-  PERFORMANCE_INFORMATION performance_info = {};
-  bool get_performance_info_result =
-      GetPerformanceInfoWrapper(&performance_info);
-  base::UmaHistogramBoolean("Memory.PerformanceInfoRetrievalSuccess",
-                            get_performance_info_result);
-
-  if (!get_performance_info_result) {
-    return;
-  }
+void SystemMemoryPressureEvaluator::RecordCommitHistograms(
+    const MEMORYSTATUSEX& mem_status) {
   // Calculate commit limit in MB.
-  uint64_t commit_limit_mb =
-      base::strict_cast<uint64_t>(performance_info.CommitLimit *
-                                  performance_info.PageSize) /
-      kMBBytes;
-  // Calculate amount of memory in MB currently committed by the system.
-  uint64_t commit_total_mb =
-      base::strict_cast<uint64_t>(performance_info.CommitTotal *
-                                  performance_info.PageSize) /
-      kMBBytes;
+  uint64_t commit_limit_mb = mem_status.ullTotalPageFile / kMBBytes;
 
-  // Calculate remaining commit limit in MB.
-  uint64_t remaining_limit_mb = commit_limit_mb - commit_total_mb;
+  // Calculate amount of available commit space in MB.
+  uint64_t commit_available_mb = mem_status.ullAvailPageFile / kMBBytes;
 
-  int commit_limit_int = std::clamp(static_cast<int>(commit_limit_mb), 0,
-                                    std::numeric_limits<int>::max());
-
-  int remaining_limit_int = std::clamp(static_cast<int>(remaining_limit_mb), 0,
-                                       std::numeric_limits<int>::max());
-
-  base::UmaHistogramCounts10M("Memory.CommitLimitMB", commit_limit_int);
-  base::UmaHistogramCounts10M("Memory.CommitRemainingMB", remaining_limit_int);
+  base::UmaHistogramCounts10M("Memory.CommitLimitMB",
+                              base::saturated_cast<int>(commit_limit_mb));
+  base::UmaHistogramCounts10M("Memory.CommitAvailableMB",
+                              base::saturated_cast<int>(commit_available_mb));
 
   // Calculate percentage used
   int percentage_used;
-  if (commit_limit_int == 0) {
+  if (commit_limit_mb == 0) {
     // Handle division by zero.
     percentage_used = 0;
   } else {
-    uint64_t temp_percentage = (commit_total_mb * 100) / commit_limit_mb;
-    percentage_used = base::saturated_cast<int>(temp_percentage);
+    uint64_t percentage_remaining =
+        (commit_available_mb * 100) / commit_limit_mb;
+    percentage_used = static_cast<int>(
+        percentage_remaining > 100 ? 0u : 100 - percentage_remaining);
   }
 
   base::UmaHistogramPercentage("Memory.CommitPercentageUsed", percentage_used);
-}
-
-bool SystemMemoryPressureEvaluator::GetPerformanceInfoWrapper(
-    PERFORMANCE_INFORMATION* perf_info) {
-  DCHECK(perf_info);
-
-  return GetPerformanceInfo(perf_info, sizeof(*perf_info));
 }
 
 }  // namespace win
