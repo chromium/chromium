@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <atomic>
 #include <cmath>
+#include <cstdint>
 #include <memory>
 #include <utility>
 
@@ -57,6 +58,9 @@ struct ThreadLocalData {
   bool sampling_interval_initialized = false;
 };
 
+// Returns an object storing thread-local state. This does NOT use
+// base::ThreadLocalStorage, so it's safe to call from hooks in the
+// base::ThreadLocalStorage implementation.
 ThreadLocalData* GetThreadLocalData() {
 #if USE_LOCAL_TLS_EMULATION()
   // If available, use ThreadLocalStorage to bypass dependencies introduced by
@@ -116,8 +120,7 @@ PoissonAllocationSamplerStats& PoissonAllocationSamplerStats::operator=(
 PoissonAllocationSampler::ScopedMuteThreadSamples::ScopedMuteThreadSamples() {
   ThreadLocalData* const thread_local_data = GetThreadLocalData();
 
-  DCHECK(!thread_local_data->internal_reentry_guard);
-  thread_local_data->internal_reentry_guard = true;
+  was_muted_ = std::exchange(thread_local_data->internal_reentry_guard, true);
 
   // We mute thread samples immediately after taking a sample, which is when we
   // reset g_tls_accumulated_bytes. This breaks the random sampling requirement
@@ -129,17 +132,21 @@ PoissonAllocationSampler::ScopedMuteThreadSamples::ScopedMuteThreadSamples() {
   // To counteract this, we drop g_tls_accumulated_bytes by a large, fixed
   // amount to lower the probability that a sample is taken to close to 0. Then
   // we reset it after we're done muting thread samples.
-  thread_local_data->accumulated_bytes_snapshot =
-      thread_local_data->accumulated_bytes;
-  thread_local_data->accumulated_bytes -= kAccumulatedBytesOffset;
+  if (!was_muted_) {
+    thread_local_data->accumulated_bytes_snapshot =
+        thread_local_data->accumulated_bytes;
+    thread_local_data->accumulated_bytes -= kAccumulatedBytesOffset;
+  }
 }
 
 PoissonAllocationSampler::ScopedMuteThreadSamples::~ScopedMuteThreadSamples() {
   ThreadLocalData* const thread_local_data = GetThreadLocalData();
   DCHECK(thread_local_data->internal_reentry_guard);
-  thread_local_data->internal_reentry_guard = false;
-  thread_local_data->accumulated_bytes =
-      thread_local_data->accumulated_bytes_snapshot;
+  thread_local_data->internal_reentry_guard = was_muted_;
+  if (!was_muted_) {
+    thread_local_data->accumulated_bytes =
+        thread_local_data->accumulated_bytes_snapshot;
+  }
 }
 
 // static
@@ -408,6 +415,11 @@ LockFreeAddressHashSet& PoissonAllocationSampler::sampled_addresses_set() {
 PoissonAllocationSampler* PoissonAllocationSampler::Get() {
   static NoDestructor<PoissonAllocationSampler> instance;
   return instance.get();
+}
+
+// static
+intptr_t PoissonAllocationSampler::GetAccumulatedBytesForTesting() {
+  return GetThreadLocalData()->accumulated_bytes;
 }
 
 // static
