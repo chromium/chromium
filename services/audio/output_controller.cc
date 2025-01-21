@@ -25,7 +25,6 @@
 #include "media/base/audio_timestamp_helper.h"
 #include "media/media_buildflags.h"
 #include "services/audio/device_listener_output_stream.h"
-#include "services/audio/stream_monitor.h"
 
 namespace audio {
 

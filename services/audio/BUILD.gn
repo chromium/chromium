@@ -63,7 +63,6 @@ source_set("audio") {
     "snooper_node.h",
     "stream_factory.cc",
     "stream_factory.h",
-    "stream_monitor.h",
     "sync_reader.cc",
     "sync_reader.h",
     "system_info.cc",
