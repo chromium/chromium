@@ -421,6 +421,21 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kAdScriptInStackOnMicrophoneRead,
           WebFeature::kAdScriptInStackOnCameraRead,
           WebFeature::kUpgradeInsecureRequestsUpgradedRequestBlockable,
+          WebFeature::kV8LanguageTranslator_Translate_Method,
+          WebFeature::kV8Translation_CanTranslate_Method,
+          WebFeature::kV8Translation_CreateTranslator_Method,
+          WebFeature::kV8AISummarizer_Summarize_Method,
+          WebFeature::kV8AISummarizer_SummarizeStreaming_Method,
+          WebFeature::kV8AISummarizerFactory_Create_Method,
+          WebFeature::kV8AIWriterFactory_Create_Method,
+          WebFeature::kV8AIWriter_Write_Method,
+          WebFeature::kV8AIWriter_WriteStreaming_Method,
+          WebFeature::kV8AIRewriterFactory_Create_Method,
+          WebFeature::kV8AIRewriter_Rewrite_Method,
+          WebFeature::kV8AIRewriter_RewriteStreaming_Method,
+          WebFeature::kV8AILanguageModel_Prompt_Method,
+          WebFeature::kV8AILanguageModel_PromptStreaming_Method,
+          WebFeature::kV8AILanguageModelFactory_Create_Method,
       }));
   return *opt_in_features;
 }
