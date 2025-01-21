@@ -566,8 +566,8 @@ public class AttributionOsLevelManager {
                                     currMatchBehavior,
                                     Instant.ofEpochMilli(startMs),
                                     Instant.ofEpochMilli(endMs),
-                                    originUris,
-                                    domainUris));
+                                    domainUris,
+                                    originUris));
 
             Futures.addCallback(
                     future, callback, ContextUtils.getApplicationContext().getMainExecutor());
