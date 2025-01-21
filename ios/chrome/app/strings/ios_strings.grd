@@ -5197,6 +5197,15 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SETTINGS_DOWNLOADS_SAVE_TO_PHOTOS_HEADER" desc="Header of Save to Photos settings section in Downloads settings. This should be the name of the Google branded application Google Photos. [iOS only]">
         Google Photos
       </message>
+      <message name="IDS_IOS_SETTINGS_DOWNLOADS_SECTION_HEADER" desc="Title for the heading to the auto deletion feature in the Downloads settings page.[iOS only]">
+        Manage Downloads
+      </message>
+      <message name="IDS_IOS_SETTINGS_DOWNLOADS_SWITCH_ITEM_DETAIL_TEXT" desc="Text describing the effects of enabling the auto deletion feature via the setting switch.">
+        Set your downloads to be deleted after one month.
+      </message>
+      <message name="IDS_IOS_SETTINGS_DOWNLOADS_SWITCH_ITEM_HEADER" desc="The header text for the auto deletion switch item.">
+        Auto Delete Downloads
+      </message>
       <message name="IDS_IOS_SETTINGS_DOWNLOADS_TITLE" desc="Title for the Downloads settings dialog [iOS only]" meaning="Title for the Downloads settings dialog [Length: 29em] [iOS only]">
         Downloads
       </message>
