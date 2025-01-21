@@ -730,6 +730,8 @@ CreateReportResult AttributionResolverImpl::MaybeCreateAndStoreReport(
           GetSuccessResult(*aggregatable_result)) {
     aggregatable_result = storage_.MaybeStoreAggregatableAttributionReportData(
         source_to_attribute->source,
+        trigger_registration.aggregatable_trigger_config.trigger_context_id()
+            .has_value(),
         source_to_attribute->source.remaining_aggregatable_attribution_budget(),
         source_to_attribute->num_aggregatable_attribution_reports,
         aggregatable_dedup_key,
