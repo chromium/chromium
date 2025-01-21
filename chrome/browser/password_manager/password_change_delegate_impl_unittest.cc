@@ -18,7 +18,7 @@ namespace {
 
 using testing::Return;
 
-const char kChangePasswordURL[] = "https://example.com/passsword/";
+const char kChangePasswordURL[] = "https://example.com/password/";
 const std::u16string kTestEmail = u"elisa.buckett@gmail.com";
 const std::u16string kPassword = u"cE1L45Vgxyzlu8";
 
@@ -33,11 +33,13 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
 
   std::unique_ptr<PasswordChangeDelegateImpl> CreateDelegate(
       content::WebContents* contents) {
-    return std::make_unique<PasswordChangeDelegateImpl>(
+    auto delegate = std::make_unique<PasswordChangeDelegateImpl>(
         GURL(kChangePasswordURL), kTestEmail, kPassword, web_contents(),
         base::BindRepeating([](content::WebContents* contents, const GURL&,
                                content::WebContents*) { return contents; },
                             base::Unretained(contents)));
+    delegate->Init();
+    return delegate;
   }
 
   std::unique_ptr<content::WebContents> CreateWebContents() {

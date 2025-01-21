@@ -217,8 +217,9 @@ class ManagePasswordsUIController
   }
 #endif  // defined(UNIT_TEST)
 
-  // Hides the bubble if opened. Mocked in the tests.
+  // Hides/Shows the bubble if opened. Mocked in the tests.
   virtual void HidePasswordBubble();
+  virtual void ShowChangePasswordBubble();
 
   bool IsShowingBubble() const {
     return bubble_status_ == BubbleStatus::SHOWN ||

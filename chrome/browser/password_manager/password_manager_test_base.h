@@ -30,6 +30,9 @@ class BubbleObserver {
   BubbleObserver(const BubbleObserver&) = delete;
   BubbleObserver& operator=(const BubbleObserver&) = delete;
 
+  // Checks whether bubble was displayed automatically.
+  bool IsBubbleDisplayedAutomatically() const;
+
   // Checks if the save prompt is being currently available due to either manual
   // fallback or successful login.
   bool IsSavePromptAvailable() const;

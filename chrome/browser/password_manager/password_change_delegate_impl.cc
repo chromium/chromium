@@ -9,6 +9,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -136,6 +137,33 @@ std::u16string GeneratePassword(
       autofill::CalculateFieldSignatureForField(*iter), iter->max_length());
 }
 
+bool IsActive(base::WeakPtr<content::WebContents> web_contents) {
+  if (!web_contents) {
+    return false;
+  }
+#if !BUILDFLAG(IS_ANDROID)
+  // Can be null in unit tests.
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents.get());
+  return tab ? tab->IsActivated() : false;
+#else
+  return false;
+#endif
+}
+
+void DisplayChangePasswordBubbleAutomatically(
+    base::WeakPtr<content::WebContents> original_tab,
+    base::WeakPtr<content::WebContents> tab_with_password_change) {
+  content::WebContents* contents = IsActive(original_tab) ? original_tab.get()
+                                   : IsActive(tab_with_password_change)
+                                       ? tab_with_password_change.get()
+                                       : nullptr;
+  if (contents) {
+    ManagePasswordsUIController::FromWebContents(contents)
+        ->ShowChangePasswordBubble();
+  }
+}
+
 }  // namespace
 
 PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
@@ -148,17 +176,17 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
       username_(std::move(username)),
       original_password_(std::move(password)),
       originator_(originator->GetWeakPtr()),
-      open_password_change_tab_callback_(std::move(callback)) {
-  UpdateState(IsPrivacyNoticeAcknowledged()
-                  ? PasswordChangeDelegate::State::kWaitingForChangePasswordForm
-                  : PasswordChangeDelegate::State::kWaitingForAgreement);
-  if (GetCurrentState() ==
-      PasswordChangeDelegate::State::kWaitingForChangePasswordForm) {
-    StartPasswordChange();
-  }
-}
+      open_password_change_tab_callback_(std::move(callback)) {}
 
 PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() = default;
+
+void PasswordChangeDelegateImpl::Init() {
+  if (IsPrivacyNoticeAcknowledged()) {
+    StartPasswordChange();
+    return;
+  }
+  UpdateState(State::kWaitingForAgreement);
+}
 
 void PasswordChangeDelegateImpl::StartPasswordChange() {
   CHECK(originator_);
@@ -341,6 +369,18 @@ void PasswordChangeDelegateImpl::UpdateState(
     current_state_ = new_state;
     observers_.Notify(&PasswordChangeDelegate::Observer::OnStateChanged,
                       current_state_);
+
+    switch (current_state_) {
+      case State::kWaitingForChangePasswordForm:
+      case State::kChangingPassword:
+        return;
+      case State::kWaitingForAgreement:
+      case State::kChangePasswordFormNotFound:
+      case State::kPasswordSuccessfullyChanged:
+      case State::kPasswordChangeFailed:
+        DisplayChangePasswordBubbleAutomatically(originator_, executor_);
+        break;
+    }
   }
 }
 

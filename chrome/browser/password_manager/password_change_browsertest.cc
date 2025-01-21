@@ -600,3 +600,125 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OpenTabWithPasswordChange) {
   EXPECT_EQ(1, tab_strip->active_index());
 }
 #endif
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
+                       PrivacyNoticeDisplayedAutomatically) {
+  GURL main_url("https://example.com/");
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(testing::Return(embedded_test_server()->GetURL(
+          "/password/update_form_empty_fields.html")));
+
+  BubbleObserver prompt_observer(WebContents());
+  password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
+                                                 WebContents());
+
+  EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForAgreement,
+            password_change_service()
+                ->GetPasswordChangeDelegate(WebContents())
+                ->GetCurrentState());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return prompt_observer.IsBubbleDisplayedAutomatically(); }));
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
+                       SuccessfulDialogDisplayedAutomatically) {
+  SetPrivacyNoticeAcceptedPref();
+  GURL main_url("https://example.com/");
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(testing::Return(embedded_test_server()->GetURL(
+          "/password/update_form_empty_fields.html")));
+
+  BubbleObserver prompt_observer(WebContents());
+  password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
+                                                 WebContents());
+
+  MockPasswordChangeOutcome(
+      PasswordChangeOutcome::
+          PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);
+
+  auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
+  PasswordsNavigationObserver password_change_page_observer(web_contents);
+  EXPECT_TRUE(password_change_page_observer.Wait());
+
+  PasswordChangeDelegate* delegate =
+      password_change_service()->GetPasswordChangeDelegate(web_contents);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    // Keep trying to mark successful submission.
+    delegate->OnPasswordFormSubmission(web_contents);
+    return delegate->GetCurrentState() ==
+           PasswordChangeDelegate::State::kPasswordSuccessfullyChanged;
+  }));
+  // Now bubble should automatically appear.
+  EXPECT_TRUE(prompt_observer.IsBubbleDisplayedAutomatically());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
+                       FailureDialogDisplayedAutomatically) {
+  SetPrivacyNoticeAcceptedPref();
+  GURL main_url("https://example.com/");
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(testing::Return(embedded_test_server()->GetURL(
+          "/password/update_form_empty_fields.html")));
+  BubbleObserver prompt_observer(WebContents());
+
+  password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
+                                                 WebContents());
+  MockPasswordChangeOutcome(
+      PasswordChangeOutcome::
+          PasswordChangeSubmissionData_PasswordChangeOutcome_UNSUCCESSFUL_OUTCOME);
+
+  auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
+  PasswordsNavigationObserver password_change_page_observer(web_contents);
+  EXPECT_TRUE(password_change_page_observer.Wait());
+
+  PasswordChangeDelegate* delegate =
+      password_change_service()->GetPasswordChangeDelegate(WebContents());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    // Keep trying to mark successful submission.
+    delegate->OnPasswordFormSubmission(web_contents);
+    return delegate->GetCurrentState() ==
+           PasswordChangeDelegate::State::kPasswordChangeFailed;
+  }));
+  // Now bubble should automatically appear.
+  EXPECT_TRUE(prompt_observer.IsBubbleDisplayedAutomatically());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
+                       BubbleIsNotDisplayedWhenSwitchedToDifferentTab) {
+  SetPrivacyNoticeAcceptedPref();
+  GURL main_url("https://example.com/");
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(testing::Return(embedded_test_server()->GetURL(
+          "/password/update_form_empty_fields.html")));
+
+  // Open new tab.
+  OpenNewTabInBackground(browser()->AsWeakPtr(),
+                         embedded_test_server()->GetURL("/password/done.html"),
+                         nullptr);
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  BubbleObserver prompt_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  // Start password change in the old tab
+  password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
+                                                 WebContents());
+  MockPasswordChangeOutcome(
+      PasswordChangeOutcome::
+          PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);
+
+  auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(2);
+  PasswordsNavigationObserver password_change_page_observer(web_contents);
+  EXPECT_TRUE(password_change_page_observer.Wait());
+
+  PasswordChangeDelegate* delegate =
+      password_change_service()->GetPasswordChangeDelegate(web_contents);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    // Keep trying to mark successful submission.
+    delegate->OnPasswordFormSubmission(web_contents);
+    return delegate->GetCurrentState() ==
+           PasswordChangeDelegate::State::kPasswordSuccessfullyChanged;
+  }));
+  // Even after password change is finished no bubble is shown.
+  EXPECT_FALSE(prompt_observer.IsBubbleDisplayedAutomatically());
+}
