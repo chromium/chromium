@@ -768,7 +768,7 @@ BASE_FEATURE(kDeviceAuthenticatorAndroidx,
 
 BASE_FEATURE(kDrawKeyNativeEdgeToEdge,
              "DrawKeyNativeEdgeToEdge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEdgeToEdgeBottomChin,
              "EdgeToEdgeBottomChin",
@@ -784,7 +784,7 @@ BASE_FEATURE(kEdgeToEdgeSafeAreaConstraint,
 
 BASE_FEATURE(kEdgeToEdgeWebOptIn,
              "EdgeToEdgeWebOptIn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEmptyTabListAnimationKillSwitch,
              "EmptyTabListAnimationKillSwitch",

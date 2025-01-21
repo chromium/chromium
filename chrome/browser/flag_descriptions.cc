@@ -4388,7 +4388,7 @@ const char kDrawCutoutEdgeToEdgeDescription[] =
 const char kDrawKeyNativeEdgeToEdgeName[] = "DrawKeyNativeEdgeToEdge";
 const char kDrawKeyNativeEdgeToEdgeDescription[] =
     "Enables the Android feature Edge-to-Edge and forces a draw ToEdge on "
-    "select native pages.";
+    "select native pages. No effect when EdgeToEdgeBottomChin is disabled";
 
 const char kEdgeToEdgeBottomChinName[] = "EdgeToEdgeBottomChin";
 const char kEdgeToEdgeBottomChinDescription[] =
@@ -4411,7 +4411,7 @@ const char kEdgeToEdgeWebOptInName[] = "EdgeToEdgeWebOptIn";
 const char kEdgeToEdgeWebOptInDescription[] =
     "Enables Chrome to draw below the Nav Bar on websites that have explicitly "
     "opted into Edge-to-Edge. Requires DrawCutoutEdgeToEdge to also be "
-    "enabled.";
+    "enabled. No effect when EdgeToEdgeBottomChin is disabled";
 
 const char kTabClosureMethodRefactorName[] = "Tab closure method refactor";
 const char kTabClosureMethodRefactorDescription[] =
