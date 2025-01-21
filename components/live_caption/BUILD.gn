@@ -13,6 +13,8 @@ if (!is_android && !is_ios) {
       "caption_bubble_controller.h",
       "caption_bubble_session_observer.h",
       "caption_bubble_settings.h",
+      "live_caption_bubble_settings.cc",
+      "live_caption_bubble_settings.h",
       "live_caption_controller.cc",
       "live_caption_controller.h",
     ]
@@ -98,13 +100,19 @@ if (!is_android && !is_ios) {
   source_set("unit_tests") {
     testonly = true
 
-    sources = [ "greedy_text_stabilizer_unittest.cc" ]
+    sources = [
+      "greedy_text_stabilizer_unittest.cc",
+      "live_caption_bubble_settings_unittest.cc",
+    ]
 
     deps = [
       ":live_caption",
       ":live_translate",
       "//base",
       "//base/test:test_support",
+      "//components/live_caption:constants",
+      "//components/prefs",
+      "//components/prefs:test_support",
       "//media/mojo/mojom:speech_recognition",
       "//mojo/public/cpp/bindings:bindings",
       "//testing/gmock",
@@ -125,8 +133,6 @@ if (!is_android && !is_ios) {
         ":constants",
         "//ash/constants",
         "//components/pref_registry",
-        "//components/prefs",
-        "//components/prefs:test_support",
         "//components/soda",
         "//components/soda:constants",
         "//ui/views",
