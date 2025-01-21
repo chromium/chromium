@@ -328,9 +328,12 @@ void PaintLayerStackingNode::CollectLayers(PaintLayer& paint_layer,
   const auto& style = object.StyleRef();
 
   if (object.IsStacked()) {
-    auto& list =
-        style.EffectiveZIndex() >= 0 ? pos_z_order_list_ : neg_z_order_list_;
-    list.push_back(paint_layer);
+    if (!RuntimeEnabledFeatures::PaintLayerUpdateOptimizationsEnabled() ||
+        paint_layer.IsZOrderListVisible()) {
+      auto& list =
+          style.EffectiveZIndex() >= 0 ? pos_z_order_list_ : neg_z_order_list_;
+      list.push_back(paint_layer);
+    }
   }
 
   if (object.IsStackingContext())

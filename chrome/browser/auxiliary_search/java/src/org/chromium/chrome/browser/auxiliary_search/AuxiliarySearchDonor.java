@@ -64,6 +64,7 @@ public class AuxiliarySearchDonor {
     }
 
     @VisibleForTesting static final String SCHEMA = "builtin:GlobalSearchApplicationInfo";
+    @VisibleForTesting static final String SCHEMA_WEBPAGE = "builtin:WebPage";
 
     private static final String TAG = "AuxiliarySearchDonor";
     private static final String TAB_PREFIX = "Tab-";
@@ -582,6 +583,7 @@ public class AuxiliarySearchDonor {
      *
      * @param callback The callback to be called after the query is completed.
      */
+    @SuppressLint("CheckResult")
     private void searchConsumerSchema(@NonNull Callback<Boolean> callback) {
         String supportedPackageName =
                 AuxiliarySearchControllerFactory.getInstance().getSupportedPackageName();
@@ -595,39 +597,38 @@ public class AuxiliarySearchDonor {
                         .addFilterSchemas(SCHEMA)
                         .addFilterPackageNames(supportedPackageName)
                         .build();
-        ListenableFuture<SearchResults> searchFutureCallback =
-                Futures.transform(
-                        mGlobalSearchSession,
-                        session -> session.search("", searchSpec),
-                        UI_THREAD_EXECUTOR);
 
-        addRequestCallback(
-                searchFutureCallback,
-                (searchResults) -> {
-                    // Returns whether document is found for the given schema.
-                    iterateSearchResults(searchResults, callback);
-                },
+        Futures.transformAsync(
+                mGlobalSearchSession,
+                session ->
+                        processSearchResults(
+                                session.search(/* queryExpression= */ "", searchSpec), callback),
                 AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    @SuppressWarnings({"CheckResult"})
-    private void iterateSearchResults(
+    private ListenableFuture<Void> processSearchResults(
             @NonNull SearchResults searchResults, @NonNull Callback<Boolean> callback) {
-        Futures.transform(
+        if (sSkipInitializationForTesting) {
+            callback.onResult(false);
+            return Futures.immediateVoidFuture();
+        }
+
+        return Futures.transformAsync(
                 searchResults.getNextPageAsync(),
-                page -> {
-                    onGetNextPage(page, callback);
-                    return null;
-                },
+                page -> iterateSearchResults(searchResults, page, callback),
                 AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @VisibleForTesting
     @SuppressWarnings({"UnsafeOptInUsageError", "RequiresFeature"})
-    void onGetNextPage(@Nullable List<SearchResult> page, @NonNull Callback<Boolean> callback) {
-        if (page == null || page.isEmpty()) {
+    ListenableFuture<Void> iterateSearchResults(
+            @NonNull SearchResults searchResults,
+            @NonNull List<SearchResult> page,
+            @NonNull Callback<Boolean> callback) {
+        if (page.isEmpty()) {
+            searchResults.close();
             callback.onResult(false);
-            return;
+            return Futures.immediateVoidFuture();
         }
 
         for (int i = 0; i < page.size(); i++) {
@@ -636,15 +637,18 @@ public class AuxiliarySearchDonor {
                 GlobalSearchApplicationInfo info =
                         genericDocument.toDocumentClass(GlobalSearchApplicationInfo.class);
                 if (info.getApplicationType()
-                        == GlobalSearchApplicationInfo.APPLICATION_TYPE_CONSUMER) {
+                                == GlobalSearchApplicationInfo.APPLICATION_TYPE_CONSUMER
+                        && info.getSchemaTypes().contains(SCHEMA_WEBPAGE)) {
                     callback.onResult(true);
-                    return;
+                    searchResults.close();
+                    return Futures.immediateVoidFuture();
                 }
             } catch (AppSearchException e) {
                 Log.i(TAG, "Failed to convert GenericDocument to" + " GlobalSearchApplicationInfo");
             }
         }
-        callback.onResult(false);
+
+        return processSearchResults(searchResults, callback);
     }
 
     @SuppressLint("CheckResult")

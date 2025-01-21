@@ -25,11 +25,7 @@
   ],
 
   'linux': [
-    # These contain logs with timestamps in them. It's part of a test that
-    # just happens to partially run during compile.
-    'gen/build/private_code_test/private_code_failure_test.json',
-    'gen/chrome/chrome_private_code_test.json',
-   ],
+  ],
 
   'linux_component': [
     # https://crbug.com/40271942

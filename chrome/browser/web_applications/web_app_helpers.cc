@@ -175,16 +175,11 @@ std::optional<webapps::AppId> FindInstalledAppWithUrlInScope(Profile* profile,
                                                              const GURL& url,
                                                              bool window_only) {
   auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
-  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   return provider
              ? provider->registrar_unsafe().FindBestAppWithUrlInScope(
-                   url,
-                   {
-                       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                   },
-                   {.include_open_in_browser_tab = !window_only})
+                   url, window_only
+                            ? web_app::WebAppFilter::OpensInDedicatedWindow()
+                            : web_app::WebAppFilter::InstalledInChrome())
              : std::nullopt;
 }
 

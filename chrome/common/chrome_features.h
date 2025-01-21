@@ -221,6 +221,8 @@ extern const base::FeatureParam<bool> kTabstripComboButtonHasReverseButtonOrder;
 COMPONENT_EXPORT(CHROME_FEATURES)
 bool HasTabstripComboButtonWithReverseButtonOrder();
 
+COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicWarming);
+
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacyGuideForceAvailable);
 

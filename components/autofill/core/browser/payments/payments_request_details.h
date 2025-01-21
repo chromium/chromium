@@ -455,10 +455,10 @@ struct GetBnplPaymentInstrumentForFetchingVcnRequestDetails {
 
   // The number for the Google Payments account this request is sent to.
   int64_t billing_customer_number;
-  // The fingerprint data for the user and the device.
-  std::string_view risk_data;
   // The instrument ID is used by the server to identify a specific BNPL issuer.
   std::string_view instrument_id;
+  // The fingerprint data for the user and the device.
+  std::string_view risk_data;
   // An opaque token used to chain consecutive payments requests together.
   // Client should not update or modify this token.
   std::string_view context_token;

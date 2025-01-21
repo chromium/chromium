@@ -188,6 +188,7 @@ void GlicWindowController::WebClientInitializeFailed() {
 }
 
 void GlicWindowController::LoginPageCommitted() {
+  login_page_committed_ = true;
   if (will_show_ && !web_client_) {
     // TODO(crbug.com/388328847): Temporarily allow showing the UI when a login
     // page is reached.
@@ -269,6 +270,10 @@ void GlicWindowController::Show(views::View* glic_button_view) {
   // for the web client to initialize.
   if (web_client_) {
     ShowPhase2();
+  } else if (login_page_committed_) {
+    // This indicates that we've warmed the web client and it has hit a login
+    // page. See LoginPageCommitted.
+    ShowFinish();
   }
 }
 
@@ -291,6 +296,7 @@ void GlicWindowController::ShowPhase2() {
 
 void GlicWindowController::ShowFinish() {
   will_show_ = false;
+  login_page_committed_ = false;
   if (!glic_window_widget_ || glic_window_widget_->IsVisible()) {
     return;
   }
@@ -691,6 +697,16 @@ GlicWindowController::AddWindowActivationChangedCallback(
 
 void GlicWindowController::NotifyWindowActivationChanged(bool active) {
   window_activation_callback_list_.Notify(active);
+}
+
+void GlicWindowController::Preload() {
+  if (!contents_) {
+    contents_ = std::make_unique<ContentsAndProfileKeepAlive>(profile_, this);
+  }
+}
+
+bool GlicWindowController::IsWarmed() {
+  return !!contents_;
 }
 
 base::WeakPtr<GlicWindowController> GlicWindowController::GetWeakPtr() {

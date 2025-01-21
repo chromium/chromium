@@ -18,8 +18,10 @@ import static org.mockito.Mockito.when;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 
+import androidx.annotation.NonNull;
 import androidx.appsearch.app.AppSearchSession;
 import androidx.appsearch.app.SearchResult;
+import androidx.appsearch.app.SearchResults;
 import androidx.appsearch.app.SetSchemaResponse;
 import androidx.appsearch.app.SetSchemaResponse.MigrationFailure;
 import androidx.appsearch.builtintypes.GlobalSearchApplicationInfo;
@@ -285,24 +287,35 @@ public class AuxiliarySearchDonorUnitTest {
 
     @Test
     @SmallTest
-    public void testOnGetNextPage() {
+    public void testIterateSearchResults() {
+        SearchResults searchresults = Mockito.mock(SearchResults.class);
         List<SearchResult> page = new ArrayList<>();
         assertTrue(page.isEmpty());
 
-        mAuxiliarySearchDonor.onGetNextPage(page, mCallback);
+        mAuxiliarySearchDonor.iterateSearchResults(searchresults, page, mCallback);
         verify(mCallback).onResult(eq(false));
 
         SearchResult searchResult1 =
-                createSearchResult(GlobalSearchApplicationInfo.APPLICATION_TYPE_PRODUCER);
+                createSearchResult(
+                        GlobalSearchApplicationInfo.APPLICATION_TYPE_PRODUCER,
+                        AuxiliarySearchDonor.SCHEMA_WEBPAGE);
         SearchResult searchResult2 =
-                createSearchResult(GlobalSearchApplicationInfo.APPLICATION_TYPE_CONSUMER);
+                createSearchResult(GlobalSearchApplicationInfo.APPLICATION_TYPE_CONSUMER, "Schema");
+        SearchResult searchResult3 =
+                createSearchResult(
+                        GlobalSearchApplicationInfo.APPLICATION_TYPE_CONSUMER,
+                        AuxiliarySearchDonor.SCHEMA_WEBPAGE);
 
         page.add(searchResult1);
-        mAuxiliarySearchDonor.onGetNextPage(page, mCallback);
+        mAuxiliarySearchDonor.iterateSearchResults(searchresults, page, mCallback);
         verify(mCallback, times(2)).onResult(eq(false));
 
         page.add(searchResult2);
-        mAuxiliarySearchDonor.onGetNextPage(page, mCallback);
+        mAuxiliarySearchDonor.iterateSearchResults(searchresults, page, mCallback);
+        verify(mCallback, times(3)).onResult(eq(false));
+
+        page.add(searchResult3);
+        mAuxiliarySearchDonor.iterateSearchResults(searchresults, page, mCallback);
         verify(mCallback).onResult(eq(true));
     }
 
@@ -321,10 +334,10 @@ public class AuxiliarySearchDonorUnitTest {
         assertTrue(mAuxiliarySearchDonor.isShareTabsWithOsEnabledKeyExist());
     }
 
-    private SearchResult createSearchResult(int applicationType) {
+    private SearchResult createSearchResult(int applicationType, @NonNull String schemaType) {
         GlobalSearchApplicationInfo appInfo =
                 new GlobalSearchApplicationInfo.Builder("namespace", "id", applicationType)
-                        .setSchemaTypes(Arrays.asList(AuxiliarySearchDonor.SCHEMA))
+                        .setSchemaTypes(Arrays.asList(schemaType))
                         .build();
         try {
             return new SearchResult.Builder("package", "database").setDocument(appInfo).build();

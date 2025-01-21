@@ -26,7 +26,7 @@ class GetBnplPaymentInstrumentForFetchingUrlRequestTest : public testing::Test {
     request_details_.billing_customer_number = 1234;
     request_details_.instrument_id = "INSTRUMENT_ID";
     request_details_.risk_data = "RISK_DATA";
-    request_details_.merchant_domain = GURL("http://test.merchant-domain/");
+    request_details_.merchant_domain = GURL("http://merchant-domain.test/");
     request_details_.total_amount = 1000000000;
     request_details_.currency = "CAD";
 
@@ -91,7 +91,7 @@ TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest,
        IsResponseComplete_ParseResponseCalled) {
   request_->ParseResponse(Dict().SetByDottedPath(
       "buy_now_pay_later_info.get_redirect_url_response_info.redirect_url",
-      "http://test.redirect-url/"));
+      "http://redirect-url.test/"));
 
   EXPECT_TRUE(request_->IsResponseComplete());
 }
@@ -102,9 +102,9 @@ TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest, RespondToDelegate) {
       Dict().Set(
           "get_redirect_url_response_info",
           Dict()
-              .Set("redirect_url", "http://test.redirect-url/")
-              .Set("base_success_return_url", "http://test.success-url/")
-              .Set("base_failure_return_url", "http://test.failure-url/")
+              .Set("redirect_url", "http://redirect-url.test/")
+              .Set("base_success_return_url", "http://success-url.test/")
+              .Set("base_failure_return_url", "http://failure-url.test/")
               .Set("get_payment_instrument_context_token", "CONTEXT_TOKEN")));
 
   request_->ParseResponse(response_dict);
@@ -113,11 +113,11 @@ TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest, RespondToDelegate) {
               Run(PaymentsRpcResult::kSuccess,
                   /*response_details=*/AllOf(
                       Field(&BnplFetchUrlResponseDetails::redirect_url,
-                            GURL("http://test.redirect-url/")),
+                            GURL("http://redirect-url.test/")),
                       Field(&BnplFetchUrlResponseDetails::success_url_prefix,
-                            GURL("http://test.success-url/")),
+                            GURL("http://success-url.test/")),
                       Field(&BnplFetchUrlResponseDetails::failure_url_prefix,
-                            GURL("http://test.failure-url/")),
+                            GURL("http://failure-url.test/")),
                       Field(&BnplFetchUrlResponseDetails::context_token,
                             "CONTEXT_TOKEN"))));
 

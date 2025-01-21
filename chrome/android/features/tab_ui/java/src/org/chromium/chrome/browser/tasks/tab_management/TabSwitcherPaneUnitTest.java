@@ -55,6 +55,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FullButtonData;
@@ -169,6 +170,8 @@ public class TabSwitcherPaneUnitTest {
             new OneshotSupplierImpl<>();
     private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
             new ObservableSupplierImpl<>();
+    private ObservableSupplierImpl<CompositorViewHolder> mCompositorViewHolderSupplier =
+            new ObservableSupplierImpl<>();
     private TabSwitcherPane mTabSwitcherPane;
     private MockTabModel mTabModel;
     private int mTimesCreated;
@@ -245,7 +248,8 @@ public class TabSwitcherPaneUnitTest {
                         mTabSwitcherPaneDrawableCoordinator,
                         mOnAlphaChange,
                         mUserEducationHelper,
-                        mEdgeToEdgeSupplier);
+                        mEdgeToEdgeSupplier,
+                        mCompositorViewHolderSupplier);
         ShadowLooper.runUiThreadTasks();
         verify(mSharedPreferences)
                 .registerOnSharedPreferenceChangeListener(

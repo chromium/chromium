@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -589,6 +590,13 @@ public class WebContentsAccessibilityEventsTest {
     @DisabledTest(message = "https://crbug.com/1186376")
     public void test_caretMove() {
         performTest("caret-move.html", "caret-move-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add({"enable-experimental-web-platform-features"})
+    public void test_carouselWithTabs() {
+        performTest("carousel-with-tabs.html", "carousel-with-tabs-expected-android.txt");
     }
 
     @Test

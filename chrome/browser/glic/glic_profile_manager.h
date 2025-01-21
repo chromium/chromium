@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_GLIC_PROFILE_MANAGER_H_
 
 #include "base/callback_list.h"
+#include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 
@@ -32,12 +33,24 @@ class GlicProfileManager {
 
   // Return the profile that should be used to open glic. May be null if there
   // is no eligible profile.
-  Profile* GetProfileForLaunch();
+  Profile* GetProfileForLaunch() const;
 
   // Called by GlicKeyedService.
   void OnUILaunching(GlicKeyedService* glic);
 
+  // True if the given profile should be considered for preloading.
+  bool ShouldPreloadForProfile(Profile* profile) const;
+
+  // Static in order to permit setting forced values before the manager is
+  // constructed.
+  static void ForceProfileForLaunchForTesting(Profile* profile);
+  static void ForceMemoryPressureForTesting(
+      base::MemoryPressureMonitor::MemoryPressureLevel* level);
+
  private:
+  base::MemoryPressureMonitor::MemoryPressureLevel GetCurrentPressureLevel()
+      const;
+
   base::WeakPtr<GlicKeyedService> active_glic_;
 };
 }  // namespace glic

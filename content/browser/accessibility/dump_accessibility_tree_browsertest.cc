@@ -4463,6 +4463,38 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunCSSTest(FILE_PATH_LITERAL("interactivity-inert.html"));
 }
 
+class DumpAccessibilityTreeWithCarouselTest : public DumpAccessibilityTreeTest {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DumpAccessibilityTreeTest::SetUpCommandLine(command_line);
+    // Enable Carousel primitives.
+    // TODO(vmpstr): These should be sufficient, but buttons don't
+    // seem to appear with just the three flags. Investigate why.
+    //
+    // command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+    //                                 "PseudoElementsFocusable");
+    // command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+    //                                 "CSSPseudoScrollButtons");
+    // command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+    //                                 "CSSPseudoScrollMarkers");
+    command_line->AppendSwitch("enable-experimental-web-platform-features");
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DumpAccessibilityTreeWithCarouselTest,
+    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPasses()),
+    DumpAccessibilityTreeTestPassToString());
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithCarouselTest, CarouselNoTabs) {
+  RunCSSTest(FILE_PATH_LITERAL("carousel-no-tabs.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithCarouselTest,
+                       CarouselWithTabs) {
+  RunCSSTest(FILE_PATH_LITERAL("carousel-with-tabs.html"));
+}
+
 //
 // These tests cover features of the testing infrastructure itself.
 //

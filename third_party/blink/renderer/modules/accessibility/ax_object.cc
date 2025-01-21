@@ -1134,6 +1134,12 @@ bool AXObject::CanHaveChildren(Element& element) {
     return false;
   }
 
+  // ::scroll-marker is a kTab role, which isn't allowed to have children.
+  // TODO(crbug.com/390400174): We can likely allow kTabs to have children.
+  if (element.IsScrollMarkerPseudoElement()) {
+    return false;
+  }
+
   return true;
 }
 
@@ -3411,6 +3417,10 @@ bool AXObject::IsTabItem() const {
   return RoleValue() == ax::mojom::blink::Role::kTab;
 }
 
+bool AXObject::IsTabList() const {
+  return RoleValue() == ax::mojom::blink::Role::kTabList;
+}
+
 bool AXObject::IsTextField() const {
   if (IsDetached())
     return false;
@@ -4528,8 +4538,9 @@ bool AXObject::ComputeCanSetFocusAttribute() {
   }
 
   // NOT focusable: disabled form controls.
-  if (IsDisabledFormControl(elem))
+  if (IsDisabledFormControl(elem)) {
     return false;
+  }
 
   // Option elements do not receive DOM focus but they do receive a11y focus,
   // unless they are part of a <datalist>, in which case they can be displayed
@@ -6595,6 +6606,12 @@ bool AXObject::ShouldDestroyWhenDetachingFromParent() const {
 
   // Image map children are entirely dependent on the parent image.
   if (ParentObject() && IsA<HTMLImageElement>(ParentObject()->GetNode())) {
+    return true;
+  }
+
+  // ::scroll-markers are added via their group in a special walk, so they
+  // should be destroyed if detached.
+  if (GetNode() && GetNode()->IsScrollMarkerGroupPseudoElement()) {
     return true;
   }
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/glic_profile_manager.h"
 
+#include "base/memory/memory_pressure_monitor.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -71,6 +72,80 @@ TEST_F(GlicProfileManagerTest, OnUILaunching_DifferentProfiles) {
   EXPECT_CALL(service1, ClosePanel());
   profile_manager.OnUILaunching(&service2);
 }
+
+class GlicProfileManagerPreloadingTest : public testing::TestWithParam<bool> {
+ public:
+  GlicProfileManagerPreloadingTest() {
+    if (IsPreloadingEnabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
+                                features::kGlicWarming},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kGlic,
+                                features::kTabstripComboButton},
+          /*disabled_features=*/{features::kGlicWarming});
+    }
+  }
+
+  void SetUp() override {
+    GlicProfileManager::ForceProfileForLaunchForTesting(profile());
+    GlicProfileManager::ForceMemoryPressureForTesting(&memory_pressure_);
+  }
+
+  void TearDown() override {
+    testing::TestWithParam<bool>::TearDown();
+    GlicProfileManager::ForceProfileForLaunchForTesting(nullptr);
+    GlicProfileManager::ForceMemoryPressureForTesting(nullptr);
+  }
+
+  bool IsPreloadingEnabled() const { return GetParam(); }
+
+  TestingProfile* profile() { return &profile_; }
+  GlicProfileManager& profile_manager() { return profile_manager_; }
+  base::MemoryPressureMonitor::MemoryPressureLevel& memory_pressure() {
+    return memory_pressure_;
+  }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  GlicProfileManager profile_manager_;
+  signin::IdentityTestEnvironment identity_test_environment_;
+  TestingProfile profile_;
+  base::MemoryPressureMonitor::MemoryPressureLevel memory_pressure_ = base::
+      MemoryPressureMonitor::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(GlicProfileManagerPreloadingTest, ShouldPreloadForProfile_Success) {
+  const bool should_preload = IsPreloadingEnabled();
+  EXPECT_EQ(should_preload,
+            profile_manager().ShouldPreloadForProfile(profile()));
+}
+
+TEST_P(GlicProfileManagerPreloadingTest,
+       ShouldPreloadForProfile_NotLaunchProfile) {
+  GlicProfileManager::ForceProfileForLaunchForTesting(nullptr);
+  EXPECT_FALSE(profile_manager().ShouldPreloadForProfile(profile()));
+}
+
+TEST_P(GlicProfileManagerPreloadingTest,
+       ShouldPreloadForProfile_WillBeDestroyed) {
+  profile()->NotifyWillBeDestroyed();
+  EXPECT_FALSE(profile_manager().ShouldPreloadForProfile(profile()));
+}
+
+TEST_P(GlicProfileManagerPreloadingTest,
+       ShouldPreloadForProfile_MemoryPressure) {
+  memory_pressure() = base::MemoryPressureMonitor::MemoryPressureLevel::
+      MEMORY_PRESSURE_LEVEL_MODERATE;
+  EXPECT_FALSE(profile_manager().ShouldPreloadForProfile(profile()));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GlicProfileManagerPreloadingTest,
+                         ::testing::Bool());
 
 }  // namespace
 }  // namespace glic

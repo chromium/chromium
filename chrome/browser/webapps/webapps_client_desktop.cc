@@ -14,6 +14,7 @@
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/web_applications/visited_manifest_manager.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -68,16 +69,9 @@ bool CheckNewWebAppConflictsWithExistingInstallation(
 
   // We cannot install if we are in scope of an installed crafted app, no matter
   // the user display type.
-  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   std::optional<AppId> non_diy_app_id =
       provider->registrar_unsafe().FindBestAppWithUrlInScope(
-          start_url,
-          {
-              web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-              web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-          },
-          {.include_open_in_browser_tab = true, .include_diy = false});
+          start_url, web_app::WebAppFilter::IsCraftedApp());
 
   if (non_diy_app_id) {
     return true;

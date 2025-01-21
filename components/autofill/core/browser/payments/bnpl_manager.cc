@@ -75,8 +75,8 @@ void BnplManager::FetchVcnDetails() {
   GetBnplPaymentInstrumentForFetchingVcnRequestDetails request_details;
   request_details.billing_customer_number =
       ongoing_flow_state_->billing_customer_number;
-  request_details.risk_data = ongoing_flow_state_->risk_data;
   request_details.instrument_id = ongoing_flow_state_->instrument_id;
+  request_details.risk_data = ongoing_flow_state_->risk_data;
   request_details.context_token = ongoing_flow_state_->context_token;
   request_details.redirect_url = ongoing_flow_state_->redirect_url;
 

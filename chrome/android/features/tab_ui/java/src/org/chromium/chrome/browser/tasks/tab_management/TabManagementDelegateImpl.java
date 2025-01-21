@@ -22,6 +22,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
@@ -103,7 +104,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull BackPressManager backPressManager,
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            @NonNull ObservableSupplier<Boolean> tabModelNotificationDotSupplier) {
+            @NonNull ObservableSupplier<Boolean> tabModelNotificationDotSupplier,
+            @NonNull ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier) {
         // TODO(crbug.com/40946413): Consider making this an activity scoped singleton and possibly
         // hosting it in CTA/HubProvider.
         TabSwitcherPaneCoordinatorFactory factory =
@@ -147,7 +149,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                             incognitoReauthControllerSupplier,
                             onToolbarAlphaChange,
                             userEducationHelper,
-                            edgeToEdgeSupplier);
+                            edgeToEdgeSupplier,
+                            compositorViewHolderSupplier);
         } else {
             Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier =
                     () ->
@@ -166,7 +169,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                                     activity, tabModelSelector, tabModelNotificationDotSupplier),
                             onToolbarAlphaChange,
                             userEducationHelper,
-                            edgeToEdgeSupplier);
+                            edgeToEdgeSupplier,
+                            compositorViewHolderSupplier);
         }
         return Pair.create(pane, pane);
     }

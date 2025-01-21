@@ -4407,7 +4407,7 @@ targets.bundle(
         "gpu_validating_telemetry_tests",
         "gpu_webcodecs_validating_ganesh_telemetry_test",
         "gpu_webgl_conformance_gles_passthrough_ganesh_telemetry_tests",
-        "gpu_webgl_conformance_validating_telemetry_tests",
+        "gpu_webgl_conformance_validating_ganesh_telemetry_tests",
     ],
 )
 
@@ -4490,7 +4490,7 @@ targets.bundle(
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl2_conformance_validating_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_ganesh_telemetry_tests",
-        "gpu_webgl_conformance_validating_telemetry_tests",
+        "gpu_webgl_conformance_validating_ganesh_telemetry_tests",
     ],
 )
 
@@ -4507,7 +4507,8 @@ targets.bundle(
         "gpu_webgl2_conformance_validating_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_ganesh_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_graphite_telemetry_tests",
-        "gpu_webgl_conformance_validating_telemetry_tests",
+        "gpu_webgl_conformance_validating_ganesh_telemetry_tests",
+        "gpu_webgl_conformance_validating_graphite_telemetry_tests",
     ],
 )
 
@@ -4563,6 +4564,57 @@ targets.bundle(
                 args = [
                     "--extra-browser-args=--use-cmd-decoder=validating --enable-features=SkiaGraphite",
                 ],
+            ),
+            "gpu_integration_test_common_args",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "gpu_webgl_conformance_validating_ganesh_telemetry_tests",
+    targets = [
+        "webgl_conformance_validating_ganesh_tests",
+    ],
+    per_test_modifications = {
+        "webgl_conformance_validating_ganesh_tests": [
+            targets.mixin(
+                args = [
+                    # On dual-GPU devices we want the high-performance GPU to be active
+                    "--extra-browser-args=--use-cmd-decoder=validating --force_high_performance_gpu --disable-features=SkiaGraphite",
+                    targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
+                ],
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+                android_swarming = targets.swarming(
+                    shards = 6,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "gpu_webgl_conformance_validating_graphite_telemetry_tests",
+    targets = [
+        "webgl_conformance_validating_graphite_tests",
+    ],
+    per_test_modifications = {
+        "webgl_conformance_validating_graphite_tests": [
+            targets.mixin(
+                args = [
+                    # On dual-GPU devices we want the high-performance GPU to be active
+                    "--extra-browser-args=--use-cmd-decoder=validating --force_high_performance_gpu --enable-features=SkiaGraphite",
+                    targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
+                ],
+                ci_only = True,
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+                android_swarming = targets.swarming(
+                    shards = 6,
+                ),
             ),
             "gpu_integration_test_common_args",
         ],

@@ -166,10 +166,6 @@ class WebAppRegistrar {
   // This struct can be used `FindBestAppWithUrlInScope` and possible future
   // methods to filter apps.
   struct AppFilterOptions {
-    // If false, removes apps that will be launched in a browser tab.
-    bool include_open_in_browser_tab = true;
-    // If false, removes DIY apps.
-    bool include_diy = true;
     // TODO(crbug.com/341337420): Change this to default true.
     bool include_extended_scope = false;
   };

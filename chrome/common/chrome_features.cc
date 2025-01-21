@@ -346,6 +346,8 @@ bool HasTabstripComboButtonWithReverseButtonOrder() {
          features::kTabstripComboButtonHasReverseButtonOrder.Get();
 }
 
+BASE_FEATURE(kGlicWarming, "GlicWarming", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Force Privacy Guide to be available even if it would be unavailable
 // otherwise. This is meant for development and test purposes only.
 BASE_FEATURE(kPrivacyGuideForceAvailable,

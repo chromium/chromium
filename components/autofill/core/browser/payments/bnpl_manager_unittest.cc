@@ -193,13 +193,13 @@ TEST_F(BnplManagerTest, FetchVcnDetails_CallsGetBnplPaymentInstrument) {
   bnpl_manager_->InitBnplFlow(1000000, base::DoNothing());
   test_api(*bnpl_manager_)
       .PopulateManagerWithUserAndBnplIssuerDetails(kBillingCustomerNumber,
-                                                   kRiskData, kInstrumentId,
+                                                   kInstrumentId, kRiskData,
                                                    kContextToken, kRedirectUrl);
 
   EXPECT_CALL(*payments_network_interface_,
               GetBnplPaymentInstrumentForFetchingVcn(
                   /*request_details=*/
-                  FieldsAre(kBillingCustomerNumber, kRiskData, kInstrumentId,
+                  FieldsAre(kBillingCustomerNumber, kInstrumentId, kRiskData,
                             kContextToken, kRedirectUrl),
                   /*callback=*/_));
 
