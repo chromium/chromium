@@ -203,14 +203,7 @@ void ManagePasswordsUIController::OnPasswordSubmitted(
 
   save_fallback_timer_.Stop();
 
-  // TODO(crbug.com/40943570): This is used to align the default password store
-  // pref with account storage pref. Once all users have those aligned this
-  // should be removed.
-  if (GetPasswordFeatureManager()->ShouldChangeDefaultPasswordStore()) {
-    passwords_data_.OnDefaultStoreChanged(std::move(form_manager));
-  } else {
-    passwords_data_.OnPendingPassword(std::move(form_manager));
-  }
+  passwords_data_.OnPendingPassword(std::move(form_manager));
 
   // All necessary events should be triggered in `passwords_data_`, so that the
   // state would be correct after password change is finished, but no other
@@ -740,9 +733,7 @@ ManagePasswordsUIController::
 
 const password_manager::InteractionsStats*
 ManagePasswordsUIController::GetCurrentInteractionStats() const {
-  CHECK(GetState() == password_manager::ui::PENDING_PASSWORD_STATE ||
-        GetState() ==
-            password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE);
+  CHECK_EQ(GetState(), password_manager::ui::PENDING_PASSWORD_STATE);
   password_manager::PasswordFormManagerForUI* form_manager =
       passwords_data_.form_manager();
   return FindStatsByUsername(
@@ -787,11 +778,6 @@ void ManagePasswordsUIController::OnBubbleHidden() {
       GetState() == password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX ||
       GetState() == password_manager::ui::NOTIFY_RECEIVED_SHARED_CREDENTIALS) {
     passwords_data_.TransitionToState(password_manager::ui::MANAGE_STATE);
-    update_icon = true;
-  } else if (GetState() ==
-             password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE) {
-    passwords_data_.TransitionToState(
-        password_manager::ui::PENDING_PASSWORD_STATE);
     update_icon = true;
   } else if (GetState() ==
              password_manager::ui::MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE) {
@@ -965,17 +951,6 @@ void ManagePasswordsUIController::BlockMovingPasswordToAccountStore() {
   UpdateBubbleAndIconVisibility();
 }
 
-void ManagePasswordsUIController::PromptSaveBubbleAfterDefaultStoreChanged() {
-  CHECK(GetState() ==
-            password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE ||
-        GetState() == password_manager::ui::PENDING_PASSWORD_STATE)
-      << GetState();
-  passwords_data_.TransitionToState(
-      password_manager::ui::PENDING_PASSWORD_STATE);
-  bubble_status_ = BubbleStatus::SHOULD_POP_UP_WITH_FOCUS;
-  UpdateBubbleAndIconVisibility();
-}
-
 void ManagePasswordsUIController::ChooseCredential(
     const password_manager::PasswordForm& form,
     password_manager::CredentialType credential_type) {
@@ -1004,16 +979,6 @@ void ManagePasswordsUIController::
         password_manager::ManagePasswordsReferrer referrer) {
   NavigateToPasswordDetailsPage(chrome::FindBrowserWithTab(web_contents()),
                                 password_domain_name, referrer);
-}
-
-void ManagePasswordsUIController::
-    NavigateToPasswordManagerSettingsAccountStoreToggle(
-        password_manager::ManagePasswordsReferrer referrer) {
-  NavigateToManagePasswordsSettingsAccountStoreToggle(
-      chrome::FindBrowserWithTab(web_contents()));
-  UMA_HISTOGRAM_ENUMERATION("PasswordManager.ManagePasswordsReferrer",
-                            referrer);
-  PromptSaveBubbleAfterDefaultStoreChanged();
 }
 
 void ManagePasswordsUIController::NavigateToPasswordCheckup(

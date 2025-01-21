@@ -99,10 +99,6 @@ void PasswordFeatureManagerImpl::SetDefaultPasswordStore(
   features_util::SetDefaultPasswordStore(pref_service_, sync_service_, store);
 }
 
-bool PasswordFeatureManagerImpl::ShouldChangeDefaultPasswordStore() const {
-  return IsOptedInForAccountStorage() && IsDefaultPasswordStoreSet() &&
-         GetDefaultPasswordStore() == PasswordForm::Store::kProfileStore;
-}
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

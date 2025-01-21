@@ -114,10 +114,6 @@ void NavigateToPasswordDetailsPage(
     const std::string& password_domain_name,
     password_manager::ManagePasswordsReferrer referrer);
 
-// Navigates to the Password Manager settings page and focuses the account store
-// toggle.
-void NavigateToManagePasswordsSettingsAccountStoreToggle(Browser* browser);
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 mojo::Remote<network::mojom::URLLoaderFactory> GetURLLoaderForMainFrame(

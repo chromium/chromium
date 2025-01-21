@@ -218,17 +218,6 @@ void NavigateToPasswordDetailsPage(Browser* browser,
   chrome::ShowPasswordDetailsPage(browser, password_domain_name);
 }
 
-void NavigateToManagePasswordsSettingsAccountStoreToggle(Browser* browser) {
-  ShowPromoInPage::Params params;
-  params.target_url = GURL(chrome::kChromeUIPasswordManagerSettingsURL);
-  params.bubble_anchor_id = PasswordManagerUI::kAccountStoreToggleElementId;
-  params.bubble_arrow = user_education::HelpBubbleArrow::kTopRight;
-  params.bubble_text = l10n_util::GetStringUTF16(
-      IDS_PASSWORD_MANAGER_IPH_ACCOUNT_STORAGE_TOGGLE);
-
-  ShowPromoInPage::Start(browser, std::move(params));
-}
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 mojo::Remote<network::mojom::URLLoaderFactory> GetURLLoaderForMainFrame(

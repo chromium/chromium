@@ -190,7 +190,6 @@ class ManagePasswordsUIController
       password_manager::metrics_util::MoveToAccountStoreTrigger trigger)
       override;
   void BlockMovingPasswordToAccountStore() override;
-  void PromptSaveBubbleAfterDefaultStoreChanged() override;
   void ChooseCredential(
       const password_manager::PasswordForm& form,
       password_manager::CredentialType credential_type) override;
@@ -198,8 +197,6 @@ class ManagePasswordsUIController
       password_manager::ManagePasswordsReferrer referrer) override;
   void NavigateToPasswordDetailsPageInPasswordManager(
       const std::string& password_domain_name,
-      password_manager::ManagePasswordsReferrer referrer) override;
-  void NavigateToPasswordManagerSettingsAccountStoreToggle(
       password_manager::ManagePasswordsReferrer referrer) override;
   void OnDialogHidden() override;
   void AuthenticateUserWithMessage(const std::u16string& message,

@@ -148,10 +148,6 @@ class PasswordsModelDelegate {
   // used credential to their account store.
   virtual void BlockMovingPasswordToAccountStore() = 0;
 
-  // Called from the dialog controller when the user acknowledges that their
-  // default password store setting changed.
-  virtual void PromptSaveBubbleAfterDefaultStoreChanged() = 0;
-
   // Called from the dialog controller when the user chooses a credential.
   // Controller can be destroyed inside the method.
   virtual void ChooseCredential(
@@ -166,10 +162,6 @@ class PasswordsModelDelegate {
   // credential details for the `password_domain_name`.
   virtual void NavigateToPasswordDetailsPageInPasswordManager(
       const std::string& password_domain_name,
-      password_manager::ManagePasswordsReferrer referrer) = 0;
-
-  // Opens password manager settings page and focuses account store toggle.
-  virtual void NavigateToPasswordManagerSettingsAccountStoreToggle(
       password_manager::ManagePasswordsReferrer referrer) = 0;
 
   // Open a new tab, pointing to the password check in the settings page.

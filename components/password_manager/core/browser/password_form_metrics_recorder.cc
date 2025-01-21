@@ -1107,7 +1107,6 @@ void PasswordFormMetricsRecorder::RecordPasswordBubbleShown(
     case metrics_util::AUTOMATIC_ADD_USERNAME_BUBBLE:
     case metrics_util::MANUAL_ADD_USERNAME_BUBBLE:
     case metrics_util::AUTOMATIC_RELAUNCH_CHROME_BUBBLE:
-    case metrics_util::AUTOMATIC_DEFAULT_STORE_CHANGED_BUBBLE:
     case metrics_util::AUTOMATIC_PASSKEY_SAVED_CONFIRMATION:
     case metrics_util::AUTOMATIC_PASSKEY_DELETED_CONFIRMATION:
     case metrics_util::MANUAL_PASSKEY_DELETED_CONFIRMATION:
@@ -1121,7 +1120,7 @@ void PasswordFormMetricsRecorder::RecordPasswordBubbleShown(
       // Do nothing.
       return;
 
-    // Obsolte display dispositions:
+    // Obsolete display dispositions:
     case metrics_util::MANUAL_BLOCKLISTED_OBSOLETE:
     case metrics_util::AUTOMATIC_CREDENTIAL_REQUEST_OBSOLETE:
     case metrics_util::NUM_DISPLAY_DISPOSITIONS:
