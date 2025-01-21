@@ -807,8 +807,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   profile_attributes_storage()->UpdateAttributesForProfileWithName(
       kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS attr) {
         attr.SetAttachedGaiaIds(
-            {base::SysNSStringToUTF8(gmail_identity1.gaiaID),
-             base::SysNSStringToUTF8(google_identity.gaiaID)});
+            {GaiaId(gmail_identity1.gaiaID), GaiaId(google_identity.gaiaID)});
         return attr;
       }));
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
@@ -879,8 +878,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   // managed profile.
   base::test::TestFuture<void> conversion_done;
   account_profile_mapper_->MakePersonalProfileManagedWithGaiaID(
-      base::SysNSStringToUTF8(google_identity.gaiaID),
-      conversion_done.GetCallback());
+      GaiaId(google_identity.gaiaID), conversion_done.GetCallback());
   ASSERT_TRUE(conversion_done.Wait());
 
   // What should have happened:

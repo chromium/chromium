@@ -306,7 +306,7 @@ TEST_P(AuthenticationServiceTest, TestSignInAndGetPrimaryIdentity) {
   AccountInfo account_info =
       identity_manager()->FindExtendedAccountInfoByEmailAddress(user_email);
   EXPECT_EQ(user_email, account_info.email);
-  EXPECT_EQ(base::SysNSStringToUTF8([identity(0) gaiaID]), account_info.gaia);
+  EXPECT_EQ(GaiaId([identity(0) gaiaID]), account_info.gaia);
   EXPECT_TRUE(
       identity_manager()->HasAccountWithRefreshToken(account_info.account_id));
   EXPECT_TRUE(authentication_service()->HasPrimaryIdentity(
@@ -474,7 +474,7 @@ TEST_P(AuthenticationServiceTest, MDMErrorsClearedOnForeground) {
     FireApplicationWillEnterForeground();
     EXPECT_TRUE(notification_received);
     EXPECT_EQ(
-        base::SysNSStringToUTF8([identity(0) gaiaID]),
+        GaiaId([identity(0) gaiaID]),
         observer.AccountFromErrorStateOfRefreshTokenUpdatedCallback().gaia);
   }
 

@@ -102,7 +102,7 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
         IdentityManagerFactory::GetForProfile(profile_.get()),
         signin::AccountAvailabilityOptionsBuilder()
             .AsPrimary(signin::ConsentLevel::kSignin)
-            .WithGaiaId(base::SysNSStringToUTF8(fake_identity_a_.gaiaID))
+            .WithGaiaId(GaiaId(fake_identity_a_.gaiaID))
             .Build(base::SysNSStringToUTF8(fake_identity_a_.userEmail)));
   }
 

@@ -196,7 +196,7 @@ TEST_F(LegacyAccountsTableViewControllerTest, DontHoldPassphraseError) {
 
   CoreAccountInfo account;
   account.email = base::SysNSStringToUTF8(fake_identity.userEmail);
-  account.gaia = base::SysNSStringToUTF8(fake_identity.gaiaID);
+  account.gaia = GaiaId(fake_identity.gaiaID);
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
   test_sync_service()->SetSignedIn(signin::ConsentLevel::kSignin, account);
   test_sync_service()->GetUserSettings()->SetPassphraseRequired();
@@ -222,7 +222,7 @@ TEST_F(LegacyAccountsTableViewControllerTest,
 
   CoreAccountInfo account;
   account.email = base::SysNSStringToUTF8(fake_identity.userEmail);
-  account.gaia = base::SysNSStringToUTF8(fake_identity.gaiaID);
+  account.gaia = GaiaId(fake_identity.gaiaID);
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
   test_sync_service()->SetSignedIn(signin::ConsentLevel::kSync, account);
   ASSERT_FALSE(test_sync_service()->GetUserSettings()->IsPassphraseRequired());

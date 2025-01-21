@@ -54,7 +54,7 @@ TEST_F(WebViewDeviceAccountsProviderImplTest, GetAccessToken) {
   bool callback_called = false;
   WebViewDeviceAccountsProviderImpl accounts_provider;
   accounts_provider.GetAccessToken(
-      "gaia-id", "client-id", {"scope-1", "scope-2"},
+      GaiaId("gaia-id"), "client-id", {"scope-1", "scope-2"},
       base::BindLambdaForTesting(
           [&](DeviceAccountsProvider::AccessTokenResult result) {
             callback_called = true;
@@ -86,7 +86,7 @@ TEST_F(WebViewDeviceAccountsProviderImplTest, GetAllAccounts) {
   ASSERT_EQ(1UL, accounts.size());
   DeviceAccountsProvider::AccountInfo account_info = accounts[0];
   EXPECT_EQ("foo@chromium.org", account_info.email);
-  EXPECT_EQ("gaia-id", account_info.gaia);
+  EXPECT_EQ(GaiaId("gaia-id"), account_info.gaia);
 
   [data_source verify];
 }

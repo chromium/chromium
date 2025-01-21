@@ -99,7 +99,7 @@ class SetUpListTest : public PlatformTest {
             base::BindOnce(
                 [](id<SystemIdentity> identity, ProfileAttributesIOS attr) {
                   attr.SetAuthenticationInfo(
-                      base::SysNSStringToUTF8(identity.gaiaID),
+                      GaiaId(identity.gaiaID),
                       base::SysNSStringToUTF8(identity.userEmail));
                   return attr;
                 },

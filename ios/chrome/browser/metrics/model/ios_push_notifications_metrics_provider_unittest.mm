@@ -84,8 +84,7 @@ class IOSPushNotificationsMetricsProviderTest : public PlatformTest {
       std::optional<std::string> assigned_profile_name =
           GetApplicationContext()
               ->GetAccountProfileMapper()
-              ->FindProfileNameForGaiaID(
-                  base::SysNSStringToUTF8(identity.gaiaID));
+              ->FindProfileNameForGaiaID(GaiaId(identity.gaiaID));
       CHECK(assigned_profile_name.has_value());
       profile_name = *assigned_profile_name;
     } else {

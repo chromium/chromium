@@ -65,10 +65,10 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentity) {
   CoreAccountInfo account_info =
       identity_test_environment_.MakeAccountAvailable(kTestEmail);
 
-  CWVIdentity* identity = [[CWVIdentity alloc]
-      initWithEmail:@(kTestEmail)
-           fullName:nil
-             gaiaID:base::SysUTF8ToNSString(account_info.gaia)];
+  CWVIdentity* identity =
+      [[CWVIdentity alloc] initWithEmail:@(kTestEmail)
+                                fullName:nil
+                                  gaiaID:account_info.gaia.ToNSString()];
 
   // Preconfigure TestSyncService as if it was enabled in transport mode.
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
@@ -114,8 +114,7 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentityInAuthError) {
                                 initWithEmail:@(kTestEmail)
                                      fullName:base::SysUTF8ToNSString(
                                                   account_info.full_name)
-                                       gaiaID:base::SysUTF8ToNSString(
-                                                  account_info.gaia)]];
+                                       gaiaID:account_info.gaia.ToNSString()]];
 
   CWVWebView.skipAccountStorageCheckEnabled = false;
 }
@@ -131,8 +130,7 @@ TEST_F(CWVSyncControllerTest, StopSyncAndClearIdentity) {
               prefService:&pref_service_];
   CWVIdentity* current_identity = sync_controller.currentIdentity;
   ASSERT_TRUE(current_identity);
-  EXPECT_NSEQ(current_identity.gaiaID,
-              base::SysUTF8ToNSString(account_info.gaia));
+  EXPECT_NSEQ(current_identity.gaiaID, account_info.gaia.ToNSString());
   EXPECT_NSEQ(current_identity.email, base::SysUTF8ToNSString(kTestEmail));
 
   [sync_controller stopSyncAndClearIdentity];
