@@ -119,4 +119,43 @@ suite('<settings-mouse-keys-subpage>', () => {
 
     assertFalse(isVisible(dominantHandControl));
   });
+
+  test('Primary key toggle hides/shows primary keyboard preview', async () => {
+    await initPage();
+
+    loadTimeData.overrideValues({
+      isAccessibilityMouseKeysEnabled: true,
+    });
+
+    const primaryKeysKeyboardPreview =
+        page.shadowRoot!.querySelector<HTMLElement>(`#primaryKeysPreview`);
+
+    assert(primaryKeysKeyboardPreview);
+    assertTrue(isVisible(primaryKeysKeyboardPreview));
+
+    const usePrimaryKeysToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#mouseKeysUsePrimaryKeys');
+
+    assert(usePrimaryKeysToggle);
+    assertTrue(isVisible(usePrimaryKeysToggle));
+    // Primary keys should be default enabled.
+    assertTrue(page.prefs.settings.a11y.mouse_keys.use_primary_keys.value);
+
+    // Turn primary key toggle off.
+    usePrimaryKeysToggle.click();
+    await waitBeforeNextRender(page);
+    flush();
+
+    assertFalse(page.prefs.settings.a11y.mouse_keys.use_primary_keys.value);
+    assertFalse(isVisible(primaryKeysKeyboardPreview));
+
+    // Turn primary key toggle on.
+    usePrimaryKeysToggle.click();
+    await waitBeforeNextRender(page);
+    flush();
+
+    assertTrue(page.prefs.settings.a11y.mouse_keys.use_primary_keys.value);
+    assertTrue(isVisible(primaryKeysKeyboardPreview));
+  });
 });

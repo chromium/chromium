@@ -17,7 +17,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <windows.h>
+#include "base/win/windows_types.h"
 #elif BUILDFLAG(IS_APPLE)
 #import <CoreFoundation/CoreFoundation.h>
 #endif  // OS_*

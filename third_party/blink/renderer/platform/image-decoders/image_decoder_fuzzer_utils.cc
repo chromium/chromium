@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_fuzzer_utils.h"
 
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
-#include "third_party/blink/renderer/platform/image-decoders/avif/avif_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/avif/crabbyavif_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
@@ -72,13 +71,6 @@ std::unique_ptr<ImageDecoder> CreateImageDecoder(DecoderType decoder_type,
           GetAlphaOption(fdp), GetHbdOption(fdp), GetColorBehavior(fdp),
           /*max_decoded_bytes=*/fdp.ConsumeIntegral<uint32_t>(),
           /*offset=*/fdp.ConsumeIntegral<uint32_t>());
-    }
-    case DecoderType::kAvifDecoder: {
-      return std::make_unique<AVIFImageDecoder>(
-          GetAlphaOption(fdp), GetHbdOption(fdp), GetColorBehavior(fdp),
-          GetAuxImageType(fdp),
-          /*max_decoded_bytes=*/fdp.ConsumeIntegral<uint32_t>(),
-          GetAnimationOption(fdp));
     }
     case DecoderType::kCrabbyAvifDecoder: {
       return std::make_unique<CrabbyAVIFImageDecoder>(

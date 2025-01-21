@@ -147,8 +147,9 @@ public class ScopedBookmarkModelObservationTest {
     @Test
     @SmallTest
     public void testBookmarkNodeChangedWithinObservedFolder() {
+        final int index = mModel.getChildIds(mFolderId).indexOf(mItem.getId());
         mUnderlyingObserver.bookmarkNodeChanged(mItem);
-        verify(mObserver).onBookmarkItemUpdated(mObservationId, mItem);
+        verify(mObserver).onBookmarkItemUpdated(mObservationId, mItem, index);
         verifyNoMoreInteractions(mObserver);
     }
 

@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/views/passwords/password_add_username_view.h"
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
 #include "chrome/browser/ui/views/passwords/password_change/password_change_view_factory.h"
-#include "chrome/browser/ui/views/passwords/password_default_store_changed_view.h"
 #include "chrome/browser/ui/views/passwords/password_save_unsynced_credentials_locally_view.h"
 #include "chrome/browser/ui/views/passwords/password_save_update_view.h"
 #include "chrome/browser/ui/views/passwords/post_save_compromised_bubble_view.h"
@@ -177,9 +176,6 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
         Profile::FromBrowserContext(web_contents->GetBrowserContext())
             ->GetPrefs());
 #endif
-  } else if (model_state ==
-             password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE) {
-    view = new PasswordDefaultStoreChangedView(web_contents, anchor_view);
   } else if (model_state ==
              password_manager::ui::PASSKEY_SAVED_CONFIRMATION_STATE) {
     view = new PasskeySavedConfirmationView(web_contents, anchor_view,

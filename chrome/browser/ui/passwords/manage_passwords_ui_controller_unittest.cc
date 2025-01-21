@@ -504,62 +504,6 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSubmittedBubbleCancelled) {
   EXPECT_FALSE(controller->IsAutomaticallyOpeningBubble());
 }
 
-TEST_F(ManagePasswordsUIControllerTest, DefaultStoreChanged) {
-  std::vector<PasswordForm> best_matches;
-  auto test_form_manager =
-      CreateFormManagerWithBestMatches(best_matches, &submitted_form());
-  EXPECT_CALL(*client().GetPasswordFeatureManager(),
-              ShouldChangeDefaultPasswordStore)
-      .WillOnce(Return(true));
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-
-  controller()->OnPasswordSubmitted(std::move(test_form_manager));
-  EXPECT_TRUE(controller()->opened_automatic_bubble());
-  EXPECT_EQ(url::Origin::Create(test_local_form().url),
-            controller()->GetOrigin());
-
-  ExpectIconAndControllerStateIs(
-      password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE);
-}
-
-TEST_F(ManagePasswordsUIControllerTest,
-       BlocklistedFormPasswordSubmittedDoesNotGetAutomaticWarning) {
-  std::vector<PasswordForm> best_matches;
-  auto test_form_manager = CreateFormManagerWithBestMatches(
-      best_matches, &submitted_form(), /*is_blocklisted=*/true);
-  EXPECT_CALL(*client().GetPasswordFeatureManager(),
-              ShouldChangeDefaultPasswordStore)
-      .WillOnce(Return(true));
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  controller()->OnPasswordSubmitted(std::move(test_form_manager));
-  EXPECT_FALSE(controller()->opened_automatic_bubble());
-
-  ExpectIconAndControllerStateIs(
-      password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE);
-}
-
-TEST_F(ManagePasswordsUIControllerTest,
-       IfSaveBubbleIsSuppressedNoAutomaticWarning) {
-  std::vector<PasswordForm> best_matches;
-  auto test_form_manager =
-      CreateFormManagerWithBestMatches(best_matches, &submitted_form());
-  std::vector<password_manager::InteractionsStats> stats = {
-      {.origin_domain = submitted_form().url.DeprecatedGetOriginAsURL(),
-       .username_value = submitted_form().username_value,
-       .dismissal_count = kGreatDissmisalCount}};
-  EXPECT_CALL(*client().GetPasswordFeatureManager(),
-              ShouldChangeDefaultPasswordStore)
-      .WillOnce(Return(true));
-  EXPECT_CALL(*test_form_manager, GetInteractionsStats)
-      .WillRepeatedly(Return(stats));
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  controller()->OnPasswordSubmitted(std::move(test_form_manager));
-  EXPECT_FALSE(controller()->opened_automatic_bubble());
-
-  ExpectIconAndControllerStateIs(
-      password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE);
-}
-
 TEST_F(ManagePasswordsUIControllerTest, PasswordSaved) {
   auto* mock_sentiment_service_ = static_cast<MockTrustSafetySentimentService*>(
       TrustSafetySentimentServiceFactory::GetInstance()
@@ -948,56 +892,6 @@ TEST_F(ManagePasswordsUIControllerTest, ChooseCredentialPSL) {
       password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD);
   EXPECT_EQ(password_manager::ui::MANAGE_STATE, controller()->GetState());
   EXPECT_THAT(controller()->GetCurrentForms(), IsEmpty());
-}
-
-TEST_F(ManagePasswordsUIControllerTest,
-       PromptSaveBubbleAfterDefaultStoreChanged) {
-  std::vector<PasswordForm> best_matches;
-  auto test_form_manager =
-      CreateFormManagerWithBestMatches(best_matches, &submitted_form());
-  EXPECT_CALL(*client().GetPasswordFeatureManager(),
-              ShouldChangeDefaultPasswordStore)
-      .WillOnce(Return(true));
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(2);
-
-  // Change the pwm ui state to PASSWORD_STORE_CHANGED_BUBBLE_STATE.
-  controller()->OnPasswordSubmitted(std::move(test_form_manager));
-  EXPECT_TRUE(controller()->opened_automatic_bubble());
-  EXPECT_EQ(url::Origin::Create(test_local_form().url),
-            controller()->GetOrigin());
-  ExpectIconAndControllerStateIs(
-      password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE);
-
-  controller()->PromptSaveBubbleAfterDefaultStoreChanged();
-  EXPECT_FALSE(controller()->opened_automatic_bubble());
-  EXPECT_EQ(url::Origin::Create(test_local_form().url),
-            controller()->GetOrigin());
-  ExpectIconAndControllerStateIs(password_manager::ui::PENDING_PASSWORD_STATE);
-}
-
-TEST_F(ManagePasswordsUIControllerTest,
-       DefaultStoreChangedBubbleClosedAndKeyIconPressedManually) {
-  std::vector<PasswordForm> best_matches;
-  auto test_form_manager =
-      CreateFormManagerWithBestMatches(best_matches, &submitted_form());
-  EXPECT_CALL(*client().GetPasswordFeatureManager(),
-              ShouldChangeDefaultPasswordStore)
-      .WillOnce(Return(true));
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(2);
-
-  // Change the pwm ui state to PASSWORD_STORE_CHANGED_BUBBLE_STATE.
-  controller()->OnPasswordSubmitted(std::move(test_form_manager));
-  EXPECT_TRUE(controller()->opened_automatic_bubble());
-  EXPECT_EQ(url::Origin::Create(test_local_form().url),
-            controller()->GetOrigin());
-  ExpectIconAndControllerStateIs(
-      password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE);
-
-  controller()->OnBubbleHidden();
-  EXPECT_FALSE(controller()->opened_automatic_bubble());
-  EXPECT_EQ(url::Origin::Create(test_local_form().url),
-            controller()->GetOrigin());
-  ExpectIconAndControllerStateIs(password_manager::ui::PENDING_PASSWORD_STATE);
 }
 
 TEST_F(ManagePasswordsUIControllerTest, AutoSignin) {

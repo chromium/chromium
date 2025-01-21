@@ -95,7 +95,12 @@ class FeaturePromoQueueTest : public testing::Test {
   }
 
   static void RemoveTimedOutPromos(FeaturePromoQueue& queue) {
-    queue.RemoveTimedOutPromos();
+    FeaturePromoQueue::ComputedDataMap data;
+    for (const auto& promo : queue.queued_promos_) {
+      data.emplace(&promo.params.feature.get(),
+                   FeaturePromoQueue::ComputedData());
+    }
+    queue.RemoveTimedOutPromos(data);
   }
 
   static void RemovePromosWithFailedPreconditions(FeaturePromoQueue& queue) {
@@ -104,7 +109,12 @@ class FeaturePromoQueueTest : public testing::Test {
 
   static const base::Feature* IdentifyNextEligiblePromo(
       FeaturePromoQueue& queue) {
-    return queue.IdentifyNextEligiblePromo();
+    FeaturePromoQueue::ComputedDataMap data;
+    for (const auto& promo : queue.queued_promos_) {
+      data.emplace(&promo.params.feature.get(),
+                   FeaturePromoQueue::ComputedData());
+    }
+    return queue.IdentifyNextEligiblePromo(data);
   }
 
   static std::optional<EligibleFeaturePromo> UpdateAndGetNextEligiblePromo(

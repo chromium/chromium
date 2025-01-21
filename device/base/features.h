@@ -28,6 +28,10 @@ DEVICE_BASE_EXPORT BASE_DECLARE_FEATURE(
     kUncachedGattDiscoveryForGattConnection);
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_ANDROID)
+DEVICE_BASE_EXPORT BASE_DECLARE_FEATURE(kBluetoothRfcommAndroid);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace features
 }  // namespace device
 

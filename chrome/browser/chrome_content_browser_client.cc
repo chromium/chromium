@@ -768,11 +768,6 @@
 #include "components/enterprise/common/files_scan_data.h"
 #endif
 
-// This should be after all other #includes.
-#if defined(_WINDOWS_)  // Detect whether windows.h was included.
-#include "base/win/windows_h_disallowed.h"
-#endif  // defined(_WINDOWS_)
-
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #endif
@@ -805,6 +800,8 @@
 #include "chrome/browser/on_device_translation/component_manager.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+
+#include "base/win/windows_h_disallowed.h"
 
 using blink::mojom::EffectiveConnectionType;
 using blink::web_pref::WebPreferences;

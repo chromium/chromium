@@ -96,6 +96,7 @@ typedef struct _OVERLAPPED OVERLAPPED;
 typedef struct tagMSG MSG, *PMSG, *NPMSG, *LPMSG;
 typedef struct tagTOUCHINPUT TOUCHINPUT;
 typedef struct tagPOINTER_INFO POINTER_INFO;
+typedef struct tagRECT RECT;
 
 typedef struct _RTL_SRWLOCK RTL_SRWLOCK;
 typedef RTL_SRWLOCK SRWLOCK, *PSRWLOCK;

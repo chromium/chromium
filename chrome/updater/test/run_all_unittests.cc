@@ -185,8 +185,6 @@ int main(int argc, char** argv) {
   SkipFallbackNetworkFetcher();
 
 #if BUILDFLAG(IS_WIN)
-  updater::test::MaybeExcludePathsFromWindowsDefender();
-
   VLOG(0) << "Process priority: " << base::Process::Current().GetOSPriority();
   VLOG(0) << updater::GetUACState();
 

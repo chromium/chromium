@@ -13,6 +13,7 @@ include_rules = [
     "+base/notreached.h",
     "+base/observer_list.h",
     "+base/trace_event",
+    "+base/win/windows_h_disallowed.h",
     "+third_party/perfetto/include/perfetto/tracing",
 ]
 

@@ -5,13 +5,12 @@
 #ifndef CRYPTO_SCOPED_CAPI_TYPES_H_
 #define CRYPTO_SCOPED_CAPI_TYPES_H_
 
-#include <windows.h>
-
 #include <memory>
 
 #include "base/check.h"
 #include "base/scoped_generic.h"
 #include "base/win/wincrypt_shim.h"
+#include "base/win/windows_types.h"
 
 namespace crypto {
 

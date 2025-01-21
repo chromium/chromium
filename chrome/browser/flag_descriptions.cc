@@ -351,11 +351,6 @@ const char kAvifGainmapHdrImagesDescription[] =
     "If enabled, Chrome uses the gainmap (if present) in AVIF images to render "
     "the HDR version on HDR displays and the SDR version on SDR displays.";
 
-const char kCrabbyAvifName[] = "CrabbyAvif for decoding AVIF images";
-const char kCrabbyAvifDescription[] =
-    "If enabled, CrabbyAvif will be used instead of libavif for decoding AVIF "
-    "images";
-
 const char kTangibleSyncName[] = "Tangible Sync";
 const char kTangibleSyncDescription[] =
     "Enables the tangible sync when a user starts the sync consent flow";

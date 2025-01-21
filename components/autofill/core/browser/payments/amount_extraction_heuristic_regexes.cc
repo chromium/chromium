@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "components/autofill/core/browser/metrics/payments/amount_extraction_metrics.h"
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.pb.h"
 
 using ::autofill::core::browser::payments::HeuristicRegexes;
@@ -30,16 +31,18 @@ AmountExtractionHeuristicRegexes::~AmountExtractionHeuristicRegexes() = default;
 
 bool AmountExtractionHeuristicRegexes::PopulateStringFromComponent(
     const std::string& binary_pb) {
-  if (binary_pb.empty()) {
-    return false;
-  }
-
   HeuristicRegexes heuristic_regexes;
   if (!heuristic_regexes.ParseFromString(binary_pb)) {
+    autofill::autofill_metrics::LogAmountExtractionComponentInstallationResult(
+        autofill::autofill_metrics::
+            AmountExtractionComponentInstallationResult::kParsingToProtoFailed);
     return false;
   }
 
   if (!heuristic_regexes.has_generic_details()) {
+    autofill::autofill_metrics::LogAmountExtractionComponentInstallationResult(
+        autofill::autofill_metrics::
+            AmountExtractionComponentInstallationResult::kEmptyGenericDetails);
     return false;
   }
 
@@ -48,6 +51,9 @@ bool AmountExtractionHeuristicRegexes::PopulateStringFromComponent(
   number_of_ancestor_levels_to_search_ =
       heuristic_regexes.generic_details().number_of_ancestor_levels_to_search();
 
+  autofill::autofill_metrics::LogAmountExtractionComponentInstallationResult(
+      autofill::autofill_metrics::AmountExtractionComponentInstallationResult::
+          kSuccessful);
   return true;
 }
 

@@ -14,6 +14,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <unordered_map>
 #include <vector>
@@ -115,7 +116,7 @@ struct CheckedTuple {
 template <class P>
 inline void WriteParam(base::Pickle* m, const P& p) {
   typedef typename SimilarTypeTraits<P>::Type Type;
-  ParamTraits<Type>::Write(m, static_cast<const Type& >(p));
+  ParamTraits<Type>::Write(m, static_cast<const Type&>(p));
 }
 
 template <class P>
@@ -330,7 +331,7 @@ struct ParamTraits<P[Size]> {
 template <>
 struct ParamTraits<std::string> {
   typedef std::string param_type;
-  static void Write(base::Pickle* m, const param_type& p) { m->WriteString(p); }
+  static void Write(base::Pickle* m, std::string_view p) { m->WriteString(p); }
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r) {
@@ -339,10 +340,18 @@ struct ParamTraits<std::string> {
   COMPONENT_EXPORT(IPC) static void Log(const param_type& p, std::string* l);
 };
 
+// Allow calling `WriteParam()` directly with a `std::string_view` argument
+// instead of forcing callers to explicitly construct a `std::string` just to
+// have the `Write()` specialization above turn it back into a
+// `std::string_view`.
+inline void WriteParam(base::Pickle* m, std::string_view sv) {
+  ParamTraits<std::string>::Write(m, sv);
+}
+
 template <>
 struct ParamTraits<std::u16string> {
   typedef std::u16string param_type;
-  static void Write(base::Pickle* m, const param_type& p) {
+  static void Write(base::Pickle* m, std::u16string_view p) {
     m->WriteString16(p);
   }
   static bool Read(const base::Pickle* m,
@@ -352,6 +361,14 @@ struct ParamTraits<std::u16string> {
   }
   COMPONENT_EXPORT(IPC) static void Log(const param_type& p, std::string* l);
 };
+
+// Allow calling `WriteParam()` directly with a `std::u16string_view` argument
+// instead of forcing callers to explicitly construct a `std::u16string` just to
+// have the `Write()` specialization above turn it back into a
+// `std::u16string_view`.
+inline void WriteParam(base::Pickle* m, std::u16string_view sv) {
+  ParamTraits<std::u16string>::Write(m, sv);
+}
 
 #if BUILDFLAG(IS_WIN)
 template <>

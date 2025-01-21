@@ -97,10 +97,7 @@ public class TabArchiverImpl implements TabArchiver {
                         ensureArchivedTabsHaveCorrectFields();
                     }
                 });
-
-        TabModelUtils.runOnTabStateInitialized(
-                selectorToArchive,
-                mCallbackController.makeCancelable(this::archiveEligibleTabsFromTabModelSelector));
+        archiveEligibleTabsFromTabModelSelector(selectorToArchive);
     }
 
     @Override

@@ -425,8 +425,7 @@ class CORE_EXPORT GridSizingTrackCollection final
   LayoutUnit TotalTrackSize() const;
 
   void BuildSets(const ComputedStyle& grid_style,
-                 LayoutUnit grid_available_size,
-                 LayoutUnit gutter_size);
+                 const LogicalSize& grid_available_size);
   void SetIndefiniteGrowthLimitsToBaseSize();
 
   // Caches the geometry of definite sets; this is useful when building the sets

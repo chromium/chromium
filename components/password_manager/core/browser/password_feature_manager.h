@@ -63,18 +63,13 @@ class PasswordFeatureManager {
   virtual void OptInToAccountStorage() = 0;
 
   // Opts-out from using account storage for passwords for the
-  // current signed-in user (unconsented primary account). Addditionally it sets
+  // current signed-in user (unconsented primary account). Additionally it sets
   // the default password store to kProfileStore.
   virtual void OptOutOfAccountStorage() = 0;
 
   // Sets the default password store selected by user in prefs. This store is
   // used for saving new credentials and adding blacking listing entries.
   virtual void SetDefaultPasswordStore(const PasswordForm::Store& store) = 0;
-
-  // Whether the default store value should be changed to match the account
-  // store setting. This is used to migrate users from having different
-  // `GetDefaultPasswordStore` and `IsOptedInForAccountStorage` values.
-  virtual bool ShouldChangeDefaultPasswordStore() const = 0;
 
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 

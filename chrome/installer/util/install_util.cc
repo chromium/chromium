@@ -7,6 +7,8 @@
 
 #include "chrome/installer/util/install_util.h"
 
+#include <windows.h>
+
 #include <shellapi.h>
 #include <shlobj.h>
 

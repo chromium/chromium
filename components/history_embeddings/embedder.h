@@ -16,23 +16,6 @@ namespace history_embeddings {
 
 class Embedding;
 
-// The kind of passage may be specified as a hint for prioritization and
-// control of compute processing.
-enum class PassageKind {
-  // Queries are given top priority and should be computed as quickly
-  // as possible.
-  QUERY,
-
-  // Passages for new live page visits are next. Performance is not as critical
-  // as for queries.
-  PAGE_VISIT_PASSAGE,
-
-  // Rebuilding deleted embeddings from previously stored passages takes lowest
-  // priority and should be computed economically to avoid overtaxing
-  // processors when a large database rebuild is needed.
-  REBUILD_PASSAGE,
-};
-
 using ComputePassagesEmbeddingsCallback = base::OnceCallback<void(
     std::vector<std::string> passages,
     std::vector<Embedding> embeddings,
@@ -51,7 +34,7 @@ class Embedder {
   // the same order. If unsuccessful, the callback will still return the
   // original passages but an empty embeddings vector.
   virtual void ComputePassagesEmbeddings(
-      PassageKind kind,
+      passage_embeddings::PassagePriority priority,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) = 0;
 

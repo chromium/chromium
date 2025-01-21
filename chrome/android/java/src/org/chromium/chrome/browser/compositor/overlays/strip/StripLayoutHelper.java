@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTit
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelActionListener.ActionType;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabStripIphController.IphType;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -82,7 +83,6 @@ import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIphController;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -475,8 +475,6 @@ public class StripLayoutHelper
     private long mLastHoverCardExitTime;
 
     // Tab Group Sync.
-    private float mTabStripHeight;
-    private TabGroupSyncIphController mTabGroupSyncIphController;
     private int mLastSyncedGroupId = Tab.INVALID_TAB_ID;
     private final Supplier<Boolean> mTabStripVisibleSupplier;
 
@@ -493,6 +491,9 @@ public class StripLayoutHelper
     @Nullable private DataSharingService mDataSharingService;
     @Nullable private TabGroupSyncService mTabGroupSyncService;
     @Nullable private DataSharingService.Observer mDataSharingObserver;
+
+    // IPH on tab strip.
+    private TabStripIphController mTabStripIphController;
 
     /**
      * Creates an instance of the {@link StripLayoutHelper}.
@@ -529,7 +530,6 @@ public class StripLayoutHelper
             ActionConfirmationManager actionConfirmationManager,
             ModalDialogManager modalDialogManager,
             DataSharingTabManager dataSharingTabManager,
-            int tabStripHeight,
             Supplier<Boolean> tabStripVisibleSupplier) {
         mGroupTitleDrawXOffset = TAB_OVERLAP_WIDTH_DP - FOLIO_FOOT_LENGTH_DP;
         mGroupTitleOverlapWidth = FOLIO_FOOT_LENGTH_DP - mGroupTitleDrawXOffset;
@@ -539,7 +539,6 @@ public class StripLayoutHelper
         mTabDragSource = tabDragSource;
         mWindowAndroid = windowAndroid;
         mLastHoverCardExitTime = INVALID_TIME;
-        mTabStripHeight = tabStripHeight;
         mTabStripVisibleSupplier = tabStripVisibleSupplier;
         mDataSharingTabManager = dataSharingTabManager;
         mModalDialogManager = modalDialogManager;
@@ -1114,8 +1113,8 @@ public class StripLayoutHelper
 
     /** Dismiss the iph text bubble for synced tab group. */
     private void dismissTabGroupSyncIph() {
-        if (mLastSyncedGroupId != Tab.INVALID_TAB_ID && mTabGroupSyncIphController != null) {
-            mTabGroupSyncIphController.dismissTextBubble();
+        if (mLastSyncedGroupId != Tab.INVALID_TAB_ID && mTabStripIphController != null) {
+            mTabStripIphController.dismissTextBubble();
             mLastSyncedGroupId = Tab.INVALID_TAB_ID;
         }
     }
@@ -1157,6 +1156,7 @@ public class StripLayoutHelper
         return doneAnimating;
     }
 
+    // TODO:(crbug.com/375271955) Ensure sync IPH doesn't show when joining a collaboration group.
     private void showTabGroupSyncIph() {
         // Return early if no tab group is being synced, or profile is invalid, or if in incognito
         // mode.
@@ -1170,37 +1170,27 @@ public class StripLayoutHelper
             return;
         }
         // Skip initialization if testing value has been set.
-        if (mTabGroupSyncIphController == null) {
+        if (mTabStripIphController == null) {
             UserEducationHelper userEducationHelper =
                     new UserEducationHelper(
                             mWindowAndroid.getActivity().get(),
                             mModel.getProfile(),
                             new Handler(Looper.getMainLooper()));
             Tracker tracker = TrackerFactory.getTrackerForProfile(mModel.getProfile());
-            mTabGroupSyncIphController =
-                    new TabGroupSyncIphController(
-                            mContext.getResources(),
-                            userEducationHelper,
-                            R.string.newly_synced_tab_group_iph,
-                            tracker);
+            mTabStripIphController =
+                    new TabStripIphController(
+                            mContext.getResources(), userEducationHelper, tracker);
         }
         StripLayoutGroupTitle groupTitle = findGroupTitle(mLastSyncedGroupId);
 
         // Display iph only when synced tab group title is fully visible.
-        if (groupTitle == null
-                || !groupTitle.isVisible()
-                || groupTitle.getPaddedX() + groupTitle.getPaddedWidth()
-                        >= mNewTabButton.getDrawX()) {
+        if (groupTitle == null || !isViewCompletelyVisible(groupTitle)) {
             return;
         }
-        float dpToPx = mContext.getResources().getDisplayMetrics().density;
+
         if (groupTitle != null) {
-            mTabGroupSyncIphController.maybeShowIphOnTabStrip(
-                    mToolbarContainerView,
-                    groupTitle.getDrawX() * dpToPx,
-                    0.f,
-                    (mWidth - groupTitle.getDrawX() - groupTitle.getWidth()) * dpToPx,
-                    mToolbarContainerView.getHeight() - mTabStripHeight);
+            mTabStripIphController.maybeShowIphOnTabStrip(
+                    groupTitle, mToolbarContainerView, IphType.TAB_GROUP_SYNC, mHeight);
         }
     }
 
@@ -1208,9 +1198,8 @@ public class StripLayoutHelper
         mLastSyncedGroupId = id;
     }
 
-    void setTabGroupSyncIphControllerForTesting(
-            TabGroupSyncIphController tabGroupSyncIphController) {
-        mTabGroupSyncIphController = tabGroupSyncIphController;
+    void setTabStripIphControllerForTesting(TabStripIphController tabStripIphController) {
+        mTabStripIphController = tabStripIphController;
     }
 
     void setIsFirstLayoutPassForTesting(boolean isFirstLayoutPass) {
@@ -4002,7 +3991,7 @@ public class StripLayoutHelper
         int index = getSelectedStripTabIndex();
         StripLayoutTab selectedLayoutTab =
                 index >= 0 && index < mStripTabs.length ? mStripTabs[index] : null;
-        if (selectedLayoutTab == null || isSelectedTabCompletelyVisible(selectedLayoutTab)) {
+        if (selectedLayoutTab == null || isViewCompletelyVisible(selectedLayoutTab)) {
             return;
         }
         float delta = calculateDeltaToMakeIndexVisible(index);
@@ -4010,11 +3999,20 @@ public class StripLayoutHelper
         setScrollForScrollingTabStacker(delta, animate, time);
     }
 
-    private boolean isSelectedTabCompletelyVisible(StripLayoutTab selectedTab) {
-        return selectedTab.isVisible()
-                && selectedTab.getDrawX() > getVisibleLeftBound() + mLeftFadeWidth
-                && selectedTab.getDrawX() + selectedTab.getWidth()
-                        < getVisibleRightBound() - mRightFadeWidth;
+    private boolean isViewCompletelyVisible(StripLayoutView view) {
+        float leftBound = getVisibleLeftBound() + mLeftFadeWidth;
+        float rightBound = getVisibleRightBound() - mRightFadeWidth;
+        float viewStart = 0f;
+        float viewEnd = 0f;
+        if (view instanceof StripLayoutTab tab) {
+            viewStart = tab.getDrawX();
+            viewEnd = tab.getDrawX() + tab.getWidth();
+        } else {
+            StripLayoutGroupTitle groupTitle = (StripLayoutGroupTitle) view;
+            viewStart = groupTitle.getPaddedX();
+            viewEnd = groupTitle.getPaddedX() + groupTitle.getPaddedWidth();
+        }
+        return view.isVisible() && viewStart > leftBound && viewEnd < rightBound;
     }
 
     /**

@@ -27,6 +27,7 @@ import androidx.core.util.Pair;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.Callback;
+import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils.UptimeMillisTimer;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.ValueChangedCallback;
@@ -590,9 +591,9 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     private View getTabGridDialogAnimationSourceView(int tabId) {
-        // If we are animating to show or hide the HubLayout, the TabGridDialog should hide or show
-        // via fade instead of animating from a tab. Return null so that this happens.
-        if (mIsAnimatingSupplier.get()) return null;
+        // Returning null causes the animation to be a fade.
+        // Do so if we are animating to show or hide the HubLayout or this is a low end device.
+        if (mIsAnimatingSupplier.get() || SysUtils.isLowEndDevice()) return null;
 
         TabListCoordinator coordinator = mTabListCoordinator;
         int index = coordinator.getTabIndexFromTabId(tabId);

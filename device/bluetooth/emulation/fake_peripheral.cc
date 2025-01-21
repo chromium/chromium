@@ -122,7 +122,7 @@ uint32_t FakePeripheral::GetBluetoothClass() const {
   NOTREACHED();
 }
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 device::BluetoothTransport FakePeripheral::GetType() const {
   NOTREACHED();
 }

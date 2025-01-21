@@ -1,6 +1,7 @@
 *AddressBarPositionEphemeralModuleTest.*
 *AndroidHomeModuleRankerTest.*
 *AutofillPasswordsEphemeralModuleTest.*
+*AuxiliarySearchPromoTest.*
 *BackgroundRecorderTest.*
 *CachedResultProviderTest.*
 *CachedResultWriterTest.*

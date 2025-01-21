@@ -10,6 +10,7 @@ import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.content.Context;
+import android.os.ParcelUuid;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -72,13 +73,34 @@ public class BluetoothDeviceWrapper {
         return mDevice.getName();
     }
 
+    public int getType() {
+        return mDevice.getType();
+    }
+
+    public ParcelUuid[] getUuids() {
+        return mDevice.getUuids();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof BluetoothDeviceWrapper) {
+            return mDevice.equals(((BluetoothDeviceWrapper) o).mDevice);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return mDevice.hashCode();
+    }
+
     /**
-     * Implements android.bluetooth.BluetoothGattCallback and forwards calls through
-     * to a provided BluetoothGattCallbackWrapper instance.
+     * Implements android.bluetooth.BluetoothGattCallback and forwards calls through to a provided
+     * BluetoothGattCallbackWrapper instance.
      *
-     * This class is required so that Fakes can use BluetoothGattCallbackWrapper
-     * without it extending from BluetoothGattCallback. Fakes must function even on
-     * Android versions where BluetoothGattCallback class is not defined.
+     * <p>This class is required so that Fakes can use BluetoothGattCallbackWrapper without it
+     * extending from BluetoothGattCallback. Fakes must function even on Android versions where
+     * BluetoothGattCallback class is not defined.
      */
     private static class ForwardBluetoothGattCallbackToWrapper extends BluetoothGattCallback {
         final BluetoothGattCallbackWrapper mWrapperCallback;
@@ -152,5 +174,4 @@ public class BluetoothDeviceWrapper {
             mWrapperCallback.onServicesDiscovered(status);
         }
     }
-
 }

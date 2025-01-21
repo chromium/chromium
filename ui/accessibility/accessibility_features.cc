@@ -401,4 +401,15 @@ bool IsBlockRootWindowAccessibleNameChangeEventEnabled() {
 }
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+BASE_FEATURE(kWasmTtsComponentUpdaterEnabled,
+             "WasmTtsComponentUpdaterEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsWasmTtsComponentUpdaterEnabled() {
+  return base::FeatureList::IsEnabled(::features::kReadAnythingReadAloud) &&
+         base::FeatureList::IsEnabled(
+             ::features::kWasmTtsComponentUpdaterEnabled);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 }  // namespace features

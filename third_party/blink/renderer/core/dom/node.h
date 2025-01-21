@@ -1017,17 +1017,6 @@ class CORE_EXPORT Node : public EventTarget {
   void SetHasDisplayLockContext() { SetFlag(kHasDisplayLockContext); }
   bool HasDisplayLockContext() const { return GetFlag(kHasDisplayLockContext); }
 
-  // Creates a DocumentFragment, converts |node_unions| from bindings into
-  // actual Nodes by converting strings and script into text nodes via
-  // NodeOrStringToNode.  If there is more than one node, appends all
-  // resulting Nodes to the DocumentFragment, and returns it. Returns nullptr
-  // if exceptions are thrown.
-  static Node* ConvertNodeUnionsIntoNode(
-      const ContainerNode* parent,
-      const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
-      Document& document,
-      const char* property_name,
-      ExceptionState& exception_state);
   // Converts |node_unions| from bindings into actual Nodes by converting
   // strings and script into text nodes, and if more than one node resulted,
   // removes them from their old parent (as though they had been inserted into

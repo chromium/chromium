@@ -121,6 +121,7 @@ class BluetoothTestBase : public testing::Test {
   static const char kTestUUIDLinkLoss[];
   static const char kTestUUIDHeartRate[];
   static const char kTestUUIDU2f[];
+  static const char kTestUUIDSerial[];
   // Characteristics
   // The following three characteristics are for kTestUUIDGenericAccess.
   static const char kTestUUIDDeviceName[];

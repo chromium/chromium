@@ -314,6 +314,7 @@ public abstract class ChromeFeatureList {
     public static final String DEVICE_AUTHENTICATOR_ANDROIDX = "DeviceAuthenticatorAndroidx";
     public static final String DETAILED_LANGUAGE_SETTINGS = "DetailedLanguageSettings";
     public static final String DISABLE_INSTANCE_LIMIT = "DisableInstanceLimit";
+    public static final String DISABLE_LIST_TAB_SWITCHER = "DisableListTabSwitcher";
     public static final String DISCO_FEED_ENDPOINT = "DiscoFeedEndpoint";
     public static final String DOWNLOADS_MIGRATE_TO_JOBS_API = "DownloadsMigrateToJobsAPI";
     public static final String DRAW_CUTOUT_EDGE_TO_EDGE = "DrawCutoutEdgeToEdge";
@@ -659,6 +660,11 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CROSS_DEVICE_TAB_PANE_ANDROID, false);
     public static final CachedFlag sDisableInstanceLimit =
             newCachedFlag(DISABLE_INSTANCE_LIMIT, false);
+    public static final CachedFlag sDisableListTabSwitcher =
+            newCachedFlag(
+                    DISABLE_LIST_TAB_SWITCHER,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sDownloadsMigrateToJobsAPI =
             newCachedFlag(DOWNLOADS_MIGRATE_TO_JOBS_API, true);
     public static final CachedFlag sDrawKeyNativeEdgeToEdge =
@@ -844,6 +850,7 @@ public abstract class ChromeFeatureList {
                     sCommandLineOnNonRooted,
                     sCrossDeviceTabPaneAndroid,
                     sDisableInstanceLimit,
+                    sDisableListTabSwitcher,
                     sDownloadsMigrateToJobsAPI,
                     sDrawKeyNativeEdgeToEdge,
                     sEdgeToEdgeBottomChin,

@@ -1977,29 +1977,6 @@ Element* ContainerNode::GetAutofocusDelegate() const {
 }
 
 // https://dom.spec.whatwg.org/#dom-parentnode-replacechildren
-void ContainerNode::ReplaceChildren(Node* new_child,
-                                    ExceptionState& exception_state) {
-  CHECK(!RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled());
-
-  if (!EnsurePreInsertionValidity(new_child, /* new_children*/ nullptr,
-                                  /*next*/ nullptr, /*old_child*/ nullptr,
-                                  exception_state)) {
-    return;
-  }
-
-  // 3. Replace all with node within this.
-  ChildListMutationScope mutation(*this);
-  while (Node* first_child = firstChild()) {
-    RemoveChild(first_child, exception_state);
-    if (exception_state.HadException()) {
-      return;
-    }
-  }
-
-  AppendChild(new_child, exception_state);
-}
-
-// https://dom.spec.whatwg.org/#dom-parentnode-replacechildren
 void ContainerNode::ReplaceChildren(const VectorOf<Node>& nodes,
                                     ExceptionState& exception_state) {
   if (!EnsurePreInsertionValidity(/*new_child*/ nullptr, &nodes,

@@ -206,11 +206,6 @@ class CORE_EXPORT GridLayoutAlgorithm
                             GridTrackSizingDirection track_direction,
                             SizingConstraint sizing_constraint) const;
 
-  // Gets the specified [column|row]-gap of the grid.
-  LayoutUnit GutterSize(
-      GridTrackSizingDirection track_direction,
-      LayoutUnit parent_grid_gutter_size = LayoutUnit()) const;
-
   LayoutUnit DetermineFreeSpace(
       SizingConstraint sizing_constraint,
       const GridSizingTrackCollection& track_collection) const;

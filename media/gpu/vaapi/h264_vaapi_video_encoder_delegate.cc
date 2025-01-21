@@ -940,15 +940,15 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
     // we use the peak, because it exists for variable bitrates.
     bitrate_bps = bitrate.peak_bps();
     DCHECK_NE(bitrate.peak_bps(), 0u);
-    base::CheckedNumeric<uint32_t> checked_percentage =
-        base::CheckDiv(base::CheckMul<uint32_t>(bitrate.target_bps(), 100u),
+    base::CheckedNumeric<uint64_t> checked_percentage =
+        base::CheckDiv(base::CheckMul<uint64_t>(bitrate.target_bps(), 100u),
                        bitrate.peak_bps());
     if (!checked_percentage.AssignIfValid(&target_percentage)) {
       DVLOGF(1)
           << "Integer overflow while computing target percentage for bitrate.";
       return false;
     }
-    target_percentage = checked_percentage.ValueOrDefault(100u);
+    DVLOGF(3) << "Target percentage: " << target_percentage;
   }
   VAEncSequenceParameterBufferH264 seq_param = {};
 

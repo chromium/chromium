@@ -51,6 +51,7 @@ const char kCountOfClearingBrowsingData[] = "count_of_clearing_browsing_data";
 const char kCountOfClearingBrowsingDataThroughQuickDelete[] =
     "count_of_clearing_browsing_data_through_quick_delete";
 const char kQuickDeletePromoShownCount[] = "quick_delete_shown_count";
+const char kAuxiliarySearchAvailable[] = "auxiliary_search_available";
 
 // Placeholder output label for segmentation model executor.
 inline constexpr char kPlaceholderEphemeralModuleLabel[] = "placeholder_module";

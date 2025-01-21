@@ -83,7 +83,6 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
   MOCK_METHOD(void, DiscardUnsyncedCredentials, (), (override));
   MOCK_METHOD(void, MovePasswordToAccountStore, (), (override));
   MOCK_METHOD(void, BlockMovingPasswordToAccountStore, (), (override));
-  MOCK_METHOD(void, PromptSaveBubbleAfterDefaultStoreChanged, (), (override));
   MOCK_METHOD(void,
               ChooseCredential,
               (const password_manager::PasswordForm&,
@@ -96,10 +95,6 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
   MOCK_METHOD(void,
               NavigateToPasswordDetailsPageInPasswordManager,
               (const std::string&, password_manager::ManagePasswordsReferrer),
-              (override));
-  MOCK_METHOD(void,
-              NavigateToPasswordManagerSettingsAccountStoreToggle,
-              (password_manager::ManagePasswordsReferrer),
               (override));
   MOCK_METHOD(void,
               NavigateToPasswordCheckup,

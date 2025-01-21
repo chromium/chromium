@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_TRACK_SIZING_ALGORITHM_H_
 
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
+#include "third_party/blink/renderer/core/style/grid_enums.h"
 
 namespace blink {
 
@@ -28,6 +29,13 @@ class GridTrackSizingAlgorithm {
   static void CacheGridItemsProperties(
       const GridSizingTrackCollection& track_collection,
       GridItems* grid_items);
+
+  // Calculates the specified `[column|row]-gap` of the container.
+  static LayoutUnit CalculateGutterSize(
+      const ComputedStyle& container_style,
+      const LogicalSize& container_available_size,
+      GridTrackSizingDirection track_direction,
+      LayoutUnit parent_gutter_size = LayoutUnit());
 
   // For the first track, computes the start offset and gutter size based on the
   // alignment properties and available size of the container.

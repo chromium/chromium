@@ -262,10 +262,6 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   bool UpdateLastImage(scoped_refptr<VideoFrame> video_frame,
                        viz::RasterContextProvider* raster_context_provider);
 
-  bool PrepareVideoFrame(scoped_refptr<VideoFrame> video_frame,
-                         viz::RasterContextProvider* raster_context_provider,
-                         const gpu::MailboxHolder& dest_holder);
-
   std::optional<Cache> cache_;
 
   // If |cache_| is not used for a while, it's deleted to save memory.

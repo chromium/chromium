@@ -7,16 +7,20 @@
 #include <iterator>
 #include <sstream>
 
+#include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "device/base/features.h"
 #include "device/bluetooth/android/wrappers.h"
 #include "device/bluetooth/bluetooth_adapter_android.h"
+#include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device_android.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic_android.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor_android.h"
@@ -102,7 +106,8 @@ bool BluetoothTestAndroid::PlatformSupportsLowEnergy() {
 
 void BluetoothTestAndroid::InitWithDefaultAdapter() {
   j_default_bluetooth_adapter_ =
-      BluetoothAdapterWrapper_CreateWithDefaultAdapter();
+      BluetoothAdapterWrapper_CreateWithDefaultAdapter(
+          base::FeatureList::IsEnabled(features::kBluetoothRfcommAndroid));
   adapter_ = BluetoothAdapterAndroid::Create(j_default_bluetooth_adapter_);
 }
 
@@ -131,6 +136,17 @@ BluetoothDevice* BluetoothTestAndroid::SimulateLowEnergyDevice(
   return observer.last_device();
 }
 
+BluetoothDevice* BluetoothTestAndroid::SimulateClassicDevice() {
+  TestBluetoothAdapterObserver observer(adapter_);
+  SimulatePairedClassicDevice(0);
+  return observer.last_device();
+}
+
+void BluetoothTestAndroid::SimulatePairedClassicDevice(int device_ordinal) {
+  Java_FakeBluetoothAdapter_simulatePairedClassicDevice(
+      AttachCurrentThread(), j_fake_bluetooth_adapter_, device_ordinal);
+}
+
 void BluetoothTestAndroid::RememberDeviceForSubsequentAction(
     BluetoothDevice* device) {
   BluetoothDeviceAndroid* device_android =
@@ -138,6 +154,12 @@ void BluetoothTestAndroid::RememberDeviceForSubsequentAction(
 
   Java_FakeBluetoothDevice_rememberDeviceForSubsequentAction(
       base::android::AttachCurrentThread(), device_android->GetJavaObject());
+}
+
+void BluetoothTestAndroid::SetEnabledDeviceTransport(
+    BluetoothTransport transport) {
+  Java_FakeBluetoothAdapter_setEnabledTransport(
+      AttachCurrentThread(), j_fake_bluetooth_adapter_, transport);
 }
 
 void BluetoothTestAndroid::SimulateLocationServicesOff() {

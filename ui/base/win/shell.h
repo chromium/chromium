@@ -5,11 +5,10 @@
 #ifndef UI_BASE_WIN_SHELL_H_
 #define UI_BASE_WIN_SHELL_H_
 
-#include <windows.h>
-
 #include <string>
 
 #include "base/component_export.h"
+#include "base/win/windows_types.h"
 
 namespace base {
 class FilePath;

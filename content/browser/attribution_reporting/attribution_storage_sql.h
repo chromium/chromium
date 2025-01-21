@@ -376,6 +376,7 @@ class CONTENT_EXPORT AttributionStorageSql {
   // `GenerateNullAggregatableReportsAndStoreReports()`.
   CreateReportResult::Aggregatable MaybeStoreAggregatableAttributionReportData(
       const StoredSource&,
+      bool has_trigger_context_id,
       int remaining_aggregatable_attribution_budget,
       int num_aggregatable_attribution_reports,
       std::optional<uint64_t> dedup_key,
@@ -493,6 +494,7 @@ class CONTENT_EXPORT AttributionStorageSql {
   // source event by `additional_budget_consumed`.
   [[nodiscard]] bool AdjustBudgetConsumedForSource(
       StoredSource::Id source_id,
+      bool has_trigger_context_id,
       int additional_budget_consumed,
       const StoredSource::AggregatableNamedBudgets*)
       VALID_CONTEXT_REQUIRED(sequence_checker_);

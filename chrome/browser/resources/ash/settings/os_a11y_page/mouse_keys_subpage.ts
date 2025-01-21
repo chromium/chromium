@@ -33,6 +33,16 @@ interface SliderData {
   defaultValue: number;
 }
 
+interface KeyboardPreviewOption {
+  icon: string;
+  label: string;
+}
+
+enum DominantHand {
+  RIGHT = 0,
+  LEFT = 1,
+}
+
 const SettingsMouseKeysSubpageElementBase = DeepLinkingMixin(RouteObserverMixin(
     WebUiListenerMixin(PrefsMixin(I18nMixin(PolymerElement)))));
 
@@ -76,8 +86,125 @@ export class SettingsMouseKeysSubpageElement extends
           ];
         },
       },
+
+      primaryKeyboardRightHandPreviewOptions_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          return [
+            {
+              icon:
+                  'os-settings-illo:mouse-keys-primary-keyboard-cursor-control',
+              label: loadTimeData.getString('rightPrimaryKeyMoveCursor'),
+            },
+            {
+              icon:
+                  'os-settings-illo:mouse-keys-primary-keyboard-press-mouse-button',
+              label: loadTimeData.getString('rightPrimaryKeyPressMouseButton'),
+            },
+            {
+              icon:
+                  'os-settings-illo:mouse-keys-primary-keyboard-change-mouse-button',
+              label: loadTimeData.getString('rightPrimaryKeyChangeMouseButton'),
+            },
+            {
+              icon: 'os-settings-illo:mouse-keys-primary-keyboard-double-click',
+              label: loadTimeData.getString('rightPrimaryKeyDoubleClick'),
+            },
+            {
+              icon:
+                  'os-settings-illo:mouse-keys-primary-keyboard-hold-mouse-button',
+              label: loadTimeData.getString('rightPrimaryKeyHoldMouseButton'),
+            },
+            {
+              icon:
+                  'os-settings-illo:mouse-keys-primary-keyboard-release-mouse-button',
+              label:
+                  loadTimeData.getString('rightPrimaryKeyReleaseMouseButton'),
+            },
+          ];
+        },
+      },
+
+      primaryKeyboardLeftHandPreviewOptions_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          return [
+            {
+              icon:
+                  'os-settings-illo:mouse-keys-left-primary-keyboard-cursor-control',
+              label: loadTimeData.getString('leftPrimaryKeyMoveCursor'),
+            },
+            {
+              icon:
+                  'os-settings-illo:mouse-keys-left-primary-keyboard-press-mouse-button',
+              label: loadTimeData.getString('leftPrimaryKeyPressMouseButton'),
+            },
+            {
+              icon:
+                  'os-settings-illo:mouse-keys-left-primary-keyboard-change-mouse-button',
+              label: loadTimeData.getString('leftPrimaryKeyChangeMouseButton'),
+            },
+            {
+              icon:
+                  'os-settings-illo:mouse-keys-left-primary-keyboard-double-click',
+              label: loadTimeData.getString('leftPrimaryKeyDoubleClick'),
+            },
+            {
+              icon:
+                  'os-settings-illo:mouse-keys-left-primary-keyboard-hold-mouse-button',
+              label: loadTimeData.getString('leftPrimaryKeyHoldMouseButton'),
+            },
+            {
+              icon:
+                  'os-settings-illo:mouse-keys-left-primary-keyboard-release-mouse-button',
+              label: loadTimeData.getString('leftPrimaryKeyReleaseMouseButton'),
+            },
+          ];
+        },
+      },
+
+      numKeypadPreviewOptions: {
+        readOnly: true,
+        type: Array,
+        value() {
+          return [
+            {
+              icon: 'os-settings-illo:mouse-keys-num-keypad-cursor-control',
+              label: loadTimeData.getString('numPadKeyMoveCursor'),
+            },
+            {
+              icon: 'os-settings-illo:mouse-keys-num-keypad-press-mouse-button',
+              label: loadTimeData.getString('numPadKeyPressMouseButton'),
+            },
+            {
+              icon:
+                  'os-settings-illo:mouse-keys-num-keypad-change-mouse-button',
+              label: loadTimeData.getString('numPadKeySelectMouseButton'),
+            },
+            {
+              icon: 'os-settings-illo:mouse-keys-num-keypad-double-click',
+              label: loadTimeData.getString('numPadKeyDoubleClick'),
+            },
+            {
+              icon: 'os-settings-illo:mouse-keys-num-keypad-hold-mouse-button',
+              label: loadTimeData.getString('numPadKeyHoldMouseButton'),
+            },
+            {
+              icon:
+                  'os-settings-illo:mouse-keys-num-keypad-release-mouse-button',
+              label: loadTimeData.getString('numPadKeyReleaseMouseButton'),
+            },
+          ];
+        },
+      },
+
     };
   }
+
+  private primaryKeyboardRightHandPreviewOptions_: KeyboardPreviewOption[];
+  private primaryKeyboardLeftHandPreviewOptions_: KeyboardPreviewOption[];
 
   private getToggleLabel_(): string {
     return this.getPref('settings.a11y.mouse_keys.enabled').value ?
@@ -149,6 +276,13 @@ export class SettingsMouseKeysSubpageElement extends
         this.i18n('defaultPercentage', strValue) :
         this.i18n('percentage', strValue);
     return {label: label, value: data.tick, ariaValue: value};
+  }
+
+  private getPrimaryKeyboardPreviewOptions_(dominantHand: DominantHand):
+      KeyboardPreviewOption[] {
+    return dominantHand === DominantHand.RIGHT ?
+        this.primaryKeyboardRightHandPreviewOptions_ :
+        this.primaryKeyboardLeftHandPreviewOptions_;
   }
 }
 

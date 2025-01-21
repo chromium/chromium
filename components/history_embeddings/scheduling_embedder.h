@@ -33,7 +33,7 @@ class SchedulingEmbedder : public Embedder {
 
   // Embedder:
   void ComputePassagesEmbeddings(
-      PassageKind kind,
+      passage_embeddings::PassagePriority priority,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override;
 
@@ -46,7 +46,7 @@ class SchedulingEmbedder : public Embedder {
   // when submitting work to the `embedder_`, and jobs can also be broken
   // down so that partial progress is made across multiple work submissions.
   struct Job {
-    Job(PassageKind kind,
+    Job(passage_embeddings::PassagePriority priority,
         std::vector<std::string> passages,
         ComputePassagesEmbeddingsCallback callback);
     ~Job();
@@ -56,7 +56,7 @@ class SchedulingEmbedder : public Embedder {
     Job& operator=(Job&&);
 
     // Data for the job is saved from calls to `ComputePassagesEmbeddings`.
-    PassageKind kind;
+    passage_embeddings::PassagePriority priority;
     std::vector<std::string> passages;
     ComputePassagesEmbeddingsCallback callback;
 

@@ -1154,9 +1154,11 @@ wtf_size_t GridLayoutAlgorithm::ComputeAutomaticRepetitions(
     const GridSpan& subgrid_span,
     GridTrackSizingDirection track_direction) const {
   const bool is_for_columns = track_direction == kForColumns;
+
+  const auto& style = Style();
   const auto& track_list = is_for_columns
-                               ? Style().GridTemplateColumns().track_list
-                               : Style().GridTemplateRows().track_list;
+                               ? style.GridTemplateColumns().track_list
+                               : style.GridTemplateRows().track_list;
 
   if (!track_list.HasAutoRepeater())
     return 0;
@@ -1188,7 +1190,8 @@ wtf_size_t GridLayoutAlgorithm::ComputeAutomaticRepetitions(
 
   LayoutUnit auto_repeater_size;
   LayoutUnit non_auto_specified_size;
-  const LayoutUnit gutter_size = GutterSize(track_direction);
+  const auto gutter_size = GridTrackSizingAlgorithm::CalculateGutterSize(
+      style, grid_available_size_, track_direction);
 
   for (wtf_size_t repeater_index = 0;
        repeater_index < track_list.RepeaterCount(); ++repeater_index) {
@@ -1428,9 +1431,10 @@ GridLayoutAlgorithm::CreateSubgridTrackCollection(
   const bool is_for_columns_in_parent = subgrid_data->is_parallel_with_root_grid
                                             ? track_direction == kForColumns
                                             : track_direction == kForRows;
+
+  const auto& style = Style();
   const auto& parent_track_collection =
       is_for_columns_in_parent ? subgrid_data.Columns() : subgrid_data.Rows();
-
   const auto& range_indices = is_for_columns_in_parent
                                   ? subgrid_data->column_range_indices
                                   : subgrid_data->row_range_indices;
@@ -1438,8 +1442,10 @@ GridLayoutAlgorithm::CreateSubgridTrackCollection(
   return std::make_unique<GridLayoutTrackCollection>(
       parent_track_collection.CreateSubgridTrackCollection(
           range_indices.begin, range_indices.end,
-          GutterSize(track_direction, parent_track_collection.GutterSize()),
-          ComputeMarginsForSelf(GetConstraintSpace(), Style()),
+          GridTrackSizingAlgorithm::CalculateGutterSize(
+              style, grid_available_size_, track_direction,
+              parent_track_collection.GutterSize()),
+          ComputeMarginsForSelf(GetConstraintSpace(), style),
           BorderScrollbarPadding(), track_direction,
           is_for_columns_in_parent
               ? subgrid_data->is_opposite_direction_in_root_grid_columns
@@ -1461,11 +1467,7 @@ void GridLayoutAlgorithm::InitializeTrackCollection(
   }
 
   auto& track_collection = layout_data->SizingCollection(track_direction);
-  track_collection.BuildSets(Style(),
-                             (track_direction == kForColumns)
-                                 ? grid_available_size_.inline_size
-                                 : grid_available_size_.block_size,
-                             GutterSize(track_direction));
+  track_collection.BuildSets(Style(), grid_available_size_);
 }
 
 namespace {
@@ -1629,12 +1631,7 @@ void GridLayoutAlgorithm::ComputeUsedTrackSizes(
 
   auto& track_collection =
       sizing_subtree.LayoutData().SizingCollection(track_direction);
-
-  track_collection.BuildSets(Style(),
-                             (track_direction == kForColumns)
-                                 ? grid_available_size_.inline_size
-                                 : grid_available_size_.block_size,
-                             GutterSize(track_direction));
+  track_collection.BuildSets(Style(), grid_available_size_);
 
   // 2. Resolve intrinsic track sizing functions to absolute lengths.
   if (track_collection.HasIntrinsicTrack()) {
@@ -2914,26 +2911,6 @@ void GridLayoutAlgorithm::ExpandFlexibleTracks(
   // container’s max-width/height), then redo this step, treating the free space
   // as definite and the available grid space as equal to the grid container’s
   // inner size when it’s sized to its min-width/height (max-width/height).
-}
-
-LayoutUnit GridLayoutAlgorithm::GutterSize(
-    GridTrackSizingDirection track_direction,
-    LayoutUnit parent_grid_gutter_size) const {
-  const bool is_for_columns = track_direction == kForColumns;
-  const auto& gutter_size =
-      is_for_columns ? Style().ColumnGap() : Style().RowGap();
-
-  if (!gutter_size) {
-    // No specified gutter size means we must use the "normal" gap behavior:
-    //   - For standalone grids `parent_grid_gutter_size` will default to zero.
-    //   - For subgrids we must provide the parent grid's gutter size.
-    return parent_grid_gutter_size;
-  }
-
-  return MinimumValueForLength(
-      *gutter_size, (is_for_columns ? grid_available_size_.inline_size
-                                    : grid_available_size_.block_size)
-                        .ClampIndefiniteToZero());
 }
 
 // TODO(ikilpatrick): Determine if other uses of this method need to respect

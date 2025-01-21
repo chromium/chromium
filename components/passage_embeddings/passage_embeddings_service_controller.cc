@@ -12,7 +12,9 @@
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/passage_embeddings/passage_embeddings_features.h"
+#include "components/passage_embeddings/passage_embeddings_types.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "services/passage_embeddings/public/mojom/passage_embeddings.mojom-shared.h"
 
 namespace passage_embeddings {
 
@@ -39,6 +41,16 @@ mojom::PassageEmbedderParamsPtr MakeEmbedderParams() {
   params->passive_priority_num_threads = kPassivePriorityNumThreads.Get();
   params->embedder_cache_size = kEmbedderCacheSize.Get();
   return params;
+}
+
+mojom::PassagePriority PassagePriorityToMojom(PassagePriority priority) {
+  switch (priority) {
+    case kUserInitiated:
+      return mojom::PassagePriority::kUserInitiated;
+    case kPassive:
+    case kLatent:
+      return mojom::PassagePriority::kPassive;
+  }
 }
 
 class ScopedEmbeddingsModelInfoStatusLogger {
@@ -151,7 +163,7 @@ EmbedderMetadata PassageEmbeddingsServiceController::GetEmbedderMetadata() {
 
 void PassageEmbeddingsServiceController::GetEmbeddings(
     std::vector<std::string> passages,
-    mojom::PassagePriority priority,
+    PassagePriority priority,
     GetEmbeddingsCallback callback) {
   if (!EmbedderReady()) {
     VLOG(1) << "Missing model path: embeddings='" << embeddings_model_path_
@@ -184,7 +196,7 @@ void PassageEmbeddingsServiceController::GetEmbeddings(
 
   pending_requests_.push_back(next_request_id_);
   embedder_remote_->GenerateEmbeddings(
-      std::move(passages), priority,
+      std::move(passages), PassagePriorityToMojom(priority),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&PassageEmbeddingsServiceController::OnGotEmbeddings,
                          weak_ptr_factory_.GetWeakPtr(), next_request_id_,
