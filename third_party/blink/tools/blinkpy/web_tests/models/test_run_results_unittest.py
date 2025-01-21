@@ -254,8 +254,7 @@ class RunResultsWithSinkTest(unittest.TestCase):
     def testAddWithSink(self):
         self.results.result_sink = mock.Mock()
         self.results.add(self.test, False, False)
-        self.results.result_sink.sink.assert_called_with(
-            False, self.test, self.expectations)
+        self.results.result_sink.sink.assert_called_with(False, self.test)
 
     def testAddWithoutSink(self):
         self.results.result_sink = None

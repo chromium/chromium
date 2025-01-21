@@ -63,7 +63,7 @@ class TestCreateTestResultSink(TestResultSinkTestBase):
         response.status_code = 200
         with mock.patch.object(rs._session, 'post',
                                return_value=response) as m:
-            rs.sink(True, test_results.TestResult('test'), None)
+            rs.sink(True, test_results.TestResult('test'))
             self.assertTrue(m.called)
             self.assertEqual(
                 urlparse(m.call_args[0][0]).netloc, ctx['address'])
@@ -74,18 +74,15 @@ class TestResultSinkMessage(TestResultSinkTestBase):
 
     def setUp(self):
         super(TestResultSinkMessage, self).setUp()
-        patcher = mock.patch.object(TestResultSink, '_send')
-        self.mock_send = patcher.start()
-        self.addCleanup(patcher.stop)
-
         ctx = {'address': 'localhost:123', 'auth_token': 'super-secret'}
         self.luci_context(result_sink=ctx)
-        self.rs = CreateTestResultSink(self.port)
 
     def sink(self, expected, test_result, expectations=None):
-        self.rs.sink(expected, test_result, expectations)
-        self.assertTrue(self.mock_send.called)
-        return self.mock_send.call_args[0][0]['testResults'][0]
+        result_sink = CreateTestResultSink(self.port, expectations)
+        with mock.patch.object(result_sink, '_send') as mock_send:
+            result_sink.sink(expected, test_result)
+        self.assertTrue(mock_send.called)
+        return mock_send.call_args[0][0]['testResults'][0]
 
     def test_sink(self):
         tr = test_results.TestResult(test_name='test-name')
