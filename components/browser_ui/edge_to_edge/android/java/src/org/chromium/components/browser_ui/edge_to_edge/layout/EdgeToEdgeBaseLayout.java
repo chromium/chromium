@@ -34,14 +34,19 @@ import org.chromium.ui.util.WindowInsetsUtils;
 public class EdgeToEdgeBaseLayout extends FrameLayout {
     private static final int DEFAULT_NAV_BAR_DIVIDER_SIZE = 1;
     private static final int DISPLAY_CUTOUT_PAINT_COLOR = Color.BLACK;
+    private static final int DEBUG_PAINT_COLOR = Color.argb(100, 200, 0, 200);
 
     private final Rect mViewRect = new Rect();
     private final Rect mStatusBarRect = new Rect();
     private final Rect mNavBarRect = new Rect();
     private final Rect mNavBarDividerRect = new Rect();
-    // Rects used for display cutout.
     private final Rect mCutoutRectLeft = new Rect();
     private final Rect mCutoutRectRight = new Rect();
+
+    private final Rect mStatusBarRectDebug = new Rect(); // Draws at 50% width of the actual rect.
+    private final Rect mNavBarRectDebug = new Rect(); // Draws at 50% width of the actual rect.
+
+    private final Paint mDebugPaint = new Paint();
     private final Paint mStatusBarPaint = new Paint();
     private final Paint mNavBarPaint = new Paint();
     private final Paint mNavBarDividerPaint = new Paint();
@@ -52,6 +57,8 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
     private Insets mCutoutInsetsLeft = Insets.NONE;
     private Insets mCutoutInsetsRight = Insets.NONE;
 
+    private boolean mIsDebugging;
+
     public EdgeToEdgeBaseLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
@@ -59,6 +66,11 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
         mNavBarPaint.setXfermode(new PorterDuffXfermode(Mode.SRC_OVER));
 
         mDisplayCutoutPaint.setColor(DISPLAY_CUTOUT_PAINT_COLOR);
+    }
+
+    void setIsDebugging(boolean isDebugging) {
+        mIsDebugging = isDebugging;
+        mDebugPaint.setColor(mIsDebugging ? DEBUG_PAINT_COLOR : Color.TRANSPARENT);
     }
 
     @Override
@@ -70,6 +82,11 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
         colorRectOnDraw(canvas, mCutoutRectRight, mDisplayCutoutPaint);
         if (!mNavBarDividerRect.isEmpty() && mNavBarDividerPaint.getAlpha() > 0) {
             colorRectOnDraw(canvas, mNavBarDividerRect, mNavBarDividerPaint);
+        }
+
+        if (mIsDebugging) {
+            colorRectOnDraw(canvas, mStatusBarRectDebug, mDebugPaint);
+            colorRectOnDraw(canvas, mNavBarRectDebug, mDebugPaint);
         }
 
         super.onDraw(canvas);
@@ -113,6 +130,13 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
 
         // Set the nav bar divider the last after the nav bar adjustments.
         mNavBarDividerRect.set(getNavBarDividerRectFromInset(mNavigationBarInsets, mNavBarRect));
+
+        if (mIsDebugging) {
+            mStatusBarRectDebug.set(mStatusBarRect);
+            mStatusBarRectDebug.inset(mStatusBarRect.width() / 4, 0);
+            mNavBarRectDebug.set(mNavBarRect);
+            mNavBarRectDebug.inset(mNavBarRect.width() / 4, 0);
+        }
     }
 
     void setStatusBarInsets(@NonNull Insets insets) {

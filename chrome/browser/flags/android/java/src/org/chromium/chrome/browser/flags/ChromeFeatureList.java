@@ -1179,6 +1179,9 @@ public abstract class ChromeFeatureList {
     public static final StringCachedFeatureParam sEdgeToEdgeBottomChinOemList =
             newStringCachedFeatureParam(EDGE_TO_EDGE_BOTTOM_CHIN, "e2e_field_trial_oem_list", "");
 
+    public static final BooleanCachedFeatureParam sEdgeToEdgeEverywhereIsDebugging =
+            newBooleanCachedFeatureParam(EDGE_TO_EDGE_EVERYWHERE, "e2e_everywhere_debug", false);
+
     public static final BooleanCachedFeatureParam sLogoPolishMediumSize =
             newBooleanCachedFeatureParam(LOGO_POLISH, "polish_logo_size_medium", true);
     public static final BooleanCachedFeatureParam sLogoPolishLargeSize =
@@ -1316,6 +1319,7 @@ public abstract class ChromeFeatureList {
                     sDrawKeyNativeEdgeToEdgeDisableIncognitoNtpE2e,
                     sEdgeToEdgeBottomChinOemMinVersions,
                     sEdgeToEdgeBottomChinOemList,
+                    sEdgeToEdgeEverywhereIsDebugging,
                     sLogoPolishMediumSize,
                     sLogoPolishLargeSize,
                     sMagicStackAndroidShowAllModules,

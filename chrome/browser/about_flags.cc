@@ -3539,6 +3539,13 @@ const FeatureEntry::FeatureVariation kEdgeToEdgeBottomChinVariations[] = {
      std::size(kEdgeToEdgeBottomChinDebugFeatureParams), nullptr},
 };
 
+const FeatureEntry::FeatureParam kEdgeToEdgeEverywhereDebugFeatureParams[] = {
+    {"e2e_everywhere_debug", "true"}};
+const FeatureEntry::FeatureVariation kEdgeToEdgeEverywhereVariations[] = {
+    {"debug", kEdgeToEdgeEverywhereDebugFeatureParams,
+     std::size(kEdgeToEdgeEverywhereDebugFeatureParams), nullptr},
+};
+
 const FeatureEntry::FeatureParam kBottomBrowserControlsRefactorParams[] = {
     {"disable_bottom_controls_stacker_y_offset", "false"}};
 const FeatureEntry::FeatureVariation
@@ -5608,7 +5615,9 @@ const FeatureEntry kFeatureEntries[] = {
                                     "EdgeToEdgeBottomChin")},
     {"edge-to-edge-everywhere", flag_descriptions::kEdgeToEdgeEverywhereName,
      flag_descriptions::kEdgeToEdgeEverywhereDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kEdgeToEdgeEverywhere)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kEdgeToEdgeEverywhere,
+                                    kEdgeToEdgeEverywhereVariations,
+                                    "EdgeToEdgeEverywhere")},
     {"edge-to-edge-safe-area-constraint",
      flag_descriptions::kEdgeToEdgeSafeAreaConstraintName,
      flag_descriptions::kEdgeToEdgeSafeAreaConstraintDescription, kOsAndroid,
