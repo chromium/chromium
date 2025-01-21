@@ -9,8 +9,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ai/ai_data_keyed_service_factory.h"
 #include "chrome/browser/autofill_ai/chrome_autofill_ai_client.h"
+#include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -26,6 +28,9 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill_ai/core/browser/autofill_ai_features.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
+#include "components/history_embeddings/mock_answerer.h"
+#include "components/history_embeddings/mock_embedder.h"
+#include "components/history_embeddings/mock_intent_classifier.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/web_contents.h"
@@ -84,6 +89,16 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
     https_server_->AddDefaultHandlers(GetChromeTestDataDir());
 
     ASSERT_TRUE(https_server_->Start());
+
+    HistoryEmbeddingsServiceFactory::GetInstance()->SetTestingFactory(
+        browser()->profile(),
+        base::BindLambdaForTesting([](content::BrowserContext* context) {
+          return HistoryEmbeddingsServiceFactory::
+              BuildServiceInstanceForBrowserContextForTesting(
+                  context, std::make_unique<history_embeddings::MockEmbedder>(),
+                  std::make_unique<history_embeddings::MockAnswerer>(),
+                  std::make_unique<history_embeddings::MockIntentClassifier>());
+        }));
 
     url_ = https_server_->GetURL("/simple.html");
   }
@@ -177,6 +192,17 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, Url) {
   LoadSimplePageAndData();
   ASSERT_TRUE(ai_data());
   EXPECT_NE(ai_data()->page_context().url().find("simple"), std::string::npos);
+}
+
+IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest,
+                       EmptyHistoryResultWithEmptyQueryString) {
+  AiDataKeyedService::AiDataSpecifier specifier;
+  auto* history_query_specifiers =
+      specifier.mutable_browser_data_collection_specifier()
+          ->mutable_history_query_specifiers();
+  history_query_specifiers->add_history_queries()->set_query("");
+  LoadSimplePageAndDataWithSpecifier(std::move(specifier));
+  EXPECT_TRUE(ai_data()->history_query_result().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, AxTreeUpdate) {
@@ -318,6 +344,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, SpecifierOff) {
   EXPECT_EQ(ai_data()->page_context().tab_screenshot(), "");
   EXPECT_EQ(ai_data()->page_context().inner_text(), "");
   EXPECT_EQ(ai_data()->site_engagement().entries().size(), 0);
+  EXPECT_TRUE(ai_data()->history_query_result().empty());
 }
 
 #if !BUILDFLAG(IS_ANDROID)
