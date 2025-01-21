@@ -91,6 +91,9 @@ class PageNodeSortProxy {
     if (is_disallowed() != rhs.is_disallowed()) {
       return rhs.is_disallowed();
     }
+    if (is_focused_ != rhs.is_focused_) {
+      return rhs.is_focused_;
+    }
     if (is_visible_ != rhs.is_visible_) {
       return rhs.is_visible_;
     }

@@ -28,6 +28,52 @@ namespace policies {
 using DiscardReason = PageDiscardingHelper::DiscardReason;
 using ::testing::Return;
 
+TEST(PageNodeSortProxyTest, Order) {
+  // Disabled tab is never discarded over focused tabs.
+  EXPECT_TRUE(PageNodeSortProxy(nullptr, CanDiscardResult::kProtected, true,
+                                true, base::Seconds(1)) <
+              PageNodeSortProxy(nullptr, CanDiscardResult::kDisallowed, false,
+                                false, base::Seconds(10)));
+  // Focused tab is more important than visible & non-focused tab.
+  EXPECT_TRUE(PageNodeSortProxy(nullptr, CanDiscardResult::kProtected, true,
+                                false, base::Seconds(1)) <
+              PageNodeSortProxy(nullptr, CanDiscardResult::kProtected, true,
+                                true, base::Seconds(10)));
+  // Visible tab is more important than protected & non-visible tab.
+  EXPECT_TRUE(PageNodeSortProxy(nullptr, CanDiscardResult::kProtected, false,
+                                false, base::Seconds(1)) <
+              PageNodeSortProxy(nullptr, CanDiscardResult::kProtected, true,
+                                false, base::Seconds(10)));
+  // Protected tab is more important than non-protected tab.
+  EXPECT_TRUE(PageNodeSortProxy(nullptr, CanDiscardResult::kEligible, false,
+                                false, base::Seconds(1)) <
+              PageNodeSortProxy(nullptr, CanDiscardResult::kProtected, false,
+                                false, base::Seconds(10)));
+
+  // Compare disabled tabs.
+  EXPECT_TRUE(PageNodeSortProxy(nullptr, CanDiscardResult::kDisallowed, false,
+                                false, base::Seconds(10)) <
+              PageNodeSortProxy(nullptr, CanDiscardResult::kDisallowed, false,
+                                false, base::Seconds(1)));
+  // Sort visible tabs based on last_visible_.
+  // TODO(crbug.com/391243672): use focus status change instead of
+  // last_visible_.
+  EXPECT_TRUE(PageNodeSortProxy(nullptr, CanDiscardResult::kProtected, true,
+                                false, base::Seconds(10)) <
+              PageNodeSortProxy(nullptr, CanDiscardResult::kProtected, true,
+                                false, base::Seconds(1)));
+  // Sort protected tabs based on last_visible_.
+  EXPECT_TRUE(PageNodeSortProxy(nullptr, CanDiscardResult::kProtected, false,
+                                false, base::Seconds(10)) <
+              PageNodeSortProxy(nullptr, CanDiscardResult::kProtected, false,
+                                false, base::Seconds(1)));
+  // Sort non-protected tabs based on last_visible_.
+  EXPECT_TRUE(PageNodeSortProxy(nullptr, CanDiscardResult::kEligible, false,
+                                false, base::Seconds(10)) <
+              PageNodeSortProxy(nullptr, CanDiscardResult::kEligible, false,
+                                false, base::Seconds(1)));
+}
+
 class PageDiscardingHelperTest
     : public testing::GraphTestHarnessWithMockDiscarder {
  public:
