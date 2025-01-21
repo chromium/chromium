@@ -418,12 +418,11 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
       browser(),
       embedded_test_server()->GetURL("example.com", "/password/done.html")));
   EXPECT_TRUE(new_page_observer.Wait());
-  // Verify the success state.
-  ASSERT_EQ(delegate->GetCurrentState(),
-            PasswordChangeDelegate::State::kPasswordSuccessfullyChanged);
-  // Verify the success state.
-  ASSERT_EQ(delegate->GetCurrentState(),
-            PasswordChangeDelegate::State::kPasswordSuccessfullyChanged);
+  // Run until the state changes to success.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return delegate->GetCurrentState() ==
+           PasswordChangeDelegate::State::kPasswordSuccessfullyChanged;
+  }));
   // Verify generated password is saved.
   WaitForPasswordStore();
   CheckThatCredentialsStored(/*username=*/"test", generated_password);
@@ -469,7 +468,13 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
       browser(),
       embedded_test_server()->GetURL("example.com", "/password/done.html")));
   EXPECT_TRUE(new_page_observer.Wait());
-
+  auto* delegate = password_change_service()->GetPasswordChangeDelegate(
+      browser()->tab_strip_model()->GetWebContentsAt(0));
+  // Run until the state changes to success.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return delegate->GetCurrentState() ==
+           PasswordChangeDelegate::State::kPasswordSuccessfullyChanged;
+  }));
   // Verify saved password is updated.
   WaitForPasswordStore();
   CheckThatCredentialsStored(base::UTF16ToUTF8(form.username_value),
