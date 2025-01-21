@@ -1451,11 +1451,11 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabGetsRemoved) {
   // Save the last invocation of calls to the InstantMessageDelegate.
   InstantMessage message;
   MessagingBackendService::InstantMessageDelegate::SuccessCallback
-      succes_callback;
+      success_callback;
   EXPECT_CALL(*mock_instant_message_delegate_,
               DisplayInstantaneousMessage(_, _))
       .WillRepeatedly(
-          DoAll(SaveArg<0>(&message), MoveArg<1>(&succes_callback)));
+          DoAll(SaveArg<0>(&message), MoveArg<1>(&success_callback)));
 
   // Removing the currently selected tab should inform the delegate.
   tg_notifier_observer_->OnTabRemoved(*tab1, tab_groups::TriggerSource::REMOTE);
@@ -1470,7 +1470,7 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabGetsRemoved) {
   EXPECT_CALL(*unowned_messaging_backend_store_,
               ClearDirtyMessage(db_message_id, DirtyType::kMessageOnly))
       .Times(1);
-  std::move(succes_callback).Run(true);
+  std::move(success_callback).Run(true);
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestSelectedTabAtStartupGetsRemoved) {
@@ -1498,11 +1498,11 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabAtStartupGetsRemoved) {
 
   InstantMessage message;
   MessagingBackendService::InstantMessageDelegate::SuccessCallback
-      succes_callback;
+      success_callback;
   EXPECT_CALL(*mock_instant_message_delegate_,
               DisplayInstantaneousMessage(_, _))
       .WillRepeatedly(
-          DoAll(SaveArg<0>(&message), MoveArg<1>(&succes_callback)));
+          DoAll(SaveArg<0>(&message), MoveArg<1>(&success_callback)));
   tg_notifier_observer_->OnTabRemoved(*tab1, tab_groups::TriggerSource::REMOTE);
 
   EXPECT_EQ(CollaborationEvent::TAB_REMOVED, message.collaboration_event);
@@ -1565,11 +1565,11 @@ TEST_F(MessagingBackendServiceImplTest, TestTabGroupRemovedInstantMessage) {
   // Save the last invocation of calls to the InstantMessageDelegate.
   InstantMessage message;
   MessagingBackendService::InstantMessageDelegate::SuccessCallback
-      succes_callback;
+      success_callback;
   EXPECT_CALL(*mock_instant_message_delegate_,
               DisplayInstantaneousMessage(_, _))
       .WillRepeatedly(
-          DoAll(SaveArg<0>(&message), MoveArg<1>(&succes_callback)));
+          DoAll(SaveArg<0>(&message), MoveArg<1>(&success_callback)));
 
   // Removing the tab group should inform the delegate.
   tg_notifier_observer_->OnTabGroupRemoved(tab_group,
@@ -1586,7 +1586,7 @@ TEST_F(MessagingBackendServiceImplTest, TestTabGroupRemovedInstantMessage) {
   EXPECT_CALL(*unowned_messaging_backend_store_,
               ClearDirtyMessage(db_message_id, DirtyType::kMessageOnly))
       .Times(1);
-  std::move(succes_callback).Run(true);
+  std::move(success_callback).Run(true);
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestInstantMessageCallbackFails) {
@@ -1612,11 +1612,11 @@ TEST_F(MessagingBackendServiceImplTest, TestInstantMessageCallbackFails) {
   // Save the last invocation of calls to the InstantMessageDelegate.
   InstantMessage message;
   MessagingBackendService::InstantMessageDelegate::SuccessCallback
-      succes_callback;
+      success_callback;
   EXPECT_CALL(*mock_instant_message_delegate_,
               DisplayInstantaneousMessage(_, _))
       .WillRepeatedly(
-          DoAll(SaveArg<0>(&message), MoveArg<1>(&succes_callback)));
+          DoAll(SaveArg<0>(&message), MoveArg<1>(&success_callback)));
 
   // Removing the tab group should inform the delegate.
   tg_notifier_observer_->OnTabGroupRemoved(tab_group,
@@ -1625,7 +1625,7 @@ TEST_F(MessagingBackendServiceImplTest, TestInstantMessageCallbackFails) {
   // If the callback provides success=false we should not clear the bit.
   EXPECT_CALL(*unowned_messaging_backend_store_, ClearDirtyMessage(_, _))
       .Times(0);
-  std::move(succes_callback).Run(false);
+  std::move(success_callback).Run(false);
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestMemberAddedCreatesInstantMessage) {
