@@ -872,13 +872,19 @@ TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEventsFromSync) {
             last_persistent_message_chip.attribution.tab_metadata->sync_tab_id);
   EXPECT_EQ(tab_group.saved_guid(), last_persistent_message_chip.attribution
                                         .tab_group_metadata->sync_tab_group_id);
+  EXPECT_EQ(message.uuid(),
+            last_persistent_message_chip.attribution.id->AsLowercaseString());
   EXPECT_EQ(tab1_sync_id,
             last_persistent_message_dot.attribution.tab_metadata->sync_tab_id);
   EXPECT_EQ(tab_group.saved_guid(), last_persistent_message_dot.attribution
                                         .tab_group_metadata->sync_tab_group_id);
+  EXPECT_EQ(message.uuid(),
+            last_persistent_message_dot.attribution.id->AsLowercaseString());
   EXPECT_EQ(tab_group.saved_guid(),
             last_persistent_message_dot_tab_group.attribution
                 .tab_group_metadata->sync_tab_group_id);
+  EXPECT_FALSE(
+      last_persistent_message_dot_tab_group.attribution.id.has_value());
 
   // SCENARIO 2: Update a tab.
   // Should receive stored messages about tab updated, and also there should be
@@ -920,13 +926,19 @@ TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEventsFromSync) {
             last_persistent_message_chip.attribution.tab_metadata->sync_tab_id);
   EXPECT_EQ(tab_group.saved_guid(), last_persistent_message_chip.attribution
                                         .tab_group_metadata->sync_tab_group_id);
+  EXPECT_EQ(message.uuid(),
+            last_persistent_message_chip.attribution.id->AsLowercaseString());
   EXPECT_EQ(tab2_sync_id,
             last_persistent_message_dot.attribution.tab_metadata->sync_tab_id);
   EXPECT_EQ(tab_group.saved_guid(), last_persistent_message_dot.attribution
                                         .tab_group_metadata->sync_tab_group_id);
+  EXPECT_EQ(message.uuid(),
+            last_persistent_message_dot.attribution.id->AsLowercaseString());
   EXPECT_EQ(tab_group.saved_guid(),
             last_persistent_message_dot_tab_group.attribution
                 .tab_group_metadata->sync_tab_group_id);
+  EXPECT_FALSE(
+      last_persistent_message_dot_tab_group.attribution.id.has_value());
 
   // SCENARIO 3: Remove a tab.
   // Should receive stored messages about tab removed, and we should also remove
@@ -972,13 +984,19 @@ TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEventsFromSync) {
             last_persistent_message_chip.attribution.tab_metadata->sync_tab_id);
   EXPECT_EQ(tab_group.saved_guid(), last_persistent_message_chip.attribution
                                         .tab_group_metadata->sync_tab_group_id);
+  EXPECT_EQ(message.uuid(),
+            last_persistent_message_chip.attribution.id->AsLowercaseString());
   EXPECT_EQ(tab3_sync_id,
             last_persistent_message_dot.attribution.tab_metadata->sync_tab_id);
   EXPECT_EQ(tab_group.saved_guid(), last_persistent_message_dot.attribution
                                         .tab_group_metadata->sync_tab_group_id);
+  EXPECT_EQ(message.uuid(),
+            last_persistent_message_dot.attribution.id->AsLowercaseString());
   EXPECT_EQ(tab_group.saved_guid(),
             last_persistent_message_dot_tab_group.attribution
                 .tab_group_metadata->sync_tab_group_id);
+  EXPECT_FALSE(
+      last_persistent_message_dot_tab_group.attribution.id.has_value());
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestOnTabAddedFromLocal) {
@@ -1463,6 +1481,7 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabGetsRemoved) {
   // We should have received a stored message about the removed tab.
   EXPECT_NE("", db_message.uuid());
   base::Uuid db_message_id = base::Uuid::ParseLowercase(db_message.uuid());
+  EXPECT_EQ(db_message_id, message.attribution.id);
 
   EXPECT_EQ(CollaborationEvent::TAB_REMOVED, message.collaboration_event);
   EXPECT_EQ(InstantNotificationType::CONFLICT_TAB_REMOVED, message.type);
@@ -1578,6 +1597,7 @@ TEST_F(MessagingBackendServiceImplTest, TestTabGroupRemovedInstantMessage) {
   // We should have received a stored message about the removed tab group.
   EXPECT_NE("", db_message.uuid());
   base::Uuid db_message_id = base::Uuid::ParseLowercase(db_message.uuid());
+  EXPECT_EQ(db_message_id, message.attribution.id);
 
   EXPECT_EQ(CollaborationEvent::TAB_GROUP_REMOVED, message.collaboration_event);
   EXPECT_EQ(tab_group.saved_guid(),

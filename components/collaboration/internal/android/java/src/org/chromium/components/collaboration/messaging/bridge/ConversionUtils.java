@@ -4,6 +4,8 @@
 
 package org.chromium.components.collaboration.messaging.bridge;
 
+import android.text.TextUtils;
+
 import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
@@ -35,6 +37,7 @@ import java.util.Optional;
 class ConversionUtils {
     @CalledByNative
     private static MessageAttribution createAttributionFrom(
+            String id,
             String collaborationId,
             @Nullable LocalTabGroupId localTabGroupId,
             @Nullable String syncTabGroupId,
@@ -49,6 +52,7 @@ class ConversionUtils {
             GroupMember triggeringUser,
             boolean triggeringUserIsSelf) {
         MessageAttribution attribution = new MessageAttribution();
+        attribution.id = TextUtils.isEmpty(id) ? null : id;
         attribution.collaborationId = collaborationId;
         if (localTabGroupId != null
                 || syncTabGroupId != null

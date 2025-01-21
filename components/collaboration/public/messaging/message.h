@@ -134,6 +134,10 @@ struct MessageAttribution {
   MessageAttribution(const MessageAttribution& other);
   ~MessageAttribution();
 
+  // The id of this message. Non-empty if there is a corresponding entry in the
+  // database, empty for synthetic messages.
+  std::optional<base::Uuid> id;
+
   // The collaboration this message is associated with (if any).
   data_sharing::GroupId collaboration_id;
 
