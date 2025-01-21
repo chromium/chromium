@@ -638,20 +638,19 @@ class SessionRestoreImpl : public BrowserListObserver {
       return;
     }
 
-    windows->erase(
-        base::ranges::remove_if(
-            *windows,
-            [provider](const std::unique_ptr<sessions::SessionWindow>& window)
-                -> bool {
-              // Windows that are auto-started and prevented from closing are
-              // exempted from session restore.
-              webapps::AppId app_id =
-                  web_app::GetAppIdFromApplicationName(window->app_name);
-              // Checking for close prevention does not require an `AppLock`
-              // and therefore `registrar_unsafe()` is safe to use.
-              return provider->registrar_unsafe().IsPreventCloseEnabled(app_id);
-            }),
-        windows->end());
+    auto to_remove = std::ranges::remove_if(
+        *windows,
+        [provider](
+            const std::unique_ptr<sessions::SessionWindow>& window) -> bool {
+          // Windows that are auto-started and prevented from closing are
+          // exempted from session restore.
+          webapps::AppId app_id =
+              web_app::GetAppIdFromApplicationName(window->app_name);
+          // Checking for close prevention does not require an `AppLock`
+          // and therefore `registrar_unsafe()` is safe to use.
+          return provider->registrar_unsafe().IsPreventCloseEnabled(app_id);
+        });
+    windows->erase(to_remove.begin(), to_remove.end());
 #endif  // BUIDLFLAG(IS_CHROMEOS)
   }
 

@@ -74,9 +74,10 @@ constexpr auto kSystemWebAppsMapping =
          {"graduation", ash::SystemWebAppType::GRADUATION}});
 
 constexpr ash::SystemWebAppType GetMaxSystemWebAppType() {
-  return base::ranges::max(kSystemWebAppsMapping, base::ranges::less{},
-                           &decltype(kSystemWebAppsMapping)::value_type::second)
-      .second;
+  return base::ranges::max_element(
+             kSystemWebAppsMapping, base::ranges::less{},
+             &decltype(kSystemWebAppsMapping)::value_type::second)
+      ->second;
 }
 
 static_assert(GetMaxSystemWebAppType() == ash::SystemWebAppType::kMaxValue,

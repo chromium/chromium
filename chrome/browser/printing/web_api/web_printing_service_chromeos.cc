@@ -165,8 +165,8 @@ blink::mojom::WebPrinterAttributesPtr MergePrinterAttributesAndStatus(
     printer_state_reasons.push_back(reason.reason);
   }
   base::ranges::sort(printer_state_reasons);
-  printer_state_reasons.erase(base::ranges::unique(printer_state_reasons),
-                              printer_state_reasons.end());
+  auto repeated = std::ranges::unique(printer_state_reasons);
+  printer_state_reasons.erase(repeated.begin(), repeated.end());
   printer_attributes->printer_state_message = printer_status->message;
   return printer_attributes;
 }
