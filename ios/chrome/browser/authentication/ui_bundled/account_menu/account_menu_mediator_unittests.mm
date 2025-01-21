@@ -160,8 +160,8 @@ class AccountMenuMediatorTest : public PlatformTest,
   // Signs in kPrimaryIdentity as primary identity.
   void AddPrimaryIdentity() {
     fake_system_identity_manager_->AddIdentity(kPrimaryIdentity);
-    authentication_service_->SignIn(
-        kPrimaryIdentity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+    authentication_service_->SignIn(kPrimaryIdentity,
+                                    signin_metrics::AccessPoint::kUnknown);
   }
 
   // Add kSecondaryIdentity as a secondary identity.

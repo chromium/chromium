@@ -136,8 +136,8 @@ TEST_F(LegacyAccountsTableViewControllerTest, AddChromeIdentity) {
   fake_system_identity_manager()->AddIdentity(fake_identity);
 
   // Simulates a credential reload.
-  authentication_service()->SignIn(
-      fake_identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  authentication_service()->SignIn(fake_identity,
+                                   signin_metrics::AccessPoint::kSettings);
   fake_system_identity_manager()->FireSystemIdentityReloaded();
   base::RunLoop().RunUntilIdle();
 
@@ -156,8 +156,8 @@ TEST_F(LegacyAccountsTableViewControllerTest, IgnoreMismatchWithAccountInfo) {
   fake_system_identity_manager()->AddIdentity(fake_identity2);
 
   // Simulates a credential reload.
-  authentication_service()->SignIn(
-      fake_identity1, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  authentication_service()->SignIn(fake_identity1,
+                                   signin_metrics::AccessPoint::kSettings);
   fake_system_identity_manager()->FireSystemIdentityReloaded();
   base::RunLoop().RunUntilIdle();
 
@@ -189,8 +189,8 @@ TEST_F(LegacyAccountsTableViewControllerTest, DontHoldPassphraseError) {
   fake_system_identity_manager()->AddIdentity(fake_identity);
 
   // Simulate a credential reload.
-  authentication_service()->SignIn(
-      fake_identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  authentication_service()->SignIn(fake_identity,
+                                   signin_metrics::AccessPoint::kSettings);
   fake_system_identity_manager()->FireSystemIdentityReloaded();
   base::RunLoop().RunUntilIdle();
 
@@ -215,8 +215,8 @@ TEST_F(LegacyAccountsTableViewControllerTest,
   fake_system_identity_manager()->AddIdentity(fake_identity);
 
   // Simulate a credential reload.
-  authentication_service()->SignIn(
-      fake_identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  authentication_service()->SignIn(fake_identity,
+                                   signin_metrics::AccessPoint::kSettings);
   fake_system_identity_manager()->FireSystemIdentityReloaded();
   base::RunLoop().RunUntilIdle();
 

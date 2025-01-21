@@ -212,8 +212,8 @@ class AccountMenuCoordinatorTest : public PlatformTest {
   // Signs in primary_identity() as primary identity.
   void SigninWithPrimaryIdentity() {
     fake_system_identity_manager_->AddIdentity(primary_identity());
-    authentication_service_->SignIn(
-        primary_identity(), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+    authentication_service_->SignIn(primary_identity(),
+                                    signin_metrics::AccessPoint::kUnknown);
   }
 
   // Add kSecondaryIdentity as a secondary identity.
