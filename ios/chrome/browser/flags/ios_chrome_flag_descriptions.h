@@ -303,6 +303,11 @@ extern const char kBlueDotOnToolsMenuButtonDescription[];
 extern const char kDetectMainThreadFreezeName[];
 extern const char kDetectMainThreadFreezeDescription[];
 
+// Title and description for the flag to enable the downloads auto deletion
+// system in Chrome.
+extern const char kDownloadAutoDeletionName[];
+extern const char kDownloadAutoDeletionDescription[];
+
 // Title and description for the flag to enable the opening of PDF files in
 // Chrome.
 extern const char kDownloadedPDFOpeningName[];

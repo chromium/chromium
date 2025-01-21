@@ -546,6 +546,12 @@ BASE_DECLARE_FEATURE(kDisableLensCamera);
 // Feature flag that allows clearing data for managed users signing out.
 BASE_DECLARE_FEATURE(kClearDeviceDataOnSignOutForManagedUsers);
 
+// YES when the Downloads Auto Deletion feature is enabled.
+BASE_DECLARE_FEATURE(kDownloadAutoDeletionFeatureEnabled);
+
+// Whether the kDownloadAutoDeletion feature is enabled.
+bool IsDownloadAutoDeletionFeatureEnabled();
+
 // Feature flag that allows opening the downloaded PDF files in Chrome.
 BASE_DECLARE_FEATURE(kDownloadedPDFOpening);
 

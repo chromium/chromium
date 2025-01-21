@@ -546,6 +546,14 @@ BASE_FEATURE(kClearDeviceDataOnSignOutForManagedUsers,
              "ClearDeviceDataOnSignOutForManagedUsers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDownloadAutoDeletionFeatureEnabled,
+             "DownloadAutoDeletionFeatureEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsDownloadAutoDeletionFeatureEnabled() {
+  return base::FeatureList::IsEnabled(kDownloadAutoDeletionFeatureEnabled);
+}
+
 BASE_FEATURE(kDownloadedPDFOpening,
              "DownloadedPDFOpening",
              base::FEATURE_DISABLED_BY_DEFAULT);

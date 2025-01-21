@@ -369,6 +369,11 @@ const char kDetectMainThreadFreezeDescription[] =
     "A crash report will be uploaded if the main thread is frozen more than "
     "the time specified by this flag.";
 
+extern const char kDownloadAutoDeletionName[] = "Enable Download Auto Deletion";
+extern const char kDownloadAutoDeletionDescription[] =
+    "When enabled, files downloaded on the device can be scheduled to be "
+    "deleted automatically after 30 days.";
+
 const char kDownloadedPDFOpeningName[] = "Enables downloaded PDF opening";
 const char kDownloadedPDFOpeningDescription[] =
     "Enables the direct opening of downloaded PDF files in Chrome";
