@@ -43,6 +43,9 @@
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/url_request/url_request.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/navigation/impression.h"
@@ -422,18 +425,27 @@ void AttributionHost::MaybeLogClientBounce(
   base::TimeDelta time_since_last_navigation =
       base::Time::Now() - *last_navigation_time_;
 
+  int64_t num_data_hosts_registered_bucket =
+      ukm::GetExponentialBucketMinForCounts1000(num_data_hosts_registered);
+
+  ukm::builders::Conversions_ClientBounce ukm_builder(
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
+
   if (!primary_main_frame_data_->has_user_activation) {
     if (time_since_last_navigation < base::Seconds(1)) {
       ClientBounceHistogram(kUserActivationStr, k1sStr,
                             num_data_hosts_registered);
+      ukm_builder.SetUserActivation_1s(num_data_hosts_registered_bucket);
     }
     if (time_since_last_navigation < base::Seconds(5)) {
       ClientBounceHistogram(kUserActivationStr, k5sStr,
                             num_data_hosts_registered);
+      ukm_builder.SetUserActivation_5s(num_data_hosts_registered_bucket);
     }
     if (time_since_last_navigation < base::Seconds(10)) {
       ClientBounceHistogram(kUserActivationStr, k10sStr,
                             num_data_hosts_registered);
+      ukm_builder.SetUserActivation_10s(num_data_hosts_registered_bucket);
     }
   }
 
@@ -441,16 +453,21 @@ void AttributionHost::MaybeLogClientBounce(
     if (time_since_last_navigation < base::Seconds(1)) {
       ClientBounceHistogram(kUserInteractionStr, k1sStr,
                             num_data_hosts_registered);
+      ukm_builder.SetUserInteraction_1s(num_data_hosts_registered_bucket);
     }
     if (time_since_last_navigation < base::Seconds(5)) {
       ClientBounceHistogram(kUserInteractionStr, k5sStr,
                             num_data_hosts_registered);
+      ukm_builder.SetUserInteraction_5s(num_data_hosts_registered_bucket);
     }
     if (time_since_last_navigation < base::Seconds(10)) {
       ClientBounceHistogram(kUserInteractionStr, k10sStr,
                             num_data_hosts_registered);
+      ukm_builder.SetUserInteraction_10s(num_data_hosts_registered_bucket);
     }
   }
+
+  ukm_builder.Record(ukm::UkmRecorder::Get());
 }
 
 // static
