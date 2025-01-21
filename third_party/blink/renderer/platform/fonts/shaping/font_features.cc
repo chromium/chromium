@@ -4,29 +4,37 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/font_features.h"
 
+#include <hb.h>
+
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 
 namespace blink {
 
-namespace {
+//
+// Ensure `FontFeatureTag` is compatible with `hb_tag_t`.
+//
+static_assert(sizeof(FontFeatureTag) == sizeof(hb_tag_t));
+static_assert(FontFeatureTag('1', '2', '3', '4').tag ==
+              HB_TAG('1', '2', '3', '4'));
 
-constexpr hb_feature_t CreateFeature(hb_tag_t tag, uint32_t value = 0) {
-  return {tag, value, 0 /* start */, static_cast<unsigned>(-1) /* end */};
+//
+// Ensure `FontFeatureRange` is compatible with `hb_feature_t`.
+//
+static_assert(sizeof(FontFeatureRange) == sizeof(hb_feature_t));
+static_assert(offsetof(FontFeatureRange, tag) == offsetof(hb_feature_t, tag));
+static_assert(offsetof(FontFeatureRange, value) ==
+              offsetof(hb_feature_t, value));
+static_assert(offsetof(FontFeatureRange, start) ==
+              offsetof(hb_feature_t, start));
+static_assert(offsetof(FontFeatureRange, end) == offsetof(hb_feature_t, end));
+
+const hb_feature_t* FontFeatures::ToHarfBuzzData() const {
+  return reinterpret_cast<const hb_feature_t*>(features_.data());
 }
 
-constexpr hb_feature_t CreateFeature(char c1,
-                                     char c2,
-                                     char c3,
-                                     char c4,
-                                     uint32_t value = 0) {
-  return CreateFeature(HB_TAG(c1, c2, c3, c4), value);
-}
-
-}  // namespace
-
-std::optional<unsigned> FontFeatures::FindValueForTesting(hb_tag_t tag) const {
-  for (const hb_feature_t& feature : features_) {
+std::optional<uint32_t> FontFeatures::FindValueForTesting(uint32_t tag) const {
+  for (const FontFeatureRange& feature : features_) {
     if (feature.tag == tag)
       return feature.value;
   }
@@ -37,8 +45,8 @@ void FontFeatures::Initialize(const FontDescription& description) {
   DCHECK(IsEmpty());
   const bool is_horizontal = !description.IsVerticalAnyUpright();
 
-  constexpr hb_feature_t no_kern = CreateFeature('k', 'e', 'r', 'n');
-  constexpr hb_feature_t no_vkrn = CreateFeature('v', 'k', 'r', 'n');
+  constexpr FontFeatureRange no_kern{{{'k', 'e', 'r', 'n'}}};
+  constexpr FontFeatureRange no_vkrn{{{'v', 'k', 'r', 'n'}}};
   switch (description.GetKerning()) {
     case FontDescription::kNormalKerning:
       // kern/vkrn are enabled by default in HarfBuzz
@@ -58,8 +66,8 @@ void FontFeatures::Initialize(const FontDescription& description) {
     constexpr auto disabled = FontDescription::kDisabledLigaturesState;
 
     // clig and liga are on by default in HarfBuzz
-    constexpr hb_feature_t no_clig = CreateFeature('c', 'l', 'i', 'g');
-    constexpr hb_feature_t no_liga = CreateFeature('l', 'i', 'g', 'a');
+    constexpr FontFeatureRange no_clig{{{'c', 'l', 'i', 'g'}}};
+    constexpr FontFeatureRange no_liga{{{'l', 'i', 'g', 'a'}}};
     auto common = description.CommonLigaturesState();
     if (letter_spacing ||
         (common == disabled || (common == normal && default_is_off))) {
@@ -67,19 +75,19 @@ void FontFeatures::Initialize(const FontDescription& description) {
       Append(no_clig);
     }
     // dlig is off by default in HarfBuzz
-    constexpr hb_feature_t dlig = CreateFeature('d', 'l', 'i', 'g', 1);
+    constexpr FontFeatureRange dlig{{{'d', 'l', 'i', 'g'}, 1}};
     auto discretionary = description.DiscretionaryLigaturesState();
     if (!letter_spacing && discretionary == enabled) {
       Append(dlig);
     }
     // hlig is off by default in HarfBuzz
-    constexpr hb_feature_t hlig = CreateFeature('h', 'l', 'i', 'g', 1);
+    constexpr FontFeatureRange hlig{{{'h', 'l', 'i', 'g'}, 1}};
     auto historical = description.HistoricalLigaturesState();
     if (!letter_spacing && historical == enabled) {
       Append(hlig);
     }
     // calt is on by default in HarfBuzz
-    constexpr hb_feature_t no_calt = CreateFeature('c', 'a', 'l', 't');
+    constexpr FontFeatureRange no_calt{{{'c', 'a', 'l', 't'}}};
     auto contextual = description.ContextualLigaturesState();
     if (letter_spacing ||
         (contextual == disabled || (contextual == normal && default_is_off))) {
@@ -87,9 +95,9 @@ void FontFeatures::Initialize(const FontDescription& description) {
     }
   }
 
-  static constexpr hb_feature_t hwid = CreateFeature('h', 'w', 'i', 'd', 1);
-  static constexpr hb_feature_t twid = CreateFeature('t', 'w', 'i', 'd', 1);
-  static constexpr hb_feature_t qwid = CreateFeature('q', 'w', 'i', 'd', 1);
+  static constexpr FontFeatureRange hwid{{{'h', 'w', 'i', 'd'}, 1}};
+  static constexpr FontFeatureRange twid{{{'t', 'w', 'i', 'd'}, 1}};
+  static constexpr FontFeatureRange qwid{{{'q', 'w', 'i', 'd'}, 1}};
   switch (description.WidthVariant()) {
     case kHalfWidth:
       Append(hwid);
@@ -107,12 +115,12 @@ void FontFeatures::Initialize(const FontDescription& description) {
   // font-variant-east-asian:
   const FontVariantEastAsian east_asian = description.VariantEastAsian();
   if (!east_asian.IsAllNormal()) [[unlikely]] {
-    static constexpr hb_feature_t jp78 = CreateFeature('j', 'p', '7', '8', 1);
-    static constexpr hb_feature_t jp83 = CreateFeature('j', 'p', '8', '3', 1);
-    static constexpr hb_feature_t jp90 = CreateFeature('j', 'p', '9', '0', 1);
-    static constexpr hb_feature_t jp04 = CreateFeature('j', 'p', '0', '4', 1);
-    static constexpr hb_feature_t smpl = CreateFeature('s', 'm', 'p', 'l', 1);
-    static constexpr hb_feature_t trad = CreateFeature('t', 'r', 'a', 'd', 1);
+    static constexpr FontFeatureRange jp78{{{'j', 'p', '7', '8'}, 1}};
+    static constexpr FontFeatureRange jp83{{{'j', 'p', '8', '3'}, 1}};
+    static constexpr FontFeatureRange jp90{{{'j', 'p', '9', '0'}, 1}};
+    static constexpr FontFeatureRange jp04{{{'j', 'p', '0', '4'}, 1}};
+    static constexpr FontFeatureRange smpl{{{'s', 'm', 'p', 'l'}, 1}};
+    static constexpr FontFeatureRange trad{{{'t', 'r', 'a', 'd'}, 1}};
     switch (east_asian.Form()) {
       case FontVariantEastAsian::kNormalForm:
         break;
@@ -137,8 +145,8 @@ void FontFeatures::Initialize(const FontDescription& description) {
       default:
         NOTREACHED();
     }
-    static constexpr hb_feature_t fwid = CreateFeature('f', 'w', 'i', 'd', 1);
-    static constexpr hb_feature_t pwid = CreateFeature('p', 'w', 'i', 'd', 1);
+    static constexpr FontFeatureRange fwid{{{'f', 'w', 'i', 'd'}, 1}};
+    static constexpr FontFeatureRange pwid{{{'p', 'w', 'i', 'd'}, 1}};
     switch (east_asian.Width()) {
       case FontVariantEastAsian::kNormalWidth:
         break;
@@ -151,52 +159,53 @@ void FontFeatures::Initialize(const FontDescription& description) {
       default:
         NOTREACHED();
     }
-    static constexpr hb_feature_t ruby = CreateFeature('r', 'u', 'b', 'y', 1);
+    static constexpr FontFeatureRange ruby{{{'r', 'u', 'b', 'y'}, 1}};
     if (east_asian.Ruby())
       Append(ruby);
   }
 
   // font-variant-numeric:
-  static constexpr hb_feature_t lnum = CreateFeature('l', 'n', 'u', 'm', 1);
+  static constexpr FontFeatureRange lnum{{{'l', 'n', 'u', 'm'}, 1}};
   if (description.VariantNumeric().NumericFigureValue() ==
       FontVariantNumeric::kLiningNums)
     Append(lnum);
 
-  static constexpr hb_feature_t onum = CreateFeature('o', 'n', 'u', 'm', 1);
+  static constexpr FontFeatureRange onum{{{'o', 'n', 'u', 'm'}, 1}};
   if (description.VariantNumeric().NumericFigureValue() ==
       FontVariantNumeric::kOldstyleNums)
     Append(onum);
 
-  static constexpr hb_feature_t pnum = CreateFeature('p', 'n', 'u', 'm', 1);
+  static constexpr FontFeatureRange pnum{{{'p', 'n', 'u', 'm'}, 1}};
   if (description.VariantNumeric().NumericSpacingValue() ==
       FontVariantNumeric::kProportionalNums)
     Append(pnum);
-  static constexpr hb_feature_t tnum = CreateFeature('t', 'n', 'u', 'm', 1);
+  static constexpr FontFeatureRange tnum{{{'t', 'n', 'u', 'm'}, 1}};
   if (description.VariantNumeric().NumericSpacingValue() ==
       FontVariantNumeric::kTabularNums)
     Append(tnum);
 
-  static constexpr hb_feature_t afrc = CreateFeature('a', 'f', 'r', 'c', 1);
+  static constexpr FontFeatureRange afrc{{{'a', 'f', 'r', 'c'}, 1}};
   if (description.VariantNumeric().NumericFractionValue() ==
       FontVariantNumeric::kStackedFractions)
     Append(afrc);
-  static constexpr hb_feature_t frac = CreateFeature('f', 'r', 'a', 'c', 1);
+  static constexpr FontFeatureRange frac{{{'f', 'r', 'a', 'c'}, 1}};
   if (description.VariantNumeric().NumericFractionValue() ==
       FontVariantNumeric::kDiagonalFractions)
     Append(frac);
 
-  static constexpr hb_feature_t ordn = CreateFeature('o', 'r', 'd', 'n', 1);
+  static constexpr FontFeatureRange ordn{{{'o', 'r', 'd', 'n'}, 1}};
   if (description.VariantNumeric().OrdinalValue() ==
       FontVariantNumeric::kOrdinalOn)
     Append(ordn);
 
-  static constexpr hb_feature_t zero = CreateFeature('z', 'e', 'r', 'o', 1);
+  static constexpr FontFeatureRange zero{{{'z', 'e', 'r', 'o'}, 1}};
   if (description.VariantNumeric().SlashedZeroValue() ==
       FontVariantNumeric::kSlashedZeroOn)
     Append(zero);
 
-  const hb_tag_t chws_or_vchw =
-      is_horizontal ? HB_TAG('c', 'h', 'w', 's') : HB_TAG('v', 'c', 'h', 'w');
+  const FontFeatureTag chws_or_vchw = is_horizontal
+                                          ? FontFeatureTag{'c', 'h', 'w', 's'}
+                                          : FontFeatureTag{'v', 'c', 'h', 'w'};
   bool default_enable_chws =
       ShouldTrimAdjacent(description.GetTextSpacingTrim());
 
@@ -204,13 +213,15 @@ void FontFeatures::Initialize(const FontDescription& description) {
   if (settings) [[unlikely]] {
     // TODO(drott): crbug.com/450619 Implement feature resolution instead of
     // just appending the font-feature-settings.
-    const hb_tag_t halt_or_vhal =
-        is_horizontal ? HB_TAG('h', 'a', 'l', 't') : HB_TAG('v', 'h', 'a', 'l');
-    const hb_tag_t palt_or_vpal =
-        is_horizontal ? HB_TAG('p', 'a', 'l', 't') : HB_TAG('v', 'p', 'a', 'l');
+    const FontFeatureTag halt_or_vhal =
+        is_horizontal ? FontFeatureTag{'h', 'a', 'l', 't'}
+                      : FontFeatureTag{'v', 'h', 'a', 'l'};
+    const FontFeatureTag palt_or_vpal =
+        is_horizontal ? FontFeatureTag{'p', 'a', 'l', 't'}
+                      : FontFeatureTag{'v', 'p', 'a', 'l'};
     for (const FontFeature& setting : *settings) {
-      const hb_feature_t feature =
-          CreateFeature(setting.Tag(), setting.Value());
+      const FontFeatureRange feature{
+          {setting.Tag(), static_cast<uint32_t>(setting.Value())}};
       Append(feature);
 
       // `chws` should not be appended if other glyph-width GPOS feature exists.
@@ -223,16 +234,16 @@ void FontFeatures::Initialize(const FontDescription& description) {
   }
 
   if (default_enable_chws)
-    Append(CreateFeature(chws_or_vchw, 1));
+    Append({{chws_or_vchw, 1}});
 
   const FontDescription::FontVariantPosition variant_position =
       description.VariantPosition();
   if (variant_position == FontDescription::kSubVariantPosition) {
-    const hb_feature_t feature = CreateFeature('s', 'u', 'b', 's', 1);
+    constexpr FontFeatureRange feature{{{'s', 'u', 'b', 's'}, 1}};
     Append(feature);
   }
   if (variant_position == FontDescription::kSuperVariantPosition) {
-    const hb_feature_t feature = CreateFeature('s', 'u', 'p', 's', 1);
+    constexpr FontFeatureRange feature{{{'s', 'u', 'p', 's'}, 1}};
     Append(feature);
   }
 }

@@ -173,8 +173,7 @@ TEST_F(HanKerningTest, ResetFeatures) {
   const SimpleFontData* noto_cjk_data = noto_cjk.PrimaryFont();
   EXPECT_TRUE(noto_cjk_data);
   FontFeatures features;
-  features.Append(
-      {HB_TAG('T', 'E', 'S', 'T'), 1, 0, static_cast<unsigned>(-1)});
+  features.Append({{{'T', 'E', 'S', 'T'}, 1}, 0, static_cast<unsigned>(-1)});
   EXPECT_EQ(features.size(), 1u);
   const String text(u"国）（国");
   {

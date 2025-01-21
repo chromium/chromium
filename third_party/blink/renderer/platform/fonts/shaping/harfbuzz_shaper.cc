@@ -74,15 +74,6 @@ namespace blink {
 
 namespace {
 
-constexpr hb_feature_t CreateFeature(char c1,
-                                     char c2,
-                                     char c3,
-                                     char c4,
-                                     uint32_t value = 0) {
-  return {HB_TAG(c1, c2, c3, c4), value, 0 /* start */,
-          static_cast<unsigned>(-1) /* end */};
-}
-
 #if EXPENSIVE_DCHECKS_ARE_ON()
 // Check if the ShapeResult has the specified range.
 // |text| and |font| are only for logging.
@@ -342,16 +333,15 @@ inline bool ShapeRange(hb_buffer_t* buffer,
     const ResolvedFontFeatures& resolved_features =
         platform_data->ResolvedFeatures();
     for (const std::pair<uint32_t, uint32_t>& feature : resolved_features) {
-      variant_features.Append({feature.first, feature.second, 0 /* start */,
+      variant_features.Append({{feature.first, feature.second},
+                               0 /* start */,
                                static_cast<unsigned>(-1) /* end */});
     }
   }
 
   bool needs_feature_merge = variant_features.size();
   if (needs_feature_merge) {
-    for (wtf_size_t i = 0; i < font_features.size(); ++i) {
-      variant_features.Append(font_features.data()[i]);
-    }
+    variant_features.AppendVector(font_features);
   }
   const FontFeatures& argument_features =
       needs_feature_merge ? variant_features : font_features;
@@ -366,7 +356,8 @@ inline bool ShapeRange(hb_buffer_t* buffer,
                               ? HarfBuzzFace::kPrepareForVerticalLayout
                               : HarfBuzzFace::kNoVerticalLayout,
                           specified_size);
-  hb_shape(hb_font, buffer, argument_features.data(), argument_features.size());
+  hb_shape(hb_font, buffer, argument_features.ToHarfBuzzData(),
+           argument_features.size());
   if (!face->ShouldSubpixelPosition()) {
     RoundHarfBuzzBufferPositions(buffer);
   }
@@ -815,7 +806,7 @@ class CapsFeatureSettingsScopedOverlay final {
 
  private:
   void OverlayCapsFeatures(FontDescription::FontVariantCaps);
-  void PrependCounting(const hb_feature_t&);
+  void PrependCounting(const FontFeatureRange&);
   FontFeatures* features_;
   wtf_size_t count_features_;
 };
@@ -829,12 +820,12 @@ CapsFeatureSettingsScopedOverlay::CapsFeatureSettingsScopedOverlay(
 
 void CapsFeatureSettingsScopedOverlay::OverlayCapsFeatures(
     FontDescription::FontVariantCaps variant_caps) {
-  static constexpr hb_feature_t smcp = CreateFeature('s', 'm', 'c', 'p', 1);
-  static constexpr hb_feature_t pcap = CreateFeature('p', 'c', 'a', 'p', 1);
-  static constexpr hb_feature_t c2sc = CreateFeature('c', '2', 's', 'c', 1);
-  static constexpr hb_feature_t c2pc = CreateFeature('c', '2', 'p', 'c', 1);
-  static constexpr hb_feature_t unic = CreateFeature('u', 'n', 'i', 'c', 1);
-  static constexpr hb_feature_t titl = CreateFeature('t', 'i', 't', 'l', 1);
+  static constexpr FontFeatureRange smcp{{{'s', 'm', 'c', 'p'}, 1}};
+  static constexpr FontFeatureRange pcap{{{'p', 'c', 'a', 'p'}, 1}};
+  static constexpr FontFeatureRange c2sc{{{'c', '2', 's', 'c'}, 1}};
+  static constexpr FontFeatureRange c2pc{{{'c', '2', 'p', 'c'}, 1}};
+  static constexpr FontFeatureRange unic{{{'u', 'n', 'i', 'c'}, 1}};
+  static constexpr FontFeatureRange titl{{{'t', 'i', 't', 'l'}, 1}};
   if (variant_caps == FontDescription::kSmallCaps ||
       variant_caps == FontDescription::kAllSmallCaps) {
     PrependCounting(smcp);
@@ -858,7 +849,7 @@ void CapsFeatureSettingsScopedOverlay::OverlayCapsFeatures(
 }
 
 void CapsFeatureSettingsScopedOverlay::PrependCounting(
-    const hb_feature_t& feature) {
+    const FontFeatureRange& feature) {
   features_->Insert(feature);
   count_features_++;
 }
