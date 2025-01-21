@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>:has-slotted negative test: no children or white space</title>
+<title>:has-slotted negative test: empty nested slot</title>
 <link rel="help" href="https://github.com/w3c/csswg-drafts/pull/10586">
 <link rel="match" href="/css/reference/ref-filled-green-100px-square-only.html">
 <p>Test passes if there is a filled green square.</p>
@@ -14,4 +14,4 @@
   :has-slotted {
       background-color: red;
   }
-</style><slot></slot></template></div></template></div>
+</style><slot></slot></template><slot></slot></div></template></div>

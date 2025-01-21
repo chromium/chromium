@@ -181848,7 +181848,7 @@
       ]
      ],
      "has-slotted-flattened-001.tentative.html": [
-      "0235f99e21f1c9ba0382e7a8936f8f1050a854fe",
+      "cd6436a7145064db3555b5d316f81a191a0db614",
       [
        null,
        [
@@ -181861,7 +181861,7 @@
       ]
      ],
      "has-slotted-flattened-002.tentative.html": [
-      "f37b6217789954240d4577b05bd5669950d72477",
+      "84e4c63953ed739f7a7d7cbdb619aebaec59dbb0",
       [
        null,
        [
@@ -181874,7 +181874,20 @@
       ]
      ],
      "has-slotted-flattened-003.tentative.html": [
-      "5f007fbd1b0fb4220a2214cb169c93a88dd2029a",
+      "e16abd7be8917ae368c5e93b0b316cd33bfa78fa",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-flattened-004.tentative.html": [
+      "365aad154dc746c922adce568972025e1f8430b2",
       [
        null,
        [
@@ -352450,6 +352463,10 @@
       "805e5333690d7e48ed1b12dff763a549a535fa89",
       []
      ],
+     "has-slotted-query-selector-expected.txt": [
+      "33440d6d0171a4b2245e18a1690fd1672afa2161",
+      []
+     ],
      "keyframes-002-expected.txt": [
       "765775c5d7c5011c6d148252d1d8e0e6dca8c756",
       []
@@ -378255,7 +378272,7 @@
       ],
       "resources": {
        "helper.js": [
-        "5cbb183acf1d7e295ff84d17706c681c634e9b2e",
+        "502e07aa4b51f9d935aba290c711d7a71803cd91",
         []
        ],
        "permissions-policy-deferred-fetch.html": [
@@ -378264,13 +378281,37 @@
        ]
       }
      },
+     "quota": {
+      "README.md": [
+       "fc59ea73f4e46d7fc9b92ecc9e755335732bad4d",
+       []
+      ],
+      "cross-origin-iframe": {
+       "README.md": [
+        "bd802f0b2d2c8d30e97015a8d69804ccac564f5e",
+        []
+       ]
+      },
+      "resources": {
+       "helper.js": [
+        "bd9571c82f58459ec0a9f27d50370bc9ca7913b7",
+        []
+       ]
+      },
+      "same-origin-iframe": {
+       "README.md": [
+        "025422314edc35e6b84f05b63a31b607a7dcd7c0",
+        []
+       ]
+      }
+     },
      "resources": {
       "fetch-later-helper.js": [
-       "566b3e0a1a4d0d57f857f5972fc99f2bb57e742b",
+       "ef1d7090a8f5e6f81d0db9572d7d2d4cc8dd7658",
        []
       ],
       "fetch-later.html": [
-       "b569e1a076ac210d87d01b51ded0a8943476eac0",
+       "b295be116c731c5ceec2d222ecd999fc5342d5c6",
        []
       ],
       "get_beacon.py": [
@@ -411141,16 +411182,16 @@
      "fc6bc8634586ded123fed22ca840e5d1128f7302",
      []
     ],
-    "sethtml-safety.dat": [
-     "ce14d5653c614103789070ac00f79e1971ba89f9",
+    "sethtml-safety.sub.dat": [
+     "4ec50f3ea06bb29bf3e73a31f390a35215a3cd4d",
      []
     ],
-    "sethtml-tree-construction.dat": [
+    "sethtml-tree-construction.sub.dat": [
      "c5c30f613134d29030a7dbd8b03ac0f181b630bb",
      []
     ],
-    "sethtml-unsafety.dat": [
-     "cdf17df3b59f0be92ddc26676d7bfe18b0af6f68",
+    "sethtml-unsafety.sub.dat": [
+     "8f3c2dea889a936cdd54a7bdf6edbe69132a7e3f",
      []
     ],
     "support": {
@@ -496102,6 +496143,20 @@
        }
       ]
      ],
+     "has-slotted-manual-assignment.html": [
+      "02be3861ead826914737aad9deabb3bad43eb416",
+      [
+       null,
+       {}
+      ]
+     ],
+     "has-slotted-query-selector.html": [
+      "88da744a67bab436dcbda3b1c4545d45d1b5848c",
+      [
+       null,
+       {}
+      ]
+     ],
      "host-context-parsing.html": [
       "56055ece63733e8c58c6add661566572356d67aa",
       [
@@ -555956,7 +556011,7 @@
       ]
      },
      "iframe.tentative.https.window.js": [
-      "4f2610863604f0a235524a80f7988212355e5ab9",
+      "b30156b41b2ac9fc934003a83b1be97f935ef4e8",
       [
        "fetch/fetch-later/iframe.tentative.https.window.html",
        {
@@ -555978,7 +556033,7 @@
       ]
      ],
      "new-window.tentative.https.window.js": [
-      "27922f462665b550e1c5520112051178ef45782b",
+      "8b1b6aacd30b2772b395b2f8c2458c6705351dec",
       [
        "fetch/fetch-later/new-window.tentative.https.window.html",
        {
@@ -556008,7 +556063,7 @@
      ],
      "permissions-policy": {
       "deferred-fetch-allowed-by-permissions-policy-attribute-redirect.tentative.https.window.js": [
-       "707d6d1fa54c10e39187a71bfb06bc987c756ae1",
+       "13870bc94b0ec7ff3066b94345dc5c163ecfe51b",
        [
         "fetch/fetch-later/permissions-policy/deferred-fetch-allowed-by-permissions-policy-attribute-redirect.tentative.https.window.html",
         {
@@ -556125,7 +556180,7 @@
        ]
       ],
       "deferred-fetch-default-permissions-policy.tentative.https.window.js": [
-       "a4cc45ef6be4f158164b5f222ebcb4b241a138cb",
+       "4982221952ff980674f459a382858e2726f28ec5",
        [
         "fetch/fetch-later/permissions-policy/deferred-fetch-default-permissions-policy.tentative.https.window.html",
         {
@@ -556164,7 +556219,7 @@
        ]
       ],
       "deferred-fetch-supported-by-permissions-policy.tentative.window.js": [
-       "e89f1edb8567092bcf6146d772a93789e2dbc9f8",
+       "385b0e054ed172ac778b7df961bfb0ad5f31a434",
        [
         "fetch/fetch-later/permissions-policy/deferred-fetch-supported-by-permissions-policy.tentative.window.html",
         {
@@ -556263,28 +556318,456 @@
        ]
       ]
      },
-     "quota.tentative.https.window.js": [
-      "400be4050955a96c96df49f5976cc5a8b43246ce",
-      [
-       "fetch/fetch-later/quota.tentative.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/get-host-info.sub.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "/fetch/fetch-later/resources/fetch-later-helper.js"
+     "quota": {
+      "accumulated-oversized-payload.tentative.https.window.js": [
+       "6439b392e2a0230a3ff819e4e80b42341dc0c389",
+       [
+        "fetch/fetch-later/quota/accumulated-oversized-payload.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/fetch/fetch-later/resources/fetch-later-helper.js"
+          ],
+          [
+           "script",
+           "/fetch/fetch-later/quota/resources/helper.js"
+          ]
          ]
+        }
+       ]
+      ],
+      "cross-origin-iframe": {
+       "accumulated-oversized-payload.tentative.https.window.js": [
+        "071a9c600b7a3230f7e72952521bebc695a2a447",
+        [
+         "fetch/fetch-later/quota/cross-origin-iframe/accumulated-oversized-payload.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/quota/resources/helper.js"
+           ]
+          ]
+         }
         ]
-       }
+       ],
+       "empty-payload.tentative.https.window.js": [
+        "6c7becfacaf45048c69c815940460d1dbe084a67",
+        [
+         "fetch/fetch-later/quota/cross-origin-iframe/empty-payload.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "max-payload.tentative.https.window.js": [
+        "480f90988bf552ca915032e3e7f0b60c59cd0604",
+        [
+         "fetch/fetch-later/quota/cross-origin-iframe/max-payload.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/quota/resources/helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "multiple-iframes.tentative.https.window.js": [
+        "3538c73a3966e3a00a513fe958a69df622446232",
+        [
+         "fetch/fetch-later/quota/cross-origin-iframe/multiple-iframes.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/quota/resources/helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "oversized-payload.tentative.https.window.js": [
+        "43a605151342a9825095ed6c20e921a663e741cb",
+        [
+         "fetch/fetch-later/quota/cross-origin-iframe/oversized-payload.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/quota/resources/helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "small-payload.tentative.https.window.js": [
+        "ad73db5516e687b1ade0f1cc3588780f15f2dd30",
+        [
+         "fetch/fetch-later/quota/cross-origin-iframe/small-payload.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ]
+          ]
+         }
+        ]
+       ]
+      },
+      "empty-payload.tentative.https.window.js": [
+       "c2c4dd50326c0a75b2c82d152995329ccc0cd252",
+       [
+        "fetch/fetch-later/quota/empty-payload.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/fetch/fetch-later/resources/fetch-later-helper.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "max-payload.tentative.https.window.js": [
+       "8457060797ac2d140c85af6c657f79389288c356",
+       [
+        "fetch/fetch-later/quota/max-payload.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/fetch/fetch-later/resources/fetch-later-helper.js"
+          ],
+          [
+           "script",
+           "/fetch/fetch-later/quota/resources/helper.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "multiple-origins.tentative.https.window.js": [
+       "5849068e4d5780a31ad0562854eba818d031af75",
+       [
+        "fetch/fetch-later/quota/multiple-origins.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/fetch/fetch-later/resources/fetch-later-helper.js"
+          ],
+          [
+           "script",
+           "/fetch/fetch-later/quota/resources/helper.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "oversized-payload.tentative.https.window.js": [
+       "0036d040d8e201d8d621c6615e4e7c49daf45fff",
+       [
+        "fetch/fetch-later/quota/oversized-payload.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/fetch/fetch-later/resources/fetch-later-helper.js"
+          ],
+          [
+           "script",
+           "/fetch/fetch-later/quota/resources/helper.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "same-origin-iframe": {
+       "accumulated-oversized-payload.tentative.https.window.js": [
+        "8b894c011ad29c3e984022ec601578bcfc701e2b",
+        [
+         "fetch/fetch-later/quota/same-origin-iframe/accumulated-oversized-payload.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/quota/resources/helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "empty-payload.tentative.https.window.js": [
+        "53cae60047eaefd2b01a3bd45c84239fa3752bf9",
+        [
+         "fetch/fetch-later/quota/same-origin-iframe/empty-payload.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "max-payload.tentative.https.window.js": [
+        "9d865eeb5ee55b80aabcc87ebbd579c3787f1ec1",
+        [
+         "fetch/fetch-later/quota/same-origin-iframe/max-payload.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/quota/resources/helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "multiple-iframes.tentative.https.window.js": [
+        "3f46f84a5fc18a1d7fbaca3fdc0a3d7b6a5f2d64",
+        [
+         "fetch/fetch-later/quota/same-origin-iframe/multiple-iframes.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/quota/resources/helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "oversized-payload.tentative.https.window.js": [
+        "d71b87190cea15f8e439129f844bab107235237a",
+        [
+         "fetch/fetch-later/quota/same-origin-iframe/oversized-payload.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/quota/resources/helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "small-payload.tentative.https.window.js": [
+        "2b20a6fc62965e0d4d8ad5a4014aeb6679653584",
+        [
+         "fetch/fetch-later/quota/same-origin-iframe/small-payload.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ]
+          ]
+         }
+        ]
+       ]
+      },
+      "small-payload.tentative.https.window.js": [
+       "862ca09affdb49c7e461cf9bdfc833b9c2ce09f9",
+       [
+        "fetch/fetch-later/quota/small-payload.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/fetch/fetch-later/resources/fetch-later-helper.js"
+          ]
+         ]
+        }
+       ]
       ]
-     ],
+     },
      "send-on-deactivate-with-background-sync.tentative.https.window.js": [
       "881bdd23f9371ac684b4aa58c2be23ac402cf4fe",
       [
@@ -677758,14 +678241,14 @@
      ]
     ],
     "sethtml-safety.tentative.html": [
-     "d7a10c0477be80773f63d491e04db620d4d8b180",
+     "8a7f3ac64d97d40d75d378816b698215ebaa2bcd",
      [
       null,
       {}
      ]
     ],
     "sethtml-tree-construction.tentative.html": [
-     "bae406ef703346adaf31790f84c030b25acc2cae",
+     "5c693dbf3c90dc59c9a9a3ac0281fc1f33f36d85",
      [
       null,
       {}

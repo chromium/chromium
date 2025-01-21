@@ -3,22 +3,18 @@ test
 #document-fragment
 script
 #document
-| "test"
 
 #data
 <p>Hello</p>
 #document-fragment
 script
 #document
-| "<p>Hello</p>"
 
 #data
 <div>Hello<script>World</script>xxx
 #document
 | <div>
 |   "Hello"
-|   <script>
-|     "World"
 |   "xxx"
 
 #data
@@ -28,8 +24,6 @@ script
 #document
 | <div>
 |   "Hello"
-|   <script>
-|     "World"
 |   "xxx"
 
 #data
@@ -37,25 +31,19 @@ script
 #document
 | <svg svg>
 |   "Hello"
-|   <svg script>
-|     "World"
 |   "xxx"
 
 #data
-<img src="https://example.com/test-image" onclick="2+2" one="two">
+<img src="https://{{host}}/test-image" onclick="2+2" one="two">
 #document
 | <img>
-|   onclick="2+2"
-|   one="two"
-|   src="https://example.com/test-image"
+|   src="https://{{host}}/test-image"
 
 #data
-<img src="https://example.com/test-image" onclick="2+2" one="two">
+<img src="https://{{host}}/test-image" onclick="2+2" one="two">
 #config
 { "attributes": ["src", "onclick", "one"]}
 #document
 | <img>
-|   onclick="2+2"
 |   one="two"
-|   src="https://example.com/test-image"
-
+|   src="https://{{host}}/test-image"
