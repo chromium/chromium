@@ -13,8 +13,8 @@ from blinkpy.common.host_mock import MockHost
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.web_tests.controllers.test_result_sink import CreateTestResultSink
 from blinkpy.web_tests.controllers.test_result_sink import TestResultSink
-from blinkpy.web_tests.models import test_failures, test_results, failure_reason
-from blinkpy.web_tests.models.typ_types import ResultType
+from blinkpy.web_tests.models import test_failures, test_results
+from blinkpy.web_tests.models.typ_types import FailureReason, ResultType
 from blinkpy.web_tests.port.driver import DriverOutput
 from blinkpy.web_tests.port.test import add_manifest_to_mock_filesystem
 from blinkpy.web_tests.port.test import TestPort
@@ -525,8 +525,7 @@ class TestResultSinkMessage(TestResultSinkTestBase):
 
     def test_failure_reason(self):
         tr = test_results.TestResult(test_name='test-name')
-        tr.failure_reason = failure_reason.FailureReason(
-            'primary error message')
+        tr.failure_reason = FailureReason('primary error message')
         sent_data = self.sink(True, tr)
         self.assertDictEqual(sent_data['failureReason'], {
             'primaryErrorMessage': 'primary error message',
@@ -541,7 +540,7 @@ class TestResultSinkMessage(TestResultSinkTestBase):
         # Test that the primary error message is truncated to 1K bytes in
         # UTF-8 encoding.
         tr = test_results.TestResult(test_name='test-name')
-        tr.failure_reason = failure_reason.FailureReason(primary_error_message)
+        tr.failure_reason = FailureReason(primary_error_message)
         sent_data = self.sink(True, tr)
 
         # Ensure truncation has left only whole unicode code points.
