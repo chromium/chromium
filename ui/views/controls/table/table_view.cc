@@ -775,7 +775,7 @@ bool TableView::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 void TableView::OnMouseMoved(const ui::MouseEvent& event) {
-  if (!hovering_enabled_ || !HasFocus()) {
+  if (!hovering_enabled_ || (GetWidget() && !GetWidget()->IsActive())) {
     return;
   }
 
