@@ -562,10 +562,12 @@ bool AudioDestination::RequestRender(size_t frames_requested,
   // The state might be changing by ::Stop() call. If the state is locked, do
   // not touch the below.
   if (!locker.is_acquired()) {
+    NOTREACHED(base::NotFatalUntil::M136);
     return false;
   }
 
   if (device_state_ != DeviceState::kRunning) {
+    NOTREACHED(base::NotFatalUntil::M136);
     return false;
   }
 
