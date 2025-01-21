@@ -65,18 +65,6 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     GpuBacking();
     virtual ~GpuBacking();
 
-    // Dumps information about the memory backing the GpuBacking to |pmd|.
-    // The memory usage is attributed to |buffer_dump_guid|.
-    // |tracing_process_id| uniquely identifies the process owning the memory.
-    // |importance| is relevant only for the cases of co-ownership, the memory
-    // gets attributed to the owner with the highest importance.
-    // Called on the compositor thread.
-    virtual void OnMemoryDump(
-        base::trace_event::ProcessMemoryDump* pmd,
-        const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-        uint64_t tracing_process_id,
-        int importance) const = 0;
-
     scoped_refptr<gpu::ClientSharedImage> shared_image;
     gpu::SyncToken mailbox_sync_token;
     bool overlay_candidate = false;

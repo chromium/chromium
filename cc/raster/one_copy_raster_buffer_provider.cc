@@ -62,18 +62,6 @@ class OneCopyRasterBufferProvider::OneCopyGpuBacking
       sii->DestroySharedImage(mailbox_sync_token, std::move(shared_image));
   }
 
-  void OnMemoryDump(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-      uint64_t tracing_process_id,
-      int importance) const override {
-    if (!shared_image) {
-      return;
-    }
-
-    shared_image->OnMemoryDump(pmd, buffer_dump_guid, importance);
-  }
-
   // The context used to clean up the mailbox
   raw_ptr<viz::RasterContextProvider> worker_context_provider = nullptr;
 };

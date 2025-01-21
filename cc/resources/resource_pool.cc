@@ -655,14 +655,11 @@ void ResourcePool::PoolResource::OnMemoryDump(
   // the root ownership.
   const int kImportance =
       static_cast<int>(gpu::TracingImportance::kClientOwner);
-  auto* dump_manager = base::trace_event::MemoryDumpManager::GetInstance();
-  uint64_t tracing_process_id = dump_manager->GetTracingProcessId();
   if (software_backing_ && software_backing_->shared_image) {
     software_backing_->shared_image->OnMemoryDump(pmd, dump->guid(),
                                                   kImportance);
-  } else if (gpu_backing_) {
-    gpu_backing_->OnMemoryDump(pmd, dump->guid(), tracing_process_id,
-                               kImportance);
+  } else if (gpu_backing_ && gpu_backing_->shared_image) {
+    gpu_backing_->shared_image->OnMemoryDump(pmd, dump->guid(), kImportance);
   }
 
   uint64_t total_bytes = memory_usage();

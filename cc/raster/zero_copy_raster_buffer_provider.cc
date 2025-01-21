@@ -45,17 +45,6 @@ class ZeroCopyGpuBacking : public ResourcePool::GpuBacking {
                                                  std::move(shared_image));
   }
 
-  void OnMemoryDump(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-      uint64_t tracing_process_id,
-      int importance) const override {
-    if (!shared_image) {
-      return;
-    }
-    shared_image->OnMemoryDump(pmd, buffer_dump_guid, importance);
-  }
-
   // The SharedImageInterface used to clean up the shared image.
   raw_ptr<gpu::SharedImageInterface> shared_image_interface = nullptr;
 };
