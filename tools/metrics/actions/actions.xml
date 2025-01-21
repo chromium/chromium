@@ -23499,6 +23499,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileMenuItemDownloadPage">
+  <owner>polardz@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <description>
+    User pressed the download page menu item in the tablet app menu.
+  </description>
+</action>
+
 <action name="MobileMenuLensCopiedImage">
   <obsolete>Deprecated as of 3/2023</obsolete>
   <owner>hujasonx@google.com</owner>

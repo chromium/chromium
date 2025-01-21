@@ -55,6 +55,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -67,6 +69,7 @@ import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.incognito.IncognitoUtilsJni;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -325,6 +328,50 @@ public class AppMenuPropertiesDelegateUnitTest {
                                                 .getDisplayMetrics()
                                                 .density));
         assertTrue(mAppMenuPropertiesDelegate.shouldShowIconRow());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON})
+    @Config(qualifiers = "sw600dp")
+    public void testShouldShowDownloadPageMenuItem_Tablet_WithFeatureOnAndEnabledDownloadPage() {
+        when(mAppMenuPropertiesDelegate.shouldEnableDownloadPage(any(Tab.class))).thenReturn(true);
+        when(mActivityTabProvider.get()).thenReturn(mTab);
+        assertTrue(
+                mAppMenuPropertiesDelegate.shouldShowDownloadPageMenuItem(
+                        mActivityTabProvider.get()));
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON})
+    @Config(qualifiers = "sw600dp")
+    public void testShouldShowDownloadPageMenuItem_Tablet_WithFeatureOffAndEnabledDownloadPage() {
+        when(mAppMenuPropertiesDelegate.shouldEnableDownloadPage(any(Tab.class))).thenReturn(true);
+        when(mActivityTabProvider.get()).thenReturn(mTab);
+        assertFalse(
+                mAppMenuPropertiesDelegate.shouldShowDownloadPageMenuItem(
+                        mActivityTabProvider.get()));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON})
+    @Config(qualifiers = "sw600dp")
+    public void testShouldShowDownloadPageMenuItem_Tablet_WithFeatureOnAndDisabledDownloadPage() {
+        when(mAppMenuPropertiesDelegate.shouldEnableDownloadPage(any(Tab.class))).thenReturn(false);
+        when(mActivityTabProvider.get()).thenReturn(mTab);
+        assertFalse(
+                mAppMenuPropertiesDelegate.shouldShowDownloadPageMenuItem(
+                        mActivityTabProvider.get()));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON})
+    @Config(qualifiers = "sw320dp")
+    public void testShouldShowDownloadPageMenuItem_Phone_WithFeatureOnAndEnabledDownloadPage() {
+        when(mAppMenuPropertiesDelegate.shouldEnableDownloadPage(any(Tab.class))).thenReturn(true);
+        when(mActivityTabProvider.get()).thenReturn(mTab);
+        assertFalse(
+                mAppMenuPropertiesDelegate.shouldShowDownloadPageMenuItem(
+                        mActivityTabProvider.get()));
     }
 
     @Test

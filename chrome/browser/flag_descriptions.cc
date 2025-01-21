@@ -7660,7 +7660,8 @@ const char kTaskManagerClankDescription[] =
 const char kHideTabletToolbarDownloadButtonName[] =
     "Hide Tablet Toolbar Download Button";
 const char kHideTabletToolbarDownloadButtonDescription[] =
-    "Hides the download button on tablet toolbar";
+    "Hides the Omnibox download button and shows it as a menu item for "
+    "tablets.";
 
 const char kShowNewTabAnimationsName[] = "Show New Tab Animations";
 const char kShowNewTabAnimationsDescription[] =
