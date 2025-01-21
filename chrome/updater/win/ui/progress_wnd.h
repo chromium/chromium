@@ -7,6 +7,7 @@
 
 #include <windows.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -215,8 +216,13 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   bool is_canceled_ = false;
 
   struct ControlState {
+   private:
+    static constexpr size_t kNumControlAttributes =
+        1 + static_cast<size_t>(States::STATE_END);
+
+   public:
     const int id;
-    const ControlAttributes attr[static_cast<size_t>(States::STATE_END) + 1];
+    const std::array<ControlAttributes, kNumControlAttributes> attr;
   };
 
   static const ControlState ctls_[];
