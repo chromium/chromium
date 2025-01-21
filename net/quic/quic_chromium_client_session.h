@@ -200,7 +200,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
     // Called when |session| encounters write error on |network|.
     // A write error may be caused by the change in the underlying network
-    // interface, and can be pre-emptive hints of connectivity quality changes
+    // interface, and can be preemptive hints of connectivity quality changes
     // based on the |error_code|.
     virtual void OnSessionEncounteringWriteError(
         QuicChromiumClientSession* session,
@@ -689,7 +689,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // Attempts to create a new stream.  If the stream can be
   // created immediately, returns OK.  If the open stream limit
   // has been reached, returns ERR_IO_PENDING, and |request|
-  // will be added to the stream requets queue and will
+  // will be added to the stream requests queue and will
   // be completed asynchronously.
   // TODO(rch): remove |stream| from this and use setter on |request|
   // and fix in spdy too.

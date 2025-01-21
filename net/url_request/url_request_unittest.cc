@@ -6547,7 +6547,7 @@ TEST_F(URLRequestTestHTTP, NetworkErrorLogging_304Response) {
   EXPECT_EQ(OK, error2.type);
 
   // repeat request with end-to-end validation.  since auth-basic results in a
-  // cachable page, we expect this test to result in a 304.  in which case, the
+  // cacheable page, we expect this test to result in a 304.  in which case, the
   // response should be fetched from the cache.
   {
     TestDelegate d;
@@ -7271,7 +7271,7 @@ TEST_F(URLRequestTestHTTP, BasicAuth) {
   }
 
   // repeat request with end-to-end validation.  since auth-basic results in a
-  // cachable page, we expect this test to result in a 304.  in which case, the
+  // cacheable page, we expect this test to result in a 304.  in which case, the
   // response should be fetched from the cache.
   {
     TestDelegate d;
@@ -7385,7 +7385,7 @@ TEST_F(URLRequestTestHTTP, BasicAuthWithCookiesCancelAuth) {
   EXPECT_EQ(1, default_network_delegate().set_cookie_count());
 }
 
-// Tests the IsolationInfo is updated approiately on redirect.
+// Tests the IsolationInfo is updated appropriately on redirect.
 TEST_F(URLRequestTestHTTP, IsolationInfoUpdatedOnRedirect) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -8122,7 +8122,7 @@ TEST_F(URLRequestTestHTTP, BasicAuthLoadTiming) {
   }
 
   // Repeat request with end-to-end validation.  Since auth-basic results in a
-  // cachable page, we expect this test to result in a 304.  In which case, the
+  // cacheable page, we expect this test to result in a 304.  In which case, the
   // response should be fetched from the cache.
   {
     TestDelegate d;
@@ -8665,7 +8665,7 @@ TEST_F(URLRequestTestHTTP, DefaultAcceptEncoding) {
 }
 
 // Check that it's possible to override the default A-E header.
-TEST_F(URLRequestTestHTTP, DefaultAcceptEncodingOverriden) {
+TEST_F(URLRequestTestHTTP, DefaultAcceptEncodingOverridden) {
   ASSERT_TRUE(http_test_server()->Start());
 
   struct {

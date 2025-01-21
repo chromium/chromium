@@ -319,7 +319,7 @@ int WebSocketBasicHandshakeStream::ReadResponseBody(
 
 void WebSocketBasicHandshakeStream::Close(bool not_reusable) {
   // This class ignores the value of `not_reusable` and never lets the socket be
-  // re-used.
+  // reused.
   state_.Close(/*not_reusable=*/true);
 }
 
