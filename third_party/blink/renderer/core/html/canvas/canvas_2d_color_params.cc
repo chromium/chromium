@@ -28,13 +28,6 @@ SkColorType Canvas2DColorParams::GetSkColorType() const {
   NOTREACHED();
 }
 
-sk_sp<SkColorSpace> Canvas2DColorParams::GetSkColorSpace() const {
-  static_assert(kN32_SkColorType == kRGBA_8888_SkColorType ||
-                    kN32_SkColorType == kBGRA_8888_SkColorType,
-                "Unexpected kN32_SkColorType value.");
-  return PredefinedColorSpaceToSkColorSpace(color_space_);
-}
-
 gfx::ColorSpace Canvas2DColorParams::GetGfxColorSpace() const {
   return PredefinedColorSpaceToGfxColorSpace(color_space_);
 }
