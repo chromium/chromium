@@ -4,6 +4,8 @@
 
 package org.chromium.content_public.browser;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -48,6 +50,9 @@ public class NavigationHandle {
     private boolean mIsPdf;
     private @Nullable String mMimeType;
     private boolean mIsSaveableNavigation;
+    private @Nullable WebContents mWebContents;
+
+    private boolean mStarted;
 
     public static NavigationHandle createForTesting(
             GURL url,
@@ -94,8 +99,7 @@ public class NavigationHandle {
             boolean isReload,
             boolean isSaveableNavigation) {
         NavigationHandle handle = new NavigationHandle(0);
-        handle.initialize(
-                0,
+        handle.didStart(
                 url,
                 GURL.emptyGURL(),
                 GURL.emptyGURL(),
@@ -113,7 +117,8 @@ public class NavigationHandle {
                 isReload,
                 /* isPdf= */ false,
                 /* mimeType= */ "",
-                isSaveableNavigation);
+                isSaveableNavigation,
+                null);
         return handle;
     }
 
@@ -123,8 +128,7 @@ public class NavigationHandle {
     }
 
     @CalledByNative
-    private void initialize(
-            long unused_nativeNavigationHandleProxy,
+    private void didStart(
             GURL url,
             GURL referrerUrl,
             GURL baseUrlForDataUrl,
@@ -142,7 +146,8 @@ public class NavigationHandle {
             boolean isReload,
             boolean isPdf,
             String mimeType,
-            boolean isSaveableNavigation) {
+            boolean isSaveableNavigation,
+            @Nullable WebContents webContents) {
         mUrl = url;
         mReferrerUrl = referrerUrl;
         mBaseUrlForDataUrl = baseUrlForDataUrl;
@@ -161,6 +166,9 @@ public class NavigationHandle {
         mIsPdf = isPdf;
         mMimeType = mimeType;
         mIsSaveableNavigation = isSaveableNavigation;
+        mWebContents = webContents;
+
+        mStarted = true;
     }
 
     /**
@@ -219,70 +227,70 @@ public class NavigationHandle {
     }
 
     /**
-     * The URL the frame is navigating to.  This may change during the navigation when encountering
-     * a server redirect.
+     * The URL the frame is navigating to. This may change during the navigation when encountering a
+     * server redirect.
      */
-    public @Nullable GURL getUrl() {
-        return mUrl;
+    public GURL getUrl() {
+        assert mStarted;
+        return assumeNonNull(mUrl);
     }
 
     /** The referrer URL for the navigation. */
-    public @Nullable GURL getReferrerUrl() {
-        return mReferrerUrl;
+    public GURL getReferrerUrl() {
+        assert mStarted;
+        return assumeNonNull(mReferrerUrl);
     }
 
     /** Used for specifying a base URL for pages loaded via data URLs. */
-    public @Nullable GURL getBaseUrlForDataUrl() {
-        return mBaseUrlForDataUrl;
+    public GURL getBaseUrlForDataUrl() {
+        assert mStarted;
+        return assumeNonNull(mBaseUrlForDataUrl);
     }
 
     /**
-     * Whether the navigation is taking place in the main frame of the primary
-     * frame tree. With MPArch (crbug.com/1164280), a WebContents may have
-     * additional frame trees for prerendering pages in addition to the primary
-     * frame tree (holding the page currently shown to the user). This remains
-     * constant over the navigation lifetime.
+     * Whether the navigation is taking place in the main frame of the primary frame tree. With
+     * MPArch (crbug.com/1164280), a WebContents may have additional frame trees for prerendering
+     * pages in addition to the primary frame tree (holding the page currently shown to the user).
+     * This remains constant over the navigation lifetime.
      */
     public boolean isInPrimaryMainFrame() {
+        assert mStarted;
         return mIsInPrimaryMainFrame;
     }
 
     /**
      * Whether the navigation was initiated by the renderer process. Examples of renderer-initiated
-     * navigations include:
-     *  - <a> link click
-     *  - changing window.location.href
-     *  - redirect via the <meta http-equiv="refresh"> tag
-     *  - using window.history.pushState
+     * navigations include: - <a> link click - changing window.location.href - redirect via the
+     * <meta http-equiv="refresh"> tag - using window.history.pushState
      *
-     * This method returns false for browser-initiated navigations, including:
-     *  - any navigation initiated from the omnibox
-     *  - navigations via suggestions in browser UI
-     *  - navigations via browser UI: Ctrl-R, refresh/forward/back/home buttons
-     *  - using window.history.forward() or window.history.back()
-     *  - any other "explicit" URL navigations, e.g. bookmarks
+     * <p>This method returns false for browser-initiated navigations, including: - any navigation
+     * initiated from the omnibox - navigations via suggestions in browser UI - navigations via
+     * browser UI: Ctrl-R, refresh/forward/back/home buttons - using window.history.forward() or
+     * window.history.back() - any other "explicit" URL navigations, e.g. bookmarks
      */
     public boolean isRendererInitiated() {
+        assert mStarted;
         return mIsRendererInitiated;
     }
 
     /**
-     * Whether the navigation happened without changing document.
-     * Examples of same document navigations are:
-     * - reference fragment navigations
-     * - pushState/replaceState
-     * - same page history navigation
+     * Whether the navigation happened without changing document. Examples of same document
+     * navigations are: - reference fragment navigations - pushState/replaceState - same page
+     * history navigation
      */
     public boolean isSameDocument() {
+        assert mStarted;
         return mIsSameDocument;
     }
 
     public String errorDescription() {
+        assert mStarted;
         // TODO(shaktisahu): Provide appropriate error description (crbug/690784).
         return "";
     }
 
     public @NetError int errorCode() {
+        assert mStarted;
         return mErrorCode;
     }
 
@@ -294,6 +302,7 @@ public class NavigationHandle {
      * page.
      */
     public boolean hasCommitted() {
+        assert mStarted;
         return mHasCommitted;
     }
 
@@ -302,25 +311,28 @@ public class NavigationHandle {
      * didFinishNavigationInPrimaryMainFrame()
      */
     public int httpStatusCode() {
+        assert mStarted;
         return mHttpStatusCode;
     }
 
     /** Returns the page transition type. */
     public @PageTransition int pageTransition() {
+        assert mStarted;
         return mPageTransition;
     }
 
     /** Returns true on same-document navigation with fragment change in the primary main frame. */
     public boolean isPrimaryMainFrameFragmentNavigation() {
+        assert mStarted;
         return mIsPrimaryMainFrameFragmentNavigation;
     }
 
     /**
-     * Whether the navigation resulted in an error page.
-     * Note that if an error page reloads, this will return true even though GetNetErrorCode will be
-     * net::OK.
+     * Whether the navigation resulted in an error page. Note that if an error page reloads, this
+     * will return true even though GetNetErrorCode will be net::OK.
      */
     public boolean isErrorPage() {
+        assert mStarted;
         return mIsErrorPage;
     }
 
@@ -331,11 +343,13 @@ public class NavigationHandle {
      * response headers.
      */
     public boolean isDownload() {
+        assert mStarted;
         return mIsDownload;
     }
 
     /** Returns true if the navigation is a search. */
     public boolean isValidSearchFormUrl() {
+        assert mStarted;
         return mIsValidSearchFormUrl;
     }
 
@@ -344,31 +358,37 @@ public class NavigationHandle {
      * originating from the browser.
      */
     public @Nullable Origin getInitiatorOrigin() {
+        assert mStarted;
         return mInitiatorOrigin;
     }
 
     /** True if the the navigation method is "POST". */
     public boolean isPost() {
+        assert mStarted;
         return mIsPost;
     }
 
     /** True if the navigation was initiated by the user. */
     public boolean hasUserGesture() {
+        assert mStarted;
         return mHasUserGesture;
     }
 
     /** Is the navigation a redirect (in which case URL is the "target" address). */
     public boolean isRedirect() {
+        assert mStarted;
         return mIsRedirect;
     }
 
     /** True if the target URL can't be handled by Chrome's internal protocol handlers. */
     public boolean isExternalProtocol() {
+        assert mStarted;
         return mIsExternalProtocol;
     }
 
     /** Get a unique ID for this navigation. */
     public long getNavigationId() {
+        assert mStarted;
         return mNavigationId;
     }
 
@@ -377,11 +397,13 @@ public class NavigationHandle {
      * the BackForwardCache or Prerender).
      */
     public boolean isPageActivation() {
+        assert mStarted;
         return mIsPageActivation;
     }
 
     /** Whether this navigation was initiated by a page reload. */
     public boolean isReload() {
+        assert mStarted;
         return mIsReload;
     }
 
@@ -400,16 +422,25 @@ public class NavigationHandle {
 
     /** Whether the navigation is for PDF content. */
     public boolean isPdf() {
+        assert mStarted;
         return mIsPdf;
     }
 
     /** MIME type of the page. */
-    public @Nullable String getMimeType() {
-        return mMimeType;
+    public String getMimeType() {
+        assert mStarted;
+        return assumeNonNull(mMimeType);
     }
 
     /** Whether this navigation can be saved so that it be reloaded or synced. */
     public boolean isSaveableNavigation() {
+        assert mStarted;
         return mIsSaveableNavigation;
+    }
+
+    /** A navigation is always taking place inside of a WebContents, so this will never be null. */
+    public WebContents getWebContents() {
+        assert mStarted;
+        return assumeNonNull(mWebContents);
     }
 }
