@@ -93,6 +93,10 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
           path,
           base::UnescapeRule::PATH_SEPARATORS |
               base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
+      // Registration endpoint can be a full URL (samesite with request origin)
+      // or a relative URL, starting with a "/" to make it origin-relative,
+      // and starting with anything else making it current-path-relative to
+      // request URL.
       GURL candidate_endpoint = request_url.Resolve(unescaped);
       if (candidate_endpoint.is_valid() &&
           net::SchemefulSite(candidate_endpoint) ==
