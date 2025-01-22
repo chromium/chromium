@@ -196,7 +196,7 @@ function simpleLoadIgnoreOnBeforeSendHeadersInvalidHeaders() {
         event: "onResponseStarted",
         details: {
           url: getURLHttpSimpleLoad(),
-          fromCache: false,
+          fromCache: true,
           statusCode: 200,
           ip: "127.0.0.1",
           statusLine: "HTTP/1.1 200 OK"
@@ -206,7 +206,7 @@ function simpleLoadIgnoreOnBeforeSendHeadersInvalidHeaders() {
         event: "onCompleted",
         details: {
           url: getURLHttpSimpleLoad(),
-          fromCache: false,
+          fromCache: true,
           statusCode: 200,
           ip: "127.0.0.1",
           statusLine: "HTTP/1.1 200 OK"
@@ -271,7 +271,7 @@ function simpleLoadIgnoreOnBeforeSendHeadersInvalidResponse() {
         event: "onResponseStarted",
         details: {
           url: getURLHttpSimpleLoad(),
-          fromCache: false,
+          fromCache: true,
           statusCode: 200,
           ip: "127.0.0.1",
           statusLine: "HTTP/1.1 200 OK",
@@ -282,7 +282,7 @@ function simpleLoadIgnoreOnBeforeSendHeadersInvalidResponse() {
         event: "onCompleted",
         details: {
           url: getURLHttpSimpleLoad(),
-          fromCache: false,
+          fromCache: true,
           statusCode: 200,
           ip: "127.0.0.1",
           statusLine: "HTTP/1.1 200 OK",

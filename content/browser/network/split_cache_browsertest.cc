@@ -756,12 +756,7 @@ IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled,
       GenURL("a.com", "/title1.html"),
       expect_first_subframe_navigation_cached));
 
-  // page_with_iframe.html is not added to the cache due to the request not
-  // having a Max-Age header like the other requests and due to the embedded
-  // test server not correctly handling requests with the If-None-Match and ETag
-  // headers, but the a.com/title1.html subframe should have been. For more info
-  // see: https://crbug.com/360903556
-  EXPECT_FALSE(NavigationResourceCached(
+  EXPECT_TRUE(NavigationResourceCached(
       GenURL("a.com", "/navigation_controller/page_with_iframe.html"),
       GenURL("a.com", "/title1.html"), true));
 
