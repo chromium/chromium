@@ -284,7 +284,7 @@ void GPUAdapter::OnRequestDeviceCallback(
       if (device_lost_info) {
         // Ensure the Dawn device is marked as lost as well.
         device->InjectError(
-            wgpu::ErrorType::DeviceLost,
+            wgpu::ErrorType::Internal,
             "Device was marked as lost due to a stale adapter.");
       }
 
@@ -298,8 +298,8 @@ void GPUAdapter::OnRequestDeviceCallback(
     }
 
     case wgpu::RequestDeviceStatus::Error:
-    case wgpu::RequestDeviceStatus::Unknown:
     case wgpu::RequestDeviceStatus::InstanceDropped:
+    default:
       if (dawn_device) {
         // A device provided with an error is already a lost device on the Dawn
         // side, reflect that by resolving the lost property immediately.

@@ -1671,7 +1671,7 @@ WebGPUDecoderImpl::CreateQueuedRequestDeviceCallback(
                                      callback_info);
         } else {
           callback_info.callback(
-              WGPURequestDeviceStatus_Unknown, nullptr,
+              WGPURequestDeviceStatus_InstanceDropped, nullptr,
               MakeStringView("Queued device request cancelled."),
               callback_info.userdata1, callback_info.userdata2);
         }

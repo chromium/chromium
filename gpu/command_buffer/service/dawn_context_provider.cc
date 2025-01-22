@@ -668,7 +668,7 @@ bool DawnSharedContext::Initialize(
       [](const wgpu::Device&, wgpu::DeviceLostReason reason,
          wgpu::StringView message, DawnSharedContext* state) {
         if (reason != wgpu::DeviceLostReason::Destroyed) {
-          state->OnError(wgpu::ErrorType::DeviceLost, message);
+          state->OnError(wgpu::ErrorType::Unknown, message);
         }
       },
       this);

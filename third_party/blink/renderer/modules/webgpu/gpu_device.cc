@@ -343,7 +343,6 @@ void GPUDevice::OnUncapturedError(const wgpu::Device& device,
   }
 
   DCHECK_NE(errorType, wgpu::ErrorType::NoError);
-  DCHECK_NE(errorType, wgpu::ErrorType::DeviceLost);
   LOG(ERROR) << "GPUDevice: " << std::string_view(message);
 
   GPUUncapturedErrorEventInit* init = GPUUncapturedErrorEventInit::Create();
@@ -487,10 +486,8 @@ void GPUDevice::OnCreateRenderPipelineAsyncCallback(
     }
 
     case wgpu::CreatePipelineAsyncStatus::InternalError:
-    case wgpu::CreatePipelineAsyncStatus::DeviceLost:
-    case wgpu::CreatePipelineAsyncStatus::DeviceDestroyed:
     case wgpu::CreatePipelineAsyncStatus::InstanceDropped:
-    case wgpu::CreatePipelineAsyncStatus::Unknown: {
+    default: {
       resolver->Reject(GPUPipelineError::Create(
           script_state->GetIsolate(), StringFromASCIIAndUTF8(message),
           V8GPUPipelineErrorReason::Enum::kInternal));
@@ -522,10 +519,8 @@ void GPUDevice::OnCreateComputePipelineAsyncCallback(
     }
 
     case wgpu::CreatePipelineAsyncStatus::InternalError:
-    case wgpu::CreatePipelineAsyncStatus::DeviceLost:
-    case wgpu::CreatePipelineAsyncStatus::DeviceDestroyed:
     case wgpu::CreatePipelineAsyncStatus::InstanceDropped:
-    case wgpu::CreatePipelineAsyncStatus::Unknown: {
+    default: {
       resolver->Reject(GPUPipelineError::Create(
           script_state->GetIsolate(), StringFromASCIIAndUTF8(message),
           V8GPUPipelineErrorReason::Enum::kInternal));
@@ -747,6 +742,11 @@ void GPUDevice::OnPopErrorScopeCallback(
       return;
     case wgpu::PopErrorScopeStatus::Success:
       break;
+    default:
+      // TODO(crbug.com/378453261): Explicitly handle EmptyStack.
+      resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
+                                       "No error scopes to pop");
+      return;
   }
   switch (type) {
     case wgpu::ErrorType::NoError:
@@ -765,14 +765,9 @@ void GPUDevice::OnPopErrorScopeCallback(
           StringFromASCIIAndUTF8(message)));
       break;
     case wgpu::ErrorType::Unknown:
+    default:
       resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
                                        "Unknown failure in popErrorScope");
-      break;
-    case wgpu::ErrorType::DeviceLost:
-      resolver->RejectWithDOMException(
-          DOMExceptionCode::kOperationError,
-          "Device lost during popErrorScope (do not use this error for "
-          "recovery - it is NOT guaranteed to happen on device loss)");
       break;
   }
 }
