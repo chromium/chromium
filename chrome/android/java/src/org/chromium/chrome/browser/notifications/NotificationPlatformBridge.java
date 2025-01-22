@@ -72,6 +72,7 @@ import org.chromium.webapk.lib.client.WebApkIdentityServiceClient;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -136,6 +137,11 @@ public class NotificationPlatformBridge {
     // the `PRE_UNSUBSCRIBE` intent was started. Used to measure the time, as perceived by the user,
     // that elapses until we see a duplicate intent being dispatched.
     private static long sLastPreUnsubscribePreNativeTaskStartRealMillis = -1;
+
+    // Maps the origins of suspicious notifications and their ids, used for UMA logging.
+    @VisibleForTesting
+    static Map<String, HashSet<String>> sSuspiciousNotificationsMap =
+            new HashMap<String, HashSet<String>>();
 
     /** Encapsulates attributes that identify a notification and where it originates from. */
     private static class NotificationIdentifyingAttributes {
@@ -244,39 +250,52 @@ public class NotificationPlatformBridge {
     static boolean dispatchNotificationEventPreNative(Intent intent) {
         NotificationIdentifyingAttributes attributes =
                 NotificationIdentifyingAttributes.extractFromIntent(intent);
-        if (NotificationConstants.ACTION_PRE_UNSUBSCRIBE.equals(intent.getAction())) {
-            onNotificationPreUnsubcribe(attributes);
-            return false;
-        } else if (NotificationConstants.ACTION_UNDO_UNSUBSCRIBE.equals(intent.getAction())) {
-            onNotificationUndoUnsubscribe(attributes);
-            return false;
-        } else if (NotificationConstants.ACTION_COMMIT_UNSUBSCRIBE.equals(intent.getAction())) {
-            // Cancel notification immediately so that the user perceives the action to have been
-            // recognized; but return `true` as we still need native processing later to actually
-            // revoke the permission. Also keep the `sOriginsWithProvisionallyRevokedPermissions` in
-            // place until native processing finishes in case there are other user interactions
-            // racing with this intent.
-            BaseNotificationManagerProxy notificationManager =
-                    BaseNotificationManagerProxyFactory.create();
-            notificationManager.cancel(attributes.notificationId, PLATFORM_ID);
-            return true;
-        } else if (NotificationConstants.ACTION_SHOW_ORIGINAL_NOTIFICATION.equals(
-                intent.getAction())) {
-            // TODO(crbug.com/382475678): Figure out a way to stay on the notifications screen when
-            // "Show Original" is tapped, instead of exiting out to previous screen.
-            onNotificationShowOriginal(attributes);
-            recordSuspiciousNotificationWarningInteractions(
-                    SuspiciousNotificationWarningInteractions.SHOW_ORIGINAL_NOTIFICATION);
-            return false;
-        } else if (NotificationConstants.ACTION_ALWAYS_ALLOW.equals(intent.getAction())) {
-            onNotificationPreAlwaysAllow(attributes);
-            recordSuspiciousNotificationWarningInteractions(
-                    SuspiciousNotificationWarningInteractions.ALWAYS_ALLOW);
-            return true;
-        }
+        switch (intent.getAction()) {
+            case NotificationConstants.ACTION_CLOSE_NOTIFICATION:
+                recordInteractionForUMAIfSuspicious(
+                        attributes.origin,
+                        attributes.notificationId,
+                        SuspiciousNotificationWarningInteractions.DISMISS);
+                return true;
+            case NotificationConstants.ACTION_PRE_UNSUBSCRIBE:
+                onNotificationPreUnsubcribe(attributes);
+                return false;
+            case NotificationConstants.ACTION_UNDO_UNSUBSCRIBE:
+                onNotificationUndoUnsubscribe(attributes);
+                return false;
+            case NotificationConstants.ACTION_COMMIT_UNSUBSCRIBE:
+                // Cancel notification immediately so that the user perceives the action to have
+                // been recognized; but return `true` as we still need native processing later to
+                // actually revoke the permission. Also keep the
+                // `sOriginsWithProvisionallyRevokedPermissions` in place until native processing
+                // finishes in case there are other user interactions racing with this intent.
+                BaseNotificationManagerProxy notificationManager =
+                        BaseNotificationManagerProxyFactory.create();
+                notificationManager.cancel(attributes.notificationId, PLATFORM_ID);
 
-        // All other intents handled from native.
-        return true;
+                recordInteractionForUMAIfSuspicious(
+                        attributes.origin,
+                        attributes.notificationId,
+                        SuspiciousNotificationWarningInteractions.UNSUBSCRIBE);
+                return true;
+            case NotificationConstants.ACTION_SHOW_ORIGINAL_NOTIFICATION:
+                // TODO(crbug.com/382475678): Figure out a way to stay on the notifications screen
+                // when "Show Original" is tapped, instead of exiting out to previous screen.
+                onNotificationShowOriginal(attributes);
+                recordSuspiciousNotificationWarningInteractions(
+                        SuspiciousNotificationWarningInteractions.SHOW_ORIGINAL_NOTIFICATION);
+                return false;
+            case NotificationConstants.ACTION_ALWAYS_ALLOW:
+                onNotificationPreAlwaysAllow(attributes);
+                recordInteractionForUMAIfSuspicious(
+                        attributes.origin,
+                        attributes.notificationId,
+                        SuspiciousNotificationWarningInteractions.ALWAYS_ALLOW);
+                return true;
+            default:
+                // All other intents handled from native.
+                return true;
+        }
     }
 
     /**
@@ -1714,6 +1733,41 @@ public class NotificationPlatformBridge {
                         isSuspicious);
     }
 
+    /** Logs the `interaction` for UMA if the `notificationId` from `origin` is suspicious. */
+    private static void recordInteractionForUMAIfSuspicious(
+            String origin,
+            String notificationId,
+            @SuspiciousNotificationWarningInteractions int interaction) {
+        // If the origin is not suspicious, nothing to record.
+        if (!sSuspiciousNotificationsMap.containsKey(origin)) {
+            return;
+        }
+
+        boolean isNotificationSuspicious =
+                sSuspiciousNotificationsMap.get(origin).contains(notificationId);
+
+        switch (interaction) {
+            case SuspiciousNotificationWarningInteractions.DISMISS:
+                // Record only if the notification is suspicious and remove the `notificationId` so
+                // that notification is not recorded again.
+                if (isNotificationSuspicious) {
+                    sSuspiciousNotificationsMap.get(origin).remove(notificationId);
+                    recordSuspiciousNotificationWarningInteractions(interaction);
+                }
+                return;
+            case SuspiciousNotificationWarningInteractions.UNSUBSCRIBE:
+            case SuspiciousNotificationWarningInteractions.ALWAYS_ALLOW:
+                // Record only if triggered from a suspicious notification. Remove the `origin`
+                // entry regardless, since future notifications from this origin should no longer be
+                // recorded.
+                if (isNotificationSuspicious) {
+                    recordSuspiciousNotificationWarningInteractions(interaction);
+                }
+                sSuspiciousNotificationsMap.remove(origin);
+                return;
+        }
+    }
+
     private TrustedWebActivityClient getTwaClient() {
         return TrustedWebActivityClient.getInstance();
     }
@@ -1808,6 +1862,18 @@ public class NotificationPlatformBridge {
         // Add the unsubscribe and show original notification buttons.
         appendUnsubscribeButton(notificationBuilder, identifyingAttributes);
         appendShowOriginalNotificationButton(notificationBuilder, identifyingAttributes);
+
+        // Add entry to `sSuspiciousNotificationsMap` for UMA logging.
+        if (sSuspiciousNotificationsMap.containsKey(identifyingAttributes.origin)) {
+            sSuspiciousNotificationsMap
+                    .get(identifyingAttributes.origin)
+                    .add(identifyingAttributes.notificationId);
+        } else {
+            HashSet<String> suspiciousNotificationIds = new HashSet<>();
+            suspiciousNotificationIds.add(identifyingAttributes.notificationId);
+            sSuspiciousNotificationsMap.put(
+                    identifyingAttributes.origin, suspiciousNotificationIds);
+        }
 
         return buildNotificationWrapper(notificationBuilder, identifyingAttributes.notificationId);
     }
