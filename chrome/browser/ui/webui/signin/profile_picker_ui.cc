@@ -48,7 +48,7 @@
 
 namespace {
 
-// Miniumum size for the picker UI.
+// Minimum size for the picker UI.
 constexpr int kMinimumPickerSizePx = 620;
 
 bool IsBrowserSigninAllowed() {
@@ -141,6 +141,10 @@ void AddStrings(content::WebUIDataSource* html_source, bool is_glic_version) {
       {"signInButtonLabel",
        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL},
       {"glicAddProfileHelper", IDS_PROFILE_PICKER_ADD_PROFILE_HELPER_GLIC},
+      {"glicTitleNoProfile",
+       IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC_NO_PROFILE},
+      {"mainViewSubtitleGlicNoProfile",
+       IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC_NO_PROFILE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

@@ -63,14 +63,18 @@ suite('ProfilePickerAppTest', function() {
         testElement.shadowRoot!.querySelector('profile-picker-main-view')!;
     await whenCheck(mainView, () => mainView.classList.contains('active'));
     await browserProxy.whenCalled('initializeMainView');
-    const profilesContainer =
-        mainView.shadowRoot!.querySelector<HTMLElement>('#wrapper')!
-            .querySelector<HTMLElement>('#profilesContainer')!;
-    assertTrue(profilesContainer.hidden);
+
+    const profilesWrapper =
+        mainView.shadowRoot!.querySelector<HTMLElement>('#profilesWrapper')!;
+    assertTrue(profilesWrapper.hidden);
 
     webUIListenerCallback(
         'profiles-list-changed', [browserProxy.profileSample]);
     await microtasksFinished();
+    assertFalse(profilesWrapper.hidden);
+
+    const profilesContainer =
+        profilesWrapper.querySelector<HTMLElement>('#profilesContainer')!;
     assertEquals(profilesContainer.querySelectorAll('profile-card').length, 1);
     mainView.$.addProfile.click();
     await waitForProfileCreationLoad();
