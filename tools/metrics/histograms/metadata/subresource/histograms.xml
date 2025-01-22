@@ -123,7 +123,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="SubresourceFilter.Experimental.ReadyToCommitResultsInCommit2"
     enum="Boolean" expires_after="2023-08-14">
   <owner>alexmt@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     For every navigation observed by the subresource filter that passes through
@@ -140,7 +139,6 @@ chromium-metrics-reviews@google.com.
     name="SubresourceFilter.Experimental.ReadyToCommitResultsInCommit2.RestrictedAdFrameNavigation"
     enum="Boolean" expires_after="2023-08-28">
   <owner>alexmt@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     For every 'restricted' navigation observed by the subresource filter that
