@@ -56,9 +56,4 @@ void TaskManagerObserverAndroid::OnTaskUnresponsive(TaskId id) {
   Java_TaskManagerObserver_onTaskUnresponsive(env, java_object_, id);
 }
 
-void TaskManagerObserverAndroid::OnActiveTaskFetched(TaskId id) {
-  JNIEnv* env = jni_zero::AttachCurrentThread();
-  Java_TaskManagerObserver_onActiveTaskFetched(env, java_object_, id);
-}
-
 }  // namespace task_manager

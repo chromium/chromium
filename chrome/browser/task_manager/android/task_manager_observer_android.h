@@ -31,7 +31,6 @@ class TaskManagerObserverAndroid : public TaskManagerObserver {
   void OnTasksRefreshedWithBackgroundCalculations(
       const TaskIdList& task_ids) override;
   void OnTaskUnresponsive(TaskId id) override;
-  void OnActiveTaskFetched(TaskId id) override;
 
   jni_zero::ScopedJavaGlobalRef<jobject> java_object_ = nullptr;
 };

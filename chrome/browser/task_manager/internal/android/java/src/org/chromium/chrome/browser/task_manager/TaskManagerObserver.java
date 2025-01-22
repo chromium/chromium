@@ -32,7 +32,4 @@ public interface TaskManagerObserver {
 
     @CalledByNative
     void onTaskUnresponsive(long id);
-
-    @CalledByNative
-    void onActiveTaskFetched(long id);
 }

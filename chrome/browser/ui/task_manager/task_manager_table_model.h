@@ -99,7 +99,6 @@ class TaskManagerTableModel : public TaskManagerObserver,
   void OnTaskAdded(TaskId id) override;
   void OnTaskToBeRemoved(TaskId id) override;
   void OnTasksRefreshed(const TaskIdList& task_ids) override;
-  void OnActiveTaskFetched(TaskId id) override;
 
   // Gets the start index and length of the group to which the task at
   // |row_index| belongs.
