@@ -25,8 +25,9 @@
   if (applicationGroup) {
     NSUserDefaults* defaults =
         [[NSUserDefaults alloc] initWithSuiteName:applicationGroup];
-    if (defaults)
+    if (defaults) {
       return defaults;
+    }
   }
 
   // On a device, the entitlements should always provide an application group to

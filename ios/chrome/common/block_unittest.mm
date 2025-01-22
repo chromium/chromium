@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import <Foundation/Foundation.h>
+
 #import <vector>
 
 #import "base/memory/ref_counted.h"
@@ -29,8 +30,9 @@ class RefCountedObject : public base::RefCounted<RefCountedObject> {
       EXPECT_FALSE(check);
       ++count;
     }
-    for (int ii = 1; ii < count; ii++)
+    for (int ii = 1; ii < count; ii++) {
       base::subtle::RefCountedBase::AddRef();
+    }
     return count;
   }
 

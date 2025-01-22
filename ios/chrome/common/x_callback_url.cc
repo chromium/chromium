@@ -23,8 +23,9 @@ const char kCancelURLParameterName[] = "x-cancel";
 }  // namespace
 
 bool IsXCallbackURL(const GURL& url) {
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return false;
+  }
 
   if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
     return url.host_piece() == kXCallbackURLHost;
@@ -36,8 +37,9 @@ bool IsXCallbackURL(const GURL& url) {
     return url.host_piece() == kXCallbackURLHost;
   }
   std::string_view path_piece = url.path_piece();
-  if (base::StartsWith(path_piece, "//"))
+  if (base::StartsWith(path_piece, "//")) {
     path_piece = path_piece.substr(2, std::string_view::npos);
+  }
 
   size_t pos = path_piece.find('/', 0);
   if (pos != std::string_view::npos) {
