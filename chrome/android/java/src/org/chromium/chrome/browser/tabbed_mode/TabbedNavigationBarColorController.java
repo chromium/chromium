@@ -65,7 +65,6 @@ class TabbedNavigationBarColorController
     private static final String TAG = "NavBarColorCntrller";
     private final Context mContext;
     private final FullscreenManager mFullScreenManager;
-    private final @ColorInt int mDefaultScrimColor;
 
     // May be null if we return from the constructor early. Otherwise will be set.
     private final @Nullable TabModelSelector mTabModelSelector;
@@ -91,7 +90,7 @@ class TabbedNavigationBarColorController
 
     private boolean mForceDarkNavigationBarColor;
     private boolean mIsInFullscreen;
-    private float mNavigationBarScrimFraction;
+    private @ColorInt int mCurrentScrimColor;
 
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private final @NonNull ObservableSupplier<Integer> mOverviewColorSupplier;
@@ -196,7 +195,6 @@ class TabbedNavigationBarColorController
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1;
 
         mContext = context;
-        mDefaultScrimColor = mContext.getColor(R.color.default_scrim_color);
         mFullScreenManager = fullscreenManager;
         mEdgeToEdgeSystemBarColorHelper = edgeToEdgeSystemBarColorHelper;
 
@@ -437,12 +435,12 @@ class TabbedNavigationBarColorController
     }
 
     /**
-     * Update the scrim amount on the navigation bar.
+     * Update the scrim color on the navigation bar.
      *
-     * @param fraction The scrim fraction in range [0, 1].
+     * @param scrimColor The scrim color currently affecting the nav bar, including alpha.
      */
-    public void setNavigationBarScrimFraction(float fraction) {
-        mNavigationBarScrimFraction = fraction;
+    public void setNavigationBarScrimColor(@ColorInt int scrimColor) {
+        mCurrentScrimColor = scrimColor;
         @ColorInt
         int scrimNavigationBarColor =
                 applyCurrentScrimToColor(getNavigationBarColor(mForceDarkNavigationBarColor));
@@ -484,7 +482,7 @@ class TabbedNavigationBarColorController
     }
 
     private @ColorInt int applyCurrentScrimToColor(@ColorInt int color) {
-        return ColorUtils.overlayColor(color, mDefaultScrimColor, mNavigationBarScrimFraction);
+        return ColorUtils.overlayColor(color, mCurrentScrimColor);
     }
 
     @VisibleForTesting

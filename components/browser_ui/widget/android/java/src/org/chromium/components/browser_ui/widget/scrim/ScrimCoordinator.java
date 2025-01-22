@@ -110,11 +110,6 @@ public class ScrimCoordinator {
         return mMediator.getNavigationBarColorSupplier();
     }
 
-    @Deprecated
-    public ObservableSupplier<Float> getNavigationBarScrimFractionSupplier() {
-        return mMediator.getNavigationBarScrimFractionSupplier();
-    }
-
     /**
      * Show the scrim.
      *

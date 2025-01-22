@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build.VERSION;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -897,12 +899,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 .getStatusBarColorSupplier()
                 .addObserver(mStatusBarColorController::setScrimColor);
         scrimCoordinator
-                .getNavigationBarScrimFractionSupplier()
-                .addObserver(this::onNavigationBarScrimFractionChanged);
+                .getNavigationBarColorSupplier()
+                .addObserver(this::onNavBarScrimColorChanged);
         return scrimCoordinator;
     }
 
-    private void onNavigationBarScrimFractionChanged(float scrimFraction) {
+    @SuppressLint("NewApi")
+    private void onNavBarScrimColorChanged(@ColorInt int color) {
         // When drawing edge to edge, scrim already draws over the nav bar region.
         // No need to change the nav bar color.
         var edgeToEdgeController = mEdgeToEdgeControllerSupplier.get();
@@ -915,7 +918,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (controller == null) {
             return;
         }
-        controller.setNavigationBarScrimFraction(scrimFraction);
+        controller.setNavigationBarScrimColor(color);
     }
 
     // Package Private class methods

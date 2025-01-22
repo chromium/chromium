@@ -34,6 +34,7 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
     private final @NonNull Runnable mScrimHiddenRunnable;
 
     private final @ColorInt int mDefaultScrimColor;
+    // TODO(skym): Re-implement to not have legacy suppliers.
     private final ObservableSupplierImpl<Integer> mFullScrimColorSupplier =
             new ObservableSupplierImpl<>(ScrimProperties.INVALID_COLOR);
     private final ObservableSupplierImpl<Integer> mStatusBarColorSupplier =
@@ -110,10 +111,6 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
 
     /* package */ ObservableSupplier<Integer> getNavigationBarColorSupplier() {
         return mNavigationBarColorSupplier;
-    }
-
-    /* package */ ObservableSupplier<Float> getNavigationBarScrimFractionSupplier() {
-        return mNavigationBarScrimFractionSupplier;
     }
 
     /** Triggers a fade in of the scrim creating a new animation if necessary. */

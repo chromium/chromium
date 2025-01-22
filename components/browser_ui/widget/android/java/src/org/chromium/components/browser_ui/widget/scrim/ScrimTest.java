@@ -80,7 +80,6 @@ public class ScrimTest {
     private final PayloadCallbackHelper<Integer> mStatusBarColorHelper =
             new PayloadCallbackHelper<>();
     private final PayloadCallbackHelper<Integer> mNavBarColorHelper = new PayloadCallbackHelper<>();
-    private final PayloadCallbackHelper<Float> mNavFractionCallback = new PayloadCallbackHelper<>();
     private final CallbackHelper mScrimClickCallbackHelper = new CallbackHelper();
     private final CallbackHelper mVisibilityChangeCallbackHelper = new CallbackHelper();
     private final Runnable mClickDelegate = mScrimClickCallbackHelper::notifyCalled;
@@ -117,9 +116,6 @@ public class ScrimTest {
                     mScrimCoordinator
                             .getNavigationBarColorSupplier()
                             .addObserver(mNavBarColorHelper::notifyCalled);
-                    mScrimCoordinator
-                            .getNavigationBarScrimFractionSupplier()
-                            .addObserver(mNavFractionCallback::notifyCalled);
 
                     mDelegatedEventHelper = new CallbackHelper();
                     mCustomGestureDetector =
@@ -135,7 +131,6 @@ public class ScrimTest {
         // Wait for all the posted initial observations come back before test cases start.
         mStatusBarColorHelper.getOnlyPayloadBlocking();
         mNavBarColorHelper.getOnlyPayloadBlocking();
-        mNavFractionCallback.getOnlyPayloadBlocking();
     }
 
     @After
@@ -360,7 +355,6 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testAffectsNavigationBar_enabled() throws TimeoutException {
-        int fractionCallCount = mNavFractionCallback.getCallCount();
         int colorCallCount = mNavBarColorHelper.getCallCount();
         PropertyModel model =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -376,10 +370,6 @@ public class ScrimTest {
         showScrim(model, false);
 
         assertEquals(
-                1f,
-                mNavFractionCallback.getPayloadByIndexBlocking(fractionCallCount).floatValue(),
-                MathUtils.EPSILON);
-        assertEquals(
                 Color.RED, mNavBarColorHelper.getPayloadByIndexBlocking(colorCallCount).intValue());
     }
 
@@ -387,7 +377,7 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testAffectsNavigationBar_disabled() throws TimeoutException {
-        int callCount = mNavFractionCallback.getCallCount();
+        int callCount = mNavBarColorHelper.getCallCount();
         PropertyModel model =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -400,9 +390,9 @@ public class ScrimTest {
         showScrim(model, false);
 
         assertEquals(
-                "No events to the navigation bar delegate should have occurred",
+                "No events to the navigation bar callback should have occurred",
                 callCount,
-                mNavFractionCallback.getCallCount());
+                mNavBarColorHelper.getCallCount());
     }
 
     @Test
