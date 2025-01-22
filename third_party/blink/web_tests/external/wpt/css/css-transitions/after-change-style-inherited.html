@@ -142,3 +142,37 @@
                   ".inner halfway between black and lime");
   }, "@starting-style rules should not apply to after-change style");
 </script>
+
+<style>
+  #t5 :is(.outer, .inner) { transition: color 1000s steps(2, start); }
+  #t5 .outer { color: red; }
+  #t5 .inner { color: black; }
+  #t5 .outer.green { color: lime; }
+  #t5 .container { container-type: inline-size; }
+  @container (width < 100000px) {
+    #t5 .outer.green .inner { color: unset; }
+  }
+</style>
+<div id="t5">
+  <div class="outer">
+    <div class="container">
+      <div class="inner"></div>
+    </div>
+  </div>
+</div>
+<script>
+  test(() => {
+    const outer = document.querySelector("#t5 .outer");
+    const inner = document.querySelector("#t5 .inner");
+    outer.offsetTop;
+    assert_equals(getComputedStyle(outer).color, "rgb(255, 0, 0)",
+                  ".outer initially red");
+    assert_equals(getComputedStyle(inner).color, "rgb(0, 0, 0)",
+                  ".inner initially black");
+    outer.classList.add("green");
+    assert_equals(getComputedStyle(outer).color, "rgb(128, 128, 0)",
+                  ".outer halfway between red and lime");
+    assert_equals(getComputedStyle(inner).color, "rgb(0, 128, 0)",
+                  ".inner halfway between black and lime");
+  }, "@container rules apply to after-change style");
+</script>
