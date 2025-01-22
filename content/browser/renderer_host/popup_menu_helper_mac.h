@@ -56,9 +56,6 @@ class PopupMenuHelper : public RenderWidgetHostObserver {
                      bool right_aligned,
                      bool allow_multiple_selection);
 
-  // Immediately return from ShowPopupMenu.
-  CONTENT_EXPORT static void DontShowPopupMenuForTesting();
-
  private:
   // RenderWidgetHostObserver implementation:
   void RenderWidgetHostVisibilityChanged(RenderWidgetHost* widget_host,
