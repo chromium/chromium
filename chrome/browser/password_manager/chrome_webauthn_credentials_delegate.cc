@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
+#include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -151,7 +152,8 @@ void ChromeWebAuthnCredentialsDelegate::OnStepTransition() {
   }
   // Do not dismiss the autofill popup when the AuthenticatorRequestDialogModel
   // says that UI is disabled.
-  if (!model->ui_disabled_) {
+  if (!model->ui_disabled_ &&
+      model->step() != AuthenticatorRequestDialogModel::Step::kNotStarted) {
     authenticator_observation_.Reset();
     flickering_timer_.Start(FROM_HERE, kFlickerDuration,
                             std::move(passkey_selected_callback_));
