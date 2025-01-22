@@ -27,12 +27,14 @@
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/impl/common_preconditions.h"
+#include "components/user_education/common/feature_promo/impl/precondition_data.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/common/user_education_storage_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
@@ -44,60 +46,41 @@
 #include "ui/views/widget/widget_utils.h"
 #include "url/gurl.h"
 
-namespace {
-class TestAnchorProvider : public user_education::AnchorElementProviderCommon {
- public:
-  TestAnchorProvider(ui::ElementIdentifier id, bool in_any_context)
-      : AnchorElementProviderCommon(id) {
-    set_in_any_context(in_any_context);
-  }
-};
-}  // namespace
-
 class BrowserFeaturePromoPreconditionsUiTest : public InteractiveBrowserTest {
  public:
   BrowserFeaturePromoPreconditionsUiTest() = default;
   ~BrowserFeaturePromoPreconditionsUiTest() override = default;
 
-  std::unique_ptr<user_education::AnchorElementPrecondition>
-  CreateAnchorPrecondition(
-      ui::ElementIdentifier id,
-      bool in_any_context,
-      ui::ElementContext default_context = ui::ElementContext()) {
-    if (!default_context) {
-      default_context = browser()->window()->GetElementContext();
-    }
-    CHECK(!anchor_element_provider_ ||
-          (anchor_element_provider_->anchor_element_id() == id &&
-           anchor_element_provider_->in_any_context() == in_any_context));
-    if (!anchor_element_provider_) {
-      anchor_element_provider_ =
-          std::make_unique<TestAnchorProvider>(id, in_any_context);
-    }
-    return std::make_unique<user_education::AnchorElementPrecondition>(
-        *anchor_element_provider_, default_context);
+ protected:
+  auto CaptureAnchor(ui::ElementIdentifier id) {
+    return AfterShow(id, [this](ui::TrackedElement* el) {
+      anchor_element_data_.data() = el;
+    });
   }
 
- private:
-  std::unique_ptr<TestAnchorProvider> anchor_element_provider_;
+  auto CheckWindowActiveResult(user_education::FeaturePromoResult expected) {
+    return CheckResult(
+        [this]() {
+          WindowActivePrecondition active_precond;
+          user_education::FeaturePromoPrecondition::ComputedData data;
+          data.Add(user_education::AnchorElementPrecondition::kAnchorElement,
+                   anchor_element_data_);
+          return active_precond.CheckPrecondition(data);
+        },
+        expected);
+  }
+
+  user_education::internal::TypedPreconditionData<ui::SafeElementReference>
+      anchor_element_data_{
+          user_education::AnchorElementPrecondition::kAnchorElement};
 };
 
 using WindowActivePreconditionUiTest = BrowserFeaturePromoPreconditionsUiTest;
 
 IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest, ElementInActiveBrowser) {
   RunTestSequence(
-      WaitForShow(kToolbarAppMenuButtonElementId),
-      CheckResult(
-          [this]() {
-            const auto anchor_precond =
-                CreateAnchorPrecondition(kToolbarAppMenuButtonElementId,
-                                         /*in_any_context=*/false);
-            WindowActivePrecondition active_precond;
-            user_education::FeaturePromoPrecondition::ComputedData data;
-            EXPECT_TRUE(anchor_precond->CheckPrecondition(data));
-            return active_precond.CheckPrecondition(data);
-          },
-          user_education::FeaturePromoResult::Success()));
+      CaptureAnchor(kToolbarAppMenuButtonElementId),
+      CheckWindowActiveResult(user_education::FeaturePromoResult::Success()));
 }
 
 IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest,
@@ -107,22 +90,19 @@ IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest,
       WaitForShow(kToolbarAppMenuButtonElementId),
       InContext(incog->window()->GetElementContext(),
                 WaitForShow(kToolbarAppMenuButtonElementId)),
-      CheckResult(
-          [this, incog]() {
-            // On different platforms, activation of the second window can occur
-            // differently. So instead of trying to guess which will be active,
-            // explicitly find the inactive one.
-            Browser* inactive = incog->IsActive() ? browser() : incog;
-            EXPECT_FALSE(inactive->IsActive());
-            const auto anchor_precond = CreateAnchorPrecondition(
+      Check([this, incog]() {
+        // On different platforms, activation of the second window can occur
+        // differently. So instead of trying to guess which will be active,
+        // explicitly find the inactive one.
+        Browser* inactive = incog->IsActive() ? browser() : incog;
+        EXPECT_FALSE(inactive->IsActive());
+        anchor_element_data_.data() =
+            ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
                 kToolbarAppMenuButtonElementId,
-                /*in_any_context=*/false,
                 inactive->window()->GetElementContext());
-            WindowActivePrecondition active_precond;
-            user_education::FeaturePromoPrecondition::ComputedData data;
-            EXPECT_TRUE(anchor_precond->CheckPrecondition(data));
-            return active_precond.CheckPrecondition(data);
-          },
+        return static_cast<bool>(anchor_element_data_.data());
+      }),
+      CheckWindowActiveResult(
           user_education::FeaturePromoResult::kBlockedByUi));
 }
 
@@ -132,18 +112,8 @@ IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest, PageInActiveTab) {
       InstrumentTab(kTabId),
       NavigateWebContents(kTabId,
                           GURL(chrome::kChromeUIUserEducationInternalsURL)),
-      InAnyContext(WaitForShow(kWebUIIPHDemoElementIdentifier)),
-      CheckResult(
-          [this]() {
-            const auto anchor_precond =
-                CreateAnchorPrecondition(kWebUIIPHDemoElementIdentifier,
-                                         /*in_any_context=*/true);
-            WindowActivePrecondition active_precond;
-            user_education::FeaturePromoPrecondition::ComputedData data;
-            EXPECT_TRUE(anchor_precond->CheckPrecondition(data));
-            return active_precond.CheckPrecondition(data);
-          },
-          user_education::FeaturePromoResult::Success()));
+      InAnyContext(CaptureAnchor(kWebUIIPHDemoElementIdentifier)),
+      CheckWindowActiveResult(user_education::FeaturePromoResult::Success()));
 }
 
 IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest, PageInInactiveTab) {
@@ -153,40 +123,17 @@ IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest, PageInInactiveTab) {
       InstrumentTab(kTabId1),
       AddInstrumentedTab(kTabId2,
                          GURL(chrome::kChromeUIUserEducationInternalsURL)),
-      InAnyContext(WaitForShow(kWebUIIPHDemoElementIdentifier)),
+      InAnyContext(CaptureAnchor(kWebUIIPHDemoElementIdentifier)),
 
       // Switch away from the tab. It is no longer "active".
       SelectTab(kTabStripElementId, 0),
-      CheckResult(
-          [this]() {
-            const auto anchor_precond =
-                CreateAnchorPrecondition(kWebUIIPHDemoElementIdentifier,
-                                         /*in_any_context=*/true);
-            WindowActivePrecondition active_precond;
-            user_education::FeaturePromoPrecondition::ComputedData data;
-            // When the tab is not the active tab, the element isn't even
-            // present.
-            EXPECT_FALSE(anchor_precond->CheckPrecondition(data));
-            return active_precond.CheckPrecondition(data);
-          },
-          user_education::FeaturePromoResult::kBlockedByUi),
+      CheckWindowActiveResult(user_education::FeaturePromoResult::kBlockedByUi),
 
       // Switch back to the tab and verify that it is "active" again.
       SelectTab(kTabStripElementId, 1),
-      InAnyContext(WaitForShow(kWebUIIPHDemoElementIdentifier)),
-      CheckResult(
-          [this]() {
-            const auto anchor_precond =
-                CreateAnchorPrecondition(kWebUIIPHDemoElementIdentifier,
-                                         /*in_any_context=*/true);
-            WindowActivePrecondition active_precond;
-            user_education::FeaturePromoPrecondition::ComputedData data;
-            // When the tab is not the active tab, the element isn't even
-            // present.
-            EXPECT_TRUE(anchor_precond->CheckPrecondition(data));
-            return active_precond.CheckPrecondition(data);
-          },
-          user_education::FeaturePromoResult::Success()));
+      // Since the element is recreated, need to capture again.
+      InAnyContext(CaptureAnchor(kWebUIIPHDemoElementIdentifier)),
+      CheckWindowActiveResult(user_education::FeaturePromoResult::Success()));
 }
 
 using OmniboxNotOpenPreconditionUiTest = BrowserFeaturePromoPreconditionsUiTest;

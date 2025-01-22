@@ -62,6 +62,16 @@ bool IsValidSpecifics(const sync_pb::SavedTabGroupSpecifics& specifics) {
 
 std::unique_ptr<syncer::EntityData> CreateEntityData(
     sync_pb::SavedTabGroupSpecifics specific) {
+  if (specific.has_tab()) {
+    // If the tab URL is not valid for syncing, change it to the Chrome
+    // unsupported URL before sending it to sync server. The local db will still
+    // store the original URL for session restoration.
+    if (!IsURLValidForSavedTabGroups(GURL(specific.tab().url()))) {
+      sync_pb::SavedTabGroupTab* tab = specific.mutable_tab();
+      tab->set_url(kChromeSavedTabGroupUnsupportedURL);
+      tab->clear_title();
+    }
+  }
   std::unique_ptr<syncer::EntityData> entity_data =
       std::make_unique<syncer::EntityData>();
   entity_data->name = specific.guid();

@@ -146,7 +146,7 @@
     Track your hands
   </message>
   <message name="IDS_KEYBOARD_LOCK_PERMISSIONS_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to lock the user's keyboard. When the keyboard is locked, any keyboard input usually handled by the browser or the OS is handled by the website instead. Follows a prompt: 'This site would like to:">
-    Lock and use your keyboard
+    Override some keys on your keyboard, like Esc
   </message>
   <message name="IDS_POINTER_LOCK_PERMISSIONS_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to lock the user's mouse. When the mouse is locked, the cursor is hidden and its motions are handled by the website. Follows a prompt: 'This site would like to:">
     Lock and use your mouse
@@ -321,7 +321,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
       Know your device use?
     </message>
     <message name="IDS_KEYBOARD_LOCK_PERMISSION_CHIP" desc="Chip UI text representing a request from a website to lock and use keyboard input.">
-      Lock your keyboard?
+      Allow keyboard override?
     </message>
     <message name="IDS_KEYBOARD_AND_POINTER_LOCK_PERMISSION_CHIP" desc="Chip UI text representing a request from a website to lock and use keyboard and mouseinput.">
       Lock your keyboard and mouse?

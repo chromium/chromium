@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/arc_features_parser.h"
 #include "base/base64url.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/experiences/arc/arc_features_parser.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"

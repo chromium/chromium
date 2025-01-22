@@ -12,7 +12,6 @@
 #include <optional>
 #include <utility>
 
-#include "ash/components/arc/arc_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -24,6 +23,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/system/scheduler_configuration_manager_base.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/session/arc_client_adapter.h"
 #include "chromeos/ash/experiences/arc/session/arc_start_params.h"
 #include "chromeos/ash/experiences/arc/session/arc_upgrade_params.h"

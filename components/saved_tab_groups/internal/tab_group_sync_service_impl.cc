@@ -1466,7 +1466,7 @@ void TabGroupSyncServiceImpl::NavigateTabInternal(
   UpdateSharedAttributions(group_id, tab_id);
 
   // Use the builder to create the updated tab.
-  bool will_update_url = url.SchemeIsHTTPOrHTTPS() && url != tab->url();
+  bool will_update_url = url != tab->url();
 
   SavedTabGroupTab updated_tab(*tab);
   updated_tab.SetURL(url);

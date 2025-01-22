@@ -69,6 +69,25 @@ TEST(RegistrationFetcherParamTest, BasicValid) {
   EXPECT_EQ(param.authorization(), "auth");
 }
 
+TEST(RegistrationFetcherParamTest, SubpathRequestUrlValid) {
+  const GURL registration_request(
+      "https://www.example.com/subpath/registration");
+  // Starting with a '/' to make it origin-relative.
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      CreateHeaders("/startsession", "(ES256 RS256)", "c1", "auth");
+  std::vector<RegistrationFetcherParam> params =
+      RegistrationFetcherParam::CreateIfValid(registration_request,
+                                              response_headers.get());
+  ASSERT_EQ(params.size(), 1U);
+  const auto& param = params[0];
+  EXPECT_EQ(param.registration_endpoint(),
+            GURL("https://www.example.com/startsession"));
+  EXPECT_THAT(param.supported_algos(),
+              UnorderedElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
+  EXPECT_EQ(param.challenge(), "c1");
+  EXPECT_EQ(param.authorization(), "auth");
+}
+
 TEST(RegistrationFetcherParamTest, ExtraUnrecognizedAlgorithm) {
   const GURL registration_request("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =

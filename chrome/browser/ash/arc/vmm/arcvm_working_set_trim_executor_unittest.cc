@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
 
-#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/mojom/memory.mojom.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -13,6 +12,7 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/memory/arc_memory_bridge.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"

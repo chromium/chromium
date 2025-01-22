@@ -7,10 +7,6 @@
 #include <string>
 #include <string_view>
 
-#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/mojom/backup_settings.mojom.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/components/arc/mojom/pip.mojom.h"
@@ -46,6 +42,10 @@
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/ash/components/network/proxy/proxy_config_service_impl.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
+#include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_package.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"

@@ -11,10 +11,13 @@
 #include "chrome/browser/status_icons/status_icon_observer.h"
 #include "ui/native_theme/native_theme_observer.h"
 
-class GlicController;
 class StatusIcon;
 class StatusIconMenuModel;
 class StatusTray;
+
+namespace glic {
+
+class GlicController;
 
 // This class abstracts away the details for creating a status tray icon and it
 // context menu for the glic background mode manager. It is responsible for
@@ -50,5 +53,7 @@ class GlicStatusIcon : public StatusIconObserver,
   raw_ptr<StatusIcon> status_icon_;
   raw_ptr<StatusIconMenuModel> context_menu_;
 };
+
+}  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_LAUNCHER_GLIC_STATUS_ICON_H_

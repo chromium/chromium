@@ -536,6 +536,31 @@ chrome.test.runTests([
     chrome.test.assertEq(fragments[0], 'foo');
     chrome.test.assertEq(fragments[1], 'bar');
 
+    // Check case where text fragment could have percent-encoded values that
+    // are used as part of the prefix / suffix like `,` and `-`.
+    fragments = paramsParser.getTextFragments(
+        `${URL}#page=3&view=FitBV:~:text=foo%2C-,apples,-bar%2D&text=bar%2D`);
+    chrome.test.assertEq(fragments.length, 2);
+    chrome.test.assertEq(fragments[0], 'foo%2C-,apples,-bar%2D');
+    chrome.test.assertEq(fragments[1], 'bar%2D');
+
+    // Check case where text fragments are empty.
+    fragments = paramsParser.getTextFragments(
+        `${URL}#page=3&view=FitBV:~:text=&text=&text=`);
+    chrome.test.assertEq(fragments.length, 0);
+
+    // Check case where some text fragments are empty.
+    fragments = paramsParser.getTextFragments(
+        `${URL}#page=3&view=FitBV:~:text=&text=foo%2C-,apples,-bar%2D&text=`);
+    chrome.test.assertEq(fragments.length, 1);
+    chrome.test.assertEq(fragments[0], 'foo%2C-,apples,-bar%2D');
+
+    // Check case where URL fragment is invalid and contains multiple
+    // octothorpes.
+    fragments = paramsParser.getTextFragments(
+        `${URL}#page=3&view=FitBV#:~:text=&text=foo%2C-,apples,-bar%2D&text=`);
+    chrome.test.assertEq(fragments.length, 0);
+
     chrome.test.succeed();
   },
 ]);

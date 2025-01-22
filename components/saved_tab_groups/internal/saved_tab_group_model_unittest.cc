@@ -22,6 +22,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/saved_tab_groups/public/utils.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
@@ -697,7 +698,7 @@ TEST_F(SavedTabGroupModelTest, MergeTabsFromModel) {
   SavedTabGroupTab tab1 = saved_tab_group_model_->Get(id_1_)->saved_tabs()[0];
   SavedTabGroupTab tab2(tab1);
   tab2.SetTitle(u"Updated Title");
-  tab2.SetURL(GURL("chrome://updated_url"));
+  tab2.SetURL(GURL("http://foo.com"));
 
   const SavedTabGroupTab* merged_tab =
       saved_tab_group_model_->MergeRemoteTab(tab2);
@@ -708,6 +709,24 @@ TEST_F(SavedTabGroupModelTest, MergeTabsFromModel) {
   EXPECT_EQ(tab2.creation_time_windows_epoch_micros(),
             merged_tab->creation_time_windows_epoch_micros());
   EXPECT_EQ(tab2.update_time_windows_epoch_micros(),
+            merged_tab->update_time_windows_epoch_micros());
+}
+
+TEST_F(SavedTabGroupModelTest, MergeTabsWithUnsupportedURLFromModel) {
+  SavedTabGroupTab tab1 = saved_tab_group_model_->Get(id_1_)->saved_tabs()[0];
+  SavedTabGroupTab remote_tab(tab1);
+  remote_tab.SetTitle(u"Updated Title");
+  remote_tab.SetURL(GURL(kChromeSavedTabGroupUnsupportedURL));
+
+  const SavedTabGroupTab* merged_tab =
+      saved_tab_group_model_->MergeRemoteTab(remote_tab);
+
+  EXPECT_EQ(tab1.url(), merged_tab->url());
+  EXPECT_EQ(remote_tab.saved_tab_guid(), merged_tab->saved_tab_guid());
+  EXPECT_EQ(remote_tab.saved_group_guid(), merged_tab->saved_group_guid());
+  EXPECT_EQ(remote_tab.creation_time_windows_epoch_micros(),
+            merged_tab->creation_time_windows_epoch_micros());
+  EXPECT_EQ(remote_tab.update_time_windows_epoch_micros(),
             merged_tab->update_time_windows_epoch_micros());
 }
 

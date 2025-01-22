@@ -77,6 +77,10 @@ const char
     kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDuration[] =
         "PageLoad.InteractiveTiming.UserInteractionLatency."
         "HighPercentile2.MaxEventDuration.Prerender";
+const char
+    kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDurationIncognito
+        [] = "PageLoad.InteractiveTiming.UserInteractionLatency."
+             "HighPercentile2.MaxEventDuration.Prerender.Incognito";
 const char kHistogramPrerenderWorstUserInteractionLatencyMaxEventDuration[] =
     "PageLoad.InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration."
     "Prerender";
@@ -88,10 +92,14 @@ const char kPageLoadPrerenderActivatedPageLoaderStatus[] =
 // Lead time brought by prerender
 const char kDomContentLoadedToActivation[] =
     "PageLoad.Internal.Prerender2.DomContentLoadedToActivation3";
+const char kMainResourceParseStartToActivation[] =
+    "PageLoad.Internal.Prerender2.MainResourceParseStartToActivation";
 
 }  // namespace internal
 
-PrerenderPageLoadMetricsObserver::PrerenderPageLoadMetricsObserver() = default;
+PrerenderPageLoadMetricsObserver::PrerenderPageLoadMetricsObserver(
+    bool is_incognito)
+    : is_incognito_(is_incognito) {}
 PrerenderPageLoadMetricsObserver::~PrerenderPageLoadMetricsObserver() = default;
 
 enum PrerenderPageLoadMetricsObserver::PaintingTimeType : uint8_t {
@@ -282,17 +290,28 @@ void PrerenderPageLoadMetricsObserver::MaybeRecordDocumentLoadMetrics(
   // If the event is not set, treat it's timestamp as infinite and then clamp it
   // to the lower bound of the histogram, which indicates that the event is
   // never fired.
+  base::TimeDelta main_resource_parse_start =
+      main_frame_timing.parse_timing->parse_start.value_or(
+          upper_bound + navigation_to_activation_time_.value());
   base::TimeDelta dom_content_loaded_event_start =
       main_frame_timing.document_timing->dom_content_loaded_event_start
           .value_or(upper_bound + navigation_to_activation_time_.value());
+
   // Shift the duration by the upper bound because UMA cannot handle negative
   // values.
-  base::TimeDelta shifted_duration = navigation_to_activation_time_.value() -
-                                     dom_content_loaded_event_start +
-                                     upper_bound;
-  RecordShiftedTimeHistogram(
-      AppendSuffix(internal::kDomContentLoadedToActivation), shifted_duration);
+  base::TimeDelta shifted_main_resource_parse_start_duration =
+      navigation_to_activation_time_.value() - main_resource_parse_start +
+      upper_bound;
+  base::TimeDelta shifted_dom_content_loaded_event_start_duration =
+      navigation_to_activation_time_.value() - dom_content_loaded_event_start +
+      upper_bound;
 
+  RecordShiftedTimeHistogram(
+      AppendSuffix(internal::kDomContentLoadedToActivation),
+      shifted_dom_content_loaded_event_start_duration);
+  RecordShiftedTimeHistogram(
+      AppendSuffix(internal::kMainResourceParseStartToActivation),
+      shifted_main_resource_parse_start_duration);
   // TODO(crbug.com/40240492): Add more metrics to track the loading progress on
   // the renderer side, e.g., loaded the blocking resources, etc.
 }
@@ -404,6 +423,15 @@ void PrerenderPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
           kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDuration,
       high_percentile2_max_event_duration, base::Milliseconds(1),
       base::Seconds(60), 50);
+
+  if (is_incognito_) {
+    UmaHistogramCustomTimes(
+        internal::
+            kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDurationIncognito,
+        high_percentile2_max_event_duration, base::Milliseconds(1),
+        base::Seconds(60), 50);
+  }
+
   base::UmaHistogramCounts1000(
       internal::kHistogramPrerenderNumInteractions,
       responsiveness_metrics_normalization.num_user_interactions());

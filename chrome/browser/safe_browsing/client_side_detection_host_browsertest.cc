@@ -66,6 +66,7 @@ class FakeDelegate : public ClientSideDetectionService::Delegate {
   GetModelExecutorSession() override {
     return nullptr;
   }
+  void LogOnDeviceModelEligibilityReason() override { return; }
 };
 
 class FakeClientSideDetectionService : public ClientSideDetectionService {

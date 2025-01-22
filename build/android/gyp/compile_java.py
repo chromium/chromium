@@ -710,6 +710,8 @@ def main(argv):
 
   javac_args = [
       '-g',
+      # Required for Error Prone's /* paramName= */ check.
+      '-parameters',
       # Jacoco does not currently support a higher value.
       '--release',
       '17',

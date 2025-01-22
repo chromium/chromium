@@ -802,6 +802,8 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Emails do not match"/>
   <int value="13" label="Unsupported Android OneDrive location"/>
   <int value="14" label="Invalid Android OneDrive URL"/>
+  <int value="15" label="Failed to launch"/>
+  <int value="16" label="MS365 not installed"/>
 </enum>
 
 <enum name="OfficeOneDriveThirdPartyAuthResult">

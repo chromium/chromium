@@ -106,7 +106,7 @@ class CORE_EXPORT WebSharedWorkerImpl final : public WebSharedWorker {
       bool is_constructor_secure_context,
       const WebString& user_agent,
       const blink::UserAgentMetadata& ua_metadata,
-      const WebVector<WebContentSecurityPolicy>& content_security_policies,
+      const std::vector<WebContentSecurityPolicy>& content_security_policies,
       const WebFetchClientSettingsObject& outside_fetch_client_settings_object,
       const base::UnguessableToken& devtools_worker_token,
       CrossVariantMojoRemote<

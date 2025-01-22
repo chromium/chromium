@@ -64,7 +64,7 @@ bool TabGroupSyncUtils::IsSaveableNavigation(
     return false;
   }
 
-  return IsURLValidForSavedTabGroups(url);
+  return true;
 }
 
 // statics

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/strings/escape.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
@@ -50,12 +51,8 @@ Session::~Session() = default;
 // static
 std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params,
                                                 GURL url) {
-  GURL refresh(params.refresh_url);
-  if (!refresh.is_valid()) {
-    return nullptr;
-  }
-
-  if (params.session_id.empty()) {
+  if (!url.is_valid() || params.session_id.empty() ||
+      params.refresh_url.empty()) {
     return nullptr;
   }
 
@@ -69,8 +66,22 @@ std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params,
     return nullptr;
   }
 
-  std::unique_ptr<Session> session(
-      new Session(Id(params.session_id), url::Origin::Create(url), refresh));
+  // The refresh endpoint can be a full URL (samesite with request origin)
+  // or a relative URL, starting with a "/" to make it origin-relative,
+  // and starting with anything else making it current-path-relative to
+  // request URL.
+  std::string unescaped_refresh_url = base::UnescapeURLComponent(
+      params.refresh_url,
+      base::UnescapeRule::PATH_SEPARATORS |
+          base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
+  GURL refresh_endpoint = url.Resolve(unescaped_refresh_url);
+  if (!refresh_endpoint.is_valid() ||
+      net::SchemefulSite(refresh_endpoint) != net::SchemefulSite(url)) {
+    return nullptr;
+  }
+  std::unique_ptr<Session> session(new Session(Id(params.session_id),
+                                               url::Origin::Create(url),
+                                               std::move(refresh_endpoint)));
   for (const auto& spec : params.scope.specifications) {
     if (!spec.domain.empty() && !spec.path.empty()) {
       const auto inclusion_result =

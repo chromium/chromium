@@ -179,4 +179,21 @@ ChromeClientSideDetectionServiceDelegate::GetModelExecutorSession() {
       config_params);
 }
 
+void ChromeClientSideDetectionServiceDelegate::
+    LogOnDeviceModelEligibilityReason() {
+  auto* opt_guide =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
+
+  if (!opt_guide) {
+    return;
+  }
+
+  optimization_guide::OnDeviceModelEligibilityReason eligibility =
+      opt_guide->GetOnDeviceModelEligibility(
+          optimization_guide::ModelBasedCapabilityKey::kScamDetection);
+  base::UmaHistogramEnumeration(
+      "SBClientPhishing.OnDeviceModelEligibilityReasonAtInquiryFailure",
+      eligibility);
+}
+
 }  // namespace safe_browsing

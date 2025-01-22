@@ -33,9 +33,19 @@ class WindowEventObserver;
 class GlicView;
 class GlicWindowResizeAnimation;
 
-// Class for Glic window controller. Owned by the Glic profile keyed-service.
-// This gets created when the Glic window needs to be shown and it owns the Glic
-// widget.
+// This class owns and manages the glic window. This class has the same lifetime
+// as the GlicKeyedService, so it exists if and only if the profile exists.
+//
+// There are 4 states for the glic window:
+//   * Closed (aka hidden, invisible)
+//   * OpenAnimation (showing an animation built into chrome, independent of the
+//     content of the glic window)
+//   * Waiting (the open animation has finished, but glic window contents is
+//     not yet ready)
+//   * Open (aka showing, visible)
+// When the glic window is open there is an additional piece of state. The glic
+// window is either attached to a Browser* or standalone.
+//
 class GlicWindowController : public views::WidgetObserver {
  public:
   // Observes the state of the glic window.
@@ -131,8 +141,16 @@ class GlicWindowController : public views::WidgetObserver {
   views::Widget* GetGlicWidgetForTesting() { return glic_window_widget_.get(); }
 
  private:
+  // TODO(crbug.com/391402352): This method is misnamed. It's used to send a
+  // message to glic indicating that the window is ready to show.
   void ShowPhase2();
+
+  // TODO(crbug.com/391402352): This method is misnamed. It's used to send
+  // coordinate showing the window when glic and this class are both ready.
+  // However this class already shows the window via animation.
   void ShowFinish();
+
+  void SetWebContents();
 
   // Determines the correct position for the glic window when attached to a
   // browser window.
@@ -208,8 +226,14 @@ class GlicWindowController : public views::WidgetObserver {
   // Called when the programmatic resize has finished.
   void ResizeFinished();
 
+  // Sets target bounds for the widget and creates a WindowResizeAnimation
+  // instance to begin a new animation. Blocks any calls to animate if the
+  // widget it not yet visible.
+  void AnimateBounds(const gfx::Rect& target_bounds,
+                     base::TimeDelta duration,
+                     base::OnceClosure callback);
+
   AttachedTargetWidgetObserver attached_target_widget_observer_{this};
-  base::WeakPtr<Browser> attached_browser_;
 
   // Used for observing closing of the pinned browser.
   std::optional<base::CallbackListSubscription> browser_close_subscription_;
@@ -235,12 +259,7 @@ class GlicWindowController : public views::WidgetObserver {
   // True if we've hit a login page (and have not yet shown).
   bool login_page_committed_ = false;
 
-  // Indicates `Show()` has been called, but not `FinishShow()`.
-  bool will_show_ = false;
-  // While `will_show_` is true, this is the button widget on the browser window
-  // where the glic window will be shown. This is null if the glic window should
-  // be shown detached rather than attached to a browser window.
-  base::WeakPtr<views::Widget> button_widget_for_browser_attachment_;
+  gfx::Rect final_widget_bounds_;
 
   // Used to monitor key and mouse events from native window.
   std::unique_ptr<WindowEventObserver> window_event_observer_;
@@ -256,6 +275,19 @@ class GlicWindowController : public views::WidgetObserver {
   mojom::PanelState panel_state_;
 
   raw_ptr<GlicWebClientAccess> web_client_;
+
+  // See class comment for details.
+  enum class State {
+    kClosed,
+    kOpenAnimation,
+    kWaitingForGlicToLoad,
+    kOpen,
+  };
+  State state_ = State::kClosed;
+
+  // If State != kClosed, then the UI must either be associated with a browser
+  // window, or standalone. That is tracked by this member.
+  raw_ptr<Browser> attached_browser_ = nullptr;
 
   base::ObserverList<StateObserver> state_observers_;
 

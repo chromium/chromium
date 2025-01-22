@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -36,6 +35,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"

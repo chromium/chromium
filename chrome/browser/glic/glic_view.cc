@@ -78,10 +78,4 @@ bool GlicView::IsPointWithinDraggableArea(const gfx::Point& point) {
   return false;
 }
 
-void GlicView::AnimateFrameBounds(const gfx::Rect& bounds) {
-  bounds_change_animation_ =
-      std::make_unique<BrowserFrameBoundsChangeAnimation>(*GetWidget(), bounds);
-  bounds_change_animation_->Start();
-}
-
 }  // namespace glic

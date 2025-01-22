@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
@@ -43,6 +44,12 @@ class ASH_EXPORT ActionButtonContainerView : public views::View {
                                     ActionButtonRank rank,
                                     ActionButtonViewID id);
 
+  // Removes and destroys all action buttons from this container.
+  void RemoveAllActionButtons();
+
+  // Returns the action buttons in this container.
+  const views::View::Views& GetActionButtons() const;
+
   // Starts performing the button transition triggered after pressing the smart
   // actions button. This will fade out existing action buttons, remove the
   // smart actions button, then animate in new icon buttons to replace the old
@@ -56,6 +63,9 @@ class ASH_EXPORT ActionButtonContainerView : public views::View {
 
   // Enables or disables events on the action button container widget.
   void SetWidgetEventsEnabled(bool enabled);
+
+  // Contains the row of action buttons.
+  raw_ptr<views::View> action_button_row_ = nullptr;
 
   base::WeakPtrFactory<ActionButtonContainerView> weak_ptr_factory_{this};
 };

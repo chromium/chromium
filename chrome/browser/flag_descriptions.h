@@ -125,6 +125,11 @@ extern const char
 extern const char
     kBlinkSchedulerDiscreteInputMatchesResponsivenessMetricsDescription[];
 
+#if !BUILDFLAG(IS_ANDROID)
+extern const char kBookmarksTreeViewName[];
+extern const char kBookmarksTreeViewDescription[];
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kBirchWeatherName[];
 extern const char kBirchWeatherDescription[];

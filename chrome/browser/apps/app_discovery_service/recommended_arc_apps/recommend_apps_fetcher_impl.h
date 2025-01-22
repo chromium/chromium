@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/arc_features_parser.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -17,6 +16,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/device_configuration.pb.h"
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher.h"
+#include "chromeos/ash/experiences/arc/arc_features_parser.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

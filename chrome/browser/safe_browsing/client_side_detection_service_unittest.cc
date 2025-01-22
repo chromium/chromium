@@ -1438,4 +1438,85 @@ TEST_P(ClientSideDetectionServiceTest,
       "SBClientPhishing.OnDeviceModelResponseParseSuccess", true, 1);
 }
 
+TEST_P(ClientSideDetectionServiceTest,
+       TestModelEligibilityReasonCheckAtFailedInquiry) {
+  if (!base::FeatureList::IsEnabled(
+          kClientSideDetectionBrandAndIntentForScamDetection)) {
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
+      model_observer_tracker_.get());
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+
+  SetupMockOptimizationGuideKeyedService();
+
+  // The below function is called by the delegate when calling
+  // InquireOnDeviceModel but the on device model is not available yet.
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              GetOnDeviceModelEligibility(_))
+      .WillOnce([&](optimization_guide::ModelBasedCapabilityKey feature) {
+        return optimization_guide::OnDeviceModelEligibilityReason::
+            kModelToBeInstalled;
+      });
+
+  // We will start listening to the on device model when we enable ESB, so we
+  // expect the call below.
+  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
+      nullptr;
+  base::RunLoop run_loop_for_add_observer;
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              AddOnDeviceModelAvailabilityChangeObserver(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+            availability_observer = observer;
+            run_loop_for_add_observer.Quit();
+          }));
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+
+  run_loop_for_add_observer.Run();
+  CHECK(availability_observer);
+
+  // Now that the delegate is observing, send `kConfigNotAvailableForFeature`
+  // first to the observer, which will not stop the observing. However, for the
+  // purpose of this test, we will never fulfill the request to notify the
+  // service class that the model installation is successful.
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::
+          kConfigNotAvailableForFeature);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 0);
+
+  // Although the default is set to false, we manually set to false in the
+  // service class.
+  csd_service_->SetOnDeviceAvailabilityForTesting(false);
+
+  ClientPhishingRequest verdict;
+  base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
+  csd_service_->InquireOnDeviceModel(&verdict, "", future.GetCallback());
+
+  // The on device model is not available as set with the
+  // SetOnDeviceAvailabilityForTesting, hence the false value for the histogram
+  // SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime. We expect the
+  // histogram value for
+  // SBClientPhishing.OnDeviceModelEligibilityReasonAtInquiryFailure to be
+  // kModelTobeInstalled as we set the EXPECT_CALL above when calling for
+  // function GetOnDeviceModelEligibility within the optimization guide service,
+  // which is called in the service delegate.
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelEligibilityReasonAtInquiryFailure",
+      optimization_guide::OnDeviceModelEligibilityReason::kModelToBeInstalled,
+      1);
+}
+
 }  // namespace safe_browsing

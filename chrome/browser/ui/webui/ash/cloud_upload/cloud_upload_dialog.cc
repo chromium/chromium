@@ -256,10 +256,39 @@ void OpenFileFromODFS(
               return;
             }
             auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-            proxy->LaunchAppWithUrl(ash::kMicrosoft365AppId,
-                                    /*event_flags=*/ui::EF_NONE, url,
-                                    apps::LaunchSource::kFromFileManager,
-                                    /*window_info=*/nullptr);
+            if (!proxy->AppRegistryCache().IsAppInstalled(
+                    ash::kMicrosoft365AppId)) {
+              LOG(ERROR) << "MS365 with app ID " << ash::kMicrosoft365AppId
+                         << " is not installed";
+              ShowUnableToOpenNotification(profile);
+              std::move(callback).Run(
+                  OfficeOneDriveOpenErrors::kMS365NotInstalled);
+              return;
+            }
+            proxy->LaunchAppWithUrl(
+                ash::kMicrosoft365AppId,
+                /*event_flags=*/ui::EF_NONE, url,
+                apps::LaunchSource::kFromFileManager,
+                /*window_info=*/nullptr,
+                base::BindOnce(
+                    [](Profile* profile,
+                       base::OnceCallback<void(OfficeOneDriveOpenErrors)>
+                           callback,
+                       apps::LaunchResult&& launch_result) {
+                      OfficeOneDriveOpenErrors open;
+                      switch (launch_result.state) {
+                        case apps::LaunchResult::State::kSuccess:
+                          open = OfficeOneDriveOpenErrors::kSuccess;
+                          break;
+                        default:
+                          LOG(ERROR) << "Failed to launch URL";
+                          ShowUnableToOpenNotification(profile);
+                          open = OfficeOneDriveOpenErrors::kFailedToLaunch;
+                          break;
+                      }
+                      std::move(callback).Run(open);
+                    },
+                    profile, std::move(callback)));
             if (base::FeatureList::IsEnabled(
                     ::features::kHappinessTrackingOffice)) {
               ash::cloud_upload::HatsOfficeTrigger::Get()
@@ -267,7 +296,6 @@ void OpenFileFromODFS(
                       ash::kMicrosoft365AppId,
                       ash::cloud_upload::HatsOfficeLaunchingApp::kMS365);
             }
-            std::move(callback).Run(OfficeOneDriveOpenErrors::kSuccess);
           },
           profile, file_system, std::move(callback)));
 }

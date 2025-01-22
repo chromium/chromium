@@ -183,6 +183,11 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
     return input.frame_sequence;
   }
 
+  static std::optional<uint64_t> source_id(
+      const media::VideoFrameMetadata& input) {
+    return input.source_id;
+  }
+
   static intermediate::EffectState background_blur(
       const media::VideoFrameMetadata& input) {
     if (!input.background_blur) {

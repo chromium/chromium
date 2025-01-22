@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/time/time.h"
@@ -19,6 +18,7 @@
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/mock_disk_mount_manager.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"

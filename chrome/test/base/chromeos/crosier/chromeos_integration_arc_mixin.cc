@@ -263,7 +263,7 @@ void ChromeOSIntegrationArcMixin::SetUpCommandLine(
                                     "always-start-with-no-play-store");
 
     // The "installed" mode needs `kEnableArcFeature` to work.
-    // See "IsArcAvailable()" in ash/components/arc/arc_util.cc.
+    // See "IsArcAvailable()" in chromeos/ash/experiences/arc/arc_util.cc.
     command_line->AppendSwitchASCII(ash::switches::kArcAvailability,
                                     "installed");
     scoped_feature_list_.emplace();

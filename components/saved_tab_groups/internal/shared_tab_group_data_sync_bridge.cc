@@ -176,7 +176,8 @@ SavedTabGroupTab SpecificsToSharedTabGroupTab(
     const sync_pb::SharedTabGroupDataSpecifics& specifics,
     const syncer::CollaborationMetadata& collaboration_metadata,
     size_t position,
-    base::Time creation_time) {
+    base::Time creation_time,
+    bool sanitize_url_and_title) {
   CHECK(specifics.has_tab());
 
   const base::Uuid guid = base::Uuid::ParseLowercase(specifics.guid());
@@ -187,8 +188,14 @@ SavedTabGroupTab SpecificsToSharedTabGroupTab(
   const base::Time update_time =
       TimeFromWindowsEpochMicros(specifics.update_time_windows_epoch_micros());
 
+  GURL url = GURL(specifics.tab().url());
+  std::string title = specifics.tab().title();
+  if (sanitize_url_and_title && !IsURLValidForSavedTabGroups(url)) {
+    url = GURL(kChromeSavedTabGroupUnsupportedURL);
+    title.clear();
+  }
   SavedTabGroupTab tab(
-      GURL(specifics.tab().url()), base::UTF8ToUTF16(specifics.tab().title()),
+      url, base::UTF8ToUTF16(title),
       base::Uuid::ParseLowercase(specifics.tab().shared_tab_group_guid()),
       position, guid, /*local_tab_id=*/std::nullopt,
       /*creator_cache_guid=*/std::nullopt,
@@ -223,6 +230,18 @@ std::unique_ptr<syncer::EntityData> CreateEntityData(
     syncer::CollaborationMetadata collaboration_metadata,
     base::Time creation_time) {
   CHECK(!collaboration_metadata.collaboration_id().empty());
+
+  if (specifics.has_tab()) {
+    // Similar to saved tab groups, if the tab URL is not valid for sharing,
+    // change it to the Chrome unsupported URL before sending it to the server.
+    // The local db will still store the original URL for session restoration.
+    if (!IsURLValidForSavedTabGroups(GURL(specifics.tab().url()))) {
+      sync_pb::SharedTab* tab = specifics.mutable_tab();
+      tab->set_url(kChromeSavedTabGroupUnsupportedURL);
+      tab->clear_title();
+      tab->clear_favicon_url();
+    }
+  }
   std::unique_ptr<syncer::EntityData> entity_data =
       std::make_unique<syncer::EntityData>();
   entity_data->name = specifics.guid();
@@ -406,7 +425,8 @@ std::vector<sync_pb::SharedTabGroupDataSpecifics> LoadStoredEntries(
                                               .shared_tab_group_guid()];
       tabs.emplace_back(SpecificsToSharedTabGroupTab(
           specifics, collaboration_metadata, tab_position,
-          ExtractCreationTimeFromMetadata(sync_metadata, storage_key)));
+          ExtractCreationTimeFromMetadata(sync_metadata, storage_key),
+          /*sanitize_url_and_title=*/false));
       group_guid_to_next_tab_position[specifics.tab()
                                           .shared_tab_group_guid()]++;
       continue;
@@ -1149,7 +1169,8 @@ SharedTabGroupDataSyncBridge::ApplyRemoteTabUpdate(
             specifics, collaboration_metadata,
             AdjustPreferredTabIndex(position_insert_before,
                                     current_tab_index.value()),
-            creation_time));
+            creation_time,
+            /*sanitize_url_and_title=*/true));
 
     // Unique positions are stored by sync in sync metadata.
     sync_pb::SharedTabGroupDataSpecifics merged_entry =
@@ -1173,7 +1194,8 @@ SharedTabGroupDataSyncBridge::ApplyRemoteTabUpdate(
           PositionToInsertRemoteTab(specifics.tab().unique_position(),
                                     *existing_group,
                                     tab_ids_with_pending_model_update),
-          creation_time));
+          creation_time,
+          /*sanitize_url_and_title=*/true));
 
   return std::nullopt;
 }

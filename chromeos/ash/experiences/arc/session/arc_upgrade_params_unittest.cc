@@ -4,11 +4,11 @@
 
 #include "chromeos/ash/experiences/arc/session/arc_upgrade_params.h"
 
-#include "ash/components/arc/arc_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {

@@ -10,9 +10,9 @@
 #include <sstream>
 #include <string>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"

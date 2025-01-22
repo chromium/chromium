@@ -14,11 +14,10 @@
 #include "chromeos/ash/experiences/arc/session/arc_management_transition.h"
 #include "storage/browser/file_system/file_system_url.h"
 
-// Most utility should be put in components/arc/arc_util.{h,cc}, rather than
-// here. However, some utility implementation requires other modules defined in
-// chrome/, so this file contains such utilities.
-// Note that it is not allowed to have dependency from components/ to chrome/
-// by DEPS.
+// Most utility should be put in chromeos/ash/experiences/arc/arc_util.{h,cc},
+// rather than here. However, some utility implementation requires other modules
+// defined in chrome/, so this file contains such utilities. Note that it is not
+// allowed to have dependency from components/ to chrome/ by DEPS.
 
 class AccountId;
 class GURL;

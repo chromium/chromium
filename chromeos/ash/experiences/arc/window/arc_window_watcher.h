@@ -7,8 +7,8 @@
 
 #include <vector>
 
-#include "ash/components/arc/arc_export.h"
 #include "base/observer_list.h"
+#include "chromeos/ash/experiences/arc/arc_export.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"

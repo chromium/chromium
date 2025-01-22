@@ -60,8 +60,6 @@ from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.models.test_run_results import convert_to_hierarchical_view
 from blinkpy.web_tests.models.typ_types import (
     Artifacts,
-    Expectation,
-    ExpectationType,
     Result,
     ResultSinkReporter,
     ResultType,
@@ -155,14 +153,11 @@ class WPTResult(Result):
     def __init__(self,
                  *args,
                  test_type: Optional[str] = None,
-                 exp_line: Optional[ExpectationType] = None,
                  baseline: Optional[List[TestharnessLine]] = None,
                  **kwargs):
-        kwargs.setdefault('expected', exp_line.results)
         super().__init__(*args, **kwargs)
         self.testharness_results = []
         self.test_type = test_type
-        self._exp_line = exp_line or Expectation()
         self._baseline = baseline or []
         self.image_diff_stats = None
         # TODO(crbug.com/41494889): Populate `self.failure_reason` like
@@ -625,6 +620,9 @@ class WPTResultsProcessor:
             baseline = parse_testharness_baseline(expected_text.decode())
         else:
             baseline = []
+        expected = self._expectations.get_expectations(test).results
+        if self.port.skips_test(test):
+            expected |= {ResultType.Skip}
         self._results[test] = WPTResult(
             test,
             # Placeholder status that has the lowest priority possible.
@@ -635,7 +633,7 @@ class WPTResultsProcessor:
             worker=0,
             file_path=self._file_path_for_test(test),
             test_type=self.get_test_type(test),
-            exp_line=self._expectations.get_expectations(test),
+            expected=expected,
             baseline=baseline)
 
     def get_path_from_test_root(self, test: str) -> str:

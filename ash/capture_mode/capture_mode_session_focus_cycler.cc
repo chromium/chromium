@@ -818,7 +818,7 @@ bool CaptureModeSessionFocusCycler::IsGroupAvailable(FocusGroup group) const {
       return !!GetRecordingTypeMenuWidget();
     case FocusGroup::kActionButtons: {
       return session_->action_container_view_ &&
-             !session_->action_container_view_->children().empty();
+             !session_->action_container_view_->GetActionButtons().empty();
     }
   }
 }
@@ -926,7 +926,8 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
     case FocusGroup::kActionButtons: {
       auto* action_container_view = session_->action_container_view_.get();
       if (action_container_view) {
-        for (views::View* action_button : action_container_view->children()) {
+        for (views::View* action_button :
+             action_container_view->GetActionButtons()) {
           if (action_button && action_button->GetEnabled()) {
             auto* highlight_helper = HighlightHelper::Get(action_button);
             CHECK(highlight_helper);

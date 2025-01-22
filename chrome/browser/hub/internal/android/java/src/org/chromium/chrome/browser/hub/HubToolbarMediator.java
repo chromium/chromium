@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.COLOR_SCHEME;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
@@ -82,6 +83,7 @@ public class HubToolbarMediator {
                     int focusedPaneId = mPaneManager.getFocusedPaneSupplier().get().getPaneId();
                     if (focusedPaneId != PaneId.TAB_SWITCHER
                             && focusedPaneId != PaneId.INCOGNITO_TAB_SWITCHER) {
+                        mPropertyModel.set(APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION, true);
                         mPropertyModel.set(SEARCH_BOX_VISIBLE, false);
                         mPropertyModel.set(SEARCH_LOUPE_VISIBLE, false);
                         return;
@@ -91,6 +93,7 @@ public class HubToolbarMediator {
                             DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
                                     || configuration.orientation
                                             == Configuration.ORIENTATION_LANDSCAPE;
+                    mPropertyModel.set(APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION, false);
                     mPropertyModel.set(SEARCH_BOX_VISIBLE, !showLoupe);
                     mPropertyModel.set(SEARCH_LOUPE_VISIBLE, showLoupe);
 
@@ -289,17 +292,20 @@ public class HubToolbarMediator {
             mPropertyModel.set(MENU_BUTTON_VISIBLE, false);
             mPropertyModel.set(IS_INCOGNITO, false);
             return;
-        } else {
-            mPropertyModel.set(MENU_BUTTON_VISIBLE, focusedPane.getMenuButtonVisible());
-
-            boolean isIncognito = focusedPaneId == PaneId.INCOGNITO_TAB_SWITCHER;
-            mPropertyModel.set(IS_INCOGNITO, isIncognito);
         }
 
+        // This must be called before IS_INCOGNITO is set for all valid focused panes. This is
+        // because hub search box elements (hint text) that will be updated via incognito state
+        // changing will depend on a delay property key set in the configuration changed callback.
         if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
             // Fire an event to determine what is shown.
             mComponentCallbacks.onConfigurationChanged(mContext.getResources().getConfiguration());
         }
+
+        mPropertyModel.set(MENU_BUTTON_VISIBLE, focusedPane.getMenuButtonVisible());
+
+        boolean isIncognito = focusedPaneId == PaneId.INCOGNITO_TAB_SWITCHER;
+        mPropertyModel.set(IS_INCOGNITO, isIncognito);
 
         int index = 0;
         for (Pair<Integer, DisplayButtonData> pair : mCachedPaneSwitcherButtonData) {

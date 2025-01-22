@@ -30,6 +30,10 @@ bool AreLocalIdsPersisted() {
 #endif
 }
 
+// URL to be synced if an unsupported scheme is navigated in a saved tab group.
+const char kChromeSavedTabGroupUnsupportedURL[] =
+    "chrome://saved-tab-groups-unsupported";
+
 std::string LocalTabGroupIDToString(const LocalTabGroupID& local_tab_group_id) {
   return local_tab_group_id.ToString();
 }

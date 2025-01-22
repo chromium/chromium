@@ -7,11 +7,11 @@
 #include <optional>
 #include <utility>
 
-#include "ash/components/arc/arc_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_runner.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 
 namespace arc {
 

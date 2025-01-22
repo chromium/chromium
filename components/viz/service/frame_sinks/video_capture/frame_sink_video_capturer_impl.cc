@@ -934,6 +934,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   metadata.reference_time = event_time;
   metadata.frame_sequence =
       frame_metadata.begin_frame_ack.frame_id.sequence_number;
+  metadata.source_id = frame_metadata.begin_frame_ack.frame_id.source_id;
   metadata.device_scale_factor = frame_metadata.device_scale_factor;
   metadata.page_scale_factor = frame_metadata.page_scale_factor;
   metadata.root_scroll_offset_x = frame_metadata.root_scroll_offset.x();

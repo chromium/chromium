@@ -3431,6 +3431,32 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="PageLoad.InteractiveTiming.{NormalizedResponsivenessMetric}.{UserInteractionLatency}{PageLoadType}.Incognito"
+    units="ms" expires_after="2025-06-21">
+  <owner>kjarosz@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    The {NormalizedResponsivenessMetric} of a {PageLoadType} page load, in ms.
+    For this metric, we measure the latency of a user interaction by the
+    {UserInteractionLatency} within the user interaction.
+
+    This metric is a version of
+    PageLoad.InteractiveTiming.{NormalizedResponsivenessMetric}.{UserInteractionLatency}{PageLoadType},
+    that is recorded only in incognito mode, see its description for details.
+
+    This histogram is of special interest to polonium@google.com. Do not modify
+    it without talking to them first.
+  </summary>
+  <token key="PageLoadType" variants="PageLoadType"/>
+  <token key="NormalizedResponsivenessMetric">
+    <variant name="UserInteractionLatency.HighPercentile2"/>
+  </token>
+  <token key="UserInteractionLatency">
+    <variant name="MaxEventDuration"/>
+  </token>
+</histogram>
+
 <histogram name="PageLoad.Internal.ErrorCode" enum="InternalErrorLoadEvent"
     expires_after="2025-06-01">
   <owner>csharrison@chromium.org</owner>
@@ -3579,6 +3605,30 @@ chromium-metrics-reviews@google.com.
     prerendered main frame and prerendering activation navigation. Recorded when
     those events are observed in PageLoadTracker.
   </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Internal.Prerender2.MainResourceParseStartToActivation{PreloadingTriggerType}"
+    units="ms" expires_after="2025-05-11">
+  <owner>lingqi@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records the duration from when to start parsing main resource to activation
+    for a prerenderedand then activated page.
+
+    Note that the duration is shifted by 1 minute (60000ms) when recording the
+    metric, because UMA cannot record negative values.
+
+    If the UA starts to parse the main resource after activation, the number
+    will be less than 60000(ms).
+
+    If the UA starts to parse the main resource before activation, the number
+    will be greater than 60000(ms).
+
+    This metric will be recorded when a session ends, at
+    PrerenderPageLoadMetricsObserver::MaybeRecordDocumentLoadMetrics.
+  </summary>
+  <token key="PreloadingTriggerType" variants="PagePreloadingTriggerType"/>
 </histogram>
 
 <histogram name="PageLoad.Internal.SoftNavigationOutcome"

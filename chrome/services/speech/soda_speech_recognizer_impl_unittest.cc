@@ -64,6 +64,9 @@ class SodaSpeechRecognizerImplTest
   void OnLanguageChanged(const std::string& language) override {}
   void OnMaskOffensiveWordsChanged(bool mask_offensive_words) override {}
   void MarkDone() override {}
+  void UpdateRecognitionContext(
+      const media::SpeechRecognitionRecognitionContext& recognition_context)
+      override {}
 
   // media::mojom::SpeechRecognitionSessionClient implementation.
   void ResultRetrieved(std::vector<media::mojom::WebSpeechRecognitionResultPtr>

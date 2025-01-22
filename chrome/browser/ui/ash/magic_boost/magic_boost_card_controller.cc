@@ -8,8 +8,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_metrics.h"
@@ -35,9 +33,7 @@ crosapi::mojom::MagicBoostController& GetMagicBoostControllerAsh() {
   if (g_crosapi_instance_for_testing) {
     return CHECK_DEREF(g_crosapi_instance_for_testing);
   }
-  return CHECK_DEREF(crosapi::CrosapiManager::Get()
-                         ->crosapi_ash()
-                         ->magic_boost_controller_ash());
+  return CHECK_DEREF(ash::MagicBoostControllerAsh::Get());
 }
 
 }  // namespace

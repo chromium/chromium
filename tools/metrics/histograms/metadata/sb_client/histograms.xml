@@ -752,6 +752,20 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram
+    name="SBClientPhishing.OnDeviceModelEligibilityReasonAtInquiryFailure"
+    enum="OptimizationGuideOnDeviceModelEligibilityReason"
+    expires_after="2026-01-21">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the OptimizationGuideOnDeviceModelEligibilityReason when the model
+    is not available at the time of inquiry. This happens in the client side
+    detection service class when we inquire the model, but the model is not
+    available.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.OnDeviceModelExecutionDuration" units="ms"
     expires_after="2025-12-02">
   <owner>andysjlim@chromium.org</owner>

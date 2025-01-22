@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/arc/notification/arc_management_transition_notification.h"
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/functional/bind.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_change_registrar.h"

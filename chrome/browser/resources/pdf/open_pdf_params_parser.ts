@@ -316,16 +316,38 @@ export class OpenPdfParamsParser {
    *     exist.
    */
   getTextFragments(url: string): string[] {
-    const hash = new URL(url).hash;
-    // Handle the case of text directives included in the URL.
-    if (!hash.includes(FRAGMENT_DIRECTIVE_DELIMITER)) {
+    // The hash of the URL object decodes the escaped characters in our
+    // fragment. So in order to keep characters such as `,` or `-` which could
+    // be part of the prefix or suffix, the fragment of the URL needs to be
+    // fetched directly from the `url` string instead of using the URL
+    // interface.
+    const hashSplit = url.split('#');
+    if (hashSplit.length !== 2) {
       return [];
     }
+    const hash = hashSplit[1];
+    assert(hash !== undefined);
 
-    // Splitting the hash by the delimiter should always have at least two
-    // items since there was already a check for if the delimiter existed.
-    return new URLSearchParams(hash.split(FRAGMENT_DIRECTIVE_DELIMITER)[1])
-        .getAll('text');
+    // Handle the case of text directives included in the URL.
+    const fragmentDirectiveSplit = hash.split(FRAGMENT_DIRECTIVE_DELIMITER);
+    if (fragmentDirectiveSplit.length !== 2) {
+      return [];
+    }
+    const fragmentDirective = fragmentDirectiveSplit[1];
+    assert(fragmentDirective !== undefined);
+
+    // Loop through the directive split at character `&` in case of multiple
+    // text directives. This cannot be done with URLSearchParams since the `get`
+    // and `getAll` functions decode the parameter values which can result in a
+    // broken text fragment parse.
+    const textFragmentDirectives: string[] = [];
+    for (const param of fragmentDirective.split('&')) {
+      const [key, value] = param.split('=');
+      if (key === 'text' && value) {
+        textFragmentDirectives.push(value);
+      }
+    }
+    return textFragmentDirectives;
   }
 
   /**

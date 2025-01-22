@@ -2465,6 +2465,12 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             return true;
         }
 
+        if (id == R.id.download_page_id) {
+            DownloadUtils.downloadOfflinePage(this, currentTab);
+            RecordUserAction.record("MobileMenuItemDownloadPage");
+            return true;
+        }
+
         if (id == R.id.reload_menu_id) {
             if (currentTab.isLoading()) {
                 currentTab.stopLoading();

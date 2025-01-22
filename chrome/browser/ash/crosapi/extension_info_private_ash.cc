@@ -6,7 +6,6 @@
 
 #include <string_view>
 
-#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "base/memory/ptr_util.h"
@@ -33,6 +32,7 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/constants/devicetype.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"

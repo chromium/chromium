@@ -12,7 +12,6 @@
 #include <tuple>
 #include <utility>
 
-#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/mojom/bitmap.mojom.h"
 #include "base/base64.h"
 #include "base/functional/bind.h"
@@ -20,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_operations.h"

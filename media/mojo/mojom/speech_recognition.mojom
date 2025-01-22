@@ -88,6 +88,11 @@ interface SpeechRecognitionRecognizer {
   // setting has changed.
   [MinVersion=2]
   OnMaskOffensiveWordsChanged@3(bool mask_offensive_words);
+
+  // Notify the speech recognition recognizer to update the recognition context.
+  [MinVersion=8]
+  UpdateRecognitionContext@4(
+      SpeechRecognitionRecognitionContext recognition_context);
 };
 
 // The interface used to return speech recognition events from the speech

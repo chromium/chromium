@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"

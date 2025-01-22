@@ -116,16 +116,6 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
   if (image_url_post_params) {
     result->image_url_post_params = *image_url_post_params;
   }
-  const std::string* side_search_param =
-      dict.FindString(DefaultSearchManager::kSideSearchParam);
-  if (side_search_param) {
-    result->side_search_param = *side_search_param;
-  }
-  const std::string* side_image_search_param =
-      dict.FindString(DefaultSearchManager::kSideImageSearchParam);
-  if (side_image_search_param) {
-    result->side_image_search_param = *side_image_search_param;
-  }
   const std::string* image_translate_source_language_param_key =
       dict.FindString(
           DefaultSearchManager::kImageTranslateSourceLanguageParamKey);
@@ -267,9 +257,6 @@ base::Value::Dict TemplateURLDataToDictionary(const TemplateURLData& data) {
                data.suggestions_url_post_params);
   url_dict.Set(DefaultSearchManager::kImageURLPostParams,
                data.image_url_post_params);
-  url_dict.Set(DefaultSearchManager::kSideSearchParam, data.side_search_param);
-  url_dict.Set(DefaultSearchManager::kSideImageSearchParam,
-               data.side_image_search_param);
   url_dict.Set(DefaultSearchManager::kImageTranslateSourceLanguageParamKey,
                data.image_translate_source_language_param_key);
   url_dict.Set(DefaultSearchManager::kImageTranslateTargetLanguageParamKey,
@@ -349,8 +336,6 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
       ToStringView(engine.search_url_post_params),
       ToStringView(engine.suggest_url_post_params),
       ToStringView(engine.image_url_post_params),
-      ToStringView(engine.side_search_param),
-      ToStringView(engine.side_image_search_param),
       ToStringView(engine.image_translate_source_language_param_key),
       ToStringView(engine.image_translate_target_language_param_key),
       std::move(search_intent_params), ToStringView(engine.favicon_url),
@@ -413,8 +398,6 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
     std::string search_url_post_params;
     std::string suggest_url_post_params;
     std::string image_url_post_params;
-    std::string side_search_param;
-    std::string side_image_search_param;
     std::string image_translate_source_language_param_key;
     std::string image_translate_target_language_param_key;
     std::u16string image_search_branding_label;
@@ -462,14 +445,6 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
     if (string_value) {
       image_url_post_params = *string_value;
     }
-    string_value = engine_dict.FindString("side_search_param");
-    if (string_value) {
-      side_search_param = *string_value;
-    }
-    string_value = engine_dict.FindString("side_image_search_param");
-    if (string_value) {
-      side_image_search_param = *string_value;
-    }
     string_value =
         engine_dict.FindString("image_translate_source_language_param_key");
     if (string_value) {
@@ -507,7 +482,6 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
         name, keyword, search_url, suggest_url, image_url, image_translate_url,
         new_tab_url, contextual_search_url, logo_url, doodle_url,
         search_url_post_params, suggest_url_post_params, image_url_post_params,
-        side_search_param, side_image_search_param,
         image_translate_source_language_param_key,
         image_translate_target_language_param_key,
         std::move(search_intent_params), favicon_url, encoding,

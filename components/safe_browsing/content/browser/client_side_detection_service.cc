@@ -820,6 +820,9 @@ void ClientSideDetectionService::InquireOnDeviceModel(
       IsOnDeviceModelAvailable());
 
   if (!IsOnDeviceModelAvailable()) {
+    // When the model is not available at the time of inquiry, we want to log
+    // the current status of the model fetch.
+    delegate_->LogOnDeviceModelEligibilityReason();
     std::move(callback).Run(std::nullopt);
     return;
   }

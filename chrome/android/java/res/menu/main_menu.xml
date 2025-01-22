@@ -92,6 +92,9 @@ found in the LICENSE file.
                 android:title="@null" />
           </menu>
         </item>
+        <item android:id="@+id/download_page_id"
+            android:title="@string/menu_download_page"
+            android:icon="@drawable/ic_file_download_white_24dp" />
         <item android:id="@+id/print_id"
             android:title="@string/menu_print"
             android:icon="@drawable/sharing_print" />

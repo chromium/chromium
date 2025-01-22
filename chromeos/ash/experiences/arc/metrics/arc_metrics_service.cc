@@ -14,9 +14,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -30,6 +27,9 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_anr.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_wm_metrics.h"
 #include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"

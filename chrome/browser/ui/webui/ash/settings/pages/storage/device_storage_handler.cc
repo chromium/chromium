@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/arc_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
@@ -28,6 +27,7 @@
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/disks/disk.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"

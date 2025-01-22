@@ -4,7 +4,7 @@
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 
-import {IdentifiedActivity, NetworkInfo, SessionResult} from '../mojom/boca.mojom-webui.js';
+import {ConfigResult, IdentifiedActivity, NetworkInfo} from '../mojom/boca.mojom-webui.js';
 
 import {ClientApi} from './boca_app.js';
 import {ClientDelegateFactory, getNetworkInfoMojomToUI, getSessionConfigMojomToUI, getStudentActivityMojomToUI} from './client_delegate.js';
@@ -28,11 +28,10 @@ async function initializeApp(app: ClientApi) {
         app.onStudentActivityUpdated(getStudentActivityMojomToUI(activities));
       })
 
-  callbackRouter.onSessionConfigUpdated.addListener(
-      (sessionResult: SessionResult) => {
-        app.onSessionConfigUpdated(
-            getSessionConfigMojomToUI(sessionResult.config));
-      })
+  callbackRouter.onSessionConfigUpdated.addListener((config: ConfigResult) => {
+    app.onSessionConfigUpdated(getSessionConfigMojomToUI(config.config));
+  })
+
   callbackRouter.onActiveNetworkStateChanged.addListener(
       (activeNetworks: NetworkInfo[]) => {
         app.onActiveNetworkStateChanged(

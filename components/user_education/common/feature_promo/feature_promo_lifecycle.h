@@ -112,6 +112,7 @@ class FeaturePromoLifecycle {
   bool is_demo() const { return was_started() && !tracker_; }
   PromoType promo_type() const { return promo_type_; }
   PromoSubtype promo_subtype() const { return promo_subtype_; }
+  int num_rotating_entries() const { return num_rotating_entries_; }
 
  private:
   enum class State { kNotStarted, kRunning, kContinued, kClosed };

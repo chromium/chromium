@@ -30,7 +30,7 @@ blink::WebContentSecurityPolicy ToWebContentSecurityPolicy(
 
 // Helper function to perform ToWebContentSecurityPolicy on an array.
 CONTENT_EXPORT
-blink::WebVector<blink::WebContentSecurityPolicy> ToWebContentSecurityPolicies(
+std::vector<blink::WebContentSecurityPolicy> ToWebContentSecurityPolicies(
     std::vector<network::mojom::ContentSecurityPolicyPtr>);
 
 }  // namespace content

@@ -1022,6 +1022,14 @@
     "expiry_milestone": 115
   },
   {
+    "name": "bookmarks-tree-view",
+    "owners": [
+      "omarflores@google.com",
+      "chrome-performance-ui-team@google.com"
+    ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "borealis-big-gl",
     "owners": [ "philpearson@google.com", "borealis-team@google.com", "buganizer-system+961348@google.com" ],
     "expiry_milestone": 150

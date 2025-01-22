@@ -109,66 +109,69 @@ class MockRemoteHandler extends PageHandlerRemote {
   override getSession(): Promise<{result: SessionResult}> {
     return Promise.resolve({
       result: {
-        config: {
-          sessionDuration: {
-            microseconds: 120000000n,
-          },
-          sessionStartTime: new Date(1000000),
-          teacher: {
-            id: '0',
-            name: 'teacher',
-            email: 'teacher@gmail.com',
-            photoUrl: {url: 'cdn0'},
-          },
-          accessCode: 'testCode',
-          students: [
-            {
-              id: '1',
-              name: 'cat',
-              email: 'cat@gmail.com',
-              photoUrl: {url: 'cdn1'},
+        session: {
+          config: {
+            sessionDuration: {
+              microseconds: 120000000n,
             },
-            {
-              id: '2',
-              name: 'dog',
-              email: 'dog@gmail.com',
-              photoUrl: {url: 'cdn2'},
+            sessionStartTime: new Date(1000000),
+            teacher: {
+              id: '0',
+              name: 'teacher',
+              email: 'teacher@gmail.com',
+              photoUrl: {url: 'cdn0'},
             },
-          ],
-          studentsJoinViaCode: [{
-            id: '3',
-            name: 'cat1',
-            email: 'cat1@gmail.com',
-            photoUrl: {url: 'cdn3'},
-          }],
-          onTaskConfig: {
-            isLocked: true,
-            tabs: [
+            accessCode: 'testCode',
+            students: [
               {
-                tab: {
-                  url: {url: 'http://google.com/'},
-                  title: 'google',
-                  favicon: 'data/image',
-                },
-                navigationType: 0,
+                id: '1',
+                name: 'cat',
+                email: 'cat@gmail.com',
+                photoUrl: {url: 'cdn1'},
               },
               {
-                tab: {
-                  url: {url: 'http://youtube.com/'},
-                  title: 'youtube',
-                  favicon: 'data/image',
-                },
-                navigationType: 1,
+                id: '2',
+                name: 'dog',
+                email: 'dog@gmail.com',
+                photoUrl: {url: 'cdn2'},
               },
             ],
+            studentsJoinViaCode: [{
+              id: '3',
+              name: 'cat1',
+              email: 'cat1@gmail.com',
+              photoUrl: {url: 'cdn3'},
+            }],
+            onTaskConfig: {
+              isLocked: true,
+              tabs: [
+                {
+                  tab: {
+                    url: {url: 'http://google.com/'},
+                    title: 'google',
+                    favicon: 'data/image',
+                  },
+                  navigationType: 0,
+                },
+                {
+                  tab: {
+                    url: {url: 'http://youtube.com/'},
+                    title: 'youtube',
+                    favicon: 'data/image',
+                  },
+                  navigationType: 1,
+                },
+              ],
+            },
+            captionConfig: {
+              sessionCaptionEnabled: true,
+              localCaptionEnabled: true,
+              sessionTranslationEnabled: true,
+            },
           },
-          captionConfig: {
-            sessionCaptionEnabled: true,
-            localCaptionEnabled: true,
-            sessionTranslationEnabled: true,
-          },
-        },
-      },
+          activities: []
+        }
+      }
     });
   }
 

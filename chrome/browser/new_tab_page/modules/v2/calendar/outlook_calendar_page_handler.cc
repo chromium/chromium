@@ -17,6 +17,7 @@
 #include "components/search/ntp_features.h"
 #include "net/base/mime_util.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -63,6 +64,61 @@ constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
             }
           }
           last_reviewed: "2024-12-17"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "Users can control this feature by (1) selecting "
+            "a non-Google default search engine in Chrome "
+            "settings under 'Search Engine', (2) signing out, "
+            "or (3) disabling the Outlook Calendar module."
+          chrome_policy {
+            DefaultSearchProviderEnabled {
+              policy_options {mode: MANDATORY}
+              DefaultSearchProviderEnabled: false
+            }
+            BrowserSignin {
+              policy_options {mode: MANDATORY}
+              BrowserSignin: 0
+            }
+            NTPCardsVisible {
+              NTPCardsVisible: false
+            }
+            NTPOutlookCardVisible {
+              NTPOutlookCardVisible: false
+            }
+          }
+        })");
+
+constexpr net::NetworkTrafficAnnotationTag attachment_traffic_annotation =
+    net::DefineNetworkTrafficAnnotation("outlook_calendar_event_attachment", R"(
+        semantics {
+          sender: "Outlook Calendar Page Handler"
+          description:
+            "The Outlook Calendar Page Handler requests user's "
+            "calendar event attachment page to ensure it exists. "
+            "The response will be used to display calendar events "
+            "on the desktop NTP."
+          trigger:
+            "Every 4 hours a signed-in user navigates to the NTP while "
+            "the Outlook Calendar module is enabled and the user's "
+            "Outlook account has been authenticated on the NTP."
+          user_data {
+            type: OTHER,
+            type: SENSITIVE_URL
+          }
+          data: "The URL consists of a users's Outlook calendar event "
+                "ID and the event's attachment's ID. This URL is a "
+                "page the user may have previously visited before or "
+                "may visit."
+          destination: OTHER
+          destination_other: "Microsoft Server"
+          internal {
+            contacts {
+              email: "chrome-desktop-ntp@google.com"
+            }
+          }
+          last_reviewed: "2025-01-06"
         }
         policy {
           cookies_allowed: NO
@@ -139,6 +195,10 @@ void OutlookCalendarPageHandler::RegisterProfilePrefs(
                              base::Time());
   registry->RegisterTimePref(prefs::kNtpOutlookCalendarLastDismissedTime,
                              base::Time());
+  registry->RegisterTimePref(
+      prefs::kNtpOutlookCalendarLastAttachmentRequestTime, base::Time());
+  registry->RegisterBooleanPref(
+      prefs::kNtpOutlookCalendarLastAttachmentRequestSuccess, false);
 }
 
 OutlookCalendarPageHandler::OutlookCalendarPageHandler(
@@ -261,6 +321,9 @@ void OutlookCalendarPageHandler::OnJsonParsed(
   std::vector<ntp::calendar::mojom::CalendarEventPtr> created_events;
   const size_t max_events =
       ntp_features::kNtpOutlookCalendarModuleMaxEventsParam.Get();
+  // Keeps track of the last attachment's `resource_url`. Needed in the case
+  // that the URL needs to be validated.
+  std::string last_attachment_resource_url;
   for (const auto& event : *events) {
     if (created_events.size() == max_events) {
       break;
@@ -360,9 +423,15 @@ void OutlookCalendarPageHandler::OnJsonParsed(
 
       created_attachment->title = GetFileName(*name, file_extension);
       created_attachment->icon_url = GetIconUrl(file_extension);
-      // TODO(376515087): Verify resource URL is valid by making a GET request.
-      created_attachment->resource_url =
-          GURL(kBaseAttachmentResourceUrl + *event_id + "/" + *id);
+      std::string attachment_url =
+          kBaseAttachmentResourceUrl + *event_id + "/" + *id;
+      // Set `resource_url` prematurely because the request to check whether the
+      // attachment page exists is handled asynchronously. This way the request
+      // can finish before possibly incorrectly resetting the URLs. The urls
+      // will be reset if a) the next request fails b) the last attempt was
+      // unsuccessful and it is not yet time to make another request.
+      created_attachment->resource_url = GURL(attachment_url);
+      last_attachment_resource_url = attachment_url;
       created_event->attachments.push_back(std::move(created_attachment));
     }
 
@@ -372,6 +441,72 @@ void OutlookCalendarPageHandler::OnJsonParsed(
     }
     created_events.push_back(std::move(created_event));
   }
+
+  // Determine whether attachment's `resource_url` should be validated.
+  base::Time last_request_time = pref_service_->GetTime(
+      prefs::kNtpOutlookCalendarLastAttachmentRequestTime);
+  bool should_make_request =
+      last_request_time == base::Time()
+          ? !last_attachment_resource_url.empty()
+          : base::Time::Now() - last_request_time > base::Hours(4) &&
+                !last_attachment_resource_url.empty();
+
+  if (should_make_request) {
+    MakeAttachmentUrlRequest(std::move(callback), std::move(created_events),
+                             last_attachment_resource_url);
+    return;
+  } else if (!pref_service_->GetBoolean(
+                 prefs::kNtpOutlookCalendarLastAttachmentRequestSuccess)) {
+    // Reset attachment URLs if the last request was unsuccessful.
+    for (auto& event : created_events) {
+      for (auto& attachment : event->attachments) {
+        attachment->resource_url.reset();
+      }
+    }
+  }
   std::move(callback).Run(std::move(created_events));
 }
 
+void OutlookCalendarPageHandler::MakeAttachmentUrlRequest(
+    GetEventsCallback callback,
+    std::vector<::ntp::calendar::mojom::CalendarEventPtr> events,
+    std::string resource_url) {
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->method = "GET";
+  resource_request->url = GURL(resource_url);
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kCacheControl,
+                                      "no-cache");
+
+  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
+                                                 attachment_traffic_annotation);
+  url_loader_->DownloadHeadersOnly(
+      url_loader_factory_.get(),
+      base::BindOnce(&OutlookCalendarPageHandler::OnHeaderReceived,
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(events)));
+}
+
+void OutlookCalendarPageHandler::OnHeaderReceived(
+    GetEventsCallback callback,
+    std::vector<::ntp::calendar::mojom::CalendarEventPtr> events,
+    scoped_refptr<net::HttpResponseHeaders> headers) {
+  const int net_error = headers->response_code();
+  pref_service_->SetTime(prefs::kNtpOutlookCalendarLastAttachmentRequestTime,
+                         base::Time::Now());
+  pref_service_->SetBoolean(
+      prefs::kNtpOutlookCalendarLastAttachmentRequestSuccess,
+      net_error == net::HTTP_OK);
+
+  url_loader_.reset();
+
+  // Reset all attachment resource URLs when there's an error verifying that at
+  // least one page does not exist.
+  if (net_error != net::HTTP_OK) {
+    for (auto& event : events) {
+      for (auto& attachment : event->attachments) {
+        attachment->resource_url.reset();
+      }
+    }
+  }
+  std::move(callback).Run(std::move(events));
+}

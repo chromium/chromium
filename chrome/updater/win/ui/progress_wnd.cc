@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/updater/win/ui/progress_wnd.h"
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -584,8 +580,10 @@ void ProgressWnd::OnComplete(const ObserverCompletionInfo& observer_info) {
 }
 
 HRESULT ProgressWnd::ChangeControlState() {
-  for (const auto& ctl : ctls_) {
-    SetControlAttributes(ctl.id, ctl.attr[static_cast<size_t>(cur_state_)]);
+  for (const ControlState& ctl : ctls_) {
+    const size_t i = static_cast<size_t>(cur_state_);
+    CHECK_LE(i, std::size(ctl.attr));
+    SetControlAttributes(ctl.id, ctl.attr[i]);
   }
   return S_OK;
 }

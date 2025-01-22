@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/arc/idle_manager/arc_cpu_throttle_observer.h"
 
-#include "ash/components/arc/arc_prefs.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_throttle_test_observer.h"
@@ -13,6 +12,7 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"
 #include "chromeos/ash/experiences/arc/power/arc_power_bridge.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"

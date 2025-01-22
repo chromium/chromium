@@ -49,9 +49,6 @@ const char DefaultSearchManager::kSuggestionsURLPostParams[] =
     "suggestions_url_post_params";
 const char DefaultSearchManager::kImageURLPostParams[] =
     "image_url_post_params";
-const char DefaultSearchManager::kSideSearchParam[] = "side_search_param";
-const char DefaultSearchManager::kSideImageSearchParam[] =
-    "side_image_search_param";
 const char DefaultSearchManager::kImageSearchBrandingLabel[] =
     "image_search_branding_label";
 const char DefaultSearchManager::kSearchIntentParams[] = "search_intent_params";

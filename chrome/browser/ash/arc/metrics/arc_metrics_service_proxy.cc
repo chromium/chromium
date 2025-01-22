@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/arc/metrics/arc_metrics_service_proxy.h"
 
-#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
@@ -14,6 +13,7 @@
 #include "chrome/browser/memory/memory_kills_monitor.h"
 #include "chrome/browser/memory/oom_kills_monitor.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 
 // Enable VLOG level 1.
 #undef ENABLED_VLOG_LEVEL

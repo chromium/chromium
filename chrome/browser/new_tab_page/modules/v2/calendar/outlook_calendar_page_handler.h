@@ -44,6 +44,14 @@ class OutlookCalendarPageHandler
                       std::unique_ptr<std::string> response_body);
   void OnJsonParsed(GetEventsCallback callback,
                     data_decoder::DataDecoder::ValueOrError result);
+  void MakeAttachmentUrlRequest(
+      GetEventsCallback callback,
+      std::vector<::ntp::calendar::mojom::CalendarEventPtr> events,
+      std::string resource_url);
+  void OnHeaderReceived(
+      GetEventsCallback callback,
+      std::vector<::ntp::calendar::mojom::CalendarEventPtr> events,
+      scoped_refptr<net::HttpResponseHeaders> headers);
 
   mojo::Receiver<ntp::calendar::mojom::OutlookCalendarPageHandler> handler_;
   raw_ptr<PrefService> pref_service_;

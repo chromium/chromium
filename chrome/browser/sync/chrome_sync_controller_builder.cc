@@ -45,7 +45,6 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
@@ -59,6 +58,7 @@
 #include "chrome/browser/ash/printing/printers_sync_bridge.h"
 #include "chrome/browser/ash/printing/synced_printers_manager.h"
 #include "chromeos/ash/components/sync_wifi/wifi_configuration_sync_service.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

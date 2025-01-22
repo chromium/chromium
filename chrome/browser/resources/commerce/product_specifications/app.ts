@@ -322,6 +322,16 @@ export class ProductSpecificationsElement extends PolymerElement {
       this.isWindowFocused_ = false;
     });
 
+    // If the browser 'back' button is clicked and the previous history entry
+    // was the empty state, then reload the page to show the empty state. This
+    // allows the user to return to the empty state after clicking on a
+    // comparison table list item or creating a new set via adding a URL.
+    window.addEventListener('popstate', () => {
+      if (window.location.hash === '') {
+        window.location.replace(window.location.origin);
+      }
+    });
+
     this.eventTracker_.add(
         this, 'click',
         () => {
@@ -791,7 +801,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     if (createdSet) {
       this.id_ = createdSet.uuid;
       document.title = this.setName_;
-      window.history.replaceState(undefined, '', `?id=${this.id_.value}`);
+      window.history.pushState(undefined, '', `?id=${this.id_.value}`);
     }
     this.populateTable_(urls);
   }
@@ -996,8 +1006,7 @@ export class ProductSpecificationsElement extends PolymerElement {
 
   private onComparisonTableListItemClick_(
       event: ComparisonTableListItemClickEvent) {
-    window.history.replaceState(
-        undefined, '', `?id=${event.detail.uuid.value}`);
+    window.history.pushState(undefined, '', `?id=${event.detail.uuid.value}`);
     this.loadSet_(event.detail.uuid);
   }
 

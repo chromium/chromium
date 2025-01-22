@@ -814,6 +814,8 @@ namespace autotestPrivate {
   // Response callback to report if a field trial exists and has been activated.
   callback IsFieldTrialActiveCallback = void(boolean active);
 
+  callback OverrideLobsterResponseForTestingCallback = void(boolean success);
+
   // Request data containing the mock responses from
   // overrideOrcaResponseForTesting.
   dictionary OrcaResponseArray {
@@ -1614,6 +1616,11 @@ namespace autotestPrivate {
     // Returns keyboard layout used for current input method.
     static void getCurrentInputMethodDescriptor(
         GetCurrentInputMethodDescriptorCallback callback);
+
+    // Overrides the response from Lobster Fetcher and returns the boolean value
+    // that indicates if the overriding is successful or not.
+    static void overrideLobsterResponseForTesting(
+        OverrideLobsterResponseForTestingCallback callback);
 
     // Overrides the response from Orca Provider and returns the boolean value
     // that indicates if the overriding is successful or not.

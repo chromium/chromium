@@ -9,6 +9,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/platform/web_content_security_policy_struct.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
@@ -72,6 +74,9 @@ class TestCSPDelegate final : public GarbageCollected<TestCSPDelegate>,
       SecurityOrigin::Create(url_);
   Vector<std::pair<String, ConsoleMessage::Level>> console_messages_;
 };
+
+WebContentSecurityPolicy ConvertToPublic(
+    network::mojom::blink::ContentSecurityPolicyPtr policy);
 
 }  // namespace blink
 

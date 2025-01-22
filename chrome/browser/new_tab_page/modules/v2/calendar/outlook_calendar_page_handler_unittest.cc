@@ -9,6 +9,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom.h"
@@ -38,6 +39,9 @@ const char kRequestUrl[] =
     "subject,start,attendees,webLink,onlineMeeting,location,isOrganizer,"
     "responseStatus,end,isCancelled&expand=attachments(select=id,name,"
     "contentType)";
+
+const char kFakeAttachmentResourceUrl[] =
+    "https://outlook.live.com/mail/0/deeplink/attachment/1/1-ABC";
 
 }  // namespace
 
@@ -117,11 +121,18 @@ TEST_F(OutlookCalendarPageHandlerTest, GetEvents) {
   base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
       future;
 
-  handler->GetEvents(future.GetCallback());
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        if (request.url == GetRequestUrl()) {
+          test_url_loader_factory_.AddResponse(
+              GetRequestUrl(),
+              *calendar::calendar_fake_data_helper::GetFakeJsonResponse());
+        } else if (request.url == kFakeAttachmentResourceUrl) {
+          test_url_loader_factory_.AddResponse(kFakeAttachmentResourceUrl, "");
+        }
+      }));
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetRequestUrl(),
-      *calendar::calendar_fake_data_helper::GetFakeJsonResponse());
+  handler->GetEvents(future.GetCallback());
 
   EXPECT_EQ(future.Get().size(), 3u);
 }
@@ -520,6 +531,13 @@ TEST_F(OutlookCalendarPageHandlerTest, AttachmentCreation) {
   base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
       future;
 
+  EXPECT_EQ(profile_->GetPrefs()->GetTime(
+                prefs::kNtpOutlookCalendarLastAttachmentRequestTime),
+            base::Time());
+  EXPECT_EQ(profile_->GetPrefs()->GetBoolean(
+                prefs::kNtpOutlookCalendarLastAttachmentRequestSuccess),
+            false);
+
   std::string event_id = "1";
   std::string attachment_id_1 = event_id + "-ABC";
   std::string attachment_id_2 = event_id + "-DEF";
@@ -527,8 +545,6 @@ TEST_F(OutlookCalendarPageHandlerTest, AttachmentCreation) {
   std::vector<std::string> id_paths = {event_id + "/" + attachment_id_1,
                                        event_id + "/" + attachment_id_2,
                                        event_id + "/" + attachment_id_3};
-
-  handler->GetEvents(future.GetCallback());
 
   // clang-format off
   std::string response = base::StringPrintf(R"(
@@ -605,13 +621,29 @@ TEST_F(OutlookCalendarPageHandlerTest, AttachmentCreation) {
       }]})", event_id, attachment_id_1, attachment_id_2, attachment_id_3);
   // clang-format on
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(GetRequestUrl(),
-                                                             response);
+  std::string request_url = GetRequestUrl();
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        if (request.url == request_url) {
+          test_url_loader_factory_.AddResponse(request_url, response);
+        } else if (request.url == kBaseAttachmentResourceUrl + id_paths[2]) {
+          test_url_loader_factory_.AddResponse(
+              kBaseAttachmentResourceUrl + id_paths[2], "");
+        }
+      }));
+
+  handler->GetEvents(future.GetCallback());
 
   const std::vector<ntp::calendar::mojom::CalendarEventPtr>& events =
       future.Get();
   EXPECT_EQ(events.size(), 1u);
   EXPECT_EQ(events[0]->attachments.size(), 3u);
+  EXPECT_EQ(profile_->GetPrefs()->GetTime(
+                prefs::kNtpOutlookCalendarLastAttachmentRequestTime),
+            base::Time::Now());
+  EXPECT_EQ(profile_->GetPrefs()->GetBoolean(
+                prefs::kNtpOutlookCalendarLastAttachmentRequestSuccess),
+            true);
 
   for (int i = 0; i < 3; i++) {
     ntp::calendar::mojom::AttachmentPtr attachment =
@@ -683,12 +715,19 @@ TEST_F(OutlookCalendarPageHandlerTest, MakeRequestAfterRetryTimeout) {
   task_environment_.FastForwardBy(base::Seconds(15));
   handler = CreateHandler();
 
-  handler->GetEvents(future.GetCallback());
-  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+  std::string request_url = GetRequestUrl();
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        if (request.url == request_url) {
+          test_url_loader_factory_.AddResponse(
+              request_url,
+              *calendar::calendar_fake_data_helper::GetFakeJsonResponse());
+        } else if (request.url == kFakeAttachmentResourceUrl) {
+          test_url_loader_factory_.AddResponse(kFakeAttachmentResourceUrl, "");
+        }
+      }));
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetRequestUrl(),
-      *calendar::calendar_fake_data_helper::GetFakeJsonResponse());
+  handler->GetEvents(future.GetCallback());
 
   EXPECT_EQ(future.Get().size(), 3u);
 }
@@ -767,4 +806,130 @@ TEST_F(OutlookCalendarPageHandlerTest, DeclinedEventNotCreated) {
   test_url_loader_factory_.SimulateResponseForPendingRequest(GetRequestUrl(),
                                                              response);
   EXPECT_EQ(future.Get().size(), 0u);
+}
+
+// Ensures attachment `resource_url's` are not set when there's an error
+// verifying that the page exists.
+TEST_F(OutlookCalendarPageHandlerTest, NoAttachmentUrlOnRequestFailure) {
+  std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
+  base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
+      future;
+
+  EXPECT_EQ(profile_->GetPrefs()->GetTime(
+                prefs::kNtpOutlookCalendarLastAttachmentRequestTime),
+            base::Time());
+  EXPECT_EQ(profile_->GetPrefs()->GetBoolean(
+                prefs::kNtpOutlookCalendarLastAttachmentRequestSuccess),
+            false);
+
+  auto head = network::CreateURLResponseHead(net::HTTP_NOT_FOUND);
+  head->mime_type = "application/json";
+  network::URLLoaderCompletionStatus status;
+
+  std::string request_url = GetRequestUrl();
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        if (request.url == request_url) {
+          test_url_loader_factory_.AddResponse(
+              request_url,
+              *calendar::calendar_fake_data_helper::GetFakeJsonResponse());
+        } else if (request.url == kFakeAttachmentResourceUrl) {
+          test_url_loader_factory_.AddResponse(GURL(kFakeAttachmentResourceUrl),
+                                               std::move(head), "", status);
+        }
+      }));
+
+  handler->GetEvents(future.GetCallback());
+
+  const std::vector<ntp::calendar::mojom::CalendarEventPtr>& events =
+      future.Get();
+  EXPECT_EQ(events.size(), 3u);
+  EXPECT_EQ(events[0]->attachments.size(), 1u);
+  EXPECT_EQ(profile_->GetPrefs()->GetTime(
+                prefs::kNtpOutlookCalendarLastAttachmentRequestTime),
+            base::Time::Now());
+  EXPECT_EQ(profile_->GetPrefs()->GetBoolean(
+                prefs::kNtpOutlookCalendarLastAttachmentRequestSuccess),
+            false);
+
+  // On request failures attachments should still be created without a
+  // `resource_url`.
+  ntp::calendar::mojom::AttachmentPtr attachment =
+      std::move(events[0]->attachments[0]);
+  EXPECT_EQ(attachment->title, "Some document");
+  EXPECT_EQ(attachment->icon_url, GURL(kDocIconUrl));
+  EXPECT_EQ(attachment->resource_url, std::nullopt);
+
+  future.Clear();
+  handler.reset();
+
+  // Verify `resource_url` is still not set when it is not yet time to make
+  // another validity request.
+  task_environment_.FastForwardBy(base::Hours(1));
+  // Set interceptor with updated request url.
+  request_url = GetRequestUrl();
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        if (request.url == request_url) {
+          test_url_loader_factory_.AddResponse(
+              request_url,
+              *calendar::calendar_fake_data_helper::GetFakeJsonResponse());
+        } else if (request.url == kFakeAttachmentResourceUrl) {
+          test_url_loader_factory_.AddResponse(GURL(kFakeAttachmentResourceUrl),
+                                               std::move(head), "", status);
+        }
+      }));
+
+  handler = CreateHandler();
+  handler->GetEvents(future.GetCallback());
+  const std::vector<ntp::calendar::mojom::CalendarEventPtr>& events2 =
+      future.Get();
+
+  EXPECT_EQ(events2.size(), 3u);
+  EXPECT_EQ(events[0]->attachments.size(), 1u);
+
+  ntp::calendar::mojom::AttachmentPtr attachment2 =
+      std::move(events2[0]->attachments[0]);
+  EXPECT_EQ(attachment2->title, "Some document");
+  EXPECT_EQ(attachment2->icon_url, GURL(kDocIconUrl));
+  EXPECT_EQ(attachment2->resource_url, std::nullopt);
+}
+
+// Verifies attachment `resource_url's` are set on the next successful request.
+TEST_F(OutlookCalendarPageHandlerTest, AttachmentUrlSet) {
+  std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
+  base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
+      future;
+  profile_->GetPrefs()->SetTime(
+      prefs::kNtpOutlookCalendarLastAttachmentRequestTime, base::Time::Now());
+  profile_->GetPrefs()->SetBoolean(
+      prefs::kNtpOutlookCalendarLastAttachmentRequestSuccess, false);
+
+  task_environment_.FastForwardBy(base::Hours(5));
+
+  handler = CreateHandler();
+
+  std::string request_url = GetRequestUrl();
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        if (request.url == request_url) {
+          test_url_loader_factory_.AddResponse(
+              request_url,
+              *calendar::calendar_fake_data_helper::GetFakeJsonResponse());
+        } else if (request.url == kFakeAttachmentResourceUrl) {
+          test_url_loader_factory_.AddResponse(kFakeAttachmentResourceUrl, "");
+        }
+      }));
+
+  handler->GetEvents(future.GetCallback());
+
+  const std::vector<ntp::calendar::mojom::CalendarEventPtr>& events =
+      future.Get();
+  EXPECT_EQ(events.size(), 3u);
+  EXPECT_EQ(events[0]->attachments.size(), 1u);
+  ntp::calendar::mojom::AttachmentPtr attachment =
+      std::move(events[0]->attachments[0]);
+  EXPECT_EQ(attachment->title, "Some document");
+  EXPECT_EQ(attachment->icon_url, GURL(kDocIconUrl));
+  EXPECT_EQ(attachment->resource_url, GURL(kFakeAttachmentResourceUrl));
 }

@@ -351,11 +351,11 @@ void SpeechRecognitionRecognizerImpl::MarkDone() {
 }
 
 void SpeechRecognitionRecognizerImpl::UpdateRecognitionContext(
-    media::mojom::SpeechRecognitionRecognitionContextPtr recognition_context) {
+    const media::SpeechRecognitionRecognitionContext& recognition_context) {
   soda::chrome::RecognitionContext context;
   auto* context_input = context.add_context();
   context_input->set_name(kContextInputName);
-  for (const auto& phrase : recognition_context->phrases) {
+  for (const auto& phrase : recognition_context.phrases) {
     auto* p = context_input->mutable_phrases()->add_phrase();
     p->set_phrase(phrase.phrase);
     p->set_boost(phrase.boost);

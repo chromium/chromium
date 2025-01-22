@@ -196,9 +196,9 @@ static_library("arc") {
 
 static_library("prefs") {
   sources = [
-    "arc_export.h",
-    "arc_prefs.cc",
-    "arc_prefs.h",
+    "//chromeos/ash/experiences/arc/arc_export.h",
+    "//chromeos/ash/experiences/arc/arc_prefs.cc",
+    "//chromeos/ash/experiences/arc/arc_prefs.h",
   ]
 
   defines = [ "ARC_IMPLEMENTATION" ]
@@ -214,8 +214,8 @@ static_library("prefs") {
 
 source_set("arc_features") {
   sources = [
-    "arc_features.cc",
-    "arc_features.h",
+    "//chromeos/ash/experiences/arc/arc_features.cc",
+    "//chromeos/ash/experiences/arc/arc_features.h",
   ]
 
   deps = [ "//base" ]
@@ -223,8 +223,8 @@ source_set("arc_features") {
 
 static_library("arc_base_utils") {
   sources = [
-    "arc_util.cc",
-    "arc_util.h",
+    "//chromeos/ash/experiences/arc/arc_util.cc",
+    "//chromeos/ash/experiences/arc/arc_util.h",
   ]
 
   public_deps = [ ":arc_features" ]
@@ -252,9 +252,9 @@ static_library("arc_base") {
   # TODO(hidehiko): Revisit here and move back some files to "arc"
   # on completion to move ArcSession task to ArcSessionManager.
   sources = [
-    "arc_browser_context_keyed_service_factory_base.h",
-    "arc_features_parser.cc",
-    "arc_features_parser.h",
+    "//chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h",
+    "//chromeos/ash/experiences/arc/arc_features_parser.cc",
+    "//chromeos/ash/experiences/arc/arc_features_parser.h",
   ]
 
   deps = [
@@ -435,6 +435,8 @@ source_set("unit_tests") {
   sources = [
     "//chromeos/ash/experiences/arc/app/arc_app_launch_notifier_unittest.cc",
     "//chromeos/ash/experiences/arc/appfuse/arc_appfuse_bridge_unittest.cc",
+    "//chromeos/ash/experiences/arc/arc_features_parser_unittest.cc",
+    "//chromeos/ash/experiences/arc/arc_util_unittest.cc",
     "//chromeos/ash/experiences/arc/audio/arc_audio_bridge_unittest.cc",
     "//chromeos/ash/experiences/arc/bluetooth/bluetooth_mojom_traits_unittest.cc",
     "//chromeos/ash/experiences/arc/bluetooth/bluetooth_type_converters_unittest.cc",
@@ -476,8 +478,6 @@ source_set("unit_tests") {
     "//chromeos/ash/experiences/arc/video_accelerator/arc_video_accelerator_util_unittest.cc",
     "//chromeos/ash/experiences/arc/volume_mounter/arc_volume_mounter_bridge_unittest.cc",
     "//chromeos/ash/experiences/arc/wake_lock/arc_wake_lock_bridge_unittest.cc",
-    "arc_features_parser_unittest.cc",
-    "arc_util_unittest.cc",
   ]
 
   deps = [

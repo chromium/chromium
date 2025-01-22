@@ -6,10 +6,10 @@
 
 #include <string_view>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "crypto/random.h"
 #include "crypto/sha2.h"
 

@@ -3270,7 +3270,7 @@ void CaptureModeSession::RemoveAllActionButtons() {
   // Remove all children from the action button container, if the widget exists.
   if (action_container_widget_) {
     CHECK(action_container_view_);
-    action_container_view_->RemoveAllChildViews();
+    action_container_view_->RemoveAllActionButtons();
   }
 }
 

@@ -298,20 +298,8 @@ std::optional<std::string> Encryptor::DecryptData(
   std::string string_data(data.begin(), data.end());
   std::string plaintext;
   if (OSCrypt::DecryptString(string_data, &plaintext)) {
-    // If OSCrypt is using os_crypt_posix.cc and it's passed invalid data to
-    // decrypt, it simply returns the data. This is a quirk of
-    // os_crypt_posix.cc. In this case, it's not really possible to tell whether
-    // or not encryption worked or not, and certainly not advisable to recommend
-    // a re-encryption of this potentially invalid data.
-    // TODO(crbug.com/365712505): Remove this fallback.
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) &&         \
-        !(BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
-    BUILDFLAG(IS_FUCHSIA)
-    if (plaintext == string_data) {
-      return plaintext;
-    }
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !(BUILDFLAG(IS_LINUX)
-        // && !BUILDFLAG(IS_CASTOS)) || BUILDFLAG(IS_FUCHSIA)
+    // If fallback to OSCrypt happened but there is a valid key provider, then
+    // recommend re-encryption.
     if (!provider_for_encryption_.empty() && flags) {
       flags->should_reencrypt = true;
     }

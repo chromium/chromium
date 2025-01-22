@@ -2777,19 +2777,19 @@
     Not allowed to use V8 optimizer
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_KEYBOARD_LOCK_DESCRIPTION" desc="Description of the keyboard lock content setting.">
-    Sites use this feature to capture and use the input of your keyboard, like for games or remote desktop apps
+    Sites use this feature to override the input of your keyboard, like for games or remote desktop apps
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_KEYBOARD_LOCK_ALLOWED" desc="Label for the enabled option of the keyboard lock content setting.">
-    Sites can ask to capture and use your keyboard input
+    Sites can ask to override your keyboard input
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_KEYBOARD_LOCK_BLOCKED" desc="Label for the disabled option of the keyboard lock content setting.">
-    Don't allow sites to capture and use your keyboard input
+    Don't allow sites to override your keyboard input
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_KEYBOARD_LOCK_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the keyboard lock content setting.">
-    Allowed to capture and use your keyboard input
+    Allowed to override your keyboard input
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_KEYBOARD_LOCK_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the keyboard lock content setting.">
-    Not allowed to capture and use your keyboard input
+    Not allowed to override your keyboard input
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_DESCRIPTION" desc="Description of the location content setting.">
     Sites usually use your location for relevant features or info, like local news or nearby shops

@@ -515,38 +515,6 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID})
-    @DisabledTest(message = "crbug.com/353946452")
-    public void testTabGroupOverflowMenuInTabSwitcher_closeGroup() {
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        SnackbarManager snackbarManager = cta.getSnackbarManager();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-        // Create a tab group.
-        mergeNormalTabsToGroupWithDialog(cta, 2);
-        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
-        verifyTabSwitcherCardCount(cta, 1);
-
-        verifyFirstCardTitle("2 tabs");
-        verifyFirstCardColor(TabGroupColorId.GREY);
-
-        // Click the close action button to close the group
-        String closeButtonText = cta.getString(R.string.close_tab_group_menu_item);
-        onView(withId(R.id.action_button)).perform(click());
-        onView(allOf(withText(closeButtonText), withId(R.id.menu_item_text))).perform(click());
-
-        // Verify the tab group was closed.
-        assertTrue(
-                snackbarManager.getCurrentSnackbarForTesting().getController()
-                        instanceof UndoBarController);
-        verifyTabSwitcherCardCount(cta, 0);
-        CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
-        verifyTabSwitcherCardCount(cta, 1);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID})
     @DisabledTest(message = "crbug.com/360393681")
     public void testTabGroupOverflowMenuInTabSwitcher_renameGroupAccept() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();

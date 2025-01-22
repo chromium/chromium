@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "ash/components/arc/arc_util.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -16,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"

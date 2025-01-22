@@ -6,7 +6,6 @@
 
 #include <string_view>
 
-#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "base/auto_reset.h"
 #include "base/base64url.h"
@@ -40,6 +39,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_map_service.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/components/disks/disks_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/storage_monitor/storage_monitor.h"

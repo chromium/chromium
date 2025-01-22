@@ -57,7 +57,7 @@ class WebRequestEventRouter : public KeyedService {
   struct BlockedRequest;
 
   // The events denoting the lifecycle of a given network request.
-  enum EventTypes {
+  enum class EventTypes {
     kInvalidEvent = 0,
     kOnBeforeRequest = 1 << 0,
     kOnBeforeSendHeaders = 1 << 1,

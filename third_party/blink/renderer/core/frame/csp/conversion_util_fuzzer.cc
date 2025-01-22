@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
+#include "third_party/blink/renderer/core/frame/csp/test_util.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"

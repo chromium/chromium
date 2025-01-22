@@ -547,9 +547,10 @@ class BrowsingDataModelBrowserTest
     ASSERT_TRUE(https_server_->InitializeAndListen());
 
     // Must come after `InitializeAndListen` so we know the `base_url()`.
+    // We are testing DBSC against kTestHost, so register a handler for it.
     https_server_->RegisterRequestHandler(
         net::device_bound_sessions::GetTestRequestHandler(
-            https_server_->base_url()));
+            https_server_->GetURL(kTestHost, "/")));
 
     https_server_->StartAcceptingConnections();
   }

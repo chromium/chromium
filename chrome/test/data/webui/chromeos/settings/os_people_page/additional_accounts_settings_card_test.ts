@@ -116,17 +116,6 @@ suite('<additonal-accounts-settings-card>', () => {
     assertTrue(!!actionMenu);
     actionMenu.querySelectorAll('button')[0]!.click();
 
-    if (loadTimeData.getBoolean('lacrosEnabled')) {
-      const confirmationDialog =
-          additionalAccountSettingsCard.shadowRoot!.querySelector(
-              '#removeConfirmationDialog');
-      assertTrue(!!confirmationDialog);
-      const button = confirmationDialog.querySelector<HTMLButtonElement>(
-          '#removeConfirmationButton');
-      assertTrue(!!button);
-      button.click();
-    }
-
     const account = await browserProxy.whenCalled('removeAccount');
     assertEquals('456', account.id);
     // Add account button should be in focus now.
@@ -154,18 +143,6 @@ suite('<additonal-accounts-settings-card>', () => {
         deepLinkElement, getDeepActiveElement(),
         `Kebab menu should be focused for settingId${removeAccountSettingId}.`);
   });
-
-  if (loadTimeData.getBoolean('arcAccountRestrictionsEnabled')) {
-    test('arc availability is shown for secondary accounts', () => {
-      accountList.items!.forEach((item, i) => {
-        const notAvailableInArc =
-            additionalAccountSettingsCard.shadowRoot!
-                .querySelectorAll<HTMLElement>('.arc-availability')[i];
-        assertTrue(!!notAvailableInArc);
-        assertEquals(item.isAvailableInArc, notAvailableInArc.hidden);
-      });
-    });
-  }
 });
 
 suite('AccountManagerAccountAdditionDisabledTests', () => {

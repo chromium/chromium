@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_POLICY_CONTAINER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_POLICY_CONTAINER_H_
 
+#include <vector>
+
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
@@ -12,7 +14,6 @@
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 namespace blink {
 
@@ -23,7 +24,7 @@ struct WebPolicyContainerPolicies {
       network::mojom::CrossOriginEmbedderPolicyValue::kNone;
   network::mojom::ReferrerPolicy referrer_policy =
       network::mojom::ReferrerPolicy::kDefault;
-  WebVector<WebContentSecurityPolicy> content_security_policies;
+  std::vector<WebContentSecurityPolicy> content_security_policies;
   bool is_credentialless = false;
   network::mojom::WebSandboxFlags sandbox_flags =
       network::mojom::WebSandboxFlags::kNone;

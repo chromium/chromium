@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/experiences/arc/system_ui/arc_system_ui_bridge.h"
 
-#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
@@ -12,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/session/connection_holder.h"

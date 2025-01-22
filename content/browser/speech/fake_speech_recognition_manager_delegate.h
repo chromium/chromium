@@ -92,6 +92,11 @@ class MockOnDeviceWebSpeechRecognitionService
               (override));
   MOCK_METHOD(void, OnLanguageChanged, (const std::string& lang), (override));
   MOCK_METHOD(void, OnMaskOffensiveWordsChanged, (bool changed), (override));
+  MOCK_METHOD(
+      void,
+      UpdateRecognitionContext,
+      (const media::SpeechRecognitionRecognitionContext& recognition_context),
+      (override));
   void MarkDone() override;
 
   // Methods for testing plumbing to SpeechRecognitionRecognizerClient.

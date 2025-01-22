@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/arc/arc_features.h"
 #include "ash/public/cpp/arc_resize_lock_type.h"
 #include "ash/public/cpp/resize_shadow_type.h"
 #include "ash/public/cpp/window_properties.h"
@@ -17,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/compat_mode/metrics.h"
 #include "chromeos/ash/experiences/arc/compat_mode/test/compat_mode_test_base.h"
 #include "chromeos/ui/base/app_types.h"

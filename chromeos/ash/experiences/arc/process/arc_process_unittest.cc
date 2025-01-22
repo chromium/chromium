@@ -9,9 +9,9 @@
 #include <list>
 #include <sstream>
 
-#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/mojom/process.mojom.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {

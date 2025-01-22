@@ -256,7 +256,7 @@ MediaCodecVideoDecoder::MediaCodecVideoDecoder(
           base::FeatureList::IsEnabled(media::kAllowNonSecureOverlays)),
       use_block_model_(base::FeatureList::IsEnabled(kMediaCodecBlockModel) &&
                        device_info_->SdkVersion() >=
-                           base::android::SDK_VERSION_R) {
+                           base::android::SDK_VERSION_V) {
   DVLOG(2) << __func__;
   surface_chooser_helper_.chooser()->SetClientCallbacks(
       base::BindRepeating(&MediaCodecVideoDecoder::OnSurfaceChosen,

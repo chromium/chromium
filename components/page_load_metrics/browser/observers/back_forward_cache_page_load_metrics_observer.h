@@ -29,6 +29,9 @@ extern const char
     kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore
         [];
 extern const char
+    kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore_Incognito
+        [];
+extern const char
     kWorstUserInteractionLatency_MaxEventDuration_AfterBackForwardCacheRestore
         [];
 

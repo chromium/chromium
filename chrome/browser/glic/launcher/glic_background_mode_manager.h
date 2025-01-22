@@ -12,8 +12,6 @@
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 
-class GlicController;
-class GlicStatusIcon;
 class ScopedKeepAlive;
 class StatusTray;
 
@@ -22,6 +20,9 @@ class Accelerator;
 }
 
 namespace glic {
+
+class GlicController;
+class GlicStatusIcon;
 
 // This is a global feature in the browser process that manages the
 // enabling/disabling of glic background mode. When background mode is enabled,

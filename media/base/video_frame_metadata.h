@@ -228,11 +228,12 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // information.
   std::optional<int> maximum_composition_delay_in_frames;
 
-  // Identifies a BeginFrameArgs (along with the source_id).
+  // Identifies a BeginFrameArgs
   // See comments in components/viz/common/frame_sinks/begin_frame_args.h.
   //
   // Only set for video frames produced by the frame sink video capturer.
   std::optional<uint64_t> frame_sequence;
+  std::optional<uint64_t> source_id;
 
   // Information about any background blur effect applied to the frame.
   std::optional<EffectInfo> background_blur;

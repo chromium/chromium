@@ -71,6 +71,7 @@ void VideoFrameMetadata::MergeMetadataFrom(
   MERGE_OPTIONAL_FIELD(wallclock_frame_duration, metadata_source);
   MERGE_OPTIONAL_FIELD(maximum_composition_delay_in_frames, metadata_source);
   MERGE_OPTIONAL_FIELD(frame_sequence, metadata_source);
+  MERGE_OPTIONAL_FIELD(source_id, metadata_source);
   MERGE_OPTIONAL_FIELD(background_blur, metadata_source);
 
 #undef MERGE_VALUE_FIELD

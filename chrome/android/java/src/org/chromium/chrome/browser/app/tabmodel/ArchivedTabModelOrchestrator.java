@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
@@ -393,7 +394,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     private void doDeclutterPassImpl(TabbedModeTabModelOrchestrator orchestrator) {
         if (!mTabArchiveSettings.getArchiveEnabled()) return;
         assert ChromeFeatureList.sAndroidTabDeclutter.isEnabled();
-        assert mTabArchiver != null;
         disableSaveTabList(orchestrator);
 
         int archiveTimeHours = mTabArchiveSettings.getArchiveTimeDeltaHours();
@@ -528,5 +528,9 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
     public void resetRescueArchivedTabsForTesting() {
         mRescueTabsCalled = false;
+    }
+
+    public void setTabModelSelectorForTesting(TabModelSelectorBase tabModelSelector) {
+        mTabModelSelector = tabModelSelector;
     }
 }

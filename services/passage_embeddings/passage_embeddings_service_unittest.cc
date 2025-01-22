@@ -136,18 +136,19 @@ TEST_F(PassageEmbeddingsServiceTest, RespondsWithEmbeddings) {
 
   base::test::TestFuture<std::vector<mojom::PassageEmbeddingsResultPtr>>
       execute_future;
-  embedder_remote->GenerateEmbeddings({"hello", "world"},
+  embedder_remote->GenerateEmbeddings({"hello", "world", ""},
                                       mojom::PassagePriority::kUserInitiated,
                                       execute_future.GetCallback());
   auto results = execute_future.Take();
-  EXPECT_EQ(results.size(), 2u);
+  EXPECT_EQ(results.size(), 3u);
   EXPECT_EQ(results[0]->passage, "hello");
   EXPECT_EQ(results[1]->passage, "world");
+  EXPECT_EQ(results[2]->passage, "");
   for (const auto& result : results) {
     EXPECT_EQ(result->embeddings.size(), kEmbeddingsOutputSize);
   }
 
-  histogram_tester_.ExpectUniqueSample(kCacheHitMetricName, false, 2);
+  histogram_tester_.ExpectUniqueSample(kCacheHitMetricName, false, 3);
 }
 
 TEST_F(PassageEmbeddingsServiceTest, CacheHits) {
@@ -163,11 +164,11 @@ TEST_F(PassageEmbeddingsServiceTest, CacheHits) {
   base::test::TestFuture<std::vector<mojom::PassageEmbeddingsResultPtr>>
       execute_future;
   embedder_remote->GenerateEmbeddings(
-      {"hello", "world", "hello", "world", "foo"},
+      {"hello", "world", "hello", "world", "foo", ""},
       mojom::PassagePriority::kUserInitiated, execute_future.GetCallback());
   auto results = execute_future.Take();
 
-  EXPECT_EQ(results.size(), 5u);
+  EXPECT_EQ(results.size(), 6u);
   EXPECT_EQ(results[0]->passage, "hello");
   EXPECT_EQ(results[1]->passage, "world");
   EXPECT_EQ(results[2]->passage, "hello");
@@ -180,9 +181,9 @@ TEST_F(PassageEmbeddingsServiceTest, CacheHits) {
     EXPECT_EQ(result->embeddings.size(), kEmbeddingsOutputSize);
   }
 
-  histogram_tester_.ExpectTotalCount(kCacheHitMetricName, 5);
+  histogram_tester_.ExpectTotalCount(kCacheHitMetricName, 6);
   histogram_tester_.ExpectBucketCount(kCacheHitMetricName, true, 2);
-  histogram_tester_.ExpectBucketCount(kCacheHitMetricName, false, 3);
+  histogram_tester_.ExpectBucketCount(kCacheHitMetricName, false, 4);
 }
 
 TEST_F(PassageEmbeddingsServiceTest, RecordsDurationHistogramsWithPriority) {

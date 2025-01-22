@@ -34,7 +34,7 @@ class BocaAppHandler : public mojom::PageHandler,
   using ActivityInterceptorCallback =
       base::OnceCallback<void(std::vector<mojom::IdentifiedActivityPtr>)>;
   using SessionConfigInterceptorCallback =
-      base::OnceCallback<void(mojom::SessionResultPtr)>;
+      base::OnceCallback<void(mojom::ConfigResultPtr)>;
   BocaAppHandler(
       mojo::PendingReceiver<mojom::PageHandler> receiver,
       mojo::PendingRemote<mojom::Page> remote,
@@ -79,7 +79,7 @@ class BocaAppHandler : public mojom::PageHandler,
   // mojom::Page:
   void OnStudentActivityUpdated(
       std::vector<mojom::IdentifiedActivityPtr> activities) override;
-  void OnSessionConfigUpdated(mojom::SessionResultPtr config) override;
+  void OnSessionConfigUpdated(mojom::ConfigResultPtr config) override;
   void OnActiveNetworkStateChanged(
       std::vector<mojom::NetworkInfoPtr> active_networks) override;
 

@@ -782,13 +782,6 @@ void TaskManagerTableModel::OnTasksRefreshed(const TaskIdList& task_ids) {
   OnRefresh();
 }
 
-void TaskManagerTableModel::OnActiveTaskFetched(TaskId id) {
-  if (!active_task_id_.has_value()) {
-    active_task_id_ = id;
-    table_view_delegate_->MaybeHighlightActiveTask();
-  }
-}
-
 void TaskManagerTableModel::ActivateTask(size_t row_index) {
   observed_task_manager()->ActivateTask(tasks_[row_index]);
 }

@@ -648,6 +648,44 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest, RequestAnimationFrameTime) {
       0);
 }
 
+TEST_F(BackForwardCachePageLoadMetricsObserverTest, UserInteractionLatency) {
+  base::TimeTicks current_time = base::TimeTicks::Now();
+  auto fake_bfcache_restore =
+      PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
+          /*was_in_foreground=*/true, base::TimeTicks());
+
+  fake_delegate_->AddBackForwardCacheRestore(fake_bfcache_restore);
+
+  page_load_metrics::mojom::UserInteractionLatenciesPtr
+      user_interaction_latencies_ptr = page_load_metrics::mojom::
+          UserInteractionLatencies::NewUserInteractionLatencies({});
+  auto& user_interaction_latencies =
+      user_interaction_latencies_ptr->get_user_interaction_latencies();
+  user_interaction_latencies.emplace_back(
+      page_load_metrics::mojom::UserInteractionLatency::New(
+          base::Milliseconds(3000), 0,
+          current_time + base::Milliseconds(1000)));
+  fake_delegate_->responsiveness_metrics_normalization_
+      .AddNewUserInteractionLatencies(1, *user_interaction_latencies_ptr);
+
+  observer_with_fake_delegate_->OnComplete(timing_);
+
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::
+          kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore,
+      1);
+  EXPECT_THAT(
+      tester()->histogram_tester().GetAllSamples(
+          internal::
+              kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore),
+      testing::ElementsAre(base::Bucket(2964, 1)));
+
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::
+          kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore_Incognito,
+      0);
+}
+
 class BackForwardCachePageLoadMetricsObserverIncognitoTest
     : public BackForwardCachePageLoadMetricsObserverTest {
  public:
@@ -691,5 +729,39 @@ TEST_F(BackForwardCachePageLoadMetricsObserverIncognitoTest,
     tester()->histogram_tester().ExpectTotalCount(metric.first, 1);
     EXPECT_THAT(tester()->histogram_tester().GetAllSamples(metric.first),
                 testing::ElementsAre(base::Bucket(metric.second, 1)));
+  }
+}
+
+TEST_F(BackForwardCachePageLoadMetricsObserverIncognitoTest,
+       UserInteractionLatencyIncognito) {
+  base::TimeTicks current_time = base::TimeTicks::Now();
+  auto fake_bfcache_restore =
+      PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
+          /*was_in_foreground=*/true, base::TimeTicks());
+
+  fake_delegate_->AddBackForwardCacheRestore(fake_bfcache_restore);
+
+  page_load_metrics::mojom::UserInteractionLatenciesPtr
+      user_interaction_latencies_ptr = page_load_metrics::mojom::
+          UserInteractionLatencies::NewUserInteractionLatencies({});
+  auto& user_interaction_latencies =
+      user_interaction_latencies_ptr->get_user_interaction_latencies();
+  user_interaction_latencies.emplace_back(
+      page_load_metrics::mojom::UserInteractionLatency::New(
+          base::Milliseconds(3000), 0,
+          current_time + base::Milliseconds(1000)));
+  fake_delegate_->responsiveness_metrics_normalization_
+      .AddNewUserInteractionLatencies(1, *user_interaction_latencies_ptr);
+
+  observer_with_fake_delegate_->OnComplete(timing_);
+
+  for (
+      auto histogram :
+      {internal::
+           kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore,
+       internal::
+           kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore_Incognito}) {
+    EXPECT_THAT(tester()->histogram_tester().GetAllSamples(histogram),
+                testing::ElementsAre(base::Bucket(2964, 1)));
   }
 }

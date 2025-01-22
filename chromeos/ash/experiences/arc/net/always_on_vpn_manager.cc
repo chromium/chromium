@@ -6,12 +6,12 @@
 
 #include <string>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace arc {

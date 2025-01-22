@@ -7,7 +7,6 @@
 #include <iterator>
 #include <utility>
 
-#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system/power/power_button_controller_base.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
@@ -18,6 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/audio/arc_audio_bridge.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_package.h"
 #include "chromeos/ash/experiences/arc/intent_helper/control_camera_app_delegate.h"

@@ -6,12 +6,12 @@
 
 #include <memory>
 
-#include "ash/components/arc/arc_util.h"
 #include "base/command_line.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

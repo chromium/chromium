@@ -1,9 +1,9 @@
 Name: log
 URL: https://crates.io/crates/log
-Version: 0.4.22
-Revision: d5ba2cfee9b3b4ca1fcad911b7f59dc79eeee022
+Version: 0.4.25
+Revision: 22be810729014e1e43267fc62fe6df0d7a29aaf7
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/log-0.4.22/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/log-0.4.25/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes
 

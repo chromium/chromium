@@ -187,6 +187,12 @@ const char
         "Uses Responsiveness Metrics definitions for discrete input in blink "
         "scheduler heuristics.";
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kBookmarksTreeViewName[] = "Top Chrome Bookmarks Tree View";
+const char kBookmarksTreeViewDescription[] =
+    "Show the bookmarks side panel in a tree view while in compact mode.";
+#endif
+
 const char kCertVerificationNetworkTimeName[] =
     "Network Time for Certificate Verification";
 const char kCertVerificationNetworkTimeDescription[] =
@@ -7660,7 +7666,8 @@ const char kTaskManagerClankDescription[] =
 const char kHideTabletToolbarDownloadButtonName[] =
     "Hide Tablet Toolbar Download Button";
 const char kHideTabletToolbarDownloadButtonDescription[] =
-    "Hides the download button on tablet toolbar";
+    "Hides the Omnibox download button and shows it as a menu item for "
+    "tablets.";
 
 const char kShowNewTabAnimationsName[] = "Show New Tab Animations";
 const char kShowNewTabAnimationsDescription[] =

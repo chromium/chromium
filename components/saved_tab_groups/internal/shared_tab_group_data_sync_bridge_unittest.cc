@@ -603,6 +603,37 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldAddRemoteTabsAtInitialSync) {
                   HasTabMetadata("tab title 2", "https://google.com/2")));
 }
 
+TEST_F(SharedTabGroupDataSyncBridgeTest, AddRemoteTabsWithUnsupportedURL) {
+  const CollaborationId kCollaborationId("collaboration");
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  sync_pb::SharedTabGroupDataSpecifics group_specifics =
+      MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::BLUE);
+  const base::Uuid group_id =
+      base::Uuid::ParseLowercase(group_specifics.guid());
+
+  syncer::EntityChangeList change_list;
+  change_list.push_back(
+      CreateAddEntityChange(group_specifics, kCollaborationId));
+  change_list.push_back(CreateAddEntityChange(
+      MakeTabSpecifics("tab title 1", GURL("https://google.com/1"), group_id,
+                       GenerateRandomUniquePosition()),
+      kCollaborationId));
+  change_list.push_back(CreateAddEntityChange(
+      MakeTabSpecifics("xyz", GURL("chrome://crash"), group_id,
+                       GenerateRandomUniquePosition()),
+      kCollaborationId));
+
+  bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
+                              std::move(change_list));
+
+  // Expect both tabs to be a part of the group.
+  EXPECT_THAT(model()->saved_tab_groups().front().saved_tabs(),
+              UnorderedElementsAre(
+                  HasTabMetadata("tab title 1", "https://google.com/1"),
+                  HasTabMetadata("", kChromeSavedTabGroupUnsupportedURL)));
+}
+
 TEST_F(SharedTabGroupDataSyncBridgeTest,
        ShouldAddRemoteGroupsAtIncrementalUpdate) {
   const CollaborationId kCollaborationId1("collaboration 1");
@@ -900,6 +931,26 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnTabDataForCommit) {
       UnorderedElementsAre(
           HasTabEntityData("tab 2", "http://google.com/2", "collaboration"),
           HasTabEntityData("tab 1", "http://google.com/1", "collaboration")));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, ReturnUnsupportedURLForCommit) {
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId(CollaborationId("collaboration"));
+  SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
+      "chrome://abc", u"tab 1", group.saved_guid(), /*position=*/0);
+
+  model()->AddedLocally(group);
+  model()->AddTabToGroupLocally(group.saved_guid(), tab1);
+
+  std::vector<syncer::EntityData> entity_data_list = ExtractEntityDataFromBatch(
+      bridge()->GetDataForCommit({tab1.saved_tab_guid().AsLowercaseString()}));
+
+  EXPECT_THAT(entity_data_list,
+              UnorderedElementsAre(HasTabEntityData(
+                  "", kChromeSavedTabGroupUnsupportedURL, "collaboration")));
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnAllDataForDebugging) {
@@ -1634,6 +1685,42 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
   EXPECT_THAT(model()->saved_tab_groups().front().saved_tabs(),
               ElementsAre(HasTabMetadata("tab 2", "https://google.com/2"),
                           HasTabMetadata("tab 1", "https://google.com/1")));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, UpdateExistingTabWithUnsupportedURL) {
+  const CollaborationId kCollaborationId("collaboration");
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  sync_pb::SharedTabGroupDataSpecifics group_specifics =
+      MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::BLUE);
+  const base::Uuid group_id =
+      base::Uuid::ParseLowercase(group_specifics.guid());
+
+  sync_pb::SharedTabGroupDataSpecifics tab_to_update_specifics =
+      MakeTabSpecifics("tab title 1", GURL("https://google.com/1"), group_id,
+                       GenerateRandomUniquePosition());
+
+  syncer::EntityChangeList change_list;
+  change_list.push_back(
+      CreateAddEntityChange(group_specifics, kCollaborationId));
+  change_list.push_back(
+      CreateAddEntityChange(tab_to_update_specifics, kCollaborationId));
+
+  bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
+                              std::move(change_list));
+  ASSERT_EQ(model()->Count(), 1);
+  ASSERT_THAT(model()->saved_tab_groups().front().saved_tabs(), SizeIs(1));
+
+  tab_to_update_specifics.mutable_tab()->set_url(
+      kChromeSavedTabGroupUnsupportedURL);
+  ApplySingleEntityChange(
+      CreateUpdateEntityChange(tab_to_update_specifics, kCollaborationId));
+
+  // Previous tab url will be preserved if the remote URL is unsupported.
+  ASSERT_EQ(model()->Count(), 1);
+  EXPECT_THAT(
+      model()->saved_tab_groups().front().saved_tabs(),
+      ElementsAre(HasTabMetadata("tab title 1", "https://google.com/1")));
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest,
