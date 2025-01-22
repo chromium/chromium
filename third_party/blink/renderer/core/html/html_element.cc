@@ -768,22 +768,25 @@ const AttributeTriggers* HTMLElement::TriggersForAttributeName(
        WebFeature::kHTMLElementWritingSuggestions, kNoEvent, nullptr},
   });
 
-  using AttributeToTriggerIndexMap = HashMap<QualifiedName, uint32_t>;
-  DEFINE_STATIC_LOCAL(AttributeToTriggerIndexMap,
-                      attribute_to_trigger_index_map, ());
-  if (!attribute_to_trigger_index_map.size()) {
-    for (uint32_t i = 0; i < attribute_triggers.size(); ++i) {
-      DCHECK(attribute_triggers[i].attribute.NamespaceURI().IsNull())
+  static bool registered_triggers = false;
+  if (!registered_triggers) {
+    registered_triggers = true;
+
+    for (unsigned index = 0, index_end = attribute_triggers.size();
+         index != index_end; ++index) {
+      const AttributeTriggers& trigger = attribute_triggers[index];
+      DCHECK(trigger.attribute.NamespaceURI().IsNull())
           << "Lookup table does not work for namespaced attributes because "
              "they would not match for different prefixes";
-      attribute_to_trigger_index_map.insert(attribute_triggers[i].attribute, i);
+      trigger.attribute.RegisterHTMLAttributeTriggersIndex(index);
     }
   }
 
-  auto iter = attribute_to_trigger_index_map.find(attr_name);
-  if (iter != attribute_to_trigger_index_map.end())
-    return &attribute_triggers[iter->value];
-  return nullptr;
+  std::optional<unsigned> index = attr_name.HTMLAttributeTriggersIndex();
+  if (!index) {
+    return nullptr;
+  }
+  return &attribute_triggers[*index];
 }
 
 // static
