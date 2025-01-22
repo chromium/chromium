@@ -259,7 +259,7 @@ TEST_F(FrameLoaderTest, PolicyContainerIsStoredOnCommitNavigation) {
       WebPolicyContainerPolicies{
           network::mojom::CrossOriginEmbedderPolicyValue::kNone,
           network::mojom::ReferrerPolicy::kAlways,
-          WebVector<WebContentSecurityPolicy>(),
+          std::vector<WebContentSecurityPolicy>(),
       },
       mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
   LocalFrame* local_frame =

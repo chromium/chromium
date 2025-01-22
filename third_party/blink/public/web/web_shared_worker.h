@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SHARED_WORKER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/unguessable_token.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -80,7 +81,7 @@ class BLINK_EXPORT WebSharedWorker {
       bool is_constructor_secure_context,
       const WebString& user_agent,
       const UserAgentMetadata& ua_metadata,
-      const WebVector<WebContentSecurityPolicy>& content_security_policies,
+      const std::vector<WebContentSecurityPolicy>& content_security_policies,
       const WebFetchClientSettingsObject& outside_fetch_client_settings_object,
       const base::UnguessableToken& devtools_worker_token,
       CrossVariantMojoRemote<mojom::WorkerContentSettingsProxyInterfaceBase>
