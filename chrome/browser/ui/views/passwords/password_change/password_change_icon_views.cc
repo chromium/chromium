@@ -47,8 +47,8 @@ PasswordChangeIconViews::PasswordChangeIconViews(
   image_container_view()->SetFlipCanvasOnPaintForRTLUI(false);
   SetProperty(views::kElementIdentifierKey, kPasswordsOmniboxKeyIconElementId);
 
-  std::u16string tooltip =
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_MANAGE);
+  std::u16string tooltip = l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_ICON_TOOLTIP);
   SetAccessibleName(tooltip);
   UpdateTooltipText();
   SetTooltipForToolbarPinningEnabled(tooltip);
@@ -142,8 +142,8 @@ void PasswordChangeIconViews::UpdateIconAndLabel() {
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
     case PasswordChangeDelegate::State::kPasswordChangeFailed:
     case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
-      SetLabel(u"",
-               l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_MANAGE));
+      SetLabel(u"", l10n_util::GetStringUTF16(
+                        IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_ICON_TOOLTIP));
       break;
     case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
       icon_color = GetColorProvider()->GetColor(ui::kColorSysOnTonalContainer);
