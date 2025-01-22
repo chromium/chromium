@@ -133,7 +133,7 @@ class BookmarkFaviconFetcher : public base::SupportsUserData::Data {
   // Starts async fetch for the next bookmark favicon.
   // Takes single url from bookmark_urls_ and removes it from the list.
   // Returns true if there are more favicons to extract.
-  bool FetchNextFavicon();
+  [[nodiscard]] bool FetchNextFavicon();
 
   // Favicon fetch callback. After all favicons are fetched executes
   // html output with |background_io_task_runner_|.
@@ -300,8 +300,11 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
 
     DecrementIndent();
 
-    Write(kFolderChildrenEnd);
-    Write(kNewline);
+    if (!Write(kFolderChildrenEnd) || !Write(kNewline)) {
+      NotifyOnFinish(BookmarksExportObserver::Result::kCouldNotWriteNodes);
+      return;
+    }
+
     // File close is forced so that unit test could read it.
     file_.reset();
 
@@ -345,7 +348,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
   }
 
   // Opens the file, returning true on success.
-  bool OpenFile() {
+  [[nodiscard]] bool OpenFile() {
     int flags = base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE;
     file_ = std::make_unique<base::File>(path_, flags);
     if (!file_->IsValid()) {
@@ -373,7 +376,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
 
   // Writes raw text out returning true on success. This does not escape
   // the text in anyway.
-  bool Write(const std::string& text) {
+  [[nodiscard]] bool Write(const std::string& text) {
     if (!text.length()) {
       return true;
     }
@@ -386,7 +389,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
 
   // Writes out the text string (as UTF8). The text is escaped based on
   // type.
-  bool Write(const std::string& text, TextType type) {
+  [[nodiscard]] bool Write(const std::string& text, TextType type) {
     DCHECK(base::IsStringUTF8(text));
     std::string utf8_string;
 
@@ -409,11 +412,11 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
   }
 
   // Indents the current line.
-  bool WriteIndent() { return Write(indent_); }
+  [[nodiscard]] bool WriteIndent() { return Write(indent_); }
 
   // Converts a time string written to the JSON codec into a time_t string
   // (used by bookmarks.html) and writes it.
-  bool WriteTime(const std::string& time_string) {
+  [[nodiscard]] bool WriteTime(const std::string& time_string) {
     int64_t internal_value;
     base::StringToInt64(time_string, &internal_value);
     return Write(base::NumberToString(
@@ -423,10 +426,10 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
   // Writes the start of a folder section, ready for subsequent calls to write
   // out children of the folder. `value` is the folder to be written, which must
   // be of `folder_type` either `BOOKMARK_BAR` or `FOLDER`.
-  bool WriteFolderStart(const base::Value::Dict& value,
-                        const std::string& date_added,
-                        const std::string& date_modified,
-                        BookmarkNode::Type folder_type) {
+  [[nodiscard]] bool WriteFolderStart(const base::Value::Dict& value,
+                                      const std::string& date_added,
+                                      const std::string& date_modified,
+                                      BookmarkNode::Type folder_type) {
     const std::string* title = value.FindString(BookmarkCodec::kNameKey);
     CHECK(title);
 
@@ -462,7 +465,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
 
   // Writes the child nodes of folder `folder` (this does not include writing
   // the folder itself).
-  bool WriteDescendants(const base::Value::Dict& folder) {
+  [[nodiscard]] bool WriteDescendants(const base::Value::Dict& folder) {
     const base::Value::List* child_values =
         folder.FindList(BookmarkCodec::kChildrenKey);
     CHECK(child_values);
@@ -479,13 +482,13 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
 
   // Writes the end of a folder section that was previously created with
   // `WriteFolderStart()`.
-  bool WriteFolderEnd() {
+  [[nodiscard]] bool WriteFolderEnd() {
     DecrementIndent();
     return WriteIndent() && Write(kFolderChildrenEnd) && Write(kNewline);
   }
 
   // Writes the node and all its children, returning true on success.
-  bool WriteNodeAndDescendants(const base::Value::Dict& value) {
+  [[nodiscard]] bool WriteNodeAndDescendants(const base::Value::Dict& value) {
     const std::string* title_ptr = value.FindString(BookmarkCodec::kNameKey);
     CHECK(title_ptr);
     const std::string* date_added_string =
@@ -594,7 +597,10 @@ void BookmarkFaviconFetcher::ExportBookmarks() {
   }
 
   if (!bookmark_urls_.empty()) {
-    FetchNextFavicon();
+    // There are bookmarks for which to fetch favicons, and the favicon map is
+    // empty (since it was just created). There is therefore async work to do.
+    CHECK(favicons_map_->empty());
+    CHECK(FetchNextFavicon());
   } else {
     ExecuteWriter();
   }
