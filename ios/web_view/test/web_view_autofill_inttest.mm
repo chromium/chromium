@@ -5,17 +5,17 @@
 #import <ChromeWebView/ChromeWebView.h>
 #import <Foundation/Foundation.h>
 
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/variations/variations_ids_provider.h"
+#import "components/variations/variations_ids_provider.h"
 #import "ios/web_view/public/cwv_navigation_delegate.h"
 #import "ios/web_view/test/web_view_inttest_base.h"
 #import "ios/web_view/test/web_view_test_util.h"
 #import "net/base/apple/url_conversions.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "testing/gtest_mac.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;

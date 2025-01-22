@@ -7,9 +7,9 @@
 #import <Foundation/Foundation.h>
 
 #import "components/autofill/ios/browser/form_suggestion.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 namespace ios_web_view {
 

@@ -4,9 +4,9 @@
 
 #import "ios/web_view/internal/signin/web_view_gaia_auth_fetcher.h"
 
-#include "google_apis/gaia/gaia_urls.h"
-#include "net/base/net_errors.h"
-#include "net/http/http_status_code.h"
+#import "google_apis/gaia/gaia_urls.h"
+#import "net/base/net_errors.h"
+#import "net/http/http_status_code.h"
 
 namespace ios_web_view {
 

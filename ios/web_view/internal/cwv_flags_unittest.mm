@@ -4,18 +4,18 @@
 
 #import "ios/web_view/internal/cwv_flags_internal.h"
 
-#include <memory>
-#include <set>
+#import <memory>
+#import <set>
 
 #import "base/containers/contains.h"
-#include "base/test/task_environment.h"
-#include "components/flags_ui/pref_service_flags_storage.h"
-#include "components/prefs/in_memory_pref_store.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/pref_service_factory.h"
+#import "base/test/task_environment.h"
+#import "components/flags_ui/pref_service_flags_storage.h"
+#import "components/prefs/in_memory_pref_store.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/pref_service.h"
+#import "components/prefs/pref_service_factory.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 namespace ios_web_view {
 

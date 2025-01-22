@@ -5,20 +5,20 @@
 #import "ios/web_view/internal/signin/web_view_device_accounts_provider_impl.h"
 
 #import <Foundation/Foundation.h>
-#include <map>
-#include <utility>
+#import <map>
+#import <utility>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/test/bind.h"
-#include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
+#import "base/test/bind.h"
+#import "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 #import "ios/web_view/public/cwv_identity.h"
 #import "ios/web_view/public/cwv_sync_controller.h"
 #import "ios/web_view/public/cwv_sync_controller_data_source.h"
 #import "ios/web_view/public/cwv_sync_errors.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 namespace ios_web_view {

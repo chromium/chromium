@@ -7,8 +7,8 @@
 #import <UIKit/UIKit.h>
 
 #import "net/base/apple/url_conversions.h"
-#include "ui/gfx/geometry/size.h"
-#include "url/gurl.h"
+#import "ui/gfx/geometry/size.h"
+#import "url/gurl.h"
 
 namespace ios_web_view {
 // Converts web::FaviconURL::IconType to CWVFaviconType.

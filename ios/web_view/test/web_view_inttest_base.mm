@@ -7,17 +7,17 @@
 #import <ChromeWebView/ChromeWebView.h>
 #import <Foundation/Foundation.h>
 
-#include "base/base64.h"
-#include "base/functional/bind.h"
+#import "base/base64.h"
+#import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
-#include "base/strings/stringprintf.h"
+#import "base/strings/stringprintf.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web_view/test/web_view_test_util.h"
-#include "net/base/url_util.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "net/base/url_util.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
+#import "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 

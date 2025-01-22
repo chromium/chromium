@@ -5,15 +5,15 @@
 #import "ios/web_view/internal/cwv_favicon_internal.h"
 
 #import <UIKit/UIKit.h>
-#include <vector>
+#import <vector>
 
-#include "ios/web/public/favicon/favicon_url.h"
+#import "ios/web/public/favicon/favicon_url.h"
 #import "net/base/apple/url_conversions.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "ui/gfx/geometry/size.h"
-#include "url/gurl.h"
+#import "testing/platform_test.h"
+#import "ui/gfx/geometry/size.h"
+#import "url/gurl.h"
 
 namespace ios_web_view {
 

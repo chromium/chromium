@@ -6,17 +6,17 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/files/file_path.h"
-#include "base/functional/bind.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
+#import "base/files/file_path.h"
+#import "base/functional/bind.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/task_environment.h"
+#import "base/test/task_environment.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
-#include "net/base/net_errors.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "net/base/net_errors.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 

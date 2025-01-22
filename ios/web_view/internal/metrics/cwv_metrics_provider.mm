@@ -4,7 +4,7 @@
 
 #import "ios/web_view/internal/metrics/cwv_metrics_provider_internal.h"
 
-#include "components/metrics/library_support/histogram_manager.h"
+#import "components/metrics/library_support/histogram_manager.h"
 
 @implementation CWVMetricsProvider {
   std::unique_ptr<metrics::HistogramManager> _histogramManager;

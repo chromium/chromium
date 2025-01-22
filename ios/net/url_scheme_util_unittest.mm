@@ -7,8 +7,8 @@
 #import <Foundation/Foundation.h>
 
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "url/gurl.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
 
 namespace net {
 
