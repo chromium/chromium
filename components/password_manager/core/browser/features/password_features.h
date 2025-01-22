@@ -93,15 +93,9 @@ BASE_DECLARE_FEATURE(kPasswordFormClientsideClassifier);
 BASE_DECLARE_FEATURE(kPasswordFormGroupedAffiliations);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-
 // Enables "chunking" generated passwords by adding hyphens every 4 characters
 // to make them more readable.
 BASE_DECLARE_FEATURE(kPasswordGenerationChunking);
-
-// Enables updated password generation UI with a prominent button and previewing
-// the generated password on focus.
-BASE_DECLARE_FEATURE(kPasswordGenerationSoftNudge);
-
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Enables logging the content of chrome://password-manager-internals to the

@@ -199,13 +199,6 @@ std::u16string WindowCaptionFromPageTitle(const std::u16string& page_title) {
     return l10n_util::GetStringUTF16(IDS_BROWSER_WINDOW_MAC_TAB_UNTITLED);
   }
   return page_title;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros, we don't want to suffix the page title with the application
-  // name. Note that the default title for empty title is different from Mac.
-  if (page_title.empty()) {
-    return l10n_util::GetStringUTF16(IDS_DEFAULT_TAB_TITLE);
-  }
-  return page_title;
 #else
   if (page_title.empty()) {
     return l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
@@ -1436,18 +1429,9 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, RestorePinnedTabs) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-// TODO(crbug.com/40148102): fix the way how exo creates accelerated widgets. At
-// the moment, they are created only after the client attaches a buffer to a
-// surface, which is incorrect and results in the "[destroyed object]: error 1:
-// popup parent not constructed" error.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_CloseWithAppMenuOpen DISABLED_CloseWithAppMenuOpen
-#else
-#define MAYBE_CloseWithAppMenuOpen CloseWithAppMenuOpen
-#endif
 // This test verifies we don't crash when closing the last window and the app
 // menu is showing.
-IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_CloseWithAppMenuOpen) {
+IN_PROC_BROWSER_TEST_F(BrowserTest, CloseWithAppMenuOpen) {
   if (browser_defaults::kBrowserAliveWithNoWindows) {
     return;
   }
@@ -1526,15 +1510,9 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
   }
 }
 
-// TODO(crbug.com/40248487) This test is flaky on asan lacros and may crash ash.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER)
-#define MAYBE_StartMinimized DISABLED_StartMinimized
-#else
-#define MAYBE_StartMinimized StartMinimized
-#endif
 // Makes sure the browser doesn't crash when
 // set_show_state(ui::mojom::WindowShowState::kMinimized) has been invoked.
-IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_StartMinimized) {
+IN_PROC_BROWSER_TEST_F(BrowserTest, StartMinimized) {
   auto params = std::to_array<Browser::CreateParams>({
       Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true),
       Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true),
@@ -1967,9 +1945,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DISABLED_WindowOpenClose3) {
 }
 
 // TODO(linux_aura) http://crbug.com/163931
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(BrowserTest, FullscreenBookmarkBar) {
 #if BUILDFLAG(IS_MAC)
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
@@ -2016,9 +1992,7 @@ class KioskModeTest : public BrowserTest {
   }
 };
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Mac: http://crbug.com/103912
 // Linux: http://crbug.com/163931
 #define MAYBE_EnableKioskModeTest DISABLED_EnableKioskModeTest
@@ -3095,13 +3069,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(back_observer.was_same_document());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(BrowserTest, CreatePictureInPicture) {
   Browser* popup_browser = Browser::Create(Browser::CreateParams(
       Browser::TYPE_PICTURE_IN_PICTURE, browser()->profile(), true));
   ASSERT_TRUE(popup_browser->is_type_picture_in_picture());
 }
-#endif  // !IS_CHROMEOS_LACROS
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(BrowserTest, PreventCloseYieldsCancelledEvent) {

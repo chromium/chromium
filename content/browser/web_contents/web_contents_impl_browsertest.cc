@@ -712,7 +712,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
       page_url, /*referrer=*/GURL(), "GET",
       network::mojom::RequestDestination::kDocument,
       /*served_file_name=*/FILE_PATH_LITERAL(""), "text/html", "127.0.0.1",
-      /*was_cached=*/false, /*first_network_request=*/false, before, after));
+      /*was_cached=*/true, /*first_network_request=*/false, before, after));
   ASSERT_EQ(1U, observer.memory_cached_loaded_urls().size());
   EXPECT_EQ(resource_url, observer.memory_cached_loaded_urls()[0]);
   observer.Reset();
@@ -731,7 +731,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
       page_url, /*referrer=*/GURL(), "GET",
       network::mojom::RequestDestination::kDocument,
       /*served_file_name=*/FILE_PATH_LITERAL(""), "text/html", "127.0.0.1",
-      /*was_cached=*/false, /*first_network_request=*/true, before, after));
+      /*was_cached=*/true, /*first_network_request=*/true, before, after));
   SCOPE_TRACED(observer.CheckResourceLoaded(
       resource_url, /*referrer=*/page_url, "GET",
       network::mojom::RequestDestination::kScript,

@@ -80,6 +80,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "autofill_ai_utils_unittest.cc",
       "autofill_ai_value_filter_unittest.cc",
       "suggestion/autofill_ai_model_executor_impl_unittest.cc",
+      "suggestion/autofill_ai_suggestions_unittest.cc",
     ]
     deps = [
       ":browser",

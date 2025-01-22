@@ -90,16 +90,10 @@ BASE_FEATURE(kPasswordFormClientsideClassifier,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-
 BASE_FEATURE(kPasswordGenerationChunking,
              "PasswordGenerationChunkPassword",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPasswordGenerationSoftNudge,
-             "PasswordGenerationSoftNudge",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kPasswordManagerLogToTerminal,
              "PasswordManagerLogToTerminal",

@@ -36,11 +36,7 @@ class SendTabToSelfToolbarIconControllerTest : public InProcessBrowserTest {
   }
 
   void WaitUntilBrowserBecomeActiveOrLastActive(Browser* browser) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    ui_test_utils::WaitUntilBrowserBecomeActive(browser);
-#else
     ui_test_utils::WaitForBrowserSetLastActive(browser);
-#endif
   }
 
   BrowserView* browser_view() {

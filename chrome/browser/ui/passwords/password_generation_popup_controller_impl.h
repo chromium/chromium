@@ -167,7 +167,6 @@ class PasswordGenerationPopupControllerImpl
   void SetSelected() override;
   void SelectionCleared() override;
   std::u16string GetPrimaryAccountEmail() override;
-  bool ShouldShowNudgePassword() const override;
   GenerationUIState state() const override;
   bool password_selected() const override;
   bool accept_button_selected() const override;

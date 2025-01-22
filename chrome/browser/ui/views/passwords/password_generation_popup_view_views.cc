@@ -472,7 +472,8 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
   const int kHorizontalMargin =
       provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
 
-  if (controller_->ShouldShowNudgePassword()) {
+  if (controller_->state() ==
+      PasswordGenerationPopupController::kOfferGeneration) {
     auto nudge_password_view = CreateNudgePasswordView(controller_);
     nudge_password_buttons_view_ = nudge_password_view->AddChildView(
         std::make_unique<NudgePasswordButtons>(controller_));
@@ -521,7 +522,8 @@ void PasswordGenerationPopupViewViews::
 
 gfx::Size PasswordGenerationPopupViewViews::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  if (controller_->ShouldShowNudgePassword()) {
+  if (controller_->state() ==
+      PasswordGenerationPopupController::kOfferGeneration) {
     int width =
         std::min(views::View::CalculatePreferredSize(available_size).width(),
                  kPasswordGenerationMaxWidth);

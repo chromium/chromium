@@ -38,10 +38,6 @@
 #include "ui/chromeos/devicetype_utils.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/policy/core/common/policy_loader_lacros.h"
-#endif
-
 class ManagedUiTest : public InProcessBrowserTest {
  public:
   ManagedUiTest() = default;
@@ -181,9 +177,6 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetDeviceManagedUiHelpLabelSupervised) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
                                        ui::GetChromeOSDeviceName()),
-            GetDeviceManagedUiHelpLabel(profile.get()));
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE),
             GetDeviceManagedUiHelpLabel(profile.get()));
 #else
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_HELP_MANAGED_BY_YOUR_PARENT),
@@ -1173,25 +1166,5 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTestCros, GetManagedUiWebUILabel) {
       u"href=\"chrome://management\">Chrome device is "
       u"managed</a> by example.com",
       GetDeviceManagedUiWebUILabel());
-}
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetSessionManagerIdentity_Unmanaged) {
-  EXPECT_EQ(std::nullopt, GetSessionManagerIdentity());
-}
-
-IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetSessionManagerIdentity_Managed) {
-  enterprise_management::PolicyData profile_policy_data;
-  profile_policy_data.add_user_affiliation_ids("affiliation-id-1");
-  profile_policy_data.set_managed_by("domain.com");
-  profile_policy_data.set_device_id("fake-profile-client-id");
-  profile_policy_data.set_request_token("fake-browser-dm-token");
-  policy::PolicyLoaderLacros::set_main_user_policy_data_for_testing(
-      std::move(profile_policy_data));
-
-  std::optional<std::string> identity = GetSessionManagerIdentity();
-  EXPECT_TRUE(identity.has_value());
-  EXPECT_EQ("domain.com", *identity);
 }
 #endif

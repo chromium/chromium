@@ -116,7 +116,7 @@ ui::ColorTransform AdjustHighlightColorForContrast(ui::ColorTransform fg,
 bool ShouldApplyHighContrastColors(const ui::ColorProviderKey& key) {
   // Only apply custom high contrast handling on platforms where we are not
   // using the system theme for high contrast.
-#if BUILDFLAG(USE_GTK) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(USE_GTK) || BUILDFLAG(IS_WIN)
   return false;
 #else
   return key.contrast_mode == ui::ColorProviderKey::ContrastMode::kHigh;

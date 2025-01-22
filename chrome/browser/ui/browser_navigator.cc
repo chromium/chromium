@@ -74,11 +74,6 @@
 #include "components/account_id/account_id.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/lacros_url_handling.h"
-#include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
-#endif
-
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
 #endif
@@ -694,15 +689,6 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const GURL& source_url =
-      params->source_contents ? params->source_contents->GetURL() : GURL();
-  if (lacros_url_handling::IsNavigationInterceptable(*params, source_url) &&
-      lacros_url_handling::MaybeInterceptNavigation(params->url)) {
-    return nullptr;
-  }
-#endif
-
   // If no source WebContents was specified, we use the selected one from the
   // target browser. This must happen before GetBrowserAndTabForDisposition()
   // has a chance to replace |params->browser| with another one, but after the
@@ -813,13 +799,6 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
         window_manager->ShowWindowForUser(new_window, src_account_id);
       }
     }
-  }
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // If Lacros gets here with an internal os:// redirect scheme to Ash, Ash
-  // did not accept the URL. Convert it into a blocked URL instead.
-  if (crosapi::gurl_os_handler_utils::HasOsScheme(params->url)) {
-    params->url = GURL(content::kBlockedURL);
   }
 #endif
 

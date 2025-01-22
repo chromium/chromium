@@ -1469,15 +1469,8 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, FitWindow) {
             popup->window()->GetBounds().width());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/40230732): Flakily crashes on Lacros.
-#define MAYBE_FindMovesOnTabClose_Issue1343052 \
-  DISABLED_FindMovesOnTabClose_Issue1343052
-#else
-#define MAYBE_FindMovesOnTabClose_Issue1343052 FindMovesOnTabClose_Issue1343052
-#endif
 IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
-                       MAYBE_FindMovesOnTabClose_Issue1343052) {
+                       FindMovesOnTabClose_Issue1343052) {
   EnsureFindBoxOpen();
   content::RunAllPendingInMessageLoop();  // Needed on Linux.
 

@@ -33,7 +33,6 @@
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/input/native_web_keyboard_event.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
@@ -161,15 +160,14 @@ bool PasswordGenerationPopupControllerImpl::HandleKeyPressEvent(
   switch (event.windows_key_code) {
     case ui::VKEY_UP:
     case ui::VKEY_DOWN:
-      if (ShouldShowNudgePassword()) {
-        SelectElement(
-            cancel_button_selected()
-                ? PasswordGenerationPopupElement::kNudgePasswordAcceptButton
-                : PasswordGenerationPopupElement::kNudgePasswordCancelButton);
-        return true;
+      if (!IsSelectable()) {
+        return false;
       }
 
-      SelectElement(PasswordGenerationPopupElement::kUseStrongPassword);
+      SelectElement(
+          cancel_button_selected()
+              ? PasswordGenerationPopupElement::kNudgePasswordAcceptButton
+              : PasswordGenerationPopupElement::kNudgePasswordCancelButton);
       return true;
     case ui::VKEY_ESCAPE:
       HideImpl();
@@ -293,10 +291,10 @@ void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
     }
   }
 
-  // With `kPasswordGenerationSoftNudge` feature enabled password is previewed
-  // straight away in offer generation state.
-  if (ShouldShowNudgePassword()) {
+  // Preview password on show in generation state.
+  if (state_ == kOfferGeneration) {
     driver_->PreviewGenerationSuggestion(current_generated_password_);
+
     // For the screen reader users, move the focus to the accept button on show.
     if (accessibility_state_utils::IsScreenReaderEnabled()) {
       SelectElement(PasswordGenerationPopupElement::kNudgePasswordAcceptButton);
@@ -380,12 +378,6 @@ std::u16string PasswordGenerationPopupControllerImpl::GetPrimaryAccountEmail() {
   return base::UTF8ToUTF16(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .email);
-}
-
-bool PasswordGenerationPopupControllerImpl::ShouldShowNudgePassword() const {
-  return state_ == kOfferGeneration &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::kPasswordGenerationSoftNudge);
 }
 
 gfx::NativeView PasswordGenerationPopupControllerImpl::container_view() const {

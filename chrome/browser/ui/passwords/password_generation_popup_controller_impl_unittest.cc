@@ -24,8 +24,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "base/test/scoped_feature_list.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 
 namespace password_manager {
 namespace {
@@ -346,10 +344,6 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
 
 TEST_F(PasswordGenerationPopupControllerImplTest,
        PreviewsGeneratedPasswordOnShowInNudgePassword) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kPasswordGenerationSoftNudge);
-
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
           /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),

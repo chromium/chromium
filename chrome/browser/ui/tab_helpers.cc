@@ -219,10 +219,6 @@
 #include "chrome/browser/ui/ash/google_one/google_one_offer_iph_tab_helper.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/web_contents_can_go_back_observer.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/cros_apps/cros_apps_tab_helper.h"
 #include "chrome/browser/chromeos/gemini_app/gemini_app_tab_helper.h"
@@ -672,10 +668,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   ash::BootTimesRecorderTabHelper::MaybeCreateForWebContents(web_contents);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  WebContentsCanGoBackObserver::CreateForWebContents(web_contents);
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
   CrosAppsTabHelper::MaybeCreateForWebContents(web_contents);
   GeminiAppTabHelper::MaybeCreateForWebContents(web_contents);
@@ -687,10 +679,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   webapps::PreRedirectionURLObserver::CreateForWebContents(web_contents);
 #endif
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   metrics::DesktopSessionDurationObserver::CreateForWebContents(web_contents);
 #endif
 

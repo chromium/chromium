@@ -428,8 +428,4 @@ UserPolicySigninServiceBase::GetConsentLevelForRegistration() {
   return signin::ConsentLevel::kSignin;
 }
 
-std::string_view UserPolicySigninServiceBase::name() const {
-  return "UserPolicySigninServiceBase";
-}
-
 }  // namespace policy

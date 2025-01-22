@@ -6,13 +6,10 @@
 
 #include <stddef.h>
 
-#include <string_view>
-
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
@@ -22,23 +19,6 @@
 namespace em = enterprise_management;
 
 namespace policy {
-
-namespace {
-std::string DumpObservers(
-    const base::ObserverList<CloudPolicyService::Observer, true>::Unchecked&
-        observers) {
-  if (observers.empty()) {
-    return "empty";
-  }
-
-  std::vector<std::string_view> names;
-  for (const auto& observer : observers) {
-    names.emplace_back(observer.name());
-  }
-
-  return base::JoinString(names, ",");
-}
-}  // namespace
 
 CloudPolicyService::CloudPolicyService(const std::string& policy_type,
                                        const std::string& settings_entity_id,
@@ -69,12 +49,6 @@ CloudPolicyService::~CloudPolicyService() {
   client_->RemovePolicyTypeToFetch(policy_type_, settings_entity_id_);
   client_->RemoveObserver(this);
   store_->RemoveObserver(this);
-
-  if (!observers_.empty()) {
-    LOG_POLICY(ERROR, POLICY_FETCHING)
-        << "CloudPolicyService observers on destruction: "
-        << DumpObservers(observers_);
-  }
 }
 
 void CloudPolicyService::RefreshPolicy(RefreshPolicyCallback callback,
