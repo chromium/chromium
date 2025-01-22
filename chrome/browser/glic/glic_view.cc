@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/layout/fill_layout.h"
@@ -25,10 +27,14 @@
 
 namespace glic {
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(GlicView, kWebViewElementIdForTesting);
+
 GlicView::GlicView(Profile* profile, const gfx::Size& initial_size) {
   SetProperty(views::kElementIdentifierKey, kGlicViewElementId);
   SetLayoutManager(std::make_unique<views::FillLayout>());
   auto web_view = std::make_unique<views::WebView>(profile);
+  web_view->SetProperty(views::kElementIdentifierKey,
+                        kWebViewElementIdForTesting);
   web_view_ = web_view.get();
   web_view->SetSize(initial_size);
   AddChildView(std::move(web_view));
@@ -75,5 +81,8 @@ bool GlicView::IsPointWithinDraggableArea(const gfx::Point& point) {
   }
   return false;
 }
+
+BEGIN_METADATA(GlicView)
+END_METADATA
 
 }  // namespace glic

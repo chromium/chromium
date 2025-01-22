@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_view.h"
 #include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/glic/interactive_glic_test.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -30,61 +31,67 @@
 #include "ui/views/test/button_test_api.h"
 
 namespace glic {
-namespace {
 
-class GlicWindowControllerTest : public InteractiveBrowserTest {
+class GlicWindowControllerTest : public test::InteractiveGlicTest {
  public:
-  GlicWindowControllerTest() {
+  GlicWindowControllerTest() = default;
+  ~GlicWindowControllerTest() override = default;
+
+  auto CheckControllerHasWidget(bool expect_widget) {
+    return CheckResult(
+        [this]() { return window_controller().GetGlicWidget() != nullptr; },
+        expect_widget, "CheckControllerHasWidget");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, ShowAndCloseAttachedWidget) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached),
+                  CheckControllerHasWidget(true), CloseGlicWindow(),
+                  CheckControllerHasWidget(false));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, ShowAndCloseDetachedWidget) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
+                  CheckControllerHasWidget(true), CloseGlicWindow(),
+                  CheckControllerHasWidget(false));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, DoNotCrashOnBrowserClose) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached));
+  chrome::CloseAllBrowsers();
+  ui_test_utils::WaitForBrowserToClose();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, DoNotCrashWhenReopening) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached), CloseGlicWindow(),
+                  OpenGlicWindow(GlicWindowMode::kAttached));
+}
+
+class GlicWindowControllerWithMemoryPressureTest
+    : public GlicWindowControllerTest {
+ public:
+  GlicWindowControllerWithMemoryPressureTest() {
     features_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kGlic, features::kTabstripComboButton,
-         features::kGlicWarming},
+        {features::kGlicWarming},
         /*disabled_features=*/{});
   }
-  ~GlicWindowControllerTest() override = default;
+  ~GlicWindowControllerWithMemoryPressureTest() override = default;
 
   void SetUp() override {
     // This will temporarily disable preloading to ensure that we don't load the
     // web client before we've initialized the embedded test server and can set
     // the correct URL.
     GlicProfileManager::ForceMemoryPressureForTesting(&forced_memory_pressure_);
-    InteractiveBrowserTest::SetUp();
+    GlicWindowControllerTest::SetUp();
   }
 
   void TearDown() override {
-    InteractiveBrowserTest::TearDown();
+    GlicWindowControllerTest::TearDown();
     GlicProfileManager::ForceMemoryPressureForTesting(nullptr);
   }
 
-  void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
-
-    embedded_test_server()->ServeFilesFromDirectory(
-        base::PathService::CheckedGet(base::DIR_ASSETS)
-            .AppendASCII("gen/chrome/test/data/webui/glic/"));
-
-    ASSERT_TRUE(embedded_test_server()->Start());
-
-    // Need to set this here rather than in SetUpCommandLine because we need to
-    // use the embedded test server to get the right URL and it's not started
-    // at that time.
-    auto* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitchASCII(
-        ::switches::kGlicGuestURL,
-        embedded_test_server()->GetURL("/glic/test.html").spec());
-    command_line->AppendSwitchASCII(::switches::kCSPOverride, "");
-  }
-
  protected:
-  glic::GlicKeyedService* glic_service() {
-    return glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-        browser()->GetProfile());
-  }
-
-  glic::GlicWindowController& window_controller() {
-    return glic_service()->window_controller();
-  }
-
   void ResetMemoryPressure() {
     forced_memory_pressure_ = base::MemoryPressureMonitor::MemoryPressureLevel::
         MEMORY_PRESSURE_LEVEL_NONE;
@@ -98,33 +105,7 @@ class GlicWindowControllerTest : public InteractiveBrowserTest {
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, ShowAndCloseAttachedWidget) {
-  RunTestSequence(PressButton(kGlicButtonElementId),
-                  InAnyContext(WaitForShow(kGlicViewElementId)),
-                  InSameContext(Steps(
-                      Check([this]() {
-                        return window_controller().GetGlicWidget() != nullptr;
-                      }),
-                      Do([this]() { window_controller().Close(); }),
-                      WaitForHide(kGlicViewElementId))));
-}
-
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, ShowAndCloseDetachedWidget) {
-  RunTestSequence(Do([this]() {
-                    // Simulate showing the glic widget detached (without
-                    // glic_button_view).
-                    window_controller().Show(nullptr);
-                  }),
-                  InAnyContext(WaitForShow(kGlicViewElementId)),
-                  InSameContext(Steps(
-                      Check([this]() {
-                        return window_controller().GetGlicWidget() != nullptr;
-                      }),
-                      Do([this]() { window_controller().Close(); }),
-                      WaitForHide(kGlicViewElementId))));
-}
-
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, Preload) {
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerWithMemoryPressureTest, Preload) {
   ResetMemoryPressure();
   glic_service()->TryPreload();
   EXPECT_TRUE(window_controller().IsWarmed());
@@ -132,23 +113,4 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, Preload) {
                   InAnyContext(WaitForShow(kGlicViewElementId)));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, DoNotCrashOnBrowserClose) {
-  RunTestSequence(PressButton(kGlicButtonElementId),
-                  InAnyContext(WaitForShow(kGlicViewElementId)));
-  chrome::CloseAllBrowsers();
-  ui_test_utils::WaitForBrowserToClose();
-}
-
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, DoNotCrashWhenReopening) {
-  RunTestSequence(
-      PressButton(kGlicButtonElementId),
-      // TODO(crbug.com/389729273): observe web client initialization directly.
-      InAnyContext(WaitForShow(kGlicViewElementId)),
-      InSameContext(Steps(Do([this]() { window_controller().Close(); }),
-                          WaitForHide(kGlicViewElementId))),
-      PressButton(kGlicButtonElementId),
-      InAnyContext(WaitForShow(kGlicViewElementId)));
-}
-
-}  // namespace
 }  // namespace glic

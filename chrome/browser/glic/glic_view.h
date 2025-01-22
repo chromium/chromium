@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_VIEW_H_
 #define CHROME_BROWSER_GLIC_GLIC_VIEW_H_
 
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -23,11 +25,15 @@ class Profile;
 namespace glic {
 
 class GlicView : public views::View {
+  METADATA_HEADER(GlicView, views::View)
+
  public:
   GlicView(Profile* profile, const gfx::Size& initial_size);
   GlicView(const GlicView&) = delete;
   GlicView& operator=(const GlicView&) = delete;
   ~GlicView() override;
+
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kWebViewElementIdForTesting);
 
   // Creates a menu widget that contains a `GlicView`, configured with the
   // given `initial_bounds`.

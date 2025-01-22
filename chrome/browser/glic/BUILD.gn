@@ -128,6 +128,16 @@ source_set("enabling") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "interactive_glic_test.cc",
+    "interactive_glic_test.h",
+  ]
+  deps = [ ":glic" ]
+  public_deps = [ "//chrome/test:test_support" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -182,6 +192,7 @@ source_set("interactive_ui_tests") {
   ]
   deps = [
     ":glic",
+    ":test_support",
     "//chrome/browser",
     "//chrome/browser/ui",
     "//chrome/common",
