@@ -415,10 +415,10 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
     private void positionOnWindow() {
         WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
-        attrs.height = mDisplayHeight - mStatusbarHeight - mNavbarHeight;
+        attrs.height = mDisplayHeight - mStatusBarHeight - mNavbarHeight;
         attrs.width = calculateWidth(mUnclampedInitialWidth);
 
-        attrs.y = mStatusbarHeight;
+        attrs.y = mStatusBarHeight;
         attrs.x =
                 (mSheetOnRight ? mVersionCompat.getDisplayWidth() - attrs.width : 0)
                         + mVersionCompat.getXOffset();

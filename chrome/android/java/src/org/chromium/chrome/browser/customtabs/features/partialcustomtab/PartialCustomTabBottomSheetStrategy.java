@@ -325,7 +325,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         assert !isFullHeight() : "initialHeightInPortraitMode() is used in portrait mode only";
         return MathUtils.clamp(
                 mUnclampedInitialHeight,
-                mDisplayHeight - mStatusbarHeight,
+                mDisplayHeight - mStatusBarHeight,
                 (int) (mDisplayHeight * MINIMAL_HEIGHT_RATIO));
     }
 
@@ -792,7 +792,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     @VisibleForTesting
     @Px
     int getFullyExpandedY() {
-        return mStatusbarHeight;
+        return mStatusBarHeight;
     }
 
     @Override

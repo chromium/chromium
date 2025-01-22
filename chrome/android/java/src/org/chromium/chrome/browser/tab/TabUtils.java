@@ -258,7 +258,7 @@ public class TabUtils {
 
     private static float getWindowHeightExcludingSystemBarsDp(
             DimensionCompat compat, Context context) {
-        return (compat.getWindowHeight() - compat.getNavbarHeight() - compat.getStatusbarHeight())
+        return (compat.getWindowHeight() - compat.getNavbarHeight() - compat.getStatusBarHeight())
                 / context.getResources().getDisplayMetrics().density;
     }
 
