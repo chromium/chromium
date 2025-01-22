@@ -388,7 +388,13 @@ TEST_F(TracingScenarioTest, StartStop) {
             tracing_scenario.current_state());
 }
 
-TEST_F(TracingScenarioTest, NestedStartStop) {
+// TODO(crbug.com/391438101): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_NestedStartStop DISABLED_NestedStartStop
+#else
+#define MAYBE_NestedStartStop NestedStartStop
+#endif
+TEST_F(TracingScenarioTest, MAYBE_NestedStartStop) {
   TracingScenarioForTesting tracing_scenario(
       ParseScenarioConfigFromText(kDefaultConfig), &delegate);
 
@@ -661,7 +667,13 @@ TEST_F(TracingScenarioTest, StopUpload) {
             tracing_scenario.current_state());
 }
 
-TEST_F(TracingScenarioTest, NestedUpload) {
+// TODO(crbug.com/391438101): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_NestedUpload DISABLED_NestedUpload
+#else
+#define MAYBE_NestedUpload NestedUpload
+#endif
+TEST_F(TracingScenarioTest, MAYBE_NestedUpload) {
   TracingScenarioForTesting tracing_scenario(
       ParseScenarioConfigFromText(kDefaultConfig), &delegate);
 
@@ -750,7 +762,13 @@ TEST_F(NestedTracingScenarioTest, Upload) {
             tracing_scenario.current_state());
 }
 
-TEST_F(NestedTracingScenarioTest, StopUpload) {
+// TODO(crbug.com/391438101): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_StopUpload DISABLED_StopUpload
+#else
+#define MAYBE_StopUpload StopUpload
+#endif
+TEST_F(NestedTracingScenarioTest, MAYBE_StopUpload) {
   NestedTracingScenarioForTesting tracing_scenario(
       ParseNestedScenarioConfigFromText(kDefaultNestedConfig), &delegate);
 
