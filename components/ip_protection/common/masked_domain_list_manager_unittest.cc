@@ -14,6 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
@@ -417,6 +418,44 @@ TEST_F(MaskedDomainListManagerTest, DataUrlTopLevelSite) {
 TEST_F(MaskedDomainListManagerTest, AllowListWithoutBypassUsesLessMemory) {
   EXPECT_GT(allow_list_first_party_bypass_.EstimateMemoryUsage(),
             allow_list_no_bypass_.EstimateMemoryUsage());
+}
+
+TEST_F(MaskedDomainListManagerTest, Matches_MdlType_MatchesCorrectly) {
+  MaskedDomainListManager mdl_manager(
+      network::mojom::IpProtectionProxyBypassPolicy::kNone);
+
+  MaskedDomainList mdl;
+
+  ResourceOwner* resource_owner = mdl.add_resource_owners();
+  resource_owner->set_owner_name("example");
+  Resource* resource = resource_owner->add_owned_resources();
+  std::string default_mdl_domain = "default-mdl.com";
+  resource->set_domain(default_mdl_domain);
+  resource = resource_owner->add_owned_resources();
+  std::string regular_mdl_domain = "regular-mdl.com";
+  resource->set_domain(regular_mdl_domain);
+  resource->add_experiments(
+      Resource::Experiment::Resource_Experiment_EXPERIMENT_EXTERNAL_REGULAR);
+  resource->set_exclude_default_group(true);
+
+  mdl_manager.UpdateMaskedDomainList(
+      mdl, /*exclusion_list=*/std::vector<std::string>());
+
+  // The default MDL resource should ONLY match for mdl type kDefault.
+  EXPECT_TRUE(
+      mdl_manager.Matches(GURL(base::StrCat({"https://", default_mdl_domain})),
+                          net::NetworkAnonymizationKey(), MdlType::kDefault));
+  EXPECT_FALSE(mdl_manager.Matches(
+      GURL(base::StrCat({"https://", default_mdl_domain})),
+      net::NetworkAnonymizationKey(), MdlType::kRegularBrowsing));
+
+  // The regular MDL resource should ONLY match for mdl type kRegularBrowsing.
+  EXPECT_FALSE(
+      mdl_manager.Matches(GURL(base::StrCat({"https://", regular_mdl_domain})),
+                          net::NetworkAnonymizationKey(), MdlType::kDefault));
+  EXPECT_TRUE(mdl_manager.Matches(
+      GURL(base::StrCat({"https://", regular_mdl_domain})),
+      net::NetworkAnonymizationKey(), MdlType::kRegularBrowsing));
 }
 
 class MaskedDomainListManagerMatchTest
