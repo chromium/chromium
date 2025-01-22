@@ -73,9 +73,6 @@ class ProfileTokenPolicyWebSigninService : public UserPolicySigninServiceBase {
   // UserPolicySigninServiceBase implementation:
   void ShutdownCloudPolicyManager() override;
 
-  // CloudPolicyService::Observer implementation:
-  std::string_view name() const override;
-
  protected:
   // UserPolicySigninServiceBase implementation:
   void RegisterCloudPolicyService() override;
