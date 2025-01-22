@@ -10,9 +10,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-#error This file should only be included on Ash ChromeOS.
-#endif
+static_assert(BUILDFLAG(IS_CHROMEOS), "For ChromeOS only");
 
 namespace policy {
 

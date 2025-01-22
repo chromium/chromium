@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
 
 #include "ash/constants/ash_pref_names.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"

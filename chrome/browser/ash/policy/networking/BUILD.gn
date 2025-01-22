@@ -67,7 +67,6 @@ source_set("browser_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser:browser_process",

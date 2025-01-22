@@ -72,7 +72,6 @@ static_library("dbus") {
     "//ash/components/arc:arc_features",
     "//ash/constants",
     "//ash/webui/shimless_rma",
-    "//build:chromeos_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_mode",

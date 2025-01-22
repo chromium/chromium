@@ -124,11 +124,7 @@ IN_PROC_BROWSER_TEST_F(KcerFactoryAshNssTest, DeviceKcerHasCorrectTokens) {
   base::test::TestFuture<base::flat_set<Token>> tokens_waiter;
   kcer->GetAvailableTokens(tokens_waiter.GetCallback());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(tokens_waiter.Get(), base::flat_set<Token>({Token::kDevice}));
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_EQ(tokens_waiter.Get(), base::flat_set<Token>({}));
-#endif
 }
 
 }  // namespace

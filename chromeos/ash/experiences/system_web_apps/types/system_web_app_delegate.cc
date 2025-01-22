@@ -138,7 +138,6 @@ bool SystemWebAppDelegate::UseSystemThemeColor() const {
   return true;
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 bool SystemWebAppDelegate::ShouldAnimateThemeChanges() const {
   return false;
 }
@@ -146,6 +145,5 @@ bool SystemWebAppDelegate::ShouldAnimateThemeChanges() const {
 bool SystemWebAppDelegate::ShouldPinTab(GURL url) const {
   return false;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace ash

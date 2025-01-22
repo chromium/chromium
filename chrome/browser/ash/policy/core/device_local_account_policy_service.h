@@ -17,13 +17,12 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_broker.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/policy/core/common/schema_registry.h"
 
-static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");
+static_assert(BUILDFLAG(IS_CHROMEOS), "For ChromeOS only");
 
 namespace ash {
 class DeviceSettingsService;

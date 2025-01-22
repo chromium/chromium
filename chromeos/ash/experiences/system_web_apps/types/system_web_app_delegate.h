@@ -37,14 +37,10 @@ namespace ash {
 
 using OriginTrialsMap = std::map<url::Origin, std::vector<std::string>>;
 
-// Use #if defined to avoid compiler error on unused function.
-#if BUILDFLAG(IS_CHROMEOS)
-
 // A convenience method to create OriginTrialsMap. Note, we only support simple
 // cases for chrome:// and chrome-untrusted:// URLs. We don't support complex
 // cases such as about:blank (which inherits origins from the embedding frame).
 url::Origin GetOrigin(const char* url);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // A class for configuring SWAs for all the out-of-application stuff. For
 // example, window decorations and initial size. Clients will add a subclass for
@@ -90,7 +86,6 @@ class SystemWebAppDelegate {
   // properties for window size.
   virtual gfx::Size GetMinimumWindowSize() const;
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Decides whether to launch the app at the given url in an existing app
   // window (returned by the function) or a new one (nullptr). By default, an
   // existing app window is reused independent of the url.
@@ -98,7 +93,6 @@ class SystemWebAppDelegate {
   // This is implemented in
   // chrome/browser/ui/ash/system_web_apps/system_web_app_delegate_ui_impl.cc.
   virtual Browser* GetWindowForLaunch(Profile* profile, const GURL& url) const;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // If true, adds a "New Window" option to App's shelf context menu.
   // NOTE: Combining this with a GetWindowForLaunch function that allows window
@@ -191,7 +185,6 @@ class SystemWebAppDelegate {
   // used when performing a full restore.
   virtual bool ShouldRestoreOverrideUrl() const;
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Control the launch of an SWA. The default takes into account single vs.
   // multiple windows, make sure multiple windows don't open directly above
   // each other, and a few other niceties. Overriding this will require some
@@ -209,7 +202,6 @@ class SystemWebAppDelegate {
       web_app::WebAppProvider* provider,
       const GURL& url,
       const apps::AppLaunchParams& params) const;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Whether |url| which is outside the normal Navigation Scope should be
   // considered part of this System App.
@@ -222,14 +214,12 @@ class SystemWebAppDelegate {
   //   3. Default color.
   virtual bool UseSystemThemeColor() const;
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Returns whether theme changes should be animated.
   virtual bool ShouldAnimateThemeChanges() const;
 
   // TODO(crbug.com/1308961): Migrate to use PWA pinned home tab when ready.
   // Returns whether the specified tab should be pinned.
   virtual bool ShouldPinTab(GURL url) const;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
  protected:
   Profile* profile() const { return profile_; }
