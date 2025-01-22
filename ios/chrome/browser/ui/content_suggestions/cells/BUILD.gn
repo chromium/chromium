@@ -100,6 +100,7 @@ source_set("most_visited_tiles") {
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
     "//ios/chrome/browser/ui/content_suggestions:metrics",
     "//ios/chrome/browser/ui/content_suggestions:public",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:magic_stack_module_content_view_delegate",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack:utils",
     "//ios/chrome/browser/url_loading/model",
