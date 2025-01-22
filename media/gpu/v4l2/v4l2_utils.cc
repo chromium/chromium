@@ -487,7 +487,8 @@ std::vector<VideoCodecProfile> EnumerateSupportedProfilesForV4L2Codec(
   // Erase duplicated profiles. This is needed because H264PROFILE_BASELINE maps
   // to both V4L2_MPEG_VIDEO_H264_PROFILE__BASELINE/CONSTRAINED_BASELINE
   base::ranges::sort(profiles);
-  profiles.erase(base::ranges::unique(profiles), profiles.end());
+  auto to_remove = std::ranges::unique(profiles);
+  profiles.erase(to_remove.begin(), to_remove.end());
   return profiles;
 }
 
