@@ -976,7 +976,7 @@
 <translation id="5556459405103347317">טעינה מחדש</translation>
 <translation id="555749644339804659">הסיסמאות נבדקות…</translation>
 <translation id="5559567453458728487">המרה של יחידות מידה שנמצאו באינטרנט</translation>
-<translation id="556042886152191864">לחצן</translation>
+<translation id="556042886152191864">כפתור</translation>
 <translation id="5572648434713976849">בסרגל הכתובות יוצגו הצעות משופרות</translation>
 <translation id="5576885723883013398">חלון חדש</translation>
 <translation id="5578795271662203820">חיפוש התמונה הזו ב-<ph name="SEARCH_ENGINE" /></translation>
@@ -1039,7 +1039,7 @@
 <translation id="5759484603608560822">הסתרת ההורדות</translation>
 <translation id="5767099457279594162">הסיסמה לא שותפה</translation>
 <translation id="5779117921996157216">{count,plural, =1{יש לך סיסמה אחת ({count}) שנחשפה ועלולה לסכן את האבטחה שלך. עליך לשפר אותה עכשיו כדי לשמור על הבטיחות.}one{יש לך {count} סיסמאות שנחשפו ועלולות לסכן את האבטחה שלך. עליך לשפר אותן עכשיו כדי לשמור על הבטיחות.}two{יש לך {count} סיסמאות שנחשפו ועלולות לסכן את האבטחה שלך. עליך לשפר אותן עכשיו כדי לשמור על הבטיחות.}other{יש לך {count} סיסמאות שנחשפו ועלולות לסכן את האבטחה שלך. עליך לשפר אותן עכשיו כדי לשמור על הבטיחות.}}</translation>
-<translation id="5791632441210678828">לחצן למיון של הפיד 'במעקב'.</translation>
+<translation id="5791632441210678828">כפתור למיון של הפיד 'במעקב'.</translation>
 <translation id="5803566855766646066">הכרטיס החדש יימחק. להמשיך?</translation>
 <translation id="5804241973901381774">הרשאות</translation>
 <translation id="5817176759448082654">בדיקת סיסמאות</translation>
@@ -1111,7 +1111,7 @@
 <translation id="6127379762771434464">הפריט הוסר</translation>
 <translation id="6136914049981179737">שניות</translation>
 <translation id="6138324221869147340">חלק מהתכונות לא זמינות יותר</translation>
-<translation id="6140600850356225166">שליחת בקשה לפתיחת קישורים מאפליקציות אחרות במצב פרטי</translation>
+<translation id="6140600850356225166">הצגת בקשה לפתיחת קישורים מאפליקציות אחרות במצב פרטי</translation>
 <translation id="6140948187512243695">הצג פרטים</translation>
 <translation id="6144589619057374135">‏פתיחת ${urls} במצב אנונימי</translation>
 <translation id="6151006591088192882">ביטול נעילת כרטיסיות פרטיות עם <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>

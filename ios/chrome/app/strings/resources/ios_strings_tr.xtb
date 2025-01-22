@@ -1111,7 +1111,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6127379762771434464">Öğe kaldırıldı</translation>
 <translation id="6136914049981179737">Sn. önce</translation>
 <translation id="6138324221869147340">Bazı özellikler artık kullanılamıyor</translation>
-<translation id="6140600850356225166">Gizli modda diğer uygulamalardan gelen açmak için sor</translation>
+<translation id="6140600850356225166">Diğer uygulamalardan gelen bağlantıları gizli modda açmak için sor</translation>
 <translation id="6140948187512243695">Ayrıntıları göster</translation>
 <translation id="6144589619057374135">Şunu Gizli modda aç: ${url}</translation>
 <translation id="6151006591088192882">Gizli sekmelerin kilidini <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ile aç</translation>

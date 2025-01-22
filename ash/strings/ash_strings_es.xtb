@@ -484,7 +484,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2701576323154693023">Compartir Internet activado (la conexión Wi-Fi está desactivada)</translation>
 <translation id="2704781753052663061">Conectarse a otras redes Wi‑Fi</translation>
 <translation id="2705001408393684014">Activar o desactivar micrófono. <ph name="STATE_TEXT" /></translation>
-<translation id="2706462751667573066">Flecha hacia arriba</translation>
+<translation id="2706462751667573066">Arriba</translation>
 <translation id="2710984741481549981">Bloquea las ventanas</translation>
 <translation id="2718395828230677721">Luz nocturna</translation>
 <translation id="2726420622004325180">Se requieren datos móviles para activar el punto de acceso</translation>
@@ -1141,7 +1141,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4889868803215848840">Proporciona comentarios opcionales para mejorar las sugerencias:</translation>
 <translation id="4890187583552566966">Tu administrador ha inhabilitado el Asistente de Google.</translation>
 <translation id="4890408602550914571">Asegúrate de que tengas el teléfono cerca y de que el Bluetooth esté activado</translation>
-<translation id="4892981359753171125">Control facial</translation>
+<translation id="4892981359753171125">Control con gestos faciales</translation>
 <translation id="4895488851634969361">La batería está llena.</translation>
 <translation id="4902797682482387055">Tarea sugerida en la que centrarse</translation>
 <translation id="490375751687810070">Vertical</translation>
@@ -1560,7 +1560,7 @@ No hay dispositivos conectados.</translation>
 <translation id="621606890568890214">Desplegar Google Classroom</translation>
 <translation id="6216759484154215561">Enlace con más información abierto en el navegador</translation>
 <translation id="6220928844947387476">Ahora puedes grabarte a ti mismo y tu pantalla al mismo tiempo</translation>
-<translation id="622484624075952240">Flecha hacia abajo</translation>
+<translation id="622484624075952240">Abajo</translation>
 <translation id="6228457605945141550">Reducir el brillo</translation>
 <translation id="623116199192908855">Envía el contenido de la pantalla de tu Chromebook</translation>
 <translation id="6231419273573514727">Es posible que el rendimiento de los periféricos esté limitado</translation>

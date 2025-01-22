@@ -4130,7 +4130,7 @@
 <translation id="3856800405688283469">Выберите часовой пояс</translation>
 <translation id="3857807444929313943">Коснитесь несколько раз</translation>
 <translation id="3858860766373142691">Название</translation>
-<translation id="385939467708172187">Используйте надежный пароль</translation>
+<translation id="385939467708172187">Использовать надежный пароль</translation>
 <translation id="386009056910366930">Управление группой вкладок "<ph name="GROUP_NAME" />"</translation>
 <translation id="3861638017150647085">Имя пользователя "<ph name="USERNAME" />" недоступно.</translation>
 <translation id="3861852898230054539">Используется пароль аккаунта Google. Чтобы входить ещё быстрее, задайте отдельный пароль для <ph name="DEVICE_TYPE" />.</translation>
@@ -10415,7 +10415,7 @@
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Более подробная информация доступна на странице g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="8383614331548401927">С возвращением!</translation>
+<translation id="8383614331548401927">Двигаемся дальше?</translation>
 <translation id="8386091599636877289">Политика не найдена.</translation>
 <translation id="8387361103813440603">Запретить сайтам определять ваше местоположение</translation>
 <translation id="8387617938027387193">Подтвердите личность</translation>

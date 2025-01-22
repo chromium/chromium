@@ -144,7 +144,7 @@
 <translation id="5943826764092288734">{HOURS,plural, =1{שעה אחת}one{# שעות}two{שעתיים}other{# שעות}}</translation>
 <translation id="6007284015834422026">התוסף הוצמד</translation>
 <translation id="6040143037577758943">סגירה</translation>
-<translation id="6117103120090651229">הלחצן המרכזי</translation>
+<translation id="6117103120090651229">הכפתור המרכזי</translation>
 <translation id="6129953537138746214">רווח</translation>
 <translation id="6135826906199951471">Del</translation>
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/s</translation>
@@ -215,7 +215,7 @@
 <translation id="8730621377337864115">בוצע</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{שעה}one{# שע}two{# שע}other{# שע}}</translation>
 <translation id="8798099450830957504">ברירת מחדל</translation>
-<translation id="8841375032071747811">לחצן 'הקודם'</translation>
+<translation id="8841375032071747811">כפתור 'הקודם'</translation>
 <translation id="8867568208303837180">ההודעה נשלחת...</translation>
 <translation id="8876215549894133151">פורמט:</translation>
 <translation id="8901569739625249689">‏<ph name="QUANTITY" />KB‏</translation>

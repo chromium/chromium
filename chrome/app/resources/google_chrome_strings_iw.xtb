@@ -284,7 +284,7 @@
 <translation id="4343195214584226067">‏<ph name="EXTENSION_NAME" /> נוסף ל-‏Chrome</translation>
 <translation id="4348548358339558429">‏כדי להשתמש בהתאמה אישית, צריך לכלול את Chrome ב'פעילות באינטרנט ובאפליקציות'</translation>
 <translation id="436060642166082913">‏‫Chrome חסם את ההורדה הזו כי הקובץ יכול לפגוע בחשבונות האישיים ובחשבונות שלך ברשתות החברתיות</translation>
-<translation id="4367027658822022112">‏אפשר להצמיד את Google Lens כדי לאפשר גישה נוחה: פשוט לוחצים על הלחצן 'הצמדה' בחלק העליון של החלונית הצדדית</translation>
+<translation id="4367027658822022112">‏אפשר להצמיד את Google Lens כדי לאפשר גישה נוחה: פשוט לוחצים על הכפתור 'הצמדה' בחלק העליון של החלונית הצדדית</translation>
 <translation id="4384570495110188418">‏Chrome לא יכול לבדוק את הסיסמאות שלך כי לא נכנסת לחשבון</translation>
 <translation id="4389991535395284064">‏בגלישה במצב פרטי, Chrome יציג אזהרה לפני טעינת אתר באמצעות חיבור לא מאובטח</translation>
 <translation id="4427306783828095590">עם ההגנה המשופרת, החסימה של פישינג ותוכנות זדוניות מקיפה יותר</translation>
@@ -400,7 +400,7 @@
 <translation id="6022659036123304283">‏אפשר להתאים אישית את Chrome בדרך שנוחה לך</translation>
 <translation id="6025087594896450715">‏Google Chrome יופעל מחדש בעוד <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">סגירה</translation>
-<translation id="604424701295382420">‏התכונה הוצמדה. מעכשיו אפשר לגשת אל Google Lens דרך הלחצן החדש בסרגל הכלים</translation>
+<translation id="604424701295382420">‏התכונה הוצמדה. מעכשיו אפשר לגשת אל Google Lens דרך הכפתור החדש בסרגל הכלים</translation>
 <translation id="6060842547856900641">‏פתיחת Lens</translation>
 <translation id="6069027071882229820">העתקה כתמונה</translation>
 <translation id="6070348360322141662">‏לשיפור האבטחה, Google Chrome יצפין את הנתונים</translation>
@@ -626,7 +626,7 @@
 <translation id="8555465886620020932">שגיאה בשירות: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">רשימת שפות לחיפוש</translation>
 <translation id="8571790202382503603">‏בעזרת פרופילים ב-Chrome, אפשר להפריד בין הפריטים ששומרים ב-Chrome. באופן הזה קל יותר להפריד בין עבודה לפנאי.</translation>
-<translation id="8601359445272098721">חדש! אפשר לתרגם טקסט ותמונות במסך באמצעות לחיצה על הלחצן 'תרגום המסך'</translation>
+<translation id="8601359445272098721">חדש! אפשר לתרגם טקסט ותמונות במסך באמצעות לחיצה על הכפתור 'תרגום המסך'</translation>
 <translation id="8614913330719544658">‏Google Chrome אינו מגיב. להפעיל מחדש עכשיו?</translation>
 <translation id="861702415419836452">‏Chrome זקוק להרשאת גישה למצלמה כדי ליצור מפה תלת-ממדית של הסביבה שלך</translation>
 <translation id="8625237574518804553">{0,plural, =1{‏Chrome יופעל מחדש בעוד דקה}one{‏Chrome יופעל מחדש בעוד # דקות}two{‏Chrome יופעל מחדש בעוד # דקות}other{‏Chrome יופעל מחדש בעוד # דקות}}</translation>

@@ -571,7 +571,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3692944402865947621">Download di <ph name="FILE_NAME" /> non riuscito perché non è possibile trovare il percorso di archiviazione.</translation>
 <translation id="3697705478071004188">Ordina per sito</translation>
 <translation id="3699022356773522638">Vuoi scaricare il file?</translation>
-<translation id="3701167022068948696">Correggi subito</translation>
+<translation id="3701167022068948696">Correggi</translation>
 <translation id="3701515417135397388">Ricevi un avviso se una password è stata compromessa a causa di una violazione dei dati</translation>
 <translation id="3703166520839776970">Se il problema persiste, scegli "Altri dettagli" di seguito per ottenere maggiori informazioni da <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3710501561113687889">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo <ph name="FIELDS_STRING" /> con questo sito.</translation>

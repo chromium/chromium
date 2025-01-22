@@ -1509,7 +1509,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3678529606614285348">Ouvrir la page dans une nouvelle fenêtre de navigation privée (Ctrl+Maj+N)</translation>
 <translation id="3678914302246317895">Saisissez le code de validation à <ph name="OTP_LENGTH" /> chiffres</translation>
 <translation id="3681007416295224113">Informations relatives au certificat</translation>
-<translation id="3681421644246505351">Chrome se base sur votre historique de navigation récent pour déterminer les thèmes qui vous intéressent.</translation>
+<translation id="3681421644246505351">Chrome relève les thèmes qui vous intéressent grâce à votre historique de navigation.</translation>
 <translation id="3682094733650754138">L'option "Remplir l'adresse" a été sélectionnée</translation>
 <translation id="3687493962714153124">Gérer la saisie automatique avec l'IA</translation>
 <translation id="3687920599421452763">Fourgons et fourgonnettes</translation>
@@ -3792,7 +3792,7 @@ Informations supplémentaires :
 <translation id="7791543448312431591">Ajouter</translation>
 <translation id="7798389633136518089">Règle ignorée, car non configurée par une source cloud.</translation>
 <translation id="7800304661137206267">La connexion est chiffrée au moyen de <ph name="CIPHER" />, avec <ph name="MAC" /> pour l'authentification des messages et <ph name="KX" /> pour la méthode d'échange de clés.</translation>
-<translation id="7800977246388195491">Chrome se base sur votre historique de navigation récent pour déterminer les thèmes qui vous intéressent. Les sites que vous consultez peuvent aussi déterminer vos centres d'intérêt. Par la suite, les sites peuvent demander ces informations pour vous montrer des annonces personnalisées. Vous pouvez choisir les thèmes et les sites qui sont utilisés pour vous montrer des annonces.</translation>
+<translation id="7800977246388195491">Chrome relève les thèmes qui vous intéressent grâce à votre historique de navigation. Les sites que vous visitez peuvent aussi déterminer ce qui vous intéresse. Les sites peuvent ensuite demander ces informations pour vous montrer des annonces personnalisées. Vous pouvez choisir les thèmes et les sites qui sont utilisés pour vous montrer des annonces.</translation>
 <translation id="7802523362929240268">Ce site est légitime</translation>
 <translation id="7802989406998618639">Saisissez le code de sécurité à <ph name="NUMBER_OF_DIGITS" /> chiffres indiqué à l'<ph name="SIDE_OF_CARD" /> pour que votre banque puisse vérifier votre identité</translation>
 <translation id="780301667611848630">Non, merci</translation>
@@ -4513,7 +4513,7 @@ Informations supplémentaires :
 <translation id="9155646082713385498">Magazines</translation>
 <translation id="9157595877708044936">Configuration en cours...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> peut inclure du contenu sensible}one{<ph name="FILE_COUNT" /> fichier peut inclure du contenu sensible}other{<ph name="FILE_COUNT" /> fichiers peuvent inclure du contenu sensible}}</translation>
-<translation id="9165305804774426672">Les sites que vous consultez peuvent aussi déterminer vos centres d'intérêt en fonction de votre activité sur ces sites. Par exemple, si vous consultez un site qui vend des chaussures de running pour les longues distances, le site peut déterminer que le marathon fait partie de vos centres d'intérêt.</translation>
+<translation id="9165305804774426672">Les sites que vous visitez peuvent aussi déterminer ce qui vous intéresse en fonction de votre activité sur ces sites. Par exemple, si vous consultez un site qui vend des chaussures de running pour les longues distances, le site peut déterminer que le marathon fait partie de vos centres d'intérêt.</translation>
 <translation id="9166851138617700776">En savoir plus sur les annonces suggérées par les sites et la mesure des annonces</translation>
 <translation id="9167054383925257837">Informations sur le navigateur et l'OS de l'appareil (versions du navigateur et de l'OS, par exemple)</translation>
 <translation id="9167594211215946097">Accéder directement à vos imprimantes</translation>

@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1018939186200882850">פריט בתפריט</translation>
-<translation id="10623998915015855">לחצן החלפה</translation>
+<translation id="10623998915015855">כפתור החלפה</translation>
 <translation id="1088086359088493902">שניות</translation>
 <translation id="1142001580032786438">הצגת בוחר השבוע</translation>
 <translation id="1188858454923323853">משלים</translation>
@@ -47,7 +47,7 @@
 <translation id="2657045182931379222">אובייקט גרפי</translation>
 <translation id="2674318244760992338">כותרת תחתונה</translation>
 <translation id="2723001399770238859">אודיו</translation>
-<translation id="2759744352195237655">לחצן קופץ</translation>
+<translation id="2759744352195237655">כפתור קופץ</translation>
 <translation id="2844350028562914727">פרטים</translation>
 <translation id="2896972712917208084">קבוצת לחצני בחירה</translation>
 <translation id="2931838996092594335">לחיצה</translation>
@@ -120,7 +120,7 @@
 <translation id="5608153257855394627">הדגשה</translation>
 <translation id="561939826962581046">time</translation>
 <translation id="5631759159893697722">תקציר</translation>
-<translation id="5643186887447432888">לחצן</translation>
+<translation id="5643186887447432888">כפתור</translation>
 <translation id="5677946354068040947">אפשרויות נוספות</translation>
 <translation id="5693537480074347398">כתב עילי</translation>
 <translation id="576709008726043716">מבוא</translation>
@@ -130,7 +130,7 @@
 <translation id="591047860372322273">תיבת חיפוש</translation>
 <translation id="5916664084637901428">פועל</translation>
 <translation id="5966707198760109579">שבוע</translation>
-<translation id="5987525920412732405">לחצן קביעת ערך</translation>
+<translation id="5987525920412732405">כפתור קביעת ערך</translation>
 <translation id="6011459053400940133">מחוון עוצמת קול</translation>
 <translation id="6015796118275082299">שנה</translation>
 <translation id="6023896073578205740">תיבת רשימה</translation>
@@ -171,7 +171,7 @@
 <translation id="7034405885550056553">הצעה</translation>
 <translation id="7102274145889307184">המיקום הנוכחי</translation>
 <translation id="7139483182332611405">הקדמה</translation>
-<translation id="7198226213493847604">לחצן קופץ של תפריט</translation>
+<translation id="7198226213493847604">כפתור קופץ של תפריט</translation>
 <translation id="7214187073215825913">פרטי תוכן</translation>
 <translation id="7238347055216017155">דגש</translation>
 <translation id="7244618938296408319">כותרת הקטע</translation>
@@ -204,7 +204,7 @@
 <translation id="8403857369060869934">הזמן שחלף: <ph name="ELAPSED_TIME" /></translation>
 <translation id="8415319359811155763">חלק</translation>
 <translation id="8433900881053900389">סרגל כלים</translation>
-<translation id="8461852803063341183">לחצן בחירה</translation>
+<translation id="8461852803063341183">כפתור בחירה</translation>
 <translation id="8474886197722836894">הקדשה</translation>
 <translation id="8531739829932800271">שגיאת דפוס</translation>
 <translation id="8534579021159131403">דקות</translation>
@@ -219,7 +219,7 @@
 <translation id="8711688047404765493">פלט</translation>
 <translation id="8808573423886751634">פרק</translation>
 <translation id="8851136666856101339">main</translation>
-<translation id="8861621546968757188">לחצן קופץ של תיבת דו-שיח</translation>
+<translation id="8861621546968757188">כפתור קופץ של תיבת דו-שיח</translation>
 <translation id="8889402386540077796">גוון</translation>
 <translation id="894736920926684893">לחצן החלפת פורמט</translation>
 <translation id="8987927404178983737">חודש</translation>

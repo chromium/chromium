@@ -2512,7 +2512,7 @@
 　　　　<ph name="BEGIN_PARAGRAPH2" />Google は、位置情報の精度と、位置情報を利用したサービスを改善し、Google のサービスを全般的に改善、提供、維持する目的でこの情報を使用します。また、ユーザーのニーズに応えるうえでの Google およびサードパーティの正当な利益に基づき、この情報を処理します。この情報が個人の特定に使用されることはありません。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />[位置情報の精度] は、このデバイスの位置情報の設定（[設定] &gt; [プライバシーとセキュリティ] &gt; [プライバシー管理] &gt; [位置情報へのアクセス] &gt; [位置情報の詳細設定]）でいつでもオフにできます。[位置情報の精度] をオフにした場合、位置情報の精度に関するデータは一切収集されません。Android アプリやサービスでは、IP アドレスのみを使用して（可能な場合）、このデバイスの位置情報を判断します。そのため、Google マップなどの Android アプリやサービスでの位置情報の利用範囲と精度に影響する可能性があります。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2730029791981212295">Linux アプリとファイルのバックアップ</translation>
-<translation id="2730596696987224099">自身で選択</translation>
+<translation id="2730596696987224099">自分で設定</translation>
 <translation id="2730647855013151888">すべての個人情報を含める</translation>
 <translation id="2730901670247399077">絵文字候補</translation>
 <translation id="273093730430620027">このページはカメラにアクセスしています。</translation>
@@ -5890,7 +5890,7 @@
 <translation id="5144815231216017543">Alt+<ph name="TOP_ROW_KEY" /></translation>
 <translation id="5145464978649806571">デバイスの前から離れると、画面が自動的にロックされます。デバイスの前にいるときは、画面がロックされるまでの時間が長くなります。ロック画面を無効にしている場合、デバイスはロックされずにスリープ状態になります。</translation>
 <translation id="5145876360421795017">デバイスを登録しない</translation>
-<translation id="5146235736676876345">自身で選択</translation>
+<translation id="5146235736676876345">自分で設定</translation>
 <translation id="5146896637028965135">システム音声</translation>
 <translation id="5147097165869384760">OS のシステムページをお探しですか？<ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" /> にアクセスしてください。</translation>
 <translation id="5147113439721488265">おすすめ</translation>

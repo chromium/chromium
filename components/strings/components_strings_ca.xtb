@@ -2243,7 +2243,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5019952743397118625">La política <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> està establerta. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> no controlarà la disponibilitat del mode de desenvolupador a la pàgina d'extensions.</translation>
 <translation id="5021557570875267742">Fes un seguiment dels preus amb Chrome</translation>
 <translation id="5023310440958281426">Consulteu les polítiques de l'administrador</translation>
-<translation id="5024171724744627792">Paga més ràpidament quan es desi la targeta. Les dades de la targeta s'encripten al teu Compte de Google.</translation>
+<translation id="5024171724744627792">Paga més ràpidament quan es desi la targeta. Els detalls de la targeta s'encripten al teu Compte de Google.</translation>
 <translation id="5030338702439866405">Emès per</translation>
 <translation id="503069730517007720"><ph name="SOFTWARE_NAME" /> requereix un certificat arrel, però no està instal·lat. Per resoldre aquest problema, l'administrador de TI ha de consultar les instruccions per configurar <ph name="SOFTWARE_NAME" />. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5034930251282078640">Vols afegir-la a la comparació?</translation>

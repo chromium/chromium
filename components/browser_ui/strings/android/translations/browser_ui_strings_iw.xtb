@@ -274,7 +274,7 @@
 <translation id="5234764350956374838">סגירה</translation>
 <translation id="5246825184569358663">‏יימחקו כל הנתונים המקומיים, כולל קובצי cookie, ויתאפסו כל ההרשאות של <ph name="DOMAIN" /> ושל כל אתרי המשנה שלו</translation>
 <translation id="5264323282659631142">הסרת '<ph name="CHIP_LABEL" />'</translation>
-<translation id="528192093759286357">כדי לצאת ממסך מלא, יש לגרור מלמעלה ולגעת בלחצן 'הקודם'.</translation>
+<translation id="528192093759286357">כדי לצאת ממסך מלא, יש לגרור מלמעלה ולגעת בכפתור 'הקודם'.</translation>
 <translation id="5292915569214461965">‏חסמת אתרים כך שלא יוכלו להשתמש בקובצי Cookie של צד שלישי כדי לעקוב אחריך במהלך הגלישה. בהגדרות ניתן <ph name="BEGIN_LINK" />לנהל את הגישה לקובצי Cookie של צד שלישי<ph name="END_LINK" />.</translation>
 <translation id="5295729974480418933">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש במידע עליך שנשמר בהם. כשהאפשרות מושבתת, אתרים לא יכולים לבקש הרשאה להשתמש במידע עליך שנשמר בהם.</translation>
 <translation id="5300589172476337783">הצגה</translation>
@@ -379,7 +379,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" />GB</translation>
 <translation id="6612358246767739896">תוכן מוגן</translation>
 <translation id="662080504995468778">להמשיך במצב אנונימי</translation>
-<translation id="6653342741369270081">כדי לצאת ממסך מלא, צריך ללחוץ על לחצן 'הקודם'.</translation>
+<translation id="6653342741369270081">כדי לצאת ממסך מלא, צריך ללחוץ על כפתור 'הקודם'.</translation>
 <translation id="6683865262523156564">האתר הזה שייך לקבוצה שיש לה הרשאה לראות את הפעילות שלך. הקבוצה הוגדרה על ידי <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">תמונות פרופיל</translation>
 <translation id="6697925417670533197">הורדות פעילות</translation>

@@ -2722,7 +2722,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2862815659905780618">Rimuovi ambiente di sviluppo Linux</translation>
 <translation id="2862986593239703553">questa scheda</translation>
 <translation id="2864601841139725659">Imposta l'immagine del profilo</translation>
-<translation id="2865057607286263192">Tieni premuti i tasti della tastiera per vedere accenti e caratteri speciali. Verrà disattivata la funzionalità Ripeti la pressione del tasto per i tasti alfabetici. Disponibile solo per l'inglese (USA).</translation>
+<translation id="2865057607286263192">Tieni premuti i tasti della tastiera per vedere accenti e caratteri speciali. Verrà disattivata la ripetizione automatica del carattere quando tieni premuto un tasto alfabetico. Disponibile solo per l'inglese (USA).</translation>
 <translation id="2865919525181940183">Screenshot dei programmi attualmente sullo schermo</translation>
 <translation id="286643536820867504">Crea automaticamente i sottotitoli codificati per le lingue supportate. I dati audio non vengono mai inoltrati dal tuo dispositivo.</translation>
 <translation id="286674810810214575">Controllo delle fonti di alimentazione…</translation>
@@ -2740,7 +2740,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2873956234023215251">Impossibile installare l'app. Si è verificato un problema.</translation>
 <translation id="2874939134665556319">Traccia precedente</translation>
 <translation id="2875698561019555027">(pagine di errore Chrome)</translation>
-<translation id="2876336351874743617">Dito 2</translation>
+<translation id="2876336351874743617">Impronta 2</translation>
 <translation id="2876369937070532032">Invia a Google gli URL di alcune pagine che visiti quando la tua sicurezza è a rischio</translation>
 <translation id="2876484123356705658">Scegli l'intervallo di tempo</translation>
 <translation id="2876556152483133018">Ricerca nei siti</translation>
@@ -3860,7 +3860,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3699920817649120894">Disattivare la sincronizzazione e la personalizzazione?</translation>
 <translation id="3700888195348409686">Presentazione di (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">Non consentire ai siti di monitorare la posizione della fotocamera</translation>
-<translation id="3701167022068948696">Correggi subito</translation>
+<translation id="3701167022068948696">Correggi</translation>
 <translation id="3701515417135397388">Ricevi un avviso se una password è stata compromessa a causa di una violazione dei dati</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Inserisci il nome del rivenditore e il numero del negozio per i quali viene configurato questo dispositivo per le demo.* <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Se non conosci il numero del negozio, puoi inserire "0000" per continuare l'installazione della modalità demo. <ph name="END_PARAGRAPH2" />
@@ -5095,7 +5095,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4562364000855074606">Blocca le app installate su: <ph name="DEVICE_TYPE" />. Per limitare il download di app o contenuti, vai alle Impostazioni di Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">La lingua di input iniziale è il cinese</translation>
 <translation id="4563382028841851106">Rimuovi dall'account</translation>
-<translation id="4563880231729913339">Dito 3</translation>
+<translation id="4563880231729913339">Impronta 3</translation>
 <translation id="4564245002465020751">Completa la configurazione sul telefono</translation>
 <translation id="456449593072900590">Elimina all'uscita</translation>
 <translation id="4565377596337484307">Nascondi password</translation>

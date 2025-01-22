@@ -178,7 +178,7 @@
 <translation id="1751249301761991853">התאמה אישית</translation>
 <translation id="1751335846119670066">עזרה בקריאה</translation>
 <translation id="1753496554272155572">יציאה מהתצוגה המקדימה של הטפט</translation>
-<translation id="1754578112426924640">לחצן לעריכת מקש הקיצור <ph name="ACCELERATOR_INFO" />.</translation>
+<translation id="1754578112426924640">כפתור לעריכת מקש הקיצור <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">אפליקציית אבחון</translation>
 <translation id="1756681705074952506">שיטת קלט</translation>
 <translation id="175763766237925754">טוב (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -268,7 +268,7 @@
 <translation id="2157660087437850958">בוחר אמוג'י</translation>
 <translation id="2157959690810728433">נמצאת בתור</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ניסיון נוסף</translation>
-<translation id="215916044711630446">‏הלחצן 'הוספת ה-APN' מושבת עכשיו</translation>
+<translation id="215916044711630446">‏הכפתור 'הוספת ה-APN' מושבת עכשיו</translation>
 <translation id="2161394479394250669">ביטול משימת ההדפסה</translation>
 <translation id="2161656808144014275">טקסט</translation>
 <translation id="2163937499206714165">הפעלת המצב הכהה</translation>
@@ -344,7 +344,7 @@
 <translation id="2513396635448525189">תמונת המשתמש המחובר</translation>
 <translation id="2521835766824839541">הטראק הקודם</translation>
 <translation id="2526590354069164005">שולחן עבודה</translation>
-<translation id="2529641961800709867">אפשרויות הלחצן</translation>
+<translation id="2529641961800709867">אפשרויות הכפתור</translation>
 <translation id="253029298928638905">מתבצעת הפעלה מחדש…</translation>
 <translation id="2531772459602846206">הידרנג'אה</translation>
 <translation id="2533048460510040082">הצעות לתוכן עזרה</translation>
@@ -709,7 +709,7 @@
 <translation id="445059817448385655">סיסמה ישנה</translation>
 <translation id="4453205916657964690">מסכה של רשת משנה</translation>
 <translation id="4454245904991689773">מיקום שמירת הסריקה</translation>
-<translation id="4456812688969919973">‏הלחצן 'שמירת ה-APN' מושבת עכשיו</translation>
+<translation id="4456812688969919973">‏הכפתור 'שמירת ה-APN' מושבת עכשיו</translation>
 <translation id="4469288414739283461">שומר המסך של זרימה בכדור הארץ</translation>
 <translation id="4474142134969976028">אין תוצאות מתאימות</translation>
 <translation id="4479639480957787382">אתרנט</translation>
@@ -849,7 +849,7 @@
 <translation id="5137451382116112100">מסך מלא</translation>
 <translation id="5140788690559353412">‏אם הגישה לחשבון הבית ספרי שלך תאבד, לא תהיה לך יותר גישה לאימייל ולקבצים ב-Google Drive שמשויכים לחשבון, כמו Gmail, ‏Docs, ‏Slides ועוד.</translation>
 <translation id="5142961317498132443">אימות</translation>
-<translation id="5144311987923128508">לחצן האישור מושבת עכשיו</translation>
+<translation id="5144311987923128508">כפתור האישור מושבת עכשיו</translation>
 <translation id="5144887194300568405">העתקת התרגום</translation>
 <translation id="5145081769226915336">להפעיל את המצב הכהה באופן אוטומטי?</translation>
 <translation id="5145331109270917438">תאריך שינוי</translation>
@@ -934,7 +934,7 @@
 <translation id="554517032089923082">GTC</translation>
 <translation id="5554741914132564590">‏העדכון הזה סופק על ידי יצרן המכשיר החיצוני והוא לא אומת על ידי Google.</translation>
 <translation id="5559898619118303662">מעבר אוטומטי לעיצוב כהה בשקיעה</translation>
-<translation id="556042886152191864">לחצן</translation>
+<translation id="556042886152191864">כפתור</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> בגווני <ph name="TERRAIN_COLOR" /></translation>
 <translation id="5572169899491758844">סריקה</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -966,7 +966,7 @@
 <translation id="5701381305118179107">מרכז</translation>
 <translation id="5703716265115423771">הפחתת עוצמת הקול</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> מתוך <ph name="TOTAL_PAGES" /></translation>
-<translation id="572854785834323605">לחצן לעריכת מקש הקיצור <ph name="SHORTCUT_DESCRIPTION" />.</translation>
+<translation id="572854785834323605">כפתור לעריכת מקש הקיצור <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">עדכון של <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">השימוש בחבילת הגלישה אופס</translation>
 <translation id="574392208103952083">בינוני</translation>
@@ -1006,7 +1006,7 @@
 <translation id="5916084858004523819">אסור</translation>
 <translation id="5916664084637901428">פועל</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{הקובץ נסרק בהצלחה ונשמר בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{הקבצים נסרקו בהצלחה ונשמרו בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{הקבצים נסרקו בהצלחה ונשמרו בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{הקבצים נסרקו בהצלחה ונשמרו בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
-<translation id="5928411637936685857">לחצן למחיקת מקש הקיצור <ph name="ACCELERATOR_INFO" />.</translation>
+<translation id="5928411637936685857">כפתור למחיקת מקש הקיצור <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5930669310554144537">נוף חלומי</translation>
 <translation id="5931523347251946569">הקובץ לא נמצא</translation>
 <translation id="5938286923316838007">אי אפשר ליצור שמות להקלטות של התוכן הזה</translation>
@@ -1129,7 +1129,7 @@
 <translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">חלש (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">מעבר אל הגדרות החשבון</translation>
-<translation id="6462978824459367242">‏הלחצן 'הוספת ה-APN' מופעל עכשיו</translation>
+<translation id="6462978824459367242">‏הכפתור 'הוספת ה-APN' מופעל עכשיו</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{לסרוק את הדף מחדש?}=1{לסרוק מחדש את דף {PAGE_NUMBER}?}one{לסרוק מחדש את דף {PAGE_NUMBER}?}two{לסרוק מחדש את דף {PAGE_NUMBER}?}other{לסרוק מחדש את דף {PAGE_NUMBER}?}}</translation>
 <translation id="6468146470109254228">‫3 ההנחיות והתוצאות האחרונות שלך. אפשר לגשת אליהן רק כשמשתמשים ב'טפט וסגנון'.</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -1153,7 +1153,7 @@
 <translation id="6543412779435705598">טאקו</translation>
 <translation id="6550369542114086980">ביום חמישי</translation>
 <translation id="6551839203326557324">תפוחים</translation>
-<translation id="65526652485742171">לחצן האישור מופעל עכשיו</translation>
+<translation id="65526652485742171">כפתור האישור מופעל עכשיו</translation>
 <translation id="6557784757915238407">‏ה-APN הוא מסוג <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">שטוח</translation>
 <translation id="6560196641871357166">מלא חיים</translation>
@@ -1300,7 +1300,7 @@
 <translation id="7180611975245234373">רענון</translation>
 <translation id="7180865173735832675">התאמה אישית</translation>
 <translation id="7182063559013288142">נקודת אינטרנט מיידית</translation>
-<translation id="7184043045742675738">כדי להתאים אישית את הלחצן, מקישים על מקש כלשהו. משנים את מיקום המקש באמצעות העכבר או מקשי החיצים.</translation>
+<translation id="7184043045742675738">כדי להתאים אישית את הכפתור, לוחצים על מקש כלשהו. משנים את מיקום המקש באמצעות העכבר או מקשי החיצים.</translation>
 <translation id="7187669805838282391">ביום רביעי</translation>
 <translation id="7206979415662233817">תנאים והגבלות</translation>
 <translation id="7210635925306941239">ציאן</translation>
@@ -1689,7 +1689,7 @@
 <translation id="9036971622563146214">תוצאות</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9045842401566197375">ספרים</translation>
-<translation id="9049868303458988905">‏הלחצן 'שמירת ה-APN' מופעל עכשיו</translation>
+<translation id="9049868303458988905">‏הכפתור 'שמירת ה-APN' מופעל עכשיו</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">‏זמן האחזור של רזולוציית ה-DNS ארוך</translation>
 <translation id="9065203028668620118">עריכה</translation>
