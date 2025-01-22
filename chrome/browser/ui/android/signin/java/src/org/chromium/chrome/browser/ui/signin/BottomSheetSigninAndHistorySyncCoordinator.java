@@ -253,17 +253,14 @@ public class BottomSheetSigninAndHistorySyncCoordinator
     /** Implements {@link SigninAccountPickerCoordinator.Delegate}. */
     @Override
     public void setScrimColor(@ColorInt int scrimColor) {
-        // INVALID_COLOR is set at the end of the bottom sheet scrim fade out animation. The status
-        // bar background should then be reset to match the history sync full screen dialog which
-        // may appear next.
-        // In case the history sync dialog is skipped, the activity will finish and the status bar
-        // color change is not shown to the user.
+        // INVALID_COLOR is set at the start and end of the bottom sheet scrim fade out animation.
+        // After the scrim fades out, the status bar background needs to be reset to match the
+        // history sync full screen dialog if it's appearing next. In case the history sync dialog
+        // is skipped, the activity will finish and the status bar color change is not shown to the
+        // user.
         if (scrimColor != ScrimProperties.INVALID_COLOR) {
             mDelegate.setStatusBarColor(scrimColor);
-            return;
-        }
-
-        if (mDelegate.isHistorySyncShownFullScreen()) {
+        } else if (mDelegate.isHistorySyncShownFullScreen() && mDialogModel != null) {
             mDelegate.setStatusBarColor(getHistorySyncBackgroundColor());
         }
     }

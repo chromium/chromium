@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
-import android.graphics.Color;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
@@ -38,7 +37,6 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.Toast;
 
 /** Responsible of showing the sign-in bottom sheet. */
@@ -129,21 +127,16 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
                         new ScrimCoordinator.SystemUiScrimDelegate() {
                             @Override
                             public void setStatusBarScrimFraction(float scrimFraction) {
-                                // TODO(skym): Once the ability to get the current scrim color is
-                                // added, this should be updated to use that instead.
-                                @ColorInt int scrimColor = mScrim.getDefaultScrimColor();
-
-                                // Update the status bar color to match the currently shown scrim
-                                // color when the latter is changed.
-                                float alpha = ((float) Color.alpha(scrimColor)) * scrimFraction;
-                                @ColorInt
-                                int color = ColorUtils.setAlphaComponent(scrimColor, (int) alpha);
-                                mDelegate.setScrimColor(color);
+                                update();
                             }
 
                             @Override
                             public void setScrimColor(@ColorInt int scrimColor) {
-                                mDelegate.setScrimColor(scrimColor);
+                                update();
+                            }
+
+                            private void update() {
+                                mDelegate.setScrimColor(mScrim.getCurrentCompositeColor());
                             }
                         },
                         (ViewGroup) sheetContainer.getParent());

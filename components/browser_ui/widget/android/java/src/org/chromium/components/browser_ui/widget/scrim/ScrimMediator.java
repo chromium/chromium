@@ -15,15 +15,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.ColorUtils;
 
 import java.util.Objects;
 
 /** This class holds the animation and related business logic for the scrim. */
 class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
+    private static final String TAG = "ScrimMediator";
+
     /** A callback that is run when the scrim has completely hidden. */
     private final @NonNull Runnable mScrimHiddenRunnable;
 
@@ -70,8 +74,12 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
     }
 
     /* package */ @ColorInt
-    int getDefaultScrimColor() {
-        return mDefaultScrimColor;
+    int getCurrentCompositeColor() {
+        if (mModel == null) return ScrimProperties.INVALID_COLOR;
+
+        @ColorInt int color = mModel.get(ScrimProperties.BACKGROUND_COLOR);
+        float alpha = mModel.get(ScrimProperties.ALPHA);
+        return ColorUtils.applyAlphaFloat(color, alpha);
     }
 
     /** Triggers a fade in of the scrim creating a new animation if necessary. */
@@ -90,24 +98,15 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         mModel.set(ScrimProperties.TOUCH_EVENT_DELEGATE, this);
         mIsHidingOrHidden = false;
 
-        // TODO(crbug.com/371034867): This flag and the usage of it should be deleted. This is
-        // currently needed because SigninAccountPickerCoordinator incorrectly consumes the color in
-        // its #setScrimColor() observer method. Once the scrim logic publishes more easily consumed
-        // color + alpha values things can be cleaned up.
-        boolean colorIsDefault = false;
-
         // When clients do not specify a background color, use the default.
         if (mModel.get(ScrimProperties.BACKGROUND_COLOR) == ScrimProperties.INVALID_COLOR) {
             mModel.set(ScrimProperties.BACKGROUND_COLOR, mDefaultScrimColor);
-            colorIsDefault = true;
         }
 
         if (mSystemUiScrimDelegate != null) {
-            if (!colorIsDefault) {
-                // Pass the current scrim color to the SystemUiScrimDelegate.
-                @ColorInt int currentScrimColor = model.get(ScrimProperties.BACKGROUND_COLOR);
-                mSystemUiScrimDelegate.setScrimColor(currentScrimColor);
-            }
+            // Pass the current scrim color to the SystemUiScrimDelegate.
+            @ColorInt int currentScrimColor = model.get(ScrimProperties.BACKGROUND_COLOR);
+            mSystemUiScrimDelegate.setScrimColor(currentScrimColor);
         }
 
         // Make sure alpha is reset to 0 since the model may be reused.
@@ -199,13 +198,11 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         if (!animate) mOverlayFadeOutAnimator.end();
     }
 
-    /**
-     * Manually set the alpha for the scrim. This is exposed as part of the public API and should
-     * not be called as part of animations as it cancels the currently running one.
-     * @param alpha The new alpha for the scrim in range [0, 1].
-     */
-    void setAlpha(float alpha) {
-        if (mOverlayAnimator != null) mOverlayAnimator.cancel();
+    /* package */ void setAlpha(float alpha, PropertyModel propertyModel) {
+        if (mOverlayAnimator != null) {
+            Log.w(TAG, "Scrim setAlpha was called during an animation.");
+            mOverlayAnimator.cancel();
+        }
         setAlphaInternal(alpha);
     }
 

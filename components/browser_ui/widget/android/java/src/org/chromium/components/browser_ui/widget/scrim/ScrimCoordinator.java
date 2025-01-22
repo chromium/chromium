@@ -125,9 +125,13 @@ public class ScrimCoordinator {
                 };
     }
 
-    /** Returns the default scrim color, not the currently shown color. */
-    public @ColorInt int getDefaultScrimColor() {
-        return mMediator.getDefaultScrimColor();
+    /**
+     * Returns the current color being applied by the current scrim. If there is no active scrim,
+     * then a fully transparent color will be returned. This is combination of the background color
+     * and the currently fraction/alpha the scrim is being applied at.
+     */
+    public @ColorInt int getCurrentCompositeColor() {
+        return mMediator.getCurrentCompositeColor();
     }
 
     /**
@@ -205,15 +209,23 @@ public class ScrimCoordinator {
     }
 
     /**
-     * Manually set the alpha for the scrim.
+     * Manually set the alpha for the scrim. This is exposed as part of the public API and should
+     * not be called as part of animations as it cancels the currently running one.
      *
      * @param alpha The alpha in range [0, 1].
+     * @param propertyModel The model used to show/identify the current scrim.
      */
-    public void setAlpha(float alpha) {
-        // TODO(skym): This method should take a PropertyModel as well.
-        mMediator.setAlpha(alpha);
+    public void setAlpha(float alpha, PropertyModel propertyModel) {
+        mMediator.setAlpha(alpha, propertyModel);
     }
 
+    /**
+     * Changes the target color of a full scrim, though the current color being applied will still
+     * be subject to the current alpha. Safe to call this during animations.
+     *
+     * @param scrimColor The color to set the scrim to.
+     * @param propertyModel The model used to show/identify the current scrim.
+     */
     public void setScrimColor(@ColorInt int scrimColor, PropertyModel propertyModel) {
         mMediator.setScrimColor(scrimColor, propertyModel);
     }

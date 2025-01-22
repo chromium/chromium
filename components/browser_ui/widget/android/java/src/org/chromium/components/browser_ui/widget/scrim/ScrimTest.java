@@ -314,9 +314,10 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testAnimation_canceled() throws TimeoutException {
-        showScrim(buildModel(false, true, Color.RED), true);
+        PropertyModel model = buildModel(false, true, Color.RED);
+        showScrim(model, true);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.setAlpha(0.5f));
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.setAlpha(0.5f, model));
 
         assertFalse(
                 "Animations should not be running.",
@@ -337,9 +338,10 @@ public class ScrimTest {
     @Feature({"Scrim"})
     public void testAffectsStatusBar_disabled() throws TimeoutException {
         int callCount = mStatusBarCallbackHelper.getCallCount();
-        showScrim(buildModel(false, true, Color.RED), false);
+        PropertyModel model = buildModel(false, true, Color.RED);
+        showScrim(model, false);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.setAlpha(0.5f));
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.setAlpha(0.5f, model));
 
         assertEquals(
                 "Scrim alpha should be 0.5f.",

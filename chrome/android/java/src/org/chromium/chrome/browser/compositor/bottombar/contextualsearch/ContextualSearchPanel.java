@@ -863,7 +863,7 @@ public class ContextualSearchPanel extends OverlayPanel {
                                 .build();
                 mScrimCoordinator.showScrim(mScrimProperties);
             }
-            mScrimCoordinator.setAlpha(statusBarAlpha);
+            mScrimCoordinator.setAlpha(statusBarAlpha, mScrimProperties);
         }
     }
 
