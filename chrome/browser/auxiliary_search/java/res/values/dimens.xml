@@ -12,7 +12,6 @@ found in the LICENSE file.
 
     <!-- Auxiliary search module dimensions. -->
     <dimen name="auxiliary_search_module_padding_start">20dp</dimen>
-    <dimen name="auxiliary_search_module_padding_bottom">12dp</dimen>
     <dimen name="auxiliary_search_module_title_padding_bottom">2dp</dimen>
     <dimen name="auxiliary_search_module_title_margin_bottom">8dp</dimen>
     <dimen name="auxiliary_search_module_content_margin_bottom">4dp</dimen>

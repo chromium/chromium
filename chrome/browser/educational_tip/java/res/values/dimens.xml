@@ -6,7 +6,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="UnusedResources">
   <!-- Educational tip module dimens -->
-  <dimen name="educational_tip_module_padding_bottom">12dp</dimen>
   <dimen name="educational_tip_module_size_without_padding">156dp</dimen>
   <dimen name="educational_tip_module_content_image_size">72dp</dimen>
   <dimen name="educational_tip_module_content_info_padding_start">16dp</dimen>
