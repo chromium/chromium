@@ -289,10 +289,12 @@ void FidoRequestHandlerBase::InitDiscoveries(
   // Thus, if the responsible process is not Chromium itself, then we do not
   // make any Bluetooth API calls.
   const bool can_call_ble_apis =
-      g_always_allow_ble_calls || base::IsProcessSelfResponsible();
+      g_always_allow_ble_calls ||
+      base::DoesResponsibleProcessHaveBluetoothMetadata();
   if (!can_call_ble_apis) {
-    FIDO_LOG(ERROR) << "Cannot test Bluetooth power status because process is "
-                       "not self-responsible. Launch from Finder to fix.";
+    FIDO_LOG(ERROR) << "Cannot use Bluetooth because the responsible app for "
+                       "the process does not have Bluetooth metadata in its "
+                       "Info.plist. Launch from Finder to fix.";
   }
 #else
   const bool can_call_ble_apis = true;

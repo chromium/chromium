@@ -32,10 +32,11 @@ namespace {
 std::optional<Error> CheckConfiguration() {
 #if BUILDFLAG(IS_MAC)
   if (!device::BluetoothAdapterFactory::HasSharedInstanceForTesting() &&
-      !base::IsProcessSelfResponsible()) {
+      !base::DoesResponsibleProcessHaveBluetoothMetadata()) {
     FIDO_LOG(EVENT)
-        << "Cannot use Bluetooth because process is not self-responsible. "
-           "Launch from Finder or with `open` instead.";
+        << "Cannot use Bluetooth because the responsible app for the process "
+           "does not have Bluetooth metadata in its Info.plist. Launch from "
+           "Finder or with `open` instead.";
     return SystemError::kNotSelfResponsible;
   }
 #endif
