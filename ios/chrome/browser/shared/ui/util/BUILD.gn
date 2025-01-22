@@ -136,7 +136,7 @@ source_set("omnibox_util") {
     "//base",
     "//components/resources:terms_resources",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/omnibox/model",
+    "//ios/chrome/browser/omnibox/model/omnibox_position",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/model/browser",
     "//ui/base",

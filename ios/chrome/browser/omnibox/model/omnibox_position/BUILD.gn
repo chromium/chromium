@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("model") {
+source_set("omnibox_position") {
   sources = [
     "omnibox_position_browser_agent.h",
     "omnibox_position_browser_agent.mm",
