@@ -1,6 +1,6 @@
 [package]
 name = "semver"
-version = "1.0.24"
+version = "1.0.25"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["data-structures", "no-std"]
 description = "Parser and evaluator for Cargo's flavor of Semantic Versioning"
@@ -24,3 +24,6 @@ doc-scrape-examples = false
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
 rustdoc-args = ["--generate-link-to-definition"]
+
+[package.metadata.playground]
+features = ["serde"]

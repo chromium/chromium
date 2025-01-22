@@ -2258,6 +2258,12 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.23 -> 1.0.24"
 notes = "Minor, `ptr_eq`-related changes."
 
+[[audits.semver]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.24 -> 1.0.25"
+notes = "No changes in `.rs` files except `doc` attribute changes in `lib.rs`."
+
 [[audits.serde]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
