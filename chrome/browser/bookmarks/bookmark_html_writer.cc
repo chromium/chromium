@@ -18,6 +18,7 @@
 #include <string>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/bookmarks/browser/bookmark_codec.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_types.h"
 #include "content/public/browser/browser_thread.h"
@@ -167,7 +169,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
     // for the duration of the write), as such we make a copy of the
     // BookmarkModel using BookmarkCodec then write from that.
     BookmarkCodec codec;
-    bookmarks_ =
+    local_bookmarks_ =
         codec.Encode(model->bookmark_bar_node(), model->other_node(),
                      model->mobile_node(), /*sync_metadata_str=*/std::string());
   }
@@ -187,24 +189,37 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
       return;
     }
 
-    base::Value::Dict* roots = bookmarks_.FindDict(BookmarkCodec::kRootsKey);
-    DCHECK(roots);
+    base::Value::Dict* local_permanent_folders =
+        local_bookmarks_.FindDict(BookmarkCodec::kRootsKey);
+    CHECK(local_permanent_folders);
 
-    base::Value::Dict* root_folder_value =
-        roots->FindDict(BookmarkCodec::kBookmarkBarFolderNameKey);
-    base::Value::Dict* other_folder_value =
-        roots->FindDict(BookmarkCodec::kOtherBookmarkFolderNameKey);
-    base::Value::Dict* mobile_folder_value =
-        roots->FindDict(BookmarkCodec::kMobileBookmarkFolderNameKey);
-    DCHECK(root_folder_value);
-    DCHECK(other_folder_value);
-    DCHECK(mobile_folder_value);
+    base::Value::Dict* bookmark_bar_folder_value =
+        local_permanent_folders->FindDict(
+            BookmarkCodec::kBookmarkBarFolderNameKey);
+    CHECK(bookmark_bar_folder_value);
+    base::Value::Dict* other_folder_value = local_permanent_folders->FindDict(
+        BookmarkCodec::kOtherBookmarkFolderNameKey);
+    CHECK(other_folder_value);
+    base::Value::Dict* mobile_folder_value = local_permanent_folders->FindDict(
+        BookmarkCodec::kMobileBookmarkFolderNameKey);
+    CHECK(mobile_folder_value);
 
     IncrementIndent();
 
-    if (!WriteNode(*root_folder_value, BookmarkNode::BOOKMARK_BAR) ||
-        !WriteNode(*other_folder_value, BookmarkNode::OTHER_NODE) ||
-        !WriteNode(*mobile_folder_value, BookmarkNode::MOBILE)) {
+    // Bookmarks are written with the following hierarchy - note the descendents
+    // of the other and mobile folders are shifted up one level (compared to the
+    // descendents of the bookmark bar). This is for compatibility with the
+    // pre-existing file format user by other browsers.
+    //
+    // - Bookmarks bar (with PERSONAL_TOOLBAR_FOLDER="true" attribute)
+    //   - All descendants of the bookmark bar
+    // - All descendants of the other bookmarks folder
+    // - All descendants of the mobile bookmarks folder
+    if (!WriteFolderStart(*bookmark_bar_folder_value,
+                          BookmarkNode::BOOKMARK_BAR) ||
+        !WriteDescendants(*bookmark_bar_folder_value) || !WriteFolderEnd() ||
+        !WriteDescendants(*other_folder_value) ||
+        !WriteDescendants(*mobile_folder_value)) {
       NotifyOnFinish(BookmarksExportObserver::Result::kCouldNotWriteNodes);
       return;
     }
@@ -251,7 +266,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
 
   // Decrements the indent.
   void DecrementIndent() {
-    DCHECK(!indent_.empty());
+    CHECK(!indent_.empty());
     indent_.resize(indent_.size() - kIndentSize, ' ');
   }
 
@@ -311,25 +326,91 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
         base::Time::FromInternalValue(internal_value).ToTimeT()));
   }
 
-  // Writes the node and all its children, returning true on success.
-  bool WriteNode(const base::Value::Dict& value,
-                 BookmarkNode::Type folder_type) {
-    const std::string* title_ptr = value.FindString(BookmarkCodec::kNameKey);
+  // Writes the start of a folder section, ready for subsequent calls to write
+  // out children of the folder. `value` is the folder to be written, which must
+  // be of `folder_type` either `BOOKMARK_BAR` or `FOLDER`.
+  bool WriteFolderStart(const base::Value::Dict& value,
+                        BookmarkNode::Type folder_type) {
+    const std::string* title = value.FindString(BookmarkCodec::kNameKey);
+    CHECK(title);
     const std::string* date_added_string =
         value.FindString(BookmarkCodec::kDateAddedKey);
-    const std::string* type_string = value.FindString(BookmarkCodec::kTypeKey);
-    if (!title_ptr || !date_added_string || !type_string ||
-        (*type_string != BookmarkCodec::kTypeURL &&
-         *type_string != BookmarkCodec::kTypeFolder)) {
-      NOTREACHED();
+    CHECK(date_added_string);
+    const std::string* last_modified_date =
+        value.FindString(BookmarkCodec::kDateModifiedKey);
+    CHECK(last_modified_date);
+
+    if (!WriteIndent() || !Write(kFolderStart) ||
+        !WriteTime(*date_added_string) || !Write(kLastModified) ||
+        !WriteTime(*last_modified_date)) {
+      return false;
     }
+
+    switch (folder_type) {
+      case BookmarkNode::BOOKMARK_BAR:
+        if (!Write(kBookmarkBar)) {
+          return false;
+        }
+        break;
+      case BookmarkNode::FOLDER:
+        if (!Write(kFolderAttributeEnd)) {
+          return false;
+        }
+        break;
+      case BookmarkNode::URL:
+      case BookmarkNode::OTHER_NODE:
+      case BookmarkNode::MOBILE:
+        NOTREACHED();
+    }
+
+    if (!Write(*title, CONTENT) || !Write(kFolderEnd) || !Write(kNewline) ||
+        !WriteIndent() || !Write(kFolderChildren) || !Write(kNewline)) {
+      return false;
+    }
+    IncrementIndent();
+    return true;
+  }
+
+  // Writes the child nodes of folder `folder` (this does not include writing
+  // the folder itself).
+  bool WriteDescendants(const base::Value::Dict& folder) {
+    const base::Value::List* child_values =
+        folder.FindList(BookmarkCodec::kChildrenKey);
+    CHECK(child_values);
+
+    for (const base::Value& child_value : *child_values) {
+      CHECK(child_value.is_dict());
+      if (!WriteNodeAndDescendants(child_value.GetDict())) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  // Writes the end of a folder section that was previously created with
+  // `WriteFolderStart()`.
+  bool WriteFolderEnd() {
+    DecrementIndent();
+    return WriteIndent() && Write(kFolderChildrenEnd) && Write(kNewline);
+  }
+
+  // Writes the node and all its children, returning true on success.
+  bool WriteNodeAndDescendants(const base::Value::Dict& value) {
+    const std::string* title_ptr = value.FindString(BookmarkCodec::kNameKey);
+    CHECK(title_ptr);
+    const std::string* date_added_string =
+        value.FindString(BookmarkCodec::kDateAddedKey);
+    CHECK(date_added_string);
+    const std::string* type_string = value.FindString(BookmarkCodec::kTypeKey);
+    CHECK(type_string);
+    CHECK(*type_string == BookmarkCodec::kTypeURL ||
+          *type_string == BookmarkCodec::kTypeFolder);
 
     std::string title = *title_ptr;
     if (*type_string == BookmarkCodec::kTypeURL) {
       const std::string* url_string = value.FindString(BookmarkCodec::kURLKey);
-      if (!url_string) {
-        NOTREACHED();
-      }
+      CHECK(url_string);
 
       std::string favicon_string;
       auto itr = favicons_map_->find(*url_string);
@@ -353,60 +434,24 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
     }
 
     // Folder.
-    const std::string* last_modified_date =
-        value.FindString(BookmarkCodec::kDateModifiedKey);
-    const base::Value::List* child_values =
-        value.FindList(BookmarkCodec::kChildrenKey);
-    if (!last_modified_date || !child_values) {
-      NOTREACHED();
-    }
-    if (folder_type != BookmarkNode::OTHER_NODE &&
-        folder_type != BookmarkNode::MOBILE) {
-      // The other/mobile folder name are not written out. This gives the effect
-      // of making the contents of the 'other folder' be a sibling to the
-      // bookmark bar folder.
-      if (!WriteIndent() || !Write(kFolderStart) ||
-          !WriteTime(*date_added_string) || !Write(kLastModified) ||
-          !WriteTime(*last_modified_date)) {
-        return false;
-      }
-      if (folder_type == BookmarkNode::BOOKMARK_BAR) {
-        if (!Write(kBookmarkBar)) {
-          return false;
-        }
-      } else if (!Write(kFolderAttributeEnd)) {
-        return false;
-      }
-      if (!Write(title, CONTENT) || !Write(kFolderEnd) || !Write(kNewline) ||
-          !WriteIndent() || !Write(kFolderChildren) || !Write(kNewline)) {
-        return false;
-      }
-      IncrementIndent();
+    if (!WriteFolderStart(value, BookmarkNode::FOLDER)) {
+      return false;
     }
 
-    // Write the children.
-    for (const base::Value& child_value : *child_values) {
-      if (!child_value.is_dict()) {
-        NOTREACHED();
-      }
-      if (!WriteNode(child_value.GetDict(), BookmarkNode::FOLDER)) {
-        return false;
-      }
+    if (!WriteDescendants(value)) {
+      return false;
     }
-    if (folder_type != BookmarkNode::OTHER_NODE &&
-        folder_type != BookmarkNode::MOBILE) {
-      // Close out the folder.
-      DecrementIndent();
-      if (!WriteIndent() || !Write(kFolderChildrenEnd) || !Write(kNewline)) {
-        return false;
-      }
+
+    if (!WriteFolderEnd()) {
+      return false;
     }
+
     return true;
   }
 
-  // The BookmarkModel as a base::Value. This value was generated from the
-  // BookmarkCodec.
-  base::Value::Dict bookmarks_;
+  // The BookmarkModel as a base::Value, for the local or syncable bookmarks.
+  // These values were generated from the BookmarkCodec.
+  base::Value::Dict local_bookmarks_;
 
   // Path we're writing to.
   base::FilePath path_;
