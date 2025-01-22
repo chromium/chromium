@@ -88,10 +88,11 @@ namespace blink {
 
 namespace {
 
-// Controls if VideoFrame.copyTo() reads GPU frames asynchronously
+// Controls if VideoFrame.copyTo() reads GPU frames asynchronously when it's given a
+// SharedArrayBuffer.
 BASE_FEATURE(kVideoFrameAsyncCopyTo,
              "VideoFrameAsyncCopyTo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 media::VideoPixelFormat ToMediaPixelFormat(V8VideoPixelFormat::Enum fmt) {
   switch (fmt) {
