@@ -1264,7 +1264,7 @@ void HTMLElement::UpdatePopoverAttribute(const AtomicString& value) {
   }
   CHECK_EQ(type, GetPopoverTypeFromAttributeValue(
                      FastGetAttribute(html_names::kPopoverAttr)));
-  EnsurePopoverData()->setType(type);
+  EnsurePopoverData().setType(type);
 }
 
 bool HTMLElement::HasPopoverAttribute() const {
