@@ -147,46 +147,6 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
   raw_ptr<syncer::MockSyncService> sync_service_mock_ = nullptr;
 };
 
-// Tests that a signed-in user with Sync enabled will have an action sheet with
-// a sign-out title.
-// TODO(crbug.com/40066949): Remove this test once ConsentLevel::kSync does not
-// exist on iOS anymore.
-TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithSync) {
-  authentication_service()->SignIn(identity_,
-                                   signin_metrics::AccessPoint::kUnknown);
-  authentication_service()->GrantSyncConsent(
-      identity_, signin_metrics::AccessPoint::kUnknown);
-  ON_CALL(*sync_service_mock_->GetMockUserSettings(),
-          IsInitialSyncFeatureSetupComplete())
-      .WillByDefault(testing::Return(true));
-
-  CreateCoordinator();
-  [signout_coordinator_ start];
-
-  ASSERT_NE(nil, signout_coordinator_.title);
-}
-
-// Tests that a signed-in managed user with Sync enabled will have an action
-// sheet with a sign-out title.
-// TODO(crbug.com/40066949): Remove this test once ConsentLevel::kSync does not
-// exist on iOS anymore.
-TEST_F(SignoutActionSheetCoordinatorTest, SignedInManagedUserWithSync) {
-  authentication_service()->SignIn(managed_identity_,
-                                   signin_metrics::AccessPoint::kUnknown);
-  authentication_service()->GrantSyncConsent(
-      managed_identity_, signin_metrics::AccessPoint::kUnknown);
-  ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
-      signin::ConsentLevel::kSync));
-  ON_CALL(*sync_service_mock_->GetMockUserSettings(),
-          IsInitialSyncFeatureSetupComplete())
-      .WillByDefault(testing::Return(true));
-
-  CreateCoordinator();
-  [signout_coordinator_ start];
-
-  ASSERT_NE(nil, signout_coordinator_.title);
-}
-
 TEST_F(SignoutActionSheetCoordinatorTest,
        ShouldNotShowActionSheetIfNoUnsyncedData) {
   authentication_service()->SignIn(identity_,
