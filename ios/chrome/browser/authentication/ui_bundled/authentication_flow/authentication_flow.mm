@@ -25,6 +25,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_current_profile.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_capabilities_fetcher.h"
@@ -58,12 +59,16 @@ using signin_ui::SigninCompletionCallback;
 namespace {
 
 // The states of the sign-in flow state machine.
+// TODO(crbug.com/375605482): Need to remove steps from SIGN_OUT_IF_NEEDED to
+// COMPLETE_WITH_FAILURE can be replaced with
+// `AuthenticationFlowInCurrentProfile` even without multi profile.
 enum AuthenticationState {
   BEGIN,
   FETCH_MANAGED_STATUS,
   FETCH_PROFILE_SEPARATION_POLICIES,
   SHOW_MANAGED_CONFIRMATION,
   CONVERT_PERSONAL_PROFILE_TO_MANAGED,
+  SWITCH_PROFILE_IF_NEEDED,
   SIGN_OUT_IF_NEEDED,
   SIGN_IN,
   REGISTER_FOR_USER_POLICY,
@@ -72,7 +77,7 @@ enum AuthenticationState {
   COMPLETE_WITH_SUCCESS,
   COMPLETE_WITH_FAILURE,
   CLEANUP_BEFORE_DONE,
-  DONE
+  DONE,
 };
 
 enum class CancelationReason {
@@ -137,6 +142,9 @@ enum class CancelationReason {
   // existing profile into a managed profile.
   policy::ProfileSeparationDataMigrationSettings
       _profileSeparationDataMigrationSettings;
+
+  // `YES` if the profile switching is done.
+  BOOL _didSwitchProfile;
 }
 
 @synthesize handlingError = _handlingError;
@@ -226,11 +234,11 @@ enum class CancelationReason {
     case FETCH_PROFILE_SEPARATION_POLICIES:
     case SHOW_MANAGED_CONFIRMATION:
     case CONVERT_PERSONAL_PROFILE_TO_MANAGED:
+    case SWITCH_PROFILE_IF_NEEDED:
     case SIGN_OUT_IF_NEEDED:
     case SIGN_IN:
     case REGISTER_FOR_USER_POLICY:
     case FETCH_USER_POLICY:
-      return COMPLETE_WITH_FAILURE;
     case FETCH_CAPABILITIES:
       return COMPLETE_WITH_FAILURE;
     case COMPLETE_WITH_SUCCESS:
@@ -262,15 +270,24 @@ enum class CancelationReason {
                    ? SHOW_MANAGED_CONFIRMATION
                    : FETCH_PROFILE_SEPARATION_POLICIES;
       }
-      return SIGN_OUT_IF_NEEDED;
+      return SWITCH_PROFILE_IF_NEEDED;
     case FETCH_PROFILE_SEPARATION_POLICIES:
       return SHOW_MANAGED_CONFIRMATION;
     case SHOW_MANAGED_CONFIRMATION:
       if (_shouldConvertPersonalProfileToManaged) {
         return CONVERT_PERSONAL_PROFILE_TO_MANAGED;
       }
-      return SIGN_OUT_IF_NEEDED;
+      return SWITCH_PROFILE_IF_NEEDED;
     case CONVERT_PERSONAL_PROFILE_TO_MANAGED:
+      return SWITCH_PROFILE_IF_NEEDED;
+    case SWITCH_PROFILE_IF_NEEDED:
+      if (_didSwitchProfile) {
+        // Once the profile switch is done, there is nothing more to do in this
+        // profile. The COMPLETE_WITH_SUCCESS should be skipped. The completion
+        // block has been passed to `AuthenticationFlowInCurrentProfile`.
+        CHECK(!_signInCompletion);
+        return CLEANUP_BEFORE_DONE;
+      }
       return SIGN_OUT_IF_NEEDED;
     case SIGN_OUT_IF_NEEDED:
       return SIGN_IN;
@@ -334,22 +351,24 @@ enum class CancelationReason {
                                      forIdentity:_identityToSignIn];
       return;
 
-    case SHOW_MANAGED_CONFIRMATION: {
+    case SHOW_MANAGED_CONFIRMATION:
       [self showManagedConfirmationStep];
       return;
-    }
 
-    case CONVERT_PERSONAL_PROFILE_TO_MANAGED: {
+    case CONVERT_PERSONAL_PROFILE_TO_MANAGED:
       [_performer makePersonalProfileManagedWithIdentity:_identityToSignIn];
       return;
-    }
+
+    case SWITCH_PROFILE_IF_NEEDED:
+      [self switchProfileIfNeededStep];
+      return;
 
     case SIGN_OUT_IF_NEEDED:
       [self signOutIfNeededStep];
       return;
 
     case SIGN_IN:
-      [self multiProfileSignIn];
+      [self signInStep];
       return;
 
     case REGISTER_FOR_USER_POLICY:
@@ -422,6 +441,53 @@ enum class CancelationReason {
                   mergeBrowsingDataByDefault:mergeBrowsingDataByDefault];
 }
 
+// Switches profile if `_identityToSignIn` is assigned to another profile.
+// If `_identityToSignIn` doesn't exist anymore, an error is generated.
+// If the identity is assigned to the current profile this step is a no-op.
+- (void)switchProfileIfNeededStep {
+  CHECK(!_didSwitchProfile);
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    [self continueFlow];
+    return;
+  }
+  ProfileIOS* profile = [self originalProfile];
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(profile);
+  std::vector<AccountInfo> accountsOnDevice =
+      identityManager->GetAccountsOnDevice();
+  BOOL isValidIdentityOnDevice = base::Contains(
+      accountsOnDevice, GaiaId(_identityToSignIn.gaiaID), &AccountInfo::gaia);
+  if (!isValidIdentityOnDevice) {
+    // Handle the case where the identity is no longer valid.
+    NSError* error = ios::provider::CreateMissingIdentitySigninError();
+    [self handleAuthenticationError:error];
+    return;
+  }
+  std::vector<CoreAccountInfo> accountsInProfile =
+      identityManager->GetAccountsWithRefreshTokens();
+  BOOL isValidIdentityInProfile =
+      base::Contains(accountsInProfile, GaiaId(_identityToSignIn.gaiaID),
+                     &CoreAccountInfo::gaia);
+  if (isValidIdentityInProfile) {
+    // If the identity is in the current profile, the flow should continue,
+    // without switching profile.
+    [self continueFlow];
+    return;
+  }
+  SceneState* sceneState = _browser->GetSceneState();
+  __weak __typeof(self) weakSelf = self;
+  OnProfileSwitchCompletion completion = base::BindOnce(
+      [](__typeof(self) strong_self, bool success,
+         Browser* new_profile_browser) {
+        [strong_self onSwitchToProfileWithSuccess:success
+                                newProfileBrowser:new_profile_browser];
+      },
+      weakSelf);
+  [_performer switchToProfileWithIdentity:_identityToSignIn
+                               sceneState:sceneState
+                               completion:std::move(completion)];
+}
+
 // Signs out, if the user is already signed in with a different identity.
 // Otherwise, this step does nothing and the flow continues to the next step.
 - (void)signOutIfNeededStep {
@@ -430,54 +496,36 @@ enum class CancelationReason {
       AuthenticationServiceFactory::GetForProfile(profile)->GetPrimaryIdentity(
           signin::ConsentLevel::kSignin);
   if (currentIdentity && ![currentIdentity isEqual:_identityToSignIn]) {
-    // TODO(crbug.com/375605482): skip sign out if there is a profile
-    // switching.
     [_performer signOutProfile:profile];
     return;
   }
   [self continueFlow];
 }
 
-- (void)multiProfileSignIn {
+// Sets the primary identity for the current profile.
+- (void)signInStep {
   ProfileIOS* profile = [self originalProfile];
+  id<SystemIdentity> currentIdentity =
+      AuthenticationServiceFactory::GetForProfile(profile)->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin);
+  if ([currentIdentity isEqual:_identityToSignIn]) {
+    // The user is already signed in with the right identity.
+    [self continueFlow];
+    return;
+  }
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
-  ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForProfile(profile);
-  BOOL isValidIdentityInProfile = NO;
-  BOOL isValidIdentityOnDevice = NO;
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    std::vector<AccountInfo> accountInfos =
-        identityManager->GetAccountsOnDevice();
-    isValidIdentityOnDevice = base::Contains(
-        accountInfos, GaiaId(_identityToSignIn.gaiaID), &AccountInfo::gaia);
-    std::vector<CoreAccountInfo> coreAccountInfos =
-        identityManager->GetAccountsWithRefreshTokens();
-    isValidIdentityInProfile =
-        base::Contains(coreAccountInfos, GaiaId(_identityToSignIn.gaiaID),
-                       &CoreAccountInfo::gaia);
-  } else {
-    isValidIdentityOnDevice = isValidIdentityInProfile =
-        accountManagerService->IsValidIdentity(_identityToSignIn);
-  }
-
+  std::vector<CoreAccountInfo> accountsInProfile =
+      identityManager->GetAccountsWithRefreshTokens();
+  BOOL isValidIdentityInProfile =
+      base::Contains(accountsInProfile, GaiaId(_identityToSignIn.gaiaID),
+                     &CoreAccountInfo::gaia);
   if (isValidIdentityInProfile) {
-    [self signInInCurrentProfile];
-  } else if (isValidIdentityOnDevice) {
-    CHECK(AreSeparateProfilesForManagedAccountsEnabled());
-    SceneState* sceneState = _browser->GetSceneState();
-    __weak __typeof(self) weakSelf = self;
-    OnProfileSwitchCompletion completion = base::BindOnce(
-        [](__typeof(self) strong_self, bool success,
-           Browser* new_profile_browser, UIViewController* view_controller) {
-          [strong_self onSwitchToProfileWithSuccess:success
-                                  newProfileBrowser:new_profile_browser
-                                     viewController:view_controller];
-        },
-        weakSelf);
-    [_performer switchToProfileWithIdentity:_identityToSignIn
-                                 sceneState:sceneState
-                                 completion:std::move(completion)];
+    [_performer signInIdentity:_identityToSignIn
+                 atAccessPoint:self.accessPoint
+                currentProfile:profile];
+    _didSignIn = YES;
+    [self continueFlow];
   } else {
     // Handle the case where the identity is no longer valid.
     NSError* error = ios::provider::CreateMissingIdentitySigninError();
@@ -517,6 +565,8 @@ enum class CancelationReason {
   SigninCompletionCallback signInCompletion = _signInCompletion;
   _signInCompletion = nil;
   signInCompletion(SigninCoordinatorResult::SigninCoordinatorResultSuccess);
+  // TODO(crbug.com/375605482): Need to understand what to do with other
+  // post sign-in actions.
   if (self.postSignInActions.Has(PostSignInAction::kShowSnackbar)) {
     [_performer completePostSignInActions:_postSignInActions
                              withIdentity:_identityToSignIn
@@ -706,37 +756,38 @@ enum class CancelationReason {
 // Called when the profile switching succeeded or failed (according to
 // `success`).
 - (void)onSwitchToProfileWithSuccess:(BOOL)success
-                   newProfileBrowser:(Browser*)newProfileBrowser
-                      viewController:(UIViewController*)viewController {
+                   newProfileBrowser:(Browser*)newProfileBrowser {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
-  if (success) {
-    _browser = newProfileBrowser;
-    _presentingViewController = viewController;
-    // TODO(crbug.com/375605482): Need to sign-out if the new profile is not
-    // signed in with the right identity (useful for the personal profile).
-    // TODO(crbug.com/375605482): Need to block user until AuthenticationFlow
-    // is done? Probably with a blur animation.
-    [self signInInCurrentProfile];
-  } else {
-    // TODO(crbug.com/375605482): Generate an error and call:
-    // `[self handleAuthenticationError:error];`.
+  CHECK(!_didSwitchProfile);
+  if (!success) {
+    NSError* error = ios::provider::CreateMissingIdentitySigninError();
+    [self handleAuthenticationError:error];
+    return;
   }
-}
-
-// Signs in the user using `_identityToSignIn`. The identity must be assigned
-// to the current profile.
-- (void)signInInCurrentProfile {
-  ProfileIOS* profile = [self originalProfile];
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(profile);
-  std::vector<CoreAccountInfo> coreAccountInfos =
-      identityManager->GetAccountsWithRefreshTokens();
-  CHECK(base::Contains(coreAccountInfos, GaiaId(_identityToSignIn.gaiaID),
-                       &CoreAccountInfo::gaia));
-  [_performer signInIdentity:_identityToSignIn
-               atAccessPoint:self.accessPoint
-              currentProfile:profile];
-  _didSignIn = YES;
+  // TODO(crbug.com/375605482): Need to block user until
+  // `AuthenticationFlowInCurrentProfile` is done? Probably with a blur
+  // animation.
+  // With the profile switching `_browser` and `_presentingViewController` are
+  // not valid anymore.
+  _browser = nullptr;
+  _presentingViewController = nil;
+  // The sign-in flow is passed to `authenticationFlowInCurrentProfile`,
+  // with the completion block.
+  // `AuthenticationFlowInCurrentProfile` retains itself until the sign-in is
+  // done. There is no need to own this instance.
+  AuthenticationFlowInCurrentProfile* authenticationFlowInCurrentProfile =
+      [[AuthenticationFlowInCurrentProfile alloc]
+            initWithBrowser:newProfileBrowser
+                   identity:_identityToSignIn
+          isManagedIdentity:_identityToSignInHostedDomain.length > 0
+                accessPoint:_accessPoint
+          postSignInActions:self.postSignInActions];
+  authenticationFlowInCurrentProfile.precedingHistorySync =
+      self.precedingHistorySync;
+  [authenticationFlowInCurrentProfile
+      startSignInWithCompletion:_signInCompletion];
+  _signInCompletion = nil;
+  _didSwitchProfile = YES;
   [self continueFlow];
 }
 

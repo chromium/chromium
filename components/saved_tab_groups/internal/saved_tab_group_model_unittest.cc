@@ -42,6 +42,7 @@ using testing::IsEmpty;
 using testing::Not;
 using testing::NotNull;
 using testing::Pointee;
+using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
 MATCHER_P(HasGroupId, guid, "") {
@@ -391,6 +392,31 @@ TEST_F(SavedTabGroupModelTest, RemoveTabFromGroup) {
                                                     tab2.saved_tab_guid());
   EXPECT_EQ(group->saved_tabs().size(), size_t(1));
   test::CompareSavedTabGroupTabs(group->saved_tabs(), {group->saved_tabs()[0]});
+}
+
+TEST_F(SavedTabGroupModelTest, RemoveSharedTabFromGroup) {
+  SavedTabGroup shared_group =
+      saved_tab_group_model_->Get(id_2_)->CloneAsSharedTabGroup(
+          CollaborationId("collaboration"));
+  ASSERT_THAT(shared_group.saved_tabs(), SizeIs(2));
+  ASSERT_THAT(shared_group.last_removed_tabs_metadata(), IsEmpty());
+  saved_tab_group_model_->AddedLocally(shared_group);
+
+  // Remove one shared tab and verify that its metadata is stored in the group.
+  GaiaId removed_by("user_id");
+  base::Uuid tab_guid_to_remove =
+      shared_group.saved_tabs().back().saved_tab_guid();
+  saved_tab_group_model_->RemoveTabFromGroupFromSync(
+      shared_group.saved_guid(), tab_guid_to_remove, removed_by);
+
+  const std::map<base::Uuid, SavedTabGroup::RemovedTabMetadata>&
+      removed_tabs_metadata =
+          saved_tab_group_model_->Get(shared_group.saved_guid())
+              ->last_removed_tabs_metadata();
+  ASSERT_THAT(removed_tabs_metadata,
+              UnorderedElementsAre(testing::Key(tab_guid_to_remove)));
+  EXPECT_EQ(removed_tabs_metadata.at(tab_guid_to_remove).removed_by,
+            removed_by);
 }
 
 // Tests that a group is removed from the model when the last tab is removed

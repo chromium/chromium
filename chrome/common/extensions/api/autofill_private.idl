@@ -342,6 +342,10 @@ namespace autofillPrivate {
     // |address|: The address entry to save.
     static void saveAddress(AddressEntry address);
 
+    // Removes the address with the given ID.
+    // |guid|: ID of the address to remove.
+    static void removeAddress(DOMString guid);
+
     // Gets the list of all countries.
     // |forAccountAddressProfile|: whether the address profile opened in the
     // editor originates in the user's profile.
@@ -374,9 +378,9 @@ namespace autofillPrivate {
     // |iban|: The IBAN entry to save.
     static void saveIban(IbanEntry iban);
 
-    // Removes the entry (address or credit card) with the given ID.
-    // |guid|: ID of the entry to remove.
-    static void removeEntry(DOMString guid);
+    // Removes the payments entity with the given ID.
+    // |guid|: ID of the entity to remove.
+    static void removePaymentsEntity(DOMString guid);
 
     // Gets the list of credit cards.
     // |callback|: Callback which will be called with the list of credit cards.

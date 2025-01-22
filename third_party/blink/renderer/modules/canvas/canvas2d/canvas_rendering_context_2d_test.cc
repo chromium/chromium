@@ -470,7 +470,7 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
                              CompositingMode compositing_mode)
       : CanvasResourceProvider(CanvasResourceProvider::kSharedImage,
                                size,
-                               kN32_SkColorType,
+                               viz::SinglePlaneFormat::kRGBA_8888,
                                kPremul_SkAlphaType,
                                gfx::ColorSpace::CreateSRGB(),
                                SharedGpuContext::ContextProviderWrapper(),

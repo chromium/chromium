@@ -409,7 +409,9 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
 
 // Tests that for the plus address manual fallback suggestion, in the overflow
 // menu, there is an option to manage the plus address.
-- (void)testOverflowMenuManageActionInAddressManualFillMenu {
+// TODO(crbug.com/391354601): Reenable when the flakiness source has been found
+// and dealt with.
+- (void)FLAKY_testOverflowMenuManageActionInAddressManualFillMenu {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
   }

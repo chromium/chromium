@@ -1619,23 +1619,20 @@ bool PaymentsDataManager::SaveCardLocallyIfNew(
   return true;
 }
 
-bool PaymentsDataManager::RemoveByGUID(const std::string& guid) {
+void PaymentsDataManager::RemoveByGUID(const std::string& guid) {
   if (!GetLocalDatabase()) {
-    return false;
+    return;
   }
 
   if (FindByGUID(local_credit_cards_, guid)) {
     GetLocalDatabase()->RemoveCreditCard(guid);
     // Refresh our local cache and send notifications to observers.
     Refresh();
-    return true;
   } else if (FindByGUID(local_ibans_, guid)) {
     GetLocalDatabase()->RemoveLocalIban(guid);
     // Refresh our local cache and send notifications to observers.
     Refresh();
-    return true;
   }
-  return false;
 }
 
 void PaymentsDataManager::RemoveLocalDataModifiedBetween(base::Time begin,

@@ -116,15 +116,22 @@ bool IsAppInstalled(Profile& profile, const KioskApp& app) {
 }
 
 std::string InstalledChromeAppVersion(Profile& profile, const KioskApp& app) {
-  auto& chrome_app =
-      CHECK_DEREF(FindInExtensionRegistry(profile, app.id().app_id.value()));
+  return InstalledChromeAppVersion(profile, app.id().app_id.value());
+}
+
+std::string InstalledChromeAppVersion(Profile& profile,
+                                      std::string_view app_id) {
+  auto& chrome_app = CHECK_DEREF(FindInExtensionRegistry(profile, app_id));
   return chrome_app.version().GetString();
 }
 
 std::string CachedChromeAppVersion(const KioskApp& app) {
+  return CachedChromeAppVersion(app.id().app_id.value());
+}
+
+std::string CachedChromeAppVersion(std::string_view app_id) {
   auto& manager = CHECK_DEREF(KioskChromeAppManager::Get());
-  auto [_, cached_crx_version] =
-      manager.GetCachedCrx(app.id().app_id.value()).value();
+  auto [_, cached_crx_version] = manager.GetCachedCrx(app_id).value();
   return cached_crx_version;
 }
 

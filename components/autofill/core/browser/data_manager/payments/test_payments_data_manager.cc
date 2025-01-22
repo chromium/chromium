@@ -82,19 +82,16 @@ void TestPaymentsDataManager::LoadIbans() {
   }
 }
 
-bool TestPaymentsDataManager::RemoveByGUID(const std::string& guid) {
+void TestPaymentsDataManager::RemoveByGUID(const std::string& guid) {
   if (const CreditCard* credit_card = GetCreditCardByGUID(guid)) {
     local_credit_cards_.erase(base::ranges::find(
         local_credit_cards_, credit_card, &std::unique_ptr<CreditCard>::get));
     NotifyObservers();
-    return true;
   } else if (const Iban* iban = GetIbanByGUID(guid)) {
     local_ibans_.erase(
         base::ranges::find(local_ibans_, iban, &std::unique_ptr<Iban>::get));
     NotifyObservers();
-    return true;
   }
-  return false;
 }
 
 void TestPaymentsDataManager::RecordUseOfCard(const CreditCard& card) {

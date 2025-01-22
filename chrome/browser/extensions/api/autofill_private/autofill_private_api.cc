@@ -292,6 +292,21 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateRemoveAddressFunction
+
+ExtensionFunction::ResponseAction AutofillPrivateRemoveAddressFunction::Run() {
+  std::optional<api::autofill_private::RemoveAddress::Params> parameters =
+      api::autofill_private::RemoveAddress::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+  AddressDataManager* adm = address_data_manager();
+  if (!adm || !adm->has_initial_load_finished()) {
+    return RespondNow(Error(kErrorDataUnavailable));
+  }
+  adm->RemoveProfile(parameters->guid);
+  return RespondNow(NoArguments());
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateGetCountryListFunction
 
 ExtensionFunction::ResponseAction AutofillPrivateGetCountryListFunction::Run() {
@@ -493,17 +508,17 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveCreditCardFunction::Run() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivateRemoveEntryFunction
+// AutofillPrivateRemovePaymentsEntityFunction
 
-ExtensionFunction::ResponseAction AutofillPrivateRemoveEntryFunction::Run() {
-  std::optional<api::autofill_private::RemoveEntry::Params> parameters =
-      api::autofill_private::RemoveEntry::Params::Create(args());
+ExtensionFunction::ResponseAction
+AutofillPrivateRemovePaymentsEntityFunction::Run() {
+  std::optional<api::autofill_private::RemovePaymentsEntity::Params>
+      parameters =
+          api::autofill_private::RemovePaymentsEntity::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  AddressDataManager* adm = address_data_manager();
   PaymentsDataManager* paydm = payments_data_manager();
-  if (!adm || !adm->has_initial_load_finished() || !paydm ||
-      !paydm->is_payments_data_loaded()) {
+  if (!paydm || !paydm->is_payments_data_loaded()) {
     return RespondNow(Error(kErrorDataUnavailable));
   }
 
@@ -522,9 +537,7 @@ ExtensionFunction::ResponseAction AutofillPrivateRemoveEntryFunction::Run() {
     }
   }
 
-  if (!paydm->RemoveByGUID(parameters->guid)) {
-    adm->RemoveProfile(parameters->guid);
-  }
+  paydm->RemoveByGUID(parameters->guid);
   return RespondNow(NoArguments());
 }
 

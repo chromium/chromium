@@ -268,6 +268,9 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_DETECT_REMOVED_FORM_CONTROLS,
                 "Enables Autofill to detect if form controls are removed from the DOM"),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_OPTIMIZE_FORM_EXTRACTION,
+                "Makes Autofill spend less time on extracting forms."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_PAGE_LANGUAGE_DETECTION,
                 "Enables Autofill to retrieve the page language for form parsing."),
         Flag.baseFeature(

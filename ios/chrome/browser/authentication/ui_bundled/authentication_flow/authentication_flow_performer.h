@@ -19,13 +19,12 @@ class ProfileIOS;
 @class SceneState;
 @protocol SystemIdentity;
 
-// Callback called the profile switching succeded (`success` is true) or failed
+// Callback called the profile switching succeeded (`success` is true) or failed
 // (`success` is false).
 // If `success is true:
-// `browser` and `view_controller` are the browser and the view controller of
-// the new profile.
-using OnProfileSwitchCompletion = base::OnceCallback<
-    void(bool success, Browser* browser, UIViewController* view_controller)>;
+// `browser` is the browser of the new profile.
+using OnProfileSwitchCompletion =
+    base::OnceCallback<void(bool success, Browser* new_profile_browser)>;
 
 // Performs the sign-in steps and user interactions as part of the sign-in flow.
 @interface AuthenticationFlowPerformer : NSObject

@@ -344,8 +344,7 @@ class MagicStackRankingModelTest : public PlatformTest {
                     prefService:GetProfile()->GetPrefs()
                largeIconService:large_icon_service
                  largeIconCache:cache
-         URLLoadingBrowserAgent:url_loader_
-                       identity:nil];
+         URLLoadingBrowserAgent:url_loader_];
 
     _safetyCheckMediator = [[SafetyCheckMagicStackMediator alloc]
         initWithSafetyCheckManager:IOSChromeSafetyCheckManagerFactory::

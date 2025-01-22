@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_CHROMEOS_APP_MODE_CHROME_KIOSK_APP_INSTALLER_H_
 #define CHROME_BROWSER_CHROMEOS_APP_MODE_CHROME_KIOSK_APP_INSTALLER_H_
 
+#include <memory>
 #include <string>
+#include <vector>
 
-#include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
+#include "base/containers/flat_set.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/app_mode/startup_app_launcher_update_checker.h"
@@ -16,6 +19,7 @@
 #include "chrome/browser/extensions/install_observer.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
+#include "extensions/common/extension_id.h"
 
 class Profile;
 
@@ -39,7 +43,7 @@ class ChromeKioskAppInstaller
   void BeginInstall(InstallCallback callback);
 
  private:
-  void MaybeInstallSecondaryApps();
+  void MaybeInstallSecondaryApps(const extensions::Extension& primary_app);
   void MaybeCheckExtensionUpdate();
   void OnExtensionUpdateCheckFinished(bool update_found);
   void FinalizeAppInstall();
@@ -57,34 +61,31 @@ class ChromeKioskAppInstaller
 
   void ReportInstallSuccess();
   void ReportInstallFailure(InstallResult result);
-  void ObserveActiveInstallations();
 
-  const extensions::Extension* GetPrimaryAppExtension() const;
+  // Observes `InstallTracker` until the given `ids` finish installing.
+  void ObserveInstallations(const std::vector<extensions::ExtensionId>& ids);
 
-  // Returns true if all secondary apps have been installed.
-  bool AreSecondaryAppsInstalled() const;
+  const extensions::ExtensionId& primary_app_id() const {
+    return primary_app_install_data_.id;
+  }
 
-  // Returns true if the app with id `id` is pending an install.
-  bool IsAppInstallPending(const std::string& id) const;
-
-  // Returns true if any secondary app is pending.
-  bool IsAnySecondaryAppPending() const;
-
-  // Returns true if the primary app has a pending update.
-  bool PrimaryAppHasPendingUpdate() const;
-
-  // Returns true if the app with `id` failed, and it is the primary or one of
-  // the secondary apps.
-  bool DidPrimaryOrSecondaryAppFailedToInstall(bool success,
-                                               const std::string& id) const;
-
-  const raw_ptr<Profile> profile_;
+  raw_ref<Profile> profile_;
   AppInstallParams primary_app_install_data_;
+
+  // The set of extension IDs to wait for in `OnFinishCrxInstall`. This includes
+  // the primary Chrome app, its secondary apps, as well as any shared modules
+  // they import.
+  base::flat_set<extensions::ExtensionId> waiting_ids_;
 
   InstallCallback on_ready_callback_;
 
   bool install_complete_ = false;
   bool secondary_apps_installing_ = false;
+
+  // Will be true if an update (not an install) of the primary app fails.
+  bool primary_app_update_failed_ = false;
+  // Will be true if an update (not an install) of a secondary app fails.
+  bool secondary_app_update_failed_ = false;
 
   base::Time extension_update_start_time_;
 

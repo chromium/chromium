@@ -288,7 +288,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': '3734b432018d89b568327b50132bfe02a1b8e05c',
+  'angle_revision': '4237cca5ec06d7c640cfa8a7a4eb960b10f3b372',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'a48d7b9b0a7426c867d8b2e7238399438cb2a7c5',
+  'devtools_frontend_revision': 'fbedad605d7fc36932e2aedfdb4cfdcdd74fc686',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -2935,7 +2935,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/boca_app/app',
-        'version': 'OylStNliVlvtSwOMTgym3D670VVo_v7g3PPMmJIYRf0C',
+        'version': 'LbHjJ_esXD1PjqaozqcEWkz9FyB_L8Ds5ej9sttOLtoC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',

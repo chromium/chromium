@@ -57,8 +57,11 @@ class SyncBridgeTabGroupModelWrapper {
   // corresponds to the data type, otherwise returns null.
   const SavedTabGroup* GetGroupContainingTab(const base::Uuid& tab_id) const;
 
-  // Removes the tab from the `group_id`.
-  void RemoveTabFromGroup(const base::Uuid& group_id, const base::Uuid& tab_id);
+  // Removes the tab from the `group_id`. `removed_by` is the user who removed
+  // the tab (used for shared tab groups only, may be empty).
+  void RemoveTabFromGroup(const base::Uuid& group_id,
+                          const base::Uuid& tab_id,
+                          GaiaId removed_by = GaiaId());
 
   // Removes the whole group and all its tabs.
   void RemoveGroup(const base::Uuid& group_id);

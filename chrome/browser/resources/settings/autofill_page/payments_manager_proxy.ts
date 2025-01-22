@@ -133,7 +133,7 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
   }
 
   removeCreditCard(guid: string) {
-    chrome.autofillPrivate.removeEntry(guid);
+    chrome.autofillPrivate.removePaymentsEntity(guid);
   }
 
   saveCreditCard(creditCard: chrome.autofillPrivate.CreditCardEntry) {
@@ -145,7 +145,7 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
   }
 
   removeIban(guid: string) {
-    chrome.autofillPrivate.removeEntry(guid);
+    chrome.autofillPrivate.removePaymentsEntity(guid);
   }
 
   migrateCreditCards() {

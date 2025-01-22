@@ -22,13 +22,16 @@ constexpr char kParentAccessBaseURL[] =
     "https://families.google.com/parentaccess";
 // URL to which the parent access widget redirects on approval.
 constexpr char kParentAccessContinueURL[] = "https://families.google.com";
-constexpr char kParentAcessIOSCallerID[] = "qSTnVRdQ";
+constexpr char kParentAccessIOSCallerID[] = "qSTnVRdQ";
+// TODO(crbug.com/384000707): Update with the server-defined ID.
+constexpr char kParentAccessDesktopCallerID[] = "5140b89c";
 
-GURL GetParentAccessURL(const std::string& caller_id) {
+GURL GetParentAccessURL(const std::string& caller_id,
+                        const std::string& locale) {
   GURL url(kParentAccessBaseURL);
   GURL::Replacements replacements;
-  std::string query = base::StrCat(
-      {"callerid=", caller_id, "&continue=", kParentAccessContinueURL});
+  std::string query = base::StrCat({"callerid=", caller_id, "&hl=", locale,
+                                    "&continue=", kParentAccessContinueURL});
   replacements.SetQueryStr(query);
   return url.ReplaceComponents(replacements);
 }
@@ -145,8 +148,12 @@ extern const char kClassifyUrlThrottleStatusHistogramName[] =
 extern const char kClassifyUrlThrottleFinalStatusHistogramName[] =
     "SupervisedUsers.ClassifyUrlThrottle.FinalStatus";
 
-GURL GetParentAccessURLForIOS() {
-  return GetParentAccessURL(kParentAcessIOSCallerID);
+GURL GetParentAccessURLForIOS(const std::string& locale) {
+  return GetParentAccessURL(kParentAccessIOSCallerID, locale);
+}
+
+GURL GetParentAccessURLForDesktop(const std::string& locale) {
+  return GetParentAccessURL(kParentAccessDesktopCallerID, locale);
 }
 
 }  // namespace supervised_user

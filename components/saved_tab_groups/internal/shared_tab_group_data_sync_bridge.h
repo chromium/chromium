@@ -137,6 +137,7 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   // tabs will be removed in addition to the group.
   void DeleteDataFromLocalStorage(
       const std::string& storage_key,
+      GaiaId removed_by,
       syncer::DataTypeStore::WriteBatch& write_batch);
 
   // Inform the processor of a new or updated Shared Tab Group or Tab.

@@ -60,13 +60,14 @@ const SavedTabGroup* SyncBridgeTabGroupModelWrapper::GetGroupContainingTab(
 
 void SyncBridgeTabGroupModelWrapper::RemoveTabFromGroup(
     const base::Uuid& group_id,
-    const base::Uuid& tab_id) {
+    const base::Uuid& tab_id,
+    GaiaId removed_by) {
   // Verify that the group corresponds to the data type.
   const SavedTabGroup* group = model_->Get(group_id);
   CHECK(group);
   CHECK_EQ(group->is_shared_tab_group(), IsSharedTabGroupData());
 
-  model_->RemoveTabFromGroupFromSync(group_id, tab_id);
+  model_->RemoveTabFromGroupFromSync(group_id, tab_id, std::move(removed_by));
 }
 
 void SyncBridgeTabGroupModelWrapper::RemoveGroup(const base::Uuid& group_id) {

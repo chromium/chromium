@@ -107,7 +107,7 @@ def CheckHistogramFormatting(input_api, output_api):
 
   # Only for changed files, do corresponding checks if the file is
   # histograms.xml or enums.xml.
-  for file_obj in input_api.AffectedTextFiles():
+  for file_obj in input_api.AffectedFiles():
     is_changed = ValidateSingleFile(
         input_api, output_api, file_obj, cwd, results)
     xml_changed = xml_changed or is_changed
@@ -147,7 +147,7 @@ def CheckBooleansAreEnums(input_api, output_api):
 
   # Only for changed files, do corresponding checks if the file is
   # histograms.xml or enums.xml.
-  for affected_file in input_api.AffectedTextFiles():
+  for affected_file in input_api.AffectedFiles():
     filepath = input_api.os_path.relpath(affected_file.AbsoluteLocalPath(), cwd)
     if 'histograms.xml' in filepath:
       for line_number, line in affected_file.ChangedContents():

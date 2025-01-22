@@ -21,9 +21,6 @@
 
 namespace {
 
-// Gaia_id used in tests.
-NSString* test_gaia_id = @"test_gaia_id";
-
 class ContentSuggestionsTileSaverControllerTest : public BlockCleanupTest {
  protected:
   void SetUp() override {
@@ -191,7 +188,7 @@ TEST_F(ContentSuggestionsTileSaverControllerTest, SaveMostVisitedToDisk) {
   };
 
   content_suggestions_tile_saver::SaveMostVisitedToDisk(
-      tiles, mock_favicon_fetcher, TestFaviconDirectory(), test_gaia_id);
+      tiles, mock_favicon_fetcher, TestFaviconDirectory());
   // Wait for all asynchronous tasks to complete.
   scoped_task_evironment_.RunUntilIdle();
 
@@ -234,7 +231,7 @@ TEST_F(ContentSuggestionsTileSaverControllerTest, UpdateSingleFaviconFallback) {
   ntp_tiles::NTPTilesVector tiles = {image_tile1, fallback_tile, image_tile2};
 
   content_suggestions_tile_saver::SaveMostVisitedToDisk(
-      tiles, mock_favicon_fetcher, TestFaviconDirectory(), test_gaia_id);
+      tiles, mock_favicon_fetcher, TestFaviconDirectory());
   // Wait for all asynchronous tasks to complete.
   scoped_task_evironment_.RunUntilIdle();
 
@@ -264,8 +261,7 @@ TEST_F(ContentSuggestionsTileSaverControllerTest, UpdateSingleFaviconFallback) {
   SetupMockCallback(mock_favicon_fetcher2, {image_tile2.url},
                     {image_tile1.url, fallback_tile.url});
   content_suggestions_tile_saver::UpdateSingleFavicon(
-      image_tile1.url, mock_favicon_fetcher2, TestFaviconDirectory(),
-      test_gaia_id);
+      image_tile1.url, mock_favicon_fetcher2, TestFaviconDirectory());
   // Wait for all asynchronous tasks to complete.
   scoped_task_evironment_.RunUntilIdle();
 
@@ -305,7 +301,7 @@ TEST_F(ContentSuggestionsTileSaverControllerTest, DeleteOutdatedImage) {
   };
 
   content_suggestions_tile_saver::SaveMostVisitedToDisk(
-      tiles, mock_favicon_fetcher, TestFaviconDirectory(), test_gaia_id);
+      tiles, mock_favicon_fetcher, TestFaviconDirectory());
   // Wait for all asynchronous tasks to complete.
   scoped_task_evironment_.RunUntilIdle();
 
@@ -321,7 +317,7 @@ TEST_F(ContentSuggestionsTileSaverControllerTest, DeleteOutdatedImage) {
   };
 
   content_suggestions_tile_saver::SaveMostVisitedToDisk(
-      tiles2, mock_favicon_fetcher, TestFaviconDirectory(), test_gaia_id);
+      tiles2, mock_favicon_fetcher, TestFaviconDirectory());
   // Wait for all asynchronous tasks to complete.
   scoped_task_evironment_.RunUntilIdle();
   NSDictionary<NSURL*, NTPTile*>* saved_tiles2 =
@@ -361,7 +357,7 @@ TEST_F(ContentSuggestionsTileSaverControllerTest, UpdateEntry) {
       tile,
   };
   content_suggestions_tile_saver::SaveMostVisitedToDisk(
-      tiles, mock_favicon_image_fetcher, TestFaviconDirectory(), test_gaia_id);
+      tiles, mock_favicon_image_fetcher, TestFaviconDirectory());
   // Wait for all asynchronous tasks to complete.
   scoped_task_evironment_.RunUntilIdle();
   NSDictionary<NSURL*, NTPTile*>* saved =
@@ -374,7 +370,7 @@ TEST_F(ContentSuggestionsTileSaverControllerTest, UpdateEntry) {
   EXPECT_NSNE(UIImagePNGRepresentation(red_image),
               UIImagePNGRepresentation(blue_image));
   content_suggestions_tile_saver::SaveMostVisitedToDisk(
-      tiles, mock_favicon_image_fetcher, TestFaviconDirectory(), test_gaia_id);
+      tiles, mock_favicon_image_fetcher, TestFaviconDirectory());
   // Wait for all asynchronous tasks to complete.
   scoped_task_evironment_.RunUntilIdle();
   saved = content_suggestions_tile_saver::ReadSavedMostVisited();
@@ -383,8 +379,7 @@ TEST_F(ContentSuggestionsTileSaverControllerTest, UpdateEntry) {
 
   // Update with fallback
   content_suggestions_tile_saver::SaveMostVisitedToDisk(
-      tiles, mock_favicon_fallback_fetcher, TestFaviconDirectory(),
-      test_gaia_id);
+      tiles, mock_favicon_fallback_fetcher, TestFaviconDirectory());
   // Wait for all asynchronous tasks to complete.
   scoped_task_evironment_.RunUntilIdle();
   saved = content_suggestions_tile_saver::ReadSavedMostVisited();
@@ -396,7 +391,7 @@ TEST_F(ContentSuggestionsTileSaverControllerTest, UpdateEntry) {
   EXPECT_NSNE(UIImagePNGRepresentation(blue_image),
               UIImagePNGRepresentation(green_image));
   content_suggestions_tile_saver::SaveMostVisitedToDisk(
-      tiles, mock_favicon_image_fetcher, TestFaviconDirectory(), test_gaia_id);
+      tiles, mock_favicon_image_fetcher, TestFaviconDirectory());
   // Wait for all asynchronous tasks to complete.
   scoped_task_evironment_.RunUntilIdle();
   saved = content_suggestions_tile_saver::ReadSavedMostVisited();
@@ -407,7 +402,7 @@ TEST_F(ContentSuggestionsTileSaverControllerTest, UpdateEntry) {
   // Remove tile.
   content_suggestions_tile_saver::SaveMostVisitedToDisk(
       ntp_tiles::NTPTilesVector(), mock_favicon_image_fetcher,
-      TestFaviconDirectory(), test_gaia_id);
+      TestFaviconDirectory());
   // Wait for all asynchronous tasks to complete.
   scoped_task_evironment_.RunUntilIdle();
   EXPECT_FALSE([[NSFileManager defaultManager]

@@ -49,9 +49,21 @@ std::vector<tab_groups::SavedTabGroupTab> GetRemovedTabs(
     const tab_groups::SavedTabGroup& before,
     const tab_groups::SavedTabGroup& after) {
   std::vector<tab_groups::SavedTabGroupTab> removed_tabs;
-  for (const auto& tab : before.saved_tabs()) {
+  const std::map<base::Uuid, tab_groups::SavedTabGroup::RemovedTabMetadata>&
+      removed_tabs_metadata = after.last_removed_tabs_metadata();
+  for (const tab_groups::SavedTabGroupTab& tab : before.saved_tabs()) {
     if (!after.ContainsTab(tab.saved_tab_guid())) {
       removed_tabs.emplace_back(tab);
+
+      if (auto it = removed_tabs_metadata.find(tab.saved_tab_guid());
+          it != removed_tabs_metadata.end()) {
+        // Copy over metadata for the removed tabs from SavedTabGroup.
+        const tab_groups::SavedTabGroup::RemovedTabMetadata& metadata =
+            it->second;
+        removed_tabs.back().SetUpdatedByAttribution(metadata.removed_by);
+        removed_tabs.back().SetUpdateTimeWindowsEpochMicros(
+            metadata.removal_time);
+      }
     }
   }
   return removed_tabs;
