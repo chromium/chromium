@@ -33,6 +33,7 @@ namespace captions {
 
 class CaptionBubbleController;
 class CaptionBubbleContext;
+class LiveCaptionBubbleSettings;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Live Caption Controller
@@ -121,6 +122,7 @@ class LiveCaptionController : public KeyedService,
   raw_ptr<PrefService> global_prefs_;
   raw_ptr<content::BrowserContext> browser_context_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+  const std::unique_ptr<LiveCaptionBubbleSettings> caption_bubble_settings_;
   std::unique_ptr<CaptionBubbleController> caption_bubble_controller_;
   std::optional<ui::CaptionStyle> caption_style_;
   base::RepeatingCallback<void()> create_ui_callback_for_testing_;

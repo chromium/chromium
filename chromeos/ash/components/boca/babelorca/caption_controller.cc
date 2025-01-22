@@ -12,6 +12,7 @@
 #include "components/live_caption/caption_bubble_context.h"
 #include "components/live_caption/caption_bubble_controller.h"
 #include "components/live_caption/caption_util.h"
+#include "components/live_caption/live_caption_bubble_settings.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -38,9 +39,9 @@ class CaptionControllerDelgateImpl : public CaptionController::Delegate {
 
   std::unique_ptr<::captions::CaptionBubbleController>
   CreateCaptionBubbleController(
-      PrefService* profile_prefs,
+      ::captions::CaptionBubbleSettings* caption_bubble_settings,
       const std::string& application_locale) override {
-    return ::captions::CaptionBubbleController::Create(profile_prefs,
+    return ::captions::CaptionBubbleController::Create(caption_bubble_settings,
                                                        application_locale);
   }
 
@@ -63,6 +64,11 @@ CaptionController::CaptionController(
     : caption_bubble_context_(std::move(caption_bubble_context)),
       profile_prefs_(profile_prefs),
       application_locale_(application_locale),
+      // TODO(crbug.com/6176897): Add babel orca implementation for bubble
+      // settings and use it here.
+      caption_bubble_settings_(
+          std::make_unique<::captions::LiveCaptionBubbleSettings>(
+              profile_prefs_)),
       delegate_(delegate ? std::move(delegate)
                          : std::make_unique<CaptionControllerDelgateImpl>()) {
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
@@ -80,7 +86,7 @@ void CaptionController::StartLiveCaption() {
 
   is_ui_constructed_ = true;
   caption_bubble_controller_ = delegate_->CreateCaptionBubbleController(
-      profile_prefs_, application_locale_);
+      caption_bubble_settings_.get(), application_locale_);
   OnCaptionStyleUpdated();
   // Observe native theme changes for caption style updates.
   delegate_->AddCaptionStyleObserver(this);
@@ -119,7 +125,7 @@ bool CaptionController::DispatchTranscription(
   }
   // Rebuild caption bubble in case it was closed.
   caption_bubble_controller_ = delegate_->CreateCaptionBubbleController(
-      profile_prefs_, application_locale_);
+      caption_bubble_settings_.get(), application_locale_);
   return caption_bubble_controller_->OnTranscription(
       caption_bubble_context_.get(), result);
 }

@@ -19,6 +19,7 @@ class PrefService;
 namespace captions {
 class CaptionBubbleContext;
 class CaptionBubbleController;
+class CaptionBubbleSettings;
 }  // namespace captions
 
 namespace media {
@@ -37,8 +38,9 @@ class CaptionController : public ui::NativeThemeObserver {
     virtual ~Delegate() = default;
 
     virtual std::unique_ptr<::captions::CaptionBubbleController>
-    CreateCaptionBubbleController(PrefService* profile_prefs,
-                                  const std::string& application_locale) = 0;
+    CreateCaptionBubbleController(
+        ::captions::CaptionBubbleSettings* caption_bubble_settings,
+        const std::string& application_locale) = 0;
 
     virtual void AddCaptionStyleObserver(ui::NativeThemeObserver* observer) = 0;
 
@@ -78,6 +80,8 @@ class CaptionController : public ui::NativeThemeObserver {
   std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context_;
   raw_ptr<PrefService> profile_prefs_;
   const std::string application_locale_;
+  const std::unique_ptr<::captions::CaptionBubbleSettings>
+      caption_bubble_settings_;
   const std::unique_ptr<Delegate> delegate_;
 
   std::unique_ptr<::captions::CaptionBubbleController>

@@ -14,6 +14,7 @@
 #include "components/live_caption/caption_bubble_context.h"
 #include "components/live_caption/caption_bubble_controller.h"
 #include "components/live_caption/caption_util.h"
+#include "components/live_caption/live_caption_bubble_settings.h"
 #include "components/live_caption/pref_names.h"
 #include "components/live_caption/views/caption_bubble.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -48,6 +49,8 @@ LiveCaptionController::LiveCaptionController(
     : profile_prefs_(profile_prefs),
       global_prefs_(global_prefs),
       browser_context_(browser_context),
+      caption_bubble_settings_(
+          std::make_unique<LiveCaptionBubbleSettings>(profile_prefs)),
       application_locale_(application_locale) {
   if (create_ui_callback_for_testing) {
     create_ui_callback_for_testing_ = std::move(create_ui_callback_for_testing);
@@ -243,8 +246,8 @@ void LiveCaptionController::CreateUI() {
     return;
   }
 
-  caption_bubble_controller_ =
-      CaptionBubbleController::Create(profile_prefs_, application_locale_);
+  caption_bubble_controller_ = CaptionBubbleController::Create(
+      caption_bubble_settings_.get(), application_locale_);
   caption_bubble_controller_->UpdateCaptionStyle(caption_style_);
 
   // Observe native theme changes for caption style updates.

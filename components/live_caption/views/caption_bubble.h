@@ -13,8 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/buildflag.h"
+#include "components/live_caption/caption_bubble_settings.h"
 #include "components/live_caption/views/caption_bubble_model.h"
-#include "components/prefs/pref_service.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/font_list.h"
@@ -25,8 +25,6 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/metadata/view_factory.h"
-
-class PrefChangeRegistrar;
 
 namespace views {
 class Checkbox;
@@ -81,11 +79,12 @@ extern const ui::ClassProperty<bool>* const kIsCaptionBubbleKey;
 //
 class CaptionBubble : public views::BubbleDialogDelegateView,
                       public gfx::AnimationDelegate,
-                      public ui::SimpleMenuModel::Delegate {
+                      public ui::SimpleMenuModel::Delegate,
+                      public CaptionBubbleSettings::Observer {
   METADATA_HEADER(CaptionBubble, views::BubbleDialogDelegateView)
 
  public:
-  CaptionBubble(PrefService* profile_prefs,
+  CaptionBubble(CaptionBubbleSettings* caption_bubble_settings,
                 const std::string& application_locale,
                 base::OnceClosure destroyed_callback);
   CaptionBubble(const CaptionBubble&) = delete;
@@ -139,6 +138,11 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
 
   bool IsCommandIdChecked(int target_language_code_index) const override;
 
+  // CaptionBubbleSettings::Observer:
+  void OnLiveTranslateEnabledChanged() override;
+  void OnLiveCaptionLanguageChanged() override;
+  void OnLiveTranslateTargetLanguageChanged() override;
+
  protected:
   // views::BubbleDialogDelegateView:
   void Init() override;
@@ -149,9 +153,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
       views::Widget* widget) override;
   gfx::Rect GetBubbleBounds() override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
-  void OnLiveTranslateEnabledChanged();
-  void OnLiveCaptionLanguageChanged();
-  void OnLiveTranslateTargetLanguageChanged();
   std::u16string GetAccessibleWindowTitle() const override;
   void OnThemeChanged() override;
 
@@ -262,8 +263,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
 
   bool IsLiveTranslateEnabled();
 
-  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-
   // Unowned. Owned by views hierarchy.
   raw_ptr<CaptionBubbleLabel> label_;
   raw_ptr<views::Label> title_;
@@ -304,7 +303,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
 
   std::optional<ui::CaptionStyle> caption_style_;
   raw_ptr<CaptionBubbleModel> model_ = nullptr;
-  raw_ptr<PrefService> profile_prefs_;
+  const raw_ptr<CaptionBubbleSettings> caption_bubble_settings_;
 
   OnErrorClickedCallback error_clicked_callback_;
   OnDoNotShowAgainClickedCallback error_silenced_callback_;
