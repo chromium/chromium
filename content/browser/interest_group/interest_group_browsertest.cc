@@ -15041,8 +15041,16 @@ class InterestGroupComponentWorkletValidationBrowserTest
 
 // Use bidder and seller worklet files that validate their arguments all have
 // the expected values, in the case of an auction with one component auction.
+// TODO(crbug.com/391463457): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ComponentAuctionValidateWorkletParameters \
+  DISABLED_ComponentAuctionValidateWorkletParameters
+#else
+#define MAYBE_ComponentAuctionValidateWorkletParameters \
+  ComponentAuctionValidateWorkletParameters
+#endif
 IN_PROC_BROWSER_TEST_P(InterestGroupComponentWorkletValidationBrowserTest,
-                       ComponentAuctionValidateWorkletParameters) {
+                       MAYBE_ComponentAuctionValidateWorkletParameters) {
   // Use different hostnames for each participant.
   //
   // Match assignments in above test as closely as possible, to make scripts
