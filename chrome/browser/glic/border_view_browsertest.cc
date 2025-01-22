@@ -27,6 +27,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/switches.h"
 #include "ui/views/test/widget_activation_waiter.h"
 
 namespace glic {
@@ -64,6 +65,11 @@ class BorderViewBrowserTest : public InteractiveBrowserTest {
         ::switches::kGlicGuestURL,
         embedded_test_server()->GetURL("/glic/test.html").spec());
     command_line->AppendSwitchASCII(::switches::kCSPOverride, "");
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kForcePrefersNoReducedMotion);
   }
 
   SkBitmap PaintBorder(BorderView* border) {
@@ -115,6 +121,20 @@ class BorderViewBrowserTest : public InteractiveBrowserTest {
     return tab_strip_view->GetGlicButton();
   }
 
+  glic::GlicKeyedService* glic_service(Browser* browser) {
+    return glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+        browser->GetProfile());
+  }
+
+  void StartBorderAnimation(Browser* browser) {
+    // Mimicking the user journey by clicking the button and having the WebApp
+    // set the context access indicator status.
+    RunTestSequence(PressButton(kGlicButtonElementId),
+                    InAnyContext(WaitForShow(kGlicViewElementId)));
+    // TODO(crbug.com/390233842): We should call this in the testing web app.
+    glic_service(browser)->SetContextAccessIndicator(true);
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -128,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, BorderResize) {
   // the glic UI is toggled.
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
-  border->StartAnimation();
+  StartBorderAnimation(browser());
   auto* contents_web_view = browser()->GetBrowserView().contents_web_view();
   EXPECT_EQ(border->GetVisibleBounds(), contents_web_view->GetVisibleBounds());
 
@@ -157,7 +177,9 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, Visibility) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   EXPECT_FALSE(border->GetVisible());
-  border->StartAnimation();
+
+  StartBorderAnimation(browser());
+  EXPECT_TRUE(border->compositor_for_testing());
   EXPECT_TRUE(border->GetVisible());
   border->CancelAnimation();
   EXPECT_FALSE(border->GetVisible());
@@ -170,7 +192,8 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, AnimationSteps) {
   ASSERT_TRUE(border);
   gfx::Rect capture_rect = GetContentsRectForWindow(browser());
 
-  border->StartAnimation();
+  StartBorderAnimation(browser());
+  EXPECT_TRUE(border->compositor_for_testing());
 
   // Manually stepping the animation code to mimic the behavior of the
   // compositor. As a part of crbug.com/384712084, testing via requesting
@@ -256,6 +279,7 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, AnimationSteps) {
   }
 
   border->CancelAnimation();
+  EXPECT_FALSE(border->compositor_for_testing());
 }
 
 // Ensures that the border animation state is reset after canceling the
@@ -264,7 +288,8 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, AnimationStateReset) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
 
-  border->StartAnimation();
+  StartBorderAnimation(browser());
+  EXPECT_TRUE(border->compositor_for_testing());
   border->OnAnimationStep(base::TimeTicks::Now());
   border->CancelAnimation();
 
@@ -277,13 +302,7 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, FocusedTabChange) {
   ASSERT_TRUE(border);
   gfx::Rect capture_rect = GetContentsRectForWindow(browser());
 
-  // Mimicking the user journey by clicking the button and having the WebApp set
-  // the context access indicator status.
-  auto* const glic_keyed_service =
-      glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-          browser()->GetProfile());
-  GetGlicButton(browser())->LaunchUI();
-  glic_keyed_service->SetContextAccessIndicator(true);
+  StartBorderAnimation(browser());
   EXPECT_TRUE(border->compositor_for_testing());
 
   base::TimeTicks timestamp = base::TimeTicks::Now();
@@ -371,21 +390,13 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, FocusedTabChange) {
 }
 
 IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, FocusedWindowChange) {
-  // Mimicking the user journey by clicking the button and having the WebApp set
-  // the context access indicator status.
-  RunTestSequence(PressButton(kGlicButtonElementId),
-                  InAnyContext(WaitForShow(kGlicViewElementId)),
-                  InSameContext(Steps(MoveMouseTo(kGlicViewElementId),
-                                      ActivateSurface(kGlicViewElementId))));
-  auto* glic_keyed_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-      browser()->GetProfile());
-  // TODO(crbug.com/390233842): We should call this in the testing web app.
-  glic_keyed_service->SetContextAccessIndicator(true);
 
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
-  EXPECT_TRUE(border->compositor_for_testing());
   gfx::Rect capture_rect = GetContentsRectForWindow(browser());
+
+  StartBorderAnimation(browser());
+  EXPECT_TRUE(border->compositor_for_testing());
 
   base::TimeTicks timestamp = base::TimeTicks::Now();
 
@@ -446,6 +457,9 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, FocusedWindowChange) {
         actual_bitmap, expected_bitmap,
         cc::ManhattanDistancePixelComparator(kPxComparisonTolerance)));
   }
+
+  border->CancelAnimation();
+  EXPECT_FALSE(border->compositor_for_testing());
 }
 
 namespace {
@@ -464,6 +478,64 @@ class BorderViewFeatureDisabledBrowserTest : public BorderViewBrowserTest {
 IN_PROC_BROWSER_TEST_F(BorderViewFeatureDisabledBrowserTest, NoBorder) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   EXPECT_FALSE(border);
+}
+
+namespace {
+class BorderViewPrefersReducedMotionBrowserTest : public BorderViewBrowserTest {
+ public:
+  BorderViewPrefersReducedMotionBrowserTest() = default;
+  ~BorderViewPrefersReducedMotionBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BorderViewBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kForcePrefersReducedMotion);
+  }
+};
+}  // namespace
+
+// Ensures that in prefers-reduced-motion cases, the border appears in its
+// maximum width and opacity from the very beginning without any animation.
+IN_PROC_BROWSER_TEST_F(BorderViewPrefersReducedMotionBrowserTest,
+                       PrefersReducedMotion) {
+  ASSERT_TRUE(gfx::Animation::PrefersReducedMotion());
+  auto* border = browser()->window()->AsBrowserView()->glic_border();
+  ASSERT_TRUE(border);
+  gfx::Rect capture_rect = GetContentsRectForWindow(browser());
+
+  StartBorderAnimation(browser());
+  EXPECT_TRUE(border->compositor_for_testing());
+
+  base::TimeTicks timestamp = base::TimeTicks::Now();
+
+  {
+    border->OnAnimationStep(timestamp);
+    SkBitmap actual_bitmap = PaintBorder(border);
+    SkBitmap expected_bitmap = ConstructExpectedBitmap(
+        capture_rect.size(),
+        /*border_color=*/BorderColor(),
+        /*center_color=*/kBlack, /*border_width=*/10.f, /*alpha=*/1.f);
+
+    EXPECT_TRUE(cc::MatchesBitmap(
+        actual_bitmap, expected_bitmap,
+        cc::ManhattanDistancePixelComparator(kPxComparisonTolerance)));
+  }
+
+  {
+    timestamp += base::Seconds(4);
+    border->OnAnimationStep(timestamp);
+    SkBitmap actual_bitmap = PaintBorder(border);
+    SkBitmap expected_bitmap = ConstructExpectedBitmap(
+        capture_rect.size(),
+        /*border_color=*/BorderColor(),
+        /*center_color=*/kBlack, /*border_width=*/10.f, /*alpha=*/1.f);
+
+    EXPECT_TRUE(cc::MatchesBitmap(
+        actual_bitmap, expected_bitmap,
+        cc::ManhattanDistancePixelComparator(kPxComparisonTolerance)));
+  }
+
+  border->CancelAnimation();
+  EXPECT_FALSE(border->compositor_for_testing());
 }
 
 }  // namespace glic

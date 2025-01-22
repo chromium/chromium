@@ -186,8 +186,11 @@ void BorderView::OnAnimationStep(base::TimeTicks timestamp) {
   base::TimeDelta since_first_frame = timestamp - first_frame_time_;
   float progress_in_radian = GetProgressInRadian(since_first_frame);
 
-  if (progress_in_radian > M_PI / 2) {
+  if (skip_animation_ || progress_in_radian > M_PI / 2) {
     progress_ = 1;
+    // If skipping the animation the class does not need to be an animation
+    // observer.
+    compositor_->RemoveAnimationObserver(this);
     return;
   }
 
@@ -216,13 +219,17 @@ void BorderView::StartAnimation() {
   layer()->SetFillsBoundsOpaquely(false);
   SetVisible(true);
 
+  skip_animation_ = gfx::Animation::PrefersReducedMotion();
+
   ui::Compositor* compositor = layer()->GetCompositor();
   if (!compositor) {
     base::debug::DumpWithoutCrashing();
     return;
   }
+
   compositor_ = compositor;
   compositor_->AddAnimationObserver(this);
+  compositor_->AddObserver(this);
 }
 
 void BorderView::CancelAnimation() {
@@ -230,6 +237,7 @@ void BorderView::CancelAnimation() {
     return;
   }
 
+  compositor_->RemoveObserver(this);
   compositor_->RemoveAnimationObserver(this);
   compositor_ = nullptr;
   progress_ = 0.f;

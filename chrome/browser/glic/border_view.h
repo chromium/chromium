@@ -7,6 +7,7 @@
 
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/compositor_animation_observer.h"
+#include "ui/compositor/compositor_observer.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
@@ -19,7 +20,8 @@ class Canvas;
 namespace glic {
 
 class BorderView : public views::View,
-                   public ui::CompositorAnimationObserver {
+                   public ui::CompositorAnimationObserver,
+                   public ui::CompositorObserver {
   METADATA_HEADER(BorderView, views::View)
 
  public:
@@ -33,6 +35,8 @@ class BorderView : public views::View,
 
   // `ui::CompositorAnimationObserver`:
   void OnAnimationStep(base::TimeTicks timestamp) override;
+
+  // `ui::CompositorObserver`:
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
 
   // TODO(liuwilliam): These should be private once we can end-to-end test the
@@ -56,6 +60,10 @@ class BorderView : public views::View,
   // Stores the first frame timestamp to be used for calculating the animation
   // progress.
   base::TimeTicks first_frame_time_;
+
+  // When it is true, the class directly presents a static border and when it is
+  // false, it animates the border first.
+  bool skip_animation_ = false;
 };
 
 BEGIN_VIEW_BUILDER(, BorderView, views::View)
