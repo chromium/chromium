@@ -17,7 +17,7 @@
 
 import {expect} from 'chai';
 
-import {base64ToString} from './Base64.js';
+import {base64ToString} from './base64.js';
 
 describe('base64ToString', () => {
   it('should decode', () => {

@@ -38,15 +38,15 @@ import {
 } from './modules/session/EventManager.js';
 import type {OutgoingMessage} from './OutgoingMessage.js';
 
-type BidiServerEvent = {
+interface BidiServerEvent extends Record<string | symbol, unknown> {
   message: ChromiumBidi.Command;
-};
+}
 
-export type MapperOptions = {
+export interface MapperOptions {
   acceptInsecureCerts?: boolean;
   unhandledPromptBehavior?: Session.UserPromptHandler;
   'goog:prerenderingDisabled'?: boolean;
-};
+}
 
 export class BidiServer extends EventEmitter<BidiServerEvent> {
   #messageQueue: ProcessingQueue<OutgoingMessage>;

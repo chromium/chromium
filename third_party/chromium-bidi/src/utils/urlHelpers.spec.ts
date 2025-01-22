@@ -17,7 +17,7 @@
 
 import {expect} from 'chai';
 
-import {urlMatchesAboutBlank} from './UrlHelpers.js';
+import {urlMatchesAboutBlank} from './urlHelpers.js';
 
 describe('BrowsingContextStorage', () => {
   describe('urlMatchesAboutBlank', () => {

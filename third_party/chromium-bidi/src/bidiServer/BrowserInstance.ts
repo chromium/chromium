@@ -37,10 +37,10 @@ import type {SimpleTransport} from './SimpleTransport.js';
 
 const debugInternal = debug('bidi:mapper:internal');
 
-export type ChromeOptions = {
+export interface ChromeOptions {
   chromeArgs: string[];
   chromeBinary?: string;
-};
+}
 
 /**
  * BrowserProcess is responsible for running the browser and BiDi Mapper within

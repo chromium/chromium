@@ -36,6 +36,7 @@ const compat = new FlatCompat({
  */
 export default [
   {
+    name: 'Ignored files',
     ignores: [
       '**/.mypy_cache/',
       '**/.pytest_cache/',
@@ -151,6 +152,7 @@ export default [
       'plugin:@typescript-eslint/recommended-requiring-type-checking',
     )
     .map((config) => ({
+      name: 'Plugin rules',
       ...config,
       files: ['**/*.ts'],
     })),
@@ -238,6 +240,8 @@ export default [
 
       'no-throw-literal': 'off',
       '@typescript-eslint/only-throw-error': 'error',
+
+      '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
     },
   },
   {

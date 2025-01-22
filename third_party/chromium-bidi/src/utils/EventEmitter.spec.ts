@@ -21,10 +21,10 @@ import sinon from 'sinon';
 import {EventEmitter} from './EventEmitter.js';
 
 describe('EventEmitter', () => {
-  type Events = {
+  interface Events extends Record<string | symbol, unknown> {
     foo: undefined;
     bar: string;
-  };
+  }
   let emitter: EventEmitter<Events>;
 
   beforeEach(() => {

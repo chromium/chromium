@@ -36,7 +36,7 @@ import {type LoggerFn, LogType} from '../../../utils/log.js';
 import {getTimestamp} from '../../../utils/time.js';
 import {inchesFromCm} from '../../../utils/unitConversions.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
-import {TargetEvents} from '../cdp/TargetEvents';
+import {TargetEvents} from '../cdp/TargetEvents.js';
 import type {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import {WindowRealm} from '../script/WindowRealm.js';

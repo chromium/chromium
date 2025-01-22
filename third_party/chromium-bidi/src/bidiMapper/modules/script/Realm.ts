@@ -22,7 +22,7 @@ import {
   NoSuchHandleException,
   Script,
 } from '../../../protocol/protocol.js';
-import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
+import {CdpErrorConstants} from '../../../utils/cdpErrorConstants.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';

@@ -25,7 +25,7 @@ import {
 import type {Realm} from './Realm.js';
 import {WindowRealm} from './WindowRealm.js';
 
-type RealmFilter = {
+interface RealmFilter {
   realmId?: Script.Realm;
   browsingContextId?: BrowsingContext.BrowsingContext;
   executionContextId?: Protocol.Runtime.ExecutionContextId;
@@ -33,7 +33,7 @@ type RealmFilter = {
   type?: Script.RealmType;
   sandbox?: string;
   cdpSessionId?: Protocol.Target.SessionID;
-};
+}
 
 /** Container class for browsing realms. */
 export class RealmStorage {

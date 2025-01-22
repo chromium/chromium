@@ -28,9 +28,9 @@ const enum BrowsingContextStorageEvents {
   Added = 'added',
 }
 
-type BrowsingContextStorageEvent = {
+interface BrowsingContextStorageEvent extends Record<string | symbol, unknown> {
   [BrowsingContextStorageEvents.Added]: {browsingContext: BrowsingContextImpl};
-};
+}
 
 /** Container class for browsing contexts. */
 export class BrowsingContextStorage {

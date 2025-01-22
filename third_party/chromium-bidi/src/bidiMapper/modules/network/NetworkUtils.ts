@@ -23,7 +23,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import {InvalidArgumentException} from '../../../protocol/ErrorResponse.js';
 import {Network, type Storage} from '../../../protocol/protocol.js';
-import {base64ToString} from '../../../utils/Base64.js';
+import {base64ToString} from '../../../utils/base64.js';
 
 export function computeHeadersSize(headers: Network.Header[]): number {
   const requestHeaders = headers.reduce((acc, header) => {
@@ -302,13 +302,13 @@ export function isSpecialScheme(protocol: string): boolean {
   );
 }
 
-export type ParsedUrlPattern = {
+export interface ParsedUrlPattern {
   protocol?: string;
   hostname?: string;
   port?: string;
   pathname?: string;
   search?: string;
-};
+}
 
 function getScheme(url: URL) {
   return url.protocol.replace(/:$/, '');

@@ -24,7 +24,7 @@ import {
   NoSuchUserContextException,
 } from '../../../protocol/protocol.js';
 import type {CdpClient} from '../../BidiMapper.js';
-import type {BrowsingContextStorage} from '../context/BrowsingContextStorage';
+import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 export class BrowserProcessor {
   readonly #browserCdpClient: CdpClient;

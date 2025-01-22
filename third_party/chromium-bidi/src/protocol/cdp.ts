@@ -39,75 +39,75 @@ export type CommandData =
   | DeprecatedGetSessionCommand
   | DeprecatedResolveRealmCommand;
 
-export type CommandResponse = {
+export interface CommandResponse {
   type: 'success';
   id: JsUint;
   result: ResultData;
-};
+}
 export type ResultData =
   | SendCommandResult
   | GetSessionResult
   | ResolveRealmResult;
 
-export type DeprecatedSendCommandCommand = {
+export interface DeprecatedSendCommandCommand {
   method: 'cdp.sendCommand';
   params: SendCommandParameters;
-};
+}
 
-export type SendCommandCommand = {
+export interface SendCommandCommand {
   method: 'goog:cdp.sendCommand';
   params: SendCommandParameters;
-};
+}
 
-export type SendCommandParameters<
+export interface SendCommandParameters<
   Command extends
     keyof ProtocolMapping.Commands = keyof ProtocolMapping.Commands,
-> = {
+> {
   method: Command;
   params?: ProtocolMapping.Commands[Command]['paramsType'][0];
   session?: Protocol.Target.SessionID;
-};
+}
 
-export type SendCommandResult = {
+export interface SendCommandResult {
   result: ProtocolMapping.Commands[keyof ProtocolMapping.Commands]['returnType'];
   session?: Protocol.Target.SessionID;
-};
+}
 
-export type DeprecatedGetSessionCommand = {
+export interface DeprecatedGetSessionCommand {
   method: 'cdp.getSession';
   params: GetSessionParameters;
-};
+}
 
-export type GetSessionCommand = {
+export interface GetSessionCommand {
   method: 'goog:cdp.getSession';
   params: GetSessionParameters;
-};
+}
 
-export type GetSessionParameters = {
+export interface GetSessionParameters {
   context: BrowsingContext.BrowsingContext;
-};
+}
 
-export type GetSessionResult = {
+export interface GetSessionResult {
   session?: Protocol.Target.SessionID;
-};
+}
 
-export type DeprecatedResolveRealmCommand = {
+export interface DeprecatedResolveRealmCommand {
   method: 'cdp.resolveRealm';
   params: ResolveRealmParameters;
-};
+}
 
-export type ResolveRealmCommand = {
+export interface ResolveRealmCommand {
   method: 'goog:cdp.resolveRealm';
   params: ResolveRealmParameters;
-};
+}
 
-export type ResolveRealmParameters = {
+export interface ResolveRealmParameters {
   realm: Script.Realm;
-};
+}
 
-export type ResolveRealmResult = {
+export interface ResolveRealmResult {
   executionContextId: Protocol.Runtime.ExecutionContextId;
-};
+}
 
 export type Event = {
   type: 'event';
@@ -117,21 +117,22 @@ export type EventData =
   | EventDataFor<keyof ProtocolMapping.Events>
   | DeprecatedEventDataFor<keyof ProtocolMapping.Events>;
 
-export type DeprecatedEventDataFor<
+export interface DeprecatedEventDataFor<
   EventName extends keyof ProtocolMapping.Events,
-> = {
+> {
   method: `cdp.${EventName}`;
   params: EventParametersFor<EventName>;
-};
+}
 
-export type EventDataFor<EventName extends keyof ProtocolMapping.Events> = {
+export interface EventDataFor<EventName extends keyof ProtocolMapping.Events> {
   method: `goog:cdp.${EventName}`;
   params: EventParametersFor<EventName>;
-};
+}
 
-export type EventParametersFor<EventName extends keyof ProtocolMapping.Events> =
-  {
-    event: EventName;
-    params: ProtocolMapping.Events[EventName][0];
-    session: Protocol.Target.SessionID;
-  };
+export interface EventParametersFor<
+  EventName extends keyof ProtocolMapping.Events,
+> {
+  event: EventName;
+  params: ProtocolMapping.Events[EventName][0];
+  session: Protocol.Target.SessionID;
+}

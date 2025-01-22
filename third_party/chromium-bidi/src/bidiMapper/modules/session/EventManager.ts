@@ -66,12 +66,12 @@ export const enum EventManagerEvents {
   Event = 'event',
 }
 
-type EventManagerEventsMap = {
+interface EventManagerEventsMap extends Record<string | symbol, unknown> {
   [EventManagerEvents.Event]: {
     message: Promise<Result<OutgoingMessage>>;
     event: string;
   };
-};
+}
 /**
  * Maps event name to a desired buffer length.
  */
@@ -82,10 +82,10 @@ const eventBufferLength: ReadonlyMap<ChromiumBidi.EventNames, number> = new Map(
 /**
  * Subscription item is a pair of event name and context id.
  */
-export type SubscriptionItem = {
+export interface SubscriptionItem {
   contextId: BrowsingContext.BrowsingContext;
   event: ChromiumBidi.EventNames;
-};
+}
 
 export class EventManager extends EventEmitter<EventManagerEventsMap> {
   /**

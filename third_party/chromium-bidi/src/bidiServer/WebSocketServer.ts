@@ -30,7 +30,7 @@ const debugInternal = debug('bidi:server:internal');
 const debugSend = debug('bidi:server:SEND ▸');
 const debugRecv = debug('bidi:server:RECV ◂');
 
-type Session = {
+interface Session {
   sessionId: string;
   // Promise is used to decrease WebSocket handshake latency. If session is set via
   // WebDriver Classic, we need to launch Browser instance for each new WebSocket
@@ -38,13 +38,13 @@ type Session = {
   // TODO: replace with BrowserInstance, make readonly, remove promise and undefined.
   browserInstancePromise: Promise<BrowserInstance> | undefined;
   sessionOptions: Readonly<SessionOptions>;
-};
+}
 
-type SessionOptions = {
+interface SessionOptions {
   readonly chromeOptions: ChromeOptions;
   readonly verbose: boolean;
   readonly sessionNewBody: string;
-};
+}
 
 export class WebSocketServer {
   #sessions = new Map<string, Session>();

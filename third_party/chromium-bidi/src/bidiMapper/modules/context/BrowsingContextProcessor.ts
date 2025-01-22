@@ -25,7 +25,7 @@ import {
   NoSuchUserContextException,
   NoSuchAlertException,
 } from '../../../protocol/protocol.js';
-import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
+import {CdpErrorConstants} from '../../../utils/cdpErrorConstants.js';
 import type {EventManager} from '../session/EventManager.js';
 
 import type {BrowsingContextImpl} from './BrowsingContextImpl.js';

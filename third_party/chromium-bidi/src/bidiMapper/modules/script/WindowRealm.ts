@@ -24,7 +24,7 @@ import {
   type BrowsingContext,
   type Script,
 } from '../../../protocol/protocol.js';
-import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
+import {CdpErrorConstants} from '../../../utils/cdpErrorConstants.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';

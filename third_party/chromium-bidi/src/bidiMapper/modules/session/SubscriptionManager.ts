@@ -74,14 +74,14 @@ export function unrollEvents(
   return [...allEvents.values()];
 }
 
-export type Subscription = {
+export interface Subscription {
   id: string;
   // Empty set means a global subscription.
   topLevelTraversableIds: Set<BrowsingContext.BrowsingContext>;
   // Never empty.
   eventNames: Set<ChromiumBidi.EventNames>;
   channel: BidiPlusChannel;
-};
+}
 
 export class SubscriptionManager {
   #subscriptions: Subscription[] = [];

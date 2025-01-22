@@ -26,7 +26,7 @@ import {assert} from '../../../utils/assert.js';
 import {
   isSingleComplexGrapheme,
   isSingleGrapheme,
-} from '../../../utils/GraphemeTools.js';
+} from '../../../utils/graphemeTools.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
