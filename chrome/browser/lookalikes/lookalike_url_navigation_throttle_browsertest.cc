@@ -1384,9 +1384,9 @@ IN_PROC_BROWSER_TEST_F(LookalikeUrlNavigationThrottleBrowserTest,
   // different (independent) subdomains each show their own warning.
   NavigateToURLSync(browser(), GetURL("example.com"));
   {
-    // Note: This uses blogspot.cv because blogspot.com is a top domain, and top
-    // domains don't show warnings.
-    const GURL kNavigatedUrl = GetURL("google-com.blogspot.cv");
+    // We must use a private registry that isn't a top domain, since top domains
+    // don't show warnings.
+    const GURL kNavigatedUrl = GetURL("google-com.bluebite.io");
     SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
     LoadAndCheckInterstitialAt(browser(), kNavigatedUrl);
     SendInterstitialCommandSync(browser(),
@@ -1397,7 +1397,7 @@ IN_PROC_BROWSER_TEST_F(LookalikeUrlNavigationThrottleBrowserTest,
   }
   NavigateToURLSync(browser(), GetURL("example.com"));
   {
-    const GURL kNavigatedUrl = GetURL("google-com-unrelated.blogspot.cv");
+    const GURL kNavigatedUrl = GetURL("google-com-unrelated.bluebite.io");
     SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
     LoadAndCheckInterstitialAt(browser(), kNavigatedUrl);
     SendInterstitialCommandSync(browser(),
