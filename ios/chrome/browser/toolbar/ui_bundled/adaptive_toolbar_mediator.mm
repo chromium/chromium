@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_tab_group_state.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/tab_group_indicator_features_utils.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/toolbar_consumer.h"
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -552,8 +553,9 @@
     return _webStateList->count();
   }
 
-  return IsTabGroupIndicatorEnabled() ? activeTabGroup->range().count()
-                                      : _webStateList->count();
+  return IsTabGroupIndicatorEnabled() && HasTabGroupIndicatorButtonsUpdated()
+             ? activeTabGroup->range().count()
+             : _webStateList->count();
 }
 
 // Returns the tab group state to display in the Tab Grid button.
@@ -562,8 +564,9 @@
   if (activeTabGroup == nullptr) {
     return ToolbarTabGroupState::kNormal;
   }
-  return IsTabGroupIndicatorEnabled() ? ToolbarTabGroupState::kTabGroup
-                                      : ToolbarTabGroupState::kNormal;
+  return IsTabGroupIndicatorEnabled() && HasTabGroupIndicatorButtonsUpdated()
+             ? ToolbarTabGroupState::kTabGroup
+             : ToolbarTabGroupState::kNormal;
 }
 
 @end

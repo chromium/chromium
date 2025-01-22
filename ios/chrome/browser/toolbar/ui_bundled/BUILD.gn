@@ -90,6 +90,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/toolbar/ui_bundled/buttons",
     "//ios/chrome/browser/toolbar/ui_bundled/public",
     "//ios/chrome/browser/toolbar/ui_bundled/public:constants",
+    "//ios/chrome/browser/toolbar/ui_bundled/tab_groups:features_utils",
     "//ios/chrome/browser/toolbar/ui_bundled/tab_groups/coordinator",
     "//ios/chrome/browser/ui/popup_menu/public",
     "//ios/chrome/browser/url_loading/model",

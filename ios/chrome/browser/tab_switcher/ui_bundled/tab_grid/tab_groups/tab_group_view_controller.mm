@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/tab_group_indicator_features_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -371,7 +372,7 @@ constexpr CGFloat kFacePileHeight = 44;
         [[UIBarButtonItem alloc] initWithCustomView:facePileButton];
   }
 
-  if (IsTabGroupIndicatorEnabled()) {
+  if (IsTabGroupIndicatorEnabled() && HasTabGroupIndicatorButtonsUpdated()) {
     if (facePileBarButton) {
       navigationItem.rightBarButtonItems = @[ dotsItem, facePileBarButton ];
     } else {
@@ -488,7 +489,7 @@ constexpr CGFloat kFacePileHeight = 44;
 
 // Adds the bottom toolbar containing the "plus" button.
 - (void)configureBottomToolbar {
-  if (!IsTabGroupIndicatorEnabled()) {
+  if (!IsTabGroupIndicatorEnabled() || !HasTabGroupIndicatorButtonsUpdated()) {
     return;
   }
 
@@ -632,7 +633,7 @@ constexpr CGFloat kFacePileHeight = 44;
 // bottom toolbar, except the top one as the grid is below a toolbar.
 - (void)updateGridInsets {
   CGFloat bottomToolbarInset = 0;
-  if (IsTabGroupIndicatorEnabled()) {
+  if (IsTabGroupIndicatorEnabled() && HasTabGroupIndicatorButtonsUpdated()) {
     BOOL shouldUseCompactLayout = self.traitCollection.verticalSizeClass ==
                                       UIUserInterfaceSizeClassRegular &&
                                   self.traitCollection.horizontalSizeClass ==

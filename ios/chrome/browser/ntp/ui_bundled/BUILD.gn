@@ -154,6 +154,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/supervised_user/model:capabilities",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/toolbar/ui_bundled/public",
+    "//ios/chrome/browser/toolbar/ui_bundled/tab_groups:features_utils",
     "//ios/chrome/browser/toolbar/ui_bundled/tab_groups/coordinator",
     "//ios/chrome/browser/ui/content_suggestions",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",

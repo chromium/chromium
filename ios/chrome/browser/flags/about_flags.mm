@@ -107,6 +107,7 @@
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/text_selection/model/text_selection_util.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/tab_group_indicator_features_utils.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/browser/web/model/features.h"
@@ -650,6 +651,41 @@ const FeatureEntry::FeatureVariation kLensTranslateToggleModeVariations[] = {
      std::size(kLensTranslateToggleModeLVF), nullptr},
     {"(Always)", kLensTranslateToggleModeAlways,
      std::size(kLensTranslateToggleModeAlways), nullptr}};
+
+const FeatureEntry::FeatureParam kTabGroupIndicatorAboveButtonsVisble[] = {
+    {kTabGroupIndicatorVisible, "true"},
+    {kTabGroupIndicatorBelowOmnibox, "false"},
+    {kTabGroupIndicatorButtonsUpdate, "true"}};
+const FeatureEntry::FeatureParam kTabGroupIndicatorBelowButtonsVisble[] = {
+    {kTabGroupIndicatorVisible, "true"},
+    {kTabGroupIndicatorBelowOmnibox, "true"},
+    {kTabGroupIndicatorButtonsUpdate, "true"}};
+const FeatureEntry::FeatureParam kTabGroupIndicatorAboveVisble[] = {
+    {kTabGroupIndicatorVisible, "true"},
+    {kTabGroupIndicatorBelowOmnibox, "false"},
+    {kTabGroupIndicatorButtonsUpdate, "false"}};
+const FeatureEntry::FeatureParam kTabGroupIndicatorBelowVisble[] = {
+    {kTabGroupIndicatorVisible, "true"},
+    {kTabGroupIndicatorBelowOmnibox, "true"},
+    {kTabGroupIndicatorButtonsUpdate, "false"}};
+const FeatureEntry::FeatureParam kTabGroupIndicatorButtons[] = {
+    {kTabGroupIndicatorVisible, "false"},
+    {kTabGroupIndicatorBelowOmnibox, "false"},
+    {kTabGroupIndicatorButtonsUpdate, "true"}};
+
+const FeatureEntry::FeatureVariation kTabGroupIndicatorVariations[] = {
+    {"Indicator above omnibox + buttons update",
+     kTabGroupIndicatorAboveButtonsVisble,
+     std::size(kTabGroupIndicatorAboveButtonsVisble), nullptr},
+    {"Indicator below omnibox + buttons update",
+     kTabGroupIndicatorBelowButtonsVisble,
+     std::size(kTabGroupIndicatorBelowButtonsVisble), nullptr},
+    {"Indicator above omnibox", kTabGroupIndicatorAboveVisble,
+     std::size(kTabGroupIndicatorAboveVisble), nullptr},
+    {"Indicator below omnibox", kTabGroupIndicatorBelowVisble,
+     std::size(kTabGroupIndicatorBelowVisble), nullptr},
+    {"buttons update only", kTabGroupIndicatorButtons,
+     std::size(kTabGroupIndicatorButtons), nullptr}};
 
 const FeatureEntry::FeatureParam
     kMlUrlPiecewiseMappedSearchBlendingAdjustedBy0[] = {
@@ -2085,7 +2121,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(kAutofillIsolatedWorldForJavascriptIos)},
     {"tab-group-indicator", flag_descriptions::kTabGroupIndicatorName,
      flag_descriptions::kTabGroupIndicatorDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kTabGroupIndicator)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kTabGroupIndicator,
+                                    kTabGroupIndicatorVariations,
+                                    "TabGroupIndicator")},
     {"safe-browsing-local-lists-use-sbv5",
      flag_descriptions::kSafeBrowsingLocalListsUseSBv5Name,
      flag_descriptions::kSafeBrowsingLocalListsUseSBv5Description,
