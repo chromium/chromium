@@ -173,6 +173,7 @@ static ui::NativeTheme::ExtraParams GetNativeThemeExtraParams(
       const auto& scrollbar_thumb =
           absl::get<WebThemeEngine::ScrollbarThumbExtraParams>(*extra_params);
       native_scrollbar_thumb.thumb_color = scrollbar_thumb.thumb_color;
+      native_scrollbar_thumb.track_color = scrollbar_thumb.track_color;
       native_scrollbar_thumb.is_thumb_minimal_mode =
           scrollbar_thumb.is_thumb_minimal_mode;
       native_scrollbar_thumb.is_web_test = scrollbar_thumb.is_web_test;

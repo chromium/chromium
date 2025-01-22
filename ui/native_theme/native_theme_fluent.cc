@@ -14,6 +14,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -147,10 +148,13 @@ SkColor4f NativeThemeFluent::GetScrollbarThumbColor(
     }
     return kColorWebNativeControlScrollbarThumb;
   };
-  // TODO(crbug.com/40596569): Adjust extra param `thumb_color` based on
-  // `state`.
-  return SkColor4f::FromColor(extra_params.thumb_color.value_or(
-      color_provider.GetColor(get_color_id())));
+  return SkColor4f::FromColor(
+      GetContrastingPressedOrHoveredColor(
+          extra_params.thumb_color,
+          extra_params.track_color.value_or(
+              color_provider.GetColor(kColorWebNativeControlScrollbarTrack)),
+          state, /*part=*/Part::kScrollbarVerticalThumb)
+          .value_or(color_provider.GetColor(get_color_id())));
 }
 
 void NativeThemeFluent::PaintScrollbarCorner(
@@ -205,10 +209,8 @@ void NativeThemeFluent::PaintButton(
     bool in_forced_colors,
     const ScrollbarArrowExtraParams& extra_params) const {
   cc::PaintFlags flags;
-  const SkColor button_color =
-      extra_params.track_color.has_value()
-          ? extra_params.track_color.value()
-          : color_provider->GetColor(kColorWebNativeControlScrollbarTrack);
+  const SkColor button_color = extra_params.track_color.value_or(
+      color_provider->GetColor(kColorWebNativeControlScrollbarTrack));
   flags.setColor(button_color);
   gfx::Rect button_fill_rect = rect;
   if (in_forced_colors) {
@@ -266,10 +268,13 @@ void NativeThemeFluent::PaintArrow(
       state == NativeTheme::kPressed || state == NativeTheme::kHovered
           ? kColorWebNativeControlScrollbarArrowForegroundPressed
           : kColorWebNativeControlScrollbarArrowForeground;
-  // TODO(crbug.com/40596569): Adjust thumb_color based on `state`.
-  const SkColor arrow_color = extra_params.thumb_color.has_value()
-                                  ? extra_params.thumb_color.value()
-                                  : color_provider->GetColor(arrow_color_id);
+  const SkColor arrow_color =
+      GetContrastingPressedOrHoveredColor(
+          extra_params.thumb_color,
+          extra_params.track_color.value_or(
+              color_provider->GetColor(kColorWebNativeControlScrollbarTrack)),
+          state, part)
+          .value_or(color_provider->GetColor(arrow_color_id));
   cc::PaintFlags flags;
   flags.setColor(arrow_color);
 
@@ -386,6 +391,15 @@ const char* NativeThemeFluent::GetArrowCodePointForScrollbarPart(
 
 int NativeThemeFluent::GetPaintedScrollbarTrackInset() const {
   return kFluentPaintedScrollbarTrackInset;
+}
+
+float NativeThemeFluent::GetContrastRatioForState(State state,
+                                                  Part part) const {
+  CHECK(SupportedPartsForContrastingColor(part));
+  // Calculated by taking the contrast ratio between the foreground and
+  // background colors.
+  static constexpr float kFluentScrollbarForegroundContrastRatio = 1.8f;
+  return kFluentScrollbarForegroundContrastRatio;
 }
 
 void NativeThemeFluent::PaintRoundedButton(cc::PaintCanvas* canvas,
