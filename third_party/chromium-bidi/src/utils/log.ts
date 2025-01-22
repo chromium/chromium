@@ -22,6 +22,7 @@ export enum LogType {
   debug = 'debug',
   debugError = 'debug:error',
   debugInfo = 'debug:info',
+  debugWarn = 'debug:warn',
   // keep-sorted end
 }
 

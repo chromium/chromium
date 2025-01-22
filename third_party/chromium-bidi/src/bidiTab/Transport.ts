@@ -29,6 +29,7 @@ import {log} from './mapperTabPage.js';
 export class WindowBidiTransport implements BidiTransport {
   static readonly LOGGER_PREFIX_RECV = `${LogType.bidi}:RECV ◂` as const;
   static readonly LOGGER_PREFIX_SEND = `${LogType.bidi}:SEND ▸` as const;
+  static readonly LOGGER_PREFIX_WARN = LogType.debugWarn as const;
 
   #onMessage: ((message: ChromiumBidi.Command) => void) | null = null;
 
@@ -168,6 +169,10 @@ export class WindowBidiTransport implements BidiTransport {
         channel = {'goog:channel': command['goog:channel'] as string};
       }
     } else if (command.channel !== undefined) {
+      log(
+        WindowBidiTransport.LOGGER_PREFIX_WARN,
+        'Legacy `channel` parameter is deprecated and will not supported soon. Use `goog:channel` instead.',
+      );
       const channelType = WindowBidiTransport.#getJsonType(command.channel);
       if (channelType !== 'string') {
         throw new Error(`Expected string 'channel' but got ${channelType}`);
