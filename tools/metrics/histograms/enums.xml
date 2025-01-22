@@ -16056,6 +16056,7 @@ from previous Chrome versions.
   <int value="-1777540083" label="LocationBarModelOptimizations:disabled"/>
   <int value="-1776351704" label="DesktopPWAsOmniboxInstall:disabled"/>
   <int value="-1775842908" label="EnableOAuthIpp:disabled"/>
+  <int value="-1775229035" label="BookmarksTreeView:enabled"/>
   <int value="-1775183049" label="NewTabPageCustomization:enabled"/>
   <int value="-1774921110" label="ServiceWorkerStaticRouter:enabled"/>
   <int value="-1774818943" label="VrWebInputEditing:enabled"/>
@@ -18516,6 +18517,7 @@ from previous Chrome versions.
   <int value="-792079435" label="EnableAppsGridGapFeature:disabled"/>
   <int value="-791916053" label="FriendlierErrorDialog:disabled"/>
   <int value="-791778534" label="LauncherQueryHighlighting:enabled"/>
+  <int value="-791590673" label="bookmarks-tree-view:enabled"/>
   <int value="-790900615" label="NtpShoppingTasksModule:disabled"/>
   <int value="-790544721"
       label="OverrideUnsupportedPageLanguageForHrefTranslate:disabled"/>
@@ -19593,6 +19595,7 @@ from previous Chrome versions.
   <int value="-362022976" label="disable-quirks-client"/>
   <int value="-361948582" label="material-security-verbose"/>
   <int value="-361767063" label="FedCmLoginHint:disabled"/>
+  <int value="-361525123" label="BookmarksTreeView:disabled"/>
   <int value="-361053631" label="CaptivePortalUI2022:disabled"/>
   <int value="-360453785" label="LeftToRightUrls:disabled"/>
   <int value="-360038744" label="invert-viewport-scroll-order"/>
@@ -20046,6 +20049,7 @@ from previous Chrome versions.
   <int value="-180292536" label="PerformanceInterventionDemoMode:enabled"/>
   <int value="-180056644" label="HomeButtonWithText:disabled"/>
   <int value="-179580377" label="CrossOriginOpenerPolicy:enabled"/>
+  <int value="-179541740" label="bookmarks-tree-view:disabled"/>
   <int value="-178744239" label="DriveFsMirroring:enabled"/>
   <int value="-178709425" label="PwaRestoreUiAtStartup:disabled"/>
   <int value="-178364053" label="TerminalSystemAppLegacySettings:enabled"/>
