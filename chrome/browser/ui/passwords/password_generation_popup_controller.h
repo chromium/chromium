@@ -35,10 +35,6 @@ class PasswordGenerationPopupController
   // account is signed in.
   virtual std::u16string GetPrimaryAccountEmail() = 0;
 
-  // Returns whether `kNudgePassword` Desktop experiment is enabled and whether
-  // it was not rejected enough times already.
-  virtual bool ShouldShowNudgePassword() const = 0;
-
   // Accessors
   virtual GenerationUIState state() const = 0;
   virtual bool password_selected() const = 0;
