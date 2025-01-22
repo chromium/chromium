@@ -84,10 +84,6 @@ specific_include_rules = {
     "+ui/gl/gl_implementation.h",
     "+third_party/zlib/google",
   ],
-  "test_resource_factory\.*" : [
-    "+components/viz/client",
-    "+components/viz/test",
-  ],
   "delegated_ink_point_renderer\.*" : [
     "+mojo/public/cpp/bindings",
   ],

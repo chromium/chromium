@@ -592,8 +592,6 @@ viz_source_set("unit_tests") {
     "display/software_renderer_unittest.cc",
     "display/surface_aggregator_pixeltest.cc",
     "display/surface_aggregator_unittest.cc",
-    "display/test_resource_factory.cc",
-    "display/test_resource_factory.h",
     "display/viz_pixel_test.cc",
     "display/viz_pixel_test.h",
     "display_embedder/buffer_queue_unittest.cc",
