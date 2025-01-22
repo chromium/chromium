@@ -141,11 +141,13 @@ class GlicWindowController : public views::WidgetObserver {
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
   GlicView* GetGlicView();
-  views::Widget* GetGlicWidget() { return glic_window_widget_.get(); }
 
   // Called when the programmatic resize has finished; public for use by
   // GlicWindowResizeAnimation.
   void ResizeFinished();
+
+  // Returns the widget that backs the glic window. public for testing.
+  views::Widget* GetGlicWidget();
 
  private:
   // This sends a message to glic to get ready to show. This will eventually
@@ -241,7 +243,11 @@ class GlicWindowController : public views::WidgetObserver {
   // destroyed when the profile needs to be destroyed.
   std::unique_ptr<ContentsAndProfileKeepAlive> contents_;
 
-  std::unique_ptr<views::Widget> glic_window_widget_;
+  // TODO(crbug.com/391402352): Create glic_detached_widget_. For now
+  // glic_attached_widget_ is used for both attached and detached state.
+  // When glic is attached `glic_attached_widget_` will be non-nullptr.
+  std::unique_ptr<views::Widget> glic_attached_widget_;
+
   std::unique_ptr<GlicWindowResizeAnimation> window_resize_animation_;
 
   // True if we've hit a login page (and have not yet shown).
