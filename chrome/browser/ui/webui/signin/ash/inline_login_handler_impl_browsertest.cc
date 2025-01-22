@@ -230,6 +230,9 @@ class InlineLoginHandlerTest
     identity_test_env_profile_adaptor_->identity_test_env()
         ->MakePrimaryAccountAvailable(GetDeviceAccountInfo().email,
                                       signin::ConsentLevel::kSignin);
+    // Setup a default device id for the primary user.
+    user_manager::KnownUser known_user{g_browser_process->local_state()};
+    known_user.SetDeviceId(primary_account_id_, kFakeDeviceId);
 
     // Setup web ui with cookies.
     web_ui_.set_web_contents(web_contents());
