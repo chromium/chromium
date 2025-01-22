@@ -183,7 +183,7 @@ class PLATFORM_EXPORT CanvasResource
 
   // Returns true if the resource is backed by memory such that it can be used
   // for direct scanout by the display.
-  virtual bool IsOverlayCandidate() const { return false; }
+  virtual bool IsOverlayCandidate() const = 0;
   virtual gfx::HDRMetadata GetHDRMetadata() const { return gfx::HDRMetadata(); }
   virtual viz::TransferableResource::ResourceSource
   GetTransferableResourceSource() const {
@@ -243,6 +243,11 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
   scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() final {
     return shared_image_;
   }
+
+  bool IsOverlayCandidate() const final {
+    return shared_image_->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
+  }
+
   const gpu::SyncToken GetSyncTokenWithOptionalVerification(
       bool needs_verified_token) final {
     return sync_token_;
