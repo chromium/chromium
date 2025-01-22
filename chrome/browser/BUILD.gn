@@ -1779,7 +1779,7 @@ static_library("browser") {
     "//chrome/browser/ui/login:impl",
 
     # TODO(crbug.com/): This is needed because tab_contents code
-    # includes c/b/enterprise/connectors/analyzis/content_analysis_delegate.h
+    # includes c/b/enterprise/connectors/analysis/content_analysis_delegate.h
     # and c/b/translate/chrome_translate_client.h.
     "//chrome/browser/ui/tab_contents:impl",
   ]
@@ -4524,6 +4524,10 @@ static_library("browser") {
       } else {
         sources += [ "first_run/first_run_internal_posix.cc" ]
       }
+    }
+
+    if (enable_dice_support) {
+      deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation" ]
     }
 
     if (use_minikin_hyphenation) {

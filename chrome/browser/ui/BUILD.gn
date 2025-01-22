@@ -1949,6 +1949,11 @@ static_library("ui") {
       deps += [ "//ui/base/ime/linux" ]
     }
 
+    if (enable_dice_support) {
+      deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation_impl" ]
+      allow_circular_includes_from += [ "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation_impl" ]
+    }
+
     if (enable_extensions) {
       deps += [
         "//chrome/browser/web_applications/extensions",

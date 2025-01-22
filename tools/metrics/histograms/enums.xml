@@ -34822,6 +34822,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="-1331415629" label="chrome://os-settings/"/>
   <int value="-1313432739" label="chrome://plugins/"/>
   <int value="-1296182448" label="chrome://vc-tray-tester/"/>
+  <int value="-1294799178" label="chrome://signout-confirmation/"/>
   <int value="-1293039192" label="chrome://os-feedback/"/>
   <int value="-1282128285" label="chrome://suggest-internals/"/>
   <int value="-1267771224" label="chrome://sensor-info/"/>
