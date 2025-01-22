@@ -2070,7 +2070,7 @@ void SyncServiceImpl::SendExplicitPassphraseToPlatformClient() {
   nigori_key->ExportKeys(proto.mutable_deprecated_user_key(),
                          proto.mutable_encryption_key(),
                          proto.mutable_mac_key());
-  int32_t byte_size = proto.ByteSize();
+  int32_t byte_size = proto.ByteSizeLong();
   std::vector<uint8_t> bytes(byte_size);
   proto.SerializeToArray(bytes.data(), byte_size);
   JNIEnv* env = base::android::AttachCurrentThread();

@@ -314,7 +314,7 @@ void DeviceCloudPolicyStoreAsh::CheckDMToken() {
   if (policy_fetch_response) {
     debug_info << ", has_signature: "
                << policy_fetch_response->has_policy_data_signature();
-    debug_info << ", size = " << policy_fetch_response->ByteSize();
+    debug_info << ", size = " << policy_fetch_response->ByteSizeLong();
     std::unique_ptr<em::PolicyData> poldata =
         std::make_unique<em::PolicyData>();
     if (!policy_fetch_response->has_policy_data() ||

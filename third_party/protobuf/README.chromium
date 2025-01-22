@@ -121,7 +121,8 @@ Description of the patches:
 
 - 0022-Allow-deprecated-fields.patch
 
-  Allows deprecated fields to be used without extra C++ compiler warnings.
+  Allows deprecated fields to be used without extra C++ compiler warnings. Other
+  deprecated methods like ByteSize() should remain deprecated.
 
 - 0026-remove-sprintf.patch
 

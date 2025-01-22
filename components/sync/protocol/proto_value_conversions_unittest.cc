@@ -62,8 +62,9 @@ using testing::Not;
 
 // We'd also like to check if we changed any field in our messages. However,
 // that's hard to do: sizeof could work, but it's platform-dependent.
-// default_instance().ByteSize() won't change for most changes, since most of
-// our fields are optional. So we just settle for comments in the proto files.
+// default_instance().ByteSizeLong() won't change for most changes, since most
+// of our fields are optional. So we just settle for comments in the proto
+// files.
 
 DEFINE_SPECIFICS_TO_VALUE_TEST(encrypted)
 

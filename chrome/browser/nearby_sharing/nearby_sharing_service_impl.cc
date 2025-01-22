@@ -3050,8 +3050,8 @@ void NearbySharingServiceImpl::SendIntroduction(
   v1_frame->set_type(sharing::nearby::V1Frame::INTRODUCTION);
   v1_frame->set_allocated_introduction(introduction.release());
 
-  std::vector<uint8_t> data(frame.ByteSize());
-  frame.SerializeToArray(data.data(), frame.ByteSize());
+  std::vector<uint8_t> data(frame.ByteSizeLong());
+  frame.SerializeToArray(data.data(), frame.ByteSizeLong());
   connection->Write(std::move(data));
 
   // We've successfully written the introduction, so we now have to wait for the
@@ -3228,8 +3228,8 @@ void NearbySharingServiceImpl::WriteResponse(
   v1_frame->set_type(sharing::nearby::V1Frame::RESPONSE);
   v1_frame->mutable_connection_response()->set_status(status);
 
-  std::vector<uint8_t> data(frame.ByteSize());
-  frame.SerializeToArray(data.data(), frame.ByteSize());
+  std::vector<uint8_t> data(frame.ByteSizeLong());
+  frame.SerializeToArray(data.data(), frame.ByteSizeLong());
 
   connection.Write(std::move(data));
 }
@@ -3242,8 +3242,8 @@ void NearbySharingServiceImpl::WriteCancel(NearbyConnection& connection) {
   sharing::nearby::V1Frame* v1_frame = frame.mutable_v1();
   v1_frame->set_type(sharing::nearby::V1Frame::CANCEL);
 
-  std::vector<uint8_t> data(frame.ByteSize());
-  frame.SerializeToArray(data.data(), frame.ByteSize());
+  std::vector<uint8_t> data(frame.ByteSizeLong());
+  frame.SerializeToArray(data.data(), frame.ByteSizeLong());
 
   connection.Write(std::move(data));
 }

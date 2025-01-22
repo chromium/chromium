@@ -833,7 +833,7 @@ ScopedJavaLocalRef<jbyteArray> BookmarkBridge::GetPowerBookmarkMeta(
   if (!meta)
     return ScopedJavaLocalRef<jbyteArray>(nullptr);
 
-  int size = meta->ByteSize();
+  size_t size = meta->ByteSizeLong();
   std::string proto_bytes;
   meta->SerializeToString(&proto_bytes);
   std::vector<uint8_t> data(size);

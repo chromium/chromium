@@ -25,3 +25,16 @@ index bdb2eecbe2e47..8bd06d340f7c3 100644
  // https://gcc.gnu.org/gcc-6/changes.html
  # define PROTOBUF_DEPRECATED_ENUM __attribute__((deprecated))
  #else
+diff --git a/src/google/protobuf/message_lite.h b/src/google/protobuf/message_lite.h
+index 950ae1a126c88..5fb0e7efaa0c1 100644
+--- a/src/google/protobuf/message_lite.h
++++ b/src/google/protobuf/message_lite.h
+@@ -377,7 +377,7 @@ class PROTOBUF_EXPORT MessageLite {
+   virtual size_t ByteSizeLong() const = 0;
+ 
+   // Legacy ByteSize() API.
+-  PROTOBUF_DEPRECATED_MSG("Please use ByteSizeLong() instead")
++  [[deprecated("Please use ByteSizeLong() instead")]]
+   int ByteSize() const { return internal::ToIntSize(ByteSizeLong()); }
+ 
+   // Serializes the message without recomputing the size.  The message must not
