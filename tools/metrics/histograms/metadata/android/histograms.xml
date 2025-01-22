@@ -6948,7 +6948,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.RequestedWithHeader.CommittedHeaderMode"
-    enum="CommittedRequestedWithHeaderMode" expires_after="2025-03-01">
+    enum="CommittedRequestedWithHeaderMode" expires_after="2025-09-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -6963,7 +6963,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.RequestedWithHeader.HadWebContentsForPartitionOrigin"
-    enum="BooleanAvailable" expires_after="2025-07-13">
+    enum="BooleanAvailable" expires_after="2025-09-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -6979,7 +6979,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.RequestedWithHeader.OnNavigationRequestedWithHeaderAllowListSize"
-    units="entries" expires_after="2025-03-01">
+    units="entries" expires_after="2025-09-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -6990,7 +6990,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.RequestedWithHeader.OriginTrialEnabled"
-    enum="BooleanEnabled" expires_after="2025-03-01">
+    enum="BooleanEnabled" expires_after="2025-09-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -7001,7 +7001,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.RequestedWithHeader.PageSchemeIsCryptographic"
-    enum="BooleanSecure" expires_after="2025-03-01">
+    enum="BooleanSecure" expires_after="2025-09-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -7015,7 +7015,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.RequestedWithHeader.SetRequestedWithHeaderModeAllowListSize"
-    units="entries" expires_after="2025-03-01">
+    units="entries" expires_after="2025-09-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -7027,7 +7027,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.RequestedWithHeader.SetServiceWorkerRequestedWithHeaderModeAllowListSize"
-    units="entries" expires_after="2025-03-01">
+    units="entries" expires_after="2025-09-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
