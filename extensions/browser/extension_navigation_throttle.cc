@@ -176,7 +176,7 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   if (url_has_extension_scheme) {
     // "chrome-extension://" URL.
     target_extension = registry->enabled_extensions().GetExtensionOrAppByURL(
-        url, true /*include_guid*/);
+        url, /*include_guid=*/true);
   } else if (target_origin.scheme() == kExtensionScheme) {
     // "blob:chrome-extension://" or "filesystem:chrome-extension://" URL.
     DCHECK(url.SchemeIsFileSystem() || url.SchemeIsBlob());
