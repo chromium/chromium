@@ -233,7 +233,7 @@ void RendererURLLoaderThrottle::OnLoadPolicyCalculated(
                        },
                        renderer_agent_, GetCurrentURL()));
     // Cancel if the resource load should be blocked.
-    delegate_->CancelWithError(net::ERR_BLOCKED_BY_CLIENT,
+    delegate_->CancelWithError(net::ERR_BLOCKED_BY_FINGERPRINTING_PROTECTION,
                                "FingerprintingProtection");
   }
   deferred_ = false;
