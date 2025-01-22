@@ -840,15 +840,6 @@ bool ShoppingService::IsMerchantViewerEnabled() {
                                       kCommerceMerchantViewerRegionLaunched);
 }
 
-bool ShoppingService::IsDiscountEligibleToShowOnNavigation() {
-  if (!IsRegionLockedFeatureEnabled(kEnableDiscountInfoApi,
-                                    kEnableDiscountInfoApiRegionLaunched)) {
-    return false;
-  }
-  return account_checker_ && account_checker_->IsSignedIn() &&
-         account_checker_->IsAnonymizedUrlDataCollectionEnabled();
-}
-
 bool ShoppingService::IsParcelTrackingEligible() {
   if (!IsRegionLockedFeatureEnabled(kParcelTracking,
                                     kParcelTrackingRegionLaunched)) {
