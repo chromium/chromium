@@ -571,6 +571,12 @@ ci.builder(
                     "--gtest_filter=-ScopedDirTest.CloseOutOfScope",
                 ],
             ),
+            "media_unittests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/391490503): Disable the failing tests
+                    "--gtest_filter=-AAC/AACAudioEncoderTest.*",
+                ],
+            ),
             "services_unittests": targets.mixin(
                 swarming = targets.swarming(
                     shards = 3,
