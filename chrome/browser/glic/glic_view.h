@@ -35,15 +35,6 @@ class GlicView : public views::View {
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kWebViewElementIdForTesting);
 
-  // Creates a menu widget that contains a `GlicView`, configured with the
-  // given `initial_bounds`.
-  static std::unique_ptr<views::Widget> CreateWidget(
-      Profile* profile,
-      const gfx::Rect& initial_bounds);
-  // Returns the `GlicView` from the widget returned by
-  // `GlicView::CreateWidget()`.
-  static GlicView* FromWidget(views::Widget& widget);
-
   void SetDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
 
   bool IsPointWithinDraggableArea(const gfx::Point& point);

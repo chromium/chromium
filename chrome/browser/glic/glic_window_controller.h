@@ -139,6 +139,7 @@ class GlicWindowController : public views::WidgetObserver {
 
   // views::WidgetObserver implementation, monitoring the glic window widget.
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+  void OnWidgetDestroyed(views::Widget* widget) override;
 
   GlicView* GetGlicView();
 
@@ -226,6 +227,11 @@ class GlicWindowController : public views::WidgetObserver {
   void AnimateBounds(const gfx::Rect& target_bounds,
                      base::TimeDelta duration,
                      base::OnceClosure callback);
+
+  // Creates the widget for the attached UI.
+  std::unique_ptr<views::Widget> CreateAttachedWidget(
+      Profile* profile,
+      const gfx::Rect& initial_bounds);
 
   AttachedTargetWidgetObserver attached_target_widget_observer_{this};
 

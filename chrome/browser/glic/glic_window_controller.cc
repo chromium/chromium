@@ -227,6 +227,16 @@ void GlicWindowController::OnWidgetActivationChanged(views::Widget* widget,
   window_activation_callback_list_.Notify(active);
 }
 
+void GlicWindowController::OnWidgetDestroyed(views::Widget* widget) {
+  // This is used to handle the case where the native window is closed
+  // directly (e.g., Windows context menu close on the title bar).
+  // Conceptually this should synchronously call Close(), but the Widget
+  // implementation currently does not support this.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&GlicWindowController::Close,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
 void GlicWindowController::Show(views::View* glic_button_view) {
   // TODO(crbug.com/379943498): If a glic window already exists, handle showing
   // by bringing to front or activating.
@@ -271,16 +281,8 @@ void GlicWindowController::Show(views::View* glic_button_view) {
   }
 
   glic_attached_widget_ =
-      glic::GlicView::CreateWidget(profile_, glic_window_widget_initial_rect);
+      CreateAttachedWidget(profile_, glic_window_widget_initial_rect);
   glic_attached_widget_->AddObserver(this);
-
-  // This is used to handle the case where the native window is closed
-  // directly (e.g., Windows context menu close on the title bar). The widget
-  // can't be deleted by the OnWidgetDestroyed notification because the widget
-  // code doesn't support that.
-  glic_attached_widget_->widget_delegate()->RegisterDeleteDelegateCallback(
-      base::BindOnce(&GlicWindowController::Close,
-                     weak_ptr_factory_.GetWeakPtr()));
 
   if (attached_browser_) {
     GetGlicWidget()->Show();
@@ -385,7 +387,7 @@ GlicView* GlicWindowController::GetGlicView() {
   if (!GetGlicWidget()) {
     return nullptr;
   }
-  return GlicView::FromWidget(*GetGlicWidget());
+  return static_cast<GlicView*>(GetGlicWidget()->GetContentsView());
 }
 
 views::Widget* GlicWindowController::GetGlicWidget() {
@@ -506,6 +508,27 @@ void GlicWindowController::AnimateBounds(const gfx::Rect& target_bounds,
 
   window_resize_animation_ = std::make_unique<GlicWindowResizeAnimation>(
       this, target_bounds, duration, std::move(callback));
+}
+
+std::unique_ptr<views::Widget> GlicWindowController::CreateAttachedWidget(
+    Profile* profile,
+    const gfx::Rect& initial_bounds) {
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+#if BUILDFLAG(IS_WIN)
+  params.dont_show_in_taskbar = true;
+  params.force_system_menu_for_frameless = true;
+#endif
+  params.bounds = initial_bounds;
+
+  std::unique_ptr<views::Widget> widget =
+      std::make_unique<views::Widget>(std::move(params));
+
+  widget->SetContentsView(
+      std::make_unique<GlicView>(profile, initial_bounds.size()));
+
+  return widget;
 }
 
 gfx::Size GlicWindowController::GetSize() {
