@@ -1128,7 +1128,7 @@
       "alimariam@google.com",
       "tommasin@chromium.org",
       "chrome-browser-privacy-team@google.com"],
-      "expiry_milestone": 135
+      "expiry_milestone": 137
   },
   {
     "name": "calculate-native-win-occlusion",
