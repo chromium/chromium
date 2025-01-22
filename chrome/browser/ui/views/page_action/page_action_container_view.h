@@ -29,7 +29,7 @@ class PageActionContainerView : public views::BoxLayoutView {
   PageActionContainerView& operator=(const PageActionContainerView&) = delete;
   ~PageActionContainerView() override;
 
-  // Sets the active PageActionControllerfor each PageActionView.
+  // Sets the active PageActionController for each PageActionView.
   void SetController(PageActionController* controller);
 
   // Gets the PageActionView associated with the given action id. Returns

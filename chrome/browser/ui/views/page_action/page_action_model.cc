@@ -65,6 +65,10 @@ bool PageActionModel::GetVisible() const {
   return action_item_enabled_ && action_item_visible_ && show_requested_;
 }
 
+bool PageActionModel::GetShowSuggestionChip() const {
+  return show_suggestion_chip_;
+}
+
 const ui::ImageModel& PageActionModel::GetImage() const {
   return action_item_image_;
 }

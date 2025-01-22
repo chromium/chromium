@@ -55,6 +55,13 @@ void PageActionView::OnPageActionModelChanged(PageActionModelInterface* model) {
 
   UpdateIconImage();
   UpdateBorder();
+  UpdateStyle(model->GetShowSuggestionChip());
+}
+
+void PageActionView::UpdateStyle(bool is_suggestion_chip) {
+  SetUseTonalColorsWhenExpanded(is_suggestion_chip);
+  SetBackgroundVisibility(is_suggestion_chip ? BackgroundVisibility::kAlways
+                                             : BackgroundVisibility::kNever);
 }
 
 void PageActionView::OnPageActionModelWillBeDeleted(
