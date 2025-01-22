@@ -55,6 +55,15 @@ source_set("common") {
   libs = [ "rpcrt4.lib" ]
 }
 
+source_set("crash_integration") {
+  public = [ "is_running_unattended.h" ]
+  sources = [ "is_running_unattended.cc" ]
+  deps = [
+    ":constants",
+    "//base",
+  ]
+}
+
 source_set("lib") {
   public = [
     "logging_support.h",
@@ -117,6 +126,7 @@ executable("test_service") {
   ]
   deps = [
     ":common",
+    ":crash_integration",
     ":delegate",
     ":service_program",
     ":test_service_idl",
@@ -142,6 +152,7 @@ source_set("unit_tests") {
     ":test_service_idl",
     "//base",
     "//base/test:test_support",
+    "//chrome/common:non_code_constants",
     "//chrome/windows_services/service_program/test_support",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",

@@ -1,8 +1,3 @@
 include_rules = [
   "+chrome/install_static",
 ]
-specific_include_rules = {
-  "scoped_install_service\.cc": [
-    "+chrome/installer/util/install_service_work_item.h",
-  ],
-}

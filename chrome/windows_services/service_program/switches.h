@@ -15,6 +15,11 @@ inline constexpr char kLogFileHandle[] = "log-file-handle";
 // is valid.
 inline constexpr char kLogFileSource[] = "log-file-source";
 
+// A switch that indicates that the service is running on behalf of an
+// unattended test (i.e., one for which CHROME_HEADLESS is set in its
+// environment block).
+inline constexpr char kUnattendedTest[] = "unattended-test";
+
 }  // namespace switches
 
 #endif  // CHROME_WINDOWS_SERVICES_SERVICE_PROGRAM_SWITCHES_H_

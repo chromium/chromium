@@ -17,6 +17,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/base_paths.h"
+#include "base/environment.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -35,6 +36,7 @@
 #include "base/types/expected.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
+#include "chrome/common/env_vars.h"
 #include "chrome/windows_services/service_program/test_service_idl.h"
 #include "chrome/windows_services/service_program/test_support/service_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -220,6 +222,16 @@ TEST_F(ServiceTest, TwoRequests) {
   int exit_code = 0;
   service_process.WaitForExit(&exit_code);
   ASSERT_EQ(exit_code, 0);
+}
+
+TEST_F(ServiceTest, IsRunningUnattended) {
+  Microsoft::WRL::ComPtr<ITestService> test_service;
+  ASSERT_NO_FATAL_FAILURE(CreateService(test_service));
+  VARIANT_BOOL is_running_unattended = VARIANT_FALSE;
+  ASSERT_HRESULT_SUCCEEDED(
+      test_service->IsRunningUnattended(&is_running_unattended));
+  ASSERT_EQ(is_running_unattended != VARIANT_FALSE,
+            base::Environment::Create()->HasVar(env_vars::kHeadless));
 }
 
 // Tests that a service can handle rapid use that should result in some requests

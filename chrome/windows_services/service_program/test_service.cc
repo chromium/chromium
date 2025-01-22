@@ -18,6 +18,7 @@
 #include "chrome/common/win/eventlog_messages.h"
 #include "chrome/windows_services/service_program/factory_and_clsid.h"
 #include "chrome/windows_services/service_program/get_calling_process.h"
+#include "chrome/windows_services/service_program/is_running_unattended.h"
 #include "chrome/windows_services/service_program/scoped_client_impersonation.h"
 #include "chrome/windows_services/service_program/service_delegate.h"
 #include "chrome/windows_services/service_program/service_program_main.h"
@@ -61,6 +62,13 @@ class TestServiceImpl
                              /*bInheritHandle=*/FALSE,
                              /*dwOptions=*/0));
     *handle = base::win::HandleToUint32(duplicate);
+    return S_OK;
+  }
+
+  IFACEMETHOD(IsRunningUnattended)
+  (VARIANT_BOOL* is_running_unattended) override {
+    *is_running_unattended =
+        internal::IsRunningUnattended() ? VARIANT_TRUE : VARIANT_FALSE;
     return S_OK;
   }
 };

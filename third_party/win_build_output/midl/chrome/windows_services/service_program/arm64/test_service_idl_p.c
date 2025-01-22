@@ -46,8 +46,8 @@
 
 #include "test_service_idl.h"
 
-#define TYPE_FORMAT_STRING_SIZE   7                                 
-#define PROC_FORMAT_STRING_SIZE   43                                
+#define TYPE_FORMAT_STRING_SIZE   11                                
+#define PROC_FORMAT_STRING_SIZE   85                                
 #define EXPR_FORMAT_STRING_SIZE   1                                 
 #define TRANSMIT_AS_TABLE_SIZE    0            
 #define WIRE_MARSHAL_TABLE_SIZE   0            
@@ -193,6 +193,42 @@ static const test_service_idl_MIDL_PROC_FORMAT_STRING test_service_idl__MIDL_Pro
 /* 40 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
+	/* Procedure IsRunningUnattended */
+
+/* 42 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 44 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 48 */	NdrFcShort( 0x4 ),	/* 4 */
+/* 50 */	NdrFcShort( 0x18 ),	/* ARM64 Stack size/offset = 24 */
+/* 52 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 54 */	NdrFcShort( 0x22 ),	/* 34 */
+/* 56 */	0x44,		/* Oi2 Flags:  has return, has ext, */
+			0x2,		/* 2 */
+/* 58 */	0xe,		/* 14 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 60 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 62 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 64 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 66 */	NdrFcShort( 0x2 ),	/* 2 */
+/* 68 */	0x2,		/* 2 */
+			0x80,		/* 128 */
+/* 70 */	0x81,		/* 129 */
+			0x0,		/* 0 */
+
+	/* Parameter is_running_unattended */
+
+/* 72 */	NdrFcShort( 0x2150 ),	/* Flags:  out, base type, simple ref, srv alloc size=8 */
+/* 74 */	NdrFcShort( 0x8 ),	/* ARM64 Stack size/offset = 8 */
+/* 76 */	0x6,		/* FC_SHORT */
+			0x0,		/* 0 */
+
+	/* Return value */
+
+/* 78 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 80 */	NdrFcShort( 0x10 ),	/* ARM64 Stack size/offset = 16 */
+/* 82 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
 			0x0
         }
     };
@@ -205,6 +241,10 @@ static const test_service_idl_MIDL_TYPE_FORMAT_STRING test_service_idl__MIDL_Typ
 /*  2 */	
 			0x11, 0xc,	/* FC_RP [alloced_on_stack] [simple_pointer] */
 /*  4 */	0x8,		/* FC_LONG */
+			0x5c,		/* FC_PAD */
+/*  6 */	
+			0x11, 0xc,	/* FC_RP [alloced_on_stack] [simple_pointer] */
+/*  8 */	0x6,		/* FC_SHORT */
 			0x5c,		/* FC_PAD */
 
 			0x0
@@ -222,7 +262,8 @@ static const test_service_idl_MIDL_TYPE_FORMAT_STRING test_service_idl__MIDL_Typ
 #pragma code_seg(".orpc")
 static const unsigned short ITestService_FormatStringOffsetTable[] =
     {
-    0
+    0,
+    42
     };
 
 static const MIDL_STUBLESS_PROXY_INFO ITestService_ProxyInfo =
@@ -246,21 +287,22 @@ static const MIDL_SERVER_INFO ITestService_ServerInfo =
     0,
     0,
     0};
-CINTERFACE_PROXY_VTABLE(4) _ITestServiceProxyVtbl = 
+CINTERFACE_PROXY_VTABLE(5) _ITestServiceProxyVtbl = 
 {
     &ITestService_ProxyInfo,
     &IID_ITestService,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    (void *) (INT_PTR) -1 /* ITestService::GetProcessHandle */
+    (void *) (INT_PTR) -1 /* ITestService::GetProcessHandle */ ,
+    (void *) (INT_PTR) -1 /* ITestService::IsRunningUnattended */
 };
 
 const CInterfaceStubVtbl _ITestServiceStubVtbl =
 {
     &IID_ITestService,
     &ITestService_ServerInfo,
-    4,
+    5,
     0, /* pure interpreted */
     CStdStubBuffer_METHODS
 };

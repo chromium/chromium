@@ -9,7 +9,23 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/environment.h"
 #include "base/path_service.h"
+#include "chrome/common/env_vars.h"
+#include "chrome/windows_services/service_program/switches.h"
+
+namespace {
+
+// Adds the --unattended-test switch to the service's command line if the test
+// is running with CHROME_HEADLESS in its environment block.
+void AddUnattendedTestSwitch(base::CommandLine& command_line) {
+  if (auto env = base::Environment::Create();
+      env->HasVar(env_vars::kHeadless)) {
+    command_line.AppendSwitch(switches::kUnattendedTest);
+  }
+}
+
+}  // namespace
 
 ServiceEnvironment::ServiceEnvironment(
     std::wstring_view display_name,
@@ -22,6 +38,9 @@ ServiceEnvironment::ServiceEnvironment(
 
   base::CommandLine service_command(
       base::PathService::CheckedGet(base::DIR_EXE).Append(service_exe_name));
+
+  AddUnattendedTestSwitch(service_command);
+
   if (!testing_switch.empty()) {
     service_command.AppendSwitch(testing_switch);
   }

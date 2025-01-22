@@ -16,6 +16,9 @@ interface ITestService : IUnknown
 {
   // Returns a handle to test service's process.
   HRESULT GetProcessHandle([out] unsigned long* handle);
+
+  // Returns `VARIANT_TRUE` if the service is run with `--unattended-test`.
+  HRESULT IsRunningUnattended([out] VARIANT_BOOL* is_running_unattended);
 };
 
 [
