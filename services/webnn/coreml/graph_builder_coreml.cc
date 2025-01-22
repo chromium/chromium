@@ -4382,7 +4382,7 @@ GraphBuilderCoreml::AddOperationForTranspose(
   CHECK(context_properties_.data_type_limits.transpose_input.Has(
       MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
-  if (input_operand_info.dimensions.empty()) {
+  if (input_operand_info.dimensions.size() <= 1) {
     return AddUnaryOperation(kOpIdentityTypeName, input_operand_id,
                              output_operand_id, block);
   }
