@@ -436,6 +436,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kV8AILanguageModel_Prompt_Method,
           WebFeature::kV8AILanguageModel_PromptStreaming_Method,
           WebFeature::kV8AILanguageModelFactory_Create_Method,
+          WebFeature::kMediaSessionEnterPictureInPicture,
       }));
   return *opt_in_features;
 }
