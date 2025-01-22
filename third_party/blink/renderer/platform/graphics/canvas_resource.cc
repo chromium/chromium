@@ -640,14 +640,12 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
   scoped_refptr<StaticBitmapImage> image;
   auto client_shared_image = GetClientSharedImage();
 
-  const bool is_overlay_candidate =
-      client_shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   // If its cross thread, then the sync token was already verified.
   image = AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       std::move(client_shared_image), GetSyncToken(), texture_id_for_image,
       image_info, context_provider_wrapper_, owning_thread_ref_,
       owning_thread_task_runner_, std::move(release_callback),
-      supports_display_compositing_, is_overlay_candidate);
+      supports_display_compositing_);
 
   DCHECK(image);
   return image;
@@ -842,13 +840,11 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
       },
       base::RetainedRef(this));
 
-  const bool is_overlay_candidate =
-      client_si_->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       client_si_, GetSyncToken(), /*shared_image_texture_id=*/0u,
       CreateSkImageInfo(), context_provider_wrapper_, owning_thread_ref_,
       owning_thread_task_runner_, std::move(release_callback),
-      /*supports_display_compositing=*/true, is_overlay_candidate);
+      /*supports_display_compositing=*/true);
 }
 
 const gpu::SyncToken
@@ -974,13 +970,10 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
       },
       base::RetainedRef(this));
 
-  const bool is_overlay_candidate =
-      back_buffer_shared_image_->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       back_buffer_shared_image_, GetSyncToken(), shared_texture_id, image_info,
       context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
-      std::move(release_callback), /*supports_display_compositing=*/true,
-      /*is_overlay_candidate=*/is_overlay_candidate);
+      std::move(release_callback), /*supports_display_compositing=*/true);
 }
 
 scoped_refptr<gpu::ClientSharedImage>

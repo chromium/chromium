@@ -69,8 +69,9 @@ AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
     base::PlatformThreadRef context_thread_ref,
     scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
     viz::ReleaseCallback release_callback,
-    bool supports_display_compositing,
-    bool is_overlay_candidate) {
+    bool supports_display_compositing) {
+  const bool is_overlay_candidate =
+      shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
       std::move(shared_image), sync_token, shared_image_texture_id,
       sk_image_info, supports_display_compositing, is_overlay_candidate,

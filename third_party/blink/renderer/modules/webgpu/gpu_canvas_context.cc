@@ -317,8 +317,6 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
       texture_descriptor_.size.width, texture_descriptor_.size.height,
       sk_color_type, kPremul_SkAlphaType);
 
-  bool is_overlay_candidate =
-      client_si->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   return MakeGarbageCollected<ImageBitmap>(
       AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
           std::move(client_si), sk_image_sync_token,
@@ -326,7 +324,7 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
           GetContextProviderWeakPtr(), base::PlatformThread::CurrentRef(),
           ThreadScheduler::Current()->CleanupTaskRunner(),
           std::move(release_callback),
-          /*supports_display_compositing=*/true, is_overlay_candidate));
+          /*supports_display_compositing=*/true));
 }
 
 // gpu_presentation_context.idl

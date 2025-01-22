@@ -63,8 +63,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       base::PlatformThreadRef context_thread_ref,
       scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
       viz::ReleaseCallback release_callback,
-      bool supports_display_compositing,
-      bool is_overlay_candidate);
+      bool supports_display_compositing);
 
   // Creates an image wrapping an external shared image.
   // The shared image may come from a different context,

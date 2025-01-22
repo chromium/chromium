@@ -256,8 +256,7 @@ class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
             WTF::BindOnce(&BlinkTransferableMessageStructTraitsWithFakeGpuTest::
                               OnImageDestroyed,
                           WTF::Unretained(this)),
-            /*supports_display_compositing=*/true,
-            /*is_overlay_candidate=*/true));
+            /*supports_display_compositing=*/true));
   }
 
   void OnImageDestroyed(const gpu::SyncToken&, bool) {

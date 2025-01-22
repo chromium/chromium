@@ -661,9 +661,7 @@ XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
       base::PlatformThread::CurrentRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
       std::move(release_callback),
-      /*supports_display_compositing=*/true,
-      /*is_overlay_candidate=*/
-      buffer->shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT));
+      /*supports_display_compositing=*/true);
 }
 
 // static
