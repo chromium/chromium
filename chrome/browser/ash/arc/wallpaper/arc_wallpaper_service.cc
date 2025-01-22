@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -18,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
+#include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"

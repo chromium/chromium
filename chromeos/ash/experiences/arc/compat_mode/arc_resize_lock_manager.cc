@@ -4,8 +4,6 @@
 
 #include "chromeos/ash/experiences/arc/compat_mode/arc_resize_lock_manager.h"
 
-#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "ash/components/arc/arc_features.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/arc_resize_lock_type.h"
@@ -20,6 +18,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/compat_mode/arc_splash_screen_dialog_view.h"
 #include "chromeos/ash/experiences/arc/compat_mode/arc_window_property_util.h"
 #include "chromeos/ash/experiences/arc/compat_mode/compat_mode_button_controller.h"

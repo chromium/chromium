@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/game_dashboard/chrome_game_dashboard_delegate.h"
 
-#include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -14,6 +13,7 @@
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/compat_mode/arc_resize_lock_manager.h"
 #include "chromeos/ash/experiences/arc/compat_mode/compat_mode_button_controller.h"
 #include "chromeos/ash/experiences/arc/session/connection_holder.h"

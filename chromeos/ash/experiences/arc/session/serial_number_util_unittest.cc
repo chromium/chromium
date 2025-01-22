@@ -4,10 +4,10 @@
 
 #include "chromeos/ash/experiences/arc/session/serial_number_util.h"
 
-#include "ash/components/arc/arc_prefs.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

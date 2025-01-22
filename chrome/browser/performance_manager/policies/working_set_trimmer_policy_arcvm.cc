@@ -4,8 +4,6 @@
 
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy_arcvm.h"
 
-#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -16,6 +14,8 @@
 #include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/exo/wm_helper.h"
 #include "content/public/browser/browser_context.h"

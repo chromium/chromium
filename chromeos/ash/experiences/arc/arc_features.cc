@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 
 #include "base/feature_list.h"
 
@@ -37,9 +37,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    base::Days(7));
 
 // Controls whether to start ARC with the GKI kernel.
-BASE_FEATURE(kArcVmGki,
-             "ArcVmGki",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kArcVmGki, "ArcVmGki", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls block IO schedulers in ARCVM.
 BASE_FEATURE(kBlockIoScheduler,

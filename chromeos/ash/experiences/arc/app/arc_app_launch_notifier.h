@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

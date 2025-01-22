@@ -76,10 +76,10 @@ specific_include_rules = {
     "+google_apis/gaia",
   ],
   "managed_network_configuration_handler_impl.cc": [
-    "+ash/components/arc/arc_prefs.h"
+    "+chromeos/ash/experiences/arc/arc_prefs.h"
   ],
   "managed_network_configuration_handler_unittest.cc": [
-    "+ash/components/arc/arc_prefs.h",
+    "+chromeos/ash/experiences/arc/arc_prefs.h",
   ],
 
   # Dependencies specific for fuzz targets and other fuzzing-related code.

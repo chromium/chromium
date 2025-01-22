@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/ash/arc/arc_vm_data_migration_confirmation_dialog.h"
 
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/arc_util.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/dialog_button.mojom.h"

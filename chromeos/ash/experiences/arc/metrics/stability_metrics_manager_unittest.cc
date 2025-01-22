@@ -4,8 +4,8 @@
 
 #include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"
 
-#include "ash/components/arc/arc_prefs.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

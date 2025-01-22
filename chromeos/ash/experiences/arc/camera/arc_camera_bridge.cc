@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -14,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/dbus/arc/arc_camera_client.h"
+#include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "crypto/random.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"

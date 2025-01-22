@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/mojom/file_system.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
@@ -41,6 +40,7 @@
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/virtual_file_provider/fake_virtual_file_provider_client.h"
 #include "chromeos/ash/components/dbus/virtual_file_provider/virtual_file_provider_client.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
 #include "chromeos/ash/experiences/arc/test/fake_file_system_instance.h"

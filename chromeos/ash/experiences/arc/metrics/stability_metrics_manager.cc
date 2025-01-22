@@ -6,8 +6,8 @@
 
 #include <ostream>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "base/metrics/histogram_macros.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 

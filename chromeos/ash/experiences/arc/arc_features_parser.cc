@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/arc/arc_features_parser.h"
+#include "chromeos/ash/experiences/arc/arc_features_parser.h"
 
 #include <string_view>
 
-#include "ash/components/arc/arc_util.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -15,6 +14,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 
 namespace arc {
 

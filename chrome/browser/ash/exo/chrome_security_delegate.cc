@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_util.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "components/exo/shell_surface_util.h"
 #include "content/public/common/drop_data.h"
 #include "storage/browser/file_system/external_mount_points.h"

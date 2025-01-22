@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
@@ -36,6 +35,7 @@
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
 #include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"

@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/ash/arc/arc_vm_data_migration_confirmation_dialog.h"
 
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/arc_util.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/metrics/histogram_functions.h"
@@ -14,6 +12,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/vector_icons/vector_icons.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"

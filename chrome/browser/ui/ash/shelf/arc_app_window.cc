@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/shelf/arc_app_window.h"
 
-#include "ash/components/arc/arc_util.h"
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -13,6 +12,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_window_delegate.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
 #include "extensions/common/constants.h"

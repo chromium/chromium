@@ -5,7 +5,6 @@
 #include <memory>
 #include <optional>
 
-#include "ash/components/arc/arc_features_parser.h"
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
@@ -17,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/experiences/arc/arc_features_parser.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"

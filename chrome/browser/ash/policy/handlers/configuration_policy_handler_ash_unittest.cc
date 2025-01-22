@@ -7,13 +7,13 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/policy_error_map.h"

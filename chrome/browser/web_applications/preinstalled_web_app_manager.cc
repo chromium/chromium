@@ -76,10 +76,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 // TODO(http://b/333583704): Revert CL which added this include after migration.
-#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/ash/components/report/utils/time_utils.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {

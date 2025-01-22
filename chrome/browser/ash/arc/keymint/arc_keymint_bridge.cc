@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/arc/keymint/arc_keymint_bridge.h"
 
-#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/arc/keymint/cert_store_bridge_keymint.h"
 #include "chromeos/ash/components/dbus/arc/arc_keymint_client.h"
+#include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "mojo/core/configuration.h"
 #include "mojo/core/embedder/embedder.h"

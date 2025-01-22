@@ -42,9 +42,9 @@
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/components/arc/arc_util.h"
 #include "chrome/browser/task_manager/providers/arc/arc_process_task_provider.h"
 #include "chrome/browser/task_manager/providers/vm/vm_process_task_provider.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/process/arc_process_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

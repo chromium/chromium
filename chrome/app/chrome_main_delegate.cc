@@ -157,7 +157,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
 #include "base/system/sys_info.h"
@@ -167,6 +166,7 @@
 #include "chrome/browser/ash/schedqos/dbus_schedqos_state_handler.h"
 #include "chromeos/ash/components/memory/memory.h"
 #include "chromeos/ash/components/memory/mglru.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "content/public/common/content_features.h"
 #include "ui/lottie/resource.h"  // nogncheck
 #endif

@@ -9,8 +9,6 @@
 #include <optional>
 #include <utility>
 
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/mojom/app_permissions.mojom.h"
 #include "ash/components/arc/mojom/compatibility_mode.mojom.h"
 #include "ash/components/arc/mojom/file_system.mojom.h"
@@ -52,6 +50,8 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_package.h"
 #include "chromeos/ash/experiences/arc/intent_helper/intent_constants.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"

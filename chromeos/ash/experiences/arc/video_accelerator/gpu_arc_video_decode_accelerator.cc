@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/arc/arc_features.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/memory/platform_shared_memory_region.h"
@@ -18,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/arc_video_accelerator_util.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager.h"
 #include "media/base/media_log.h"

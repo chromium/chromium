@@ -21,7 +21,7 @@
 #include "extensions/common/extension_urls.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/components/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {

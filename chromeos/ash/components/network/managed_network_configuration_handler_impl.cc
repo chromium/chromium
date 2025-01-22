@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
@@ -51,6 +50,7 @@
 #include "chromeos/ash/components/network/shill_property_util.h"
 #include "chromeos/ash/components/network/tether_constants.h"
 #include "chromeos/ash/components/network/text_message_suppression_state.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/components/onc/onc_validator.h"

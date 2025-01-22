@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/arc_features_parser.h"
 #include "ash/components/arc/mojom/webapk.mojom.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -19,6 +18,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_metrics.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chromeos/ash/experiences/arc/arc_features_parser.h"
 
 class Profile;
 

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ARC_ARC_PREFS_H_
-#define ASH_COMPONENTS_ARC_ARC_PREFS_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_ARC_PREFS_H_
+#define CHROMEOS_ASH_EXPERIENCES_ARC_ARC_PREFS_H_
 
-#include "ash/components/arc/arc_export.h"
+#include "chromeos/ash/experiences/arc/arc_export.h"
 
 class PrefRegistrySimple;
 
@@ -74,4 +74,4 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 }  // namespace prefs
 }  // namespace arc
 
-#endif  // ASH_COMPONENTS_ARC_ARC_PREFS_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_ARC_PREFS_H_

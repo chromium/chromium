@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/mojom/power.mojom.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -27,6 +25,8 @@
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/throttle/throttle_observer.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"
 #include "chromeos/ash/experiences/arc/power/arc_power_bridge.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"

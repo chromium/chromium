@@ -4,10 +4,11 @@
 
 // This file defines the public base::FeatureList features for ARC.
 
-#ifndef ASH_COMPONENTS_ARC_ARC_FEATURES_H_
-#define ASH_COMPONENTS_ARC_ARC_FEATURES_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_ARC_FEATURES_H_
+#define CHROMEOS_ASH_EXPERIENCES_ARC_ARC_FEATURES_H_
 
 #include <base/time/time.h>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
@@ -91,4 +92,4 @@ BASE_DECLARE_FEATURE_PARAM(std::string, kPriorityAppLmkDelayList);
 BASE_DECLARE_FEATURE(kLmkPerceptibleMinStateUpdate);
 }  // namespace arc
 
-#endif  // ASH_COMPONENTS_ARC_ARC_FEATURES_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_ARC_FEATURES_H_

@@ -10,7 +10,6 @@
 #include <optional>
 #include <string>
 
-#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/mojom/anr.mojom.h"
 #include "ash/components/arc/mojom/power.mojom.h"
 #include "base/memory/raw_ptr.h"
@@ -19,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "chromeos/dbus/power/power_manager_client.h"

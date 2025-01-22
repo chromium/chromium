@@ -6,8 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -21,6 +19,8 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/session/adb_sideloading_availability_delegate.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"

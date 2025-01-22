@@ -7,10 +7,10 @@
 #include <optional>
 #include <string_view>
 
-#include "ash/components/arc/arc_util.h"
 #include "ash/wm/window_properties.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chromeos/ash/components/borealis/borealis_util.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"

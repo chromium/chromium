@@ -8,7 +8,6 @@
 #include <set>
 #include <string_view>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
@@ -37,6 +36,7 @@
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"

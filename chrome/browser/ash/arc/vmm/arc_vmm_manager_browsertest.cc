@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/arc/vmm/arc_vmm_manager.h"
 
 #include "ash/accelerators/accelerator_controller_impl.h"
-#include "ash/components/arc/arc_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
@@ -17,6 +16,7 @@
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/ash/experiences/arc/test/connection_holder_util.h"

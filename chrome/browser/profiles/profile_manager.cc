@@ -142,7 +142,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_switches.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/system/sys_info.h"
@@ -155,6 +154,7 @@
 #include "chrome/browser/chromeos/extensions/desk_api/desk_api_extension_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/session/arc_management_transition.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"

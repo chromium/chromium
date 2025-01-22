@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/mojom/auth.mojom.h"
 #include "ash/shell.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"
 #include "components/user_manager/user_manager.h"
 

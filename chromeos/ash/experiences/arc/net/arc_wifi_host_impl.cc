@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/experiences/arc/net/arc_wifi_host_impl.h"
 
-#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "base/memory/singleton.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -12,6 +11,7 @@
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
+#include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/net/arc_net_utils.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 

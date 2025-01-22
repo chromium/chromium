@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 
 #include <string>
 

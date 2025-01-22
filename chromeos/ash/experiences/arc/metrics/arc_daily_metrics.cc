@@ -11,10 +11,10 @@
 
 #include <unordered_set>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 
 namespace arc {

@@ -6,12 +6,12 @@
 
 #include <string_view>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

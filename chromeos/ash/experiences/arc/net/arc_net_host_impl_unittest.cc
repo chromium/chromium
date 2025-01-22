@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/dbus/patchpanel/fake_patchpanel_client.h"
@@ -15,6 +14,7 @@
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/test/fake_cert_manager.h"
 #include "components/prefs/testing_pref_service.h"

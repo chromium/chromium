@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/arc/sharesheet/arc_sharesheet_bridge.h"
 
-#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_thread.h"
 

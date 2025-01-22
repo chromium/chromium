@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ARC_ARC_FEATURES_PARSER_H_
-#define ASH_COMPONENTS_ARC_ARC_FEATURES_PARSER_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_ARC_FEATURES_PARSER_H_
+#define CHROMEOS_ASH_EXPERIENCES_ARC_ARC_FEATURES_PARSER_H_
 
 #include <map>
 #include <optional>
@@ -123,4 +123,4 @@ class ArcFeaturesParser {
 
 }  // namespace arc
 
-#endif  // ASH_COMPONENTS_ARC_ARC_FEATURES_PARSER_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_ARC_FEATURES_PARSER_H_

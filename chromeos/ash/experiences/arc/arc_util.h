@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ARC_ARC_UTIL_H_
-#define ASH_COMPONENTS_ARC_ARC_UTIL_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_ARC_UTIL_H_
+#define CHROMEOS_ASH_EXPERIENCES_ARC_ARC_UTIL_H_
 
 // This file contains utility to see ARC functionality status controlled by
 // outside of ARC, e.g. CommandLine flag, attribute of global data/state,
@@ -328,4 +328,4 @@ void RecordFirstActivationDuringUserSessionStartUp(PrefService* prefs,
 
 }  // namespace arc
 
-#endif  // ASH_COMPONENTS_ARC_ARC_UTIL_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_ARC_UTIL_H_
