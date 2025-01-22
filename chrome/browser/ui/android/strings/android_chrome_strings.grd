@@ -3294,6 +3294,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_NOTIFICATION_SHOW_ORIGINAL_BUTTON" desc="Text of a button shown on suspicious notifications, allowing the user to see the contents of the original notification instead of the warning.">
         Show notification
       </message>
+      <message name="IDS_NOTIFICATION_ALWAYS_ALLOW_BUTTON" desc="Text of a button shown on original notifications that were displayed after the warning notifications. Clicking the button allows the user to always receive notifications from their origin without warning notifications.">
+        Always allow
+      </message>
 
       <!-- Download UI -->
       <message name="IDS_DOWNLOAD_NOTIFICATION_PENDING" desc="Download notification to be displayed when a download has been scheduled but has not started being fetched from the network.">
