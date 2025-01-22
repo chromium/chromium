@@ -218,7 +218,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         tabGroupDisplayName);
                 recordUserAction("ShareGroup");
             } else if (menuId == R.id.manage_sharing) {
-                dataSharingTabManager.showManageSharing(activity, collaborationId);
+                dataSharingTabManager.showManageSharing(
+                        activity, collaborationId, /* finishRunnable= */ null);
                 recordUserAction("ManageSharing");
             } else if (menuId == R.id.recent_activity) {
                 dataSharingTabManager.showRecentActivity(activity, collaborationId);

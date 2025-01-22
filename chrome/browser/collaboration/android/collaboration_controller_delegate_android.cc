@@ -7,6 +7,8 @@
 #include "base/android/jni_string.h"
 #include "components/collaboration/public/android/conversion_utils.h"
 #include "components/data_sharing/public/android/conversion_utils.h"
+#include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
+#include "components/saved_tab_groups/public/android/tab_group_sync_conversions_utils.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/collaboration/internal_jni_headers/CollaborationControllerDelegateImpl_jni.h"
@@ -128,8 +130,20 @@ void CollaborationControllerDelegateAndroid::ShowManageDialog(
     const tab_groups::EitherGroupID& either_id,
     ResultCallback result) {
   JNIEnv* env = base::android::AttachCurrentThread();
+
+  if (std::holds_alternative<base::Uuid>(either_id)) {
+    Java_CollaborationControllerDelegateImpl_showManageDialog(
+        env, java_obj_,
+        tab_groups::UuidToJavaString(env, std::get<base::Uuid>(either_id)),
+        /*localId=*/nullptr,
+        conversion::GetJavaResultCallbackPtr(std::move(result)));
+    return;
+  }
   Java_CollaborationControllerDelegateImpl_showManageDialog(
-      env, java_obj_, conversion::GetJavaResultCallbackPtr(std::move(result)));
+      env, java_obj_, /*syncId=*/nullptr,
+      tab_groups::TabGroupSyncConversionsBridge::ToJavaTabGroupId(
+          env, std::get<tab_groups::LocalTabGroupID>(either_id)),
+      conversion::GetJavaResultCallbackPtr(std::move(result)));
 }
 
 void CollaborationControllerDelegateAndroid::PromoteTabGroup(

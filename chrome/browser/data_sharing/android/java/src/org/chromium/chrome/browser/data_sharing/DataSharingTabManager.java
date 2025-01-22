@@ -730,7 +730,7 @@ public class DataSharingTabManager {
         if (existingGroup.collaborationId != null) {
             DataSharingMetrics.recordShareActionFlowState(
                     DataSharingMetrics.ShareActionStateAndroid.GROUP_EXISTS);
-            showManageSharing(activity, existingGroup.collaborationId);
+            showManageSharing(activity, existingGroup.collaborationId, /* finishRunnable= */ null);
             return;
         }
 
@@ -874,8 +874,11 @@ public class DataSharingTabManager {
      *
      * @param activity The activity to show the UI for.
      * @param collaborationId The collaboration ID to show the UI for.
+     * @param finishRunnable The runnable to run when the session is finished.
+     * @return The session id associated with the UI instance.
      */
-    public void showManageSharing(Activity activity, String collaborationId) {
+    public String showManageSharing(
+            Activity activity, String collaborationId, @Nullable Runnable finishRunnable) {
         assert mProfile != null;
 
         DataSharingUIDelegate uiDelegate = mDataSharingService.getUiDelegate();
@@ -957,7 +960,9 @@ public class DataSharingTabManager {
 
                     @Override
                     public void onSessionFinished() {
-                        // TODO(haileywang) : Implement this.
+                        if (finishRunnable != null) {
+                            finishRunnable.run();
+                        }
                     }
                 };
         DataSharingManageUiConfig manageConfig =
@@ -967,7 +972,7 @@ public class DataSharingTabManager {
                         .setLearnAboutBlockedAccounts(getLearnAboutBlockedAccountsUrl())
                         .setCommonConfig(getCommonConfig(activity, tabGroupName, stringConfig))
                         .build();
-        uiDelegate.showManageFlow(manageConfig);
+        return uiDelegate.showManageFlow(manageConfig);
     }
 
     private DataSharingUiConfig getCommonConfig(
@@ -1019,7 +1024,8 @@ public class DataSharingTabManager {
                 new DataSharingAvatarProvider(activity, mDataSharingService.getUiDelegate());
 
         // TODO(crbug.com/380962101): Extract manage sharing into a different interface.
-        Runnable manageSharingCallback = () -> showManageSharing(activity, collaborationId);
+        Runnable manageSharingCallback =
+                () -> showManageSharing(activity, collaborationId, /* finishRunnable= */ null);
         RecentActivityActionHandler recentActivityActionHandler =
                 new RecentActivityActionHandlerImpl(
                         tabGroupSyncService,

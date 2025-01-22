@@ -1442,7 +1442,7 @@ public class TabGridDialogMediatorUnitTest {
 
         mMediator.onToolbarMenuItemClick(R.id.manage_sharing, TAB_GROUP_ID, COLLABORATION_ID1);
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.ManageSharing"));
-        verify(mDataSharingTabManager).showManageSharing(any(), eq(COLLABORATION_ID1));
+        verify(mDataSharingTabManager).showManageSharing(any(), eq(COLLABORATION_ID1), eq(null));
     }
 
     @Test

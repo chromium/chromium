@@ -284,7 +284,7 @@ public class InstantMessageDelegateImplUnitTest {
         Supplier<Integer> action = propertyModel.get(ON_PRIMARY_ACTION);
         assertNotNull(action);
         assertEquals(DISMISS_IMMEDIATELY, action.get().intValue());
-        verify(mDataSharingTabManager).showManageSharing(any(), any());
+        verify(mDataSharingTabManager).showManageSharing(any(), any(), any());
     }
 
     @Test
@@ -299,7 +299,7 @@ public class InstantMessageDelegateImplUnitTest {
         Supplier<Integer> action = propertyModel.get(ON_PRIMARY_ACTION);
         assertNotNull(action);
         assertEquals(DISMISS_IMMEDIATELY, action.get().intValue());
-        verify(mDataSharingTabManager, never()).showManageSharing(any(), any());
+        verify(mDataSharingTabManager, never()).showManageSharing(any(), any(), any());
     }
 
     @Test

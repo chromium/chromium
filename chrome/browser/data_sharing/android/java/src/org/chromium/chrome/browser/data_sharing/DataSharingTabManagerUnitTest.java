@@ -402,7 +402,8 @@ public class DataSharingTabManagerUnitTest {
 
     @Test
     public void testManageSharing() {
-        mDataSharingTabManager.showManageSharing(mActivity, COLLABORATION_ID1);
+        mDataSharingTabManager.showManageSharing(
+                mActivity, COLLABORATION_ID1, /* finishRunnable= */ null);
     }
 
     @Test
