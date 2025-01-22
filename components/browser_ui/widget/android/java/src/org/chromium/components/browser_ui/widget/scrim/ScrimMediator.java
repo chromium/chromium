@@ -5,7 +5,6 @@
 package org.chromium.components.browser_ui.widget.scrim;
 
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -188,14 +187,6 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
                     animation -> {
                         setAlphaInternal((float) animation.getAnimatedValue());
                     });
-            mOverlayFadeOutAnimator.addListener(
-                    new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            // Reset the scrim color stored in the SystemUiScrimDelegate.
-                            mFullScrimColorSupplier.set(ScrimProperties.INVALID_COLOR);
-                        }
-                    });
         }
         mOverlayFadeOutAnimator.setDuration(getAnimationDuration(animDurationMs));
 
@@ -239,6 +230,7 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
 
         if (mIsHidingOrHidden && !isVisible && mModel != null) {
             mModel = null;
+            mFullScrimColorSupplier.set(ScrimProperties.INVALID_COLOR);
             mScrimHiddenRunnable.run();
         }
     }
