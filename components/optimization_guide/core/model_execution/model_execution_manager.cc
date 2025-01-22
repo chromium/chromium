@@ -530,7 +530,7 @@ ModelExecutionManager::GetSamplingParamsConfig(
     return std::nullopt;
   }
 
-  return adaptation_metadata->adapter()->MaybeSamplingParamsConfig();
+  return adaptation_metadata->adapter()->GetSamplingParamsConfig();
 }
 
 }  // namespace optimization_guide

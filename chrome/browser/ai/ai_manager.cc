@@ -352,26 +352,20 @@ void AIManager::CreateSummarizer(
 }
 
 blink::mojom::AIModelInfoPtr AIManager::GetLanguageModelInfo() {
-  auto model_info = blink::mojom::AIModelInfo::New(
-      optimization_guide::features::GetOnDeviceModelDefaultTopK(),
-      GetLanguageModelMaxTopK(),
-      optimization_guide::features::GetOnDeviceModelDefaultTemperature());
+  auto model_info = blink::mojom::AIModelInfo::New();
+  model_info->max_top_k = GetLanguageModelMaxTopK();
 
   auto sampling_params_config =
       OptimizationGuideKeyedServiceFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context_))
           ->GetSamplingParamsConfig(
               optimization_guide::ModelBasedCapabilityKey::kPromptApi);
-  if (!sampling_params_config.has_value()) {
-    return model_info;
-  }
-  if (sampling_params_config->default_top_k.has_value()) {
-    model_info->default_top_k = sampling_params_config->default_top_k.value();
-  }
-  if (sampling_params_config->default_temperature.has_value()) {
+  if (sampling_params_config.has_value()) {
+    model_info->default_top_k = sampling_params_config->default_top_k;
     model_info->default_temperature =
-        sampling_params_config->default_temperature.value();
+        sampling_params_config->default_temperature;
   }
+
   return model_info;
 }
 

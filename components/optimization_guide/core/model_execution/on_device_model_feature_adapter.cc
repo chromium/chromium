@@ -170,11 +170,17 @@ OnDeviceModelFeatureAdapter::ConstructTextSafetyRequest(
   return text_safety_request;
 }
 
-std::optional<SamplingParamsConfig>
-OnDeviceModelFeatureAdapter::MaybeSamplingParamsConfig() const {
+SamplingParamsConfig OnDeviceModelFeatureAdapter::GetSamplingParamsConfig()
+    const {
   if (!config_.has_sampling_params()) {
-    return std::nullopt;
+    // Returns default value if the sampling params are not configured.
+    return SamplingParamsConfig{
+        .default_top_k = uint32_t(features::GetOnDeviceModelDefaultTopK()),
+        .default_temperature =
+            float(features::GetOnDeviceModelDefaultTemperature()),
+    };
   }
+
   return SamplingParamsConfig{
       .default_top_k = config_.sampling_params().top_k(),
       .default_temperature = config_.sampling_params().temperature(),
