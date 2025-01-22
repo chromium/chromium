@@ -2908,26 +2908,6 @@
             ]
         }
     ],
-    "BackForwardCacheBroadcastChannel": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BFCacheOpenBroadcastChannel"
-                    ]
-                }
-            ]
-        }
-    ],
     "BackForwardCacheForPageWithCacheControlNotStoredHeader": [
         {
             "platforms": [
