@@ -1047,6 +1047,7 @@ void TracingHandler::OnFrameFromVideoConsumer(
   }
   const SkBitmap skbitmap = DevToolsVideoConsumer::GetSkBitmapFromFrame(frame);
   uint64_t frame_sequence = *frame->metadata().frame_sequence;
+  // TODO(jacktfranklin): consume the source_id
 
   // This reference_time is an ESTIMATE. It is set by the compositor frame sink
   // from the `expected_display_time`, which is based on a previously known

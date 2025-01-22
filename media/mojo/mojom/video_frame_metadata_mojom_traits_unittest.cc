@@ -94,6 +94,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, EmptyMetadata) {
   EXPECT_FALSE(metadata_out.frame_duration.has_value());
   EXPECT_FALSE(metadata_out.wallclock_frame_duration.has_value());
   EXPECT_FALSE(metadata_out.frame_sequence.has_value());
+  EXPECT_FALSE(metadata_out.source_id.has_value());
   EXPECT_FALSE(metadata_out.background_blur.has_value());
 }
 
@@ -105,6 +106,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   // ints
   metadata_in.capture_counter = 123;
   metadata_in.frame_sequence = 456;
+  metadata_in.source_id = 789;
 
   // gfx::Rects
   metadata_in.capture_update_rect = gfx::Rect(12, 34, 360, 480);
@@ -196,6 +198,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   EXPECT_EQ(metadata_in.wallclock_frame_duration,
             metadata_out.wallclock_frame_duration);
   EXPECT_EQ(metadata_in.frame_sequence, metadata_out.frame_sequence);
+  EXPECT_EQ(metadata_in.source_id, metadata_out.source_id);
   EXPECT_EQ(metadata_in.background_blur->enabled,
             metadata_out.background_blur->enabled);
 }
