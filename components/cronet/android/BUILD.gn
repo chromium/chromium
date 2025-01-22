@@ -1993,6 +1993,7 @@ GN2BP_SOURCES = [
   "//components/cronet/gn2bp/gen_android_bp.py",
   "//components/cronet/gn2bp/generate_build_scripts_output.py",
   "//components/cronet/gn2bp/gn_utils.py",
+  "//components/cronet/gn2bp/targets.py",
   "//tools/mb/mb.py",
   "$_gn_path",
   "$_ninja_path",
