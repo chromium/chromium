@@ -4538,6 +4538,12 @@ ScriptPromise<AdAuctionData> NavigatorAuction::getInterestGroupAdAuctionData(
           "One of seller or sellers for AdAuctionDataConfig must be provided.");
       return EmptyPromise();
     }
+    if (config->hasCoordinatorOrigin() && config->hasSellers()) {
+      exception_state.ThrowTypeError(
+          "Cannot provide both coordinatorOrigin and sellers for "
+          "AdAuctionDataConfig.");
+      return EmptyPromise();
+    }
   }
 
   if (config->hasSeller()) {
