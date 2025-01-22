@@ -74,29 +74,6 @@ AST_MATCHER(clang::ParmVarDecl, isArrayParm) {
   return Node.getOriginalType()->isArrayType();
 }
 
-std::string EscapeReplacementText(std::string text) {
-  static const std::string_view escaped = "\n\r%@,:<>";
-  static const std::string_view hex = "0123456789ABCDEF";
-
-  // <empty> is a special keyword. It is never escaped.
-  if (text == kEmptyKeyword) {
-    return text;
-  }
-
-  std::string out;
-  for (auto ch : text) {
-    if (escaped.find(ch) != std::string_view::npos) {
-      uint8_t value = static_cast<uint8_t>(ch);
-      out += '%';
-      out += hex[(value >> 4) & 0x0F];
-      out += hex[(value >> 0) & 0x0F];
-    } else {
-      out += ch;
-    }
-  }
-  return out;
-}
-
 struct Node {
   bool is_buffer = false;
 
@@ -116,9 +93,18 @@ struct Node {
   //    provide a size for the pointer returned)
   bool size_info_available = false;
 
-  // This is true for dereference expressions.
-  // Example: *buf, *fct(), *(buf++), ...
-  bool is_deref_expr = false;
+  // Dependent nodes are special nodes having a single neighbor and that need to
+  // be rewritten iff their only neighbor is. These nodes include (among
+  // others):
+  //  1. Dereference nodes: If the expression we are dereferencing is rewritten
+  //     to base::span, the dereference expression needs to be adapted as well.
+  //  2. Nodes to replace unary arithmetic operations
+  //  3. Nodes to replace binary arithmetic operations
+  //  4. Additional replacement Nodes: When a replacement is split in two, the
+  //     second node is marked as a dependent node on the first since both
+  //     replacements are needed together. See the `additional_replacement`
+  //     field description for more details.
+  bool is_dependent = false;
 
   // This is true for the cases where the lhs node doesn't get rewritten while
   // the rhs does. in that case, we create a special node that adds a `.data()`
@@ -126,6 +112,26 @@ struct Node {
   // buffer => gets spanified T* temp = ptr; => temp never used as a buffer =>
   // need to add `.data()` The statement becomes: T* temp = ptr.data();
   bool is_data_change = false;
+
+  // This field is NOT serialized.
+  // This is used to split this nodes into two. The second node, who's
+  // replacement is `additional_replacement`, is dependent (is_dependent=true)
+  // on this node.
+  // Examples of where this is needed:
+  // 1. Dereference expressions: (*expr => expr[0])
+  //    For deref expressions, we need to delete the `*` operator and to append
+  //    [0]. This leads to conflicting rewrites for expressions that use
+  //    multiple operators. Example: `*++a;` which needs to be rewritten to
+  //    base::preIncrementSpan(a)[0]. If the deref expression replacement is not
+  //    split in two, we would end up with two conflicting replacement ranges.
+  //        a. The preIncrement replacement that removes the `++` and rewrites
+  //           the expression to base::preIncrementSpan(a).
+  //        b. The deref statement which tries to replace *++a with ++a[0] which
+  //           simply wouldn't compile.
+  // 2. Adding trailing braces to Array rewrites. This leads to us needing to
+  //    escape the special characters that are included in the array
+  //    initializers.
+  std::string additional_replacement;
 
   bool operator==(const Node& other) const {
     return replacement == other.replacement;
@@ -138,12 +144,12 @@ struct Node {
   // The resulting string follows the following format:
   // {is_buffer\,r:::<filepath>:::<offset>:::<length>:::<replacement_text>
   //\,include-user-header:::<file path>:::-1:::-1:::<include
-  // text>\,size_info_available\,is_deref_expr\,is_data_change}
+  // text>\,size_info_available\,is_dependent\,is_data_change}
   // where the booleans are represented as 0 or 1.
   std::string ToString() const {
     return llvm::formatv("{{{0:d}\\,{1}\\,{2}\\,{3:d}\\,{4:d}\\,{5:d}}",
                          is_buffer, replacement, include_directive,
-                         size_info_available, is_deref_expr, is_data_change);
+                         size_info_available, is_dependent, is_data_change);
   }
 };
 
@@ -187,9 +193,9 @@ static std::string GetReplacementDirective(
   if (file_path.empty()) {
     return {"", ""};
   }
-  // If `replacement_text` is a special keyword, e.g. "<empty>", should not
-  // escape `replacement_text`.
-  replacement_text = EscapeReplacementText(replacement_text);
+  // For replacements that span multiple lines, make sure to remove the newline
+  // character.
+  std::replace(replacement_text.begin(), replacement_text.end(), '\n', '\0');
   return llvm::formatv("r:::{0}:::{1}:::{2}:::{3}", file_path,
                        replacement.getOffset(), replacement.getLength(),
                        replacement_text);
@@ -491,7 +497,7 @@ static Node getNodeFromDerefExpr(const clang::Expr* deref_expr,
   Node n;
   n.replacement = replacement_and_include_pair.first;
   n.include_directive = "<empty>";
-  n.is_deref_expr = true;
+  n.is_dependent = true;
   return n;
 }
 
@@ -538,8 +544,8 @@ static Node getNodeFromCallToExternalFunction(
       rep_range, replacement_text, source_manager);
   Node n;
   n.replacement = replacement_and_include_pair.first;
-  n.include_directive = "<empty>";
-  n.is_deref_expr = true;
+  n.include_directive = kEmptyKeyword;
+  n.is_dependent = true;
   return n;
 }
 
@@ -609,7 +615,7 @@ static Node getNodeFromSizeOfArrayExpr(
 
   Node n;
   n.replacement = replacement_directive;
-  n.is_deref_expr = true;
+  n.is_dependent = true;
   return n;
 }
 
@@ -887,22 +893,21 @@ std::string GetStringViewType(const clang::QualType element_type,
       .str();
 }
 
-// If needed, insert a trailing comma in the `init_list_expr` to make the code
-// more readable. This makes clang-format to put each elements in a new line.
-// Everything is aligned nicely, and the output is more readable. This is
-// particularly helpful when the original code is not formatted with
-// clang-format, and isn't using a trailing comma, but was originally formatted
-// on multiple lines.
-void InsertTrailingComma(const clang::InitListExpr* init_list_expr,
-                         clang::Rewriter& rewriter,
-                         const clang::SourceManager& source_manager) {
+// Determines whether a trailing comma should be inserted after the
+// `init_list_expr` to make the code more readable. Adding a trailing comma
+// makes clang-format put each element on a new line. Everything is aligned
+// nicely, and the output is more readable. This is particularly helpful when
+// the original code is not formatted with clang-format, and isn't using a
+// trailing comma, but was originally formatted on multiple lines.
+bool ShouldInsertTrailingComma(const clang::InitListExpr* init_list_expr,
+                               const clang::SourceManager& source_manager) {
   // To allow for one-liner, we don't add the trailing comma when the size is
   // below 3 or the content length is below 40.
   const int length =
       source_manager.getFileOffset(init_list_expr->getRBraceLoc()) -
       source_manager.getFileOffset(init_list_expr->getLBraceLoc());
   if (init_list_expr->getNumInits() < 3 || length < 40) {
-    return;
+    return false;
   }
 
   const clang::Expr* last_element =
@@ -913,11 +918,11 @@ void InsertTrailingComma(const clang::InitListExpr* init_list_expr,
   for (auto loc = last_element->getEndLoc().getLocWithOffset(1);
        loc != init_list_expr->getRBraceLoc(); loc = loc.getLocWithOffset(1)) {
     if (source_manager.getCharacterData(loc)[0] == ',') {
-      return;
+      return false;
     }
   }
 
-  rewriter.InsertTextAfterToken(last_element->getEndLoc(), ",");
+  return true;
 }
 
 // Return if braces can be elided when initializing an std::array of type
@@ -962,25 +967,38 @@ bool CanElideBracesForStdArrayInitialization(
   return true;
 }
 
-// Rewrites a C-style array with an initializer list to a std::array.
-std::string RewriteStdArrayWithInitList(
+// Returns a pair of replacements necessary to rewrite a C-style array
+// with an initializer list to a std::array.
+// The replacement is split into two, the first being a textual rewrite to an
+// std::array up and until the start of the initializer list, and the second
+// being a full replacement directive format (created with
+// GetReplacementDirective) pointing to the end of the initializer list to
+// handle closing brackets. This way, we don't need to include the initializer
+// list test and don't need to escape special characters.
+std::pair<std::string, std::string> RewriteStdArrayWithInitList(
     const clang::ArrayType* array_type,
     const std::string& type,
     const std::string& var,
     const std::string& size,
     const clang::InitListExpr* init_list_expr,
-    clang::SourceManager& source_manager,
+    const clang::SourceManager& source_manager,
     const clang::ASTContext& ast_context) {
-  clang::Rewriter rewriter(source_manager, ast_context.getLangOpts());
-  InsertTrailingComma(init_list_expr, rewriter, source_manager);
-  const std::string init_list_string =
-      rewriter.getRewrittenText(init_list_expr->getSourceRange());
+  bool needs_trailing_comma =
+      ShouldInsertTrailingComma(init_list_expr, source_manager);
+
+  clang::SourceRange init_list_closing_brackets_range = {
+      init_list_expr->getSourceRange().getEnd(),
+      init_list_expr->getSourceRange().getEnd().getLocWithOffset(1)};
 
   // Implicitly sized arrays are rewritten to std::to_array. This is because the
   // std::array constructor does not allow the size to be omitted.
   if (size.empty()) {
-    return llvm::formatv("auto {0} = std::to_array<{1}>({2})", var, type,
-                         init_list_string);
+    auto closing_brackets_replacement_directive = GetReplacementDirective(
+        init_list_closing_brackets_range, needs_trailing_comma ? ",})" : "})",
+        source_manager);
+    return std::make_pair(
+        llvm::formatv("auto {0} = std::to_array<{1}>(", var, type),
+        closing_brackets_replacement_directive);
   }
 
   // Warn for array and initializer list size mismatch, except for empty lists.
@@ -999,9 +1017,18 @@ std::string RewriteStdArrayWithInitList(
   const bool elide_braces =
       CanElideBracesForStdArrayInitialization(init_list_expr, source_manager);
 
-  return llvm::formatv(elide_braces ? "std::array<{0}, {1}> {2} = {3}"
-                                    : "std::array<{0}, {1}> {2} = {{{3}}",
-                       type, size, var, init_list_string);
+  if (elide_braces) {
+    return std::make_pair(
+        llvm::formatv("std::array<{0}, {1}> {2} = ", type, size, var), "");
+  }
+
+  auto closing_brackets_replacement_directive = GetReplacementDirective(
+      init_list_closing_brackets_range, needs_trailing_comma ? ",}}" : "}}",
+      source_manager);
+
+  return std::make_pair(
+      llvm::formatv("std::array<{0}, {1}> {2} = {{", type, size, var),
+      closing_brackets_replacement_directive);
 }
 
 // Creates a replacement node for c-style arrays on which we invoke operator[].
@@ -1104,11 +1131,12 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
   // `init_list_expr` if any.
   clang::SourceRange replacement_range = {
       array_variable->getSourceRange().getBegin(),
-      init_list_expr ? init_list_expr->getEndLoc().getLocWithOffset(1)
+      init_list_expr ? init_list_expr->getBeginLoc()
                      : type_loc->getSourceRange().getEnd().getLocWithOffset(1)};
 
   const char* include_path = kArrayIncludePath;
   std::string replacement_text;
+  std::string additional_replacement;
   if (original_element_type->isAnyCharacterType() &&
       original_element_type.isConstant(ast_context) &&
       clang::dyn_cast_or_null<clang::StringLiteral>(
@@ -1118,15 +1146,16 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
         array_variable_as_string);
     include_path = kStringViewIncludePath;
   } else if (init_list_expr) {
-    replacement_text = RewriteStdArrayWithInitList(
+    auto replacements = RewriteStdArrayWithInitList(
         array_type, element_type_as_string, array_variable_as_string,
         array_size_as_string, init_list_expr, source_manager, ast_context);
+    replacement_text = replacements.first;
+    additional_replacement = replacements.second;
   } else {
     replacement_text =
         llvm::formatv("std::array<{0}, {1}> {2}", element_type_as_string,
                       array_size_as_string, array_variable_as_string);
   }
-
   auto replacement_and_include_pair = GetReplacementAndIncludeDirectives(
       replacement_range,
       class_definition + qualifier_string.str() + replacement_text,
@@ -1137,6 +1166,7 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
   n.replacement = replacement_and_include_pair.first;
   n.include_directive = replacement_and_include_pair.second;
   n.size_info_available = true;
+  n.additional_replacement = additional_replacement;
   return n;
 }
 
@@ -1180,8 +1210,8 @@ class PotentialNodes : public MatchFinder::MatchCallback {
     if (auto* get_call = result.Nodes.getNodeAs<clang::CXXMemberCallExpr>(
             "raw_ptr_get_call")) {
       Node n = getNodeFromMemberCallExpr(get_call, "get_member_expr", result);
-      n.include_directive = "<empty>";
-      n.is_deref_expr = true;
+      n.include_directive = kEmptyKeyword;
+      n.is_dependent = true;
       return n;
     }
 
@@ -1263,15 +1293,22 @@ class PotentialNodes : public MatchFinder::MatchCallback {
     }
 
     Node rhs = getRHSNodeFromMatchResult(result);
-
     auto* expr = result.Nodes.getNodeAs<clang::Expr>("span_frontier");
-    if (expr && !lhs.is_deref_expr && !rhs.size_info_available) {
+    if (expr && !lhs.is_dependent && !rhs.size_info_available) {
       // Node to add `.data()`;
       // This is needed in the case where rhs is rewritten and lhs is not.
       // Adding `.data()` is thus needed to extract the pointer since lhs and
       // rhs no longer have the same type.
       Node data_node = getDataChangeNode(lhs.replacement, result);
       output_helper_.AddEdge(data_node, rhs);
+    }
+
+    if (!lhs.additional_replacement.empty()) {
+      Node n;
+      n.replacement = lhs.additional_replacement;
+      n.include_directive = kEmptyKeyword;
+      n.is_dependent = true;
+      output_helper_.AddEdge(n, rhs);
     }
 
     output_helper_.AddEdge(lhs, rhs);
