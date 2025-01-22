@@ -106,6 +106,9 @@ constexpr char kOpTypeTranspose[] = "Transpose";
 constexpr char kOpTypeTriangular[] = "Trilu";
 constexpr char kOpTypeWhere[] = "Where";
 
+constexpr char kInserted[] = "Inserted";
+constexpr char kUnderscore[] = "_";
+
 base::unexpected<mojom::ErrorPtr> NewNotSupportedError(std::string message) {
   return base::unexpected(mojom::Error::New(
       mojom::Error::Code::kNotSupportedError, std::move(message)));
@@ -182,6 +185,10 @@ struct TensorTypeMap<int64_t> {
 
 }  // namespace
 
+std::string GetOperandName(std::string_view label, uint64_t id) {
+  return base::JoinString({label, base::NumberToString(id)}, kUnderscore);
+}
+
 // static
 base::expected<std::unique_ptr<OrtModelBuilder::ModelInfo>, mojom::ErrorPtr>
 GraphBuilderOrt::CreateAndBuild(
@@ -215,40 +222,20 @@ const mojom::Operand& GraphBuilderOrt::GetOperand(uint64_t operand_id) {
   return *graph_info_->id_to_operand_map.at(operand_id);
 }
 
-// TODO(https://github.com/shiyi9801/chromium/issues/63): Make name generation
-// more robust.
 std::string GraphBuilderOrt::GetOperandNameById(uint64_t operand_id) {
   const mojom::Operand& operand = GetOperand(operand_id);
-  switch (operand.kind) {
-    case mojom::Operand::Kind::kInput: {
-      CHECK(operand.name.has_value());
-      // Add a prefix to avoid possible name collision.
-      return operand.name.value();
-      // return base::JoinString({"input", operand.name.value()}, "_");
-    }
-    case mojom::Operand::Kind::kConstant: {
-      // It's okay to use operand id as name directly since operand id is
-      // guaranteed to be unique.
-      return base::NumberToString(operand_id);
-    }
-    case mojom::Operand::Kind::kOutput: {
-      if (operand.name.has_value()) {
-        return operand.name.value();
-        // return base::JoinString({"output", operand.name.value()}, "_");
-      } else {
-        return base::NumberToString(operand_id);
-      }
-    }
-  }
+  std::string operand_label =
+      operand.name.has_value() ? operand.name.value() : "";
+  return GetOperandName(operand_label, operand_id);
 }
 
 std::string GraphBuilderOrt::GenerateNextOperandName() {
-  return base::NumberToString(next_operand_id_++);
+  return GetOperandName(kInserted, next_operand_id_++);
 }
 
 std::string GraphBuilderOrt::GenerateNextOperationName(std::string_view label) {
   return base::JoinString({label, base::NumberToString(next_operation_id_++)},
-                          "_");
+                          kUnderscore);
 }
 
 template <typename DataType>

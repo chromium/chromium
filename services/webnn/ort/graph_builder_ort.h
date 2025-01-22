@@ -42,6 +42,10 @@ concept IsSupportedTensorType = IsAnyOf<T, float, uint16_t, int64_t>;
 
 }  // namespace internal
 
+// The returned operand name has a format of "label_id". Adding operand id at
+// the end ensures that the name is unique.
+std::string GetOperandName(std::string_view label, uint64_t id);
+
 class GraphBuilderOrt {
   STACK_ALLOCATED();
 
@@ -76,13 +80,8 @@ class GraphBuilderOrt {
   // Get the unique name of an existing operand by its id.
   std::string GetOperandNameById(uint64_t operand_id);
 
-  // Generate the unique name of a newly created operand using the
-  // `next_operand_id_`, and then increase the `next_operand_id_`.
-  // TODO(https://github.com/shiyi9801/chromium/issues/63): Make name generation
-  // more robust. The newly created operands should also have a unique id, so
-  // here they're named by their ids for now. However, it is still possible to
-  // have names that are the same as the graph's inputs/outputs provided by
-  // users. ONNX doesn't allow duplicate operand names.
+  // Generate the unique name of a newly created operand by combining a prefix
+  // "inserted" and `next_operand_id_`, and then increase `next_operand_id_`.
   std::string GenerateNextOperandName();
 
   // Generate the unique name of a newly created operation by combining the

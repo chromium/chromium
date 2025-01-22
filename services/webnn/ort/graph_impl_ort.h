@@ -51,31 +51,14 @@ class GraphImplOrt final : public WebNNGraphImpl {
   GraphImplOrt& operator=(const GraphImplOrt&) = delete;
   ~GraphImplOrt() override;
 
-  struct Session {
-    Session(ScopedOrtEnvPtr env,
-            ScopedOrtSessionPtr session,
-            std::vector<base::HeapArray<uint8_t>> external_data);
-    Session(const Session&) = delete;
-    Session& operator=(const Session&) = delete;
-    ~Session();
-
-    OrtSession* GetSession() { return session.Get(); }
-
-    std::vector<base::HeapArray<uint8_t>> external_data;
-
-    // `env` should be prior to `session`. That ensures releasing `env` after
-    // releasing the session. This avoids unloading the providers DLLs being
-    // used during `session` destruction.
-    ScopedOrtEnvPtr env;
-    ScopedOrtSessionPtr session;
-  };
-
  private:
+  class ComputeResources;
+
   GraphImplOrt(ComputeResourceInfo compute_resource_info,
-               std::unique_ptr<GraphImplOrt::Session> session,
+               std::unique_ptr<ComputeResources> compute_resources,
                ContextImplOrt* context);
 
-  static base::expected<std::unique_ptr<GraphImplOrt::Session>, mojom::ErrorPtr>
+  static base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
   CreateAndBuildOnBackgroundThread(
       mojom::GraphInfoPtr graph_info,
       mojom::CreateContextOptionsPtr context_options,
@@ -87,10 +70,8 @@ class GraphImplOrt final : public WebNNGraphImpl {
       base::WeakPtr<WebNNContextImpl> context,
       ComputeResourceInfo compute_resource_info,
       WebNNContextImpl::CreateGraphImplCallback callback,
-      base::expected<std::unique_ptr<GraphImplOrt::Session>, mojom::ErrorPtr>
+      base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
           result);
-
-  class ComputeResources;
 
   // Execute the compiled platform graph asynchronously. The inputs were
   // validated in base class so we can use them to compute directly.
