@@ -12,18 +12,20 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros/concat.h"
+#include "base/macros/if.h"
+#include "base/macros/is_empty.h"
 #include "base/macros/remove_parens.h"
 #include "base/macros/uniquify.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/types/expected.h"
 
-// Executes an expression `rexpr` that returns a `base::expected<T, E>`. If the
+// Executes an expression `rexpr` that returns an `expected<T, E>`. If the
 // result is an error, causes the calling function to return. If no additional
 // arguments are given, the function return value is the `E` returned by
 // `rexpr`. Otherwise, the additional arguments are treated as an invocable that
 // expects an E as its last argument and returns some type (including `void`)
 // convertible to the function's return type; that is, the function returns the
-// result of `std::invoke(..., E)`.
+// result of `std::invoke(..., E)` on the additional arguments.
 //
 // This works with move-only types and can be used in functions that return
 // either an `E` directly or a `base::expected<U, E>`, without needing to
@@ -96,10 +98,10 @@
                                    BASE_UNIQUIFY(_expected_value), rexpr,  \
                                    __VA_ARGS__)
 
-// Executes an expression `rexpr` that returns a `base::expected<T, E>`. If the
-// result is an expected value, moves the `T` into whatever `lhs` defines/refers
-// to; otherwise, behaves like RETURN_IF_ERROR() above. Avoid side effects in
-// `lhs`, as it will not be evaluated in the error case.
+// Executes an expression `rexpr` that returns an `expected<T, E>`. If the
+// result is not an error, moves the `T` into whatever `lhs` defines/refers to;
+// otherwise, behaves like RETURN_IF_ERROR() above. Avoid side effects in `lhs`,
+// as it will not be evaluated in the error case.
 //
 // # Interface
 //
@@ -209,7 +211,7 @@ namespace base::internal {
 // the error of an `expected<T, E>`. Supports move-only `E`, as well as `void`.
 //
 // In order to support `void` return types, `UnexpectedDeducer` is not
-// constructed directly from an `E`, but from a lambda that returns `E`; and
+// constructed directly with an `E`, but with a lambda that returns `E`; and
 // callers must return `Ret()` rather than returning the deducer itself. Using
 // both these indirections allows consistent invocation from macros.
 template <typename Lambda, typename E = std::invoke_result_t<Lambda&&>>
@@ -230,11 +232,17 @@ class UnexpectedDeducer {
   // arbitrary `T`) or `E`.
   template <typename T>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr operator expected<T, E>() && noexcept {
+  constexpr operator expected<T, E>() && noexcept
+    requires(!std::is_void_v<E>)
+  {
     return expected<T, E>(unexpect, std::move(lambda_)());
   }
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr operator E() && noexcept { return std::move(lambda_)(); }
+  constexpr operator E() && noexcept
+    requires(!std::is_void_v<E>)
+  {
+    return std::move(lambda_)();
+  }
 
  private:
   // RAW_PTR_EXCLUSION: Not intended to handle &&-qualified members.
@@ -253,23 +261,19 @@ UnexpectedDeducer(Lambda) -> UnexpectedDeducer<Lambda>;
 
 #define BASE_INTERNAL_EXPECTED_PASS_ARGS(func, ...) func(__VA_ARGS__)
 
-// These are necessary to avoid mismatched parens inside __VA_OPT__() below.
-#define BASE_INTERNAL_EXPECTED_BEGIN_INVOKE std::invoke(
-#define BASE_INTERNAL_EXPECTED_END_INVOKE )
-
-#define BASE_INTERNAL_EXPECTED_BODY(expected, rexpr, name, ...)              \
-  decltype(auto) expected = (rexpr);                                         \
-  {                                                                          \
-    static_assert(base::internal::IsExpected<decltype(expected)>,            \
-                  #name " should only be used with base::expected<>");       \
-  }                                                                          \
-  if (!expected.has_value()) [[unlikely]] {                                  \
-    return base::internal::UnexpectedDeducer([&] {                           \
-             return __VA_OPT__(BASE_INTERNAL_EXPECTED_BEGIN_INVOKE)          \
-                 __VA_ARGS__ __VA_OPT__(, ) std::move(expected)              \
-                     .error() __VA_OPT__(BASE_INTERNAL_EXPECTED_END_INVOKE); \
-           })                                                                \
-        .Ret();                                                              \
+#define BASE_INTERNAL_EXPECTED_BODY(expected, rexpr, name, ...)           \
+  decltype(auto) expected = (rexpr);                                      \
+  {                                                                       \
+    static_assert(base::internal::IsExpected<decltype(expected)>,         \
+                  #name " should only be used with base::expected<>");    \
+  }                                                                       \
+  if (!expected.has_value()) [[unlikely]] {                               \
+    return base::internal::UnexpectedDeducer([&] {                        \
+             return BASE_IF(                                              \
+                 BASE_IS_EMPTY(__VA_ARGS__), std::move(expected).error(), \
+                 std::invoke(__VA_ARGS__, std::move(expected).error()));  \
+           })                                                             \
+        .Ret();                                                           \
   }
 
 #define BASE_INTERNAL_EXPECTED_RETURN_IF_ERROR(expected, rexpr, ...) \
@@ -279,7 +283,6 @@ UnexpectedDeducer(Lambda) -> UnexpectedDeducer<Lambda>;
   } while (false)
 
 #define BASE_INTERNAL_EXPECTED_ASSIGN_OR_RETURN(lhs, expected, rexpr, ...)     \
-  BASE_INTERNAL_EXPECTED_BODY(expected, rexpr, ASSIGN_OR_RETURN, __VA_ARGS__); \
   {                                                                            \
     constexpr auto lhs_v = std::string_view(#lhs);                             \
     static_assert(!(lhs_v.front() == '(' && lhs_v.back() == ')' &&             \
@@ -288,6 +291,7 @@ UnexpectedDeducer(Lambda) -> UnexpectedDeducer<Lambda>;
                   "parenthesized expressions containing '?' to the first "     \
                   "argument of ASSIGN_OR_RETURN()");                           \
   }                                                                            \
+  BASE_INTERNAL_EXPECTED_BODY(expected, rexpr, ASSIGN_OR_RETURN, __VA_ARGS__); \
   BASE_REMOVE_PARENS(lhs) = std::move(expected).value();
 
 #endif  // BASE_TYPES_EXPECTED_MACROS_H_
