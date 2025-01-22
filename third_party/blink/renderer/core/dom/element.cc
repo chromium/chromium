@@ -1321,10 +1321,6 @@ bool Element::InterestGained(Element& interest_target) {
                                 &GetDocument())) {
       popover->InvokePopover(*this);
     }
-  } else if (auto* dialog = DynamicTo<HTMLDialogElement>(interest_target)) {
-    if (!dialog->IsOpen()) {
-      dialog->showModal(ASSERT_NO_EXCEPTION);
-    }
   }
   return true;
 }
@@ -1349,10 +1345,6 @@ bool Element::InterestLost(Element& interest_target) {
           HidePopoverFocusBehavior::kFocusPreviousElement,
           HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
           /*exception_state=*/nullptr);
-    }
-  } else if (auto* dialog = DynamicTo<HTMLDialogElement>(interest_target)) {
-    if (dialog->IsOpen()) {
-      dialog->close();
     }
   }
   return true;
