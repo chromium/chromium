@@ -7,6 +7,7 @@ specific_include_rules = {
     "+components/previous_session_info/previous_session_info_private.h",
   ],
 "sync_test_util\.mm": [
+    "+components/data_sharing/public",
     "+components/saved_tab_groups",
   ],
 }

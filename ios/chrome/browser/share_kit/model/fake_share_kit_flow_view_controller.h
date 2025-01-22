@@ -26,8 +26,8 @@ enum class FakeShareKitFlowType {
 // It features a Cancel and a Save bar button items.
 @interface FakeShareKitFlowViewController : UIViewController
 
-// Executed when the group is actually shared, after tapping the Save button.
-// The collab ID that is returned is a new UUID.
+// Executed when the group is actually shared or joined, after tapping the Save
+// button. The collab ID that is returned is a new UUID.
 @property(nonatomic, copy) ShareGroupCompletionBlock sharedGroupCompletionBlock;
 
 // Executed when Cancel or Save are tapped. The `result` is then respectively
