@@ -4325,7 +4325,9 @@ public class TabListMediatorUnitTest {
         assertNotNull(mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
-        mMediator.onMenuItemClicked(R.id.close_tab_group, TAB1_ID, /* collaborationId= */ null);
+        when(mTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
+        mMediator.onMenuItemClicked(
+                R.id.close_tab_group, TAB_GROUP_ID, /* collaborationId= */ null);
         verify(mTabRemover)
                 .closeTabs(
                         eq(
@@ -4356,7 +4358,9 @@ public class TabListMediatorUnitTest {
         assertNotNull(mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
         when(mIncognitoTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mIncognitoTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
-        mMediator.onMenuItemClicked(R.id.ungroup_tab, TAB1_ID, /* collaborationId= */ null);
+        when(mIncognitoTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID))
+                .thenReturn(TAB1_ID);
+        mMediator.onMenuItemClicked(R.id.ungroup_tab, TAB_GROUP_ID, /* collaborationId= */ null);
         verify(mIncognitoTabUngrouper)
                 .ungroupTabs(TAB1_ID, /* trailing= */ true, /* allowDialog= */ true);
     }
@@ -4381,7 +4385,10 @@ public class TabListMediatorUnitTest {
         assertNotNull(mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
         when(mIncognitoTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mIncognitoTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
-        mMediator.onMenuItemClicked(R.id.delete_tab_group, TAB1_ID, /* collaborationId= */ null);
+        when(mIncognitoTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID))
+                .thenReturn(TAB1_ID);
+        mMediator.onMenuItemClicked(
+                R.id.delete_tab_group, TAB_GROUP_ID, /* collaborationId= */ null);
         verify(mIncognitoTabRemover)
                 .closeTabs(
                         eq(
@@ -4410,7 +4417,8 @@ public class TabListMediatorUnitTest {
         // Assert that the callback performs as expected.
         mModelList.get(POSITION1).model.set(TabProperties.TITLE, myTitle);
         assertNotNull(mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
-        mMediator.onMenuItemClicked(R.id.share_group, TAB1_ID, /* collaborationId= */ null);
+        when(mTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
+        mMediator.onMenuItemClicked(R.id.share_group, TAB_GROUP_ID, /* collaborationId= */ null);
         verify(mDataSharingTabManager).createGroupFlow(eq(mActivity), eq(myTitle), any(), any());
     }
 
@@ -4430,7 +4438,9 @@ public class TabListMediatorUnitTest {
         assertNotNull(mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
-        mMediator.onMenuItemClicked(R.id.close_tab_group, TAB1_ID, /* collaborationId= */ null);
+        when(mTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
+        mMediator.onMenuItemClicked(
+                R.id.close_tab_group, TAB_GROUP_ID, /* collaborationId= */ null);
         verify(mTabRemover)
                 .closeTabs(
                         eq(

@@ -2564,7 +2564,11 @@ class TabListMediator implements TabListNotificationHandler {
     }
 
     @VisibleForTesting
-    void onMenuItemClicked(@IdRes int menuId, int tabId, @Nullable String collaborationId) {
+    void onMenuItemClicked(@IdRes int menuId, Token tabGroupId, @Nullable String collaborationId) {
+        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
+        int tabId = filter.getGroupLastShownTabId(tabGroupId);
+        if (tabId == Tab.INVALID_TAB_ID) return;
+
         if (menuId == R.id.close_tab_group || menuId == R.id.delete_tab_group) {
             boolean hideTabGroups = menuId == R.id.close_tab_group;
             if (hideTabGroups) {
@@ -2575,32 +2579,21 @@ class TabListMediator implements TabListNotificationHandler {
             setUseShrinkCloseAnimation(tabId, /* useShrinkCloseAnimation= */ true);
             onGroupClosedFrom(tabId);
             TabUiUtils.closeTabGroup(
-                    mCurrentTabGroupModelFilterSupplier.get(),
-                    tabId,
-                    hideTabGroups,
-                    getOnMaybeTabClosedCallback(tabId));
+                    filter, tabId, hideTabGroups, getOnMaybeTabClosedCallback(tabId));
         } else if (menuId == R.id.edit_group_name) {
             RecordUserAction.record("TabGroupItemMenu.Rename");
             renameTabGroup(tabId);
         } else if (menuId == R.id.ungroup_tab) {
             RecordUserAction.record("TabGroupItemMenu.Ungroup");
-            TabUiUtils.ungroupTabGroup(mCurrentTabGroupModelFilterSupplier.get(), tabId);
+            TabUiUtils.ungroupTabGroup(filter, tabId);
         } else if (menuId == R.id.delete_shared_group) {
             RecordUserAction.record("TabGroupItemMenu.DeleteShared");
             TabUiUtils.exitSharedTabGroupWithDialog(
-                    mActivity,
-                    mCurrentTabGroupModelFilterSupplier.get(),
-                    mActionConfirmationManager,
-                    mModalDialogManager,
-                    tabId);
+                    mActivity, filter, mActionConfirmationManager, mModalDialogManager, tabId);
         } else if (menuId == R.id.leave_group) {
             RecordUserAction.record("TabGroupItemMenu.LeaveShared");
             TabUiUtils.exitSharedTabGroupWithDialog(
-                    mActivity,
-                    mCurrentTabGroupModelFilterSupplier.get(),
-                    mActionConfirmationManager,
-                    mModalDialogManager,
-                    tabId);
+                    mActivity, filter, mActionConfirmationManager, mModalDialogManager, tabId);
         } else if (menuId == R.id.share_group) {
             assert mDataSharingTabManager != null;
             RecordUserAction.record("TabGroupItemMenu.ShareGroup");
@@ -2608,7 +2601,7 @@ class TabListMediator implements TabListNotificationHandler {
             PropertyModel model = mModelList.get(index).model;
             TabUiUtils.startShareTabGroupFlow(
                     mActivity,
-                    mCurrentTabGroupModelFilterSupplier.get(),
+                    filter,
                     mDataSharingTabManager,
                     tabId,
                     model.get(TabProperties.TITLE));

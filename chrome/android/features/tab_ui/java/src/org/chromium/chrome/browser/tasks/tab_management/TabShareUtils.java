@@ -51,7 +51,21 @@ public class TabShareUtils {
         Token localGroupId = tab.getTabGroupId();
         if (localGroupId == null) return null;
 
-        LocalTabGroupId localTabGroupId = new LocalTabGroupId(localGroupId);
+        return getCollaborationIdOrNull(localGroupId, tabGroupSyncService);
+    }
+
+    /**
+     * Tries to get the collaboration id from a tab's group.
+     *
+     * @param tabGroupId The id of the tab group.
+     * @param tabGroupSyncService The sync service with tab group data.
+     * @return The collaboration id or null.
+     */
+    public static @Nullable String getCollaborationIdOrNull(
+            @Nullable Token tabGroupId, @Nullable TabGroupSyncService tabGroupSyncService) {
+        if (tabGroupId == null || tabGroupSyncService == null) return null;
+
+        LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
         SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(localTabGroupId);
         return savedTabGroup == null ? null : savedTabGroup.collaborationId;
     }

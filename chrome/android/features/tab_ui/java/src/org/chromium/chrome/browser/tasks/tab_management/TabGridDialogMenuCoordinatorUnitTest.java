@@ -99,7 +99,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         new TabGridDialogMenuCoordinator(
                                 mOnItemClickedCallback,
                                 () -> mTabModel,
-                                () -> TAB_ID,
+                                () -> TAB_GROUP_TOKEN,
                                 mTabGroupSyncService,
                                 mCollaborationService));
     }

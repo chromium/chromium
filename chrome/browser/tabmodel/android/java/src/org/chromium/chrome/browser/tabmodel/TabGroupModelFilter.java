@@ -136,6 +136,12 @@ public interface TabGroupModelFilter extends TabList {
     int getIndexOfTabInGroup(Tab tab);
 
     /**
+     * @param tabGroupId The tab group id of the group to lookup.
+     * @return the last shown tab in that group or Tab.INVALID_TAB_ID otherwise.
+     */
+    int getGroupLastShownTabId(@Nullable Token tabGroupId);
+
+    /**
      * @param rootId The rootId of the group to lookup.
      * @return the last shown tab in that group or Tab.INVALID_TAB_ID otherwise.
      */

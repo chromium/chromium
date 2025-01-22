@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -70,6 +71,10 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.DATA_SHARING})
 public class TabGroupContextMenuCoordinatorUnitTest {
+    private static final int TAB_ID = 1;
+    private static final int ROOT_ID = TAB_ID;
+    private static final Token TAB_GROUP_ID = new Token(3L, 4L);
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -78,7 +83,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
     private OnItemClickedCallback mOnItemClickedCallback;
-    private int mTabId;
     private MockTabModel mTabModel;
     @Mock private TabRemover mTabRemover;
     @Mock private TabUngrouper mTabUngrouper;
@@ -115,7 +119,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         mTabModel.setTabCreatorForTesting(mTabCreator);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mProfile.isOffTheRecord()).thenReturn(true);
-        mTabId = 1;
         mOnItemClickedCallback =
                 TabGroupContextMenuCoordinator.getMenuItemClickedCallback(
                         activity,
@@ -133,7 +136,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                         mDataSharingTabManager);
 
         // Set groupRootId to bypass showMenu() call.
-        mTabGroupContextMenuCoordinator.setGroupRootIdForTesting(mTabId);
+        mTabGroupContextMenuCoordinator.setGroupRootIdForTesting(ROOT_ID);
     }
 
     @Test
@@ -285,8 +288,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         setUpTabGroupModelFilter();
 
         // Verify tab group is ungrouped.
-        mOnItemClickedCallback.onClick(R.id.ungroup_tab, mTabId, /* collaborationId= */ null);
-        verify(mTabUngrouper).ungroupTabs(mTabId, /* trailing= */ true, /* allowDialog= */ true);
+        mOnItemClickedCallback.onClick(R.id.ungroup_tab, TAB_GROUP_ID, /* collaborationId= */ null);
+        verify(mTabUngrouper).ungroupTabs(TAB_ID, /* trailing= */ true, /* allowDialog= */ true);
     }
 
     @Test
@@ -296,7 +299,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         List<Tab> tabsInGroup = setUpTabGroupModelFilter();
 
         // Verify tab group closed.
-        mOnItemClickedCallback.onClick(R.id.close_tab_group, mTabId, /* collaborationId= */ null);
+        mOnItemClickedCallback.onClick(
+                R.id.close_tab_group, TAB_GROUP_ID, /* collaborationId= */ null);
         verify(mTabRemover)
                 .closeTabs(
                         argThat(
@@ -315,7 +319,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         List<Tab> tabsInGroup = setUpTabGroupModelFilter();
 
         // Verify tab group deleted.
-        mOnItemClickedCallback.onClick(R.id.delete_tab_group, mTabId, /* collaborationId= */ null);
+        mOnItemClickedCallback.onClick(
+                R.id.delete_tab_group, TAB_GROUP_ID, /* collaborationId= */ null);
         verify(mTabRemover)
                 .closeTabs(
                         argThat(
@@ -335,7 +340,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
         // Verify new tab opened in group.
         mOnItemClickedCallback.onClick(
-                R.id.open_new_tab_in_group, mTabId, /* collaborationId= */ null);
+                R.id.open_new_tab_in_group, TAB_GROUP_ID, /* collaborationId= */ null);
         verify(mTabCreator)
                 .createNewTab(any(), eq(TabLaunchType.FROM_TAB_GROUP_UI), eq(tabsInGroup.get(0)));
     }
@@ -360,7 +365,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         keyboardVisibilityListener.keyboardVisibilityChanged(false);
 
         // Verify the group title is updated.
-        verify(mTabGroupModelFilter).setTabGroupTitle(mTabId, newTitle);
+        verify(mTabGroupModelFilter).setTabGroupTitle(TAB_ID, newTitle);
 
         // Remove the custom title set by the user by clearing the edit box.
         newTitle = "";
@@ -368,20 +373,22 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         keyboardVisibilityListener.keyboardVisibilityChanged(false);
 
         // Verify the previous title is deleted and is default to "N tabs"
-        verify(mTabGroupModelFilter).deleteTabGroupTitle(mTabId);
+        verify(mTabGroupModelFilter).deleteTabGroupTitle(TAB_ID);
         assertEquals("1 tab", groupTitleEditText.getText().toString());
     }
 
     private List<Tab> setUpTabGroupModelFilter() {
-        mTabModel.addTab(mTabId);
-        Tab tab = mTabModel.getTabById(mTabId);
+        Tab tab = mTabModel.addTab(TAB_ID);
+        tab.setRootId(ROOT_ID);
+        tab.setTabGroupId(TAB_GROUP_ID);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mTabGroupModelFilter.isTabInTabGroup(tab)).thenReturn(true);
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(eq(mTabId))).thenReturn(1);
+        when(mTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB_ID);
+        when(mTabGroupModelFilter.getRelatedTabCountForRootId(eq(TAB_ID))).thenReturn(1);
         List<Tab> tabsInGroup = Arrays.asList(tab);
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(eq(mTabId))).thenReturn(tabsInGroup);
-        when(mTabGroupModelFilter.getRelatedTabList(eq(mTabId))).thenReturn(tabsInGroup);
+        when(mTabGroupModelFilter.getRelatedTabListForRootId(eq(TAB_ID))).thenReturn(tabsInGroup);
+        when(mTabGroupModelFilter.getRelatedTabList(eq(TAB_ID))).thenReturn(tabsInGroup);
         return tabsInGroup;
     }
 

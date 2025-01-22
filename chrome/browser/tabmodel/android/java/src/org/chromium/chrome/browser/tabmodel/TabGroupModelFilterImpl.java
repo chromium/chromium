@@ -1413,6 +1413,14 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
+    public int getGroupLastShownTabId(@Nullable Token tabGroupId) {
+        if (tabGroupId == null) return Tab.INVALID_TAB_ID;
+
+        int rootId = getRootIdFromStableId(tabGroupId);
+        return getGroupLastShownTabId(rootId);
+    }
+
+    @Override
     public int getGroupLastShownTabId(int rootId) {
         TabGroup group = mRootIdToGroupMap.get(rootId);
         return group == null ? Tab.INVALID_TAB_ID : group.getLastShownTabId();

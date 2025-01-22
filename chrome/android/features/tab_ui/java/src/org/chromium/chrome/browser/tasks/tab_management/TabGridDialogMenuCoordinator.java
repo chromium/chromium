@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
@@ -27,20 +28,19 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
  * menu items, setting up the menu and displaying the menu.
  */
 public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinator {
-    private Supplier<Integer> mTabIdSupplier;
+    private final Supplier<Token> mTabGroupIdSupplier;
 
     /**
      * @param onItemClicked A callback for listening to clicks.
      * @param tabModelSupplier The supplier of the tab model.
-     * @param tabIdSupplier The tab ID supplier for the tab or a tab ID from the group being acted
-     *     on.
+     * @param tabGroupIdSupplier The tab group ID supplier for the tab group being acted on.
      * @param tabGroupSyncService Used to checking if a group is shared or synced.
      * @param collaborationService Used for checking the user is the owner of a group.
      */
     public TabGridDialogMenuCoordinator(
             OnItemClickedCallback onItemClicked,
             Supplier<TabModel> tabModelSupplier,
-            Supplier<Integer> tabIdSupplier,
+            Supplier<Token> tabGroupIdSupplier,
             @Nullable TabGroupSyncService tabGroupSyncService,
             @NonNull CollaborationService collaborationService) {
         super(
@@ -49,7 +49,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
                 tabModelSupplier,
                 tabGroupSyncService,
                 collaborationService);
-        mTabIdSupplier = tabIdSupplier;
+        mTabGroupIdSupplier = tabGroupIdSupplier;
     }
 
     /**
@@ -58,7 +58,8 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
      * @return The on click listener.
      */
     public View.OnClickListener getOnClickListener() {
-        return view -> createAndShowMenu(view, mTabIdSupplier.get(), (Activity) view.getContext());
+        return view ->
+                createAndShowMenu(view, mTabGroupIdSupplier.get(), (Activity) view.getContext());
     }
 
     @VisibleForTesting
