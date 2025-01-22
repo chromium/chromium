@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.UiUtils;
@@ -37,6 +38,7 @@ public class ScrimCoordinator {
     private static final int ANIM_DURATION_MS = 300;
 
     /** A delegate to expose functionality that changes the scrim over the system UI. */
+    @Deprecated
     public interface SystemUiScrimDelegate {
         /**
          * Pass the current scrim color to the relevant system UI elements.
@@ -101,7 +103,9 @@ public class ScrimCoordinator {
      * @param context An Android {@link Context} for creating the view.
      * @param systemUiScrimDelegate A means of changing the scrim over the system UI.
      * @param parent The {@link ViewGroup} the scrim should exist in.
+     * @deprecated Do not use {@link SystemUiScrimDelegate}.
      */
+    @Deprecated
     public ScrimCoordinator(
             Context context,
             @Nullable SystemUiScrimDelegate systemUiScrimDelegate,
@@ -116,13 +120,26 @@ public class ScrimCoordinator {
                             mView = null;
                             mChangeProcessor = null;
                         },
-                        systemUiScrimDelegate,
                         defaultScrimColor);
+        if (systemUiScrimDelegate != null) {
+            mMediator.getFullScrimColorSupplier().addObserver(systemUiScrimDelegate::setScrimColor);
+            mMediator
+                    .getStatusBarScrimFractionSupplier()
+                    .addObserver(systemUiScrimDelegate::setStatusBarScrimFraction);
+            mMediator
+                    .getNavigationBarScrimFractionSupplier()
+                    .addObserver(systemUiScrimDelegate::setNavigationBarScrimFraction);
+        }
         mScrimViewBuilder =
                 () -> {
                     ScrimView view = new ScrimView(context, parent);
                     return view;
                 };
+    }
+
+    /** Version of the constructor without a {@link SystemUiScrimDelegate}. */
+    public ScrimCoordinator(Context context, ViewGroup parent) {
+        this(context, /* systemUiScrimDelegate= */ null, parent);
     }
 
     /**
@@ -132,6 +149,18 @@ public class ScrimCoordinator {
      */
     public @ColorInt int getCurrentCompositeColor() {
         return mMediator.getCurrentCompositeColor();
+    }
+
+    public ObservableSupplier<Integer> getFullScrimColorSupplier() {
+        return mMediator.getFullScrimColorSupplier();
+    }
+
+    public ObservableSupplier<Float> getStatusBarScrimFractionSupplier() {
+        return mMediator.getStatusBarScrimFractionSupplier();
+    }
+
+    public ObservableSupplier<Float> getNavigationBarScrimFractionSupplier() {
+        return mMediator.getNavigationBarScrimFractionSupplier();
     }
 
     /**

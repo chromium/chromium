@@ -17,6 +17,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -31,10 +33,13 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
     /** A callback that is run when the scrim has completely hidden. */
     private final @NonNull Runnable mScrimHiddenRunnable;
 
-    /** A means of changing the system UI color. */
-    private final @Nullable ScrimCoordinator.SystemUiScrimDelegate mSystemUiScrimDelegate;
-
     private final @ColorInt int mDefaultScrimColor;
+    private final ObservableSupplierImpl<Integer> mFullScrimColorSupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Float> mStatusBarScrimFractionSupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Float> mNavigationBarScrimFractionSupplier =
+            new ObservableSupplierImpl<>();
 
     /** The animator for fading the view in. */
     private ValueAnimator mOverlayFadeInAnimator;
@@ -61,15 +66,10 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
 
     /**
      * @param scrimHiddenRunnable A mechanism for hiding the scrim.
-     * @param systemUiScrimDelegate A means of changing the scrim over the system UI.
      * @param defaultScrimColor The color of the scrim when not explicitly set.
      */
-    ScrimMediator(
-            @NonNull Runnable scrimHiddenRunnable,
-            @Nullable ScrimCoordinator.SystemUiScrimDelegate systemUiScrimDelegate,
-            @ColorInt int defaultScrimColor) {
+    ScrimMediator(@NonNull Runnable scrimHiddenRunnable, @ColorInt int defaultScrimColor) {
         mScrimHiddenRunnable = scrimHiddenRunnable;
-        mSystemUiScrimDelegate = systemUiScrimDelegate;
         mDefaultScrimColor = defaultScrimColor;
     }
 
@@ -80,6 +80,18 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         @ColorInt int color = mModel.get(ScrimProperties.BACKGROUND_COLOR);
         float alpha = mModel.get(ScrimProperties.ALPHA);
         return ColorUtils.applyAlphaFloat(color, alpha);
+    }
+
+    /* package */ ObservableSupplier<Integer> getFullScrimColorSupplier() {
+        return mFullScrimColorSupplier;
+    }
+
+    /* package */ ObservableSupplier<Float> getStatusBarScrimFractionSupplier() {
+        return mStatusBarScrimFractionSupplier;
+    }
+
+    /* package */ ObservableSupplier<Float> getNavigationBarScrimFractionSupplier() {
+        return mNavigationBarScrimFractionSupplier;
     }
 
     /** Triggers a fade in of the scrim creating a new animation if necessary. */
@@ -103,11 +115,8 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
             mModel.set(ScrimProperties.BACKGROUND_COLOR, mDefaultScrimColor);
         }
 
-        if (mSystemUiScrimDelegate != null) {
-            // Pass the current scrim color to the SystemUiScrimDelegate.
-            @ColorInt int currentScrimColor = model.get(ScrimProperties.BACKGROUND_COLOR);
-            mSystemUiScrimDelegate.setScrimColor(currentScrimColor);
-        }
+        @ColorInt int currentScrimColor = model.get(ScrimProperties.BACKGROUND_COLOR);
+        mFullScrimColorSupplier.set(currentScrimColor);
 
         // Make sure alpha is reset to 0 since the model may be reused.
         setAlphaInternal(0.f);
@@ -184,9 +193,7 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             // Reset the scrim color stored in the SystemUiScrimDelegate.
-                            if (mSystemUiScrimDelegate != null) {
-                                mSystemUiScrimDelegate.setScrimColor(ScrimProperties.INVALID_COLOR);
-                            }
+                            mFullScrimColorSupplier.set(ScrimProperties.INVALID_COLOR);
                         }
                     });
         }
@@ -216,11 +223,11 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         if (mModel == null) return;
         if (MathUtils.areFloatsEqual(alpha, mModel.get(ScrimProperties.ALPHA))) return;
         mModel.set(ScrimProperties.ALPHA, alpha);
-        if (mModel.get(ScrimProperties.AFFECTS_STATUS_BAR) && mSystemUiScrimDelegate != null) {
-            mSystemUiScrimDelegate.setStatusBarScrimFraction(alpha);
+        if (mModel.get(ScrimProperties.AFFECTS_STATUS_BAR)) {
+            mStatusBarScrimFractionSupplier.set(alpha);
         }
-        if (mModel.get(ScrimProperties.AFFECTS_NAVIGATION_BAR) && mSystemUiScrimDelegate != null) {
-            mSystemUiScrimDelegate.setNavigationBarScrimFraction(alpha);
+        if (mModel.get(ScrimProperties.AFFECTS_NAVIGATION_BAR)) {
+            mNavigationBarScrimFractionSupplier.set(alpha);
         }
 
         boolean isVisible = alpha > Float.MIN_NORMAL;
@@ -239,7 +246,7 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
     /*package */ void setScrimColor(@ColorInt int scrimColor, PropertyModel propertyModel) {
         if (!Objects.equals(mModel, propertyModel)) return;
         mModel.set(ScrimProperties.BACKGROUND_COLOR, scrimColor);
-        mSystemUiScrimDelegate.setScrimColor(scrimColor);
+        mFullScrimColorSupplier.set(scrimColor);
     }
 
     /**
