@@ -243,10 +243,10 @@ void GlicWindowController::Show(views::View* glic_button_view) {
     top_right_point = GetTopRightPositionForDetachedGlicWindow();
     int padding = 50;
     attached_browser_ = nullptr;
-    glic_window_widget_initial_rect = {
-        top_right_point.x() - final_widget_bounds_.width() - padding,
-        top_right_point.y() + padding, final_widget_bounds_.width(),
-        final_widget_bounds_.height()};
+    final_widget_bounds_.set_x(top_right_point.x() -
+                               final_widget_bounds_.width() - padding);
+    final_widget_bounds_.set_y(top_right_point.y() + padding);
+    glic_window_widget_initial_rect = final_widget_bounds_;
   } else {
     // If summoned from the tab strip button. This will always show up attached
     // because it is tied to a views::View object within the current browser

@@ -22,9 +22,9 @@ static_library("help_app") {
     "//ash/webui/help_app_ui",
     "//base",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
+    "//chromeos/ash/experiences/system_web_apps/types",
     "//content/public/browser",
     "//ui/gfx/geometry",
   ]

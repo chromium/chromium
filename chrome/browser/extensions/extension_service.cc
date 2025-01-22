@@ -887,6 +887,15 @@ void ExtensionService::DisableExtension(const std::string& extension_id,
   extension_registrar_.DisableExtension(extension_id, disable_reasons);
 }
 
+void ExtensionService::DisableExtension(
+    ExtensionPrefs::DisableReasonRawManipulationPasskey,
+    const std::string& extension_id,
+    const base::flat_set<int>& disable_reasons) {
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  auto passkey = ExtensionPrefs::DisableReasonRawManipulationPasskey();
+  extension_registrar_.DisableExtension(passkey, extension_id, disable_reasons);
+}
+
 void ExtensionService::DisableExtensionWithSource(
     const Extension* source_extension,
     const std::string& extension_id,

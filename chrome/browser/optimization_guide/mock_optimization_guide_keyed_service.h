@@ -122,6 +122,11 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
               GetSamplingParamsConfig,
               (optimization_guide::ModelBasedCapabilityKey),
               (override));
+
+  MOCK_METHOD(std::optional<const optimization_guide::proto::Any>,
+              GetFeatureMetadata,
+              (optimization_guide::ModelBasedCapabilityKey),
+              (override));
 };
 
 #endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_MOCK_OPTIMIZATION_GUIDE_KEYED_SERVICE_H_

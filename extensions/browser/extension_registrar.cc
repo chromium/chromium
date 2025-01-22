@@ -12,11 +12,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/stl_util.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -257,8 +259,16 @@ void ExtensionRegistrar::EnableExtension(const ExtensionId& extension_id) {
 
 void ExtensionRegistrar::DisableExtension(const ExtensionId& extension_id,
                                           int disable_reasons) {
+  auto passkey = ExtensionPrefs::DisableReasonRawManipulationPasskey();
+  DisableExtension(passkey, extension_id, BitflagToIntegerSet(disable_reasons));
+}
+
+void ExtensionRegistrar::DisableExtension(
+    ExtensionPrefs::DisableReasonRawManipulationPasskey,
+    const ExtensionId& extension_id,
+    base::flat_set<int> disable_reasons) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_NE(disable_reason::DISABLE_NONE, disable_reasons);
+  DCHECK(!disable_reasons.empty());
 
   scoped_refptr<const Extension> extension =
       registry_->GetExtensionById(extension_id, ExtensionRegistry::EVERYTHING);
@@ -270,41 +280,47 @@ void ExtensionRegistrar::DisableExtension(const ExtensionId& extension_id,
     // Remove disallowed disable reasons.
     // Certain disable reasons are always allowed, since they are more internal
     // to the browser (rather than the user choosing to disable the extension).
-    int internal_disable_reason_mask =
-        extensions::disable_reason::DISABLE_RELOAD |
-        extensions::disable_reason::DISABLE_CORRUPTED |
-        extensions::disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY |
+    base::flat_set<int> internal_disable_reasons = {
+        extensions::disable_reason::DISABLE_RELOAD,
+        extensions::disable_reason::DISABLE_CORRUPTED,
+        extensions::disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY,
         extensions::disable_reason::
-            DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY |
-        extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY |
-        extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED |
-        extensions::disable_reason::DISABLE_REINSTALL |
-        extensions::disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION |
-        extensions::disable_reason::DISABLE_NOT_VERIFIED |
-        extensions::disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION;
+            DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY,
+        extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY,
+        extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED,
+        extensions::disable_reason::DISABLE_REINSTALL,
+        extensions::disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION,
+        extensions::disable_reason::DISABLE_NOT_VERIFIED,
+        extensions::disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION,
+    };
 
 #if BUILDFLAG(IS_CHROMEOS)
     // For controlled extensions, only allow disabling not ash-keeplisted
     // extensions if Lacros is the only browser.
     if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
-      internal_disable_reason_mask |=
-          extensions::disable_reason::DISABLE_NOT_ASH_KEEPLISTED;
+      internal_disable_reasons.insert(
+          extensions::disable_reason::DISABLE_NOT_ASH_KEEPLISTED);
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    disable_reasons &= internal_disable_reason_mask;
+    disable_reasons = base::STLSetIntersection<base::flat_set<int>>(
+        disable_reasons, internal_disable_reasons);
 
-    if (disable_reasons == disable_reason::DISABLE_NONE)
+    if (disable_reasons.empty()) {
       return;
+    }
   }
+
+  auto passkey = ExtensionPrefs::DisableReasonRawManipulationPasskey();
 
   // The extension may have been disabled already. Just add the disable reasons.
   if (!IsExtensionEnabled(extension_id)) {
-    extension_prefs_->AddDisableReasons(extension_id, disable_reasons);
+    extension_prefs_->AddDisableReasons(passkey, extension_id, disable_reasons);
     return;
   }
 
-  extension_prefs_->SetExtensionDisabled(extension_id, disable_reasons);
+  extension_prefs_->SetExtensionDisabled(passkey, extension_id,
+                                         disable_reasons);
 
   int include_mask =
       ExtensionRegistry::EVERYTHING & ~ExtensionRegistry::DISABLED;

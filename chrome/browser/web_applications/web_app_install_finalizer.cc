@@ -70,7 +70,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_data.h"
 #endif
 
 namespace web_app {

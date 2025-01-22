@@ -12,6 +12,129 @@
 
 namespace content {
 
+namespace {
+
+// Returns true when the error callback should be fired. The callback does not
+// need to be fired when prerendering succeed but is never activated, or it is
+// intentinally cancelled by an embedder (e.g., calling the cancellation API).
+// Otherwise, the callback should be fired.
+bool ShouldFireErrorCallback(PrerenderFinalStatus status) {
+  switch (status) {
+    case PrerenderFinalStatus::kActivated:
+      NOTREACHED();
+
+    // Prerendering is not activated.
+    case PrerenderFinalStatus::kDestroyed:
+      return false;
+
+    case PrerenderFinalStatus::kLowEndDevice:
+    case PrerenderFinalStatus::kInvalidSchemeRedirect:
+    case PrerenderFinalStatus::kInvalidSchemeNavigation:
+    case PrerenderFinalStatus::kNavigationRequestBlockedByCsp:
+    case PrerenderFinalStatus::kMainFrameNavigation:
+    case PrerenderFinalStatus::kMojoBinderPolicy:
+    case PrerenderFinalStatus::kRendererProcessCrashed:
+    case PrerenderFinalStatus::kRendererProcessKilled:
+    case PrerenderFinalStatus::kDownload:
+      return true;
+
+    // Prerendering is intentionally cancelled by the app or not activated.
+    case PrerenderFinalStatus::kTriggerDestroyed:
+      return false;
+
+    case PrerenderFinalStatus::kNavigationNotCommitted:
+    case PrerenderFinalStatus::kNavigationBadHttpStatus:
+    case PrerenderFinalStatus::kClientCertRequested:
+    case PrerenderFinalStatus::kNavigationRequestNetworkError:
+    case PrerenderFinalStatus::kCancelAllHostsForTesting:
+    case PrerenderFinalStatus::kDidFailLoad:
+    case PrerenderFinalStatus::kStop:
+    case PrerenderFinalStatus::kSslCertificateError:
+    case PrerenderFinalStatus::kLoginAuthRequested:
+    case PrerenderFinalStatus::kUaChangeRequiresReload:
+    case PrerenderFinalStatus::kBlockedByClient:
+    case PrerenderFinalStatus::kMixedContent:
+    case PrerenderFinalStatus::kTriggerBackgrounded:
+    case PrerenderFinalStatus::kMemoryLimitExceeded:
+    case PrerenderFinalStatus::kDataSaverEnabled:
+    case PrerenderFinalStatus::kTriggerUrlHasEffectiveUrl:
+    case PrerenderFinalStatus::kActivatedBeforeStarted:
+    case PrerenderFinalStatus::kInactivePageRestriction:
+    case PrerenderFinalStatus::kStartFailed:
+    case PrerenderFinalStatus::kTimeoutBackgrounded:
+    case PrerenderFinalStatus::kCrossSiteRedirectInInitialNavigation:
+    case PrerenderFinalStatus::kCrossSiteNavigationInInitialNavigation:
+    case PrerenderFinalStatus::
+        kSameSiteCrossOriginRedirectNotOptInInInitialNavigation:
+    case PrerenderFinalStatus::
+        kSameSiteCrossOriginNavigationNotOptInInInitialNavigation:
+    case PrerenderFinalStatus::kActivationNavigationParameterMismatch:
+    case PrerenderFinalStatus::kActivatedInBackground:
+    case PrerenderFinalStatus::kActivationNavigationDestroyedBeforeSuccess:
+      return true;
+
+    // The associated tab is closed.
+    case PrerenderFinalStatus::kTabClosedByUserGesture:
+    case PrerenderFinalStatus::kTabClosedWithoutUserGesture:
+      return false;
+
+    case PrerenderFinalStatus::kPrimaryMainFrameRendererProcessCrashed:
+    case PrerenderFinalStatus::kPrimaryMainFrameRendererProcessKilled:
+    case PrerenderFinalStatus::kActivationFramePolicyNotCompatible:
+    case PrerenderFinalStatus::kPreloadingDisabled:
+    case PrerenderFinalStatus::kBatterySaverEnabled:
+    case PrerenderFinalStatus::kActivatedDuringMainFrameNavigation:
+    case PrerenderFinalStatus::kPreloadingUnsupportedByWebContents:
+    case PrerenderFinalStatus::kCrossSiteRedirectInMainFrameNavigation:
+    case PrerenderFinalStatus::kCrossSiteNavigationInMainFrameNavigation:
+    case PrerenderFinalStatus::
+        kSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation:
+    case PrerenderFinalStatus::
+        kSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation:
+    case PrerenderFinalStatus::kMemoryPressureOnTrigger:
+    case PrerenderFinalStatus::kMemoryPressureAfterTriggered:
+    case PrerenderFinalStatus::kPrerenderingDisabledByDevTools:
+      return true;
+
+    // This is used for speculation rules, not for embedder triggers.
+    case PrerenderFinalStatus::kSpeculationRuleRemoved:
+      NOTREACHED();
+
+    case PrerenderFinalStatus::kActivatedWithAuxiliaryBrowsingContexts:
+      return true;
+
+    // These are used for speculation rules, not for embedder triggers.
+    case PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded:
+    case PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded:
+      NOTREACHED();
+
+    case PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded:
+    case PrerenderFinalStatus::kPrerenderingUrlHasEffectiveUrl:
+    case PrerenderFinalStatus::kRedirectedPrerenderingUrlHasEffectiveUrl:
+    case PrerenderFinalStatus::kActivationUrlHasEffectiveUrl:
+    case PrerenderFinalStatus::kJavaScriptInterfaceAdded:
+    case PrerenderFinalStatus::kJavaScriptInterfaceRemoved:
+    case PrerenderFinalStatus::kAllPrerenderingCanceled:
+      return true;
+
+    // window.close() is called in a prerendered page.
+    case PrerenderFinalStatus::kWindowClosed:
+      return false;
+
+    case PrerenderFinalStatus::kSlowNetwork:
+      return true;
+
+    case PrerenderFinalStatus::kOtherPrerenderedPageActivated:
+      return false;
+
+    case PrerenderFinalStatus::kV8OptimizerDisabled:
+    case PrerenderFinalStatus::kPrerenderFailedDuringPrefetch:
+      return true;
+  }
+}
+
+}  // namespace
+
 PrerenderHandleImpl::PrerenderHandleImpl(
     base::WeakPtr<PrerenderHostRegistry> prerender_host_registry,
     FrameTreeNodeId frame_tree_node_id,
@@ -90,8 +213,10 @@ void PrerenderHandleImpl::OnFailed(PrerenderFinalStatus status) {
     return;
   }
 
-  // TODO(crbug.com/41490450): Don't fire the callback when prerendering is
-  // intentionally canceled by an app (e.g., calling the cancellation API).
+  if (!ShouldFireErrorCallback(status)) {
+    error_callback_.Reset();
+    return;
+  }
 
   // TODO(crbug.com/41490450): Pass a cancellation reason to the callback.
   // Note that we should not expose detailed reasons to prevent embedders from

@@ -104,9 +104,9 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_browser_controller_ash.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

@@ -36,6 +36,10 @@ class TabGroupChangeNotifierImpl : public TabGroupChangeNotifier {
   void Initialize() override;
   bool IsInitialized() override;
 
+  void OnTabGroupOpenedOrClosed(
+      const base::Uuid& sync_id,
+      const std::optional<tab_groups::LocalTabGroupID>& local_id);
+
  private:
   // TabGroupSyncService::Observer.
   void OnInitialized() override;

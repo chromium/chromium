@@ -174,6 +174,9 @@ base::CallbackListSubscription GlicKeyedService::AddWebClientCreatedCallback(
 void GlicKeyedService::TryPreload() {
   CHECK(GlicEnabling::IsEnabledForProfile(
       Profile::FromBrowserContext(browser_context_)));
+  if (!profile_manager_) {
+    return;
+  }
   Profile* profile = Profile::FromBrowserContext(browser_context_);
   if (!profile_manager_->ShouldPreloadForProfile(profile)) {
     return;

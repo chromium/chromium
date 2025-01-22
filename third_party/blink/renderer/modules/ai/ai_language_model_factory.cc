@@ -170,9 +170,12 @@ void AILanguageModelFactory::OnGetModelInfoComplete(
     AILanguageModelCapabilities* capabilities,
     mojom::blink::AIModelInfoPtr model_info) {
   CHECK(model_info);
-  capabilities->SetDefaultTopK(model_info->default_top_k);
-  capabilities->SetMaxTopK(model_info->max_top_k);
-  capabilities->SetDefaultTemperature(model_info->default_temperature);
+  capabilities->SetDefaultTopK(model_info->default_sampling_params->top_k);
+  capabilities->SetDefaultTemperature(
+      model_info->default_sampling_params->temperature);
+  capabilities->SetMaxTopK(model_info->max_sampling_params->top_k);
+  capabilities->SetMaxTemperature(model_info->max_sampling_params->temperature);
+
   resolver->Resolve(capabilities);
 }
 

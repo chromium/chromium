@@ -82,7 +82,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/window_properties.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 using base::UserMetricsAction;

@@ -451,4 +451,14 @@ OptimizationGuideService::GetSamplingParamsConfig(
 
   return model_execution_manager_->GetSamplingParamsConfig(feature);
 }
+
+std::optional<const optimization_guide::proto::Any>
+OptimizationGuideService::GetFeatureMetadata(
+    optimization_guide::ModelBasedCapabilityKey feature) {
+  if (!model_execution_manager_) {
+    return std::nullopt;
+  }
+
+  return model_execution_manager_->GetFeatureMetadata(feature);
+}
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)

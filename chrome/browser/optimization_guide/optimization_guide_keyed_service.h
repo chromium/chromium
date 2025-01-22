@@ -17,6 +17,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
@@ -151,6 +152,8 @@ class OptimizationGuideKeyedService
       optimization_guide::ModelBasedCapabilityKey feature) override;
   std::optional<optimization_guide::SamplingParamsConfig>
   GetSamplingParamsConfig(
+      optimization_guide::ModelBasedCapabilityKey feature) override;
+  std::optional<const optimization_guide::proto::Any> GetFeatureMetadata(
       optimization_guide::ModelBasedCapabilityKey feature) override;
 
   // Returns true if the `feature` should be currently enabled for this user.

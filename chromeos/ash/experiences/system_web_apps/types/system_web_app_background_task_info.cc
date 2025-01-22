@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_background_task_info.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_background_task_info.h"
 
 namespace ash {
 

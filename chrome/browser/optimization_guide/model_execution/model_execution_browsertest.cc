@@ -108,7 +108,7 @@ class ScopedSetMetricsConsent {
 };
 
 constexpr float kTestDefaultTemperature = 0.9;
-constexpr int kTestDefaultTopK = 7;
+constexpr uint32_t kTestDefaultTopK = 7;
 
 }  // namespace
 

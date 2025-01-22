@@ -56,12 +56,7 @@ void GpuArcProtectedBufferManagerProxy::GetProtectedSharedMemoryFromHandle(
   base::UnsafeSharedMemoryRegion unsafe_shared_memory_region =
       protected_buffer_manager_->GetProtectedSharedMemoryRegionFor(
           std::move(unwrapped_fd));
-  if (!unsafe_shared_memory_region.IsValid()) {
-    return std::move(callback).Run(mojo::ScopedSharedBufferHandle());
-  }
-
-  std::move(callback).Run(mojo::WrapUnsafeSharedMemoryRegion(
-      std::move(unsafe_shared_memory_region)));
+  std::move(callback).Run(std::move(unsafe_shared_memory_region));
 }
 
 void GpuArcProtectedBufferManagerProxy::

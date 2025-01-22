@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
 #include "extensions/browser/unloaded_extension_reason.h"
@@ -156,6 +157,21 @@ class ExtensionRegistrar : public ProcessManagerObserver {
   // Marks |extension| as disabled and deactivates it. The ExtensionRegistry
   // retains a reference to it, so it can be enabled later.
   void DisableExtension(const ExtensionId& extension_id, int disable_reasons);
+
+  // The method above will start accepting a `flat_set` of `DisableReason` soon
+  // (see crbug.com/372186532). When that happens, writing unknown reasons to
+  // prefs will be disallowed. This is because casting unknown reasons (integer)
+  // to `DisableReason` enum is undefined behavior. This isn't a problem in the
+  // bitflag representation because there is no casting involved.
+  //
+  // Any code which needs to write unknown reasons should use the
+  // methods below, which operate on raw integers. This is needed for scenarios
+  // like Sync where unknown reasons can be synced from newer versions of the
+  // browser to older versions. Most code should use the above method. We want
+  // to limit the use of the method below, so it is guarded by a passkey.
+  void DisableExtension(ExtensionPrefs::DisableReasonRawManipulationPasskey,
+                        const ExtensionId& extension_id,
+                        base::flat_set<int> disable_reasons);
 
   // Same as `DisableExtension`, but assumes that the request to disable
   // `extension_id` originates from `source_extension` when evaluating whether

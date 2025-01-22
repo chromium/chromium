@@ -114,8 +114,8 @@ class AITestUtils {
     void TearDown() override;
 
    protected:
-    void SetupMockOptimizationGuideKeyedService();
-    void SetupNullOptimizationGuideKeyedService();
+    virtual void SetupMockOptimizationGuideKeyedService();
+    virtual void SetupNullOptimizationGuideKeyedService();
 
     mojo::Remote<blink::mojom::AIManager> GetAIManagerRemote();
     size_t GetAIManagerContextBoundObjectSetSize();

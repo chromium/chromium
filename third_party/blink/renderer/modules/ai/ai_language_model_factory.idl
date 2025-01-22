@@ -25,6 +25,8 @@ interface AILanguageModelCapabilities {
   readonly attribute unsigned long? maxTopK;
   [Measure]
   readonly attribute float? defaultTemperature;
+  [Measure]
+  readonly attribute float? maxTemperature;
 };
 
 [

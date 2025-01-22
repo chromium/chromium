@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_SYSTEM_APP_DELEGATE_H_
 
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 

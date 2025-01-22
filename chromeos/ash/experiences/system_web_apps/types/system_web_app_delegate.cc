@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 
 #include "ui/gfx/geometry/rect.h"
 
@@ -142,12 +142,10 @@ bool SystemWebAppDelegate::UseSystemThemeColor() const {
 bool SystemWebAppDelegate::ShouldAnimateThemeChanges() const {
   return false;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool SystemWebAppDelegate::ShouldPinTab(GURL url) const {
   return false;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace ash

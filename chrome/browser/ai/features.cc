@@ -13,4 +13,9 @@ BASE_FEATURE(kAILanguageModelOverrideConfiguration,
 const base::FeatureParam<int> kAILanguageModelOverrideConfigurationMaxTopK{
     &features::kAILanguageModelOverrideConfiguration, "max_top_k", 8};
 
+const base::FeatureParam<double>
+    kAILanguageModelOverrideConfigurationMaxTemperature{
+        &features::kAILanguageModelOverrideConfiguration, "max_temperature",
+        2.0f};
+
 }  // namespace features

@@ -24,9 +24,8 @@ struct AILanguageModelSamplingParams {
 // This struct contains the information describing the default and max values
 // for session creation.
 struct AIModelInfo {
-  uint32 default_top_k;
-  uint32 max_top_k;
-  float default_temperature;
+  AILanguageModelSamplingParams default_sampling_params;
+  AILanguageModelSamplingParams max_sampling_params;
 };
 
 // The information of an AILanguageModel instance, this should be returned

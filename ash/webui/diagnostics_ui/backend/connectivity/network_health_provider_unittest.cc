@@ -172,7 +172,7 @@ class NetworkHealthProviderTest : public AshTestBase {
     SystemTokenCertDbStorage::Initialize();
 
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<user_manager::FakeUserManager>());
+        std::make_unique<user_manager::FakeUserManager>(local_state()));
 
     // NetworkHandler has pieces that depend on NetworkCertLoader so it's better
     // to initialize NetworkHandlerTestHelper after

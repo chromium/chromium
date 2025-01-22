@@ -34,7 +34,7 @@ class AISummarizerUnitTest : public AITestUtils::AITestBase {
  public:
   AISummarizerUnitTest() = default;
 
-  void SetupMockOptimizationGuideKeyedService() {
+  void SetupMockOptimizationGuideKeyedService() override {
     AITestUtils::AITestBase::SetupMockOptimizationGuideKeyedService();
 
     ON_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))

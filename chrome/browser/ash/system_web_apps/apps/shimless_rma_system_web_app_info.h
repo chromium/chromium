@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_SHIMLESS_RMA_SYSTEM_WEB_APP_INFO_H_
 
 #include "ash/webui/shimless_rma/url_constants.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace web_app {

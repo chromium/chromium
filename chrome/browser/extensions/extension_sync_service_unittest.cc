@@ -1364,6 +1364,11 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataEnableDisable) {
 
   const ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
 
+  constexpr int kUnknownDisableReason_1 =
+      (extensions::disable_reason::DISABLE_REASON_LAST << 2);
+  constexpr int kUnknownDisableReason_2 =
+      (extensions::disable_reason::DISABLE_REASON_LAST << 3);
+
   struct TestCase {
     const char* name;  // For failure output only.
     // Set of disable reasons before any Sync data comes in. If this is != 0,
@@ -1400,6 +1405,31 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataEnableDisable) {
        extensions::disable_reason::DISABLE_USER_ACTION |
            extensions::disable_reason::DISABLE_RELOAD,
        true, 0, extensions::disable_reason::DISABLE_RELOAD},
+
+      // The disable reasons not known to the client should be considered as
+      // syncable.
+      {"UnknownDisableReasons",
+
+       // Existing disable reasons. We keep one syncable, one local and
+       // one unknown one (which should be considered as syncable).
+       extensions::disable_reason::DISABLE_USER_ACTION |
+           extensions::disable_reason::DISABLE_RELOAD | kUnknownDisableReason_1,
+
+       // Incoming enabled state.
+       false,
+
+       // Incoming reasons via sync. We keep one known syncable reason and one
+       // unknown one. The unknown one which is incoming is different from the
+       // one which is present locally.
+       extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE |
+           kUnknownDisableReason_2,
+
+       // Expected reasons after processing the sync update. Local
+       // reasons should be preserved. Syncable reasons should be replaced with
+       // the incoming ones.
+       extensions::disable_reason::DISABLE_RELOAD |
+           extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE |
+           kUnknownDisableReason_2},
 
       // Interaction with Chrome clients <=M44, which don't sync disable_reasons
       // at all (any existing reasons are preserved).

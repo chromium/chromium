@@ -1081,8 +1081,7 @@ bool UserManagerImpl::IsEphemeralAccountId(const AccountId& account_id) const {
   }
 
   const bool device_is_owned =
-      ash::InstallAttributes::Get()->IsEnterpriseManaged() ||
-      GetOwnerAccountId().is_valid();
+      IsEnterpriseManaged() || GetOwnerAccountId().is_valid();
 
   return device_is_owned &&
          GetEphemeralModeConfig().IsAccountIdIncluded(account_id);
@@ -1236,8 +1235,7 @@ bool UserManagerImpl::CanUserBeRemoved(const User* user) const {
   // in order not to remove an owner. However due to non-instant nature of
   // ownership assignment this later check may sometimes fail.
   // See http://crosbug.com/12723
-  if (users_.size() < 2 &&
-      !ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
+  if (users_.size() < 2 && !IsEnterpriseManaged()) {
     return false;
   }
 
@@ -1830,6 +1828,16 @@ void UserManagerImpl::RemoveDeprecatedArcKioskUser(
     base::UmaHistogramEnumeration(kDeprecatedArcKioskUsersHistogramName,
                                   DeprecatedArcKioskUserStatus::kHidden);
   }
+}
+
+bool UserManagerImpl::IsEnterpriseManaged() const {
+  if (!ash::InstallAttributes::IsInitialized()) {
+    // In unit tests, InstallAttributes may not be initialized.
+    // For enterprise test cases, it must be.
+    CHECK_IS_TEST();
+    return false;
+  }
+  return ash::InstallAttributes::Get()->IsEnterpriseManaged();
 }
 
 }  // namespace user_manager

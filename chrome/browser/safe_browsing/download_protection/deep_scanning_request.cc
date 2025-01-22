@@ -37,7 +37,6 @@
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/safe_browsing/deep_scanning_failure_modal_dialog.h"
 #include "chrome/common/pref_names.h"
 #include "components/download/public/common/download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -968,30 +967,6 @@ bool DeepScanningRequest::IsEnterpriseTriggered() const {
     case DeepScanTrigger::TRIGGER_POLICY:
       return true;
   }
-}
-
-bool DeepScanningRequest::MaybeShowDeepScanFailureModalDialog(
-    base::OnceClosure accept_callback,
-    base::OnceClosure cancel_callback,
-    base::OnceClosure close_callback,
-    base::OnceClosure open_now_callback) {
-  Profile* profile = Profile::FromBrowserContext(
-      content::DownloadItemUtils::GetBrowserContext(item_));
-  if (!profile) {
-    return false;
-  }
-
-  Browser* browser =
-      chrome::FindTabbedBrowser(profile, /*match_original_profiles=*/false);
-  if (!browser) {
-    return false;
-  }
-
-  DeepScanningFailureModalDialog::ShowForWebContents(
-      browser->tab_strip_model()->GetActiveWebContents(),
-      std::move(accept_callback), std::move(cancel_callback),
-      std::move(close_callback), std::move(open_now_callback));
-  return true;
 }
 
 bool DeepScanningRequest::ShouldTerminateEarly(

@@ -22,6 +22,8 @@ class OptimizationGuideOnDeviceCapabilityProvider {
       ModelBasedCapabilityKey feature) = 0;
   virtual std::optional<SamplingParamsConfig> GetSamplingParamsConfig(
       ModelBasedCapabilityKey feature) = 0;
+  virtual std::optional<const optimization_guide::proto::Any>
+  GetFeatureMetadata(optimization_guide::ModelBasedCapabilityKey feature) = 0;
 
  protected:
   OptimizationGuideOnDeviceCapabilityProvider() = default;
