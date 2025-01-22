@@ -37,14 +37,20 @@ class ComparablePermission {
  public:
   explicit ComparablePermission(const PermissionMessage& msg) : msg_(&msg) {}
 
-  bool operator<(const ComparablePermission& rhs) const {
-    return std::tie(msg_->message(), msg_->submessages()) <
-           std::tie(rhs.msg_->message(), rhs.msg_->submessages());
+  friend auto operator<=>(const ComparablePermission& a,
+                          const ComparablePermission& b) {
+    return std::tie(a.msg_->message(), a.msg_->submessages()) <=>
+           std::tie(b.msg_->message(), b.msg_->submessages());
   }
 
-  bool operator==(const ComparablePermission& rhs) const {
-    return msg_->message() == rhs.msg_->message() &&
-           msg_->submessages() == rhs.msg_->submessages();
+  // This will not be unused when base::ranges:: switches to std::ranges::, as
+  // that requires this. To avoid having to make the changes in lockstep, mark
+  // as `[[maybe_unused]]` for now.
+  // TODO(crbug.com/386918226): Remove annotation once base::ranges:: is gone.
+  [[maybe_unused]] friend bool operator==(const ComparablePermission& a,
+                                          const ComparablePermission& b) {
+    return std::tie(a.msg_->message(), a.msg_->submessages()) ==
+           std::tie(b.msg_->message(), b.msg_->submessages());
   }
 
  private:

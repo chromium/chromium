@@ -47,14 +47,4 @@ bool MediaGalleriesPermissionData::FromValue(const base::Value* value) {
   return false;
 }
 
-bool MediaGalleriesPermissionData::operator<(
-    const MediaGalleriesPermissionData& rhs) const {
-  return permission_ < rhs.permission_;
-}
-
-bool MediaGalleriesPermissionData::operator==(
-    const MediaGalleriesPermissionData& rhs) const {
-  return permission_ == rhs.permission_;
-}
-
 }  // namespace chrome_apps
