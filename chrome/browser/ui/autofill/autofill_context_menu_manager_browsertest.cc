@@ -414,6 +414,21 @@ IN_PROC_BROWSER_TEST_F(AutofillAiEnabledTest, AutofillAiEntryAdded) {
   EXPECT_THAT(menu_model(), Not(ContainsAutofillAiEntry()));
 }
 
+// Tests that when triggering the context menu on a text area, the improved
+// prediction entry point is added.
+// TODO(crbug.com/372158654): Implement suitable criteria or remove the entry.
+IN_PROC_BROWSER_TEST_F(AutofillAiEnabledTest,
+                       TriggeredOnTextArea_AutofillAiEntryAdded) {
+  FormData form = CreateAndAttachUnclassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id(),
+                              form.fields()[0].renderer_id(),
+                              blink::mojom::FormControlType::kTextArea));
+
+  autofill_context_menu_manager()->AppendItems();
+  EXPECT_THAT(menu_model(), Not(ContainsAutofillAiEntry()));
+}
+
 // Tests that selecting the improved predictions triggers the right command.
 IN_PROC_BROWSER_TEST_F(AutofillAiEnabledTest, ActionTriggersSuggestions) {
   FormData form = CreateAndAttachUnclassifiedForm();
@@ -786,6 +801,24 @@ class PasswordsFallbackWithPasswordDatabaseEntriesTest
 
 IN_PROC_BROWSER_TEST_P(
     PasswordsFallbackWithPasswordDatabaseEntriesTest,
+    PasswordGenerationEnabled_HasPasswordDatabaseEntries_TriggeredOnContenteditable_NoEntriesAdded) {
+  UpdateSyncStatus(/*sync_enabled=*/true);
+  AddPasswordToStore();
+
+  FormData form = CreateAndAttachPasswordForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id(),
+                              form.fields()[0].renderer_id(),
+                              blink::mojom::FormControlType::kTextArea));
+
+  autofill_context_menu_manager()->AppendItems();
+  // Password manual fallback entry should not be added if the context menu was
+  // triggered on a text area.
+  EXPECT_THAT(menu_model()->GetItemCount(), ::testing::Eq(0));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    PasswordsFallbackWithPasswordDatabaseEntriesTest,
     PasswordGenerationEnabled_HasPasswordDatabaseEntries_ManualFallbackAddedWithGeneratePasswordOption) {
   UpdateSyncStatus(/*sync_enabled=*/true);
   AddPasswordToStore();
@@ -1035,6 +1068,23 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest, ClassifiedForm) {
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
                               form.fields()[0].renderer_id()));
+  autofill_context_menu_manager()->AppendItems();
+
+  EXPECT_THAT(menu_model(), PlusAddressFallbackAdded());
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                kUserActionPlusAddressesFallbackSelected),
+            0);
+}
+
+// Tests that Plus Address fallbacks are added when the context menu is
+// triggered on a text area.
+IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest,
+                       TriggeredOnTextArea_ClassifiedForm) {
+  FormData form = CreateAndAttachClassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id(),
+                              form.fields()[0].renderer_id(),
+                              blink::mojom::FormControlType::kTextArea));
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(), PlusAddressFallbackAdded());
