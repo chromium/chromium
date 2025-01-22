@@ -11,6 +11,7 @@ import android.os.Build;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
@@ -35,6 +36,7 @@ import java.lang.reflect.Proxy;
  * install a replacement implementation of IPackageManager into ActivityThread. This replacement
  * will filter out the preloaded_fonts metadata key from any returned results, avoiding the crash.
  */
+@NullMarked
 public class FontPreloadingWorkaround {
     private static final String TAG = "FontWorkaround";
     private static final String FONT_PRELOADING_KEY = "preloaded_fonts";

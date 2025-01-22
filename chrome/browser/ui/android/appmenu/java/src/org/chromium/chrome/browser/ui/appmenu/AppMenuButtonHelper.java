@@ -6,12 +6,15 @@ package org.chromium.chrome.browser.ui.appmenu;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A helper class for a menu button to decide when to show the app menu and forward touch events.
  *
  * Use {@link AppMenuHandler#createAppMenuButtonHelper()} to create a new instance, then pass the
  * set the AppMenuButtonHelper instance as a TouchListener for a menu button.
  */
+@NullMarked
 public interface AppMenuButtonHelper extends View.OnTouchListener {
     /**
      * @return Whether app menu is active. That is, AppMenu is showing or menu button is consuming

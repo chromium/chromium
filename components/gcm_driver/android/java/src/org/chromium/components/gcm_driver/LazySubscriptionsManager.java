@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +28,7 @@ import java.util.Set;
  * This class is responsible for managing lazy subscriptions. It provides API to change and query
  * whether a subscription is lazy, and toto persist and retrieve persisted messages.
  */
+@NullMarked
 public class LazySubscriptionsManager {
     private static final String TAG = "LazySubscriptions";
     private static final String FCM_LAZY_SUBSCRIPTIONS = "fcm_lazy_subscriptions";

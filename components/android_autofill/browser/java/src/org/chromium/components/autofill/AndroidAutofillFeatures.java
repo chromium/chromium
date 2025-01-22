@@ -8,6 +8,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Features;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Java accessor for base/feature_list.h state.
@@ -16,6 +17,7 @@ import org.chromium.base.Features;
  * `kFeaturesExposedToJava` in components/android_autofill/browser/android_autofill_features.cc.
  */
 @JNINamespace("autofill::features")
+@NullMarked
 public class AndroidAutofillFeatures extends Features {
     public static final String ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME =
             "AndroidAutofillBottomSheetWorkaround";

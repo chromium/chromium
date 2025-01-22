@@ -6,11 +6,13 @@ package org.chromium.components.gcm_driver;
 
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
 
 /** Helper to subscribe to and unsubscribe from Google Cloud Messaging. */
+@NullMarked
 public interface GoogleCloudMessagingSubscriber {
     /**
      * Subscribes to a source to start receiving messages from it.
@@ -23,6 +25,7 @@ public interface GoogleCloudMessagingSubscriber {
      * @return The registration id.
      * @throws IOException if the request fails.
      */
+    @Nullable
     String subscribe(String source, String subtype, @Nullable Bundle data) throws IOException;
 
     /**

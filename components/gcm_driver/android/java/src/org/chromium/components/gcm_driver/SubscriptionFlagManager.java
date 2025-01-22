@@ -8,11 +8,13 @@ import android.content.Context;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * This class is responsible for persisting subscription specific flags to make them available
  * before native has loaded.
  */
+@NullMarked
 public class SubscriptionFlagManager {
     private static final String PREF_PACKAGE =
             "org.chromium.components.gcm_driver.subscription_flags";

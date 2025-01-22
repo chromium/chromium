@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.readaloud.exceptions;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.readaloud.exceptions.ReadAloudException.ReadAloudErrorCode;
 
 /** A ReadAloudException representing an issue with readability. */
+@NullMarked
 public class ReadAloudUnsupportedException extends ReadAloudException {
 
     @IntDef({

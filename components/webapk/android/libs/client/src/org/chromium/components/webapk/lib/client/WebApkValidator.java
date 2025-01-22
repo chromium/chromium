@@ -4,6 +4,7 @@
 
 package org.chromium.components.webapk.lib.client;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.webapk.lib.common.WebApkConstants.WEBAPK_PACKAGE_PREFIX;
 import static org.chromium.components.webapk.lib.common.WebApkMetaDataKeys.SCOPE;
 import static org.chromium.components.webapk.lib.common.WebApkMetaDataKeys.START_URL;
@@ -22,13 +23,14 @@ import android.os.StrictMode;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.ui.widget.Toast;
 
@@ -49,6 +51,7 @@ import java.util.List;
  * Checks whether a URL belongs to a WebAPK, and whether a WebAPK is signed by the WebAPK Minting
  * Server.
  */
+@NullMarked
 public class WebApkValidator {
     private static final String TAG = "WebApkValidator";
     private static final String KEY_FACTORY = "EC"; // aka "ECDSA"
@@ -57,9 +60,9 @@ public class WebApkValidator {
             "https://www.google.com/maps"; // Matches scope.
     private static final boolean DEBUG = false;
 
-    private static byte[] sExpectedSignature;
-    private static byte[] sCommentSignedPublicKeyBytes;
-    private static PublicKey sCommentSignedPublicKey;
+    private static byte @Nullable [] sExpectedSignature;
+    private static byte @Nullable [] sCommentSignedPublicKeyBytes;
+    private static @Nullable PublicKey sCommentSignedPublicKey;
     private static boolean sOverrideValidation;
 
     @IntDef({
@@ -146,7 +149,8 @@ public class WebApkValidator {
         toast.show();
     }
 
-    private static Bundle extractWebApkMetaData(Context context, String webApkPackageName) {
+    private static @Nullable Bundle extractWebApkMetaData(
+            Context context, String webApkPackageName) {
         PackageManager packageManager = context.getPackageManager();
         try {
             ApplicationInfo appInfo =
@@ -185,7 +189,8 @@ public class WebApkValidator {
                     case ValidationResult.V1_WEB_APK:
                         int shellApkVersion =
                                 IntentUtils.safeGetInt(
-                                        extractWebApkMetaData(context, webApkPackage),
+                                        assumeNonNull(
+                                                extractWebApkMetaData(context, webApkPackage)),
                                         WebApkMetaDataKeys.SHELL_APK_VERSION,
                                         0);
                         if (0 < shellApkVersion && shellApkVersion < minShellVersion) {
@@ -348,7 +353,7 @@ public class WebApkValidator {
      *     WebApk exists. If package isn't specified, the intent may create a disambiguation dialog
      *     when started.
      */
-    public static Intent createWebApkIntentForUrlAndOptionalPackage(
+    public static @Nullable Intent createWebApkIntentForUrlAndOptionalPackage(
             String url, @Nullable String applicationPackage) {
         Intent intent;
         try {

@@ -4,7 +4,10 @@
 
 package org.chromium.components.segmentation_platform;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Stores constants related to segmentation models. */
+@NullMarked
 public final class Constants {
     // Custom inputs for contextual page action's model. Model defined in
     // contextual_page_actions_model.cc.

@@ -10,6 +10,7 @@ import android.os.Parcelable;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 import java.util.Objects;
@@ -18,6 +19,7 @@ import java.util.Objects;
  * This class holds the data used to represent a compromised credential in the Password Check
  * settings screen.
  */
+@NullMarked
 public class CompromisedCredential implements Parcelable {
     /** This static member is required to automagically deserialize credential parcels . */
     public static final Parcelable.Creator<CompromisedCredential> CREATOR =
@@ -25,13 +27,20 @@ public class CompromisedCredential implements Parcelable {
                 @Override
                 public CompromisedCredential createFromParcel(Parcel in) {
                     final String signonRealm = in.readString();
+                    assert signonRealm != null;
                     final GURL associatedUrl = GURL.deserialize(in.readString());
                     final String username = in.readString();
+                    assert username != null;
                     final String displayOrigin = in.readString();
+                    assert displayOrigin != null;
                     final String displayUsername = in.readString();
+                    assert displayUsername != null;
                     final String password = in.readString();
+                    assert password != null;
                     final String passwordChangeUrl = in.readString();
+                    assert passwordChangeUrl != null;
                     final String associatedApp = in.readString();
+                    assert associatedApp != null;
                     final long creationTime = in.readLong();
                     final long lastUsedTime = in.readLong();
                     boolean[] boolArguments = new boolean[4];

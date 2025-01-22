@@ -4,21 +4,24 @@
 
 package org.chromium.components.payments;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
+import org.chromium.build.annotations.Contract;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.payments.mojom.PaymentAddress;
 
 /**
  * A Utility class that converts org.chromium.components.payments.Address type to
  * org.chromium.payments.mojom.PaymentAddress and vice versa.
  */
+@NullMarked
 public final class PaymentAddressTypeConverter {
     /**
      * @param address The org.chromium.payments.mojom.PaymentAddress to be converted.
      * @return The converted address with type org.chromium.components.payments.Address.
      */
-    @Nullable
-    public static Address convertPaymentAddressFromMojo(PaymentAddress address) {
+    public static @Nullable Address convertPaymentAddressFromMojo(PaymentAddress address) {
         if (address == null) return null;
         return new Address(
                 address.country,
@@ -37,12 +40,12 @@ public final class PaymentAddressTypeConverter {
      * @param address The org.chromium.components.payments.Address address to be converted.
      * @return The converted address with type org.chromium.payments.mojom.PaymentAddress.
      */
-    @Nullable
-    public static PaymentAddress convertAddressToMojoPaymentAddress(Address address) {
+    @Contract("!null -> !null")
+    public static @Nullable PaymentAddress convertAddressToMojoPaymentAddress(Address address) {
         if (address == null) return null;
         PaymentAddress result = new PaymentAddress();
         result.country = address.country;
-        result.addressLine = address.addressLine;
+        result.addressLine = assumeNonNull(address.addressLine);
         result.region = address.region;
         result.city = address.city;
         result.dependentLocality = address.dependentLocality;

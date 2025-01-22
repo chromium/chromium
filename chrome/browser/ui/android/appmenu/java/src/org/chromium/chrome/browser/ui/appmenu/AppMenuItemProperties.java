@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.ui.appmenu;
 
 import android.graphics.drawable.Drawable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -16,6 +18,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
  * {@link PropertyKey} list for app menu, most keys are set by {@link AppMenuPropertiesDelegate},
  * but HIGHLIGHTED and CLICK_HANDLER will be set by {@link AppMenuHandler}.
  */
+@NullMarked
 public class AppMenuItemProperties {
     /** The ID of the menu item. */
     public static final WritableIntPropertyKey MENU_ITEM_ID =
@@ -72,7 +75,7 @@ public class AppMenuItemProperties {
             new WritableBooleanPropertyKey("SUPPORT_ENTER_ANIMATION");
 
     /** The click handler for the menu item. */
-    public static final WritableObjectPropertyKey<AppMenuClickHandler> CLICK_HANDLER =
+    public static final WritableObjectPropertyKey<@Nullable AppMenuClickHandler> CLICK_HANDLER =
             new WritableObjectPropertyKey<>(/* skipEquality= */ true, "CLICK_HANDLER");
 
     /**

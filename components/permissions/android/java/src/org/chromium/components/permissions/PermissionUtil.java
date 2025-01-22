@@ -4,6 +4,8 @@
 
 package org.chromium.components.permissions;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.Manifest;
 import android.os.Build;
 
@@ -13,6 +15,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.webxr.WebXrAndroidFeatureMap;
@@ -23,6 +26,7 @@ import org.chromium.ui.permissions.PermissionCallback;
 import java.util.Arrays;
 
 /** A utility class for permissions. */
+@NullMarked
 public class PermissionUtil {
     /**
      * TODO(https://crbug.com/331574787): Replace with official strings. At which time, any
@@ -242,9 +246,7 @@ public class PermissionUtil {
 
     @CalledByNative
     public static void requestLocationServices(WindowAndroid windowAndroid) {
-        windowAndroid
-                .getActivity()
-                .get()
+        assumeNonNull(windowAndroid.getActivity().get())
                 .startActivity(LocationUtils.getInstance().getSystemLocationSettingsIntent());
     }
 }

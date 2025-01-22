@@ -12,10 +12,13 @@ import org.chromium.base.FeatureMap;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** A double-type {@link CachedFeatureParam}. */
+@NullMarked
 public class DoubleCachedFeatureParam extends CachedFeatureParam<Double> {
-    private Supplier<Double> mValueSupplier;
+    private @Nullable Supplier<Double> mValueSupplier;
 
     public DoubleCachedFeatureParam(
             FeatureMap featureMap, String featureName, String variationName, double defaultValue) {

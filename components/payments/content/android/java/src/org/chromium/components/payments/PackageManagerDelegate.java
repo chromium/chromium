@@ -17,15 +17,16 @@ import android.graphics.drawable.Drawable;
 import android.os.StrictMode;
 import android.os.StrictMode.ThreadPolicy;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.PackageUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
 
 /** Abstraction of Android's package manager to enable testing. */
+@NullMarked
 public class PackageManagerDelegate {
     /**
      * Checks whether the system has the given feature.
@@ -43,7 +44,7 @@ public class PackageManagerDelegate {
      * @return The package information of the installed application.
      */
     @SuppressLint("PackageManagerGetSignatures")
-    public PackageInfo getPackageInfoWithSignatures(String packageName) {
+    public @Nullable PackageInfo getPackageInfoWithSignatures(String packageName) {
         return PackageUtils.getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
     }
 
@@ -54,7 +55,7 @@ public class PackageManagerDelegate {
      * @return The package information of the installed application.
      */
     @SuppressLint("PackageManagerGetSignatures")
-    public PackageInfo getPackageInfoWithSignatures(int uid) {
+    public @Nullable PackageInfo getPackageInfoWithSignatures(int uid) {
         String packageName =
                 ContextUtils.getApplicationContext().getPackageManager().getNameForUid(uid);
         if (packageName == null) return null;
@@ -122,8 +123,7 @@ public class PackageManagerDelegate {
      * @param resourceId      The identifier of the string array resource.
      * @return The string array resource, or null if not found.
      */
-    @Nullable
-    public String[] getStringArrayResourceForApplication(
+    public String @Nullable [] getStringArrayResourceForApplication(
             ApplicationInfo applicationInfo, int resourceId) {
         Resources resources;
         try {
@@ -147,8 +147,7 @@ public class PackageManagerDelegate {
      * @param packageName The package name of the specified package. Not allowed to be null.
      * @return The package name of the installer app.
      */
-    @Nullable
-    public String getInstallerPackage(String packageName) {
+    public @Nullable String getInstallerPackage(String packageName) {
         assert packageName != null;
         return ContextUtils.getApplicationContext()
                 .getPackageManager()

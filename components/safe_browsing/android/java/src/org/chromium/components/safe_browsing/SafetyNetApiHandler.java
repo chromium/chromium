@@ -4,10 +4,13 @@
 
 package org.chromium.components.safe_browsing;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Java interface that a SafetyNetApiHandler must implement when used with {@code
  * SafeBrowsingApiBridge}.
  */
+@NullMarked
 public interface SafetyNetApiHandler {
     /** Observer to be notified when the SafetyNetApiHandler determines the verify apps result. */
     interface Observer {

@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.model_execution;
 
+import org.chromium.build.annotations.NullMarked;
+
+@NullMarked
 public interface ModelExecutionSessionFactory {
     /**
      * Create a ModelExecutionSession for the given {@code feature}. If an invalid value of

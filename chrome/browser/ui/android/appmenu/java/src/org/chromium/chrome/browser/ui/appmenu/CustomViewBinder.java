@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
@@ -23,6 +24,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
  * handled by the binder. The custom view binder can use {@link AppMenuItemProperties#HIGHLIGHTED}
  * to determine if an item should be highlighted.
  */
+@NullMarked
 public interface CustomViewBinder extends ViewBinder<PropertyModel, View, PropertyKey> {
     /**
      * Indicates that this view binder does not handle a particular menu item.

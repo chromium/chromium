@@ -13,11 +13,13 @@ import android.os.IBinder;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * A bound service responsible for receiving change payment method, shipping option, and shipping
  * address calls from an inoked native payment app.
  */
+@NullMarked
 public class PaymentDetailsUpdateService extends Service {
     // AIDL calls can happen on multiple threads in parallel. The binder uses PostTask for
     // synchronization since locks are discouraged in Chromium. The UI thread task runner is used

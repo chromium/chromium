@@ -7,12 +7,14 @@ package org.chromium.components.autofill;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * An option that the user can select, e.g., a shipping option, a shipping address, or a payment
  * method.
  */
+@NullMarked
 public class EditableOption implements Completable {
     // By default an editable option is complete. It is up to the subclass to update this value if
     // the payment option is not complete.
@@ -20,12 +22,12 @@ public class EditableOption implements Completable {
     // By default a complete editable option should have max completeness score.
     protected int mCompletenessScore = Integer.MAX_VALUE;
     protected boolean mIsEditable;
-    protected String mEditMessage;
-    protected String mEditTitle;
-    protected String mPromoMessage;
-    private String mId;
-    private Drawable mIcon;
-    private String[] mLabels = {null, null, null};
+    protected @Nullable String mEditMessage;
+    protected @Nullable String mEditTitle;
+    protected @Nullable String mPromoMessage;
+    private @Nullable String mId;
+    private @Nullable Drawable mIcon;
+    private @Nullable String[] mLabels = {null, null, null};
     private boolean mIsValid = true;
 
     /** See {@link #EditableOption(String, String, String, String, int)}. */
@@ -66,7 +68,7 @@ public class EditableOption implements Completable {
      * The non-human readable identifier for this option. For example, "standard_shipping" or the
      * GUID of an autofill card.
      */
-    public String getIdentifier() {
+    public @Nullable String getIdentifier() {
         return mId;
     }
 
@@ -74,8 +76,7 @@ public class EditableOption implements Completable {
      * The message of required edit of this option. For example, "Billing address required" or
      * "Phone number required".
      */
-    @Nullable
-    public String getEditMessage() {
+    public @Nullable String getEditMessage() {
         return mEditMessage;
     }
 
@@ -83,26 +84,22 @@ public class EditableOption implements Completable {
      * The title of required edit of this option. For example, "Add billing address" or "Add phone
      * number".
      */
-    @Nullable
-    public String getEditTitle() {
+    public @Nullable String getEditTitle() {
         return mEditTitle;
     }
 
     /** The primary label of this option. For example, “Visa***1234” or "2-day shipping". */
-    @Nullable
-    public String getLabel() {
+    public @Nullable String getLabel() {
         return mLabels[0];
     }
 
     /** The optional sublabel of this option. For example, “Expiration date: 12/2025”. */
-    @Nullable
-    public String getSublabel() {
+    public @Nullable String getSublabel() {
         return mLabels[1];
     }
 
     /** The optional tertiary label of this option.  For example, "(555) 867-5309". */
-    @Nullable
-    public String getTertiaryLabel() {
+    public @Nullable String getTertiaryLabel() {
         return mLabels[2];
     }
 
@@ -110,8 +107,7 @@ public class EditableOption implements Completable {
      * The optional promo message of this option.  For example, discount for a payment method, like
      * "$45".
      */
-    @Nullable
-    public String getPromoMessage() {
+    public @Nullable String getPromoMessage() {
         return mPromoMessage;
     }
 
@@ -122,7 +118,10 @@ public class EditableOption implements Completable {
 
     /** See {@link #updateIdentifierLabelsAndIcon(String, String, String, String, int)}. */
     protected void updateIdentifierAndLabels(
-            String id, String label, @Nullable String sublabel, @Nullable String tertiarylabel) {
+            String id,
+            @Nullable String label,
+            @Nullable String sublabel,
+            @Nullable String tertiarylabel) {
         mId = id;
         mLabels[0] = label;
         mLabels[1] = sublabel;
@@ -141,7 +140,7 @@ public class EditableOption implements Completable {
      */
     protected void updateIdentifierLabelsAndIcon(
             String id,
-            String label,
+            @Nullable String label,
             @Nullable String sublabel,
             @Nullable String tertiarylabel,
             @Nullable Drawable icon) {
@@ -191,7 +190,7 @@ public class EditableOption implements Completable {
     }
 
     /** @return The drawable icon for this payment option. */
-    public Drawable getDrawableIcon() {
+    public @Nullable Drawable getDrawableIcon() {
         return mIcon;
     }
 

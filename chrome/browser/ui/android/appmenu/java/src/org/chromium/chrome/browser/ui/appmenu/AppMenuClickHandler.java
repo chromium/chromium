@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.ui.appmenu;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Interface to handle clicks and long-clicks on menu items. */
+@NullMarked
 public interface AppMenuClickHandler {
     /**
      * Handles clicks on the AppMenu popup.
