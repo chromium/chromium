@@ -1431,13 +1431,16 @@ void ContainerNode::ChildrenChanged(const ChildrenChange& change) {
   if (!change.IsChildInsertion())
     return;
   Node* inserted_node = change.sibling_changed;
-  if (inserted_node->IsContainerNode() || inserted_node->IsTextNode())
+  if (inserted_node->IsContainerNode() || inserted_node->IsTextNode()) {
     inserted_node->ClearFlatTreeNodeDataIfHostChanged(*this);
+  }
   if (!InActiveDocument())
     return;
   if (Element* element = DynamicTo<Element>(this)) {
     if (GetDocument().StatePreservingAtomicMoveInProgress()) {
-      inserted_node->FlatTreeParentChanged();
+      if (inserted_node->IsContainerNode() || inserted_node->IsTextNode()) {
+        inserted_node->FlatTreeParentChanged();
+      }
     }
     if (!element->GetComputedStyle()) {
       // There is no need to mark for style recalc if the parent element does
