@@ -108,7 +108,6 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     // Store only forms that contain iframes or fields.
     if (IsFormInteresting(form)) {
       FormRendererId form_id = form.renderer_id();
-      DCHECK(extracted_forms_.find(form_id) == extracted_forms_.end());
       auto it = old_extracted_forms.find(form_id);
       if (it == old_extracted_forms.end() || !it->second ||
           !FormData::DeepEqual(std::move(*it->second), form)) {
@@ -124,28 +123,24 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
   if (!document) {
     return r;
   }
-  for (const blink::WebFormElement& form_element :
-       document.GetTopLevelForms()) {
+  std::vector<blink::WebFormElement> form_elements =
+      document.GetTopLevelForms().ReleaseVector();
+  // Add a null WebFormElement to account for the form of unowned elements.
+  form_elements.emplace_back();
+
+  bool stop_extracting_forms = false;
+  for (const blink::WebFormElement& form_element : form_elements) {
+    extracted_forms_[form_util::GetFormRendererId(form_element)] = nullptr;
+    if (stop_extracting_forms) {
+      continue;
+    }
     if (std::optional<FormData> form = form_util::ExtractFormData(
             document, form_element, field_data_manager,
             agent_->GetCallTimerState(kUpdateFormCache))) {
       if (!ProcessForm(std::move(*form))) {
-        return r;
+        stop_extracting_forms = true;
       }
-    } else {
-      extracted_forms_[form_util::GetFormRendererId(form_element)] = nullptr;
     }
-  }
-
-  // Look for more extractable fields outside of forms. Create a synthetic form
-  // from them.
-  std::optional<FormData> synthetic_form = form_util::ExtractFormData(
-      document, blink::WebFormElement(), field_data_manager,
-      agent_->GetCallTimerState(kUpdateFormCache));
-  if (synthetic_form) {
-    ProcessForm(std::move(*synthetic_form));
-  } else {
-    extracted_forms_[FormRendererId()] = nullptr;
   }
   return r;
 }
