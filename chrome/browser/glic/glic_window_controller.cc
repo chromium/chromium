@@ -176,7 +176,6 @@ GlicWindowController::GlicWindowController(Profile* profile)
 GlicWindowController::~GlicWindowController() = default;
 
 void GlicWindowController::WebClientInitializeFailed() {
-  // TODO(crbug.com/391402352): Set state.
   if (state_ == State::kOpenAnimation ||
       state_ == State::kWaitingForGlicToLoad) {
     // TODO(crbug.com/388328847): The web client failed to initialize. Decide
@@ -201,11 +200,19 @@ void GlicWindowController::LoginPageCommitted() {
 }
 
 void GlicWindowController::SetWebClient(GlicWebClientAccess* web_client) {
+  // If state_ == kClosed, then store web_client_ for a future call to Open().
+  // Once we get crash/error flows, this can theoretically happen with state_ ==
+  // kOpen, but those will those need to handled alongside the crash/error
+  // flows.
   web_client_ = web_client;
+
+  // Always reset `glic_loaded_` since the web client has changed.
+  glic_loaded_ = false;
+
   if (state_ == State::kOpenAnimation ||
       state_ == State::kWaitingForGlicToLoad) {
     if (web_client_) {
-      ShowPhase2();
+      WaitForGlicToLoad();
     } else {
       // TODO(crbug.com/388328847): The web client could disconnect without a
       // WebClientInitializeFailed() call, for example, if the renderer crashes.
@@ -297,18 +304,18 @@ void GlicWindowController::Show(views::View* glic_button_view) {
         views::CreateRoundedRectBackground(SK_ColorBLACK, 12));
 
     // If there's a browser, then animate.
-    AnimateBounds(
-        target_bounds, base::Milliseconds(kEntryDurationMs),
-        base::BindOnce(&GlicWindowController::SetWebContents, GetWeakPtr()));
+    AnimateBounds(target_bounds, base::Milliseconds(kEntryDurationMs),
+                  base::BindOnce(&GlicWindowController::OpenAnimationFinished,
+                                 GetWeakPtr()));
   } else {
     // Otherwise, skip straight to waiting for glic to load.
-    SetWebContents();
+    state_ = State::kWaitingForGlicToLoad;
+    GetGlicView()->web_view()->SetWebContents(contents_->web_contents());
   }
 
-  // If the web client is already initialized, go to phase 2. Otherwise, wait
-  // for the web client to initialize.
+  // If the web client is already initialized, wait for it to load in parallel.
   if (web_client_) {
-    ShowPhase2();
+    WaitForGlicToLoad();
   } else if (login_page_committed_) {
     // This indicates that we've warmed the web client and it has hit a login
     // page. See LoginPageCommitted.
@@ -316,16 +323,33 @@ void GlicWindowController::Show(views::View* glic_button_view) {
   }
 }
 
-// Phase 2 of showing the widget. This happens after the web client is
-// initialized. It signals the web client that it will be shown, and waits for
-// the response before actually showing the widget.
-void GlicWindowController::ShowPhase2() {
+// This happens after the web client is initialized. It signals the web client
+// that it will be shown, and waits for the response before actually showing the
+// widget.
+void GlicWindowController::WaitForGlicToLoad() {
   DCHECK(web_client_);
   // Notify the web client that the panel will open, and wait for the response
   // to actually show the window.
   web_client_->PanelWillOpen(
       CreatePanelState(true, attached_browser_),
-      base::BindOnce(&GlicWindowController::ShowFinish, GetWeakPtr()));
+      base::BindOnce(&GlicWindowController::GlicLoaded, GetWeakPtr()));
+}
+
+void GlicWindowController::GlicLoaded() {
+  glic_loaded_ = true;
+  if (state_ == State::kWaitingForGlicToLoad) {
+    ShowFinish();
+  }
+}
+
+void GlicWindowController::OpenAnimationFinished() {
+  if (state_ == State::kOpenAnimation) {
+    state_ = State::kWaitingForGlicToLoad;
+    GetGlicView()->web_view()->SetWebContents(contents_->web_contents());
+    if (glic_loaded_) {
+      ShowFinish();
+    }
+  }
 }
 
 void GlicWindowController::ShowFinish() {
@@ -353,11 +377,6 @@ void GlicWindowController::ShowFinish() {
   // Set the draggable area to the top bar of the window, by default.
   GetGlicView()->SetDraggableAreas(
       {{0, 0, final_widget_bounds_.width(), kWidgetTopBarHeight}});
-}
-
-void GlicWindowController::SetWebContents() {
-  GetGlicView()->web_view()->SetWebContents(contents_->web_contents());
-  state_ = State::kWaitingForGlicToLoad;
 }
 
 GlicView* GlicWindowController::GetGlicView() {

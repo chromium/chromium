@@ -141,16 +141,18 @@ class GlicWindowController : public views::WidgetObserver {
   views::Widget* GetGlicWidgetForTesting() { return glic_window_widget_.get(); }
 
  private:
-  // TODO(crbug.com/391402352): This method is misnamed. It's used to send a
-  // message to glic indicating that the window is ready to show.
-  void ShowPhase2();
+  // This sends a message to glic to get ready to show. This will eventually
+  // result in the callback GlicLoaded().
+  void WaitForGlicToLoad();
+  void GlicLoaded();
+
+  // Called when the open animation is finished.
+  void OpenAnimationFinished();
 
   // TODO(crbug.com/391402352): This method is misnamed. It's used to send
   // coordinate showing the window when glic and this class are both ready.
   // However this class already shows the window via animation.
   void ShowFinish();
-
-  void SetWebContents();
 
   // Determines the correct position for the glic window when attached to a
   // browser window.
@@ -288,6 +290,9 @@ class GlicWindowController : public views::WidgetObserver {
   // If State != kClosed, then the UI must either be associated with a browser
   // window, or standalone. That is tracked by this member.
   raw_ptr<Browser> attached_browser_ = nullptr;
+
+  // Set to true when glic is ready.
+  bool glic_loaded_ = false;
 
   base::ObserverList<StateObserver> state_observers_;
 
