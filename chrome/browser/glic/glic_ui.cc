@@ -91,8 +91,8 @@ void GlicUI::BindInterface(
 
 void GlicUI::CreatePageHandler(
     mojo::PendingReceiver<glic::mojom::PageHandler> receiver) {
-  page_handler_ = std::make_unique<GlicPageHandler>(
-      web_ui()->GetWebContents()->GetBrowserContext(), std::move(receiver));
+  page_handler_ = std::make_unique<GlicPageHandler>(web_ui()->GetWebContents(),
+                                                    std::move(receiver));
 }
 
 }  // namespace glic

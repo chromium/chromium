@@ -187,6 +187,13 @@ export declare interface GlicBrowserHost {
    * hiding the indicators when tab context permissions are revoked.
    */
   setContextAccessIndicator?(show: boolean): void;
+
+  /**
+   * Allows the web client to control audio ducking (aka audio suppression) of
+   * other sounds, beyond what's played by itself. It is important that ducking
+   * be enabled only when it's necessary.
+   */
+  setAudioDucking?(enabled: boolean): void;
 }
 
 // A panel can be in one of these three states.
@@ -321,7 +328,7 @@ export declare interface Screenshot {
   // Width and height of the image in pixels.
   widthPixels: number;
   heightPixels: number;
-  // Encoded image data. ArrayBuffer is transferrable, so it should be copied
+  // Encoded image data. ArrayBuffer is transferable, so it should be copied
   // more efficiently over postMessage.
   data: ArrayBuffer;
   // The image encoding format represented as a MIME type.

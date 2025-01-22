@@ -325,6 +325,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   glicBrowserSetContextAccessIndicator(request: {show: boolean}) {
     this.handler.setContextAccessIndicator(request.show);
   }
+
+  glicBrowserSetAudioDucking(request: {enabled: boolean}) {
+    this.handler.setAudioDucking(request.enabled);
+  }
 }
 
 export class GlicApiHost implements PostMessageRequestHandler {

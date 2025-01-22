@@ -42,6 +42,8 @@ interface PageElementTypes {
   audioCapStart: HTMLButtonElement;
   audioStatus: HTMLDivElement;
   mic: HTMLAudioElement;
+  audioDuckingOn: HTMLButtonElement;
+  audioDuckingOff: HTMLButtonElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -59,6 +61,8 @@ class WebClient implements GlicWebClient {
 
   async initialize(browser: GlicBrowserHost): Promise<void> {
     this.browser = browser;
+    browser.resizeWindow(400, 500);
+
     logMessage('initialize called');
     $.pageHeader!.classList.add('connected');
 
@@ -254,6 +258,14 @@ $.navigateWebviewUrl.addEventListener('keyup', ({key}) => {
   if (key === 'Enter') {
     window.location.href = $.navigateWebviewUrl.value;
   }
+});
+
+$.audioDuckingOn.addEventListener('click', () => {
+  getBrowser()!.setAudioDucking!(true);
+});
+
+$.audioDuckingOff.addEventListener('click', () => {
+  getBrowser()!.setAudioDucking!(false);
 });
 
 

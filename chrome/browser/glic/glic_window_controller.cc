@@ -9,7 +9,6 @@
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_view.h"
 #include "chrome/browser/glic/glic_window_resize_animation.h"
-#include "chrome/browser/media/audio_ducker.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -536,21 +535,6 @@ void GlicWindowController::Close() {
   if (web_client_) {
     // The webview is kept alive by default, no need to use this callback.
     web_client_->PanelWasClosed(base::DoNothing());
-  }
-}
-
-bool GlicWindowController::SetAudioDucking(bool enabled) {
-  glic::GlicView* glic_view = GetGlicView();
-  if (!glic_view) {
-    return false;
-  }
-  content::WebContents* contents = glic_view->web_view()->GetWebContents();
-  AudioDucker* audio_ducker =
-      AudioDucker::GetOrCreateForPage(contents->GetPrimaryPage());
-  if (enabled) {
-    return audio_ducker->StartDuckingOtherAudio();
-  } else {
-    return audio_ducker->StopDuckingOtherAudio();
   }
 }
 

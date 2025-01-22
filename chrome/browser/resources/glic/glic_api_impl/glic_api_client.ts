@@ -305,6 +305,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       throw Error('refreshSignInCookies failed');
     }
   }
+
+  setAudioDucking?(enabled: boolean): void {
+    this.sender.requestNoResponse('glicBrowserSetAudioDucking', {enabled});
+  }
 }
 
 // Returns a promise which resolves to the `GlicHostRegistry`. This promise

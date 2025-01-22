@@ -11,6 +11,7 @@ group("generate_test_files") {
   data_deps = [
     ":build_ts",
     ":move_html",
+    ":test_client_external_files",
   ]
 }
 
@@ -37,4 +38,9 @@ preprocess_if_expr("move_html") {
     "test_client/index.html",
   ]
   out_folder = out_dir
+}
+
+copy("test_client_external_files") {
+  sources = [ "//content/test/data/media/bear-opus.ogg" ]
+  outputs = [ "$out_dir/test_client/{{source_file_part}}" ]
 }
