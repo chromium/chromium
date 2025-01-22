@@ -1159,6 +1159,11 @@ class Port(object):
         # Contrary to the behavior of `_parse_paths()`, `Port.tests([])` should
         # still return all tests, so coerce `paths` here.
         paths_by_root = self._parse_paths(paths or None)
+
+        if self._path_finder.is_cog():
+            # Only update wpt manifest for tests intended to run
+            self._maybe_partial_update_wpt_manifest(paths_by_root)
+
         bases_by_root = self._filter_paths(paths_by_root, bases_by_root)
         tests_by_root = self._resolve_paths(bases_by_root)
         return sorted(self._format_paths(tests_by_root))
@@ -1430,6 +1435,33 @@ class Port(object):
                 and not Port.is_reference_html_file(self._filesystem, dirname,
                                                     filename))
 
+    def _maybe_partial_update_wpt_manifest(self,
+                                           bases_by_root: PathsByRoot) -> None:
+        path_by_wpt_dir = defaultdict(set)
+        for (_, wpt_dir), paths_from_root in bases_by_root.items():
+            if wpt_dir:
+                for path in paths_from_root:
+                    if self._filesystem.exists(
+                            self._filesystem.join(wpt_dir, path)):
+                        path_by_wpt_dir[wpt_dir].add(path)
+                    else:
+                        # update directories only in case path is a url
+                        path_by_wpt_dir[wpt_dir].add(
+                            self._filesystem.dirname(path))
+
+        for wpt_dir, paths in path_by_wpt_dir.items():
+            if '' in paths:
+                WPTManifest.ensure_manifest(self, wpt_dir)
+            else:
+                # update wpt manifest for tests to run
+                WPTManifest.ensure_manifest(self, wpt_dir, [
+                    self._path_finder.path_from_web_tests(wpt_dir, path)
+                    for path in paths
+                ])
+
+        # Skip Manifest update in future.
+        self.set_option('manifest_update', False)
+
     @memoized
     def wpt_manifest(self,
                      path: str,
@@ -1441,9 +1473,7 @@ class Port(object):
             self._filesystem.join(self.web_tests_dir(), path))
         manifest_path = self._filesystem.join(self.web_tests_dir(), path,
                                               MANIFEST_NAME)
-        if self.should_update_manifest(path):
-            _log.debug('Generating MANIFEST.json for %s...', path)
-            WPTManifest.ensure_manifest(self, path)
+        WPTManifest.ensure_manifest(self, path)
         return WPTManifest.from_file(self, manifest_path,
                                      self.get_option('test_types'),
                                      exclude_jsshell)
@@ -2091,6 +2121,9 @@ class Port(object):
 
     def get_option(self, name, default_value=None):
         return getattr(self._options, name, default_value)
+
+    def set_option(self, name, value):
+        return setattr(self._options, name, value)
 
     def set_option_default(self, name, default_value):
         return self._options.ensure_value(name, default_value)
