@@ -4,12 +4,14 @@
 
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_coordinator.h"
 
+#import "base/functional/bind.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_mediator.h"
+#import "ios/chrome/browser/supervised_user/model/parent_access_tab_helper.h"
 #import "ios/chrome/browser/supervised_user/ui/parent_access_bottom_sheet_view_controller.h"
 #import "ios/web/public/web_state.h"
 
@@ -17,28 +19,38 @@
 @end
 
 @implementation ParentAccessCoordinator {
-  ParentAccessCallbackCompletion _completion;
+  ParentAccessApprovalResultCallback _callback;
   ParentAccessBottomSheetViewController* _viewController;
   ParentAccessMediator* _mediator;
 }
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                completion:
-                                    (ParentAccessCallbackCompletion)completion {
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                    completion:(void (^)(supervised_user::LocalApprovalResult))
+                                   completion {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _completion = completion;
+    _callback = base::BindOnce(completion);
   }
   return self;
 }
 
 - (void)start {
   ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
-  web::WebState::CreateParams params = web::WebState::CreateParams(profile);
-  _mediator = [[ParentAccessMediator alloc]
-      initWithWebState:web::WebState::Create(params)];
 
+  // Set up the WebState and its TabHelper.
+  web::WebState::CreateParams params = web::WebState::CreateParams(profile);
+  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
+  ParentAccessTabHelper::CreateForWebState(webState.get());
+  ParentAccessTabHelper* tabHelper =
+      ParentAccessTabHelper::FromWebState(webState.get());
+  tabHelper->SetCommandsHandler(HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ParentAccessCommands));
+  tabHelper->SetApprovalResultCallback(std::move(_callback));
+
+  _mediator =
+      [[ParentAccessMediator alloc] initWithWebState:std::move(webState)];
   _viewController = [[ParentAccessBottomSheetViewController alloc] init];
   _viewController.presentationController.delegate = self;
   _mediator.consumer = _viewController;
@@ -63,14 +75,6 @@
   id<ParentAccessCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ParentAccessCommands);
   [handler hideParentAccessBottomSheet];
-}
-
-#pragma mark - WKScriptMessageHandler
-
-- (void)userContentController:(WKUserContentController*)userContentController
-      didReceiveScriptMessage:(WKScriptMessage*)message {
-  // TODO(crbug.com/384514294): Processes local approval result in completion
-  // callback.
 }
 
 @end
