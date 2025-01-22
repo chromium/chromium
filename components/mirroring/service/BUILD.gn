@@ -130,5 +130,10 @@ source_set("unittests") {
     "//third_party/openscreen/src/cast/streaming:sender",
   ]
 
-  include_dirs = [ "//third_party/openscreen/src" ]
+  # Make sure to use the Chromium protobuf headers, and not the ones in
+  # //third_party/openscreen/src/third_party/protobuf. direct include_dirs
+  # takes precedence over those pulled in from configs.
+  include_dirs = [ "//third_party/protobuf/src" ]
+  configs +=
+      [ "//third_party/openscreen/src/build_overrides:openscreen_include_dirs" ]
 }
