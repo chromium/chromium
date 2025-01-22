@@ -968,13 +968,6 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, IsEligibleForSeaPen_Child) {
   ASSERT_FALSE(sea_pen_provider()->IsEligibleForSeaPen());
 }
 
-TEST_F(PersonalizationAppSeaPenProviderImplTest, IsEligibleForSeaPen_Googler) {
-  // Managed Googlers can still access SeaPen.
-  SetUpProfileForTesting(kGooglerEmail, GetGooglerAccountId());
-  profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
-  ASSERT_TRUE(sea_pen_provider()->IsEligibleForSeaPen());
-}
-
 TEST_F(PersonalizationAppSeaPenProviderImplTest, IsEligibleForSeaPen_Managed) {
   SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
   profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
