@@ -89,7 +89,6 @@
   {
     "name": "allow-apn-modification-policy",
     "owners": [
-      "gordonseto@google.com",
       "hsuregan@google.com",
       "cros-device-enablement@google.com"
     ],
@@ -1355,14 +1354,14 @@
   },
   {
     "name": "cellular-bypass-esim-installation-connectivity-check",
-    "owners": [ "azeemarshad@chromium.org", "khorimoto@chromium.org", "jiajunz@chromium.org", "cros-device-enablement@google.com" ],
+    "owners": [ "khorimoto@chromium.org", "jiajunz@chromium.org", "cros-device-enablement@google.com" ],
     // This flag does not expire because it allows some test cases that host a local SM-DP+ server
     // on a network without an external connection to the internet to be able to install eSIM.
     "expiry_milestone": -1
   },
   {
     "name": "cellular-use-second-euicc",
-    "owners": [ "azeemarshad@chromium.org", "khorimoto@chromium.org", "cros-device-enablement@google.com" ],
+    "owners": [ "khorimoto@chromium.org", "cros-device-enablement@google.com" ],
     // Never expires. This used in ChromeOS to switch to removable EUICC for
     // all eSIM operations. This is useful for debugging with test SIM cards.
     "expiry_milestone": -1
@@ -7979,7 +7978,7 @@
   },
   {
     "name": "show-metered-toggle",
-    "owners": [ "stevenjb@chromium.org", "azeemarshad@chromium.org", "cros-device-enablement@google.com" ],
+    "owners": [ "stevenjb@chromium.org", "cros-device-enablement@google.com" ],
     "expiry_milestone": 127
   },
   {
@@ -8848,7 +8847,7 @@
   },
   {
     "name": "use-custom-messages-domain",
-    "owners": [ "azeemarshad@chromium.org", "jonmann@chromium.org" ],
+    "owners": [ "khorimoto@chromium.org", "jonmann@chromium.org" ],
     // This flag is used for QA and development.
     "expiry_milestone": -1
   },
@@ -8920,7 +8919,7 @@
   },
   {
     "name": "use_messages_staging_url",
-    "owners": [ "azeemarshad@chromium.org", "khorimoto@chromium.org", "jonmann@chromium.org" ],
+    "owners": [ "khorimoto@chromium.org", "jonmann@chromium.org" ],
     // This flag is required for QA and dogfood testing.
     "expiry_milestone": -1
   },

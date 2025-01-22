@@ -86,9 +86,9 @@ void DeviceOperationHandler::HandleFinishedOperation(bool success) {
   ProcessQueue();
 }
 
-// TODO(gordonseto): Investigate whether we need to manually fail the current
-// operation occurring if Bluetooth disables. If we don't, we can remove this
-// observer.
+// TODO(crbug.com/390255587): Investigate whether we need to manually fail the
+// current operation occurring if Bluetooth disables. If we don't, we can remove
+// this observer.
 void DeviceOperationHandler::OnAdapterStateChanged() {
   if (current_operation_) {
     BLUETOOTH_LOG(DEBUG) << "Device with id: " << current_operation_->device_id

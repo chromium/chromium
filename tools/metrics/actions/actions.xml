@@ -6575,7 +6575,6 @@ should be able to be added at any place in this file.
 
 <action name="ChromeOS.SystemTray.Network.SettingsButtonPressed">
   <owner>khorimoto@chromium.org</owner>
-  <owner>tjohnsonkanu@chromium.org</owner>
   <owner>chadduffin@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <description>
