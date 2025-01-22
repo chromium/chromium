@@ -220,6 +220,18 @@ void TabGroupChangeNotifierImpl::OnTabSelected(
 void TabGroupChangeNotifierImpl::OnTabGroupLocalIdChanged(
     const base::Uuid& sync_id,
     const std::optional<tab_groups::LocalTabGroupID>& local_id) {
+  // When tab group local id is changed, tabs are not updating yet.
+  // Delay to post task to make sure tabs are
+  // updated before notifying observers.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&TabGroupChangeNotifierImpl::OnTabGroupOpenedOrClosed,
+                     weak_ptr_factory_.GetWeakPtr(), sync_id, local_id));
+}
+
+void TabGroupChangeNotifierImpl::OnTabGroupOpenedOrClosed(
+    const base::Uuid& sync_id,
+    const std::optional<tab_groups::LocalTabGroupID>& local_id) {
   std::optional<tab_groups::SavedTabGroup> tab_group =
       tab_group_sync_service_->GetGroup(sync_id);
   if (tab_group) {

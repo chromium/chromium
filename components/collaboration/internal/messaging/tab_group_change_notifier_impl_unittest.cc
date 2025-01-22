@@ -898,11 +898,10 @@ TEST_F(TabGroupChangeNotifierImplTest, OpenAndCloseTabGroup) {
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
       .WillRepeatedly(Return(tab_group));
   EXPECT_CALL(*notifier_observer_, OnTabGroupOpened(_));
-  tgss_observer_->OnTabGroupLocalIdChanged(
+  notifier_->OnTabGroupOpenedOrClosed(
       tab_group.saved_guid(), tab_groups::test::GenerateRandomTabGroupID());
   EXPECT_CALL(*notifier_observer_, OnTabGroupClosed(_));
-  tgss_observer_->OnTabGroupLocalIdChanged(tab_group.saved_guid(),
-                                           std::nullopt);
+  notifier_->OnTabGroupOpenedOrClosed(tab_group.saved_guid(), std::nullopt);
 }
 
 }  // namespace collaboration::messaging
