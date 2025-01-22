@@ -416,6 +416,10 @@ void GlicWindowController::ResizeFinished() {
 }
 
 void GlicWindowController::Attach() {
+  if (!glic_window_widget_) {
+    return;
+  }
+
   // TODO (crbug.com/388917542) Determine which browser to attach to. Currently
   // attaches to the last focused glic-compatible browser.
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
@@ -441,33 +445,33 @@ void GlicWindowController::Detach() {
 }
 
 void GlicWindowController::AttachToBrowser(Browser* browser) {
+  CHECK(glic_window_widget_);
   attached_browser_ = browser;
   MovePositionToBrowserGlicButton(browser, true);
-  // Close holder window if existing.
-  if (holder_widget_) {
-    holder_widget_->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
-    holder_widget_.reset();
-  }
+  // Close the holder window.
+  holder_widget_.reset();
+
   views::Widget* browser_widget =
       browser->window()->AsBrowserView()->GetWidget();
-  // Makes the glic widget a child view of the given widget's browser.
-  if (browser_widget && glic_window_widget_ && browser) {
-    // Add observer to new parent.
-    attached_target_widget_observer_.SetAttachedTargetWidget(browser_widget);
-    views::Widget::ReparentNativeView(glic_window_widget_->GetNativeView(),
-                                      browser_widget->GetNativeView());
-    NotifyIfPanelStateChanged();
+  CHECK(browser_widget);
 
-    // When attached to a browser window, the glic widget mustn't float and when
-    // interacted with must behave like any other widget.
-    glic_window_widget_->SetZOrderLevel(ui::ZOrderLevel::kNormal);
+  // Makes the glic widget a child view of the given widget's browser.
+  // Add observer to new parent.
+  attached_target_widget_observer_.SetAttachedTargetWidget(browser_widget);
+  views::Widget::ReparentNativeView(glic_window_widget_->GetNativeView(),
+                                    browser_widget->GetNativeView());
+  NotifyIfPanelStateChanged();
+
+  // When attached to a browser window, the glic widget mustn't float and when
+  // interacted with must behave like any other widget.
+  glic_window_widget_->SetZOrderLevel(ui::ZOrderLevel::kNormal);
 #if BUILDFLAG(IS_MAC)
-    glic_window_widget_->SetActivationIndependence(false);
+  glic_window_widget_->SetActivationIndependence(false);
 #endif
-    browser_close_subscription_ = browser->RegisterBrowserDidClose(
-        base::BindRepeating(&GlicWindowController::AttachedBrowserDidClose,
-                            base::Unretained(this)));
-  }
+
+  browser_close_subscription_ = browser->RegisterBrowserDidClose(
+      base::BindRepeating(&GlicWindowController::AttachedBrowserDidClose,
+                          base::Unretained(this)));
 }
 
 bool GlicWindowController::Resize(const gfx::Size& size) {
