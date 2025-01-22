@@ -8634,6 +8634,11 @@ crbug.com/391381439 http/tests/devtools/security/mixed-content-active-and-passiv
 crbug.com/391381439 http/tests/devtools/security/mixed-content-reload.js [ Failure Pass ]
 crbug.com/391381439 http/tests/devtools/security/security-blocked-mixed-content.js [ Failure Pass ]
 
+# Temporarily disabled to unblock https://crrev.com/c/6187530
+crbug.com/391381439 http/tests/devtools/components/minimum-size.js [ Failure Pass ]
+crbug.com/391381439 http/tests/devtools/components/split-widget.js [ Failure Pass ]
+crbug.com/391381439 http/tests/devtools/unit/viewport-datagrid-items-attached-to-dom.js [ Failure Pass ]
+
 # Temporarily disabled to unblock https://crrev.com/c/6164904
 crbug.com/388445687 http/tests/devtools/a11y-axe-core/performance/settings-pane-a11y-test.js [ Failure Pass ]
 
