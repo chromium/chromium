@@ -39,6 +39,10 @@
 
 using signin_util::SignedInState;
 
+// TODO(crbug.com/391586330): Strings used in this file sometimes originate
+// from a different source which makes their name out of context. Look into
+// whether it would better to have specific strings for these views.
+
 namespace {
 
 constexpr int kTitleMaxWidth = 218;
@@ -96,11 +100,12 @@ std::u16string GetButtonText(bool is_autofill_promo,
 
 std::u16string GetAccessibilityText(bool is_autofill_promo,
                                     SignedInState signed_in_state,
-                                    const std::string& email) {
+                                    const AccountInfo& account) {
   if (is_autofill_promo && signed_in_state == SignedInState::kWebOnlySignedIn) {
     return l10n_util::GetStringFUTF16(
-        IDS_SIGNIN_CONTINUE_AS_BUTTON_ACCESSIBILITY_LABEL,
-        {base::UTF8ToUTF16(email)});
+        IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCEPT_TEXT,
+        {base::UTF8ToUTF16(
+            base::StrCat({account.given_name, " ", account.email}))});
   }
 
   return std::u16string();
@@ -166,7 +171,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
   std::u16string button_text =
       GetButtonText(is_autofill_promo, signed_in_state, account.given_name);
   std::u16string accessibility_text =
-      GetAccessibilityText(is_autofill_promo, signed_in_state, account.email);
+      GetAccessibilityText(is_autofill_promo, signed_in_state, account);
   signin_metrics::PromoAction promo_action =
       GetPromoAction(is_autofill_promo, signed_in_state);
 
