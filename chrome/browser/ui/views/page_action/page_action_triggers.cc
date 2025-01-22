@@ -8,14 +8,9 @@
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(page_actions::PageActionTrigger)
 
-namespace {
-constexpr std::underlying_type_t<page_actions::PageActionTrigger>
-    kInvalidPageActionTriggerSource = -1;
-}
-
 namespace page_actions {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(std::underlying_type_t<PageActionTrigger>,
                              kPageActionTriggerKey,
-                             kInvalidPageActionTriggerSource)
+                             kInvalidPageActionTrigger)
 }  // namespace page_actions

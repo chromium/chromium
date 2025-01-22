@@ -14,6 +14,9 @@ enum class PageActionTrigger {
   kGesture = 2,
 };
 
+constexpr std::underlying_type_t<page_actions::PageActionTrigger>
+    kInvalidPageActionTrigger = -1;
+
 extern const ui::ClassProperty<std::underlying_type_t<PageActionTrigger>>* const
     kPageActionTriggerKey;
 

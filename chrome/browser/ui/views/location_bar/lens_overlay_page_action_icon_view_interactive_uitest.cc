@@ -27,6 +27,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/events/test/test_event.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
 #include "url/url_constants.h"
@@ -199,12 +200,6 @@ IN_PROC_BROWSER_TEST_P(LensOverlayPageActionIconViewTest,
 
 IN_PROC_BROWSER_TEST_P(LensOverlayPageActionIconViewTest,
                        OpensNewTabWhenEnteredThroughKeyboard) {
-  // TODO(crbug.com/376283383): The migrated lens overlay page action's
-  // execution is dictated by the underlying ActionItem, and currently doesn't
-  // have different behaviour when executed via keyboard.
-  if (IsMigrationEnabled()) {
-    return;
-  }
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   // Navigate to a non-NTP page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
@@ -217,28 +212,25 @@ IN_PROC_BROWSER_TEST_P(LensOverlayPageActionIconViewTest,
         ->CompletedFirstVisuallyNonEmptyPaint();
   }));
 
-  LensOverlayPageActionIconView* icon_view = lens_overlay_icon_view();
-  views::FocusManager* focus_manager = icon_view->GetFocusManager();
-  page_actions::PageActionView* page_action_view =
-      lens_overlay_page_action_view();
+  views::View* page_action_view = PageActionView();
+  views::FocusManager* focus_manager = page_action_view->GetFocusManager();
   focus_manager->ClearFocus();
   EXPECT_FALSE(focus_manager->GetFocusedView());
-  EXPECT_FALSE(icon_view->GetVisible());
   EXPECT_FALSE(page_action_view->GetVisible());
 
   // Focus in the location bar should show the icon.
-  base::RunLoop run_loop;
-  icon_view->set_update_callback_for_testing(run_loop.QuitClosure());
-  location_bar()->FocusLocation(false);
-  EXPECT_TRUE(focus_manager->GetFocusedView());
-  run_loop.Run();
-  EXPECT_TRUE(icon_view->GetVisible());
-  EXPECT_FALSE(page_action_view->GetVisible());
+  FocusLocationBarAndWaitForUpdate();
+  EXPECT_TRUE(page_action_view->GetVisible());
 
   // Executing the lens overlay icon view with keyboard source should open a new
   // tab.
   ui_test_utils::TabAddedWaiter tab_add(browser());
-  icon_view->execute_with_keyboard_source_for_testing();
+  if (IsMigrationEnabled()) {
+    lens_overlay_page_action_view()->NotifyClick(
+        ui::test::TestEvent(ui::EventType::kKeyPressed));
+  } else {
+    lens_overlay_icon_view()->execute_with_keyboard_source_for_testing();
+  }
   auto* new_tab_contents = tab_add.Wait();
 
   EXPECT_TRUE(new_tab_contents);
