@@ -14,14 +14,14 @@ export function getHtml(this: TabOrganizationSelectorElement) {
 <div ?hidden=${this.getVisibleFeature_() !== TabOrganizationFeature.kSelector}>
   <div id="buttonContainer">
     <tab-organization-selector-button id="autoTabGroupsButton"
-        top="true"
+        top
         heading="$i18n{autoTabGroupsSelectorHeading}"
         subheading="$i18n{autoTabGroupsSelectorSubheading}"
         icon="tab-search:auto-tab-groups"
         @click="${this.onAutoTabGroupsClick_}">
     </tab-organization-selector-button>
     <tab-organization-selector-button id="declutterButton"
-        bottom="true"
+        bottom
         heading="${this.declutterHeading_}"
         subheading="$i18n{declutterSelectorSubheading}"
         icon="tab-search:declutter"
@@ -33,7 +33,7 @@ export function getHtml(this: TabOrganizationSelectorElement) {
 
 <div ?hidden=${
     this.getVisibleFeature_() !== TabOrganizationFeature.kAutoTabGroups}>
-  <auto-tab-groups-page id="autoTabGroupsPage" ?show-back-button="${true}"
+  <auto-tab-groups-page id="autoTabGroupsPage" show-back-button
       available-height="${this.availableHeight}"
       @back-click="${this.onBackClick_}">
   </auto-tab-groups-page>
@@ -41,7 +41,7 @@ export function getHtml(this: TabOrganizationSelectorElement) {
 
 <div ?hidden=${
     this.getVisibleFeature_() !== TabOrganizationFeature.kDeclutter}>
-  <declutter-page id="declutterPage" ?show-back-button="${true}"
+  <declutter-page id="declutterPage" show-back-button
       available-height="${this.availableHeight}"
       @back-click="${this.onBackClick_}">
   </declutter-page>

@@ -151,7 +151,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
    */
   private resultPendingMetricsTimestamp_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
-  forceSuppressLogging: boolean;
+  forceSuppressLogging: boolean = false;
   isEmpty: boolean = true;
   numCharsForQuery: number = 0;
   private numCharsForLastResultQuery_: number = 0;

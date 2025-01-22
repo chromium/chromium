@@ -46,7 +46,7 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
   async function forceEmbeddingsComponent() {
     // Force a search so that the cr-history-embeddings component is available.
     app.query = 'two words';
-    await app.updateComplete;
+    await microtasksFinished();
     const embeddingsComponent = getEmbeddingsComponent();
     assertTrue(!!embeddingsComponent);
     return embeddingsComponent;
@@ -80,18 +80,18 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
     assertTrue(clickEvent.defaultPrevented);
     assertEquals(1, embeddingsHandler.getCallCount('openSettingsPage'));
 
-    await app.updateComplete;
+    await microtasksFinished();
     assertTrue(historyEmbeddingsElement.forceSuppressLogging);
   });
 
   test('ShowsResultsComponent', async () => {
     app.query = 'onlyonewordquery';
-    await app.updateComplete;
+    await microtasksFinished();
     let embeddingsComponent = getEmbeddingsComponent();
     assertFalse(!!embeddingsComponent);
 
     app.query = 'two words';
-    await app.updateComplete;
+    await microtasksFinished();
     embeddingsComponent = getEmbeddingsComponent();
     assertTrue(!!embeddingsComponent);
   });
@@ -206,12 +206,12 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
 
     app.$.historyClusters.dispatchEvent(
         new CustomEvent('record-history-link-click'));
-    await app.updateComplete;
+    await microtasksFinished();
     assertTrue(embeddingsComponent.otherHistoryResultClicked);
 
     app.$.searchbox.dispatchEvent(
         new CustomEvent('search-changed', {detail: 'new query'}));
-    await app.updateComplete;
+    await microtasksFinished();
     assertFalse(embeddingsComponent.otherHistoryResultClicked);
   });
 
@@ -231,41 +231,41 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
     }
 
     dispatchNativeInput({data: 'a'}, 'a');
-    await app.updateComplete;
+    await microtasksFinished();
     assertEquals(
         1, embeddingsComponent.numCharsForQuery, 'counts normal characters');
     dispatchNativeInput({data: 'b'}, 'ab');
     dispatchNativeInput({data: 'c'}, 'abc');
-    await app.updateComplete;
+    await microtasksFinished();
     assertEquals(
         3, embeddingsComponent.numCharsForQuery,
         'counts additional characters');
 
     dispatchNativeInput({data: 'pasted text'}, 'pasted text');
-    await app.updateComplete;
+    await microtasksFinished();
     assertEquals(
         1, embeddingsComponent.numCharsForQuery,
         'insert that replaces all text counts as 1');
 
     dispatchNativeInput({data: 'more text'}, 'pasted text more text');
-    await app.updateComplete;
+    await microtasksFinished();
     assertEquals(
         2, embeddingsComponent.numCharsForQuery,
         'insert that adds to existing input increments count');
 
     dispatchNativeInput({data: null}, 'pasted text more tex');
-    await app.updateComplete;
+    await microtasksFinished();
     assertEquals(
         3, embeddingsComponent.numCharsForQuery, 'deletion increments');
 
     dispatchNativeInput({data: null}, '');
-    await app.updateComplete;
+    await microtasksFinished();
     assertEquals(
         0, embeddingsComponent.numCharsForQuery,
         'deletion of entire input resets counter');
 
     app.$.searchbox.dispatchEvent(new CustomEvent('search-term-cleared'));
-    await app.updateComplete;
+    await microtasksFinished();
     assertEquals(0, embeddingsComponent.numCharsForQuery, 'resets on clear');
   });
 
@@ -276,21 +276,21 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
 
     // Pretend that history-clusters is empty.
     clustersComponent.isEmpty = true;
-    await app.updateComplete;
+    await microtasksFinished();
     assertTrue(isVisible(clustersComponent));
 
     // When history-embeddings has results, history-clusters should be hidden.
     const embeddingsComponent = await forceEmbeddingsComponent();
     embeddingsComponent.dispatchEvent(
         new CustomEvent('is-empty-changed', {detail: {value: false}}));
-    await app.updateComplete;
+    await microtasksFinished();
     assertFalse(isVisible(clustersComponent));
 
     // When history-embeddings is empty, history-clusters should be visible
     // again.
     embeddingsComponent.dispatchEvent(
         new CustomEvent('is-empty-changed', {detail: {value: true}}));
-    await app.updateComplete;
+    await microtasksFinished();
     assertTrue(isVisible(clustersComponent));
   });
 });
