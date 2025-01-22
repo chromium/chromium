@@ -21,7 +21,7 @@ DEFAULT_TESTS = [
     "//build/rust/tests/test_rust_static_library:test_rust_static_library",  # Added to make sure that rust still compiles
     "//build/rust/tests/test_serde_json_lenient:test_serde_json_lenient__library",  # Added to make sure that rust still compiles
     "//build/rust/tests/bindgen_test:bindgen_test",  # Added to make sure that rust still compiles
-    '//build/rust/tests/bindgen_static_fns_test:bindgen_static_fns_test'  # Added to make sure that rust still compiles
+    '//build/rust/tests/bindgen_static_fns_test:bindgen_static_fns_test',  # Added to make sure that rust still compiles
     "//net/android:dummy_spnego_authenticator_java",  # Required for net::HttpAuthHandlerNegotiateTest::SetUp() to work, due to https://crbug.com/389069158
 ]
 
