@@ -498,6 +498,34 @@ public class AwPrerenderTest extends AwParameterizedTest {
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 
+    // Tests the case where a user navigates to a page different from a prerendered page.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testNavigationToNonPrerenderedPage() throws Throwable {
+        loadInitialPage();
+
+        var histogramWatcher = createFinalStatusHistogramWatcher(/* kTriggerDestroyed */ 16);
+
+        startPrerenderingAndWait(
+                mPrerenderingUrl,
+                /* prefetchParameters= */ null,
+                /* activationCallback= */ null,
+                mPrerenderErrorCallbackHelper.getCallback());
+
+        // Navigate to `prerender.html?b=42` that doesn't match the prerendered page. This should
+        // cancel prerendering.
+        String url = mTestServer.getURL(PRERENDER_URL.concat("?b=42"));
+        navigatePage(url);
+
+        // Wait until prerendering is canceled.
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+
+        // The error callback should not be called in this case.
+        Assert.assertEquals(0, mPrerenderErrorCallbackHelper.getCallCount());
+    }
+
     // Tests prerendering navigation that is redirected to same-origin.
     @Test
     @LargeTest
