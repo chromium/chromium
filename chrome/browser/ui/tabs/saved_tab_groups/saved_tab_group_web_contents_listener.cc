@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -206,13 +205,6 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
 
   SavedTabGroupTab* tab = group->GetTab(local_tab_id());
   CHECK(tab);
-
-  if (!tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    // TODO(crbug.com/359715038): Implement in TGSS then remove cast.
-    static_cast<TabGroupSyncServiceProxy*>(service_)->SetFaviconForTab(
-        group->local_group_id().value(), local_tab_id(),
-        favicon::TabFaviconFromWebContents(contents()));
-  }
 
   service_->NavigateTab(group->local_group_id().value(), local_tab_id(),
                         contents()->GetURL(), contents()->GetTitle());

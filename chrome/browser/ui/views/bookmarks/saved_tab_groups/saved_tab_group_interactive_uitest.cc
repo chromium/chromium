@@ -2,20 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
@@ -34,13 +38,21 @@
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/favicon/content/content_favicon_driver.h"
+#include "components/favicon/core/favicon_driver.h"
+#include "components/favicon/core/favicon_driver_observer.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "content/public/browser/favicon_status.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -55,6 +67,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/skia_util.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view_utils.h"
@@ -63,10 +76,66 @@
 
 namespace tab_groups {
 
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+
+class FaviconFetchObserver : public ui::test::ObservationStateObserver<
+                                 bool,
+                                 favicon::ContentFaviconDriver,
+                                 favicon::FaviconDriverObserver> {
+ public:
+  FaviconFetchObserver(favicon::ContentFaviconDriver* driver,
+                       const GURL& favicon_url)
+      : ObservationStateObserver(driver),
+        driver_(driver),
+        target_favicon_url_(favicon_url) {}
+
+  ~FaviconFetchObserver() override = default;
+
+  bool GetStateObserverInitialState() const override {
+    return GetCurrentFaviconURL() == target_favicon_url_;
+  }
+
+  void OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
+                        NotificationIconType notification_icon_type,
+                        const GURL& icon_url,
+                        bool icon_url_changed,
+                        const gfx::Image& image) override {
+    if (icon_url == target_favicon_url_) {
+      OnStateObserverStateChanged(true);
+    }
+  }
+
+ private:
+  GURL GetCurrentFaviconURL() const {
+    content::NavigationController& controller =
+        driver_->web_contents()->GetController();
+    content::NavigationEntry* entry = controller.GetLastCommittedEntry();
+    return entry ? entry->GetFavicon().url : GURL();
+  }
+
+  raw_ptr<favicon::ContentFaviconDriver> driver_;
+  GURL target_favicon_url_;
+};
+
 class SavedTabGroupInteractiveTestBase : public InteractiveBrowserTest {
  public:
   SavedTabGroupInteractiveTestBase() = default;
   ~SavedTabGroupInteractiveTestBase() override = default;
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    InteractiveBrowserTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+    InteractiveBrowserTest::TearDownOnMainThread();
+  }
+
+  GURL GetURL(std::string_view path) {
+    return embedded_test_server()->GetURL("example.com", path);
+  }
 
   MultiStep ShowBookmarksBar() {
     return Steps(PressButton(kToolbarAppMenuButtonElementId),
@@ -139,6 +208,42 @@ class SavedTabGroupInteractiveTest
                  WaitForShow(kTabGroupEditorBubbleId));
   }
 
+  MultiStep WaitToFetchFavicon(int tab_index, const GURL& favicon_url) {
+    DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(FaviconFetchObserver,
+                                        kFaviconFetchObserver);
+
+    favicon::ContentFaviconDriver* favicon_driver =
+        favicon::ContentFaviconDriver::FromWebContents(
+            browser()->tab_strip_model()->GetWebContentsAt(tab_index));
+
+    return Steps(ObserveState(kFaviconFetchObserver,
+                              std::make_unique<FaviconFetchObserver>(
+                                  favicon_driver, favicon_url)),
+                 WaitForState(kFaviconFetchObserver, true),
+                 StopObservingState(kFaviconFetchObserver));
+  }
+
+  MultiStep WaitForTabMenuItemToLoadFavicon() {
+    using FaviconLoadObserver =
+        views::test::PollingViewObserver<bool, views::MenuItemView>;
+    DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(FaviconLoadObserver,
+                                        kFaviconLoadObserver);
+
+    return Steps(
+        PollView(kFaviconLoadObserver, SavedTabGroupUtils::kTab,
+                 [](const views::MenuItemView* menu_item_view) -> bool {
+                   auto actual_image = menu_item_view->GetIcon();
+                   auto expected_image = favicon::GetDefaultFaviconModel(
+                       kColorTabGroupBookmarkBarBlue);
+                   auto* color_provider = menu_item_view->GetColorProvider();
+                   CHECK(!actual_image.IsEmpty());
+                   return !gfx::BitmapsAreEqual(
+                       *actual_image.Rasterize(color_provider).bitmap(),
+                       *expected_image.Rasterize(color_provider).bitmap());
+                 }),
+        WaitForState(kFaviconLoadObserver, true));
+  }
+
   StepBuilder CheckIfSavedGroupIsOpen(const base::Uuid* const saved_guid) {
     return Do([=, this]() {
       const std::optional<SavedTabGroup> group =
@@ -189,6 +294,39 @@ class SavedTabGroupInteractiveTest
                          /*last_updater_cache_guid=*/std::nullopt,
                          /*created_before_syncing_tab_groups=*/false,
                          /*creation_time_windows_epoch_micros=*/std::nullopt});
+    });
+  }
+
+  StepBuilder CreateRemoteSavedGroup() {
+    return Do([=, this]() {
+      const base::Uuid group_guid = base::Uuid::GenerateRandomV4();
+      const base::Uuid tab_guid = base::Uuid::GenerateRandomV4();
+      SavedTabGroup group = {
+          /*title=*/u"group_title",
+          /*color=*/tab_groups::TabGroupColorId::kBlue,
+          /*urls=*/
+          {{GetURL("/favicon/page_with_favicon.html"), u"tab_title", group_guid,
+            0, tab_guid}},
+          /*position=*/std::nullopt,
+          /*saved_guid=*/group_guid,
+          /*local_group_id=*/std::nullopt,
+          /*creator_cache_guid=*/std::nullopt,
+          /*last_updater_cache_guid=*/std::nullopt,
+          /*created_before_syncing_tab_groups=*/false,
+          /*creation_time_windows_epoch_micros=*/std::nullopt};
+
+      TabGroupSyncService* service =
+          SavedTabGroupUtils::GetServiceForProfile(browser()->profile());
+
+      if (IsMigrationEnabled()) {
+        TabGroupSyncServiceImpl* service_impl =
+            static_cast<TabGroupSyncServiceImpl*>(service);
+        service_impl->GetModelForTesting()->AddedFromSync(std::move(group));
+      } else {
+        TabGroupSyncServiceProxy* service_impl =
+            static_cast<TabGroupSyncServiceProxy*>(service);
+        service_impl->GetModelForTesting()->AddedFromSync(std::move(group));
+      }
     });
   }
 
@@ -1061,6 +1199,23 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       WaitForShow(STGEverythingMenu::kCreateNewTabGroup),
       // Expect the group to not be displayed.
       EnsureNotPresent(STGEverythingMenu::kTabGroup));
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       AppMenuTabGroupsShowsCorrectFavicons) {
+  RunTestSequence(
+      InstrumentTab(kFirstTab),
+      // Navigate to a page with favicon and wait for the favicon
+      // to be updated to the local favicon database
+      NavigateWebContents(kFirstTab, GetURL("/favicon/page_with_favicon.html")),
+      WaitToFetchFavicon(0, GetURL("/favicon/icon.png")),
+      CreateRemoteSavedGroup(), PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuModel::kTabGroupsMenuItem),
+      SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
+      WaitForShow(STGEverythingMenu::kTabGroup),
+      SelectMenuItem(STGEverythingMenu::kTabGroup),
+      // Validate if the menu item view loaded a favicon from the database
+      WaitForShow(SavedTabGroupUtils::kTab), WaitForTabMenuItemToLoadFavicon());
 }
 
 INSTANTIATE_TEST_SUITE_P(SavedTabGroupBar,

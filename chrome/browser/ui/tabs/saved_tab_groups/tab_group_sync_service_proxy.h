@@ -20,6 +20,7 @@
 namespace tab_groups {
 
 class SavedTabGroupKeyedService;
+class SavedTabGroupModel;
 
 // Proxy service which implements TabGroupSyncService. Forwards and translates
 // TabGroupSyncService calls to SavedTabGroupKeyedService calls.
@@ -127,12 +128,7 @@ class TabGroupSyncServiceProxy : public TabGroupSyncService,
 
   void SetIsInitializedForTesting(bool initialized) override;
 
-  // Used to manually set the favicon for a specific tab.
-  // TODO(crbug.com/348486163): Find a way to support favicons for the
-  // sync_service_ code paths.
-  void SetFaviconForTab(const LocalTabGroupID& group_id,
-                        const LocalTabID& tab_id,
-                        std::optional<gfx::Image> favicon);
+  SavedTabGroupModel* GetModelForTesting();
 
  private:
   // SavedTabGroupModelObserver:
