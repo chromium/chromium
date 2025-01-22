@@ -9,7 +9,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "trees_in_viz_cc_unittests",
+        "name": "cc_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
