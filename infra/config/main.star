@@ -45,7 +45,6 @@ lucicfg.config(
         "luci/project.cfg",
         "luci/realms.cfg",
         "luci/testhaus.cfg",
-        "luci/tricium-prod.cfg",
         "outages.pyl",
         "sheriff-rotations/*.txt",
         "project.pyl",
@@ -67,12 +66,6 @@ lucicfg.config(
 lucicfg.emit(
     dest = "luci/testhaus.cfg",
     data = io.read_file("testhaus.cfg"),
-)
-
-# Just copy tricium-prod.cfg to the generated outputs
-lucicfg.emit(
-    dest = "luci/tricium-prod.cfg",
-    data = io.read_file("tricium-prod.cfg"),
 )
 
 # Just copy LUCI Analysis config to generated outputs.

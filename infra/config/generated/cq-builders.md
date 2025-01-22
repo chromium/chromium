@@ -840,6 +840,24 @@ as required builders.
 * [mac14-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac14-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac14-arm64-rel""))
   * Experiment percentage: 75.0
 
+* [tricium-clang-tidy](https://ci.chromium.org/p/chromium/builders/try/tricium-clang-tidy) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""tricium-clang-tidy""))
+  * Experiment percentage: 100.0
+
+  Location filters:
+  * [`//.*\.(c|cc|cpp|h)`](https://cs.chromium.org/search?q=+file:.*\.(c|cc|cpp|h))
+
+* [tricium-metrics-analysis](https://ci.chromium.org/p/chromium/builders/try/tricium-metrics-analysis) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""tricium-metrics-analysis""))
+  * Experiment percentage: 100.0
+
+  Location filters:
+  * [`//.*\.(json|xml)`](https://cs.chromium.org/search?q=+file:.*\.(json|xml))
+
+* [tricium-oilpan-analysis](https://ci.chromium.org/p/chromium/builders/try/tricium-oilpan-analysis) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""tricium-oilpan-analysis""))
+  * Experiment percentage: 100.0
+
+  Location filters:
+  * [`//.*\.(c|cc|cpp|h)`](https://cs.chromium.org/search?q=+file:.*\.(c|cc|cpp|h))
+
 
 ## Mega CQ builders
 These builders run when the "Mega" CQ mode is triggered. This mode runs all the

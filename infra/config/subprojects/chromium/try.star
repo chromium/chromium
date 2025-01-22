@@ -41,7 +41,6 @@ luci.bucket(
             users = [
                 "dawn-automated-expectations@chops-service-accounts.iam.gserviceaccount.com",
                 "findit-for-me@appspot.gserviceaccount.com",
-                "tricium-prod@appspot.gserviceaccount.com",
             ],
             projects = [p for p in [
                 branches.value(branch_selector = branches.selector.MAIN, value = "angle"),
@@ -127,6 +126,10 @@ luci.cq_group(
             acl.CQ_DRY_RUNNER,
             groups = "project-chromium-tryjob-access",
         ),
+        acl.entry(
+            acl.CQ_NEW_PATCHSET_RUN_TRIGGERER,
+            groups = "project-chromium-tryjob-access",
+        ),
     ],
     additional_modes = [
         cq.run_mode(
@@ -187,6 +190,10 @@ branches.cq_group(
         ),
         acl.entry(
             acl.CQ_DRY_RUNNER,
+            groups = "project-chromium-tryjob-access",
+        ),
+        acl.entry(
+            acl.CQ_NEW_PATCHSET_RUN_TRIGGERER,
             groups = "project-chromium-tryjob-access",
         ),
     ],

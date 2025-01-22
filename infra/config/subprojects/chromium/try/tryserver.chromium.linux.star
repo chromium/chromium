@@ -961,11 +961,27 @@ try_.builder(
 try_.builder(
     name = "tricium-metrics-analysis",
     executable = "recipe:tricium_metrics",
+    tryjob = try_.job(
+        custom_cq_run_modes = [cq.MODE_NEW_PATCHSET_RUN],
+        disable_reuse = True,
+        experiment_percentage = 100,
+        location_filters = [
+            cq.location_filter(path_regexp = r".*\.(json|xml)"),
+        ],
+    ),
 )
 
 try_.builder(
     name = "tricium-oilpan-analysis",
     executable = "recipe:tricium_oilpan",
+    tryjob = try_.job(
+        custom_cq_run_modes = [cq.MODE_NEW_PATCHSET_RUN],
+        disable_reuse = True,
+        experiment_percentage = 100,
+        location_filters = [
+            cq.location_filter(path_regexp = r".*\.(c|cc|cpp|h)"),
+        ],
+    ),
 )
 
 try_.gpu.optional_tests_builder(
