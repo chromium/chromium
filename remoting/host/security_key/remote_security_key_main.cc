@@ -90,11 +90,11 @@ int RemoteSecurityKeyMain(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
   remoting::InitHostLogging();
 
-#if defined(REMOTING_ENABLE_BREAKPAD)
+#if defined(REMOTING_ENABLE_CRASH_REPORTING)
   if (IsUsageStatsAllowed()) {
     InitializeCrashReporting();
   }
-#endif  // defined(REMOTING_ENABLE_BREAKPAD)
+#endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
 
   return StartRemoteSecurityKey();
 }

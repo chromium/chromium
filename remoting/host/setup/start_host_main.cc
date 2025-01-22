@@ -440,13 +440,13 @@ int StartHostMain(int argc, char** argv) {
     return 1;
   }
 
-#if defined(REMOTING_ENABLE_BREAKPAD)
+#if defined(REMOTING_ENABLE_CRASH_REPORTING)
   // We don't have a config file yet so we can't use IsUsageStatsAllowed(),
   // instead we can just check the command line parameter.
   if (params.enable_crash_reporting) {
     InitializeCrashReporting();
   }
-#endif  // defined(REMOTING_ENABLE_BREAKPAD)
+#endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
 
   // Provide SingleThreadTaskExecutor and threads for the
   // URLRequestContextGetter.

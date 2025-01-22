@@ -159,7 +159,7 @@ target("mac_app_bundle", "remoting_me2me_host") {
 
   # TODO(joedow): Re-enable or replace with Crashpad: crbug.com/637884.
   # if (is_chrome_branded && is_official_build) {
-  #   defines = [ "REMOTING_ENABLE_BREAKPAD" ]
+  #   defines = [ "REMOTING_ENABLE_CRASH_REPORTING" ]
   # }
 
   deps = [

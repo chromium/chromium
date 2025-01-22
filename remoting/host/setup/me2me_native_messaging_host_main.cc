@@ -91,14 +91,14 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
   // Required to find the ICU data file, used by some file_util routines.
   base::i18n::InitializeICU();
 
-#if defined(REMOTING_ENABLE_BREAKPAD)
-  // Initialize Breakpad as early as possible. On Mac the command-line needs to
-  // be initialized first, so that the preference for crash-reporting can be
-  // looked up in the config file.
+#if defined(REMOTING_ENABLE_CRASH_REPORTING)
+  // Initialize crash reporting as early as possible. On Mac the command-line
+  // needs to be initialized first, so that the preference for crash-reporting
+  // can be looked up in the config file.
   if (IsUsageStatsAllowed()) {
     InitializeCrashReporting();
   }
-#endif  // defined(REMOTING_ENABLE_BREAKPAD)
+#endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
 
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams("Me2Me");
 

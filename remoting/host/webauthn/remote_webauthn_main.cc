@@ -43,11 +43,11 @@ int RemoteWebAuthnMain(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
   InitHostLogging();
 
-#if defined(REMOTING_ENABLE_BREAKPAD)
+#if defined(REMOTING_ENABLE_CRASH_REPORTING)
   if (IsUsageStatsAllowed()) {
     InitializeCrashReporting();
   }
-#endif  // defined(REMOTING_ENABLE_BREAKPAD)
+#endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
 
   if (!IsLaunchedByTrustedProcess()) {
     LOG(ERROR) << "Current process is not launched by a trusted process.";
