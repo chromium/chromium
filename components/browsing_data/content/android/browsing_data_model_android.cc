@@ -76,7 +76,6 @@ void BrowsingDataModelAndroid::RemoveBrowsingData(
                      ScopedJavaGlobalRef<jobject>(java_callback)));
 }
 
-void BrowsingDataModelAndroid::Destroy(JNIEnv* env,
-                                       const JavaParamRef<jobject>& obj) {
+void BrowsingDataModelAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
