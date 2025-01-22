@@ -8850,21 +8850,6 @@
             ]
         }
     ],
-    "EnableASWebAuthenticationSession": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableASWebAuthenticationSession"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableCertManagementUIV2": [
         {
             "platforms": [
