@@ -58,6 +58,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -801,9 +802,29 @@ void CanonicalCookie::PostIncludeForRequestURL(
     const CookieOptions& options_used,
     CookieOptions::SameSiteCookieContext::ContextType
         cookie_inclusion_context_used) const {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Cookie.RequestSameSiteContext", cookie_inclusion_context_used,
-      CookieOptions::SameSiteCookieContext::ContextType::COUNT);
+  if (metrics_subsampler_.ShouldSample(0.001)) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Cookie.RequestSameSiteContext", cookie_inclusion_context_used,
+        CookieOptions::SameSiteCookieContext::ContextType::COUNT);
+
+    if (access_result.status.IsInclude()) {
+      UMA_HISTOGRAM_ENUMERATION("Cookie.IncludedRequestEffectiveSameSite",
+                                access_result.effective_same_site,
+                                CookieEffectiveSameSite::COUNT);
+    }
+
+    using ContextRedirectTypeBug1221316 = CookieOptions::SameSiteCookieContext::
+        ContextMetadata::ContextRedirectTypeBug1221316;
+
+    ContextRedirectTypeBug1221316 redirect_type_for_metrics =
+        options_used.same_site_cookie_context()
+            .GetMetadataForCurrentSchemefulMode()
+            .redirect_type_bug_1221316;
+    if (redirect_type_for_metrics != ContextRedirectTypeBug1221316::kUnset) {
+      UMA_HISTOGRAM_ENUMERATION("Cookie.CrossSiteRedirectType.Read",
+                                redirect_type_for_metrics);
+    }
+  }
 
   // For the metric, we only want to consider first party partitioned cookies.
   if (IsFirstPartyPartitioned()) {
@@ -811,24 +832,6 @@ void CanonicalCookie::PostIncludeForRequestURL(
         "Cookie.FirstPartyPartitioned.HasCrossSiteAncestor",
         cookie_inclusion_context_used ==
             CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE);
-  }
-
-  if (access_result.status.IsInclude()) {
-    UMA_HISTOGRAM_ENUMERATION("Cookie.IncludedRequestEffectiveSameSite",
-                              access_result.effective_same_site,
-                              CookieEffectiveSameSite::COUNT);
-  }
-
-  using ContextRedirectTypeBug1221316 = CookieOptions::SameSiteCookieContext::
-      ContextMetadata::ContextRedirectTypeBug1221316;
-
-  ContextRedirectTypeBug1221316 redirect_type_for_metrics =
-      options_used.same_site_cookie_context()
-          .GetMetadataForCurrentSchemefulMode()
-          .redirect_type_bug_1221316;
-  if (redirect_type_for_metrics != ContextRedirectTypeBug1221316::kUnset) {
-    UMA_HISTOGRAM_ENUMERATION("Cookie.CrossSiteRedirectType.Read",
-                              redirect_type_for_metrics);
   }
 
   if (access_result.status.HasWarningReason(

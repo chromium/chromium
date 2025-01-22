@@ -227,6 +227,8 @@ chromium-metrics-reviews@google.com.
 
     The metrics exists primarily to act as a denominator for
     Cookie.CrossSiteRedirectDowngradeChangesInclusion2.{AccessType}.
+
+    Read is subsampled to 1/1000.
   </summary>
   <token key="AccessType">
     <variant name="Read" summary="read for a request"/>
@@ -589,6 +591,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The value of the effective samesite for cookies that will be included in a
     request. Logged once per successful inclusion.
+
+    Subsampled to 1/1000.
   </summary>
 </histogram>
 
@@ -918,6 +922,8 @@ chromium-metrics-reviews@google.com.
     The same-site context of a request, i.e. the relationship between the
     request and the navigational environment. Logged on every request to access
     a cookie.
+
+    Subsampled to 1/1000.
   </summary>
 </histogram>
 
