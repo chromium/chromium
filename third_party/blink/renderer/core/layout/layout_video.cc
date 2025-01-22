@@ -32,8 +32,9 @@
 
 namespace blink {
 
-LayoutVideo::LayoutVideo(HTMLVideoElement* video) : LayoutMedia(video) {
-  SetNaturalSize(DefaultSize());
+LayoutVideo::LayoutVideo(HTMLVideoElement* video)
+    : LayoutMedia(video),
+      natural_dimensions_(PhysicalNaturalSizingInfo::MakeFixed(DefaultSize())) {
 }
 
 LayoutVideo::~LayoutVideo() = default;
@@ -57,12 +58,11 @@ void LayoutVideo::UpdateNaturalSize() {
   if (sizing_info.size.IsEmpty() && GetDocument().IsMediaDocument()) {
     return;
   }
-
-  if (sizing_info.size == NaturalSize()) {
+  if (sizing_info == natural_dimensions_) {
     return;
   }
+  natural_dimensions_ = sizing_info;
 
-  SetNaturalSize(sizing_info.size);
   SetIntrinsicLogicalWidthsDirty();
   SetNeedsLayoutAndFullPaintInvalidation(
       layout_invalidation_reason::kSizeChanged);
@@ -89,10 +89,9 @@ PhysicalNaturalSizingInfo LayoutVideo::GetNaturalDimensions() const {
       // If the video playback area is currently represented by the poster
       // image, the natural dimensions are that of the poster image.
       if (!ImageResource()->ErrorOccurred()) {
-        return cached_image_natural_dimensions_;
+        return LayoutImage::GetNaturalDimensions();
       }
       break;
-
     case kVideo:
       // Otherwise, the natural dimensions are that of the video.
       if (const auto* player = video->GetWebMediaPlayer()) {
@@ -116,17 +115,6 @@ void LayoutVideo::ImageChanged(WrappedImagePtr new_image,
                                CanDeferInvalidation defer) {
   NOT_DESTROYED();
   LayoutMedia::ImageChanged(new_image, defer);
-
-  // Cache the image intrinsic size so we can continue to use it to draw the
-  // image correctly even if we know the video intrinsic size but aren't able to
-  // draw video frames yet (we don't want to scale the poster to the video size
-  // without keeping aspect ratio). We do not need to check
-  // |ShouldDisplayPosterImage| because the image can be ready before we find
-  // out we actually need it.
-  cached_image_natural_dimensions_ = LayoutImage::GetNaturalDimensions();
-
-  // The intrinsic size is now that of the image, but in case we already had the
-  // intrinsic size of the video we call this here to restore the video size.
   UpdateNaturalSize();
 }
 

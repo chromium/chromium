@@ -159,20 +159,6 @@ NaturalSizingInfo LayoutImageResource::GetNaturalDimensions(
   return sizing_info;
 }
 
-gfx::SizeF LayoutImageResource::ImageSize(float multiplier) const {
-  if (!cached_image_)
-    return gfx::SizeF();
-  gfx::SizeF size(cached_image_->IntrinsicSize(
-      layout_object_->StyleRef().ImageOrientation()));
-  if (multiplier != 1 && HasIntrinsicSize()) {
-    size = ApplyClampedZoom(size, multiplier);
-  }
-  if (auto* layout_image = DynamicTo<LayoutImage>(*layout_object_)) {
-    size.Scale(layout_image->ImageDevicePixelRatio());
-  }
-  return size;
-}
-
 gfx::SizeF LayoutImageResource::ConcreteObjectSize(
     float multiplier,
     const gfx::SizeF& default_object_size) const {
