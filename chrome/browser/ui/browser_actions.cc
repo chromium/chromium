@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
@@ -318,28 +319,31 @@ void BrowserActions::InitializeBrowserActions() {
             kActionDevTools, IDS_DEV_TOOLS, IDS_DEV_TOOLS, kDeveloperToolsIcon)
             .Build());
 
-    root_action_item_->AddChild(
-        ChromeMenuAction(
-            base::BindRepeating(
-                [](Browser* browser, actions::ActionItem* item,
-                   actions::ActionInvocationContext context) {
-                  auto* bubble_controller =
-                      browser->browser_window_features()
-                          ->send_tab_to_self_toolbar_bubble_controller();
-                  if (bubble_controller->IsBubbleShowing()) {
-                    bubble_controller->HideBubble();
-                  } else {
-                    send_tab_to_self::ShowBubble(
-                        browser->tab_strip_model()->GetActiveWebContents());
-                  }
-                },
-                base::Unretained(browser)),
-            kActionSendTabToSelf, IDS_SEND_TAB_TO_SELF, IDS_SEND_TAB_TO_SELF,
-            kDevicesChromeRefreshIcon)
-            .SetEnabled(chrome::CanSendTabToSelf(browser))
-            .SetVisible(
-                !sharing_hub::SharingIsDisabledByPolicy(browser->profile()))
-            .Build());
+    if (send_tab_to_self::SendTabToSelfToolbarIconController::CanShowOnBrowser(
+            browser)) {
+      root_action_item_->AddChild(
+          ChromeMenuAction(
+              base::BindRepeating(
+                  [](Browser* browser, actions::ActionItem* item,
+                     actions::ActionInvocationContext context) {
+                    auto* bubble_controller =
+                        browser->browser_window_features()
+                            ->send_tab_to_self_toolbar_bubble_controller();
+                    if (bubble_controller->IsBubbleShowing()) {
+                      bubble_controller->HideBubble();
+                    } else {
+                      send_tab_to_self::ShowBubble(
+                          browser->tab_strip_model()->GetActiveWebContents());
+                    }
+                  },
+                  base::Unretained(browser)),
+              kActionSendTabToSelf, IDS_SEND_TAB_TO_SELF, IDS_SEND_TAB_TO_SELF,
+              kDevicesChromeRefreshIcon)
+              .SetEnabled(chrome::CanSendTabToSelf(browser))
+              .SetVisible(
+                  !sharing_hub::SharingIsDisabledByPolicy(browser->profile()))
+              .Build());
+    }
 
     root_action_item_->AddChild(
         ChromeMenuAction(base::BindRepeating(

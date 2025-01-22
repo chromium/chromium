@@ -30,6 +30,9 @@ class SendTabToSelfToolbarIconController
       const SendTabToSelfToolbarIconController&) = delete;
   ~SendTabToSelfToolbarIconController() override;
 
+  // Returns true if the toolbar button can be shown for the provided browser.
+  static bool CanShowOnBrowser(Browser* browser);
+
   // ReceivingUiHandler implementation.
   void DisplayNewEntries(
       const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&

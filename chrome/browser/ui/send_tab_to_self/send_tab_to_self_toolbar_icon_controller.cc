@@ -31,6 +31,11 @@ SendTabToSelfToolbarIconController::SendTabToSelfToolbarIconController(
     Profile* profile)
     : profile_(profile) {}
 
+// static
+bool SendTabToSelfToolbarIconController::CanShowOnBrowser(Browser* browser) {
+  return browser->is_type_normal();
+}
+
 void SendTabToSelfToolbarIconController::DisplayNewEntries(
     const std::vector<const SendTabToSelfEntry*>& new_entries) {
   // TODO(crbug.com/40180897): Any entries that were never shown are lost.
@@ -49,7 +54,7 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
   // appropriate browser.
   if (features::IsToolbarPinningEnabled()) {
     auto* browser = chrome::FindLastActiveWithProfile(profile_);
-    if (browser && browser->IsActive()) {
+    if (browser && browser->IsActive() && CanShowOnBrowser(browser)) {
       ShowToolbarButton(*new_entry, browser);
       return;
     }
@@ -116,8 +121,10 @@ void SendTabToSelfToolbarIconController::OnBrowserSetLastActive(
   }
 
   if (features::IsToolbarPinningEnabled()) {
-    ShowToolbarButton(*entry, browser);
-    pending_entry_ = nullptr;
+    if (CanShowOnBrowser(browser)) {
+      ShowToolbarButton(*entry, browser);
+      pending_entry_ = nullptr;
+    }
   } else {
     if (browser == chrome::FindBrowserWithProfile(profile_)) {
       ShowToolbarButton(*entry);
@@ -134,6 +141,7 @@ void SendTabToSelfToolbarIconController::ShowToolbarButton(
     auto* container = BrowserView::GetBrowserViewForBrowser(browser)
                           ->toolbar()
                           ->pinned_toolbar_actions_container();
+    CHECK(container);
     container->ShowActionEphemerallyInToolbar(kActionSendTabToSelf, true);
     auto* button = container->GetButtonFor(kActionSendTabToSelf);
     CHECK(button);
