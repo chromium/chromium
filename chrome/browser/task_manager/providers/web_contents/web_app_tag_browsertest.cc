@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTagIsolatedWebAppTest, IsolatedWebAppTaskCreated) {
               "<html><head><title>IWA Document Title</title></head></html>")
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
-                       app->TrustBundleAndInstall(profile()));
+                       app->Install(profile()));
   webapps::AppId app_id = url_info.app_id();
   MockWebContentsTaskManager task_manager;
   EXPECT_TRUE(task_manager.tasks().empty());
@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTagIsolatedWebAppTest,
               "<html><head><title>IWA Document Title</title></head></html>")
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
-                       app->TrustBundleAndInstall(profile()));
+                       app->Install(profile()));
   webapps::AppId app_id = url_info.app_id();
 
   MockWebContentsTaskManager task_manager;

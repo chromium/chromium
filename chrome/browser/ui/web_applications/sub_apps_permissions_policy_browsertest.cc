@@ -46,7 +46,7 @@ class SubAppsPermissionsPolicyBrowserTest
                                             .SetName("Parent apps test app")
                                             .SetVersion("1.0.0"))
              .BuildBundle()
-             ->TrustBundleAndInstall(profile());
+             ->Install(profile());
 
     parent_app_id_ = url_info.app_id();
 
@@ -58,7 +58,7 @@ class SubAppsPermissionsPolicyBrowserTest
                                   .SetVersion(installed_version.GetString()))
             .BuildBundle();
 
-    *bundle->TrustBundleAndInstall(profile());
+    *bundle->Install(profile());
 
     const WebApp* web_app =
         provider().registrar_unsafe().GetAppById(parent_app_id_);

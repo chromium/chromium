@@ -770,12 +770,6 @@ BundledIsolatedWebApp::FakeInstallPageState(Profile* profile) {
 }
 
 base::expected<IsolatedWebAppUrlInfo, std::string>
-BundledIsolatedWebApp::TrustBundleAndInstall(Profile* profile) {
-  TrustSigningKey();
-  return Install(profile);
-}
-
-base::expected<IsolatedWebAppUrlInfo, std::string>
 BundledIsolatedWebApp::InstallWithSource(Profile* profile,
                                          IsolatedWebAppInstallSource source,
                                          bool fake_install_page,

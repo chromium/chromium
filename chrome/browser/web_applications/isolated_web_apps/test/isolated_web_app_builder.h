@@ -395,10 +395,6 @@ class BundledIsolatedWebApp {
           IwaSourceBundleModeAndFileOp::kProdModeCopy,
       InstallationTraits&&... traits);
 
-  // TODO(crbug.com/390443309): Delete this
-  base::expected<IsolatedWebAppUrlInfo, std::string> TrustBundleAndInstall(
-      Profile* profile);
-
  private:
   WITH_TRAITS(InstallationTraits)
   base::expected<IsolatedWebAppUrlInfo, std::string> InstallWithSource(

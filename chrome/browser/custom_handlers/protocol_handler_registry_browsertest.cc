@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerIsolatedWebAppsTest,
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
       web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()).BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
-                       app->TrustBundleAndInstall(profile()));
+                       app->Install(profile()));
 
   Browser* browser = LaunchWebAppBrowserAndWait(url_info.app_id());
   content::WebContents* web_contents =

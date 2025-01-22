@@ -650,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUsbBrowserTest, ClaimInterface) {
               blink::mojom::PermissionsPolicyFeature::kUsb))
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
-                       app->TrustBundleAndInstall(profile()));
+                       app->Install(profile()));
 
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
@@ -730,7 +730,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
               blink::mojom::PermissionsPolicyFeature::kUsb))
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
-                       app->TrustBundleAndInstall(profile()));
+                       app->Install(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   const std::string permissions_policy = "";
@@ -767,7 +767,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
               blink::mojom::PermissionsPolicyFeature::kUsb))
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
-                       app->TrustBundleAndInstall(profile()));
+                       app->Install(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   const std::string permissions_policy = "usb 'self'";
@@ -806,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
               blink::mojom::PermissionsPolicyFeature::kUsb))
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
-                       app->TrustBundleAndInstall(profile()));
+                       app->Install(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   GURL non_app_url =
@@ -849,7 +849,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
               blink::mojom::PermissionsPolicyFeature::kUsb))
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
-                       app->TrustBundleAndInstall(profile()));
+                       app->Install(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   const std::string permissions_policy = "usb 'none'";
@@ -880,7 +880,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
               blink::mojom::PermissionsPolicyFeature::kUsb))
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
-                       app->TrustBundleAndInstall(profile()));
+                       app->Install(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   GURL non_app_url =
@@ -914,7 +914,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                            "web_apps/simple_isolated_app/usb_none.html")
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
-                       app->TrustBundleAndInstall(profile()));
+                       app->Install(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   GURL app_url = url_info.origin().GetURL().Resolve("/usb_none.html");
@@ -960,7 +960,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                            "web_apps/simple_isolated_app/usb_self.html")
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
-                       app->TrustBundleAndInstall(profile()));
+                       app->Install(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   GURL app_url = url_info.origin().GetURL().Resolve("/usb_self.html");
@@ -1003,7 +1003,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                            "web_apps/simple_isolated_app/usb_all.html")
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
-                       app->TrustBundleAndInstall(profile()));
+                       app->Install(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   GURL app_url = url_info.origin().GetURL().Resolve("/usb_all.html");
@@ -1044,7 +1044,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                   blink::mojom::PermissionsPolicyFeature::kCrossOriginIsolated))
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
-                       app->TrustBundleAndInstall(profile()));
+                       app->Install(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   // Create a fake device with protected class and grant permission.
@@ -1113,7 +1113,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
           .AddHtml("/empty.html", "Empty Page")
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
-                       app->TrustBundleAndInstall(profile()));
+                       app->Install(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   // Create a fake device with protected class and grant permission.

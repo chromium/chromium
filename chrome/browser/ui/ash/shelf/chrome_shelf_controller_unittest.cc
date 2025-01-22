@@ -1283,8 +1283,6 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app_bundle =
         web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
             .BuildBundle();
-    app_bundle->FakeInstallPageState(profile());
-    app_bundle->TrustSigningKey();
     const web_app::IsolatedWebAppUrlInfo url_info =
         app_bundle
             ->InstallWithSource(

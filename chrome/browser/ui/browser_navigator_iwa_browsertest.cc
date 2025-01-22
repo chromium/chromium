@@ -113,7 +113,7 @@ class BrowserNavigatorIwaTest : public BrowserNavigatorTest {
             .BuildBundle();
 
     url_info1_ = std::make_unique<web_app::IsolatedWebAppUrlInfo>(
-        *app1_->TrustBundleAndInstall(profile()));
+        *app1_->Install(profile()));
 
     app2_ =
         web_app::IsolatedWebAppBuilder(
@@ -121,7 +121,7 @@ class BrowserNavigatorIwaTest : public BrowserNavigatorTest {
             .BuildBundle();
 
     url_info2_ = std::make_unique<web_app::IsolatedWebAppUrlInfo>(
-        *app2_->TrustBundleAndInstall(profile()));
+        *app2_->Install(profile()));
   }
 
  protected:
