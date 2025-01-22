@@ -5,10 +5,8 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_POLICY_ISOLATED_WEB_APP_INSTALLER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_POLICY_ISOLATED_WEB_APP_INSTALLER_H_
 
-#include <memory>
 #include <string>
 
-#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -18,10 +16,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -120,15 +114,9 @@ class IwaInstaller {
   IwaInstaller& operator=(const IwaInstaller&) = delete;
 
  private:
-#if BUILDFLAG(IS_CHROMEOS)
-  void OnGetCacheFilePath(std::optional<base::FilePath> cache_file);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   void CreateTempFile(base::OnceClosure next_step_callback);
   void OnTempFileCreated(base::OnceClosure next_step_callback,
                          ScopedTempWebBundleFile bundle);
-
-  void InstallFromInternet();
 
   // Downloading of the update manifest of the current app.
   void DownloadUpdateManifest(
@@ -166,11 +154,6 @@ class IwaInstaller {
 
   std::unique_ptr<UpdateManifestFetcher> update_manifest_fetcher_;
   std::unique_ptr<IsolatedWebAppDownloader> bundle_downloader_;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Should be used only when `IsIwaBundleCacheEnabled()` is true.
-  std::unique_ptr<IwaCacheClient> cache_client_;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::WeakPtrFactory<IwaInstaller> weak_factory_{this};
 };
