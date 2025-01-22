@@ -72,7 +72,7 @@ export class AutofillManagerImpl implements AutofillManagerProxy {
   }
 
   removeAddress(guid: string) {
-    chrome.autofillPrivate.removeEntry(guid);
+    chrome.autofillPrivate.removeAddress(guid);
   }
 
   setAutofillSyncToggleEnabled(enabled: boolean) {

@@ -1828,7 +1828,7 @@ Called by update_extension_histograms.py.-->
   <int value="1013" label="AUTOFILLPRIVATE_SAVEADDRESS"/>
   <int value="1014" label="AUTOFILLPRIVATE_GETADDRESSCOMPONENTS"/>
   <int value="1015" label="AUTOFILLPRIVATE_SAVECREDITCARD"/>
-  <int value="1016" label="AUTOFILLPRIVATE_REMOVEENTRY"/>
+  <int value="1016" label="DELETED_AUTOFILLPRIVATE_REMOVEENTRY"/>
   <int value="1017" label="DELETED_AUTOFILLPRIVATE_VALIDATEPHONENUMBERS"/>
   <int value="1018" label="DELETED_AUTOFILLPRIVATE_MASKCREDITCARD"/>
   <int value="1019" label="INSTANCEID_GETID"/>
@@ -2789,6 +2789,8 @@ Called by update_extension_histograms.py.-->
   <int value="1917" label="USERSCRIPTS_EXECUTE"/>
   <int value="1918" label="EXPERIMENTALAIDATA_PRIVATE_GETAIDATAWITHSPECIFIER"/>
   <int value="1919" label="AUTOTESTPRIVATE_OVERRIDELOBSTERRESPONSE"/>
+  <int value="1920" label="AUTOFILLPRIVATE_REMOVEADDRESS"/>
+  <int value="1921" label="AUTOFILLPRIVATE_REMOVEPAYMENTSENTITY"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">
