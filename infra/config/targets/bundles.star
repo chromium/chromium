@@ -6334,6 +6334,7 @@ targets.bundle(
 targets.bundle(
     name = "trees_in_viz_fyi_gtests",
     targets = [
+        "blink_unittests",
         "cc_unittests",
     ],
     mixins = [
@@ -6344,6 +6345,11 @@ targets.bundle(
         ),
     ],
     per_test_modifications = {
+        "blink_unittests": targets.mixin(
+            args = [
+                "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.blink_unittests.filter",
+            ],
+        ),
         "cc_unittests": targets.mixin(
             args = [
                 "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.cc_unittests.filter",

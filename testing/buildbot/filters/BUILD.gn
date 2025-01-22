@@ -61,6 +61,12 @@ bundle_data("blink_platform_unittests_filters_bundle_data") {
               "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
 
+source_set("blink_unittests_filters") {
+  testonly = true
+
+  data = [ "//testing/buildbot/filters/trees_in_viz.blink_unittests.filter" ]
+}
+
 source_set("blink_web_tests_filter") {
   testonly = true
 
