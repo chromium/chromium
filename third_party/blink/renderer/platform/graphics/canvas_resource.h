@@ -493,7 +493,10 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
   scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() override;
 
  private:
-  bool IsOverlayCandidate() const final { return true; }
+  bool IsOverlayCandidate() const final {
+    return front_buffer_shared_image_->usage().Has(
+        gpu::SHARED_IMAGE_USAGE_SCANOUT);
+  }
   bool UsesAcceleratedRaster() const final { return true; }
   const gpu::SyncToken GetSyncTokenWithOptionalVerification(
       bool needs_verified_token) override;

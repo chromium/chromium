@@ -979,11 +979,13 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
       },
       base::RetainedRef(this));
 
+  const bool is_overlay_candidate =
+      back_buffer_shared_image_->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       back_buffer_shared_image_, GetSyncToken(), shared_texture_id, image_info,
       context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
       std::move(release_callback), /*supports_display_compositing=*/true,
-      /*is_overlay_candidate=*/true);
+      /*is_overlay_candidate=*/is_overlay_candidate);
 }
 
 scoped_refptr<gpu::ClientSharedImage>
