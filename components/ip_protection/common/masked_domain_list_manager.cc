@@ -40,28 +40,6 @@ MaskedDomainListManager::~MaskedDomainListManager() = default;
 MaskedDomainListManager::MaskedDomainListManager(
     const MaskedDomainListManager&) {}
 
-MaskedDomainListManager MaskedDomainListManager::CreateForTesting(
-    const std::map<std::string, std::set<std::string>>& first_party_map) {
-  auto allow_list = MaskedDomainListManager(
-      IpProtectionProxyBypassPolicy::kFirstPartyToTopLevelFrame);
-
-  auto mdl = masked_domain_list::MaskedDomainList();
-
-  for (auto const& [domain, properties] : first_party_map) {
-    ResourceOwner& resourceOwner = *mdl.add_resource_owners();
-    for (auto property : properties) {
-      resourceOwner.add_owned_properties(property);
-    }
-    Resource& resource = *resourceOwner.add_owned_resources();
-    resource.set_domain(domain);
-  }
-
-  allow_list.UpdateMaskedDomainList(
-      mdl,
-      /*exclusion_list=*/std::vector<std::string>());
-  return allow_list;
-}
-
 bool MaskedDomainListManager::IsEnabled() const {
   return base::FeatureList::IsEnabled(network::features::kMaskedDomainList);
 }

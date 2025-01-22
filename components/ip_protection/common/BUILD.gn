@@ -334,6 +334,7 @@ source_set("ip_protection_proxy_delegate_unittest") {
     ":masked_domain_list_manager",
     "//base",
     "//base/test:test_support",
+    "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
     "//net",
     "//net:gtest_util",
     "//net:test_support",
