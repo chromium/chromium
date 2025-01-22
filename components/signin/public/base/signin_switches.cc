@@ -157,6 +157,10 @@ BASE_FEATURE(kEnableIdentityInAuthError,
              "EnableIdentityInAuthError",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableErrorBadgeOnIdentityDisc,
+             "EnableErrorBadgeOnIdentityDisc",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableASWebAuthenticationSession,
              "EnableASWebAuthenticationSession",
              base::FEATURE_DISABLED_BY_DEFAULT);

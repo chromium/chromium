@@ -606,51 +606,6 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
   [self assertSnackbarNotShown];
 }
 
-#pragma mark - Test Error Badge
-
-- (void)testErrorBadge {
-  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
-  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  // Verify the error badge shows on the ADP.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kNTPFeedHeaderIdentityDiscBadge)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  [self selectIdentityDiscAndVerify];
-
-  // Check the error button is displayed.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kAccountMenuErrorActionButtonId)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  // Tap on the error action button.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kAccountMenuErrorActionButtonId)]
-      performAction:grey_tap()];
-  // Verify that the passphrase view was opened.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kSyncEncryptionPassphraseTableViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  // Enter the passphrase.
-  [SigninEarlGreyUI submitSyncPassphrase:kPassphrase];
-  // Entering the passphrase closes the view.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kSyncEncryptionPassphraseTableViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_nil()];
-
-  [self closeAccountMenu];
-
-  [self assertAccountMenuIsNotShown];
-
-  // Verify the error badge on the ADP disappears.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kNTPFeedHeaderIdentityDiscBadge)]
-      assertWithMatcher:grey_notVisible()];
-}
-
 // Tests remove account from the edit accounts menu.
 - (void)testEditAccountsListRemoveAccount {
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];

@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller+Testing.h"
@@ -85,7 +86,10 @@ TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedIn) {
 
 // Tests the header view when the user is signed in.
 TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedIn_AccountMenu) {
-  base::test::ScopedFeatureList scoped_feature_list{kIdentityDiscAccountMenu};
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kIdentityDiscAccountMenu, switches::kEnableErrorBadgeOnIdentityDisc},
+      {});
 
   [view_controller_ loadViewIfNeeded];
 

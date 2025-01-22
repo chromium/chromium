@@ -765,7 +765,8 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 - (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError
                                 name:(NSString*)name
                                email:(NSString*)email {
-  CHECK(base::FeatureList::IsEnabled(kIdentityDiscAccountMenu));
+  CHECK(
+      base::FeatureList::IsEnabled(switches::kEnableErrorBadgeOnIdentityDisc));
 
   if (hasAccountError == _hasAccountError) {
     return;
@@ -855,7 +856,8 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 - (void)updateIdentityDiscAccessibilityLabelWithName:(NSString*)name
                                                email:(NSString*)email {
   NSString* accountButtonLabel;
-  if (!base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+  if (!base::FeatureList::IsEnabled(
+          switches::kEnableErrorBadgeOnIdentityDisc)) {
     if (name) {
       accountButtonLabel = l10n_util::GetNSStringF(
           IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL,

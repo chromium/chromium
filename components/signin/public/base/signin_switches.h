@@ -125,6 +125,10 @@ bool IsImprovedSettingsUIOnDesktopEnabled();
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableIdentityInAuthError);
 
+// Show the error badge on the identity disc in the NTP.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableErrorBadgeOnIdentityDisc);
+
 // Features to enable using the ASWebAuthenticationSession to add accounts to
 // device.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

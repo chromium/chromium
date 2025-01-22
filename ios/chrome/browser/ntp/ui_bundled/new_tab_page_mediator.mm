@@ -13,6 +13,7 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/search/search.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
@@ -21,6 +22,16 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
+#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
+#import "ios/chrome/browser/ntp/ui_bundled/feed_control_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/feed_wrapper_view_controller.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_consumer.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -33,16 +44,6 @@
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
-#import "ios/chrome/browser/ntp/ui_bundled/feed_control_delegate.h"
-#import "ios/chrome/browser/ntp/ui_bundled/feed_wrapper_view_controller.h"
-#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
-#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_consumer.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
@@ -392,7 +393,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 }
 
 - (void)updateAccountErrorBadge {
-  if (!base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+  if (!base::FeatureList::IsEnabled(
+          switches::kEnableErrorBadgeOnIdentityDisc)) {
     return;
   }
   id<SystemIdentity> identity =
