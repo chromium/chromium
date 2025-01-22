@@ -2373,6 +2373,20 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="SETTING_DO_NOT_FRAGMENT"/>
 </enum>
 
+<!-- LINT.IfChange(QuicSessionKeyMismatchedField) -->
+
+<enum name="QuicSessionKeyMismatchedField">
+  <int value="0" label="kPrivacyMode"/>
+  <int value="1" label="kSocketTag"/>
+  <int value="2" label="kProxyChain"/>
+  <int value="3" label="kSessionUsage"/>
+  <int value="4" label="kNetworkAnonymizationKey"/>
+  <int value="5" label="kSecureDnsPolicy"/>
+  <int value="6" label="kRequireDNSHttpsAlpn"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/quic/quic_session_pool.cc:QuicSessionKeyMismatchedField) -->
+
 <!-- LINT.IfChange(QuicSessionKeyPartialMatchResult) -->
 
 <enum name="QuicSessionKeyPartialMatchResult">

@@ -582,12 +582,14 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // Returns whether we have an existing session to the same server id as
   // `session_key`. This is used to determine whether we have an existing
   // session to the host but with different `QuicSessionKey`.
-  bool HasActiveSessionToServerId(const QuicSessionKey& session_key) const;
+  std::optional<QuicSessionKey> GetActiveSessionToServerId(
+      const QuicSessionKey& session_key) const;
 
   // Returns whether we have an active job to the same server id as
   // `session_key`. This is used to determine whether we have an in-flight
   // attempt to the host but with different `QuicSessionKey`
-  bool HasActiveJobToServerId(const QuicSessionKey& session_key) const;
+  std::optional<QuicSessionKey> GetActiveJobToServerId(
+      const QuicSessionKey& session_key) const;
 
   int CreateSessionSync(QuicSessionAliasKey key,
                         quic::ParsedQuicVersion quic_version,
@@ -761,6 +763,9 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   const quic::ParsedQuicVersionVector& supported_versions() const {
     return params_.supported_versions;
   }
+
+  void CheckQuicSessionKeyMismatch(const QuicSessionKey& session_key,
+                                   url::SchemeHostPort destination) const;
 
   // Whether QUIC is known to have ever worked on current network. This is true
   // when QUIC is expected to work in general, rather than whether QUIC was
