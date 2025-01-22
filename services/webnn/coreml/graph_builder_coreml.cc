@@ -1795,10 +1795,27 @@ GraphBuilderCoreml::AddOperationForBatchNormalization(
         "dimension.");
   }
 
+  uint64_t input_operand_id = operation.input_operand_id;
+  // Rank of 5 causes crashes when not targeting `MLComputeUnitsCPUOnly`, see
+  // crbug.com/391566721, so reshape to 4 to perform batch norm, then reshape
+  // back.
+  if (device_ != mojom::CreateContextOptions::Device::kCpu &&
+      input_operand_info.dimensions.size() == 5) {
+    std::array<uint32_t, 4> flattened_dims{
+        input_operand_info.dimensions[0], input_operand_info.dimensions[1],
+        input_operand_info.dimensions[2],
+        input_operand_info.dimensions[3] * input_operand_info.dimensions[4]};
+    ASSIGN_OR_RETURN(input_operand_id,
+                     GenerateInternalOperandInfo(
+                         input_operand_info.mil_data_type, flattened_dims));
+    RETURN_IF_ERROR(AddOperationForReshape(operation.input_operand_id,
+                                           input_operand_id, block));
+  }
+
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpBatchNormalizationTypeName);
-  RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
-                                      operation.input_operand_id));
+  RETURN_IF_ERROR(
+      SetInputFromOperand(*op->mutable_inputs(), kOpParamX, input_operand_id));
 
   static constexpr char kParamMean[] = "mean";
   static constexpr char kParamVariance[] = "variance";
@@ -1821,8 +1838,18 @@ GraphBuilderCoreml::AddOperationForBatchNormalization(
       *op->mutable_inputs(), kOpParamEpsilon,
       CreateFloatValue(input_operand_info.mil_data_type, operation.epsilon));
 
-  CoreML::Specification::MILSpec::NamedValueType& output = *op->add_outputs();
-  PopulateNamedValueType(operation.output_operand_id, output);
+  if (input_operand_id != operation.input_operand_id) {
+    ASSIGN_OR_RETURN(uint64_t output_operand_id,
+                     GenerateInternalOperandInfo(
+                         input_operand_info.mil_data_type,
+                         GetOperandInfo(input_operand_id).dimensions));
+    PopulateNamedValueType(output_operand_id, *op->add_outputs());
+    RETURN_IF_ERROR(AddOperationForReshape(output_operand_id,
+                                           operation.output_operand_id, block));
+
+  } else {
+    PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  }
   return base::ok();
 }
 
