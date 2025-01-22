@@ -21,6 +21,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.Objects;
@@ -34,6 +35,10 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
 
     private final @ColorInt int mDefaultScrimColor;
     private final ObservableSupplierImpl<Integer> mFullScrimColorSupplier =
+            new ObservableSupplierImpl<>(ScrimProperties.INVALID_COLOR);
+    private final ObservableSupplierImpl<Integer> mStatusBarColorSupplier =
+            new ObservableSupplierImpl<>(ScrimProperties.INVALID_COLOR);
+    private final ObservableSupplierImpl<Integer> mNavigationBarColorSupplier =
             new ObservableSupplierImpl<>(ScrimProperties.INVALID_COLOR);
     private final ObservableSupplierImpl<Float> mStatusBarScrimFractionSupplier =
             new ObservableSupplierImpl<>(0f);
@@ -70,19 +75,45 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
     ScrimMediator(@NonNull Runnable scrimHiddenRunnable, @ColorInt int defaultScrimColor) {
         mScrimHiddenRunnable = scrimHiddenRunnable;
         mDefaultScrimColor = defaultScrimColor;
+
+        mFullScrimColorSupplier.addObserver((ignored) -> updateCompositeSuppliers());
+        mStatusBarScrimFractionSupplier.addObserver((ignored) -> updateCompositeSuppliers());
+        mNavigationBarScrimFractionSupplier.addObserver((ignored) -> updateCompositeSuppliers());
     }
 
-    /* package */ @ColorInt
-    int getCurrentCompositeColor() {
+    private void updateCompositeSuppliers() {
+        mStatusBarColorSupplier.set(
+                calculateCurrentCompositeColor(ScrimProperties.AFFECTS_STATUS_BAR));
+        mNavigationBarColorSupplier.set(
+                calculateCurrentCompositeColor(ScrimProperties.AFFECTS_NAVIGATION_BAR));
+    }
+
+    private @ColorInt int calculateCurrentCompositeColor(
+            ReadableBooleanPropertyKey isAffectedProperty) {
         if (mModel == null) return ScrimProperties.INVALID_COLOR;
 
-        @ColorInt int color = mModel.get(ScrimProperties.BACKGROUND_COLOR);
+        boolean isAffected = mModel.get(isAffectedProperty);
+        if (!isAffected) return ScrimProperties.INVALID_COLOR;
+
         float alpha = mModel.get(ScrimProperties.ALPHA);
+        if (MathUtils.areFloatsEqual(alpha, 0f)) {
+            return ScrimProperties.INVALID_COLOR;
+        }
+
+        @ColorInt int color = mModel.get(ScrimProperties.BACKGROUND_COLOR);
         return ColorUtils.applyAlphaFloat(color, alpha);
     }
 
     /* package */ ObservableSupplier<Integer> getFullScrimColorSupplier() {
         return mFullScrimColorSupplier;
+    }
+
+    /* package */ ObservableSupplier<Integer> getStatusBarColorSupplier() {
+        return mStatusBarColorSupplier;
+    }
+
+    /* package */ ObservableSupplier<Integer> getNavigationBarColorSupplier() {
+        return mNavigationBarColorSupplier;
     }
 
     /* package */ ObservableSupplier<Float> getStatusBarScrimFractionSupplier() {

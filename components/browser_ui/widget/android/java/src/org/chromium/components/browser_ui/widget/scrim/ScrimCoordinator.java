@@ -92,23 +92,35 @@ public class ScrimCoordinator {
                 };
     }
 
-    /**
-     * Returns the current color being applied by the current scrim. If there is no active scrim,
-     * then a fully transparent color will be returned. This is combination of the background color
-     * and the currently fraction/alpha the scrim is being applied at.
-     */
-    public @ColorInt int getCurrentCompositeColor() {
-        return mMediator.getCurrentCompositeColor();
-    }
-
+    @Deprecated
     public ObservableSupplier<Integer> getFullScrimColorSupplier() {
         return mMediator.getFullScrimColorSupplier();
     }
 
+    /**
+     * Returns the current color being applied by the current scrim to the status bar. If there is
+     * no active scrim or the scrim doesn't affect the status bar, then a fully transparent color
+     * will be returned.
+     */
+    public ObservableSupplier<Integer> getStatusBarColorSupplier() {
+        return mMediator.getStatusBarColorSupplier();
+    }
+
+    /**
+     * Returns the current color being applied by the current scrim to the nav bar. If there is no
+     * active scrim or the scrim doesn't affect the nav bar, then a fully transparent color will be
+     * returned.
+     */
+    public ObservableSupplier<Integer> getNavigationBarColorSupplier() {
+        return mMediator.getNavigationBarColorSupplier();
+    }
+
+    @Deprecated
     public ObservableSupplier<Float> getStatusBarScrimFractionSupplier() {
         return mMediator.getStatusBarScrimFractionSupplier();
     }
 
+    @Deprecated
     public ObservableSupplier<Float> getNavigationBarScrimFractionSupplier() {
         return mMediator.getNavigationBarScrimFractionSupplier();
     }

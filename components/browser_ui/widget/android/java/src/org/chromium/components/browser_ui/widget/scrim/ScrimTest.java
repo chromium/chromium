@@ -79,6 +79,9 @@ public class ScrimTest {
 
     private final PayloadCallbackHelper<Integer> mScrimColorCallbackHelper =
             new PayloadCallbackHelper<>();
+    private final PayloadCallbackHelper<Integer> mStatusBarColorHelper =
+            new PayloadCallbackHelper<>();
+    private final PayloadCallbackHelper<Integer> mNavBarColorHelper = new PayloadCallbackHelper<>();
     private final PayloadCallbackHelper<Float> mStatusFractionCallback =
             new PayloadCallbackHelper<>();
     private final PayloadCallbackHelper<Float> mNavFractionCallback = new PayloadCallbackHelper<>();
@@ -116,6 +119,12 @@ public class ScrimTest {
                             .getFullScrimColorSupplier()
                             .addObserver(mScrimColorCallbackHelper::notifyCalled);
                     mScrimCoordinator
+                            .getStatusBarColorSupplier()
+                            .addObserver(mStatusBarColorHelper::notifyCalled);
+                    mScrimCoordinator
+                            .getNavigationBarColorSupplier()
+                            .addObserver(mNavBarColorHelper::notifyCalled);
+                    mScrimCoordinator
                             .getStatusBarScrimFractionSupplier()
                             .addObserver(mStatusFractionCallback::notifyCalled);
                     mScrimCoordinator
@@ -135,6 +144,8 @@ public class ScrimTest {
                 });
         // Wait for all the posted initial observations come back before test cases start.
         mScrimColorCallbackHelper.getOnlyPayloadBlocking();
+        mStatusBarColorHelper.getOnlyPayloadBlocking();
+        mNavBarColorHelper.getOnlyPayloadBlocking();
         mStatusFractionCallback.getOnlyPayloadBlocking();
         mNavFractionCallback.getOnlyPayloadBlocking();
     }
@@ -330,12 +341,16 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testAffectsStatusBar_enabled() throws TimeoutException {
-        int callCount = mStatusFractionCallback.getCallCount();
+        int fractionCallCount = mStatusFractionCallback.getCallCount();
+        int colorCallCount = mStatusBarColorHelper.getCallCount();
         showScrim(buildModel(true, true, Color.RED), false);
         assertEquals(
                 1f,
-                mStatusFractionCallback.getPayloadByIndexBlocking(callCount).floatValue(),
+                mStatusFractionCallback.getPayloadByIndexBlocking(fractionCallCount).floatValue(),
                 MathUtils.EPSILON);
+        assertEquals(
+                Color.RED,
+                mStatusBarColorHelper.getPayloadByIndexBlocking(colorCallCount).intValue());
     }
 
     @Test
@@ -364,7 +379,8 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testAffectsNavigationBar_enabled() throws TimeoutException {
-        int callCount = mNavFractionCallback.getCallCount();
+        int fractionCallCount = mNavFractionCallback.getCallCount();
+        int colorCallCount = mNavBarColorHelper.getCallCount();
         PropertyModel model =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -373,14 +389,17 @@ public class ScrimTest {
                                     .with(CLICK_DELEGATE, mClickDelegate)
                                     .with(VISIBILITY_CALLBACK, mVisibilityChangeCallback)
                                     .with(AFFECTS_NAVIGATION_BAR, true)
+                                    .with(BACKGROUND_COLOR, Color.RED)
                                     .build();
                         });
         showScrim(model, false);
 
         assertEquals(
                 1f,
-                mNavFractionCallback.getPayloadByIndexBlocking(callCount).floatValue(),
+                mNavFractionCallback.getPayloadByIndexBlocking(fractionCallCount).floatValue(),
                 MathUtils.EPSILON);
+        assertEquals(
+                Color.RED, mNavBarColorHelper.getPayloadByIndexBlocking(colorCallCount).intValue());
     }
 
     @Test
