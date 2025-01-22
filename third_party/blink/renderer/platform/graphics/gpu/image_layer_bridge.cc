@@ -236,9 +236,9 @@ bool ImageLayerBridge::PrepareTransferableResource(
 
     // Copy from SkImage into SharedMemory owned by |resource|.
     auto dst_mapping = resource.shared_image->Map();
-    if (!sk_image->readPixels(dst_info,
-                              dst_mapping->GetMemoryForPlane(0).data(),
-                              dst_info.minRowBytes(), 0, 0)) {
+    if (!sk_image->readPixels(/*context=*/nullptr,
+                              dst_mapping->GetSkPixmapForPlane(0, dst_info), 0,
+                              0)) {
       return false;
     }
 
