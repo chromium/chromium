@@ -162,8 +162,6 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
                          list_example.Clone());
   local_state()->SetString(prefs::kIosSafetyCheckManagerPasswordCheckResult,
                            "Example");
-  local_state()->SetString(
-      tab_resumption_prefs::kTabResumptionLastOpenedTabURLPref, "Example");
   local_state()->SetDict(prefs::kIosPreRestoreAccountInfo,
                          dict_example.Clone());
 
@@ -184,13 +182,6 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
             NameForSafetyCheckState(PasswordSafetyCheckState::kDefault));
   EXPECT_EQ(local_state()->GetString(
                 prefs::kIosSafetyCheckManagerPasswordCheckResult),
-            "Example");
-
-  EXPECT_EQ(pref_service()->GetString(
-                tab_resumption_prefs::kTabResumptionLastOpenedTabURLPref),
-            std::string());
-  EXPECT_EQ(local_state()->GetString(
-                tab_resumption_prefs::kTabResumptionLastOpenedTabURLPref),
             "Example");
 
   EXPECT_EQ(pref_service()->GetDict(prefs::kIosPreRestoreAccountInfo).size(),
@@ -219,13 +210,6 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   EXPECT_EQ(local_state()->GetString(
                 prefs::kIosSafetyCheckManagerPasswordCheckResult),
             NameForSafetyCheckState(PasswordSafetyCheckState::kDefault));
-
-  EXPECT_EQ(pref_service()->GetString(
-                tab_resumption_prefs::kTabResumptionLastOpenedTabURLPref),
-            "Example");
-  EXPECT_EQ(local_state()->GetString(
-                tab_resumption_prefs::kTabResumptionLastOpenedTabURLPref),
-            std::string());
 
   EXPECT_EQ(pref_service()->GetDict(prefs::kIosPreRestoreAccountInfo),
             dict_example);

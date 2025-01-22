@@ -622,8 +622,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Prefs migrated to profile prefs.
   registry->RegisterListPref(prefs::kIosLatestMostVisitedSites,
                              PrefRegistry::LOSSY_PREF);
-  registry->RegisterStringPref(
-      tab_resumption_prefs::kTabResumptionLastOpenedTabURLPref, std::string());
   registry->RegisterTimePref(prefs::kTabPickupLastDisplayedTime, base::Time());
   registry->RegisterStringPref(prefs::kTabPickupLastDisplayedURL,
                                std::string());
@@ -1088,13 +1086,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
-  // Added 01/2024.
-  // Note that this key is an obsolete LocalState pref, it's here because it was
-  // moved from LocalState pref to Profile pref and before clearing it the
-  // Profile pref needs to be updated.
-  MigrateStringPrefFromLocalStatePrefsToProfilePrefs(
-      tab_resumption_prefs::kTabResumptionLastOpenedTabURLPref, prefs);
 
   // Added 02/2024.
   MigrateListPrefFromLocalStatePrefsToProfilePrefs(
