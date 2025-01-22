@@ -29,6 +29,7 @@ class PasswordChangeDelegateMock final : public PasswordChangeDelegate {
               (),
               (const override));
   MOCK_METHOD(void, Stop, (), (override));
+  MOCK_METHOD(void, Restart, (), (override));
   MOCK_METHOD(void, OpenPasswordChangeTab, (), (override));
   MOCK_METHOD(void,
               OnPasswordFormSubmission,

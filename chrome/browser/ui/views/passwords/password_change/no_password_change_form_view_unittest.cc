@@ -77,9 +77,18 @@ TEST_F(NoPasswordChangeFormViewTest, BubbleLayout) {
 
 TEST_F(NoPasswordChangeFormViewTest, CancelClick) {
   CreateAndShowView();
-  ASSERT_TRUE(view()->GetOkButton());
+  ASSERT_TRUE(view()->GetCancelButton());
 
   EXPECT_CALL(*password_change_delegate(), Stop);
   views::test::ButtonTestApi(view()->GetCancelButton())
+      .NotifyClick(ui::test::TestEvent());
+}
+
+TEST_F(NoPasswordChangeFormViewTest, RestartClick) {
+  CreateAndShowView();
+  ASSERT_TRUE(view()->GetOkButton());
+
+  EXPECT_CALL(*password_change_delegate(), Restart);
+  views::test::ButtonTestApi(view()->GetOkButton())
       .NotifyClick(ui::test::TestEvent());
 }

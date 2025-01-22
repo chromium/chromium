@@ -24,7 +24,8 @@ NoPasswordChangeFormBubbleController::~NoPasswordChangeFormBubbleController() {
 }
 
 void NoPasswordChangeFormBubbleController::Restart() {
-  // TODO(crbug.com/381055148): Implement logic.
+  CHECK(password_change_delegate_);
+  password_change_delegate_->Restart();
 }
 
 void NoPasswordChangeFormBubbleController::Cancel() {
