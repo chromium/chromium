@@ -229,6 +229,29 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeContainerCondition(
       stream);
 }
 
+// <if-test> = style( <style-query> )
+// <style-query>     = not <style-in-parens>
+//                   | <style-in-parens> [ [ and <style-in-parens> ]* | [ or
+//                   <style-in-parens> ]* ] | <style-feature>
+// <style-in-parens> = ( <style-query> )
+//                   | ( <style-feature> )
+//                   | <general-enclosed>
+const MediaQueryExpNode* ContainerQueryParser::ConsumeIfTest(
+    CSSParserTokenStream& stream) {
+  if (stream.Peek().GetType() == kFunctionToken &&
+      stream.Peek().FunctionId() == CSSValueID::kStyle) {
+    CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    stream.ConsumeWhitespace();
+    if (const MediaQueryExpNode* query =
+            ConsumeFeatureQuery(stream, StyleFeatureSet())) {
+      guard.Release();
+      stream.ConsumeWhitespace();
+      return MediaQueryExpNode::Function(query, AtomicString("style"));
+    }
+  }
+  return nullptr;
+}
+
 const MediaQueryExpNode* ContainerQueryParser::ConsumeFeatureQuery(
     CSSParserTokenStream& stream,
     const FeatureSet& feature_set) {

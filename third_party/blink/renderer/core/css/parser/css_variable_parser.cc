@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/css_syntax_component.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
+#include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
@@ -218,6 +219,70 @@ static bool ConsumeAttributeReference(CSSParserTokenStream& stream,
   return stream.AtEnd();
 }
 
+// <if-condition> = <boolean-expr[ <if-test> ]> | else
+// <if-test> =
+//   supports( [ <supports-condition> | <ident> : <declaration-value> ] ) |
+//   media( <media-query> ) |
+//   style( <style-query> )
+// https://www.w3.org/TR/css-values-5/#if-notation
+static bool ConsumeIfCondition(CSSParserTokenStream& stream,
+                               const CSSParserContext& context) {
+  if (stream.Peek().Id() == CSSValueID::kElse) {
+    stream.ConsumeIncludingWhitespace();
+    return true;
+  }
+
+  ContainerQueryParser parser(context);
+
+  const MediaQueryExpNode* exp_node = parser.ConsumeIfTest(stream);
+  if (!exp_node) {
+    return false;
+  }
+
+  stream.ConsumeWhitespace();
+  return true;
+}
+
+// <if()> = if( [ <if-condition> : <declaration-value>? ; ]*
+//              <if-condition> : <declaration-value>? ;? )
+// <if-condition> = <boolean-expr[ <if-test> ]> | else
+// <if-test> =
+//   supports( [ <supports-condition> | <ident> : <declaration-value> ] ) |
+//   media( <media-query> ) |
+//   style( <style-query> )
+// https://www.w3.org/TR/css-values-5/#if-notation
+static bool ConsumeIfReference(CSSParserTokenStream& stream,
+                               bool& has_references,
+                               bool& has_font_units,
+                               bool& has_root_font_units,
+                               bool& has_line_height_units,
+                               const CSSParserContext& context) {
+  CSSParserTokenStream::BlockGuard guard(stream);
+
+  stream.ConsumeWhitespace();
+  while (ConsumeIfCondition(stream, context)) {
+    if (stream.Peek().GetType() != kColonToken) {
+      return false;
+    }
+    stream.ConsumeIncludingWhitespace();
+    // Parse <declaration-value>
+    if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false,
+                              /*comma_ends_declaration=*/false, has_references,
+                              has_font_units, has_root_font_units,
+                              has_line_height_units, context)) {
+      return false;
+    }
+    if (stream.AtEnd()) {
+      return true;
+    }
+    if (stream.Peek().GetType() != kSemicolonToken) {
+      return false;
+    }
+    stream.ConsumeIncludingWhitespace();
+  }
+  return stream.AtEnd();
+}
+
 static bool ConsumeInternalAppearanceAutoBaseSelect(
     CSSParserTokenStream& stream,
     bool& has_references,
@@ -358,6 +423,17 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
           if (!ConsumeInternalAppearanceAutoBaseSelect(
                   stream, has_references, has_font_units, has_root_font_units,
                   has_line_height_units, context)) {
+            error = true;
+          }
+          has_references = true;
+          continue;
+        case CSSValueID::kIf:
+          if (!RuntimeEnabledFeatures::CSSInlineIfForStyleQueriesEnabled()) {
+            break;
+          }
+          if (!ConsumeIfReference(stream, has_references, has_font_units,
+                                  has_root_font_units, has_line_height_units,
+                                  context)) {
             error = true;
           }
           has_references = true;

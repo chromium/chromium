@@ -15,10 +15,11 @@ namespace blink {
 
 class ContainerQueryParserTest : public PageTestBase {
  public:
-  String ParseQuery(String string) {
+  template <typename Functor>
+  String ParseQuery(String string, Functor& container_query_parser_func) {
     const auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
-    const MediaQueryExpNode* node =
-        ContainerQueryParser(*context).ParseCondition(string);
+    ContainerQueryParser parser(*context);
+    const MediaQueryExpNode* node = container_query_parser_func(string, parser);
     if (!node) {
       return g_null_atom;
     }
@@ -62,6 +63,10 @@ class ContainerQueryParserTest : public PageTestBase {
 };
 
 TEST_F(ContainerQueryParserTest, ParseQuery) {
+  auto container_query_parser_func = [](String string,
+                                        ContainerQueryParser& parser) {
+    return parser.ParseCondition(string);
+  };
   const char* tests[] = {
       "(width)",
       "(min-width: 100px)",
@@ -81,25 +86,89 @@ TEST_F(ContainerQueryParserTest, ParseQuery) {
   };
 
   for (const char* test : tests) {
-    EXPECT_EQ(String(test), ParseQuery(test));
+    EXPECT_EQ(String(test), ParseQuery(test, container_query_parser_func));
   }
 
   // Escaped (unnecessarily but validly) characters in the identifier.
-  EXPECT_EQ("(width)", ParseQuery("(\\77 idth)"));
+  EXPECT_EQ("(width)", ParseQuery("(\\77 idth)", container_query_parser_func));
   // Repro case for b/341640868
-  EXPECT_EQ("(min-width: 100px)", ParseQuery("(min\\2d width: 100px)"));
+  EXPECT_EQ("(min-width: 100px)",
+            ParseQuery("(min\\2d width: 100px)", container_query_parser_func));
 
   // Invalid:
-  EXPECT_EQ("<unknown>", ParseQuery("(min-width)"));
-  EXPECT_EQ("<unknown>", ParseQuery("((width) or (width) and (width))"));
-  EXPECT_EQ("<unknown>", ParseQuery("((width) and (width) or (width))"));
-  EXPECT_EQ("<unknown>", ParseQuery("((width) or (height) and (width))"));
-  EXPECT_EQ("<unknown>", ParseQuery("((width) and (height) or (width))"));
-  EXPECT_EQ("<unknown>", ParseQuery("((width) and (height) 50px)"));
-  EXPECT_EQ("<unknown>", ParseQuery("((width) and (height 50px))"));
-  EXPECT_EQ("<unknown>", ParseQuery("((width) and 50px (height))"));
-  EXPECT_EQ("<unknown>", ParseQuery("foo(width)"));
-  EXPECT_EQ("<unknown>", ParseQuery("size(width)"));
+  EXPECT_EQ("<unknown>",
+            ParseQuery("(min-width)", container_query_parser_func));
+  EXPECT_EQ("<unknown>", ParseQuery("((width) or (width) and (width))",
+                                    container_query_parser_func));
+  EXPECT_EQ("<unknown>", ParseQuery("((width) and (width) or (width))",
+                                    container_query_parser_func));
+  EXPECT_EQ("<unknown>", ParseQuery("((width) or (height) and (width))",
+                                    container_query_parser_func));
+  EXPECT_EQ("<unknown>", ParseQuery("((width) and (height) or (width))",
+                                    container_query_parser_func));
+  EXPECT_EQ("<unknown>", ParseQuery("((width) and (height) 50px)",
+                                    container_query_parser_func));
+  EXPECT_EQ("<unknown>", ParseQuery("((width) and (height 50px))",
+                                    container_query_parser_func));
+  EXPECT_EQ("<unknown>", ParseQuery("((width) and 50px (height))",
+                                    container_query_parser_func));
+  EXPECT_EQ("<unknown>", ParseQuery("foo(width)", container_query_parser_func));
+  EXPECT_EQ("<unknown>",
+            ParseQuery("size(width)", container_query_parser_func));
+}
+
+TEST_F(ContainerQueryParserTest, ParseStyleQuery) {
+  auto container_query_parser_func = [](String string,
+                                        ContainerQueryParser& parser) {
+    CSSParserTokenStream stream(string);
+    return parser.ConsumeIfTest(stream);
+  };
+  const char* valid_tests[] = {
+      // clang-format off
+    "style(--x)",
+    "style(((--x)))",
+     "style((--x) and (--y: 10))",
+     "style((--x) and ((--y) or (not (--z))))",
+    "style(not (--x))",
+    "style(--x: var(--y))",
+    "style((--y: green) and (--x: 3))",
+    "style(((--x: 3px) and (--y: 3)) or (not (--z: 6px)))",
+      // clang-format on
+  };
+
+  for (const char* test : valid_tests) {
+    EXPECT_EQ(String(test), ParseQuery(test, container_query_parser_func));
+  }
+
+  const char* invalid_parse_time_tests[] = {
+      // clang-format off
+    "(min-width: 100px)",
+    "not (width)",
+    "(width) and (height)",
+    "(((style(--x))))",
+    "not style(--x)",
+    "style(width)",
+    "style(invalid)",
+    "(style(--x: 3px) and style(--y: 3)) or (not style(--z: 6px))",
+      // clang-format on
+  };
+
+  for (const char* test : invalid_parse_time_tests) {
+    EXPECT_FALSE(ParseQuery(test, container_query_parser_func));
+  }
+
+  const char* invalid_tests[] = {
+      // clang-format off
+    "style(style(--x))",
+    "style(var(--x))",
+    "style(attr(data-foo))",
+    "style(var(--x): green) and style(var(--x): 3)",
+      // clang-format on
+  };
+
+  for (const char* test : invalid_tests) {
+    EXPECT_EQ("<unknown>", ParseQuery(test, container_query_parser_func));
+  }
 }
 
 // This test exists primarily to not lose coverage of

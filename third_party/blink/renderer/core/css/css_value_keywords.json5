@@ -1974,5 +1974,9 @@
     // alternate
     "once",
     "state",
+
+    // inline conditional
+    "if",
+    "else",
   ],
 }
