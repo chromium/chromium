@@ -798,11 +798,12 @@ Status WebViewImpl::SendBidiCommand(base::Value::Dict command,
   }
   base::Value expected_id = maybe_cmd_id->Clone();
 
-  std::string* maybe_channel = command.FindString("channel");
+  std::string* maybe_channel = command.FindString("goog:channel");
   if (maybe_channel == nullptr || !maybe_channel->starts_with("/")) {
-    return Status{kUnknownError,
-                  "BiDi command does not contain a non-empty string 'channel' "
-                  "with a leading '/'"};
+    return Status{
+        kUnknownError,
+        "BiDi command does not contain a non-empty string 'goog:channel' "
+        "with a leading '/'"};
   }
   bidi_tracker_guard.Tracker().SetChannelSuffix(*maybe_channel);
 

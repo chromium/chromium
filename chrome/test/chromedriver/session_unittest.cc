@@ -176,14 +176,15 @@ TEST(Session, OnBidiResponseChan) {
   session.AddBidiConnection(512, base::BindRepeating(&SaveTo, &received),
                             base::BindRepeating([] {}));
   base::Value::Dict payload;
-  payload.Set("channel", std::string("abc/512") + Session::kChannelSuffix);
+  payload.Set("goog:channel", std::string("abc/512") + Session::kChannelSuffix);
   payload.Set("data", "ok");
   EXPECT_TRUE(StatusOk(session.OnBidiResponse(std::move(payload))));
   std::optional<base::Value> data_parsed =
       base::JSONReader::Read(received, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(data_parsed);
   ASSERT_TRUE(data_parsed->is_dict());
-  EXPECT_THAT(data_parsed->GetDict().FindString("channel"), Pointee(Eq("abc")));
+  EXPECT_THAT(data_parsed->GetDict().FindString("goog:channel"),
+              Pointee(Eq("abc")));
   EXPECT_THAT(data_parsed->GetDict().FindString("data"), Pointee(Eq("ok")));
 }
 
@@ -194,14 +195,14 @@ TEST(Session, OnBidiResponseNoChan) {
   session.AddBidiConnection(512, base::BindRepeating(&SaveTo, &received),
                             base::BindRepeating([] {}));
   base::Value::Dict payload;
-  payload.Set("channel", std::string("/512") + Session::kNoChannelSuffix);
+  payload.Set("goog:channel", std::string("/512") + Session::kNoChannelSuffix);
   payload.Set("data", "ok");
   EXPECT_TRUE(StatusOk(session.OnBidiResponse(std::move(payload))));
   std::optional<base::Value> data_parsed =
       base::JSONReader::Read(received, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(data_parsed);
   ASSERT_TRUE(data_parsed->is_dict());
-  EXPECT_EQ(nullptr, data_parsed->GetDict().FindString("channel"));
+  EXPECT_EQ(nullptr, data_parsed->GetDict().FindString("goog:channel"));
   EXPECT_THAT(data_parsed->GetDict().FindString("data"), Pointee(Eq("ok")));
 }
 
@@ -224,7 +225,7 @@ TEST(Session, OnBidiResponseUnexpectedChannel1) {
   session.AddBidiConnection(512, base::BindRepeating(&SaveTo, &received),
                             base::BindRepeating([] {}));
   base::Value::Dict payload;
-  payload.Set("channel", "x/512/unexpected");
+  payload.Set("goog:channel", "x/512/unexpected");
   payload.Set("data", "ok");
   EXPECT_TRUE(session.OnBidiResponse(std::move(payload)).IsError());
   EXPECT_EQ("", received);
@@ -237,7 +238,7 @@ TEST(Session, OnBidiResponseUnexpectedChannel2) {
   session.AddBidiConnection(512, base::BindRepeating(&SaveTo, &received),
                             base::BindRepeating([] {}));
   base::Value::Dict payload;
-  payload.Set("channel", "unexpected");
+  payload.Set("goog:channel", "unexpected");
   payload.Set("data", "ok");
   EXPECT_TRUE(session.OnBidiResponse(std::move(payload)).IsError());
   EXPECT_EQ("", received);
@@ -250,7 +251,7 @@ TEST(Session, OnBidiResponseUnknownConnection) {
   session.AddBidiConnection(136, base::BindRepeating(&SaveTo, &received),
                             base::BindRepeating([] {}));
   base::Value::Dict payload;
-  payload.Set("channel", std::string("/5") + Session::kNoChannelSuffix);
+  payload.Set("goog:channel", std::string("/5") + Session::kNoChannelSuffix);
   payload.Set("data", "ok");
   // Response must be accepted as it is addressed to a closed connection.
   // However no connection should actually receive it
@@ -269,7 +270,7 @@ TEST(Session, OnBidiResponseRemovedConnection) {
                             base::BindRepeating([] {}));
   session.RemoveBidiConnection(1);
   base::Value::Dict payload;
-  payload.Set("channel", std::string("/1") + Session::kNoChannelSuffix);
+  payload.Set("goog:channel", std::string("/1") + Session::kNoChannelSuffix);
   payload.Set("data", "ok");
   // Response must be accepted as it is addressed to a closed connection.
   // However no connection should actually receive it
@@ -286,7 +287,7 @@ TEST(Session, OnBidiResponseAfterCloseAllConnections) {
                             base::BindRepeating([] {}));
   session.CloseAllConnections();
   base::Value::Dict payload;
-  payload.Set("channel", std::string("/5") + Session::kNoChannelSuffix);
+  payload.Set("goog:channel", std::string("/5") + Session::kNoChannelSuffix);
   payload.Set("data", "ok");
   // Response must be accepted as it is addressed to a closed connection.
   // However no connection should actually receive it
@@ -307,7 +308,7 @@ TEST(Session, OnBidiResponseCorrectConnection) {
   session.AddBidiConnection(3, base::BindRepeating(&SaveTo, &received3),
                             base::BindRepeating([] {}));
   base::Value::Dict payload;
-  payload.Set("channel", std::string("abc/2") + Session::kChannelSuffix);
+  payload.Set("goog:channel", std::string("abc/2") + Session::kChannelSuffix);
   payload.Set("data", "ok");
   EXPECT_TRUE(StatusOk(session.OnBidiResponse(std::move(payload))));
   EXPECT_EQ("", received1);
@@ -316,7 +317,8 @@ TEST(Session, OnBidiResponseCorrectConnection) {
       base::JSONReader::Read(received2, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(data_parsed);
   ASSERT_TRUE(data_parsed->is_dict());
-  EXPECT_THAT(data_parsed->GetDict().FindString("channel"), Pointee(Eq("abc")));
+  EXPECT_THAT(data_parsed->GetDict().FindString("goog:channel"),
+              Pointee(Eq("abc")));
   EXPECT_THAT(data_parsed->GetDict().FindString("data"), Pointee(Eq("ok")));
 }
 
@@ -327,13 +329,13 @@ TEST(Session, OnBidiResponseFormat) {
   session.AddBidiConnection(512, base::BindRepeating(&SaveTo, &received),
                             base::BindRepeating([] {}));
   base::Value::Dict payload;
-  payload.Set("channel", std::string("abc/512") + Session::kChannelSuffix);
+  payload.Set("goog:channel", std::string("abc/512") + Session::kChannelSuffix);
   payload.Set("string_field", "some_String");
   payload.Set("integer_field", 1);
   payload.Set("float_field", 1.234);
   EXPECT_TRUE(StatusOk(session.OnBidiResponse(std::move(payload))));
   EXPECT_EQ(
-      "{\"channel\":\"abc\",\"float_field\":1.234,\"integer_field\":1,\"string_"
-      "field\":\"some_String\"}",
+      "{\"float_field\":1.234,\"goog:channel\":\"abc\",\"integer_field\":1,"
+      "\"string_field\":\"some_String\"}",
       received);
 }

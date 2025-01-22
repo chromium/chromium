@@ -4612,7 +4612,7 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
         self._driver.RemoveCredential(authenticatorId, credentialId)
 
   def testAddCredentialBase64Errors(self):
-    # Test that AddCredential checks UrlBase64 parameteres.
+    # Test that AddCredential checks UrlBase64 parameters.
     self._driver.Load(self.GetHttpsUrlForFile(
         '/chromedriver/webauthn_test.html', 'chromedriver.test'))
 
@@ -5769,7 +5769,7 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
       bytes('<span>Ready, Steady, Go!</span>', 'utf-8'))
     self._http_server.SetDataForPath('/main.html',
       bytes('<iframe src="%s">' % remote_url, 'utf-8'))
-    # It was reproted that the test with 2 internal iterations fails twice in a
+    # It was reported that the test with 2 internal iterations fails twice in a
     # row with 2% rate on some Mac builders. This corresponds to 0.92 success
     # rate for a single iteration.
     # If we make 15 internal iterations the chance that two consecutive runs
@@ -7812,7 +7812,7 @@ class PureBidiTest(ChromeDriverBaseTestWithWebServer):
       'method': 'browsingContext.handleUserPrompt',
       'params': {
           'context': context_id,
-          'acccpt': True,
+          'accept': True,
       }
     })
     conn.WaitForResponse(command_id)
@@ -7873,7 +7873,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
       }
     }
     if channel is not None:
-      command['channel'] = channel
+      command['goog:channel'] = channel
     if id is not None:
       command['id'] = id
     return conn.PostCommand(command)
@@ -8057,6 +8057,21 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     resp = conn.WaitForResponse(cmd_id1, channel="abc")
     self.assertEqual(9, resp['result']['value'])
 
+  def testLegacyChannel(self):
+    conn = self.createWebSocketConnection()
+    context_id = self.getContextId(conn, 0)
+    self.assertIsNotNone(context_id)
+
+    cmd_id = conn.PostCommand({
+      'id': 10006,
+      'channel': 'some_legacy_channel',
+      'method': 'browsingContext.getTree',
+      'params': {}
+    })
+
+    with self.assertRaises(chromedriver.InvalidArgument):
+      conn.WaitForResponse(cmd_id)
+
   def testMultipleConnections(self):
     conn1 = self.createWebSocketConnection()
     context_id = self.getContextId(conn1, 0)
@@ -8137,7 +8152,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
           'events': [
               'browsingContext.load']}}
     if channel is not None:
-      command['channel'] = channel
+      command['goog:channel'] = channel
     return conn.SendCommand(command, channel=channel)
 
   def navigateTo(self, conn, url, context_id=None, channel=None):
@@ -8150,7 +8165,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
             'wait': 'complete',
             'context': context_id}}
     if channel is not None:
-      command['channel'] = channel
+      command['goog:channel'] = channel
     return conn.SendCommand(command, channel=channel)
 
   def navigateSomewhere(self, conn, context_id=None, channel=None):
@@ -8170,7 +8185,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     events = conn.TakeEvents()
     # The event for about:blank is also possible
     self.assertLessEqual(1, len(events))
-    self.assertFalse('channel' in events[0])
+    self.assertFalse('goog:channel' in events[0])
     self.assertEqual('browsingContext.load', events[0]['method'])
 
   def testEventChannel(self):
@@ -8184,7 +8199,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     events = conn.TakeEvents()
     # The event for about:blank is also possible
     self.assertLessEqual(1, len(events))
-    self.assertEqual('abc', events[0]['channel'])
+    self.assertEqual('abc', events[0]['goog:channel'])
     self.assertEqual('browsingContext.load', events[0]['method'])
 
   def testEventChannelAndNoChannel(self):
@@ -8197,18 +8212,18 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     self.navigateSomewhere(conn, context_id)
 
     all_events = conn.TakeEvents()
-    events = [evt for evt in all_events if 'channel' not in evt]
+    events = [evt for evt in all_events if 'goog:channel' not in evt]
     events_x = [evt for evt in all_events
-               if 'channel' in evt and evt['channel'] == 'x']
+               if 'goog:channel' in evt and evt['goog:channel'] == 'x']
 
     # The event for about:blank is also possible
     self.assertLessEqual(1, len(events))
-    self.assertFalse('channel' in events[0])
+    self.assertFalse('goog:channel' in events[0])
     self.assertEqual('browsingContext.load', events[0]['method'])
 
     # The event for about:blank is also possible
     self.assertLessEqual(1, len(events_x))
-    self.assertEqual('x', events_x[0]['channel'])
+    self.assertEqual('x', events_x[0]['goog:channel'])
     self.assertEqual('browsingContext.load', events[0]['method'])
 
   def testEventConnections(self):
@@ -8229,7 +8244,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual(0, len(events1))
     # The event for about:blank is also possible
     self.assertLessEqual(1, len(events2))
-    self.assertFalse('channel' in events2[0])
+    self.assertFalse('goog:channel' in events2[0])
     self.assertEqual('browsingContext.load', events2[0]['method'])
 
   def testBrowserCrashWhileWaitingForEvents(self):
@@ -8239,7 +8254,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     self.assertIsNotNone(context_id)
 
     command = {
-        'method': 'cdp.sendCommand',
+        'method': 'goog:cdp.sendCommand',
         'params': {
           'method': 'Browser.crash',
           'params': {}}}

@@ -27,6 +27,8 @@
 #include "chrome/test/chromedriver/session.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::ContainsRegex;
+
 TEST(SessionCommandsTest, ExecuteGetTimeouts) {
   Session session("id");
   base::Value::Dict params;
@@ -709,4 +711,55 @@ TEST(SessionCommandsTest, ConfigureSession_unhandledPromptBehaviorDict) {
       "{\"alert\":\"accept\",\"beforeUnload\":\"accept\",\"confirm\":"
       "\"dismiss\",\"prompt\":\"ignore\"}",
       json);
+}
+
+TEST(SessionCommandsTest, ForwardBidiCommand_noBidiCommand) {
+  BrowserInfo binfo;
+  MockChrome* chrome = new MockChrome(binfo);
+  Session session("id", std::unique_ptr<Chrome>(chrome));
+
+  base::Value::Dict command = base::test::ParseJsonDict(
+      R"({
+        "connectionId": 1,
+      })");
+
+  Status status = ForwardBidiCommand(&session, command, nullptr);
+  ASSERT_EQ(kUnknownError, status.code()) << status.message();
+  EXPECT_THAT(status.message(),
+              ContainsRegex("bidiCommand is missing in params"));
+}
+
+TEST(SessionCommandsTest, ForwardBidiCommand_noConnectionId) {
+  BrowserInfo binfo;
+  MockChrome* chrome = new MockChrome(binfo);
+  Session session("id", std::unique_ptr<Chrome>(chrome));
+
+  base::Value::Dict command = base::test::ParseJsonDict(
+      R"({
+        "bidiCommand": {}
+      })");
+
+  Status status = ForwardBidiCommand(&session, command, nullptr);
+  ASSERT_EQ(kUnknownCommand, status.code()) << status.message();
+  EXPECT_THAT(status.message(),
+              ContainsRegex("connectionId is missing in params"));
+}
+
+TEST(SessionCommandsTest, ForwardBidiCommand_legacyChannel) {
+  BrowserInfo binfo;
+  MockChrome* chrome = new MockChrome(binfo);
+  Session session("id", std::unique_ptr<Chrome>(chrome));
+
+  base::Value::Dict command = base::test::ParseJsonDict(
+      R"({
+        "connectionId": 1,
+        "bidiCommand": {
+          "channel": "SOME_LEGACY_CHANNEL",
+        }
+      })");
+
+  Status status = ForwardBidiCommand(&session, command, nullptr);
+  ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
+  EXPECT_THAT(status.message(),
+              ContainsRegex("`channel` parameter is deprecated"));
 }
