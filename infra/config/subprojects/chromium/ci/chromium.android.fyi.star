@@ -565,6 +565,11 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.content_unittests.filter",
                 ],
             ),
+            "gl_tests_validating": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p_10.gl_tests.filter",
+                ],
+            ),
             "perfetto_unittests": targets.mixin(
                 args = [
                     # TODO(crbug.com/40201873): Fix the failed test
