@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_undefined_unsignedlonglongenforcerange.h"
@@ -73,20 +72,7 @@ constexpr uint64_t UndefinedLimitValue<uint64_t>() {
 
 GPUSupportedLimits::GPUSupportedLimits(const wgpu::SupportedLimits& limits)
     : limits_(limits.limits) {
-  for (auto* chain = limits.nextInChain; chain; chain = chain->nextInChain) {
-    switch (chain->sType) {
-      case (wgpu::SType::DawnExperimentalSubgroupLimits): {
-        auto* t = static_cast<wgpu::DawnExperimentalSubgroupLimits*>(
-            limits.nextInChain);
-        subgroup_limits_ = *t;
-        subgroup_limits_.nextInChain = nullptr;
-        subgroup_limits_initialized_ = true;
-        break;
-      }
-      default:
-        NOTREACHED();
-    }
-  }
+  DCHECK_EQ(limits.nextInChain, nullptr);
 }
 
 // static
@@ -158,21 +144,5 @@ bool GPUSupportedLimits::Populate(
   }
 SUPPORTED_LIMITS(X)
 #undef X
-
-unsigned GPUSupportedLimits::minSubgroupSize() const {
-  // Return the undefined limits value if subgroup limits is not acquired.
-  if (!subgroup_limits_initialized_) {
-    return UndefinedLimitValue<unsigned>();
-  }
-  return subgroup_limits_.minSubgroupSize;
-}
-
-unsigned GPUSupportedLimits::maxSubgroupSize() const {
-  // Return the undefined limits value if subgroup limits is not acquired.
-  if (!subgroup_limits_initialized_) {
-    return UndefinedLimitValue<unsigned>();
-  }
-  return subgroup_limits_.maxSubgroupSize;
-}
 
 }  // namespace blink
