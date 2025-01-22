@@ -34,7 +34,7 @@
 
 namespace base {
 
-typedef HistogramBase::Count Count;
+typedef HistogramBase::Count32 Count32;
 typedef HistogramBase::Sample32 Sample32;
 
 namespace {
@@ -70,7 +70,7 @@ class SampleVectorIterator : public SampleCountIterator {
   }
   void Get(Sample32* min,
            int64_t* max,
-           HistogramBase::Count* count) override {
+           HistogramBase::Count32* count) override {
     DCHECK(!Done());
     *min = bucket_ranges_->range(index_);
     *max = strict_cast<int64_t>(bucket_ranges_->range(index_ + 1));
@@ -131,7 +131,7 @@ SampleVectorBase::SampleVectorBase(uint64_t id,
 
 SampleVectorBase::~SampleVectorBase() = default;
 
-void SampleVectorBase::Accumulate(Sample32 value, Count count) {
+void SampleVectorBase::Accumulate(Sample32 value, Count32 count) {
   const size_t bucket_index = GetBucketIndex(value);
 
   // Handle the single-sample case.
@@ -155,12 +155,12 @@ void SampleVectorBase::Accumulate(Sample32 value, Count count) {
   }
 
   // Handle the multi-sample case.
-  Count new_bucket_count =
+  Count32 new_bucket_count =
       subtle::NoBarrier_AtomicIncrement(&counts_at(bucket_index), count);
   IncreaseSumAndCount(strict_cast<int64_t>(count) * value, count);
 
   // TODO(bcwhite) Remove after crbug.com/682680.
-  Count old_bucket_count = new_bucket_count - count;
+  Count32 old_bucket_count = new_bucket_count - count;
   bool record_negative_sample =
       (new_bucket_count >= 0) != (old_bucket_count >= 0) && count > 0;
   if (record_negative_sample) [[unlikely]] {
@@ -168,11 +168,11 @@ void SampleVectorBase::Accumulate(Sample32 value, Count count) {
   }
 }
 
-Count SampleVectorBase::GetCount(Sample32 value) const {
+Count32 SampleVectorBase::GetCount(Sample32 value) const {
   return GetCountAtIndex(GetBucketIndex(value));
 }
 
-Count SampleVectorBase::TotalCount() const {
+Count32 SampleVectorBase::TotalCount() const {
   // Handle the single-sample case.
   SingleSample sample = single_sample().Load();
   if (sample.count != 0) {
@@ -181,7 +181,7 @@ Count SampleVectorBase::TotalCount() const {
 
   // Handle the multi-sample case.
   if (counts().has_value() || MountExistingCountsStorage()) {
-    Count count = 0;
+    Count32 count = 0;
     // TODO(danakj): In C++23 we can skip the `counts_span` lvalue and iterate
     // over `counts().value()` directly without creating a dangling reference.
     span<const HistogramBase::AtomicCount> counts_span = counts().value();
@@ -195,7 +195,7 @@ Count SampleVectorBase::TotalCount() const {
   return 0;
 }
 
-Count SampleVectorBase::GetCountAtIndex(size_t bucket_index) const {
+Count32 SampleVectorBase::GetCountAtIndex(size_t bucket_index) const {
   DCHECK(bucket_index < counts_size());
 
   // Handle the single-sample case.
@@ -290,7 +290,7 @@ bool SampleVectorBase::AddSubtractImpl(SampleCountIterator* iter,
     return true;
   }
 
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
   size_t dest_index = GetDestinationBucketIndexAndCount(*iter, &count);
   if (dest_index == SIZE_MAX) {
     return false;
@@ -340,7 +340,7 @@ bool SampleVectorBase::AddSubtractImpl(SampleCountIterator* iter,
 
 size_t SampleVectorBase::GetDestinationBucketIndexAndCount(
     SampleCountIterator& iter,
-    HistogramBase::Count* count) {
+    HistogramBase::Count32* count) {
   Sample32 min;
   int64_t max;
 
@@ -447,7 +447,7 @@ void SampleVectorBase::MountCountsStorageAndMoveSingleSample() {
     AutoLock lock(counts_lock.Get());
     if (counts_data_.load(std::memory_order_relaxed) == nullptr) {
       // Create the actual counts storage while the above lock is acquired.
-      span<HistogramBase::Count> counts = CreateCountsStorageWhileLocked();
+      span<HistogramBase::Count32> counts = CreateCountsStorageWhileLocked();
       // Point |counts()| to the newly created storage. This is done while
       // locked to prevent possible concurrent calls to CreateCountsStorage
       // but, between that call and here, other threads could notice the
@@ -488,7 +488,7 @@ bool SampleVector::MountExistingCountsStorage() const {
 
 std::string SampleVector::GetAsciiHeader(std::string_view histogram_name,
                                          int32_t flags) const {
-  Count sample_count = TotalCount();
+  Count32 sample_count = TotalCount();
   std::string output;
   StrAppend(&output, {"Histogram: ", histogram_name, " recorded ",
                       NumberToString(sample_count), " samples"});
@@ -505,7 +505,7 @@ std::string SampleVector::GetAsciiHeader(std::string_view histogram_name,
 }
 
 std::string SampleVector::GetAsciiBody() const {
-  Count sample_count = TotalCount();
+  Count32 sample_count = TotalCount();
 
   // Prepare to normalize graphical rendering of bucket contents.
   double max_size = 0;
@@ -535,7 +535,7 @@ std::string SampleVector::GetAsciiBody() const {
   std::string output;
   // Output the actual histogram graph.
   for (uint32_t i = 0; i < bucket_count(); ++i) {
-    Count current = GetCountAtIndex(i);
+    Count32 current = GetCountAtIndex(i);
     remaining -= current;
     std::string range = GetSimpleAsciiBucketRange(bucket_ranges()->range(i));
     output.append(range);
@@ -549,7 +549,7 @@ std::string SampleVector::GetAsciiBody() const {
       output.append("... \n");
       continue;  // No reason to plot emptiness.
     }
-    Count current_size = round(current * scaling_factor);
+    Count32 current_size = round(current * scaling_factor);
     WriteAsciiBucketGraph(current_size, kLineLength, &output);
     WriteAsciiBucketContext(past, current, remaining, i, &output);
     output.append("\n");
@@ -560,9 +560,9 @@ std::string SampleVector::GetAsciiBody() const {
 }
 
 double SampleVector::GetPeakBucketSize() const {
-  Count max = 0;
+  Count32 max = 0;
   for (uint32_t i = 0; i < bucket_count(); ++i) {
-    Count current = GetCountAtIndex(i);
+    Count32 current = GetCountAtIndex(i);
     if (current > max) {
       max = current;
     }
@@ -571,7 +571,7 @@ double SampleVector::GetPeakBucketSize() const {
 }
 
 void SampleVector::WriteAsciiBucketContext(int64_t past,
-                                           Count current,
+                                           Count32 current,
                                            int64_t remaining,
                                            uint32_t current_bucket_index,
                                            std::string* output) const {

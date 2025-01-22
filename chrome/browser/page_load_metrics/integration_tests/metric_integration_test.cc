@@ -293,7 +293,7 @@ void MetricIntegrationTest::ExpectUniqueUMAWithinRange(
 void MetricIntegrationTest::ExpectUniqueUMABucketCount(
     std::string_view metric_name,
     base::HistogramBase::Sample32 sample,
-    base::HistogramBase::Count count) {
+    base::HistogramBase::Count32 count) {
   histogram_tester_->ExpectBucketCount(metric_name, sample, count);
 }
 

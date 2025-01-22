@@ -53,7 +53,7 @@ class SampleMapIterator : public SampleCountIterator {
 
   void Get(HistogramBase::Sample32* min,
            int64_t* max,
-           HistogramBase::Count* count) override {
+           HistogramBase::Count32* count) override {
     DCHECK(!Done());
     *min = iter_->first;
     *max = int64_t{iter_->first} + 1;
@@ -84,7 +84,7 @@ class SampleMapIterator : public SampleCountIterator {
     }
   }
 
-  HistogramBase::Count Load() const {
+  HistogramBase::Count32 Load() const {
     if constexpr (kUseAtomicOps) {
       return iter_->second->load(std::memory_order_relaxed);
     } else {
@@ -92,7 +92,7 @@ class SampleMapIterator : public SampleCountIterator {
     }
   }
 
-  HistogramBase::Count Exchange() const
+  HistogramBase::Count32 Exchange() const
     requires support_extraction
   {
     if constexpr (kUseAtomicOps) {

@@ -31,7 +31,7 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
  public:
   using SampleToCountMap =
       std::map<HistogramBase::Sample32,
-               raw_ptr<std::atomic<HistogramBase::Count>, CtnExperimental>>;
+               raw_ptr<std::atomic<HistogramBase::Count32>, CtnExperimental>>;
 
   // Constructs a persistent sample map using a PersistentHistogramAllocator
   // as the data source for persistent records.
@@ -46,9 +46,9 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
 
   // HistogramSamples:
   void Accumulate(HistogramBase::Sample32 value,
-                  HistogramBase::Count count) override;
-  HistogramBase::Count GetCount(HistogramBase::Sample32 value) const override;
-  HistogramBase::Count TotalCount() const override;
+                  HistogramBase::Count32 count) override;
+  HistogramBase::Count32 GetCount(HistogramBase::Sample32 value) const override;
+  HistogramBase::Count32 TotalCount() const override;
   std::unique_ptr<SampleCountIterator> Iterator() const override;
   std::unique_ptr<SampleCountIterator> ExtractingIterator() override;
   bool IsDefinitelyEmpty() const override;
@@ -70,17 +70,17 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
       HistogramBase::Sample32 value);
 
  protected:
-  // Performs arithemetic. |op| is ADD or SUBTRACT.
+  // Performs arithmetic. |op| is ADD or SUBTRACT.
   bool AddSubtractImpl(SampleCountIterator* iter, Operator op) override;
 
   // Gets a pointer to a "count" corresponding to a given |value|. Returns NULL
   // if sample does not exist.
-  std::atomic<HistogramBase::Count>* GetSampleCountStorage(
+  std::atomic<HistogramBase::Count32>* GetSampleCountStorage(
       HistogramBase::Sample32 value) const;
 
   // Gets a pointer to a "count" corresponding to a given |value|, creating
   // the sample (initialized to zero) if it does not already exist.
-  std::atomic<HistogramBase::Count>* GetOrCreateSampleCountStorage(
+  std::atomic<HistogramBase::Count32>* GetOrCreateSampleCountStorage(
       HistogramBase::Sample32 value);
 
  private:
@@ -95,7 +95,7 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
   // currently available samples have been loaded. Pass a nullopt for
   // |until_value| to force the importing of all available samples (null will
   // always be returned in this case).
-  std::atomic<HistogramBase::Count>* ImportSamples(
+  std::atomic<HistogramBase::Count32>* ImportSamples(
       std::optional<HistogramBase::Sample32> until_value = std::nullopt) const;
 
   // All created/loaded sample values and their associated counts. The storage

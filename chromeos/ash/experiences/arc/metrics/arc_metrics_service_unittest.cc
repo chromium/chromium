@@ -626,7 +626,7 @@ void ExpectOneSampleAppKillCountsForVm(
   for (const auto counter : kKillCounterInfo) {
     const auto name = base::StringPrintf(
         "Arc.App.LowMemoryKills%s.%sCount10Minutes", vm_prefix, counter.name);
-    base::Histogram::Count value =
+    base::Histogram::Count32 value =
         (*c1).*(counter.member) - (*c0).*(counter.member);
     tester.ExpectUniqueSample(name, value, 1);
   }

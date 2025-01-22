@@ -224,7 +224,7 @@ TEST_F(HistogramTesterTest, MissingHistogramMeansEmptyBuckets) {
 TEST_F(HistogramTesterTest, BucketsAre) {
   // Auxiliary functions for keeping the lines short.
   auto a = [](std::vector<Bucket> b) { return b; };
-  auto b = [](base::Histogram::Sample32 min, base::Histogram::Count count) {
+  auto b = [](base::Histogram::Sample32 min, base::Histogram::Count32 count) {
     return Bucket(min, count);
   };
   using ::testing::Not;
@@ -263,7 +263,7 @@ TEST_F(HistogramTesterTest, BucketsAre) {
 TEST_F(HistogramTesterTest, BucketsInclude) {
   // Auxiliary function for the "actual" values to shorten lines.
   auto a = [](std::vector<Bucket> b) { return b; };
-  auto b = [](base::Histogram::Sample32 min, base::Histogram::Count count) {
+  auto b = [](base::Histogram::Sample32 min, base::Histogram::Count32 count) {
     return Bucket(min, count);
   };
   using ::testing::Not;

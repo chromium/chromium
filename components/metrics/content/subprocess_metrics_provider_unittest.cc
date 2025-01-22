@@ -30,7 +30,7 @@ const uint32_t TEST_MEMORY_SIZE = 64 << 10;  // 64 KiB
 
 struct HistogramData {
   const std::string histogram_name;
-  const base::HistogramBase::Count total_count;
+  const base::HistogramBase::Count32 total_count;
   const int64_t sum;
 
   bool operator==(const HistogramData& other) const {
@@ -111,7 +111,7 @@ class SubprocessMetricsProviderTest : public testing::Test {
     SubprocessMetricsProvider::CreateInstance();
 
     // Need to recreate a task runner, otherwise it may be a stale one from a
-    // previous test (it's possible the global instance is re-used across
+    // previous test (it's possible the global instance is reused across
     // tests).
     RecreateTaskRunnerForTesting();
 

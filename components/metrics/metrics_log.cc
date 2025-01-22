@@ -72,7 +72,7 @@ namespace metrics {
 LogMetadata::LogMetadata()
     : samples_count(std::nullopt), user_id(std::nullopt) {}
 LogMetadata::LogMetadata(
-    const std::optional<base::HistogramBase::Count> samples_count,
+    const std::optional<base::HistogramBase::Count32> samples_count,
     const std::optional<uint64_t> user_id,
     const std::optional<metrics::UkmLogSourceType> log_source_type)
     : samples_count(samples_count),
@@ -81,7 +81,7 @@ LogMetadata::LogMetadata(
 LogMetadata::LogMetadata(const LogMetadata& other) = default;
 LogMetadata::~LogMetadata() = default;
 
-void LogMetadata::AddSampleCount(base::HistogramBase::Count sample_count) {
+void LogMetadata::AddSampleCount(base::HistogramBase::Count32 sample_count) {
   if (samples_count.has_value()) {
     samples_count = samples_count.value() + sample_count;
   } else {

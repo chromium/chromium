@@ -44,14 +44,14 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
 
   // HistogramSamples:
   void Accumulate(HistogramBase::Sample32 value,
-                  HistogramBase::Count count) override;
-  HistogramBase::Count GetCount(HistogramBase::Sample32 value) const override;
-  HistogramBase::Count TotalCount() const override;
+                  HistogramBase::Count32 count) override;
+  HistogramBase::Count32 GetCount(HistogramBase::Sample32 value) const override;
+  HistogramBase::Count32 TotalCount() const override;
   std::unique_ptr<SampleCountIterator> Iterator() const override;
   std::unique_ptr<SampleCountIterator> ExtractingIterator() override;
 
   // Get count of a specific bucket.
-  HistogramBase::Count GetCountAtIndex(size_t bucket_index) const;
+  HistogramBase::Count32 GetCountAtIndex(size_t bucket_index) const;
 
   // Access the bucket ranges held externally.
   const BucketRanges* bucket_ranges() const { return bucket_ranges_; }
@@ -76,7 +76,7 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
   // Validates that the destination bucket matches the min/max from the iterator
   // and returns SIZE_MAX on a mismatch.
   size_t GetDestinationBucketIndexAndCount(SampleCountIterator& iter,
-                                           HistogramBase::Count* count);
+                                           HistogramBase::Count32* count);
 
   // Moves the single-sample value to a mounted "counts" array.
   void MoveSingleSampleToCounts();
@@ -94,7 +94,7 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
   // be the number of counts required by the histogram. Ownership of the
   // array remains with the called method but will never change. This must be
   // called while some sort of lock is held to prevent reentry.
-  virtual span<HistogramBase::Count> CreateCountsStorageWhileLocked() = 0;
+  virtual span<HistogramBase::Count32> CreateCountsStorageWhileLocked() = 0;
 
   std::optional<span<HistogramBase::AtomicCount>> counts() {
     HistogramBase::AtomicCount* data =
@@ -184,12 +184,12 @@ class BASE_EXPORT SampleVector : public SampleVectorBase {
 
   // SampleVectorBase:
   bool MountExistingCountsStorage() const override;
-  span<HistogramBase::Count> CreateCountsStorageWhileLocked() override;
+  span<HistogramBase::Count32> CreateCountsStorageWhileLocked() override;
 
   // Writes cumulative percentage information based on the number
   // of past, current, and remaining bucket samples.
   void WriteAsciiBucketContext(int64_t past,
-                               HistogramBase::Count current,
+                               HistogramBase::Count32 current,
                                int64_t remaining,
                                uint32_t current_bucket_index,
                                std::string* output) const;
@@ -220,7 +220,7 @@ class BASE_EXPORT PersistentSampleVector : public SampleVectorBase {
  private:
   // SampleVectorBase:
   bool MountExistingCountsStorage() const override;
-  span<HistogramBase::Count> CreateCountsStorageWhileLocked() override;
+  span<HistogramBase::Count32> CreateCountsStorageWhileLocked() override;
 
   // Persistent storage for counts.
   DelayedPersistentAllocation persistent_counts_;

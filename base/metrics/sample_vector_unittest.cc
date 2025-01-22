@@ -229,7 +229,7 @@ TEST_F(SampleVectorTest, Iterate) {
   size_t index;
   HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
   for (i = 1; !it->Done(); i++, it->Next()) {
     it->Get(&min, &max, &count);
     EXPECT_EQ(i, min);
@@ -270,7 +270,7 @@ TEST_F(SampleVectorTest, Iterator_InvalidSingleSample) {
   // invalid sample is not (it was discarded).
   HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
   it = samples.Iterator();
   ASSERT_FALSE(it->Done());
   it->Get(&min, &max, &count);
@@ -330,7 +330,7 @@ TEST_F(SampleVectorTest, IterateDoneDeath) {
 
   HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
   EXPECT_DCHECK_DEATH(it->Get(&min, &max, &count));
 
   EXPECT_DCHECK_DEATH(it->Next());
@@ -363,7 +363,7 @@ TEST_F(SampleVectorTest, SingleSample) {
   // Ensure that the iterator returns only one value.
   HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
   std::unique_ptr<SampleCountIterator> it = samples.Iterator();
   ASSERT_FALSE(it->Done());
   it->Get(&min, &max, &count);
@@ -447,7 +447,7 @@ TEST_F(SampleVectorTest, PersistentSampleVector) {
 
   HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
   std::unique_ptr<SampleCountIterator> it = samples2.Iterator();
   ASSERT_FALSE(it->Done());
   it->Get(&min, &max, &count);
@@ -533,7 +533,7 @@ TEST_F(SampleVectorTest, PersistentSampleVectorTestWithOutsideAlloc) {
   EXPECT_FALSE(HasSamplesCounts(samples1));
 
   // Because the delayed allocation can be shared with other objects (the
-  // |offset| parameter allows concatinating multiple data blocks into the
+  // |offset| parameter allows concatenating multiple data blocks into the
   // same allocation), it's possible that the allocation gets realized from
   // the outside even though the data block being accessed is all zero.
   allocation.Get<uint8_t>();
@@ -542,7 +542,7 @@ TEST_F(SampleVectorTest, PersistentSampleVectorTestWithOutsideAlloc) {
 
   HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
   std::unique_ptr<SampleCountIterator> it = samples1.Iterator();
   ASSERT_FALSE(it->Done());
   it->Get(&min, &max, &count);
