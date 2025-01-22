@@ -20,8 +20,6 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
 namespace {
@@ -32,7 +30,6 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
 
 }  // namespace
 
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 @implementation PageContextWrapper {
   base::WeakPtr<web::WebState> _webState;
@@ -45,8 +42,6 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
   // WebFrames.
   NSMutableArray<NSString*>* _webFramesInnerTexts;
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-
   // The callback to execute once all async work is complete, whichs
   // relinquishes ownership of the PageContext proto to the callback's handler.
   base::OnceCallback<void(
@@ -55,12 +50,7 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
 
   // Unique pointer to the PageContext proto.
   std::unique_ptr<optimization_guide::proto::PageContext> _page_context;
-
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 }
-
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-
 - (instancetype)
       initWithWebState:(web::WebState*)webState
     completionCallback:
@@ -299,7 +289,5 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
   _page_context->set_inner_text(
       base::SysNSStringToUTF8(concatenatedInnerTexts));
 }
-
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 @end

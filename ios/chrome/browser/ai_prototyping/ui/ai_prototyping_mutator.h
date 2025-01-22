@@ -20,18 +20,20 @@ enum TabOrganizationRequest_TabOrganizationModelStrategy : int;
 @protocol AIPrototypingMutator
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-// Executes a prototyping request to a server-hosted model.
-- (void)executeServerQuery:
-    (optimization_guide::proto::BlingPrototypingRequest)request;
 
 // Executes a prototyping request to an on-device model.
 - (void)executeOnDeviceQuery:(optimization_guide::proto::StringValue)request;
+
+#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+
+// Executes a prototyping request to a server-hosted model.
+- (void)executeServerQuery:
+    (optimization_guide::proto::BlingPrototypingRequest)request;
 
 // Executes a tab organization request with a given organization `strategy`.
 - (void)executeGroupTabsWithStrategy:
     (optimization_guide::proto::
          TabOrganizationRequest_TabOrganizationModelStrategy)strategy;
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 @end
 

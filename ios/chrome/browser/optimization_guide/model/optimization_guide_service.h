@@ -22,11 +22,8 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "ios/chrome/browser/download/model/background_service/background_download_service_factory.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 namespace leveldb_proto {
 class ProtoDatabaseProvider;
@@ -36,16 +33,13 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-namespace optimization_guide {
-class ModelExecutionManager;
-class OnDeviceModelAvailabilityObserver;
-class OnDeviceModelComponentStateManager;
-}  // namespace optimization_guide
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-
 namespace optimization_guide {
 class HintsManager;
+class ModelExecutionManager;
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+class OnDeviceModelAvailabilityObserver;
+class OnDeviceModelComponentStateManager;
+#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 class OptimizationGuideStore;
 class OptimizationTargetModelObserver;
 class PredictionManager;
@@ -72,8 +66,8 @@ class PrefService;
 class OptimizationGuideService
     : public KeyedService,
       public optimization_guide::OptimizationGuideDecider,
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
       public optimization_guide::OptimizationGuideModelExecutor,
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
       public optimization_guide::OptimizationGuideOnDeviceCapabilityProvider,
 #endif
       public optimization_guide::OptimizationGuideModelProvider {
@@ -119,16 +113,6 @@ class OptimizationGuideService
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   // optimization_guide::OptimizationGuideModelExecutor implementation:
-  std::unique_ptr<Session> StartSession(
-      optimization_guide::ModelBasedCapabilityKey feature,
-      const std::optional<optimization_guide::SessionConfigParams>&
-          config_params) override;
-  void ExecuteModel(
-      optimization_guide::ModelBasedCapabilityKey feature,
-      const google::protobuf::MessageLite& request_metadata,
-      const std::optional<base::TimeDelta>& execution_timeout,
-      optimization_guide::OptimizationGuideModelExecutionResultCallback
-          callback) override;
   void AddOnDeviceModelAvailabilityChangeObserver(
       optimization_guide::ModelBasedCapabilityKey feature,
       optimization_guide::OnDeviceModelAvailabilityObserver* observer) override;
@@ -148,6 +132,17 @@ class OptimizationGuideService
       optimization_guide::ModelBasedCapabilityKey feature) override;
 
 #endif
+
+  std::unique_ptr<Session> StartSession(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      const std::optional<optimization_guide::SessionConfigParams>&
+          config_params) override;
+  void ExecuteModel(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      const google::protobuf::MessageLite& request_metadata,
+      const std::optional<base::TimeDelta>& execution_timeout,
+      optimization_guide::OptimizationGuideModelExecutionResultCallback
+          callback) override;
 
   // optimization_guide::OptimizationGuideModelProvider implementation:
   void AddObserverForOptimizationTargetModel(
@@ -238,10 +233,11 @@ class OptimizationGuideService
   scoped_refptr<optimization_guide::OnDeviceModelComponentStateManager>
       on_device_model_state_manager_;
 
+#endif
+
   // Manages the model execution. Not created for off the record profiles.
   std::unique_ptr<optimization_guide::ModelExecutionManager>
       model_execution_manager_;
-#endif
 
   // The PrefService of the profile this service is linked to.
   const raw_ptr<PrefService> pref_service_ = nullptr;

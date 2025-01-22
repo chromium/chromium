@@ -37,6 +37,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/optimization_guide/model:unit_tests",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test",
   ]
 }

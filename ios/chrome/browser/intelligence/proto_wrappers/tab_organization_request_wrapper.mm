@@ -14,9 +14,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 @implementation TabOrganizationRequestWrapper {
   raw_ptr<WebStateList> _webStateList;
@@ -24,8 +22,6 @@
   // Vector holding all PageContextWrappers to keep them alive until their async
   // work is done.
   std::vector<PageContextWrapper*> _page_contexts;
-
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
   // The callback to execute once all async work is complete, whichs
   // relinquishes ownership of the TabOrganizationRequest proto to the
@@ -36,11 +32,7 @@
 
   // Unique pointer to the TabOrganizationRequest proto.
   std::unique_ptr<optimization_guide::proto::TabOrganizationRequest> _request;
-
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 }
-
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 - (instancetype)
                initWithWebStateList:(WebStateList*)webStateList
@@ -146,7 +138,5 @@
                               (optimization_guide::proto::Tab*)associated_tab {
   associated_tab->set_allocated_page_context(page_context.release());
 }
-
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 @end
