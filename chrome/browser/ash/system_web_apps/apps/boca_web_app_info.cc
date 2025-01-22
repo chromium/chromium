@@ -88,6 +88,10 @@ bool BocaSystemAppDelegate::ShouldHideNewTabButton() const {
   return IsConsumerProfile(profile());
 }
 
+bool BocaSystemAppDelegate::ShouldHaveExtensionsContainerInToolbar() const {
+  return IsConsumerProfile(profile());
+}
+
 bool BocaSystemAppDelegate::IsUrlInSystemAppScope(const GURL& url) const {
   // Consumer SWA will also host 3P content, so we override app scope checks to
   // prevent navigation outside the app.

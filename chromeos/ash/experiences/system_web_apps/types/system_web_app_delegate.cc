@@ -86,6 +86,10 @@ bool SystemWebAppDelegate::ShouldHideNewTabButton() const {
   return false;
 }
 
+bool SystemWebAppDelegate::ShouldHaveExtensionsContainerInToolbar() const {
+  return false;
+}
+
 bool SystemWebAppDelegate::ShouldHaveReloadButtonInMinimalUi() const {
   return true;
 }
