@@ -41,14 +41,6 @@ User* FakeUserManager::AddKioskAppUser(const AccountId& account_id) {
   return user;
 }
 
-void FakeUserManager::LogoutAllUsers() {
-  primary_user_ = nullptr;
-  active_user_ = nullptr;
-
-  logged_in_users_.clear();
-  lru_logged_in_users_.clear();
-}
-
 void FakeUserManager::UserLoggedIn(const AccountId& account_id,
                                    const std::string& username_hash,
                                    bool browser_restart,

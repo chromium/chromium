@@ -117,9 +117,9 @@ class TestNetworkMetadataObserver : public NetworkMetadataObserver {
   base::flat_map<std::string, int> updates_;
 };
 
-class NetworkMetadataStoreTest : public ::testing::Test {
+class NetworkMetadataStoreNoLoginTest : public ::testing::Test {
  public:
-  NetworkMetadataStoreTest() {
+  NetworkMetadataStoreNoLoginTest() {
     LoginState::Initialize();
     network_configuration_handler_ =
         NetworkConfigurationHandler::InitializeForTest(
@@ -172,10 +172,12 @@ class NetworkMetadataStoreTest : public ::testing::Test {
     metadata_store_->AddObserver(metadata_observer_.get());
   }
 
-  NetworkMetadataStoreTest(const NetworkMetadataStoreTest&) = delete;
-  NetworkMetadataStoreTest& operator=(const NetworkMetadataStoreTest&) = delete;
+  NetworkMetadataStoreNoLoginTest(const NetworkMetadataStoreNoLoginTest&) =
+      delete;
+  NetworkMetadataStoreNoLoginTest& operator=(
+      const NetworkMetadataStoreNoLoginTest&) = delete;
 
-  ~NetworkMetadataStoreTest() override {
+  ~NetworkMetadataStoreNoLoginTest() override {
     network_state_handler_ = nullptr;
     metadata_store_.reset();
     metadata_observer_.reset();
@@ -193,7 +195,6 @@ class NetworkMetadataStoreTest : public ::testing::Test {
 
   void SetUp() override {
     SetIsEnterpriseEnrolled(false);
-    LoginUser(primary_user_);
   }
 
   // This creates a new NetworkMetadataStore object.
@@ -328,6 +329,14 @@ class NetworkMetadataStoreTest : public ::testing::Test {
   std::unique_ptr<TestNetworkMetadataObserver> metadata_observer_;
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;
+};
+
+class NetworkMetadataStoreTest : public NetworkMetadataStoreNoLoginTest {
+ public:
+  void SetUp() override {
+    NetworkMetadataStoreNoLoginTest::SetUp();
+    LoginUser(primary_user_);
+  }
 };
 
 TEST_F(NetworkMetadataStoreTest, FirstConnect) {
@@ -511,8 +520,8 @@ TEST_F(NetworkMetadataStoreTest, ConfigurationRemoved) {
   ASSERT_FALSE(metadata_store()->GetIsConfiguredBySync(kGuid));
 }
 
-TEST_F(NetworkMetadataStoreTest, OwnOobeNetworks) {
-  fake_user_manager()->LogoutAllUsers();
+TEST_F(NetworkMetadataStoreNoLoginTest, OwnOobeNetworks) {
+  ASSERT_EQ(fake_user_manager()->GetLoggedInUsers().size(), 0u);
   ConfigureService(kConfigWifi1Shared);
   base::RunLoop().RunUntilIdle();
 
@@ -525,9 +534,9 @@ TEST_F(NetworkMetadataStoreTest, OwnOobeNetworks) {
   ASSERT_TRUE(metadata_store()->GetIsCreatedByUser(kGuid));
 }
 
-TEST_F(NetworkMetadataStoreTest, OwnOobeNetworks_EnterpriseEnrolled) {
+TEST_F(NetworkMetadataStoreNoLoginTest, OwnOobeNetworks_EnterpriseEnrolled) {
   SetIsEnterpriseEnrolled(true);
-  fake_user_manager()->LogoutAllUsers();
+  ASSERT_EQ(fake_user_manager()->GetLoggedInUsers().size(), 0u);
   ConfigureService(kConfigWifi1Shared);
   base::RunLoop().RunUntilIdle();
 
@@ -540,8 +549,8 @@ TEST_F(NetworkMetadataStoreTest, OwnOobeNetworks_EnterpriseEnrolled) {
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 }
 
-TEST_F(NetworkMetadataStoreTest, OwnOobeNetworks_NotOwner) {
-  fake_user_manager()->LogoutAllUsers();
+TEST_F(NetworkMetadataStoreNoLoginTest, OwnOobeNetworks_NotOwner) {
+  ASSERT_EQ(fake_user_manager()->GetLoggedInUsers().size(), 0u);
   ConfigureService(kConfigWifi1Shared);
   base::RunLoop().RunUntilIdle();
 
@@ -554,8 +563,8 @@ TEST_F(NetworkMetadataStoreTest, OwnOobeNetworks_NotOwner) {
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 }
 
-TEST_F(NetworkMetadataStoreTest, OwnOobeNetworks_NotFirstLogin) {
-  fake_user_manager()->LogoutAllUsers();
+TEST_F(NetworkMetadataStoreNoLoginTest, OwnOobeNetworks_NotFirstLogin) {
+  ASSERT_EQ(fake_user_manager()->GetLoggedInUsers().size(), 0u);
   ConfigureService(kConfigWifi1Shared);
   base::RunLoop().RunUntilIdle();
 

@@ -35,8 +35,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
   // Creates and adds a new Kiosk user.
   User* AddKioskAppUser(const AccountId& account_id);
 
-  void LogoutAllUsers();
-
   // UserManager overrides.
   void UserLoggedIn(const AccountId& account_id,
                     const std::string& username_hash,
