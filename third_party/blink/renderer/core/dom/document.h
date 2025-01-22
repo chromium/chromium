@@ -2656,7 +2656,7 @@ class CORE_EXPORT Document : public ContainerNode,
   bool has_draggable_regions_ = false;
   bool draggable_regions_dirty_ = false;
 
-  std::unique_ptr<SelectorQueryCache> selector_query_cache_;
+  Member<SelectorQueryCache> selector_query_cache_;
 
   // It is safe to keep a raw, untraced pointer to this stack-allocated
   // cache object: it is set upon the cache object being allocated on

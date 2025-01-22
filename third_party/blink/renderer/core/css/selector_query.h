@@ -34,10 +34,8 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -52,14 +50,11 @@ template <typename NodeType>
 class StaticNodeTypeList;
 using StaticElementList = StaticNodeTypeList<Element>;
 
-class CORE_EXPORT SelectorQuery {
-  USING_FAST_MALLOC(SelectorQuery);
-
+class CORE_EXPORT SelectorQuery : public GarbageCollected<SelectorQuery> {
  public:
+  explicit SelectorQuery(CSSSelectorList*);
   SelectorQuery(const SelectorQuery&) = delete;
   SelectorQuery& operator=(const SelectorQuery&) = delete;
-
-  static std::unique_ptr<SelectorQuery> Adopt(CSSSelectorList*);
 
   // https://dom.spec.whatwg.org/#dom-element-matches
   bool Matches(Element&) const;
@@ -87,9 +82,9 @@ class CORE_EXPORT SelectorQuery {
   // non DCHECK builds to avoid the overhead on the query process.
   static QueryStats LastQueryStats();
 
- private:
-  explicit SelectorQuery(CSSSelectorList*);
+  void Trace(Visitor* visitor) const { visitor->Trace(selector_list_); }
 
+ private:
   template <typename SelectorQueryTrait>
   void ExecuteWithId(ContainerNode& root_node,
                      typename SelectorQueryTrait::OutputType&) const;
@@ -114,8 +109,7 @@ class CORE_EXPORT SelectorQuery {
     return selector_list_->First() + selector_start_offsets_[index];
   }
 
-  // TODO(sesse): Consider moving SelectorQuery to Oilpan.
-  Persistent<CSSSelectorList> selector_list_;
+  Member<CSSSelectorList> selector_list_;
   // Contains the start of each complex selector (relative to the first selector
   // in selector_list_; we cannot store pointers due to Oilpan restrictions),
   // but without ones that could never match like pseudo elements, div::before.
@@ -128,15 +122,15 @@ class CORE_EXPORT SelectorQuery {
   bool use_slow_scan_ : 1;
 };
 
-class SelectorQueryCache {
-  USING_FAST_MALLOC(SelectorQueryCache);
-
+class SelectorQueryCache : public GarbageCollected<SelectorQueryCache> {
  public:
   SelectorQuery* Add(const AtomicString&, const Document&, ExceptionState&);
   void Invalidate();
 
+  void Trace(Visitor* visitor) const { visitor->Trace(entries_); }
+
  private:
-  HashMap<AtomicString, std::unique_ptr<SelectorQuery>> entries_;
+  HeapHashMap<AtomicString, Member<SelectorQuery>> entries_;
 };
 
 }  // namespace blink

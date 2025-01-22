@@ -556,11 +556,6 @@ void SelectorQuery::Execute(
   FindTraverseRootsAndExecute<SelectorQueryTrait>(root_node, output);
 }
 
-std::unique_ptr<SelectorQuery> SelectorQuery::Adopt(
-    CSSSelectorList* selector_list) {
-  return base::WrapUnique(new SelectorQuery(selector_list));
-}
-
 SelectorQuery::SelectorQuery(CSSSelectorList* selector_list)
     : selector_list_(selector_list),
       selector_id_is_rightmost_(true),
@@ -612,10 +607,9 @@ SelectorQuery* SelectorQueryCache::Add(const AtomicString& selectors,
     return nullptr;
   }
 
-  HashMap<AtomicString, std::unique_ptr<SelectorQuery>>::iterator it =
-      entries_.find(selectors);
+  auto it = entries_.find(selectors);
   if (it != entries_.end()) {
-    return it->value.get();
+    return it->value.Get();
   }
 
   HeapVector<CSSSelector> arena;
@@ -640,8 +634,9 @@ SelectorQuery* SelectorQueryCache::Add(const AtomicString& selectors,
     entries_.erase(entries_.begin());
   }
 
-  return entries_.insert(selectors, SelectorQuery::Adopt(selector_list))
-      .stored_value->value.get();
+  return entries_
+      .insert(selectors, MakeGarbageCollected<SelectorQuery>(selector_list))
+      .stored_value->value.Get();
 }
 
 void SelectorQueryCache::Invalidate() {
