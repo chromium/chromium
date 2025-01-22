@@ -296,6 +296,7 @@ android_library("chrome_java_transit") {
     "//components/messages/android/test:test_support_java",
     "//components/omnibox/browser:browser_java",
     "//components/omnibox/browser:junit_test_support",
+    "//components/omnibox/common:features_java",
     "//components/tab_groups:tab_groups_java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
