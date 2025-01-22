@@ -90,7 +90,7 @@ public class FacilitatedPaymentsApiClientUnitTest {
 
         apiClient.invokePurchaseAction(
                 /* primaryAccount= */ null,
-                new SecurePayload(new byte[] {'A', 'c', 't', 'i', 'o', 'n'}, new SecureData[0]));
+                SecurePayload.create(new byte[] {'A', 'c', 't', 'i', 'o', 'n'}, new SecureData[0]));
 
         Assert.assertTrue(delegate.mIsPurchaseActionInvoked);
         Assert.assertEquals(PurchaseActionResult.COULD_NOT_INVOKE, delegate.mPurchaseActionResult);
@@ -164,7 +164,7 @@ public class FacilitatedPaymentsApiClientUnitTest {
 
         apiClient.invokePurchaseAction(
                 /* primaryAccount= */ null,
-                new SecurePayload(new byte[] {'A', 'c', 't', 'i', 'o', 'n'}, new SecureData[0]));
+                SecurePayload.create(new byte[] {'A', 'c', 't', 'i', 'o', 'n'}, new SecureData[0]));
 
         Assert.assertTrue(delegate.mIsPurchaseActionInvoked);
         Assert.assertEquals(PurchaseActionResult.RESULT_OK, delegate.mPurchaseActionResult);

@@ -32,8 +32,8 @@ ScopedJavaLocalRef<jobject> ConvertSecurePayloadToJavaObject(
     secure_data_array.push_back(Java_SecureData_Constructor(
         env, secure_data.key, ConvertUTF8ToJavaString(env, secure_data.value)));
   }
-  return Java_SecurePayload_Constructor(env, action_token,
-                                        std::move(secure_data_array));
+  return Java_SecurePayload_create(env, action_token,
+                                   std::move(secure_data_array));
 }
 
 }  // namespace payments::facilitated
