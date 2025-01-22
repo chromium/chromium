@@ -61,6 +61,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.BuildConfig;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -117,6 +119,7 @@ import java.util.List;
         })
 @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
 public class LocationBarMediatorTest {
+
     @Implements(UrlUtilities.class)
     static class ShadowUrlUtilities {
         static boolean sIsNtp;
@@ -203,6 +206,7 @@ public class LocationBarMediatorTest {
     @Mock private LocationBarMediator.OmniboxUma mOmniboxUma;
     @Mock private OmniboxSuggestionsDropdownEmbedderImpl mEmbedderImpl;
     @Mock private ResourceRequestBody.Natives mResourceRequestBodyJni;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
@@ -237,6 +241,7 @@ public class LocationBarMediatorTest {
         ResourceRequestBodyJni.setInstanceForTesting(mResourceRequestBodyJni);
         doReturn(mProfile).when(mTab).getProfile();
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(mProfile);
+        doReturn(ControlsPosition.TOP).when(mBrowserControlsStateProvider).getControlsPosition();
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         OneshotSupplierImpl<TemplateUrlService> templateUrlServiceSupplier =
                 new OneshotSupplierImpl<>();
@@ -260,7 +265,8 @@ public class LocationBarMediatorTest {
                         mOmniboxUma,
                         () -> mIsToolbarMicEnabled,
                         mEmbedderImpl,
-                        mTabModelSelectorSupplier);
+                        mTabModelSelectorSupplier,
+                        mBrowserControlsStateProvider);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         ObjectAnimatorShadow.setUrlAnimator(mUrlAnimator);
 
@@ -282,7 +288,8 @@ public class LocationBarMediatorTest {
                         (tab, transition, isNtp) -> {},
                         () -> mIsToolbarMicEnabled,
                         mEmbedderImpl,
-                        mTabModelSelectorSupplier);
+                        mTabModelSelectorSupplier,
+                        mBrowserControlsStateProvider);
         mTabletMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         ShadowUrlUtilities.sIsNtp = false;
@@ -962,6 +969,14 @@ public class LocationBarMediatorTest {
         testOnUrlFocusChange(/* expectRetainOmniboxOnFocus= */ true);
     }
 
+    @Test
+    public void testAnimateIconChanges_bottomToolbar() {
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsStateProvider).getControlsPosition();
+        Mockito.reset(mStatusCoordinator);
+        mMediator.onUrlFocusChange(true);
+        verify(mStatusCoordinator).setShouldAnimateIconChanges(false);
+    }
+
     private void testOnUrlFocusChange(boolean expectRetainOmniboxOnFocus) {
         mMediator.addUrlFocusChangeListener(mUrlCoordinator);
         mMediator.onUrlFocusChange(true);
@@ -1020,7 +1035,8 @@ public class LocationBarMediatorTest {
                         mOmniboxUma,
                         () -> mIsToolbarMicEnabled,
                         mEmbedderImpl,
-                        mTabModelSelectorSupplier);
+                        mTabModelSelectorSupplier,
+                        mBrowserControlsStateProvider);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         int primeCount = sGeoHeaderPrimeCount;
         mMediator.addUrlFocusChangeListener(mUrlCoordinator);
