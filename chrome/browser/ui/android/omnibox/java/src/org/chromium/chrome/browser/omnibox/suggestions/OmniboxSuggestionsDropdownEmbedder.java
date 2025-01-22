@@ -6,14 +6,14 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import android.annotation.SuppressLint;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Objects;
 
 /** Provider of capabilities required to embed the omnibox suggestion list into the UI. */
+@NullMarked
 public interface OmniboxSuggestionsDropdownEmbedder {
 
     /**
@@ -68,7 +68,6 @@ public interface OmniboxSuggestionsDropdownEmbedder {
         }
 
         @SuppressLint("DefaultLocale")
-        @NonNull
         @Override
         public String toString() {
             return String.format(
@@ -117,7 +116,6 @@ public interface OmniboxSuggestionsDropdownEmbedder {
      * Returns the current alignment values, but does not recalculate them. Will not return null but
      * may return {@link OmniboxAlignment.UNSPECIFIED} if there is not a currently valid alignment.
      */
-    @NonNull
     OmniboxAlignment getCurrentAlignment();
 
     /** Return whether the suggestions are being rendered in the tablet UI. */
