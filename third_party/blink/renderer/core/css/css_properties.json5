@@ -7777,6 +7777,27 @@
       valid_for_keyframe: false,
     },
     {
+      name: "animation-trigger-range",
+      longhands: [
+        "animation-trigger-range-start", "animation-trigger-range-end",
+      ],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      supports_incremental_style: false,
+      valid_for_keyframe: false,
+      runtime_flag: "CSSAnimationTriggerRange",
+    },
+    {
+      name: "animation-trigger-exit-range",
+      longhands: [
+        "animation-trigger-exit-range-start",
+        "animation-trigger-exit-range-end",
+      ],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      supports_incremental_style: false,
+      valid_for_keyframe: false,
+      runtime_flag: "CSSAnimationTriggerRange",
+    },
+    {
       name: "background",
       longhands: [
         "background-image", "background-position-x", "background-position-y",

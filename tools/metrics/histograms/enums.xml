@@ -27013,6 +27013,8 @@ Called by update_use_counter_css.py.-->
   <int value="822" label="animation-trigger-exit-range-end"/>
   <int value="823" label="interest-target-show-delay"/>
   <int value="824" label="interest-target-hide-delay"/>
+  <int value="825" label="animation-trigger-range"/>
+  <int value="826" label="animation-trigger-exit-range"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->
