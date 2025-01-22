@@ -13,6 +13,7 @@ import os
 import posixpath
 import subprocess
 import shutil
+import sys
 import time
 
 from devil import base_error
@@ -21,6 +22,7 @@ from devil.android import device_errors
 from devil.android import device_temp_file
 from devil.android import logcat_monitor
 from devil.android import ports
+from devil.android.ndk import abis
 from devil.android.tools import system_app
 from devil.android.sdk import version_codes
 from devil.utils import reraiser_thread
@@ -547,72 +549,46 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
       if self._test_instance.deploy_mock_openxr_runtime:
 
         def deploy_openxr_runtime(dev):
-          out_dir = constants.GetOutDirectory()
+          apk_path = dev.GetApplicationPaths(
+              self._test_instance.apk_helper.GetPackageName())
+          apk_dir = os.path.dirname(apk_path[0])
 
-          # The set of OpenXR files that need to be deployed to system-writable
-          # locations, these need to be deployed via
-          # `EnableSystemAppModification`, which can be slow.
-          openxr_system_files = [(os.path.join(out_dir, "mock_vr_clients",
-                                               "bin", "openxr", "openxr.json"),
-                                  "/product/etc/openxr/1/active_runtime.json")]
+          abi = device.product_cpu_abi
+          # Some architectures don't map 1:1 with the folder names.
+          arch_path = {abis.ARM_64: 'arm64', abis.ARM: 'arm'}.get(abi, abi)
+
+          device_openxr_runtime_path = os.path.join(apk_dir, 'lib', arch_path,
+                                                    'libopenxrruntime.so')
+          if not dev.PathExists(device_openxr_runtime_path, as_root=True):
+            logging.exception('Could not locate OpenXr runtime on device. '
+                              'Note that openxr deployment seems to fail with '
+                              'incremental_install=True')
+            sys.exit(1)
+
+          local_json_path = os.path.join(constants.GetOutDirectory(),
+                                         'mock_vr_clients', 'bin', 'openxr',
+                                         'openxr.json')
+          device_json_path = '/product/etc/openxr/1/active_runtime.json'
+          with open(local_json_path, 'r') as local_json_file:
+            openxr_json_contents = local_json_file.read()
+          openxr_json_contents = openxr_json_contents.replace(
+              'OPENXR_RUNTIME_PATH', device_openxr_runtime_path)
 
           # Enabling SystemAppModification is a slow process, and the files that
           # need to be deployed this way are pretty static. As an optimization
           # (especially for local development), only attempt a re-deployment if
           # the contents of the files have changed.
-          openxr_changed_system_files = []
-          for (local_path, device_path) in openxr_system_files:
-            if not dev.PathExists(device_path, as_root=True):
-              openxr_changed_system_files.append(device_path)
-              continue
-            device_contents = dev.ReadFile(device_path, as_root=True)
-            with open(local_path, 'r') as local_file:
-              local_contents = local_file.read()
+          if dev.PathExists(device_json_path, as_root=True):
+            device_json_contents = dev.ReadFile(device_json_path, as_root=True)
+            replace_openxr_json = (device_json_contents != openxr_json_contents)
+          else:
+            replace_openxr_json = True
 
-            if device_contents != local_contents:
-              openxr_changed_system_files.append(device_path)
-
-          if openxr_changed_system_files:
+          if replace_openxr_json:
             with system_app.EnableSystemAppModification(device):
-              dev.PushChangedFiles(openxr_system_files,
-                                   delete_device_stale=False,
-                                   as_root=True)
-
-          # TODO(https://crbug.com/388453693): PushChangedFiles as_root seems to
-          # only run `mkdir` as root, so the actual push of the OpenXRRuntime
-          # fails. Push the OpenXRRuntime to a temp location instead, and then
-          # copy it to the root writable location and modify it's permissions to
-          # make it loadable/executable via individual `RunShellCommand` calls
-          # as a workaround.
-          # These seem to get sporadically wiped if deployed before the system
-          # app files.
-          device_root = self._delegate.GetTestDataRoot(dev)
-          if self._env.force_main_user:
-            device_root = dev.ResolveSpecialPath(device_root)
-          openxr_runtime_path = os.path.join(device_root, 'libopenxrruntime.so')
-
-          # These files need to be deployed to locations that are writable by
-          # 'only' being root.
-          openxr_files = [(os.path.join(out_dir, 'libmock_vr_clients', 'bin',
-                                        'openxr', 'libopenxrruntime.so'),
-                           openxr_runtime_path)]
-          dev.PushChangedFiles(openxr_files,
-                               delete_device_stale=False,
-                               as_root=True)
-
-          if not dev.PathExists('/data/app/mock_openxr', as_root=True):
-            dev.RunShellCommand(['mkdir', '-p', '/data/app/mock_openxr'],
-                                check_return=True,
-                                as_root=True)
-
-          final_openxr_runtime_path = '/data/app/mock_openxr/libopenxrruntime.so'
-          dev.RunShellCommand(
-              ['cp', openxr_runtime_path, final_openxr_runtime_path],
-              check_return=True,
-              as_root=True)
-          dev.RunShellCommand(['chmod', '777', final_openxr_runtime_path],
-                              check_return=True,
-                              as_root=True)
+              dev.WriteFile(device_json_path,
+                            openxr_json_contents,
+                            as_root=True)
 
         deploy_openxr_runtime(device)
 

@@ -1766,14 +1766,13 @@ if (is_android) {
         "//third_party/openxr",
       ]
 
-      data_deps += [ "//device/vr:openxr_mock" ]
-
       extra_args += [ "--deploy-mock-openxr-runtime" ]
 
-      data += [
-        "$root_out_dir/mock_vr_clients/bin/openxr/openxr.json",
-        "$root_out_dir/libmock_vr_clients/bin/openxr/libopenxrruntime.so",
-      ]
+      loadable_module_deps = [ "//device/vr:openxr_mock" ]
+      loadable_modules =
+          [ "$root_out_dir/libmock_vr_clients/bin/openxr/libopenxrruntime.so" ]
+      library_always_compress =
+          [ "libmock_vr_clients/bin/openxr/libopenxrruntime.so" ]
     }
 
     if (dfmify_dev_ui) {
