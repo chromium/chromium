@@ -52,6 +52,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/page/histograms.xml:BlinkRequestDestination) -->
 
+<variants name="PerAnimationFrameInteractionType">
+  <variant name="All"
+      summary="all animation frames overlapping with any interaction type"/>
+  <variant name="Both"
+      summary="animation frames overlapping with BOTH keyboard and pointer
+               interactions"/>
+  <variant name="Keyboard"
+      summary="animation frames overlapping a keyboard interaction"/>
+  <variant name="TapOrClick"
+      summary="animation frames overlapping a pointer interaction (taps or
+               clicks)"/>
+</variants>
+
 <variants name="PreloadTrigger">
   <variant name="" summary="All preloads"/>
   <variant name=".LinkPreload"
@@ -4235,7 +4248,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Blink.Responsiveness.PerAnimationFrame.CommitToPresentationTime"
+    name="Blink.Responsiveness.PerAnimationFrame.CommitToPresentationTime.{PerAnimationFrameInteractionType}"
     units="ms" expires_after="2025-10-30">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
@@ -4251,11 +4264,13 @@ chromium-metrics-reviews@google.com.
     This subpart represents the duration from the time when commit stage of
     rendering completes to when the browser presents the next frame with the
     changes caused by the last event.
+
+    The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
 </histogram>
 
 <histogram
-    name="Blink.Responsiveness.PerAnimationFrame.EventCreationTimeToEventQueueTime"
+    name="Blink.Responsiveness.PerAnimationFrame.EventCreationTimeToEventQueueTime.{PerAnimationFrameInteractionType}"
     units="ms" expires_after="2025-10-30">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
@@ -4270,11 +4285,13 @@ chromium-metrics-reviews@google.com.
 
     This subpart represents the duration from the first event creation time
     (timeStamp) to when it was queued on the main thread.
+
+    The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
 </histogram>
 
 <histogram
-    name="Blink.Responsiveness.PerAnimationFrame.EventCreationTimeToProcessingStart"
+    name="Blink.Responsiveness.PerAnimationFrame.EventCreationTimeToProcessingStart.{PerAnimationFrameInteractionType}"
     units="ms" expires_after="2025-10-30">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
@@ -4290,11 +4307,78 @@ chromium-metrics-reviews@google.com.
     This subpart represents the duration from the first event creation time
     (timeStamp) to when it was processed on the main thread. Traditionally, also
     referred to as Input Delay.
+
+    The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
 </histogram>
 
 <histogram
-    name="Blink.Responsiveness.PerAnimationFrame.EventQueueTimeToProcessingStart"
+    name="Blink.Responsiveness.PerAnimationFrame.EventCreationToLastProcessingEnd.NoFramePresented.{PerAnimationFrameInteractionType}"
+    units="ms" expires_after="2025-10-30">
+  <owner>sullivan@chromium.org</owner>
+  <owner>mmocny@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    Blink.Responsiveness.PerAnimationFrame.* is a family of metrics representing
+    the sub-parts (aka breakdowns) of Interactions. Reported per Animation Frame
+    which includes at least one Event Timing which is a part of an interaction
+    (as in INP). All subparts are based on Event Timing API measurements (and
+    so, do not include continuous events, like scrolling).
+
+    This subpart represents the total duration when no frame is presented, which
+    is from the time when the first event is created to when the last event
+    finishes processing. To get the total duration when a frame is presented,
+    use Blink.Responsiveness.PerAnimationFrame.EventCreationToPresentationTime.
+
+    The metric is reported for {PerAnimationFrameInteractionType}.
+  </summary>
+</histogram>
+
+<histogram
+    name="Blink.Responsiveness.PerAnimationFrame.EventCreationToPresentationTime.{PerAnimationFrameInteractionType}"
+    units="ms" expires_after="2025-10-30">
+  <owner>sullivan@chromium.org</owner>
+  <owner>mmocny@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    Blink.Responsiveness.PerAnimationFrame.* is a family of metrics representing
+    the sub-parts (aka breakdowns) of Interactions. Reported per Animation Frame
+    which includes at least one Event Timing which is a part of an interaction
+    (as in INP). All subparts are based on Event Timing API measurements (and
+    so, do not include continuous events, like scrolling).
+
+    This subpart represents the total duration between when the event is created
+    until it is presented, which is the entire interaction duration.
+
+    The metric is reported for {PerAnimationFrameInteractionType}.
+  </summary>
+</histogram>
+
+<histogram
+    name="Blink.Responsiveness.PerAnimationFrame.EventQueueTimeToCommit.{PerAnimationFrameInteractionType}"
+    units="ms" expires_after="2025-10-30">
+  <owner>sullivan@chromium.org</owner>
+  <owner>mmocny@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    Blink.Responsiveness.PerAnimationFrame.* is a family of metrics representing
+    the sub-parts (aka breakdowns) of Interactions. Reported per Animation Frame
+    which includes at least one Event Timing which is a part of an interaction
+    (as in INP). All subparts are based on Event Timing API measurements (and
+    so, do not include continuous events, like scrolling).
+
+    This subpart represents the total duration between when the event is queued
+    on the main thread until commit, which is the duration on the main thread.
+
+    The metric is reported for {PerAnimationFrameInteractionType}.
+  </summary>
+</histogram>
+
+<histogram
+    name="Blink.Responsiveness.PerAnimationFrame.EventQueueTimeToProcessingStart.{PerAnimationFrameInteractionType}"
     units="ms" expires_after="2025-10-30">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
@@ -4309,11 +4393,13 @@ chromium-metrics-reviews@google.com.
 
     This subpart represents the duration from the time when the first event was
     queued on the main thread to when it was processed.
+
+    The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
 </histogram>
 
 <histogram
-    name="Blink.Responsiveness.PerAnimationFrame.FirstProcessingStartToLastProcessingEnd"
+    name="Blink.Responsiveness.PerAnimationFrame.FirstProcessingStartToLastProcessingEnd.{PerAnimationFrameInteractionType}"
     units="ms" expires_after="2025-10-30">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
@@ -4329,11 +4415,13 @@ chromium-metrics-reviews@google.com.
     This subpart represents the duration from the time when the first event
     starts processing on the main thread to when the last event finishes
     processing.
+
+    The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
 </histogram>
 
 <histogram
-    name="Blink.Responsiveness.PerAnimationFrame.ProcessingEndToPresentationTime"
+    name="Blink.Responsiveness.PerAnimationFrame.ProcessingEndToPresentationTime.{PerAnimationFrameInteractionType}"
     units="ms" expires_after="2025-10-30">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
@@ -4350,11 +4438,13 @@ chromium-metrics-reviews@google.com.
     finishes processing on the main thread to when the browser presents the next
     frame with the changes caused by this event. Traditionally, also referred to
     as Presentation Delay.
+
+    The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
 </histogram>
 
 <histogram
-    name="Blink.Responsiveness.PerAnimationFrame.ProcessingEndToRenderStartTime"
+    name="Blink.Responsiveness.PerAnimationFrame.ProcessingEndToRenderStartTime.{PerAnimationFrameInteractionType}"
     units="ms" expires_after="2025-10-30">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
@@ -4369,11 +4459,13 @@ chromium-metrics-reviews@google.com.
 
     This subpart represents the duration from the time when the last event
     finishes processing on the main thread to when the rendering starts.
+
+    The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
 </histogram>
 
 <histogram
-    name="Blink.Responsiveness.PerAnimationFrame.RenderStartTimeToCommitTime"
+    name="Blink.Responsiveness.PerAnimationFrame.RenderStartTimeToCommitTime.{PerAnimationFrameInteractionType}"
     units="ms" expires_after="2025-10-30">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
@@ -4388,11 +4480,13 @@ chromium-metrics-reviews@google.com.
 
     This subpart represents the duration from the time when the rendering starts
     to when commit stage of rendering completes.
+
+    The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
 </histogram>
 
 <histogram
-    name="Blink.Responsiveness.PerAnimationFrame.TotalUnaccountedEventProcessingTime"
+    name="Blink.Responsiveness.PerAnimationFrame.TotalUnaccountedEventProcessingTime.{PerAnimationFrameInteractionType}"
     units="ms" expires_after="2025-10-30">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
@@ -4408,6 +4502,8 @@ chromium-metrics-reviews@google.com.
     This subpart represents the total unaccounted duration (idle time) within
     the processing time range which is from the time when the first event starts
     processing on the main thread to when the last event finishes processing.
+
+    The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
 </histogram>
 

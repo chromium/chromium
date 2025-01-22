@@ -38,6 +38,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
@@ -240,6 +241,19 @@ const char kHistogramCommitToPresentationTimePerAnimationFrame[] =
     "Blink.Responsiveness.PerAnimationFrame.CommitToPresentationTime";
 const char kHistogramProcessingEndToPresentationTimePerAnimationFrame[] =
     "Blink.Responsiveness.PerAnimationFrame.ProcessingEndToPresentationTime";
+
+const char kHistogramEventQueueTimeToCommitPerAnimationFrame[] =
+    "Blink.Responsiveness.PerAnimationFrame.EventQueueTimeToCommit";
+const char kHistogramEventCreationToPresentationTimePerAnimationFrame[] =
+    "Blink.Responsiveness.PerAnimationFrame.EventCreationToPresentationTime";
+const char kHistogramEventCreationToLastProcessingEndPerAnimationFrame[] =
+    "Blink.Responsiveness.PerAnimationFrame.EventCreationToLastProcessingEnd."
+    "NoFramePresented";
+
+const char kHistogramBothInteractionTypes[] = ".Both";
+const char kHistogramKeyboardInteractionTypes[] = ".Keyboard";
+const char kHistogramTapOrClickInteractionTypes[] = ".TapOrClick";
+const char kHistogramAllInteractionTypes[] = ".All";
 
 base::TimeTicks WindowPerformance::GetTimeOrigin(LocalDOMWindow* window) {
   DocumentLoader* loader = window->GetFrame()->Loader().GetDocumentLoader();
@@ -852,6 +866,17 @@ void WindowPerformance::FlushEventTimingsOnPageHidden() {
   responsiveness_metrics_->FlushAllEventsAtPageHidden();
 }
 
+void ReportPerAnimationFrameHistograms(std::string_view histogram_name,
+                                       std::string_view histogram_suffix,
+                                       base::TimeDelta sample) {
+  base::UmaHistogramCustomTimes(
+      base::StrCat({histogram_name, histogram_suffix}), sample,
+      base::Milliseconds(1), base::Seconds(60), 50);
+  base::UmaHistogramCustomTimes(
+      base::StrCat({histogram_name, kHistogramAllInteractionTypes}), sample,
+      base::Milliseconds(1), base::Seconds(60), 50);
+}
+
 // At visibility change, we report event timings of current pending events. The
 // registered presentation callback, when invoked, would be ignored.
 void WindowPerformance::ReportAllPendingEventTimingsOnPageHidden() {
@@ -943,10 +968,18 @@ void WindowPerformance::ReportEventTimings() {
 
     // Report all the events in this frame
     bool had_interaction_in_animation_frame = false;
+    bool had_key_interaction = false;
+    bool had_click_tap_interaction = false;
     std::for_each(first, last, [&](auto entry) {
       ReportEvent(interactive_detector, entry);
       if (entry->HasKnownInteractionID() && entry->interactionId() != 0u) {
         had_interaction_in_animation_frame = true;
+        if (entry->GetEventTimingReportingInfo()->key_code.has_value()) {
+          had_key_interaction = true;
+        }
+        if (entry->GetEventTimingReportingInfo()->pointer_id.has_value()) {
+          had_click_tap_interaction = true;
+        }
       }
     });
 
@@ -979,57 +1012,78 @@ void WindowPerformance::ReportEventTimings() {
     // Report INP breakdown metrics into UMA per animation frame.
     // Input delay breakdown.
     if (had_interaction_in_animation_frame) {
-      UMA_HISTOGRAM_CUSTOM_TIMES(
+      std::string_view histogram_suffix;
+      if (had_click_tap_interaction && had_key_interaction) {
+        histogram_suffix = kHistogramBothInteractionTypes;
+      } else if (had_key_interaction) {
+        histogram_suffix = kHistogramKeyboardInteractionTypes;
+      } else {
+        histogram_suffix = kHistogramTapOrClickInteractionTypes;
+      }
+      ReportPerAnimationFrameHistograms(
           kHistogramEventCreationTimeToProcessingStartPerAnimationFrame,
-          first_event_processing_start - first_event_creation_time,
-          base::Milliseconds(1), base::Seconds(60), 50);
-      UMA_HISTOGRAM_CUSTOM_TIMES(
+          histogram_suffix,
+          first_event_processing_start - first_event_creation_time);
+      ReportPerAnimationFrameHistograms(
           kHistogramEventCreationTimeToEventQueueTimePerAnimationFrame,
-          first_event_enqueued_to_main_thread_time - first_event_creation_time,
-          base::Milliseconds(1), base::Seconds(60), 50);
-      UMA_HISTOGRAM_CUSTOM_TIMES(
+          histogram_suffix,
+          first_event_enqueued_to_main_thread_time - first_event_creation_time);
+      ReportPerAnimationFrameHistograms(
           kHistogramEventQueueTimeToProcessingStartPerAnimationFrame,
+          histogram_suffix,
           first_event_processing_start -
-              first_event_enqueued_to_main_thread_time,
-          base::Milliseconds(1), base::Seconds(60), 50);
+              first_event_enqueued_to_main_thread_time);
 
       // Event Processing duration breakdown.
       base::TimeDelta total_processing_duration =
           last_event_processing_end_time - first_event_processing_start;
-      UMA_HISTOGRAM_CUSTOM_TIMES(
+      ReportPerAnimationFrameHistograms(
           kHistogramFirstProcessingStartToLastProcessingEndPerAnimationFrame,
-          total_processing_duration, base::Milliseconds(1), base::Seconds(60),
-          50);
+          histogram_suffix, total_processing_duration);
 
       base::TimeDelta total_accountable_processing_duration =
           TotalNonOverlappingProcessingDuration(event_timing_entries_);
       base::TimeDelta total_unaccountable_processing_duration =
           total_processing_duration - total_accountable_processing_duration;
-      UMA_HISTOGRAM_CUSTOM_TIMES(
+      ReportPerAnimationFrameHistograms(
           kHistogramTotalUnaccountedEventProcessingTimePerAnimationFrame,
-          total_unaccountable_processing_duration, base::Milliseconds(1),
-          base::Seconds(60), 50);
+          histogram_suffix, total_unaccountable_processing_duration);
 
       // Presentation delay breakdown.
       if (!last_event_presentation_time.is_null() &&
           !last_event_commit_finish_time.is_null() &&
           !last_event_render_start_time.is_null()) {
-        UMA_HISTOGRAM_CUSTOM_TIMES(
+        ReportPerAnimationFrameHistograms(
             kHistogramProcessingEndToRenderStartTimePerAnimationFrame,
-            last_event_render_start_time - last_event_processing_end_time,
-            base::Milliseconds(1), base::Seconds(60), 50);
-        UMA_HISTOGRAM_CUSTOM_TIMES(
+            histogram_suffix,
+            last_event_render_start_time - last_event_processing_end_time);
+        ReportPerAnimationFrameHistograms(
             kHistogramRenderStartTimeToCommitTimePerAnimationFrame,
-            last_event_commit_finish_time - last_event_render_start_time,
-            base::Milliseconds(1), base::Seconds(60), 50);
-        UMA_HISTOGRAM_CUSTOM_TIMES(
+            histogram_suffix,
+            last_event_commit_finish_time - last_event_render_start_time);
+        ReportPerAnimationFrameHistograms(
             kHistogramCommitToPresentationTimePerAnimationFrame,
-            last_event_presentation_time - last_event_commit_finish_time,
-            base::Milliseconds(1), base::Seconds(60), 50);
-        UMA_HISTOGRAM_CUSTOM_TIMES(
+            histogram_suffix,
+            last_event_presentation_time - last_event_commit_finish_time);
+        ReportPerAnimationFrameHistograms(
             kHistogramProcessingEndToPresentationTimePerAnimationFrame,
-            last_event_presentation_time - last_event_processing_end_time,
-            base::Milliseconds(1), base::Seconds(60), 50);
+            histogram_suffix,
+            last_event_presentation_time - last_event_processing_end_time);
+
+        // Overall durations
+        ReportPerAnimationFrameHistograms(
+            kHistogramEventQueueTimeToCommitPerAnimationFrame, histogram_suffix,
+            last_event_commit_finish_time -
+                first_event_enqueued_to_main_thread_time);
+        ReportPerAnimationFrameHistograms(
+            kHistogramEventCreationToPresentationTimePerAnimationFrame,
+            histogram_suffix,
+            last_event_presentation_time - first_event_creation_time);
+      } else {
+        ReportPerAnimationFrameHistograms(
+            kHistogramEventCreationToLastProcessingEndPerAnimationFrame,
+            histogram_suffix,
+            last_event_processing_end_time - first_event_creation_time);
       }
     }
 
