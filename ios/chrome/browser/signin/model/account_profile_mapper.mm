@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/core/browser/account_management_type_metrics_recorder.h"
 #import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -565,10 +566,21 @@ AccountProfileMapper::AccountProfileMapper(
       system_identity_manager_, std::ref(num_consumer_accounts),
       std::ref(num_managed_accounts), std::ref(num_unknown_accounts)));
 
+  auto account_types_summary =
+      signin::AccountManagementTypeMetricsRecorder::GetAccountTypesSummary(
+          num_consumer_accounts, num_managed_accounts);
   base::UmaHistogramEnumeration(
       "Signin.IOSAccountsOnDeviceManagementTypesSummary",
-      signin::AccountManagementTypeMetricsRecorder::GetAccountTypesSummary(
-          num_consumer_accounts, num_managed_accounts));
+      account_types_summary);
+  if (IsApplicationManagedByMDM()) {
+    base::UmaHistogramEnumeration(
+        "Signin.IOSAccountsOnDeviceManagementTypesSummary.ManagedDevice",
+        account_types_summary);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Signin.IOSAccountsOnDeviceManagementTypesSummary.UnmanagedDevice",
+        account_types_summary);
+  }
   base::UmaHistogramBoolean(
       "Signin.IOSAccountsOnDeviceManagementTypesHadUnknownTypes",
       num_unknown_accounts > 0);
