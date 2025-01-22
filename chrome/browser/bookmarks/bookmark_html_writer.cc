@@ -40,9 +40,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_types.h"
-#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/favicon_size.h"
 
 using bookmarks::BookmarkCodec;
@@ -376,7 +374,6 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
         if (!Write(kBookmarkBar)) {
           return false;
         }
-        title = l10n_util::GetStringUTF8(IDS_BOOKMARK_BAR_FOLDER_NAME);
       } else if (!Write(kFolderAttributeEnd)) {
         return false;
       }
