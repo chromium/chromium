@@ -170,6 +170,13 @@
   --cr-chip-height: 24px;
 }
 
+#attachments cr-chip[disabled] {
+  --cr-disabled-opacity: 1;
+  --cr-chip-color: var(--color-sys-state-disabled);
+  --color-chip-border: var(--color-sys-neutral-outline);
+  --cr-fallback-color-tonal-outline: var(--cr-fallback-color-neutral-outline);
+}
+
 #attachments img {
   height: 14px;
   width: 14px;

@@ -2398,6 +2398,13 @@ inline constexpr char kNtpModulesLoadedCountDict[] =
 // Dictionary of number of times the user has interacted with a module.
 inline constexpr char kNtpModulesInteractedCountDict[] =
     "NewTabPage.ModulesInteractedCountDict";
+// Whether a user's file attachment page can be successfully retrieved. Kept in
+// sync with `kOutlookCalendarLastAttachmentRequestTime.`
+inline constexpr char kNtpOutlookCalendarLastAttachmentRequestSuccess[] =
+    "NewTabPage.OutlookCalendar.LastAttachmentRequestSuccess";
+// The last time the validity of an attachment's resource URL was checked.
+inline constexpr char kNtpOutlookCalendarLastAttachmentRequestTime[] =
+    "NewTabPage.OutlookCalendar.LastAttachmentRequestTime";
 // Time the Outlook Calendar module was last dismissed.
 inline constexpr char kNtpOutlookCalendarLastDismissedTime[] =
     "NewTabPage.OutlookCalendar.LastDismissedTime";
