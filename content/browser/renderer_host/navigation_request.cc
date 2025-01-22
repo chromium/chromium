@@ -5873,10 +5873,6 @@ void NavigationRequest::OnWillCommitWithoutUrlLoaderChecksComplete(
 }
 
 void NavigationRequest::InheritServiceWorkerControllerFromParentIfNeeded() {
-  if (!base::FeatureList::IsEnabled(features::kServiceWorkerSrcdocSupport)) {
-    return;
-  }
-
   CHECK(!loader_);
   CHECK(!service_worker_handle_);
   RenderFrameHostImpl* parent = frame_tree_node()->parent();
@@ -5892,6 +5888,12 @@ void NavigationRequest::InheritServiceWorkerControllerFromParentIfNeeded() {
   if ((frame_tree_node_->pending_frame_policy().sandbox_flags &
        network::mojom::WebSandboxFlags::kOrigin) ==
       network::mojom::WebSandboxFlags::kOrigin) {
+    return;
+  }
+  GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+      frame_tree_node_->current_frame_host(),
+      blink::mojom::WebFeature::kAboutSrcdocToBeControlledByServiceWorker);
+  if (!base::FeatureList::IsEnabled(features::kServiceWorkerSrcdocSupport)) {
     return;
   }
   StoragePartition* partition = GetStoragePartitionWithCurrentSiteInfo();
