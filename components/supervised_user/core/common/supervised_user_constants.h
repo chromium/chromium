@@ -210,7 +210,12 @@ extern const char kClassifyUrlThrottleStatusHistogramName[];
 extern const char kClassifyUrlThrottleFinalStatusHistogramName[];
 
 // Returns the URL of the PACP widget for the iOS local web approval flow.
-GURL GetParentAccessURLForIOS();
+// `locale` is the display language (go/bcp47).
+GURL GetParentAccessURLForIOS(const std::string& locale);
+
+// Returns the URL of the PACP widget for the Desktop local web approval flow.
+// `locale` is the display language (go/bcp47).
+GURL GetParentAccessURLForDesktop(const std::string& locale);
 
 }  // namespace supervised_user
 

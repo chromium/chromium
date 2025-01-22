@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "components/supervised_user/core/common/supervised_user_constants.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "url/gurl.h"
 
@@ -28,7 +29,8 @@
   _webState->SetWebUsageEnabled(true);
   web::NavigationManager::WebLoadParams webParams =
       web::NavigationManager::WebLoadParams(
-          supervised_user::GetParentAccessURLForIOS());
+          supervised_user::GetParentAccessURLForIOS(
+              GetApplicationContext()->GetApplicationLocale()));
   _webState->GetNavigationManager()->LoadURLWithParams(webParams);
   // TODO(crbug.com/41407753): For a newly created WebState, the session
   // will not be restored until LoadIfNecessary call. Remove when fixed.
