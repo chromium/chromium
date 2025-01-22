@@ -456,6 +456,9 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   bool IsDeprecatedArcKioskAccountId(const AccountId& account_id) const;
   void RemoveDeprecatedArcKioskUser(const AccountId& account_id);
 
+  // Returns whether the device is enterprise managed.
+  bool IsEnterpriseManaged() const;
+
   std::unique_ptr<Delegate> delegate_;
 
   SEQUENCE_CHECKER(sequence_checker_);

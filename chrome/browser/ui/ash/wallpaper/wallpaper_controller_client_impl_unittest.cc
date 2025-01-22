@@ -29,9 +29,8 @@ class WallpaperControllerClientImplTest : public testing::Test {
  public:
   WallpaperControllerClientImplTest()
       : local_state_(TestingBrowserProcess::GetGlobal()) {
-    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
     user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+        std::make_unique<user_manager::FakeUserManager>(local_state_.Get()));
   }
 
   void SetUp() override {

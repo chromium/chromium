@@ -103,7 +103,7 @@ class ActiveSessionAuthControllerTest
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id_),
         /*browser_restart=*/false,
         /*is_child=*/false);
-    user_manager_->SetUserCryptohomeDataEphemeral(account_id_, false);
+    ASSERT_FALSE(user_manager_->IsUserCryptohomeDataEphemeral(account_id_));
   }
 
   std::string HashPassword(const std::string& unhashed_password) {
