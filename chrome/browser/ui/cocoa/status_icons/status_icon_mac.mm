@@ -228,8 +228,6 @@ void StatusIconMac::UpdatePlatformContextMenu(StatusIconMenuModel* model) {
 
 void StatusIconMac::CreateMenu(ui::MenuModel* model) {
   DCHECK(model);
-  menu_ = [[MenuControllerCocoa alloc] initWithModel:model
-                                            delegate:nil
-                              useWithPopUpButtonCell:NO];
+  menu_ = [[MenuControllerCocoa alloc] initWithModel:model delegate:nil];
   item().menu = menu_.menu;
 }
