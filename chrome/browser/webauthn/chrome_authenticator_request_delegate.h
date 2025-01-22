@@ -334,11 +334,6 @@ class ChromeAuthenticatorRequestDelegate
   std::unique_ptr<device::FidoRequestHandlerBase::TransportAvailabilityInfo>
       pending_transport_availability_info_;
 
-  std::optional<device::FidoRequestType> request_type_;
-
-  std::optional<device::UserVerificationRequirement>
-      user_verification_requirement_;
-
   // This holds a `TrustedVaultConnection` which will be set on
   // `enclave_controller_` when it is created.
   std::unique_ptr<trusted_vault::TrustedVaultConnection>

@@ -561,8 +561,6 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     device::FidoDiscoveryFactory* discovery_factory) {
   DCHECK(request_type == device::FidoRequestType::kGetAssertion ||
          resident_key_requirement.has_value());
-  request_type_ = request_type;
-  user_verification_requirement_ = user_verification_requirement;
 
   // Without the UI enabled, discoveries like caBLE, Android AOA, iCloud
   // keychain, and the enclave, don't make sense.
