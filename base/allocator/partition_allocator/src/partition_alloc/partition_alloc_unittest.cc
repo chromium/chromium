@@ -863,7 +863,7 @@ TEST_P(PartitionAllocTest, MultiAlloc) {
   ptrdiff_t diff = UntagPtr(ptr2) - UntagPtr(ptr1);
   EXPECT_EQ(static_cast<ptrdiff_t>(ActualTestAllocSize()), diff);
 
-  // Check that we re-use the just-freed slot.
+  // Check that we reuse the just-freed slot.
   allocator.root()->Free(ptr2);
   ptr2 = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr2);
@@ -995,7 +995,7 @@ TEST_P(PartitionAllocTest, ExtraAllocSize) {
   PartitionRoot::Bucket* bucket = &allocator.root()->buckets[bucket_index];
   ASSERT_EQ(bucket->slot_size, slot_size);
 
-  // The first allocation is expected to span exactly the capcity of the slot.
+  // The first allocation is expected to span exactly the capacity of the slot.
   // The second one should overflow into a higher-size slot, and not fill its
   // capacity.
   size_t requested_size1 = slot_size - ExtraAllocSize(allocator);
@@ -2495,7 +2495,7 @@ TEST_P(PartitionAllocTest, LostFreeSlotSpansBug) {
 // Disable these tests on Android because, due to the allocation-heavy behavior,
 // they tend to get OOM-killed rather than pass.
 //
-// Disable these test on Windows, since they run slower, so tend to timout and
+// Disable these test on Windows, since they run slower, so tend to timeout and
 // cause flake.
 #if !PA_BUILDFLAG(IS_WIN) &&                                         \
         (!PA_BUILDFLAG(PA_ARCH_CPU_64_BITS) ||                       \
@@ -3892,7 +3892,7 @@ TEST_P(PartitionAllocTest, InaccessibleRegionAfterSlotSpans) {
     }
   }
 
-  // Didn't find any bucket that doesn't fill the last PartitionPage. Unlikley,
+  // Didn't find any bucket that doesn't fill the last PartitionPage. Unlikely,
   // but so be it.
   if (!incomplete_bucket) {
     GTEST_SKIP();
@@ -3904,8 +3904,7 @@ TEST_P(PartitionAllocTest, InaccessibleRegionAfterSlotSpans) {
       root->Alloc(incomplete_bucket->slot_size - ExtraAllocSize(allocator), "");
   ASSERT_TRUE(ptr);
   uintptr_t start = SlotSpanMetadata<MetadataKind::kReadOnly>::ToSlotSpanStart(
-      SlotSpanMetadata<MetadataKind::kReadOnly>::FromAddr(
-          reinterpret_cast<uintptr_t>(ptr)));
+      SlotSpanMetadata<MetadataKind::kReadOnly>::FromAddr(UntagPtr(ptr)));
   uintptr_t end = start + incomplete_bucket->get_bytes_per_span();
 
   std::string proc_maps;
@@ -3948,7 +3947,7 @@ TEST_P(PartitionAllocTest, FewerMemoryRegions) {
     }
   }
 
-  // Didn't find any bucket that doesn't fill the last PartitionPage. Unlikley,
+  // Didn't find any bucket that doesn't fill the last PartitionPage. Unlikely,
   // but so be it.
   if (!incomplete_bucket) {
     GTEST_SKIP();
@@ -3960,8 +3959,7 @@ TEST_P(PartitionAllocTest, FewerMemoryRegions) {
       root->Alloc(incomplete_bucket->slot_size - ExtraAllocSize(allocator), "");
   ASSERT_TRUE(ptr);
   uintptr_t start = SlotSpanMetadata<MetadataKind::kReadOnly>::ToSlotSpanStart(
-      SlotSpanMetadata<MetadataKind::kReadOnly>::FromAddr(
-          reinterpret_cast<uintptr_t>(ptr)));
+      SlotSpanMetadata<MetadataKind::kReadOnly>::FromAddr(UntagPtr(ptr)));
   uintptr_t end = start + incomplete_bucket->get_bytes_per_span();
 
   std::string proc_maps;
@@ -4038,7 +4036,7 @@ TEST_P(PartitionAllocTest, ZeroFreedMemory) {
 
 TEST_P(PartitionAllocTest, Bug_897585) {
   // Need sizes big enough to be direct mapped and a delta small enough to
-  // allow re-use of the slot span when cookied. These numbers fall out of the
+  // allow reuse of the slot span when cookied. These numbers fall out of the
   // test case in the indicated bug.
   size_t kInitialSize = 983050;
   size_t kDesiredSize = 983100;
@@ -4503,7 +4501,7 @@ TEST_P(PartitionAllocTest, Bookkeeping) {
                 root.total_size_of_direct_mapped_pages);
 
       // Freeing memory in the diret map decommits pages right away. The address
-      // space is released for re-use too.
+      // space is released for reuse too.
       root.Free(ptr);
       expected_committed_size -= aligned_size;
       expected_direct_map_size = 0;
