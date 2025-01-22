@@ -39,7 +39,7 @@ import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class SafetyHubModuleViewBinderTest {
+public class DeprecatedSafetyHubModuleViewBinderTest {
     private static final @DrawableRes int SAFE_ICON = R.drawable.material_ic_check_24dp;
     private static final @DrawableRes int WARNING_ICON = R.drawable.ic_error;
     private static final @DrawableRes int INFO_ICON = R.drawable.btn_info;
@@ -68,76 +68,83 @@ public class SafetyHubModuleViewBinderTest {
 
         mPasswordCheckPropertyModel =
                 new PropertyModel.Builder(
-                                SafetyHubModuleProperties.PASSWORD_CHECK_SAFETY_HUB_MODULE_KEYS)
+                                DeprecatedSafetyHubModuleProperties
+                                        .PASSWORD_CHECK_SAFETY_HUB_MODULE_KEYS)
                         .build();
         PropertyModelChangeProcessor.create(
                 mPasswordCheckPropertyModel,
                 mPasswordCheckPreference,
-                SafetyHubModuleViewBinder::bindPasswordCheckProperties);
+                DeprecatedSafetyHubModuleViewBinder::bindPasswordCheckProperties);
 
         // Set up update check preference.
         mUpdateCheckPreference = new SafetyHubExpandablePreference(mActivity, null);
 
         mUpdateCheckPropertyModel =
                 new PropertyModel.Builder(
-                                SafetyHubModuleProperties.UPDATE_CHECK_SAFETY_HUB_MODULE_KEYS)
+                                DeprecatedSafetyHubModuleProperties
+                                        .UPDATE_CHECK_SAFETY_HUB_MODULE_KEYS)
                         .build();
         PropertyModelChangeProcessor.create(
                 mUpdateCheckPropertyModel,
                 mUpdateCheckPreference,
-                SafetyHubModuleViewBinder::bindUpdateCheckProperties);
+                DeprecatedSafetyHubModuleViewBinder::bindUpdateCheckProperties);
 
         // Set up permissions preference.
         mPermissionsPreference = new SafetyHubExpandablePreference(mActivity, null);
         mPermissionsPropertyModel =
-                new PropertyModel.Builder(SafetyHubModuleProperties.PERMISSIONS_MODULE_KEYS)
+                new PropertyModel.Builder(
+                                DeprecatedSafetyHubModuleProperties.PERMISSIONS_MODULE_KEYS)
                         .build();
         PropertyModelChangeProcessor.create(
                 mPermissionsPropertyModel,
                 mPermissionsPreference,
-                SafetyHubModuleViewBinder::bindPermissionsProperties);
+                DeprecatedSafetyHubModuleViewBinder::bindPermissionsProperties);
 
         // Set up notifications review preference.
         mNotificationsReviewPreference = new SafetyHubExpandablePreference(mActivity, null);
         mNotificationsReviewPropertyModel =
                 new PropertyModel.Builder(
-                                SafetyHubModuleProperties.NOTIFICATIONS_REVIEW_MODULE_KEYS)
+                                DeprecatedSafetyHubModuleProperties
+                                        .NOTIFICATIONS_REVIEW_MODULE_KEYS)
                         .build();
         PropertyModelChangeProcessor.create(
                 mNotificationsReviewPropertyModel,
                 mNotificationsReviewPreference,
-                SafetyHubModuleViewBinder::bindNotificationsReviewProperties);
+                DeprecatedSafetyHubModuleViewBinder::bindNotificationsReviewProperties);
 
         // Set up safe browsing preference.
         mSafeBrowsingPreference = new SafetyHubExpandablePreference(mActivity, null);
         mSafeBrowsingPropertyModel =
-                new PropertyModel.Builder(SafetyHubModuleProperties.SAFE_BROWSING_MODULE_KEYS)
+                new PropertyModel.Builder(
+                                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_MODULE_KEYS)
                         .build();
         PropertyModelChangeProcessor.create(
                 mSafeBrowsingPropertyModel,
                 mSafeBrowsingPreference,
-                SafetyHubModuleViewBinder::bindSafeBrowsingProperties);
+                DeprecatedSafetyHubModuleViewBinder::bindSafeBrowsingProperties);
 
         // Set up browser state preference.
         mBrowserStatePreference = new CardPreference(mActivity, null);
         mBrowserStatePropertyModel =
-                new PropertyModel.Builder(SafetyHubModuleProperties.BROWSER_STATE_MODULE_KEYS)
+                new PropertyModel.Builder(
+                                DeprecatedSafetyHubModuleProperties.BROWSER_STATE_MODULE_KEYS)
                         .build();
         PropertyModelChangeProcessor.create(
                 mBrowserStatePropertyModel,
                 mBrowserStatePreference,
-                SafetyHubModuleViewBinder::bindBrowserStateProperties);
+                DeprecatedSafetyHubModuleViewBinder::bindBrowserStateProperties);
     }
 
     @Test
     public void testPasswordCheckModule_NoCompromisedPasswords() {
         int totalPasswordsCount = 5;
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, 0);
+        mPasswordCheckPropertyModel.set(DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN, true);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, 0);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.ACCOUNT_EMAIL, TEST_ACCOUNT_EMAIL);
+                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+        mPasswordCheckPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.ACCOUNT_EMAIL, TEST_ACCOUNT_EMAIL);
 
         String expectedTitle =
                 mActivity.getString(R.string.safety_hub_no_compromised_passwords_title);
@@ -155,7 +162,8 @@ public class SafetyHubModuleViewBinderTest {
                 expectedSecondaryButtonText, mPasswordCheckPreference.getSecondaryButtonText());
 
         // Verify the managed state.
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+        mPasswordCheckPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
         String expectedManagedSummary =
                 mActivity.getString(R.string.safety_hub_no_passwords_summary_managed);
 
@@ -177,17 +185,18 @@ public class SafetyHubModuleViewBinderTest {
         int totalPasswordsCount = 5;
         int weakPasswordsCount = 1;
         int reusedPasswordsCount = 2;
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, 0);
+        mPasswordCheckPropertyModel.set(DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN, true);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, 0);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.REUSED_PASSWORDS_COUNT, reusedPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
+                DeprecatedSafetyHubModuleProperties.REUSED_PASSWORDS_COUNT, reusedPasswordsCount);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.ACCOUNT_EMAIL, TEST_ACCOUNT_EMAIL);
+                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+        mPasswordCheckPropertyModel.set(DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN, true);
+        mPasswordCheckPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.ACCOUNT_EMAIL, TEST_ACCOUNT_EMAIL);
 
         String expectedTitle = mActivity.getString(R.string.safety_hub_reused_weak_passwords_title);
         // Reused passwords take priority over weak passwords in the UI.
@@ -211,7 +220,8 @@ public class SafetyHubModuleViewBinderTest {
         String expectedSecondaryButtonText =
                 mActivity.getString(R.string.safety_hub_passwords_navigation_button);
 
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+        mPasswordCheckPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
         String expectedManagedSummary =
                 mActivity.getString(R.string.safety_hub_no_passwords_summary_managed);
 
@@ -232,15 +242,17 @@ public class SafetyHubModuleViewBinderTest {
     public void testPasswordCheckModule_NoCompromisedPasswords_WeakPasswordsExists_Enabled() {
         int totalPasswordsCount = 5;
         int weakPasswordsCount = 1;
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, 0);
+        mPasswordCheckPropertyModel.set(DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN, true);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount);
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.REUSED_PASSWORDS_COUNT, 0);
+                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, 0);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.ACCOUNT_EMAIL, TEST_ACCOUNT_EMAIL);
+                DeprecatedSafetyHubModuleProperties.REUSED_PASSWORDS_COUNT, 0);
+        mPasswordCheckPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+        mPasswordCheckPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.ACCOUNT_EMAIL, TEST_ACCOUNT_EMAIL);
 
         String expectedTitle = mActivity.getString(R.string.safety_hub_reused_weak_passwords_title);
         String expectedSummary =
@@ -263,7 +275,8 @@ public class SafetyHubModuleViewBinderTest {
         String expectedSecondaryButtonText =
                 mActivity.getString(R.string.safety_hub_passwords_navigation_button);
 
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+        mPasswordCheckPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
         String expectedManagedSummary =
                 mActivity.getString(R.string.safety_hub_no_passwords_summary_managed);
 
@@ -283,16 +296,17 @@ public class SafetyHubModuleViewBinderTest {
         int totalPasswordsCount = 5;
         int weakPasswordsCount = 1;
         int reusedPasswordsCount = 2;
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, 0);
+        mPasswordCheckPropertyModel.set(DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN, true);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, 0);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.REUSED_PASSWORDS_COUNT, reusedPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.REUSED_PASSWORDS_COUNT, reusedPasswordsCount);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.ACCOUNT_EMAIL, TEST_ACCOUNT_EMAIL);
+                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+        mPasswordCheckPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.ACCOUNT_EMAIL, TEST_ACCOUNT_EMAIL);
 
         String expectedTitle =
                 mActivity.getString(R.string.safety_hub_no_compromised_passwords_title);
@@ -310,7 +324,8 @@ public class SafetyHubModuleViewBinderTest {
                 expectedSecondaryButtonText, mPasswordCheckPreference.getSecondaryButtonText());
 
         // Verify the managed state.
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+        mPasswordCheckPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
         String expectedManagedSummary =
                 mActivity.getString(R.string.safety_hub_no_passwords_summary_managed);
 
@@ -332,17 +347,18 @@ public class SafetyHubModuleViewBinderTest {
         int compromisedPasswordsCount = 5;
         int weakPasswordsCount = 6;
         int reusedPasswordsCount = 6;
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
+        mPasswordCheckPropertyModel.set(DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN, true);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
+                compromisedPasswordsCount);
         // Compromised passwords take priority over any other type, hence, the weak or reused
         // passwords counts should be ignored.
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.REUSED_PASSWORDS_COUNT, reusedPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.REUSED_PASSWORDS_COUNT, reusedPasswordsCount);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
 
         String expectedTitle =
                 mActivity
@@ -372,7 +388,8 @@ public class SafetyHubModuleViewBinderTest {
         String expectedSecondaryButtonText =
                 mActivity.getString(R.string.safety_hub_passwords_navigation_button);
 
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+        mPasswordCheckPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
         String expectedManagedSummary =
                 mActivity.getString(R.string.safety_hub_no_passwords_summary_managed);
 
@@ -387,8 +404,9 @@ public class SafetyHubModuleViewBinderTest {
 
     @Test
     public void testPasswordCheckModule_NoPasswordsSaved() {
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, 0);
+        mPasswordCheckPropertyModel.set(DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN, true);
+        mPasswordCheckPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, 0);
 
         String expectedTitle = mActivity.getString(R.string.safety_hub_no_passwords_title);
         String expectedSummary = mActivity.getString(R.string.safety_hub_no_passwords_summary);
@@ -403,7 +421,8 @@ public class SafetyHubModuleViewBinderTest {
                 expectedSecondaryButtonText, mPasswordCheckPreference.getSecondaryButtonText());
 
         // Verify the managed state.
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+        mPasswordCheckPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
         String expectedManagedSummary =
                 mActivity.getString(R.string.safety_hub_no_passwords_summary_managed);
 
@@ -427,15 +446,16 @@ public class SafetyHubModuleViewBinderTest {
         int compromisedPasswordsCount = -1;
         int weakPasswordsCount = 0;
         int reusedPasswordsCount = 0;
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
+        mPasswordCheckPropertyModel.set(DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN, true);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
+                compromisedPasswordsCount);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.REUSED_PASSWORDS_COUNT, reusedPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.REUSED_PASSWORDS_COUNT, reusedPasswordsCount);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
 
         String expectedTitle =
                 mActivity.getString(R.string.safety_hub_password_check_unavailable_title);
@@ -451,7 +471,7 @@ public class SafetyHubModuleViewBinderTest {
                 expectedSecondaryButtonText, mPasswordCheckPreference.getSecondaryButtonText());
 
         // Verify the signed out state.
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, false);
+        mPasswordCheckPropertyModel.set(DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN, false);
         String expectedSignedOutSummary =
                 mActivity.getString(R.string.safety_hub_password_check_signed_out_summary);
         expectedSecondaryButtonText = mActivity.getString(R.string.sign_in_to_chrome);
@@ -464,7 +484,8 @@ public class SafetyHubModuleViewBinderTest {
                 expectedSecondaryButtonText, mPasswordCheckPreference.getSecondaryButtonText());
 
         // Verify the managed state.
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+        mPasswordCheckPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
         String expectedManagedSummary =
                 mActivity.getString(R.string.safety_hub_no_passwords_summary_managed);
 
@@ -488,15 +509,16 @@ public class SafetyHubModuleViewBinderTest {
         int compromisedPasswordsCount = -1;
         int weakPasswordsCount = 0;
         int reusedPasswordsCount = 0;
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
+        mPasswordCheckPropertyModel.set(DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN, true);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
+                compromisedPasswordsCount);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.REUSED_PASSWORDS_COUNT, reusedPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.REUSED_PASSWORDS_COUNT, reusedPasswordsCount);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
 
         String expectedTitle =
                 mActivity.getString(R.string.safety_hub_no_reused_weak_passwords_title);
@@ -515,7 +537,8 @@ public class SafetyHubModuleViewBinderTest {
         assertNull(mPasswordCheckPreference.getPrimaryButtonText());
 
         // Verify the managed state.
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+        mPasswordCheckPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
         String expectedManagedSummary =
                 mActivity.getString(R.string.safety_hub_no_passwords_summary_managed);
 
@@ -533,7 +556,8 @@ public class SafetyHubModuleViewBinderTest {
         UpdateStatusProvider.UpdateStatus updateStatus = new UpdateStatusProvider.UpdateStatus();
         updateStatus.updateState = UpdateStatusProvider.UpdateState.NONE;
 
-        mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
+        mUpdateCheckPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
 
         String expectedTitle = mActivity.getString(R.string.safety_check_updates_updated);
         String expectedSecondaryButtonText =
@@ -550,7 +574,8 @@ public class SafetyHubModuleViewBinderTest {
         UpdateStatusProvider.UpdateStatus updateStatus = new UpdateStatusProvider.UpdateStatus();
         updateStatus.updateState = UpdateStatusProvider.UpdateState.UPDATE_AVAILABLE;
 
-        mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
+        mUpdateCheckPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
 
         String expectedTitle = mActivity.getString(R.string.safety_check_updates_outdated);
         String expectedPrimaryButtonText = mActivity.getString(R.string.menu_update);
@@ -568,7 +593,8 @@ public class SafetyHubModuleViewBinderTest {
         updateStatus.updateState = UpdateStatusProvider.UpdateState.UNSUPPORTED_OS_VERSION;
         updateStatus.latestUnsupportedVersion = "1.1.1.1";
 
-        mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
+        mUpdateCheckPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
 
         String expectedTitle = mActivity.getString(R.string.menu_update_unsupported);
         String expectedSummary =
@@ -581,7 +607,7 @@ public class SafetyHubModuleViewBinderTest {
 
     @Test
     public void testUpdateCheckModule_StatusNotReady() {
-        mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, null);
+        mUpdateCheckPropertyModel.set(DeprecatedSafetyHubModuleProperties.UPDATE_STATUS, null);
 
         String expectedTitle = mActivity.getString(R.string.safety_hub_update_unavailable_title);
         String expectedSummary = mActivity.getString(R.string.safety_hub_unavailable_summary);
@@ -598,7 +624,7 @@ public class SafetyHubModuleViewBinderTest {
     @Test
     public void testPermissionsModule_NoSitesWithUnusedPermissions() {
         mPermissionsPropertyModel.set(
-                SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT, 0);
+                DeprecatedSafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT, 0);
 
         String expectedTitle = mActivity.getString(R.string.safety_hub_permissions_ok_title);
         String expectedSummary = mActivity.getString(R.string.safety_hub_permissions_ok_summary);
@@ -616,7 +642,7 @@ public class SafetyHubModuleViewBinderTest {
     public void testPermissionsModule_WithSitesWithUnusedPermissions() {
         int sitesWithUnusedPermissionsCount = 3;
         mPermissionsPropertyModel.set(
-                SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
+                DeprecatedSafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
                 sitesWithUnusedPermissionsCount);
         String expectedTitle =
                 mActivity
@@ -641,7 +667,7 @@ public class SafetyHubModuleViewBinderTest {
     @Test
     public void testNotificationsReviewModule_NoNotificationPermissions() {
         mNotificationsReviewPropertyModel.set(
-                SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT, 0);
+                DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT, 0);
 
         String expectedTitle =
                 mActivity.getString(R.string.safety_hub_notifications_review_ok_title);
@@ -665,7 +691,7 @@ public class SafetyHubModuleViewBinderTest {
     public void testNotificationsReviewModule_NotificationPermissionsExist() {
         int notificationPermissionsForReviewCount = 5;
         mNotificationsReviewPropertyModel.set(
-                SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
+                DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
                 notificationPermissionsForReviewCount);
         String expectedTitle =
                 mActivity
@@ -698,7 +724,7 @@ public class SafetyHubModuleViewBinderTest {
         @SafeBrowsingState int safeBrowsingState = SafeBrowsingState.STANDARD_PROTECTION;
 
         mSafeBrowsingPropertyModel.set(
-                SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
+                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
         String expectedTitle = mActivity.getString(R.string.safety_hub_safe_browsing_on_title);
         String expectedSummary = mActivity.getString(R.string.safety_hub_safe_browsing_on_summary);
         String expectedSecondaryButtonText =
@@ -711,7 +737,8 @@ public class SafetyHubModuleViewBinderTest {
         assertEquals(expectedSecondaryButtonText, mSafeBrowsingPreference.getSecondaryButtonText());
 
         // Verify the managed state.
-        mSafeBrowsingPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+        mSafeBrowsingPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
         String expectedManagedSummary =
                 mActivity.getString(R.string.safety_hub_safe_browsing_on_summary_managed);
         assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
@@ -726,7 +753,7 @@ public class SafetyHubModuleViewBinderTest {
         @SafeBrowsingState int safeBrowsingState = SafeBrowsingState.ENHANCED_PROTECTION;
 
         mSafeBrowsingPropertyModel.set(
-                SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
+                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
         String expectedTitle =
                 mActivity.getString(R.string.safety_hub_safe_browsing_enhanced_title);
         String expectedSummary =
@@ -741,7 +768,8 @@ public class SafetyHubModuleViewBinderTest {
         assertEquals(expectedSecondaryButtonText, mSafeBrowsingPreference.getSecondaryButtonText());
 
         // Verify the managed state.
-        mSafeBrowsingPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+        mSafeBrowsingPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
         String expectedManagedSummary =
                 mActivity.getString(R.string.safety_hub_safe_browsing_enhanced_summary_managed);
         assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
@@ -756,7 +784,7 @@ public class SafetyHubModuleViewBinderTest {
         @SafeBrowsingState int safeBrowsingState = SafeBrowsingState.NO_SAFE_BROWSING;
 
         mSafeBrowsingPropertyModel.set(
-                SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
+                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
         String expectedTitle =
                 mActivity.getString(R.string.prefs_safe_browsing_no_protection_summary);
         String expectedSummary = mActivity.getString(R.string.safety_hub_safe_browsing_off_summary);
@@ -773,7 +801,8 @@ public class SafetyHubModuleViewBinderTest {
         String expectedSecondaryButtonText =
                 mActivity.getString(R.string.safety_hub_go_to_security_settings_button);
 
-        mSafeBrowsingPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+        mSafeBrowsingPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
         String expectedManagedSummary =
                 mActivity.getString(R.string.safety_hub_safe_browsing_off_summary_managed);
         assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
@@ -794,19 +823,21 @@ public class SafetyHubModuleViewBinderTest {
         int sitesWithUnusedPermissionsCount = 3;
         int notificationPermissionsForReviewCount = 5;
 
-        mBrowserStatePropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
+        mBrowserStatePropertyModel.set(DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN, true);
         mBrowserStatePropertyModel.set(
-                SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
-        mBrowserStatePropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
+                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
         mBrowserStatePropertyModel.set(
-                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
         mBrowserStatePropertyModel.set(
-                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
+                compromisedPasswordsCount);
         mBrowserStatePropertyModel.set(
-                SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
+                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+        mBrowserStatePropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
                 sitesWithUnusedPermissionsCount);
         mBrowserStatePropertyModel.set(
-                SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
+                DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
                 notificationPermissionsForReviewCount);
 
         updateStatus.updateState = UpdateStatusProvider.UpdateState.NONE;
@@ -814,19 +845,21 @@ public class SafetyHubModuleViewBinderTest {
         safeBrowsingState = SafeBrowsingState.NO_SAFE_BROWSING;
 
         mBrowserStatePropertyModel.set(
-                SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
-        mBrowserStatePropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
+                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
+        mBrowserStatePropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
 
         safeBrowsingState = SafeBrowsingState.STANDARD_PROTECTION;
         totalPasswordsCount = 5;
         compromisedPasswordsCount = 1;
 
         mBrowserStatePropertyModel.set(
-                SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
+                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
         mBrowserStatePropertyModel.set(
-                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
+                compromisedPasswordsCount);
         mBrowserStatePropertyModel.set(
-                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
 
         assertFalse(mBrowserStatePreference.isVisible());
     }
@@ -841,17 +874,19 @@ public class SafetyHubModuleViewBinderTest {
         int notificationPermissionsForReviewCount = 5;
 
         mBrowserStatePropertyModel.set(
-                SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
-        mBrowserStatePropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
+                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
         mBrowserStatePropertyModel.set(
-                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
         mBrowserStatePropertyModel.set(
-                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
+                compromisedPasswordsCount);
         mBrowserStatePropertyModel.set(
-                SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
+                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+        mBrowserStatePropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
                 sitesWithUnusedPermissionsCount);
         mBrowserStatePropertyModel.set(
-                SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
+                DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
                 notificationPermissionsForReviewCount);
 
         assertFalse(mBrowserStatePreference.isVisible());
@@ -868,19 +903,21 @@ public class SafetyHubModuleViewBinderTest {
         int sitesWithUnusedPermissionsCount = 3;
         int notificationPermissionsForReviewCount = 0;
 
-        mBrowserStatePropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
+        mBrowserStatePropertyModel.set(DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN, true);
         mBrowserStatePropertyModel.set(
-                SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
-        mBrowserStatePropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
+                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
         mBrowserStatePropertyModel.set(
-                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
         mBrowserStatePropertyModel.set(
-                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
+                compromisedPasswordsCount);
         mBrowserStatePropertyModel.set(
-                SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
+                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+        mBrowserStatePropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
                 sitesWithUnusedPermissionsCount);
         mBrowserStatePropertyModel.set(
-                SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
+                DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
                 notificationPermissionsForReviewCount);
 
         assertTrue(mBrowserStatePreference.isVisible());
@@ -897,19 +934,21 @@ public class SafetyHubModuleViewBinderTest {
         int sitesWithUnusedPermissionsCount = 0;
         int notificationPermissionsForReviewCount = 0;
 
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
+        mPasswordCheckPropertyModel.set(DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN, true);
         mSafeBrowsingPropertyModel.set(
-                SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
-        mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
+                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
+        mUpdateCheckPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
+                compromisedPasswordsCount);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
         mPermissionsPropertyModel.set(
-                SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
+                DeprecatedSafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
                 sitesWithUnusedPermissionsCount);
         mNotificationsReviewPropertyModel.set(
-                SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
+                DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
                 notificationPermissionsForReviewCount);
 
         List<Integer> actualOrder =
@@ -943,28 +982,30 @@ public class SafetyHubModuleViewBinderTest {
         int notificationPermissionsForReviewCount = 5;
 
         // Unmanaged warning state should rank first.
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
+        mPasswordCheckPropertyModel.set(DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN, true);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
+                compromisedPasswordsCount);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
 
         // Unavailable state should rank after warning states.
-        mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, null);
+        mUpdateCheckPropertyModel.set(DeprecatedSafetyHubModuleProperties.UPDATE_STATUS, null);
 
         // Managed warning state should follow the same order as info state.
         mSafeBrowsingPropertyModel.set(
-                SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
-        mSafeBrowsingPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
+        mSafeBrowsingPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
 
         // Info state should rank above safe.
         mNotificationsReviewPropertyModel.set(
-                SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
+                DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
                 notificationPermissionsForReviewCount);
 
         // Safe state should rank last.
         mPermissionsPropertyModel.set(
-                SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
+                DeprecatedSafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
                 sitesWithUnusedPermissionsCount);
 
         List<Integer> actualOrder =

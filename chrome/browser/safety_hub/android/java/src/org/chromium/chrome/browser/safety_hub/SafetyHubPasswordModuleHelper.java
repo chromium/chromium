@@ -9,7 +9,7 @@ import android.content.Context;
 import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.safety_hub.SafetyHubModuleProperties.ModuleState;
+import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleState;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
@@ -50,11 +50,14 @@ public final class SafetyHubPasswordModuleHelper {
     // Returns the password module type according to the `model` properties.
     private static @ModuleType int getModuleType(PropertyModel model) {
         int compromisedPasswordsCount =
-                model.get(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT);
-        int weakPasswordsCount = model.get(SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT);
-        int reusedPasswordsCount = model.get(SafetyHubModuleProperties.REUSED_PASSWORDS_COUNT);
-        int totalPasswordsCount = model.get(SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT);
-        boolean isSignedOut = !model.get(SafetyHubModuleProperties.IS_SIGNED_IN);
+                model.get(DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT);
+        int weakPasswordsCount =
+                model.get(DeprecatedSafetyHubModuleProperties.WEAK_PASSWORDS_COUNT);
+        int reusedPasswordsCount =
+                model.get(DeprecatedSafetyHubModuleProperties.REUSED_PASSWORDS_COUNT);
+        int totalPasswordsCount =
+                model.get(DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT);
+        boolean isSignedOut = !model.get(DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN);
 
         boolean isWeakAndReusedFeatureEnabled =
                 ChromeFeatureList.sSafetyHubWeakAndReusedPasswords.isEnabled();
@@ -105,7 +108,7 @@ public final class SafetyHubPasswordModuleHelper {
         preference.setPrimaryButtonClickListener(null);
         preference.setSecondaryButtonText(context.getString(R.string.sign_in_to_chrome));
         preference.setSecondaryButtonClickListener(
-                model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
+                model.get(DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
     }
 
     // Updates `preference` for the password module of type {@link
@@ -121,7 +124,7 @@ public final class SafetyHubPasswordModuleHelper {
         preference.setSecondaryButtonText(
                 context.getString(R.string.safety_hub_passwords_navigation_button));
         preference.setSecondaryButtonClickListener(
-                model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
+                model.get(DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
     }
 
     // Updates `preference` for the password module of type {@link ModuleType.NO_SAVED_PASSWORDS}.
@@ -135,7 +138,7 @@ public final class SafetyHubPasswordModuleHelper {
         preference.setSecondaryButtonText(
                 context.getString(R.string.safety_hub_passwords_navigation_button));
         preference.setSecondaryButtonClickListener(
-                model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
+                model.get(DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
     }
 
     // Updates `preference` for the password module of type {@link
@@ -144,7 +147,7 @@ public final class SafetyHubPasswordModuleHelper {
             SafetyHubExpandablePreference preference, PropertyModel model) {
         Context context = preference.getContext();
         int compromisedPasswordsCount =
-                model.get(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT);
+                model.get(DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT);
         preference.setTitle(
                 context.getResources()
                         .getQuantityString(
@@ -160,7 +163,7 @@ public final class SafetyHubPasswordModuleHelper {
         preference.setPrimaryButtonText(
                 context.getString(R.string.safety_hub_passwords_navigation_button));
         preference.setPrimaryButtonClickListener(
-                model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
+                model.get(DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
         preference.setSecondaryButtonText(null);
         preference.setSecondaryButtonClickListener(null);
     }
@@ -170,7 +173,7 @@ public final class SafetyHubPasswordModuleHelper {
     private static void updatePreferenceForNoCompromisedPasswords(
             SafetyHubExpandablePreference preference, PropertyModel model) {
         Context context = preference.getContext();
-        String account = model.get(SafetyHubModuleProperties.ACCOUNT_EMAIL);
+        String account = model.get(DeprecatedSafetyHubModuleProperties.ACCOUNT_EMAIL);
 
         preference.setTitle(context.getString(R.string.safety_hub_no_compromised_passwords_title));
 
@@ -185,14 +188,15 @@ public final class SafetyHubPasswordModuleHelper {
         preference.setSecondaryButtonText(
                 context.getString(R.string.safety_hub_passwords_navigation_button));
         preference.setSecondaryButtonClickListener(
-                model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
+                model.get(DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
     }
 
     // Updates `preference` for the password module of type {@link ModuleType.HAS_WEAK_PASSWORDS}.
     private static void updatePreferenceForHasWeakPasswords(
             SafetyHubExpandablePreference preference, PropertyModel model) {
         Context context = preference.getContext();
-        int weakPasswordsCount = model.get(SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT);
+        int weakPasswordsCount =
+                model.get(DeprecatedSafetyHubModuleProperties.WEAK_PASSWORDS_COUNT);
         preference.setTitle(context.getString(R.string.safety_hub_reused_weak_passwords_title));
         preference.setSummary(
                 context.getResources()
@@ -203,7 +207,7 @@ public final class SafetyHubPasswordModuleHelper {
         preference.setPrimaryButtonText(
                 context.getString(R.string.safety_hub_passwords_navigation_button));
         preference.setPrimaryButtonClickListener(
-                model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
+                model.get(DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
         preference.setSecondaryButtonText(null);
         preference.setSecondaryButtonClickListener(null);
     }
@@ -212,7 +216,8 @@ public final class SafetyHubPasswordModuleHelper {
     private static void updatePreferenceForHasReusedPasswords(
             SafetyHubExpandablePreference preference, PropertyModel model) {
         Context context = preference.getContext();
-        int reusedPasswordsCount = model.get(SafetyHubModuleProperties.REUSED_PASSWORDS_COUNT);
+        int reusedPasswordsCount =
+                model.get(DeprecatedSafetyHubModuleProperties.REUSED_PASSWORDS_COUNT);
         preference.setTitle(context.getString(R.string.safety_hub_reused_weak_passwords_title));
         preference.setSummary(
                 context.getResources()
@@ -223,7 +228,7 @@ public final class SafetyHubPasswordModuleHelper {
         preference.setPrimaryButtonText(
                 context.getString(R.string.safety_hub_passwords_navigation_button));
         preference.setPrimaryButtonClickListener(
-                model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
+                model.get(DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
         preference.setSecondaryButtonText(null);
         preference.setSecondaryButtonClickListener(null);
     }
@@ -243,14 +248,14 @@ public final class SafetyHubPasswordModuleHelper {
         preference.setSecondaryButtonText(
                 context.getString(R.string.safety_hub_passwords_navigation_button));
         preference.setSecondaryButtonClickListener(
-                model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
+                model.get(DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
     }
 
     // Overrides summary and primary button fields of `preference` if passwords are controlled by a
     // policy.
     private static void overridePreferenceForManaged(
             SafetyHubExpandablePreference preference, PropertyModel model) {
-        assert model.get(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
+        assert model.get(DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
         preference.setSummary(
                 preference
                         .getContext()
@@ -260,7 +265,7 @@ public final class SafetyHubPasswordModuleHelper {
             assert preference.getSecondaryButtonText() == null;
             preference.setSecondaryButtonText(primaryButtonText);
             preference.setSecondaryButtonClickListener(
-                    model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
+                    model.get(DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
             preference.setPrimaryButtonText(null);
             preference.setSecondaryButtonClickListener(null);
         }
@@ -300,7 +305,7 @@ public final class SafetyHubPasswordModuleHelper {
                 throw new IllegalArgumentException();
         }
 
-        if (model.get(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY)) {
+        if (model.get(DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY)) {
             overridePreferenceForManaged(preference, model);
         }
     }

@@ -13,22 +13,22 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.BuildInfo;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
-import org.chromium.chrome.browser.safety_hub.SafetyHubModuleProperties.ModuleOption;
-import org.chromium.chrome.browser.safety_hub.SafetyHubModuleProperties.ModuleState;
+import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleOption;
+import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleState;
 import org.chromium.components.browser_ui.settings.CardPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-public class SafetyHubModuleViewBinder {
+public class DeprecatedSafetyHubModuleViewBinder {
     public static void bindCommonProperties(
             PropertyModel model,
             SafetyHubExpandablePreference preference,
             PropertyKey propertyKey) {
-        if (SafetyHubModuleProperties.IS_VISIBLE == propertyKey) {
-            preference.setVisible(model.get(SafetyHubModuleProperties.IS_VISIBLE));
-        } else if (SafetyHubModuleProperties.IS_EXPANDED == propertyKey) {
-            preference.setExpanded(model.get(SafetyHubModuleProperties.IS_EXPANDED));
+        if (DeprecatedSafetyHubModuleProperties.IS_VISIBLE == propertyKey) {
+            preference.setVisible(model.get(DeprecatedSafetyHubModuleProperties.IS_VISIBLE));
+        } else if (DeprecatedSafetyHubModuleProperties.IS_EXPANDED == propertyKey) {
+            preference.setExpanded(model.get(DeprecatedSafetyHubModuleProperties.IS_EXPANDED));
         }
     }
 
@@ -37,14 +37,14 @@ public class SafetyHubModuleViewBinder {
             SafetyHubExpandablePreference preference,
             PropertyKey propertyKey) {
         bindCommonProperties(model, preference, propertyKey);
-        if (SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT == propertyKey
-                || SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT == propertyKey
-                || SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT == propertyKey
-                || SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY == propertyKey
-                || SafetyHubModuleProperties.IS_SIGNED_IN == propertyKey
-                || SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER == propertyKey
-                || SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER == propertyKey
-                || SafetyHubModuleProperties.ACCOUNT_EMAIL == propertyKey) {
+        if (DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT == propertyKey
+                || DeprecatedSafetyHubModuleProperties.WEAK_PASSWORDS_COUNT == propertyKey
+                || DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT == propertyKey
+                || DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY == propertyKey
+                || DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN == propertyKey
+                || DeprecatedSafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER == propertyKey
+                || DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER == propertyKey
+                || DeprecatedSafetyHubModuleProperties.ACCOUNT_EMAIL == propertyKey) {
             updatePasswordCheckModule(preference, model);
         }
     }
@@ -54,7 +54,7 @@ public class SafetyHubModuleViewBinder {
             SafetyHubExpandablePreference preference,
             PropertyKey propertyKey) {
         bindCommonProperties(model, preference, propertyKey);
-        if (SafetyHubModuleProperties.UPDATE_STATUS == propertyKey) {
+        if (DeprecatedSafetyHubModuleProperties.UPDATE_STATUS == propertyKey) {
             updateUpdateCheckModule(preference, model);
         }
     }
@@ -64,7 +64,8 @@ public class SafetyHubModuleViewBinder {
             SafetyHubExpandablePreference preference,
             PropertyKey propertyKey) {
         bindCommonProperties(model, preference, propertyKey);
-        if (SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT == propertyKey) {
+        if (DeprecatedSafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT
+                == propertyKey) {
             updatePermissionsModule(preference, model);
         }
     }
@@ -74,7 +75,8 @@ public class SafetyHubModuleViewBinder {
             SafetyHubExpandablePreference preference,
             PropertyKey propertyKey) {
         bindCommonProperties(model, preference, propertyKey);
-        if (SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT == propertyKey) {
+        if (DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT
+                == propertyKey) {
             updateNotificationsReviewModule(preference, model);
         }
     }
@@ -84,23 +86,24 @@ public class SafetyHubModuleViewBinder {
             SafetyHubExpandablePreference preference,
             PropertyKey propertyKey) {
         bindCommonProperties(model, preference, propertyKey);
-        if (SafetyHubModuleProperties.SAFE_BROWSING_STATE == propertyKey
-                || SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY == propertyKey) {
+        if (DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE == propertyKey
+                || DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY == propertyKey) {
             updateSafeBrowsingModule(preference, model);
         }
     }
 
     public static void bindBrowserStateProperties(
             PropertyModel model, CardPreference preference, PropertyKey propertyKey) {
-        if (SafetyHubModuleProperties.SAFE_BROWSING_STATE == propertyKey
-                || SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT
+        if (DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE == propertyKey
+                || DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT
                         == propertyKey
-                || SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT == propertyKey
-                || SafetyHubModuleProperties.UPDATE_STATUS == propertyKey
-                || SafetyHubModuleProperties.IS_SIGNED_IN == propertyKey
-                || SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT == propertyKey
-                || SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT == propertyKey
-                || SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT == propertyKey) {
+                || DeprecatedSafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT
+                        == propertyKey
+                || DeprecatedSafetyHubModuleProperties.UPDATE_STATUS == propertyKey
+                || DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN == propertyKey
+                || DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT == propertyKey
+                || DeprecatedSafetyHubModuleProperties.WEAK_PASSWORDS_COUNT == propertyKey
+                || DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT == propertyKey) {
             updateBrowserStateModule(preference, model);
         }
     }
@@ -109,8 +112,8 @@ public class SafetyHubModuleViewBinder {
             SafetyHubExpandablePreference preference, PropertyModel model) {
         @ModuleOption int option = ModuleOption.SAFE_BROWSING;
         @SafeBrowsingState
-        int safeBrowsingState = model.get(SafetyHubModuleProperties.SAFE_BROWSING_STATE);
-        boolean managed = model.get(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
+        int safeBrowsingState = model.get(DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE);
+        boolean managed = model.get(DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
         @ModuleState int state = getModuleState(model, option);
         String title;
         String summary;
@@ -121,7 +124,7 @@ public class SafetyHubModuleViewBinder {
                         .getString(R.string.safety_hub_go_to_security_settings_button);
         View.OnClickListener primaryButtonListener = null;
         View.OnClickListener secondaryButtonListener =
-                model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
+                model.get(DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
 
         switch (safeBrowsingState) {
             case SafeBrowsingState.STANDARD_PROTECTION:
@@ -174,7 +177,7 @@ public class SafetyHubModuleViewBinder {
                     primaryButtonText =
                             preference.getContext().getString(R.string.safety_hub_turn_on_button);
                     primaryButtonListener =
-                            model.get(SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
+                            model.get(DeprecatedSafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
                 }
         }
 
@@ -194,7 +197,7 @@ public class SafetyHubModuleViewBinder {
         SafetyHubPasswordModuleHelper.updatePreference(preference, model);
         @ModuleOption int option = ModuleOption.ACCOUNT_PASSWORDS;
         @ModuleState int state = getModuleState(model, option);
-        boolean managed = model.get(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
+        boolean managed = model.get(DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
         preference.setIcon(getIconForModuleState(preference.getContext(), state, managed));
         preference.setOrder(getOrderForModuleState(option, state, managed));
     }
@@ -203,7 +206,7 @@ public class SafetyHubModuleViewBinder {
             SafetyHubExpandablePreference preference, PropertyModel model) {
         @ModuleOption int option = ModuleOption.UPDATE_CHECK;
         UpdateStatusProvider.UpdateStatus updateStatus =
-                model.get(SafetyHubModuleProperties.UPDATE_STATUS);
+                model.get(DeprecatedSafetyHubModuleProperties.UPDATE_STATUS);
         @ModuleState int state = getModuleState(model, option);
         String title;
         String summary = null;
@@ -218,7 +221,7 @@ public class SafetyHubModuleViewBinder {
             secondaryButtonText =
                     preference.getContext().getString(R.string.safety_hub_go_to_google_play_button);
             secondaryButtonListener =
-                    model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
+                    model.get(DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
         } else {
             switch (updateStatus.updateState) {
                 case UpdateStatusProvider.UpdateState.UNSUPPORTED_OS_VERSION:
@@ -239,7 +242,7 @@ public class SafetyHubModuleViewBinder {
                                     .getString(R.string.safety_hub_updates_outdated_summary);
                     primaryButtonText = preference.getContext().getString(R.string.menu_update);
                     primaryButtonListener =
-                            model.get(SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
+                            model.get(DeprecatedSafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
                     break;
                 default:
                     title =
@@ -260,7 +263,8 @@ public class SafetyHubModuleViewBinder {
                                     .getContext()
                                     .getString(R.string.safety_hub_go_to_google_play_button);
                     secondaryButtonListener =
-                            model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
+                            model.get(
+                                    DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
             }
         }
 
@@ -279,7 +283,7 @@ public class SafetyHubModuleViewBinder {
             SafetyHubExpandablePreference preference, PropertyModel model) {
         @ModuleOption int option = ModuleOption.UNUSED_PERMISSIONS;
         int sitesWithUnusedPermissionsCount =
-                model.get(SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT);
+                model.get(DeprecatedSafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT);
         @ModuleState int state = getModuleState(model, option);
         String title;
         String summary;
@@ -304,9 +308,10 @@ public class SafetyHubModuleViewBinder {
             primaryButtonText = preference.getContext().getString(R.string.got_it);
             secondaryButtonText =
                     preference.getContext().getString(R.string.safety_hub_view_sites_button);
-            primaryButtonListener = model.get(SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
+            primaryButtonListener =
+                    model.get(DeprecatedSafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
             secondaryButtonListener =
-                    model.get(SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER);
+                    model.get(DeprecatedSafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER);
         } else {
             title = preference.getContext().getString(R.string.safety_hub_permissions_ok_title);
             summary = preference.getContext().getString(R.string.safety_hub_permissions_ok_summary);
@@ -315,7 +320,7 @@ public class SafetyHubModuleViewBinder {
                             .getContext()
                             .getString(R.string.safety_hub_go_to_site_settings_button);
             secondaryButtonListener =
-                    model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
+                    model.get(DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
         }
 
         preference.setTitle(title);
@@ -333,7 +338,9 @@ public class SafetyHubModuleViewBinder {
             SafetyHubExpandablePreference preference, PropertyModel model) {
         @ModuleOption int option = ModuleOption.NOTIFICATION_REVIEW;
         int notificationPermissionsForReviewCount =
-                model.get(SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT);
+                model.get(
+                        DeprecatedSafetyHubModuleProperties
+                                .NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT);
         @ModuleState int state = getModuleState(model, option);
         String title;
         String summary;
@@ -361,9 +368,10 @@ public class SafetyHubModuleViewBinder {
                             .getString(R.string.safety_hub_notifications_reset_all_button);
             secondaryButtonText =
                     preference.getContext().getString(R.string.safety_hub_view_sites_button);
-            primaryButtonListener = model.get(SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
+            primaryButtonListener =
+                    model.get(DeprecatedSafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
             secondaryButtonListener =
-                    model.get(SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER);
+                    model.get(DeprecatedSafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER);
         } else {
             title =
                     preference
@@ -378,7 +386,7 @@ public class SafetyHubModuleViewBinder {
                             .getContext()
                             .getString(R.string.safety_hub_go_to_notification_settings_button);
             secondaryButtonListener =
-                    model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
+                    model.get(DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
         }
 
         preference.setTitle(title);
@@ -441,11 +449,12 @@ public class SafetyHubModuleViewBinder {
     private static int getOrderForModuleState(
             @ModuleOption int option, @ModuleState int state, boolean managed) {
         // Modules are ordered based on the severity of their {@link
-        // SafetyHubModuleProperties.ModuleState}. Modules in warning state that are not controlled
+        // DeprecatedSafetyHubModuleProperties.ModuleState}. Modules in warning state that are not
+        // controlled
         // by policy should appear first in the list. Followed by unavailable, info then safe
         // states.
         // If multiple modules have the same state, fallback to the order in {@link
-        // SafetyHubModuleProperties.ModuleOption}.
+        // DeprecatedSafetyHubModuleProperties.ModuleOption}.
         switch (state) {
             case ModuleState.SAFE:
             case ModuleState.INFO:
@@ -476,18 +485,20 @@ public class SafetyHubModuleViewBinder {
                 return SafetyHubPasswordModuleHelper.getModuleState(model);
             case ModuleOption.UPDATE_CHECK:
                 return SafetyHubUtils.getUpdateCheckModuleState(
-                        model.get(SafetyHubModuleProperties.UPDATE_STATUS));
+                        model.get(DeprecatedSafetyHubModuleProperties.UPDATE_STATUS));
             case ModuleOption.UNUSED_PERMISSIONS:
                 return SafetyHubUtils.getPermissionsModuleState(
-                        model.get(SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT));
+                        model.get(
+                                DeprecatedSafetyHubModuleProperties
+                                        .SITES_WITH_UNUSED_PERMISSIONS_COUNT));
             case ModuleOption.NOTIFICATION_REVIEW:
                 return SafetyHubUtils.getNotificationModuleState(
                         model.get(
-                                SafetyHubModuleProperties
+                                DeprecatedSafetyHubModuleProperties
                                         .NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT));
             case ModuleOption.SAFE_BROWSING:
                 return SafetyHubUtils.getSafeBrowsingModuleState(
-                        model.get(SafetyHubModuleProperties.SAFE_BROWSING_STATE));
+                        model.get(DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE));
             default:
                 throw new IllegalArgumentException();
         }

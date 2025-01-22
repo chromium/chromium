@@ -16,7 +16,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** List of properties to designate information about module in Safety Hub. */
-public class SafetyHubModuleProperties {
+// TODO(https://crbug.com/388788381): Migrate all the modules to use a new version of
+// SafetyHubModuleProperties.
+public class DeprecatedSafetyHubModuleProperties {
     /**
      * Order reflects state severity. Lowest being the most severe state and highest being the
      * safest state. Must be kept in sync with SafetyHubModuleState in settings/enums.xml.

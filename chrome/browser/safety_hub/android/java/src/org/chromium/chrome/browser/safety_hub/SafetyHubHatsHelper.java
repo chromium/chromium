@@ -16,7 +16,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
-import org.chromium.chrome.browser.safety_hub.SafetyHubModuleProperties.ModuleState;
+import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleState;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -218,7 +218,7 @@ class SafetyHubHatsHelper extends EmptyTabObserver implements Destroyable {
     /**
      * Returns a string that represents the overall state of Safety Hub. The overall state
      * represents the most severe state of all the modules. The logic for the state of each module
-     * should be equivalent to {@link SafetyHubModuleViewBinder#getModuleState()}.
+     * should be equivalent to {@link DeprecatedSafetyHubModuleViewBinder#getModuleState()}.
      */
     @VisibleForTesting
     @NonNull
@@ -258,7 +258,7 @@ class SafetyHubHatsHelper extends EmptyTabObserver implements Destroyable {
 
     /**
      * Returns the state of the password module. This computation differs slightly from the one in
-     * {@link SafetyHubModuleViewBinder#getModuleState()}.
+     * {@link DeprecatedSafetyHubModuleViewBinder#getModuleState()}.
      */
     private @ModuleState int getPasswordModuleState() {
         int compromisedPasswordsCount =
