@@ -237,12 +237,16 @@ FakeTabGroupSyncService::GetCurrentlySelectedTabID() {
 
 void FakeTabGroupSyncService::MakeTabGroupShared(
     const LocalTabGroupID& local_group_id,
-    std::string_view collaboration_id) {
+    std::string_view collaboration_id,
+    TabGroupSharingCallback callback) {
   std::optional<int> index = GetIndexOf(local_group_id);
   CHECK(index.has_value());
   SavedTabGroup& group = groups_[index.value()];
   group.SetCollaborationId(CollaborationId(std::string(collaboration_id)));
   NotifyObserversOfTabGroupShared(group);
+  if (callback) {
+    std::move(callback).Run(TabGroupSharingResult::kSuccess);
+  }
 }
 
 void FakeTabGroupSyncService::AboutToUnShareTabGroup(

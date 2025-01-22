@@ -88,7 +88,10 @@ void data_sharing::AssociateTabGroupWithGroupId(const std::string& tab_group_id,
   std::optional<tab_groups::SavedTabGroup> group =
       service->GetGroup(local_tab_group_id);
   if (group && !group->is_shared_tab_group()) {
-    service->MakeTabGroupShared(local_tab_group_id, group_id);
+    // TODO(crbug.com/382557489): implement the callback.
+    service->MakeTabGroupShared(
+        local_tab_group_id, group_id,
+        tab_groups::TabGroupSyncService::TabGroupSharingCallback());
   }
 }
 

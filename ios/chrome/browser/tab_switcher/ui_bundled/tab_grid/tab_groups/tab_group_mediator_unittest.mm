@@ -324,7 +324,8 @@ TEST_F(TabGroupMediatorTest, CollaborationIDChangedForInvalidGroup) {
       tab_groups::TabGroupId::GenerateNew());
   tab_group_sync_service_->AddGroup(other_saved_group);
   tab_group_sync_service_->MakeTabGroupShared(
-      other_saved_group.local_group_id().value(), "collaboration");
+      other_saved_group.local_group_id().value(), "collaboration",
+      tab_groups::TabGroupSyncService::TabGroupSharingCallback());
 
   EXPECT_OCMOCK_VERIFY((id)tab_group_consumer_);
 }
@@ -338,7 +339,8 @@ TEST_F(TabGroupMediatorTest, CollaborationIDChangedForGroupShared) {
   const SavedTabGroup saved_group =
       tab_group_sync_service_->GetGroup(tab_group_->tab_group_id()).value();
   tab_group_sync_service_->MakeTabGroupShared(
-      saved_group.local_group_id().value(), "collaboration");
+      saved_group.local_group_id().value(), "collaboration",
+      tab_groups::TabGroupSyncService::TabGroupSharingCallback());
 
   EXPECT_OCMOCK_VERIFY((id)tab_group_consumer_);
 }
