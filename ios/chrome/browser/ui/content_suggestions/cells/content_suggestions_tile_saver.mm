@@ -12,7 +12,6 @@
 #import "base/threading/scoped_blocking_call.h"
 #import "components/favicon/core/fallback_url_util.h"
 #import "components/ntp_tiles/ntp_tile.h"
-#import "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_provider.h"
 #import "ios/chrome/browser/widget_kit/model/features.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -26,9 +25,8 @@
 
 namespace content_suggestions_tile_saver {
 
-// Writes the `most_visited_sites` to disk.
-void WriteSavedMostVisited(NSDictionary<NSURL*, NTPTile*>* most_visited_sites,
-                           NSString* gaia_id);
+// Write the `most_visited_sites` to disk.
+void WriteSavedMostVisited(NSDictionary<NSURL*, NTPTile*>* most_visited_sites);
 
 // Checks if every site in `tiles` has had its favicons fetched. If so, writes
 // the info to disk, saving the favicons to `favicons_directory`.
@@ -42,16 +40,14 @@ NSString* GetFaviconFileName(const GURL& url);
 // `tile`.
 void WriteSingleUpdatedTileToDisk(NTPTile* tile);
 
-// Gets the favicons using `favicon_provider` and writes them to disk.
+// Get the favicons using `favicon_provider` and writes them to disk.
 void GetFaviconsAndSave(const ntp_tiles::NTPTilesVector& most_visited_data,
                         FaviconAttributesProvider* favicon_provider,
-                        NSURL* favicons_directory,
-                        NSString* gaia_id);
+                        NSURL* favicons_directory);
 
 // Updates the list of tiles that must be displayed in the content suggestion
 // widget.
-void UpdateTileList(const ntp_tiles::NTPTilesVector& most_visited_data,
-                    NSString* gaia_id);
+void UpdateTileList(const ntp_tiles::NTPTilesVector& most_visited_data);
 
 // Deletes icons contained in `favicons_directory` and corresponding to no URL
 // in `most_visited_data`.
@@ -62,8 +58,7 @@ void ClearOutdatedIcons(const ntp_tiles::NTPTilesVector& most_visited_data,
 
 namespace content_suggestions_tile_saver {
 
-void UpdateTileList(const ntp_tiles::NTPTilesVector& most_visited_data,
-                    NSString* gaia_id) {
+void UpdateTileList(const ntp_tiles::NTPTilesVector& most_visited_data) {
   NSMutableDictionary<NSURL*, NTPTile*>* tiles =
       [[NSMutableDictionary alloc] init];
   NSDictionary<NSURL*, NTPTile*>* old_tiles = ReadSavedMostVisited();
@@ -89,7 +84,7 @@ void UpdateTileList(const ntp_tiles::NTPTilesVector& most_visited_data,
     }
     [tiles setObject:tile forKey:tile.URL];
   }
-  WriteSavedMostVisited(tiles, gaia_id);
+  WriteSavedMostVisited(tiles);
 }
 
 NSString* GetFaviconFileName(const GURL& url) {
@@ -99,11 +94,10 @@ NSString* GetFaviconFileName(const GURL& url) {
 
 void GetFaviconsAndSave(const ntp_tiles::NTPTilesVector& most_visited_data,
                         FaviconAttributesProvider* favicon_provider,
-                        NSURL* favicons_directory,
-                        NSString* gaia_id) {
+                        NSURL* favicons_directory) {
   for (size_t i = 0; i < most_visited_data.size(); i++) {
     const GURL& gurl = most_visited_data[i].url;
-    UpdateSingleFavicon(gurl, favicon_provider, favicons_directory, gaia_id);
+    UpdateSingleFavicon(gurl, favicon_provider, favicons_directory);
   }
 }
 
@@ -133,12 +127,11 @@ void ClearOutdatedIcons(const ntp_tiles::NTPTilesVector& most_visited_data,
 
 void SaveMostVisitedToDisk(const ntp_tiles::NTPTilesVector& most_visited_data,
                            FaviconAttributesProvider* favicon_provider,
-                           NSURL* favicons_directory,
-                           NSString* gaia_id) {
+                           NSURL* favicons_directory) {
   if (favicons_directory == nil) {
     return;
   }
-  UpdateTileList(most_visited_data, gaia_id);
+  UpdateTileList(most_visited_data);
 
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -147,18 +140,18 @@ void SaveMostVisitedToDisk(const ntp_tiles::NTPTilesVector& most_visited_data,
       base::BindOnce(
           ^(const ntp_tiles::NTPTilesVector& inner_most_visited_data) {
             GetFaviconsAndSave(inner_most_visited_data, favicon_provider,
-                               favicons_directory, gaia_id);
+                               favicons_directory);
           },
           most_visited_data));
 }
 
-void WriteSingleUpdatedTileToDisk(NTPTile* tile, NSString* gaia_id) {
+void WriteSingleUpdatedTileToDisk(NTPTile* tile) {
   NSMutableDictionary* tiles = [ReadSavedMostVisited() mutableCopy];
   if (![tiles objectForKey:tile.URL]) {
     return;
   }
   [tiles setObject:tile forKey:tile.URL];
-  WriteSavedMostVisited(tiles, gaia_id);
+  WriteSavedMostVisited(tiles);
 }
 
 // Updates the Shortcut's widget with the user's current most visited sites
@@ -168,8 +161,7 @@ void UpdateShortcutsWidget() {
 #endif
 }
 
-void WriteSavedMostVisited(NSDictionary<NSURL*, NTPTile*>* most_visited_data,
-                           NSString* gaia_id) {
+void WriteSavedMostVisited(NSDictionary<NSURL*, NTPTile*>* most_visited_data) {
   NSDate* last_modification_date = NSDate.date;
   NSError* error = nil;
   NSData* data = [NSKeyedArchiver archivedDataWithRootObject:most_visited_data
@@ -183,35 +175,9 @@ void WriteSavedMostVisited(NSDictionary<NSURL*, NTPTile*>* most_visited_data,
 
   NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
 
-  // TODO(crbug.com/387971524): To be removed once ios_enable_widgets_for_mim is
-  // enabled by default.
   [sharedDefaults setObject:data forKey:app_group::kSuggestedItems];
   [sharedDefaults setObject:last_modification_date
                      forKey:app_group::kSuggestedItemsLastModificationDate];
-
-  // Update key app_group::kSuggestedItemsForMultiprofile.
-  NSMutableDictionary* suggested_items = [[sharedDefaults
-      objectForKey:app_group::kSuggestedItemsForMultiprofile] mutableCopy];
-  if (suggested_items == nil) {
-    suggested_items = [NSMutableDictionary dictionary];
-  }
-  [suggested_items setObject:data forKey:gaia_id];
-  [sharedDefaults setObject:suggested_items
-                     forKey:app_group::kSuggestedItemsForMultiprofile];
-
-  // Update key app_group::kSuggestedItemsLastModificationDateForMultiprofile.
-  NSMutableDictionary* last_modification_dates = [[sharedDefaults
-      objectForKey:app_group::
-                       kSuggestedItemsLastModificationDateForMultiprofile]
-      mutableCopy];
-  if (last_modification_dates == nil) {
-    last_modification_dates = [NSMutableDictionary dictionary];
-  }
-  [last_modification_dates setObject:last_modification_date forKey:gaia_id];
-  [sharedDefaults
-      setObject:last_modification_dates
-         forKey:app_group::kSuggestedItemsLastModificationDateForMultiprofile];
-
   UpdateShortcutsWidget();
 }
 
@@ -234,8 +200,7 @@ NSDictionary* ReadSavedMostVisited() {
 
 void UpdateSingleFavicon(const GURL& site_url,
                          FaviconAttributesProvider* favicon_provider,
-                         NSURL* favicons_directory,
-                         NSString* gaia_id) {
+                         NSURL* favicons_directory) {
   NSURL* siteNSURL = net::NSURLWithGURL(site_url);
 
   void (^faviconAttributesBlock)(FaviconAttributes*) =
@@ -270,7 +235,7 @@ void UpdateSingleFavicon(const GURL& site_url,
           tile.fallbackBackgroundColor = attributes.backgroundColor;
           tile.fallbackIsDefaultColor = attributes.defaultBackgroundColor;
           tile.fallbackMonogram = attributes.monogramString;
-          WriteSingleUpdatedTileToDisk(tile, gaia_id);
+          WriteSingleUpdatedTileToDisk(tile);
           // Favicon is outdated. Delete it.
           NSString* faviconFileName =
               GetFaviconFileName(net::GURLWithNSURL(siteNSURL));

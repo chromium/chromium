@@ -162,18 +162,12 @@ extern NSString* const kOpenCommandSourceShareExtension;
 extern NSString* const kOpenCommandSourceCredentialsExtension;
 extern NSString* const kOpenCommandSourceOpenExtension;
 
-// The value of the key for the sharedDefaults used by the Shortcuts Widget.
+// The value of the key for the sharedDefaults used by the Content Widget.
 extern NSString* const kSuggestedItems;
+
 // The value of the key for the sharedDefaults last modification date used by
 // the Shortcuts Widget.
 extern NSString* const kSuggestedItemsLastModificationDate;
-
-// NSUserDefaults key containing a dictionary with most visited sites data for a
-// given gaiaID. Used by the Shortcuts Widget.
-extern NSString* const kSuggestedItemsForMultiprofile;
-// NSUserDefaults key containing the last modification date. Used by
-// the Shortcuts Widget.
-extern NSString* const kSuggestedItemsLastModificationDateForMultiprofile;
 
 // The current epoch time, on the first run of chrome on this machine. It is set
 // once and must be attached to metrics reports forever thereafter.
