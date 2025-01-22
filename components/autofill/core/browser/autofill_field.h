@@ -91,6 +91,10 @@ class AutofillField : public FormFieldData {
     return server_predictions_;
   }
   bool HasServerPredictionsWithAutofillAiType() const;
+
+  // Returns the first server prediction value of `FieldTypeGroup::kAutofillAi`
+  // group or `FieldType::NO_SERVER_DATA` in case none is found.
+  FieldType GetAutofillAiServerTypePredictions() const;
   const std::vector<
       AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>&
   experimental_server_predictions() const {

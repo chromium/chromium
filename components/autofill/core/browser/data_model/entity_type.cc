@@ -4,10 +4,35 @@
 
 #include "components/autofill/core/browser/data_model/entity_type.h"
 
+#include <optional>
+
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
+
+std::optional<AttributeType> AttributeType::FromFieldType(FieldType type) {
+  switch (type) {
+    case PASSPORT_NAME_TAG:
+      return AttributeType(AttributeTypeName::kPassportName);
+    case PASSPORT_NUMBER:
+      return AttributeType(AttributeTypeName::kPassportNumber);
+    case PASSPORT_ISSUING_COUNTRY_TAG:
+      return AttributeType(AttributeTypeName::kPassportCountry);
+    case PASSPORT_EXPIRATION_DATE_TAG:
+      return AttributeType(AttributeTypeName::kPassportExpiryDate);
+    case PASSPORT_ISSUE_DATE_TAG:
+      return AttributeType(AttributeTypeName::kPassportIssueDate);
+    case LOYALTY_MEMBERSHIP_PROGRAM:
+      return AttributeType(AttributeTypeName::kLoyaltyCardProgram);
+    case LOYALTY_MEMBERSHIP_PROVIDER:
+      return AttributeType(AttributeTypeName::kLoyaltyCardProvider);
+    case LOYALTY_MEMBERSHIP_ID:
+      return AttributeType(AttributeTypeName::kLoyaltyCardMemberId);
+    default:
+      return std::nullopt;
+  }
+}
 
 FieldType AttributeTypeNameToFieldType(AttributeTypeName a) {
   switch (a) {
