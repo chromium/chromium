@@ -64,6 +64,8 @@ public class ColorPickerViewBinder {
                             model.get(ColorPickerSuggestionProperties.ONCLICK)
                                     .onResult(model.get(ColorPickerSuggestionProperties.INDEX)));
         } else {
+            suggestionView.setContentDescription(model.get(ColorPickerSuggestionProperties.LABEL));
+            suggestionView.setSelected(model.get(ColorPickerSuggestionProperties.IS_SELECTED));
             suggestionView.setAccessibilityDelegate(
                     new View.AccessibilityDelegate() {
                         @Override
@@ -77,9 +79,6 @@ public class ColorPickerViewBinder {
                                             1,
                                             1,
                                             false));
-                            info.setSelected(
-                                    model.get(ColorPickerSuggestionProperties.IS_SELECTED));
-                            info.setText(model.get(ColorPickerSuggestionProperties.LABEL));
                         }
                     });
         }
