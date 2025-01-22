@@ -121,8 +121,9 @@ void RecordCookieChanges(std::vector<net::CanonicalCookie>* out_cookies,
                          const net::CookieChangeInfo& change) {
   DCHECK(out_cookies);
   out_cookies->push_back(change.cookie);
-  if (out_removes)
+  if (out_removes) {
     out_removes->push_back(net::CookieChangeCauseIsDeletion(change.cause));
+  }
 }
 
 void SetCookie(const std::string& cookie_line,
@@ -144,8 +145,9 @@ void ClearCookies() {
   NSHTTPCookieStorage* store = [NSHTTPCookieStorage sharedHTTPCookieStorage];
   [store setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
   NSArray* cookies = [store cookies];
-  for (NSHTTPCookie* cookie in cookies)
+  for (NSHTTPCookie* cookie in cookies) {
     [store deleteCookie:cookie];
+  }
   EXPECT_EQ(0u, [[store cookies] count]);
 }
 

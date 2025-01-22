@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/net/cookies/cookie_store_ios_client.h"
+
 #import "base/task/sequenced_task_runner.h"
 
 namespace {
@@ -24,8 +25,8 @@ CookieStoreIOSClient::CookieStoreIOSClient() {}
 
 CookieStoreIOSClient::~CookieStoreIOSClient() {}
 
-scoped_refptr<base::SequencedTaskRunner>
-CookieStoreIOSClient::GetTaskRunner() const {
+scoped_refptr<base::SequencedTaskRunner> CookieStoreIOSClient::GetTaskRunner()
+    const {
   return scoped_refptr<base::SequencedTaskRunner>();
 }
 

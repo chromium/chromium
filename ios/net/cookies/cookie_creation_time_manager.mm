@@ -25,14 +25,16 @@ base::Time GetCreationTimeFromObject(NSHTTPCookie* cookie) {
   // Return a null time if the key is missing.
   id created = [[cookie properties] objectForKey:kHTTPCookieCreated];
   DCHECK(created && [created isKindOfClass:[NSNumber class]]);
-  if (!created || ![created isKindOfClass:[NSNumber class]])
+  if (!created || ![created isKindOfClass:[NSNumber class]]) {
     return base::Time();
+  }
   // created is the time from January 1st, 2001 in seconds.
   CFAbsoluteTime absolute_time = [(NSNumber*)created doubleValue];
   // If the cookie has been created using |-initWithProperties:|, the creation
   // date property is (incorrectly) set to 1.0. Treat that as an invalid time.
-  if (absolute_time < 2.0)
+  if (absolute_time < 2.0) {
     return base::Time();
+  }
   return base::Time::FromCFAbsoluteTime(absolute_time);
 }
 
@@ -51,8 +53,7 @@ CookieCreationTimeManager::CookieCreationTimeManager() : weak_factory_(this) {
   DETACH_FROM_THREAD(thread_checker_);
 }
 
-CookieCreationTimeManager::~CookieCreationTimeManager() {
-}
+CookieCreationTimeManager::~CookieCreationTimeManager() {}
 
 void CookieCreationTimeManager::SetCreationTime(
     NSHTTPCookie* cookie,
@@ -76,8 +77,9 @@ base::Time CookieCreationTimeManager::MakeUniqueCreationTime(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto it = unique_times_.find(creation_time);
 
-  if (it == unique_times_.end())
+  if (it == unique_times_.end()) {
     return creation_time;
+  }
 
   // If the time already exist, increment until we find a time available.
   // |unique_times_| is sorted according to time, so we can traverse it from
@@ -96,8 +98,9 @@ base::Time CookieCreationTimeManager::GetCreationTime(NSHTTPCookie* cookie) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   std::unordered_map<std::string, base::Time>::iterator it =
       creation_times_.find(GetCookieUniqueID(cookie));
-  if (it != creation_times_.end())
+  if (it != creation_times_.end()) {
     return it->second;
+  }
 
   base::Time native_creation_time = GetCreationTimeFromObject(cookie);
   native_creation_time = MakeUniqueCreationTime(native_creation_time);

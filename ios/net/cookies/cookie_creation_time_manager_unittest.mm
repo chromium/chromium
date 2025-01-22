@@ -17,10 +17,11 @@ class CookieCreationTimeManagerTest : public PlatformTest {
  public:
   NSHTTPCookie* GetCookie(NSString* cookie_line) {
     NSArray* cookies = [NSHTTPCookie
-        cookiesWithResponseHeaderFields:@{ @"Set-Cookie" : cookie_line }
+        cookiesWithResponseHeaderFields:@{@"Set-Cookie" : cookie_line}
                                  forURL:[NSURL URLWithString:@"http://foo"]];
-    if ([cookies count] != 1)
+    if ([cookies count] != 1) {
       return nil;
+    }
 
     return [cookies objectAtIndex:0];
   }

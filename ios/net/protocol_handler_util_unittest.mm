@@ -79,8 +79,9 @@ class HeadersURLRequestJob : public URLRequestJob {
 
  protected:
   std::string GetContentTypeValue() const {
-    if (request()->url().path_piece() == "/badcontenttype")
+    if (request()->url().path_piece() == "/badcontenttype") {
       return "\xff";
+    }
     return kTextHtml;
   }
 };
@@ -153,8 +154,7 @@ TEST_F(ProtocolHandlerUtilTest, BadHttpContentType) {
   // Create a response from the request.
   @try {
     GetNSURLResponseForRequest(request.get());
-  }
-  @catch (id exception) {
+  } @catch (id exception) {
     FAIL() << "Exception while creating response";
   }
 }
@@ -181,10 +181,10 @@ TEST_F(ProtocolHandlerUtilTest, CopyHttpHeaders) {
   NSMutableURLRequest* in_request =
       [[NSMutableURLRequest alloc] initWithURL:NSURLWithGURL(url)];
   [in_request setAllHTTPHeaderFields:@{
-      @"Referer" : @"referrer",
-      @"User-Agent" : @"secret",
-      @"Accept" : @"money/cash",
-      @"Foo" : @"bar",
+    @"Referer" : @"referrer",
+    @"User-Agent" : @"secret",
+    @"Accept" : @"money/cash",
+    @"Foo" : @"bar",
   }];
   std::unique_ptr<URLRequest> out_request(
       request_context_->CreateRequest(url, DEFAULT_PRIORITY, nullptr));
