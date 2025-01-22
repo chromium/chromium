@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.56"
 name = "proc-macro2"
-version = "1.0.92"
+version = "1.0.93"
 authors = [
     "David Tolnay <dtolnay@gmail.com>",
     "Alex Crichton <alex@alexcrichton.com>",
@@ -49,6 +49,12 @@ targets = ["x86_64-unknown-linux-gnu"]
 
 [package.metadata.playground]
 features = ["span-locations"]
+
+[features]
+default = ["proc-macro"]
+nightly = []
+proc-macro = []
+span-locations = []
 
 [lib]
 name = "proc_macro2"
@@ -97,9 +103,3 @@ version = "1"
 
 [dev-dependencies.tar]
 version = "0.4"
-
-[features]
-default = ["proc-macro"]
-nightly = []
-proc-macro = []
-span-locations = []

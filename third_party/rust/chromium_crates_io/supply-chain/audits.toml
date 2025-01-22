@@ -1749,6 +1749,12 @@ and the changes look okay to me (including the `unsafe fn from_str_unchecked`
 changes in `wrapper.rs`).
 """
 
+[[audits.proc-macro2]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.92 -> 1.0.93"
+notes = "No `unsafe`-related changes."
+
 [[audits.prost]]
 who = "agl@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

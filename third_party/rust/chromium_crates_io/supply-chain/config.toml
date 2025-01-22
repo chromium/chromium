@@ -179,7 +179,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."ppv-lite86:0.2.20"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."proc-macro2:1.0.92"]
+[policy."proc-macro2:1.0.93"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."prost-derive:0.13.4"]
