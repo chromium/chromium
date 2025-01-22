@@ -378298,7 +378298,7 @@
       ],
       "resources": {
        "helper.js": [
-        "5cbb183acf1d7e295ff84d17706c681c634e9b2e",
+        "502e07aa4b51f9d935aba290c711d7a71803cd91",
         []
        ],
        "permissions-policy-deferred-fetch.html": [
@@ -378307,13 +378307,37 @@
        ]
       }
      },
+     "quota": {
+      "README.md": [
+       "fc59ea73f4e46d7fc9b92ecc9e755335732bad4d",
+       []
+      ],
+      "cross-origin-iframe": {
+       "README.md": [
+        "bd802f0b2d2c8d30e97015a8d69804ccac564f5e",
+        []
+       ]
+      },
+      "resources": {
+       "helper.js": [
+        "bd9571c82f58459ec0a9f27d50370bc9ca7913b7",
+        []
+       ]
+      },
+      "same-origin-iframe": {
+       "README.md": [
+        "025422314edc35e6b84f05b63a31b607a7dcd7c0",
+        []
+       ]
+      }
+     },
      "resources": {
       "fetch-later-helper.js": [
-       "566b3e0a1a4d0d57f857f5972fc99f2bb57e742b",
+       "ef1d7090a8f5e6f81d0db9572d7d2d4cc8dd7658",
        []
       ],
       "fetch-later.html": [
-       "b569e1a076ac210d87d01b51ded0a8943476eac0",
+       "b295be116c731c5ceec2d222ecd999fc5342d5c6",
        []
       ],
       "get_beacon.py": [
@@ -435718,26 +435742,240 @@
       {}
      ]
     ],
-    "idbobjectstore-rename-abort.html": [
-     "0a7c54ee58f51927add8ed11aa5817d2b3fdbadd",
+    "idbobjectstore-rename-abort.any.js": [
+     "b285fca78320b5d45f0b7dffe6e2c6d48e17a4ff",
      [
-      null,
-      {}
-     ]
-    ],
-    "idbobjectstore-rename-errors.html": [
-     "ad2ff9a6577d05029016ec8fbef7fe3acdb74e15",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbobjectstore-rename-store.html": [
-     "97fa2e0c1fee475b006ff36df7d1099c87ac3190",
-     [
-      null,
+      "IndexedDB/idbobjectstore-rename-abort.any.html",
       {
-       "timeout": "long"
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: object store renaming support in aborted transactions"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-rename-abort.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: object store renaming support in aborted transactions"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-rename-abort.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: object store renaming support in aborted transactions"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-rename-abort.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: object store renaming support in aborted transactions"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "idbobjectstore-rename-errors.any.js": [
+     "32e52ffa5f8c4982ac30fdf6eb040e11dbc077d0",
+     [
+      "IndexedDB/idbobjectstore-rename-errors.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: object store renaming error handling"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-rename-errors.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: object store renaming error handling"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-rename-errors.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: object store renaming error handling"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-rename-errors.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: object store renaming error handling"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "idbobjectstore-rename-store.any.js": [
+     "5877c045bc3d39a8c161c68aa8c8c7f837584b61",
+     [
+      "IndexedDB/idbobjectstore-rename-store.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: object store renaming support"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-rename-store.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: object store renaming support"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-rename-store.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: object store renaming support"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-rename-store.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: object store renaming support"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
       }
      ]
     ],
@@ -436950,18 +437188,162 @@
       {}
      ]
     ],
-    "idbtransaction-objectStore-exception-order.html": [
-     "9b5c4ac4b94605b0d16d3ff8b98cdf73aa0a6c87",
+    "idbtransaction-objectStore-exception-order.any.js": [
+     "56856fd3134d5f933b14d0ebadbab80bc8dfbea9",
      [
-      null,
-      {}
+      "IndexedDB/idbtransaction-objectStore-exception-order.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBTransaction objectStore() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbtransaction-objectStore-exception-order.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBTransaction objectStore() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbtransaction-objectStore-exception-order.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBTransaction objectStore() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbtransaction-objectStore-exception-order.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBTransaction objectStore() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbtransaction-objectStore-finished.html": [
-     "de2cad51afe1b52fcfca88b8ef590b6b9dbc9a1f",
+    "idbtransaction-objectStore-finished.any.js": [
+     "a5713d5885b2d60aac1d421a37c5014fd40c7f17",
      [
-      null,
-      {}
+      "IndexedDB/idbtransaction-objectStore-finished.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBTransaction objectStore() when transaction is finished"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbtransaction-objectStore-finished.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBTransaction objectStore() when transaction is finished"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbtransaction-objectStore-finished.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBTransaction objectStore() when transaction is finished"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbtransaction-objectStore-finished.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBTransaction objectStore() when transaction is finished"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbtransaction-oncomplete.htm": [
@@ -511149,8 +511531,15 @@
        {}
       ]
      ],
-     "pseudo-element-animations.html": [
+     "pseudo-element-animations-rerun.html": [
       "a7c3247479d01f4044b9033726282037c1b4bc9f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "pseudo-element-animations.html": [
+      "b5cde702733779cba306e861ee1fe2290fe64a5e",
       [
        null,
        {}
@@ -556069,7 +556458,7 @@
       ]
      },
      "iframe.tentative.https.window.js": [
-      "4f2610863604f0a235524a80f7988212355e5ab9",
+      "b30156b41b2ac9fc934003a83b1be97f935ef4e8",
       [
        "fetch/fetch-later/iframe.tentative.https.window.html",
        {
@@ -556091,7 +556480,7 @@
       ]
      ],
      "new-window.tentative.https.window.js": [
-      "27922f462665b550e1c5520112051178ef45782b",
+      "5a64eb596e1b78dfc7e96f8346ecc7e399e8d470",
       [
        "fetch/fetch-later/new-window.tentative.https.window.html",
        {
@@ -556121,7 +556510,7 @@
      ],
      "permissions-policy": {
       "deferred-fetch-allowed-by-permissions-policy-attribute-redirect.tentative.https.window.js": [
-       "707d6d1fa54c10e39187a71bfb06bc987c756ae1",
+       "13870bc94b0ec7ff3066b94345dc5c163ecfe51b",
        [
         "fetch/fetch-later/permissions-policy/deferred-fetch-allowed-by-permissions-policy-attribute-redirect.tentative.https.window.html",
         {
@@ -556238,7 +556627,7 @@
        ]
       ],
       "deferred-fetch-default-permissions-policy.tentative.https.window.js": [
-       "a4cc45ef6be4f158164b5f222ebcb4b241a138cb",
+       "4982221952ff980674f459a382858e2726f28ec5",
        [
         "fetch/fetch-later/permissions-policy/deferred-fetch-default-permissions-policy.tentative.https.window.html",
         {
@@ -556277,7 +556666,7 @@
        ]
       ],
       "deferred-fetch-supported-by-permissions-policy.tentative.window.js": [
-       "e89f1edb8567092bcf6146d772a93789e2dbc9f8",
+       "385b0e054ed172ac778b7df961bfb0ad5f31a434",
        [
         "fetch/fetch-later/permissions-policy/deferred-fetch-supported-by-permissions-policy.tentative.window.html",
         {
@@ -556376,28 +556765,456 @@
        ]
       ]
      },
-     "quota.tentative.https.window.js": [
-      "400be4050955a96c96df49f5976cc5a8b43246ce",
-      [
-       "fetch/fetch-later/quota.tentative.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/get-host-info.sub.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "/fetch/fetch-later/resources/fetch-later-helper.js"
+     "quota": {
+      "accumulated-oversized-payload.tentative.https.window.js": [
+       "6439b392e2a0230a3ff819e4e80b42341dc0c389",
+       [
+        "fetch/fetch-later/quota/accumulated-oversized-payload.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/fetch/fetch-later/resources/fetch-later-helper.js"
+          ],
+          [
+           "script",
+           "/fetch/fetch-later/quota/resources/helper.js"
+          ]
          ]
+        }
+       ]
+      ],
+      "cross-origin-iframe": {
+       "accumulated-oversized-payload.tentative.https.window.js": [
+        "071a9c600b7a3230f7e72952521bebc695a2a447",
+        [
+         "fetch/fetch-later/quota/cross-origin-iframe/accumulated-oversized-payload.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/quota/resources/helper.js"
+           ]
+          ]
+         }
         ]
-       }
+       ],
+       "empty-payload.tentative.https.window.js": [
+        "6c7becfacaf45048c69c815940460d1dbe084a67",
+        [
+         "fetch/fetch-later/quota/cross-origin-iframe/empty-payload.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "max-payload.tentative.https.window.js": [
+        "480f90988bf552ca915032e3e7f0b60c59cd0604",
+        [
+         "fetch/fetch-later/quota/cross-origin-iframe/max-payload.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/quota/resources/helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "multiple-iframes.tentative.https.window.js": [
+        "3538c73a3966e3a00a513fe958a69df622446232",
+        [
+         "fetch/fetch-later/quota/cross-origin-iframe/multiple-iframes.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/quota/resources/helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "oversized-payload.tentative.https.window.js": [
+        "43a605151342a9825095ed6c20e921a663e741cb",
+        [
+         "fetch/fetch-later/quota/cross-origin-iframe/oversized-payload.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/quota/resources/helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "small-payload.tentative.https.window.js": [
+        "ad73db5516e687b1ade0f1cc3588780f15f2dd30",
+        [
+         "fetch/fetch-later/quota/cross-origin-iframe/small-payload.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ]
+          ]
+         }
+        ]
+       ]
+      },
+      "empty-payload.tentative.https.window.js": [
+       "c2c4dd50326c0a75b2c82d152995329ccc0cd252",
+       [
+        "fetch/fetch-later/quota/empty-payload.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/fetch/fetch-later/resources/fetch-later-helper.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "max-payload.tentative.https.window.js": [
+       "8457060797ac2d140c85af6c657f79389288c356",
+       [
+        "fetch/fetch-later/quota/max-payload.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/fetch/fetch-later/resources/fetch-later-helper.js"
+          ],
+          [
+           "script",
+           "/fetch/fetch-later/quota/resources/helper.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "multiple-origins.tentative.https.window.js": [
+       "5849068e4d5780a31ad0562854eba818d031af75",
+       [
+        "fetch/fetch-later/quota/multiple-origins.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/fetch/fetch-later/resources/fetch-later-helper.js"
+          ],
+          [
+           "script",
+           "/fetch/fetch-later/quota/resources/helper.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "oversized-payload.tentative.https.window.js": [
+       "0036d040d8e201d8d621c6615e4e7c49daf45fff",
+       [
+        "fetch/fetch-later/quota/oversized-payload.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/fetch/fetch-later/resources/fetch-later-helper.js"
+          ],
+          [
+           "script",
+           "/fetch/fetch-later/quota/resources/helper.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "same-origin-iframe": {
+       "accumulated-oversized-payload.tentative.https.window.js": [
+        "8b894c011ad29c3e984022ec601578bcfc701e2b",
+        [
+         "fetch/fetch-later/quota/same-origin-iframe/accumulated-oversized-payload.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/quota/resources/helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "empty-payload.tentative.https.window.js": [
+        "53cae60047eaefd2b01a3bd45c84239fa3752bf9",
+        [
+         "fetch/fetch-later/quota/same-origin-iframe/empty-payload.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "max-payload.tentative.https.window.js": [
+        "9d865eeb5ee55b80aabcc87ebbd579c3787f1ec1",
+        [
+         "fetch/fetch-later/quota/same-origin-iframe/max-payload.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/quota/resources/helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "multiple-iframes.tentative.https.window.js": [
+        "3f46f84a5fc18a1d7fbaca3fdc0a3d7b6a5f2d64",
+        [
+         "fetch/fetch-later/quota/same-origin-iframe/multiple-iframes.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/quota/resources/helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "oversized-payload.tentative.https.window.js": [
+        "d71b87190cea15f8e439129f844bab107235237a",
+        [
+         "fetch/fetch-later/quota/same-origin-iframe/oversized-payload.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/quota/resources/helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "small-payload.tentative.https.window.js": [
+        "2b20a6fc62965e0d4d8ad5a4014aeb6679653584",
+        [
+         "fetch/fetch-later/quota/same-origin-iframe/small-payload.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/fetch/fetch-later/resources/fetch-later-helper.js"
+           ]
+          ]
+         }
+        ]
+       ]
+      },
+      "small-payload.tentative.https.window.js": [
+       "862ca09affdb49c7e461cf9bdfc833b9c2ce09f9",
+       [
+        "fetch/fetch-later/quota/small-payload.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/fetch/fetch-later/resources/fetch-later-helper.js"
+          ]
+         ]
+        }
+       ]
       ]
-     ],
+     },
      "send-on-deactivate-with-background-sync.tentative.https.window.js": [
       "881bdd23f9371ac684b4aa58c2be23ac402cf4fe",
       [

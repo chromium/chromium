@@ -4118,12 +4118,12 @@
   },
   {
     "name": "enable-webrtc-allow-input-volume-adjustment",
-    "owners": [ "alessiob@chromium.org", "silen@chromium.org" ],
+    "owners": [ "peah@chromium.org", "silen@chromium.org" ],
     "expiry_milestone": 140
   },
   {
     "name": "enable-webrtc-apm-downmix-capture-audio-method",
-    "owners": [ "alessiob@chromium.org", "silen@chromium.org" ],
+    "owners": [ "peah@chromium.org", "silen@chromium.org" ],
     "expiry_milestone": 140
   },
   {

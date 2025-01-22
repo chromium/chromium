@@ -190,18 +190,28 @@ void PasswordChangeDelegateImpl::Init() {
 
 void PasswordChangeDelegateImpl::StartPasswordChange() {
   CHECK(originator_);
-  content::WebContents* new_tab =
-      std::move(open_password_change_tab_callback_)
-          .Run(change_password_url_, originator_.get());
-  if (new_tab) {
+  if (executor_) {
+    executor_->OpenURL(
+        content::OpenURLParams(change_password_url_, content::Referrer(),
+                               WindowOpenDisposition::CURRENT_TAB,
+                               ui::PAGE_TRANSITION_LINK,
+                               /*is_renderer_initiated=*/false),
+        base::DoNothing());
+  } else {
+    content::WebContents* new_tab = open_password_change_tab_callback_.Run(
+        change_password_url_, originator_.get());
+    if (!new_tab) {
+      UpdateState(State::kPasswordChangeFailed);
+      return;
+    }
     executor_ = new_tab->GetWeakPtr();
-    form_waiter_ = std::make_unique<ParsedPasswordFormWaiter>(
-        new_tab,
-        base::BindOnce(&PasswordChangeDelegateImpl::OnPasswordChangeFormParsed,
-                       weak_ptr_factory_.GetWeakPtr()));
-
-    Observe(new_tab);
   }
+
+  form_waiter_ = std::make_unique<ParsedPasswordFormWaiter>(
+      executor_.get(),
+      base::BindOnce(&PasswordChangeDelegateImpl::OnPasswordChangeFormParsed,
+                     weak_ptr_factory_.GetWeakPtr()));
+  Observe(executor_.get());
 }
 
 void PasswordChangeDelegateImpl::OnPasswordChangeFormParsed(
@@ -246,6 +256,14 @@ PasswordChangeDelegate::State PasswordChangeDelegateImpl::GetCurrentState()
 void PasswordChangeDelegateImpl::Stop() {
   observers_.Notify(&PasswordChangeDelegate::Observer::OnPasswordChangeStopped,
                     this);
+}
+
+void PasswordChangeDelegateImpl::Restart() {
+  CHECK_EQ(State::kChangePasswordFormNotFound, current_state_);
+  CHECK(!form_manager_);
+
+  current_state_ = State::kWaitingForChangePasswordForm;
+  StartPasswordChange();
 }
 
 void PasswordChangeDelegateImpl::OnPasswordFormSubmission(

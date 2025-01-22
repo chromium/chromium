@@ -68,6 +68,10 @@ const char kMerchantTrustForceShowUIForTestingName[] =
 const base::FeatureParam<bool> kMerchantTrustForceShowUIForTesting{
     &kMerchantTrust, kMerchantTrustForceShowUIForTestingName, false};
 
+const char kMerchantTrustEnableOmniboxChipName[] = "enable-omnibox-chip";
+const base::FeatureParam<bool> kMerchantTrustEnableOmniboxChip{
+    &kMerchantTrust, kMerchantTrustEnableOmniboxChipName, false};
+
 extern bool IsMerchantTrustFeatureEnabled(const std::string& country_code,
                                           const std::string& locale) {
   if (kMerchantTrustForceShowUIForTesting.Get()) {

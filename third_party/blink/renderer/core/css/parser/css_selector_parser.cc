@@ -1893,13 +1893,17 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
     }
     case CSSSelector::kPseudoScrollButton: {
       const CSSParserToken& ident = stream.Peek();
-      if (ident.GetType() != kIdentToken) {
+      if (ident.GetType() == kIdentToken) {
+        if (!IsScrollButtonDirectionKeyword(ident)) {
+          return false;
+        }
+        selector.SetArgument(ident.Value().ToAtomicString());
+      } else if (ident.GetType() == kDelimiterToken &&
+                 ident.Delimiter() == '*') {
+        selector.SetArgument(AtomicString("*"));
+      } else {
         return false;
       }
-      if (!IsScrollButtonDirectionKeyword(ident)) {
-        return false;
-      }
-      selector.SetArgument(ident.Value().ToAtomicString());
       stream.ConsumeIncludingWhitespace();
       if (!stream.AtEnd()) {
         return false;

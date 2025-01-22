@@ -2717,6 +2717,7 @@ crbug.com/388922812 external/wpt/svg/animations/reftests/discard-rect-with-anim-
 crbug.com/388934352 external/wpt/trusted-types/block-eval-function-constructor.html [ Failure ]
 crbug.com/388934352 external/wpt/trusted-types/WorkerGlobalScope-importScripts.html [ Failure ]
 crbug.com/388580242 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/popup-redirect-same-origin-allow-popups.https.html [ Crash Failure ]
+[ Mac13 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Timeout ]
 [ Mac14 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Timeout ]
 crbug.com/388309400 [ Mac15 ] external/wpt/css/CSS2/backgrounds/background-position-applies-to-012.xht [ Crash ]
 crbug.com/388309400 [ Win ] external/wpt/css/CSS2/backgrounds/background-position-applies-to-012.xht [ Crash ]

@@ -340,6 +340,7 @@ if (!is_chromeos) {
       "//build:buildflag_header_h",
       "//chrome/app:branded_strings",
       "//chrome/app:generated_resources",
+      "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser:browser_process",
       "//chrome/browser:resources",
       "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",

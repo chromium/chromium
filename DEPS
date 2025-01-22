@@ -280,7 +280,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '96bbf45d79d37efff889891745c45f845af50fcf',
+  'skia_revision': '03ff690028ae4e7ffede473730f4ebdb22860c32',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -288,7 +288,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': '4237cca5ec06d7c640cfa8a7a4eb960b10f3b372',
+  'angle_revision': 'd8a95bf7141ea8439b1af28de1aaf8a3929c50c3',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'bbc742a979b29dd4e713314bb75820732ea010c8',
+  'devtools_frontend_revision': '0b280c019621c8e864a388ad58e6e839cf0e2794',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -2618,7 +2618,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/r8',
-              'version': 'IeZEJCRJvyn60PrXJLIyw7cb3gwHgcMv3bxkNOh3jZYC',
+              'version': 'ZTHhAJg0CQvNxfBmE7mECwY-jJDQ7kknVwVvZpQzLLIC',
           },
       ],
       'condition': 'checkout_android and non_git_source',

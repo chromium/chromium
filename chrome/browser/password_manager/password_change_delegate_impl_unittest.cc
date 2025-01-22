@@ -94,3 +94,24 @@ TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFormNotFound) {
   EXPECT_EQ(PasswordChangeDelegate::State::kChangePasswordFormNotFound,
             delegate->GetCurrentState());
 }
+
+TEST_F(PasswordChangeDelegateImplTest, RestartPasswordChange) {
+  prefs()->SetBoolean(
+      password_manager::prefs::kPasswordChangeFlowNoticeAgreement, true);
+
+  std::unique_ptr<content::WebContents> test_web_contents = CreateWebContents();
+  std::unique_ptr<PasswordChangeDelegate> delegate =
+      CreateDelegate(test_web_contents.get());
+
+  EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
+            delegate->GetCurrentState());
+
+  FastForwardBy(PasswordChangeDelegateImpl::kChangePasswordFormWaitingTimeout);
+
+  EXPECT_EQ(PasswordChangeDelegate::State::kChangePasswordFormNotFound,
+            delegate->GetCurrentState());
+
+  delegate->Restart();
+  EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
+            delegate->GetCurrentState());
+}

@@ -48,9 +48,12 @@ class MerchantTrustChipButtonInteractiveUITest : public InteractiveBrowserTest {
   MerchantTrustChipButtonInteractiveUITest() {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
+    // TODO(b/324418190): Parametrize the test to support both versions with the
+    // chip and without.
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {page_info::kMerchantTrust,
-         {{page_info::kMerchantTrustForceShowUIForTestingName, "true"}}}};
+         {{page_info::kMerchantTrustForceShowUIForTestingName, "true"},
+          {page_info::kMerchantTrustEnableOmniboxChipName, "true"}}}};
     feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
 

@@ -25,6 +25,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/browser_resources.h"
+#include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/profile_picker_resources.h"
 #include "chrome/grit/profile_picker_resources_map.h"
@@ -222,6 +223,7 @@ void AddResourcePaths(content::WebUIDataSource* html_source) {
       {"glic_banner_bottom_left.svg",
        IDR_SIGNIN_IMAGES_GLIC_BANNER_BOTTOM_LEFT_SVG},
       {"glic_logo.svg", IDR_SIGNIN_IMAGES_GLIC_LOGO_SVG},
+      {"product_logo.svg", IDR_PRODUCT_LOGO_SVG},
   };
   html_source->AddResourcePaths(kResourcePaths);
 }

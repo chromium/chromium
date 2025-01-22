@@ -66,6 +66,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   bool IsPasswordChangeOngoing(content::WebContents* web_contents) override;
   State GetCurrentState() const override;
   void Stop() override;
+  void Restart() override;
 #if !BUILDFLAG(IS_ANDROID)
   void OpenPasswordChangeTab() override;
 #endif

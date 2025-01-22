@@ -86,6 +86,12 @@
         }
       }
 
+      h3 {
+        font-size: inherit;
+        margin: 0;
+        font-weight: normal;
+      }
+
       #sync-icon-container cr-icon {
         fill: white;  /* Same in light and dark modes. */
         height: 12px;
@@ -120,10 +126,10 @@
         id="promo-header" hidden="[[shouldHideBanner_(
               syncStatus.signedInState)]]">
       <div class="flex cr-padded-text">
-        <div id="promo-title" part="title">
+        <h3 id="promo-title" part="title">
           [[getLabel_(promoLabelWithAccount,
               promoLabelWithNoAccount, shownAccount_)]]
-        </div>
+        </h3>
         <div class="secondary">[[subLabel_]]</div>
       </div>
       <cr-button class="action-button cr-button-gap" on-click="onSigninClick_"

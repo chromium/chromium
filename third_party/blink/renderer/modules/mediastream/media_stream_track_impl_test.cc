@@ -8,7 +8,6 @@
 
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
@@ -559,51 +558,6 @@ TEST_F(MediaStreamTrackImplTest,
       kReducedWidth, kReducedHeight, kMinFrameRate, kMaxFrameRate);
   EXPECT_CALL(*platform_source_ptr, GetSubCaptureTargetVersion)
       .WillRepeatedly(testing::Return(1));
-  auto apply_constraints_promise =
-      track->applyConstraints(v8_scope.GetScriptState(), track_constraints);
-
-  ScriptPromiseTester tester(v8_scope.GetScriptState(),
-                             apply_constraints_promise);
-  tester.WaitUntilSettled();
-  EXPECT_TRUE(tester.IsFulfilled());
-  // Verify that the settings are not updated and that the source was not
-  // restarted.
-  EXPECT_EQ(platform_source_ptr->restart_count(), 0);
-  EXPECT_EQ(platform_source_ptr->max_requested_width(), initialWidth);
-  EXPECT_EQ(platform_source_ptr->max_requested_height(), initialHeight);
-  EXPECT_EQ(platform_source_ptr->max_requested_frame_rate(), initialFrameRate);
-}
-
-TEST_F(MediaStreamTrackImplTest,
-       ApplyConstraintsDoesNotUpdateSourceFormatIfDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      // Enabled features.
-      {},
-      // Disabled features.
-      {kApplyConstraintsRestartsVideoContentSources});
-
-  V8TestingScope v8_scope;
-  MediaStreamComponent* component;
-  MockMediaStreamVideoSource* platform_source_ptr;
-  std::tie(component, platform_source_ptr) =
-      MakeMockDisplayVideoCaptureComponent();
-  MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
-      v8_scope.GetExecutionContext(), component);
-
-  // Start the source.
-  platform_source_ptr->StartMockedSource();
-  // Get initial settings and verify that resolution and frame rate are
-  // different than the new constraints.
-  int initialWidth = platform_source_ptr->max_requested_width();
-  int initialHeight = platform_source_ptr->max_requested_height();
-  float initialFrameRate = platform_source_ptr->max_requested_frame_rate();
-  EXPECT_NE(initialWidth, kReducedWidth);
-  EXPECT_NE(initialHeight, kReducedHeight);
-  EXPECT_NE(initialFrameRate, kMaxFrameRate);
-  // Apply new constraints.
-  MediaTrackConstraints* track_constraints = MakeMediaTrackConstraints(
-      kReducedWidth, kReducedHeight, kMinFrameRate, kMaxFrameRate);
   auto apply_constraints_promise =
       track->applyConstraints(v8_scope.GetScriptState(), track_constraints);
 

@@ -292,31 +292,31 @@ class ChromeStdlib(TestSuite):
       397,1292552043253633,75000,"STEP_SWAP_BUFFERS_ACK",65565,6
       """))
 
-  def test_chrome_graphics_pipeline_aggregated_frames(self):
+  def test_chrome_surface_frame_id_to_first_display_id(self):
     return DiffTestBlueprint(
       trace=DataPath('scroll_m131.pftrace'),
       query="""
       INCLUDE PERFETTO MODULE chrome.graphics_pipeline;
 
       SELECT
-        display_trace_id,
-        surface_frame_trace_id
-      FROM chrome_graphics_pipeline_aggregated_frames
-      ORDER BY display_trace_id, surface_frame_trace_id
+        surface_frame_trace_id,
+        display_trace_id
+      FROM chrome_surface_frame_id_to_first_display_id
+      ORDER BY surface_frame_trace_id, display_trace_id
       LIMIT 10;
       """,
       out=Csv("""
-      "display_trace_id","surface_frame_trace_id"
-      65565,4294967439
-      65565,1407387768455321
-      65566,4294967440
-      65566,1407387768455322
-      65567,4294967441
-      65567,1407387768455323
-      65568,4294967442
-      65568,1407387768455324
-      65569,4294967443
-      65569,1407387768455325
+      "surface_frame_trace_id","display_trace_id"
+      4294967439,65565
+      4294967440,65566
+      4294967441,65567
+      4294967442,65568
+      4294967443,65569
+      4294967449,65658
+      4294967458,65716
+      4294967459,65717
+      4294967460,65718
+      4294967461,65719
       """))
 
   def test_chrome_graphics_pipeline_inputs_to_surface_frames(self):

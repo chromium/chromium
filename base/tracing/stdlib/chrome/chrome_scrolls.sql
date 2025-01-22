@@ -31,14 +31,14 @@ SELECT
   ) AS presentation_latency_id,
   chrome_graphics_pipeline_inputs_to_surface_frames.surface_frame_trace_id
     AS surface_frame_id,
-  chrome_graphics_pipeline_aggregated_frames.display_trace_id
+  chrome_surface_frame_id_to_first_display_id.display_trace_id
 FROM
   chrome_inputs scroll_update
 LEFT JOIN chrome_graphics_pipeline_inputs_to_surface_frames
   USING (latency_id)
-LEFT JOIN chrome_graphics_pipeline_aggregated_frames
+LEFT JOIN chrome_surface_frame_id_to_first_display_id
   ON
-    chrome_graphics_pipeline_aggregated_frames.surface_frame_trace_id
+    chrome_surface_frame_id_to_first_display_id.surface_frame_trace_id
     = chrome_graphics_pipeline_inputs_to_surface_frames.surface_frame_trace_id
 LEFT JOIN chrome_touch_move_to_scroll_update
   ON

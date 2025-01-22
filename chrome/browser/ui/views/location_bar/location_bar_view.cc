@@ -280,7 +280,8 @@ void LocationBarView::Init() {
   location_icon_view->set_drag_controller(this);
   location_icon_view_ = AddChildView(std::move(location_icon_view));
 
-  if (page_info::IsMerchantTrustFeatureEnabled()) {
+  if (page_info::IsMerchantTrustFeatureEnabled() &&
+      page_info::kMerchantTrustEnableOmniboxChip.Get()) {
     merchant_trust_chip_ = AddChildView(std::make_unique<OmniboxChipButton>());
     merchant_trust_chip_controller_ =
         std::make_unique<MerchantTrustChipButtonController>(

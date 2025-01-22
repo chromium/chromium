@@ -64,6 +64,10 @@ class PasswordChangeDelegate {
   // invoked after this function is called as the object will soon be destroyed.
   virtual void Stop() = 0;
 
+  // Restarts password change flow only if the flow failed due to inability to
+  // find change password form. In all other scenarios it's unsafe to restart.
+  virtual void Restart() = 0;
+
 #if !BUILDFLAG(IS_ANDROID)
   // Brings a tab where password change is ongoing. Does nothing if the tab
   // doesn't exist anymore.

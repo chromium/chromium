@@ -15,7 +15,7 @@
   --scrollbar-width: 4px;
   --scrollbar-background: var(--google-grey-100);
   --footer-spacing: 40px;
-  --profile-card-hover-color: var(--md-background-color);
+  --profile-card-hover-color: var(--google-grey-100);
   --profile-item-height: 178px;
   --profile-item-width: 162px;
 }

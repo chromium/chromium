@@ -13,6 +13,7 @@
 #import "components/search_engines/search_engines_switches.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
@@ -207,6 +208,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   } else if ([self isRunningTest:@selector
                    (testSignInSignOutScrolledToTop_AccountMenu)]) {
     config.features_enabled.push_back(kIdentityDiscAccountMenu);
+    config.features_enabled.push_back(
+        switches::kEnableErrorBadgeOnIdentityDisc);
   }
 
   return config;
