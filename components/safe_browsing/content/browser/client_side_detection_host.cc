@@ -1123,6 +1123,12 @@ void ClientSideDetectionHost::OnInnerTextComplete(
     std::string inner_text) {
   base::UmaHistogramCounts100000("SBClientPhishing.OnDeviceModelInnerTextSize",
                                  inner_text.size());
+  if (inner_text.empty()) {
+    MaybeGetAccessToken(std::move(verdict),
+                        did_match_high_confidence_allowlist);
+    return;
+  }
+
   csd_service_->InquireOnDeviceModel(
       verdict.get(), inner_text,
       base::BindOnce(&ClientSideDetectionHost::OnInquireOnDeviceModelDone,
