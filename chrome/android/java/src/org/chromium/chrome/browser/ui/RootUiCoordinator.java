@@ -1694,19 +1694,16 @@ public class RootUiCoordinator
     }
 
     /**
-     * Gives concrete implementation of {@link ScrimCoordinator.SystemUiScrimDelegate} and
-     * constructs {@link ScrimCoordinator}.
+     * Constructs a {@link ScrimCoordinator} and sets up observers. Lifetime of all these objects
+     * should match.
      */
     protected ScrimCoordinator buildScrimWidget() {
         ViewGroup coordinator = mActivity.findViewById(R.id.coordinator);
-        ScrimCoordinator.SystemUiScrimDelegate delegate =
-                new ScrimCoordinator.SystemUiScrimDelegate() {
-                    @Override
-                    public void setStatusBarScrimFraction(float scrimFraction) {
-                        RootUiCoordinator.this.setStatusBarScrimFraction(scrimFraction);
-                    }
-                };
-        return new ScrimCoordinator(mActivity, delegate, coordinator);
+        ScrimCoordinator scrimCoordinator = new ScrimCoordinator(mActivity, coordinator);
+        scrimCoordinator
+                .getStatusBarScrimFractionSupplier()
+                .addObserver(RootUiCoordinator.this::setStatusBarScrimFraction);
+        return scrimCoordinator;
     }
 
     protected void setStatusBarScrimFraction(float scrimFraction) {

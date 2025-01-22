@@ -79,26 +79,9 @@ public class ScrimTest {
 
     private final PayloadCallbackHelper<Integer> mScrimColorCallbackHelper =
             new PayloadCallbackHelper<>();
-    private final CallbackHelper mStatusBarCallbackHelper = new CallbackHelper();
-    private final CallbackHelper mNavigationBarCallbackHelper = new CallbackHelper();
-    private final ScrimCoordinator.SystemUiScrimDelegate mScrimDelegate =
-            new ScrimCoordinator.SystemUiScrimDelegate() {
-                @Override
-                public void setScrimColor(@ColorInt int scrimColor) {
-                    mScrimColorCallbackHelper.notifyCalled(scrimColor);
-                }
-
-                @Override
-                public void setStatusBarScrimFraction(float scrimFraction) {
-                    mStatusBarCallbackHelper.notifyCalled();
-                }
-
-                @Override
-                public void setNavigationBarScrimFraction(float scrimFraction) {
-                    mNavigationBarCallbackHelper.notifyCalled();
-                }
-            };
-
+    private final PayloadCallbackHelper<Float> mStatusFractionCallback =
+            new PayloadCallbackHelper<>();
+    private final PayloadCallbackHelper<Float> mNavFractionCallback = new PayloadCallbackHelper<>();
     private final CallbackHelper mScrimClickCallbackHelper = new CallbackHelper();
     private final CallbackHelper mVisibilityChangeCallbackHelper = new CallbackHelper();
     private final Runnable mClickDelegate = mScrimClickCallbackHelper::notifyCalled;
@@ -128,7 +111,16 @@ public class ScrimTest {
                     mAnchorView = new View(sActivity);
                     sParent.addView(mAnchorView);
 
-                    mScrimCoordinator = new ScrimCoordinator(sActivity, mScrimDelegate, sParent);
+                    mScrimCoordinator = new ScrimCoordinator(sActivity, sParent);
+                    mScrimCoordinator
+                            .getFullScrimColorSupplier()
+                            .addObserver(mScrimColorCallbackHelper::notifyCalled);
+                    mScrimCoordinator
+                            .getStatusBarScrimFractionSupplier()
+                            .addObserver(mStatusFractionCallback::notifyCalled);
+                    mScrimCoordinator
+                            .getNavigationBarScrimFractionSupplier()
+                            .addObserver(mNavFractionCallback::notifyCalled);
 
                     mDelegatedEventHelper = new CallbackHelper();
                     mCustomGestureDetector =
@@ -141,6 +133,10 @@ public class ScrimTest {
                                         }
                                     });
                 });
+        // Wait for all the posted initial observations come back before test cases start.
+        mScrimColorCallbackHelper.getOnlyPayloadBlocking();
+        mStatusFractionCallback.getOnlyPayloadBlocking();
+        mNavFractionCallback.getOnlyPayloadBlocking();
     }
 
     @After
@@ -228,13 +224,19 @@ public class ScrimTest {
     public void testColor_mutated() throws TimeoutException {
         PropertyModel model = buildModel(false, true, Color.GREEN);
 
+        int callCount = mScrimColorCallbackHelper.getCallCount();
         showScrim(model, false);
         assertScrimColor(Color.GREEN);
-        assertEquals(Color.GREEN, mScrimColorCallbackHelper.getOnlyPayloadBlocking().intValue());
+        assertEquals(
+                Color.GREEN,
+                mScrimColorCallbackHelper.getPayloadByIndexBlocking(callCount).intValue());
 
+        callCount = mScrimColorCallbackHelper.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.setScrimColor(Color.RED, model));
         assertScrimColor(Color.RED);
-        assertEquals(Color.RED, mScrimColorCallbackHelper.getPayloadByIndexBlocking(1).intValue());
+        assertEquals(
+                Color.RED,
+                mScrimColorCallbackHelper.getPayloadByIndexBlocking(callCount).intValue());
     }
 
     @Test
@@ -328,16 +330,19 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testAffectsStatusBar_enabled() throws TimeoutException {
-        int callCount = mStatusBarCallbackHelper.getCallCount();
+        int callCount = mStatusFractionCallback.getCallCount();
         showScrim(buildModel(true, true, Color.RED), false);
-        mStatusBarCallbackHelper.waitForCallback(callCount, 1);
+        assertEquals(
+                1f,
+                mStatusFractionCallback.getPayloadByIndexBlocking(callCount).floatValue(),
+                MathUtils.EPSILON);
     }
 
     @Test
     @SmallTest
     @Feature({"Scrim"})
     public void testAffectsStatusBar_disabled() throws TimeoutException {
-        int callCount = mStatusBarCallbackHelper.getCallCount();
+        int callCount = mStatusFractionCallback.getCallCount();
         PropertyModel model = buildModel(false, true, Color.RED);
         showScrim(model, false);
 
@@ -352,14 +357,14 @@ public class ScrimTest {
         assertEquals(
                 "No events to the status bar delegate should have occurred",
                 callCount,
-                mStatusBarCallbackHelper.getCallCount());
+                mStatusFractionCallback.getCallCount());
     }
 
     @Test
     @SmallTest
     @Feature({"Scrim"})
     public void testAffectsNavigationBar_enabled() throws TimeoutException {
-        int callCount = mNavigationBarCallbackHelper.getCallCount();
+        int callCount = mNavFractionCallback.getCallCount();
         PropertyModel model =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -372,14 +377,17 @@ public class ScrimTest {
                         });
         showScrim(model, false);
 
-        mNavigationBarCallbackHelper.waitForCallback(callCount, 1);
+        assertEquals(
+                1f,
+                mNavFractionCallback.getPayloadByIndexBlocking(callCount).floatValue(),
+                MathUtils.EPSILON);
     }
 
     @Test
     @SmallTest
     @Feature({"Scrim"})
     public void testAffectsNavigationBar_disabled() throws TimeoutException {
-        int callCount = mStatusBarCallbackHelper.getCallCount();
+        int callCount = mNavFractionCallback.getCallCount();
         PropertyModel model =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -394,7 +402,7 @@ public class ScrimTest {
         assertEquals(
                 "No events to the navigation bar delegate should have occurred",
                 callCount,
-                mNavigationBarCallbackHelper.getCallCount());
+                mNavFractionCallback.getCallCount());
     }
 
     @Test

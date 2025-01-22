@@ -9,7 +9,6 @@ import android.view.MotionEvent;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.base.ObserverList;
@@ -36,35 +35,6 @@ public class ScrimCoordinator {
 
     /** The duration for the scrim animation. */
     private static final int ANIM_DURATION_MS = 300;
-
-    /** A delegate to expose functionality that changes the scrim over the system UI. */
-    @Deprecated
-    public interface SystemUiScrimDelegate {
-        /**
-         * Pass the current scrim color to the relevant system UI elements.
-         *
-         * @param scrimColor The current base color of the scrim.
-         */
-        default void setScrimColor(@ColorInt int scrimColor) {}
-
-        /**
-         * Set the amount of scrim over the status bar. The implementor may choose to not respect
-         * the value provided to this method.
-         *
-         * @param scrimFraction The scrim fraction over the status bar. 0 is completely hidden, 1 is
-         *     completely shown.
-         */
-        default void setStatusBarScrimFraction(float scrimFraction) {}
-
-        /**
-         * Set the amount of scrim over the navigation bar. The implementor may choose to not
-         * respect the value provided to this method.
-         *
-         * @param scrimFraction The scrim fraction over the status bar. 0 is completely hidden, 1 is
-         *     completely shown.
-         */
-        default void setNavigationBarScrimFraction(float scrimFraction) {}
-    }
 
     /** A mechanism for delegating motion events out to the mediator. */
     interface TouchEventDelegate {
@@ -101,15 +71,9 @@ public class ScrimCoordinator {
 
     /**
      * @param context An Android {@link Context} for creating the view.
-     * @param systemUiScrimDelegate A means of changing the scrim over the system UI.
      * @param parent The {@link ViewGroup} the scrim should exist in.
-     * @deprecated Do not use {@link SystemUiScrimDelegate}.
      */
-    @Deprecated
-    public ScrimCoordinator(
-            Context context,
-            @Nullable SystemUiScrimDelegate systemUiScrimDelegate,
-            ViewGroup parent) {
+    public ScrimCoordinator(Context context, ViewGroup parent) {
         @ColorInt
         int defaultScrimColor = ContextCompat.getColor(context, R.color.default_scrim_color);
         mMediator =
@@ -121,25 +85,11 @@ public class ScrimCoordinator {
                             mChangeProcessor = null;
                         },
                         defaultScrimColor);
-        if (systemUiScrimDelegate != null) {
-            mMediator.getFullScrimColorSupplier().addObserver(systemUiScrimDelegate::setScrimColor);
-            mMediator
-                    .getStatusBarScrimFractionSupplier()
-                    .addObserver(systemUiScrimDelegate::setStatusBarScrimFraction);
-            mMediator
-                    .getNavigationBarScrimFractionSupplier()
-                    .addObserver(systemUiScrimDelegate::setNavigationBarScrimFraction);
-        }
         mScrimViewBuilder =
                 () -> {
                     ScrimView view = new ScrimView(context, parent);
                     return view;
                 };
-    }
-
-    /** Version of the constructor without a {@link SystemUiScrimDelegate}. */
-    public ScrimCoordinator(Context context, ViewGroup parent) {
-        this(context, /* systemUiScrimDelegate= */ null, parent);
     }
 
     /**

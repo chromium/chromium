@@ -121,25 +121,15 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
         sheetContainer.setLayoutParams(
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mContainerView.addView(sheetContainer);
-        mScrim =
-                new ScrimCoordinator(
-                        mActivity,
-                        new ScrimCoordinator.SystemUiScrimDelegate() {
-                            @Override
-                            public void setStatusBarScrimFraction(float scrimFraction) {
-                                update();
-                            }
-
-                            @Override
-                            public void setScrimColor(@ColorInt int scrimColor) {
-                                update();
-                            }
-
-                            private void update() {
-                                mDelegate.setScrimColor(mScrim.getCurrentCompositeColor());
-                            }
-                        },
-                        (ViewGroup) sheetContainer.getParent());
+        mScrim = new ScrimCoordinator(mActivity, (ViewGroup) sheetContainer.getParent());
+        mScrim.getFullScrimColorSupplier()
+                .addObserver(
+                        (Integer ignored) ->
+                                mDelegate.setScrimColor(mScrim.getCurrentCompositeColor()));
+        mScrim.getStatusBarScrimFractionSupplier()
+                .addObserver(
+                        (Float ignored) ->
+                                mDelegate.setScrimColor(mScrim.getCurrentCompositeColor()));
 
         mBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(

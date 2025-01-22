@@ -34,11 +34,11 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
 
     private final @ColorInt int mDefaultScrimColor;
     private final ObservableSupplierImpl<Integer> mFullScrimColorSupplier =
-            new ObservableSupplierImpl<>();
+            new ObservableSupplierImpl<>(ScrimProperties.INVALID_COLOR);
     private final ObservableSupplierImpl<Float> mStatusBarScrimFractionSupplier =
-            new ObservableSupplierImpl<>();
+            new ObservableSupplierImpl<>(0f);
     private final ObservableSupplierImpl<Float> mNavigationBarScrimFractionSupplier =
-            new ObservableSupplierImpl<>();
+            new ObservableSupplierImpl<>(0f);
 
     /** The animator for fading the view in. */
     private ValueAnimator mOverlayFadeInAnimator;
