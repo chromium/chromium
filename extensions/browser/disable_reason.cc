@@ -35,4 +35,24 @@ bool IsValidDisableReason(int reason) {
          reason == disable_reason::DISABLE_UNKNOWN;
 }
 
+int IntegerSetToBitflag(const base::flat_set<int>& set) {
+  int bitflag = 0;
+  for (int reason : set) {
+    CHECK_EQ(reason & (reason - 1), 0)
+        << "Only one bit should be set for each reason";
+    bitflag |= reason;
+  }
+  return bitflag;
+}
+
+base::flat_set<int> BitflagToIntegerSet(int bit_flag) {
+  base::flat_set<int> set;
+  for (int i = 0; i < 32; ++i) {
+    int val = (1 << i);
+    if (bit_flag & val) {
+      set.insert(val);
+    }
+  }
+  return set;
+}
 }  // namespace extensions

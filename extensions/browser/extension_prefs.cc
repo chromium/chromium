@@ -261,17 +261,6 @@ base::Value::List BitflagToList(int bit_flag) {
   return list;
 }
 
-base::flat_set<int> BitflagToIntegerSet(int bit_flag) {
-  base::flat_set<int> set;
-  for (int i = 0; i < 32; ++i) {
-    int val = (1 << i);
-    if (bit_flag & val) {
-      set.insert(val);
-    }
-  }
-  return set;
-}
-
 // Serializes |time| as a string value mapped to |key| in |dictionary|.
 void SaveTime(prefs::DictionaryValueUpdate* dictionary,
               const char* key,
@@ -989,6 +978,12 @@ int ExtensionPrefs::GetDisableReasons(const ExtensionId& extension_id) const {
   return bitflag;
 }
 
+base::flat_set<int> ExtensionPrefs::GetDisableReasons(
+    DisableReasonRawManipulationPasskey,
+    const ExtensionId& extension_id) const {
+  return ReadDisableReasonsFromPrefs(extension_id);
+}
+
 int ExtensionPrefs::GetBitMapPrefBits(const ExtensionId& extension_id,
                                       std::string_view pref_key,
                                       int default_bit) const {
@@ -1013,17 +1008,25 @@ void ExtensionPrefs::AddDisableReason(
 
 void ExtensionPrefs::AddDisableReasons(const ExtensionId& extension_id,
                                        int disable_reasons) {
+  const base::flat_set<int> incoming_reasons_set =
+      BitflagToIntegerSet(disable_reasons);
+
+  auto passkey = DisableReasonRawManipulationPasskey();
+  AddDisableReasons(passkey, extension_id, incoming_reasons_set);
+}
+
+void ExtensionPrefs::AddDisableReasons(
+    DisableReasonRawManipulationPasskey,
+    const ExtensionId& extension_id,
+    const base::flat_set<int>& incoming_reasons) {
   DCHECK(!DoesExtensionHaveState(extension_id, Extension::ENABLED) ||
          blocklist_prefs::IsExtensionBlocklisted(extension_id, this));
-  CHECK_NE(disable_reasons, disable_reason::DISABLE_NONE);
-  CHECK_EQ(disable_reasons & disable_reason::DISABLE_UNKNOWN, 0)
+  CHECK(!incoming_reasons.empty());
+  CHECK(!incoming_reasons.contains(disable_reason::DISABLE_UNKNOWN))
       << "Can not add DISABLE_UNKNOWN to the disable reasons list.";
 
   const base::flat_set<int> current_reasons =
       ReadDisableReasonsFromPrefs(extension_id);
-  const base::flat_set<int> incoming_reasons =
-      BitflagToIntegerSet(disable_reasons);
-
   const base::flat_set<int> new_reasons =
       base::STLSetUnion<base::flat_set<int>>(current_reasons, incoming_reasons);
 
@@ -1056,11 +1059,6 @@ void ExtensionPrefs::RemoveDisableReason(
 
 void ExtensionPrefs::ReplaceDisableReasons(const ExtensionId& extension_id,
                                            int disable_reasons) {
-  if (disable_reasons == disable_reason::DISABLE_NONE) {
-    ClearDisableReasons(extension_id);
-    return;
-  }
-
   // TODO(crbug.com/372186532) This assertion is temporary. Many callers do
   // this:
   //
@@ -1077,17 +1075,24 @@ void ExtensionPrefs::ReplaceDisableReasons(const ExtensionId& extension_id,
   // set before writing it to the prefs.
   CHECK_EQ(disable_reasons & disable_reason::DISABLE_UNKNOWN, 0)
       << "Can not add DISABLE_UNKNOWN to the disable reasons list.";
-
-  const base::flat_set<int> current_disable_reasons =
-      ReadDisableReasonsFromPrefs(extension_id);
-  const base::flat_set<int> incoming_disable_reasons =
+  const base::flat_set<int> incoming_disable_reasons_set =
       BitflagToIntegerSet(disable_reasons);
 
-  if (current_disable_reasons == incoming_disable_reasons) {
+  auto passkey = DisableReasonRawManipulationPasskey();
+  ReplaceDisableReasons(passkey, extension_id, incoming_disable_reasons_set);
+}
+
+void ExtensionPrefs::ReplaceDisableReasons(
+    DisableReasonRawManipulationPasskey,
+    const ExtensionId& extension_id,
+    const base::flat_set<int>& disable_reasons) {
+  const base::flat_set<int> current_disable_reasons =
+      ReadDisableReasonsFromPrefs(extension_id);
+  if (current_disable_reasons == disable_reasons) {
     return;
   }
 
-  WriteDisableReasonsToPrefs(extension_id, incoming_disable_reasons);
+  WriteDisableReasonsToPrefs(extension_id, disable_reasons);
   NotifyDisableReasonsChanged(extension_id);
 }
 
@@ -1462,11 +1467,19 @@ void ExtensionPrefs::SetExtensionEnabled(const ExtensionId& extension_id) {
 
 void ExtensionPrefs::SetExtensionDisabled(const ExtensionId& extension_id,
                                           int disable_reasons) {
+  auto passkey = DisableReasonRawManipulationPasskey();
+  SetExtensionDisabled(passkey, extension_id,
+                       BitflagToIntegerSet(disable_reasons));
+}
+
+void ExtensionPrefs::SetExtensionDisabled(
+    DisableReasonRawManipulationPasskey,
+    const ExtensionId& extension_id,
+    const base::flat_set<int>& disable_reasons) {
   UpdateExtensionPref(extension_id, kPrefState,
                       base::Value(Extension::DISABLED));
   extension_pref_value_map_->SetExtensionState(extension_id, false);
-  UpdateExtensionPref(extension_id, kPrefDisableReasons,
-                      base::Value(BitflagToList(disable_reasons)));
+  WriteDisableReasonsToPrefs(extension_id, disable_reasons);
   for (auto& observer : observer_list_) {
     observer.OnExtensionStateChanged(extension_id, false);
   }

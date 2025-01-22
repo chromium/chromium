@@ -1365,6 +1365,43 @@ TEST_F(ExtensionPrefsSimpleTest, MigrateToNewExternalUninstallBits) {
       prefs.prefs()->IsExternalExtensionUninstalled(internal_extension));
 }
 
+// Tests that raw manipulation of extension disable reasons works and unknown
+// values can be written / read back.
+TEST_F(ExtensionPrefsSimpleTest, DisableReasonsRawManipulation) {
+  content::BrowserTaskEnvironment task_environment;
+  TestExtensionPrefs prefs(base::SingleThreadTaskRunner::GetCurrentDefault());
+  std::string extension_id = prefs.AddExtension("Test Extension")->id();
+
+  ExtensionPrefs* extension_prefs = prefs.prefs();
+  ASSERT_FALSE(extension_prefs->IsExtensionDisabled(extension_id));
+
+  auto passkey = ExtensionPrefs::DisableReasonRawManipulationPasskey();
+  constexpr int kUnknownReason_1 = disable_reason::DISABLE_REASON_LAST + 1;
+  constexpr int kUnknownReason_2 = disable_reason::DISABLE_REASON_LAST + 2;
+  constexpr int kUnknownReason_3 = disable_reason::DISABLE_REASON_LAST + 3;
+  constexpr int kKnownReason_1 = disable_reason::DISABLE_USER_ACTION;
+  constexpr int kKnownReason_2 = disable_reason::DISABLE_PERMISSIONS_INCREASE;
+
+  // Disable the extension with known and unknown reasons.
+  extension_prefs->SetExtensionDisabled(passkey, extension_id,
+                                        {kKnownReason_1, kUnknownReason_1});
+  EXPECT_THAT(extension_prefs->GetDisableReasons(passkey, extension_id),
+              testing::UnorderedElementsAre(kKnownReason_1, kUnknownReason_1));
+
+  // Add one known and one unknown reason.
+  extension_prefs->AddDisableReasons(passkey, extension_id,
+                                     {kKnownReason_2, kUnknownReason_2});
+  EXPECT_THAT(extension_prefs->GetDisableReasons(passkey, extension_id),
+              testing::UnorderedElementsAre(kKnownReason_1, kUnknownReason_1,
+                                            kKnownReason_2, kUnknownReason_2));
+
+  // Try replacing the disable reason set.
+  extension_prefs->ReplaceDisableReasons(passkey, extension_id,
+                                         {kUnknownReason_3, kKnownReason_1});
+  EXPECT_THAT(extension_prefs->GetDisableReasons(passkey, extension_id),
+              testing::UnorderedElementsAre(kUnknownReason_3, kKnownReason_1));
+}
+
 // Tests the generic Get/Set functions for profile wide extension prefs.
 TEST_F(ExtensionPrefsSimpleTest, ProfileExtensionPrefsMapTest) {
   constexpr PrefMap kTestBooleanPref = {"test.boolean", PrefType::kBool,

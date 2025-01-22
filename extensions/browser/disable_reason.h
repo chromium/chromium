@@ -7,6 +7,8 @@
 
 #include <limits>
 
+#include "base/containers/flat_set.h"
+
 namespace extensions {
 namespace disable_reason {
 
@@ -75,6 +77,12 @@ static_assert(DISABLE_REASON_LAST - 1 <= std::numeric_limits<int>::max(),
 // Validates that `reason` is a valid `DisableReason` (i.e. we have an enum
 // value for it).
 bool IsValidDisableReason(int reason);
+
+// Utility methods to convert a bitflag to a set of integers and vice-versa.
+// TODO(crbug.com/372186532): Remove these once we migrate away from bitflags
+// completely.
+int IntegerSetToBitflag(const base::flat_set<int>& set);
+base::flat_set<int> BitflagToIntegerSet(int bit_flag);
 
 }  // namespace extensions
 
