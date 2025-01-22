@@ -512,6 +512,7 @@ DEFINE_VARIATION_PARAM(kIPHiOSPaymentPromoDesktopFeature,
 inline constexpr flags_ui::FeatureEntry::FeatureVariation
     kIPHDemoModeChoiceVariations[] = {
 #if BUILDFLAG(IS_ANDROID)
+        VARIATION_ENTRY(kIPHAccountSettingsHistorySync),
         VARIATION_ENTRY(
             kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature),
         VARIATION_ENTRY(
