@@ -1527,7 +1527,7 @@ dialog:popover-open {
 
 /* This rule matches popovers (dialog or not) that are currently open as a
    popover. */
-[popover]:popover-open:not(dialog), dialog:popover-open:not([open]) {
+[popover]:-internal-popover-in-top-layer {
   overlay: auto !important;
 }
 
