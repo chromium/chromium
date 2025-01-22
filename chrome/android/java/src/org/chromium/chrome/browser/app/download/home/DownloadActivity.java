@@ -100,9 +100,11 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
 
     @Override
     protected void onDestroy() {
-        mDownloadCoordinator.removeObserver(mUiObserver);
-        mDownloadCoordinator.destroy();
-        mModalDialogManager.destroy();
+        if (mDownloadCoordinator != null) {
+            mDownloadCoordinator.removeObserver(mUiObserver);
+            mDownloadCoordinator.destroy();
+            mModalDialogManager.destroy();
+        }
         super.onDestroy();
     }
 
