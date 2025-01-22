@@ -16,7 +16,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/message.h"
 
@@ -124,18 +124,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Buffer {
 
   // The storage location and capacity currently backing |message_|. Owned by
   // the message object internally, not by this Buffer.
-  // Dangling when running chromedriver_unittests on win-rel (this is not an
-  // exhaustive list of failures, just ones that provided an easy to view
-  // backtrace):
-  // FetchUrlTest.ConnectionClose
-  // FetchUrlTest.Http200
-  // FetchUrlTest.HttpNon200
-  // FetchUrlTest.NoServer
-  // TestHttpServerTest.ResourceNotFound
-  // TestHttpServerTest.SetDataForPath
-  // TestHttpServerTest.Start
-  // TODO: crbug.com/387315749 - Resolving dangling pointer
-  raw_ptr<void, DanglingUntriaged> data_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union, #addr-of
+  RAW_PTR_EXCLUSION void* data_ = nullptr;
   size_t size_ = 0;
 
   // The current write offset into |data_| if this Buffer is being used for
