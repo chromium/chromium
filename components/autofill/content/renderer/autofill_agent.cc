@@ -1997,9 +1997,11 @@ void AutofillAgent::OnProvisionallySaveForm(
   // Updates cached data needed for submission so that we only cache the latest
   // version of the to-be-submitted form.
   auto update_submission_data_on_user_edit = [&] {
-    if (form_element && !base::FeatureList::IsEnabled(
-                            features::kAutofillOptimizeFormExtraction)) {
-      UpdateLastInteractedElement(form_util::GetFormRendererId(form_element));
+    if (form_element) {
+      if (!base::FeatureList::IsEnabled(
+              features::kAutofillOptimizeFormExtraction)) {
+        UpdateLastInteractedElement(form_util::GetFormRendererId(form_element));
+      }
       return;
     }
     std::erase_if(
