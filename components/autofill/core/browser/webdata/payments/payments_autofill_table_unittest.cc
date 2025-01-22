@@ -111,7 +111,7 @@ TEST_F(PaymentsAutofillTableTest, Iban) {
   Iban iban;
   std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   iban.set_identifier(Iban::Guid(guid));
-  iban.SetRawInfo(IBAN_VALUE, std::u16string(test::kIbanValue16));
+  iban.set_value(std::u16string(test::kIbanValue16));
   iban.set_nickname(u"My doctor's IBAN");
 
   EXPECT_TRUE(table_->AddLocalIban(iban));
@@ -132,7 +132,7 @@ TEST_F(PaymentsAutofillTableTest, Iban) {
   Iban another_iban;
   std::string another_guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   another_iban.set_identifier(Iban::Guid(another_guid));
-  another_iban.SetRawInfo(IBAN_VALUE, u"DE91 1000 0000 0123 4567 89");
+  another_iban.set_value(u"DE91 1000 0000 0123 4567 89");
   another_iban.set_nickname(u"My brother's IBAN");
 
   EXPECT_TRUE(table_->AddLocalIban(another_iban));
@@ -150,7 +150,7 @@ TEST_F(PaymentsAutofillTableTest, Iban) {
   EXPECT_FALSE(s_target.Step());
 
   // Update the another_iban.
-  another_iban.SetRawInfo(IBAN_VALUE, u"GB98 MIDL 0700 9312 3456 78");
+  another_iban.set_value(u"GB98 MIDL 0700 9312 3456 78");
   another_iban.set_nickname(u"My teacher's IBAN");
   EXPECT_TRUE(table_->UpdateLocalIban(another_iban));
   db_iban = table_->GetLocalIban(another_iban.guid());

@@ -463,7 +463,7 @@ TEST_F(PaymentsDataManagerTest, UpdateLocalIbans) {
   ExpectSameElements(ibans, payments_data_manager().GetLocalIbans());
 
   // Update the `iban` with new value.
-  iban.SetRawInfo(IBAN_VALUE, u"GB98 MIDL 0700 9312 3456 78");
+  iban.set_value(u"GB98 MIDL 0700 9312 3456 78");
   payments_data_manager().UpdateIban(iban);
   WaitForOnPaymentsDataChanged();
 

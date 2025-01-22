@@ -500,44 +500,6 @@ bool Iban::SetMetadata(const PaymentsMetadata& metadata) {
   return true;
 }
 
-std::u16string Iban::GetInfo(FieldType type,
-                             const std::string& app_locale) const {
-  return GetRawInfo(type);
-}
-
-std::u16string Iban::GetInfo(const AutofillType& type,
-                             const std::string& app_locale) const {
-  return GetRawInfo(type.GetStorableType());
-}
-
-std::u16string Iban::GetRawInfo(FieldType type) const {
-  if (type == IBAN_VALUE) {
-    return value_;
-  }
-
-  NOTREACHED();
-}
-
-void Iban::SetRawInfoWithVerificationStatus(FieldType type,
-                                            const std::u16string& value,
-                                            VerificationStatus status) {
-  if (type == IBAN_VALUE) {
-    set_value(value);
-  } else {
-    NOTREACHED() << "Attempting to set unknown info-type" << type;
-  }
-}
-
-void Iban::GetSupportedTypes(FieldTypeSet* supported_types) const {
-  supported_types->insert(IBAN_VALUE);
-}
-
-bool Iban::IsEmpty(const std::string& app_locale) const {
-  FieldTypeSet types;
-  GetNonEmptyTypes(app_locale, &types);
-  return types.empty();
-}
-
 int Iban::Compare(const Iban& iban) const {
   if (identifier_ < iban.identifier_) {
     return -1;
@@ -725,7 +687,7 @@ std::ostream& operator<<(std::ostream& os, const Iban& iban) {
             << (iban.record_type() == Iban::RecordType::kLocalIban
                     ? "Local IBAN"
                     : "Server IBAN")
-            << ", value: " << base::UTF16ToUTF8(iban.GetRawInfo(IBAN_VALUE))
+            << ", value: " << base::UTF16ToUTF8(iban.value())
             << ", prefix: " << base::UTF16ToUTF8(iban.prefix())
             << ", suffix: " << base::UTF16ToUTF8(iban.suffix())
             << ", nickname: " << base::UTF16ToUTF8(iban.nickname()) << "]";

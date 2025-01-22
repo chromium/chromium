@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/browser/data_model/usage_history_information.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -19,8 +18,8 @@ namespace autofill {
 
 struct PaymentsMetadata;
 
-// A form group that stores IBAN information.
-class Iban : public FormGroup {
+// A class storing IBAN information.
+class Iban {
  public:
   using Guid = base::StrongAlias<class GuidTag, std::string>;
   using InstrumentId = base::StrongAlias<class InstrumentIdTag, int64_t>;
@@ -141,7 +140,7 @@ class Iban : public FormGroup {
   explicit Iban(const InstrumentId& instrument_id);
 
   Iban(const Iban&);
-  ~Iban() override;
+  ~Iban();
 
   Iban& operator=(const Iban& iban);
 
@@ -173,16 +172,6 @@ class Iban : public FormGroup {
 
   PaymentsMetadata GetMetadata() const;
   bool SetMetadata(const PaymentsMetadata& metadata);
-
-  std::u16string GetInfo(FieldType type,
-                         const std::string& app_locale) const override;
-  std::u16string GetInfo(const AutofillType& type,
-                         const std::string& app_locale) const override;
-  std::u16string GetRawInfo(FieldType type) const override;
-  void SetRawInfoWithVerificationStatus(FieldType type,
-                                        const std::u16string& value,
-                                        VerificationStatus status) override;
-  void GetSupportedTypes(FieldTypeSet* supported_types) const override;
 
   // Returns true if there are no values (field types) set.
   bool IsEmpty(const std::string& app_locale) const;
