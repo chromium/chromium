@@ -1211,7 +1211,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     bool is_pdf,
     bool is_embedder_initiated_fenced_frame_navigation,
     std::optional<std::u16string> embedder_shared_storage_context) {
-  return Create(
+  auto request = Create(
       frame_tree_node, std::move(common_params), std::move(commit_params),
       /*browser_initiated=*/true, was_opener_suppressed,
       std::nullopt /* initiator_frame_token */,
@@ -1223,6 +1223,10 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
       is_pdf, is_embedder_initiated_fenced_frame_navigation,
       /*is_container_initiated=*/false, /*has_rel_opener=*/false,
       net::StorageAccessApiStatus::kNone, embedder_shared_storage_context);
+  // It is only possible for a null NavigationRequest to be returned if an
+  // initiator_frame_token is provided.
+  CHECK(request);
+  return request;
 }
 
 // static
@@ -1295,6 +1299,33 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
                   .GetBrowserContext()
                   ->GetStoragePartition(frame_entry->site_instance()),
               common_params->url);
+    }
+  }
+
+  // Ensure that top-level navigations initiated from fenced frames (such as
+  // _unfencedTop, pop-ups, and "Open Link in...") fail if the fenced frame's
+  // network access is revoked. Some of these paths have additional checks for
+  // UX reasons (see: RenderFrameHostImpl::CreateNewWindow and
+  // RenderViewContextMenu::IsCommandIdEnabled). This check is only needed for
+  // navigations that escape the fenced frame boundary, as the target will have
+  // no knowledge of the fenced frame's network revocation nonce. This check
+  // does not exist in CreateRendererInitiated() because that path is not hit
+  // for navigations that cross fenced frame boundaries.
+  if (initiator_frame_token) {
+    // It is okay to use the current frame host's storage partition because
+    // the storage partition does not change over the lifetime of the fenced
+    // frame.
+    std::optional<bool> is_untrusted_network_disabled =
+        RenderFrameHostImpl::GetIsUntrustedNetworkDisabled(
+            base::OptionalToPtr(initiator_frame_token), initiator_process_id,
+            static_cast<StoragePartitionImpl*>(
+                frame_tree_node->current_frame_host()->GetStoragePartition()));
+    if (is_untrusted_network_disabled == true) {
+      frame_tree_node->current_frame_host()->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kError,
+          "Navigations cannot be initiated from a fenced frame after its "
+          "network has been disabled.");
+      return nullptr;
     }
   }
 

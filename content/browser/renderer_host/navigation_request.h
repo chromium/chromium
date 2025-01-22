@@ -230,10 +230,12 @@ class CONTENT_EXPORT NavigationRequest
           std::nullopt);
 
   // Creates a request for either a browser-initiated navigation or a
-  // renderer-initiated navigation.  Normally, renderer-initiated navigations
-  // use CreateRendererInitiated(), but some legacy renderer-initiated
-  // navigation paths, such as OpenURL, are stuck using this path instead;
-  // these cases specify `browser_initiated` as false.
+  // renderer-initiated navigation. Returns nullptr if the navigation could not
+  // be started, such as when network access has been revoked (see
+  // RenderFrameHost::IsUntrustedNetworkDisabled()).  Normally,
+  // renderer-initiated navigations use CreateRendererInitiated(), but some
+  // legacy renderer-initiated navigation paths, such as OpenURL, are stuck
+  // using this path instead; these cases specify `browser_initiated` as false.
   //
   // Do NOT add more uses of this function.  Browser-initiated navigations
   // should use CreateBrowserInitiated() and renderer-initiated navigations

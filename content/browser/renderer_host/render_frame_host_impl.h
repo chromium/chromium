@@ -428,6 +428,15 @@ class CONTENT_EXPORT RenderFrameHostImpl
       int initiator_process_id,
       StoragePartitionImpl* storage_partition);
 
+  // Get the IsUntrustedNetworkDisabled() result associated with `frame_token`.
+  // See RenderFrameHost::IsUntrustedNetworkDisabled() for more info. Returns
+  // nullopt if unable to find information on the associated frame, the boolean
+  // untrusted network status otherwise.
+  static std::optional<bool> GetIsUntrustedNetworkDisabled(
+      const blink::LocalFrameToken* frame_token,
+      int initiator_process_id,
+      StoragePartitionImpl* storage_partition);
+
   RenderFrameHostImpl(const RenderFrameHostImpl&) = delete;
   RenderFrameHostImpl& operator=(const RenderFrameHostImpl&) = delete;
 

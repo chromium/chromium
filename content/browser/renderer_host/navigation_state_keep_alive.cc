@@ -17,13 +17,15 @@ namespace content {
 NavigationStateKeepAlive::NavigationStateKeepAlive(
     const blink::LocalFrameToken& token,
     scoped_refptr<PolicyContainerHost> policy_container_host,
-    scoped_refptr<SiteInstanceImpl> source_site_instance)
+    scoped_refptr<SiteInstanceImpl> source_site_instance,
+    bool is_untrusted_network_disabled)
     : frame_token_(token),
       storage_partition_(static_cast<StoragePartitionImpl*>(
           source_site_instance->GetBrowserContext()->GetStoragePartition(
               source_site_instance.get()))),
       policy_container_host_(std::move(policy_container_host)),
-      source_site_instance_(std::move(source_site_instance)) {
+      source_site_instance_(std::move(source_site_instance)),
+      is_untrusted_network_disabled_(is_untrusted_network_disabled) {
   CHECK(source_site_instance_->group());
   source_site_instance_->group()->IncrementKeepAliveCount();
 }
