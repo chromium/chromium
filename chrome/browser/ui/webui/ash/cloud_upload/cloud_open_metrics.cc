@@ -249,6 +249,8 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeOneDriveOpenErrors::kEmailsDoNotMatch:
               case OfficeOneDriveOpenErrors::
                   kAndroidOneDriveUnsupportedLocation:
+              case OfficeOneDriveOpenErrors::kFailedToLaunch:
+              case OfficeOneDriveOpenErrors::kMS365NotInstalled:
                 SetWrongValueLogged(one_drive_open_error);
                 break;
             }
@@ -285,6 +287,8 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeOneDriveOpenErrors::kConversionToODFSUrlError:
               case OfficeOneDriveOpenErrors::kAndroidOneDriveInvalidUrl:
               case OfficeOneDriveOpenErrors::kEmailsDoNotMatch:
+              case OfficeOneDriveOpenErrors::kFailedToLaunch:
+              case OfficeOneDriveOpenErrors::kMS365NotInstalled:
                 SetWrongValueLogged(one_drive_open_error);
                 break;
             }
@@ -388,6 +392,8 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeOneDriveOpenErrors::kConversionToODFSUrlError:
               case OfficeOneDriveOpenErrors::kAndroidOneDriveInvalidUrl:
               case OfficeOneDriveOpenErrors::kEmailsDoNotMatch:
+              case OfficeOneDriveOpenErrors::kFailedToLaunch:
+              case OfficeOneDriveOpenErrors::kMS365NotInstalled:
                 break;
               case OfficeOneDriveOpenErrors::kSuccess:
               case OfficeOneDriveOpenErrors::
@@ -449,6 +455,8 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeOneDriveOpenErrors::kEmailsDoNotMatch:
               case OfficeOneDriveOpenErrors::
                   kAndroidOneDriveUnsupportedLocation:
+              case OfficeOneDriveOpenErrors::kFailedToLaunch:
+              case OfficeOneDriveOpenErrors::kMS365NotInstalled:
                 SetWrongValueLogged(one_drive_open_error);
                 break;
             }

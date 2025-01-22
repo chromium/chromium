@@ -52,6 +52,7 @@ FORWARD_DECLARE_TEST(OneDriveTest, FailToOpenFileFromAndroidOneDriveNotOnODFS);
 FORWARD_DECLARE_TEST(
     OneDriveTest,
     FailToOpenFileFromAndroidOneDriveDirectoryNotAccessibleToODFS);
+FORWARD_DECLARE_TEST(OneDriveTest, FailToOpenFileFromODFSWhenMS365NotInstalled);
 }  // namespace file_manager::file_tasks
 
 namespace ash::cloud_upload {
@@ -155,6 +156,8 @@ class CloudOpenTask : public BrowserListObserver,
   FRIEND_TEST_ALL_PREFIXES(
       ::file_manager::file_tasks::OneDriveTest,
       FailToOpenFileFromAndroidOneDriveDirectoryNotAccessibleToODFS);
+  FRIEND_TEST_ALL_PREFIXES(::file_manager::file_tasks::OneDriveTest,
+                           FailToOpenFileFromODFSWhenMS365NotInstalled);
 
  private:
   friend class RefCounted<CloudOpenTask>;  // Allow destruction by RefCounted<>.
