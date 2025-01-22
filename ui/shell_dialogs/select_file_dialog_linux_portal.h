@@ -12,7 +12,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/synchronization/atomic_flag.h"
 #include "base/task/sequenced_task_runner.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -38,17 +37,14 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
   SelectFileDialogLinuxPortal& operator=(
       const SelectFileDialogLinuxPortal& other) = delete;
 
-  // Starts running a test to check for the presence of the file chooser portal
-  // on the D-Bus task runner. This should only be called once, preferably
-  // around program start.
+  // Starts running a test to check for the presence of the file chooser portal.
+  // Must be called on the UI thread. This should only be called once,
+  // preferably around program start.
   static void StartAvailabilityTestInBackground();
 
   // Checks if the file chooser portal is available. Logs a warning if the
   // availability test has not yet completed.
   static bool IsPortalAvailable();
-
-  // Destroys the connection to the bus.
-  static void DestroyPortalConnection();
 
  protected:
   ~SelectFileDialogLinuxPortal() override;
@@ -111,23 +107,23 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
                OnSelectFileCanceledCallback canceled_callback);
 
     // Sets up listeners for the response handle's signals.
-    void SelectFileImplOnBusThread(std::u16string title,
-                                   base::FilePath default_path,
-                                   const bool default_path_exists,
-                                   PortalFilterSet filter_set,
-                                   base::FilePath::StringType default_extension,
-                                   std::string parent_handle);
+    void SelectFileImpl(std::u16string title,
+                        base::FilePath default_path,
+                        const bool default_path_exists,
+                        PortalFilterSet filter_set,
+                        base::FilePath::StringType default_extension,
+                        std::string parent_handle);
     Type type;
     // The task runner the SelectFileImpl method was called on.
-    scoped_refptr<base::SequencedTaskRunner> main_task_runner;
+    scoped_refptr<base::SequencedTaskRunner> invoker_task_runner;
 
    private:
     friend class base::RefCountedThreadSafe<DialogInfo>;
     ~DialogInfo();
 
-    // Should run on D-Bus thread.
+    // Should run on main thread.
     void ConnectToHandle();
-    void OnCallResponse(dbus::Bus* bus,
+    void OnCallResponse(scoped_refptr<dbus::Bus> bus,
                         dbus::Response* response,
                         dbus::ErrorResponse* error_response);
     void OnResponseSignalEmitted(dbus::Signal* signal);
@@ -158,7 +154,7 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
     // marks the dialog as closed.
     void CancelOpen();
 
-    // These callbacks should run on main thread.
+    // These callbacks should run on the invoker task runner.
     // It will point to SelectFileDialogPortal::DialogCreatedOnMainThread.
     base::OnceClosure created_callback_;
     // It will point to SelectFileDialogPortal::CompleteOpenOnMainThread.
@@ -168,19 +164,12 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
 
     // The response object handle that the portal will send a signal to upon the
     // dialog's completion.
-    raw_ptr<dbus::ObjectProxy, DanglingUntriaged> response_handle_ = nullptr;
+    raw_ptr<dbus::ObjectProxy> response_handle_ = nullptr;
 
     // `response_handle_` owns callbacks with methods bound to `this`.  To
     // prevent leaking, the callbacks are bound with weak references to `this`.
     base::WeakPtrFactory<DialogInfo> weak_factory_{this};
   };
-
-  // D-Bus configuration and initialization.
-  static void CheckPortalAvailabilityOnBusThread();
-
-  // Returns a flag, written by the D-Bus thread and read by the UI thread,
-  // indicating whether or not the availability test has completed.
-  static base::AtomicFlag* GetAvailabilityTestCompletionFlag();
 
   PortalFilterSet BuildFilterSet();
 
@@ -199,16 +188,13 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
   // Removes the DialogInfo parent. Must be called on the UI task runner.
   void UnparentOnMainThread();
 
-  // This should be used in the main thread.
+  // This should be used by the invoker task runner.
   base::WeakPtr<aura::WindowTreeHost> host_;
 
-  // Data shared across main thread and D-Bus thread.
+  // Used by main task runner.
   scoped_refptr<DialogInfo> info_;
 
-  // Written by the D-Bus thread and read by the UI thread.
-  static bool is_portal_available_;
-
-  // Used by the D-Bus thread to generate unique handle tokens.
+  // Used by the main task runner to generate unique handle tokens.
   static int handle_token_counter_;
 
   std::vector<PortalFilter> filters_;
