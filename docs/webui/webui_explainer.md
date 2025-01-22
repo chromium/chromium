@@ -221,7 +221,7 @@ have side effects are more commonly done in a
 [`WebUIMessageHandler`s](#WebUIMessageHandler).
 
 `WebUI` are created synchronously on the UI thread in response to a URL request,
-and are re-used where possible between navigations (i.e. refreshing a page).
+and are reused where possible between navigations (i.e. refreshing a page).
 Because they run in a separate process and can exist before a corresponding
 renderer process has been created, special care is required to communicate with
 the renderer if reliable message passing is required.
@@ -852,7 +852,7 @@ execute code, it can use `CallJavascriptFunction()`.
 
 <div class="note">
 Javascript must be <a href="#AllowJavascript">allowed</a> to use
-<code>CallJavscriptFunction()</code>.
+<code>CallJavascriptFunction()</code>.
 </div>
 
 ```c++
@@ -963,7 +963,7 @@ messages.
 #### WebUIMessageHandler::OnJavascriptDisallowed()
 
 `OnJavascriptDisallowed` is a lifecycle method called when it's unclear whether
-it's safe to send JavaScript messsages to the renderer.
+it's safe to send JavaScript messages to the renderer.
 
 There's a number of situations that result in this method being called:
 

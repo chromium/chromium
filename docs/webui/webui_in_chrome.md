@@ -453,7 +453,7 @@ Any code that is located in `ui/webui/resources` and served from
 `chrome://resources` and `chrome-untrusted://resources` can be used from any
 WebUI page. If you want to share some additional code from another WebUI page
 that is not in the shared resources, first see
-[Sharing Code in WebUI](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_code_sharing.md) to determine the best approach.
+[Sharing Code in WebUI](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui/webui_code_sharing.md) to determine the best approach.
 
 If you determine that the code should be narrowly shared, the following
 explains how to add the narrowly shared resources to your WebUI data source.
