@@ -702,13 +702,21 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GURL(url::kAboutBlankURL)));
 
-  std::string histogram_name = prerender_helper_.GenerateHistogramName(
-      "PageLoad.Internal.Prerender2.DomContentLoadedToActivation3",
-      content::PreloadingTriggerType::kSpeculationRule, "");
-  histogram_tester().ExpectTotalCount(histogram_name, 1);
+  std::string dom_content_loaded_histogram_name =
+      prerender_helper_.GenerateHistogramName(
+          "PageLoad.Internal.Prerender2.DomContentLoadedToActivation3",
+          content::PreloadingTriggerType::kSpeculationRule, "");
+  std::string parse_start_histogram_name =
+      prerender_helper_.GenerateHistogramName(
+          "PageLoad.Internal.Prerender2.MainResourceParseStartToActivation",
+          content::PreloadingTriggerType::kSpeculationRule, "");
+  histogram_tester().ExpectTotalCount(dom_content_loaded_histogram_name, 1);
+  histogram_tester().ExpectTotalCount(parse_start_histogram_name, 1);
   // We shift the duration by the 1 minute when recording the metric.
   base::TimeDelta shifting_duration = base::Minutes(1);
-  EXPECT_GE(histogram_tester().GetTotalSum(histogram_name),
+  EXPECT_GE(histogram_tester().GetTotalSum(dom_content_loaded_histogram_name),
+            shifting_duration.InMilliseconds());
+  EXPECT_GE(histogram_tester().GetTotalSum(parse_start_histogram_name),
             shifting_duration.InMilliseconds());
 }
 
@@ -772,6 +780,54 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
       content::NavigateToURL(web_contents(), GURL(url::kAboutBlankURL)));
   std::string histogram_name = prerender_helper_.GenerateHistogramName(
       "PageLoad.Internal.Prerender2.DomContentLoadedToActivation3",
+      content::PreloadingTriggerType::kSpeculationRule, "");
+  histogram_tester().ExpectTotalCount(histogram_name, 1);
+  // We shift the duration by the 1 minute when recording the metric.
+  base::TimeDelta shifting_duration = base::Minutes(1);
+  EXPECT_LE(histogram_tester().GetTotalSum(histogram_name),
+            shifting_duration.InMilliseconds());
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
+                       ResponseBodyReceivedAfterActivation) {
+  net::test_server::ControllableHttpResponse response(embedded_test_server(),
+                                                      "/title2.html");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to an initial page.
+  auto initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
+
+  // Start a prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *web_contents());
+  prerender_helper_.AddPrerenderAsync(prerender_url);
+  registry_observer.WaitForTrigger(prerender_url);
+  response.WaitForRequest();
+  response.Send(net::HTTP_OK, "text/html");
+
+  content::test::PrerenderHostObserver host_observer(*web_contents(),
+                                                     prerender_url);
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+  waiter->AddPageExpectation(
+      page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+
+  std::ignore = ExecJs(web_contents()->GetPrimaryMainFrame(),
+                       content::JsReplace("location = $1", prerender_url));
+  host_observer.WaitForActivation();
+
+  // Send the body after activation.
+  response.Send("<html>hello</html>");
+  response.Done();
+  waiter->Wait();
+
+  // Flush metrics.
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GURL(url::kAboutBlankURL)));
+  std::string histogram_name = prerender_helper_.GenerateHistogramName(
+      "PageLoad.Internal.Prerender2.MainResourceParseStartToActivation",
       content::PreloadingTriggerType::kSpeculationRule, "");
   histogram_tester().ExpectTotalCount(histogram_name, 1);
   // We shift the duration by the 1 minute when recording the metric.

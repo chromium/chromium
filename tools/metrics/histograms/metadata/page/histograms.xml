@@ -3607,6 +3607,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PageLoad.Internal.Prerender2.MainResourceParseStartToActivation{PreloadingTriggerType}"
+    units="ms" expires_after="2025-05-11">
+  <owner>lingqi@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records the duration from when to start parsing main resource to activation
+    for a prerenderedand then activated page.
+
+    Note that the duration is shifted by 1 minute (60000ms) when recording the
+    metric, because UMA cannot record negative values.
+
+    If the UA starts to parse the main resource after activation, the number
+    will be less than 60000(ms).
+
+    If the UA starts to parse the main resource before activation, the number
+    will be greater than 60000(ms).
+
+    This metric will be recorded when a session ends, at
+    PrerenderPageLoadMetricsObserver::MaybeRecordDocumentLoadMetrics.
+  </summary>
+  <token key="PreloadingTriggerType" variants="PagePreloadingTriggerType"/>
+</histogram>
+
 <histogram name="PageLoad.Internal.SoftNavigationOutcome"
     enum="SoftNavigationOutcome" expires_after="2025-06-29">
   <owner>iclelland@chromium.org</owner>
