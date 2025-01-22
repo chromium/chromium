@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -168,8 +169,24 @@ InteractiveFeaturePromoTestPrivate::CreateMockTracker(
   // Allow an unlimited number of calls to these methods.
   EXPECT_CALL(*mock_tracker, IsInitialized)
       .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*mock_tracker, AddOnInitializedCallback)
+      .WillRepeatedly(
+          [](feature_engagement::Tracker::OnInitializedCallback cb) {
+            base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    [](feature_engagement::Tracker::OnInitializedCallback cb) {
+                      std::move(cb).Run(true);
+                    },
+                    std::move(cb)));
+          });
   EXPECT_CALL(*mock_tracker, WouldTriggerHelpUI)
       .WillRepeatedly(testing::Return(true));
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(*mock_tracker, ListEvents)
+      .WillRepeatedly(
+          testing::Return(feature_engagement::Tracker::EventList()));
+#endif
 
   // Because some features are enabled by default, ensure that anything other
   // than the specific feature being tested is rejected.

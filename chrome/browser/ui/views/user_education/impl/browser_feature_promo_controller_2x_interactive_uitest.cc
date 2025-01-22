@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -25,6 +26,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/user_education_data.h"
+#include "components/user_education/common/user_education_features.h"
 #include "components/user_education/common/user_education_storage_service.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
@@ -57,19 +59,34 @@ BASE_FEATURE(kLegalNoticeTestFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
-class BrowserFeaturePromoController20UiTest
-    : public InteractiveFeaturePromoTest {
+#define INSTANTIATE_V2X_TEST(TestClass)                                    \
+  INSTANTIATE_TEST_SUITE_P(, TestClass, testing::Bool(),                   \
+                           [](const testing::TestParamInfo<bool>& param) { \
+                             return param.param ? "V25" : "V20";           \
+                           })
+
+class BrowserFeaturePromoController2xUiTest
+    : public InteractiveFeaturePromoTest,
+      public testing::WithParamInterface<bool> {
  public:
-  BrowserFeaturePromoController20UiTest()
+  BrowserFeaturePromoController2xUiTest()
       : InteractiveFeaturePromoTest(UseMockTracker(),
                                     ClockMode::kUseDefaultClock) {}
 
-  ~BrowserFeaturePromoController20UiTest() override = default;
+  ~BrowserFeaturePromoController2xUiTest() override = default;
 
-  BrowserFeaturePromoController20UiTest(
-      const BrowserFeaturePromoController20UiTest&) = delete;
-  BrowserFeaturePromoController20UiTest& operator=(
-      const BrowserFeaturePromoController20UiTest&) = delete;
+  BrowserFeaturePromoController2xUiTest(
+      const BrowserFeaturePromoController2xUiTest&) = delete;
+  BrowserFeaturePromoController2xUiTest& operator=(
+      const BrowserFeaturePromoController2xUiTest&) = delete;
+
+  void SetUp() override {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          user_education::features::kUserEducationExperienceVersion2Point5);
+    }
+    InteractiveFeaturePromoTest::SetUp();
+  }
 
   void SetUpOnMainThread() override {
     InteractiveFeaturePromoTest::SetUpOnMainThread();
@@ -183,16 +200,18 @@ class BrowserFeaturePromoController20UiTest
   }
 
   user_education::FeaturePromoController* promo_controller() const {
-    return static_cast<BrowserFeaturePromoController20*>(
-        browser()->window()->GetFeaturePromoControllerForTesting());
+    return browser()->window()->GetFeaturePromoControllerForTesting();
   }
 
  private:
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20UiTest,
+INSTANTIATE_V2X_TEST(BrowserFeaturePromoController2xUiTest);
+
+IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
                        LogsAbortMetrics) {
   RunTestSequence(MaybeShowPromo(kToastTestFeature),
                   AbortPromo(kToastTestFeature),
@@ -204,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20UiTest,
                                /*custom_action_count*/ 0));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20UiTest,
+IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
                        LogsEngagedMetrics) {
   RunTestSequence(MaybeShowPromo(kToastTestFeature),
                   UseFeature(kToastTestFeature),
@@ -216,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20UiTest,
                                /*custom_action_count*/ 0));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20UiTest,
+IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
                        LogsCustomActionMetrics) {
   RunTestSequence(MaybeShowPromo(kCustomActionTestFeature),
                   PressNonDefaultPromoButton(),
@@ -228,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20UiTest,
                                /*custom_action_count*/ 1));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20UiTest,
+IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
                        CanShowPromoReturnsExpectedValue) {
   RunTestSequence(
       QueryIPH(kToastTestFeature,
@@ -241,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20UiTest,
                user_education::FeaturePromoResult::kPermanentlyDismissed));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20UiTest,
+IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
                        CallbackHappensAfterCancel) {
   bool called = false;
   FeaturePromoClosedReason close_reason = FeaturePromoClosedReason::kAbortPromo;
@@ -262,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20UiTest,
       CheckVariable(close_reason, FeaturePromoClosedReason::kCancel));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20UiTest,
+IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
                        CallbackHappensAfterConfirm) {
   bool called = false;
   FeaturePromoClosedReason close_reason = FeaturePromoClosedReason::kAbortPromo;
@@ -282,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20UiTest,
       CheckVariable(close_reason, FeaturePromoClosedReason::kDismiss));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20UiTest,
+IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
                        CallbackHappensAfterCustomAction) {
   bool called = false;
   FeaturePromoClosedReason close_reason = FeaturePromoClosedReason::kAbortPromo;
@@ -305,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20UiTest,
 }
 
 // Using the base interactive browser test re-enables window activation
-// checking.
+// checking. This is only 2.0 since activation precondition is tested elsewhere.
 using BrowserFeaturePromoController20ActivationUiTest = InteractiveBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20ActivationUiTest,
