@@ -4,7 +4,7 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
-# Separate from chrome/browser/ash/system_web_apps/types/BUILD.gn, which is
+# Separate from chromeos/ash/experiences/system_web_apps/types/BUILD.gn, which is
 # Ash-only. The statement below exists just to bypass the presubmit.
 # Not going to add assert(is_chromeos_ash) check.
 proto_library("proto") {

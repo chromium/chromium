@@ -164,9 +164,9 @@ source_set("unit_tests") {
       "//chrome/browser/ash/login/users:test_support",
       "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ash/system_web_apps/test_support",
-      "//chrome/browser/ash/system_web_apps/types",
       "//chrome/browser/ui/apps",
       "//chrome/browser/ui/ash/system_web_apps",
+      "//chromeos/ash/experiences/system_web_apps/types",
       "//components/services/app_service/public/cpp:instance_update",
     ]
   }

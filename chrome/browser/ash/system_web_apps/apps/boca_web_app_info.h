@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 

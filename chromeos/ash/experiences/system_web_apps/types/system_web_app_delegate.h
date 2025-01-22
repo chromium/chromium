@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_TYPES_SYSTEM_WEB_APP_DELEGATE_H_
-#define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_TYPES_SYSTEM_WEB_APP_DELEGATE_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_SYSTEM_WEB_APPS_TYPES_SYSTEM_WEB_APP_DELEGATE_H_
+#define CHROMEOS_ASH_EXPERIENCES_SYSTEM_WEB_APPS_TYPES_SYSTEM_WEB_APP_DELEGATE_H_
 
 #include <memory>
 #include <string>
@@ -12,7 +12,7 @@
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_background_task_info.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_background_task_info.h"
 #include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -245,4 +245,4 @@ class SystemWebAppDelegate {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_TYPES_SYSTEM_WEB_APP_DELEGATE_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_SYSTEM_WEB_APPS_TYPES_SYSTEM_WEB_APP_DELEGATE_H_

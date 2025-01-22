@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_SHORTCUT_CUSTOMIZATION_SYSTEM_WEB_APP_INFO_H_
 
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace web_app {

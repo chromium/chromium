@@ -5,7 +5,6 @@
 syntax = "proto2";
 
 import "components/sync/protocol/web_app_specifics.proto";
-import "chrome/browser/ash/system_web_apps/types/proto/system_web_app_data.proto";
 import "chrome/browser/web_applications/proto/web_app_launch_handler.proto";
 import "chrome/browser/web_applications/proto/web_app_os_integration_state.proto";
 import "chrome/browser/web_applications/proto/web_app_install_state.proto";
@@ -14,6 +13,7 @@ import "chrome/browser/web_applications/proto/web_app_proto_package.proto";
 import "chrome/browser/web_applications/proto/web_app_related_applications.proto";
 import "chrome/browser/web_applications/proto/web_app_share_target.proto";
 import "chrome/browser/web_applications/proto/web_app_tab_strip.proto";
+import "chromeos/ash/experiences/system_web_apps/types/proto/system_web_app_data.proto";
 
 option optimize_for = LITE_RUNTIME;
 
