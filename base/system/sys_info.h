@@ -268,6 +268,10 @@ class BASE_EXPORT SysInfo {
   // Returns the Android build ID.
   static std::string GetAndroidBuildID();
 
+  // Returns the Android hardware system property, equivalent to Java's
+  // Build.HARDWARE.
+  static std::string GetAndroidHardware();
+
   // Returns the Android hardware EGL system property.
   static std::string GetAndroidHardwareEGL();
 #endif  // BUILDFLAG(IS_ANDROID)

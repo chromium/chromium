@@ -115,6 +115,12 @@ std::string SysInfo::GetAndroidBuildID() {
   return std::string(os_build_id_str);
 }
 
+std::string SysInfo::GetAndroidHardware() {
+  char os_hardware_str[PROP_VALUE_MAX];
+  __system_property_get("ro.hardware", os_hardware_str);
+  return std::string(os_hardware_str);
+}
+
 std::string SysInfo::GetAndroidHardwareEGL() {
   char os_hardware_egl_str[PROP_VALUE_MAX];
   __system_property_get("ro.hardware.egl", os_hardware_egl_str);
