@@ -395,6 +395,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void NotifyUISchedulerOfGestureEventUpdate(
       blink::WebInputEvent::Type gesture_event) override;
   void OnInputIgnored(const blink::WebInputEvent& event) override;
+  void IncrementInFlightEventCount() override;
+  void DecrementInFlightEventCount(
+      blink::mojom::InputEventResultSource ack_source) override;
+  input::StylusInterface* GetStylusInterface() override;
 
   // Update the stored set of visual properties for the renderer. If 'propagate'
   // is true, the new properties will be sent to the renderer process.
@@ -817,7 +821,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       const std::optional<std::vector<gfx::Rect>>& character_bounds,
       const std::optional<std::vector<gfx::Rect>>& line_bounds) override;
   void OnImeCancelComposition() override;
-  input::StylusInterface* GetStylusInterface() override;
   void OnStartStylusWriting() override;
   void UpdateElementFocusForStylusWriting(
 #if BUILDFLAG(IS_WIN)
@@ -832,10 +835,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       bool from_user_gesture,
       bool unadjusted_movement,
       input::InputRouterImpl::RequestMouseLockCallback response) override;
-  // TODO(b/331420891): Move these methods into RenderInputRouter.
-  void IncrementInFlightEventCount() override;
-  void DecrementInFlightEventCount(
-      blink::mojom::InputEventResultSource ack_source) override;
 
   // PointerLockContext overrides
   void RequestMouseLockChange(

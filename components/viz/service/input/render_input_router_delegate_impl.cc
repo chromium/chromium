@@ -129,4 +129,9 @@ RenderInputRouterDelegateImpl::MakePeakGpuMemoryTracker(
                                                     delegate_->GetGpuService());
 }
 
+input::StylusInterface* RenderInputRouterDelegateImpl::GetStylusInterface() {
+  // Stylus input is not being handled by InputVizard currently.
+  return nullptr;
+}
+
 }  // namespace viz

@@ -93,6 +93,11 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
   void NotifyUISchedulerOfGestureEventUpdate(
       blink::WebInputEvent::Type gesture_event) override {}
   void OnInputIgnored(const blink::WebInputEvent& event) override {}
+  // TODO(391135801): Handle renderer unresponsiveness with InputVizard.
+  void IncrementInFlightEventCount() override {}
+  void DecrementInFlightEventCount(
+      blink::mojom::InputEventResultSource ack_source) override {}
+  input::StylusInterface* GetStylusInterface() override;
 
   void SetIsBlocked(bool blocked) { is_blocked_ = blocked; }
 
