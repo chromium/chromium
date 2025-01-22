@@ -108,6 +108,7 @@ void EditorMenuControllerImpl::OnTextAvailable(
                           : EditorTextSelectionMode::kNoSelection,
                       /*consent_status_settled=*/false,
                       /*preset_queries=*/{}));
+    return;
   }
 
   card_session_->editor_manager()->GetEditorPanelContext(base::BindOnce(
