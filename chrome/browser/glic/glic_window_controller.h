@@ -261,10 +261,6 @@ class GlicWindowController : public views::WidgetObserver {
 
   gfx::Rect final_widget_bounds_;
 
-  // TODO(crbug.com/391402352): Fold into state machine.
-  // Indicates `Show()` has been called, but not `FinishShow()`.
-  bool will_show_ = false;
-
   // Used to monitor key and mouse events from native window.
   std::unique_ptr<WindowEventObserver> window_event_observer_;
 

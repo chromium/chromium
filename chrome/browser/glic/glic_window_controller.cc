@@ -177,7 +177,8 @@ GlicWindowController::~GlicWindowController() = default;
 
 void GlicWindowController::WebClientInitializeFailed() {
   // TODO(crbug.com/391402352): Set state.
-  if (will_show_) {
+  if (state_ == State::kOpenAnimation ||
+      state_ == State::kWaitingForGlicToLoad) {
     // TODO(crbug.com/388328847): The web client failed to initialize. Decide
     // what the fallback behavior is. Additionally, we probably need some kind
     // of timeout and/or loading indicator if loading takes too much time. For
@@ -190,7 +191,9 @@ void GlicWindowController::WebClientInitializeFailed() {
 
 void GlicWindowController::LoginPageCommitted() {
   login_page_committed_ = true;
-  if (will_show_ && !web_client_) {
+  if ((state_ == State::kOpenAnimation ||
+       state_ == State::kWaitingForGlicToLoad) &&
+      !web_client_) {
     // TODO(crbug.com/388328847): Temporarily allow showing the UI when a login
     // page is reached.
     ShowFinish();
@@ -199,7 +202,8 @@ void GlicWindowController::LoginPageCommitted() {
 
 void GlicWindowController::SetWebClient(GlicWebClientAccess* web_client) {
   web_client_ = web_client;
-  if (will_show_) {
+  if (state_ == State::kOpenAnimation ||
+      state_ == State::kWaitingForGlicToLoad) {
     if (web_client_) {
       ShowPhase2();
     } else {
@@ -225,7 +229,6 @@ void GlicWindowController::Show(views::View* glic_button_view) {
   }
 
   gfx::Point top_right_point;
-  will_show_ = true;
 
   gfx::Size default_widget_size(kWidgetDefaultWidth, kWidgetTopBarHeight);
   if (final_widget_bounds_.IsEmpty()) {
@@ -326,7 +329,6 @@ void GlicWindowController::ShowPhase2() {
 }
 
 void GlicWindowController::ShowFinish() {
-  will_show_ = false;
   login_page_committed_ = false;
   if (state_ == State::kClosed || state_ == State::kOpen) {
     return;
@@ -506,7 +508,6 @@ void GlicWindowController::Close() {
   browser_close_subscription_.reset();
   glic_window_widget_->RemoveObserver(this);
   glic_window_widget_.reset();
-  will_show_ = false;
   NotifyIfPanelStateChanged();
 
   if (web_client_) {
