@@ -8067,6 +8067,11 @@ void Document::SetPopoverPointerdownTarget(const HTMLElement* popover) {
   popover_pointerdown_target_ = popover;
 }
 
+void Document::SetCustomizableSelectMousedownLocation(
+    std::optional<gfx::PointF> point) {
+  customizable_select_mousedown_location_ = point;
+}
+
 const HTMLDialogElement* Document::DialogPointerdownTarget() const {
   CHECK(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
   return dialog_pointerdown_target_.Get();

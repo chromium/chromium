@@ -434,6 +434,10 @@ inline void EventDispatcher::DispatchEventPostProcess(
 #endif  // BUILDFLAG(IS_MAC)
   }
 
+  if (event_->IsMouseEvent() && event_->type() == event_type_names::kMouseup) {
+    node_->GetDocument().SetCustomizableSelectMousedownLocation(std::nullopt);
+  }
+
   auto* keyboard_event = DynamicTo<KeyboardEvent>(event_);
   if (Page* page = node_->GetDocument().GetPage()) {
     if (page->GetSettings().GetSpatialNavigationEnabled() &&

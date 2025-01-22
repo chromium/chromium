@@ -1651,6 +1651,10 @@ class CORE_EXPORT Document : public ContainerNode,
     return popover_pointerdown_target_.Get();
   }
   void SetPopoverPointerdownTarget(const HTMLElement*);
+  std::optional<gfx::PointF> CustomizableSelectMousedownLocation() const {
+    return customizable_select_mousedown_location_;
+  }
+  void SetCustomizableSelectMousedownLocation(std::optional<gfx::PointF>);
   const HTMLDialogElement* DialogPointerdownTarget() const;
   void SetDialogPointerdownTarget(const HTMLDialogElement*);
 
@@ -2721,6 +2725,8 @@ class CORE_EXPORT Document : public ContainerNode,
   HeapVector<Member<HTMLElement>> popover_hint_stack_;
   // The popover (if any) that received the most recent pointerdown event.
   Member<const HTMLElement> popover_pointerdown_target_;
+  // The mouse location for the mousedown that opened the select, if any.
+  std::optional<gfx::PointF> customizable_select_mousedown_location_;
   // The dialog (if any) that received the most recent pointerdown event. This
   // is distinct from popover_pointerdown_target_ because the same pointer
   // action could trigger light dismiss on a containing popover and not a

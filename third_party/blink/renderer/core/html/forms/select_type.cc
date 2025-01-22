@@ -522,6 +522,12 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
           // pointerup is fired before mousedown on touch, so this is only
           // needed when the event is not from touch.
           select_->GetDocument().SetPopoverPointerdownTarget(popover_);
+
+          // Keep track of the mouse pixel location, so that when the mouseup
+          // happens, we can see whether there was a mouse drag to pick an
+          // option.
+          select_->GetDocument().SetCustomizableSelectMousedownLocation(
+              mouse_event->AbsoluteLocation());
         }
         ShowPopup(mouse_event->FromTouch() ? PopupMenu::kTouch
                                            : PopupMenu::kOther);
@@ -529,20 +535,12 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
     }
     return true;
   }
-
-  // In the case that the picker is not overlapping the select's invoker button,
-  // we want to make sure that dragging to the first option and releasing the
-  // mouse chooses that option and closes the picker. This code does this by
-  // looking for mousemove events on the select's button.
-  // event.target() is only compared to select_ because the author provided
-  // button is inert, so clicking in an author provided button will always make
-  // the target select_.
-  if (event.type() == event_type_names::kMousemove &&
-      event.target() == select_ && !select_->MouseupShouldClosePicker() &&
-      IsAppearanceBasePicker()) {
-    select_->SetMouseupShouldClosePicker(true);
+  if (event.type() == event_type_names::kMouseup && mouse_event &&
+      mouse_event->button() ==
+          static_cast<int16_t>(WebPointerProperties::Button::kLeft) &&
+      IsAppearanceBasePicker() && !mouse_event->FromTouch()) {
+    select_->GetDocument().SetCustomizableSelectMousedownLocation(std::nullopt);
   }
-
   return false;
 }
 
@@ -774,7 +772,6 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
   }
 
   if (IsAppearanceBasePicker()) {
-    select_->SetMouseupShouldClosePicker(false);
     popover_->ShowPopoverInternal(select_, /*exception_state=*/nullptr);
     if (!IsAppearanceBasePicker()) {
       // The picker, as the result of CSS, changed `appearance` values upon
