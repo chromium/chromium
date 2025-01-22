@@ -412,8 +412,8 @@ void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
   ASSIGN_OR_RETURN(
       std::unique_ptr<GraphBuilderCoreml::Result> build_graph_result,
       GraphBuilderCoreml::CreateAndBuild(
-          *graph_info.get(), std::move(context_properties), constant_operands,
-          model_file_dir.GetPath()),
+          *graph_info.get(), std::move(context_properties),
+          context_options->device, constant_operands, model_file_dir.GetPath()),
       [&](mojom::ErrorPtr error) {
         std::move(callback).Run(base::unexpected(std::move(error)));
         return;

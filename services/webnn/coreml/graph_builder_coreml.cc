@@ -934,6 +934,7 @@ base::expected<std::unique_ptr<GraphBuilderCoreml::Result>, mojom::ErrorPtr>
 GraphBuilderCoreml::CreateAndBuild(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
+    mojom::CreateContextOptions::Device device,
     const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
         constant_operands,
     const base::FilePath& working_directory) {
@@ -955,9 +956,9 @@ GraphBuilderCoreml::CreateAndBuild(
     return NewUnknownError(kWriteWeightsErrorMessage);
   }
 
-  GraphBuilderCoreml graph_builder(graph_info, std::move(context_properties),
-                                   constant_operands, std::move(ml_package_dir),
-                                   std::move(*weights_handle));
+  GraphBuilderCoreml graph_builder(
+      graph_info, std::move(context_properties), device, constant_operands,
+      std::move(ml_package_dir), std::move(*weights_handle));
 
   RETURN_IF_ERROR(graph_builder.BuildCoreMLModel());
   RETURN_IF_ERROR(graph_builder.SerializeModel());
@@ -1142,6 +1143,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
 GraphBuilderCoreml::GraphBuilderCoreml(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
+    mojom::CreateContextOptions::Device device,
     const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
         constant_operands,
     base::FilePath ml_package_dir,
@@ -1149,6 +1151,7 @@ GraphBuilderCoreml::GraphBuilderCoreml(
     : graph_info_(graph_info),
       constant_operands_(constant_operands),
       context_properties_(std::move(context_properties)),
+      device_(device),
       internal_operand_id_(
           base::ranges::max_element(
               graph_info_->id_to_operand_map,
