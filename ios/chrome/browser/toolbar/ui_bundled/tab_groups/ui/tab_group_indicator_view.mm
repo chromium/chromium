@@ -131,6 +131,7 @@
   }
   self.hidden = hidden;
   [_toolbarHeightDelegate toolbarsHeightChanged];
+  [_delegate tabGroupIndicatorViewVisibilityUpdated:!hidden];
 }
 
 // Returns the stack view.

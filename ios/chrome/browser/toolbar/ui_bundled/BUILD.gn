@@ -156,6 +156,7 @@ source_set("ui") {
     "//ios/chrome/browser/toolbar/ui_bundled/buttons",
     "//ios/chrome/browser/toolbar/ui_bundled/public",
     "//ios/chrome/browser/toolbar/ui_bundled/public:constants",
+    "//ios/chrome/browser/toolbar/ui_bundled/tab_groups:features_utils",
     "//ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui",
     "//ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui:constants",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",

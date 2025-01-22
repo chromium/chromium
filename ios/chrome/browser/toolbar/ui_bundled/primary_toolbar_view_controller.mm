@@ -261,9 +261,6 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
   CGFloat alphaValue = fmax(progress * 2 - 1, 0);
   self.view.leadingStackView.alpha = alphaValue;
   self.view.trailingStackView.alpha = alphaValue;
-  if (IsTabGroupInGridEnabled()) {
-    self.view.tabGroupIndicatorView.alpha = alphaValue;
-  }
   self.view.locationBarBottomConstraint.constant =
       [self verticalMarginForLocationBarForFullscreenProgress:progress];
 
