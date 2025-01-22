@@ -112,6 +112,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(std::vector<PaintShader::FloatUniform>* uniforms);
   void Read(std::vector<PaintShader::Float2Uniform>* uniforms);
   void Read(std::vector<PaintShader::Float4Uniform>* uniforms);
+  void Read(std::vector<PaintShader::IntUniform>* uniforms);
 
   void Read(SkClipOp* op) { ReadEnum<SkClipOp, SkClipOp::kMax_EnumValue>(op); }
   void Read(PaintCanvas::AnnotationType* type) {

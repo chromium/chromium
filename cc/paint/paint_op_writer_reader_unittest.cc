@@ -125,6 +125,7 @@ struct UniformTestCase {
   std::vector<PaintShader::FloatUniform> scalars;
   std::vector<PaintShader::Float2Uniform> float2s;
   std::vector<PaintShader::Float4Uniform> float4s;
+  std::vector<PaintShader::IntUniform> ints;
   size_t expected_size;
 };
 
@@ -141,12 +142,15 @@ TEST_P(PaintOpWriterReaderUniformTest, Uniforms) {
   const auto& scalars = GetParam().scalars;
   const auto& float2s = GetParam().float2s;
   const auto& float4s = GetParam().float4s;
+  const auto& ints = GetParam().ints;
   if (!scalars.empty()) {
     writer.Write(scalars);
   } else if (!float2s.empty()) {
     writer.Write(float2s);
   } else if (!float4s.empty()) {
     writer.Write(float4s);
+  } else if (!ints.empty()) {
+    writer.Write(ints);
   } else {
     ASSERT_TRUE(false);
   }
@@ -169,6 +173,10 @@ TEST_P(PaintOpWriterReaderUniformTest, Uniforms) {
     std::vector<PaintShader::Float4Uniform> deseralized;
     reader.Read(&deseralized);
     EXPECT_THAT(deseralized, ::testing::UnorderedElementsAreArray(float4s));
+  } else if (!ints.empty()) {
+    std::vector<PaintShader::IntUniform> deseralized;
+    reader.Read(&deseralized);
+    EXPECT_THAT(deseralized, ::testing::UnorderedElementsAreArray(ints));
   } else {
     ASSERT_TRUE(false);
   }
@@ -200,7 +208,11 @@ INSTANTIATE_TEST_SUITE_P(
                          // count = 8,
                          // "var1" = 8+4, value = 16,
                          // "variable2" = 8+12 (9 aligned up to 12), value = 16
-                         .expected_size = 72u}}),
+                         .expected_size = 72u},
+         UniformTestCase{.ints = {{.name = SkString("var1"), .value = 1},
+                                  {.name = SkString("variable2"), .value = 2}},
+                         // Should match scalars case.
+                         .expected_size = 48u}}),
     [](const ::testing::TestParamInfo<UniformTestCase> info) {
       if (!info.param.scalars.empty()) {
         return "Scalar";
@@ -208,6 +220,8 @@ INSTANTIATE_TEST_SUITE_P(
         return "SkV2";
       } else if (!info.param.float4s.empty()) {
         return "SkV4";
+      } else if (!info.param.ints.empty()) {
+        return "Int";
       } else {
         NOTREACHED();
       }

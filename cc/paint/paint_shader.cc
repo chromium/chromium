@@ -232,7 +232,8 @@ sk_sp<PaintShader> PaintShader::MakeSkSLCommand(
     std::string_view sksl,
     std::vector<FloatUniform> float_uniforms,
     std::vector<Float2Uniform> float2_uniforms,
-    std::vector<Float4Uniform> float4_uniforms) {
+    std::vector<Float4Uniform> float4_uniforms,
+    std::vector<IntUniform> int_uniforms) {
   SkString cmd(sksl);
   auto [effect, error] = SkRuntimeEffect::MakeForShader(cmd);
   if (!effect) {
@@ -244,6 +245,7 @@ sk_sp<PaintShader> PaintShader::MakeSkSLCommand(
   shader->scalar_uniforms_ = std::move(float_uniforms);
   shader->float2_uniforms_ = std::move(float2_uniforms);
   shader->float4_uniforms_ = std::move(float4_uniforms);
+  shader->int_uniforms_ = std::move(int_uniforms);
   return shader;
 }
 
@@ -280,7 +282,8 @@ size_t PaintShader::GetSerializedSize(const PaintShader* shader) {
           PaintOpWriter::SerializedSize(shader->sksl_command_) +
           PaintOpWriter::SerializedSize(shader->scalar_uniforms_) +
           PaintOpWriter::SerializedSize(shader->float2_uniforms_) +
-          PaintOpWriter::SerializedSize(shader->float4_uniforms_))
+          PaintOpWriter::SerializedSize(shader->float4_uniforms_) +
+          PaintOpWriter::SerializedSize(shader->int_uniforms_))
       .ValueOrDie();
 }
 
@@ -546,6 +549,9 @@ sk_sp<SkShader> PaintShader::GetSkShader(
         builder.uniform(name.c_str()) = value;
       }
       for (const auto& [name, value] : float4_uniforms_) {
+        builder.uniform(name.c_str()) = value;
+      }
+      for (const auto& [name, value] : int_uniforms_) {
         builder.uniform(name.c_str()) = value;
       }
       return builder.makeShader();

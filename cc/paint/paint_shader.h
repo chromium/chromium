@@ -142,11 +142,13 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   using FloatUniform = Uniform<SkScalar>;
   using Float2Uniform = Uniform<SkV2>;
   using Float4Uniform = Uniform<SkV4>;
+  using IntUniform = Uniform<int>;
   static sk_sp<PaintShader> MakeSkSLCommand(
       std::string_view sksl,
       std::vector<FloatUniform> float_uniforms,
       std::vector<Float2Uniform> float2_uniforms,
-      std::vector<Float4Uniform> float4_uniforms);
+      std::vector<Float4Uniform> float4_uniforms,
+      std::vector<IntUniform> int_uniforms);
 
   static size_t GetSerializedSize(const PaintShader* shader);
 
@@ -326,6 +328,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   std::vector<FloatUniform> scalar_uniforms_;
   std::vector<Float2Uniform> float2_uniforms_;
   std::vector<Float4Uniform> float4_uniforms_;
+  std::vector<IntUniform> int_uniforms_;
 };
 
 }  // namespace cc
