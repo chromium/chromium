@@ -172,7 +172,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*softmax_input=*/DataTypeConstraint::kFloat16To32,
        /*softplus_input=*/{},
        /*softsign_input=*/{},
-       /*split_input=*/{},
+       /*split_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
        /*tanh_input=*/{},
        /*tile_input=*/{},
        /*transpose_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
