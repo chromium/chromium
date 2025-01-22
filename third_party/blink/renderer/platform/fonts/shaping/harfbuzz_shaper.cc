@@ -328,23 +328,20 @@ inline bool ShapeRange(hb_buffer_t* buffer,
     return false;
   }
 
-  FontFeatures variant_features;
-  if (!platform_data.ResolvedFeatures().empty()) {
-    const ResolvedFontFeatures& resolved_features =
-        platform_data.ResolvedFeatures();
-    for (const std::pair<uint32_t, uint32_t>& feature : resolved_features) {
-      variant_features.Append({{feature.first, feature.second},
-                               0 /* start */,
-                               static_cast<unsigned>(-1) /* end */});
+  std::optional<FontFeatures> variant_features;
+  if (const ResolvedFontFeatures& resolved_features =
+          platform_data.ResolvedFeatures();
+      !resolved_features.empty()) {
+    // Insert `resolved_features` before `font_features`.
+    variant_features.emplace();
+    variant_features->Reserve(resolved_features.size() + font_features.size());
+    for (const FontFeatureValue& feature : resolved_features) {
+      variant_features->Append({feature});
     }
-  }
-
-  bool needs_feature_merge = variant_features.size();
-  if (needs_feature_merge) {
-    variant_features.AppendVector(font_features);
+    variant_features->AppendVector(font_features);
   }
   const FontFeatures& argument_features =
-      needs_feature_merge ? variant_features : font_features;
+      variant_features ? *variant_features : font_features;
 
   hb_buffer_set_language(buffer, language);
   hb_buffer_set_script(buffer, ICUScriptToHBScript(current_run_script));
