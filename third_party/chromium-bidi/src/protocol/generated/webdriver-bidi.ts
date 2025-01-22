@@ -284,10 +284,13 @@ export namespace Session {
 export namespace Session {
   export type Unsubscribe = {
     method: 'session.unsubscribe';
-    params:
-      | Session.UnsubscribeByAttributesRequest
-      | Session.UnsubscribeByIdRequest;
+    params: Session.UnsubscribeParameters;
   };
+}
+export namespace Session {
+  export type UnsubscribeParameters =
+    | Session.UnsubscribeByAttributesRequest
+    | Session.UnsubscribeByIdRequest;
 }
 export type BrowserCommand =
   | Browser.Close

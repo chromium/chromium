@@ -380,11 +380,16 @@ export namespace Session {
   export const UnsubscribeSchema = z.lazy(() =>
     z.object({
       method: z.literal('session.unsubscribe'),
-      params: z.union([
-        Session.UnsubscribeByAttributesRequestSchema,
-        Session.UnsubscribeByIdRequestSchema,
-      ]),
+      params: Session.UnsubscribeParametersSchema,
     }),
+  );
+}
+export namespace Session {
+  export const UnsubscribeParametersSchema = z.lazy(() =>
+    z.union([
+      Session.UnsubscribeByAttributesRequestSchema,
+      Session.UnsubscribeByIdRequestSchema,
+    ]),
   );
 }
 export const BrowserCommandSchema = z.lazy(() =>
