@@ -13211,25 +13211,6 @@
             ]
         }
     ],
-    "KillSpareRenderOnMemoryPressure": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "KillSpareRenderOnMemoryPressure"
-                    ]
-                }
-            ]
-        }
-    ],
     "KioskHeartbeatsViaERP": [
         {
             "platforms": [
@@ -14593,6 +14574,7 @@
                         "count": "2"
                     },
                     "enable_features": [
+                        "KillSpareRenderOnMemoryPressure",
                         "MultipleSpareRPHs"
                     ]
                 },
@@ -14602,6 +14584,7 @@
                         "count": "5"
                     },
                     "enable_features": [
+                        "KillSpareRenderOnMemoryPressure",
                         "MultipleSpareRPHs"
                     ]
                 }
