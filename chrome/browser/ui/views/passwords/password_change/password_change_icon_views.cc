@@ -142,18 +142,19 @@ void PasswordChangeIconViews::UpdateIconAndLabel() {
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
     case PasswordChangeDelegate::State::kPasswordChangeFailed:
     case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
-      SetText(u"");
+      SetLabel(u"",
+               l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_MANAGE));
       break;
     case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
       icon_color = GetColorProvider()->GetColor(ui::kColorSysOnTonalContainer);
       background_color_id = ui::kColorSysTonalContainer;
-      SetText(l10n_util::GetStringUTF16(
+      SetLabel(l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_OMNIBOX_SIGN_IN_CHECK));
       break;
     case PasswordChangeDelegate::State::kChangingPassword:
       icon_color = GetColorProvider()->GetColor(ui::kColorSysOnTonalContainer);
       background_color_id = ui::kColorSysTonalContainer;
-      SetText(l10n_util::GetStringUTF16(
+      SetLabel(l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_OMNIBOX_CHANGING_PASSWORD));
       break;
   }
