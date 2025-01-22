@@ -72,6 +72,7 @@ import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.util.AttrUtils;
+import org.chromium.ui.util.XrUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -380,6 +381,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     @CallSuper
     protected boolean applyOverrides(Context baseContext, Configuration overrideConfig) {
         applyOverridesForAutomotive(baseContext, overrideConfig);
+        applyOverridesForXr(baseContext, overrideConfig);
         return NightModeUtils.applyOverridesForNightMode(
                 getNightModeStateProvider(), overrideConfig);
     }
@@ -392,6 +394,16 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             // Enable web ui scaling for automotive devices.
             CommandLine.getInstance()
                     .appendSwitch(DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED);
+        }
+    }
+
+    @VisibleForTesting
+    static void applyOverridesForXr(Context baseContext, Configuration overrideConfig) {
+        if (XrUtils.isXrDevice()) {
+            DisplayUtil.scaleUpConfigurationForXr(baseContext, overrideConfig);
+
+            // Enable web ui scaling for immersive devices.
+            CommandLine.getInstance().appendSwitch(DisplaySwitches.XR_WEB_UI_SCALE_UP_ENABLED);
         }
     }
 
