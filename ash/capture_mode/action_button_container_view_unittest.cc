@@ -52,7 +52,8 @@ TEST_F(ActionButtonContainerViewTest, AddsActionButton) {
 
   // Check that the action button has been successfully created.
   ASSERT_TRUE(action_button);
-  EXPECT_THAT(action_button_container->children(), ElementsAre(action_button));
+  EXPECT_THAT(action_button_container->GetActionButtons(),
+              ElementsAre(action_button));
   EXPECT_EQ(action_button->label_for_testing()->GetText(), u"Button Text");
 
   // Check that clicking the action button runs the action callback.
@@ -80,7 +81,7 @@ TEST_F(ActionButtonContainerViewTest, ActionButtonsOrderedByRank) {
       &kCaptureModeImageIcon, ActionButtonRank(ActionButtonType::kScanner, 0),
       ActionButtonViewID::kScannerButton);
 
-  EXPECT_THAT(action_button_container.children(),
+  EXPECT_THAT(action_button_container.GetActionButtons(),
               ElementsAre(scanner_button, copy_text_button, search_button));
 }
 
@@ -110,14 +111,14 @@ TEST_F(ActionButtonContainerViewTest, SmartActionsButtonTransition) {
           ActionButtonRank(ActionButtonType::kScanner, 0),
           ActionButtonViewID::kSmartActionsButton);
   EXPECT_THAT(
-      action_button_container->children(),
+      action_button_container->GetActionButtons(),
       ElementsAre(smart_actions_button, copy_text_button, search_button));
 
   action_button_container->StartSmartActionsButtonTransition();
 
   // The smart actions button should be removed and other buttons should be
   // collapsed.
-  EXPECT_THAT(action_button_container->children(),
+  EXPECT_THAT(action_button_container->GetActionButtons(),
               ElementsAre(copy_text_button, search_button));
   EXPECT_TRUE(IsActionButtonCollapsed(copy_text_button));
   EXPECT_TRUE(IsActionButtonCollapsed(search_button));

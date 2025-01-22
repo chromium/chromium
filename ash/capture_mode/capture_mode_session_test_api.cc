@@ -145,7 +145,8 @@ std::vector<ActionButtonView*> CaptureModeSessionTestApi::GetActionButtons()
   // vector.
   if (session_->action_container_widget_) {
     CHECK(session_->action_container_view_);
-    for (views::View* button : session_->action_container_view_->children()) {
+    for (views::View* button :
+         session_->action_container_view_->GetActionButtons()) {
       action_buttons.emplace_back(views::AsViewClass<ActionButtonView>(button));
     }
   }

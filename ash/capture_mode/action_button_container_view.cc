@@ -27,6 +27,7 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -56,13 +57,15 @@ constexpr base::TimeDelta kSmartActionsButtonTransitionSlideInDuration =
 }  // namespace
 
 ActionButtonContainerView::ActionButtonContainerView() {
-  auto* box_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal));
-  box_layout->set_between_child_spacing(kActionButtonSpacing);
-  box_layout->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kCenter);
-  box_layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStretch);
+  SetUseDefaultFillLayout(true);
+  AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .CopyAddressTo(&action_button_row_)
+          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+          .SetBetweenChildSpacing(kActionButtonSpacing)
+          .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
+          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStretch)
+          .Build());
 }
 
 ActionButtonContainerView::~ActionButtonContainerView() = default;
@@ -78,16 +81,16 @@ ActionButtonView* ActionButtonContainerView::AddActionButton(
   std::vector<std::unique_ptr<ActionButtonView>> action_buttons;
 
   // Populate `action_buttons` with the existing action buttons, if any. We need
-  // to copy the vector of `children()` as we will be removing buttons from the
-  // original.
-  views::View::Views children_copy = children();
-  for (views::View* action_button : children_copy) {
+  // to copy the old action buttons vector since we will be removing buttons
+  // from the original vector.
+  views::View::Views old_action_buttons = GetActionButtons();
+  for (views::View* action_button : old_action_buttons) {
     CHECK(action_button);
-    action_buttons.push_back(
-        RemoveChildViewT(views::AsViewClass<ActionButtonView>(action_button)));
+    action_buttons.push_back(action_button_row_->RemoveChildViewT(
+        views::AsViewClass<ActionButtonView>(action_button)));
   }
 
-  CHECK(children().empty());
+  CHECK(GetActionButtons().empty());
 
   // Add the new action button to the vector so it can also be sorted.
   auto new_action_button =
@@ -107,10 +110,18 @@ ActionButtonView* ActionButtonContainerView::AddActionButton(
   // to lowest. Higher ranked buttons should appear to the right of lower ranked
   // buttons, so insert new buttons on the left.
   for (std::unique_ptr<ActionButtonView>& action_button : action_buttons) {
-    AddChildView(std::move(action_button));
+    action_button_row_->AddChildView(std::move(action_button));
   }
 
   return new_action_button_ptr;
+}
+
+void ActionButtonContainerView::RemoveAllActionButtons() {
+  action_button_row_->RemoveAllChildViews();
+}
+
+const views::View::Views& ActionButtonContainerView::GetActionButtons() const {
+  return action_button_row_->children();
 }
 
 void ActionButtonContainerView::StartSmartActionsButtonTransition() {
@@ -137,25 +148,26 @@ void ActionButtonContainerView::OnSmartActionsButtonFadedOut() {
     return;
   }
 
-  // Remove Scanner action buttons and keep other buttons. We need to copy
-  // `children()` since we will be removing buttons from the original vector.
+  // Remove Scanner action buttons and keep other buttons. We need to copy the
+  // old action buttons vector since we will be removing buttons from the
+  // original vector.
   std::vector<std::unique_ptr<ActionButtonView>> action_buttons_to_keep;
-  views::View::Views children_copy = children();
-  for (views::View* child : children_copy) {
-    auto action_button =
-        RemoveChildViewT(views::AsViewClass<ActionButtonView>(child));
+  views::View::Views old_action_buttons = GetActionButtons();
+  for (views::View* view : old_action_buttons) {
+    auto action_button = action_button_row_->RemoveChildViewT(
+        views::AsViewClass<ActionButtonView>(view));
     if (action_button->rank().type != ActionButtonType::kScanner) {
       action_buttons_to_keep.push_back(std::move(action_button));
     }
   }
-  CHECK(children().empty());
+  CHECK(GetActionButtons().empty());
 
   // Add the buttons to keep back into the action button container and
   // collapse them into icon buttons.
   for (std::unique_ptr<ActionButtonView>& action_button :
        action_buttons_to_keep) {
     action_button->CollapseToIconButton();
-    AddChildView(std::move(action_button));
+    action_button_row_->AddChildView(std::move(action_button));
   }
 
   // Compute bounds required to slide in the new icon buttons from the left edge
