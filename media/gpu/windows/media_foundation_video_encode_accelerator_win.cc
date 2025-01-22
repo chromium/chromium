@@ -1411,6 +1411,12 @@ void MediaFoundationVideoEncodeAccelerator::SetSWRateControl() {
       return;
     }
 
+    if (vendor_ == DriverVendor::kQualcomm) {
+      // Qualcomm H264 HMFT does not work with SW BRC.
+      // More info: https://crbug.com/390581539
+      return;
+    }
+
     // Check feature flag for the camera source.
     if (content_type_ == VideoEncodeAccelerator::Config::ContentType::kCamera &&
         !base::FeatureList::IsEnabled(kMediaFoundationUseSWBRCForH264Camera)) {
