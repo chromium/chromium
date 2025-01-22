@@ -239,10 +239,10 @@
     insecure content
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_KEYBOARD_LOCK" desc="The label used for the keyboard lock site settings controls.">
-    Keyboard lock and use
+    Keyboard override
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_KEYBOARD_LOCK_MID_SENTENCE" desc="The label used for the keyboard lock site settings controls when used mid-sentence, e.g. 'Automatically blocked keyboard lock and use'.">
-    keyboard lock and use
+    keyboard override
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_PAYMENT_HANDLER" desc="The label used for the payment handler site settings controls.">
     Payment handlers
