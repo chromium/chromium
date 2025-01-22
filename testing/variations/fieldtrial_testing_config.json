@@ -11487,9 +11487,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_WithScans_5",
+                    "name": "Enabled_WithThrottling_20250121_5",
                     "enable_features": [
                         "AutofillAcrossIframesIos",
+                        "AutofillAcrossIframesIosThrottling",
                         "AutofillAcrossIframesIosTriggerFormExtraction"
                     ]
                 }
