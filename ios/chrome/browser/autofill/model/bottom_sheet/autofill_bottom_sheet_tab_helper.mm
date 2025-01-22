@@ -212,6 +212,7 @@ void AutofillBottomSheetTabHelper::MaybeShowPaymentsBottomSheet(
     // Use the status quo logic for triggering the payments bottom sheet if
     // V3 isn't enabled.
     ShowPaymentsBottomSheet(params);
+    return;
   }
 
   // In V3, First try to retrieve credit card suggestions before considering
