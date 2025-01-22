@@ -304,9 +304,10 @@ IN_PROC_BROWSER_TEST_F(OpenWindowFromNTPBrowserTest,
 }
 
 // Test that the System AccentColor keyword is supported ONLY for installed
-// WebApps. Currently this test is applicable ONLY for Windows, ChromeOS and
-// Mac.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+// WebApps. Currently this test is appliable ONLY for Windows and ChromeOS, Mac
+// uses it own implementation to derive System AccentColor and doesn't use same
+// pipeline.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 class SystemAccentColorTest : public InProcessBrowserTest {
  protected:
   SystemAccentColorTest() : browser_client_(&test_theme_) {}
@@ -378,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccentColorTest,
   ui::NativeTheme::GetInstanceForWeb()->NotifyOnNativeThemeUpdated();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), web_app_scope));
-  // For installed WebApps we expect System AccentColor keyword resolve to
+  // For installled WebApps we expect System AccentColor keyword resolve to
   // OS-defined accent-color, which are currently pumped for ChromeOS and
   // Windows.
   EXPECT_EQ("rgb(135, 115, 10)",
@@ -407,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccentColorTest,
                        "window.getComputedStyle(document.getElementById('"
                        "header_element')).backgroundColor")));
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 
 // Test for the state of Forced Colors Mode for a given WebContents across
 // various scenarios.
