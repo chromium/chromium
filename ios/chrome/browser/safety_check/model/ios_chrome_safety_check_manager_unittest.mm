@@ -62,9 +62,7 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
         IOSChromeSafetyCheckManagerFactory::GetForProfile(profile);
   }
 
-  void TearDown() override {
-    safety_check_manager_->StopSafetyCheck();
-  }
+  void TearDown() override { safety_check_manager_->StopSafetyCheck(); }
 
  protected:
   web::WebTaskEnvironment task_environment_{
