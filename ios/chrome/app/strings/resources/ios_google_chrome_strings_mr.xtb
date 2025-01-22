@@ -169,6 +169,7 @@
 <translation id="5639704535586432836">सेटिंग्ज &gt; गोपनीयता &gt; कॅमेरा &gt; Google Chrome उघडा आणि कॅमेरा सुरू करा.</translation>
 <translation id="5642200033778930880">विभाजित दृश्य मोडमध्ये Google Chrome तुमचा कॅमेरा वापरू शकत नाही</translation>
 <translation id="5661521615548540542">Google Password Manager ला सर्व पासवर्ड तपासता आले नाहीत. नंतर पुन्हा प्रयत्न करा.</translation>
+<translation id="5681291952421236520">Chrome टॉगल करा</translation>
 <translation id="5690398455483874150">{count,plural, =1{आता एक Chrome विंडो दाखवत आहे}other{आता {count} Chrome विंडो दाखवत आहे}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Chrome ला तुमचा डीफॉल्ट ब्राउझर म्हणून सेट करा</translation>
@@ -204,6 +205,7 @@
 <translation id="6484712497741564393"><ph name="EMAIL" /> म्हणून साइन इन केले आहे.
 
 तुमचा डेटा हा तुमच्या पासफ्रेझसह एंक्रिप्ट केलेला आहे. तुमच्या Google खाते मधील Chrome डेटा वापरण्यासाठी आणि सेव्ह करण्यासाठी तो एंटर करा.</translation>
+<translation id="6533470733797826516">Chrome ऑटोफिलद्वारे आणखी जलदपणे साइन इन करा</translation>
 <translation id="6545449117344801102">Chrome हे पत्ते डिटेक्ट करते आणि तुम्हाला दिशानिर्देश व स्थानिक माहिती देण्यासाठी Google Maps वापरते.</translation>
 <translation id="6634107063912726160">तुम्ही साइन आउट करता तेव्हा, Chrome तुमच्या Google खाते मध्ये कोणताही नवीन डेटा सिंक करणार नाही. याआधी सिंक केलेला डेटा खात्यामध्ये राहील.</translation>
 <translation id="6636941099779251629">तुमच्या संस्थेनुसार Chrome वापरण्यासाठी तुम्ही साइन इन करणे आवश्यक आहे. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>

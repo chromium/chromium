@@ -191,6 +191,7 @@
 <translation id="1779354709911146450">પ્રમાણીકરણ સંબંધી ભૂલ</translation>
 <translation id="1780152987505130652">ગ્રૂપ બંધ કરો</translation>
 <translation id="178400879184240105">તમારા પાસવર્ડ વિશિષ્ટ છે</translation>
+<translation id="17906873777101817">પાસવર્ડ અને પાસકી સાચવવાની ઑફર આપો</translation>
 <translation id="1807893857950749072">કિંમતને ટ્રૅક કરવા સંબંધિત નોટિફિકેશનને મંજૂરી આપો…</translation>
 <translation id="1810976980198522421">રદ કરો</translation>
 <translation id="1815941218935345331">પાસકોડ</translation>
@@ -493,6 +494,7 @@
 <translation id="3130863904455712965">ઇતિહાસ અને વધુ</translation>
 <translation id="313283613037595347">નવી છૂપી ટૅબ બનાવો.</translation>
 <translation id="3138611310073113613">પસંદગી કાઢી નાખો</translation>
+<translation id="3140825265190223781">સાચવેલા પાસવર્ડ અને પાસકી</translation>
 <translation id="3143515551205905069">સિંક કરવાનું રદ કરો</translation>
 <translation id="314837624430314508">તાજેતરના ન્યૂઝ, કિંમતને ટ્રૅક કરવા સંબંધિત અપડેટ અને બીજી ઘણી બાબતો જોતા રહો.</translation>
 <translation id="3157387275655328056">વાંચન સૂચિમાં ઉમેરો</translation>
@@ -541,6 +543,7 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 ઑક્ટોબર, 2023</translation>
 <translation id="3435738964857648380">સુરક્ષા</translation>
+<translation id="343850944564645513">તમારી લોકપ્રિય સાઇટ</translation>
 <translation id="3443810440409579745">ટૅબ પ્રાપ્ત થયું.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> મિનિટ</translation>
 <translation id="344589138074534176">Google Lens વિશે વધુ જાણો</translation>
@@ -655,6 +658,7 @@
 <translation id="3967327056943561740">બુકમાર્ક</translation>
 <translation id="3967822245660637423">ડાઉનલોડ પૂર્ણ</translation>
 <translation id="3982893814825393515">સમસ્યાની જાણ કરો…</translation>
+<translation id="3984527584375648997">"તમારી લોકપ્રિય સાઇટ" છુપાવો</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" /> તરીકે સાઇન ઇન થયા. એકાઉન્ટ મેનૂ ખોલો.</translation>
 <translation id="3986739045730058129">ટૅબ પર જાઓ</translation>
 <translation id="3992684624889376114">આ પેજ વિશે</translation>
@@ -832,7 +836,6 @@
 <translation id="4764612367328936189">તમારી સંસ્થા માત્ર અમુક ચોક્કસ એકાઉન્ટ વડે તમને સાઇન ઇન કરવાની મંજૂરી આપે છે. મંજૂરી ન હોય એવા એકાઉન્ટને છુપાવવામાં આવે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover અને ફૉલો કરી રહ્યાં છીએ</translation>
 <translation id="4769198578611055647">કોઈપણ ડિવાઇસ પર સાચવેલી પાસકી ઍક્સેસ કરવામાં તમને સહાય કરે છે</translation>
-<translation id="4777866634702576038">શું ટૅબનું ગ્રૂપ ડિલીટ કરીએ?</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">શું છૂપા મોડમાં ખોલીએ?</translation>
 <translation id="4792385443586519711">કંપનીનું નામ</translation>
@@ -1322,6 +1325,7 @@
 <translation id="6732087373923685049">કૅમેરા</translation>
 <translation id="6746338529702829275">તમારો એકાઉન્ટ ડેટા રિવ્યૂ કરો</translation>
 <translation id="6755200887046212842">એકાઉન્ટ્સનું સંચાલન કરો</translation>
+<translation id="6755733078693946548">કોઈપણ ઍપમાંથી પાસવર્ડ અને પાસકી ઍક્સેસ કરો</translation>
 <translation id="6761393919622941301">ઑડિયો</translation>
 <translation id="6779455296366983087">તમારો બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવશે</translation>
 <translation id="6790502149545262384">ટૂંક સમયમાં, જ્યારે તમે નવું ટૅબ ખોલશો ત્યારે તમને <ph name="CHANNEL_NAME" /> પરથી સ્ટોરી દેખાશે.</translation>
@@ -1466,6 +1470,7 @@
 <translation id="746872191028309255">તમે તમારા કૅમેરા વડે કે ફોટો ગૅલરીમાં જે જુઓ, તેને ખરીદો.</translation>
 <translation id="7471557245617580330">નવું ટેબ બનાવો</translation>
 <translation id="7473891865547856676">ના, આભાર</translation>
+<translation id="7476548258282096076">આ કાર્ડ તમારી સૌથી વધારે મુલાકાત લીધેલી સાઇટ બતાવે છે.</translation>
 <translation id="747956641630879526">આ કાર્ડ છુપાવવાથી પૅકેજ ટ્રૅકિંગની સુવિધા બંધ થઈ જશે અને તમારો બધો ડેટા કાઢી નાખવામાં આવશે</translation>
 <translation id="7484645889979462775">આ સાઇટ માટે ક્યારેય નહીં</translation>
 <translation id="7486006552035434095">તમારા ડિવાઇસને સિંક કરેલા રાખો</translation>
@@ -1589,6 +1594,7 @@
 <translation id="7977451675950311423">તમે ઉપયોગમાં લો છો તે પાસવર્ડ સાથે કોઈ ડેટા ઉલ્લંઘન દરમિયાન ચેડાં કરવામાં આવ્યા હોય તો તમને ચેતવણી આપે છે.</translation>
 <translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> નવા ટૅબ, <ph name="NUMBER_OF_TABS_REMOVED" /> બંધ છે</translation>
 <translation id="797824194429476746">આ ડિવાઇસ પર ટૅબ ખુલ્લા રહેશે, પરંતુ ગ્રૂપ કાયમ માટે ડિલીટ કરવામાં આવશે.</translation>
+<translation id="797874245254030665">કોઈપણ ઍપમાંથી તમારા પાસવર્ડ અને પાસકી ઍક્સેસ કરો</translation>
 <translation id="7982789257301363584">નેટવર્ક</translation>
 <translation id="7987685713885608670">વધારાની સલામતી માટે, તમારા પાસવર્ડ Google પાસવર્ડ મેનેજરમાં સાચવવામાં આવે એ પહેલાં એમને તમારા ડિવાઇસમાં એન્ક્રિપ્ટ કરો.</translation>
 <translation id="798991908416757345">ટૅબના ગ્રૂપ ઉપલબ્ધ નથી</translation>
@@ -1669,6 +1675,8 @@
 <translation id="8299613349954694191">ખાનગી રૂપે વેબ બ્રાઉઝ કરવા છૂપી ટૅબ ખોલો.</translation>
 <translation id="8307481894409578819">આ ફાઇલ અપલોડ કરી શકતા નથી</translation>
 <translation id="8319076807703933069">નવી શોધ</translation>
+<translation id="8328607660158575887">ઑટોમૅટિક રીતે ભરવાની સુવિધા અને પાસવર્ડના સેટિંગ ખોલો</translation>
+<translation id="833647236762414178">સાઇટ અને ઍપમાં સરળતાથી સાઇન ઇન કરવા માટે, તમારા પાસવર્ડ અને પાસકી બનાવો, તેને સાચવો અને મેનેજ કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">તમારી સામગ્રીનું બૅકઅપ લો અને કોઈપણ ડિવાઇસ પર તેનો ઉપયોગ કરો.</translation>
 <translation id="8349305172487531364">બુકમાર્ક બાર</translation>
 <translation id="8364563001733875155">તમારો પિન બદલવા માટે, પહેલા તમારા ડિવાઇસ પર પાસકોડનું સેટઅપ કરો.</translation>
@@ -1820,6 +1828,7 @@
 <translation id="8909459547399237818">Password Manager પસંદ કરો, પછી વિજેટ ઉમેરો પર ટૅપ કરો</translation>
 <translation id="891282356902782456">આ પાસવર્ડને માત્ર આ ડિવાઇસ પર સાચવેલો છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ, <ph name="EMAIL" />માં સાચવો.</translation>
 <translation id="8915916167043355778">બધા બંધ કરો</translation>
+<translation id="892185197271200809">ટૅબના ગ્રૂપ “<ph name="GROUP_NAME" />”નો ઍક્સેસ દરેક વ્યક્તિ તરત જ ગુમાવશે અને તેને બધા ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે</translation>
 <translation id="8921902386312975525">પૅકેજ ટ્રૅક કરવા માટેના વિકલ્પો</translation>
 <translation id="8923178205567790913">પાસવર્ડ</translation>
 <translation id="892776311701544612">વધુ જાણો…</translation>

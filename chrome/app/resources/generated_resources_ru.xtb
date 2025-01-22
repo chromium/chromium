@@ -129,7 +129,6 @@
 <translation id="1079242569060319448">Забыли PIN-код?</translation>
 <translation id="1079285777677001938">Функции некоторых сайтов могут стать недоступными.</translation>
 <translation id="1079766198702302550">Всегда блокировать доступ к камере</translation>
-<translation id="1080365971383768617">Пароли на всех ваших устройствах</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 вкладка}one{<ph name="GROUP_TITLE" /> – # вкладка}few{<ph name="GROUP_TITLE" /> – # вкладки}many{<ph name="GROUP_TITLE" /> – # вкладок}other{<ph name="GROUP_TITLE" /> – # вкладки}}</translation>
 <translation id="1082214733466244292">Некоторые функции этого устройства заблокированы администратором</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> предлагает восстановить настройки Chrome по умолчанию. В результате произойдет сброс настроек стартовой страницы, страницы быстрого доступа и поисковой системы, а также отключение расширений и открепление всех вкладок. Кроме того, все временные и кешированные данные (такие как файлы cookie, контент и данные сайтов) будут удалены.</translation>
@@ -526,6 +525,7 @@
 <translation id="135389172849514421">Доступен офлайн</translation>
 <translation id="1353980523955420967">Не удается найти файл PPD. Убедитесь, что устройство Chromebook подключено к Интернету, и повторите попытку.</translation>
 <translation id="1354045473509304750">Разрешить сайту <ph name="HOST" /> и дальше использовать вашу камеру и перемещать ее</translation>
+<translation id="1354148503392558902">Изменение пароля…</translation>
 <translation id="1355088139103479645">Удалить все данные?</translation>
 <translation id="1356376170199999104">Разрешено (<ph name="PERMISSION_DETAILS" />). Включите микрофон, используя физический переключатель.</translation>
 <translation id="1356959069439783953">Неактивные вкладки выглядят по-новому</translation>
@@ -1096,6 +1096,7 @@
 <translation id="1751335846119670066">Help me read</translation>
 <translation id="17513872634828108">Открытые вкладки</translation>
 <translation id="175196451752279553">От&amp;крыть закрытую вкладку</translation>
+<translation id="1752557850776261983">Проверка входа…</translation>
 <translation id="1753067873202720523">Возможны проблемы при зарядке Chromebook.</translation>
 <translation id="1753557900380512635">Интерьер</translation>
 <translation id="1753905327828125965">Наиболее посещаемые</translation>
@@ -3022,6 +3023,7 @@
 <translation id="310297983047869047">Предыдущий слайд</translation>
 <translation id="3103451787721578293">Укажите причину, по которой вы загружаете эти данные:</translation>
 <translation id="3103512663951238230">Alt + Левая кнопка мыши</translation>
+<translation id="3104763887980088552">Журнал активности</translation>
 <translation id="3104948640446684649">Передача данных об использовании и диагностике. Сейчас это устройство автоматически отправляет в Google диагностическую информацию, сведения об использовании приложений и самого устройства. Эти сведения позволяют нам повышать стабильность приложений и системы, а также внедрять другие улучшения. Некоторые агрегированные данные используются для улучшения приложений Google или передаются нашим партнерам, например разработчикам Android. Если включена дополнительная история приложений и веб-поиска, эта информация может сохраняться в вашем аккаунте Google. <ph name="BEGIN_LINK2" />Узнать больше о сборе данных<ph name="BEGIN_LINK2_END" />Подробнее…<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Последний сбой при обновлении</translation>
 <translation id="3105796011181310544">Вернуться к Google?</translation>
@@ -3736,6 +3738,7 @@
 <translation id="3629664892718440872">Запомнить выбор</translation>
 <translation id="3630132874740063857">Телефон</translation>
 <translation id="3630995161997703415">Добавьте этот сайт на панель запуска, чтобы он всегда был у вас под рукой.</translation>
+<translation id="3632929818790223729">Открыть эту и активную вкладку в разделенном окне</translation>
 <translation id="3634652306074934350">Срок действия запроса на разрешение истек</translation>
 <translation id="3635199270495525546">Обнаружен доверенный платформенный модуль (TPM)</translation>
 <translation id="3635353578505343390">Отправка отзыва в Google</translation>
@@ -4100,7 +4103,7 @@
 <translation id="3856800405688283469">Выберите часовой пояс</translation>
 <translation id="3857807444929313943">Коснитесь несколько раз</translation>
 <translation id="3858860766373142691">Название</translation>
-<translation id="385939467708172187">Используйте надежный пароль</translation>
+<translation id="385939467708172187">Использовать надежный пароль</translation>
 <translation id="3859987779882450877">Функция автоматически предлагает и создает группы из открытых вкладок.</translation>
 <translation id="386009056910366930">Управление группой вкладок "<ph name="GROUP_NAME" />"</translation>
 <translation id="3861638017150647085">Имя пользователя "<ph name="USERNAME" />" недоступно.</translation>
@@ -6236,9 +6239,6 @@
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) хочет управлять с вами группой вкладок. Обратите внимание, что любой, у кого есть ссылка, может изменять все вкладки. Она действительна 48 часов.</translation>
 <translation id="5410889048775606433">Фуксия</translation>
 <translation id="5411022484772257615">Не удалось зарегистрироваться в учебном заведении</translation>
-<translation id="5411856344659127989">Если вы хотите добавить аккаунт для другого человека, <ph name="LINK_BEGIN" />создайте профиль пользователя<ph name="LINK_END" /> на <ph name="DEVICE_TYPE" />.
-
-Разрешения, предоставленные сайтам и приложениям, могут применяться к этому аккаунту. Для управления аккаунтами Google перейдите в <ph name="SETTINGS_LINK_BEGIN" />настройки<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="54118879136097217">Приложение будет установлено на устройство <ph name="DEVICE_TYPE" /></translation>
 <translation id="5413640305322530561">Подробнее об отправке данных об использовании и диагностике…</translation>
 <translation id="5414198321558177633">Список профилей обновляется. Это может занять несколько минут.</translation>
@@ -6517,7 +6517,6 @@
 <translation id="5610867721023328944">Повторите попытку или выберите одну из тем ниже.</translation>
 <translation id="5611398002774823980">Сохранить в аккаунте</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" /> (<ph name="APP_FULL_NAME" />)</translation>
-<translation id="5613074282491265467">Если вы вошли в Chrome, сохраненные пароли будут добавляться в ваш аккаунт Google (<ph name="USER_EMAIL" />). Отключить эту функцию можно в настройках.</translation>
 <translation id="5614190747811328134">Уведомление пользователя</translation>
 <translation id="5614553682702429503">Сохранить пароль?</translation>
 <translation id="5614947000616625327">Связка ключей iCloud</translation>
@@ -8555,7 +8554,6 @@
 <translation id="7088674813905715446">Это устройство отключено администратором. Чтобы можно было выполнить регистрацию, устройство следует перевести в состояние ожидания подключения.</translation>
 <translation id="7088960765736518739">Функция Switch Access</translation>
 <translation id="7089253021944603172">Вкладка вновь активна</translation>
-<translation id="7090160970140261931">Вы можете добавить дополнительные аккаунты на устройство <ph name="DEVICE_TYPE" />, чтобы использовать их в приложениях для Android и на сайтах. Также вы можете выбрать, какие аккаунты будут использоваться в приложениях для Android.</translation>
 <translation id="7090714929377281710">Автоматически отключать точку доступа</translation>
 <translation id="7092504544229909737">Нельзя использовать в приложениях для Android.</translation>
 <translation id="7093220653036489319">Быстрые ответы</translation>
@@ -9016,6 +9014,7 @@
 <translation id="7424818322350938336">Сеть добавлена</translation>
 <translation id="7425037327577270384">Генератор текстов</translation>
 <translation id="7427348830195639090">Фоновая страница: <ph name="BACKGROUND_PAGE_URL" /></translation>
+<translation id="7427729970025360383">Это управляемый профиль</translation>
 <translation id="7427798576651127129">Позвонить с устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7429415133937917139">Имитация вывода дисплея Брайля на панели ChromeVox в верхней части экрана</translation>
 <translation id="7429568074268678162">Файл "<ph name="FILENAME" />" может представлять опасность. Если вы хотите, чтобы Chrome проверил его, добавьте пароль. Вы также можете скачать этот файл напрямую.</translation>
@@ -10033,6 +10032,7 @@
 <translation id="8140869601171867148">Этот аккаунт также используется в других сервисах Google, таких как Gmail, YouTube и Chrome.
     С его помощью вы легко можете получать доступ ко всем закладкам, файлам и многому другому.</translation>
 <translation id="8141418916163800697">Вы можете настроить больше функций в разделе "Управление телефоном".</translation>
+<translation id="814156740715940972">Открыть эту и активную вкладку в разделенном окне</translation>
 <translation id="8141584439523427891">Запуск альтернативного браузера…</translation>
 <translation id="8141725884565838206">Управление паролями</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{видео}one{# видео}few{# видео}many{# видео}other{# видео}}</translation>
@@ -10381,7 +10381,7 @@
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Более подробная информация доступна на странице g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="8383614331548401927">С возвращением!</translation>
+<translation id="8383614331548401927">Двигаемся дальше?</translation>
 <translation id="8386091599636877289">Политика не найдена.</translation>
 <translation id="8387361103813440603">Запретить сайтам определять ваше местоположение</translation>
 <translation id="8387617938027387193">Подтвердите личность</translation>
@@ -11168,9 +11168,6 @@
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Начнет быстрее расходовать заряд батареи (сейчас она заряжена на <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944633700466246631">Создайте 6-значный резервный PIN-код для Google Менеджера паролей</translation>
-<translation id="8944725102565796255">Если этот аккаунт вам больше не понадобится, можно <ph name="GUEST_LINK_BEGIN" />воспользоваться устройством в гостевом режиме<ph name="GUEST_LINK_END" />. Чтобы добавить аккаунт для другого человека, <ph name="LINK_BEGIN" />создайте профиль пользователя<ph name="LINK_END" /> на <ph name="DEVICE_TYPE" />.
-
-Разрешения, предоставленные сайтам и приложениям, могут применяться к этому аккаунту. Для управления аккаунтами Google перейдите в <ph name="SETTINGS_LINK_BEGIN" />настройки<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="8945274638472141382">Размер значков</translation>
 <translation id="8945508919180478719">Студийный микрофон</translation>
 <translation id="8946359700442089734">На устройстве <ph name="IDS_SHORT_PRODUCT_NAME" /> включены не все функции отладки.</translation>

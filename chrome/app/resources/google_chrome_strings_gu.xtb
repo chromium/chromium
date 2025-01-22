@@ -59,7 +59,6 @@
 <translation id="1698376642261615901">Google Chrome એ એક એવું વેબ બ્રાઉઝર છે જે પ્રકાશની ગતિએ વેબપૃષ્ઠો અને એપ્લિકેશંસને ચલાવે છે. તે ઝડપી, સ્થિર અને ઉપયોગમાં સરળ છે. Google Chrome માં નિર્મિત મૉલવેર અને ફિશીંગ સુરક્ષા સાથે વેબને વધુ સુરક્ષિત રૂપે બ્રાઉઝ કરો.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome એક કલાકમાં ફરીથી લૉન્ચ થશે}one{Chrome # કલાકમાં ફરીથી લૉન્ચ થશે}other{Chrome # કલાકમાં ફરીથી લૉન્ચ થશે}}</translation>
 <translation id="1722488837206509557">આ તમને ઉપલબ્ધ ડિવાઇસમાંથી પસંદ કરવાની અને તેમના પર કન્ટેન્ટ બતાવવાની મંજૂરી આપશે.</translation>
-<translation id="1734234790201236882">Chrome આ પાસવર્ડ તમારા Google એકાઉન્ટમાં સાચવશે. તમારે તેને યાદ રાખવો જરૂરી નથી.</translation>
 <translation id="1786003790898721085">ખાતરી કરો કે તમે તમારા <ph name="TARGET_DEVICE_NAME" /> પર Chromeમાં સાઇન ઇન કર્યું છે અને પછી ફરીથી મોકલવાનો પ્રયાસ કરો.</translation>
 <translation id="1786044937610313874">શૉર્ટકટ Chromeમાં ખુલે છે</translation>
 <translation id="178701303897325119">આ એક્સ્ટેન્શન હવે સપોર્ટેડ રહ્યું નથી. એના બદલે Chrome તેને કાઢી નાખવાનો સુઝાવ તમને આપે છે.</translation>
@@ -327,6 +326,7 @@
 <translation id="4990567037958725628">Google Chrome કૅનેરી</translation>
 <translation id="4997044641749333913">તમારા બ્રાઉઝિંગ અનુભવને બહેતર બનાવવા અને વસ્તુઓને ઝડપી રાખવા માટે, Chrome આ ટૅબને નિષ્ક્રિય કરી શકે છે.</translation>
 <translation id="5003967926796347400">“Google Password Manager” પર ક્લિક કરો</translation>
+<translation id="5114340746415930644">તમારા <ph name="USER_EMAIL" /> એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે તમારો પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="5120334927898581447">જ્યારે તમે Googleની અન્ય સેવાઓમાં સાઇન ઇન કરશો, ત્યારે Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="5126049312684316860">તમે જે પેજની મુલાકાત લેશો તેવી શક્યતા હોય, Chrome તેવા વધુ પેજને પણ પહેલેથી લોડ કરે છે, જેથી જ્યારે તમે તેમની મુલાકાત લો, ત્યારે તે વધુ ઝડપથી લોડ થાય</translation>
 <translation id="5132929315877954718">Google Chrome માટે શ્રેષ્ઠ ઍપ્લિકેશનો, રમતો, એક્સટેન્શન્સ અને થીમ્સ શોધો</translation>
@@ -478,9 +478,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7024536598735240744">અનપૅક કરવામાં ભૂલ: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">ઇન્સ્ટૉલેશનની પ્રક્રિયા રોકી.</translation>
 <translation id="7025800014283535195">તમે અહીં એક Chrome પ્રોફાઇલથી બીજી Chrome પ્રોફાઇલ પર સ્વિચ કરી શકો છો</translation>
-<translation id="7036251913954633326">જો તમે માત્ર એક વાર જ આ એકાઉન્ટનો ઉપયોગ કરવા માગતા હો, તો તમે Chrome બ્રાઉઝરમાં <ph name="GUEST_LINK_BEGIN" />અતિથિ મોડ<ph name="GUEST_LINK_END" />નો ઉપયોગ કરી શકો છો. જો તમે કોઈ બીજી વ્યક્તિ માટે એકાઉન્ટ ઉમેરવા માગતા હો, તો તમારા <ph name="DEVICE_TYPE" />માં <ph name="LINK_BEGIN" />નવી વ્યક્તિ ઉમેરો<ph name="LINK_END" />.
-
-તમે વેબસાઇટ અને ઍપને પહેલેથી જે પરવાનગીઓ આપી છે, તે આ એકાઉન્ટ પર લાગુ થઈ શકે છે. તમે <ph name="SETTINGS_LINK_BEGIN" />સેટિંગ<ph name="SETTINGS_LINK_END" />માં જઈને તમારા Google એકાઉન્ટ મેનેજ કરી શકો છો.</translation>
 <translation id="7048502283602470098">AI વિશે શોધખોળ કરો</translation>
 <translation id="7059914902409643750">Chrome કસ્ટમાઇઝ કરો</translation>
 <translation id="7071827361006050863">Chrome ટૂંક સમયમાં જ બ્રાઉઝિંગ ડેટા ડિલીટ કરશે</translation>

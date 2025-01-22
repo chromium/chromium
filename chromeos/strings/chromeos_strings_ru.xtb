@@ -564,6 +564,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (отзывов: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Нет соединения</translation>
 <translation id="3749289110408117711">Название файла</translation>
+<translation id="3763034084412196440">Регулировка громкости</translation>
 <translation id="3767737419527918477">Поиск файлов записей</translation>
 <translation id="3771294271822695279">Видеофайлы</translation>
 <translation id="3780740315729837296">Назначьте клавишу</translation>
@@ -1218,6 +1219,7 @@
 <translation id="6747035363363040417">нейтральный</translation>
 <translation id="6747215703636344499">Печать прервана: выходной лоток заполнен</translation>
 <translation id="6749473226660745022">Фото</translation>
+<translation id="6752960629591143793">Выберите язык расшифровки и скачайте файлы в настройках или меню <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="6753452347192452143">Это компьютер.</translation>
 <translation id="6756731097889387912">Не удалось отменить сканирование.</translation>
 <translation id="6760706756348334449">Уменьшить громкость</translation>

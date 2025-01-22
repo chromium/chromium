@@ -169,6 +169,7 @@
 <translation id="5639704535586432836">‏افتح الإعدادات &gt; الخصوصية &gt; الكاميرا &gt; Google Chrome وشغِّل الكاميرا.</translation>
 <translation id="5642200033778930880">‏يتعذر على Google Chrome استخدام الكاميرا في وضع تقسيم العرض</translation>
 <translation id="5661521615548540542">‏تعذَّر على "مدير كلمات المرور في Google" التأكد من جميع كلمات المرور. يُرجى إعادة المحاولة لاحقًا.</translation>
+<translation id="5681291952421236520">‏تفعيل الميزة على Chrome</translation>
 <translation id="5690398455483874150">{count,plural, =1{‏يتم الآن عرض نافذة Chrome واحدة.}zero{‏يتم الآن عرض {count} نافذة Chrome.}two{‏يتم الآن عرض نافذتَي Chrome.({count})}few{‏يتم الآن عرض {count} نوافذ Chrome.}many{‏يتم الآن عرض {count} نافذة Chrome.}other{‏يتم الآن عرض {count} نافذة Chrome.}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">‏اختيار Chrome كمتصفِّح تلقائي</translation>
@@ -204,6 +205,7 @@
 <translation id="6484712497741564393">‏تم تسجيل الدخول باستخدام حساب "<ph name="EMAIL" />".
 
 وتم تشفير بياناتك باستخدام عبارة المرور. عليك إدخال عبارة المرور لاستخدام بيانات Chrome وحفظها في حسابك على Google.</translation>
+<translation id="6533470733797826516">‏يمكنك تسجيل الدخول بشكل أسرع باستخدام ميزة "الملء التلقائي" في Chrome</translation>
 <translation id="6545449117344801102">‏يرصد Chrome العناوين ويستخدم "خرائط Google" لإعلامك بالاتجاهات مع معلومات محلية.</translation>
 <translation id="6634107063912726160">‏عند تسجيل الخروج، لن تتم مزامنة أي بيانات جديدة في Chrome مع حسابك على Google. وتظلّ البيانات التي تمت مزامنتها سابقًا متوفّرة في حسابك.</translation>
 <translation id="6636941099779251629">‏تطلُب المؤسسة منك تسجيل الدخول لاستخدام Chrome. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>

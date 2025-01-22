@@ -169,6 +169,7 @@
 <translation id="5639704535586432836">ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; ಗೌಪ್ಯತೆ &gt; ಕ್ಯಾಮರಾ &gt; Google Chrome ತೆರೆಯಿರಿ ಮತ್ತು ಕ್ಯಾಮರಾ ಆನ್ ಮಾಡಿ.</translation>
 <translation id="5642200033778930880">ವಿಭಜಿತ ವೀಕ್ಷಣೆ ಮೋಡ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು Google Chrome ಗೆ ಬಳಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="5661521615548540542">Google Password Manager ಎಲ್ಲಾ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="5681291952421236520">Chrome ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="5690398455483874150">{count,plural, =1{ಈಗ 1 Chrome ವಿಂಡೋವನ್ನು ತೋರಿಸುತ್ತಿದೆ}one{ಈಗ {count} Chrome ವಿಂಡೋಗಳನ್ನು ತೋರಿಸುತ್ತಿದೆ}other{ಈಗ {count} Chrome ವಿಂಡೋಗಳನ್ನು ತೋರಿಸುತ್ತಿದೆ}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Chrome ಅನ್ನು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ರೂಪದಲ್ಲಿ ಸೆಟ್ ಮಾಡಿ</translation>
@@ -204,6 +205,7 @@
 <translation id="6484712497741564393"><ph name="EMAIL" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ.
 
 ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ಮೂಲಕ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ. ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ Chrome ಡೇಟಾವನ್ನು ಬಳಸಲು ಮತ್ತು ಸೇವ್‌ ಮಾಡಲು, ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ನಮೂದಿಸಿ.</translation>
+<translation id="6533470733797826516">Chrome ಆಟೋಫಿಲ್ ಮೂಲಕ ವೇಗವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="6545449117344801102">Chrome ವಿಳಾಸಗಳನ್ನು ಪತ್ತೆಹಚ್ಚುತ್ತದೆ ಮತ್ತು ನಿಮಗೆ ಮಾರ್ಗ ನಿರ್ದೇಶನಗಳನ್ನು ಹಾಗೂ ಸ್ಥಳೀಯ ಮಾಹಿತಿಯನ್ನು ಒದಗಿಸಲು Google Maps ಅನ್ನು ಬಳಸುತ್ತದೆ.</translation>
 <translation id="6634107063912726160">ನೀವು ಸೈನ್ ಔಟ್ ಮಾಡಿದಾಗ, Chrome ನಿಮ್ಮ Google ಖಾತೆಗೆ ಯಾವುದೇ ಹೊಸ ಡೇಟಾವನ್ನು ಸಿಂಕ್ ಮಾಡುವುದಿಲ್ಲ. ಈ ಹಿಂದೆ ಸಿಂಕ್ ಮಾಡಿದ ಡೇಟಾವು ಖಾತೆಯಲ್ಲಿ ಉಳಿಯುತ್ತದೆ.</translation>
 <translation id="6636941099779251629">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಪ್ರಕಾರ Chrome ಅನ್ನು ಬಳಸಲು ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>

@@ -828,7 +828,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4835385943915508971">Chrome does not have access to the requested resource.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Restore tab group of <ph name="TAB_COUNT_ONE" /> tab, colour <ph name="COLOR_NAME" />, as a new background tab group.}other{Restore tab group of <ph name="TAB_COUNT_MANY" /> tabs, colour <ph name="COLOR_NAME" />, as a new background tab group.}}</translation>
 <translation id="4837753911714442426">Open options to print page</translation>
-<translation id="4842092870884894799">Showing password generation pop-up</translation>
 <translation id="4844633725025837809">For added safety, encrypt passwords on your device before they‘re saved to Google Password Manager</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="4852014461738377247">Signing in\u2026</translation>

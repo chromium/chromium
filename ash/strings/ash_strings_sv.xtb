@@ -973,6 +973,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4285498937028063278">Lossa</translation>
 <translation id="428715201724021596">Ansluter till profilen. Det kan ta några minuter.</translation>
 <translation id="4287250812980588583">Chrome-fönster</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Mikrofonvolymen styrs av <ph name="APP_NAME" />}other{Mikrofonvolymen styrs av # appar}}</translation>
 <translation id="4294319844246081198">Hej <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Rensa alla <ph name="COUNT" /> aviseringar</translation>
 <translation id="4300272766492248925">Öppna appen</translation>
@@ -1270,6 +1271,7 @@ Du kan även använda kortkommandot. Markera först text och tryck sedan på <ph
 <translation id="5245201184978705914">Det gick inte att generera transkription</translation>
 <translation id="5251174953851719648">Uppdatera innehållet</translation>
 <translation id="5253783950165989294">Ansluten till enheten <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
+<translation id="5256939106029293271">Testa mikrofonen</translation>
 <translation id="5258528442992323769">Det finns inga sparade skrivbord</translation>
 <translation id="5260676007519551770">Skrivbord 4</translation>
 <translation id="5265391159779542051">Resultaten har lästs in</translation>
@@ -1427,6 +1429,7 @@ Inga enheter är anslutna.</translation>
 <translation id="5745612484876805746">Nattljus aktiveras automatiskt när solen går ned</translation>
 <translation id="5750765938512549687">Bluetooth är inaktiverat</translation>
 <translation id="5758114525425072423">Starta Fokus. Timern har ställts in på <ph name="FOCUS_DURATION" />.</translation>
+<translation id="5759522586053040964">Hör hur du låter för andra. Du avslutar genom att klicka på testikonen eller stänga videosamtalspanelen.</translation>
 <translation id="5760866832697883462">Anslut <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Aktivera och inaktivera märkpennan. <ph name="STATE_TEXT" /> Använd styrplattan, pekskärmen eller e-pennan för att rita på skärmen.</translation>
 <translation id="576341972084747908">Den skadliga filen <ph name="FILENAME" /> laddas ned</translation>

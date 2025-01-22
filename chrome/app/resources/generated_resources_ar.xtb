@@ -129,7 +129,6 @@
 <translation id="1079242569060319448">هل نسيت رقم التعريف الشخصي؟</translation>
 <translation id="1079285777677001938">قد لا تعمل الميزات على بعض المواقع الإلكترونية.</translation>
 <translation id="1079766198702302550">حظر الدخول إلى الكاميرا دومًا</translation>
-<translation id="1080365971383768617">كلمات المرور على جميع أجهزتك</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{المجموعة "<ph name="GROUP_TITLE" />" - تحتوي على علامة تبويب واحدة}zero{المجموعة "<ph name="GROUP_TITLE" />" - تحتوي على # علامة تبويب}two{المجموعة "<ph name="GROUP_TITLE" />" - تحتوي على علامتَي تبويب}few{المجموعة "<ph name="GROUP_TITLE" />" - تحتوي على # علامات تبويب}many{المجموعة "<ph name="GROUP_TITLE" />" - تحتوي على # علامة تبويب}other{المجموعة "<ph name="GROUP_TITLE" />" - تحتوي على # علامة تبويب}}</translation>
 <translation id="1082214733466244292">حظر المشرف إمكانية استخدام بعض الوظائف على هذا الجهاز.</translation>
 <translation id="1082398631555931481">‏يريد <ph name="THIRD_PARTY_TOOL_NAME" /> إعادة إعدادات Chrome إلى الحالة التلقائية الأصلية. وسيعمل هذا على إعادة ضبط صفحتك الرئيسية وصفحة علامة التبويب الجديدة ومحرك البحث وسيعطّل إضافاتك ويلغي تثبيت كل علامات التبويب. كما سيزيل البيانات الأخرى المؤقتة والمخبأة، مثل ملفات تعريف الارتباط وبيانات الموقع والمحتوى.</translation>
@@ -527,6 +526,7 @@
 <translation id="135389172849514421">تعمل بدون اتصال بالإنترنت</translation>
 <translation id="1353980523955420967">‏يتعذّر العثور على ملف PPD. تأكد من اتصال Chromebook بالإنترنت وأعد المحاولة.</translation>
 <translation id="1354045473509304750">مواصلة السماح للمضيف <ph name="HOST" /> باستخدام الكاميرا وتحريكها</translation>
+<translation id="1354148503392558902">جارٍ تغيير كلمة المرور...</translation>
 <translation id="1355088139103479645">هل تريد حذف كلّ البيانات؟</translation>
 <translation id="1356376170199999104">تم منح إذن الوصول إلى الميكروفون: <ph name="PERMISSION_DETAILS" />. شغِّل الميكروفون باستخدام الزر اليدوي.</translation>
 <translation id="1356959069439783953">مظهر جديد لعلامات التبويب غير النشطة</translation>
@@ -1097,6 +1097,7 @@
 <translation id="1751335846119670066">ساعدني في القراءة</translation>
 <translation id="17513872634828108">علامات التبويب المفتوحة</translation>
 <translation id="175196451752279553">إ&amp;عادة فتح علامة التبويب المغلقة</translation>
+<translation id="1752557850776261983">جارٍ التأكّد من تسجيل الدخول...</translation>
 <translation id="1753067873202720523">‏قد يتعذر شحن جهاز Chromebook أثناء تشغيله.</translation>
 <translation id="1753557900380512635">تصميمات داخلية</translation>
 <translation id="1753905327828125965">الأكثر زيارة</translation>
@@ -3025,6 +3026,7 @@
 <translation id="310297983047869047">الشريحة السابقة</translation>
 <translation id="3103451787721578293">يُرجى تحديد سبب لتحميل هذه البيانات:</translation>
 <translation id="3103512663951238230">‏‫Alt + النقر</translation>
+<translation id="3104763887980088552">سجلّ الأنشطة</translation>
 <translation id="3104948640446684649">‏إرسال بيانات الاستخدام والتشخيص: يُرسل هذا الجهاز حاليًا بيانات التشخيص وبيانات استخدام الجهاز والتطبيقات إلى Google تلقائيًا. وسيساعد ذلك في تعزيز استقرار النظام والتطبيقات وإجراء المزيد من التحسينات. ستساعد أيضًا بعض البيانات المجمّعة تطبيقات Google وشركاءها، مثل مطوّري تطبيقات Android. في حال تفعيل إعداد "النشاط الإضافي على الويب وفي التطبيقات"، قد يتم حفظ هذه البيانات في حسابك على Google. <ph name="BEGIN_LINK2" />مزيد من المعلومات حول المقاييس<ph name="BEGIN_LINK2_END" />مزيد من المعلومات<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">آخر تغيير غير ناجح</translation>
 <translation id="3105796011181310544">‏هل تريد التغيير مرة أخرى إلى Google؟</translation>
@@ -3739,6 +3741,7 @@
 <translation id="3629664892718440872">تذكُّر هذا الاختيار</translation>
 <translation id="3630132874740063857">هاتفك</translation>
 <translation id="3630995161997703415">أضف الموقع الإلكتروني هذا إلى الرف لاستخدامه في أي وقت.</translation>
+<translation id="3632929818790223729">تقسيم النافذة بين علامة التبويب هذه وعلامة التبويب النشطة</translation>
 <translation id="3634652306074934350">انتهت صلاحية طلب الإذن.</translation>
 <translation id="3635199270495525546">‏تم رصد وحدة نظام أساسي موثوق به (TPM)</translation>
 <translation id="3635353578505343390">‏إرسال ملاحظات إلى Google</translation>
@@ -6238,9 +6241,6 @@
 <translation id="5410300144953132176">تلقّيت دعوة من "<ph name="OWNER_FULL_NAME" />" ‏(<ph name="OWNER_EMAIL" />) للانضمام إلى مجموعة علامات تبويب. يمكن لأيّ مستخدم لديه الرابط تعديل جميع علامات التبويب، لذا يُرجى توخّي الحذر عند الانضمام. وتنتهي صلاحية الرابط بعد 48 ساعة.</translation>
 <translation id="5410889048775606433">فوشيا</translation>
 <translation id="5411022484772257615">تعذَّر إتمام تسجيل الجهاز ضمن المؤسسة التعليمية</translation>
-<translation id="5411856344659127989">‏إذا كنت تريد إضافة حساب لمستخدم آخر، <ph name="LINK_BEGIN" />أضِف مستخدمًا جديدًا<ph name="LINK_END" /> إلى <ph name="DEVICE_TYPE" />.
-
-يُرجى العِلم أنّ الأذونات التي سبق لك منحها إلى المواقع الإلكترونية والتطبيقات يمكن أن تنطبق على هذا الحساب. يمكنك إدارة حساباتك على Google من خلال <ph name="SETTINGS_LINK_BEGIN" />الإعدادات<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="54118879136097217">تثبيت التطبيق على "<ph name="DEVICE_TYPE" />"</translation>
 <translation id="5413640305322530561">مزيد من المعلومات عن بيانات التشخيص والاستخدام</translation>
 <translation id="5414198321558177633">جارٍ إعادة تحميل قائمة الملفات الشخصية. قد تستغرق هذه العملية بضع دقائق.</translation>
@@ -6519,7 +6519,6 @@
 <translation id="5610867721023328944">بإمكانك إعادة المحاولة أو اختيار أحد المظاهر المتوفّرة أدناه.</translation>
 <translation id="5611398002774823980">الحفظ في الحساب</translation>
 <translation id="561236229031062396">"<ph name="SHORTCUT_NAME" />" و"<ph name="APP_FULL_NAME" />"</translation>
-<translation id="5613074282491265467">‏عندما تكون مسجّلاً الدخول إلى متصفِّح Chrome، سيتم في حسابك على Google (<ph name="USER_EMAIL" />) حفظ كلمات المرور التي تحفظها. لإيقاف هذا الإعداد، انتقِل إلى الإعدادات.</translation>
 <translation id="5614190747811328134">إشعار المستخدم</translation>
 <translation id="5614553682702429503">هل تريد حفظ كلمة المرور؟</translation>
 <translation id="5614947000616625327">‏سلسلة مفاتيح iCloud</translation>
@@ -8559,7 +8558,6 @@
 <translation id="7088674813905715446">ألغى المشرف إدارة الحسابات لهذا الجهاز. لتمكينه من التسجيل، يُرجى أن تطلب من المشرف وضع الجهاز في حالة في انتظار المراجعة.</translation>
 <translation id="7088960765736518739">الوصول عبر مفتاح تبديل</translation>
 <translation id="7089253021944603172">علامة التبويب نشطة مجددًا</translation>
-<translation id="7090160970140261931">‏يمكنك إضافة حسابات إضافية إلى جهاز <ph name="DEVICE_TYPE" /> لاستخدامها في المواقع الإلكترونية وتطبيقات Android. ويمكنك أيضًا التحكّم في اختيار الحسابات التي يتم استخدامها مع تطبيقات Android.</translation>
 <translation id="7090714929377281710">إيقاف نقطة الاتصال تلقائيًا</translation>
 <translation id="7092504544229909737">‏لا يمكن استخدام هذا الحساب مع تطبيقات Android</translation>
 <translation id="7093220653036489319">معلومات سريعة</translation>
@@ -9021,6 +9019,7 @@
 <translation id="7424818322350938336">تمت إضافة الشبكة</translation>
 <translation id="7425037327577270384">مساعدة في الكتابة</translation>
 <translation id="7427348830195639090">صفحة الخلفية: <ph name="BACKGROUND_PAGE_URL" /></translation>
+<translation id="7427729970025360383">تتم إدارة هذا الملف الشخصي</translation>
 <translation id="7427798576651127129">الاتصال من <ph name="DEVICE_NAME" /></translation>
 <translation id="7429415133937917139">‏يحاكي إخراج جهاز عرض بلغة برايل قابل لإعادة التحميل في لوحة ChromeVox بأعلى الشاشة.</translation>
 <translation id="7429568074268678162">‏قد يكون الملف "<ph name="FILENAME" />" خطيرًا. يمكنك إضافة كلمة مرور إذا أردت أن يتأكَّد Chrome من أمان الملف أو يمكنك تنزيله مباشرةً.</translation>
@@ -10038,6 +10037,7 @@
 <translation id="8140869601171867148">‏إنّ حسابك على Google هو الحساب نفسه الذي تستخدمه في Gmail وYouTube وChrome ومنتجات Google الأخرى.
     يمكنك استخدام حسابك للوصول بسهولة إلى جميع الإشارات المرجعية والملفات وغير ذلك.</translation>
 <translation id="8141418916163800697">يمكنك إعداد المزيد من الميزات في إعدادات "مركز التحكُّم بالهاتف".</translation>
+<translation id="814156740715940972">تقسيم النافذة بين علامة التبويب هذه وعلامة التبويب النشطة</translation>
 <translation id="8141584439523427891">جارٍ الفتح في متصفِّح بديل الآن</translation>
 <translation id="8141725884565838206">إدارة كلمات المرور</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{فيديو واحد}zero{# فيديو}two{فيديوهان}few{# فيديوهات}many{# فيديو}other{# فيديو}}</translation>
@@ -11175,9 +11175,6 @@
 <translation id="894360074127026135">‏الترقية الدولية لـ Netscape</translation>
 <translation id="8944099748578356325">استخدام البطارية بسرعة أكبر (حاليًا <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944633700466246631">‏إنشاء رقم تعريف شخصي مكوّن من 6 أرقام لاسترداد البيانات في "مدير كلمات المرور في Google"</translation>
-<translation id="8944725102565796255">‏إذا كنت تريد استخدام هذا الحساب لمرة واحدة فقط، يمكنك <ph name="GUEST_LINK_BEGIN" />استخدام الجهاز في "وضع الضيف"<ph name="GUEST_LINK_END" />. وإذا أردت إضافة حساب لمستخدم آخر، <ph name="LINK_BEGIN" />أضِف مستخدمًا جديدًا<ph name="LINK_END" /> إلى <ph name="DEVICE_TYPE" />.
-
-يُرجى العِلم أنّ الأذونات التي سبق لك منحها إلى المواقع الإلكترونية والتطبيقات يمكن أن تنطبق على هذا الحساب. يمكنك إدارة حساباتك على Google من خلال <ph name="SETTINGS_LINK_BEGIN" />الإعدادات<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="8945274638472141382">حجم الرمز</translation>
 <translation id="8945508919180478719">ميكروفون بنمط الاستوديو</translation>
 <translation id="8946359700442089734">لم يتم تفعيل ميزات التصحيح كليًا على هذا الجهاز <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>

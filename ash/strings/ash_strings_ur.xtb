@@ -140,6 +140,7 @@
 <translation id="1415846719612499304">نیٹ ورک کی فہرست دکھائیں۔ <ph name="STATE_TEXT" />۔</translation>
 <translation id="1419738280318246476">اطلاع کی کارروائی کرنے کیلئے آلے کو غیر مقفل کریں</translation>
 <translation id="1420408895951708260">نائٹ لائٹ ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">تجویز کردہ گروپ</translation>
 <translation id="1426410128494586442">ہاں</translation>
 <translation id="1435537621343861112">ڈکٹیشن شروع نہیں کر سکتے۔ آپ کا مائیک آف ہے۔</translation>
 <translation id="1445031758921122223">فیس کنٹرول فائلز ڈاؤن لوڈ ہو گئیں</translation>
@@ -243,12 +244,14 @@
 <translation id="17722141032474077">حساب کتاب</translation>
 <translation id="1774796056689732716">کیلنڈر، <ph name="CURRENT_MONTH_YEAR" />، فی الحال <ph name="DATE" /> کو منتخب کیا گیا ہے۔</translation>
 <translation id="178347895271755507">اپنے فون کی حالیہ تصاویر، میڈیا اور اطلاعات دیکھنے کو سیٹ اپ کریں</translation>
+<translation id="1785317913592722944">تجویز کردہ گروپ سے آئٹم کو ہٹائیں</translation>
 <translation id="1786487376942610288">تصویر میں تصویر ونڈو کو اس کے زیادہ سے زیادہ یا موجودہ سائز کے درمیان سوئچ کریں</translation>
 <translation id="1787955149152357925">آف</translation>
 <translation id="1796561540704213354">ویب سائٹس بشمول وہ صفحات جن کا آپ نے ملاحظہ کیا ہے اور وہ صفحات جنہیں آپ نے کھولا ہے</translation>
 <translation id="179842970735685253">‏‫Google کی سروس کی شرائط</translation>
 <translation id="1805407494113167797">فوکس کی آوازیں خصوصیت نہیں چلا سکے</translation>
 <translation id="181103072419391116">سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
+<translation id="1815039896005206046">اظہار ناپسندیدگی یہ تاثرات جمع کرائے گا کہ آپ کو یہ تجویز کردہ گروپ پسند نہیں ہے</translation>
 <translation id="1816896987747843206">اس سے کیمرے کی اجازت کے ساتھ تمام ایپس اور ویب سائٹس کے لیے کیمرے تک رسائی کی اجازت ملتی ہے</translation>
 <translation id="1823873187264960516">ایتھرنیٹ: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">مقام تک رسائی آن کریں</translation>
@@ -390,6 +393,7 @@
 <translation id="2369165858548251131">چینی میں "ہیلو"</translation>
 <translation id="2370971919968699910">اس کے نتیجے میں ڈیٹا چارجز لگ سکتے ہیں۔
 <ph name="DEVICECOUNT" /> آلات منسلک ہیں۔</translation>
+<translation id="2383521554963939360">ایپ اور ٹیب گروپس</translation>
 <translation id="2386292613071805067">صفحہ پر ہر چیز کو منتخب کریں</translation>
 <translation id="2389423187722941333">‏‫Gemini ٹوگل کریں</translation>
 <translation id="2392659840443812875">کوئی ہاٹ اسپاٹ دستیاب نہیں ہے۔ یہ یقینی بنائیں کہ آپ کا آلہ قریب میں ہے اور بلوٹوتھ آن ہے۔</translation>
@@ -920,6 +924,7 @@
 <translation id="4151054805501931758">پورٹریٹ ٹچ اپ</translation>
 <translation id="4156293514828496577">‏<ph name="PERCENTAGE" />فیصد بیٹری باقی ہے left (تقریباََ <ph name="TIME_LEFT" />)۔
 کچھ خصوصیات بیٹری لائف میں اضافہ کے لیے محدود ہیں۔</translation>
+<translation id="4158003972857765638">نئی ڈیسک میں منظم کریں</translation>
 <translation id="4160919062868802509">متعدد آڈیو ذرائع کا پتہ چلا</translation>
 <translation id="416245495747357243">مکمل ہو گیا!</translation>
 <translation id="4165275524535002941">ہو سکتا ہے کہ کیبل ڈسپلیز کو سپورٹ نہ کرے</translation>
@@ -968,6 +973,7 @@
 <translation id="4285498937028063278">پن ہٹائیں</translation>
 <translation id="428715201724021596">پروفائل سے منسلک کیا جا رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="4287250812980588583">‏‫Chrome ونڈو</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{‏‫Mic والیوم کو <ph name="APP_NAME" /> کے ذریعے کنٹرول کیا جاتا ہے}other{‏‫Mic والیوم کو # ایپس کے ذریعے کنٹرول کیا جاتا ہے}}</translation>
 <translation id="4294319844246081198">صبح بخیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="4296136865091727875">تمام <ph name="COUNT" /> اطلاعات صاف کریں</translation>
 <translation id="4300272766492248925">ایپ کھولیں</translation>
@@ -984,6 +990,7 @@
 <translation id="4322742403972824594">‏Ctrl + Alt + 'اوپر تیر کا نشان' کی بورڈ شارٹ کٹ تبدیل ہو گیا۔ Home کلید کا استعمال کرنے کیلئے، <ph name="LAUNCHER_KEY_NAME" /> کلید + 'بائیں تیر کا نشان' کو دبائیں۔</translation>
 <translation id="4324840740119394760">اس سے کیمرے کی اجازت کے ساتھ <ph name="APP_NAME" /> اور تمام ایپس اور ویب سائٹس کو کیمرے تک رسائی کی اجازت ملتی ہے</translation>
 <translation id="4327147325944669226">گیم ریکارڈ کریں</translation>
+<translation id="4329076911374908740">محفوظ کردہ گروپس کی زیادہ سے زیادہ تعداد حد تک پہنچ گئی</translation>
 <translation id="4338109981321384717">میگنفائنگ گلاس</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />، خاموش کردہ</translation>
 <translation id="4351244548802238354">ڈائیلاگ بند کریں</translation>
@@ -1940,6 +1947,7 @@
 <translation id="7524043547948122239">‫Google Tasks</translation>
 <translation id="7525067979554623046">بنائیں</translation>
 <translation id="7526573455193969409">ممکن ہے نیٹ ورک کو مانیٹر کیا جا رہا ہو</translation>
+<translation id="7534543072325030705">اظہار پسندیدگی تاثرات جمع کرائے گا کہ آپ کو یہ تجویز کردہ گروپ پسند ہے</translation>
 <translation id="7536035074519304529">‏IP پتہ: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">بائیں ونڈو کو اپ ڈیٹ کریں</translation>
 <translation id="7543399541175347147">‏Linux ایپس اور پوشیدگی ونڈوز فی الحال تعاون یافتہ نہیں ہیں۔ دیگر ایپس کو محفوظ کیا جائے گا۔</translation>
@@ -2104,6 +2112,7 @@
 <translation id="8004512796067398576">اضافہ</translation>
 <translation id="8005527720597583355">فوکس سیشن شروع کریں</translation>
 <translation id="8015361438441228492">ٹاسک میں ترمیم نہیں کی جا سکی۔</translation>
+<translation id="8027187124910699148">تجویز کردہ گروپ دوبارہ شروع کریں</translation>
 <translation id="802782383769312836">گزشتہ ڈیسک: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> میں سے <ph name="DESK_INDEX" /> ڈیسک</translation>
 <translation id="8029247720646289474">ہاٹ سپاٹ کنکشن نہیں ملا</translation>
 <translation id="8029629653277878342">‏مزید سیکیورٹی کیلئے PIN یا پاس ورڈ درکار ہے</translation>
@@ -2212,6 +2221,7 @@
 <translation id="8426708595819210923">شام بخیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="8428213095426709021">ترتیبات</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> سے <ph name="KEY_TWO" /> تک</translation>
+<translation id="8429547770382807369">بعد کیلئے گروپ محفوظ کریں</translation>
 <translation id="8433186206711564395">نیٹ ورک کی ترتیبات</translation>
 <translation id="8433977262951327081">شیلف میں ان پٹ اختیارات کے مینیو بلبلے کو دکھانے والا شارٹ کٹ تبدیل ہو گیا ہے۔ براہ کرم <ph name="OLD_SHORTCUT" /> کی بجائے <ph name="NEW_SHORTCUT" /> استعمال کریں۔</translation>
 <translation id="8437311513256731931">تاثرات ٹول کھولیں</translation>
@@ -2220,6 +2230,7 @@
 <translation id="8446884382197647889">مزید جانیں</translation>
 <translation id="8456543082656546101">‏V + <ph name="SHORTCUT_KEY_NAME" />‏</translation>
 <translation id="8462305545768648477">سننے کیلئے منتخب کریں کو بند کریں</translation>
+<translation id="8466665972451889002">‫<ph name="GROUP_NAME" /> میں آئٹم دکھائیں</translation>
 <translation id="8468806060683421065"><ph name="DUE_DATE_AND_TIME" /> آخری تاریخ ہے</translation>
 <translation id="847056008324733326">اسکیل ترتیبات کو ڈسپلے کریں</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> میں <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> ہے۔</translation>
@@ -2242,6 +2253,7 @@
 <translation id="8551588720239073785">تاریخ اور وقت کی ترتیبات</translation>
 <translation id="8553395910833293175">پہلے ہی تمام ڈیسکس کو تفویض کر دیا گیا۔</translation>
 <translation id="8555757996376137129">حالیہ ڈیسک کو ہٹائیں</translation>
+<translation id="8558521694042102707">‏تخلیق کر سکنے والا AI غلطیاں کر سکتا ہے، بشمول لوگوں کے بارے میں، لہذا اسے دوبارہ چیک کریں۔</translation>
 <translation id="8559845965695780508"><ph name="USER" /> نے ترمیم کی</translation>
 <translation id="8569146227972631631">‎°F</translation>
 <translation id="8569751806372591456">کوشش کرنے کے لیے یہاں کچھ تجاویز ہیں</translation>
@@ -2264,6 +2276,7 @@
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="8638637208069328956">مائیکروفون آن/آف کریں</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> باقی</translation>
+<translation id="8640470573049727749">گروپ کی تمام تجاویز چھپائیں</translation>
 <translation id="8641510901370802679"><ph name="ANSWER_TYPE" /> کی معلومات دکھائی جا رہی ہے</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> ٹائمر</translation>
 <translation id="8647931990447795414">‏کسی فرد کو شامل کرنے کے لیے، اپنی Family Link کا والدین کا رسائی کا کوڈ درج کریں</translation>
@@ -2346,6 +2359,7 @@
 <translation id="8905919797434099235">(کوئی عنوان نہیں)</translation>
 <translation id="890616557918890486">ماخذ تبدیل کریں</translation>
 <translation id="8909138438987180327">بیٹری <ph name="PERCENTAGE" /> فیصد ہے۔</translation>
+<translation id="8916866375277139011">‫<ph name="GROUP_NAME" /> میں آئٹمز چھپائیں</translation>
 <translation id="8921554779039049422">H+‎</translation>
 <translation id="8921624153894383499">‏Google اسسٹنٹ یہ زبان نہیں بولتا ہے۔</translation>
 <translation id="8926951137623668982">شیلف ہمیشہ پوشیدہ</translation>

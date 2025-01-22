@@ -191,6 +191,7 @@
 <translation id="1779354709911146450">Autentifikācijas kļūda</translation>
 <translation id="1780152987505130652">Aizvērt grupu</translation>
 <translation id="178400879184240105">Jūsu paroles ir unikālas</translation>
+<translation id="17906873777101817">Piedāvāt saglabāt paroles un piekļuves atslēgas</translation>
 <translation id="1807893857950749072">Atļaut cenu izsekošanas paziņojumus…</translation>
 <translation id="1810976980198522421">Atcelt</translation>
 <translation id="1815941218935345331">Piekļuves kods</translation>
@@ -651,6 +652,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3955740319737378355">Gatavs</translation>
 <translation id="3955822496205734389">Jums ir nedrošas paroles.</translation>
 <translation id="3958312024468322930">Velciet ikonu uz doku sākuma ekrāna apakšdaļā</translation>
+<translation id="3960218941754097036">Meklējiet jebkādu ekrānā redzamo saturu, izmantojot Google Lens</translation>
 <translation id="3962326069546168954">Saglabāt</translation>
 <translation id="3967327056943561740">Grāmatzīmes</translation>
 <translation id="3967822245660637423">Lejupielāde pabeigta</translation>
@@ -693,6 +695,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4147897805161313378">Google fotoattēli</translation>
 <translation id="4148023517926189160">Šī vietne vēlas lejupielādēt failu un pievienot to jūsu kalendāram.</translation>
 <translation id="4152011295694446843">Šeit varēsiet skatīt savas grāmatzīmes</translation>
+<translation id="4154753961803534698">Meklēt ar kameru</translation>
 <translation id="4158491215857439601">Paroļu pārvaldnieks</translation>
 <translation id="4163699139741158298">{count,plural, =1{Grāmatzīme tika saglabāta šeit: “{title}”. Tā ir saglabāta tikai šajā ierīcē.}zero{{count} grāmatzīmes tika saglabātas šeit: “{title}”. Tās ir saglabātas tikai šajā ierīcē.}one{{count} grāmatzīme tika saglabāta šeit: “{title}”. Tās ir saglabātas tikai šajā ierīcē.}other{{count} grāmatzīmes tika saglabātas šeit: “{title}”. Tās ir saglabātas tikai šajā ierīcē.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />, pēdējie cipari ir <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -831,7 +834,6 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4764612367328936189">Jūsu organizācija ir atļāvusi pierakstīšanos tikai ar noteiktiem kontiem. Konti, kas nav atļauti, ir paslēpti. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="4766112107778026136">Discover un sekošana</translation>
 <translation id="4769198578611055647">Palīdz piekļūt saglabātajām piekļuves atslēgām jebkurā ierīcē</translation>
-<translation id="4777866634702576038">Vai dzēst ciļņu grupu?</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Vai atvērt inkognito režīmā?</translation>
 <translation id="4792385443586519711">Uzņēmuma nosaukums</translation>
@@ -1159,6 +1161,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6168647875670665004">Rakstu ieteikumi</translation>
 <translation id="6169031022444660352">Lai varētu dzēst visus saglabātos akreditācijas datus, vispirms ierīcē ir jāiestata piekļuves kods.</translation>
 <translation id="6173499589275053515">Parole ir saglabāta jūsu Google kontā (<ph name="EMAIL" />).</translation>
+<translation id="6181969657494915430">Meklēt ekrānā redzamo saturu</translation>
 <translation id="6187302354554850004">Pēdējoreiz sinhr.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Izveides datums: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Nelasīts</translation>
@@ -1320,6 +1323,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6746338529702829275">Pārskatīt konta datus</translation>
 <translation id="6755200887046212842">Pārvaldīt kontus</translation>
+<translation id="6755733078693946548">Piekļuve parolēm un piekļuves atslēgām no jebkuras lietotnes</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6779455296366983087">Jūsu pārlūkošanas dati tiks dzēsti</translation>
 <translation id="6790502149545262384">Drīzumā, atverot jaunu cilni, būs redzami raksti no vietnes <ph name="CHANNEL_NAME" />.</translation>
@@ -1587,6 +1591,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="7977451675950311423">Tiek rādīts brīdinājums, ja izmantojat paroli, kas ir uzlauzta datu aizsardzības pārkāpuma dēļ.</translation>
 <translation id="7977482887663636093">Jauno ciļņu skaits: <ph name="NUMBER_OF_TABS_ADDED" />; aizvērto ciļņu skaits: <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="797824194429476746">Cilnes paliks atvērtas šajā ierīcē, taču grupa tiks neatgriezeniski dzēsta.</translation>
+<translation id="797874245254030665">Piekļuve parolēm un piekļuves atslēgām no jebkuras lietotnes</translation>
 <translation id="7982789257301363584">Tīkls</translation>
 <translation id="7987685713885608670">Lai gādātu par papildu drošību, šifrējiet paroles savā ierīcē, pirms tās tiek saglabātas Google paroļu pārvaldniekā.</translation>
 <translation id="798991908416757345">Ciļņu grupas nav pieejamas</translation>
@@ -1596,6 +1601,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8005666035647241369">Google paroļu pārvaldniekā šajā ierīcē</translation>
 <translation id="8011489434346330032">Tīmekļa inspektors</translation>
 <translation id="802154636333426148">Lejupielāde neizdevās</translation>
+<translation id="8023170444051056234">Jūs uzreiz zaudēsiet piekļuvi ciļņu grupai “<ph name="GROUP_NAME" />”, un tā tiks izdzēsta no visām jūsu ierīcēm.</translation>
 <translation id="8023878949384262191">Izvērš sadaļu.</translation>
 <translation id="8027581147000338959">Atvērt jaunā logā</translation>
 <translation id="8032569120109842252">Sekojat</translation>
@@ -1666,6 +1672,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8299613349954694191">Atveriet inkognito cilni, lai privāti pārlūkotu tīmekli.</translation>
 <translation id="8307481894409578819">Šo failu nevarēja augšupielādēt</translation>
 <translation id="8319076807703933069">Jauns meklēšanas vaicājums</translation>
+<translation id="8328607660158575887">Atveriet automātiskās aizpildes un paroļu iestatījumus.</translation>
 <translation id="833647236762414178">Izveidojiet, saglabājiet un pārvaldiet paroles un piekļuves atslēgas, lai varētu ērti pierakstīties vietnēs un lietotnēs. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="8343993175958086504">Varat dublēt savus datus un izmantot tos jebkurā ierīcē.</translation>
 <translation id="8349305172487531364">Grāmatzīmju josla</translation>
@@ -1818,6 +1825,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8909459547399237818">Atlasiet Paroļu pārvaldnieku un pēc tam pieskarieties pogai Pievienot logrīku.</translation>
 <translation id="891282356902782456">Šī parole ir saglabāta tikai šajā ierīcē. Lai paroli izmantotu citās ierīcēs, saglabājiet to savā Google kontā (<ph name="EMAIL" />).</translation>
 <translation id="8915916167043355778">Aizvērt visu</translation>
+<translation id="892185197271200809">Visi uzreiz zaudēs piekļuvi ciļņu grupai “<ph name="GROUP_NAME" />”, un tā tiks izdzēsta no visām ierīcēm.</translation>
 <translation id="8921902386312975525">Sūtījumu izsekošanas iespējas</translation>
 <translation id="8923178205567790913">Paroles</translation>
 <translation id="892776311701544612">Uzzināt vairāk…</translation>

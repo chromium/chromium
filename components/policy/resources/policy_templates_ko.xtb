@@ -380,6 +380,11 @@
 <translation id="1294263471858445589">시크릿 모드와 일반 세션에서 수동 인증을 사용 설정합니다.</translation>
 <translation id="1295737447968372331">로그인 화면에서 음성기록 사용</translation>
 <translation id="1297182715641689552">.pac 프록시 스크립트 사용</translation>
+<translation id="1297909092292754072">이 정책을 설정하면 안전하지 않은 출처의 보안 제한이 적용되지 않는 출처(URL) 또는 호스트 이름 패턴(*.example.com 등)의 목록이 지정됩니다. 패턴은 호스트 이름에만 허용됩니다. 스킴이 있는 URL/출처는 정확한 문자열이어야 합니다. 정책을 통해 조직은 TLS를 배포할 수 없는 레거시 애플리케이션의 출처를 지정하거나 내부 웹 개발을 위한 스테이징 서버를 설정하여 개발자가 스테이징 서버에서 TLS를 배포하지 않고도 보안 컨텍스트가 필요한 기능을 테스트하도록 할 수 있습니다. 또한 정책을 사용하면 주소 표시줄에서 출처에 '안전하지 않음' 라벨이 표시되지 않습니다.
+
+정책에서 URL 목록을 설정하면 같은 URL의 쉼표로 구분된 목록에 명령줄 플래그 --unsafely-treat-insecure-origin-as-secure를 설정하는 것과 같은 효과가 나타납니다. 정책이 설정되면 명령줄 플래그가 재정의되며 UnsafelyTreatInsecureOriginAsSecure가 있는 경우 이 역시 재정의됩니다.
+
+보안 컨텍스트에 관해 자세히 알아보려면 보안 컨텍스트 페이지(https://www.w3.org/TR/secure-contexts)를 참고하세요.</translation>
 <translation id="1297961932043741908">단일 Chrome 인스턴스에서 사용할 수 있는 메모리(메가바이트 단위) 제한을 설정합니다.</translation>
 <translation id="1304973015437969093">자동으로 설치되는 확장 프로그램/앱 ID와 업데이트 URL</translation>
 <translation id="1305400589435476516">정책을 사용 설정하면 기기의 데이터 로밍이 허용됩니다.
@@ -3647,6 +3652,7 @@ HTTPS용 RSA 인증서에 두 가지를 모두 포함해야 합니다.</translat
 <translation id="3663124775601519286">정책을 사용 설정하거나 설정하지 않으면 <ph name="PRODUCT_NAME" />에서 Translator API를 사용할 수 있습니다.
 
       정책을 사용 중지로 설정하면 Translator AP를 사용할 수 없습니다.</translation>
+<translation id="3664164569472125114"><ph name="GLIC" /> 액세스 제어</translation>
 <translation id="3665437376055221832">자동 선택과 일치하는 인증서가 없을 때만 사용자에게 메시지 표시</translation>
 <translation id="3667467644216039144">사용자가 모든 브라우저 창을 닫을 때 삭제되어야 하는 인터넷 사용 기록 유형의 목록을 구성합니다.
 
@@ -5561,6 +5567,7 @@ false로 설정되면 기기 식별을 위해 사용할 수 있는 정보가 수
 정책을 사용 중지하면 CSS 'zoom' 속성이 표준화 이전의 기존 동작으로 대체됩니다.
 
 이 정책은 웹 콘텐츠를 새로운 동작으로 이전할 수 있도록 일시적으로 유예 기간을 허용합니다. 또한 이 정책이 사용 중지된 경우의 동작에 해당하는 오리진 트라이얼('DisableStandardizedBrowserZoom')도 있습니다. 이 정책은 삭제될 예정이며, 버전 134에서는 '사용 설정됨' 동작이 영구적으로 적용되었습니다.</translation>
+<translation id="5088303895040832480">새 코드에 UsbDeviceId를 사용합니다.</translation>
 <translation id="5090791951240382356">출처가 서로 다른 사전 정책의 병합 허용</translation>
 <translation id="5091315650312105069">HTTP 연결에 <ph name="BASIC_AUTH" /> 인증 허용</translation>
 <translation id="5093603777978346818">잠금 화면에서 화면 보호기를 사용 설정하지 않습니다.</translation>

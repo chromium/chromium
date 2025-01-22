@@ -129,7 +129,6 @@
 <translation id="1079242569060319448">Esqueceu o PIN?</translation>
 <translation id="1079285777677001938">Os recursos de alguns sites podem não funcionar.</translation>
 <translation id="1079766198702302550">Sempre bloquear o acesso à câmera</translation>
-<translation id="1080365971383768617">Senhas em todos os seus dispositivos</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" />: 1 guia}one{<ph name="GROUP_TITLE" />: # guia}other{<ph name="GROUP_TITLE" />: # guias}}</translation>
 <translation id="1082214733466244292">O administrador bloqueou algumas funcionalidades do dispositivo</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> deseja restaurar as configurações do Chrome aos padrões originais. Isso redefinirá sua página inicial, a página "Nova guia" e mecanismo de pesquisa, desativará suas extensões e liberará todas as guias. Além disso, outros dados temporários e dados armazenados em cache, tais como cookies, conteúdo e dados de site, também serão limpos.</translation>
@@ -524,6 +523,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="135389172849514421">Funciona off-line</translation>
 <translation id="1353980523955420967">Não é possível encontrar o PPD. Verifique se seu Chromebook está on-line e tente novamente.</translation>
 <translation id="1354045473509304750">Continuar permitindo que <ph name="HOST" /> use e mova sua câmera</translation>
+<translation id="1354148503392558902">Mudando senha…</translation>
 <translation id="1355088139103479645">Excluir todos os dados?</translation>
 <translation id="1356376170199999104">Concedida (<ph name="PERMISSION_DETAILS" />). Ative o microfone usando o interruptor físico.</translation>
 <translation id="1356959069439783953">As guias inativas estão de cara nova</translation>
@@ -1104,6 +1104,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1751335846119670066">Quero ajuda para ler</translation>
 <translation id="17513872634828108">Guias abertas</translation>
 <translation id="175196451752279553">R&amp;eabrir guia fechada</translation>
+<translation id="1752557850776261983">Verificando login…</translation>
 <translation id="1753067873202720523">Seu Chromebook não pode ser carregado enquanto está ligado.</translation>
 <translation id="1753557900380512635">Interiores</translation>
 <translation id="1753905327828125965">Mais visitados</translation>
@@ -2385,6 +2386,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2638662041295312666">Imagem de login</translation>
 <translation id="2640299212685523844">Usar GTK</translation>
 <translation id="264083724974021997">Conecte-se ao seu smartphone - Caixa de diálogo</translation>
+<translation id="2641098199809442625">Sua senha não foi atualizada, mas você ainda pode acessar o site com a senha antiga.</translation>
 <translation id="2642111877055905627">Bola de futebol</translation>
 <translation id="2642206811783203764">Sempre no site <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">Você pode excluir seus dados de medição de anúncios a qualquer momento excluindo os dados de navegação</translation>
@@ -3032,6 +3034,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="310297983047869047">Slide anterior</translation>
 <translation id="3103451787721578293">Informe um motivo para fazer upload desses dados:</translation>
 <translation id="3103512663951238230">Alt + clique</translation>
+<translation id="3104763887980088552">Registro de atividades</translation>
 <translation id="3104948640446684649">Envie dados de uso e diagnóstico. No momento, este dispositivo está enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também vão ajudar apps e parceiros do Google, por exemplo, os desenvolvedores Android. Se a configuração "Atividade na Web e de apps adicional" estiver ativada, esses dados poderão ser salvos na sua Conta do Google. <ph name="BEGIN_LINK2" />Saiba mais sobre as métricas<ph name="BEGIN_LINK2_END" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Atualização mais recente que apresentou falha</translation>
 <translation id="3105796011181310544">Voltar a usar o Google?</translation>
@@ -3747,6 +3750,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3629664892718440872">Lembrar esta escolha</translation>
 <translation id="3630132874740063857">Seu smartphone</translation>
 <translation id="3630995161997703415">Adicione este site à sua estante para usá-lo a qualquer momento</translation>
+<translation id="3632929818790223729">Dividir guia com a guia ativa</translation>
 <translation id="3634652306074934350">A solicitação de permissão expirou</translation>
 <translation id="3635199270495525546">Trusted Platform Module (TPM) detectado</translation>
 <translation id="3635353578505343390">Enviar feedback para o Google</translation>
@@ -4111,7 +4115,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3856800405688283469">Selecionar fuso horário</translation>
 <translation id="3857807444929313943">Tire o dedo e toque novamente</translation>
 <translation id="3858860766373142691">Nome</translation>
-<translation id="385939467708172187">Use uma senha forte</translation>
+<translation id="385939467708172187">Usar uma senha forte</translation>
 <translation id="3859987779882450877">Sugere e cria grupos automaticamente com base nas suas guias abertas</translation>
 <translation id="386009056910366930">Gerenciar o grupo de guias "<ph name="GROUP_NAME" />"</translation>
 <translation id="3861638017150647085">O nome de usuário "<ph name="USERNAME" />" não está disponível</translation>
@@ -6248,9 +6252,6 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) quer que você participe de um grupo de guias. Compartilhe com cautela. Qualquer pessoa com o link pode editar todas as guias. O link expira em 48 horas.</translation>
 <translation id="5410889048775606433">Fúcsia</translation>
 <translation id="5411022484772257615">Não foi possível concluir o registro escolar</translation>
-<translation id="5411856344659127989">Se você quer adicionar uma conta para outra pessoa, <ph name="LINK_BEGIN" />adicione um novo usuário<ph name="LINK_END" /> ao <ph name="DEVICE_TYPE" />.
-
-As permissões que você já concedeu a sites e apps podem ser aplicadas a essa conta. É possível gerenciar suas Contas do Google nas <ph name="SETTINGS_LINK_BEGIN" />Configurações<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="54118879136097217">Instale o app no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="5413640305322530561">Saiba mais</translation>
 <translation id="5414198321558177633">Atualizando a lista de perfis. Pode levar alguns minutos..</translation>
@@ -6529,7 +6530,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5610867721023328944">Tente de novo ou selecione um dos temas disponíveis abaixo.</translation>
 <translation id="5611398002774823980">Salvar na conta</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5613074282491265467">Quando sua Conta do Google <ph name="USER_EMAIL" /> está conectada ao Chrome, as senhas são salvas nela. Para desativar esse recurso, acesse as configurações.</translation>
 <translation id="5614190747811328134">Aviso para o usuário</translation>
 <translation id="5614553682702429503">Salvar senha?</translation>
 <translation id="5614947000616625327">Chaves do iCloud</translation>
@@ -8564,7 +8564,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7088674813905715446">O administrador pôs este dispositivo no estado de provisionamento cancelado. Para ativar a inscrição do dispositivo, solicite que o administrador o coloque no estado "Pendente".</translation>
 <translation id="7088960765736518739">Acesso com interruptor</translation>
 <translation id="7089253021944603172">Guia ativa novamente</translation>
-<translation id="7090160970140261931">É possível adicionar mais contas ao <ph name="DEVICE_TYPE" /> para serem usadas com sites e apps Android. Você também pode controlar quais contas são usadas em apps Android.</translation>
 <translation id="7090714929377281710">Desativar ponto de acesso automaticamente</translation>
 <translation id="7092504544229909737">Não pode ser usada com apps Android</translation>
 <translation id="7093220653036489319">Respostas rápidas</translation>
@@ -10043,6 +10042,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8140869601171867148">Sua Conta do Google é a mesma conta que você usa para o Gmail, o YouTube, o Chrome e outros produtos do Google.
     Use-a para acessar com facilidade todos os seus favoritos, arquivos e muito mais.</translation>
 <translation id="8141418916163800697">Você pode definir mais recursos nas configurações da ferramenta Seu smartphone</translation>
+<translation id="814156740715940972">Dividir guia com a guia ativa</translation>
 <translation id="8141584439523427891">Abrindo em navegador alternativo agora</translation>
 <translation id="8141725884565838206">Gerenciar suas senhas</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{um vídeo}one{# vídeo}other{# vídeos}}</translation>
@@ -11176,9 +11176,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Consumir a bateria mais rapidamente (no momento com <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944633700466246631">Crie um PIN de recuperação de 6 dígitos para o Gerenciador de senhas do Google</translation>
-<translation id="8944725102565796255">Se você quiser usar essa conta apenas uma vez, <ph name="GUEST_LINK_BEGIN" />utilize o dispositivo como visitante<ph name="GUEST_LINK_END" />. Se quiser adicionar uma conta para outra pessoa, <ph name="LINK_BEGIN" />adicione um novo usuário<ph name="LINK_END" /> ao <ph name="DEVICE_TYPE" />.
-
-As permissões que você já concedeu a sites e apps podem ser aplicadas a essa conta. É possível gerenciar suas Contas do Google nas <ph name="SETTINGS_LINK_BEGIN" />Configurações<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="8945274638472141382">Tamanho do ícone</translation>
 <translation id="8945508919180478719">Microfone de estúdio</translation>
 <translation id="8946359700442089734">Os recursos de depuração não foram completamente ativados neste dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>

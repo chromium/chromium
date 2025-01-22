@@ -973,6 +973,7 @@
 <translation id="4285498937028063278">ຖອນໝຸດ</translation>
 <translation id="428715201724021596">ກຳລັງເຊື່ອມຕໍ່ຫາໂປຣໄຟລ໌. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ.</translation>
 <translation id="4287250812980588583">ໜ້າຈໍ Chrome</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{ລະດັບສຽງຂອງໄມຄວບຄຸມໂດຍ <ph name="APP_NAME" />}other{ລະດັບສຽງຂອງໄມຄວບຄຸມໂດຍ # ແອັບ}}</translation>
 <translation id="4294319844246081198">ສະບາຍດີຕອນເຊົ້າ <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">ລຶບລ້າງການແຈ້ງເຕືອນທັງໝົດ <ph name="COUNT" /> ລາຍການ</translation>
 <translation id="4300272766492248925">ເປີດແອັບ</translation>

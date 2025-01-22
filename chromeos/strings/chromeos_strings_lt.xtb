@@ -564,6 +564,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (apžvalgų: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Neprisijungta</translation>
 <translation id="3749289110408117711">Failo pavadinimas</translation>
+<translation id="3763034084412196440">Garsumo koregavimas</translation>
 <translation id="3767737419527918477">Ieškoti įrašų failų</translation>
 <translation id="3771294271822695279">Vaizdo įrašų failai</translation>
 <translation id="3780740315729837296">Priskirkite klaviatūros klavišą</translation>
@@ -1218,6 +1219,7 @@
 <translation id="6747035363363040417">neutralus</translation>
 <translation id="6747215703636344499">Sustabdyta – išvestis pilna</translation>
 <translation id="6749473226660745022">Nuotraukos</translation>
+<translation id="6752960629591143793">Pasirinkite transkribavimo kalbą ir atsisiųskite skiltyje „Nustatymai“ arba <ph name="THREE_DOTS_MENU_ICON" /> meniu</translation>
 <translation id="6753452347192452143">Įrenginys yra kompiuteris.</translation>
 <translation id="6756731097889387912">Nepavyko atšaukti nuskaitymo</translation>
 <translation id="6760706756348334449">Sumažinti garsumą</translation>

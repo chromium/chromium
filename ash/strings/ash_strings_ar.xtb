@@ -971,6 +971,7 @@
 <translation id="4285498937028063278">إزالة التثبيت</translation>
 <translation id="428715201724021596">جارٍ الاتصال بالملف الشخصي. قد تستغرق هذه العملية بضع دقائق.</translation>
 <translation id="4287250812980588583">‏نافذة Chrome</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{يتحكّم "<ph name="APP_NAME" />" في مستوى صوت الميكروفون}zero{يتحكّم # تطبيق في مستوى صوت الميكروفون}two{يتحكّم تطبيقان في مستوى صوت الميكروفون}few{تتحكّم # تطبيقات في مستوى صوت الميكروفون}many{يتحكّم # تطبيقًا في مستوى صوت الميكروفون}other{يتحكّم # تطبيق في مستوى صوت الميكروفون}}</translation>
 <translation id="4294319844246081198">صباح الخير <ph name="GIVEN_NAME" />،</translation>
 <translation id="4296136865091727875">محو جميع الإشعارات التي يبلغ عددها <ph name="COUNT" /></translation>
 <translation id="4300272766492248925">فتح التطبيق</translation>

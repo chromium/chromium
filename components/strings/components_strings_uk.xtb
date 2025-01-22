@@ -85,6 +85,7 @@
 <translation id="1158211211994409885">Хост <ph name="HOST_NAME" /> неочікувано розірвав з’єднання.</translation>
 <translation id="1160009341934077418">Історія цін в Інтернеті</translation>
 <translation id="1161325031994447685">знову під’єднати пристрій до мережі Wi-Fi</translation>
+<translation id="1161663161838091892">Щоб продовжити, синхронізуйте вкладки й історію</translation>
 <translation id="1163507966173624031">Народна й традиційна музика</translation>
 <translation id="11635448457105324">Кнопка "Керувати адресами"; активуйте, щоб додати адреси й керувати ними в налаштуваннях Chrome</translation>
 <translation id="1165039591588034296">Помилка</translation>
@@ -1105,6 +1106,7 @@
 <translation id="297173220375858963">Комп’ютерна верстка</translation>
 <translation id="2972581237482394796">&amp;Повторити</translation>
 <translation id="2974468223369775963">Не вдалося зберегти номер IBAN у вашому обліковому записі Google. Натомість його збережено в Chrome на цьому пристрої. Chrome надішле повторний запит наступного разу, коли ви скористаєтеся цим номером IBAN.</translation>
+<translation id="297667759942911166">Працюйте разом у групах вкладок</translation>
 <translation id="2977665033722899841">Зараз вибрано: <ph name="ROW_NAME" /> (<ph name="ROW_CONTENT" />)</translation>
 <translation id="2977847223286097084">Блокувати й використовувати клавіатуру</translation>
 <translation id="2978824962390592855">Опера</translation>
@@ -1968,6 +1970,7 @@
 <translation id="4434045419905280838">Спливаючі вікна/переспрямування</translation>
 <translation id="443673843213245140">Використання проксі-сервера вимкнено, але чітко вказано налаштування проксі-сервера.</translation>
 <translation id="4438821706955556403">Звичайна ціна</translation>
+<translation id="444116852243722675">Відкрити всі (<ph name="ITEMS" />)</translation>
 <translation id="4441832193888514600">Ігнорується, оскільки це правило можна налаштувати лише як хмарне правило для користувачів.</translation>
 <translation id="4445133368066241428">Популярні теми</translation>
 <translation id="4445964943162061557">Це експериментальна функція, тому вона не завжди працює правильно.</translation>
@@ -2063,6 +2066,7 @@
 <translation id="4661556981531699496">Домашні й дикі тварини</translation>
 <translation id="4661868874067696603">Шукати інші варіанти покупки</translation>
 <translation id="4663373278480897665">Дозволено використовувати камеру</translation>
+<translation id="4664084870155869900">Наступного разу дані буде заповнено автоматично. Дані картки зберігаються на вашому пристрої.</translation>
 <translation id="466561305373967878">Настільні ігри</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Віртуальна реальність</translation>
@@ -2634,6 +2638,7 @@
 <translation id="5675809467256309336">Танцювальна й електронна музика</translation>
 <translation id="5675959228867414813">Показувати за датою</translation>
 <translation id="567604591393105935">Нижній екран із комерційною пропозицією відкрито на половину висоти</translation>
+<translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Фольга</translation>
 <translation id="5680642791693447368">Трилери, детективи й кримінальні фільми</translation>
 <translation id="568292603005599551">Горизонтальне положення зображення</translation>
@@ -2671,6 +2676,7 @@
 <translation id="573555826359077410">Кнопка "Створити форму"; активуйте, щоб швидко створити нову форму в Google Формах</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Збережіть картку в обліковому записі Google}one{Збережіть картки в обліковому записі Google}few{Збережіть картки в обліковому записі Google}many{Збережіть картки в обліковому записі Google}other{Збережіть картки в обліковому записі Google}}</translation>
 <translation id="5738385766833540397">Укажіть, як ви хочете отримувати сповіщення про зниження цін на товари, які відстежуєте</translation>
+<translation id="573974402615125334">Щоб ділитися групами вкладок, приєднуватися до них і працювати в них разом з іншими користувачами, синхронізуйте історію і вкладки</translation>
 <translation id="5740911612628596808">Конверт C9</translation>
 <translation id="5742806904559466333">Бари, клуби й нічне життя</translation>
 <translation id="5743684619253032786">Засоби для догляду за нігтями</translation>
@@ -3871,6 +3877,7 @@
 <translation id="7865448901209910068">Оптимальна швидкість</translation>
 <translation id="7870281855125116701">Знайдено знижку</translation>
 <translation id="7871445724586827387">Змініть пароль облікового запису Google</translation>
+<translation id="787226752901403048">Увійдіть у Chrome, щоб ділитися групами вкладок, приєднуватися до них і втілювати ідеї в життя разом з іншими користувачами</translation>
 <translation id="7877007680666472091">ідентифікатори захищеного контенту</translation>
 <translation id="7878562273885520351">Ваш пароль можуть зламати</translation>
 <translation id="7882421473871500483">Коричневий</translation>
@@ -4326,6 +4333,7 @@
 <translation id="8702965365666568344">Монтажна стрічка</translation>
 <translation id="8703575177326907206">Ваше з’єднання з <ph name="DOMAIN" /> не зашифровано.</translation>
 <translation id="8705331520020532516">Серійний номер</translation>
+<translation id="8706806585855470492">Ви зможете ділитися групами вкладок, приєднуватися до них і працювати в них разом з іншими користувачами</translation>
 <translation id="8708134712139312373">Може просити дозвіл підключатися до пристроїв із Bluetooth</translation>
 <translation id="8710842507289500830">Стиль шрифту</translation>
 <translation id="8712637175834984815">OK</translation>
@@ -4468,6 +4476,7 @@
 <translation id="8975263830901772334">Назви файлів, які ви друкуєте</translation>
 <translation id="8982884016487650216">Файл PDF завантажено</translation>
 <translation id="8983369100812962543">Тепер ви можете змінювати розмір додатка</translation>
+<translation id="8985112471026018799">Збережіть картку, щоб швидше оплачувати покупки</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб переглянути історію веб-перегляду в Chrome</translation>
 <translation id="8987663052629670333">Друк фотографій</translation>
 <translation id="8987927404178983737">Місяць</translation>
@@ -4534,6 +4543,7 @@
 <translation id="9090993752571911635">Постачальники послуг Інтернету (ISP)</translation>
 <translation id="9093723786115107672">Одяг для сну</translation>
 <translation id="9094544726794842788">Якщо натиснути "Не подобається", відкриється форма, де ви зможете залишити докладний відгук про те, чому вам не подобаються ці результати</translation>
+<translation id="9094809883254050729">Наступного разу дані буде заповнено автоматично. Дані картки зберігаються в зашифрованому вигляді.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />; щоб зробити Chrome веб-переглядачем системи за умовчанням у налаштуваннях iOS, натисніть Tab, а потім – Enter</translation>
 <translation id="9101450247048146228">Використання й переміщення камери (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Лоток 1</translation>

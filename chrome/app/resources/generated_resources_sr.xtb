@@ -129,7 +129,6 @@
 <translation id="1079242569060319448">Заборавили сте PIN?</translation>
 <translation id="1079285777677001938">Функције на неким сајтовима можда не раде.</translation>
 <translation id="1079766198702302550">Увек блокирај приступ камери</translation>
-<translation id="1080365971383768617">Лозинке на свим уређајима</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 картица}one{<ph name="GROUP_TITLE" /> – # картица}few{<ph name="GROUP_TITLE" /> – # картице}other{<ph name="GROUP_TITLE" /> – # картица}}</translation>
 <translation id="1082214733466244292">Администратор је блокирао неке функционалности за овај уређај</translation>
 <translation id="1082398631555931481">Алатка <ph name="THIRD_PARTY_TOOL_NAME" /> жели да врати подешавања Chrome-а на првобитне подразумеване вредности. То ће ресетовати почетну страницу, страницу нове картице и претраживач, онемогућиће додатке и откачити све картице. Такође ће обрисати друге привремене и кеширане податке, попут колачића, садржаја и података о сајтовима.</translation>
@@ -2296,6 +2295,7 @@
 <translation id="2581786034175502848">Притисните shift 5 пута да бисте га поново омогућили</translation>
 <translation id="2581992808349413349">Користите безбедну везу да бисте потражили IP адресу сајта у DNS-у (систем имена домена). Користите добављача услуга којим се управља на <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Платформа <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
+<translation id="2583905535229480958">Било који читач паметних картица</translation>
 <translation id="2584109212074498965">Преузимање Kerberos тикета није успело. Пробајте поново или се обратите администратору уређаја у организацији. (Кôд грешке <ph name="ERROR_CODE" />)</translation>
 <translation id="2584974473573720127">Управљајте дозволама за микрофон за веб-сајтове у Chrome-у</translation>
 <translation id="2586561813241011046">Инсталирање апликације <ph name="APP_NAME" /> није успело. Пробајте поново или се обратите администратору. Кôд грешке: <ph name="ERROR_CODE" />.</translation>
@@ -3020,6 +3020,7 @@
 <translation id="310297983047869047">Претходни слајд</translation>
 <translation id="3103451787721578293">Унесите разлог за отпремање ових података:</translation>
 <translation id="3103512663951238230">alt + клик</translation>
+<translation id="3104763887980088552">Евиденција активности</translation>
 <translation id="3104948640446684649">Шаљите податке о коришћењу и дијагностичке податке. Овај уређај тренутно аутоматски шаље податке о дијагностици, уређају и коришћењу апликација Google-у. То доприноси одржавању стабилности система и апликације и другим подешавањима. Неки обједињени подаци ће такође помоћи Google апликацијама и партнерима, попут Android програмера. Ако укључите подешавање додатне активности на вебу и у апликацијама, ти подаци могу да се чувају на Google налогу. <ph name="BEGIN_LINK2" />Сазнајте више о показатељима<ph name="BEGIN_LINK2_END" />Сазнајте више<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Последње неуспешно ажурирање</translation>
 <translation id="3105796011181310544">Желите ли да се вратите на Google?</translation>
@@ -6234,9 +6235,6 @@
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) жели да се придружите групи картица. Свако са линком може да мења све картице, па будите пажљиви када се придружујете. Линк истиче за 48 сати.</translation>
 <translation id="5410889048775606433">Фуксија</translation>
 <translation id="5411022484772257615">Регистрација за школу није успела</translation>
-<translation id="5411856344659127989">Ако желите да додате налог за неког другог, <ph name="LINK_BEGIN" />додајте нову особу<ph name="LINK_END" /> на уређај <ph name="DEVICE_TYPE" />.
-
-Дозволе које сте већ дали веб-сајтовима и апликацијама могу да важе за овај налог. Google налозима можете да управљате у <ph name="SETTINGS_LINK_BEGIN" />Подешавањима<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="54118879136097217">Инсталирајте апликацију на уређају <ph name="DEVICE_TYPE" /></translation>
 <translation id="5413640305322530561">Сазнајте више о дијагностици и подацима о коришћењу</translation>
 <translation id="5414198321558177633">Листа профила се освежава. То може да потраје неколико минута.</translation>
@@ -6515,7 +6513,6 @@
 <translation id="5610867721023328944">Пробајте поново или изаберите неку од доступних тема у наставку.</translation>
 <translation id="5611398002774823980">Сачувај на налогу</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5613074282491265467">Када сте пријављени у Chrome, лозинке које сачувате иду на Google налог, <ph name="USER_EMAIL" />. Да бисте то искључили, идите у подешавања.</translation>
 <translation id="5614190747811328134">Обавештење о кориснику</translation>
 <translation id="5614553682702429503">Желите ли да сачувате лозинку?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
@@ -8552,7 +8549,6 @@
 <translation id="7088674813905715446">Администратор је уклонио овај уређај. Да бисте га омогућили за регистрацију, затражите од администратора да промени његов статус у „На чекању“.</translation>
 <translation id="7088960765736518739">Приступ помоћу прекидача</translation>
 <translation id="7089253021944603172">Картица је поново активна</translation>
-<translation id="7090160970140261931">Можете да додајете додатне налоге на <ph name="DEVICE_TYPE" /> које ћете користити са веб-сајтовима и Android апликацијама. Можете и да контролишете који налози се користе са Android апликацијама.</translation>
 <translation id="7090714929377281710">Аутоматски искључи хотспот</translation>
 <translation id="7092504544229909737">Не може да се користи са Android апликацијама</translation>
 <translation id="7093220653036489319">Брзи одговори</translation>
@@ -9013,6 +9009,7 @@
 <translation id="7424818322350938336">Мрежа је додата</translation>
 <translation id="7425037327577270384">Помоћ при писању</translation>
 <translation id="7427348830195639090">Страница у позадини: <ph name="BACKGROUND_PAGE_URL" /></translation>
+<translation id="7427729970025360383">Овим профилом се управља</translation>
 <translation id="7427798576651127129">Позив са уређаја <ph name="DEVICE_NAME" /></translation>
 <translation id="7429415133937917139">Симулира приказ Брајевог екрана који може да се освежава
         у ChromeVox окну у врху екрана</translation>
@@ -11166,9 +11163,6 @@
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">бржа потрошња батерије (тренутно <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944633700466246631">Направите шестоцифрени PIN за враћање приступа Google менаџеру лозинки</translation>
-<translation id="8944725102565796255">Ако желите да користите овај налог само једном, можете да <ph name="GUEST_LINK_BEGIN" />користите уређај као гост<ph name="GUEST_LINK_END" />. Ако желите да додате налог за неког другог, <ph name="LINK_BEGIN" />додајте нову особу<ph name="LINK_END" /> на уређај <ph name="DEVICE_TYPE" />.
-
-Дозволе које сте већ дали веб-сајтовима и апликацијама могу да важе за овај налог. Google налозима можете да управљате у <ph name="SETTINGS_LINK_BEGIN" />Подешавањима<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="8945274638472141382">Величина иконе</translation>
 <translation id="8945508919180478719">Микрофон у студијском стилу</translation>
 <translation id="8946359700442089734">Функције за отклањање грешака нису у потпуности омогућене на овом <ph name="IDS_SHORT_PRODUCT_NAME" /> уређају.</translation>

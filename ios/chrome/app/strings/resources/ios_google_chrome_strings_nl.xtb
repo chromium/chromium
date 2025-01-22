@@ -169,6 +169,7 @@ Wacht een paar minuten voordat je uitlogt. Als je nu uitlogt, worden deze gegeve
 <translation id="5639704535586432836">Open Instellingen &gt; Privacy &gt; Camera &gt; Google Chrome en zet de camera aan.</translation>
 <translation id="5642200033778930880">Google Chrome kan je camera niet gebruiken in de modus 'Gesplitste weergave'</translation>
 <translation id="5661521615548540542">Google Wachtwoordmanager kan niet alle wachtwoorden checken. Probeer het later opnieuw.</translation>
+<translation id="5681291952421236520">Chrome aan-/uitzetten</translation>
 <translation id="5690398455483874150">{count,plural, =1{Er wordt nu 1 Chrome-venster getoond}other{Er worden nu {count} Chrome-vensters getoond}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Chrome instellen als je standaardbrowser</translation>
@@ -204,6 +205,7 @@ Wacht een paar minuten voordat je van account wisselt. Als je nu van account wis
 <translation id="6484712497741564393">Ingelogd als <ph name="EMAIL" />.
 
 Je gegevens zijn versleuteld met je wachtwoordzin. Geef deze op om Chrome-gegevens te gebruiken en op te slaan in je Google-account.</translation>
+<translation id="6533470733797826516">Log sneller in met automatisch invullen in Chrome</translation>
 <translation id="6545449117344801102">Chrome neemt adressen waar en gebruikt Google Maps om je routes en lokale informatie te geven.</translation>
 <translation id="6634107063912726160">Als je uitlogt, synchroniseert Chrome geen nieuwe gegevens met je Google-account. Eerder gesynchroniseerde gegevens blijven in het account staan.</translation>
 <translation id="6636941099779251629">Je organisatie vereist dat je inlogt om Chrome te gebruiken. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>

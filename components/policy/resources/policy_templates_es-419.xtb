@@ -245,6 +245,7 @@ Para obtener más información sobre el manejo de datos de las funciones potenci
 
       Si se establece esta política como falsa, no aparecerá la casilla de verificación "Permitir siempre" y el usuario verá un mensaje de confirmación cada vez que se invoque un protocolo externo.</translation>
 <translation id="1181598794547737681">Habilitar la IU del cuadro de descarga</translation>
+<translation id="1182701225491473405">Configuración de Controlled Frame</translation>
 <translation id="1184531093651606913">Impedir que se carguen extensiones desde la línea de comandos</translation>
 <translation id="1184562656144537588">Habilitar Manifest v2 solo para extensiones instaladas de manera automática</translation>
 <translation id="11903325225202653">Si estableces el valor "True" para la política, se activará el modo de contraste alto. Si estableces el valor "False", se desactivará el modo de contraste alto.
@@ -383,6 +384,11 @@ Esto reemplaza la política <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NA
 <translation id="1294263471858445589">Permite la autenticación ambiental en sesiones comunes y de incógnito.</translation>
 <translation id="1295737447968372331">Habilita la función de dictado en la pantalla de acceso</translation>
 <translation id="1297182715641689552">Usar un script para proxy .pac</translation>
+<translation id="1297909092292754072">Si estableces la política, se especificará una lista de orígenes (URLs) o patrones de nombres de host (como *.example.com) para los que no se aplicarán restricciones de seguridad en orígenes inseguros. Los patrones solo se aceptan para los nombres de host; las URLs o los orígenes con esquemas deben ser strings exactos. Las organizaciones pueden especificar orígenes para las apps heredadas que no pueden implementar TLS o configurar un servidor de etapa de pruebas para desarrollos web internos. Así, los desarrolladores pueden probar las funciones que requieren contextos seguros sin tener que implementar TLS en el servidor de pruebas. Esta política también previene que el origen se considere "No seguro" en la barra de direcciones.
+
+Establecer una lista de URLs en esta política equivale a establecer la función experimental de línea de comandos --unsafely-treat-insecure-origin-as-secure en una lista separada por comas de las mismas URLs. La política anulará esta función experimental y también UnsafelyTreatInsecureOriginAsSecure, si se aplica.
+
+Para obtener más información sobre contextos seguros, consulta Secure Contexts (https://www.w3.org/TR/secure-contexts).</translation>
 <translation id="1297961932043741908">Establece el límite de memoria en megabytes que puede usar una única instancia de Chrome</translation>
 <translation id="1304973015437969093">ID de extensiones/apps y direcciones URL de actualización para instalar en silencio</translation>
 <translation id="1305400589435476516">Si habilitas la política, se permitirá el roaming de datos para el dispositivo.
@@ -1074,6 +1080,7 @@ política fue la versión 121. Se quitó en la versión 122.</translation>
       Si no estableces la política o la estableces como una lista vacía, no se adjuntarán datos de depuración de bajo nivel a los comentarios de los usuarios.
       Consulta la descripción de cada tipo de dispositivo para conocer el tipo específico de datos de depuración de bajo nivel.</translation>
 <translation id="1744340218280697033">No permitir que los padres agreguen cuentas supervisadas</translation>
+<translation id="1745981653910662565">Permitir la API de Controlled Frame en estos sitios</translation>
 <translation id="1751429117283165017">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que no pueden pedir a los usuarios acceso de escritura a los archivos o directorios que se encuentren en el sistema de archivos del sistema operativo del host.
 
       Si no estableces la política, se aplicará <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
@@ -1295,6 +1302,7 @@ Si la inhabilitas, <ph name="PRODUCT_NAME" /> cerrará la pestaña y, luego, cam
       Si no estableces la política, se desactivará la autenticación <ph name="HTTP_NEGOTIATE" /> en Android.</translation>
 <translation id="1923704782248889851">Habilitar el dictado</translation>
 <translation id="1924085079572112898">Inhabilitar la configuración de F11</translation>
+<translation id="1924393228810864764">No permitir que los orígenes de apps web aisladas usen Controlled Frame</translation>
 <translation id="1925529914257504750">Se habilitó la actualización automática de la conexión P2P</translation>
 <translation id="1928355425032308464">Habilitar la entrada de video</translation>
 <translation id="1930094135927166199">Inhabilitar el uso compartido de energía por USB</translation>
@@ -1367,6 +1375,7 @@ Si la inhabilitas, <ph name="PRODUCT_NAME" /> cerrará la pestaña y, luego, cam
 
       Si la inhabilitas o no la estableces, no se podrá usar la Transición rápida.</translation>
 <translation id="1972134432340252414">Bloquear los puntos de extensiones heredados del proceso del navegador</translation>
+<translation id="1973804850652157024">Controlar el uso de la API de Controlled Frame</translation>
 <translation id="1977581177449752640">Si estableces la política, el host de acceso remoto utilizará un certificado de cliente con el CN del emisor determinado para autenticar <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Para permitir que el host use cualquier certificado de cliente disponible, establece la política como <ph name="WILDCARD_VALUE" />. Si dejas la política vacía o no la estableces, se inhabilitará esta función.</translation>
 <translation id="1984934843478301531">Automatización de la ejecución de apps</translation>
 <translation id="1985545260037812875">Mostrar la pantalla de configuración del tamaño de visualización durante el acceso</translation>
@@ -2009,6 +2018,7 @@ Si habilitas esta política o no la estableces, el usuario podrá elegir una ima
 
       Nota: Si aíslas demasiados sitios en Android, es posible que se generen problemas de rendimiento, en especial en dispositivos con poca memoria. Esta política solo se aplica a Chrome cuando se ejecuta en dispositivos con Android que tienen exclusivamente más de 1 GB de RAM. Para aplicar la política en plataformas que no sean de Android, utiliza <ph name="ISOLATE_ORIGINS_POLICY_NAME" />.</translation>
 <translation id="2407758458436268630">Permitir que el modelo de atenuación inteligente extienda el tiempo de atenuación de la pantalla</translation>
+<translation id="2410163749464044777">Configuración de almacenamiento local de datos del usuario</translation>
 <translation id="2411629345938804022">Si estableces la política en 3, los sitios web podrán solicitar acceso a dispositivos Bluetooth cercanos. Si la estableces en 2, se negará el acceso a dispositivos Bluetooth cercanos.
 
       Si no la estableces, los sitios podrán solicitar acceso, pero los usuarios podrán cambiar esta configuración.</translation>
@@ -2547,6 +2557,9 @@ Si no la estableces, se aplicará la política <ph name="BLOCK_POPUPS_POLICY_NAM
 <translation id="2801378553855965587">Inhabilitar la integración de <ph name="GOOGLE_CALENDAR_NAME" /></translation>
 <translation id="2805707493867224476">Permitir que todos los sitios muestren ventanas emergentes.</translation>
 <translation id="2806804577787377637">Esta política dejó de estar disponible y ya no se admite. En su lugar, usa <ph name="PER_APP_TIME_LIMITS_ALLOWLIST" />.</translation>
+<translation id="2812417768214606683">Esta política especifica una lista de dispositivos de almacenamiento USB que están exentos de las políticas <ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" /> y <ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" />.
+
+Las entradas son pares formados por un identificador de producto y un identificador de proveedor USB que permiten reconocer el modelo específico del dispositivo USB.</translation>
 <translation id="2815701930753942156">Esta política especifica una lista de intervalos semanales durante los cuales no se puede usar el dispositivo <ph name="PRODUCT_OS_NAME" />. Se cerrarán las sesiones en curso y se bloqueará el acceso.
 
 No se admiten intervalos superpuestos.
@@ -3743,6 +3756,7 @@ incluir ambos en los certificados RSA para HTTPS.</translation>
 <translation id="3663124775601519286">Si habilitas la política o no la estableces, se permitirá el uso de la API de Translator en <ph name="PRODUCT_NAME" />.
 
       Si la inhabilitas, no se permitirá el uso de la API de Translator.</translation>
+<translation id="3664164569472125114">Controlar el acceso de <ph name="GLIC" /></translation>
 <translation id="3665437376055221832">Solo notificar al usuario cuando ningún certificado coincide con la selección automática</translation>
 <translation id="3667467644216039144">Configura una lista de los tipos de datos de navegación que deben borrarse cuando el usuario cierra todas las ventanas del navegador.
 
@@ -4381,6 +4395,17 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 <translation id="4146319954420095470">(Advertencia: Pronto se descartará esta dependencia, comienza a usar <ph name="GLS_POLICY_NAME" /> en su lugar). Si estableces esta política como <ph name="BLOCK_GEOLOCATION_SETTING" />, las apps para Android y los servicios del sistema <ph name="PRODUCT_OS_NAME" /> no podrán acceder a la información de ubicación. Si estableces esta política con cualquier otro valor o no la estableces, el usuario deberá dar su consentimiento cada vez que una app para Android quiera acceder a la información de ubicación.</translation>
 <translation id="4147818922357566987">Habilitar solo variaciones relacionadas con correcciones críticas</translation>
 <translation id="4150201353443180367">Pantalla</translation>
+<translation id="4150646872548223241">La API de Controlled Frame, disponible para ciertos contextos aislados, como las apps web aisladas (IWA), permite que una app incorpore y manipule contenido arbitrario.
+Para obtener más información, consulta https://github.com/WICG/controlled-frame.
+
+Si estableces la política, podrás crear una lista de patrones de URL donde se especifiquen los sitios que pueden usar la API de Controlled Frame.
+Los patrones válidos se limitan a las apps web aisladas.
+
+Si no estableces la política, se aplicará <ph name="DEFAULT_CONTROLLED_FRAME_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido.
+
+Los patrones de URL no deben entrar en conflicto con <ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" />. Si una URL se ajusta a ambas políticas, no prevalece ninguna de las dos.
+
+Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="4154221011709068799">Inhabilitar dispositivos de almacenamiento externo</translation>
 <translation id="415445772247959702">Web Store (compatible desde la versión 89)</translation>
 <translation id="4157003184375321727">Informar la versión de firmware y SO.</translation>
@@ -5698,6 +5723,7 @@ Si habilitas esta política o no la estableces, la propiedad "zoom" de CSS se aj
 Si la inhabilitas, la propiedad "zoom" de CSS volverá a su comportamiento heredado anterior a la estandarización.
 
 Esta política es una prórroga temporal para permitir que el contenido web migre al nuevo comportamiento. También hay una prueba de origen ("DisableStandardizedBrowserZoom") que corresponde al comportamiento cuando inhabilitas esta política. Esta política se quitará y el comportamiento "Habilitado" se establecerá como permanente en la versión 134.</translation>
+<translation id="5088303895040832480">Usa UsbDeviceId en el código nuevo.</translation>
 <translation id="5090791951240382356">Permitir la combinación de políticas de diccionarios con diferentes fuentes</translation>
 <translation id="5091315650312105069">Permitir la autenticación <ph name="BASIC_AUTH" /> para HTTP</translation>
 <translation id="5093603777978346818">No habilitar el protector de pantalla en la pantalla de bloqueo</translation>
@@ -7197,6 +7223,7 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
       De lo contrario, puede establecerse en uno de los siguientes valores: "tls1.2" o "tls1.3". Si se establece, <ph name="PRODUCT_NAME" /> no usará versiones de SSL/TLS posteriores a la especificada. Se ignorarán los valores no reconocidos.</translation>
 <translation id="6120909112796019291">Permitir Generative AI Photo Editing y mejorar los modelos de IA.</translation>
 <translation id="6123052603197028610">No permite que las consultas que se envíen a los servidores de Google recuperen marcas de tiempo</translation>
+<translation id="6128539430475678271">Bloquear la API de Controlled Frame en estos sitios</translation>
 <translation id="6130360423841559818">Controlar el nuevo comportamiento del diálogo de cancelación que produce el evento beforeunload</translation>
 <translation id="6131803221304830537">Inhabilitar la integridad del código del renderizador</translation>
 <translation id="6132506775968708399">Bloquea cookies de terceros</translation>
@@ -7705,6 +7732,7 @@ Si no estableces la política, <ph name="PRODUCT_OS_NAME" /> utiliza el director
       Si no estableces esta política para un sitio, se aplicará la política de <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> al sitio, si se establece. De lo contrario, el permiso seguirá la configuración predeterminada del navegador y permitirá a los usuarios elegir este permiso para cada sitio.</translation>
 <translation id="6383774771168138899">Configurar el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Habilitar que se muestren las páginas de resultados del motor de búsqueda predeterminado en el panel lateral de un navegador</translation>
+<translation id="6389240462871677239">Permitir que los orígenes de apps web aisladas usen Controlled Frame</translation>
 <translation id="6389858262577493180">Habilitar el uso de <ph name="GLIC" /></translation>
 <translation id="6390338862225976270">Estas funciones de las Herramientas para desarrolladores de <ph name="PRODUCT_NAME" /> emplean modelos de IA generativa para proporcionar información de depuración adicional. Para usar estas funciones, <ph name="PRODUCT_NAME" /> tiene que recopilar datos como mensajes de error, seguimientos de pila, fragmentos de código y solicitudes de red, y enviarlos a un servidor de Google que ejecuta un modelo de IA generativa. Los datos que se envían al servidor no incluyen el cuerpo de la respuesta ni los encabezados de autenticación y de cookies.
 
@@ -8517,6 +8545,17 @@ el comportamiento predeterminado para bloquear esas solicitudes.</translation>
 <translation id="692096803256767290">Revertir el SO a la versión de destino</translation>
 <translation id="6921241119085515674">Permitir el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6921544339867564740">Permitir que los dispositivos ejecuten máquinas virtuales en ChromeOS</translation>
+<translation id="692161853658983957">La API de Controlled Frame, disponible para ciertos contextos aislados, como las apps web aisladas (IWA), permite que una app incorpore y manipule contenido arbitrario.
+Para obtener más información, consulta https://github.com/WICG/controlled-frame.
+
+Si estableces la política, podrás crear una lista de patrones de URL donde se especifiquen los sitios que no pueden usar la API de Controlled Frame.
+Los patrones válidos se limitan a las apps web aisladas.
+
+Si no estableces la política, se aplicará <ph name="DEFAULT_CONTROLLED_FRAME_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido.
+
+Los patrones de URL no deben entrar en conflicto con <ph name="CONTROLLED_FRAME_ALLOWED_FOR_URLS_POLICY_NAME" />. Si una URL se ajusta a ambas políticas, no prevalece ninguna de las dos.
+
+Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="6922265559343919728">Elegir si las URLs de BLOB se particionan durante la recuperación y la navegación</translation>
 <translation id="6922884955650325312">Bloquear el complemento <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="6924223708804692571">Permite forzar la habilitación del corrector ortográfico de idiomas. Se omitirán los idiomas que no se reconozcan en esa lista.
@@ -8534,6 +8573,12 @@ el comportamiento predeterminado para bloquear esas solicitudes.</translation>
 <translation id="6929639826067341257">Sugerirles a los usuarios que incorporen sus datos existentes en el perfil administrado, y darles la opción de no hacerlo</translation>
 <translation id="6929746927224321095">Inhabilitar Autocompletar</translation>
 <translation id="6931242315485576290">Inhabilitar la sincronización de datos con Google</translation>
+<translation id="6931967294677760242">La API de Controlled Frame, disponible para ciertos contextos aislados, como las apps web aisladas (IWA), permite que una app incorpore y manipule contenido arbitrario.
+Para obtener más información, consulta https://github.com/WICG/controlled-frame.
+
+Si estableces la política en 1 o no la estableces, los orígenes de apps web aisladas podrán usar Controlled Frame.
+
+Si estableces la política en 2, se impedirá que los orígenes de apps web aisladas usen Controlled Frame.</translation>
 <translation id="6932282102911647185">Color púrpura para la retroiluminación del teclado</translation>
 <translation id="6938424179790370595">Si estableces la política con el valor "None", se desactivará la lupa.
 
@@ -8786,6 +8831,7 @@ Esta política no afecta a los administradores de contraseñas de terceros que u
 APIs de accesibilidad.</translation>
 <translation id="7114169791477667553">Inhabilitar el proveedor de búsqueda predeterminado</translation>
 <translation id="7115684775550072082">Solo conservar espacios en blanco para los tipos de MIME de texto y XML</translation>
+<translation id="7119538491527883595">Almacenamiento local de datos del usuario</translation>
 <translation id="7121046543122812054">Esta política dejó de estar disponible. Puedes usar <ph name="BROWSER_SIGNIN_POLICY_NAME" /> en su lugar.
 
       Permite que el usuario acceda a <ph name="PRODUCT_NAME" />.
@@ -9096,6 +9142,7 @@ Esto reemplaza la política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_N
 <translation id="7339315111520512972">Forzar el código de red para que se ejecute en el proceso de navegación</translation>
 <translation id="7340034977315324840">Notificar tiempo de actividad del dispositivo</translation>
 <translation id="734095828044419464">Inhabilitar el aprovisionamiento de certificados de cliente</translation>
+<translation id="7341773449551289679">Lista de dispositivos permitidos de almacenamiento externo</translation>
 <translation id="7343004974628511824">Realizar comprobaciones de intercepción de DNS</translation>
 <translation id="7343497214039883642">Archivo de configuración de las impresoras empresariales para los dispositivos</translation>
 <translation id="7357148531287978404">Inhabilitar la entrada de audio</translation>

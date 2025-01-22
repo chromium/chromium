@@ -973,6 +973,7 @@
 <translation id="4285498937028063278">Открепить</translation>
 <translation id="428715201724021596">Выполняется подключение к профилю. Это может занять несколько минут.</translation>
 <translation id="4287250812980588583">Окно Chrome</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Громкостью микрофона управляет приложение "<ph name="APP_NAME" />"}one{Громкостью микрофона управляет # приложение}few{Громкостью микрофона управляют # приложения}many{Громкостью микрофона управляют # приложений}other{Громкостью микрофона управляют # приложения}}</translation>
 <translation id="4294319844246081198">Доброе утро, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Удалить все уведомления: <ph name="COUNT" /></translation>
 <translation id="4300272766492248925">Открыть приложение</translation>
@@ -2208,7 +2209,7 @@
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> и телефон будут подключены друг к другу автоматически</translation>
 <translation id="8380784334203145311">Доброй ночи!</translation>
 <translation id="8382715499079447151">Защита от чужих взглядов</translation>
-<translation id="8383614331548401927">С возвращением!</translation>
+<translation id="8383614331548401927">Двигаемся дальше?</translation>
 <translation id="838540623579162843">Подписка Music Premium</translation>
 <translation id="8388750414311082622">Удалить единственный рабочий стол нельзя.</translation>
 <translation id="8394567579869570560">Ваш родитель заблокировал это устройство.</translation>

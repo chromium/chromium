@@ -169,6 +169,7 @@
 <translation id="5639704535586432836">সেটিংস &gt; গোপনীয়তা &gt; ক্যামেরা &gt; Google Chrome খুলুন এবং ক্যামেরা চালু করুন।</translation>
 <translation id="5642200033778930880">Google Chrome আপনার ক্যামেরা বিভক্ত দৃশ্য মোডে ব্যবহার করতে পারবে না</translation>
 <translation id="5661521615548540542">Google Password Manager সব পাসওয়ার্ড চেক করতে পারেনি। পরে আবার চেষ্টা করুন।</translation>
+<translation id="5681291952421236520">Chrome টগল করুন</translation>
 <translation id="5690398455483874150">{count,plural, =1{এখন ১টি Chrome উইন্ডো দেখা যাচ্ছে}one{এখন {count}টি Chrome উইন্ডো দেখা যাচ্ছে}other{এখন {count}টি Chrome উইন্ডো দেখা যাচ্ছে}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Chrome-কে আপনার ডিফল্ট ব্রাউজার হিসেবে সেট করুন</translation>
@@ -204,6 +205,7 @@
 <translation id="6484712497741564393"><ph name="EMAIL" /> হিসেবে সাইন-ইন করেছেন।
 
 আপনার ডেটা পাসফ্রেজের মাধ্যমে এনক্রিপ্ট করা হয়েছে। আপনার Google অ্যাকাউন্টে Chrome সম্পর্কিত ডেটা ব্যবহার ও সেভ করতে এটি লিখুন।</translation>
+<translation id="6533470733797826516">Chrome অটোফিলের মাধ্যমে দ্রুত সাইন-ইন করুন</translation>
 <translation id="6545449117344801102">Chrome আপনাকে দিকনির্দেশ এবং স্থানীয় তথ্য দিতে ঠিকানা শনাক্ত ও Google Maps ব্যবহার করে।</translation>
 <translation id="6634107063912726160">আপনি সাইন-আউট করলে, Chrome আপনার Google অ্যাকাউন্টে কোনও নতুন ডেটা সিঙ্ক করবে না। আগে সিঙ্ক করা ডেটা অ্যাকাউন্টে থেকে যাবে।</translation>
 <translation id="6636941099779251629">আপনার সংস্থার নিয়ম অনুযায়ী, আপনাকে Chrome ব্যবহার করার জন্য সাইন-ইন করতে হবে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>

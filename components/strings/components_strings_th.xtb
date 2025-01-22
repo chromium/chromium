@@ -85,6 +85,7 @@
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> ปิดการเชื่อมต่อโดยไม่คาดคิด</translation>
 <translation id="1160009341934077418">ประวัติราคาในเว็บ</translation>
 <translation id="1161325031994447685">เชื่อมต่อ Wi-Fi ใหม่</translation>
+<translation id="1161663161838091892">ซิงค์แท็บและประวัติการเข้าชมเพื่อดำเนินการต่อ</translation>
 <translation id="1163507966173624031">เพลงโฟล์กและเพลงดั้งเดิม</translation>
 <translation id="11635448457105324">ปุ่มจัดการที่อยู่ เปิดใช้งานเพื่อเพิ่มและจัดการที่อยู่ในการตั้งค่า Chrome</translation>
 <translation id="1165039591588034296">ข้อผิดพลาด</translation>
@@ -637,6 +638,7 @@
 <translation id="2105838220373099643">เกมสวมบทบาท</translation>
 <translation id="2107021941795971877">การรองรับการพิมพ์</translation>
 <translation id="2108755909498034140">รีสตาร์ทคอมพิวเตอร์</translation>
+<translation id="2109845311767915560">กลุ่มแท็บที่แชร์</translation>
 <translation id="2111166930115883695">กดแป้นเว้นวรรคเพื่อเล่น</translation>
 <translation id="2113977810652731515">บัตร</translation>
 <translation id="2114841414352855701">ไม่สนใจเพราะถูกแทนที่โดย <ph name="POLICY_NAME" /></translation>
@@ -1105,6 +1107,7 @@
 <translation id="297173220375858963">การจัดพิมพ์ด้วยคอมพิวเตอร์เดสก์ท็อป</translation>
 <translation id="2972581237482394796">&amp;ทำซ้ำ</translation>
 <translation id="2974468223369775963">บันทึก IBAN นี้ในบัญชี Google ไม่ได้ แต่บันทึกลงใน Chrome บนอุปกรณ์นี้แทน Chrome จะถามคุณอีกครั้งในครั้งถัดไปที่คุณใช้ IBAN นี้</translation>
+<translation id="297667759942911166">ทำงานร่วมกันในกลุ่มแท็บ</translation>
 <translation id="2977665033722899841">เลือก <ph name="ROW_NAME" /> อยู่ตอนนี้ <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">ล็อกและใช้แป้นพิมพ์</translation>
 <translation id="2978824962390592855">อุปรากร</translation>
@@ -2063,6 +2066,7 @@
 <translation id="4661556981531699496">สัตว์เลี้ยงและสัตว์อื่นๆ</translation>
 <translation id="4661868874067696603">ค้นหาตัวเลือกการซื้อเพิ่มเติม</translation>
 <translation id="4663373278480897665">อนุญาตให้ใช้กล้องถ่ายรูป</translation>
+<translation id="4664084870155869900">ป้อนข้อมูลอัตโนมัติในครั้งถัดไป บันทึกบัตรไว้ในอุปกรณ์ของคุณแล้ว</translation>
 <translation id="466561305373967878">เกมกระดาน</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Virtual Reality</translation>
@@ -2088,6 +2092,7 @@
 <translation id="4704745399240123930">ระบบปิดใช้บัตรที่ผู้ขายรายนี้ไม่ยอมรับ เช่น บัตรเสมือน (Virtual Card)</translation>
 <translation id="4708268264240856090">การเชื่อมต่อของคุณขัดข้อง</translation>
 <translation id="4708276642004148190">การประปาและการบำบัดน้ำเสีย</translation>
+<translation id="4711628883879888561">ทำงานร่วมกันในกลุ่มแท็บ</translation>
 <translation id="471880041731876836">คุณไม่มีสิทธิ์เข้าชมเว็บไซต์นี้</translation>
 <translation id="4718897478554657123">600 x 900 มม.</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />เรียกใช้การวินิจฉัยเครือข่ายของ Windows<ph name="END_LINK" /></translation>
@@ -2672,6 +2677,7 @@
 <translation id="573555826359077410">ปุ่มสร้างแบบฟอร์ม เปิดใช้งานเพื่อสร้างแบบฟอร์มใหม่ใน Google ฟอร์มอย่างรวดเร็ว</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{บันทึกบัตรลงในบัญชี Google ของคุณ}other{บันทึกบัตรลงในบัญชี Google ของคุณ}}</translation>
 <translation id="5738385766833540397">จัดการวิธีรับการแจ้งเตือนเมื่อราคาลดลงสำหรับผลิตภัณฑ์ที่คุณติดตาม</translation>
+<translation id="573974402615125334">หากต้องการแชร์ เข้าร่วม และทำงานร่วมกันในกลุ่มแท็บ ให้ซิงค์ประวัติการเข้าชมและแท็บ</translation>
 <translation id="5740911612628596808">Envelope C9</translation>
 <translation id="5742806904559466333">บาร์ คลับ และสถานบันเทิงยามค่ำคืน</translation>
 <translation id="5743684619253032786">ผลิตภัณฑ์ดูแลเล็บ</translation>
@@ -2693,6 +2699,7 @@
 <translation id="578305955206182703">เหลืองอำพัน</translation>
 <translation id="5783700460098783980">กระเป๋าและอุปกรณ์สำหรับการเดินทาง</translation>
 <translation id="57838592816432529">ปิดเสียง</translation>
+<translation id="5783922175933467571">ลิงก์ <ph name="TAB_GROUP_DISPLAY_NAME" /> จะหมดอายุใน 48 ชั่วโมง</translation>
 <translation id="5784606427469807560">เกิดปัญหาในการยืนยันบัตรของคุณ โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและลองอีกครั้ง</translation>
 <translation id="5785756445106461925">นอกจากนี้ หน้านี้ประกอบด้วยทรัพยากรอื่นๆ ซึ่งไม่ปลอดภัย ผู้อื่นสามารถดูทรัพยากรเหล่านี้ขณะถ่ายโอน และผู้บุกรุกสามารถแก้ไขเพื่อเปลี่ยนรูปลักษณ์ของหน้าได้</translation>
 <translation id="5793317771769868848">ระบบจะลบวิธีการชำระเงินนี้ออกจากอุปกรณ์</translation>
@@ -2765,6 +2772,7 @@
 <translation id="5930147475897662863">เปิดการตั้งค่านี้เพื่อใช้ฟีเจอร์ช่วยฉันเขียน</translation>
 <translation id="593102073240001326">วิธีการ, DIY และเนื้อหาจากผู้เชี่ยวชาญ</translation>
 <translation id="5932224571077948991">เว็บไซต์แสดงโฆษณาที่แทรกหรือทำให้เข้าใจผิด</translation>
+<translation id="5933597524153120073">เปิด (<ph name="ITEMS" />) ทั้งหมดในหน้าต่างใหม่</translation>
 <translation id="5937560539988385583">แปลหน้าเว็บแล้ว</translation>
 <translation id="5938153366081463283">เพิ่มบัตรเสมือน</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3037,6 +3045,7 @@
 <translation id="6394852772105848029">เว็บไซต์นี้ต้องการเปิดแอป <ph name="APP_NAME" /></translation>
 <translation id="639673288733510393">สกู๊ตเตอร์และโมเพ็ด</translation>
 <translation id="6398765197997659313">ออกจากการแสดงแบบเต็มหน้าจอ</translation>
+<translation id="6399633237874954301">ผู้ดูแลระบบอนุญาตให้ใช้เครื่องอ่านสมาร์ทการ์ด</translation>
 <translation id="6401136357288658127">นโยบายนี้เลิกใช้งานไปแล้ว คุณควรใช้นโยบาย <ph name="NEW_POLICY" /> แทน</translation>
 <translation id="640163077447496506">หมดอายุวันนี้</translation>
 <translation id="6402537308870515461">ต้องตรวจสอบก่อนย้าย</translation>
@@ -3872,6 +3881,7 @@
 <translation id="7865448901209910068">เร็วที่สุด</translation>
 <translation id="7870281855125116701">พบส่วนลด</translation>
 <translation id="7871445724586827387">เปลี่ยนรหัสผ่านของบัญชี Google</translation>
+<translation id="787226752901403048">ลงชื่อเข้าใช้ Chrome เพื่อแชร์และเข้าร่วมกลุ่มแท็บ รวมถึงทำงานร่วมกันเพื่อหาไอเดีย</translation>
 <translation id="7877007680666472091">รหัสเนื้อหาที่มีการคุ้มครอง</translation>
 <translation id="7878562273885520351">รหัสผ่านของคุณอาจถูกขโมยได้</translation>
 <translation id="7882421473871500483">น้ำตาล</translation>
@@ -4327,6 +4337,7 @@
 <translation id="8702965365666568344">เทปสําหรับติดยึด</translation>
 <translation id="8703575177326907206">การเชื่อมต่อของคุณไปยัง <ph name="DOMAIN" /> ไม่ได้รับการเข้ารหัส</translation>
 <translation id="8705331520020532516">หมายเลขซีเรียล</translation>
+<translation id="8706806585855470492">คุณจะแชร์ เข้าร่วม และทำงานร่วมกันในกลุ่มแท็บได้</translation>
 <translation id="8708134712139312373">สามารถขอเชื่อมต่อกับอุปกรณ์บลูทูธได้</translation>
 <translation id="8710842507289500830">รูปแบบตัวอักษร</translation>
 <translation id="8712637175834984815">รับทราบ</translation>
@@ -4469,6 +4480,7 @@
 <translation id="8975263830901772334">ชื่อของไฟล์ที่คุณพิมพ์</translation>
 <translation id="8982884016487650216">โหลด PDF เสร็จแล้ว</translation>
 <translation id="8983369100812962543">ตอนนี้คุณปรับขนาดแอปได้แล้ว</translation>
+<translation id="8985112471026018799">บันทึกบัตรเพื่อชำระเงินได้เร็วขึ้น</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อดูประวัติการท่องเว็บใน Chrome</translation>
 <translation id="8987663052629670333">บริการพิมพ์ภาพถ่าย</translation>
 <translation id="8987927404178983737">เดือน</translation>
@@ -4535,6 +4547,7 @@
 <translation id="9090993752571911635">ผู้ให้บริการอินเทอร์เน็ต (ISP)</translation>
 <translation id="9093723786115107672">ชุดนอน</translation>
 <translation id="9094544726794842788">ปุ่ม "ไม่ชอบ" จะเปิดแบบฟอร์มสำหรับส่งความคิดเห็นโดยละเอียดเกี่ยวกับสาเหตุที่คุณไม่ชอบผลการค้นหาเหล่านี้</translation>
+<translation id="9094809883254050729">ป้อนข้อมูลอัตโนมัติในครั้งถัดไป บัตรจะถูกเข้ารหัสเมื่อบันทึก</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab แล้วกด Enter เพื่อตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้นของระบบในการตั้งค่า iOS</translation>
 <translation id="9101450247048146228">การใช้และขยับกล้อง (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">ถาด 1</translation>

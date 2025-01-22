@@ -85,6 +85,7 @@
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> ने अनपेक्षित रूप से कनेक्शन बंद कर दिया है.</translation>
 <translation id="1160009341934077418">वेब पर, कीमत के इतिहास से जुड़ा डेटा</translation>
 <translation id="1161325031994447685">वाई-फ़ाई से फिर से कनेक्ट करें</translation>
+<translation id="1161663161838091892">जारी रखने के लिए, टैब और इतिहास को सिंक करें</translation>
 <translation id="1163507966173624031">लोक और पारंपरिक संगीत</translation>
 <translation id="11635448457105324">'पते मैनेज करें' बटन, Chrome की सेटिंग में पते जोड़ने और उन्हें मैनेज करने के लिए इसे चालू करें</translation>
 <translation id="1165039591588034296">गड़बड़ी</translation>
@@ -638,6 +639,7 @@
 <translation id="2105838220373099643">भूमिका निभाने वाले गेम</translation>
 <translation id="2107021941795971877">प्रिंट सहायता</translation>
 <translation id="2108755909498034140">अपना कंप्यूटर फिर से चालू करें</translation>
+<translation id="2109845311767915560">शेयर किया गया टैब ग्रुप</translation>
 <translation id="2111166930115883695">गेम चलाने के लिए, space दबाएं</translation>
 <translation id="2113977810652731515">कार्ड</translation>
 <translation id="2114841414352855701">ध्यान नहीं दिया गया क्योंकि यह <ph name="POLICY_NAME" /> द्वारा ओवरराइड की गई थी.</translation>
@@ -1106,6 +1108,7 @@
 <translation id="297173220375858963">डेस्कटॉप पब्लिशिंग</translation>
 <translation id="2972581237482394796">&amp;फिर से करें</translation>
 <translation id="2974468223369775963">इस IBAN को आपके Google खाते में सेव नहीं किया जा सका. इसके बजाय, इसे इस डिवाइस पर Chrome में सेव किया गया है. अगली बार इस IBAN का इस्तेमाल करने पर, Chrome इसे सेव करने के लिए आपसे दोबारा पूछेगा.</translation>
+<translation id="297667759942911166">टैब ग्रुप में मिलकर काम करें</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, इस समय चुना गया है. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">अपना कीबोर्ड लॉक करें और उसका इस्तेमाल करें</translation>
 <translation id="2978824962390592855">ऑपरा</translation>
@@ -1968,6 +1971,7 @@
 <translation id="4434045419905280838">पॉप-अप और रीडायरेक्ट</translation>
 <translation id="443673843213245140">प्रॉक्‍सी का उपयोग अक्षम है लेकिन कोई स्‍पष्ट प्रॉक्‍सी कॉन्फ़िगरेशन दर्ज किया गया है.</translation>
 <translation id="4438821706955556403">औसत कीमत</translation>
+<translation id="444116852243722675">सभी यूआरएल (<ph name="ITEMS" />) खोलें</translation>
 <translation id="4441832193888514600">अनदेखा किया गया है, क्योंकि इस नीति को सिर्फ़ क्लाउड की उपयोगकर्ता नीति के तौर पर सेट किया जा सकता है.</translation>
 <translation id="4445133368066241428">लोकप्रिय विषय</translation>
 <translation id="4445964943162061557">यह सुविधा एक्सपेरिमेंट के तौर पर उपलब्ध है. यह ज़रूरी नहीं है कि यह सुविधा हमेशा सही तरीके से काम करें.</translation>
@@ -2063,6 +2067,7 @@
 <translation id="4661556981531699496">पालतू पशु और जानवर</translation>
 <translation id="4661868874067696603">खरीदारी के ज़्यादा विकल्प खोजें</translation>
 <translation id="4663373278480897665">कैमरे की अनुमति है</translation>
+<translation id="4664084870155869900">अगली बार, ऑटोमैटिक भरने की सुविधा इस्तेमाल करें. क्रेडिट कार्ड की जानकारी आपके डिवाइस में सेव है.</translation>
 <translation id="466561305373967878">बोर्ड गेम</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">वर्चुअल रिएलिटी</translation>
@@ -2088,6 +2093,7 @@
 <translation id="4704745399240123930">यह कारोबारी या कंपनी जो कार्ड (जैसे, वर्चुअल कार्ड) स्वीकार नहीं करती उनके इस्तेमाल पर पाबंदी है.</translation>
 <translation id="4708268264240856090">आपका कनेक्शन बाधित था</translation>
 <translation id="4708276642004148190">पानी की सप्लाई और ट्रीटमेंट</translation>
+<translation id="4711628883879888561">टैब ग्रुप पर मिलकर काम करें</translation>
 <translation id="471880041731876836">आपको इस साइट पर जाने की अनुमति नहीं है</translation>
 <translation id="4718897478554657123">600 x 900 मि॰मी॰</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows नेटवर्क निदान चलाकर देखें<ph name="END_LINK" /></translation>
@@ -2634,6 +2640,7 @@
 <translation id="5675809467256309336">डांस और इलेक्ट्रॉनिक म्यूज़िक</translation>
 <translation id="5675959228867414813">तारीख के हिसाब से दिखाएं</translation>
 <translation id="567604591393105935">कॉमर्स बॉटम शीट, आधी स्क्रीन पर खोल दी गई है</translation>
+<translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">फ़ॉयल</translation>
 <translation id="5680642791693447368">रोमांचक, अपराध, और रहस्य वाली फ़िल्में</translation>
 <translation id="568292603005599551">इमेज X की स्थिति</translation>
@@ -2671,6 +2678,7 @@
 <translation id="573555826359077410">'फ़ॉर्म बनाएं' बटन, Google Forms में जल्दी से नया फ़ॉर्म बनाने के लिए इसे चालू करें</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{अपने Google खाते में कार्ड सेव करें}one{अपने Google खाते में कार्ड सेव करें}other{अपने Google खाते में कार्ड सेव करें}}</translation>
 <translation id="5738385766833540397">मैनेज करें कि आपको ऐसे प्रॉडक्ट की कीमत में कमी से जुड़ी सूचनाएं कैसे मिलेंगी जिन्हें आपने ट्रैकिंग में रखा है</translation>
+<translation id="573974402615125334">टैब ग्रुप को शेयर करने, उनमें शामिल होने, और उनमें साथ मिलकर काम करने के लिए, Chrome के इतिहास और टैब को सिंक करें</translation>
 <translation id="5740911612628596808">C9 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="5742806904559466333">बार, क्लब, और नाइटलाइफ़</translation>
 <translation id="5743684619253032786">नाखून की देखभाल से जुड़े प्रॉडक्ट</translation>
@@ -2692,6 +2700,7 @@
 <translation id="578305955206182703">ऐंबर</translation>
 <translation id="5783700460098783980">बैग और यात्रा से जुड़ी ऐक्सेसरी</translation>
 <translation id="57838592816432529">म्यूट करें</translation>
+<translation id="5783922175933467571"><ph name="TAB_GROUP_DISPLAY_NAME" /> लिंक 48 घंटों के बाद काम नहीं करते हैं</translation>
 <translation id="5784606427469807560">आपके कार्ड की पुष्टि करते समय समस्‍या हुई. अपना इंटरनेट कनेक्‍शन जांचें और फिर से कोशिश करें.</translation>
 <translation id="5785756445106461925">इसके अतिरिक्त, इस पेज में ऐसे अन्य संसाधन भी शामिल हैं, जो सुरक्षित नहीं हैं. ट्रांज़िट में होने के दौरान ये संसाधन अन्य लोगों द्वारा देखे जा सकते हैं और पेज का स्वरूप बदलने के लिए किसी हमवलावर द्वारा इनमें बदलाव किए जा सकते हैं.</translation>
 <translation id="5793317771769868848">इस डिवाइस से, पेमेंट का यह तरीका मिटा दिया जाएगा</translation>
@@ -2764,6 +2773,7 @@
 <translation id="5930147475897662863">'लिखने में मेरी मदद करो' सुविधा का इस्तेमाल करने के लिए, इस सेटिंग को चालू करें</translation>
 <translation id="593102073240001326">कैसे करें, खुद करके देखें, और एक्सपर्ट का कॉन्टेंट</translation>
 <translation id="5932224571077948991">साइट में तंग करने वाले या गुमराह करने वाले विज्ञापन दिखाई देते हैं</translation>
+<translation id="5933597524153120073">सभी टेबल (<ph name="ITEMS" />) नई विंडो में खोलें</translation>
 <translation id="5937560539988385583">पेज का अनुवाद हो गया</translation>
 <translation id="5938153366081463283">वर्चुअल कार्ड जोड़ें</translation>
 <translation id="5938793338444039872">ट्रॉय</translation>
@@ -3036,6 +3046,7 @@
 <translation id="6394852772105848029">यह साइट, <ph name="APP_NAME" /> ऐप्लिकेशन को खोलना चाहती है</translation>
 <translation id="639673288733510393">स्कूटर और मोपेड</translation>
 <translation id="6398765197997659313">फ़ुल स्क्रीन से बाहर निकलें</translation>
+<translation id="6399633237874954301">आपके एडमिन ने स्मार्ट कार्ड रीडर का इस्तेमाल करने की अनुमति दी है</translation>
 <translation id="6401136357288658127">यह नीति हटा दी गई है. आपको इसके बजाय, इस <ph name="NEW_POLICY" /> नीति का इस्तेमाल करना चाहिए.</translation>
 <translation id="640163077447496506">समयसीमा आज खत्म हो जाएगी</translation>
 <translation id="6402537308870515461">मूव करने से पहले, समीक्षा करना ज़रूरी है</translation>
@@ -3871,6 +3882,7 @@
 <translation id="7865448901209910068">सबसे अच्छी रफ़्तार</translation>
 <translation id="7870281855125116701">छूट मिली</translation>
 <translation id="7871445724586827387">अपने Google खाते का पासवर्ड बदलें</translation>
+<translation id="787226752901403048">टैब ग्रुप शेयर करने और उनमें शामिल होने के लिए, Chrome में साइन इन करें और आइडिया पर मिलकर काम करें</translation>
 <translation id="7877007680666472091">सुरक्षित Content ID</translation>
 <translation id="7878562273885520351">आपके पासवर्ड से छेड़छाड़ की जा सकती है</translation>
 <translation id="7882421473871500483">भूरा</translation>
@@ -4326,6 +4338,7 @@
 <translation id="8702965365666568344">माउंटिंग टेप</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> से आपके कनेक्शन को सुरक्षित नहीं किया गया है.</translation>
 <translation id="8705331520020532516">क्रम संख्या</translation>
+<translation id="8706806585855470492">आपको टैब ग्रुप में शामिल होने, उन्हें शेयर करने, और उनमें साथ मिलकर काम करने की सुविधा मिलेगी</translation>
 <translation id="8708134712139312373">साइट, ब्लूटूथ डिवाइसों से कनेक्ट करने की अनुमति मांग सकती है</translation>
 <translation id="8710842507289500830">फ़ॉन्ट स्टाइल</translation>
 <translation id="8712637175834984815">समझ लिया</translation>
@@ -4468,6 +4481,7 @@
 <translation id="8975263830901772334">उन फ़ाइलों के नाम जिन्हें आप प्रिंट करते हैं</translation>
 <translation id="8982884016487650216">PDF लोड हो गया</translation>
 <translation id="8983369100812962543">अब आप ऐप्लिकेशन का डिसप्ले, डिवाइस के वि़ंडो साइज़ के हिसाब से बदल सकते हैं.</translation>
+<translation id="8985112471026018799">क्रेडिट कार्ड की जानकारी सेव करें, ताकि आप तेज़ी से चेकआउट कर सकें</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome में अपने ब्राउज़िंग इतिहास को देखने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="8987663052629670333">फ़ोटो प्रिंटिंग की सेवाएं</translation>
 <translation id="8987927404178983737">माह</translation>
@@ -4534,6 +4548,7 @@
 <translation id="9090993752571911635">इंटरनेट सेवा देने वाली कंपनियां (आईएसपी)</translation>
 <translation id="9093723786115107672">नाइटवियर</translation>
 <translation id="9094544726794842788">'पसंद नहीं है' बटन को दबाने से एक फ़ॉर्म खुलता है. इस फ़ॉर्म में आपको इस बारे में पूरी जानकारी देनी होती है कि आपको ये नतीजे क्यों पसंद नहीं हैं</translation>
+<translation id="9094809883254050729">अगली बार, ऑटोमैटिक भरने की सुविधा इस्तेमाल करें. क्रेडिट कार्ड की जानकारी सेव करने पर, उसे एन्क्रिप्ट (सुरक्षित) किया जाता है.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS की सेटिंग में, Chrome को सिस्टम के डिफ़ॉल्ट ब्राउज़र के रूप में सेट करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="9101450247048146228">कैमरा इस्तेमाल करना और उसे मूव करना (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">ट्रे 1</translation>

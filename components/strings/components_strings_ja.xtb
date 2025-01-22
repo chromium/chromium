@@ -85,6 +85,7 @@
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> により途中で接続が切断されました。</translation>
 <translation id="1160009341934077418">ウェブ全体での価格の推移</translation>
 <translation id="1161325031994447685">Wi-Fi に再度接続する</translation>
+<translation id="1161663161838091892">続行するにはタブと履歴を同期してください</translation>
 <translation id="1163507966173624031">民族音楽、伝統音楽</translation>
 <translation id="11635448457105324">[住所を管理] ボタンです。実行すると、Chrome の設定で住所を追加、管理できます</translation>
 <translation id="1165039591588034296">エラー</translation>
@@ -637,6 +638,7 @@
 <translation id="2105838220373099643">ロールプレイング ゲーム</translation>
 <translation id="2107021941795971877">印刷サポート</translation>
 <translation id="2108755909498034140">パソコンを再起動する</translation>
+<translation id="2109845311767915560">共有タブグループ</translation>
 <translation id="2111166930115883695">プレイするには Space キーを押してください</translation>
 <translation id="2113977810652731515">カード</translation>
 <translation id="2114841414352855701"><ph name="POLICY_NAME" /> によって上書きされるため無視されます。</translation>
@@ -1105,6 +1107,7 @@
 <translation id="297173220375858963">DTP</translation>
 <translation id="2972581237482394796">やり直し(&amp;R)</translation>
 <translation id="2974468223369775963">この IBAN は Google アカウントに保存できず、代わりにこのデバイスの Chrome に保存されました。次回この IBAN を使用するときに再度確認が行われます。</translation>
+<translation id="297667759942911166">タブグループでの共同作業</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />が現在選択されています。<ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">キーボードのロックと使用</translation>
 <translation id="2978824962390592855">オペラ</translation>
@@ -2064,6 +2067,7 @@
 <translation id="4661556981531699496">ペット、動物</translation>
 <translation id="4661868874067696603">その他の購入オプションを検索</translation>
 <translation id="4663373278480897665">カメラを使用できます</translation>
+<translation id="4664084870155869900">次回から自動入力します。カードはデバイスに保存されます。</translation>
 <translation id="466561305373967878">ボードゲーム</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">バーチャル リアリティ（VR）</translation>
@@ -2089,6 +2093,7 @@
 <translation id="4704745399240123930">この販売者が対応していないカード（仮想カードなど）は無効になっています。</translation>
 <translation id="4708268264240856090">接続が中断されました</translation>
 <translation id="4708276642004148190">上水道、水処理</translation>
+<translation id="4711628883879888561">タブグループで共同編集</translation>
 <translation id="471880041731876836">このサイトへのアクセスが許可されていません</translation>
 <translation id="4718897478554657123">600x900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows ネットワーク診断ツールを実行する<ph name="END_LINK" /></translation>
@@ -2635,6 +2640,7 @@
 <translation id="5675809467256309336">ダンス音楽、エレクトロニック ミュージック</translation>
 <translation id="5675959228867414813">日付別に表示</translation>
 <translation id="567604591393105935">コマースのボトムシートが画面の下半分に表示されています</translation>
+<translation id="5676641328629468296">Google Pay、Pix</translation>
 <translation id="5678007133659493065">ホイル</translation>
 <translation id="5680642791693447368">スリラー、犯罪、ミステリー映画</translation>
 <translation id="568292603005599551">画像の X 座標</translation>
@@ -2672,6 +2678,7 @@
 <translation id="573555826359077410">[フォームを作成] ボタンです。実行すると、Google フォームで新しいフォームをすばやく作成できます</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Google アカウントにカードを保存}other{Google アカウントにカードを保存}}</translation>
 <translation id="5738385766833540397">トラッキングしている商品の値下げアラートを受け取る方法を管理します</translation>
+<translation id="573974402615125334">タブグループの共有、参加、共同作業を行うには、履歴とタブを同期してください</translation>
 <translation id="5740911612628596808">C9 封筒</translation>
 <translation id="5742806904559466333">バー、クラブ、ナイトライフ</translation>
 <translation id="5743684619253032786">ネイルケア商品</translation>
@@ -2693,6 +2700,7 @@
 <translation id="578305955206182703">アンバー</translation>
 <translation id="5783700460098783980">旅行バッグ、旅行用品</translation>
 <translation id="57838592816432529">ミュート</translation>
+<translation id="5783922175933467571">「<ph name="TAB_GROUP_DISPLAY_NAME" />」のリンクは 48 時間で期限切れになります</translation>
 <translation id="5784606427469807560">カードの確認中に問題が発生しました。インターネット接続を確認してもう一度お試しください。</translation>
 <translation id="5785756445106461925">加えて、このページには安全でない他のリソースが含まれています。このリソースは送信中に他のユーザーから見られる可能性があります。また、悪意のあるユーザーによって改変されページの見た目が変わる可能性もあります。</translation>
 <translation id="5793317771769868848">このお支払い方法はこのデバイスから削除されます</translation>
@@ -2765,6 +2773,7 @@
 <translation id="5930147475897662863">文書作成サポートを使用するには、この設定をオンにしてください</translation>
 <translation id="593102073240001326">ノウハウ、DIY、専門コンテンツ</translation>
 <translation id="5932224571077948991">このサイトでは煩わしい広告や誤解を招く広告が表示されます</translation>
+<translation id="5933597524153120073">新しいウィンドウですべて開く（<ph name="ITEMS" /> 件の URL）</translation>
 <translation id="5937560539988385583">ページが翻訳されました</translation>
 <translation id="5938153366081463283">仮想カードを追加する</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3873,6 +3882,7 @@
 <translation id="7865448901209910068">最高速度</translation>
 <translation id="7870281855125116701">割引が見つかりました</translation>
 <translation id="7871445724586827387">Google アカウントのパスワードを変更します</translation>
+<translation id="787226752901403048">Chrome にログインして、タブグループの共有や参加、アイデアの出し合いなどを行うことができます</translation>
 <translation id="7877007680666472091">保護されたコンテンツ ID</translation>
 <translation id="7878562273885520351">パスワードが不正使用される可能性があります</translation>
 <translation id="7882421473871500483">茶</translation>
@@ -4328,6 +4338,7 @@
 <translation id="8702965365666568344">粘着テープ</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> への接続は暗号化されていません。</translation>
 <translation id="8705331520020532516">シリアル番号</translation>
+<translation id="8706806585855470492">タブグループの共有、参加、共同作業を行うことができます</translation>
 <translation id="8708134712139312373">Bluetooth デバイスへの接続を要求できる</translation>
 <translation id="8710842507289500830">フォント スタイル</translation>
 <translation id="8712637175834984815">理解した</translation>
@@ -4470,6 +4481,7 @@
 <translation id="8975263830901772334">印刷するファイルの名前</translation>
 <translation id="8982884016487650216">PDF の読み込みが完了しました</translation>
 <translation id="8983369100812962543">アプリのサイズ変更を許可できるようになりました</translation>
+<translation id="8985112471026018799">カードを保存して簡単に購入手続き</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome の閲覧履歴を表示します</translation>
 <translation id="8987663052629670333">写真の印刷サービス</translation>
 <translation id="8987927404178983737">月</translation>
@@ -4536,6 +4548,7 @@
 <translation id="9090993752571911635">インターネット サービス プロバイダ（ISP）</translation>
 <translation id="9093723786115107672">ナイトウェア</translation>
 <translation id="9094544726794842788">低く評価すると、これらの結果が気に入らなかった理由について詳細なフィードバックを送信するためのフォームが開きます</translation>
+<translation id="9094809883254050729">次回から自動入力します。カードは暗号化して保存されます。</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、iOS 設定で Chrome をシステムの既定のブラウザとして設定できます</translation>
 <translation id="9101450247048146228">カメラの使用と移動（<ph name="CAMERAS_COUNT" />）</translation>
 <translation id="9101630580131696064">トレイ 1</translation>

@@ -380,6 +380,11 @@ Dit vervangt het beëindigde beleid <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_P
 <translation id="1294263471858445589">Ambient-verificatie in normale en incognitosessies aanzetten.</translation>
 <translation id="1295737447968372331">Dicteren op het inlogscherm aanzetten</translation>
 <translation id="1297182715641689552">Een PAC-script voor de proxy gebruiken</translation>
+<translation id="1297909092292754072">Als je dit beleid instelt, wordt een lijst met oorsprongen (URL's) of hostnaampatronen (zoals '*.example.com') gedefinieerd waarop beveiligingsbeperkingen voor niet-beveiligde oorsprongen niet van toepassing zijn. Patronen worden alleen geaccepteerd voor hostnamen. URL's/oorsprongen met schema's moeten exacte tekenreeksen zijn. Organisaties kunnen oorsprongen aangeven voor verouderde apps die geen TLS kunnen implementeren, of een staging server voor interne webontwikkelingen instellen, zodat de ontwikkelaars functies die een beveiligde context vereisen, kunnen testen zonder TLS te hoeven implementeren op de staging server. Dit beleid verhindert ook dat de oorsprong wordt aangeduid als Niet beveiligd in de adresbalk.
+
+Als er een lijst met URL's wordt ingesteld in dit beleid, heeft dit hetzelfde effect als wanneer de opdrachtregelmarkering '--unsafely-treat-insecure-origin-as-secure' wordt ingesteld voor een door komma's gescheiden lijst met dezelfde URL's. Het beleid overschrijft de opdrachtregelmarkering en UnsafelyTreatInsecureOriginAsSecure, indien aanwezig.
+
+Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/TR/secure-contexts.</translation>
 <translation id="1297961932043741908">Een limiet instellen voor het aantal megabytes geheugen dat door één Chrome-instantie kan worden gebruikt.</translation>
 <translation id="1304973015437969093">ID's voor extensies/apps en URL's voor updates die op de achtergrond moeten worden geïnstalleerd</translation>
 <translation id="1305400589435476516">Als je het beleid toepast, is dataroaming toegestaan voor het apparaat.
@@ -3601,6 +3606,7 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 <translation id="3663124775601519286">Als je het beleid toepast of niet instelt, mag de Translator API worden gebruikt in <ph name="PRODUCT_NAME" />.
 
       Als je het beleid niet toepast, mag de Translator API niet worden gebruikt.</translation>
+<translation id="3664164569472125114"><ph name="GLIC" />-toegang beheren</translation>
 <translation id="3665437376055221832">De gebruiker alleen vragen als geen enkel certificaat overeenkomt met de automatische selectie.</translation>
 <translation id="3667467644216039144">Hiermee stel je een lijst met typen browsergegevens in die moeten worden verwijderd als de gebruiker alle browservensters sluit.
 
@@ -5445,6 +5451,7 @@ https://drafts.csswg.org/css-viewport/#zoom-property
 Als je het beleid niet toepast, valt de css-eigenschap 'zoom' terug op het verouderde gedrag van vóór de standaardisatie.
 
 Dit beleid is een tijdelijke uitstelmaatregel om tijd te geven om webcontent te migreren naar het nieuwe gedrag. Er is ook een origin trial (DisableStandardizedBrowserZoom) die overeenkomt met het gedrag als dit beleid niet wordt toegepast. Dit beleid wordt verwijderd en het gedrag Aangezet wordt permanent in mijlpaal 134.</translation>
+<translation id="5088303895040832480">Gebruik UsbDeviceId in nieuwe code.</translation>
 <translation id="5090791951240382356">Toestaan dat woordenboekbeleid van verschillende bronnen wordt samengevoegd</translation>
 <translation id="5091315650312105069"><ph name="BASIC_AUTH" />-verificatie toestaan voor HTTP</translation>
 <translation id="5093603777978346818">De screensaver op het vergrendelscherm niet aanzetten.</translation>

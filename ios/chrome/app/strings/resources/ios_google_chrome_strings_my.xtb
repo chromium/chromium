@@ -169,6 +169,7 @@
 <translation id="5639704535586432836">ဆက်တင်များ &gt; ကိုယ်ရေးအချက်အလက်လုံခြုံမှု &gt; ကင်မရာ &gt; Google Chrome သို့သွားပြီး ကင်မရာကို ဖွင့်ပါ။</translation>
 <translation id="5642200033778930880">Google Chrome သည် မျက်နှာပြင် ခွဲခြမ်းပြသသည့်မုဒ်တွင် ကင်မရာကို အသုံးပြု၍မရပါ</translation>
 <translation id="5661521615548540542">Google Password Manager က စကားဝှက်အားလုံးကို စစ်ဆေး၍မရပါ။ နောက်မှထပ်စမ်းပါ။</translation>
+<translation id="5681291952421236520">Chrome ဖွင့်/ပိတ်ရန်</translation>
 <translation id="5690398455483874150">{count,plural, =1{ယခု Chrome ဝင်းဒိုး 1 ခုကို ပြထားသည်}other{ယခု Chrome ဝင်းဒိုး {count} ခုကို ပြထားသည်}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Chromium ကို သင်၏မူရင်းဘရောင်ဇာအဖြစ် သတ်မှတ်ပါ</translation>
@@ -204,6 +205,7 @@
 <translation id="6484712497741564393"><ph name="EMAIL" /> အဖြစ် လက်မှတ်ထိုးဝင်ပါ။
 
 သင့်စကားဝှက်စာဖြင့် သင်၏ဒေတာကို အသွင်ဝှက်ထားသည်။ သင်၏ Google Account တွင် Chrome ဒေတာ သုံးရန်နှင့် သိမ်းရန် ၎င်းကိုထည့်ပါ။</translation>
+<translation id="6533470733797826516">Chrome အော်တိုဖြည့်ဖြင့် အမြန်လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="6545449117344801102">ခရီးလမ်းညွှန်ချက်နှင့် ဒေသတွင်းအချက်အလက်များ ပေးရန် Chrome က လိပ်စာများသိရှိပြီး Google Maps သုံးသည်။</translation>
 <translation id="6634107063912726160">သင်အကောင့်မှထွက်သောအခါ Chrome သည် သင့် Google Account သို့ ဒေတာအသစ်များကို စင့်ခ်လုပ်မည်မဟုတ်ပါ။ ယခင်က စင့်ခ်လုပ်ထားသောဒေတာများ အကောင့်တွင် ဆက်ရှိနေပါမည်။</translation>
 <translation id="6636941099779251629">Chrome သုံးရန်အတွက် လက်မှတ်ထိုးဝင်ရန် သင့်အဖွဲ့အစည်းက သတ်မှတ်ထားသည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>

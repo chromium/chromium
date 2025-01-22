@@ -140,6 +140,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1415846719612499304">Mostrar a lista de redes. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Desbloquea o dispositivo para levar a cabo a acción de notificación</translation>
 <translation id="1420408895951708260">Activar/desactivar Luz nocturna: <ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">Grupo suxerido</translation>
 <translation id="1426410128494586442">Si</translation>
 <translation id="1435537621343861112">Non se puido iniciar o ditado. O micrófono está desactivado.</translation>
 <translation id="1445031758921122223">Descargáronse os ficheiros de control facial</translation>
@@ -243,12 +244,14 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="17722141032474077">Cálculos</translation>
 <translation id="1774796056689732716">Calendario, <ph name="CURRENT_MONTH_YEAR" />; nestes momentos está seleccionada a data <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Configurar a visualización do contido multimedia, das notificacións e das fotos recentes do teu teléfono</translation>
+<translation id="1785317913592722944">Quitar o elemento do grupo suxerido</translation>
 <translation id="1786487376942610288">Cambiar entre o tamaño máximo e o actual da ventá da pantalla superposta</translation>
 <translation id="1787955149152357925">Desactivado</translation>
 <translation id="1796561540704213354">Sitios web que inclúen as páxinas que visitaches e as abertas</translation>
 <translation id="179842970735685253">Condicións de servizo de Google</translation>
 <translation id="1805407494113167797">Non se puideron reproducir os sons do modo Sen distraccións</translation>
 <translation id="181103072419391116">Intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
+<translation id="1815039896005206046">Co botón Non me gusta indicas que non che gusta este grupo suxerido</translation>
 <translation id="1816896987747843206">Desta forma, poderán acceder á cámara todas as aplicacións e sitios web con permiso de acceso á cámara</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Activar acceso á localización</translation>
@@ -390,6 +393,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2369165858548251131">"Ola" en chinés</translation>
 <translation id="2370971919968699910">Pode que se apliquen custos polo uso de datos.
 Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
+<translation id="2383521554963939360">Grupos de aplicacións e pestanas</translation>
 <translation id="2386292613071805067">Selecciona todo na páxina</translation>
 <translation id="2389423187722941333">Activar ou desactivar Gemini</translation>
 <translation id="2392659840443812875">Non hai ningunha zona wifi dispoñible. Asegúrate de ter o dispositivo preto e de que o Bluetooth estea activado.</translation>
@@ -921,6 +925,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4151054805501931758">Retoque facial</translation>
 <translation id="4156293514828496577">Queda un <ph name="PERCENTAGE" /> % de batería. Tempo restante aproximado: <ph name="TIME_LEFT" />.
 Limitáronse algunhas funcións para ampliar a duración da batería.</translation>
+<translation id="4158003972857765638">Organiza as ventás nun novo escritorio</translation>
 <translation id="4160919062868802509">Detectáronse varias fontes de audio</translation>
 <translation id="416245495747357243">Todo listo!</translation>
 <translation id="4165275524535002941">O cable non é compatible coas pantallas</translation>
@@ -969,6 +974,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4285498937028063278">Deixar de fixar</translation>
 <translation id="428715201724021596">Conectando co perfil. Esta acción pode tardar uns minutos.</translation>
 <translation id="4287250812980588583">Ventá de Chrome</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> controla o volume do micrófono}other{# aplicacións controlan o volume do micrófono}}</translation>
 <translation id="4294319844246081198">Bos días, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Borrar as <ph name="COUNT" /> notificacións</translation>
 <translation id="4300272766492248925">Abrir aplicación</translation>
@@ -985,6 +991,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4322742403972824594">O atallo Control + Alt + Frecha arriba cambiou. Para usar a tecla Inicio, preme <ph name="LAUNCHER_KEY_NAME" /> + Frecha esquerda.</translation>
 <translation id="4324840740119394760">Desta forma, poderán acceder á cámara <ph name="APP_NAME" /> e todas as aplicacións e sitios web con permiso de acceso á cámara</translation>
 <translation id="4327147325944669226">Gravar xogo</translation>
+<translation id="4329076911374908740">Chegouse ao número máximo de grupos gardados.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, silenciado</translation>
 <translation id="4351244548802238354">Pechar cadro de diálogo</translation>
@@ -1265,6 +1272,7 @@ Tamén podes usar o atallo de teclado. Primeiro, destaca o texto e, a continuaci
 <translation id="5245201184978705914">Non se puido xerar a transcrición</translation>
 <translation id="5251174953851719648">Actualizar o contido</translation>
 <translation id="5253783950165989294">Conexión establecida cun dispositivo chamado "<ph name="DEVICE_NAME" />"; <ph name="BATTERY_PERCENTAGE" /> % de batería</translation>
+<translation id="5256939106029293271">Proba o micrófono</translation>
 <translation id="5258528442992323769">Non hai escritorios gardados</translation>
 <translation id="5260676007519551770">Escritorio 4</translation>
 <translation id="5265391159779542051">Resultados cargados</translation>
@@ -1422,6 +1430,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="5745612484876805746">A opción Luz nocturna activarase automaticamente ao anoitecer</translation>
 <translation id="5750765938512549687">O Bluetooth está desactivado</translation>
 <translation id="5758114525425072423">Iniciar o modo Sen distraccións. Temporizador programado de <ph name="FOCUS_DURATION" />.</translation>
+<translation id="5759522586053040964">Comproba como te van escoitar outras persoas. Para parar, fai clic na icona de proba e pecha o panel da videochamada.</translation>
 <translation id="5760866832697883462">Conecta o dispositivo (<ph name="NAME" />)</translation>
 <translation id="5762420912707163638">Activar/Desactivar marcador. <ph name="STATE_TEXT" /> Usa o panel táctil, a pantalla táctil ou o lapis óptico para debuxar na pantalla.</translation>
 <translation id="576341972084747908">Descarga de ficheiro perigoso <ph name="FILENAME" /></translation>
@@ -1940,6 +1949,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7524043547948122239">Tarefas de Google</translation>
 <translation id="7525067979554623046">Crear</translation>
 <translation id="7526573455193969409">É posible que se controle a rede</translation>
+<translation id="7534543072325030705">Co botón Gústame indicas que che gusta este grupo suxerido</translation>
 <translation id="7536035074519304529">Enderezo IP: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Actualizar a ventá da esquerda</translation>
 <translation id="7543399541175347147">As aplicacións de Linux e as ventás do modo de incógnito agora mesmo non son compatibles. Gardaranse outras aplicacións.</translation>
@@ -2104,6 +2114,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8004512796067398576">Aumentar</translation>
 <translation id="8005527720597583355">Iniciar o modo Sen distraccións</translation>
 <translation id="8015361438441228492">Non se puido editar a tarefa.</translation>
+<translation id="8027187124910699148">Retoma o grupo suxerido</translation>
 <translation id="802782383769312836">Escritorio anterior: <ph name="DESK_NAME" />. Escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Produciuse un erro coa conexión á zona wifi</translation>
 <translation id="8029629653277878342">Como medida adicional de seguranza debes escribir o PIN ou o contrasinal</translation>
@@ -2212,6 +2223,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8426708595819210923">Bo serán, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /> do <ph name="KEY_ONE" /> ao <ph name="KEY_TWO" /></translation>
+<translation id="8429547770382807369">Gardar grupo para máis tarde</translation>
 <translation id="8433186206711564395">Configuración de rede</translation>
 <translation id="8433977262951327081">Modificouse o atallo que mostra o globo do menú de opcións de entrada no estante. Usa <ph name="NEW_SHORTCUT" /> en lugar de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8437311513256731931">Abrir ferramenta de comentarios</translation>
@@ -2220,6 +2232,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8446884382197647889">Máis información</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Pechar Escoitar selección</translation>
+<translation id="8466665972451889002">Mostrar os elementos de <ph name="GROUP_NAME" /></translation>
 <translation id="8468806060683421065">Data límite: <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Configuración da escala de visualización</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
@@ -2242,6 +2255,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8551588720239073785">Configuración de data e hora</translation>
 <translation id="8553395910833293175">Xa se asignou a todos os escritorios.</translation>
 <translation id="8555757996376137129">Quitar escritorio actual</translation>
+<translation id="8558521694042102707">A IA xenerativa pode cometer erros (mesmo no referente á información sobre persoas), polo que debes revisar os resultados.</translation>
 <translation id="8559845965695780508"><ph name="USER" /> editouno</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">Aquí tes algunhas suxestións que podes probar</translation>
@@ -2264,6 +2278,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
 <translation id="8638637208069328956">Activar ou desactivar o micrófono</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> restante</translation>
+<translation id="8640470573049727749">Ocultar todas as suxestións de grupos</translation>
 <translation id="8641510901370802679">Mostrando información sobre <ph name="ANSWER_TYPE" /></translation>
 <translation id="8646417893960517480">Temporizador de <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Para engadir unha persoa, escribe o código de acceso parental de Family Link</translation>
@@ -2346,6 +2361,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8905919797434099235">(Sen título)</translation>
 <translation id="890616557918890486">Cambiar fonte</translation>
 <translation id="8909138438987180327">Nivel de batería: <ph name="PERCENTAGE" /> por cento.</translation>
+<translation id="8916866375277139011">Ocultar os elementos de <ph name="GROUP_NAME" /></translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">O Asistente de Google non fala este idioma.</translation>
 <translation id="8926951137623668982">O estante ocúltase sempre</translation>

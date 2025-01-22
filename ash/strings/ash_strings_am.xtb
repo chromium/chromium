@@ -973,6 +973,7 @@
 <translation id="4285498937028063278">ይንቀሉ</translation>
 <translation id="428715201724021596">ከመገለጫ ጋር በመገናኘት ላይ። ይህ ጥቂት ደቂቃዎችን ሊወስድ ይችላል።</translation>
 <translation id="4287250812980588583">Chrome መስኮት</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{የማይክሮፎን የድምፅ መጠን በ<ph name="APP_NAME" /> ቁጥጥር ይደረግበታል}one{የማይክሮፎን የድምፅ መጠን በ# መተግበሪያ ቁጥጥር ይደረግበታል}other{የማይክሮፎን የድምፅ መጠን በ# መተግበሪያዎች ቁጥጥር ይደረግበታል}}</translation>
 <translation id="4294319844246081198">ደህና አደሩ <ph name="GIVEN_NAME" />፣</translation>
 <translation id="4296136865091727875">ሁሉንም <ph name="COUNT" /> ማሳወቂያዎች አጽዳ</translation>
 <translation id="4300272766492248925">መተግበሪያ ክፈት</translation>

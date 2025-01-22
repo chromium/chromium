@@ -140,6 +140,7 @@
 <translation id="1415846719612499304">નેટવર્કની સૂચિ બતાવો. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">નોટિફિકેશન ક્રિયા કરવા માટે ઉપકરણને અનલૉક કરો</translation>
 <translation id="1420408895951708260">રાત્રિ પ્રકાશને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">સૂચવેલું ગ્રૂપ</translation>
 <translation id="1426410128494586442">હા</translation>
 <translation id="1435537621343861112">ડિક્ટેશન શરુ કરી શકતા નથી. તમારું માઇક બંધ છે.</translation>
 <translation id="1445031758921122223">ચહેરાથી નિયંત્રિત કરવાની સુવિધાની ફાઇલો ડાઉનલોડ કરી</translation>
@@ -243,12 +244,14 @@
 <translation id="17722141032474077">ગણતરીઓ</translation>
 <translation id="1774796056689732716">કૅલેન્ડર, <ph name="CURRENT_MONTH_YEAR" />, હાલમાં <ph name="DATE" /> પસંદ કરેલી છે.</translation>
 <translation id="178347895271755507">તમારા ફોનના તાજેતરના ફોટા, મીડિયા અને નોટિફિકેશન જોવાની સુવિધાનું સેટઅપ કરવાની પ્રક્રિયા કરો</translation>
+<translation id="1785317913592722944">સૂચવેલા ગ્રૂપમાંથી આઇટમ કાઢી નાખો</translation>
 <translation id="1786487376942610288">ચિત્ર-માં-ચિત્ર વિન્ડોના મહત્તમ અથવા વર્તમાન કદ વચ્ચે સ્વિચ કરો</translation>
 <translation id="1787955149152357925">બંધ છે</translation>
 <translation id="1796561540704213354">વેબસાઇટ જેમાં તમે મુલાકાત લીધેલા પેજ અને ખોલેલા પેજ શામેલ છે</translation>
 <translation id="179842970735685253">Googleની સેવાની શરતો</translation>
 <translation id="1805407494113167797">ફોકસના સાઉન્ડ ચલાવી શક્યાં નથી</translation>
 <translation id="181103072419391116">સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
+<translation id="1815039896005206046">તમે આ સૂચવેલું ગ્રૂપ નાપસંદ કરો છો, થમ્બ્સ ડાઉન પસંદ કરવાથી આ પ્રતિસાદ સબમિટ થશે</translation>
 <translation id="1816896987747843206">આમ કરવાથી કૅમેરાની પરવાનગી ધરાવતી બધી ઍપ અને વેબસાઇટ માટે, કૅમેરાના ઍક્સેસની મંજૂરી આપવામાં આવે છે</translation>
 <translation id="1823873187264960516">ઇથરનેટ: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">લોકેશનનો ઍક્સેસ ચાલુ કરો</translation>
@@ -390,6 +393,7 @@
 <translation id="2369165858548251131">ચીની ભાષામાં "નમસ્કાર"</translation>
 <translation id="2370971919968699910">આમ કરવાથી ડેટા વપરાશનો ખર્ચ લાગુ થઈ શકે છે.
 <ph name="DEVICECOUNT" /> ડિવાઇસ કનેક્ટ કર્યા.</translation>
+<translation id="2383521554963939360">ઍપ અને ટૅબના ગ્રૂપ</translation>
 <translation id="2386292613071805067">પેજ પરનું બધું પસંદ કરો</translation>
 <translation id="2389423187722941333">Gemini ટૉગલ કરો</translation>
 <translation id="2392659840443812875">કોઈ હૉટસ્પૉટ ઉપલબ્ધ નથી. ખાતરી કરો કે તમારું ડિવાઇસ નજીકમાં હોય અને તેમાં બ્લૂટૂથની સુવિધા ચાલુ હોય.</translation>
@@ -920,6 +924,7 @@
 <translation id="4151054805501931758">પોર્ટ્રેટ ટચ-અપ કરવાની સુવિધા</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% બૅટરી બાકી છે (લગભગ <ph name="TIME_LEFT" />).
 બૅટરી આવરદા વધારવા માટે કેટલીક સુવિધાઓ મર્યાદિત કરી છે.</translation>
+<translation id="4158003972857765638">કોઈ નવી ડેસ્ક પર ગોઠવણી કરો</translation>
 <translation id="4160919062868802509">એક કરતાં વધુ ઑડિયો સૉર્સની ભાળ મળી</translation>
 <translation id="416245495747357243">થઈ ગયું!</translation>
 <translation id="4165275524535002941">કેબલ કદાચ ડિસ્પ્લેને સપોર્ટ ન આપતો હોય</translation>
@@ -968,6 +973,7 @@
 <translation id="4285498937028063278">અનપિન કરો</translation>
 <translation id="428715201724021596">પ્રોફાઇલ સાથે કનેક્ટ કરી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
 <translation id="4287250812980588583">Chrome વિન્ડો</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{માઇકનું વૉલ્યૂમ <ph name="APP_NAME" /> દ્વારા નિયંત્રિત કરવામાં આવે છે}one{માઇકનું વૉલ્યૂમ # ઍપ દ્વારા નિયંત્રિત કરવામાં આવે છે}other{માઇકનું વૉલ્યૂમ # ઍપ દ્વારા નિયંત્રિત કરવામાં આવે છે}}</translation>
 <translation id="4294319844246081198">ગુડ મોર્નિંગ <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">બધા <ph name="COUNT" /> નોટિફિકેશન સાફ કરો</translation>
 <translation id="4300272766492248925">ઍપ્લિકેશન ખોલો</translation>
@@ -984,6 +990,7 @@
 <translation id="4322742403972824594">Ctrl કી + Alt કી + ઉપરની ઍરો કી કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. Home કીનો ઉપયોગ કરવા માટે, <ph name="LAUNCHER_KEY_NAME" /> કી + ડાબી ઍરો કી દબાવો.</translation>
 <translation id="4324840740119394760">આમ કરવાથી કૅમેરાની પરવાનગી ધરાવતી <ph name="APP_NAME" /> તથા બધી ઍપ અને વેબસાઇટ માટે, કૅમેરાના ઍક્સેસની મંજૂરી આપવામાં આવે છે</translation>
 <translation id="4327147325944669226">ગેમ રેકોર્ડ કરો</translation>
+<translation id="4329076911374908740">સાચવેલા ગ્રૂપની મહત્તમ સંખ્યા પર પહોંચી ગયા છો.</translation>
 <translation id="4338109981321384717">બૃહદદર્શક કાચ</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, મ્યૂટ કર્યું છે</translation>
 <translation id="4351244548802238354">સંવાદ બંધ કરો</translation>
@@ -1941,6 +1948,7 @@
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">બનાવો</translation>
 <translation id="7526573455193969409">નેટવર્કને મોનિટર કરવામાં આવી શકે છે</translation>
+<translation id="7534543072325030705">તમે આ સૂચવેલું ગ્રૂપ પસંદ કરો છો, થમ્બ્સ અપ પસંદ કરવાથી આ પ્રતિસાદ સબમિટ થશે</translation>
 <translation id="7536035074519304529">IP સરનામું: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">ડાબી વિન્ડો અપડેટ કરો</translation>
 <translation id="7543399541175347147">Linux ઍપ અને છૂપી વિન્ડોને હાલમાં સપોર્ટ કરવામાં આવતો નથી. અન્ય ઍપ સાચવવામાં આવશે.</translation>
@@ -2105,6 +2113,7 @@
 <translation id="8004512796067398576">વૃદ્ધિ</translation>
 <translation id="8005527720597583355">ફોકસનું સત્ર શરૂ કરો</translation>
 <translation id="8015361438441228492">કાર્યમાં ફેરફાર કરી શકાયો નથી.</translation>
+<translation id="8027187124910699148">સૂચવેલું ગ્રૂપ ફરી શરૂ કરો</translation>
 <translation id="802782383769312836">પાછલી ડેસ્ક: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" />માંથી ડેસ્ક <ph name="DESK_INDEX" />.</translation>
 <translation id="8029247720646289474">હૉટસ્પૉટ કનેક્શન નિષ્ફળ થયું</translation>
 <translation id="8029629653277878342">વધુ સુરક્ષા માટે પિન અથવા પાસવર્ડ જરૂરી છે</translation>
@@ -2213,6 +2222,7 @@
 <translation id="8426708595819210923">ગુડ ઇવનિંગ <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">સેટિંગ</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" />થી <ph name="KEY_TWO" /></translation>
+<translation id="8429547770382807369">પછીથી ઉપયોગમાં લેવા માટે ગ્રૂપ સાચવો</translation>
 <translation id="8433186206711564395">નેટવર્ક સેટિંગ</translation>
 <translation id="8433977262951327081">શેલ્ફમાં મેનૂ પરપોટો ઇનપુટ વિકલ્પો બતાવવાનો શૉર્ટકટ બદલાયો છે. કૃપા કરીને <ph name="OLD_SHORTCUT" />ને બદલે <ph name="NEW_SHORTCUT" />નો ઉપયોગ કરો.</translation>
 <translation id="8437311513256731931">પ્રતિસાદ ટૂલ ખોલો</translation>
@@ -2221,6 +2231,7 @@
 <translation id="8446884382197647889">વધુ જાણો</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">સાંભળવા માટે પસંદ કરો બંધ કરો</translation>
+<translation id="8466665972451889002"><ph name="GROUP_NAME" />માંની આઇટમ બતાવો</translation>
 <translation id="8468806060683421065">નિયત તારીખ <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">પ્રદર્શન ધોરણનું સેટિંગ</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />માં <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />છે.</translation>
@@ -2243,6 +2254,7 @@
 <translation id="8551588720239073785">તારીખ અને સમયનાં સેટિંગ</translation>
 <translation id="8553395910833293175">બધા ડેસ્ક માટે પહેલેથી જ સોંપણી કરવામાં આવી છે.</translation>
 <translation id="8555757996376137129">વર્તમાન ડેસ્ક કાઢી નાખો</translation>
+<translation id="8558521694042102707">જનરેટિવ AI ભૂલો કરી શકે છે જેમાં લોકો વિશેની માહિતી પણ શામેલ છે, તેથી તેને બે વાર ચેક કરો.</translation>
 <translation id="8559845965695780508"><ph name="USER" /> દ્વારા ફેરફાર કરાયેલી</translation>
 <translation id="8569146227972631631">°ફે</translation>
 <translation id="8569751806372591456">અહીં અજમાવવા જેવા અમુક સૂચનો આપવામાં આવ્યા છે</translation>
@@ -2265,6 +2277,7 @@
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="8638637208069328956">માઇક્રોફોન ચાલુ/બંધ કરો</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> બાકી</translation>
+<translation id="8640470573049727749">ગ્રૂપના બધા સૂચનો છુપાવો</translation>
 <translation id="8641510901370802679"><ph name="ANSWER_TYPE" />ની માહિતી બતાવી રહ્યાં છીએ</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> ટાઇમર</translation>
 <translation id="8647931990447795414">કોઈ વ્યક્તિને ઉમેરવા માટે, તમારી Family Linkનો માતાપિતા માટેનો ઍક્સેસ કોડ દાખલ કરો</translation>
@@ -2347,6 +2360,7 @@
 <translation id="8905919797434099235">(કોઈ શીર્ષક નથી)</translation>
 <translation id="890616557918890486">સ્રોત બદલો</translation>
 <translation id="8909138438987180327">બૅટરી <ph name="PERCENTAGE" /> ટકા પર છે.</translation>
+<translation id="8916866375277139011"><ph name="GROUP_NAME" />માંની આઇટમ છુપાવો</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant આ ભાષા બોલતું નથી.</translation>
 <translation id="8926951137623668982">શેલ્ફ હંમેશાં છુપાવવામાં આવે છે</translation>

@@ -169,6 +169,7 @@ Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez
 <translation id="5639704535586432836">Ouvrez Paramètres &gt; Confidentialité &gt; Appareil photo &gt; Google Chrome, puis activez l'appareil photo.</translation>
 <translation id="5642200033778930880">Google Chrome ne peut pas utiliser votre appareil photo en mode Vue fractionnée</translation>
 <translation id="5661521615548540542">Le Gestionnaire de mots de passe de Google n'a pas pu vérifier tous les mots de passe. Réessayez plus tard.</translation>
+<translation id="5681291952421236520">Activez Chrome</translation>
 <translation id="5690398455483874150">{count,plural, =1{1 fenêtre Chrome actuellement affichée}one{{count} fenêtre Chrome actuellement affichée}other{{count} fenêtres Chrome actuellement affichées}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Définir Chrome comme navigateur par défaut</translation>
@@ -204,6 +205,7 @@ Patientez quelques minutes avant de changer de compte. Si vous changez de compte
 <translation id="6484712497741564393">Connecté en tant que <ph name="EMAIL" />.
 
 Vos données sont chiffrées avec votre phrase secrète. Saisissez-la pour utiliser et enregistrer les données Chrome dans votre compte Google.</translation>
+<translation id="6533470733797826516">Connectez-vous plus vite avec la saisie automatique Chrome</translation>
 <translation id="6545449117344801102">Chrome détecte les adresses et utilise Google Maps pour vous proposer des itinéraires et des informations locales.</translation>
 <translation id="6634107063912726160">Lorsque vous vous déconnectez, Chrome cesse de synchroniser vos données avec votre compte Google. Les données déjà synchronisées ne sont pas effacées.</translation>
 <translation id="6636941099779251629">Votre organisation exige que vous vous connectiez pour utiliser Chrome. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>

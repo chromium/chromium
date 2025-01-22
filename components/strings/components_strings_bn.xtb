@@ -85,6 +85,7 @@
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> অপ্রত্যাশিতভাবে সংযোগ বন্ধ করেছে।</translation>
 <translation id="1160009341934077418">ওয়েব জুড়ে দাম সম্পর্কিত ইতিহাস</translation>
 <translation id="1161325031994447685">ওয়াই-ফাই এ আবার সংযুক্ত করে দেখুন</translation>
+<translation id="1161663161838091892">চালিয়ে যেতে ট্যাব ও ইতিহাস সিঙ্ক করুন</translation>
 <translation id="1163507966173624031">লোকগীতি ও ট্র্যাডিশনাল মিউজিক</translation>
 <translation id="11635448457105324">'ঠিকানা ম্যানেজ করুন' বোতাম, Chrome সেটিংসে ঠিকানা যোগ ও ম্যানেজ করতে এটি চালু করুন</translation>
 <translation id="1165039591588034296">ত্রুটি</translation>
@@ -1106,6 +1107,7 @@
 <translation id="297173220375858963">ডেস্কটপ পাবলিশিং</translation>
 <translation id="2972581237482394796">&amp;পুনরায় করুন</translation>
 <translation id="2974468223369775963">এই IBAN আপনার Google অ্যাকাউন্টে সেভ করা যায়নি। পরিবর্তে এই ডিভাইসের Chrome-এ সেটি সেভ করা হয়েছে। এই IBAN পরেরবার ব্যবহার করার সময় Chrome আপনাকে আবার জিজ্ঞেস করবে।</translation>
+<translation id="297667759942911166">ট্যাব গ্রুপে কোলাবরেট করুন</translation>
 <translation id="2977665033722899841">এখন <ph name="ROW_NAME" /> বেছে নিয়েছেন। <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">কীবোর্ড লক করুন ও ব্যবহার করুন</translation>
 <translation id="2978824962390592855">অপেরা</translation>
@@ -1969,6 +1971,7 @@
 <translation id="4434045419905280838">পপ-আপ এবং রিডাইরেক্ট</translation>
 <translation id="443673843213245140">প্রক্সির ব্যবহার অক্ষম করা হয়েছে কিন্তু কোনো স্পষ্ট প্রক্সি কনফিগারেশান নির্দিষ্ট করা হয়েছে৷</translation>
 <translation id="4438821706955556403">সাধারণ দাম</translation>
+<translation id="444116852243722675">সব (<ph name="ITEMS" />) খুলুন</translation>
 <translation id="4441832193888514600">উপেক্ষা করা হয়েছে কারণ নীতিটি শুধুমাত্র ক্লাউড ব্যবহারকারী নীতি হিসেবে সেট করা যেতে পারে।</translation>
 <translation id="4445133368066241428">জনপ্রিয় বিষয়</translation>
 <translation id="4445964943162061557">এটি পরীক্ষামূলক ফিচার তাই সবসময় সঠিক তথ্য দেখাবে না।</translation>
@@ -2064,6 +2067,7 @@
 <translation id="4661556981531699496">পোষ্য ও জীবজন্তু</translation>
 <translation id="4661868874067696603">কেনাকাটার আরও বিকল্প সার্চ করুন</translation>
 <translation id="4663373278480897665">ক্যামেরা ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
+<translation id="4664084870155869900">পরের বার অটোফিল করুন। আপনার ডিভাইসে কার্ড সেভ করা থাকে।</translation>
 <translation id="466561305373967878">বোর্ড গেম</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">ভার্চুয়াল রিয়ালিটি</translation>
@@ -2635,6 +2639,7 @@
 <translation id="5675809467256309336">নাচ ও ইলেক্ট্রনিক মিউজিক</translation>
 <translation id="5675959228867414813">তারিখ অনুযায়ী দেখুন</translation>
 <translation id="567604591393105935">স্ক্রিনের নিচে অ্যাটাচ করা কমার্স শিট অর্ধেক স্ক্রিন জুড়ে খুলেছে</translation>
+<translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">ফয়েল</translation>
 <translation id="5680642791693447368">থ্রিলার, ক্রাইম ও রহস্যমূলক সিনেমা</translation>
 <translation id="568292603005599551">ছবি X পজিশন</translation>
@@ -2672,6 +2677,7 @@
 <translation id="573555826359077410">'ফর্ম তৈরি করুন' বোতাম, Google Forms-এ চটপট নতুন ফর্ম তৈরি করতে এটি চালু করুন</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Google অ্যাকাউন্টে কার্ড সেভ করুন}one{Google অ্যাকাউন্টে কার্ড সেভ করুন}other{Google অ্যাকাউন্টে কার্ড সেভ করুন}}</translation>
 <translation id="5738385766833540397">আপনার ট্র্যাক করা প্রোডাক্টের দাম কমার বিজ্ঞপ্তি কীভাবে পাবেন তা ম্যানেজ করুন</translation>
+<translation id="573974402615125334">ট্যাব গ্রুপে শেয়ার করতে, যোগ দিতে ও কোলাবরেট করতে, আপনার ইতিহাস ও ট্যাব সিঙ্ক করুন</translation>
 <translation id="5740911612628596808">এনভেলপ C9</translation>
 <translation id="5742806904559466333">বার, ক্লাব ও নাইটলাইফ</translation>
 <translation id="5743684619253032786">নখের যত্ন নেওয়ার প্রোডাক্ট</translation>
@@ -3871,6 +3877,7 @@
 <translation id="7865448901209910068">সর্বোচ্চ গতি</translation>
 <translation id="7870281855125116701">প্রোডাক্টে ছাড় খুঁজে পাওয়া গেছে</translation>
 <translation id="7871445724586827387">আপনার Google অ্যাকাউন্টের পাসওয়ার্ড পরিবর্তন করুন</translation>
+<translation id="787226752901403048">ট্যাব গ্রুপে শেয়ার করতে ও যোগ দিতে এবং আইডিয়ার উপরে একসাথে কাজ করতে, Chrome-এ সাইন-ইন করুন</translation>
 <translation id="7877007680666472091">সুরক্ষিত কন্টেন্ট আইডি</translation>
 <translation id="7878562273885520351">আপনার পাসওয়ার্ড অন্য কেউ পরিবর্তন করার চেষ্টা করেছে</translation>
 <translation id="7882421473871500483">খয়েরি</translation>
@@ -4325,6 +4332,7 @@
 <translation id="8702965365666568344">মাউন্টিং টেপ</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" />-এ আপনার কানেকশন এনক্রিপ্ট হয় নি৷</translation>
 <translation id="8705331520020532516">ক্রমিক সংখ্যা</translation>
+<translation id="8706806585855470492">ট্যাব গ্রুপে আপনি শেয়ার করতে, যোগ দিতে ও কোলাবরেট করতে পারবেন</translation>
 <translation id="8708134712139312373">ব্লুটুথ ডিভাইসের সাথে কানেক্ট করার অনুমতি চাইতে পারে</translation>
 <translation id="8710842507289500830">ফন্ট স্টাইল</translation>
 <translation id="8712637175834984815">বুঝেছি</translation>
@@ -4467,6 +4475,7 @@
 <translation id="8975263830901772334">আপনার প্রিন্ট করা ফাইলগুলির নাম</translation>
 <translation id="8982884016487650216">PDF লোড হয়ে গেছে</translation>
 <translation id="8983369100812962543">আপনি এখন অ্যাপ ছোট বড় করতে পারবেন</translation>
+<translation id="8985112471026018799">আরও দ্রুত চেক-আউট করতে কার্ড সেভ করুন</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-এ আপনার ব্রাউজিংয়ের ইতিহাস দেখতে Tab প্রেস করার পর Enter প্রেস করুন</translation>
 <translation id="8987663052629670333">ফটো প্রিন্টের পরিষেবা</translation>
 <translation id="8987927404178983737">মাস</translation>
@@ -4533,6 +4542,7 @@
 <translation id="9090993752571911635">ইন্টারনেট সার্ভিস প্রোভাইডার (ISP)</translation>
 <translation id="9093723786115107672">ঘুমানোর পোষাক</translation>
 <translation id="9094544726794842788">'থাম্বস-ডাউন' আইকন এমন একটি ফর্ম খোলে, যেখানে এইসব ফলাফল কেন আপনার পছন্দ হয়নি সেই সম্পর্কিত বিশদ মতামত জমা দেওয়া যায়</translation>
+<translation id="9094809883254050729">পরের বার অটোফিল করুন। সেভ করা হলে কার্ড, এনক্রিপ্টেড হয়ে যায়।</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS সেটিংসে Chrome-কে সিস্টেমের ডিফল্ট ব্রাউজার হিসেবে সেট করতে প্রথমে ট্যাব, তারপরে Enter কী প্রেস করুন</translation>
 <translation id="9101450247048146228">ক্যামেরা ব্যবহার এবং গতিবিধি (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">ট্রে ১</translation>

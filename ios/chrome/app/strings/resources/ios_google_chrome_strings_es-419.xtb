@@ -169,6 +169,7 @@ Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</t
 <translation id="5639704535586432836">Abre Configuración &gt; Privacidad &gt; Cámara &gt; Google Chrome y activa la cámara.</translation>
 <translation id="5642200033778930880">Google Chrome no puede usar tu cámara en el modo de vista dividida</translation>
 <translation id="5661521615548540542">El Administrador de contraseñas de Google no pudo revisar todas las contraseñas. Vuelve a intentarlo más tarde.</translation>
+<translation id="5681291952421236520">Activa Chrome.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Se muestra 1 ventana de Chrome}other{Se muestran {count} ventanas de Chrome}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Establecer Chrome como tu navegador predeterminado</translation>
@@ -204,6 +205,7 @@ Espera unos minutos antes de cambiar de cuenta. Si cambias de cuenta ahora, se b
 <translation id="6484712497741564393">Accediste como <ph name="EMAIL" />.
 
 Tus datos se encriptan con tu frase de contraseña. Ingrésala para usar y guardar datos de Chrome en tu Cuenta de Google.</translation>
+<translation id="6533470733797826516">Accede más rápido con Autocompletar de Chrome</translation>
 <translation id="6545449117344801102">Chrome detecta direcciones y usa Google Maps para brindarte información local, además de instrucciones sobre cómo llegar.</translation>
 <translation id="6634107063912726160">Si sales de la cuenta, Chrome no sincronizará ningún dato nuevo con tu Cuenta de Google. Los datos sincronizados anteriormente permanecerán en la cuenta.</translation>
 <translation id="6636941099779251629">Tu organización requiere que accedas para usar Chrome. <ph name="BEGIN_LINK" />Obtén más información<ph name="END_LINK" /></translation>

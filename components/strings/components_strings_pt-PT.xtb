@@ -85,6 +85,7 @@
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> fechou a ligação inesperadamente.</translation>
 <translation id="1160009341934077418">Histórico de preços na Web</translation>
 <translation id="1161325031994447685">Ligar novamente à rede Wi-Fi</translation>
+<translation id="1161663161838091892">Sincronize os separadores e o histórico para continuar</translation>
 <translation id="1163507966173624031">Música folk e tradicional</translation>
 <translation id="11635448457105324">Botão Gerir endereços; ative para adicionar e gerir endereços nas definições do Chrome</translation>
 <translation id="1165039591588034296">Erro</translation>
@@ -637,6 +638,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2105838220373099643">Jogos RPG</translation>
 <translation id="2107021941795971877">Suportes de impressão</translation>
 <translation id="2108755909498034140">Reiniciar o computador</translation>
+<translation id="2109845311767915560">Grupo de separadores partilhado</translation>
 <translation id="2111166930115883695">Prima a barra de espaço.</translation>
 <translation id="2113977810652731515">Cartão</translation>
 <translation id="2114841414352855701">Ignorada porque foi substituída por <ph name="POLICY_NAME" /> .</translation>
@@ -1105,6 +1107,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="297173220375858963">Edição eletrónica</translation>
 <translation id="2972581237482394796">&amp;Repetir</translation>
 <translation id="2974468223369775963">Não foi possível guardar este IBAN na sua Conta Google. Em alternativa, foi guardado no Chrome neste dispositivo. O Chrome vai perguntar-lhe novamente da próxima vez que usar este IBAN.</translation>
+<translation id="297667759942911166">Colabore em grupos de separadores</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> selecionado atualmente. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">Bloquear e usar o teclado</translation>
 <translation id="2978824962390592855">Ópera</translation>
@@ -2064,6 +2067,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4661556981531699496">Animais de estimação e animais selvagens</translation>
 <translation id="4661868874067696603">Pesquise mais opções de compra</translation>
 <translation id="4663373278480897665">Câmara permitida</translation>
+<translation id="4664084870155869900">Preencha automaticamente da próxima vez. O cartão é guardado no seu dispositivo.</translation>
 <translation id="466561305373967878">Jogos de tabuleiro</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>
@@ -2089,6 +2093,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4704745399240123930">Os cartões não aceites por este comerciante, como os cartões virtuais, são desativados.</translation>
 <translation id="4708268264240856090">A ligação foi interrompida</translation>
 <translation id="4708276642004148190">Tratamento e abastecimento de água</translation>
+<translation id="4711628883879888561">Colabore no grupo de separadores</translation>
 <translation id="471880041731876836">Não tem autorização para aceder a este site</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Executar o Diagnóstico de rede do Windows<ph name="END_LINK" /></translation>
@@ -2673,6 +2678,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="573555826359077410">Botão Criar formulário; ative para criar rapidamente um novo formulário no Google Forms</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Guardar o cartão na sua Conta Google}other{Guardar os cartões na sua Conta Google}}</translation>
 <translation id="5738385766833540397">Faça a gestão da forma como recebe alertas de descida do preço relativos a produtos que monitoriza</translation>
+<translation id="573974402615125334">Para partilhar, aderir e colaborar em grupos de separadores, sincronize o seu histórico e separadores</translation>
 <translation id="5740911612628596808">Envelope C9</translation>
 <translation id="5742806904559466333">Bares, clubes e vida noturna</translation>
 <translation id="5743684619253032786">Produtos para cuidados das unhas</translation>
@@ -2694,6 +2700,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="578305955206182703">Âmbar</translation>
 <translation id="5783700460098783980">Bagagem e acessórios de viagem</translation>
 <translation id="57838592816432529">Desativar som</translation>
+<translation id="5783922175933467571">O link de <ph name="TAB_GROUP_DISPLAY_NAME" /> expira em 48 horas</translation>
 <translation id="5784606427469807560">Ocorreu um erro ao confirmar o cartão. Verifique a sua ligação à Internet e tente novamente.</translation>
 <translation id="5785756445106461925">Além disso, esta página inclui outros recursos que não são seguros. Estes recursos podem ser vistos por outros utilizadores em trânsito e modificados por um utilizador mal intencionado com o intuito de alterar o aspeto da página.</translation>
 <translation id="5793317771769868848">Este método de pagamento vai ser eliminado deste dispositivo</translation>
@@ -2766,6 +2773,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5930147475897662863">Ative esta definição para usar a funcionalidade Ajuda-me a escrever</translation>
 <translation id="593102073240001326">Faça você mesmo e conteúdo para especialistas e de procedimentos</translation>
 <translation id="5932224571077948991">O site apresenta anúncios intrusivos ou enganadores.</translation>
+<translation id="5933597524153120073">Abrir tudo (<ph name="ITEMS" />) numa nova janela</translation>
 <translation id="5937560539988385583">Página traduzida</translation>
 <translation id="5938153366081463283">Adicione um cartão virtual</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3038,6 +3046,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6394852772105848029">Este site quer abrir a app <ph name="APP_NAME" /></translation>
 <translation id="639673288733510393">Scooters e motorizadas</translation>
 <translation id="6398765197997659313">Sair do modo de ecrã inteiro</translation>
+<translation id="6399633237874954301">Leitor de cartões inteligentes permitido pelo seu administrador</translation>
 <translation id="6401136357288658127">Esta política foi descontinuada. Deverá optar por utilizar a política <ph name="NEW_POLICY" />.</translation>
 <translation id="640163077447496506">Expira hoje</translation>
 <translation id="6402537308870515461">É necessária uma revisão antes de mover</translation>
@@ -3872,6 +3881,7 @@ Detalhes adicionais:
 <translation id="7865448901209910068">A melhor velocidade</translation>
 <translation id="7870281855125116701">Desconto encontrado</translation>
 <translation id="7871445724586827387">Altere a palavra-passe da sua Conta Google</translation>
+<translation id="787226752901403048">Inicie sessão no Chrome para partilhar e aderir a grupos de separadores, e desenvolver ideias em conjunto</translation>
 <translation id="7877007680666472091">IDs de conteúdo protegido</translation>
 <translation id="7878562273885520351">A palavra-passe pode estar comprometida</translation>
 <translation id="7882421473871500483">Castanho</translation>
@@ -4327,6 +4337,7 @@ Detalhes adicionais:
 <translation id="8702965365666568344">Fita adesiva para montagem</translation>
 <translation id="8703575177326907206">A sua ligação a <ph name="DOMAIN" /> não está encriptada.</translation>
 <translation id="8705331520020532516">Número de série</translation>
+<translation id="8706806585855470492">Vai poder partilhar, aderir e colaborar em grupos de separadores</translation>
 <translation id="8708134712139312373">Pode solicitar a ligação a dispositivos Bluetooth</translation>
 <translation id="8710842507289500830">Estilo do tipo de letra</translation>
 <translation id="8712637175834984815">OK</translation>
@@ -4469,6 +4480,7 @@ Detalhes adicionais:
 <translation id="8975263830901772334">Nomes dos ficheiros impressos</translation>
 <translation id="8982884016487650216">Carregamento do PDF concluído</translation>
 <translation id="8983369100812962543">Já pode redimensionar a app</translation>
+<translation id="8985112471026018799">Guarde o cartão para um pagamento mais rápido</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Prima Tab e, em seguida, Enter para ver o histórico de navegação no Chrome</translation>
 <translation id="8987663052629670333">Serviços de impressão de fotos</translation>
 <translation id="8987927404178983737">Mês</translation>
@@ -4535,6 +4547,7 @@ Detalhes adicionais:
 <translation id="9090993752571911635">Fornecedores de serviços de Internet (ISPs)</translation>
 <translation id="9093723786115107672">Vestuário de dormir</translation>
 <translation id="9094544726794842788">A opção Não gosto abre um formulário para enviar feedback detalhado sobre o motivo pelo qual não gosta destes resultados</translation>
+<translation id="9094809883254050729">Preencha automaticamente da próxima vez. O cartão é encriptado quando é guardado.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para definir o Chrome como o navegador predefinido do sistema nas definições do iOS</translation>
 <translation id="9101450247048146228">Utilização e movimento da câmara (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Tabuleiro 1</translation>

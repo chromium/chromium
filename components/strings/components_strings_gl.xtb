@@ -85,6 +85,7 @@
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> pechou a conexión de forma inesperada.</translation>
 <translation id="1160009341934077418">Historial de prezos na Web</translation>
 <translation id="1161325031994447685">Conectando de novo á wifi</translation>
+<translation id="1161663161838091892">Sincroniza as pestanas e o historial para continuar</translation>
 <translation id="1163507966173624031">Música folk e tradicional</translation>
 <translation id="11635448457105324">Botón para xestionar enderezos. Actívao para engadir e xestionar enderezos na configuración de Chrome</translation>
 <translation id="1165039591588034296">Erro</translation>
@@ -1105,6 +1106,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="297173220375858963">Autoedición</translation>
 <translation id="2972581237482394796">&amp;Refacer</translation>
 <translation id="2974468223369775963">Este IBAN non se puido gardar na túa Conta de Google. En lugar diso, gardouse en Chrome neste dispositivo. Chrome preguntarache de novo a próxima vez que o uses.</translation>
+<translation id="297667759942911166">Colabora en grupos de pestanas</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />: opción actualmente seleccionada. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">Bloquear e usar o teclado</translation>
 <translation id="2978824962390592855">Ópera</translation>
@@ -1968,6 +1970,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4434045419905280838">Ventás emerxentes e redireccións</translation>
 <translation id="443673843213245140">O uso dun proxy está desactivado, pero especifícase unha configuración de proxy explícita.</translation>
 <translation id="4438821706955556403">Prezo habitual</translation>
+<translation id="444116852243722675">Abrir todos os URL (<ph name="ITEMS" />)</translation>
 <translation id="4441832193888514600">Ignorada porque a política só se pode configurar como unha política de usuario da nube.</translation>
 <translation id="4445133368066241428">Temas populares</translation>
 <translation id="4445964943162061557">Esta función é experimental, polo que non sempre acerta.</translation>
@@ -2063,6 +2066,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4661556981531699496">Mascotas e animais</translation>
 <translation id="4661868874067696603">Buscar máis opcións de compra</translation>
 <translation id="4663373278480897665">Permítese a cámara</translation>
+<translation id="4664084870155869900">Autocompleta os datos a próxima vez. A tarxeta gardarase no teu dispositivo.</translation>
 <translation id="466561305373967878">Xogos de mesa</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>
@@ -2634,6 +2638,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5675809467256309336">Música dance e electrónica</translation>
 <translation id="5675959228867414813">Mostrar por data</translation>
 <translation id="567604591393105935">Panel inferior do comercio aberto a altura media</translation>
+<translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Lámina</translation>
 <translation id="5680642791693447368">Películas de intriga, policiais e de suspense</translation>
 <translation id="568292603005599551">Posición X da imaxe</translation>
@@ -2671,6 +2676,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="573555826359077410">Botón para crear un formulario. Actívao para crear rapidamente un formulario de Google</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Garda a tarxeta na túa Conta de Google}other{Garda tarxetas na túa Conta de Google}}</translation>
 <translation id="5738385766833540397">Xestiona como recibes as alertas de baixada de prezos para os produtos dos que fas un seguimento</translation>
+<translation id="573974402615125334">Para compartir grupos de pestanas, unirte a eles e colaborar, sincroniza o teu historial e as pestanas</translation>
 <translation id="5740911612628596808">Sobre C9</translation>
 <translation id="5742806904559466333">Bares, clubes e vida nocturna</translation>
 <translation id="5743684619253032786">Produtos de manicura</translation>
@@ -3870,6 +3876,7 @@ Detalles adicionais:
 <translation id="7865448901209910068">A mellor velocidade</translation>
 <translation id="7870281855125116701">Desconto atopado</translation>
 <translation id="7871445724586827387">Cambiar o contrasinal da Conta de Google</translation>
+<translation id="787226752901403048">Inicia sesión en Chrome para compartir grupos de pestanas e unirte a eles, así como para desenvolver ideas con outras persoas</translation>
 <translation id="7877007680666472091">códigos de identificación de contido protexido</translation>
 <translation id="7878562273885520351">Pode que o teu contrasinal estea en perigo</translation>
 <translation id="7882421473871500483">Marrón</translation>
@@ -4324,6 +4331,7 @@ Detalles adicionais:
 <translation id="8702965365666568344">Cinta de escuma para montaxe</translation>
 <translation id="8703575177326907206">A túa conexión con <ph name="DOMAIN" /> non está cifrada.</translation>
 <translation id="8705331520020532516">Número de serie</translation>
+<translation id="8706806585855470492">Poderás compartir grupos de pestanas, unirte a eles e colaborar</translation>
 <translation id="8708134712139312373">Pode pedirche permiso para conectarse a dispositivos Bluetooth</translation>
 <translation id="8710842507289500830">Estilo do tipo de letra</translation>
 <translation id="8712637175834984815">De acordo</translation>
@@ -4466,6 +4474,7 @@ Detalles adicionais:
 <translation id="8975263830901772334">Nomes dos ficheiros que imprimes</translation>
 <translation id="8982884016487650216">Carga do PDF completada</translation>
 <translation id="8983369100812962543">Xa podes cambiar o tamaño da aplicación</translation>
+<translation id="8985112471026018799">Garda a tarxeta para tramitar a compra máis rapidamente</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para consultar o teu historial de navegación en Chrome, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="8987663052629670333">Servizos de impresión de fotos</translation>
 <translation id="8987927404178983737">Mes</translation>
@@ -4532,6 +4541,7 @@ Detalles adicionais:
 <translation id="9090993752571911635">Fornecedores de servizos de Internet (ISP)</translation>
 <translation id="9093723786115107672">Pixamas</translation>
 <translation id="9094544726794842788">Ao premer Non me gusta, abrirase un formulario para enviar comentarios detallados sobre o motivo polo que non che gustan estes resultados</translation>
+<translation id="9094809883254050729">Autocompleta os datos a próxima vez. A tarxeta encriptarase cando se garde.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para establecer Chrome como navegador predeterminado do sistema na configuración de iOS, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="9101450247048146228">Uso e movemento das cámaras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Bandexa 1</translation>

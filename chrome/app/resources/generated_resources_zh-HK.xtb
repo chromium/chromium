@@ -129,7 +129,6 @@
 <translation id="1079242569060319448">忘記 PIN 嗎？</translation>
 <translation id="1079285777677001938">部分網站的功能可能會無法正常運作。</translation>
 <translation id="1079766198702302550">永遠封鎖存取相機</translation>
-<translation id="1080365971383768617">在所有裝置上都能使用自己的密碼</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 個分頁}other{<ph name="GROUP_TITLE" /> - # 個分頁}}</translation>
 <translation id="1082214733466244292">管理員已封鎖此裝置的部分功能</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> 要求還原您的 Chrome 設定為原始預設值，並會重設您的首頁、新分頁和搜尋引擎、停用您的擴充功能，以及取消固定所有分頁。其他暫存資料和快取資料 (例如 Cookie、內容和網站資料) 亦會一併清除。</translation>
@@ -523,6 +522,7 @@
 <translation id="135389172849514421">可離線使用</translation>
 <translation id="1353980523955420967">找不到 PPD。請確認 Chromebook 已連線，然後再試一次。</translation>
 <translation id="1354045473509304750">繼續允許 <ph name="HOST" /> 使用和移動相機</translation>
+<translation id="1354148503392558902">正在變更密碼…</translation>
 <translation id="1355088139103479645">要刪除所有資料嗎？</translation>
 <translation id="1356376170199999104">已允許 – <ph name="PERMISSION_DETAILS" />。使用實體開關開啟麥克風。</translation>
 <translation id="1356959069439783953">閒置分頁新外觀登場</translation>
@@ -1102,6 +1102,7 @@
 <translation id="1751335846119670066">幫我讀</translation>
 <translation id="17513872634828108">開啟分頁</translation>
 <translation id="175196451752279553">重新開啟已關閉分頁(&amp;E)</translation>
+<translation id="1752557850776261983">正在檢查登入狀態…</translation>
 <translation id="1753067873202720523">您的 Chromebook 可能無法在開啟時充電。</translation>
 <translation id="1753557900380512635">室內</translation>
 <translation id="1753905327828125965">最常瀏覽</translation>
@@ -3032,6 +3033,7 @@
 <translation id="310297983047869047">上一張投影片</translation>
 <translation id="3103451787721578293">請提供上載這些資料的原因：</translation>
 <translation id="3103512663951238230">Alt 鍵 + 按一下左鍵</translation>
+<translation id="3104763887980088552">活動記錄</translation>
 <translation id="3104948640446684649">傳送使用情況和診斷資料。此裝置目前會將診斷、裝置及應用程式使用情況資料自動傳送至 Google。這些資料將有助改善系統和應用程式的穩定性及其他功能。部分彙整資料亦會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果已開啟「其他網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至你的 Google 帳戶。<ph name="BEGIN_LINK2" />進一步瞭解數據<ph name="BEGIN_LINK2_END" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">上次不成功的更新</translation>
 <translation id="3105796011181310544">要改回使用 Google 嗎？</translation>
@@ -3744,6 +3746,7 @@
 <translation id="3629664892718440872">記住這個選擇</translation>
 <translation id="3630132874740063857">您的手機</translation>
 <translation id="3630995161997703415">將此網站加到捷徑列，即可隨時使用</translation>
+<translation id="3632929818790223729">分割顯示所選分頁和使用中的分頁</translation>
 <translation id="3634652306074934350">權限要求已過期</translation>
 <translation id="3635199270495525546">偵測到可信任平台模組 (TPM)</translation>
 <translation id="3635353578505343390">傳送意見給 Google</translation>
@@ -6236,9 +6239,6 @@
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) 希望你加入分頁群組。任何擁有連結的人均可編輯所有分頁，因此加入時請小心。連結會於 48 小時後到期。</translation>
 <translation id="5410889048775606433">紫紅色</translation>
 <translation id="5411022484772257615">無法完成學校註冊程序</translation>
-<translation id="5411856344659127989">如要新增其他人的帳戶，請<ph name="LINK_BEGIN" />新增使用者<ph name="LINK_END" />至您的 <ph name="DEVICE_TYPE" />。
-
-您已向網站和應用程式授予的權限，可能會套用到此帳戶。您可在「<ph name="SETTINGS_LINK_BEGIN" />設定<ph name="SETTINGS_LINK_END" />」中管理 Google 帳戶。</translation>
 <translation id="54118879136097217">在 <ph name="DEVICE_TYPE" /> 上安裝應用程式</translation>
 <translation id="5413640305322530561">進一步瞭解診斷和使用情況資料</translation>
 <translation id="5414198321558177633">正在重新整理設定檔清單。這項操作可能需時數分鐘。</translation>
@@ -6517,7 +6517,6 @@
 <translation id="5610867721023328944">請再試一次，或選取下方其中一個可用的主題。</translation>
 <translation id="5611398002774823980">儲存在帳戶中</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />，<ph name="APP_FULL_NAME" /></translation>
-<translation id="5613074282491265467">登入 Chrome 後，密碼將儲存在 Google 帳戶 (<ph name="USER_EMAIL" />) 中。如要關閉此功能，請前往設定。</translation>
 <translation id="5614190747811328134">使用者通知</translation>
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
 <translation id="5614947000616625327">iCloud 鑰匙圈</translation>
@@ -8546,7 +8545,6 @@
 <translation id="7088674813905715446">管理員已將這部裝置設為取消佈建狀態。如要讓裝置符合註冊資格，請要求您的管理員將裝置設為等待處理狀態。</translation>
 <translation id="7088960765736518739">按鈕控制</translation>
 <translation id="7089253021944603172">讓分頁恢復「使用中」狀態</translation>
-<translation id="7090160970140261931">您可新增其他帳戶至「<ph name="DEVICE_TYPE" />」，以便透過帳戶使用網站或 Android 應用程式。您亦可控制要透過哪個帳戶使用 Android 應用程式。</translation>
 <translation id="7090714929377281710">自動關閉熱點</translation>
 <translation id="7092504544229909737">無法配合 Android 應用程式使用</translation>
 <translation id="7093220653036489319">快速解答</translation>
@@ -9007,6 +9005,7 @@
 <translation id="7424818322350938336">已新增網絡</translation>
 <translation id="7425037327577270384">幫我寫</translation>
 <translation id="7427348830195639090">背景頁面：<ph name="BACKGROUND_PAGE_URL" /></translation>
+<translation id="7427729970025360383">這是受管個人檔案</translation>
 <translation id="7427798576651127129">透過 <ph name="DEVICE_NAME" /> 撥打電話</translation>
 <translation id="7429415133937917139">在 ChromeVox 面板的畫面頂部模擬展示可重新整理的點字顯示器輸出結果</translation>
 <translation id="7429568074268678162"><ph name="FILENAME" /> 可能唔安全。如果要 Chrome 驗證檔案，可以加個密碼。你亦可以直接下載檔案。</translation>
@@ -10024,6 +10023,7 @@
 <translation id="8140869601171867148">Google 帳戶是指你在 Gmail、YouTube、Chrome 和其他 Google 產品使用的帳戶。
     透過帳戶，你可輕鬆存取所有書籤、檔案及其他內容。</translation>
 <translation id="8141418916163800697">您可在 Phone Hub 設定中設定更多功能</translation>
+<translation id="814156740715940972">分割顯示所選分頁和使用中的分頁</translation>
 <translation id="8141584439523427891">正在替代瀏覽器中開啟</translation>
 <translation id="8141725884565838206">管理您的密碼</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{1 部影片}other{# 部影片}}</translation>
@@ -11154,9 +11154,6 @@
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">加快耗電量 (目前為 <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944633700466246631">建立 6 位數的「Google 密碼管理工具」復原 PIN</translation>
-<translation id="8944725102565796255">如果您只想使用此帳戶一次，可以<ph name="GUEST_LINK_BEGIN" />透過訪客身份使用裝置<ph name="GUEST_LINK_END" />。如要新增其他人的帳戶，請<ph name="LINK_BEGIN" />新增使用者<ph name="LINK_END" />至您的 <ph name="DEVICE_TYPE" />。
-
-您已向網站和應用程式授予的權限，可能會套用到此帳戶。您可在「<ph name="SETTINGS_LINK_BEGIN" />設定<ph name="SETTINGS_LINK_END" />」中管理 Google 帳戶。</translation>
 <translation id="8945274638472141382">圖示大小</translation>
 <translation id="8945508919180478719">錄音室式麥克風</translation>
 <translation id="8946359700442089734">這部 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置未完全啟用偵錯功能。</translation>

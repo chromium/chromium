@@ -191,6 +191,7 @@
 <translation id="1779354709911146450">Authentication error</translation>
 <translation id="1780152987505130652">Close group</translation>
 <translation id="178400879184240105">Your passwords are unique</translation>
+<translation id="17906873777101817">Offer to save passwords and passkeys</translation>
 <translation id="1807893857950749072">Allow price tracking notifications…</translation>
 <translation id="1810976980198522421">Cancel</translation>
 <translation id="1815941218935345331">Passcode</translation>
@@ -833,7 +834,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4764612367328936189">Your organisation allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover and following</translation>
 <translation id="4769198578611055647">Helps you access saved passkeys on any device</translation>
-<translation id="4777866634702576038">Delete tab group?</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Open in Incognito?</translation>
 <translation id="4792385443586519711">Company name</translation>
@@ -1323,6 +1323,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6732087373923685049">camera</translation>
 <translation id="6746338529702829275">Review your account data</translation>
 <translation id="6755200887046212842">Manage Accounts</translation>
+<translation id="6755733078693946548">Access passwords and passkeys from any app</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6779455296366983087">Your browsing data will be deleted</translation>
 <translation id="6790502149545262384">Soon, you’ll see stories from <ph name="CHANNEL_NAME" /> when you open a new tab.</translation>
@@ -1590,6 +1591,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="7977451675950311423">Warns you if you use a password that has been compromised in a data breach.</translation>
 <translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> new tabs, <ph name="NUMBER_OF_TABS_REMOVED" /> closed</translation>
 <translation id="797824194429476746">The tabs will remain open on this device but the group will be permanently deleted.</translation>
+<translation id="797874245254030665">Access your passwords and passkeys from any app</translation>
 <translation id="7982789257301363584">Network</translation>
 <translation id="7987685713885608670">For added safety, encrypt passwords on your device before they’re saved to Google Password Manager.</translation>
 <translation id="798991908416757345">Tab groups are unavailable</translation>
@@ -1670,6 +1672,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8299613349954694191">Open an Incognito tab to browse the web privately.</translation>
 <translation id="8307481894409578819">This file could not be uploaded</translation>
 <translation id="8319076807703933069">New search</translation>
+<translation id="8328607660158575887">Open autofill and passwords settings</translation>
 <translation id="833647236762414178">Create, save and manage your passwords and passkeys to easily sign in to sites and apps. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Back up your stuff and use it on any device.</translation>
 <translation id="8349305172487531364">Bookmarks bar</translation>
@@ -1822,6 +1825,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8909459547399237818">Select Password Manager, then tap Add Widget</translation>
 <translation id="891282356902782456">This password is saved only to this device. To use it on your other devices, save it in your Google Account, <ph name="EMAIL" />.</translation>
 <translation id="8915916167043355778">Close all</translation>
+<translation id="892185197271200809">Everyone will immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and it will be deleted from all devices</translation>
 <translation id="8921902386312975525">Options to track parcels</translation>
 <translation id="8923178205567790913">Passwords</translation>
 <translation id="892776311701544612">Learn more…</translation>

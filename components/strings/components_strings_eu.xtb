@@ -85,6 +85,7 @@
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> webguneak konexioa eten du ustekabean.</translation>
 <translation id="1160009341934077418">Prezioaren historia sarean</translation>
 <translation id="1161325031994447685">Wifi-sarera berriro konektatu.</translation>
+<translation id="1161663161838091892">Aurrera egiteko, sinkronizatu fitxak eta historia</translation>
 <translation id="1163507966173624031">Folka eta musika tradizionala</translation>
 <translation id="11635448457105324">Helbideak kudeatzeko botoia: aktiba ezazu Chrome-ren ezarpenetara joan, eta helbideak gehitzeko eta kudeatzeko</translation>
 <translation id="1165039591588034296">Errorea</translation>
@@ -1105,6 +1106,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="297173220375858963">Argitalpen elektronikoak</translation>
 <translation id="2972581237482394796">&amp;Berregin</translation>
 <translation id="2974468223369775963">Ezin izan da gorde IBANa Google-ko kontuan. Horren ordez, gailu honetako Chrome-n gorde da. IBANa erabiltzen duzun hurrengoan, Chrome-k berriro galdetuko dizu.</translation>
+<translation id="297667759942911166">Jardun elkarlanean fitxa taldeetan</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> dago hautatuta. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">Teklatua blokeatu eta erabili</translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -2060,6 +2062,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4661556981531699496">Animaliak eta konpainia-animaliak</translation>
 <translation id="4661868874067696603">Bilatu erosteko aukera gehiago</translation>
 <translation id="4663373278480897665">Kamera erabil daiteke</translation>
+<translation id="4664084870155869900">Bete automatikoki hurrengoan. Txartela gailuan gordetzen da.</translation>
 <translation id="466561305373967878">Mahai-jokoak</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Errealitate birtuala</translation>
@@ -2631,6 +2634,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5675809467256309336">Dance musika eta musika elektronikoa</translation>
 <translation id="5675959228867414813">Erakutsi dataren arabera</translation>
 <translation id="567604591393105935">Pantailaren behealdean ainguratutako orria, merkataritzari buruzkoa, altuera erdian irekita dago</translation>
+<translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Xafla mehea</translation>
 <translation id="5680642791693447368">Thrillerrak, krimen-filmak eta misteriozko filmak</translation>
 <translation id="568292603005599551">Irudiaren X ardatzaren posizioa</translation>
@@ -2668,6 +2672,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="573555826359077410">Inprimaki bat sortzeko botoia: aktiba ezazu Google Inprimakiak zerbitzuan inprimaki bat bizkor sortzeko</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Gorde txartela Google-ko kontuan}other{Gorde txartelak Google-ko kontuan}}</translation>
 <translation id="5738385766833540397">Kudeatu jarraipena egiten diezun produktuei dagozkien prezio-jaitsieren alertak jasotzeko modua</translation>
+<translation id="573974402615125334">Fitxa taldeak partekatzeko, haietan sartzeko eta elkarlanean jarduteko, sinkronizatu historia eta fitxak</translation>
 <translation id="5740911612628596808">C9 gutun-azala</translation>
 <translation id="5742806904559466333">Tabernak, klubak eta gaugiroa</translation>
 <translation id="5743684619253032786">Azazkalen zaintzarako produktuak</translation>
@@ -3866,6 +3871,7 @@ Xehetasun gehiago:
 <translation id="7865448901209910068">Abiadurarik onena</translation>
 <translation id="7870281855125116701">Deskontu bat aurkitu da</translation>
 <translation id="7871445724586827387">Aldatu Google-ko kontuko pasahitza</translation>
+<translation id="787226752901403048">Hasi saioa Chrome-n fitxa taldeak partekatzeko eta haietan sartzeko, eta ideien inguruan elkarlanean jarduteko</translation>
 <translation id="7877007680666472091">eduki babestuaren IDak</translation>
 <translation id="7878562273885520351">Baliteke pasahitza arriskuan egotea</translation>
 <translation id="7882421473871500483">Marroia</translation>
@@ -4320,6 +4326,7 @@ Xehetasun gehiago:
 <translation id="8702965365666568344">Oratzeko zinta</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> domeinuarekiko duzun konexioa ez dago enkriptatuta.</translation>
 <translation id="8705331520020532516">Serie-zenbakia</translation>
+<translation id="8706806585855470492">Fitxa taldeak partekatzeko, haietan sartzeko eta elkarlanean jarduteko aukera izango duzu</translation>
 <translation id="8708134712139312373">Bluetooth bidezko gailuetara konektatzea eska dezake</translation>
 <translation id="8710842507289500830">Letra-estiloa</translation>
 <translation id="8712637175834984815">Ados</translation>
@@ -4462,6 +4469,7 @@ Xehetasun gehiago:
 <translation id="8975263830901772334">Inprimatzen dituzun fitxategien izenak</translation>
 <translation id="8982884016487650216">Kargatu da PDFa</translation>
 <translation id="8983369100812962543">Orain, aplikazioaren tamaina alda dezakezu</translation>
+<translation id="8985112471026018799">Gorde txartela bizkorrago ordaintzeko</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" arakatze-historia Chrome-n ikusteko</translation>
 <translation id="8987663052629670333">Argazkiak inprimatzeko zerbitzuak</translation>
 <translation id="8987927404178983737">Hilabetea</translation>
@@ -4528,6 +4536,7 @@ Xehetasun gehiago:
 <translation id="9090993752571911635">Interneteko zerbitzu-hornitzaileak</translation>
 <translation id="9093723786115107672">Lotarako arropa</translation>
 <translation id="9094544726794842788">"Ez zait gustatu" sakatuta, inprimaki bat irekiko da, non emaitzak zergatik gustatu ez zaizkizun azaldu ahal izango duzun</translation>
+<translation id="9094809883254050729">Bete automatikoki hurrengoan. Txartela enkriptatu egiten da gordetzean.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" Chrome sistemaren arakatzaile lehenetsi gisa ezartzeko iOS-en ezarpenetan</translation>
 <translation id="9101450247048146228">Kameraren erabilera eta mugimendua (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">1. erretilua</translation>

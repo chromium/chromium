@@ -169,6 +169,7 @@
 <translation id="5639704535586432836">Откройте "Настройки &gt; Конфиденциальность &gt; Камера &gt; Chrome" и включите камеру.</translation>
 <translation id="5642200033778930880">Google Chrome не может использовать камеру в режиме Split View.</translation>
 <translation id="5661521615548540542">Google Менеджеру паролей не удается проверить все пароли. Повторите попытку позже.</translation>
+<translation id="5681291952421236520">Включите Chrome.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Показано одно окно Chrome}one{Показано {count} окно Chrome}few{Показано {count} окна Chrome}many{Показано {count} окон Chrome}other{Показано {count} окна Chrome}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Сделайте Chrome браузером по умолчанию</translation>
@@ -204,6 +205,7 @@
 <translation id="6484712497741564393">Вы вошли как <ph name="EMAIL" />.
 
 Ваши данные зашифрованы кодовой фразой. Введите ее, чтобы пользоваться данными Chrome и сохранять их в аккаунте Google.</translation>
+<translation id="6533470733797826516">Входите в аккаунты быстрее с помощью автозаполнения Chrome.</translation>
 <translation id="6545449117344801102">Chrome определяет адреса и использует Google Карты, чтобы прокладывать маршруты и показывать полезную информацию</translation>
 <translation id="6634107063912726160">Выйдя из Chrome, вы остановите синхронизацию данных с аккаунтом Google. Синхронизированные ранее данные не будут удалены.</translation>
 <translation id="6636941099779251629">По правилам организации, чтобы использовать Chrome, нужно выполнить вход. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>

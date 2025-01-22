@@ -169,6 +169,7 @@ Coba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data ini a
 <translation id="5639704535586432836">Buka Setelan &gt; Privasi &gt; Kamera &gt; Google Chrome, lalu aktifkan kamera.</translation>
 <translation id="5642200033778930880">Google Chrome tidak dapat menggunakan kamera dalam mode Layar Terpisah</translation>
 <translation id="5661521615548540542">Pengelola Sandi Google tidak dapat memeriksa semua sandi. Coba lagi nanti.</translation>
+<translation id="5681291952421236520">Aktifkan/nonaktifkan Chrome</translation>
 <translation id="5690398455483874150">{count,plural, =1{Saat ini menampilkan 1 jendela Chrome}other{Saat ini menampilkan {count} jendela Chrome}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Setel Chrome sebagai browser default Anda</translation>
@@ -204,6 +205,7 @@ Coba tunggu beberapa menit sebelum beralih akun. Jika Anda beralih akun sekarang
 <translation id="6484712497741564393">Login sebagai <ph name="EMAIL" />.
 
 Data Anda dienkripsi dengan frasa sandi. Masukkan frasa sandi untuk menggunakan dan menyimpan data Chrome di Akun Google Anda.</translation>
+<translation id="6533470733797826516">Login lebih cepat dengan fitur isi otomatis Chrome</translation>
 <translation id="6545449117344801102">Chrome mendeteksi alamat dan menggunakan Google Maps untuk memberikan rute dan info lokal kepada Anda.</translation>
 <translation id="6634107063912726160">Jika Anda logout, Chrome tidak akan menyinkronkan data baru apa pun ke Akun Google Anda. Data yang sebelumnya disinkronkan tetap tersimpan di akun.</translation>
 <translation id="6636941099779251629">Organisasi mengharuskan Anda login untuk menggunakan Chrome. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>

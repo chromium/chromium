@@ -380,6 +380,11 @@ Isso substitui a política <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAM
 <translation id="1294263471858445589">Ativar a autenticação pelo SO em sessões normais e anônimas.</translation>
 <translation id="1295737447968372331">Ativa o ditado na tela de login</translation>
 <translation id="1297182715641689552">Usar um script de proxy .pac</translation>
+<translation id="1297909092292754072">Se a política for definida, será possível especificar uma lista de origens (URLs) ou padrões de nome de host (como *.example.com) aos quais as restrições de segurança de origens inseguras não serão aplicadas. Os padrões só são aceitos para nomes de host. URLs/origens com esquemas precisam ser strings exatas. As organizações podem especificar origens para aplicativos legados que não possam implantar TLS ou configurar um servidor de preparo para desenvolvimento da Web interno. Dessa forma, os desenvolvedores podem testar recursos que necessitam de contextos seguros sem precisar implantar o TLS no servidor de preparo. Essa política também impede que origens sejam marcadas como "Não seguras" na barra de endereço.
+
+A definição de uma lista de URLs nesta política tem o mesmo efeito que configurar a flag de linha de comando --unsafely-treat-insecure-origin-as-secure para uma lista dos mesmos URLs separados por vírgulas. A política vai modificar a flag de linha de comando e UnsafelyTreatInsecureOriginAsSecure, se estiver presente.
+
+Para ver mais informações sobre contextos seguros, consulte Secure Contexts (https://www.w3.org/TR/secure-contexts) (em inglês).</translation>
 <translation id="1297961932043741908">Define um limite, em megabytes, para a memória que uma única instância do Chrome pode usar.</translation>
 <translation id="1304973015437969093">IDs de extensões//aplicativos e URLs de atualização deverão ser instalados silenciosamente</translation>
 <translation id="1305400589435476516">Se a política for definida como "Ativada", o roaming de dados será permitido no dispositivo.
@@ -2012,6 +2017,7 @@ Se ela for ativada ou deixada sem definição, o usuário poderá escolher uma i
 
       Observação: o isolamento de muitos sites no Android pode causar problemas de desempenho, principalmente em dispositivos com pouca memória. Esta política se aplica apenas ao Chrome no Android sendo executado em dispositivos com mais de 1 GB de RAM. Para aplicar a política em plataformas que não sejam o Android, use a <ph name="ISOLATE_ORIGINS_POLICY_NAME" />.</translation>
 <translation id="2407758458436268630">Permitir que o modelo de escurecimento inteligente aumente o tempo até a tela escurecer</translation>
+<translation id="2410163749464044777">Configurações de armazenamento local de dados do usuário</translation>
 <translation id="2411629345938804022">Se a política for definida como 3, os sites solicitarão acesso a dispositivos Bluetooth que estiverem por perto. Se a política for definida como 2, o acesso a dispositivos Bluetooth que estiverem por perto será negado.
 
       Se não for definida, os sites terão permissão para solicitar acesso, mas os usuários poderão mudar essa configuração.</translation>
@@ -2554,6 +2560,9 @@ Se a política não for definida, a <ph name="BLOCK_POPUPS_POLICY_NAME" /> será
 <translation id="2801378553855965587">Desativar a integração com o <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
 <translation id="2805707493867224476">Permitir que todos os sites exibam pop-ups</translation>
 <translation id="2806804577787377637">Essa política foi descontinuada e parou de ter suporte. Use a <ph name="PER_APP_TIME_LIMITS_ALLOWLIST" />.</translation>
+<translation id="2812417768214606683">Esta política especifica uma lista de dispositivos de armazenamento USB isentos das políticas de <ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" /> e <ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" />.
+
+As entradas são pares de identificador de fornecedor e identificador de produto USB que reconhecem o modelo específico do dispositivo USB.</translation>
 <translation id="2815701930753942156">Esta política especifica uma lista de intervalos semanais durante os quais o dispositivo <ph name="PRODUCT_OS_NAME" /> não pode ser usado. As sessões em andamento serão fechadas, e o login será bloqueado.
 
 Não é possível usar intervalos sobrepostos.
@@ -5713,6 +5722,7 @@ Quando ela for ativada ou deixada sem definição, a propriedade "zoom" do CSS v
 Quando ela for desativada, a propriedade "zoom" do CSS vai voltar ao comportamento legado pré-padronizado.
 
 Esta política é uma solução temporária para permitir que o conteúdo da Web seja migrado para o novo comportamento. Há também um teste de origem (DisableStandardizedBrowserZoom) que corresponde ao comportamento quando esta política está desativada. Esta política será removida e o comportamento "Ativado" será permanente no marco 134.</translation>
+<translation id="5088303895040832480">Use UsbDeviceId no novo código.</translation>
 <translation id="5090791951240382356">Permitir a mescla de políticas de dicionário de diferentes fontes</translation>
 <translation id="5091315650312105069">Permitir autenticação <ph name="BASIC_AUTH" /> para conexões HTTP</translation>
 <translation id="5093603777978346818">Não ativar o protetor na tela de bloqueio.</translation>
@@ -8807,6 +8817,7 @@ Esta política não afeta os gerenciadores de senhas de terceiros que usam
 APIs de acessibilidade.</translation>
 <translation id="7114169791477667553">Desativar o provedor de pesquisa padrão</translation>
 <translation id="7115684775550072082">Manter apenas espaços em branco para Tipos MIME de texto e XML</translation>
+<translation id="7119538491527883595">Armazenamento local de dados do usuário</translation>
 <translation id="7121046543122812054">Esta política foi descontinuada. Use a <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
 
       Permite que o usuário faça login no <ph name="PRODUCT_NAME" />.
@@ -9116,6 +9127,7 @@ Isso substitui a política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_NA
 <translation id="7339315111520512972">Força a execução do código de rede no processo do navegador</translation>
 <translation id="7340034977315324840">Informar horário das atividades do dispositivo</translation>
 <translation id="734095828044419464">Desativar o provisionamento de certificado do cliente</translation>
+<translation id="7341773449551289679">Lista de permissões de armazenamento externo</translation>
 <translation id="7343004974628511824">Realizar verificações de interceptação de DNS</translation>
 <translation id="7343497214039883642">Arquivo de configuração de impressora empresarial para dispositivos</translation>
 <translation id="7357148531287978404">Desativar a entrada de áudio</translation>

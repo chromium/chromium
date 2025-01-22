@@ -973,6 +973,7 @@
 <translation id="4285498937028063278">Босату</translation>
 <translation id="428715201724021596">Профильге қосылуда. Бұл бірнеше минутқа созылуы мүмкін.</translation>
 <translation id="4287250812980588583">Chrome терезесі</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> басқаратын микрофонның дыбыс деңгейі}other{# қолданба басқаратын микрофонның дыбыс деңгейі}}</translation>
 <translation id="4294319844246081198">Қайырлы таң, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Барлық <ph name="COUNT" /> хабарландыруды өшіру</translation>
 <translation id="4300272766492248925">Қолданбаны ашу</translation>
@@ -1270,6 +1271,7 @@
 <translation id="5245201184978705914">Транскриптіні құру мүмкін емес</translation>
 <translation id="5251174953851719648">Контентті жаңарту</translation>
 <translation id="5253783950165989294">"<ph name="DEVICE_NAME" />" деп аталатын, батарея заряды <ph name="BATTERY_PERCENTAGE" />% құрылғыға қосылды.</translation>
+<translation id="5256939106029293271">Микрофонды тексеріп көріңіз</translation>
 <translation id="5258528442992323769">Сақталған жұмыс үстелі жоқ.</translation>
 <translation id="5260676007519551770">4-ші жұмыс үстелі</translation>
 <translation id="5265391159779542051">Нәтижелер жүктелді</translation>
@@ -1427,6 +1429,7 @@
 <translation id="5745612484876805746">Күн батқанда, Night Light режимі автоматты түрде іске қосылады</translation>
 <translation id="5750765938512549687">Bluetooth өшірулі</translation>
 <translation id="5758114525425072423">Зейін қою режимі басталады. Таймер <ph name="FOCUS_DURATION" /> ұзақтыққа орнатылды.</translation>
+<translation id="5759522586053040964">Басқаларға дауысыңыз қалай естілетінін тыңдаңыз. Тоқтату үшін сынақ белгішесін басыңыз немесе бейнеқоңырау панелін жабыңыз.</translation>
 <translation id="5760866832697883462"><ph name="NAME" /> құрылғысын жалғаңыз</translation>
 <translation id="5762420912707163638">Ауыстырғыш белгілегіші. <ph name="STATE_TEXT" /> Экранда сурет салу үшін сенсорлық тақтаны, сенсорлық экранды және стилусты пайдаланыңыз.</translation>
 <translation id="576341972084747908">Қауіпті <ph name="FILENAME" /> файлы жүктеп алынуда</translation>

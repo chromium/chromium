@@ -140,6 +140,7 @@
 <translation id="1415846719612499304">צפייה ברשימת הרשתות. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">כדי לבצע את פעולת ההודעה יש לבטל את נעילת המכשיר</translation>
 <translation id="1420408895951708260">הפעלה או כיבוי של תאורת הלילה. <ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">קבוצה מוצעת</translation>
 <translation id="1426410128494586442">כן</translation>
 <translation id="1435537621343861112">לא ניתן להתחיל את ההכתבה. המיקרופון כבוי.</translation>
 <translation id="1445031758921122223">הורדת הקבצים של שליטה באמצעות תנועות הפנים הסתיימה</translation>
@@ -243,12 +244,14 @@
 <translation id="17722141032474077">חישובים</translation>
 <translation id="1774796056689732716">יומן, <ph name="CURRENT_MONTH_YEAR" />, התאריך שנבחר הוא <ph name="DATE" />.</translation>
 <translation id="178347895271755507">הגדרת ההצגה של התמונות, המדיה וההתראות שבטלפון מהזמן האחרון</translation>
+<translation id="1785317913592722944">הסרת פריט מהקבוצה המוצעת</translation>
 <translation id="1786487376942610288">מעבר בין הגודל המרבי לגודל הנוכחי של חלון התמונה בתוך תמונה</translation>
 <translation id="1787955149152357925">כבוי</translation>
 <translation id="1796561540704213354">אתרים, כולל דפים שביקרת בהם ודפים פתוחים</translation>
 <translation id="179842970735685253">‏תנאים ולהגבלות של Google</translation>
 <translation id="1805407494113167797">לא ניתן להשמיע את הצלילים של מצב הריכוז</translation>
 <translation id="181103072419391116">עוצמת האות: <ph name="SIGNAL_STRENGTH" />, הרשת מנוהלת על ידי מנהל המערכת שלך</translation>
+<translation id="1815039896005206046">אם סימנת "לא אהבתי", יישלח אלינו משוב שלא אהבת את הקבוצה המוצעת הזו</translation>
 <translation id="1816896987747843206">הפעולה הזו מאפשרת גישה למצלמה לכל האפליקציות והאתרים שיש להם הרשאת גישה למצלמה</translation>
 <translation id="1823873187264960516">אתרנט: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">הפעלת הגישה למיקום</translation>
@@ -390,6 +393,7 @@
 <translation id="2369165858548251131">"שלום" בסינית</translation>
 <translation id="2370971919968699910">עשויים לחול חיובים על שימוש בחבילת הגלישה.
 ‫<ph name="DEVICECOUNT" /> מכשירים מחוברים.</translation>
+<translation id="2383521554963939360">אפליקציות וקבוצות של כרטיסיות</translation>
 <translation id="2386292613071805067">בחירת כל תוכן הדף</translation>
 <translation id="2389423187722941333">‏הפעלה או השבתה של Gemini</translation>
 <translation id="2392659840443812875">‏אין נקודה לשיתוף אינטרנט (Hotspot). צריך לוודא שהמכשיר נמצא בקרבת מקום ושה-Bluetooth מופעל.</translation>
@@ -920,6 +924,7 @@
 <translation id="4151054805501931758">שיפור תמונת הדיוקן</translation>
 <translation id="4156293514828496577">רמת הטעינה שנותרה בסוללה: %<ph name="PERCENTAGE" /> (בערך <ph name="TIME_LEFT" />).
 חלק מהתכונות מוגבלות כדי להאריך את חיי הסוללה.</translation>
+<translation id="4158003972857765638">ארגון בשולחן עבודה וירטואלי חדש</translation>
 <translation id="4160919062868802509">זוהו מספר מקורות אודיו</translation>
 <translation id="416245495747357243">סיימת!</translation>
 <translation id="4165275524535002941">יכול להיות שהכבל לא תומך במסכים</translation>
@@ -968,7 +973,7 @@
 <translation id="4285498937028063278">ביטול ההצמדה</translation>
 <translation id="428715201724021596">מתבצע חיבור לפרופיל. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="4287250812980588583">‏חלון Chrome</translation>
-<translation id="4291322857434980285">{NUM_APPS,plural, =1{עוצמת הקול של המיקרופון נשלטת על ידי <ph name="APP_NAME" />}one{עוצמת הקול של המיקרופון נשלטת על ידי # אפליקציות}two{עוצמת הקול של המיקרופון נשלטת על ידי # אפליקציות}other{עוצמת הקול של המיקרופון נשלטת על ידי # אפליקציות}}</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{‫<ph name="APP_NAME" /> שולטת בעוצמת המיקרופון}one{# אפליקציות שולטות בעוצמת המיקרופון}two{# אפליקציות שולטות בעוצמת המיקרופון}other{# אפליקציות שולטות בעוצמת המיקרופון}}</translation>
 <translation id="4294319844246081198">בוקר טוב <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">ניקוי כל <ph name="COUNT" /> ההתראות</translation>
 <translation id="4300272766492248925">פתיחת האפליקציה</translation>
@@ -985,6 +990,7 @@
 <translation id="4322742403972824594">‏מקשי הקיצור Ctrl ‏+ ‏Alt + חץ למעלה הוחלפו. כדי לדמות את הפעולה של המקש Home, יש להקיש על <ph name="LAUNCHER_KEY_NAME" /> + החץ שמאלה.</translation>
 <translation id="4324840740119394760">הפעולה הזו מאפשרת גישה למצלמה לאפליקציה <ph name="APP_NAME" /> ולכל האפליקציות והאתרים שיש להם הרשאת גישה למצלמה</translation>
 <translation id="4327147325944669226">הקלטת המשחק</translation>
+<translation id="4329076911374908740">הגעת למספר המקסימלי של קבוצות שאפשר לשמור.</translation>
 <translation id="4338109981321384717">זכוכית מגדלת</translation>
 <translation id="4348580496249286403">‫<ph name="VOLUME_LEVEL" />, הושתק</translation>
 <translation id="4351244548802238354">סגירת תיבת הדו-שיח</translation>
@@ -1942,6 +1948,7 @@
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">יצירה</translation>
 <translation id="7526573455193969409">ייתכן שהרשת מנוטרת</translation>
+<translation id="7534543072325030705">אם סימנת "אהבתי", יישלח אלינו משוב שאהבת את הקבוצה המוצעת הזו</translation>
 <translation id="7536035074519304529">‏כתובת IP: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">עדכון החלון השמאלי</translation>
 <translation id="7543399541175347147">‏בשלב הזה, אין תמיכה באפליקציות Linux ובחלונות פרטיים. אפליקציות אחרות יישמרו.</translation>
@@ -2108,6 +2115,7 @@
 <translation id="8004512796067398576">הוספה</translation>
 <translation id="8005527720597583355">התחלת פעילות במצב ריכוז</translation>
 <translation id="8015361438441228492">לא ניתן לערוך את המשימה.</translation>
+<translation id="8027187124910699148">המשך עם הקבוצה המוצעת</translation>
 <translation id="802782383769312836">שולחן העבודה הווירטואלי הקודם: <ph name="DESK_NAME" />. שולחן עבודה וירטואלי <ph name="DESK_INDEX" /> מתוך <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">ניסיון ההתחברות לנקודה לשיתוף אינטרנט נכשל</translation>
 <translation id="8029629653277878342">יש להזין קוד אימות או סיסמה כדי לענות על דרישות האבטחה המוגברות</translation>
@@ -2216,6 +2224,7 @@
 <translation id="8426708595819210923">ערב טוב <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> עד <ph name="KEY_TWO" /></translation>
+<translation id="8429547770382807369">שמירת הקבוצה למועד מאוחר יותר</translation>
 <translation id="8433186206711564395">הגדרות רשת</translation>
 <translation id="8433977262951327081">שינינו את קיצור הדרך להצגת בועת התפריט של אפשרויות הקלט במדף. יש להשתמש ב-<ph name="NEW_SHORTCUT" /> במקום ב-<ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8437311513256731931">פתיחת כלי המשוב</translation>
@@ -2224,6 +2233,7 @@
 <translation id="8446884382197647889">למידע נוסף</translation>
 <translation id="8456543082656546101">‏<ph name="SHORTCUT_KEY_NAME" /> + ‏V</translation>
 <translation id="8462305545768648477">סגירת הקראה</translation>
+<translation id="8466665972451889002">הצגת הפריטים ב<ph name="GROUP_NAME" /></translation>
 <translation id="8468806060683421065">מועד ההגשה: <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">הגדרות קנה המידה של התצוגה</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> את <ph name="FEATURE_NAME" />.</translation>
@@ -2246,6 +2256,7 @@
 <translation id="8551588720239073785">הגדרות תאריך ושעה</translation>
 <translation id="8553395910833293175">כבר מוקצה לכל שולחנות העבודה הווירטואליים.</translation>
 <translation id="8555757996376137129">הסרת שולחן העבודה הווירטואלי הנוכחי</translation>
+<translation id="8558521694042102707">בינה מלאכותית גנרטיבית עלולה לטעות, גם לגבי אנשים, אז כדאי לבדוק היטב את התשובות.</translation>
 <translation id="8559845965695780508">נערך על ידי <ph name="USER" /></translation>
 <translation id="8569146227972631631">‎°F</translation>
 <translation id="8569751806372591456">הנה כמה הצעות שכדאי לנסות</translation>
@@ -2268,6 +2279,7 @@
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, עוצמת האות: <ph name="SIGNAL_STRENGTH" />, הרשת מנוהלת על ידי מנהל המערכת</translation>
 <translation id="8638637208069328956">הפעלה/כיבוי של המיקרופון</translation>
 <translation id="8639760480004882931">שיעור טעינה נותר - <ph name="PERCENTAGE" /></translation>
+<translation id="8640470573049727749">הסתרת כל ההצעות לקבוצות</translation>
 <translation id="8641510901370802679">הצגת מידע על <ph name="ANSWER_TYPE" /></translation>
 <translation id="8646417893960517480">טיימר של <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">‏כדי להוסיף משתמש, יש להזין קוד גישה להורים ב-Family Link</translation>
@@ -2350,6 +2362,7 @@
 <translation id="8905919797434099235">(ללא שם)</translation>
 <translation id="890616557918890486">שינוי המקור</translation>
 <translation id="8909138438987180327">שיעור הטעינה של הסוללה הוא <ph name="PERCENTAGE" /> אחוזים.</translation>
+<translation id="8916866375277139011">הסתרת הפריטים ב<ph name="GROUP_NAME" /></translation>
 <translation id="8921554779039049422">+H</translation>
 <translation id="8921624153894383499">‏Google Assistant לא מדברת בשפה הזאת.</translation>
 <translation id="8926951137623668982">המדף תמיד מוסתר</translation>

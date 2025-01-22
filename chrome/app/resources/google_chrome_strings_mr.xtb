@@ -58,7 +58,6 @@
 <translation id="1698376642261615901">Google Chrome एक वेब ब्राउझर आहे जे वेब पेज आणि अ‍ॅप्स विजेच्या गतीने चालविते. ते जलद, स्थिर आणि वापरण्यास सोपे आहे. Google Chrome मध्ये तयार केलेल्या मालवेअर आणि फिशिंग संरक्षणासह वेब अधिक सुरक्षितपणे ब्राउझ करा.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome एका तासामध्ये पुन्हा लाँच होईल}other{Chrome # तासांमध्ये पुन्हा लाँच होईल}}</translation>
 <translation id="1722488837206509557">यामुळे तुम्हाला उपलब्ध डिव्हाइसमधून निवडता येईल आणि आशय दाखवता येईल.</translation>
-<translation id="1734234790201236882">Chrome हा पासवर्ड तुमच्या Google खात्यामध्ये सेव्ह करेल. तुम्हाला लक्षात ठेवावा लागणार नाही.</translation>
 <translation id="1786003790898721085">तुम्ही तुमच्या <ph name="TARGET_DEVICE_NAME" /> वर Chrome मध्ये साइन इन केले असल्याची खात्री करा आणि त्यानंतर पुन्हा पाठवून पहा.</translation>
 <translation id="1786044937610313874">शॉर्टकट Chrome मध्ये उघडतात</translation>
 <translation id="178701303897325119">या एक्स्टेंशनला यापुढे सपोर्ट नाही. त्याऐवजी तुम्ही ते काढून टाकावे अशी Chrome शिफारस करते.</translation>
@@ -326,6 +325,7 @@
 <translation id="4990567037958725628">Google Chrome कॅनरी</translation>
 <translation id="4997044641749333913">तुमच्या ब्राउझिंग अनुभवामध्ये सुधारणा करण्यासाठी आणि जलद काम करण्यासाठी Chrome हे टॅब इनॅक्टिव्ह करू शकते.</translation>
 <translation id="5003967926796347400">“Google Password Manager” वर क्लिक करा</translation>
+<translation id="5114340746415930644">तुमच्या <ph name="USER_EMAIL" /> या खात्यामध्ये Chrome डेटा वापरण्यासाठी आणि सेव्ह करण्यासाठी तुमचा पासफ्रेझ एंटर करा</translation>
 <translation id="5120334927898581447">तुम्ही इतर Google सेवांमध्ये साइन इन करता, तेव्हा Chrome मध्ये साइन इन करा</translation>
 <translation id="5126049312684316860">Chrome तुम्ही भेट देण्याची शक्यता असलेली आणखी पेज प्रीलोड करते, जेणेकरून तुम्ही त्यांना भेट देता, तेव्हा ती अधिक जलद लोड होतात</translation>
 <translation id="5132929315877954718">Google Chrome साठी उत्कृष्ट ॲप, खेळ, विस्तार आणि थीम शोधा.</translation>
@@ -476,9 +476,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7024536598735240744">उघडण्याशी संबंधित एरर: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">इंस्टॉलेशन थांबवले</translation>
 <translation id="7025800014283535195">तुम्ही Chrome प्रोफाइलदरम्यान येथे स्विच करू शकता</translation>
-<translation id="7036251913954633326">तुम्हाला हे खाते फक्त एकदाच वापरायचे असल्यास, तुम्ही Chrome ब्राउझरमध्ये <ph name="GUEST_LINK_BEGIN" />अतिथी मोड<ph name="GUEST_LINK_END" /> वापरू शकता. तुम्हाला दुसऱ्या व्यक्तीसाठी खाते जोडायचे असल्यास, तुमच्या <ph name="DEVICE_TYPE" /> मध्ये <ph name="LINK_BEGIN" />नवीन व्यक्ती जोडा<ph name="LINK_END" />.
-
-तुम्ही वेबसाइट आणि अ‍ॅप्सना आधीपासून दिलेल्या परवानग्या या खात्याला लागू होऊ शकतात. तुम्ही तुमची Google खाती <ph name="SETTINGS_LINK_BEGIN" />सेटिंग्ज<ph name="SETTINGS_LINK_END" /> मध्ये व्यवस्थापित करू शकता.</translation>
 <translation id="7048502283602470098">AI एक्सप्लोर करा</translation>
 <translation id="7059914902409643750">Chrome ला तुमचे हक्काचे ठिकाण बनवा</translation>
 <translation id="7071827361006050863">Chrome लवकरच ब्राउझिंग डेटा हटवेल</translation>

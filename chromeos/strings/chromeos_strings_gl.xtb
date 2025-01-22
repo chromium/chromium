@@ -564,6 +564,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensións)</translation>
 <translation id="3748026146096797577">Non conectado</translation>
 <translation id="3749289110408117711">Nome de ficheiro</translation>
+<translation id="3763034084412196440">Axustar o volume</translation>
 <translation id="3767737419527918477">Buscar ficheiros de gravación</translation>
 <translation id="3771294271822695279">Ficheiros de vídeo</translation>
 <translation id="3780740315729837296">Asigna unha tecla do teclado</translation>
@@ -1218,6 +1219,7 @@
 <translation id="6747035363363040417">neutra</translation>
 <translation id="6747215703636344499">Detívose (a saída está chea)</translation>
 <translation id="6749473226660745022">Fotos</translation>
+<translation id="6752960629591143793">Selecciona o idioma de transcrición e descárgao desde Configuración ou desde o menú <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="6753452347192452143">O dispositivo é un ordenador.</translation>
 <translation id="6756731097889387912">Non se puido cancelar o escaneamento</translation>
 <translation id="6760706756348334449">Baixa o volume</translation>

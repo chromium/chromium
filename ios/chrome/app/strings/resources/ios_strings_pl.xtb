@@ -191,6 +191,7 @@
 <translation id="1779354709911146450">Błąd uwierzytelniania</translation>
 <translation id="1780152987505130652">Zamknij grupę</translation>
 <translation id="178400879184240105">Twoje hasła są unikalne</translation>
+<translation id="17906873777101817">Oferuj zapisywanie haseł i kluczy dostępu</translation>
 <translation id="1807893857950749072">Zezwól na powiadomienia ze śledzenia cen…</translation>
 <translation id="1810976980198522421">Anuluj</translation>
 <translation id="1815941218935345331">Kod dostępu</translation>
@@ -493,6 +494,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3130863904455712965">Historia i inne elementy</translation>
 <translation id="313283613037595347">Utwórz nową kartę incognito.</translation>
 <translation id="3138611310073113613">Odrzuć wybór</translation>
+<translation id="3140825265190223781">Zapisane hasła i klucze dostępu</translation>
 <translation id="3143515551205905069">Anuluj synchronizację</translation>
 <translation id="314837624430314508">Bądź na bieżąco, otrzymując najnowsze wiadomości, powiadomienia z funkcji śledzenia cen i inne informacje.</translation>
 <translation id="3157387275655328056">Dodaj do listy Do przeczytania</translation>
@@ -541,6 +543,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3409785640040772790">Mapy</translation>
 <translation id="3416023309465857378">25 października 2023 r.</translation>
 <translation id="3435738964857648380">Bezpieczeństwo</translation>
+<translation id="343850944564645513">Najczęściej odwiedzane strony</translation>
 <translation id="3443810440409579745">Odebrano kartę.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Więcej informacji o Obiektywie Google</translation>
@@ -655,6 +658,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3967327056943561740">Zakładki</translation>
 <translation id="3967822245660637423">Pobieranie zakończone</translation>
 <translation id="3982893814825393515">Zgłoś problem…</translation>
+<translation id="3984527584375648997">Ukryj „Najczęściej odwiedzane strony”</translation>
 <translation id="398604237578616937">Zalogowano jako <ph name="USER_EMAIL" />. Otwórz menu konta.</translation>
 <translation id="3986739045730058129">Przejdź do karty</translation>
 <translation id="3992684624889376114">Informacje o tej stronie</translation>
@@ -832,7 +836,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4764612367328936189">Twoja organizacja pozwala logować się tylko na określone konta. Niedozwolone konta zostały ukryte. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Odkrywanie i obserwowanie</translation>
 <translation id="4769198578611055647">Ułatwia dostęp do zapisanych kluczy dostępu na dowolnym urządzeniu</translation>
-<translation id="4777866634702576038">Usunąć grupę kart?</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Otworzyć w trybie incognito?</translation>
 <translation id="4792385443586519711">Nazwa firmy</translation>
@@ -1322,6 +1325,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6746338529702829275">Sprawdź dane konta</translation>
 <translation id="6755200887046212842">Zarządzaj kontami</translation>
+<translation id="6755733078693946548">Uzyskuj dostęp do haseł i kluczy dostępu z dowolnej aplikacji</translation>
 <translation id="6761393919622941301">Dźwięk</translation>
 <translation id="6779455296366983087">Dane przeglądania zostaną usunięte</translation>
 <translation id="6790502149545262384">Już niedługo po otwarciu nowej karty będziesz widzieć relacje ze strony <ph name="CHANNEL_NAME" />.</translation>
@@ -1466,6 +1470,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="746872191028309255">Kupuj to, co widzisz na obrazie z aparatu lub w galerii zdjęć.</translation>
 <translation id="7471557245617580330">Utwórz nową kartę</translation>
 <translation id="7473891865547856676">Nie, dziękuję</translation>
+<translation id="7476548258282096076">Ta karta pokazuje strony, które najczęściej odwiedzasz.</translation>
 <translation id="747956641630879526">Ukrycie tej karty spowoduje wyłączenie śledzenia przesyłek i usunięcie wszystkich danych</translation>
 <translation id="7484645889979462775">Nigdy dla tej witryny</translation>
 <translation id="7486006552035434095">Synchronizacja urządzeń</translation>
@@ -1589,6 +1594,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="7977451675950311423">Ostrzega, jeśli użyjesz hasła, które zostało przejęte w wyniku naruszenia bezpieczeństwa danych.</translation>
 <translation id="7977482887663636093">Nowe karty: <ph name="NUMBER_OF_TABS_ADDED" />, zamknięto <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="797824194429476746">Karty pozostaną otwarte na tym urządzeniu, ale grupa zostanie trwale usunięta.</translation>
+<translation id="797874245254030665">Uzyskuj dostęp do haseł i kluczy dostępu z dowolnej aplikacji</translation>
 <translation id="7982789257301363584">Sieć</translation>
 <translation id="7987685713885608670">Zanim zapiszesz hasła w menedżerze haseł Google, zaszyfruj je na urządzeniu, aby zwiększyć ich bezpieczeństwo.</translation>
 <translation id="798991908416757345">Grupy kart są niedostępne</translation>
@@ -1669,6 +1675,8 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8299613349954694191">Otwórz kartę incognito, aby przeglądać strony prywatnie.</translation>
 <translation id="8307481894409578819">Nie udało się przesłać tego pliku</translation>
 <translation id="8319076807703933069">Nowe wyszukiwanie</translation>
+<translation id="8328607660158575887">Otwórz ustawienia autouzupełniania i haseł</translation>
+<translation id="833647236762414178">Twórz i zapisuj hasła oraz klucze dostępu i zarządzaj nimi, aby łatwo logować się na stronach i w aplikacjach. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Twórz kopie zapasowe swoich danych i używaj ich na dowolnym urządzeniu.</translation>
 <translation id="8349305172487531364">Pasek zakładek</translation>
 <translation id="8364563001733875155">Aby zmienić kod PIN, najpierw ustaw kod dostępu na urządzeniu.</translation>
@@ -1820,6 +1828,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8909459547399237818">Wybierz Menedżera haseł i kliknij Dodaj widżet</translation>
 <translation id="891282356902782456">To hasło zostało zapisane tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz je na swoim koncie Google <ph name="EMAIL" />.</translation>
 <translation id="8915916167043355778">Zamknij wszystko</translation>
+<translation id="892185197271200809">Wszyscy natychmiast utracą dostęp do grupy kart „<ph name="GROUP_NAME" />” i zostanie ona usunięta ze wszystkich urządzeń</translation>
 <translation id="8921902386312975525">Opcje śledzenia przesyłek</translation>
 <translation id="8923178205567790913">Hasła</translation>
 <translation id="892776311701544612">Więcej informacji…</translation>

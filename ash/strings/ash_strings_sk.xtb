@@ -973,6 +973,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="4285498937028063278">Odopnúť</translation>
 <translation id="428715201724021596">Pripája sa k profilu. Môže to trvať niekoľko minút.</translation>
 <translation id="4287250812980588583">Okno Chromu</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Hlasitosť mikrofónu ovláda aplikácia <ph name="APP_NAME" />}few{Hlasitosť mikrofónu ovládajú # aplikácie}many{Mic volume controlled by # apps}other{Hlasitosť mikrofónu ovláda # aplikácií}}</translation>
 <translation id="4294319844246081198">Dobré ráno, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Vymazať všetky upozornenia (počet: <ph name="COUNT" />)</translation>
 <translation id="4300272766492248925">Otvoriť aplikáciu</translation>

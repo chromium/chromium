@@ -191,6 +191,7 @@
 <translation id="1779354709911146450">Ralat pengesahan</translation>
 <translation id="1780152987505130652">Tutup Kumpulan</translation>
 <translation id="178400879184240105">Kata laluan anda adalah unik</translation>
+<translation id="17906873777101817">Tawaran untuk menyimpan kata laluan &amp; kunci laluan</translation>
 <translation id="1807893857950749072">Benarkan pemberitahuan penjejakan harga…</translation>
 <translation id="1810976980198522421">Batal</translation>
 <translation id="1815941218935345331">Kod laluan</translation>
@@ -542,6 +543,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 Okt 2023</translation>
 <translation id="3435738964857648380">Keselamatan</translation>
+<translation id="343850944564645513">Laman Popular Anda</translation>
 <translation id="3443810440409579745">Tab diterima.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Ketahui lebih lanjut tentang Google Lens</translation>
@@ -656,6 +658,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3967327056943561740">Penanda halaman</translation>
 <translation id="3967822245660637423">Muat turun selesai</translation>
 <translation id="3982893814825393515">Laporkan isu…</translation>
+<translation id="3984527584375648997">Sembunyikan "Laman Popular Anda"</translation>
 <translation id="398604237578616937">Log masuk sebagai <ph name="USER_EMAIL" />. Buka menu akaun.</translation>
 <translation id="3986739045730058129">Akses tab</translation>
 <translation id="3992684624889376114">Perihal halaman ini</translation>
@@ -833,7 +836,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4764612367328936189">Organisasi anda membenarkan anda log masuk dengan akaun tertentu sahaja. Akaun yang tidak dibenarkan disembunyikan. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover &amp; Mengikuti</translation>
 <translation id="4769198578611055647">Membantu anda mengakses kunci laluan yang disimpan pada mana-mana peranti</translation>
-<translation id="4777866634702576038">Padamkan kumpulan tab?</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Buka dalam Inkognito?</translation>
 <translation id="4792385443586519711">Nama syarikat</translation>
@@ -1323,6 +1325,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6746338529702829275">Semak data akaun anda</translation>
 <translation id="6755200887046212842">Urus Akaun</translation>
+<translation id="6755733078693946548">Akses kata laluan &amp; kunci laluan daripada mana-mana apl</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6779455296366983087">Data semakan imbas anda akan dipadamkan</translation>
 <translation id="6790502149545262384">Tidak lama lagi, anda akan melihat cerita daripada <ph name="CHANNEL_NAME" /> apabila anda membuka tab baharu.</translation>
@@ -1467,6 +1470,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="746872191028309255">Beli-belah perkara yang anda lihat dengan kamera atau galeri foto anda.</translation>
 <translation id="7471557245617580330">Buat tab baharu</translation>
 <translation id="7473891865547856676">Tidak, Terima Kasih</translation>
+<translation id="7476548258282096076">Kad ini menunjukkan laman anda yang paling kerap dilawati.</translation>
 <translation id="747956641630879526">Tindakan menyembunyikan kad ini akan mematikan Penjejakan Bungkusan dan mengalih keluar semua data anda</translation>
 <translation id="7484645889979462775">Jangan sekali-kali untuk tapak ini</translation>
 <translation id="7486006552035434095">Pastikan peranti anda disegerakkan</translation>
@@ -1590,6 +1594,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="7977451675950311423">Memberikan amaran kepada anda jika anda menggunakan kata laluan yang telah terjejas dalam pelanggaran data.</translation>
 <translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> tab baharu, <ph name="NUMBER_OF_TABS_REMOVED" /> ditutup</translation>
 <translation id="797824194429476746">Tab akan kekal terbuka pada peranti ini tetapi kumpulan tersebut akan dipadamkan secara kekal.</translation>
+<translation id="797874245254030665">Akses kata laluan &amp; kunci laluan anda daripada mana-mana apl</translation>
 <translation id="7982789257301363584">Rangkaian</translation>
 <translation id="7987685713885608670">Untuk keselamatan tambahan, sulitkan kata laluan pada peranti sebelum disimpan ke Pengurus Kata Laluan Google.</translation>
 <translation id="798991908416757345">Kumpulan tab tidak tersedia</translation>
@@ -1670,6 +1675,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8299613349954694191">Buka tab Inkognito untuk menyemak imbas web secara tertutup.</translation>
 <translation id="8307481894409578819">Fail ini tidak dapat dimuat naik</translation>
 <translation id="8319076807703933069">Carian Baharu</translation>
+<translation id="8328607660158575887">Buka tetapan Autolengkap &amp; Kata laluan</translation>
 <translation id="833647236762414178">Buat, simpan dan urus kata laluan &amp; kunci laluan anda supaya anda dapat log masuk ke laman dan apl dengan mudah. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sandarkan bahan anda dan gunakan bahan itu pada mana-mana peranti.</translation>
 <translation id="8349305172487531364">Bar penanda halaman</translation>
@@ -1822,6 +1828,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8909459547399237818">Pilih Password Manager, kemudian ketik Tambah Widget</translation>
 <translation id="891282356902782456">Kata laluan ini disimpan untuk peranti ini sahaja. Simpan kata laluan tersebut dalam Google Account anda, <ph name="EMAIL" /> untuk menggunakan kata laluan tersebut pada peranti anda yang lain.</translation>
 <translation id="8915916167043355778">Tutup semua</translation>
+<translation id="892185197271200809">Semua orang akan kehilangan akses kepada kumpulan tab “<ph name="GROUP_NAME" />" dengan serta-merta dan kumpulan tab ini akan dipadamkan daripada semua peranti</translation>
 <translation id="8921902386312975525">Pilihan untuk menjejaki bungkusan</translation>
 <translation id="8923178205567790913">Kata laluan</translation>
 <translation id="892776311701544612">Ketahui lebih lanjut…</translation>

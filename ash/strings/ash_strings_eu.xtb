@@ -974,6 +974,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="4285498937028063278">Desainguratu</translation>
 <translation id="428715201724021596">Profilera konektatzen. Agian minutu batzuk beharko dira.</translation>
 <translation id="4287250812980588583">Chrome-ren leihoa</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> aplikazioak kontrolatzen du mikrofonoaren bolumena}other{# aplikaziok kontrolatzen dute mikrofonoaren bolumena}}</translation>
 <translation id="4294319844246081198">Egun on, <ph name="GIVEN_NAME" />:</translation>
 <translation id="4296136865091727875">Garbitu <ph name="COUNT" /> jakinarazpenak</translation>
 <translation id="4300272766492248925">Ireki aplikazioa</translation>
@@ -1271,6 +1272,7 @@ Lasterbide hau ere erabil dezakezu: lehenengo, nabarmendu testua, eta, ondoren, 
 <translation id="5245201184978705914">Ezin da sortu transkripzioa</translation>
 <translation id="5251174953851719648">Freskatu edukia</translation>
 <translation id="5253783950165989294">Konektatu da <ph name="DEVICE_NAME" /> izeneko gailu batera. Bateria: % <ph name="BATTERY_PERCENTAGE" />.</translation>
+<translation id="5256939106029293271">Probatu mikrofonoa</translation>
 <translation id="5258528442992323769">Ez dago lan-eremurik gordeta</translation>
 <translation id="5260676007519551770">4. lan-eremua</translation>
 <translation id="5265391159779542051">Kargatu dira emaitzak</translation>
@@ -1428,6 +1430,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="5745612484876805746">Iluntzean, automatikoki aktibatzen da gaueko argia</translation>
 <translation id="5750765938512549687">Desaktibatuta dago Bluetootha</translation>
 <translation id="5758114525425072423">Hasi kontzentratzeko saio bat. Tenporizadorea: <ph name="FOCUS_DURATION" />.</translation>
+<translation id="5759522586053040964">Jakin nola entzungo zaituzten besteek. Gelditzeko, sakatu probaren ikonoa edo itxi bideodeiaren panela.</translation>
 <translation id="5760866832697883462">Konektatu <ph name="NAME" /> gailua</translation>
 <translation id="5762420912707163638">Aktibatu edo desaktibatu markatzailea. <ph name="STATE_TEXT" /> Erabili ukipen-panela, ukipen-pantaila edo arkatza pantailan marrazteko.</translation>
 <translation id="576341972084747908">Arriskutsua da <ph name="FILENAME" /> deskargatzea</translation>

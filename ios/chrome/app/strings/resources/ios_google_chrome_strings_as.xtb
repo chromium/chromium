@@ -169,6 +169,7 @@
 <translation id="5639704535586432836">ছেটিংসমূহ &gt; গোপনীয়তা &gt; কেমেৰা &gt; Google Chrome খোলক আৰু কেমেৰা অন কৰক।</translation>
 <translation id="5642200033778930880">Google Chromeএ বিভাজিত ম’ডত আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিব নোৱাৰে</translation>
 <translation id="5661521615548540542">Google Password Managerএ আটাইবোৰ পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে। পাছত পুনৰ চেষ্টা কৰক।</translation>
+<translation id="5681291952421236520">Chrome ট’গল কৰক</translation>
 <translation id="5690398455483874150">{count,plural, =1{এতিয়া ১ খন Chromeৰ ৱিণ্ড দেখুৱাই থকা হৈছে}one{এতিয়া {count} খন Chromeৰ ৱিণ্ড দেখুৱাই থকা হৈছে}other{এতিয়া {count} খন Chromeৰ ৱিণ্ড দেখুৱাই থকা হৈছে}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Chromeক আপোনাৰ ডিফ'ল্ট ব্ৰাউজাৰ হিচাপে ছেট কৰক</translation>
@@ -204,6 +205,7 @@
 <translation id="6484712497741564393"><ph name="EMAIL" /> হিচাপে ছাইন ইন কৰিছে।
 
 আপোনাৰ ডেটা নিজৰ পাছফ্ৰে’জৰ জৰিয়তে এনক্ৰিপ্ট কৰা হৈছে। আপোনাৰ Google একাউণ্টত Chromeৰ ডেটা ব্যৱহাৰ আৰু ছেভ কৰিবলৈ এইটো দিয়ক।</translation>
+<translation id="6533470733797826516">Chromeৰ স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাটোৰ জৰিয়তে অধিক ক্ষিপ্ৰতাৰে ছাইন ইন কৰক</translation>
 <translation id="6545449117344801102">আপোনাক দিক্-নিৰ্দেশনা আৰু স্থানীয় তথ্য দিবলৈ Chromeএ ঠিকনাসমূহ চিনাক্ত কৰে আৰু Google Maps ব্যৱহাৰ কৰে।</translation>
 <translation id="6634107063912726160">আপুনি ছাইন আউট কৰিলে Chromeএ আপোনাৰ Google একাউণ্টত কোনো নতুন ডেটা ছিংক নকৰিব। পূৰ্বে ছিংক কৰা ডেটাখিনি একাউণ্টটোতে থাকে।</translation>
 <translation id="6636941099779251629">Chrome ব্যৱহাৰ কৰিবলৈ আপোনাৰ প্ৰতিষ্ঠানে আপুনি ছাইন ইন কৰাটো বাধ্যতামূলক কৰিছে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>

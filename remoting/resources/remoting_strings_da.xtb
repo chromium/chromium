@@ -28,6 +28,7 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="2329392777730037872"><ph name="URL" /> kunne ikke åbnes i klienten.</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2366718077645204424">Værten kunne ikke nås. Dette skyldes sandsynligvis konfigurationen af det netværk, du bruger.</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. Alle rettigheder forbeholdes.</translation>
 <translation id="2504109125669302160">Giv tilladelsen "Tilgængelighed" til <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Der er oprettet forbindelse til <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Vil du dele denne computer, så en anden bruger kan se og styre den?</translation>
@@ -133,6 +134,7 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="7067321367069083429">Skærmen fungerer som touchskærm</translation>
 <translation id="7116737094673640201">Velkommen til Chrome Fjernskrivebord</translation>
 <translation id="7144878232160441200">Prøv igen</translation>
+<translation id="7298392173540380852">Copyright 2025 Udviklerne af Chromium. Alle rettigheder forbeholdes.</translation>
 <translation id="7312846573060934304">Hosten er offline.</translation>
 <translation id="7319983568955948908">Stop deling</translation>
 <translation id="7359298090707901886">Den valgte browser kan ikke bruges til at åbne webadresser på den lokale maskine.</translation>

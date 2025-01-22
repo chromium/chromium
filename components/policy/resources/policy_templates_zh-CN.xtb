@@ -379,6 +379,11 @@
 <translation id="1294263471858445589">为无痕会话和常规会话启用静默身份验证。</translation>
 <translation id="1295737447968372331">在登录屏幕上启用“语音输入”</translation>
 <translation id="1297182715641689552">使用 .pac 代理脚本</translation>
+<translation id="1297909092292754072">通过设置此政策，您能以列表形式指定针对不安全来源的安全性限制不适用于哪些来源（网址）或主机名模式（例如 *.example.com）。模式仅适用于主机名；带架构的网址/来源必须是精确的字符串。组织可为无法部署 TLS 的旧版应用指定来源，或设置用于内部 Web 开发的预演服务器，这样开发者不必在预演服务器上部署 TLS 就能测试需要在安全上下文中运行的功能。此政策还可防止来源在地址栏中被标记为“不安全”。
+
+您可以在此政策中设置网址列表，也可以设置“--unsafely-treat-insecure-origin-as-secure”命令行 flag 并为其指定包含相同网址的逗号分隔列表，两种方法效果相同。此政策会覆盖该命令行 flag 和 UnsafelyTreatInsecureOriginAsSecure（若存在）。
+
+如需详细了解安全上下文，请参阅“安全上下文”(https://www.w3.org/TR/secure-contexts)。</translation>
 <translation id="1297961932043741908">设置单个 Chrome 实例可以使用的内存上限（以 MB 为单位）。</translation>
 <translation id="1304973015437969093">要静默安装的扩展程序/应用的 ID 和更新网址</translation>
 <translation id="1305400589435476516">如果此政策已启用，系统将允许设备使用数据漫游功能。
@@ -3590,6 +3595,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3663124775601519286">如果此政策已启用或未经设置，系统将允许在 <ph name="PRODUCT_NAME" /> 中使用 Translator API。
 
       如果此政策已停用，系统将禁止使用 Translator API。</translation>
+<translation id="3664164569472125114">控制 <ph name="GLIC" /> 访问权限</translation>
 <translation id="3665437376055221832">仅当没有任何证书与自动选择政策匹配时才提示用户。</translation>
 <translation id="3667467644216039144">以列表形式配置，系统应在用户关闭所有浏览器窗口时删除哪些类型的浏览数据。
 
@@ -5433,6 +5439,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 如果此政策已停用，CSS“zoom”属性将回退到标准化之前的旧行为。
 
 此政策是一项暂时性缓解措施，以便您有更多时间将 Web 内容转换为新行为。停用此政策后，还有一个与此行为对应的源试用（“DisableStandardizedBrowserZoom”）。在里程碑版本 134 中，此政策将被移除，“已启用”状态下的行为也将永久生效。</translation>
+<translation id="5088303895040832480">在新代码中使用 UsbDeviceId。</translation>
 <translation id="5090791951240382356">允许合并来自多个不同来源的字典政策</translation>
 <translation id="5091315650312105069">允许通过 HTTP 进行<ph name="BASIC_AUTH" />身份验证</translation>
 <translation id="5093603777978346818">不为锁定屏幕启用屏保。</translation>

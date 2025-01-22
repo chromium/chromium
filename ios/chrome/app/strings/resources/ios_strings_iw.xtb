@@ -494,6 +494,7 @@
 <translation id="3130863904455712965">היסטוריה ועוד</translation>
 <translation id="313283613037595347">יצירת כרטיסיית מצב אנונימי חדשה.</translation>
 <translation id="3138611310073113613">ביטול הבחירה</translation>
+<translation id="3140825265190223781">סיסמאות ומפתחות גישה שמורים</translation>
 <translation id="3143515551205905069">ביטול סנכרון</translation>
 <translation id="314837624430314508">מתעדכנים בחדשות האחרונות, מעקב מחירים ועוד.</translation>
 <translation id="3157387275655328056">הוספה לרשימת הקריאה</translation>
@@ -542,6 +543,7 @@
 <translation id="3409785640040772790">מפות</translation>
 <translation id="3416023309465857378">25 באוקטובר 2023</translation>
 <translation id="3435738964857648380">אבטחה</translation>
+<translation id="343850944564645513">האתרים המובילים שלך</translation>
 <translation id="3443810440409579745">כרטיסייה התקבלה.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> דק'</translation>
 <translation id="344589138074534176">‏מידע נוסף על Google Lens</translation>
@@ -656,6 +658,7 @@
 <translation id="3967327056943561740">סימניות</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
 <translation id="3982893814825393515">דיווח על בעיה…</translation>
+<translation id="3984527584375648997">הסתרת האפשרות "האתרים המובילים שלך"</translation>
 <translation id="398604237578616937">נכנסת לחשבון בתור <ph name="USER_EMAIL" />. לפתיחת תפריט החשבון.</translation>
 <translation id="3986739045730058129">מעבר לכרטיסייה</translation>
 <translation id="3992684624889376114">מידע על הדף הזה</translation>
@@ -833,7 +836,6 @@
 <translation id="4764612367328936189">הארגון מאפשר לך להיכנס לדפדפן רק באמצעות חשבונות מסוימים. החשבונות שאינם מותרים מוסתרים. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">‏Discover והפיד 'במעקב'</translation>
 <translation id="4769198578611055647">הפעולה הזו עוזרת לך לגשת למפתחות הגישה ששמורים בכל מכשיר</translation>
-<translation id="4777866634702576038">למחוק את קבוצת הכרטיסיות?</translation>
 <translation id="4787847736989526091">‫<ph name="VALUE" />,‏ <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">לפתוח במצב פרטי?</translation>
 <translation id="4792385443586519711">שם חברה</translation>
@@ -1468,6 +1470,7 @@
 <translation id="746872191028309255">אפשר לקנות את מה שרואים באמצעות המצלמה או דרך גלריית התמונות.</translation>
 <translation id="7471557245617580330">יצירת כרטיסייה חדשה</translation>
 <translation id="7473891865547856676">לא, תודה</translation>
+<translation id="7476548258282096076">בכרטיס הזה מוצגים האתרים שבהם ביקרת הכי הרבה.</translation>
 <translation id="747956641630879526">הסתרת הכרטיס הזה תוביל להשבתת המעקב אחר חבילות ולהסרת כל הנתונים שלך</translation>
 <translation id="7484645889979462775">לעולם לא עבור אתר זה</translation>
 <translation id="7486006552035434095">אפשר לסנכרן בין המכשירים</translation>
@@ -1591,7 +1594,7 @@
 <translation id="7977451675950311423">מקבלים אזהרה אם משתמשים בסיסמה שנחשפה בפרצה באבטחת מידע.</translation>
 <translation id="7977482887663636093">מספר הכרטיסיות החדשות: <ph name="NUMBER_OF_TABS_ADDED" />. מספר הכרטיסיות שנסגרו: <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="797824194429476746">הכרטיסיות יישארו פתוחות במכשיר הזה, אבל הקבוצה תימחק לתמיד.</translation>
-<translation id="797874245254030665">גישה לסיסמאות ולמפתחות הגישה שלך מכל אפליקציה</translation>
+<translation id="797874245254030665">רוצה לגשת לסיסמאות ולמפתחות שלך מכל האפליקציות?</translation>
 <translation id="7982789257301363584">רשת</translation>
 <translation id="7987685713885608670">‏כדי לשפר את הבטיחות, כדאי להצפין את הסיסמאות במכשיר שלך לפני שהן נשמרות במנהל הסיסמאות של Google.</translation>
 <translation id="798991908416757345">קבוצות הכרטיסיות לא זמינות</translation>
@@ -1673,6 +1676,7 @@
 <translation id="8307481894409578819">לא ניתן להעלות את הקובץ הזה</translation>
 <translation id="8319076807703933069">חיפוש חדש</translation>
 <translation id="8328607660158575887">פתיחת ההגדרות של המילוי האוטומטי והסיסמאות</translation>
+<translation id="833647236762414178">אפשר ליצור, לשמור ולנהל סיסמאות ומפתחות גישה כדי להיכנס בקלות לאתרים ולאפליקציות. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">כדאי לגבות את הנתונים כדי להשתמש בהם בכל מכשיר.</translation>
 <translation id="8349305172487531364">סרגל סימניות</translation>
 <translation id="8364563001733875155">כדי לשנות את קוד האימות, קודם עליך להגדיר קוד גישה במכשיר.</translation>

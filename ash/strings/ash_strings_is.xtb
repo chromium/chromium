@@ -973,6 +973,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4285498937028063278">Losa</translation>
 <translation id="428715201724021596">Tengist prófíl. Þetta gæti tekið nokkrar mínútur.</translation>
 <translation id="4287250812980588583">Chrome-gluggi</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Hljóðstyrk hljóðnema er stýrt af <ph name="APP_NAME" />}one{Hljóðstyrk hljóðnema er stýrt af # forriti}other{Hljóðstyrk hljóðnema er stýrt af # forritum}}</translation>
 <translation id="4294319844246081198">Góðan dag <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Hreinsa <ph name="COUNT" /> tilkynningar</translation>
 <translation id="4300272766492248925">Opna forrit</translation>

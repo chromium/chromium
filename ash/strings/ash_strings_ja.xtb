@@ -973,6 +973,7 @@
 <translation id="4285498937028063278">固定を解除</translation>
 <translation id="428715201724021596">プロファイルに接続しています。この処理には数分かかることがあります。</translation>
 <translation id="4287250812980588583">Chrome ウィンドウ</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{マイクの音量は <ph name="APP_NAME" /> によって制御されています}other{マイクの音量は # 個のアプリによって制御されています}}</translation>
 <translation id="4294319844246081198">おはようございます、<ph name="GIVEN_NAME" /> さん</translation>
 <translation id="4296136865091727875"><ph name="COUNT" /> 件の通知をすべて消去</translation>
 <translation id="4300272766492248925">アプリを開く</translation>

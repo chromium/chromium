@@ -140,6 +140,7 @@
 <translation id="1415846719612499304">ନେଟୱାର୍କ ତାଲିକା ଦେଖାନ୍ତୁ। <ph name="STATE_TEXT" />।</translation>
 <translation id="1419738280318246476">ବିଜ୍ଞପ୍ତି କାର୍ଯ୍ୟ ସମ୍ପାଦନ କରିବାକୁ ଡିଭାଇସ୍‌କୁ ଅନ୍‌ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="1420408895951708260">ନାଇଟ୍ ଲାଇଟ୍‍କୁ ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">ପ୍ରସ୍ତାବିତ ଗୋଷ୍ଠୀ</translation>
 <translation id="1426410128494586442">ହଁ</translation>
 <translation id="1435537621343861112">ଡିକ୍ଟେସନ ଆରମ୍ଭ କରାଯାଇପାରିବ ନାହିଁ। ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନ ବନ୍ଦ ଅଛି।</translation>
 <translation id="1445031758921122223">ଫେସ କଣ୍ଟ୍ରୋଲ ଫାଇଲଗୁଡ଼ିକୁ ଡାଉନଲୋଡ କରାଯାଇଛି</translation>
@@ -243,12 +244,14 @@
 <translation id="17722141032474077">ଗଣନା</translation>
 <translation id="1774796056689732716">କ୍ୟାଲେଣ୍ଡର, <ph name="CURRENT_MONTH_YEAR" />, ବର୍ତ୍ତମାନ <ph name="DATE" />କୁ ଚୟନ କରାଯାଇଛି।</translation>
 <translation id="178347895271755507">ଆପଣଙ୍କ ଫୋନର ବର୍ତ୍ତମାନର ଫଟୋ, ମିଡିଆ ଏବଂ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଭ୍ୟୁ କରିବା ସେଟ ଅପ କରନ୍ତୁ</translation>
+<translation id="1785317913592722944">ପ୍ରସ୍ତାବିତ ଗୋଷ୍ଠୀରୁ ଆଇଟମକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="1786487376942610288">ପିକଚର-ଇନ-ପିକଚର ୱିଣ୍ଡୋର ସର୍ବାଧିକ କିମ୍ବା ବର୍ତ୍ତମାନର ସାଇଜ ମଧ୍ଯରେ ସୁଇଚ କରନ୍ତୁ</translation>
 <translation id="1787955149152357925">ବନ୍ଦ ଅଛି</translation>
 <translation id="1796561540704213354">ଆପଣ ଭିଜିଟ କରିଥିବା ପୃଷ୍ଠା ଏବଂ ଖୋଲା ଥିବା ପୃଷ୍ଠା ସମେତ ୱେବସାଇଟଗୁଡ଼ିକ</translation>
 <translation id="179842970735685253">Googleର ସେବାର ସର୍ତ୍ତାବଳୀ</translation>
 <translation id="1805407494113167797">ଫୋକସ ସାଉଣ୍ଡ ପ୍ଲେ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="181103072419391116">ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
+<translation id="1815039896005206046">ଆପଣ ଏହି ପ୍ରସ୍ତାବିତ ଗୋଷ୍ଠୀକୁ ନାପସନ୍ଦ କରନ୍ତି ବୋଲି ଥମ୍ବସ ଡାଉନ ମତାମତ ଦାଖଲ କରିବ</translation>
 <translation id="1816896987747843206">ଏହା କେମେରା ଅନୁମତି ଥିବା ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ପାଇଁ କେମେରା ଆକ୍ସେସକୁ ଅନୁମତି ଦିଏ</translation>
 <translation id="1823873187264960516">ଇଥର୍ନେଟ୍: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">ଲୋକେସନ ଆକ୍ସେସକୁ ଚାଲୁ କରନ୍ତୁ</translation>
@@ -390,6 +393,7 @@
 <translation id="2369165858548251131">ଚୀନୀୟ ଭାଷାରେ "ହେଲୋ"</translation>
 <translation id="2370971919968699910">ଏହା କରିବା ଫଳରେ ଡାଟା ମୂଲ୍ୟ ଲାଗୁ ହୋଇପାରେ।
 <ph name="DEVICECOUNT" /> ଡିଭାଇସକୁ କନେକ୍ଟ କରାଯାଇଛି।</translation>
+<translation id="2383521554963939360">ଆପ ଏବଂ ଟାବ ଗ୍ରୁପ</translation>
 <translation id="2386292613071805067">ପୃଷ୍ଠାରେ ଥିବା ସବୁକିଛି ଚୟନ କରନ୍ତୁ</translation>
 <translation id="2389423187722941333">Geminiକୁ ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="2392659840443812875">କୌଣସି ହଟସ୍ପଟ ଉପଲବ୍ଧ ନାହିଁ। ଆପଣଙ୍କ ଡିଭାଇସ ଆଖପାଖରେ ଅଛି ଏବଂ ବ୍ଲୁଟୁଥ ଚାଲୁ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
@@ -920,6 +924,7 @@
 <translation id="4151054805501931758">ପୋର୍ଟ୍ରେଟ ଟଚ-ଅପ</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% ବେଟେରୀ ଚାର୍ଜ ବାକି ଅଛି (ପ୍ରାୟ <ph name="TIME_LEFT" />)।
 ବେଟେରୀ ଲାଇଫକୁ ବଢ଼ାଇବା ପାଇଁ କିଛି ଫିଚରକୁ ସୀମିତ କରାଯାଇଛି।</translation>
+<translation id="4158003972857765638">ଏକ ନୂଆ ଡେସ୍କରେ ବ୍ୟବସ୍ଥିତ କରନ୍ତୁ</translation>
 <translation id="4160919062868802509">ଏକାଧିକ ଅଡିଓ ସୋର୍ସ ଚିହ୍ନଟ ହୋଇଛି</translation>
 <translation id="416245495747357243">ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି!</translation>
 <translation id="4165275524535002941">କବୁଲ ଡିସପ୍ଲେଗୁଡ଼ିକୁ ସମର୍ଥନ କରିନପାରେ</translation>
@@ -968,6 +973,7 @@
 <translation id="4285498937028063278">ଅନ୍‌ପିନ୍ କରନ୍ତୁ</translation>
 <translation id="428715201724021596">ପ୍ରୋଫାଇଲ୍ ସହ ସଂଯୋଗ କରାଯାଉଛି। ଏଥିପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ।</translation>
 <translation id="4287250812980588583">Chrome ୱିଣ୍ଡୋ</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{ମାଇକ ଭଲ୍ୟୁମ <ph name="APP_NAME" /> ଦ୍ୱାରା ନିୟନ୍ତ୍ରିତ ହୁଏ}other{ମାଇକ ଭଲ୍ୟୁମ # ଆପ୍ସ ଦ୍ୱାରା ନିୟନ୍ତ୍ରିତ ହୁଏ}}</translation>
 <translation id="4294319844246081198">ସୁପ୍ରଭାତ <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">ସମସ୍ତ <ph name="COUNT" />ବିଜ୍ଞପ୍ତି ଖାଲି କରନ୍ତୁ</translation>
 <translation id="4300272766492248925">ଆପ ଖୋଲନ୍ତୁ</translation>
@@ -984,6 +990,7 @@
 <translation id="4322742403972824594">Ctrl + Alt + ଉପର ତୀର କୀବୋର୍ଡ ସର୍ଟକଟ୍ ବଦଳି ଯାଇଛି। Home କୀକୁ ବ୍ୟବହାର କରିବା ପାଇଁ, <ph name="LAUNCHER_KEY_NAME" /> କୀ + ବାମ ତୀର କୀ ଦବାନ୍ତୁ।</translation>
 <translation id="4324840740119394760">ଏହା କେମେରା ଅନୁମତି ଥିବା <ph name="APP_NAME" />, ଏବଂ ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ପାଇଁ କେମେରା ଆକ୍ସେସକୁ ଅନୁମତି ଦିଏ</translation>
 <translation id="4327147325944669226">ଗେମ ରେକର୍ଡ କରନ୍ତୁ</translation>
+<translation id="4329076911374908740">ସେଭ କରାଯାଇଥିବା ଗୋଷ୍ଠୀର ସର୍ବାଧିକ ସଂଖ୍ୟାରେ ପହଞ୍ଚିଯାଇଛି।</translation>
 <translation id="4338109981321384717">ମାଗ୍ନିଫାଇଂ ଗ୍ଲାସ୍</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, ମ୍ୟୁଟ କରାଯାଇଛି</translation>
 <translation id="4351244548802238354">ଡାୟଲଗ୍‍କୁ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -1264,6 +1271,7 @@
 <translation id="5245201184978705914">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="5251174953851719648">ବିଷୟବସ୍ତୁକୁ ରିଫ୍ରେସ କରନ୍ତୁ</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> ନାମକ ଏକ ଡିଭାଇସ୍ ସହ ସଂଯୋଗ କରାଯାଇଛି, ବ୍ୟାଟେରୀରେ <ph name="BATTERY_PERCENTAGE" />% ଚାର୍ଜ ଅଛି</translation>
+<translation id="5256939106029293271">ଆପଣଙ୍କ ମାଇକକୁ ଟେଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="5258528442992323769">କୌଣସି ସେଭ ହୋଇଥିବା ଡେସ୍କ ନାହିଁ</translation>
 <translation id="5260676007519551770">ଡେସ୍କ 4</translation>
 <translation id="5265391159779542051">ଫଳାଫଳ ଲୋଡ କରାଯାଇଛି</translation>
@@ -1421,6 +1429,7 @@
 <translation id="5745612484876805746">ସୂର୍ଯ୍ୟାସ୍ତ ପରେ ନାଇଟ୍ ଲାଇଟ୍ ସ୍ୱଚାଳିତ ଭାବେ ଚାଲୁ ହୋଇଥାଏ</translation>
 <translation id="5750765938512549687">ବ୍ଲୁଟୁଥ୍‌ ବନ୍ଦ ଅଛି</translation>
 <translation id="5758114525425072423">ଫୋକସ ମୋଡ ଆରମ୍ଭ କରନ୍ତୁ। <ph name="FOCUS_DURATION" />ରେ ଟାଇମର ସେଟ କରାଯାଇଛି।</translation>
+<translation id="5759522586053040964">ଆପଣଙ୍କ ଭଏସ ଅନ୍ୟମାନଙ୍କୁ କିପରି ଲାଗିବ ତାହା ଶୁଣନ୍ତୁ। ବନ୍ଦ କରିବା ପାଇଁ ଟେଷ୍ଟ ଆଇକନରେ କ୍ଲିକ କରନ୍ତୁ କିମ୍ବା ଭିଡିଓ କଲ ପେନେଲକୁ ବନ୍ଦ କରନ୍ତୁ।</translation>
 <translation id="5760866832697883462">ଆପଣଙ୍କ <ph name="NAME" />କୁ କନେକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="5762420912707163638">ମାର୍କରକୁ ଟୋଗଲ କରନ୍ତୁ। <ph name="STATE_TEXT" /> ସ୍କ୍ରିନରେ ଡ୍ର କରିବାକୁ ଟ୍ରାକପ୍ୟାଡ, ଟଚସ୍କ୍ରିନ କିମ୍ବା ଷ୍ଟାଇଲସ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="576341972084747908">ବିପଦଜନକ <ph name="FILENAME" />କୁ ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
@@ -1938,6 +1947,7 @@
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">ତିଆରି କରନ୍ତୁ</translation>
 <translation id="7526573455193969409">ନେଟ୍‌ୱର୍କ ଉପରେ ହୁଏତ ନଜର ରଖାଯାଇପାରେ</translation>
+<translation id="7534543072325030705">ଆପଣ ଏହି ପ୍ରସ୍ତାବିତ ଗୋଷ୍ଠୀକୁ ପସନ୍ଦ କରନ୍ତି ବୋଲି ଥମ୍ବସ ଅପ ମତାମତ ଦାଖଲ କରିବ</translation>
 <translation id="7536035074519304529">IP ଠିକଣା: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">ବାମ ୱିଣ୍ଡୋକୁ ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="7543399541175347147">ବର୍ତ୍ତମାନ Linux ଆପ ଏବଂ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋଗୁଡ଼ିକ ସମର୍ଥିତ ନୁହେଁ। ଅନ୍ୟ ଆପଗୁଡ଼ିକ ସେଭ ହୋଇଯିବ।</translation>
@@ -2102,6 +2112,7 @@
 <translation id="8004512796067398576">ବୃଦ୍ଧି</translation>
 <translation id="8005527720597583355">ଫୋକସ ସେସନ ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="8015361438441228492">ଟାସ୍କକୁ ଏଡିଟ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
+<translation id="8027187124910699148">ପ୍ରସ୍ତାବିତ ଗୋଷ୍ଠୀ ରିଜ୍ୟୁମ କରନ୍ତୁ</translation>
 <translation id="802782383769312836">ପୂର୍ବବର୍ତ୍ତୀ ଡେସ୍କ: <ph name="DESK_NAME" />। <ph name="DESK_COUNT" />ରୁ <ph name="DESK_INDEX" /> ଡେସ୍କ।</translation>
 <translation id="8029247720646289474">ହଟସ୍ପଟ୍ ସହ ସଂଯୋଗ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="8029629653277878342">ଅଧିକ ସୁରକ୍ଷା ପାଇଁ PIN କିମ୍ବା ପାସୱାର୍ଡ ଆବଶ୍ୟକ</translation>
@@ -2210,6 +2221,7 @@
 <translation id="8426708595819210923">ଶୁଭ ସନ୍ଧ୍ୟା <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">ସେଟିଂସ୍</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" />ରୁ <ph name="KEY_TWO" /> ପର୍ଯ୍ୟନ୍ତ</translation>
+<translation id="8429547770382807369">ପରବର୍ତ୍ତୀ ସମୟ ପାଇଁ ଗୋଷ୍ଠୀକୁ ସେଭ କରନ୍ତୁ</translation>
 <translation id="8433186206711564395">ନେଟ୍‍ୱର୍କ ସେଟିଂସ୍</translation>
 <translation id="8433977262951327081">ସେଲ୍ଫ ମଧ୍ୟରେ ଇନ୍‍ପୁଟ୍ ବିକଳ୍ପ ମେନୁ ବବଲ୍ ଦେଖାଇବା ପାଇଁ ସର୍ଟକଟ୍ ବଦଳିଯାଇଛି। ଦୟାକରି <ph name="OLD_SHORTCUT" />ପରିବର୍ତ୍ତେ <ph name="NEW_SHORTCUT" />ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="8437311513256731931">ଫିଡବେକ ଟୁଲ ଖୋଲନ୍ତୁ</translation>
@@ -2218,6 +2230,7 @@
 <translation id="8446884382197647889">ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">ସିଲେକ୍ଟ-ଟୁ-ସ୍ପିକକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="8466665972451889002"><ph name="GROUP_NAME" />ରେ ଆଇଟମଗୁଡ଼ିକୁ ଦେଖାନ୍ତୁ</translation>
 <translation id="8468806060683421065">ଧାର୍ଯ୍ୟ ତାରିଖ ଏବଂ/କିମ୍ବା ସମୟ <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">ଡିସପ୍ଲେ ସ୍କେଲ୍‌ ସେଟିଂସ୍‌</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />ର <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />ଅଛି।</translation>
@@ -2240,6 +2253,7 @@
 <translation id="8551588720239073785">ତାରିଖ ଏବଂ ସମୟ ସେଟିଂସ୍</translation>
 <translation id="8553395910833293175">ସମସ୍ତ ଡେସ୍କକୁ ପୂର୍ବରୁ ଆସାଇନ୍ କରାଯାଇଛି।</translation>
 <translation id="8555757996376137129">ବର୍ତ୍ତମାନର ଡେସ୍କ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
+<translation id="8558521694042102707">ଜେନେରେଟିଭ AI ଭୁଲ କରିପାରେ, ଯେଉଁଥିରେ ଲୋକମାନଙ୍କ ବିଷୟରେ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ, ତେଣୁ ଏହାକୁ ଦୁଇଥର-ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="8559845965695780508"><ph name="USER" /> ଏଡିଟ କରିଛନ୍ତି</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">ବ୍ୟବହାର କରିବାକୁ ଏଠାରେ କିଛି ପରାମର୍ଶ ଅଛି</translation>
@@ -2262,6 +2276,7 @@
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="8638637208069328956">ମାଇକ୍ରୋଫୋନକୁ ଚାଲୁ/ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> ବାକି ଅଛି</translation>
+<translation id="8640470573049727749">ସମସ୍ତ ଗୋଷ୍ଠୀ ପରାମର୍ଶକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="8641510901370802679"><ph name="ANSWER_TYPE" /> ସୂଚନା ଦେଖାଯାଉଛି</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> ଟାଇମର୍</translation>
 <translation id="8647931990447795414">ଜଣେ ବ୍ୟକ୍ତିଙ୍କୁ ଯୋଗ କରିବାକୁ, ଆପଣଙ୍କର Family Linkର ବାପାମା ଆକ୍ସେସ୍ କୋଡ୍ ଲେଖନ୍ତୁ</translation>
@@ -2344,6 +2359,7 @@
 <translation id="8905919797434099235">(କୌଣସି ଟାଇଟେଲ ନାହିଁ)</translation>
 <translation id="890616557918890486">ଉତ୍ସ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="8909138438987180327"><ph name="PERCENTAGE" /> ଶତକଡା ବ୍ୟାଟେରୀ ଅଛି।</translation>
+<translation id="8916866375277139011"><ph name="GROUP_NAME" />ରେ ଆଇଟମଗୁଡ଼ିକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google ଆସିଷ୍ଟାଣ୍ଟ ଏହି ଭାଷା କହେ ନାହିଁ।</translation>
 <translation id="8926951137623668982">ସେଲ୍ଫ ସର୍ବଦା ଲୁଚାଇ ରଖାଯାଇଛି</translation>

@@ -59,7 +59,6 @@
 <translation id="1698376642261615901">Google Chrome ແມ່ນບຣາວເຊີເວັບທີ່ແລ່ນໜ້າເວັບ ແລະແອັບພລິເຄຊັນດ້ວຍຄວາມໄວແບບສາຍຟ້າແມັບ. ມັນໄວ, ໝັ້ນທ່ຽງ, ແລະໃຊ້ງ່າຍ. ທ່ອງເວັບໄດ້ປອດໄພກ່ວາດ້ວຍການປົກປ້ອງມາລແວ ແລະພິຊຊິງທີ່ສ້າງຢູ່ໃນຕົວ Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome ຈະເປີດຄືນໃໝ່ໃນໜຶ່ງຊົ່ວໂມງ}other{Chrome ຈະເປີດຄືນໃໝ່ໃນ # ຊົ່ວໂມງ}}</translation>
 <translation id="1722488837206509557">ວິທີນີ້ຈະຊ່ວຍໃຫ້ທ່ານສາມາດເລືອກຈາກອຸປະກອນທີ່ພ້ອມນຳໃຊ້ ແລະ ສະແດງເນື້ອຫາຢູ່ອຸປະກອນເຫຼົ່ານັ້ນ.</translation>
-<translation id="1734234790201236882">Chrome ຈະບັນທຶກລະຫັດຜ່ານນີ້ໃນບັນຊີ Google ຂອງທ່ານ. ທ່ານຈະບໍ່ຈຳເປັນຕ້ອງຈື່ມັນ.</translation>
 <translation id="1786003790898721085">ກວດໃຫ້ແນ່ໃຈວ່າທ່ານໄດ້ເຂົ້າສູ່ລະບົບ Chrome ໃນ <ph name="TARGET_DEVICE_NAME" /> ຂອງທ່ານແລ້ວລອງສົ່ງໃໝ່.</translation>
 <translation id="1786044937610313874">ທາງລັດທີ່ເປີດໃນ Chrome</translation>
 <translation id="178701303897325119">ບໍ່ຮອງຮັບສ່ວນຂະຫຍາຍນີ້ອີກຕໍ່ໄປແລ້ວ. Chrome ແນະນຳໃຫ້ທ່ານລຶບມັນອອກແທນ.</translation>
@@ -327,6 +326,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="4997044641749333913">Chrome ສາມາດເຮັດໃຫ້ແຖບເຫຼົ່ານີ້ບໍ່ເຮັດວຽກເພື່ອປັບປຸງປະສົບການໃນການເລືອກເບິ່ງຂອງທ່ານ ແລະ ເຮັດໃຫ້ສິ່ງຕ່າງໆເຮັດວຽກໄດ້ໄວຂຶ້ນ.</translation>
 <translation id="5003967926796347400">ຄລິກ “ຕົວຈັດການລະຫັດຜ່ານ Google”</translation>
+<translation id="5114340746415930644">ໃສ່ລະຫັດຜ່ານຂອງທ່ານເພື່ອໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີຂອງທ່ານ, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">ເຂົ້າສູ່ລະບົບ Chrome ເມື່ອທ່ານເຂົ້າສູ່ລະບົບບໍລິການອື່ນໆຂອງ Google</translation>
 <translation id="5126049312684316860">Chrome ໂຫຼດໜ້າເວັບໄວ້ກ່ອນລ່ວງໜ້າເພີ່ມຫຼາຍຂຶ້ນສຳລັບໜ້າທີ່ທ່ານອາດຈະເຂົ້າເບິ່ງ, ເພື່ອໃຫ້ພວກມັນໂຫຼດໄວຂຶ້ນເມື່ອທ່ານເຂົ້າເບິ່ງ</translation>
 <translation id="5132929315877954718">ຄົ້ນພົບແອັບຯ, ເກມ, ສ່ວນຂະຫຍາຍ ແລະ ຮູບແບບສີສັນສຳລັບ Google Chrome.</translation>
@@ -478,9 +478,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7024536598735240744">ແຕກໄຟລ໌ຜິດພາດ: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">ຢຸດການຕິດຕັ້ງແລ້ວ.</translation>
 <translation id="7025800014283535195">ທ່ານສາມາດສະຫຼັບລະຫວ່າງໂປຣໄຟລ໌ Chrome ໄດ້ຢູ່ບ່ອນນີ້</translation>
-<translation id="7036251913954633326">ຫາກທ່ານຕ້ອງການໃຊ້ບັນຊີນີ້ແບບເທື່ອດຽວເທົ່ານັ້ນ, ທ່ານສາມາດໃຊ້ <ph name="GUEST_LINK_BEGIN" />ໂໝດແຂກ<ph name="GUEST_LINK_END" /> ໃນໂປຣແກຣມທ່ອງເວັບ Chrome ໄດ້. ຫາກທ່ານຕ້ອງການເພີ່ມບັນຊີໃຫ້ຄົນອື່ນ, ກະລຸນາ <ph name="LINK_BEGIN" />ເພີ່ມຄົນໃໝ່<ph name="LINK_END" /> ໃສ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ.
-
-ການອະນຸຍາດທີ່ທ່ານໄດ້ມອບໃຫ້ເວັບໄຊ ແລະ ແອັບຕ່າງໆໄປກ່ອນແລ້ວອາດມີຜົນກັບບັນຊີນີ້ນຳ. ທ່ານສາມາດຈັດການບັນຊີ Google ຂອງທ່ານໄດ້ໃນ <ph name="SETTINGS_LINK_BEGIN" />ການຕັ້ງຄ່າ<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7048502283602470098">ສຳຫຼວດ AI</translation>
 <translation id="7059914902409643750">ຕັ້ງຄ່າ Chrome ແບບກຳນົດເອງ</translation>
 <translation id="7071827361006050863">Chrome ຈະລຶບຂໍ້ມູນການທ່ອງເວັບໃນໄວໆນີ້</translation>

@@ -85,6 +85,7 @@
 <translation id="1158211211994409885">Хост <ph name="HOST_NAME" /> нечакана закрыў падключэнне.</translation>
 <translation id="1160009341934077418">Гісторыя цэн у інтэрнэце</translation>
 <translation id="1161325031994447685">Паўторна падключыцца да Wi-Fi</translation>
+<translation id="1161663161838091892">Каб працягнуць, уключыце сінхранізацыю ўкладак і гісторыі</translation>
 <translation id="1163507966173624031">Народная і традыцыйная музыка</translation>
 <translation id="11635448457105324">Кнопка "Кіраваць адрасамі". Каб дадаваць адрасы і кіраваць імі праз налады Chrome, націсніце яе.</translation>
 <translation id="1165039591588034296">Памылка</translation>
@@ -1106,6 +1107,7 @@
 <translation id="297173220375858963">Настольныя выдавецкія сістэмы</translation>
 <translation id="2972581237482394796">&amp;Узнавіць</translation>
 <translation id="2974468223369775963">Не ўдалося захаваць гэты нумар IBAN ва Уліковым запісе Google. Ён захаваны ў Chrome на гэтай прыладзе. Chrome зноў спытае вас пры наступным выкарыстанні гэтага нумара IBAN.</translation>
+<translation id="297667759942911166">Сумесна працаваць з групамі ўкладак</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, радок выбраны. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">Заблакіраваць і выкарыстоўваць клавіятуру</translation>
 <translation id="2978824962390592855">Опера</translation>
@@ -1968,6 +1970,7 @@
 <translation id="4434045419905280838">Усплыв. вокны і перанакіраванні</translation>
 <translation id="443673843213245140">Выкарыстанне проксі-сервера выключана, але яўная канфігурацыя проксі вызначана.</translation>
 <translation id="4438821706955556403">Звычайная цана</translation>
+<translation id="444116852243722675">Адкрыць усе (<ph name="ITEMS" />)</translation>
 <translation id="4441832193888514600">Ігнаруецца, бо гэтыя правілы могуць задавацца толькі як палітыка для карыстальнікаў на ўзроўні воблака.</translation>
 <translation id="4445133368066241428">Папулярныя тэмы</translation>
 <translation id="4445964943162061557">Гэта эксперыментальная функцыя, якая не заўсёды працуе бездакорна.</translation>
@@ -2063,6 +2066,7 @@
 <translation id="4661556981531699496">Хатнія і дзікія жывёлы</translation>
 <translation id="4661868874067696603">Пошук іншых варыянтаў куплі</translation>
 <translation id="4663373278480897665">Камера дазволена</translation>
+<translation id="4664084870155869900">Наступны раз даныя будуць запоўнены аўтаматычна. Картка захавана на прыладзе.</translation>
 <translation id="466561305373967878">Настольныя гульні</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Віртуальная рэальнасць</translation>
@@ -2633,6 +2637,7 @@
 <translation id="5675809467256309336">Танцавальная і электронная музыка</translation>
 <translation id="5675959228867414813">Паказваць па даце</translation>
 <translation id="567604591393105935">Ніжні аркуш з камерцыйнай інфармацыяй адкрыты на палову экрана</translation>
+<translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Фольга</translation>
 <translation id="5680642791693447368">Трылеры, крымінальныя і дэтэктыўныя фільмы</translation>
 <translation id="568292603005599551">Размяшчэнне відарыса па восі X</translation>
@@ -2670,6 +2675,7 @@
 <translation id="573555826359077410">Кнопка "Стварыць форму". Каб хутка стварыць новую форму ў Формах Google, націсніце яе.</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Захавайце плацежную картку ва Уліковым запісе Google}one{Захавайце плацежныя карткі ва Уліковым запісе Google}few{Захавайце плацежныя карткі ва Уліковым запісе Google}many{Захавайце плацежныя карткі ва Уліковым запісе Google}other{Захавайце плацежныя карткі ва Уліковым запісе Google}}</translation>
 <translation id="5738385766833540397">Выберыце, куды павінны прыходзіць абвесткі пра зніжэнне цэн на тавары, за якімі вы сочыце</translation>
+<translation id="573974402615125334">Каб абагульваць групы ўкладак, далучацца да іх і сумесна працаваць з імі, уключыце сінхранізацыю гісторыі і ўкладак</translation>
 <translation id="5740911612628596808">Канверт C9</translation>
 <translation id="5742806904559466333">Бары, клубы і начныя забавы</translation>
 <translation id="5743684619253032786">Тавары для догляду пазногцяў</translation>
@@ -3870,6 +3876,7 @@
 <translation id="7865448901209910068">Найлепшая хуткасць</translation>
 <translation id="7870281855125116701">Знойдзена скідка</translation>
 <translation id="7871445724586827387">Змяніць пароль Уліковага запісу Google</translation>
+<translation id="787226752901403048">Увайдзіце ў Chrome, каб абагульваць групы ўкладак, далучацца да іх і сумесна працаваць з іншымі карыстальнікамі</translation>
 <translation id="7877007680666472091">ідэнтыфікатары абароненага змесціва</translation>
 <translation id="7878562273885520351">Ваш пароль можа быць раскрыты</translation>
 <translation id="7882421473871500483">Карычневы</translation>
@@ -4324,6 +4331,7 @@
 <translation id="8702965365666568344">Мантажная стужка</translation>
 <translation id="8703575177326907206">Падключэнне да дамена <ph name="DOMAIN" /> не шыфруецца.</translation>
 <translation id="8705331520020532516">Серыйны нумар</translation>
+<translation id="8706806585855470492">Вы зможаце абагульваць групы ўкладак, далучацца да іх і сумесна працаваць з імі</translation>
 <translation id="8708134712139312373">Сайт можа запытваць дазвол на падключэнне да прылад з Bluetooth</translation>
 <translation id="8710842507289500830">Стыль шрыфту</translation>
 <translation id="8712637175834984815">Зразумела</translation>
@@ -4466,6 +4474,7 @@
 <translation id="8975263830901772334">Назвы файлаў, якія вы друкуеце</translation>
 <translation id="8982884016487650216">Загрузка PDF завершана</translation>
 <translation id="8983369100812962543">Цяпер можна змяняць памер праграмы</translation>
+<translation id="8985112471026018799">Захавайце картку, каб хутчэй праводзіць аплату</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб азнаёміцца з гісторыяй прагляду сайтаў у Chrome, націсніце Tab, затым Enter</translation>
 <translation id="8987663052629670333">Паслугі друку фатаграфій</translation>
 <translation id="8987927404178983737">Месяц</translation>
@@ -4532,6 +4541,7 @@
 <translation id="9090993752571911635">Інтэрнэт-правайдары</translation>
 <translation id="9093723786115107672">Адзенне для сну</translation>
 <translation id="9094544726794842788">Калі націснуць кнопку "Не падабаецца", будзе адкрыта форма для адпраўкі падрабязнага водгуку аб тым, чаму вам не спадабаліся гэтыя вынікі</translation>
+<translation id="9094809883254050729">Наступны раз даныя будуць запоўнены аўтаматычна. Картка зашыфроўваецца падчас захавання.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб зрабіць Chrome стандартным браўзерам сістэмы ў наладах iOS, націсніце Tab, затым Увод</translation>
 <translation id="9101450247048146228">Рух і выкарыстанне камер (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Латок 1</translation>

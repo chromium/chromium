@@ -191,6 +191,7 @@
 <translation id="1779354709911146450">خطای اصالت‌سنجی</translation>
 <translation id="1780152987505130652">بستن گروه</translation>
 <translation id="178400879184240105">گذرواژه‌هایتان غیرتکراری است</translation>
+<translation id="17906873777101817">پیشنهاد برای ذخیره کردن گذرواژه‌ها و گذرکلیدها</translation>
 <translation id="1807893857950749072">مجاز کردن اعلان‌های پیگیری قیمت…</translation>
 <translation id="1810976980198522421">لغو کردن</translation>
 <translation id="1815941218935345331">گذرنویسه</translation>
@@ -542,6 +543,7 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">۲۵ اکتبر ۲۰۲۳</translation>
 <translation id="3435738964857648380">امنیت</translation>
+<translation id="343850944564645513">سایت‌های برتر شما</translation>
 <translation id="3443810440409579745">برگه دریافت شد.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> دقیقه</translation>
 <translation id="344589138074534176">‏درباره «لنز Google» بیشتر بدانید</translation>
@@ -656,6 +658,7 @@
 <translation id="3967327056943561740">نشانک‌ها</translation>
 <translation id="3967822245660637423">بارگیری کامل شد</translation>
 <translation id="3982893814825393515">گزارش کردن مشکل…</translation>
+<translation id="3984527584375648997">پنهان کردن «سایت‌های برتر شما»</translation>
 <translation id="398604237578616937">با حساب <ph name="USER_EMAIL" /> به سیستم وارد شده‌اید. منوِ حساب را باز کنید.</translation>
 <translation id="3986739045730058129">رفتن به برگه</translation>
 <translation id="3992684624889376114">درباره این صفحه</translation>
@@ -833,7 +836,6 @@
 <translation id="4764612367328936189">سازمانتان فقط ورود به سیستم با حساب‌های خاصی را مجاز کرده است. حساب‌هایی که مجاز نیستند پنهان می‌شوند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">کاوش و دنبال کردن</translation>
 <translation id="4769198578611055647">به شما کمک می‌کند به گذرکلیدهای ذخیره‌شده‌تان در هر دستگاهی دسترسی پیدا کنید</translation>
-<translation id="4777866634702576038">گروه برگه حذف شود؟</translation>
 <translation id="4787847736989526091">‫<ph name="VALUE" />، <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">در حالت ناشناس باز شود؟</translation>
 <translation id="4792385443586519711">نام شرکت</translation>
@@ -1323,6 +1325,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6732087373923685049">دوربین</translation>
 <translation id="6746338529702829275">مرور کردن داده‌های حساب</translation>
 <translation id="6755200887046212842">مدیریت حساب‌ها</translation>
+<translation id="6755733078693946548">دسترسی به گذرواژه‌ها و گذرکلیدها از هر برنامه‌ای</translation>
 <translation id="6761393919622941301">صدا</translation>
 <translation id="6779455296366983087">داده‌های مرورتان حذف خواهد شد</translation>
 <translation id="6790502149545262384">به‌زودی وقتی برگه جدیدی باز می‌کنید، داستان‌هایی از <ph name="CHANNEL_NAME" /> خواهید دید.</translation>
@@ -1467,6 +1470,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="746872191028309255">آنچه را می‌بینید با دوربین یا گالری عکستان خریداری کنید.</translation>
 <translation id="7471557245617580330">ایجاد برگه جدید</translation>
 <translation id="7473891865547856676">نه متشکرم</translation>
+<translation id="7476548258282096076">این کارت سایت‌هایی را که بیشتر بازدید کرده‌اید نشان می‌دهد.</translation>
 <translation id="747956641630879526">درصورت پنهان کردن این کارت، «رهگیری بسته» غیرفعال خواهد شد و همه داده‌هایتان برداشته خواهد شد</translation>
 <translation id="7484645889979462775">هرگز برای این سایت</translation>
 <translation id="7486006552035434095">دستگاه‌هایتان را همگام نگه دارید</translation>
@@ -1590,6 +1594,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7977451675950311423">اگر از گذرواژه‌ای استفاده کنید که در سرقت اطلاعات شبکه لو رفته باشد، به شما هشدار می‌دهد.</translation>
 <translation id="7977482887663636093">‫<ph name="NUMBER_OF_TABS_ADDED" /> برگه جدید، <ph name="NUMBER_OF_TABS_REMOVED" /> برگه بسته شد</translation>
 <translation id="797824194429476746">برگه‌ها در این دستگاه باز می‌مانند اما گروه برای همیشه حذف خواهد شد.</translation>
+<translation id="797874245254030665">از هر برنامه‌ای به گذرواژه‌ها و گذرکلیدهایتان دسترسی داشته باشید</translation>
 <translation id="7982789257301363584">شبکه</translation>
 <translation id="7987685713885608670">‏برای افزایش ایمنی، گذرواژه‌ها را قبل‌از ذخیره شدن در «مدیر گذرواژه Google» در دستگاهتان رمزگذاری می‌کند.</translation>
 <translation id="798991908416757345">گروه‌های برگه دردسترس نیست</translation>
@@ -1670,6 +1675,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8299613349954694191">برای مرور وب به‌صورت خصوصی، «برگه ناشناس» باز کنید.</translation>
 <translation id="8307481894409578819">این فایل بارگذاری نشد</translation>
 <translation id="8319076807703933069">جستجوی جدید</translation>
+<translation id="8328607660158575887">باز کردن تنظیمات «تکمیل خودکار و گذرواژه‌ها»</translation>
 <translation id="833647236762414178">گذرواژه‌ها و گذرکلیدهایتان را ایجاد، ذخیره، و مدیریت کنید تا بتوانید به‌راحتی به سیستم سایت‌ها و برنامه‌ها وارد شوید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">از داده‌هایتان پشتیبان بگیرید و در هر دستگاهی از آن‌ها استفاده کنید.</translation>
 <translation id="8349305172487531364">نوار نشانک‌ها</translation>
@@ -1822,6 +1828,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8909459547399237818">«مدیر گذرواژه» را انتخاب کنید، سپس روی «افزودن ابزاره» تک‌ضرب بزنید</translation>
 <translation id="891282356902782456">‏این گذرواژه فقط در این دستگاه ذخیره می‌شود. برای استفاده از این گذرواژه در دستگاه‌های دیگر، آن را در «حساب Google» خود (<ph name="EMAIL" />) ذخیره کنید.</translation>
 <translation id="8915916167043355778">بستن همه</translation>
+<translation id="892185197271200809">همه افراد دسترسی به گروه برگه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهند و این گروه از همه دستگاه‌ها حذف می‌شود</translation>
 <translation id="8921902386312975525">گزینه‌های رهگیری بسته</translation>
 <translation id="8923178205567790913">گذرواژه‌ها</translation>
 <translation id="892776311701544612">بیشتر بدانید…</translation>

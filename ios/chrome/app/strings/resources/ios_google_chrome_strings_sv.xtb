@@ -169,6 +169,7 @@ Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas d
 <translation id="5639704535586432836">Öppna Inställningar &gt; Integritet &gt; Kamera &gt; Google Chrome och aktivera kameran.</translation>
 <translation id="5642200033778930880">Google Chrome kan inte använda kameran i delad vy</translation>
 <translation id="5661521615548540542">Google Lösenordshantering kunde inte kontrollera alla lösenord. Försök igen senare.</translation>
+<translation id="5681291952421236520">Aktivera eller inaktivera Chrome</translation>
 <translation id="5690398455483874150">{count,plural, =1{Nu visas 1 fönster i Chrome}other{Nu visas {count} fönster i Chrome}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Ange Chrome som standardwebbläsare</translation>
@@ -204,6 +205,7 @@ Testa att vänta några minuter innan du byter konto. Om du byter konto nu rader
 <translation id="6484712497741564393">Inloggad som <ph name="EMAIL" />.
 
 Din data krypteras med lösenfrasen. Ange den om du vill använda och spara Chrome-data i ditt Google-konto.</translation>
+<translation id="6533470733797826516">Logga in snabbare med autofyll i Chrome</translation>
 <translation id="6545449117344801102">Chrome identifierar adresser och använder Google Maps för att ge dig vägbeskrivningar och lokal information.</translation>
 <translation id="6634107063912726160">När du har loggat ut synkroniseras ingen mer data med ditt Google-konto i Chrome. Data som redan har synkroniserats finns kvar i kontot.</translation>
 <translation id="6636941099779251629">Organisationen kräver att du loggar in för att använda Chrome. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>

@@ -59,7 +59,6 @@
 <translation id="1698376642261615901">Google Chrome је веб прегледач који веб-странице и апликације покреће брзином светлости. Он је брз, стабилан и лак за коришћење. Још безбедније прегледајте Веб уз помоћ заштите од малвера и „пецања“ која је уграђена у Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Поново ћемо покренути Chrome за један сат}one{Поново ћемо покренути Chrome за # сат}few{Поново ћемо покренути Chrome за # сата}other{Поново ћемо покренути Chrome за # сати}}</translation>
 <translation id="1722488837206509557">То ће вам омогућити да бирате са доступних уређаја и да приказујете садржај на њима.</translation>
-<translation id="1734234790201236882">Chrome ће сачувати ову лозинку на Google налогу. Нећете морати да је памтите.</translation>
 <translation id="1786003790898721085">Уверите се да сте пријављени у Chrome на уређају <ph name="TARGET_DEVICE_NAME" /> и пробајте да пошаљете поново.</translation>
 <translation id="1786044937610313874">Пречице се отварају у Chrome-у</translation>
 <translation id="178701303897325119">Овај додатак више није подржан. Chrome препоручује да га уклоните.</translation>
@@ -479,9 +478,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="7024536598735240744">Грешка при отпакивању: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Инсталација је прекинута.</translation>
 <translation id="7025800014283535195">Овде можете да прелазите са једног Chrome профила на други</translation>
-<translation id="7036251913954633326">Ако желите да користите овај налог само једном, можете да користите <ph name="GUEST_LINK_BEGIN" />режим госта<ph name="GUEST_LINK_END" /> у Chrome прегледачу. Ако желите да додате налог за неког другог, <ph name="LINK_BEGIN" />додајте нову особу<ph name="LINK_END" /> на уређај <ph name="DEVICE_TYPE" />.
-
-Дозволе које сте већ дали веб-сајтовима и апликацијама могу да важе за овај налог. Google налозима можете да управљате у <ph name="SETTINGS_LINK_BEGIN" />Подешавањима<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7048502283602470098">Истражи вештачку интелигенцију</translation>
 <translation id="7059914902409643750">Прилагодите Chrome себи</translation>
 <translation id="7071827361006050863">Chrome ће ускоро избрисати податке прегледања</translation>

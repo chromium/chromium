@@ -973,6 +973,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4285498937028063278">Atspraust</translation>
 <translation id="428715201724021596">Notiek savienojuma izveide ar profilu. Tas var ilgt dažas minūtes.</translation>
 <translation id="4287250812980588583">Chrome logs</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Mikrofona skaļumu kontrolē lietotne <ph name="APP_NAME" />}zero{Mikrofona skaļumu kontrolē # lietotnes}one{Mikrofona skaļumu kontrolē # lietotne}other{Mikrofona skaļumu kontrolē # lietotnes}}</translation>
 <translation id="4294319844246081198">Labrīt, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Notīrīt visus paziņojumus (kopā <ph name="COUNT" />)</translation>
 <translation id="4300272766492248925">Atvērt lietotni</translation>
@@ -1270,6 +1271,7 @@ Varat arī izmantot īsinājumtaustiņus. Vispirms atzīmējiet tekstu un pēc t
 <translation id="5245201184978705914">Nevar ģenerēt transkripciju.</translation>
 <translation id="5251174953851719648">Atsvaidzināt saturu</translation>
 <translation id="5253783950165989294">Izveidots savienojums ar ierīci “<ph name="DEVICE_NAME" />”, akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5256939106029293271">Mikrofona pārbaude</translation>
 <translation id="5258528442992323769">Nav saglabātu darbvietu</translation>
 <translation id="5260676007519551770">4. galds</translation>
 <translation id="5265391159779542051">Rezultāti ir ielādēti</translation>
@@ -1427,6 +1429,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="5745612484876805746">Nakts režīms tiek automātiski ieslēgts saulrietā.</translation>
 <translation id="5750765938512549687">Bluetooth ir izslēgts</translation>
 <translation id="5758114525425072423">Ieslēgt fokusa režīmu. Iestatīts taimeris: <ph name="FOCUS_DURATION" />.</translation>
+<translation id="5759522586053040964">Klausieties, kā jūs dzird citi. Lai apturētu pārbaudi, noklikšķiniet uz pārbaudes ikonas vai aizveriet videozvana paneli.</translation>
 <translation id="5760866832697883462">Savienojuma izveide ar ierīci (<ph name="NAME" />)</translation>
 <translation id="5762420912707163638">Pārslēdziet marķieri. <ph name="STATE_TEXT" /> Izmantojiet skārienpaliktni, skārienekrānu vai skārienekrāna pildspalvu, lai zīmētu ekrānā.</translation>
 <translation id="576341972084747908">Notiek bīstama faila <ph name="FILENAME" /> lejupielāde</translation>

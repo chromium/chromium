@@ -973,6 +973,7 @@
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="428715201724021596">正在連線至設定檔。這項操作可能需時數分鐘。</translation>
 <translation id="4287250812980588583">Chrome 視窗</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{麥克風音量由「<ph name="APP_NAME" />」控制}other{麥克風音量由 # 個應用程式控制}}</translation>
 <translation id="4294319844246081198"><ph name="GIVEN_NAME" />，早晨：</translation>
 <translation id="4296136865091727875">清除全部 <ph name="COUNT" /> 個通知</translation>
 <translation id="4300272766492248925">開啟應用程式</translation>

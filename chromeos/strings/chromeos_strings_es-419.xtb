@@ -564,6 +564,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> opiniones)</translation>
 <translation id="3748026146096797577">Sin conexión</translation>
 <translation id="3749289110408117711">Nombre del archivo</translation>
+<translation id="3763034084412196440">Ajustar el volumen</translation>
 <translation id="3767737419527918477">Buscar archivos de grabación</translation>
 <translation id="3771294271822695279">Archivos de video</translation>
 <translation id="3780740315729837296">Asignar una tecla del teclado</translation>
@@ -1218,6 +1219,7 @@
 <translation id="6747035363363040417">neutra</translation>
 <translation id="6747215703636344499">Se detuvo: la bandeja de salida está llena</translation>
 <translation id="6749473226660745022">Fotos</translation>
+<translation id="6752960629591143793">Selecciona el idioma de transcripción y descárgalo en Configuración o en el menú <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="6753452347192452143">El dispositivo es una computadora.</translation>
 <translation id="6756731097889387912">No se pudo cancelar el escaneo</translation>
 <translation id="6760706756348334449">Bajar el volumen</translation>
