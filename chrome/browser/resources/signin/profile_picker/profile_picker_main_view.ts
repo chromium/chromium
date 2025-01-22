@@ -72,6 +72,9 @@ export class ProfilePickerMainViewElement extends
       forceSigninErrorDialogBody_: {type: String},
       forceSigninErrorProfilePath_: {type: String},
       shouldShownSigninButton_: {type: Boolean},
+
+      // Exposed to CSS as 'is-glic_'.
+      isGlic_: {type: Boolean, reflect: true},
     };
   }
 
@@ -84,6 +87,7 @@ export class ProfilePickerMainViewElement extends
   protected guestModeEnabled_: boolean =
       loadTimeData.getBoolean('isGuestModeEnabled');
   protected profileCreationAllowed_: boolean = isProfileCreationAllowed();
+  protected isGlic_: boolean = isGlicVersion();
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
   private resizeObserver_: ResizeObserver|null = null;
@@ -130,7 +134,7 @@ export class ProfilePickerMainViewElement extends
         'display-force-signin-error-dialog',
         (title: string, body: string, profilePath: string) =>
             this.showForceSigninErrorDialog(title, body, profilePath));
-    if (!isGlicVersion()) {
+    if (!this.isGlic_) {
       this.addWebUiListener(
           'guest-mode-availability-updated',
           this.maybeUpdateGuestMode_.bind(this));
@@ -177,7 +181,7 @@ export class ProfilePickerMainViewElement extends
   }
 
   private addResizeObserver_() {
-    if (isGlicVersion()) {
+    if (this.isGlic_) {
       // In the Glic version, the separator is not needed. If added it will
       // interfere with the special background in this mode. Also a footer text
       // is shown, which already acts as a separator.
@@ -291,7 +295,7 @@ export class ProfilePickerMainViewElement extends
   // Redirects the call to the handler, to create/use a browser to show the
   // Help page.
   private onLearnMoreClicked_(): void {
-    assert(isGlicVersion());
+    assert(this.isGlic_);
     this.manageProfilesBrowserProxy_.onLearnMoreClicked();
   }
 

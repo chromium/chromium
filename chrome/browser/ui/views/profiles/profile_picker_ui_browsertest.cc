@@ -46,8 +46,9 @@ struct ProfilePickerTestParam {
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
-// to be named like `<TestClassName>.InvokeUi_default/<TestSuffix>` instead
-// of using the index of the param in `TestParam` as suffix.
+// to be named like
+// ProfilePickerUIPixelTest.InvokeUi_default/<TestSuffix>`
+// instead of using the index of the param in `TestParam` as suffix.
 std::string ParamToTestSuffix(
     const ::testing::TestParamInfo<ProfilePickerTestParam>& info) {
   return info.param.pixel_test_param.test_suffix;
@@ -132,6 +133,33 @@ enum class ProfileStatus {
   kSignedInSupervised,
 };
 
+// Make non empty account Glic eligible in Glic mode by adapting the
+// account capabilities of the signed in account and propagating them to the
+// `ProfileAttributesEntry`.
+void EnableGlicForAccount(signin::IdentityManager* identity_manager,
+                          AccountInfo account_info) {
+  CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_can_use_model_execution_features(true);
+
+  // In order to have the propagation of the account capabilities in the
+  // `ProfileAttributesEntry` the account info must be complete/valid.
+  // Fill them with dummy data if not filled already.
+  if (account_info.hosted_domain.empty()) {
+    account_info.hosted_domain = signin::constants::kNoHostedDomainFound;
+  }
+  if (account_info.full_name.empty()) {
+    account_info.full_name = "Joe Testing";
+  }
+  if (account_info.given_name.empty()) {
+    account_info.given_name = "Joe";
+  }
+  if (account_info.picture_url.empty()) {
+    account_info.picture_url = "PICTURE_URL_EMPTY";
+  }
+  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+}
+
 void SetSigninProfileProperties(signin::IdentityManager* identity_manager,
                                 ProfileStatus profile_status,
                                 bool is_glic_version) {
@@ -165,21 +193,8 @@ void SetSigninProfileProperties(signin::IdentityManager* identity_manager,
     }
   }
 
-  // Make non empty account Glic eligible in Glic mode by adapting the
-  // account capabilities of the signed in account and propagating them to the
-  // `ProfileAttributesEntry`.
   if (!account_info.IsEmpty() && is_glic_version) {
-    CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-    mutator.set_can_use_model_execution_features(true);
-
-    // In order to have the propagation of the account capabilities in the
-    // `ProfileAttributesEntry` the account info must be complete/valid.
-    account_info.hosted_domain = signin::constants::kNoHostedDomainFound;
-    account_info.full_name = "Joe Testing";
-    account_info.given_name = "Joe";
-    account_info.picture_url = "PICTURE_URL_EMPTY";
-    signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+    EnableGlicForAccount(identity_manager, account_info);
   }
 }
 

@@ -13,9 +13,7 @@ export function getHtml(this: ProfilePickerMainViewElement) {
   <div class="title-container">
     <div id="images-container">
       <img id="product-logo" @click="${this.onProductLogoClick_}"
-          srcset="chrome://theme/current-channel-logo@1x 1x,
-                  chrome://theme/current-channel-logo@2x 2x"
-          role="presentation">
+          src="product_logo.svg" role="presentation">
       <img id="glic-logo" ?hidden="${!isGlicVersion()}" role="presentation">
     </div>
     <h1 class="title">$i18nRaw{mainViewTitle}</h1>
@@ -41,9 +39,9 @@ export function getHtml(this: ProfilePickerMainViewElement) {
       </cr-button>
     </div>
   </div>
-</div>
-<div id="footer-text" ?hidden="${!isGlicVersion()}">
-  $i18nRaw{glicAddProfileHelper}
+  <div id="footer-text" class="subtitle" ?hidden="${!isGlicVersion()}">
+    $i18nRaw{glicAddProfileHelper}
+  </div>
 </div>
 <div class="footer">
   <cr-button id="browseAsGuestButton"
