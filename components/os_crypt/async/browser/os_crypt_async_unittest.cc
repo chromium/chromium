@@ -457,7 +457,7 @@ TEST_F(OSCryptAsyncTest, TestEncryptorIsEncryptionAvailable) {
 class FailingKeyProvider : public TestKeyProvider {
  private:
   void GetKey(KeyCallback callback) override {
-    std::move(callback).Run("", std::nullopt);
+    std::move(callback).Run("BLAH", std::nullopt);
   }
 };
 
@@ -717,6 +717,19 @@ TEST_F(OSCryptAsyncDeathTest, TwoOsCryptCompatibleKeyProviders) {
         std::ignore = GetInstanceSync(factory);
       },
       "Cannot have more than one key marked OSCrypt sync compatible.");
+}
+
+TEST_F(OSCryptAsyncDeathTest, EmptyProviderName) {
+  ProviderList providers;
+  providers.emplace_back(/*precedence=*/10u,
+                         std::make_unique<TestKeyProvider>(
+                             std::string(), /*use_for_encryption=*/true));
+  EXPECT_DCHECK_DEATH_WITH(
+      {
+        OSCryptAsync factory(std::move(providers));
+        std::ignore = GetInstanceSync(factory);
+      },
+      "Tag cannot be empty.");
 }
 
 TEST_F(OSCryptAsyncTest, NoCrashWithLongNames) {

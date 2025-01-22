@@ -219,7 +219,7 @@ void SecretPortalKeyProvider::ReceivedSecret() {
 
 void SecretPortalKeyProvider::Finalize(InitStatus init_status) {
   CHECK_NE(init_status, InitStatus::kSuccess);
-  Finalize(init_status, std::string(), std::nullopt);
+  Finalize(init_status, kKeyTag, std::nullopt);
 }
 
 void SecretPortalKeyProvider::Finalize(InitStatus init_status,

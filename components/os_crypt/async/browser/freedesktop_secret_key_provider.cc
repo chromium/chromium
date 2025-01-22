@@ -638,7 +638,7 @@ void FreedesktopSecretKeyProvider::FinalizeFailure(InitStatus status,
     return;
   }
   RecordInitStatus(status, detail);
-  std::move(key_callback_).Run(std::string(), std::nullopt);
+  std::move(key_callback_).Run(kEncryptionTag, std::nullopt);
   CloseSession();
 }
 

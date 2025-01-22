@@ -116,7 +116,7 @@ void DPAPIKeyProvider::GetKey(KeyCallback callback) {
   if (result.has_value()) {
     std::move(callback).Run(kKeyTag, std::move(result.value()));
   } else {
-    std::move(callback).Run(std::string(), std::nullopt);
+    std::move(callback).Run(kKeyTag, std::nullopt);
   }
 }
 
