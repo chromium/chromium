@@ -31,7 +31,7 @@ using testing::NiceMock;
 
 class AIManagerTest : public AITestUtils::AITestBase {
  protected:
-  void SetupMockOptimizationGuideKeyedService() {
+  void SetupMockOptimizationGuideKeyedService() override {
     AITestUtils::AITestBase::SetupMockOptimizationGuideKeyedService();
 
     ON_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))

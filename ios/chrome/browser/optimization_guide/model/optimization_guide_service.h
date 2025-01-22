@@ -144,6 +144,9 @@ class OptimizationGuideService
   std::optional<optimization_guide::SamplingParamsConfig>
   GetSamplingParamsConfig(
       optimization_guide::ModelBasedCapabilityKey feature) override;
+  std::optional<const optimization_guide::proto::Any> GetFeatureMetadata(
+      optimization_guide::ModelBasedCapabilityKey feature) override;
+
 #endif
 
   // optimization_guide::OptimizationGuideModelProvider implementation:

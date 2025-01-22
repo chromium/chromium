@@ -219,7 +219,6 @@ struct TokenLimits {
 };
 
 // The configuration that specifies the default sampling params.
-// TODO(crbug.com/367771112): support `max_top_k` and `max_temperature`.
 struct SamplingParamsConfig {
   uint32_t default_top_k;
   float default_temperature;

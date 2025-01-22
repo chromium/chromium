@@ -10994,6 +10994,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5245" label="RequestOTRMainFrame"/>
   <int value="5246" label="MixedContentOnLocalhost"/>
   <int value="5247" label="MixedFrameEmbeddedByLocalhost"/>
+  <int value="5248"
+      label="V8AILanguageModelCapabilities_MaxTemperature_AttributeGetter"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

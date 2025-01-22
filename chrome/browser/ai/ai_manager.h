@@ -65,14 +65,15 @@ class AIManager : public base::SupportsUserData::Data,
       uint64_t downloaded_bytes,
       uint64_t total_bytes);
 
-  // TODO(crbug.com/372349624): make the max sampling params configured from the
-  // model execution config as well.
   // Return the max top k value for the LanguageModel API. Note that this value
   // won't exceed the max top k defined by the underlying on-device model.
   uint32_t GetLanguageModelMaxTopK();
+  // Return the max temperature for the LanguageModel API.
+  float GetLanguageModelMaxTemperature();
 
-  // Return the default sampling params for the LanguageModel API.
-  optimization_guide::SamplingParams GetLanguageModelDefaultSamplingParams();
+  // Return the model info like the sampling params config for the LanguageModel
+  // API.
+  blink::mojom::AIModelInfoPtr GetLanguageModelInfo();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AIManagerTest, CanCreate);
@@ -128,8 +129,6 @@ class AIManager : public base::SupportsUserData::Data,
 
   void SendDownloadProgressUpdate(uint64_t downloaded_bytes,
                                   uint64_t total_bytes);
-
-  blink::mojom::AIModelInfoPtr GetLanguageModelInfo();
 
   mojo::ReceiverSet<blink::mojom::AIManager> receivers_;
   mojo::RemoteSet<blink::mojom::ModelDownloadProgressObserver>

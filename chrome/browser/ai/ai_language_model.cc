@@ -86,14 +86,6 @@ const char* FormatPromptRole(PromptApiRole role) {
   }
 }
 
-PromptApiMetadata ParseMetadata(const optimization_guide::proto::Any& any) {
-  PromptApiMetadata metadata;
-  if (any.type_url() == "type.googleapis.com/" + metadata.GetTypeName()) {
-    metadata.ParseFromString(any.value());
-  }
-  return metadata;
-}
-
 std::unique_ptr<optimization_guide::proto::StringValue> ToStringValue(
     const PromptApiRequest& request) {
   std::ostringstream oss;
@@ -234,6 +226,16 @@ AILanguageModel::AILanguageModel(
 }
 
 AILanguageModel::~AILanguageModel() = default;
+
+// static
+PromptApiMetadata AILanguageModel::ParseMetadata(
+    const optimization_guide::proto::Any& any) {
+  PromptApiMetadata metadata;
+  if (any.type_url() == "type.googleapis.com/" + metadata.GetTypeName()) {
+    metadata.ParseFromString(any.value());
+  }
+  return metadata;
+}
 
 void AILanguageModel::SetInitialPrompts(
     const std::optional<std::string> system_prompt,

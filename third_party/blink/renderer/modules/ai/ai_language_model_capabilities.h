@@ -33,6 +33,7 @@ class AILanguageModelCapabilities final : public ScriptWrappable {
   std::optional<float> defaultTemperature() const {
     return default_temperature_;
   }
+  std::optional<float> maxTemperature() const { return max_temperature_; }
 
   void SetDefaultTopK(uint64_t default_top_k) {
     default_top_k_ = default_top_k;
@@ -41,12 +42,16 @@ class AILanguageModelCapabilities final : public ScriptWrappable {
   void SetDefaultTemperature(float default_temperature) {
     default_temperature_ = default_temperature;
   }
+  void SetMaxTemperature(float max_temperature) {
+    max_temperature_ = max_temperature;
+  }
 
  private:
   V8AICapabilityAvailability capability_availability_;
   std::optional<uint64_t> default_top_k_;
   std::optional<uint64_t> max_top_k_;
   std::optional<float> default_temperature_;
+  std::optional<float> max_temperature_;
 };
 
 }  // namespace blink

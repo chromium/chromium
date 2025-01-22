@@ -517,20 +517,42 @@ ModelExecutionManager::GetOnDeviceModelEligibility(
   return on_device_model_service_controller_->CanCreateSession(feature);
 }
 
-std::optional<optimization_guide::SamplingParamsConfig>
-ModelExecutionManager::GetSamplingParamsConfig(
+std::optional<optimization_guide::OnDeviceModelAdaptationMetadata>
+ModelExecutionManager::GetOnDeviceModelAdaptationMetadata(
     optimization_guide::ModelBasedCapabilityKey feature) {
   if (!on_device_model_service_controller_) {
     return std::nullopt;
   }
 
-  OnDeviceModelAdaptationMetadata* adaptation_metadata =
+  optimization_guide::OnDeviceModelAdaptationMetadata* metadata =
       on_device_model_service_controller_->GetFeatureMetadata(feature);
-  if (!adaptation_metadata) {
+  if (!metadata) {
+    return std::nullopt;
+  }
+  return *metadata;
+}
+
+std::optional<optimization_guide::SamplingParamsConfig>
+ModelExecutionManager::GetSamplingParamsConfig(
+    optimization_guide::ModelBasedCapabilityKey feature) {
+  std::optional<optimization_guide::OnDeviceModelAdaptationMetadata>
+      adaptation_metadata = GetOnDeviceModelAdaptationMetadata(feature);
+  if (!adaptation_metadata.has_value()) {
     return std::nullopt;
   }
 
   return adaptation_metadata->adapter()->GetSamplingParamsConfig();
+}
+
+std::optional<const proto::Any> ModelExecutionManager::GetFeatureMetadata(
+    optimization_guide::ModelBasedCapabilityKey feature) {
+  std::optional<optimization_guide::OnDeviceModelAdaptationMetadata>
+      adaptation_metadata = GetOnDeviceModelAdaptationMetadata(feature);
+  if (!adaptation_metadata.has_value()) {
+    return std::nullopt;
+  }
+
+  return adaptation_metadata->adapter()->GetFeatureMetadata();
 }
 
 }  // namespace optimization_guide

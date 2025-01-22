@@ -41,6 +41,7 @@
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
@@ -51,6 +52,8 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
 namespace {
+
+constexpr float kDefaultMaxTemperature = 2.0f;
 
 // Checks if the model path configured via command line is valid.
 bool IsModelPathValid(const std::string& model_path_str) {
@@ -352,28 +355,44 @@ void AIManager::CreateSummarizer(
 }
 
 blink::mojom::AIModelInfoPtr AIManager::GetLanguageModelInfo() {
-  auto model_info = blink::mojom::AIModelInfo::New();
-  model_info->max_top_k = GetLanguageModelMaxTopK();
+  auto model_info = blink::mojom::AIModelInfo::New(
+      blink::mojom::AILanguageModelSamplingParams::New(),
+      blink::mojom::AILanguageModelSamplingParams::New());
+  model_info->max_sampling_params->top_k = GetLanguageModelMaxTopK();
+  model_info->max_sampling_params->temperature =
+      GetLanguageModelMaxTemperature();
 
-  auto sampling_params_config =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context_))
-          ->GetSamplingParamsConfig(
-              optimization_guide::ModelBasedCapabilityKey::kPromptApi);
-  if (sampling_params_config.has_value()) {
-    model_info->default_top_k = sampling_params_config->default_top_k;
-    model_info->default_temperature =
-        sampling_params_config->default_temperature;
+  auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context_));
+  auto sampling_params_config = service->GetSamplingParamsConfig(
+      optimization_guide::ModelBasedCapabilityKey::kPromptApi);
+
+  if (!sampling_params_config.has_value()) {
+    return model_info;
+  }
+
+  model_info->default_sampling_params->top_k =
+      sampling_params_config->default_top_k;
+  model_info->default_sampling_params->temperature =
+      sampling_params_config->default_temperature;
+
+  auto metadata = service->GetFeatureMetadata(
+      optimization_guide::ModelBasedCapabilityKey::kPromptApi);
+  if (metadata.has_value()) {
+    auto parsed_metadata = AILanguageModel::ParseMetadata(metadata.value());
+    if (parsed_metadata.has_max_sampling_params()) {
+      auto max_sampling_params = parsed_metadata.max_sampling_params();
+      if (max_sampling_params.has_top_k()) {
+        model_info->max_sampling_params->top_k = max_sampling_params.top_k();
+      }
+      if (max_sampling_params.has_temperature()) {
+        model_info->max_sampling_params->temperature =
+            max_sampling_params.temperature();
+      }
+    }
   }
 
   return model_info;
-}
-
-optimization_guide::SamplingParams
-AIManager::GetLanguageModelDefaultSamplingParams() {
-  auto model_info = GetLanguageModelInfo();
-  return optimization_guide::SamplingParams{model_info->default_top_k,
-                                            model_info->default_temperature};
 }
 
 // This is the method to get the info for AILanguageModel.
@@ -513,15 +532,29 @@ void AIManager::OnModelPathValidationComplete(const std::string& model_path,
   }
 }
 
+// TODO(crbug.com/367771112): remove these methods after we roll out the model
+// execution config change.
 uint32_t AIManager::GetLanguageModelMaxTopK() {
-  int max_top_k = optimization_guide::features::GetOnDeviceModelMaxTopK();
   if (base::FeatureList::IsEnabled(
           features::kAILanguageModelOverrideConfiguration)) {
-    max_top_k =
-        std::min(max_top_k,
-                 features::kAILanguageModelOverrideConfigurationMaxTopK.Get());
+    return std::min(
+        optimization_guide::features::GetOnDeviceModelMaxTopK(),
+        features::kAILanguageModelOverrideConfigurationMaxTopK.Get());
   }
-  return max_top_k;
+
+  return optimization_guide::features::GetOnDeviceModelMaxTopK();
+}
+
+float AIManager::GetLanguageModelMaxTemperature() {
+  if (base::FeatureList::IsEnabled(
+          features::kAILanguageModelOverrideConfiguration)) {
+    return std::min(
+        kDefaultMaxTemperature,
+        float(features::kAILanguageModelOverrideConfigurationMaxTemperature
+                  .Get()));
+  }
+
+  return kDefaultMaxTemperature;
 }
 
 void AIManager::AddModelDownloadProgressObserver(

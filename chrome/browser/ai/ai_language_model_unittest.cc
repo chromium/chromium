@@ -21,6 +21,7 @@
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
+#include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,12 +40,15 @@ namespace {
 using optimization_guide::proto::PromptApiRequest;
 using optimization_guide::proto::PromptApiRole;
 
-const uint32_t kTestMaxContextToken = 10u;
-const uint32_t kTestInitialPromptsToken = 5u;
-const uint32_t kDefaultTopK = 1u;
-const uint32_t kOverrideMaxTopK = 5u;
-const float kDefaultTemperature = 0.0;
-const uint64_t kTestModelDownloadSize = 572u;
+constexpr uint32_t kTestMaxContextToken = 10u;
+constexpr uint32_t kTestInitialPromptsToken = 5u;
+constexpr uint32_t kTestDefaultTopK = 1u;
+constexpr float kTestDefaultTemperature = 0.3;
+constexpr uint32_t kTestMaxTopK = 5u;
+constexpr float kTestMaxTemperature = 1.5;
+constexpr uint64_t kTestModelDownloadSize = 572u;
+static_assert(kTestDefaultTopK <= kTestMaxTopK);
+static_assert(kTestDefaultTemperature <= kTestMaxTemperature);
 
 const char kTestPrompt[] = "Test prompt";
 const char kExpectedFormattedTestPrompt[] = "User: Test prompt\nModel: ";
@@ -180,10 +184,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
   };
 
   void SetUp() override {
-    std::vector<base::test::FeatureRefAndParams> enabled_features{
-        base::test::FeatureRefAndParams(
-            features::kAILanguageModelOverrideConfiguration,
-            {{"max_top_k", base::NumberToString(kOverrideMaxTopK)}})};
+    std::vector<base::test::FeatureRefAndParams> enabled_features{};
     std::vector<base::test::FeatureRef> disabled_features{};
     if (IsAPIStreamingChunkByChunk()) {
       disabled_features.push_back(
@@ -198,6 +199,29 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
   }
 
  protected:
+  void SetupMockOptimizationGuideKeyedService() override {
+    AITestUtils::AITestBase::SetupMockOptimizationGuideKeyedService();
+    ON_CALL(*mock_optimization_guide_keyed_service_, GetSamplingParamsConfig(_))
+        .WillByDefault([](optimization_guide::ModelBasedCapabilityKey feature) {
+          return optimization_guide::SamplingParamsConfig{
+              .default_top_k = kTestDefaultTopK,
+              .default_temperature = kTestDefaultTemperature};
+        });
+
+    ON_CALL(*mock_optimization_guide_keyed_service_, GetFeatureMetadata(_))
+        .WillByDefault([](optimization_guide::ModelBasedCapabilityKey feature) {
+          optimization_guide::proto::SamplingParams sampling_params;
+          sampling_params.set_top_k(kTestMaxTopK);
+          sampling_params.set_temperature(kTestMaxTemperature);
+          optimization_guide::proto::PromptApiMetadata metadata;
+          *metadata.mutable_max_sampling_params() = sampling_params;
+          optimization_guide::proto::Any any;
+          any.set_value(metadata.SerializeAsString());
+          any.set_type_url("type.googleapis.com/" + metadata.GetTypeName());
+          return any;
+        });
+  }
+
   bool IsModelStreamingChunkByChunk() { return std::get<0>(GetParam()); }
   bool IsAPIStreamingChunkByChunk() { return std::get<1>(GetParam()); }
 
@@ -211,17 +235,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
 
     // Set up mock service.
     SetupMockOptimizationGuideKeyedService();
-    // When the sampling param is not specified, `GetSamplingParamsConfig()`
-    // will be called.
-    if (!sampling_params_copy) {
-      EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-                  GetSamplingParamsConfig(_))
-          .WillOnce([](optimization_guide::ModelBasedCapabilityKey feature) {
-            return optimization_guide::SamplingParamsConfig{
-                .default_top_k = kDefaultTopK,
-                .default_temperature = kDefaultTemperature};
-          });
-    }
+
     // `StartSession()` will run twice when creating and cloning the session.
     EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
         .Times(2)
@@ -233,9 +247,10 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
               testing::NiceMock<optimization_guide::MockSession>>();
           if (sampling_params_copy) {
             EXPECT_EQ(config_params->sampling_params->top_k,
-                      std::min(kOverrideMaxTopK, sampling_params_copy->top_k));
+                      std::min(kTestMaxTopK, sampling_params_copy->top_k));
             EXPECT_EQ(config_params->sampling_params->temperature,
-                      sampling_params_copy->temperature);
+                      std::min(kTestMaxTemperature,
+                               sampling_params_copy->temperature));
           }
 
           SetUpMockSession(*session, options.use_prompt_api_proto,
@@ -588,8 +603,8 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
     ON_CALL(session, GetSamplingParams()).WillByDefault([]() {
       // We don't need to use these value, so just mock it with defaults.
       return optimization_guide::SamplingParams{
-          /*top_k=*/kDefaultTopK,
-          /*temperature=*/kDefaultTemperature};
+          /*top_k=*/kTestDefaultTopK,
+          /*temperature=*/kTestDefaultTemperature};
     });
     ON_CALL(session, GetSizeInTokens(_, _))
         .WillByDefault(
@@ -747,7 +762,8 @@ TEST_P(AILanguageModelTest, PromptDefaultSession) {
 TEST_P(AILanguageModelTest, PromptSessionWithSamplingParams) {
   RunPromptTest(AILanguageModelTest::Options{
       .sampling_params = blink::mojom::AILanguageModelSamplingParams::New(
-          /*top_k=*/kOverrideMaxTopK - 1, /*temperature=*/0.6),
+          /*top_k=*/kTestMaxTopK - 1,
+          /*temperature=*/kTestMaxTemperature * 0.9),
       .prompt_input = kTestPrompt,
       .expected_prompt = kExpectedFormattedTestPrompt,
   });
@@ -756,7 +772,19 @@ TEST_P(AILanguageModelTest, PromptSessionWithSamplingParams) {
 TEST_P(AILanguageModelTest, PromptSessionWithSamplingParams_ExceedMaxTopK) {
   RunPromptTest(AILanguageModelTest::Options{
       .sampling_params = blink::mojom::AILanguageModelSamplingParams::New(
-          /*top_k=*/kOverrideMaxTopK + 1, /*temperature=*/0.6),
+          /*top_k=*/kTestMaxTopK + 1,
+          /*temperature=*/kTestMaxTemperature * 0.9),
+      .prompt_input = kTestPrompt,
+      .expected_prompt = kExpectedFormattedTestPrompt,
+  });
+}
+
+TEST_P(AILanguageModelTest,
+       PromptSessionWithSamplingParams_ExceedMaxTemperature) {
+  RunPromptTest(AILanguageModelTest::Options{
+      .sampling_params = blink::mojom::AILanguageModelSamplingParams::New(
+          /*top_k=*/kTestMaxTopK - 1,
+          /*temperature=*/kTestMaxTemperature + 0.1),
       .prompt_input = kTestPrompt,
       .expected_prompt = kExpectedFormattedTestPrompt,
   });

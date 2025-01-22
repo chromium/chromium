@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
@@ -83,6 +84,9 @@ class ModelExecutionManager
   // Returns the `SamplingParamsConfig` for `feature`.
   std::optional<optimization_guide::SamplingParamsConfig>
   GetSamplingParamsConfig(optimization_guide::ModelBasedCapabilityKey feature);
+  // Returns the metadata proto for `feature`.
+  std::optional<const proto::Any> GetFeatureMetadata(
+      optimization_guide::ModelBasedCapabilityKey feature);
 
   // Starts a new session for `feature`.
   std::unique_ptr<OptimizationGuideModelExecutor::Session> StartSession(
@@ -113,6 +117,11 @@ class ModelExecutionManager
   // Registers text safety and language detection models. Does nothing if
   // already registered.
   void RegisterTextSafetyAndLanguageModels();
+
+  // Returns the `OnDeviceModelAdaptationMetadata` for `feature`.
+  std::optional<optimization_guide::OnDeviceModelAdaptationMetadata>
+  GetOnDeviceModelAdaptationMetadata(
+      optimization_guide::ModelBasedCapabilityKey feature);
 
   // Owned by OptimizationGuideKeyedService and outlives `this`. This is to be
   // passed through the ModelQualityLogEntry to invoke upload during log

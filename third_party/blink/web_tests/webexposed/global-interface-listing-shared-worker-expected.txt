@@ -53,6 +53,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter available
 [Worker]     getter defaultTemperature
 [Worker]     getter defaultTopK
+[Worker]     getter maxTemperature
 [Worker]     getter maxTopK
 [Worker]     method constructor
 [Worker]     method languageAvailable

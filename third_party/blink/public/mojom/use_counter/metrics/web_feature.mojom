@@ -4631,6 +4631,7 @@ enum WebFeature {
   kRequestOTRMainFrame = 5245,
   kMixedContentOnLocalhost = 5246,
   kMixedFrameEmbeddedByLocalhost = 5247,
+  kV8AILanguageModelCapabilities_MaxTemperature_AttributeGetter = 5248,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

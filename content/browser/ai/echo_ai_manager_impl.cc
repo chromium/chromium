@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 
 namespace content {
@@ -110,9 +111,12 @@ void EchoAIManagerImpl::CreateSummarizer(
 
 void EchoAIManagerImpl::GetModelInfo(GetModelInfoCallback callback) {
   std::move(callback).Run(blink::mojom::AIModelInfo::New(
-      optimization_guide::features::GetOnDeviceModelDefaultTopK(),
-      optimization_guide::features::GetOnDeviceModelMaxTopK(),
-      optimization_guide::features::GetOnDeviceModelDefaultTemperature()));
+      blink::mojom::AILanguageModelSamplingParams::New(
+          optimization_guide::features::GetOnDeviceModelDefaultTopK(),
+          optimization_guide::features::GetOnDeviceModelDefaultTemperature()),
+      blink::mojom::AILanguageModelSamplingParams::New(
+          optimization_guide::features::GetOnDeviceModelMaxTopK(),
+          /*temperature=*/2.0f)));
 }
 
 void EchoAIManagerImpl::CanCreateWriter(

@@ -39,6 +39,7 @@ class AILanguageModel : public AIContextBoundObject,
  public:
   using PromptApiPrompt = optimization_guide::proto::PromptApiPrompt;
   using PromptApiRequest = optimization_guide::proto::PromptApiRequest;
+  using PromptApiMetadata = optimization_guide::proto::PromptApiMetadata;
   using CreateLanguageModelCallback = base::OnceCallback<void(
       base::expected<mojo::PendingRemote<blink::mojom::AILanguageModel>,
                      blink::mojom::AIManagerCreateLanguageModelError>,
@@ -132,6 +133,10 @@ class AILanguageModel : public AIContextBoundObject,
   AILanguageModel& operator=(const AILanguageModel&) = delete;
 
   ~AILanguageModel() override;
+
+  // Returns the the metadata parsed to the `PromptApiMetadata` from `any`.
+  static PromptApiMetadata ParseMetadata(
+      const optimization_guide::proto::Any& any);
 
   // `blink::mojom::AILanguageModel` implementation.
   void Prompt(const std::string& input,
