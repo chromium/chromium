@@ -92,11 +92,6 @@ public class ScrimCoordinator {
                 };
     }
 
-    @Deprecated
-    public ObservableSupplier<Integer> getFullScrimColorSupplier() {
-        return mMediator.getFullScrimColorSupplier();
-    }
-
     /**
      * Returns the current color being applied by the current scrim to the status bar. If there is
      * no active scrim or the scrim doesn't affect the status bar, then a fully transparent color
@@ -113,11 +108,6 @@ public class ScrimCoordinator {
      */
     public ObservableSupplier<Integer> getNavigationBarColorSupplier() {
         return mMediator.getNavigationBarColorSupplier();
-    }
-
-    @Deprecated
-    public ObservableSupplier<Float> getStatusBarScrimFractionSupplier() {
-        return mMediator.getStatusBarScrimFractionSupplier();
     }
 
     @Deprecated

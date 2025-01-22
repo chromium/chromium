@@ -210,19 +210,18 @@ public class StatusBarColorControllerTest {
                 statusBarColorController.getStatusBarColorWithoutStatusIndicator());
 
         // Set scrim.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> statusBarColorController.setStatusBarScrimFraction(.5f));
+        updateCurrentScrimColor(statusBarColorController, .5f);
 
         // The resulting color should be a scrimmed version of the status bar color.
         Assert.assertEquals(
                 "Wrong status bar color w/ scrim.",
-                getScrimmedColor(Color.BLUE, .5f),
+                calculateScrimmedColor(Color.BLUE, .5f),
                 statusBarColor.get().intValue());
 
+        // Remove scrim.
+        updateCurrentScrimColor(statusBarColorController, 0f);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    // Remove scrim.
-                    statusBarColorController.setStatusBarScrimFraction(.0f);
                     // Set the status indicator color to the default, i.e. transparent.
                     statusBarColorController.onStatusIndicatorColorChanged(Color.TRANSPARENT);
                 });
@@ -370,18 +369,17 @@ public class StatusBarColorControllerTest {
                 statusBarColorController.getStatusBarColorWithoutStatusIndicator());
 
         // Set scrim.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> statusBarColorController.setStatusBarScrimFraction(.5f));
+        updateCurrentScrimColor(statusBarColorController, .5f);
 
         Assert.assertEquals(
                 "Wrong status bar color w/ scrim",
-                getScrimmedColor(Color.BLUE, .5f),
+                calculateScrimmedColor(Color.BLUE, .5f),
                 statusBarColor.get().intValue());
 
+        // Remove scrim.
+        updateCurrentScrimColor(statusBarColorController, 0f);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    // Remove scrim.
-                    statusBarColorController.setStatusBarScrimFraction(.0f);
                     // Set the status indicator color to the default, i.e. transparent.
                     statusBarColorController.onStatusIndicatorColorChanged(Color.TRANSPARENT);
                 });
@@ -487,7 +485,7 @@ public class StatusBarColorControllerTest {
                 activity.getWindow().getStatusBarColor());
     }
 
-    private int getScrimmedColor(@ColorInt int color, float fraction) {
+    private int calculateScrimmedColor(@ColorInt int color, float fraction) {
         return ColorUtils.overlayColor(color, mScrimColor, fraction);
     }
 
@@ -554,5 +552,12 @@ public class StatusBarColorControllerTest {
         // crbug.com/342539152. Unclear if we even want this, see crbug.com/40249125.
         LayoutManagerImpl lmi = sActivityTestRule.getActivity().getLayoutManagerSupplier().get();
         LayoutTestUtils.waitForLayout(lmi, LayoutType.BROWSING);
+    }
+
+    private void updateCurrentScrimColor(
+            StatusBarColorController statusBarColorController, float fraction) {
+        @ColorInt int compositeScrimColor = ColorUtils.applyAlphaFloat(mScrimColor, fraction);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> statusBarColorController.setScrimColor(compositeScrimColor));
     }
 }

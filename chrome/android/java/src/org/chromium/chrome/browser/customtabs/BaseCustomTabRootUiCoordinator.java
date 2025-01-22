@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -616,10 +617,10 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     }
 
     @Override
-    protected void setStatusBarScrimFraction(float scrimFraction) {
-        super.setStatusBarScrimFraction(scrimFraction);
+    protected void onScrimColorChanged(@ColorInt int scrimColor) {
+        super.onScrimColorChanged(scrimColor);
         // TODO(jinsukkim): Separate CCT scrim update action from status bar scrim stuff.
-        mCustomTabHeightStrategy.setScrimFraction(scrimFraction);
+        mCustomTabHeightStrategy.setScrimColor(scrimColor);
     }
 
     @Override

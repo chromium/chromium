@@ -104,20 +104,12 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         return ColorUtils.applyAlphaFloat(color, alpha);
     }
 
-    /* package */ ObservableSupplier<Integer> getFullScrimColorSupplier() {
-        return mFullScrimColorSupplier;
-    }
-
     /* package */ ObservableSupplier<Integer> getStatusBarColorSupplier() {
         return mStatusBarColorSupplier;
     }
 
     /* package */ ObservableSupplier<Integer> getNavigationBarColorSupplier() {
         return mNavigationBarColorSupplier;
-    }
-
-    /* package */ ObservableSupplier<Float> getStatusBarScrimFractionSupplier() {
-        return mStatusBarScrimFractionSupplier;
     }
 
     /* package */ ObservableSupplier<Float> getNavigationBarScrimFractionSupplier() {

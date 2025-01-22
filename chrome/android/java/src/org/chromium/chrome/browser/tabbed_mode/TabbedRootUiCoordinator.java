@@ -894,11 +894,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     protected ScrimCoordinator buildScrimWidget() {
         ScrimCoordinator scrimCoordinator = new ScrimCoordinator(mActivity, mCoordinator);
         scrimCoordinator
-                .getFullScrimColorSupplier()
+                .getStatusBarColorSupplier()
                 .addObserver(mStatusBarColorController::setScrimColor);
-        scrimCoordinator
-                .getStatusBarScrimFractionSupplier()
-                .addObserver(mStatusBarColorController::setStatusBarScrimFraction);
         scrimCoordinator
                 .getNavigationBarScrimFractionSupplier()
                 .addObserver(this::onNavigationBarScrimFractionChanged);

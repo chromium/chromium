@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -1701,13 +1702,13 @@ public class RootUiCoordinator
         ViewGroup coordinator = mActivity.findViewById(R.id.coordinator);
         ScrimCoordinator scrimCoordinator = new ScrimCoordinator(mActivity, coordinator);
         scrimCoordinator
-                .getStatusBarScrimFractionSupplier()
-                .addObserver(RootUiCoordinator.this::setStatusBarScrimFraction);
+                .getStatusBarColorSupplier()
+                .addObserver(RootUiCoordinator.this::onScrimColorChanged);
         return scrimCoordinator;
     }
 
-    protected void setStatusBarScrimFraction(float scrimFraction) {
-        mStatusBarColorController.setStatusBarScrimFraction(scrimFraction);
+    protected void onScrimColorChanged(@ColorInt int scrimColor) {
+        mStatusBarColorController.setScrimColor(scrimColor);
     }
 
     protected void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
