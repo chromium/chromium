@@ -148,6 +148,8 @@ class AutoPictureInPictureTabHelper
   friend class content::WebContentsUserData<AutoPictureInPictureTabHelper>;
   FRIEND_TEST_ALL_PREFIXES(AutoPictureInPictureTabHelperBrowserTest,
                            CannotAutopipViaHttp);
+  FRIEND_TEST_ALL_PREFIXES(AutoPictureInPictureTabHelperBrowserTest,
+                           PromptResultNotRecorded);
   FRIEND_TEST_ALL_PREFIXES(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                            DoesNotDocumentAutopip_VideoInRemoteIFrame);
 
@@ -169,7 +171,7 @@ class AutoPictureInPictureTabHelper
 
   void MaybeStartOrStopObservingTabStrip();
 
-  bool IsEligibleForAutoPictureInPicture();
+  bool IsEligibleForAutoPictureInPicture(bool should_record_blocking_metrics);
 
   // Returns true if the tab:
   //   * Has audio focus

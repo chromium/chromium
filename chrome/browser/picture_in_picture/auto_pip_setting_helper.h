@@ -54,7 +54,7 @@ class AutoPipSettingHelper {
 
   // Notify us that the user has closed the window.  This will cause the embargo
   // to be updated if needed.
-  void OnUserClosedWindow();
+  void OnUserClosedWindow(std::string histogram_name_for_autopip_reason);
 
   // Create an AutoPipSettingOverlayView that should be used as the overlay view
   // when the content setting is ASK.  This view will call back to us, so we
@@ -72,8 +72,10 @@ class AutoPipSettingHelper {
   // Called by the AutoPictureInPictureTabHelper when automatic
   // picture-in-picture has been preemptively blocked. Used to record associated
   // `Media.AutoPictureInPicture.PromptResultV2` metrics.
-  void OnAutoPipBlockedByPermission();
-  void OnAutoPipBlockedByIncognito();
+  void OnAutoPipBlockedByPermission(
+      std::string histogram_name_for_autopip_reason);
+  void OnAutoPipBlockedByIncognito(
+      std::string histogram_name_for_autopip_reason);
 
  private:
   // These values are persisted to logs. Entries should not be renumbered and
@@ -134,13 +136,14 @@ class AutoPipSettingHelper {
                           std::string histogram_name_for_autopip_reason);
 
   // Record metrics for the result of the prompt.
-  void RecordResult(PromptResult result);
-
-  // Record `AutoPictureInPictureTabHelper` metrics, specifically the prompt
-  // result for `metric_name`. If `metric_name` is empty, no metrics will be
-  // recorded.
-  void RecorTabHelperdMetric(std::string metric_name,
-                             PromptResult result) const;
+  //
+  // Records the various prompt results and the prompt results for each of the
+  // reasons for entering auto picture in picture: video conferencing or media
+  // playback.
+  //
+  // If `metric_name` is empty, the prompt result will not be recorded for auto
+  // picture in picture reasons.
+  void RecordResult(PromptResult result, std::string metric_name);
 
   GURL origin_;
   const raw_ptr<HostContentSettingsMap> settings_map_ = nullptr;
