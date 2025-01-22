@@ -63,7 +63,9 @@ constexpr char kActivationConsoleMessage[] =
     "Fingerprinting protection is active on the current page. Please file bugs "
     "at "
     "https://issues.chromium.org/"
-    "issues?q=status:open%20componentid:1456351&s=created_time:desc";
+    "issues?q=status:open%20componentid:1456351&s=created_time:desc. If this "
+    "breaks your workflow, you can disable these protections via the "
+    "chrome://flags#enable-fingerprinting-protection-blocklist flag.";
 
 // Console message to be displayed on disallowing subframe.
 constexpr char kDisallowChildFrameConsoleMessageFormat[] =
