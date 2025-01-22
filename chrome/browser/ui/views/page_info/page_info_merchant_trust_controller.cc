@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_merchant_trust_content_view.h"
 #include "components/page_info/core/merchant_trust_service.h"
 #include "components/page_info/core/page_info_types.h"
+#include "content/public/browser/web_contents.h"
 
 PageInfoMerchantTrustController::PageInfoMerchantTrustController(
     PageInfoMerchantTrustContentView* content_view,

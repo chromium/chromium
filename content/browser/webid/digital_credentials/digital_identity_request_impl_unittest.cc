@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "content/browser/webid/test/stub_digital_identity_provider.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/test/test_render_frame_host.h"

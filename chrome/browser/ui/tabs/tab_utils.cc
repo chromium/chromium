@@ -62,27 +62,25 @@ std::vector<TabAlertState> GetTabAlertStatesForContents(
   }
 
   if (contents->IsCapabilityActive(
-          content::WebContents::CapabilityType::kBluetoothConnected)) {
+          content::WebContentsCapabilityType::kBluetoothConnected)) {
     states.push_back(TabAlertState::BLUETOOTH_CONNECTED);
   }
 
   if (contents->IsCapabilityActive(
-          content::WebContents::CapabilityType::kBluetoothScanning)) {
+          content::WebContentsCapabilityType::kBluetoothScanning)) {
     states.push_back(TabAlertState::BLUETOOTH_SCAN_ACTIVE);
   }
 
-  if (contents->IsCapabilityActive(
-          content::WebContents::CapabilityType::kUSB)) {
+  if (contents->IsCapabilityActive(content::WebContentsCapabilityType::kUSB)) {
     states.push_back(TabAlertState::USB_CONNECTED);
   }
 
-  if (contents->IsCapabilityActive(
-          content::WebContents::CapabilityType::kHID)) {
+  if (contents->IsCapabilityActive(content::WebContentsCapabilityType::kHID)) {
     states.push_back(TabAlertState::HID_CONNECTED);
   }
 
   if (contents->IsCapabilityActive(
-          content::WebContents::CapabilityType::kSerial)) {
+          content::WebContentsCapabilityType::kSerial)) {
     states.push_back(TabAlertState::SERIAL_CONNECTED);
   }
 

@@ -161,7 +161,7 @@ TEST_F(FrameConnectedBluetoothDevicesTest, Insert_Once) {
                     CreateServerClient());
 
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_TRUE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
 }
 
@@ -172,7 +172,7 @@ TEST_F(FrameConnectedBluetoothDevicesTest, Insert_Twice) {
                     CreateServerClient());
 
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_TRUE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
 }
 
@@ -183,7 +183,7 @@ TEST_F(FrameConnectedBluetoothDevicesTest, Insert_TwoDevices) {
                     CreateServerClient());
 
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_TRUE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
   EXPECT_TRUE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId1));
 }
@@ -195,7 +195,7 @@ TEST_F(FrameConnectedBluetoothDevicesTest, Insert_TwoMaps) {
                     CreateServerClient());
 
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_TRUE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
   EXPECT_TRUE(map_ptr1_->IsConnectedToDeviceWithId(kDeviceId1));
 }
@@ -206,13 +206,13 @@ TEST_F(FrameConnectedBluetoothDevicesTest,
                     CreateServerClient());
 
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_TRUE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
 
   map_ptr0_->CloseConnectionToDeviceWithId(kDeviceId0);
 
   EXPECT_FALSE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_FALSE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
 }
 
@@ -222,14 +222,14 @@ TEST_F(FrameConnectedBluetoothDevicesTest,
                     CreateServerClient());
 
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_TRUE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
 
   map_ptr0_->CloseConnectionToDeviceWithId(kDeviceId0);
   map_ptr0_->CloseConnectionToDeviceWithId(kDeviceId0);
 
   EXPECT_FALSE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_FALSE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
 }
 
@@ -241,13 +241,13 @@ TEST_F(FrameConnectedBluetoothDevicesTest,
                     CreateServerClient());
 
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_TRUE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
 
   map_ptr0_->CloseConnectionToDeviceWithId(kDeviceId0);
 
   EXPECT_FALSE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_FALSE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
 }
 
@@ -259,14 +259,14 @@ TEST_F(FrameConnectedBluetoothDevicesTest,
                     CreateServerClient());
 
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_TRUE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
 
   map_ptr0_->CloseConnectionToDeviceWithId(kDeviceId0);
   map_ptr0_->CloseConnectionToDeviceWithId(kDeviceId0);
 
   EXPECT_FALSE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_FALSE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
 }
 
@@ -277,20 +277,20 @@ TEST_F(FrameConnectedBluetoothDevicesTest, CloseConnectionId_TwoDevices) {
                     CreateServerClient());
 
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_TRUE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
   EXPECT_TRUE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId1));
 
   map_ptr0_->CloseConnectionToDeviceWithId(kDeviceId0);
 
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_FALSE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
 
   map_ptr0_->CloseConnectionToDeviceWithId(kDeviceId1);
 
   EXPECT_FALSE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_FALSE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId1));
 }
 
@@ -301,20 +301,20 @@ TEST_F(FrameConnectedBluetoothDevicesTest, CloseConnectionId_TwoMaps) {
                     CreateServerClient());
 
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_TRUE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
   EXPECT_TRUE(map_ptr1_->IsConnectedToDeviceWithId(kDeviceId1));
 
   map_ptr0_->CloseConnectionToDeviceWithId(kDeviceId0);
 
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_FALSE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
 
   map_ptr1_->CloseConnectionToDeviceWithId(kDeviceId1);
 
   EXPECT_FALSE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_FALSE(map_ptr1_->IsConnectedToDeviceWithId(kDeviceId1));
 }
 
@@ -324,7 +324,7 @@ TEST_F(FrameConnectedBluetoothDevicesTest,
                     CreateServerClient());
 
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_TRUE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
 
   EXPECT_EQ(
@@ -332,7 +332,7 @@ TEST_F(FrameConnectedBluetoothDevicesTest,
       kDeviceId0);
 
   EXPECT_FALSE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_FALSE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
 }
 
@@ -342,7 +342,7 @@ TEST_F(FrameConnectedBluetoothDevicesTest,
                     CreateServerClient());
 
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_TRUE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
 
   EXPECT_EQ(
@@ -351,7 +351,7 @@ TEST_F(FrameConnectedBluetoothDevicesTest,
   EXPECT_FALSE(map_ptr0_->CloseConnectionToDeviceWithAddress(kDeviceAddress0));
 
   EXPECT_FALSE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_FALSE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
 }
 
@@ -363,7 +363,7 @@ TEST_F(FrameConnectedBluetoothDevicesTest,
                     CreateServerClient());
 
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_TRUE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
 
   EXPECT_EQ(
@@ -371,7 +371,7 @@ TEST_F(FrameConnectedBluetoothDevicesTest,
       kDeviceId0);
 
   EXPECT_FALSE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_FALSE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
 }
 
@@ -383,7 +383,7 @@ TEST_F(FrameConnectedBluetoothDevicesTest,
                     CreateServerClient());
 
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_TRUE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
 
   EXPECT_EQ(
@@ -392,7 +392,7 @@ TEST_F(FrameConnectedBluetoothDevicesTest,
   EXPECT_FALSE(map_ptr0_->CloseConnectionToDeviceWithAddress(kDeviceAddress0));
 
   EXPECT_FALSE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_FALSE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
 }
 
@@ -403,7 +403,7 @@ TEST_F(FrameConnectedBluetoothDevicesTest, CloseConnectionAddress_TwoDevices) {
                     CreateServerClient());
 
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_TRUE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
   EXPECT_TRUE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId1));
 
@@ -412,7 +412,7 @@ TEST_F(FrameConnectedBluetoothDevicesTest, CloseConnectionAddress_TwoDevices) {
       kDeviceId0);
 
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_FALSE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
   EXPECT_TRUE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId1));
 
@@ -421,7 +421,7 @@ TEST_F(FrameConnectedBluetoothDevicesTest, CloseConnectionAddress_TwoDevices) {
       kDeviceId1);
 
   EXPECT_FALSE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_FALSE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId1));
 }
 
@@ -432,7 +432,7 @@ TEST_F(FrameConnectedBluetoothDevicesTest, CloseConnectionAddress_TwoMaps) {
                     CreateServerClient());
 
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_TRUE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
   EXPECT_TRUE(map_ptr1_->IsConnectedToDeviceWithId(kDeviceId1));
 
@@ -441,7 +441,7 @@ TEST_F(FrameConnectedBluetoothDevicesTest, CloseConnectionAddress_TwoMaps) {
       kDeviceId0);
 
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_FALSE(map_ptr0_->IsConnectedToDeviceWithId(kDeviceId0));
   EXPECT_TRUE(map_ptr1_->IsConnectedToDeviceWithId(kDeviceId1));
 
@@ -450,7 +450,7 @@ TEST_F(FrameConnectedBluetoothDevicesTest, CloseConnectionAddress_TwoMaps) {
       kDeviceId1);
 
   EXPECT_FALSE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
   EXPECT_FALSE(map_ptr1_->IsConnectedToDeviceWithId(kDeviceId1));
 }
 
@@ -461,12 +461,12 @@ TEST_F(FrameConnectedBluetoothDevicesTest, Destruction_MultipleDevices) {
                     CreateServerClient());
 
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
 
   ResetService0();
 
   EXPECT_FALSE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
 }
 
 TEST_F(FrameConnectedBluetoothDevicesTest, Destruction_MultipleMaps) {
@@ -481,18 +481,18 @@ TEST_F(FrameConnectedBluetoothDevicesTest, Destruction_MultipleMaps) {
                     CreateServerClient());
 
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
 
   ResetService0();
 
   // WebContents should still be connected because of map_ptr1_.
   EXPECT_TRUE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
 
   ResetService1();
 
   EXPECT_FALSE(contents()->IsCapabilityActive(
-      WebContents::CapabilityType::kBluetoothConnected));
+      WebContentsCapabilityType::kBluetoothConnected));
 }
 
 TEST_F(FrameConnectedBluetoothDevicesTest,

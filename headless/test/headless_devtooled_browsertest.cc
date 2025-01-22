@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "content/public/browser/web_contents.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/public/headless_browser_context.h"
 

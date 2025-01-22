@@ -59,6 +59,7 @@
 #include "content/public/browser/mhtml_generation_result.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_capability_type.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -458,7 +459,7 @@ class CONTENT_EXPORT WebContentsImpl
   bool IsAudioMuted() override;
   void SetAudioMuted(bool mute) override;
   bool IsCurrentlyAudible() override;
-  bool IsCapabilityActive(CapabilityType capability_type) override;
+  bool IsCapabilityActive(WebContentsCapabilityType capability_type) override;
   bool HasFileSystemAccessHandles() override;
   bool HasPictureInPictureVideo() override;
   bool HasPictureInPictureDocument() override;
@@ -1365,8 +1366,9 @@ class CONTENT_EXPORT WebContentsImpl
 
   // Notifies the delegate and observers when device connection types used by
   // the WebContents change.
-  void OnCapabilityTypesChanged(CapabilityType device_capability_type,
-                                bool used);
+  void OnCapabilityTypesChanged(
+      WebContentsCapabilityType device_capability_type,
+      bool used);
 
   // Modify the counter of frames in this WebContents actively using USB
   // devices.

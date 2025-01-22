@@ -703,13 +703,13 @@ void TabLifecycleUnitSource::TabLifecycleUnit::CheckDeviceUsage(
   DCHECK(decision_details);
 
   if (web_contents()->IsCapabilityActive(
-          content::WebContents::CapabilityType::kUSB)) {
+          content::WebContentsCapabilityType::kUSB)) {
     decision_details->AddReason(
         DecisionFailureReason::LIVE_STATE_USING_WEB_USB);
   }
 
   if (web_contents()->IsCapabilityActive(
-          content::WebContents::CapabilityType::kBluetoothConnected)) {
+          content::WebContentsCapabilityType::kBluetoothConnected)) {
     decision_details->AddReason(
         DecisionFailureReason::LIVE_STATE_USING_BLUETOOTH);
   }

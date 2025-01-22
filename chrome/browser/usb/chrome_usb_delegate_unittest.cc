@@ -453,7 +453,7 @@ class ChromeUsbTestHelper {
     service->GetDevice(device_info->guid, device.BindNewPipeAndPassReceiver());
     if (web_contents) {
       EXPECT_FALSE(web_contents->IsCapabilityActive(
-          content::WebContents::CapabilityType::kUSB));
+          content::WebContentsCapabilityType::kUSB));
     }
 
     // Open the device. Now the WebContents should indicate we are connected to
@@ -468,7 +468,7 @@ class ChromeUsbTestHelper {
     EXPECT_TRUE(open_future.Get()->is_success());
     if (web_contents) {
       EXPECT_TRUE(web_contents->IsCapabilityActive(
-          content::WebContents::CapabilityType::kUSB));
+          content::WebContentsCapabilityType::kUSB));
     }
 
     // Close the device and check that the WebContents no longer indicates we
@@ -482,7 +482,7 @@ class ChromeUsbTestHelper {
     loop.Run();
     if (web_contents) {
       EXPECT_FALSE(web_contents->IsCapabilityActive(
-          content::WebContents::CapabilityType::kUSB));
+          content::WebContentsCapabilityType::kUSB));
     }
   }
 
@@ -510,7 +510,7 @@ class ChromeUsbTestHelper {
     service->GetDevice(device_info->guid, device.BindNewPipeAndPassReceiver());
     if (web_contents) {
       EXPECT_FALSE(web_contents->IsCapabilityActive(
-          content::WebContents::CapabilityType::kUSB));
+          content::WebContentsCapabilityType::kUSB));
     }
 
     // Open the device. Now the WebContents should indicate we are connected to
@@ -525,7 +525,7 @@ class ChromeUsbTestHelper {
     EXPECT_TRUE(open_future.Get()->is_success());
     if (web_contents) {
       EXPECT_TRUE(web_contents->IsCapabilityActive(
-          content::WebContents::CapabilityType::kUSB));
+          content::WebContentsCapabilityType::kUSB));
     }
 
     // Remove the device and check that the WebContents no longer indicates we
@@ -544,7 +544,7 @@ class ChromeUsbTestHelper {
     }
     if (web_contents) {
       EXPECT_FALSE(web_contents->IsCapabilityActive(
-          content::WebContents::CapabilityType::kUSB));
+          content::WebContentsCapabilityType::kUSB));
     }
   }
 
@@ -574,7 +574,7 @@ class ChromeUsbTestHelper {
     service->GetDevice(device_info->guid, device.BindNewPipeAndPassReceiver());
     if (web_contents) {
       EXPECT_FALSE(web_contents->IsCapabilityActive(
-          content::WebContents::CapabilityType::kUSB));
+          content::WebContentsCapabilityType::kUSB));
     }
 
     TestFuture<device::mojom::UsbOpenDeviceResultPtr> open_future;
@@ -582,7 +582,7 @@ class ChromeUsbTestHelper {
     EXPECT_TRUE(open_future.Get()->is_success());
     if (web_contents) {
       EXPECT_TRUE(web_contents->IsCapabilityActive(
-          content::WebContents::CapabilityType::kUSB));
+          content::WebContentsCapabilityType::kUSB));
     }
 
     TestFuture<bool> set_configuration_future;
@@ -630,7 +630,7 @@ class ChromeUsbTestHelper {
                          device.BindNewPipeAndPassReceiver());
       if (web_contents) {
         EXPECT_FALSE(web_contents->IsCapabilityActive(
-            content::WebContents::CapabilityType::kUSB));
+            content::WebContentsCapabilityType::kUSB));
       }
 
       TestFuture<device::mojom::UsbOpenDeviceResultPtr> open_future;
@@ -638,7 +638,7 @@ class ChromeUsbTestHelper {
       EXPECT_TRUE(open_future.Get()->is_success());
       if (web_contents) {
         EXPECT_TRUE(web_contents->IsCapabilityActive(
-            content::WebContents::CapabilityType::kUSB));
+            content::WebContentsCapabilityType::kUSB));
       }
 
       TestFuture<bool> set_configuration_future;
@@ -737,7 +737,7 @@ class ChromeUsbDelegateRenderFrameTestBase
     service->GetDevice(device_info->guid, device.BindNewPipeAndPassReceiver());
     if (web_contents) {
       EXPECT_FALSE(web_contents->IsCapabilityActive(
-          content::WebContents::CapabilityType::kUSB));
+          content::WebContentsCapabilityType::kUSB));
     }
 
     // Open the device. Now the WebContents should indicate we are connected to
@@ -749,7 +749,7 @@ class ChromeUsbDelegateRenderFrameTestBase
     EXPECT_TRUE(open_future.Get()->is_success());
     if (web_contents) {
       EXPECT_TRUE(web_contents->IsCapabilityActive(
-          content::WebContents::CapabilityType::kUSB));
+          content::WebContentsCapabilityType::kUSB));
     }
 
     // Perform a cross-origin navigation. The WebContents should indicate we are
@@ -759,7 +759,7 @@ class ChromeUsbDelegateRenderFrameTestBase
     base::RunLoop().RunUntilIdle();
     if (web_contents) {
       EXPECT_FALSE(web_contents->IsCapabilityActive(
-          content::WebContents::CapabilityType::kUSB));
+          content::WebContentsCapabilityType::kUSB));
     }
   }
 };

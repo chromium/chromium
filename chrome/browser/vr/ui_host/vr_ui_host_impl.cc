@@ -329,11 +329,11 @@ void VRUiHostImpl::PollCapturingState() {
 
     // Bluetooth.
     active_capturing.bluetooth_connected = web_contents_->IsCapabilityActive(
-        content::WebContents::CapabilityType::kBluetoothConnected);
+        content::WebContentsCapabilityType::kBluetoothConnected);
 
     // USB.
     active_capturing.usb_connected = web_contents_->IsCapabilityActive(
-        content::WebContents::CapabilityType::kUSB);
+        content::WebContentsCapabilityType::kUSB);
   }
 
   auto capturing_switched_on =
