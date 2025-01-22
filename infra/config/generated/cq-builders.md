@@ -100,7 +100,7 @@ builder.
   * [`//services/on_device_model/.+`](https://cs.chromium.org/chromium/src/services/on_device_model/)
 
   This builder is only run when the CL owner is in the group:
-  * [`optimization-guide-try-opt-in`](https://chrome-infra-auth.appspot.com/auth/lookup?p=optimization-guide-try-opt-in)
+  * [`google/optimization-guide-try-opt-in@google.com`](https://chrome-infra-auth.appspot.com/auth/lookup?p=google/optimization-guide-try-opt-in@google.com)
 
 * [optimization_guide-mac-arm64](https://ci.chromium.org/p/chrome/builders/try/optimization_guide-mac-arm64) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""optimization_guide-mac-arm64""))
 
@@ -110,7 +110,7 @@ builder.
   * [`//services/on_device_model/.+`](https://cs.chromium.org/chromium/src/services/on_device_model/)
 
   This builder is only run when the CL owner is in the group:
-  * [`optimization-guide-try-opt-in`](https://chrome-infra-auth.appspot.com/auth/lookup?p=optimization-guide-try-opt-in)
+  * [`google/optimization-guide-try-opt-in@google.com`](https://chrome-infra-auth.appspot.com/auth/lookup?p=google/optimization-guide-try-opt-in@google.com)
 
 * [optimization_guide-win64](https://ci.chromium.org/p/chrome/builders/try/optimization_guide-win64) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""optimization_guide-win64""))
 
@@ -120,7 +120,7 @@ builder.
   * [`//services/on_device_model/.+`](https://cs.chromium.org/chromium/src/services/on_device_model/)
 
   This builder is only run when the CL owner is in the group:
-  * [`optimization-guide-try-opt-in`](https://chrome-infra-auth.appspot.com/auth/lookup?p=optimization-guide-try-opt-in)
+  * [`google/optimization-guide-try-opt-in@google.com`](https://chrome-infra-auth.appspot.com/auth/lookup?p=google/optimization-guide-try-opt-in@google.com)
 
 ### chromium
 * [3pp-linux-amd64-packager](https://ci.chromium.org/p/chromium/builders/try/3pp-linux-amd64-packager) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""3pp-linux-amd64-packager""))
