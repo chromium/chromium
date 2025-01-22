@@ -933,9 +933,6 @@ extern const char kEnableManagedConfigurationWebApiDescription[];
 extern const char kDownloadNotificationServiceUnifiedAPIName[];
 extern const char kDownloadNotificationServiceUnifiedAPIDescription[];
 
-extern const char kDownloadsMigrateToJobsAPIName[];
-extern const char kDownloadsMigrateToJobsAPIDescription[];
-
 extern const char kEnablePerfettoSystemTracingName[];
 extern const char kEnablePerfettoSystemTracingDescription[];
 
