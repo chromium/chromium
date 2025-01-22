@@ -54,7 +54,7 @@ class SingleClientSearchEnginesSyncTest : public SyncTest {
       std::unique_ptr<TemplateURL> turl) {
     DCHECK(turl);
     syncer::SyncData sync_data =
-        TemplateURLService::CreateSyncDataFromTemplateURL(*turl);
+        TemplateURLService::CreateSyncDataFromTemplateURLData(turl->data());
     return syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
         /*non_unique_name=*/sync_data.GetTitle(),
         /*client_tag=*/turl->sync_guid(), sync_data.GetSpecifics(),

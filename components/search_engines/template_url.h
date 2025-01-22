@@ -981,6 +981,8 @@ class TemplateURL {
   const std::optional<TemplateURLData>& GetLocalData() const;
   const std::optional<TemplateURLData>& GetAccountData() const;
 
+  void CopyActiveValueToLocalAndAccount();
+
  private:
   // Resizes the |url_refs_| vector, which always holds the search URL as the
   // last item.

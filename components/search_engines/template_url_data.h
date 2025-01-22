@@ -242,6 +242,9 @@ struct TemplateURLData {
   // starter_pack_id > 0.
   int starter_pack_id{0};
 
+  friend bool operator==(const TemplateURLData&,
+                         const TemplateURLData&) = default;
+
  private:
   // Private so we can enforce using the setters and thus enforce that these
   // fields are never empty.
