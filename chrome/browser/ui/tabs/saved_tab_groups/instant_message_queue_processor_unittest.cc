@@ -29,6 +29,7 @@ using collaboration::messaging::InstantNotificationType;
 using collaboration::messaging::MessageAttribution;
 using collaboration::messaging::PersistentNotificationType;
 using collaboration::messaging::TabGroupMessageMetadata;
+using collaboration::messaging::TabMessageMetadata;
 using data_sharing::GroupMember;
 using testing::_;
 
@@ -38,10 +39,20 @@ using SuccessCallback = collaboration::messaging::MessagingBackendService::
 namespace {
 
 InstantMessage CreateMessage(CollaborationEvent event) {
+  GroupMember member;
+  member.given_name = "User";
+
+  TabMessageMetadata tab_metadata;
+  tab_metadata.last_known_url = "chrome://settings";
+  tab_metadata.last_known_title = "Chrome settings";
+
   TabGroupMessageMetadata tab_group_metadata;
   tab_group_metadata.local_tab_group_id = TabGroupId::GenerateNew();
+  tab_group_metadata.last_known_title = "Vacation";
 
   MessageAttribution attribution;
+  attribution.triggering_user = member;
+  attribution.tab_metadata = tab_metadata;
   attribution.tab_group_metadata = tab_group_metadata;
 
   InstantMessage message;
@@ -67,21 +78,6 @@ class TestInstantMessageQueueProcessor : public InstantMessageQueueProcessor {
 
   void SetToastWillBeShown(bool enabled) { toast_will_be_shown_ = enabled; }
 
-  std::optional<ToastParams> GetParamsForMessage(
-      const InstantMessage& message) override {
-    if (should_create_toast_params_) {
-      ToastParams params(ToastId::kMaxValue);
-      return params;
-    }
-    return std::nullopt;
-  }
-
-  // TODO(crbug.com/370781127): Remove this mock function after ToastParams are
-  // added.
-  void SetShouldCreateToastParams(bool enabled) {
-    should_create_toast_params_ = enabled;
-  }
-
   void FastForwardByToastDuration(
       base::test::TaskEnvironment* task_environment) {
     task_environment->FastForwardBy(GetMessageInterval());
@@ -89,7 +85,6 @@ class TestInstantMessageQueueProcessor : public InstantMessageQueueProcessor {
 
  private:
   bool toast_will_be_shown_ = false;
-  bool should_create_toast_params_ = false;
 };
 
 }  // namespace
@@ -131,13 +126,14 @@ TEST_F(InstantMessageQueueProcessorTest, IgnoresUnsupportedEvents) {
 
 TEST_F(InstantMessageQueueProcessorTest,
        FailsMessageUnableToCreateToastParams) {
-  // Mock a situation where the toast params cannot be created.
-  processor()->SetShouldCreateToastParams(false);
-
   EXPECT_FALSE(processor()->IsMessageShowing());
   EXPECT_EQ(0, processor()->GetQueueSize());
 
   auto message = CreateMessage(CollaborationEvent::TAB_REMOVED);
+
+  // Remove user so that toast cannot be created from message.
+  message.attribution.triggering_user = std::nullopt;
+
   base::MockCallback<SuccessCallback> callback;
 
   // Message will fail because toast params could not be created.
@@ -149,8 +145,6 @@ TEST_F(InstantMessageQueueProcessorTest,
 }
 
 TEST_F(InstantMessageQueueProcessorTest, ShowsSupportedEvents) {
-  // Mock creating toast params to be created.
-  processor()->SetShouldCreateToastParams(true);
   // Mock that toast to be shown.
   processor()->SetToastWillBeShown(true);
 
@@ -175,16 +169,14 @@ TEST_F(InstantMessageQueueProcessorTest, ShowsSupportedEvents) {
 }
 
 TEST_F(InstantMessageQueueProcessorTest, QueuesMessages) {
-  // Mock creating toast params to be created.
-  processor()->SetShouldCreateToastParams(true);
   // Mock that toast to be shown.
   processor()->SetToastWillBeShown(true);
 
   EXPECT_FALSE(processor()->IsMessageShowing());
   EXPECT_EQ(0, processor()->GetQueueSize());
 
-  auto message1 = CreateMessage(CollaborationEvent::TAB_REMOVED);
-  auto message2 = CreateMessage(CollaborationEvent::TAB_REMOVED);
+  auto message1 = CreateMessage(CollaborationEvent::COLLABORATION_MEMBER_ADDED);
+  auto message2 = CreateMessage(CollaborationEvent::COLLABORATION_REMOVED);
   base::MockCallback<SuccessCallback> callback1;
   base::MockCallback<SuccessCallback> callback2;
 

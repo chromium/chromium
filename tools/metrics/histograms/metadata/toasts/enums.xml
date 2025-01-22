@@ -63,6 +63,9 @@ chromium-metrics-reviews@google.com.
   <int value="10"
       label="ESB value was synced to 'turned on' - for security settings page"/>
   <int value="11" label="ESB value is synced to 'turned off'"/>
+  <int value="12" label="Tab removed from collaboration"/>
+  <int value="13" label="User joined collaboration"/>
+  <int value="14" label="Collaboration removed"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->

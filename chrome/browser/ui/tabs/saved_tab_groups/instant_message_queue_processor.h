@@ -92,9 +92,7 @@ class InstantMessageQueueProcessor {
   // Returns the toast params populated for this message. Returns
   // std::nullopt if this message cannot be converted into a valid
   // toast. Virtual for tests.
-  // TODO(crbug.com/370781127): Remove virtual after ToastParams are added.
-  virtual std::optional<ToastParams> GetParamsForMessage(
-      const InstantMessage& message);
+  std::optional<ToastParams> GetParamsForMessage(const InstantMessage& message);
 
   raw_ptr<Profile> profile_;
 
