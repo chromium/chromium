@@ -14050,10 +14050,10 @@ This can include information about installed software, files, your browser, and 
           go to settings
         </message>
 
-        <message name="IDS_SYNC_PASSPHRASE_DIALOG_FOOTER" desc="">
-          If you forgot your passphrase or want to change this setting, <ph name="SETTINGS_LINK">$1<ex>clear the data in your account</ex></ph>.
+        <message name="IDS_SYNC_PASSPHRASE_DIALOG_FOOTER_LINK" desc="Highlighted link in the dialog footer of the passphrase dialog.">
+          clear
         </message>
-        <message name="IDS_SYNC_PASSPHRASE_DIALOG_TITLE" desc="">
+        <message name="IDS_SYNC_PASSPHRASE_DIALOG_TITLE" desc="Title of the sync passphrase dialog">
           Enter your passphrase
         </message>
 
