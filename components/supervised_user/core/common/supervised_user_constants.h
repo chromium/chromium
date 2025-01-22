@@ -20,7 +20,8 @@ enum class LocalApprovalResult {
   kDeclined = 1,
   kCanceled = 2,
   kError = 3,
-  kMaxValue = kError
+  kMalformedPacpResult = 4,
+  kMaxValue = kMalformedPacpResult
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:FamilyLinkUserLocalWebApprovalResult)
 

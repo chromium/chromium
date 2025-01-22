@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/memory/raw_ref.h"
 #include "components/safe_search_api/url_checker.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -78,7 +79,9 @@ class ParentAccessCallbackParsedResult {
 
   // Decodes and parses the the base64 result provided by the PACP widget.
   static ParentAccessCallbackParsedResult ParseParentAccessCallbackResult(
-      const std::string& encoded_parent_access_callback_proto);
+      const std::string& encoded_parent_access_callback_proto,
+      base::Base64DecodePolicy decoding_policy =
+          base::Base64DecodePolicy::kStrict);
 
  private:
   absl::variant<
@@ -86,6 +89,11 @@ class ParentAccessCallbackParsedResult {
       ParentAccessWidgetError>
       result_;
 };
+
+// Extracts a parent approval result from a url query parameter returned by the
+// PACP widget, if the provided url must contain a `result=` query param.
+// If not such query param value exists the method returns an empty optional.
+std::optional<std::string> MaybeGetPacpResultFromUrl(const GURL& url);
 
 // Converts FamilyRole enum to string format.
 std::string FamilyRoleToString(kidsmanagement::FamilyRole role);
