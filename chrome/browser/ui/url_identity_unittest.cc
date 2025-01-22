@@ -98,9 +98,6 @@ class UrlIdentityTest : public testing::Test {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 #endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 TEST_F(UrlIdentityTest, AllowlistedTypesAreAllowed) {

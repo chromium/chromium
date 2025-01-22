@@ -29,15 +29,6 @@
 #include "chrome/browser/ui/ash/multi_user/test_multi_user_window_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/test/run_until.h"
-#include "base/test/test_future.h"
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom.h"
-#include "chromeos/lacros/lacros_test_helper.h"
-#include "chromeos/startup/browser_init_params.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace {
 
 using BrowserNavigatorTestChromeOS = BrowserNavigatorTest;
@@ -225,91 +216,5 @@ IN_PROC_BROWSER_TEST_F(BrowserGuestSessionNavigatorTest,
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Verifies that the navigation is trying to open the os:// scheme page in
-// Ash, will fail and then open it as chrome:// in Lacros to show a 404 error.
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, OsSchemeRedirectFail) {
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
-
-  // Navigate to an unknown page with an os:// scheme.
-  NavigateParams params(MakeNavigateParams(browser()));
-  params.disposition = WindowOpenDisposition::SINGLETON_TAB;
-  params.url = GURL("os://foobar");
-  params.window_action = NavigateParams::SHOW_WINDOW;
-  params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
-  Navigate(&params);
-
-  // A new blocked page should be shown in the browser.
-  EXPECT_EQ(browser(), params.browser);
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  EXPECT_EQ(GURL(content::kBlockedURL),
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
-}
-
-// Verifies that the navigation of an os:// scheme page is opening an app on
-// the ash side and does not produce a navigation on the Lacros side.
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, OsSchemeRedirectSucceed) {
-  if (chromeos::LacrosService::Get()
-          ->GetInterfaceVersion<crosapi::mojom::TestController>() <
-      static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
-                           kGetOpenAshBrowserWindowsMinVersion)) {
-    LOG(WARNING) << "Unsupported ash version.";
-    return;
-  }
-
-  auto& test_controller = chromeos::LacrosService::Get()
-                              ->GetRemote<crosapi::mojom::TestController>();
-
-  // Ash shouldn't have a browser window open by now.
-  base::test::TestFuture<uint32_t> window_count_future;
-  test_controller->GetOpenAshBrowserWindows(window_count_future.GetCallback());
-  EXPECT_EQ(0u, window_count_future.Take());
-
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  GURL url_before_navigation =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
-
-  // Navigate to a known Ash page.
-  NavigateParams params(MakeNavigateParams(browser()));
-  params.disposition = WindowOpenDisposition::SINGLETON_TAB;
-  params.url = GURL(chrome::kOsUIFlagsURL);
-  params.window_action = NavigateParams::SHOW_WINDOW;
-  params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
-  params.transition = ui::PageTransitionFromInt(
-      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
-  Navigate(&params);
-
-  // No change should have happened on the Lacros side.
-  EXPECT_EQ(browser(), params.browser);
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_EQ(url_before_navigation,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
-
-  // Clean up the window we have created.
-
-  // Wait until we have the app running.
-  ASSERT_TRUE(base::test::RunUntil([&] {
-    test_controller->GetOpenAshBrowserWindows(
-        window_count_future.GetCallback());
-    return window_count_future.Take() > 0;
-  }));
-
-  // Close it.
-  base::test::TestFuture<bool> success_future;
-  test_controller->CloseAllBrowserWindows(success_future.GetCallback());
-  EXPECT_TRUE(success_future.Get());
-
-  // Wait until all are gone.
-  ASSERT_TRUE(base::test::RunUntil([&] {
-    test_controller->GetOpenAshBrowserWindows(
-        window_count_future.GetCallback());
-    return window_count_future.Take() == 0;
-  }));
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace

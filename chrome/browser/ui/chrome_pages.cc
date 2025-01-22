@@ -164,10 +164,6 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
   LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::HELP, params);
 #else
   GURL url;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // If this is Lacros, forward the request to Ash.
-  url = GURL(kOsUIHelpAppURL);
-#else
   switch (source) {
     case HELP_SOURCE_KEYBOARD:
       url = GURL(kChromeHelpViaKeyboardURL);
@@ -196,7 +192,6 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
     default:
       NOTREACHED() << "Unhandled help source " << source;
   }
-#endif  // BUILDFLAG_IS_CHROMEOS_LACROS)
   if (browser) {
     ShowSingletonTab(browser, url);
   } else {
@@ -302,10 +297,6 @@ void ShowSystemAppInternal(Profile* profile, const ash::SystemWebAppType type) {
   ash::SystemAppLaunchParams params;
   params.launch_source = apps::LaunchSource::kUnknown;
   ash::LaunchSystemWebAppAsync(profile, type, params);
-}
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-void ShowSystemAppInternal(Profile* profile, const GURL& url) {
-  ShowSingletonTab(profile, url);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -678,55 +669,30 @@ GURL GetOSSettingsUrl(std::string_view sub_page) {
       << sub_page;
   return GURL(base::StrCat({kChromeUIOSSettingsURL, sub_page}));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void ShowPrintManagementApp(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   ShowSystemAppInternal(profile, ash::SystemWebAppType::PRINT_MANAGEMENT);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  ShowSystemAppInternal(profile, GURL(kOsUIPrintManagementAppURL));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ShowConnectivityDiagnosticsApp(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   ShowSystemAppInternal(profile,
                         ash::SystemWebAppType::CONNECTIVITY_DIAGNOSTICS);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  ShowSystemAppInternal(profile, GURL(kOsUIConnectivityDiagnosticsAppURL));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ShowScanningApp(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   ShowSystemAppInternal(profile, ash::SystemWebAppType::SCANNING);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  ShowSystemAppInternal(profile, GURL(kOsUIScanningAppURL));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ShowDiagnosticsApp(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   ShowSystemAppInternal(profile, ash::SystemWebAppType::DIAGNOSTICS);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  ShowSystemAppInternal(profile, GURL(kOsUIDiagnosticsAppURL));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ShowFirmwareUpdatesApp(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   ShowSystemAppInternal(profile, ash::SystemWebAppType::FIRMWARE_UPDATE);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  ShowSystemAppInternal(profile, GURL(kOsUIFirmwareUpdaterAppURL));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ShowShortcutCustomizationApp(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   ShowSystemAppInternal(profile, ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  ShowSystemAppInternal(profile, GURL(kOsUIShortcutCustomizationAppURL));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ShowShortcutCustomizationApp(Profile* profile,
@@ -734,19 +700,14 @@ void ShowShortcutCustomizationApp(Profile* profile,
                                   const std::string& category) {
   const std::string query_string =
       base::StrCat({"action=", action, "&category=", category});
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::SystemAppLaunchParams params;
   params.launch_source = apps::LaunchSource::kUnknown;
   params.url = GURL(base::StrCat(
       {ash::kChromeUIShortcutCustomizationAppURL, "?", query_string}));
   ShowSystemAppInternal(profile, ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION,
                         params);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  const GURL os_shortcuts_app_url{
-      base::StrCat({kOsUIShortcutCustomizationAppURL, "?", query_string})};
-  ShowSystemAppInternal(profile, os_shortcuts_app_url);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 void ShowWebAppSettingsImpl(Browser* browser,

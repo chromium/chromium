@@ -954,16 +954,6 @@ ClearHostClosure ProfilePickerView::GetClearClosure() {
                                          weak_ptr_factory_.GetWeakPtr()));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// static
-void ProfilePicker::NotifyAccountSelected(const GaiaId& gaia_id) {
-  if (!g_profile_picker_view) {
-    return;
-  }
-  g_profile_picker_view->NotifyAccountSelected(gaia_id);
-}
-#endif
-
 void ProfilePickerView::UpdateAccessibleNameForRootView(views::WebView*) {
   if (GetWidget()) {
     GetWidget()->UpdateAccessibleNameForRootView();

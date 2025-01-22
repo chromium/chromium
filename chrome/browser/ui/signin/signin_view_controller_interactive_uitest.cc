@@ -110,8 +110,6 @@ class SignInViewControllerBrowserTest : public InProcessBrowserTest {
   }
 };
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// DICE sign-in flow isn't applicable on Lacros.
 IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest, Accelerators) {
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
   browser()->signin_view_controller()->ShowSignin(
@@ -133,27 +131,14 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest, Accelerators) {
 
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Tests that the confirm button is focused by default in the sync confirmation
 // dialog.
 IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
                        // TODO(crbug.com/40927355): Re-enable this test
                        DISABLED_SyncConfirmationDefaultFocus) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // This test runs in the main profile.
-  EXPECT_TRUE(
-      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  CoreAccountInfo device_primary_account =
-      GetIdentityManager()->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kSignin);
-  signin::MakePrimaryAccountAvailable(GetIdentityManager(),
-                                      device_primary_account.email,
-                                      signin::ConsentLevel::kSync);
-#else
   signin::MakePrimaryAccountAvailable(GetIdentityManager(), "alice@gmail.com",
                                       signin::ConsentLevel::kSync);
-#endif
   content::TestNavigationObserver content_observer(
       GURL("chrome://sync-confirmation/"));
   content_observer.StartWatchingNewWebContents();
@@ -295,19 +280,8 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
     GTEST_SKIP() << "EnterpriseUpdatedProfileCreationScreen feature replaces "
                     "this dialog with a new one";
   }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // This test runs in the main profile.
-  EXPECT_TRUE(
-      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  auto primary_account_info = GetIdentityManager()->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kSignin);
-  auto account_info = signin::MakePrimaryAccountAvailable(
-      GetIdentityManager(), primary_account_info.email,
-      signin::ConsentLevel::kSync);
-#else
   auto account_info = signin::MakePrimaryAccountAvailable(
       GetIdentityManager(), "alice@gmail.com", signin::ConsentLevel::kSync);
-#endif
   content::TestNavigationObserver content_observer(
       (GURL(chrome::kChromeUIManagedUserProfileNoticeUrl)));
   content_observer.StartWatchingNewWebContents();

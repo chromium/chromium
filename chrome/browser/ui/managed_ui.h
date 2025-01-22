@@ -106,17 +106,6 @@ bool AreProfileAndBrowserManagedBySameEntity(Profile* profile);
 // hasn't been loaded yet.
 std::optional<std::string> GetDeviceManagerIdentity();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Returns the UTF8-encoded string representation of the the entity that manages
-// the current session or nullopt if unmanaged. Returns the same result as
-// `GetAccountManagerIdentity(primary_profile)` where `primary_profile` is the
-// initial profile in the session. This concept only makes sense on lacros where
-//  - session manager can be different from account manager for a profile in
-//    this session, and also
-//  - session manager can be different from device manager.
-std::optional<std::string> GetSessionManagerIdentity();
-#endif
-
 // Returns the UTF8-encoded string representation of the the entity that manages
 // `profile` or nullopt if unmanaged. For standard dasher domains, this will be
 // a domain name (ie foo.com). For FlexOrgs, this will be the email address of

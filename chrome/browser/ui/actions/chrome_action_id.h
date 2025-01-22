@@ -510,14 +510,9 @@
 #define CHROME_PLATFORM_SPECIFIC_ACTION_IDS \
   E(kUseSystemTitleBar, IDC_USE_SYSTEM_TITLE_BAR) \
   E(kRestoreWindow, IDC_RESTORE_WINDOW)
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#define CHROME_PLATFORM_SPECIFIC_ACTION_IDS \
-  E(kRestoreWindow, IDC_RESTORE_WINDOW)
 #else
 #define CHROME_PLATFORM_SPECIFIC_ACTION_IDS
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #define CHROME_GOOGLE_BRANDED_ACTION_IDS \

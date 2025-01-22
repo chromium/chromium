@@ -865,7 +865,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SwitchToTabCorrectWindow) {
 }
 
 // TODO(crbug.com/40806044): Reactivate the test.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // This test verifies that "switch to tab" prefers the latest used browser,
 // if multiple exist.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, DISABLED_SwitchToTabLatestWindow) {
@@ -889,7 +888,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, DISABLED_SwitchToTabLatestWindow) {
 
   EXPECT_EQ(browser2, test_browser);
 }
-#endif
 
 // Tests that a disposition of SINGLETON_TAB cannot see outside its
 // window.
@@ -2006,7 +2004,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MainFrameNavigationUIData) {
 }
 
 // TODO(crbug.com/40806044): Reactivate the test.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Test that subframe navigations generate a NavigationUIData with no
 // disposition.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SubFrameNavigationUIData) {
@@ -2040,7 +2037,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SubFrameNavigationUIData) {
   EXPECT_EQ(WindowOpenDisposition::CURRENT_TAB,
             observer.last_navigation_ui_data()->window_open_disposition());
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        Disposition_PictureInPicture_Open) {

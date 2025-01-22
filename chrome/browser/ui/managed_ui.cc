@@ -53,10 +53,6 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/policy/core/common/policy_loader_lacros.h"
-#endif
-
 using signin::constants::kNoHostedDomainFound;
 
 namespace {
@@ -171,12 +167,12 @@ bool ShouldDisplayManagedUi(Profile* profile) {
   }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Don't show the UI for Family Link accounts.
   if (profile->IsChild()) {
     return false;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return enterprise_util::IsBrowserManaged(profile) ||
          ShouldDisplayManagedByParentUi(profile);
@@ -462,15 +458,6 @@ std::optional<std::string> GetDeviceManagerIdentity() {
       .value_or(std::string());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-std::optional<std::string> GetSessionManagerIdentity() {
-  if (!policy::PolicyLoaderLacros::IsMainUserManaged()) {
-    return std::nullopt;
-  }
-  return policy::PolicyLoaderLacros::main_user_policy_data()->managed_by();
-}
-#endif
 
 std::optional<std::string> GetAccountManagerIdentity(Profile* profile) {
   if (!policy::ManagementServiceFactory::GetForProfile(profile)
