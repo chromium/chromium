@@ -123,13 +123,10 @@ class AutocompleteActionPredictor : public KeyedService,
                          const AutocompleteMatch& match,
                          content::WebContents* web_contents) const;
 
-  // Begins prerendering or prefetch with `url`. The `size` gives the initial
-  // size for the target prefetch. The predictor will run at most one prerender
+  // The predictor will run at most one prerender
   // at a time, so launching a prerender will cancel our previous prerenders (if
   // any).
-  void StartPrerendering(const GURL& url,
-                         content::WebContents& web_contents,
-                         const gfx::Size& size);
+  void StartPrerendering(const GURL& url, content::WebContents& web_contents);
 
   // Returns true if the suggestion type warrants a TCP/IP preconnection.
   // i.e., it is now quite likely that the user will select the related domain.

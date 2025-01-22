@@ -143,10 +143,8 @@ void OmniboxPrerender::DoPrerender(const AutocompleteMatch& match,
   // SearchPrefetchService is responsible for handling search
   // AutocompleteMatches and preloading search result pages when needed.
   DCHECK(!AutocompleteMatch::IsSearchType(match.type));
-  gfx::Rect container_bounds = web_contents->GetContainerBounds();
   predictors::AutocompleteActionPredictorFactory::GetForProfile(profile)
-      ->StartPrerendering(match.destination_url, *web_contents,
-                          container_bounds.size());
+      ->StartPrerendering(match.destination_url, *web_contents);
 }
 
 void OmniboxPrerender::DoPreconnect(const AutocompleteMatch& match,

@@ -1745,8 +1745,7 @@ IN_PROC_BROWSER_TEST_F(
   WaitForAutocompleteActionPredictorInitialization();
   const auto prerender_gurl = embedded_test_server()->GetURL(kPrerenderURL);
   GetAutocompleteActionPredictor()->StartPrerendering(
-      prerender_gurl, *(browser()->tab_strip_model()->GetActiveWebContents()),
-      gfx::Size(50, 50));
+      prerender_gurl, *(browser()->tab_strip_model()->GetActiveWebContents()));
 
   // One task for main page and one for the prerendered page.
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
@@ -1784,7 +1783,7 @@ IN_PROC_BROWSER_TEST_F(
         embedded_test_server()->GetURL(kNewPrerenderURL);
     GetAutocompleteActionPredictor()->StartPrerendering(
         embedded_test_server()->GetURL(kNewPrerenderURL),
-        *GetActiveWebContents(), gfx::Size(50, 50));
+        *GetActiveWebContents());
     ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyPrerender()));
     ASSERT_NO_FATAL_FAILURE(
         WaitForTaskManagerRows(1, MatchPrerender(new_prerender_gurl.spec())));
@@ -1824,8 +1823,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderTaskBrowserTest,
   ASSERT_TRUE(GetAutocompleteActionPredictor());
   WaitForAutocompleteActionPredictorInitialization();
   const auto prerender_gurl = embedded_test_server()->GetURL(kPrerenderURL);
-  GetAutocompleteActionPredictor()->StartPrerendering(
-      prerender_gurl, *GetActiveWebContents(), gfx::Size(50, 50));
+  GetAutocompleteActionPredictor()->StartPrerendering(prerender_gurl,
+                                                      *GetActiveWebContents());
 
   // One task for main page and one for the prerendered page.
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
