@@ -261,7 +261,16 @@
                                error:(NSError*)error {
   _applicationModeRequestStatus = ApplicationModeRequestStatus::kAvailable;
   if (isAppSwitcherIncognito) {
+    // When the `applicationMode` needs changing the error associated to the
+    // response must be nil.
+    CHECK(!error);
     _applicationMode = ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO;
+  } else {
+    if (error &&
+        !IsYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialEnabled()) {
+      _applicationMode =
+          ApplicationModeForTabOpening::APP_SWITCHER_UNDETERMINED;
+    }
   }
 
   for (AppModeRequestBlock block in _pendingBlocks) {
