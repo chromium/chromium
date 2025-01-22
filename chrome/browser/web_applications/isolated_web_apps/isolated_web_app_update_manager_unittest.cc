@@ -159,6 +159,17 @@ class MockCommandScheduler : public WebAppCommandScheduler {
        const base::Location& call_location),
       (override));
 
+  MOCK_METHOD(
+      void,
+      PrepareAndStoreIsolatedWebAppUpdate,
+      (const IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo& update_info,
+       const IsolatedWebAppUrlInfo& url_info,
+       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
+       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
+       PrepareAndStoreIsolatedWebAppUpdateCallback callback,
+       const base::Location& call_location),
+      (override));
+
   void DelegateToRealImpl() {
     ON_CALL(*this, ApplyPendingIsolatedWebAppUpdate)
         .WillByDefault(
@@ -174,6 +185,22 @@ class MockCommandScheduler : public WebAppCommandScheduler {
               return this
                   ->WebAppCommandScheduler::ApplyPendingIsolatedWebAppUpdate(
                       url_info, std::move(optional_keep_alive),
+                      std::move(optional_profile_keep_alive),
+                      std::move(callback), call_location);
+            });
+    ON_CALL(*this, PrepareAndStoreIsolatedWebAppUpdate)
+        .WillByDefault(
+            [this](const IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo&
+                       update_info,
+                   const IsolatedWebAppUrlInfo& url_info,
+                   std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
+                   std::unique_ptr<ScopedProfileKeepAlive>
+                       optional_profile_keep_alive,
+                   PrepareAndStoreIsolatedWebAppUpdateCallback callback,
+                   const base::Location& call_location) {
+              return this
+                  ->WebAppCommandScheduler::PrepareAndStoreIsolatedWebAppUpdate(
+                      update_info, url_info, std::move(optional_keep_alive),
                       std::move(optional_profile_keep_alive),
                       std::move(callback), call_location);
             });
@@ -288,6 +315,12 @@ class IsolatedWebAppUpdateManagerTest : public IsolatedWebAppTest {
               version);
   }
 
+  void AssertAppNotInstalled(
+      const web_package::SignedWebBundleId& web_bundle_id) {
+    ASSERT_FALSE(
+        provider().registrar_unsafe().GetAppById(GetAppId(web_bundle_id)));
+  }
+
   data_decoder::test::InProcessDataDecoder data_decoder_;
 };
 
@@ -313,11 +346,6 @@ TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
   web_package::SignedWebBundleId bundle_id =
       test::GetDefaultEd25519WebBundleId();
 
-  auto update_bundle =
-      IsolatedWebAppBuilder(
-          ManifestBuilder().SetVersion("2.0.0").SetName("updated iwa"))
-          .BuildBundle(bundle_id, {test::GetDefaultEd25519KeyPair()});
-
   auto initial_bundle =
       IsolatedWebAppBuilder(
           ManifestBuilder().SetVersion("1.0.0").SetName("intiial iwa"))
@@ -330,7 +358,11 @@ TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
 
   page_state.manifest_before_default_processing = CreateDefaultManifest(
       url_info.origin().GetURL(), u"updated iwa", base::Version("2.0.0"));
-  initial_bundle->TrustSigningKey();
+
+  auto update_bundle =
+      IsolatedWebAppBuilder(
+          ManifestBuilder().SetVersion("2.0.0").SetName("updated iwa"))
+          .BuildBundle(bundle_id, {test::GetDefaultEd25519KeyPair()});
 
   base::test::TestFuture<base::expected<base::Version, std::string>> future;
   provider().iwa_update_manager().DiscoverApplyAndPrioritizeLocalDevModeUpdate(
@@ -868,72 +900,38 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   AssertAppInstalledAtVersion(GetIwa2WebBundleId(), base::Version("2.2.0"));
 }
 
-// TODO(crbug.com/389137516): Flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_StopsNonStartedUpdateDiscoveryTasksIfIwaIsUninstalled \
-  DISABLED_StopsNonStartedUpdateDiscoveryTasksIfIwaIsUninstalled
-#else
-#define MAYBE_StopsNonStartedUpdateDiscoveryTasksIfIwaIsUninstalled \
-  StopsNonStartedUpdateDiscoveryTasksIfIwaIsUninstalled
-#endif
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
-       MAYBE_StopsNonStartedUpdateDiscoveryTasksIfIwaIsUninstalled) {
-  url_loader_factory().ClearResponses();
-
+       StopsNonStartedUpdateDiscoveryTasksIfIwaIsUninstalled) {
   InitialIwaBundleForceInstall(CreateIwa1Bundle("1.0.0"));
   InitialIwaBundleForceInstall(CreateIwa2Bundle("2.0.0"));
 
-  // Add updated bundles for both apps.
   test_update_server().AddBundle(CreateIwa1Bundle("1.1.0"));
   test_update_server().AddBundle(CreateIwa2Bundle("2.2.0"));
 
-  std::optional<web_package::SignedWebBundleId> iwa_to_uninstall;
-  std::optional<web_package::SignedWebBundleId> iwa_to_keep;
+  // Wait for the first discovery task to be in progress.
+  base::test::TestFuture<web_package::SignedWebBundleId> future;
+  EXPECT_CALL(mock_command_scheduler(), PrepareAndStoreIsolatedWebAppUpdate)
+      .WillOnce(
+          WithArg<1>([&future](const IsolatedWebAppUrlInfo& url_info) -> void {
+            future.SetValue(url_info.web_bundle_id());
+          }))
+      .RetiresOnSaturation();
 
-  url_loader_factory().SetInterceptor(
-      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        // Only intercept the first update manifest request.
-        if (!iwa_to_uninstall) {
-          if (request.url == test_update_server().GetUpdateManifestUrlForIwa(
-                                 GetIwa2WebBundleId())) {
-            iwa_to_uninstall = GetIwa1WebBundleId();
-            iwa_to_keep = GetIwa2WebBundleId();
-          } else if (request.url ==
-                     test_update_server().GetUpdateManifestUrlForIwa(
-                         GetIwa1WebBundleId())) {
-            iwa_to_uninstall = GetIwa2WebBundleId();
-            iwa_to_keep = GetIwa1WebBundleId();
-          }
-        }
-      }));
+  EXPECT_THAT(update_manager().DiscoverUpdatesNow(), Eq(2ul));
 
-  update_manager().DiscoverUpdatesNow();
+  web_package::SignedWebBundleId iwa_to_keep = future.Take();
 
-  // Wait for the update discovery task of either app 1 or app 2 to request the
-  // update manifest (which task starts first is undefined).
-  ASSERT_TRUE(iwa_to_uninstall.has_value());
-
-  // Verify that two discovery tasks are queued and none have finished.
-  EXPECT_THAT(UpdateDiscoveryTasks(), SizeIs(2));
-  EXPECT_THAT(UpdateDiscoveryLog(), IsEmpty());
-
+  // Uninstall the other IWA whose discovery task has not yet started.
+  web_package::SignedWebBundleId iwa_to_uninstall =
+      (iwa_to_keep == GetIwa1WebBundleId()) ? GetIwa2WebBundleId()
+                                            : GetIwa1WebBundleId();
   test::RemoveForceInstalledIwaFromPolicy(profile()->GetPrefs(),
-                                          iwa_to_uninstall.value());
+                                          iwa_to_uninstall);
 
   WebAppTestUninstallObserver uninstall_observer(profile());
-  uninstall_observer.BeginListeningAndWait(
-      {GetAppId(iwa_to_uninstall.value())});
+  uninstall_observer.BeginListeningAndWait({GetAppId(iwa_to_uninstall)});
 
-  AssertInstallationFinish(iwa_to_keep.value());
-
-  // Check that only 1 update was discovered and applied.
-  EXPECT_THAT(
-      UpdateDiscoveryLog(),
-      UnorderedElementsAre(IsDict(DictionaryHasValue(
-          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
-  EXPECT_THAT(UpdateApplyLog(),
-              UnorderedElementsAre(IsDict(DictionaryHasValue(
-                  "app_id", base::Value(GetAppId(iwa_to_keep.value()))))));
+  AssertAppNotInstalled(iwa_to_uninstall);
 }
 
 // TODO(crbug.com/338380813): The test is flaky on asan ChromeOS builder.
