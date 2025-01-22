@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
@@ -43,6 +44,12 @@ class CORE_EXPORT GlobalFetch {
     // Returns the number of fetch() method calls in the associated execution
     // context.  This is used for metrics.
     virtual uint32_t FetchCount() const = 0;
+
+    // A wrapper to expose `FetchLaterManager::UpdateDeferredBytesQuota()`.
+    // This method should only be called when `FetchLater()` is available.
+    virtual void UpdateDeferredBytesQuota(const KURL& url,
+                                          uint64_t& quota_for_url_origin,
+                                          uint64_t& total_quota) const;
 
     static ScopedFetcher* From(LocalDOMWindow&);
     static ScopedFetcher* From(WorkerGlobalScope&);
