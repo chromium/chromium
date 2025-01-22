@@ -15,7 +15,6 @@ virtual/isolated-context/wpt_internal/*
 virtual/isolated-context-stable/wpt_internal/*
 virtual/forced-high-contrast-colors/wpt_internal/*
 virtual/trust-tokens/wpt_internal/*
-virtual/details-styling-disabled/wpt_internal/*
 virtual/third-party-storage-partitioning/wpt_internal/*
 virtual/popover-hint-disabled/wpt_internal/*
 virtual/private-aggregation-developer-mode/wpt_internal/*

@@ -69,15 +69,6 @@ void HTMLDetailsElement::DispatchPendingEvent(
     GetDocument().SetToggleDuringParsing(false);
 }
 
-LayoutObject* HTMLDetailsElement::CreateLayoutObject(
-    const ComputedStyle& style) {
-  if (RuntimeEnabledFeatures::DetailsStylingEnabled()) {
-    return HTMLElement::CreateLayoutObject(style);
-  }
-
-  return LayoutObject::CreateBlockFlowOrListItem(this, style);
-}
-
 // Creates shadow DOM:
 // #shadowroot
 //   <SLOT id="details-summary">
@@ -100,9 +91,7 @@ void HTMLDetailsElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 
   content_slot_ = MakeGarbageCollected<HTMLSlotElement>(GetDocument());
   content_slot_->SetIdAttribute(shadow_element_names::kIdDetailsContent);
-  if (RuntimeEnabledFeatures::DetailsStylingEnabled()) {
-    content_slot_->SetShadowPseudoId(shadow_element_names::kIdDetailsContent);
-  }
+  content_slot_->SetShadowPseudoId(shadow_element_names::kIdDetailsContent);
   content_slot_->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
                                         CSSValueID::kHidden);
   content_slot_->EnsureDisplayLockContext().SetIsDetailsSlotElement(true);
@@ -200,9 +189,6 @@ void HTMLDetailsElement::ParseAttribute(
 
     if (is_open_) {
       content->RemoveInlineStyleProperty(CSSPropertyID::kContentVisibility);
-      if (!RuntimeEnabledFeatures::DetailsStylingEnabled()) {
-        content->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
-      }
 
       // https://html.spec.whatwg.org/multipage/interactive-elements.html#ensure-details-exclusivity-by-closing-other-elements-if-needed
       //
@@ -230,10 +216,6 @@ void HTMLDetailsElement::ParseAttribute(
         }
       }
     } else {
-      if (!RuntimeEnabledFeatures::DetailsStylingEnabled()) {
-        content->SetInlineStyleProperty(CSSPropertyID::kDisplay,
-                                        CSSValueID::kBlock);
-      }
       content->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
                                       CSSValueID::kHidden);
       content->EnsureDisplayLockContext().SetIsDetailsSlotElement(true);

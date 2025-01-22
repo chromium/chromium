@@ -1431,11 +1431,6 @@
       status: "test",
     },
     {
-      // Enabled in M131.  Can be removed a bit after M131 reaches stable.
-      name: "DetailsStyling",
-      status: "stable",
-    },
-    {
       name: "DeviceAttributes",
       status: {
         "ChromeOS_Ash": "stable",
