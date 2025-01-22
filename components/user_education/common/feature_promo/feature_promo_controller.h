@@ -40,7 +40,8 @@ class TrackedElement;
 }  // namespace ui
 
 // Declaring these in the global namespace for testing purposes.
-class BrowserFeaturePromoController20TestBase;
+class BrowserFeaturePromoController2xTestBase;
+class BrowserFeaturePromoControllerTestHelper;
 class FeaturePromoLifecycleUiTest;
 
 namespace user_education {
@@ -270,7 +271,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   }
 
  protected:
-  friend BrowserFeaturePromoController20TestBase;
+  friend BrowserFeaturePromoController2xTestBase;
   friend FeaturePromoLifecycleUiTest;
 
   struct ShowPromoBubbleParams {
@@ -410,6 +411,8 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       ui::TrackedElement* anchor_element) const = 0;
 
  private:
+  friend BrowserFeaturePromoControllerTestHelper;
+
   void RecordPromoEnded(FeaturePromoClosedReason close_reason,
                         bool continue_after_close);
 

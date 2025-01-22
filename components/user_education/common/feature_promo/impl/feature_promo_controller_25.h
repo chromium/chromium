@@ -30,6 +30,7 @@ class FeaturePromoController25 : public FeaturePromoControllerCommon {
  public:
   // Use the same priority rankings as the rest of User Education.
   using Priority = FeaturePromoPriorityProvider::PromoPriority;
+  using PromoWeight = FeaturePromoPriorityProvider::PromoWeight;
 
   // Delay between checking to see if promos can show.
   static constexpr base::TimeDelta kPollDelay = base::Milliseconds(500);
@@ -44,7 +45,9 @@ class FeaturePromoController25 : public FeaturePromoControllerCommon {
       ProductMessagingController* messaging_controller);
   ~FeaturePromoController25() override;
 
-  // Perform required initialization that may rely on virtual methods.
+  // Perform required initialization that cannot be safely done in the
+  // constructor. Derived classes MUST call the base class version of this
+  // method.
   virtual void Init();
 
   // FeaturePromoControllerCommon:
@@ -61,6 +64,10 @@ class FeaturePromoController25 : public FeaturePromoControllerCommon {
   void MaybeShowQueuedPromo() override;
   base::WeakPtr<FeaturePromoController> GetAsWeakPtr() override;
   base::WeakPtr<FeaturePromoControllerCommon> GetCommonWeakPtr() override;
+
+  // This needs to be called by derived class destructor to ensure proper
+  // order of cleanup.
+  void OnDestroying();
 
   virtual void AddDemoPreconditionProviders(
       ComposingPreconditionListProvider& to_add_to,

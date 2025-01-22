@@ -9990,7 +9990,7 @@ test("unit_tests") {
       "../browser/ui/window_name_prompt/window_name_prompt_unittest.cc",
     ]
     if (!is_chrome_for_testing) {
-      sources += [ "../browser/ui/views/user_education/impl/browser_feature_promo_controller_20_unittest.cc" ]
+      sources += [ "../browser/ui/views/user_education/impl/browser_feature_promo_controller_2x_unittest.cc" ]
     }
     if (is_linux) {
       sources += [

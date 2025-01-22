@@ -166,6 +166,8 @@ class ProductMessagingController final {
   base::CallbackListSubscription AddRequiredNoticeShownCallback(
       StatusUpdateCallback callback);
 
+  bool has_current_notice() const { return static_cast<bool>(current_notice_); }
+
   RequiredNoticeId current_notice_for_testing() const {
     return current_notice_;
   }

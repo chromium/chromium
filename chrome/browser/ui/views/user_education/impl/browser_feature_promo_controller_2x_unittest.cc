@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller_20.h"
-
 #include <optional>
 #include <string>
 #include <vector>
@@ -34,6 +32,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller_20.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/generated_resources.h"
@@ -85,6 +84,38 @@ using ::testing::AnyNumber;
 using ::testing::NiceMock;
 using ::testing::Ref;
 using ::testing::Return;
+
+#define INSTANTIATE_V2X_TEST(TestClass)                                    \
+  INSTANTIATE_TEST_SUITE_P(, TestClass, testing::Bool(),                   \
+                           [](const testing::TestParamInfo<bool>& param) { \
+                             return param.param ? "V25" : "V20";           \
+                           })
+
+// Helper class that provides pass-throughs for protected members of
+// FeaturePromoController[Common].
+class BrowserFeaturePromoControllerTestHelper {
+ public:
+  explicit BrowserFeaturePromoControllerTestHelper(
+      const user_education::FeaturePromoControllerCommon& controller)
+      : controller_(controller) {}
+  ~BrowserFeaturePromoControllerTestHelper() = default;
+
+  ui::ElementContext GetAnchorContext() const {
+    return controller_->GetAnchorContext();
+  }
+  const ui::AcceleratorProvider* GetAcceleratorProvider() const {
+    return controller_->GetAcceleratorProvider();
+  }
+  std::u16string GetFocusHelpBubbleScreenReaderHint(
+      user_education::FeaturePromoSpecification::PromoType promo_type,
+      ui::TrackedElement* anchor_element) const {
+    return controller_->GetFocusHelpBubbleScreenReaderHint(promo_type,
+                                                           anchor_element);
+  }
+
+ private:
+  const raw_ref<const user_education::FeaturePromoControllerCommon> controller_;
+};
 
 namespace {
 
@@ -141,15 +172,22 @@ using user_education::UserEducationSessionData;
 using user_education::UserEducationStorageService;
 
 using BubbleCloseCallback =
-    BrowserFeaturePromoController20::BubbleCloseCallback;
+    user_education::FeaturePromoControllerCommon::BubbleCloseCallback;
 using ShowPromoCallback =
-    BrowserFeaturePromoController20::ShowPromoResultCallback;
+    user_education::FeaturePromoControllerCommon::ShowPromoResultCallback;
 
-class BrowserFeaturePromoController20TestBase : public TestWithBrowserView {
+class BrowserFeaturePromoController2xTestBase
+    : public TestWithBrowserView,
+      public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
+
+    if (GetParam()) {
+      enabled_features.emplace_back(
+          user_education::features::kUserEducationExperienceVersion2Point5);
+    }
 
     // Disable all registered IPH. These tests use only test features.
     for (const auto& feature : feature_engagement::GetAllFeatures()) {
@@ -160,9 +198,10 @@ class BrowserFeaturePromoController20TestBase : public TestWithBrowserView {
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
     TestWithBrowserView::SetUp();
-    controller_ = static_cast<BrowserFeaturePromoController20*>(
+    controller_ = static_cast<user_education::FeaturePromoControllerCommon*>(
         browser_view()->GetFeaturePromoControllerForTesting());
-    lock_ = BrowserFeaturePromoController20::BlockActiveWindowCheckForTesting();
+    lock_ = user_education::FeaturePromoControllerCommon::
+        BlockActiveWindowCheckForTesting();
 
     mock_tracker_ =
         static_cast<NiceMock<feature_engagement::test::MockTracker>*>(
@@ -223,7 +262,7 @@ class BrowserFeaturePromoController20TestBase : public TestWithBrowserView {
             kCustomActionIPHFeature, kToolbarAppMenuButtonElementId,
             IDS_CHROME_TIP, IDS_CHROME_TIP,
             base::BindRepeating(
-                &BrowserFeaturePromoController20TestBase::OnCustomPromoAction,
+                &BrowserFeaturePromoController2xTestBase::OnCustomPromoAction,
                 base::Unretained(this),
                 base::Unretained(&kCustomActionIPHFeature))));
 
@@ -231,7 +270,7 @@ class BrowserFeaturePromoController20TestBase : public TestWithBrowserView {
         kDefaultCustomActionIPHFeature, kToolbarAppMenuButtonElementId,
         IDS_CHROME_TIP, IDS_CHROME_TIP,
         base::BindRepeating(
-            &BrowserFeaturePromoController20TestBase::OnCustomPromoAction,
+            &BrowserFeaturePromoController2xTestBase::OnCustomPromoAction,
             base::Unretained(this),
             base::Unretained(&kDefaultCustomActionIPHFeature)));
     default_custom.SetCustomActionIsDefault(true);
@@ -241,6 +280,8 @@ class BrowserFeaturePromoController20TestBase : public TestWithBrowserView {
 
   void TearDown() override {
     test_util_.reset();
+    controller_ = nullptr;
+    mock_tracker_ = nullptr;
     TestWithBrowserView::TearDown();
     lock_.reset();
   }
@@ -253,7 +294,8 @@ class BrowserFeaturePromoController20TestBase : public TestWithBrowserView {
       base::OnceClosure additional_action = base::DoNothing()) {
     using OnInitializedCallback =
         feature_engagement::Tracker::OnInitializedCallback;
-    tracker_initialized_ = false;
+    tracker_initialized_ =
+        callback_behavior == TrackerCallbackBehavior::kImmediate && success;
     auto wrapped_action = base::BindRepeating(
         [](base::OnceClosure& cb) {
           if (cb) {
@@ -294,7 +336,7 @@ class BrowserFeaturePromoController20TestBase : public TestWithBrowserView {
     factories.emplace_back(
         feature_engagement::TrackerFactory::GetInstance(),
         base::BindRepeating(
-            BrowserFeaturePromoController20TestBase::MakeTestTracker));
+            BrowserFeaturePromoController2xTestBase::MakeTestTracker));
     return factories;
   }
 
@@ -308,7 +350,8 @@ class BrowserFeaturePromoController20TestBase : public TestWithBrowserView {
         base::StringPrintf("UserEducation.MessageNotShown.%s", feature.name);
 
     EXPECT_EQ(not_shown_count,
-              user_action_tester_.GetActionCount(action_with_iph_name));
+              user_action_tester_.GetActionCount(action_with_iph_name))
+        << "Re: " << action_with_iph_name;
 
     auto failure = result.failure();
     if (!failure.has_value()) {
@@ -363,13 +406,16 @@ class BrowserFeaturePromoController20TestBase : public TestWithBrowserView {
     }
 
     EXPECT_EQ(not_shown_count,
-              user_action_tester_.GetActionCount(failure_action_name));
+              user_action_tester_.GetActionCount(failure_action_name))
+        << "Re: " << failure_action_name;
   }
 
-  FeaturePromoResult GetPromoResult(
-      const base::Feature& feature,
-      BubbleCloseCallback close_callback = base::DoNothing(),
-      ShowPromoCallback show_callback = base::DoNothing()) {
+  void ExpectPromoResult(const base::Feature& feature,
+                         FeaturePromoResult expected_result,
+                         bool may_time_out,
+                         BubbleCloseCallback close_callback = base::DoNothing(),
+                         ShowPromoCallback show_callback = base::DoNothing()) {
+    CHECK(!may_time_out || test_util_);
     FeaturePromoResult result;
     UNCALLED_MOCK_CALLBACK(ShowPromoCallback, mock_callback);
     ShowPromoCallback actual_show_callback = base::BindLambdaForTesting(
@@ -382,8 +428,15 @@ class BrowserFeaturePromoController20TestBase : public TestWithBrowserView {
     EXPECT_ASYNC_CALL_IN_SCOPE(mock_callback, Run, {
       controller_->MaybeShowPromo(MakeParams(feature, std::move(close_callback),
                                              std::move(actual_show_callback)));
+      if (may_time_out) {
+        const auto new_now = test_util_->Now() +
+                             user_education::features::GetLowPriorityTimeout() +
+                             base::Seconds(1);
+        test_util_->SetNow(new_now);
+        test_util_->UpdateLastActiveTime(new_now, true);
+      }
     });
-    return result;
+    EXPECT_EQ(expected_result, result);
   }
 
   // These are public so derived classes can access them.
@@ -504,10 +557,9 @@ class BrowserFeaturePromoController20TestBase : public TestWithBrowserView {
   const base::TimeDelta kMoreThanNewSession =
       user_education::features::GetIdleTimeBetweenSessions() + base::Hours(1);
 
-  raw_ptr<BrowserFeaturePromoController20, DanglingUntriaged> controller_;
-  raw_ptr<NiceMock<feature_engagement::test::MockTracker>, DanglingUntriaged>
-      mock_tracker_;
-  BrowserFeaturePromoController20::TestLock lock_;
+  raw_ptr<user_education::FeaturePromoControllerCommon> controller_;
+  raw_ptr<NiceMock<feature_engagement::test::MockTracker>> mock_tracker_;
+  user_education::FeaturePromoControllerCommon::TestLock lock_;
   int custom_callback_count_ = 0;
   bool tracker_initialized_ = true;
 
@@ -536,126 +588,65 @@ class BrowserFeaturePromoController20TestBase : public TestWithBrowserView {
 };
 
 using BubbleCloseCallback =
-    BrowserFeaturePromoController20::BubbleCloseCallback;
+    user_education::FeaturePromoControllerCommon::BubbleCloseCallback;
 
-class BrowserFeaturePromoController20Test
-    : public BrowserFeaturePromoController20TestBase {
+class BrowserFeaturePromoController2xTest
+    : public BrowserFeaturePromoController2xTestBase {
  public:
-  BrowserFeaturePromoController20Test() = default;
-  ~BrowserFeaturePromoController20Test() override = default;
+  BrowserFeaturePromoController2xTest() = default;
+  ~BrowserFeaturePromoController2xTest() override = default;
 
   void SetUp() override {
-    BrowserFeaturePromoController20TestBase::SetUp();
+    BrowserFeaturePromoController2xTestBase::SetUp();
 
     // Ensure that tests start after the grace period. The grace period itself
     // will be tested in the policy tests.
     ResetSessionDataImpl(kMoreThanGracePeriod, base::TimeDelta(),
                          browser()->window()->AsBrowserView());
   }
+
+  void TimeOutQueuedPromo() {
+    AdvanceTimeImpl(
+        user_education::features::GetLowPriorityTimeout() + base::Seconds(1),
+        base::TimeDelta(), true);
+  }
 };
 
-TEST_F(BrowserFeaturePromoController20Test, NotifyFeatureUsedIfValidIsValid) {
+INSTANTIATE_V2X_TEST(BrowserFeaturePromoController2xTest);
+
+TEST_P(BrowserFeaturePromoController2xTest, NotifyFeatureUsedIfValidIsValid) {
   EXPECT_CALL(*mock_tracker_, NotifyUsedEvent(testing::Ref(kTestIPHFeature)))
       .Times(1);
   controller_->NotifyFeatureUsedIfValid(kTestIPHFeature);
 }
 
-TEST_F(BrowserFeaturePromoController20Test,
-       FeatureEngagementTrackerEvents_DoNotBlockPromo) {
-  feature_engagement::EventConfig config;
-  config.name = "foo";
-  config.comparator = feature_engagement::Comparator(
-      feature_engagement::ComparatorType::LESS_THAN, 2);
-  EXPECT_CALL(*mock_tracker_, ListEvents(testing::Ref(kTestIPHFeature)))
-      .WillOnce(Return(feature_engagement::Tracker::EventList{{config, 1}}));
-  EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(testing::Ref(kTestIPHFeature)))
-      .WillOnce(Return(true));
-  EXPECT_EQ(FeaturePromoResult::Success(),
-            controller_->CanShowPromo(kTestIPHFeature));
+TEST_P(BrowserFeaturePromoController2xTest, GetAnchorContext) {
+  EXPECT_EQ(
+      browser_view()->GetElementContext(),
+      BrowserFeaturePromoControllerTestHelper(*controller_).GetAnchorContext());
 }
 
-TEST_F(BrowserFeaturePromoController20Test,
-       FeatureEngagementTrackerEvents_DoBlockPromo) {
-  feature_engagement::EventConfig config;
-  config.name = "foo";
-  config.comparator = feature_engagement::Comparator(
-      feature_engagement::ComparatorType::LESS_THAN, 2);
-  EXPECT_CALL(*mock_tracker_, ListEvents(testing::Ref(kTestIPHFeature)))
-      .WillOnce(Return(feature_engagement::Tracker::EventList{{config, 2}}));
-  EXPECT_EQ(FeaturePromoResult::kBlockedByConfig,
-            controller_->CanShowPromo(kTestIPHFeature));
+TEST_P(BrowserFeaturePromoController2xTest, GetAcceleratorProvider) {
+  EXPECT_EQ(browser_view(),
+            BrowserFeaturePromoControllerTestHelper(*controller_)
+                .GetAcceleratorProvider());
 }
 
-TEST_F(BrowserFeaturePromoController20Test, AsksBackendIfPromoShouldBeShown) {
-  // If the backend says no, the controller says no.
-  EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(Ref(kTestIPHFeature)))
-      .WillOnce(Return(false));
-  EXPECT_EQ(FeaturePromoResult::kBlockedByConfig,
-            controller_->CanShowPromo(kTestIPHFeature));
-
-  // If the backend says yes, the controller says yes.
-  EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(Ref(kTestIPHFeature)))
-      .WillOnce(Return(true));
-  EXPECT_EQ(FeaturePromoResult::Success(),
-            controller_->CanShowPromo(kTestIPHFeature));
+TEST_P(BrowserFeaturePromoController2xTest,
+       GetFocusHelpBubbleScreenReaderHint) {
+  EXPECT_TRUE(
+      BrowserFeaturePromoControllerTestHelper(*controller_)
+          .GetFocusHelpBubbleScreenReaderHint(
+              FeaturePromoSpecification::PromoType::kToast, GetAnchorElement())
+          .empty());
+  EXPECT_FALSE(
+      BrowserFeaturePromoControllerTestHelper(*controller_)
+          .GetFocusHelpBubbleScreenReaderHint(
+              FeaturePromoSpecification::PromoType::kSnooze, GetAnchorElement())
+          .empty());
 }
 
-TEST_F(BrowserFeaturePromoController20Test, AsksBackendToShowPromo) {
-  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
-      .WillOnce(Return(false));
-
-  UNCALLED_MOCK_CALLBACK(BubbleCloseCallback, close_callback);
-
-  EXPECT_EQ(FeaturePromoResult::kBlockedByConfig,
-            GetPromoResult(kTestIPHFeature, close_callback.Get()));
-  EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
-  EXPECT_FALSE(GetPromoBubble());
-}
-
-TEST_F(BrowserFeaturePromoController20Test, AsksBackendToShowStartupPromo) {
-  SetTrackerInitBehavior(false, TrackerCallbackBehavior::kImmediate);
-
-  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
-                         callback);
-  EXPECT_ASYNC_CALL_IN_SCOPE(
-      callback, Run(FeaturePromoResult(FeaturePromoResult::kError)),
-      controller_->MaybeShowStartupPromo(
-          MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get())));
-}
-
-TEST_F(BrowserFeaturePromoController20Test,
-       DoesNotAskBackendWhenShowingFromDemoPage) {
-  controller_->MaybeShowPromoForDemoPage(kTestIPHFeature);
-  EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
-  EXPECT_NE(nullptr, GetPromoBubble());
-}
-
-TEST_F(BrowserFeaturePromoController20Test, ShowsBubble) {
-  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
-      .WillOnce(Return(true));
-  const auto result = GetPromoResult(kTestIPHFeature);
-  EXPECT_EQ(FeaturePromoResult::Success(), result);
-  CheckNotShownMetrics(kTestIPHFeature, result, /*not_shown_count=*/0);
-  EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
-  EXPECT_TRUE(GetPromoBubble());
-}
-
-TEST_F(BrowserFeaturePromoController20Test, BubbleBlocksCanShowPromo) {
-  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
-      .WillOnce(Return(true));
-  EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(Ref(kTutorialIPHFeature)))
-      .WillRepeatedly(Return(true));
-  EXPECT_EQ(FeaturePromoResult::Success(), GetPromoResult(kTestIPHFeature));
-  EXPECT_EQ(FeaturePromoResult::kBlockedByPromo,
-            controller_->CanShowPromo(kTutorialIPHFeature));
-  EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
-  EXPECT_TRUE(controller_->EndPromo(
-      kTestIPHFeature, user_education::EndFeaturePromoReason::kFeatureEngaged));
-  EXPECT_EQ(FeaturePromoResult::Success(),
-            controller_->CanShowPromo(kTutorialIPHFeature));
-}
-
-TEST_F(BrowserFeaturePromoController20Test, ShowsStartupBubble) {
+TEST_P(BrowserFeaturePromoController2xTest, ShowsStartupBubble) {
   SetTrackerInitBehavior(true, TrackerCallbackBehavior::kImmediate);
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .WillOnce(Return(true));
@@ -663,7 +654,7 @@ TEST_F(BrowserFeaturePromoController20Test, ShowsStartupBubble) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          callback);
 
-  EXPECT_CALL_IN_SCOPE(
+  EXPECT_ASYNC_CALL_IN_SCOPE(
       callback, Run(FeaturePromoResult::Success()),
       controller_->MaybeShowStartupPromo(
           MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get())));
@@ -672,66 +663,86 @@ TEST_F(BrowserFeaturePromoController20Test, ShowsStartupBubble) {
   EXPECT_TRUE(GetPromoBubble());
 }
 
-TEST_F(BrowserFeaturePromoController20Test,
-       ShowStartupBlockedWithAsyncCallback) {
-  base::RunLoop run_loop;
-  SetTrackerInitBehavior(false, TrackerCallbackBehavior::kPost,
-                         run_loop.QuitClosure());
+TEST_P(BrowserFeaturePromoController2xTest,
+       ShowStartupBubbleBlockedWithImmediateFailure) {
+  SetTrackerInitBehavior(false, TrackerCallbackBehavior::kImmediate);
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
+                         callback);
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      callback, Run(FeaturePromoResult(FeaturePromoResult::kError)), {
+        controller_->MaybeShowStartupPromo(
+            MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get()));
+        TimeOutQueuedPromo();
+      });
+}
 
+TEST_P(BrowserFeaturePromoController2xTest,
+       ShowStartupBubbleBlockedWithAsyncCallback) {
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, tracker_initialized);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          callback);
 
-  controller_->MaybeShowStartupPromo(
-      MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get()));
-  EXPECT_EQ(FeaturePromoStatus::kQueuedForStartup,
-            controller_->GetPromoStatus(kTestIPHFeature));
-  EXPECT_CALL_IN_SCOPE(callback,
-                       Run(FeaturePromoResult(FeaturePromoResult::kError)),
-                       run_loop.Run());
+  SetTrackerInitBehavior(false, TrackerCallbackBehavior::kPost,
+                         tracker_initialized.Get());
+  EXPECT_ASYNC_CALLS_IN_SCOPE_2(
+      tracker_initialized, Run, callback,
+      Run(FeaturePromoResult(FeaturePromoResult::kError)), {
+        controller_->MaybeShowStartupPromo(
+            MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get()));
+        EXPECT_EQ(FeaturePromoStatus::kQueuedForStartup,
+                  controller_->GetPromoStatus(kTestIPHFeature));
+        TimeOutQueuedPromo();
+      });
   EXPECT_EQ(FeaturePromoStatus::kNotRunning,
             controller_->GetPromoStatus(kTestIPHFeature));
 }
 
-TEST_F(BrowserFeaturePromoController20Test,
+TEST_P(BrowserFeaturePromoController2xTest,
        ShowStartupBubbleWithAsyncCallback) {
-  base::RunLoop run_loop;
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, tracker_initialized);
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
+                         callback);
   SetTrackerInitBehavior(true, TrackerCallbackBehavior::kPost,
-                         run_loop.QuitClosure());
+                         tracker_initialized.Get());
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .WillOnce(Return(true));
 
-  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
-                         callback);
-
-  controller_->MaybeShowStartupPromo(
-      MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get()));
-  EXPECT_EQ(FeaturePromoStatus::kQueuedForStartup,
-            controller_->GetPromoStatus(kTestIPHFeature));
-  EXPECT_CALL_IN_SCOPE(callback, Run(FeaturePromoResult::Success()),
-                       run_loop.Run());
+  EXPECT_ASYNC_CALLS_IN_SCOPE_2(
+      tracker_initialized, Run, callback,
+      Run(FeaturePromoResult(FeaturePromoResult::Success())), {
+        controller_->MaybeShowStartupPromo(
+            MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get()));
+        EXPECT_EQ(FeaturePromoStatus::kQueuedForStartup,
+                  controller_->GetPromoStatus(kTestIPHFeature));
+      });
   EXPECT_EQ(FeaturePromoStatus::kBubbleShowing,
             controller_->GetPromoStatus(kTestIPHFeature));
 }
 
-TEST_F(BrowserFeaturePromoController20Test,
+TEST_P(BrowserFeaturePromoController2xTest,
        ShowStartupBubbleFailsWhenAlreadyShowing) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          callback);
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
+                         callback2);
 
   SetTrackerInitBehavior(true, TrackerCallbackBehavior::kImmediate);
-  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kSnoozeIPHFeature)))
       .WillOnce(Return(true));
 
-  controller_->MaybeShowStartupPromo(kTestIPHFeature);
-  EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_ASYNC_CALL_IN_SCOPE(
-      callback, Run(FeaturePromoResult(FeaturePromoResult::kAlreadyQueued)),
+      callback, Run,
       controller_->MaybeShowStartupPromo(
-          MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get())));
-  EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
+          MakeParams(kSnoozeIPHFeature, base::DoNothing(), callback.Get())));
+  EXPECT_TRUE(controller_->IsPromoActive(kSnoozeIPHFeature));
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      callback2, Run(FeaturePromoResult(FeaturePromoResult::kAlreadyQueued)),
+      controller_->MaybeShowStartupPromo(
+          MakeParams(kSnoozeIPHFeature, base::DoNothing(), callback2.Get())));
+  EXPECT_TRUE(controller_->IsPromoActive(kSnoozeIPHFeature));
 }
 
-TEST_F(BrowserFeaturePromoController20Test,
+TEST_P(BrowserFeaturePromoController2xTest,
        ShowStartupBubbleFailsWhenAlreadyPending) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          callback);
@@ -747,7 +758,7 @@ TEST_F(BrowserFeaturePromoController20Test,
             controller_->GetPromoStatus(kTestIPHFeature));
 }
 
-TEST_F(BrowserFeaturePromoController20Test, CancelPromoBeforeStartup) {
+TEST_P(BrowserFeaturePromoController2xTest, CancelPromoBeforeStartup) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result_callback);
 
@@ -778,7 +789,110 @@ TEST_F(BrowserFeaturePromoController20Test, CancelPromoBeforeStartup) {
             controller_->GetPromoStatus(kTestIPHFeature));
 }
 
-TEST_F(BrowserFeaturePromoController20Test, ShowsBubbleAnyContext) {
+class BrowserFeaturePromoController2xTrackerInitializedTest
+    : public BrowserFeaturePromoController2xTest {
+ public:
+  BrowserFeaturePromoController2xTrackerInitializedTest() = default;
+  ~BrowserFeaturePromoController2xTrackerInitializedTest() override = default;
+
+  void SetUp() override {
+    BrowserFeaturePromoController2xTest::SetUp();
+    SetTrackerInitBehavior(true, TrackerCallbackBehavior::kImmediate);
+  }
+};
+
+INSTANTIATE_V2X_TEST(BrowserFeaturePromoController2xTrackerInitializedTest);
+
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
+       FeatureEngagementTrackerEvents_DoNotBlockPromo) {
+  feature_engagement::EventConfig config;
+  config.name = "foo";
+  config.comparator = feature_engagement::Comparator(
+      feature_engagement::ComparatorType::LESS_THAN, 2);
+  EXPECT_CALL(*mock_tracker_, ListEvents(testing::Ref(kTestIPHFeature)))
+      .WillRepeatedly(
+          Return(feature_engagement::Tracker::EventList{{config, 1}}));
+  EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(testing::Ref(kTestIPHFeature)))
+      .WillRepeatedly(Return(true));
+  EXPECT_EQ(FeaturePromoResult::Success(),
+            controller_->CanShowPromo(kTestIPHFeature));
+}
+
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
+       FeatureEngagementTrackerEvents_DoBlockPromo) {
+  feature_engagement::EventConfig config;
+  config.name = "foo";
+  config.comparator = feature_engagement::Comparator(
+      feature_engagement::ComparatorType::LESS_THAN, 2);
+  EXPECT_CALL(*mock_tracker_, ListEvents(testing::Ref(kTestIPHFeature)))
+      .WillOnce(Return(feature_engagement::Tracker::EventList{{config, 2}}));
+  EXPECT_EQ(FeaturePromoResult::kBlockedByConfig,
+            controller_->CanShowPromo(kTestIPHFeature));
+}
+
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
+       AsksBackendIfPromoShouldBeShown) {
+  // If the backend says no, the controller says no.
+  EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .WillOnce(Return(false));
+  EXPECT_EQ(FeaturePromoResult::kBlockedByConfig,
+            controller_->CanShowPromo(kTestIPHFeature));
+
+  // If the backend says yes, the controller says yes.
+  EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .WillOnce(Return(true));
+  EXPECT_EQ(FeaturePromoResult::Success(),
+            controller_->CanShowPromo(kTestIPHFeature));
+}
+
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
+       AsksBackendToShowPromo) {
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .WillOnce(Return(false));
+
+  UNCALLED_MOCK_CALLBACK(BubbleCloseCallback, close_callback);
+
+  ExpectPromoResult(kTestIPHFeature, FeaturePromoResult::kBlockedByConfig,
+                    false, close_callback.Get());
+  EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
+  EXPECT_FALSE(GetPromoBubble());
+}
+
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
+       DoesNotAskBackendWhenShowingFromDemoPage) {
+  controller_->MaybeShowPromoForDemoPage(kTestIPHFeature);
+  EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
+  EXPECT_NE(nullptr, GetPromoBubble());
+}
+
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest, ShowsBubble) {
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .WillOnce(Return(true));
+  ExpectPromoResult(kTestIPHFeature, FeaturePromoResult::Success(), false);
+  CheckNotShownMetrics(kTestIPHFeature, FeaturePromoResult::Success(),
+                       /*not_shown_count=*/0);
+  EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
+  EXPECT_TRUE(GetPromoBubble());
+}
+
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
+       BubbleBlocksCanShowPromo) {
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(Ref(kTutorialIPHFeature)))
+      .WillRepeatedly(Return(true));
+  ExpectPromoResult(kTestIPHFeature, FeaturePromoResult::Success(), false);
+  EXPECT_EQ(FeaturePromoResult::kBlockedByPromo,
+            controller_->CanShowPromo(kTutorialIPHFeature));
+  EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
+  EXPECT_TRUE(controller_->EndPromo(
+      kTestIPHFeature, user_education::EndFeaturePromoReason::kFeatureEngaged));
+  EXPECT_EQ(FeaturePromoResult::Success(),
+            controller_->CanShowPromo(kTutorialIPHFeature));
+}
+
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
+       ShowsBubbleAnyContext) {
   registry()->RegisterFeature(
       std::move(FeaturePromoSpecification::CreateForTesting(
                     kOneOffIPHFeature, kOneOffIPHElementId, IDS_CHROME_TIP)
@@ -803,7 +917,7 @@ TEST_F(BrowserFeaturePromoController20Test, ShowsBubbleAnyContext) {
       views::ElementTrackerViews::GetContextForWidget(widget.get());
   EXPECT_NE(browser_view()->GetElementContext(), widget_context);
 
-  EXPECT_EQ(FeaturePromoResult::Success(), GetPromoResult(kOneOffIPHFeature));
+  ExpectPromoResult(kOneOffIPHFeature, FeaturePromoResult::Success(), false);
   EXPECT_TRUE(controller_->IsPromoActive(kOneOffIPHFeature));
   auto* const bubble = GetPromoBubble();
   ASSERT_TRUE(bubble);
@@ -813,7 +927,8 @@ TEST_F(BrowserFeaturePromoController20Test, ShowsBubbleAnyContext) {
   bubble->Close();
 }
 
-TEST_F(BrowserFeaturePromoController20Test, ShowsBubbleWithFilter) {
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
+       ShowsBubbleWithFilter) {
   registry()->RegisterFeature(
       std::move(FeaturePromoSpecification::CreateForTesting(
                     kOneOffIPHFeature, kOneOffIPHElementId, IDS_CHROME_TIP)
@@ -836,14 +951,15 @@ TEST_F(BrowserFeaturePromoController20Test, ShowsBubbleWithFilter) {
       ->AddChildView(std::make_unique<views::View>())
       ->SetProperty(views::kElementIdentifierKey, kOneOffIPHElementId);
 
-  EXPECT_EQ(FeaturePromoResult::Success(), GetPromoResult(kOneOffIPHFeature));
+  ExpectPromoResult(kOneOffIPHFeature, FeaturePromoResult::Success(), false);
   EXPECT_TRUE(controller_->IsPromoActive(kOneOffIPHFeature));
   auto* const bubble = GetPromoBubble();
   ASSERT_TRUE(bubble);
   bubble->Close();
 }
 
-TEST_F(BrowserFeaturePromoController20Test, ShowsBubbleWithFilterAnyContext) {
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
+       ShowsBubbleWithFilterAnyContext) {
   ui::ElementContext widget_context;
   registry()->RegisterFeature(
       std::move(FeaturePromoSpecification::CreateForTesting(
@@ -890,7 +1006,7 @@ TEST_F(BrowserFeaturePromoController20Test, ShowsBubbleWithFilterAnyContext) {
 
   EXPECT_NE(browser_view()->GetElementContext(), widget_context);
 
-  EXPECT_EQ(FeaturePromoResult::Success(), GetPromoResult(kOneOffIPHFeature));
+  ExpectPromoResult(kOneOffIPHFeature, FeaturePromoResult::Success(), false);
   EXPECT_TRUE(controller_->IsPromoActive(kOneOffIPHFeature));
   auto* const bubble = GetPromoBubble();
   ASSERT_TRUE(bubble);
@@ -900,11 +1016,11 @@ TEST_F(BrowserFeaturePromoController20Test, ShowsBubbleWithFilterAnyContext) {
   bubble->Close();
 }
 
-TEST_F(BrowserFeaturePromoController20Test,
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
        DismissNonCriticalBubbleInRegion_RegionDoesNotOverlap) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .WillOnce(Return(true));
-  EXPECT_EQ(FeaturePromoResult::Success(), GetPromoResult(kTestIPHFeature));
+  ExpectPromoResult(kTestIPHFeature, FeaturePromoResult::Success(), false);
 
   const gfx::Rect bounds =
       GetPromoBubble()->GetWidget()->GetWindowBoundsInScreen();
@@ -917,11 +1033,11 @@ TEST_F(BrowserFeaturePromoController20Test,
   EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
 }
 
-TEST_F(BrowserFeaturePromoController20Test,
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
        DismissNonCriticalBubbleInRegion_RegionOverlaps) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .WillOnce(Return(true));
-  EXPECT_EQ(FeaturePromoResult::Success(), GetPromoResult(kTestIPHFeature));
+  ExpectPromoResult(kTestIPHFeature, FeaturePromoResult::Success(), false);
 
   const gfx::Rect bounds =
       GetPromoBubble()->GetWidget()->GetWindowBoundsInScreen();
@@ -933,7 +1049,8 @@ TEST_F(BrowserFeaturePromoController20Test,
   EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
 }
 
-TEST_F(BrowserFeaturePromoController20Test, RequiredNoticeBlocksPromo) {
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
+       RequiredNoticeBlocksPromo) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTutorialIPHFeature)))
       .Times(0);
 
@@ -944,7 +1061,7 @@ TEST_F(BrowserFeaturePromoController20Test, RequiredNoticeBlocksPromo) {
   DEFINE_LOCAL_REQUIRED_NOTICE_IDENTIFIER(kRequiredNotice);
 
   user_education::RequiredNoticePriorityHandle handle_to_hold;
-  base::RunLoop run_loop;
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   product_messaging_controller.QueueRequiredNotice(
       kRequiredNotice,
       base::BindLambdaForTesting(
@@ -952,29 +1069,31 @@ TEST_F(BrowserFeaturePromoController20Test, RequiredNoticeBlocksPromo) {
             handle_to_hold = std::move(handle);
             run_loop.Quit();
           }));
-
-  EXPECT_EQ(user_education::FeaturePromoResult::kBlockedByPromo,
-            GetPromoResult(kTutorialIPHFeature));
-
-  // Run the loop, ensuring that the notice is cleared.
   run_loop.Run();
+
+  ExpectPromoResult(kTutorialIPHFeature, FeaturePromoResult::kBlockedByPromo,
+                    true);
 }
 
-TEST_F(BrowserFeaturePromoController20Test, NewProfileBlocksPromo) {
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
+       NewProfileBlocksPromo) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTutorialIPHFeature)))
       .Times(0);
   // Simulate a new profile.
   storage_service()->set_profile_creation_time_for_testing(
       storage_service()->GetCurrentTime() - base::Hours(12));
 
-  auto result = GetPromoResult(kTutorialIPHFeature);
-  EXPECT_EQ(FeaturePromoResult::kBlockedByNewProfile, result);
-  CheckNotShownMetrics(kTutorialIPHFeature, result, /*not_shown_count=*/1);
+  ExpectPromoResult(kTutorialIPHFeature,
+                    FeaturePromoResult::kBlockedByNewProfile, false);
+  CheckNotShownMetrics(kTutorialIPHFeature,
+                       FeaturePromoResult::kBlockedByNewProfile,
+                       /*not_shown_count=*/1);
   EXPECT_FALSE(controller_->IsPromoActive(kTutorialIPHFeature));
   EXPECT_FALSE(GetPromoBubble());
 }
 
-TEST_F(BrowserFeaturePromoController20Test, SnoozeServiceBlocksPromo) {
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
+       SnoozeServiceBlocksPromo) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTutorialIPHFeature)))
       .Times(0);
   // Simulate a snooze by writing data directly.
@@ -985,21 +1104,23 @@ TEST_F(BrowserFeaturePromoController20Test, SnoozeServiceBlocksPromo) {
   data.last_snooze_time = base::Time::Now();
   storage_service()->SavePromoData(kTutorialIPHFeature, data);
 
-  auto result = GetPromoResult(kTutorialIPHFeature);
-  EXPECT_EQ(FeaturePromoResult::kSnoozed, result);
-  CheckNotShownMetrics(kTutorialIPHFeature, result, /*not_shown_count=*/1);
+  ExpectPromoResult(kTutorialIPHFeature, FeaturePromoResult::kSnoozed, false);
+  CheckNotShownMetrics(kTutorialIPHFeature, FeaturePromoResult::kSnoozed,
+                       /*not_shown_count=*/1);
   EXPECT_FALSE(controller_->IsPromoActive(kTutorialIPHFeature));
   EXPECT_FALSE(GetPromoBubble());
   storage_service()->Reset(kTutorialIPHFeature);
 }
 
-TEST_F(BrowserFeaturePromoController20Test, PromoEndsWhenRequested) {
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
+       PromoEndsWhenRequested) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(0);
 
   UNCALLED_MOCK_CALLBACK(BubbleCloseCallback, close_callback);
-  ASSERT_TRUE(GetPromoResult(kTestIPHFeature, close_callback.Get()));
+  ExpectPromoResult(kTestIPHFeature, FeaturePromoResult::Success(), false,
+                    close_callback.Get());
 
   // Only valid before the widget is closed.
   auto* const bubble = GetPromoBubble();
@@ -1022,17 +1143,17 @@ TEST_F(BrowserFeaturePromoController20Test, PromoEndsWhenRequested) {
   widget_observer.Wait();
 }
 
-TEST_F(BrowserFeaturePromoController20Test,
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
        CloseBubbleDoesNothingIfPromoNotShowing) {
   EXPECT_FALSE(controller_->EndPromo(
       kTestIPHFeature, user_education::EndFeaturePromoReason::kAbortPromo));
 }
 
-TEST_F(BrowserFeaturePromoController20Test,
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
        CloseBubbleDoesNothingIfDifferentPromoShowing) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .WillOnce(Return(true));
-  ASSERT_TRUE(GetPromoResult(kTestIPHFeature));
+  ExpectPromoResult(kTestIPHFeature, FeaturePromoResult::Success(), false);
 
   EXPECT_FALSE(controller_->EndPromo(
       kTutorialIPHFeature, user_education::EndFeaturePromoReason::kAbortPromo));
@@ -1040,13 +1161,15 @@ TEST_F(BrowserFeaturePromoController20Test,
   EXPECT_TRUE(GetPromoBubble());
 }
 
-TEST_F(BrowserFeaturePromoController20Test, PromoEndsOnBubbleClosure) {
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
+       PromoEndsOnBubbleClosure) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(0);
 
   UNCALLED_MOCK_CALLBACK(BubbleCloseCallback, close_callback);
-  ASSERT_TRUE(GetPromoResult(kTestIPHFeature, close_callback.Get()));
+  ExpectPromoResult(kTestIPHFeature, FeaturePromoResult::Success(), false,
+                    close_callback.Get());
 
   // Only valid before the widget is closed.
   auto* const bubble = GetPromoBubble();
@@ -1066,14 +1189,15 @@ TEST_F(BrowserFeaturePromoController20Test, PromoEndsOnBubbleClosure) {
   EXPECT_FALSE(GetPromoBubble());
 }
 
-TEST_F(BrowserFeaturePromoController20Test,
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
        ContinuedPromoDefersBackendDismissed) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(0);
 
   UNCALLED_MOCK_CALLBACK(BubbleCloseCallback, close_callback);
-  ASSERT_TRUE(GetPromoResult(kTestIPHFeature, close_callback.Get()));
+  ExpectPromoResult(kTestIPHFeature, FeaturePromoResult::Success(), false,
+                    close_callback.Get());
 
   // Only valid before the widget is closed.
   auto* const bubble = GetPromoBubble();
@@ -1102,11 +1226,12 @@ TEST_F(BrowserFeaturePromoController20Test,
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
 }
 
-TEST_F(BrowserFeaturePromoController20Test, ContinuedPromoDismissesOnForceEnd) {
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
+       ContinuedPromoDismissesOnForceEnd) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
-  ASSERT_TRUE(GetPromoResult(kTestIPHFeature));
+  ExpectPromoResult(kTestIPHFeature, FeaturePromoResult::Success(), false);
 
   FeaturePromoHandle promo_handle =
       controller_->CloseBubbleAndContinuePromo(kTestIPHFeature);
@@ -1120,12 +1245,12 @@ TEST_F(BrowserFeaturePromoController20Test, ContinuedPromoDismissesOnForceEnd) {
   promo_handle.Release();
 }
 
-TEST_F(BrowserFeaturePromoController20Test,
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
        PromoHandleDismissesPromoOnRelease) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
-  ASSERT_TRUE(GetPromoResult(kTestIPHFeature));
+  ExpectPromoResult(kTestIPHFeature, FeaturePromoResult::Success(), false);
 
   FeaturePromoHandle promo_handle =
       controller_->CloseBubbleAndContinuePromo(kTestIPHFeature);
@@ -1140,12 +1265,12 @@ TEST_F(BrowserFeaturePromoController20Test,
                                           FeaturePromoStatus::kContinued));
 }
 
-TEST_F(BrowserFeaturePromoController20Test,
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
        PromoHandleDismissesPromoOnOverwrite) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
-  ASSERT_TRUE(GetPromoResult(kTestIPHFeature));
+  ExpectPromoResult(kTestIPHFeature, FeaturePromoResult::Success(), false);
 
   FeaturePromoHandle promo_handle =
       controller_->CloseBubbleAndContinuePromo(kTestIPHFeature);
@@ -1159,12 +1284,12 @@ TEST_F(BrowserFeaturePromoController20Test,
   EXPECT_FALSE(promo_handle);
 }
 
-TEST_F(BrowserFeaturePromoController20Test,
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
        PromoHandleDismissesPromoExactlyOnce) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
-  ASSERT_TRUE(GetPromoResult(kTestIPHFeature));
+  ExpectPromoResult(kTestIPHFeature, FeaturePromoResult::Success(), false);
 
   FeaturePromoHandle promo_handle =
       controller_->CloseBubbleAndContinuePromo(kTestIPHFeature);
@@ -1180,12 +1305,12 @@ TEST_F(BrowserFeaturePromoController20Test,
   EXPECT_FALSE(promo_handle);
 }
 
-TEST_F(BrowserFeaturePromoController20Test,
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
        PromoHandleDismissesPromoAfterMoveConstruction) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
-  ASSERT_TRUE(GetPromoResult(kTestIPHFeature));
+  ExpectPromoResult(kTestIPHFeature, FeaturePromoResult::Success(), false);
 
   FeaturePromoHandle promo_handle =
       controller_->CloseBubbleAndContinuePromo(kTestIPHFeature);
@@ -1202,12 +1327,12 @@ TEST_F(BrowserFeaturePromoController20Test,
   EXPECT_FALSE(promo_handle2);
 }
 
-TEST_F(BrowserFeaturePromoController20Test,
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
        PromoHandleDismissesPromoAfterMoveAssignment) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
-  ASSERT_TRUE(GetPromoResult(kTestIPHFeature));
+  ExpectPromoResult(kTestIPHFeature, FeaturePromoResult::Success(), false);
 
   FeaturePromoHandle promo_handle =
       controller_->CloseBubbleAndContinuePromo(kTestIPHFeature);
@@ -1225,7 +1350,7 @@ TEST_F(BrowserFeaturePromoController20Test,
   EXPECT_FALSE(promo_handle2);
 }
 
-TEST_F(BrowserFeaturePromoController20Test,
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
        PropertySetOnAnchorViewWhileBubbleOpen) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .WillOnce(Return(true));
@@ -1233,7 +1358,7 @@ TEST_F(BrowserFeaturePromoController20Test,
   EXPECT_FALSE(
       GetAnchorView()->GetProperty(user_education::kHasInProductHelpPromoKey));
 
-  ASSERT_TRUE(GetPromoResult(kTestIPHFeature));
+  ExpectPromoResult(kTestIPHFeature, FeaturePromoResult::Success(), false);
   EXPECT_TRUE(
       GetAnchorView()->GetProperty(user_education::kHasInProductHelpPromoKey));
 
@@ -1243,7 +1368,8 @@ TEST_F(BrowserFeaturePromoController20Test,
       GetAnchorView()->GetProperty(user_education::kHasInProductHelpPromoKey));
 }
 
-TEST_F(BrowserFeaturePromoController20Test, FailsIfBubbleIsShowing) {
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
+       FailsIfBubbleIsShowing) {
   HelpBubbleParams bubble_params;
   bubble_params.body_text = l10n_util::GetStringUTF16(IDS_CHROME_TIP);
   auto bubble = bubble_factory()->CreateHelpBubble(GetAnchorElement(),
@@ -1254,17 +1380,19 @@ TEST_F(BrowserFeaturePromoController20Test, FailsIfBubbleIsShowing) {
       .Times(0);
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(0);
 
-  const auto result = GetPromoResult(kTestIPHFeature);
-  EXPECT_FALSE(result);
-  CheckNotShownMetrics(kTestIPHFeature, result, /*not_shown_count=*/1);
+  ExpectPromoResult(kTestIPHFeature, FeaturePromoResult::kBlockedByPromo, true);
+  CheckNotShownMetrics(kTestIPHFeature, FeaturePromoResult::kBlockedByPromo,
+                       /*not_shown_count=*/1);
 }
 
 // Test that a feature promo can chain into a tutorial.
-TEST_F(BrowserFeaturePromoController20Test, StartsTutorial) {
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest, StartsTutorial) {
   // Launch a feature promo that has a tutorial.
+  EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(Ref(kTutorialIPHFeature)))
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTutorialIPHFeature)))
       .WillOnce(Return(true));
-  ASSERT_TRUE(GetPromoResult(kTutorialIPHFeature));
+  ExpectPromoResult(kTutorialIPHFeature, FeaturePromoResult::Success(), false);
 
   // Simulate clicking the "Show Tutorial" button.
   auto* const bubble = GetPromoBubble();
@@ -1283,11 +1411,13 @@ TEST_F(BrowserFeaturePromoController20Test, StartsTutorial) {
 }
 
 // Test that a feature promo can perform a custom action.
-TEST_F(BrowserFeaturePromoController20Test, PerformsCustomAction) {
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
+       PerformsCustomAction) {
   // Launch a feature promo that has a tutorial.
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kCustomActionIPHFeature)))
       .WillOnce(Return(true));
-  ASSERT_TRUE(GetPromoResult(kCustomActionIPHFeature));
+  ExpectPromoResult(kCustomActionIPHFeature, FeaturePromoResult::Success(),
+                    false);
 
   // Simulate clicking the custom action button.
   auto* const bubble = GetPromoBubble();
@@ -1301,12 +1431,14 @@ TEST_F(BrowserFeaturePromoController20Test, PerformsCustomAction) {
 }
 
 // Test that a feature promo can perform a custom action that is the default.
-TEST_F(BrowserFeaturePromoController20Test, PerformsCustomActionAsDefault) {
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
+       PerformsCustomActionAsDefault) {
   // Launch a feature promo that has a tutorial.
   EXPECT_CALL(*mock_tracker_,
               ShouldTriggerHelpUI(Ref(kDefaultCustomActionIPHFeature)))
       .WillOnce(Return(true));
-  ASSERT_TRUE(GetPromoResult(kDefaultCustomActionIPHFeature));
+  ExpectPromoResult(kDefaultCustomActionIPHFeature,
+                    FeaturePromoResult::Success(), false);
 
   // Simulate clicking the custom action button.
   auto* const bubble = GetPromoBubble();
@@ -1328,11 +1460,13 @@ TEST_F(BrowserFeaturePromoController20Test, PerformsCustomActionAsDefault) {
 
 // Test that a feature promo does not perform a custom action when the default
 // "Got it" button is clicked.
-TEST_F(BrowserFeaturePromoController20Test, DoesNotPerformCustomAction) {
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
+       DoesNotPerformCustomAction) {
   // Launch a feature promo that has a tutorial.
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kCustomActionIPHFeature)))
       .WillOnce(Return(true));
-  ASSERT_TRUE(GetPromoResult(kCustomActionIPHFeature));
+  ExpectPromoResult(kCustomActionIPHFeature, FeaturePromoResult::Success(),
+                    false);
 
   // Simulate clicking the other button.
   auto* const bubble = GetPromoBubble();
@@ -1347,12 +1481,14 @@ TEST_F(BrowserFeaturePromoController20Test, DoesNotPerformCustomAction) {
 
 // Test that a feature promo does not perform a custom action when a non-default
 // "Got it" button is clicked.
-TEST_F(BrowserFeaturePromoController20Test, DoesNotPerformDefaultCustomAction) {
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
+       DoesNotPerformDefaultCustomAction) {
   // Launch a feature promo that has a tutorial.
   EXPECT_CALL(*mock_tracker_,
               ShouldTriggerHelpUI(Ref(kDefaultCustomActionIPHFeature)))
       .WillOnce(Return(true));
-  ASSERT_TRUE(GetPromoResult(kDefaultCustomActionIPHFeature));
+  ExpectPromoResult(kDefaultCustomActionIPHFeature,
+                    FeaturePromoResult::Success(), false);
 
   // Simulate clicking the other button.
   auto* const bubble = GetPromoBubble();
@@ -1367,7 +1503,8 @@ TEST_F(BrowserFeaturePromoController20Test, DoesNotPerformDefaultCustomAction) {
 
 // Test that the promo controller can handle the anchor view disappearing from
 // under the bubble during the button callback.
-TEST_F(BrowserFeaturePromoController20Test, CustomActionHidesAnchorView) {
+TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
+       CustomActionHidesAnchorView) {
   FeaturePromoHandle promo_handle;
   registry()->RegisterFeature(FeaturePromoSpecification::CreateForCustomAction(
       kCustomActionIPHFeature2, kToolbarAppMenuButtonElementId, IDS_CHROME_TIP,
@@ -1385,7 +1522,8 @@ TEST_F(BrowserFeaturePromoController20Test, CustomActionHidesAnchorView) {
   EXPECT_CALL(*mock_tracker_,
               ShouldTriggerHelpUI(Ref(kCustomActionIPHFeature2)))
       .WillOnce(Return(true));
-  ASSERT_TRUE(GetPromoResult(kCustomActionIPHFeature2));
+  ExpectPromoResult(kCustomActionIPHFeature2, FeaturePromoResult::Success(),
+                    false);
 
   // Simulate clicking the custom action button.
   auto* const bubble = GetPromoBubble();
@@ -1402,29 +1540,6 @@ TEST_F(BrowserFeaturePromoController20Test, CustomActionHidesAnchorView) {
   promo_handle.Release();
 }
 
-TEST_F(BrowserFeaturePromoController20Test, GetAnchorContext) {
-  EXPECT_EQ(browser_view()->GetElementContext(),
-            controller_->GetAnchorContext());
-}
-
-TEST_F(BrowserFeaturePromoController20Test, GetAcceleratorProvider) {
-  EXPECT_EQ(browser_view(), controller_->GetAcceleratorProvider());
-}
-
-TEST_F(BrowserFeaturePromoController20Test,
-       GetFocusHelpBubbleScreenReaderHint) {
-  EXPECT_TRUE(
-      controller_
-          ->GetFocusHelpBubbleScreenReaderHint(
-              FeaturePromoSpecification::PromoType::kToast, GetAnchorElement())
-          .empty());
-  EXPECT_FALSE(
-      controller_
-          ->GetFocusHelpBubbleScreenReaderHint(
-              FeaturePromoSpecification::PromoType::kSnooze, GetAnchorElement())
-          .empty());
-}
-
 namespace {
 const int kStringWithNoSubstitution = IDS_OK;
 const int kStringWithSingleSubstitution =
@@ -1438,15 +1553,15 @@ const std::u16string kSubstitution3{u"Third"};
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kPromoShownEvent);
 }  // namespace
 
-class BrowserFeaturePromoController20ViewsTest
+class BrowserFeaturePromoController2xViewsTestBase
     : public views::test::InteractiveViewsTestT<
-          BrowserFeaturePromoController20TestBase> {
+          BrowserFeaturePromoController2xTestBase> {
  public:
-  BrowserFeaturePromoController20ViewsTest() = default;
-  ~BrowserFeaturePromoController20ViewsTest() override = default;
+  BrowserFeaturePromoController2xViewsTestBase() = default;
+  ~BrowserFeaturePromoController2xViewsTestBase() override = default;
 
   void SetUp() override {
-    InteractiveViewsTestT<BrowserFeaturePromoController20TestBase>::SetUp();
+    InteractiveViewsTestT<BrowserFeaturePromoController2xTestBase>::SetUp();
     SetContextWidget(browser_view()->GetWidget());
   }
 
@@ -1483,52 +1598,64 @@ class BrowserFeaturePromoController20ViewsTest
         expected_text);
   }
 
+  auto AdvanceTime(std::optional<base::TimeDelta> until_new_last_active,
+                   base::TimeDelta until_new_now = base::Milliseconds(500),
+                   bool send_update = true) {
+    return Do(base::BindRepeating(
+        &BrowserFeaturePromoController2xTestBase::AdvanceTimeImpl,
+        base::Unretained(this), until_new_last_active, until_new_now,
+        send_update));
+  }
+
   auto MaybeShowPromo(
       user_education::FeaturePromoParams params,
-      FeaturePromoResult expected = FeaturePromoResult::Success()) {
+      FeaturePromoResult expected = FeaturePromoResult::Success(),
+      std::optional<base::TimeDelta> timeout_delta = std::nullopt) {
     auto result =
         base::MakeRefCounted<base::RefCountedData<FeaturePromoResult>>();
     // Must be computed before `WithElement()` below, which consumes `params`.
     const std::string caller =
         base::StrCat({"MaybeShowPromo( ", params.feature->name, ", ",
                       base::ToString(expected), " )"});
-    auto steps = Steps(
-        WithElement(
-            kBrowserViewElementId,
-            [this, p = std::move(params), expected,
-             result](ui::TrackedElement* el) mutable {
-              if (expected) {
-                EXPECT_CALL(*mock_tracker_,
-                            ShouldTriggerHelpUI(Ref(*p.feature)))
-                    .WillOnce(Return(true));
-              } else if (expected.failure() ==
-                         FeaturePromoResult::kBlockedByConfig) {
-                EXPECT_CALL(*mock_tracker_,
-                            ShouldTriggerHelpUI(Ref(*p.feature)))
-                    .WillOnce(Return(false));
-              }
+    auto steps = Steps(WithElement(
+        kBrowserViewElementId, [this, p = std::move(params), expected,
+                                result](ui::TrackedElement* el) mutable {
+          if (expected) {
+            EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(*p.feature)))
+                .WillOnce(Return(true));
+          } else if (expected.failure() ==
+                     FeaturePromoResult::kBlockedByConfig) {
+            EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(*p.feature)))
+                .WillOnce(Return(false));
+          }
 
-              ui::SafeElementReference el_ref(el);
+          ui::SafeElementReference el_ref(el);
 
-              p.show_promo_result_callback = base::BindLambdaForTesting(
-                  [result,
-                   actual_callback = std::move(p.show_promo_result_callback),
-                   el_ref = std::move(el_ref)](
-                      FeaturePromoResult actual_result) mutable {
-                    result->data = actual_result;
-                    if (actual_callback) {
-                      std::move(actual_callback).Run(actual_result);
-                    }
-                    auto* const el = el_ref.get();
-                    CHECK(el);
-                    ui::ElementTracker::GetFrameworkDelegate()
-                        ->NotifyCustomEvent(el, kPromoShownEvent);
-                  });
+          p.show_promo_result_callback = base::BindLambdaForTesting(
+              [result,
+               actual_callback = std::move(p.show_promo_result_callback),
+               el_ref = std::move(el_ref)](
+                  FeaturePromoResult actual_result) mutable {
+                result->data = actual_result;
+                if (actual_callback) {
+                  std::move(actual_callback).Run(actual_result);
+                }
+                auto* const el = el_ref.get();
+                CHECK(el);
+                ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+                    el, kPromoShownEvent);
+              });
 
-              controller_->MaybeShowPromo(std::move(p));
-            }),
-        WaitForEvent(kBrowserViewElementId, kPromoShownEvent),
-        CheckResult([result]() { return result->data; }, expected));
+          controller_->MaybeShowPromo(std::move(p));
+        }));
+
+    if (timeout_delta) {
+      steps.emplace_back(AdvanceTime(*timeout_delta + base::Milliseconds(500)));
+    }
+
+    steps = Steps(std::move(steps),
+                  WaitForEvent(kBrowserViewElementId, kPromoShownEvent),
+                  CheckResult([result]() { return result->data; }, expected));
     AddDescriptionPrefix(steps, caller);
     return steps;
   }
@@ -1550,7 +1677,21 @@ class BrowserFeaturePromoController20ViewsTest
   }
 };
 
-TEST_F(BrowserFeaturePromoController20ViewsTest,
+class BrowserFeaturePromoController2xViewsTest
+    : public BrowserFeaturePromoController2xViewsTestBase {
+ public:
+  BrowserFeaturePromoController2xViewsTest() = default;
+  ~BrowserFeaturePromoController2xViewsTest() = default;
+
+  void SetUp() override {
+    BrowserFeaturePromoController2xViewsTestBase::SetUp();
+    SetTrackerInitBehavior(true, TrackerCallbackBehavior::kImmediate);
+  }
+};
+
+INSTANTIATE_V2X_TEST(BrowserFeaturePromoController2xViewsTest);
+
+TEST_P(BrowserFeaturePromoController2xViewsTest,
        BodyTextSubstitution_SingleString) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.body_params = kSubstitution1;
@@ -1564,7 +1705,7 @@ TEST_F(BrowserFeaturePromoController20ViewsTest,
                             kStringWithSingleSubstitution, kSubstitution1)));
 }
 
-TEST_F(BrowserFeaturePromoController20ViewsTest,
+TEST_P(BrowserFeaturePromoController2xViewsTest,
        BodyTextSubstitution_MultipleStrings) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.body_params =
@@ -1581,7 +1722,7 @@ TEST_F(BrowserFeaturePromoController20ViewsTest,
                             kSubstitution2, kSubstitution3)));
 }
 
-TEST_F(BrowserFeaturePromoController20ViewsTest,
+TEST_P(BrowserFeaturePromoController2xViewsTest,
        BodyTextSubstitution_Singular) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.body_params = 1;
@@ -1595,7 +1736,7 @@ TEST_F(BrowserFeaturePromoController20ViewsTest,
           l10n_util::GetPluralStringFUTF16(kStringWithPluralSubstitution, 1)));
 }
 
-TEST_F(BrowserFeaturePromoController20ViewsTest, BodyTextSubstitution_Plural) {
+TEST_P(BrowserFeaturePromoController2xViewsTest, BodyTextSubstitution_Plural) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.body_params = 3;
 
@@ -1608,7 +1749,7 @@ TEST_F(BrowserFeaturePromoController20ViewsTest, BodyTextSubstitution_Plural) {
           l10n_util::GetPluralStringFUTF16(kStringWithPluralSubstitution, 3)));
 }
 
-TEST_F(BrowserFeaturePromoController20ViewsTest,
+TEST_P(BrowserFeaturePromoController2xViewsTest,
        TitleTextSubstitution_SingleString) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.title_params = kSubstitution1;
@@ -1622,7 +1763,7 @@ TEST_F(BrowserFeaturePromoController20ViewsTest,
                             kStringWithSingleSubstitution, kSubstitution1)));
 }
 
-TEST_F(BrowserFeaturePromoController20ViewsTest,
+TEST_P(BrowserFeaturePromoController2xViewsTest,
        TitleTextSubstitution_MultipleStrings) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.title_params =
@@ -1639,7 +1780,7 @@ TEST_F(BrowserFeaturePromoController20ViewsTest,
                             kSubstitution2, kSubstitution3)));
 }
 
-TEST_F(BrowserFeaturePromoController20ViewsTest,
+TEST_P(BrowserFeaturePromoController2xViewsTest,
        TitleTextSubstitution_Singular) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.title_params = 1;
@@ -1653,7 +1794,7 @@ TEST_F(BrowserFeaturePromoController20ViewsTest,
           l10n_util::GetPluralStringFUTF16(kStringWithPluralSubstitution, 1)));
 }
 
-TEST_F(BrowserFeaturePromoController20ViewsTest, TitleTextSubstitution_Plural) {
+TEST_P(BrowserFeaturePromoController2xViewsTest, TitleTextSubstitution_Plural) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.title_params = 3;
 
@@ -1666,7 +1807,7 @@ TEST_F(BrowserFeaturePromoController20ViewsTest, TitleTextSubstitution_Plural) {
           l10n_util::GetPluralStringFUTF16(kStringWithPluralSubstitution, 3)));
 }
 
-TEST_F(BrowserFeaturePromoController20ViewsTest,
+TEST_P(BrowserFeaturePromoController2xViewsTest,
        ScreenreaderTextSubstitution_Accelerator) {
   static const ui::Accelerator kAccelerator(ui::VKEY_ESCAPE, ui::MODIFIER_NONE);
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
@@ -1679,7 +1820,7 @@ TEST_F(BrowserFeaturePromoController20ViewsTest,
           kStringWithSingleSubstitution, kAccelerator.GetShortcutText()));
 }
 
-TEST_F(BrowserFeaturePromoController20ViewsTest,
+TEST_P(BrowserFeaturePromoController2xViewsTest,
        ScreenreaderTextSubstitution_SingleString) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.screen_reader_params = kSubstitution1;
@@ -1690,7 +1831,7 @@ TEST_F(BrowserFeaturePromoController20ViewsTest,
                       kStringWithSingleSubstitution, kSubstitution1)));
 }
 
-TEST_F(BrowserFeaturePromoController20ViewsTest,
+TEST_P(BrowserFeaturePromoController2xViewsTest,
        ScreenreaderTextSubstitution_MultipleStrings) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.screen_reader_params =
@@ -1704,7 +1845,7 @@ TEST_F(BrowserFeaturePromoController20ViewsTest,
                       kSubstitution2, kSubstitution3)));
 }
 
-TEST_F(BrowserFeaturePromoController20ViewsTest,
+TEST_P(BrowserFeaturePromoController2xViewsTest,
        ScreenreaderTextSubstitution_Singular) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.screen_reader_params = 1;
@@ -1715,7 +1856,7 @@ TEST_F(BrowserFeaturePromoController20ViewsTest,
                       kStringWithPluralSubstitution, 1)));
 }
 
-TEST_F(BrowserFeaturePromoController20ViewsTest,
+TEST_P(BrowserFeaturePromoController2xViewsTest,
        ScreenreaderTextSubstitution_Plural) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.screen_reader_params = 3;
@@ -1734,11 +1875,11 @@ BASE_FEATURE(kRotatingPromoIPHFeature,
 
 }
 
-class BrowserFeaturePromoController20RotatingPromoTest
-    : public BrowserFeaturePromoController20ViewsTest {
+class BrowserFeaturePromoController2xRotatingPromoTest
+    : public BrowserFeaturePromoController2xViewsTest {
  public:
-  BrowserFeaturePromoController20RotatingPromoTest() = default;
-  ~BrowserFeaturePromoController20RotatingPromoTest() override = default;
+  BrowserFeaturePromoController2xRotatingPromoTest() = default;
+  ~BrowserFeaturePromoController2xRotatingPromoTest() override = default;
 
   template <typename... Args>
   void RegisterRotatingPromo(Args&&... args) {
@@ -1782,7 +1923,9 @@ class BrowserFeaturePromoController20RotatingPromoTest
   }
 };
 
-TEST_F(BrowserFeaturePromoController20RotatingPromoTest, OnePromo) {
+INSTANTIATE_V2X_TEST(BrowserFeaturePromoController2xRotatingPromoTest);
+
+TEST_P(BrowserFeaturePromoController2xRotatingPromoTest, OnePromo) {
   RegisterRotatingPromo(FeaturePromoSpecification::CreateForSnoozePromo(
       kRotatingPromoIPHFeature, kToolbarAppMenuButtonElementId,
       IDS_CHROME_TIP));
@@ -1803,7 +1946,7 @@ TEST_F(BrowserFeaturePromoController20RotatingPromoTest, OnePromo) {
                   VerifyPromoData(2, 0, FeaturePromoClosedReason::kDismiss));
 }
 
-TEST_F(BrowserFeaturePromoController20RotatingPromoTest,
+TEST_P(BrowserFeaturePromoController2xRotatingPromoTest,
        ToastHasDismissButton) {
   RegisterRotatingPromo(
       FeaturePromoSpecification::CreateForToastPromo(
@@ -1827,7 +1970,7 @@ TEST_F(BrowserFeaturePromoController20RotatingPromoTest,
                         l10n_util::GetStringUTF16(IDS_OK)));
 }
 
-TEST_F(BrowserFeaturePromoController20RotatingPromoTest, TwoPromosRotating) {
+TEST_P(BrowserFeaturePromoController2xRotatingPromoTest, TwoPromosRotating) {
   int call_count = 0;
   RegisterRotatingPromo(
       FeaturePromoSpecification::CreateForSnoozePromo(
@@ -1865,7 +2008,7 @@ TEST_F(BrowserFeaturePromoController20RotatingPromoTest, TwoPromosRotating) {
       CheckResult([&call_count]() { return call_count; }, 1));
 }
 
-TEST_F(BrowserFeaturePromoController20RotatingPromoTest, SnoozeButtonRepeats) {
+TEST_P(BrowserFeaturePromoController2xRotatingPromoTest, SnoozeButtonRepeats) {
   int call_count = 0;
   RegisterRotatingPromo(
       FeaturePromoSpecification::CreateForSnoozePromo(
@@ -1904,7 +2047,7 @@ TEST_F(BrowserFeaturePromoController20RotatingPromoTest, SnoozeButtonRepeats) {
       CheckResult([&call_count]() { return call_count; }, 1));
 }
 
-TEST_F(BrowserFeaturePromoController20RotatingPromoTest, RotatesPastGaps) {
+TEST_P(BrowserFeaturePromoController2xRotatingPromoTest, RotatesPastGaps) {
   RegisterRotatingPromo(
       std::nullopt,
       FeaturePromoSpecification::CreateForToastPromo(
@@ -1932,7 +2075,7 @@ TEST_F(BrowserFeaturePromoController20RotatingPromoTest, RotatesPastGaps) {
                   ClosePromo());
 }
 
-TEST_F(BrowserFeaturePromoController20RotatingPromoTest,
+TEST_P(BrowserFeaturePromoController2xRotatingPromoTest,
        ContinuesWithNewRotatingPromo) {
   RegisterRotatingPromo(
       FeaturePromoSpecification::CreateForToastPromo(
@@ -1973,7 +2116,7 @@ TEST_F(BrowserFeaturePromoController20RotatingPromoTest,
                   ClosePromo());
 }
 
-TEST_F(BrowserFeaturePromoController20RotatingPromoTest,
+TEST_P(BrowserFeaturePromoController2xRotatingPromoTest,
        ContinuesAfterPromoRemoved) {
   RegisterRotatingPromo(
       FeaturePromoSpecification::CreateForToastPromo(
@@ -2108,19 +2251,15 @@ DEFINE_LOCAL_REQUIRED_NOTICE_IDENTIFIER(kRequiredNoticeId);
 
 }  // namespace
 
-class BrowserFeaturePromoController20PriorityTest
-    : public BrowserFeaturePromoController20ViewsTest {
+class BrowserFeaturePromoController2xPriorityTest
+    : public BrowserFeaturePromoController2xViewsTest {
  public:
-  BrowserFeaturePromoController20PriorityTest() { VerifyConstants(); }
-  ~BrowserFeaturePromoController20PriorityTest() override = default;
-
-  void TearDown() override {
-    BrowserFeaturePromoController20ViewsTest::TearDown();
-  }
+  BrowserFeaturePromoController2xPriorityTest() { VerifyConstants(); }
+  ~BrowserFeaturePromoController2xPriorityTest() override = default;
 
  protected:
   void RegisterIPH() override {
-    BrowserFeaturePromoController20ViewsTest::RegisterIPH();
+    BrowserFeaturePromoController2xViewsTest::RegisterIPH();
 
     FeaturePromoSpecification spec =
         DefaultPromoSpecification(kLegalNoticeFeature);
@@ -2178,18 +2317,9 @@ class BrowserFeaturePromoController20PriorityTest
         WithView(
             kBrowserViewElementId,
             base::BindOnce(
-                &BrowserFeaturePromoController20TestBase::ResetSessionDataImpl,
+                &BrowserFeaturePromoController2xTestBase::ResetSessionDataImpl,
                 base::Unretained(this), since_session_start, idle_time))
             .AddDescriptionPrefix("ResetSessionData()"));
-  }
-
-  auto AdvanceTime(std::optional<base::TimeDelta> until_new_last_active,
-                   base::TimeDelta until_new_now = base::Milliseconds(500),
-                   bool send_update = true) {
-    return Do(base::BindRepeating(
-        &BrowserFeaturePromoController20TestBase::AdvanceTimeImpl,
-        base::Unretained(this), until_new_last_active, until_new_now,
-        send_update));
   }
 
   auto CheckPromoStatus(const base::Feature& iph_feature,
@@ -2215,7 +2345,9 @@ class BrowserFeaturePromoController20PriorityTest
   }
 };
 
-TEST_F(BrowserFeaturePromoController20PriorityTest,
+INSTANTIATE_V2X_TEST(BrowserFeaturePromoController2xPriorityTest);
+
+TEST_P(BrowserFeaturePromoController2xPriorityTest,
        MultipleStartupPromosHighPriority) {
   SetTrackerInitBehavior(true, TrackerCallbackBehavior::kPost);
   RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
@@ -2230,7 +2362,7 @@ TEST_F(BrowserFeaturePromoController20PriorityTest,
                   ExpectShowingPromo(&kLegalNoticeFeature2), ClosePromo());
 }
 
-TEST_F(BrowserFeaturePromoController20PriorityTest,
+TEST_P(BrowserFeaturePromoController2xPriorityTest,
        MultipleStartupPromosHighPriorityToastThenLowPriorityAllowed) {
   SetTrackerInitBehavior(true, TrackerCallbackBehavior::kPost);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -2253,8 +2385,8 @@ TEST_F(BrowserFeaturePromoController20PriorityTest,
       ExpectShowingPromo(&kSnoozeIPHFeature), ClosePromo());
 }
 
-TEST_F(
-    BrowserFeaturePromoController20PriorityTest,
+TEST_P(
+    BrowserFeaturePromoController2xPriorityTest,
     MultipleStartupPromosHighPriorityLowPriorityToastAllowedAfterHeavyweight) {
   SetTrackerInitBehavior(true, TrackerCallbackBehavior::kPost);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -2275,7 +2407,7 @@ TEST_F(
                   ExpectShowingPromo(&kTestIPHFeature), ClosePromo());
 }
 
-TEST_F(BrowserFeaturePromoController20PriorityTest,
+TEST_P(BrowserFeaturePromoController2xPriorityTest,
        MultipleStartupPromosHighPriorityLowPriorityBlockedAfterHeavyweight) {
   SetTrackerInitBehavior(true, TrackerCallbackBehavior::kPost);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -2296,7 +2428,7 @@ TEST_F(BrowserFeaturePromoController20PriorityTest,
       ClosePromo(), WaitForState(kStartupCallbackState, true));
 }
 
-TEST_F(BrowserFeaturePromoController20PriorityTest,
+TEST_P(BrowserFeaturePromoController2xPriorityTest,
        RequiredNoticeDelaysLegalNotice) {
   SetTrackerInitBehavior(true, TrackerCallbackBehavior::kPost);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -2322,7 +2454,7 @@ TEST_F(BrowserFeaturePromoController20PriorityTest,
       ClosePromo());
 }
 
-TEST_F(BrowserFeaturePromoController20PriorityTest,
+TEST_P(BrowserFeaturePromoController2xPriorityTest,
        LegalNoticeDelaysRequiredNotice) {
   SetTrackerInitBehavior(true, TrackerCallbackBehavior::kPost);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -2338,7 +2470,7 @@ TEST_F(BrowserFeaturePromoController20PriorityTest,
                   Do([&notice]() { notice.Release(); }));
 }
 
-TEST_F(BrowserFeaturePromoController20PriorityTest,
+TEST_P(BrowserFeaturePromoController2xPriorityTest,
        MultipleStartupPromosHighThenNoticeThenLow) {
   SetTrackerInitBehavior(true, TrackerCallbackBehavior::kPost);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -2358,28 +2490,33 @@ TEST_F(BrowserFeaturePromoController20PriorityTest,
       WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting),
       ExpectShowingPromo(&kLegalNoticeFeature2),
       // Request the notice and verify it doesn't pop.
+      Log("Requesting notice."),
       Do([&notice]() { notice.Request(kRequiredNoticeId); }),
       WaitForState(kNoticeCallbackState, false),
       // Close the promo and verify the notice (and not the other promo) pops.
-      ClosePromo(), WaitForState(kNoticeCallbackState, true),
+      Log("Closing promo and waiting for notice."), ClosePromo(),
+      WaitForState(kNoticeCallbackState, true),
+      Log("Verifying second promo did not show."),
       WaitForState(kStartupCallbackState, false),
       // Release the notice and verify the final promo is shown.
-      Do([&notice]() { notice.Release(); }),
+      Log("Releasing notice."), Do([&notice]() { notice.Release(); }),
+      Log("Waiting for second notice to show."),
       WaitForState(kStartupCallbackState, true),
       WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting),
       ExpectShowingPromo(&kTestIPHFeature), ClosePromo());
 }
 
-TEST_F(BrowserFeaturePromoController20PriorityTest,
+TEST_P(BrowserFeaturePromoController2xPriorityTest,
        RegularPromoBlockedWhenPromoIsQueued) {
   SetTrackerInitBehavior(true, TrackerCallbackBehavior::kPost);
   RunTestSequence(
       ResetSessionData(kMoreThanGracePeriod),
-      MaybeShowStartupPromo(kLegalNoticeFeature),
-      MaybeShowPromo(kTutorialIPHFeature, FeaturePromoResult::kBlockedByPromo));
+      MaybeShowStartupPromo(kLegalNoticeFeature2),
+      MaybeShowPromo(kTutorialIPHFeature, FeaturePromoResult::kBlockedByPromo,
+                     user_education::features::GetLowPriorityTimeout()));
 }
 
-TEST_F(BrowserFeaturePromoController20PriorityTest,
+TEST_P(BrowserFeaturePromoController2xPriorityTest,
        LegalNoticeNotBlockedWhenPromoIsQueued) {
   SetTrackerInitBehavior(true, TrackerCallbackBehavior::kPost);
   RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
@@ -2387,7 +2524,7 @@ TEST_F(BrowserFeaturePromoController20PriorityTest,
                   MaybeShowPromo(kLegalNoticeFeature));
 }
 
-TEST_F(BrowserFeaturePromoController20PriorityTest,
+TEST_P(BrowserFeaturePromoController2xPriorityTest,
        SecondPromoNotCanceledWhenFirstQueuedPromoIsOverridden) {
   SetTrackerInitBehavior(true, TrackerCallbackBehavior::kPost);
   RunTestSequence(
@@ -2419,14 +2556,19 @@ constexpr char kAppName1[] = "app1";
 constexpr char kAppName2[] = "app2";
 }  // namespace
 
-class BrowserFeaturePromoController20ReshowTest
-    : public BrowserFeaturePromoController20PriorityTest {
+class BrowserFeaturePromoController2xReshowTest
+    : public BrowserFeaturePromoController2xPriorityTest {
  public:
-  BrowserFeaturePromoController20ReshowTest() = default;
-  ~BrowserFeaturePromoController20ReshowTest() override = default;
+  BrowserFeaturePromoController2xReshowTest() = default;
+  ~BrowserFeaturePromoController2xReshowTest() override = default;
+
+  void SetUp() override {
+    BrowserFeaturePromoController2xPriorityTest::SetUp();
+    SetTrackerInitBehavior(true, TrackerCallbackBehavior::kImmediate);
+  }
 
   void RegisterIPH() override {
-    BrowserFeaturePromoController20ViewsTest::RegisterIPH();
+    BrowserFeaturePromoController2xViewsTest::RegisterIPH();
 
     FeaturePromoSpecification spec =
         DefaultPromoSpecification(kLegalNoticeFeature);
@@ -2461,7 +2603,9 @@ class BrowserFeaturePromoController20ReshowTest
   }
 };
 
-TEST_F(BrowserFeaturePromoController20ReshowTest,
+INSTANTIATE_V2X_TEST(BrowserFeaturePromoController2xReshowTest);
+
+TEST_P(BrowserFeaturePromoController2xReshowTest,
        ReshowLegalNoticeWithNoLimit) {
   RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
                   // Promo can show initially.
@@ -2485,7 +2629,7 @@ TEST_F(BrowserFeaturePromoController20ReshowTest,
                   MaybeShowPromo(kLegalNoticeFeature), ClosePromo());
 }
 
-TEST_F(BrowserFeaturePromoController20ReshowTest, ReshowLegalNoticeWithLimit) {
+TEST_P(BrowserFeaturePromoController2xReshowTest, ReshowLegalNoticeWithLimit) {
   RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
                   // Promo can show initially.
                   MaybeShowPromo(kLegalNoticeFeature2), ClosePromo(),
@@ -2508,7 +2652,7 @@ TEST_F(BrowserFeaturePromoController20ReshowTest, ReshowLegalNoticeWithLimit) {
                                  FeaturePromoResult::kPermanentlyDismissed));
 }
 
-TEST_F(BrowserFeaturePromoController20ReshowTest, ReshowKeyedPromoNoLimit) {
+TEST_P(BrowserFeaturePromoController2xReshowTest, ReshowKeyedPromoNoLimit) {
   RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
                   // Promo can show initially.
                   MaybeShowPromo({kKeyedPromoFeature, kAppName1}), ClosePromo(),
@@ -2532,7 +2676,7 @@ TEST_F(BrowserFeaturePromoController20ReshowTest, ReshowKeyedPromoNoLimit) {
                                  FeaturePromoResult::kBlockedByReshowDelay));
 }
 
-TEST_F(BrowserFeaturePromoController20ReshowTest, ReshowKeyedPromoWithLimit) {
+TEST_P(BrowserFeaturePromoController2xReshowTest, ReshowKeyedPromoWithLimit) {
   RunTestSequence(
       ResetSessionData(kMoreThanGracePeriod),
       // Promo can show initially.
@@ -2568,16 +2712,21 @@ TEST_F(BrowserFeaturePromoController20ReshowTest, ReshowKeyedPromoWithLimit) {
                      FeaturePromoResult::kPermanentlyDismissed));
 }
 
-class BrowserFeaturePromoController20PolicyTest
-    : public BrowserFeaturePromoController20PriorityTest {
+class BrowserFeaturePromoController2xPolicyTest
+    : public BrowserFeaturePromoController2xPriorityTest {
  public:
-  BrowserFeaturePromoController20PolicyTest() = default;
+  BrowserFeaturePromoController2xPolicyTest() = default;
 
-  ~BrowserFeaturePromoController20PolicyTest() override = default;
+  ~BrowserFeaturePromoController2xPolicyTest() override = default;
+
+  void SetUp() override {
+    BrowserFeaturePromoController2xPriorityTest::SetUp();
+    SetTrackerInitBehavior(true, TrackerCallbackBehavior::kImmediate);
+  }
 
   void TearDown() override {
     help_bubble_.reset();
-    BrowserFeaturePromoController20PriorityTest::TearDown();
+    BrowserFeaturePromoController2xPriorityTest::TearDown();
   }
 
   auto SimulateSnoozes(const base::Feature& feature, int delta_from_max) {
@@ -2612,16 +2761,19 @@ class BrowserFeaturePromoController20PolicyTest
   std::unique_ptr<user_education::HelpBubble> help_bubble_;
 };
 
-TEST_F(BrowserFeaturePromoController20PolicyTest, TwoLowPriorityPromos) {
-  RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
-                  MaybeShowPromo(kTestIPHFeature),
-                  ExpectShowingPromo(&kTestIPHFeature),
-                  MaybeShowPromo(kCustomActionIPHFeature,
-                                 FeaturePromoResult::kBlockedByPromo),
-                  ExpectShowingPromo(&kTestIPHFeature));
+INSTANTIATE_V2X_TEST(BrowserFeaturePromoController2xPolicyTest);
+
+TEST_P(BrowserFeaturePromoController2xPolicyTest, TwoLowPriorityPromos) {
+  RunTestSequence(
+      ResetSessionData(kMoreThanGracePeriod), MaybeShowPromo(kTestIPHFeature),
+      ExpectShowingPromo(&kTestIPHFeature),
+      MaybeShowPromo(kCustomActionIPHFeature,
+                     FeaturePromoResult::kBlockedByPromo,
+                     user_education::features::GetLowPriorityTimeout()),
+      ExpectShowingPromo(&kTestIPHFeature));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest,
+TEST_P(BrowserFeaturePromoController2xPolicyTest,
        ActionableAlertOverridesLowPriority) {
   RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
                   MaybeShowPromo(kTestIPHFeature),
@@ -2629,16 +2781,18 @@ TEST_F(BrowserFeaturePromoController20PolicyTest,
                   ExpectShowingPromo(&kActionableAlertIPHFeature));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest, TwoActionableAlerts) {
-  RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
-                  MaybeShowPromo(kActionableAlertIPHFeature),
-                  ExpectShowingPromo(&kActionableAlertIPHFeature),
-                  MaybeShowPromo(kActionableAlertIPHFeature2,
-                                 FeaturePromoResult::kBlockedByPromo),
-                  ExpectShowingPromo(&kActionableAlertIPHFeature));
+TEST_P(BrowserFeaturePromoController2xPolicyTest, TwoActionableAlerts) {
+  RunTestSequence(
+      ResetSessionData(kMoreThanGracePeriod),
+      MaybeShowPromo(kActionableAlertIPHFeature),
+      ExpectShowingPromo(&kActionableAlertIPHFeature),
+      MaybeShowPromo(kActionableAlertIPHFeature2,
+                     FeaturePromoResult::kBlockedByPromo,
+                     user_education::features::GetMediumPriorityTimeout()),
+      ExpectShowingPromo(&kActionableAlertIPHFeature));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest,
+TEST_P(BrowserFeaturePromoController2xPolicyTest,
        LegalNoticeOverridesLowPriority) {
   RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
                   MaybeShowPromo(kTestIPHFeature),
@@ -2646,7 +2800,7 @@ TEST_F(BrowserFeaturePromoController20PolicyTest,
                   ExpectShowingPromo(&kLegalNoticeFeature));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest,
+TEST_P(BrowserFeaturePromoController2xPolicyTest,
        LegalNoticeOverridesActionableAlert) {
   RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
                   MaybeShowPromo(kActionableAlertIPHFeature),
@@ -2654,44 +2808,45 @@ TEST_F(BrowserFeaturePromoController20PolicyTest,
                   ExpectShowingPromo(&kLegalNoticeFeature));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest, TwoLegalNotices) {
+TEST_P(BrowserFeaturePromoController2xPolicyTest, TwoLegalNotices) {
   RunTestSequence(
       ResetSessionData(kMoreThanGracePeriod),
-      MaybeShowPromo(kLegalNoticeFeature),
-      ExpectShowingPromo(&kLegalNoticeFeature),
-      MaybeShowPromo(kLegalNoticeFeature2, FeaturePromoResult::kBlockedByPromo),
-      ExpectShowingPromo(&kLegalNoticeFeature));
+      MaybeShowPromo(kLegalNoticeFeature2),
+      ExpectShowingPromo(&kLegalNoticeFeature2),
+      MaybeShowPromo(kLegalNoticeFeature, FeaturePromoResult::kBlockedByPromo,
+                     user_education::features::GetHighPriorityTimeout()),
+      ExpectShowingPromo(&kLegalNoticeFeature2));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest,
+TEST_P(BrowserFeaturePromoController2xPolicyTest,
        GracePeriodBlocksHeavyweightInV2) {
   RunTestSequence(ResetSessionData(kLessThanGracePeriod),
                   MaybeShowPromo(kTutorialIPHFeature,
                                  FeaturePromoResult::kBlockedByGracePeriod));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest,
+TEST_P(BrowserFeaturePromoController2xPolicyTest,
        GracePeriodDoesNotBlockLightweightInV2) {
   RunTestSequence(
       ResetSessionData(kLessThanGracePeriod),
       MaybeShowPromo(kTestIPHFeature, FeaturePromoResult::Success()));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest,
+TEST_P(BrowserFeaturePromoController2xPolicyTest,
        GracePeriodDoesNotBlockHeavyweightLegalNotice) {
   RunTestSequence(
       ResetSessionData(kLessThanGracePeriod),
       MaybeShowPromo(kLegalNoticeFeature2, FeaturePromoResult::Success()));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest,
+TEST_P(BrowserFeaturePromoController2xPolicyTest,
        GracePeriodDoesNotBlockActionableAlert) {
   RunTestSequence(ResetSessionData(kLessThanGracePeriod),
                   MaybeShowPromo(kActionableAlertIPHFeature2,
                                  FeaturePromoResult::Success()));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest,
+TEST_P(BrowserFeaturePromoController2xPolicyTest,
        GracePeriodBlocksHeavyweightInV2AfterNewSession) {
   RunTestSequence(ResetSessionData(kLessThanGracePeriod),
                   AdvanceTime(kMoreThanNewSession),
@@ -2699,7 +2854,7 @@ TEST_F(BrowserFeaturePromoController20PolicyTest,
                                  FeaturePromoResult::kBlockedByGracePeriod));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest,
+TEST_P(BrowserFeaturePromoController2xPolicyTest,
        GracePeriodDoesNotBlocksHeavyweightLongAfterNewSession) {
   RunTestSequence(
       ResetSessionData(base::Seconds(60)), AdvanceTime(kMoreThanNewSession),
@@ -2707,7 +2862,7 @@ TEST_F(BrowserFeaturePromoController20PolicyTest,
       MaybeShowPromo(kTutorialIPHFeature, FeaturePromoResult::Success()));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest, CooldownPreventsPromoInV2) {
+TEST_P(BrowserFeaturePromoController2xPolicyTest, CooldownPreventsPromoInV2) {
   RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
                   MaybeShowPromo(kTutorialIPHFeature), ClosePromo(),
                   AdvanceTime(kLessThanCooldown),
@@ -2716,7 +2871,7 @@ TEST_F(BrowserFeaturePromoController20PolicyTest, CooldownPreventsPromoInV2) {
                                  FeaturePromoResult::kBlockedByCooldown));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest,
+TEST_P(BrowserFeaturePromoController2xPolicyTest,
        CooldownDoesNotPreventLightweightPromo) {
   RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
                   MaybeShowPromo(kTutorialIPHFeature), ClosePromo(),
@@ -2725,7 +2880,7 @@ TEST_F(BrowserFeaturePromoController20PolicyTest,
                   MaybeShowPromo(kTestIPHFeature));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest,
+TEST_P(BrowserFeaturePromoController2xPolicyTest,
        LightweightPromoDoesNotTriggerCooldown) {
   RunTestSequence(
       ResetSessionData(kMoreThanGracePeriod), MaybeShowPromo(kTestIPHFeature),
@@ -2733,7 +2888,7 @@ TEST_F(BrowserFeaturePromoController20PolicyTest,
       AdvanceTime(kMoreThanGracePeriod), MaybeShowPromo(kTutorialIPHFeature));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest,
+TEST_P(BrowserFeaturePromoController2xPolicyTest,
        CooldownDoesNotPreventLegalNotice) {
   RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
                   MaybeShowPromo(kTutorialIPHFeature), ClosePromo(),
@@ -2742,7 +2897,7 @@ TEST_F(BrowserFeaturePromoController20PolicyTest,
                   MaybeShowPromo(kLegalNoticeFeature2));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest,
+TEST_P(BrowserFeaturePromoController2xPolicyTest,
        CooldownDoesNotPreventActionableAlert) {
   RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
                   MaybeShowPromo(kTutorialIPHFeature), ClosePromo(),
@@ -2751,7 +2906,7 @@ TEST_F(BrowserFeaturePromoController20PolicyTest,
                   MaybeShowPromo(kActionableAlertIPHFeature2));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest,
+TEST_P(BrowserFeaturePromoController2xPolicyTest,
        ExpiredCooldownDoesNotPreventPromo) {
   RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
                   MaybeShowPromo(kTutorialIPHFeature), ClosePromo(),
@@ -2760,7 +2915,7 @@ TEST_F(BrowserFeaturePromoController20PolicyTest,
                   MaybeShowPromo(kCustomActionIPHFeature));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest,
+TEST_P(BrowserFeaturePromoController2xPolicyTest,
        AbortedPromoDoesNotTriggerCooldown) {
   RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
                   // Show an immediately close the promo without user
@@ -2770,7 +2925,7 @@ TEST_F(BrowserFeaturePromoController20PolicyTest,
                   MaybeShowPromo(kCustomActionIPHFeature));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest,
+TEST_P(BrowserFeaturePromoController2xPolicyTest,
        AbortedPromoDoesTriggerIndividualCooldown) {
   RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
                   MaybeShowPromo(kTutorialIPHFeature), AbortPromo(),
@@ -2780,7 +2935,7 @@ TEST_F(BrowserFeaturePromoController20PolicyTest,
                                  FeaturePromoResult::kRecentlyAborted));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest,
+TEST_P(BrowserFeaturePromoController2xPolicyTest,
        AbortedPromoDoesNotTriggerSnooze) {
   RunTestSequence(
       ResetSessionData(kMoreThanGracePeriod),
@@ -2790,7 +2945,7 @@ TEST_F(BrowserFeaturePromoController20PolicyTest,
       MaybeShowPromo(kTutorialIPHFeature, FeaturePromoResult::Success()));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest, SnoozeButtonDisappearsInV2) {
+TEST_P(BrowserFeaturePromoController2xPolicyTest, SnoozeButtonDisappearsInV2) {
   RunTestSequence(
       ResetSessionData(kMoreThanGracePeriod),
       // Simulate N-1 snoozes at some distant time in the past.
@@ -2813,7 +2968,7 @@ TEST_F(BrowserFeaturePromoController20PolicyTest, SnoozeButtonDisappearsInV2) {
       EnsureNotPresent(HelpBubbleView::kFirstNonDefaultButtonIdForTesting));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest,
+TEST_P(BrowserFeaturePromoController2xPolicyTest,
        TutorialSnoozeButtonChangesInV2) {
   RunTestSequence(
       ResetSessionData(kMoreThanGracePeriod),
@@ -2839,7 +2994,7 @@ TEST_F(BrowserFeaturePromoController20PolicyTest,
                         l10n_util::GetStringUTF16(IDS_PROMO_DISMISS_BUTTON)));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest,
+TEST_P(BrowserFeaturePromoController2xPolicyTest,
        IdleAtStartupStillShowsPromo) {
   RunTestSequence(
       ResetSessionData(base::TimeDelta()),
@@ -2848,7 +3003,7 @@ TEST_F(BrowserFeaturePromoController20PolicyTest,
       MaybeShowPromo(kTutorialIPHFeature));
 }
 
-TEST_F(BrowserFeaturePromoController20PolicyTest,
+TEST_P(BrowserFeaturePromoController2xPolicyTest,
        IdleAtStartupPromoBlockedByNewSession) {
   RunTestSequence(
       ResetSessionData(base::TimeDelta()),
