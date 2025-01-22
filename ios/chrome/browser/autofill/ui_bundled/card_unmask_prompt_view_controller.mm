@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/autofill/ui_bundled/card_unmask_prompt_view_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/card_unmask_prompt_view_controller+Testing.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
@@ -12,6 +11,11 @@
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
+#import "ios/chrome/browser/autofill/ui_bundled/card_unmask_prompt_view_bridge.h"
+#import "ios/chrome/browser/autofill/ui_bundled/card_unmask_prompt_view_controller+Testing.h"
+#import "ios/chrome/browser/autofill/ui_bundled/cells/card_unmask_header_item.h"
+#import "ios/chrome/browser/autofill/ui_bundled/cells/expiration_date_edit_item.h"
+#import "ios/chrome/browser/autofill/ui_bundled/cells/expiration_date_edit_item_delegate.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
@@ -19,10 +23,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/autofill/ui_bundled/card_unmask_prompt_view_bridge.h"
-#import "ios/chrome/browser/autofill/ui_bundled/cells/card_unmask_header_item.h"
-#import "ios/chrome/browser/autofill/ui_bundled/cells/expiration_date_edit_item.h"
-#import "ios/chrome/browser/autofill/ui_bundled/cells/expiration_date_edit_item_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ui/base/l10n/l10n_util.h"

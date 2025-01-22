@@ -128,8 +128,9 @@ void SaveToPasswordProfileStore(const password_manager::PasswordForm& form) {
   // Check the result and ensure PasswordStore processed this.
   TestStoreConsumer consumer;
   for (const auto& result : consumer.GetStoreResults()) {
-    if (result == expected_form)
+    if (result == expected_form) {
       return;
+    }
   }
 }
 
@@ -368,7 +369,7 @@ class FakeCreditCardServer : public CreditCardSaveManager::ObserverForTest {
   std::unique_ptr<IOSTestEventWaiter<CreditCardSaveManagerObserverEvent>>
       event_waiter_;
 };
-}
+}  // namespace autofill
 
 @implementation AutofillAppInterface
 

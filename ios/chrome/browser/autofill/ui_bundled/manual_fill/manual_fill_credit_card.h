@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_CREDIT_CARD_H_
 
 #import <Foundation/Foundation.h>
+
 #import "components/autofill/core/browser/data_model/credit_card.h"
 
 // This represents a credit card to use with manual fill.

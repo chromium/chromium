@@ -290,10 +290,11 @@ void SuggestionControllerJavaScriptFeatureTest::SequentialNavigationSkipCheck(
   EXPECT_NSEQ(@"firstname", GetActiveElementName());
   autofill::SuggestionControllerJavaScriptFeature::GetInstance()
       ->SelectNextElementInFrame(GetMainFrame());
-  if (shouldSkip)
+  if (shouldSkip) {
     EXPECT_TRUE(WaitUntilElementSelected(@"lastname"));
-  else
+  } else {
     EXPECT_TRUE(WaitUntilElementSelected(@"middlename"));
+  }
 }
 
 TEST_F(SuggestionControllerJavaScriptFeatureTest,

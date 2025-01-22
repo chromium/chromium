@@ -7,8 +7,8 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/autofill/ui_bundled/branding/branding_consumer.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 @implementation BrandingMediator {
   // Weak pointer to the local state that stores the number of times the

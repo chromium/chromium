@@ -424,14 +424,14 @@ static const CGFloat kOffsetForConnectedCell = 16;
       kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
-    self.autofillFormButton = CreateAutofillFormButton();
-    [self.contentView addSubview:self.autofillFormButton];
-    [self.autofillFormButton addTarget:self
-                                action:@selector(onAutofillFormButtonTapped)
-                      forControlEvents:UIControlEventTouchUpInside];
-    [accessibilityElements addObject:self.autofillFormButton];
-    AppendHorizontalConstraintsForViews(
-        staticConstraints, @[ self.autofillFormButton ], self.layoutGuide);
+  self.autofillFormButton = CreateAutofillFormButton();
+  [self.contentView addSubview:self.autofillFormButton];
+  [self.autofillFormButton addTarget:self
+                              action:@selector(onAutofillFormButtonTapped)
+                    forControlEvents:UIControlEventTouchUpInside];
+  [accessibilityElements addObject:self.autofillFormButton];
+  AppendHorizontalConstraintsForViews(
+      staticConstraints, @[ self.autofillFormButton ], self.layoutGuide);
 
   [NSLayoutConstraint activateConstraints:staticConstraints];
 

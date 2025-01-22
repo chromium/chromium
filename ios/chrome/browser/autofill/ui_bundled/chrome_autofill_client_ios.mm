@@ -246,8 +246,9 @@ const translate::LanguageState* ChromeAutofillClientIOS::GetLanguageState() {
   auto* translate_client = ChromeIOSTranslateClient::FromWebState(web_state());
   if (translate_client) {
     auto* translate_manager = translate_client->GetTranslateManager();
-    if (translate_manager)
+    if (translate_manager) {
       return translate_manager->GetLanguageState();
+    }
   }
   return nullptr;
 }

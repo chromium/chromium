@@ -9,9 +9,9 @@
 #import "base/notreached.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/autofill/ui_bundled/branding/branding_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/autofill/ui_bundled/branding/branding_view_controller_delegate.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {

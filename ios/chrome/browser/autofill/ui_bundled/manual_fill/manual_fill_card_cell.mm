@@ -659,7 +659,7 @@ CGFloat GPayIconTopAnchorOffset() {
       base::UserMetricsAction("ManualFallback_CreditCard_SuggestionAccepted"));
 
   autofill::SuggestionType type =
-              [self.card recordType] == kVirtualCard
+      [self.card recordType] == kVirtualCard
           ? autofill::SuggestionType::kVirtualCreditCardEntry
           : autofill::SuggestionType::kCreditCardEntry;
   FormSuggestion* suggestion = [FormSuggestion
