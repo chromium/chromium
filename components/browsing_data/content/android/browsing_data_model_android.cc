@@ -9,6 +9,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/permissions/permissions_client.h"
 #include "content/public/browser/android/browser_context_handle.h"
 #include "content/public/browser/browser_context.h"
@@ -77,5 +78,7 @@ void BrowsingDataModelAndroid::RemoveBrowsingData(
 }
 
 void BrowsingDataModelAndroid::Destroy(JNIEnv* env) {
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Android.BrowsingDataModel.ModelDestructionTime");
   delete this;
 }
