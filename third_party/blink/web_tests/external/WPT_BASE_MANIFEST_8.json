@@ -457704,7 +457704,7 @@
    },
    "clear-site-data": {
     "clear-cache.https.html": [
-     "8cdaf2a55271987943dfb25a37d98295068b57b2",
+     "eab2e5975025afffd8c46011c2446e91f8c5ef92",
      [
       null,
       {
@@ -521872,6 +521872,13 @@
      ],
      "MutationObserver-takeRecords.html": [
       "6a27ef77ecacf55a7eaaae18cdd007e017e42cd9",
+      [
+       null,
+       {}
+      ]
+     ],
+     "MutationObserver-textContent.html": [
+      "404cc259340456364e9eb1ef2e5c90a7ff80090c",
       [
        null,
        {}
