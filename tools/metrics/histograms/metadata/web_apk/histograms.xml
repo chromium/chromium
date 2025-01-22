@@ -55,7 +55,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Database.WriteResult" enum="Boolean"
-    expires_after="2025-03-01">
+    expires_after="2026-02-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>Records the write result (boolean) in WebApkDatabase.</summary>
@@ -252,7 +252,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Sync.Restore.FetchInstallableData.AppType"
-    enum="WebApkAppType" expires_after="2025-03-01">
+    enum="WebApkAppType" expires_after="2026-02-01">
   <owner>eirage@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -263,7 +263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Sync.Restore.FetchInstallableData.NotWebApkStatusCode"
-    enum="InstallableStatusCode" expires_after="2025-03-01">
+    enum="InstallableStatusCode" expires_after="2026-02-01">
   <owner>eirage@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -274,7 +274,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Sync.Restore.InstallEvent"
-    enum="WebApkRestoreFallbackReason" expires_after="2025-03-01">
+    enum="WebApkRestoreFallbackReason" expires_after="2026-02-01">
   <owner>eirage@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -286,7 +286,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Sync.Restore.InstallResult.{RestoreType}"
-    enum="WebApkInstallResult" expires_after="2025-03-01">
+    enum="WebApkInstallResult" expires_after="2026-02-01">
   <owner>eirage@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -300,7 +300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Sync.SyncedWebApkAddition"
-    enum="WebApkSyncAddOrModifyType" expires_after="2025-03-01">
+    enum="WebApkSyncAddOrModifyType" expires_after="2026-02-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -313,7 +313,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Sync.SyncedWebApkCount" units="WebApks"
-    expires_after="2025-07-06">
+    expires_after="2026-02-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -324,7 +324,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Sync.SyncedWebApkRemovalCount" units="WebApks"
-    expires_after="2025-03-01">
+    expires_after="2026-02-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
