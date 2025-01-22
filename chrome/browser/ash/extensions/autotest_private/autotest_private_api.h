@@ -1692,6 +1692,19 @@ class AutotestPrivateIsInputMethodReadyForTestingFunction
   ResponseAction Run() override;
 };
 
+class AutotestPrivateOverrideLobsterResponseForTestingFunction
+    : public ExtensionFunction {
+ public:
+  AutotestPrivateOverrideLobsterResponseForTestingFunction();
+  DECLARE_EXTENSION_FUNCTION(
+      "autotestPrivate.overrideLobsterResponseForTesting",
+      AUTOTESTPRIVATE_OVERRIDELOBSTERRESPONSE)
+
+ private:
+  ~AutotestPrivateOverrideLobsterResponseForTestingFunction() override;
+  ResponseAction Run() override;
+};
+
 class AutotestPrivateOverrideOrcaResponseForTestingFunction
     : public ExtensionFunction {
  public:

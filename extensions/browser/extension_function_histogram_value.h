@@ -1978,6 +1978,7 @@ enum HistogramValue {
   DEVELOPERPRIVATE_UPLOADEXTENSIONTOACCOUNT = 1916,
   USERSCRIPTS_EXECUTE = 1917,
   EXPERIMENTALAIDATA_PRIVATE_GETAIDATAWITHSPECIFIER = 1918,
+  AUTOTESTPRIVATE_OVERRIDELOBSTERRESPONSE = 1919,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
