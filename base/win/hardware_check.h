@@ -9,10 +9,20 @@
 
 namespace base::win {
 
-// Returns true if the hardware supports Win11. It is intended to be called
-// on OS versions below Win11 and validates against minimum requirements.
+struct BASE_EXPORT HardwareEvaluationResult {
+  bool cpu = false;
+  bool memory = false;
+  bool disk = false;
+  bool firmware = false;
+  bool tpm = false;
+
+  bool IsEligible() const;
+};
+
+// Returns result for hardware eligibility for Win11. It is intended to be
+// called on OS versions below Win11 and validates against min requirements.
 // This must be called from a context that allows I/O operations.
-BASE_EXPORT bool IsWin11UpgradeEligible();
+BASE_EXPORT HardwareEvaluationResult EvaluateWin11UpgradeEligibility();
 
 }  // namespace base::win
 

@@ -819,6 +819,22 @@ void RecordAppCompatMetrics() {
   base::UmaHistogramBoolean("Windows.AcLayersLoaded", !!mod);
 }
 
+void RecordWin11UpgradeEligibilityMetrics(
+    const base::win::HardwareEvaluationResult& result) {
+  base::UmaHistogramBoolean("Windows.Win11UpgradeEligible",
+                            result.IsEligible());
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.CPUCheck",
+                            result.cpu);
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.MemoryCheck",
+                            result.memory);
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.DiskCheck",
+                            result.disk);
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.FirmwareCheck",
+                            result.firmware);
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.TPMCheck",
+                            result.tpm);
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 void RecordDisplayHDRStatus(const display::Display& display) {
@@ -863,8 +879,9 @@ void RecordStartupMetrics() {
   RecordAppCompatMetrics();
 
   if (base::win::OSInfo::Kernel32Version() < base::win::Version::WIN11) {
-    base::UmaHistogramBoolean("Windows.Win11UpgradeEligible",
-                              base::win::IsWin11UpgradeEligible());
+    base::win::HardwareEvaluationResult result =
+        base::win::EvaluateWin11UpgradeEligibility();
+    RecordWin11UpgradeEligibilityMetrics(result);
   }
   key_credential_manager_support::ReportKeyCredentialManagerSupport();
 #endif  // BUILDFLAG(IS_WIN)

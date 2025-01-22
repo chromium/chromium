@@ -8,10 +8,19 @@
 
 namespace base::win {
 
-TEST(IsWin11UpgradeEligible, ExpectNoCrash) {
+TEST(HardwareEvaluationResult, Eligible) {
+  HardwareEvaluationResult result{
+      .cpu = true, .memory = true, .disk = true, .firmware = true, .tpm = true};
+  EXPECT_TRUE(result.IsEligible());
+
+  result.cpu = false;
+  EXPECT_FALSE(result.IsEligible());
+}
+
+TEST(EvaluateWin11UpgradeEligibility, ExpectNoCrash) {
   // It's not worthwhile to check the validity of the return value
   // so just check for crashes.
-  IsWin11UpgradeEligible();
+  EvaluateWin11UpgradeEligibility();
 }
 
 }  // namespace base::win

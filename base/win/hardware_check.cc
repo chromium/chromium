@@ -90,39 +90,38 @@ bool IsTPM20Supported() {
 
 }  // namespace
 
-bool IsWin11UpgradeEligible() {
+bool HardwareEvaluationResult::IsEligible() const {
+  return this->cpu && this->memory && this->disk && this->firmware && this->tpm;
+}
+
+HardwareEvaluationResult EvaluateWin11UpgradeEligibility() {
   static constexpr int64_t kMinTotalDiskSpace = 64 * 1024 * 1024;
   static constexpr uint64_t kMinTotalPhysicalMemory = 4 * 1024 * 1024;
 
-  static const bool is_win11_upgrade_eligible = [] {
-    if (!IsWin11SupportedProcessor(
-            CPU(), OSInfo::GetInstance()->processor_vendor_name())) {
-      return false;
-    }
+  static const HardwareEvaluationResult evaluate_win11_upgrade_eligibility =
+      [] {
+        HardwareEvaluationResult result;
 
-    if (SysInfo::AmountOfPhysicalMemory() < kMinTotalPhysicalMemory) {
-      return false;
-    }
+        result.cpu = IsWin11SupportedProcessor(
+            CPU(), OSInfo::GetInstance()->processor_vendor_name());
 
-    FilePath system_path;
-    if (PathService::Get(DIR_SYSTEM, &system_path) &&
-        SysInfo::AmountOfTotalDiskSpace(
-            FilePath(system_path.GetComponents()[0])) < kMinTotalDiskSpace) {
-      return false;
-    }
+        result.memory =
+            SysInfo::AmountOfPhysicalMemory() >= kMinTotalPhysicalMemory;
 
-    if (!IsUEFISecureBootEnabled()) {
-      return false;
-    }
+        FilePath system_path;
+        result.disk =
+            PathService::Get(DIR_SYSTEM, &system_path) &&
+            SysInfo::AmountOfTotalDiskSpace(
+                FilePath(system_path.GetComponents()[0])) >= kMinTotalDiskSpace;
 
-    if (!IsTPM20Supported()) {
-      return false;
-    }
+        result.firmware = IsUEFISecureBootEnabled();
 
-    return true;
-  }();
+        result.tpm = IsTPM20Supported();
 
-  return is_win11_upgrade_eligible;
+        return result;
+      }();
+
+  return evaluate_win11_upgrade_eligibility;
 }
 
 }  // namespace base::win
