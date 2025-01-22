@@ -1220,10 +1220,9 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
     image_bitmap = context_->GetImage(reason);
   }
 
-  if (image_bitmap)
-    DCHECK(image_bitmap->SupportsDisplayCompositing());
-  else
+  if (!image_bitmap) {
     image_bitmap = CreateTransparentImage(Size());
+  }
 
   return image_bitmap;
 }
