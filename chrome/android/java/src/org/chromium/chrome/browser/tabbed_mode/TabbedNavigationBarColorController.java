@@ -62,7 +62,6 @@ class TabbedNavigationBarColorController
     /** The amount of time transitioning from one color to another should take in ms. */
     public static final long NAVBAR_COLOR_TRANSITION_DURATION_MS = 250;
 
-    private static final String TAG = "NavBarColorCntrller";
     private final Context mContext;
     private final FullscreenManager mFullScreenManager;
 
@@ -71,6 +70,16 @@ class TabbedNavigationBarColorController
     private final @Nullable TabModelSelectorObserver mTabModelSelectorObserver;
     private final Callback<TabModel> mCurrentTabModelObserver;
     private final @Nullable FullscreenManager.Observer mFullscreenObserver;
+    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private final @NonNull ObservableSupplier<Integer> mOverviewColorSupplier;
+    private final @NonNull Callback<Integer> mOnOverviewColorChanged =
+            color -> updateNavigationBarColor();
+    private final Callback<EdgeToEdgeController> mEdgeToEdgeRegisterChangeObserverCallback;
+    private final EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
+    private final @Nullable BottomAttachedUiObserver mBottomAttachedUiObserver;
+    private final TabObserver mTabObserver;
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
+
     private @Nullable LayoutStateProvider mLayoutManager;
     private @Nullable LayoutStateObserver mLayoutStateObserver;
     private CallbackController mCallbackController = new CallbackController();
@@ -91,30 +100,18 @@ class TabbedNavigationBarColorController
     private boolean mForceDarkNavigationBarColor;
     private boolean mIsInFullscreen;
     private @ColorInt int mCurrentScrimColor;
-
-    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-    private final @NonNull ObservableSupplier<Integer> mOverviewColorSupplier;
-    private final @NonNull Callback<Integer> mOnOverviewColorChanged =
-            color -> updateNavigationBarColor();
-    private final Callback<EdgeToEdgeController> mEdgeToEdgeRegisterChangeObserverCallback;
     private EdgeToEdgeController mEdgeToEdgeController;
-    @Nullable private ChangeObserver mEdgeToEdgeChangeObserver;
-    private final EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
-    private @Nullable final BottomAttachedUiObserver mBottomAttachedUiObserver;
-
+    private @Nullable ChangeObserver mEdgeToEdgeChangeObserver;
     private @Nullable Tab mActiveTab;
-    private TabObserver mTabObserver;
-    @Nullable private @ColorInt Integer mBottomAttachedUiColor;
+    private @Nullable @ColorInt Integer mBottomAttachedUiColor;
     private boolean mForceShowDivider;
     private boolean mOverviewMode;
-
     private ValueAnimator mNavbarColorTransitionAnimation;
-    private ObserverList<Observer> mObservers = new ObserverList<>();
 
     /**
      * Creates a new {@link TabbedNavigationBarColorController} instance.
      *
-     * @param window The {@link Window} this controller should operate on.
+     * @param context Used to load resources.
      * @param tabModelSelector The {@link TabModelSelector} used to determine which tab model is
      *     selected.
      * @param layoutManagerSupplier An {@link ObservableSupplier} for the {@link LayoutManager}
@@ -141,7 +138,7 @@ class TabbedNavigationBarColorController
      *     sheet.
      * @param overviewColorSupplier Notifies when the overview color changes.
      * @param insetObserver An {@link InsetObserver} to listen for changes to the window insets.
-     * @param edgeToEdgeManager Manages core edge-to-edge state and logic.
+     * @param edgeToEdgeSystemBarColorHelper Helps setting nav bar colors when in edge-to-edge.
      */
     TabbedNavigationBarColorController(
             Context context,
@@ -507,10 +504,6 @@ class TabbedNavigationBarColorController
                 && mActiveTab != null;
     }
 
-    void setLayoutManagerForTesting(LayoutManager layoutManager) {
-        setLayoutManager(layoutManager);
-    }
-
     void updateActiveTabForTesting() {
         updateActiveTab();
     }
@@ -521,10 +514,6 @@ class TabbedNavigationBarColorController
 
     boolean getUseBottomAttachedUiColorForTesting() {
         return useBottomAttachedUiColor();
-    }
-
-    int getNavigationBarColorForTesting() {
-        return mNavigationBarColor;
     }
 
     private static boolean areNavBarColorAnimationsEnabled() {
