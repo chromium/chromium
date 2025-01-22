@@ -168,7 +168,8 @@ class GraphBuilderOrt {
   void AddCastOperation(const mojom::ElementWiseUnary& cast);
   void AddClampOperation(const mojom::Clamp& clamp);
   void AddConcatOperation(const mojom::Concat& concat);
-  void AddConv2dOperation(const mojom::Conv2d& conv2d);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddConv2dOperation(
+      const mojom::Conv2d& conv2d);
   void AddExpandOperation(const mojom::Expand& expand);
   void AddGatherOperation(const mojom::Gather& gather);
   void AddGemmOperation(const mojom::Gemm& gemm);

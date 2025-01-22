@@ -68,6 +68,7 @@ constexpr char kOpTypeCast[] = "Cast";
 constexpr char kOpTypeClamp[] = "Clip";
 constexpr char kOpTypeConcat[] = "Concat";
 constexpr char kOpTypeConv2d[] = "Conv";
+constexpr char kOpTypeConvTranspose2d[] = "ConvTranspose";
 constexpr char kOpTypeExpand[] = "Expand";
 constexpr char kOpTypeGather[] = "Gather";
 constexpr char kOpTypeGemm[] = "Gemm";
@@ -789,7 +790,8 @@ void GraphBuilderOrt::AddConcatOperation(const mojom::Concat& concat) {
                          attributes);
 }
 
-void GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
   const std::string node_name = GenerateNextOperationName(conv2d.label);
   const std::string input_name = GetOperandNameById(conv2d.input_operand_id);
   const std::string filter_name = GetOperandNameById(conv2d.filter_operand_id);
@@ -828,14 +830,84 @@ void GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
   ScopedOrtOpAttrPtr attr_strides =
       model_builder_.CreateAttribute(/*name=*/"strides", strides);
 
-  std::array<OrtOpAttr*, 4> attributes = {
+  std::vector<OrtOpAttr*> attributes = {
       attr_dilations.Release(),
       attr_group.Release(),
       attr_pads.Release(),
       attr_strides.Release(),
   };
-  model_builder_.AddNode(kOpTypeConv2d, node_name, input_names, output_names,
-                         attributes);
+
+  switch (conv2d.kind) {
+    case mojom::Conv2d::Kind::kDirect:
+      model_builder_.AddNode(kOpTypeConv2d, node_name, input_names,
+                             output_names, attributes);
+      break;
+    case mojom::Conv2d::Kind::kTransposed:
+      const OperandDescriptor& output_descriptor =
+          GetOperand(conv2d.output_operand_id).descriptor;
+      const std::vector<uint32_t>& output_shape = output_descriptor.shape();
+      // Since ONNX Runtime uses the NCHW format， output_shape[2] and
+      // output_shape[3] are used here to access the height and width dimensions
+      // of the output tensor shape.
+      std::array<int64_t, 2> output_size = {
+          base::checked_cast<int64_t>(output_shape[2]),
+          base::checked_cast<int64_t>(output_shape[3])};
+      ScopedOrtOpAttrPtr attr_output_shape =
+          model_builder_.CreateAttribute(/*name=*/"output_shape", output_size);
+      attributes.push_back(attr_output_shape.Release());
+
+      // According to the ONNX ConvTranspose2d documentation, the shape of the
+      // output_padding is calculated as:
+      // output_padding[i] = output_shape[i] - stride[i] * (input_size[i] - 1) -
+      // ((kernel_shape[i] - 1) * dilations[i] + 1) + pads[start_i] +
+      // pads[end_i]
+      // https://onnx.ai/onnx/operators/onnx__ConvTranspose.html#summary
+      const std::vector<uint32_t>& input_shape =
+          GetOperand(conv2d.input_operand_id).descriptor.shape();
+      const std::vector<uint32_t>& filter_shape =
+          GetOperand(conv2d.filter_operand_id).descriptor.shape();
+
+      const auto output_padding_height =
+          base::MakeCheckedNum(output_size[0]) -
+          strides[0] * (base::checked_cast<int64_t>(input_shape[2]) - 1) -
+          ((base::checked_cast<int64_t>(filter_shape[2]) - 1) * dilations[0] +
+           1) +
+          pads[0] + pads[2];
+      if (!output_padding_height.IsValid()) {
+        return NewUnknownError(
+            "[WebNN] Failed to calculate the height of output_padding.");
+      }
+
+      const auto output_padding_width =
+          base::MakeCheckedNum(output_size[1]) -
+          strides[1] * (base::checked_cast<int64_t>(input_shape[3]) - 1) -
+          ((base::checked_cast<int64_t>(filter_shape[3]) - 1) * dilations[1] +
+           1) +
+          pads[1] + pads[3];
+      if (!output_padding_width.IsValid()) {
+        return NewUnknownError(
+            "[WebNN] Failed to calculate the width of output_padding.");
+      }
+      std::array<int64_t, 2> output_padding = {
+          output_padding_height.ValueOrDie(),
+          output_padding_width.ValueOrDie()};
+
+      // According to the ONNX ConvTranspose2d documentation, since pads will be
+      // auto generated if output_shape is specified, and output_shape is
+      // determined by pads and output_padding, we need to calculate the actual
+      // output_padding to ensure that the pads value automatically calculated
+      // is correct.
+      // https://onnx.ai/onnx/operators/onnx__ConvTranspose.html#attributes
+      ScopedOrtOpAttrPtr attr_output_padding = model_builder_.CreateAttribute(
+          /*name=*/"output_padding", output_padding);
+      attributes.push_back(attr_output_padding.Release());
+
+      model_builder_.AddNode(kOpTypeConvTranspose2d, node_name, input_names,
+                             output_names, attributes);
+      break;
+  }
+
+  return base::ok();
 }
 
 void GraphBuilderOrt::AddExpandOperation(const mojom::Expand& expand) {
@@ -1622,7 +1694,7 @@ GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kConv2d: {
-        AddConv2dOperation(*operation->get_conv2d());
+        RETURN_IF_ERROR(AddConv2dOperation(*operation->get_conv2d()));
         break;
       }
       case mojom::Operation::Tag::kExpand: {
