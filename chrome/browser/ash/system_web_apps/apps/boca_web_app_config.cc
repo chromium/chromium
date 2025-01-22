@@ -35,6 +35,8 @@ class ChromeBocaUIDelegate : public ash::boca::BocaUIDelegate {
     source->AddBoolean("isDevChannel", channel == version_info::Channel::DEV);
     source->AddBoolean("isProducer", ash::boca_util::IsProducer(user));
     source->AddBoolean("isConsumer", ash::boca_util::IsConsumer(user));
+    source->AddBoolean("spotlightEnabled",
+                       ash::features::IsBocaSpotlightEnabled());
     source->AddString("appLocale", g_browser_process->GetApplicationLocale());
   }
 
