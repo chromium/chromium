@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/observer_list.h"
@@ -374,34 +373,31 @@ ThemeSyncableService::MergeDataAndStartSyncing(
 
   const sync_pb::ThemeSpecifics current_specifics =
       GetThemeSpecificsFromCurrentTheme();
-  // Find the last SyncData that has theme data and set the current theme from
-  // it. If SyncData doesn't have a theme, but there is a current theme, it will
-  // not reset it.
-  for (const syncer::SyncData& sync_data : base::Reversed(initial_sync_data)) {
-    if (sync_data.GetSpecifics().has_theme()) {
-      sync_pb::ThemeSpecifics new_specs = sync_data.GetSpecifics().theme();
-      if (!HasNonDefaultTheme(current_specifics) ||
-          HasNonDefaultTheme(new_specs)) {
-        ThemeSyncState startup_state =
-            MaybeSetTheme(current_specifics, new_specs);
-        // Commit the current theme if it has changed and is different from the
-        // remote theme. This can happen when theme attributes which were
-        // earlier synced via prefs (user color and ntp background), are now
-        // populated in ThemeSpecifics. This new ThemeSpecifics should be
-        // committed to the server. Note that this is avoided for incoming
-        // extension themes as they are applied from a posted task and will call
-        // OnThemeChanged() when set and commit the current theme.
-        if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics) &&
-            startup_state == ThemeSyncState::kApplied &&
-            !new_specs.use_custom_theme() &&
-            !AreThemeSpecificsEquivalent(
-                GetThemeSpecificsFromCurrentTheme(), new_specs,
-                theme_service_->IsSystemThemeDistinctFromDefaultTheme())) {
-          OnThemeChanged();
-        }
-        NotifyOnSyncStarted(startup_state);
-        return std::nullopt;
+  if (!initial_sync_data.empty() &&
+      initial_sync_data[0].GetSpecifics().has_theme()) {
+    const sync_pb::ThemeSpecifics& new_specifics =
+        initial_sync_data[0].GetSpecifics().theme();
+    if (!HasNonDefaultTheme(current_specifics) ||
+        HasNonDefaultTheme(new_specifics)) {
+      ThemeSyncState startup_state =
+          MaybeSetTheme(current_specifics, new_specifics);
+      // Commit the current theme if it has changed and is different from the
+      // remote theme. This can happen when theme attributes which were
+      // earlier synced via prefs (user color and ntp background), are now
+      // populated in ThemeSpecifics. This new ThemeSpecifics should be
+      // committed to the server. Note that this is avoided for incoming
+      // extension themes as they are applied from a posted task and will call
+      // OnThemeChanged() when set and commit the current theme.
+      if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics) &&
+          startup_state == ThemeSyncState::kApplied &&
+          !new_specifics.use_custom_theme() &&
+          !AreThemeSpecificsEquivalent(
+              GetThemeSpecificsFromCurrentTheme(), new_specifics,
+              theme_service_->IsSystemThemeDistinctFromDefaultTheme())) {
+        OnThemeChanged();
       }
+      NotifyOnSyncStarted(startup_state);
+      return std::nullopt;
     }
   }
 
@@ -482,10 +478,11 @@ std::optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
     }
     return syncer::ModelError(FROM_HERE, err_msg);
   }
-  if (change_list.begin()->change_type() != syncer::SyncChange::ACTION_ADD &&
-      change_list.begin()->change_type() != syncer::SyncChange::ACTION_UPDATE) {
+  const syncer::SyncChange& theme_change = change_list[0];
+  if (theme_change.change_type() != syncer::SyncChange::ACTION_ADD &&
+      theme_change.change_type() != syncer::SyncChange::ACTION_UPDATE) {
     return syncer::ModelError(
-        FROM_HERE, "Invalid theme change: " + change_list.begin()->ToString());
+        FROM_HERE, "Invalid theme change: " + theme_change.ToString());
   }
 
   if (!IsCurrentThemeSyncable()) {
@@ -493,16 +490,11 @@ std::optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
     return std::nullopt;
   }
 
-  // Set current theme from the theme specifics of the last change of type
-  // |ACTION_ADD| or |ACTION_UPDATE|.
-  for (const syncer::SyncChange& theme_change : base::Reversed(change_list)) {
-    if (theme_change.sync_data().GetSpecifics().has_theme() &&
-        (theme_change.change_type() == syncer::SyncChange::ACTION_ADD ||
-         theme_change.change_type() == syncer::SyncChange::ACTION_UPDATE)) {
-      MaybeSetTheme(GetThemeSpecificsFromCurrentTheme(),
-                    theme_change.sync_data().GetSpecifics().theme());
-      return std::nullopt;
-    }
+  // Set current theme from the theme specifics.
+  if (theme_change.sync_data().GetSpecifics().has_theme()) {
+    MaybeSetTheme(GetThemeSpecificsFromCurrentTheme(),
+                  theme_change.sync_data().GetSpecifics().theme());
+    return std::nullopt;
   }
 
   return syncer::ModelError(FROM_HERE, "Didn't find valid theme specifics");
