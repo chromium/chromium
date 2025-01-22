@@ -184,7 +184,7 @@ source_set("public") {
     "content_suggestions_consumer.h",
     "content_suggestions_delegate.h",
     "content_suggestions_image_data_source.h",
-    "content_suggestions_menu_provider.h",
+    "content_suggestions_menu_elements_provider.h",
     "content_suggestions_view_controller_audience.h",
   ]
   deps = [
