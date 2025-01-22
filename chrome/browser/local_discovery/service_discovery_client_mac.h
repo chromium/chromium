@@ -83,6 +83,8 @@ class ServiceWatcherImplMac : public ServiceWatcher {
   const std::string service_type_;
   ServiceWatcher::UpdatedCallback callback_;
   bool started_ = false;
+  // TODO(crbug.com/376743512): Remove this workaround once the issue is fixed.
+  bool force_enable_legacy_discovery_ = false;
 
   scoped_refptr<base::SingleThreadTaskRunner> service_discovery_runner_;
 
