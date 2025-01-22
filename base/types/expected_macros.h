@@ -91,8 +91,11 @@
 // ```
 //   RETURN_IF_ERROR(TryProcessing(query), &MyClass::FailureHandler, this);
 // ```
-#define RETURN_IF_ERROR(rexpr, ...) \
-  BASE_INTERNAL_EXPECTED_RETURN_IF_ERROR_IMPL(return, rexpr, __VA_ARGS__)
+#define RETURN_IF_ERROR(rexpr, ...)                                      \
+  BASE_INTERNAL_EXPECTED_PASS_ARGS(                                      \
+      BASE_INTERNAL_EXPECTED_RETURN_IF_ERROR,                            \
+      BASE_INTERNAL_EXPECTED_ARGS(BASE_UNIQUIFY(_expected_value), rexpr, \
+                                  __VA_ARGS__))
 
 // Executes an expression `rexpr` that returns a `base::expected<T, E>`. If the
 // result is an expected value, moves the `T` into whatever `lhs` defines/refers
@@ -192,8 +195,12 @@
 //   ASSIGN_OR_RETURN(ValueType value, MaybeGetValue(query),
 //                    &MyClass::FailureHandler, this);
 // ```
-#define ASSIGN_OR_RETURN(lhs, rexpr, ...) \
-  BASE_INTERNAL_EXPECTED_ASSIGN_OR_RETURN_IMPL(return, lhs, rexpr, __VA_ARGS__)
+#define ASSIGN_OR_RETURN(lhs, rexpr, ...)                                \
+  BASE_INTERNAL_EXPECTED_PASS_ARGS(                                      \
+      BASE_INTERNAL_EXPECTED_ASSIGN_OR_RETURN,                           \
+      BASE_INTERNAL_EXPECTED_ARGS(BASE_UNIQUIFY(_expected_value), rexpr, \
+                                  __VA_ARGS__),                          \
+      lhs)
 
 namespace base::internal {
 
@@ -247,38 +254,33 @@ UnexpectedDeducer(Lambda) -> UnexpectedDeducer<Lambda>;
 
 }  // namespace base::internal
 
-#define BASE_INTERNAL_EXPECTED_BODY(expected, rexpr, name, return_keyword, \
-                                    error_expr)                            \
-  decltype(auto) expected = (rexpr);                                       \
-  {                                                                        \
-    static_assert(base::internal::IsExpected<decltype(expected)>,          \
-                  #name " should only be used with base::expected<>");     \
-  }                                                                        \
-  if (!expected.has_value()) [[unlikely]] {                                \
-    return_keyword base::internal::UnexpectedDeducer([&] {                 \
-      return error_expr;                                                   \
-    }).Ret();                                                              \
+#define BASE_INTERNAL_EXPECTED_BODY(expected, rexpr, name, error_expr)   \
+  decltype(auto) expected = (rexpr);                                     \
+  {                                                                      \
+    static_assert(base::internal::IsExpected<decltype(expected)>,        \
+                  #name " should only be used with base::expected<>");   \
+  }                                                                      \
+  if (!expected.has_value()) [[unlikely]] {                              \
+    return base::internal::UnexpectedDeducer([&] { return error_expr; }) \
+        .Ret();                                                          \
   }
 
-#define BASE_INTERNAL_EXPECTED_RETURN_IF_ERROR(expected, rexpr,            \
-                                               return_keyword, error_expr) \
-  do {                                                                     \
-    BASE_INTERNAL_EXPECTED_BODY(expected, rexpr, RETURN_IF_ERROR,          \
-                                return_keyword, error_expr);               \
+#define BASE_INTERNAL_EXPECTED_RETURN_IF_ERROR(expected, rexpr, error_expr)    \
+  do {                                                                         \
+    BASE_INTERNAL_EXPECTED_BODY(expected, rexpr, RETURN_IF_ERROR, error_expr); \
   } while (false)
 
-#define BASE_INTERNAL_EXPECTED_ASSIGN_OR_RETURN(                           \
-    expected, rexpr, return_keyword, error_expr, lhs)                      \
-  BASE_INTERNAL_EXPECTED_BODY(expected, rexpr, ASSIGN_OR_RETURN,           \
-                              return_keyword, error_expr);                 \
-  {                                                                        \
-    constexpr auto lhs_v = std::string_view(#lhs);                         \
-    static_assert(!(lhs_v.front() == '(' && lhs_v.back() == ')' &&         \
-                    lhs_v.rfind('?') != std::string_view::npos),           \
-                  "Identified possible ternary in `lhs`; avoid passing "   \
-                  "parenthesized expressions containing '?' to the first " \
-                  "argument of ASSIGN_OR_RETURN()");                       \
-  }                                                                        \
+#define BASE_INTERNAL_EXPECTED_ASSIGN_OR_RETURN(expected, rexpr, error_expr,  \
+                                                lhs)                          \
+  BASE_INTERNAL_EXPECTED_BODY(expected, rexpr, ASSIGN_OR_RETURN, error_expr); \
+  {                                                                           \
+    constexpr auto lhs_v = std::string_view(#lhs);                            \
+    static_assert(!(lhs_v.front() == '(' && lhs_v.back() == ')' &&            \
+                    lhs_v.rfind('?') != std::string_view::npos),              \
+                  "Identified possible ternary in `lhs`; avoid passing "      \
+                  "parenthesized expressions containing '?' to the first "    \
+                  "argument of ASSIGN_OR_RETURN()");                          \
+  }                                                                           \
   BASE_REMOVE_PARENS(lhs) = std::move(expected).value();
 
 #define BASE_INTERNAL_EXPECTED_PASS_ARGS(func, ...) func(__VA_ARGS__)
@@ -287,25 +289,10 @@ UnexpectedDeducer(Lambda) -> UnexpectedDeducer<Lambda>;
 #define BASE_INTERNAL_EXPECTED_BEGIN_INVOKE std::invoke(
 #define BASE_INTERNAL_EXPECTED_END_INVOKE )
 
-#define BASE_INTERNAL_EXPECTED_ARGS(temp_name, return_keyword, rexpr, ...) \
-  temp_name, rexpr, return_keyword,                                        \
-      (__VA_OPT__(BASE_INTERNAL_EXPECTED_BEGIN_INVOKE)                     \
-           __VA_ARGS__ __VA_OPT__(, ) std::move(temp_name)                 \
+#define BASE_INTERNAL_EXPECTED_ARGS(temp_name, rexpr, ...) \
+  temp_name, rexpr,                                        \
+      (__VA_OPT__(BASE_INTERNAL_EXPECTED_BEGIN_INVOKE)     \
+           __VA_ARGS__ __VA_OPT__(, ) std::move(temp_name) \
                .error() __VA_OPT__(BASE_INTERNAL_EXPECTED_END_INVOKE))
-
-#define BASE_INTERNAL_EXPECTED_RETURN_IF_ERROR_IMPL(return_keyword, rexpr, \
-                                                    ...)                   \
-  BASE_INTERNAL_EXPECTED_PASS_ARGS(                                        \
-      BASE_INTERNAL_EXPECTED_RETURN_IF_ERROR,                              \
-      BASE_INTERNAL_EXPECTED_ARGS(BASE_UNIQUIFY(_expected_value),          \
-                                  return_keyword, rexpr, __VA_ARGS__))
-
-#define BASE_INTERNAL_EXPECTED_ASSIGN_OR_RETURN_IMPL(return_keyword, lhs, \
-                                                     rexpr, ...)          \
-  BASE_INTERNAL_EXPECTED_PASS_ARGS(                                       \
-      BASE_INTERNAL_EXPECTED_ASSIGN_OR_RETURN,                            \
-      BASE_INTERNAL_EXPECTED_ARGS(BASE_UNIQUIFY(_expected_value),         \
-                                  return_keyword, rexpr, __VA_ARGS__),    \
-      lhs)
 
 #endif  // BASE_TYPES_EXPECTED_MACROS_H_
