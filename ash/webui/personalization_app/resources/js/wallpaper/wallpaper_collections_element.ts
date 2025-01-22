@@ -402,7 +402,10 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
         },
       },
 
-      hasError_: Boolean,
+      hasError_: {
+        type: Boolean,
+        observer: 'onHasErrorChanged_',
+      },
 
       isSeaPenEnabled_: {
         type: Boolean,
@@ -493,18 +496,31 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
     return firstBackdropIndex;
   }
 
-  /**
-   * Notify that this element visibility has changed.
-   */
-  private async onHiddenChanged_(hidden: boolean) {
-    if (!hidden) {
-      document.title = this.i18n('wallpaperLabel');
-    }
+  private fireIronResize_() {
     afterNextRender(this, () => {
       this.$.grid.fire('iron-resize');
       (this.shadowRoot!.getElementById('promoted') as IronListElement | null)
           ?.fire('iron-resize');
     });
+  }
+
+  /**
+   * Notify that this element visibility has changed.
+   */
+  private onHiddenChanged_(hidden: boolean) {
+    if (!hidden) {
+      document.title = this.i18n('wallpaperLabel');
+    }
+    this.fireIronResize_();
+  }
+
+  private onHasErrorChanged_(hasError: boolean) {
+    if (hasError) {
+      // Skip updating visibility when `hasError` is true because the iron-list
+      // elements will already be hidden.
+      return;
+    }
+    this.fireIronResize_();
   }
 
   /**
