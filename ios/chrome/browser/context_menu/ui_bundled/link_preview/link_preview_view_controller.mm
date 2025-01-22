@@ -6,8 +6,8 @@
 
 #import <MaterialComponents/MaterialProgressView.h>
 
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/link_preview/link_preview_constants.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ui/gfx/ios/uikit_util.h"
 
@@ -130,8 +130,9 @@ const CGFloat kProgressBarHeight = 2.0f;
 #pragma mark - LinkPreviewConsumer
 
 - (void)setLoadingState:(BOOL)loading {
-  if (self.loading == loading)
+  if (self.loading == loading) {
     return;
+  }
 
   self.loading = loading;
 
