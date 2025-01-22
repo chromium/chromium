@@ -217,6 +217,9 @@ export class BidiParser implements BidiCommandParameterParser {
   parseSubscribeParams(params: unknown): Session.SubscriptionRequest {
     return Parser.Session.parseSubscribeParams(params);
   }
+  parseUnsubscribeParams(params: unknown): Session.UnsubscribeParameters {
+    return Parser.Session.parseUnsubscribeParams(params);
+  }
   // keep-sorted end
 
   // Storage module

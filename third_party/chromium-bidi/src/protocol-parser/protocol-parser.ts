@@ -278,6 +278,15 @@ export namespace Session {
       WebDriverBidi.Session.SubscriptionRequestSchema,
     ) as Protocol.Session.SubscriptionRequest;
   }
+
+  export function parseUnsubscribeParams(
+    params: unknown,
+  ): Protocol.Session.UnsubscribeParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.Session.UnsubscribeParametersSchema,
+    ) as Protocol.Session.UnsubscribeParameters;
+  }
 }
 
 export namespace Input {

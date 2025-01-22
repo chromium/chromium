@@ -85,6 +85,7 @@ export type Subscription = {
 
 export class SubscriptionManager {
   #subscriptions: Subscription[] = [];
+  #knownSubscriptionIds = new Set<string>();
   #browsingContextStorage: BrowsingContextStorage;
 
   constructor(browsingContextStorage: BrowsingContextStorage) {
@@ -222,6 +223,7 @@ export class SubscriptionManager {
       channel,
     };
     this.#subscriptions.push(subscription);
+    this.#knownSubscriptionIds.add(subscription.id);
     return subscription;
   }
 
@@ -349,8 +351,23 @@ export class SubscriptionManager {
   /**
    * Unsubscribes by subscriptionId.
    */
-  unsubscribeById(_subscription: string) {
-    // TODO: implement.
+  unsubscribeById(subscriptionIds: string[]) {
+    const subscriptionIdsSet = new Set(subscriptionIds);
+    const unknownIds = difference(
+      subscriptionIdsSet,
+      this.#knownSubscriptionIds,
+    );
+
+    if (unknownIds.size !== 0) {
+      throw new InvalidArgumentException('No subscription found');
+    }
+    this.#subscriptions = this.#subscriptions.filter((subscription) => {
+      return !subscriptionIdsSet.has(subscription.id);
+    });
+    this.#knownSubscriptionIds = difference(
+      this.#knownSubscriptionIds,
+      subscriptionIdsSet,
+    );
   }
 }
 

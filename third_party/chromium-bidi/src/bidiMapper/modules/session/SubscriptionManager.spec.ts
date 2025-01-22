@@ -203,6 +203,18 @@ describe('SubscriptionManager', () => {
       ).to.equal(false);
     });
 
+    it('should unsubscribe by id', () => {
+      const {id} = subscriptionManager.subscribe(
+        [SOME_EVENT],
+        [],
+        SOME_CHANNEL,
+      );
+      subscriptionManager.unsubscribeById([id]);
+      expect(
+        subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
+      ).to.equal(false);
+    });
+
     it('should not unsubscribe on error', () => {
       subscriptionManager.subscribe([SOME_EVENT], [], SOME_CHANNEL);
       expect(() =>
@@ -296,6 +308,18 @@ describe('SubscriptionManager', () => {
       ).to.equal(true);
       expect(
         subscriptionManager.isSubscribedTo(SOME_EVENT, ANOTHER_CONTEXT),
+      ).to.equal(false);
+    });
+
+    it('should unsubscribe by id', () => {
+      const {id} = subscriptionManager.subscribe(
+        [SOME_EVENT],
+        [SOME_CONTEXT],
+        SOME_CHANNEL,
+      );
+      subscriptionManager.unsubscribeById([id]);
+      expect(
+        subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
       ).to.equal(false);
     });
 
@@ -427,6 +451,46 @@ describe('SubscriptionManager', () => {
       expect(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
       ).to.equal(true);
+    });
+  });
+
+  describe('unsubscribeById', () => {
+    it('should keep subscription if one of the IDs is not known', () => {
+      const {id} = subscriptionManager.subscribe(
+        [SOME_EVENT],
+        [],
+        SOME_CHANNEL,
+      );
+      expect(
+        subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
+      ).to.equal(true);
+      expect(() => {
+        subscriptionManager.unsubscribeById([id, 'wrong']);
+      }).to.throw('No subscription found');
+      expect(
+        subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
+      ).to.equal(true);
+    });
+
+    it('should throw an error if an ID is not know', () => {
+      expect(() => {
+        subscriptionManager.unsubscribeById(['wrong']);
+      }).to.throw('No subscription found');
+    });
+
+    it('should throw an error if a subscription is used multiple times', () => {
+      const {id} = subscriptionManager.subscribe(
+        [SOME_EVENT],
+        [],
+        SOME_CHANNEL,
+      );
+      expect(
+        subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
+      ).to.equal(true);
+      subscriptionManager.unsubscribeById([id]);
+      expect(() => {
+        subscriptionManager.unsubscribeById([id]);
+      }).to.throw('No subscription found');
     });
   });
 

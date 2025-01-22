@@ -390,7 +390,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         );
       case 'session.unsubscribe':
         return await this.#sessionProcessor.unsubscribe(
-          this.#parser.parseSubscribeParams(command.params),
+          this.#parser.parseUnsubscribeParams(command.params),
           command.channel,
         );
       // keep-sorted end

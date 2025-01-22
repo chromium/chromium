@@ -138,6 +138,7 @@ export interface BidiCommandParameterParser {
   // Session module
   // keep-sorted start block=yes
   parseSubscribeParams(params: unknown): Session.SubscriptionRequest;
+  parseUnsubscribeParams(params: unknown): Session.UnsubscribeParameters;
   // keep-sorted end
 
   // Storage module

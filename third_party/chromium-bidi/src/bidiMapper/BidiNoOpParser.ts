@@ -218,6 +218,13 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   parseSubscribeParams(params: unknown): Session.SubscriptionRequest {
     return params as Session.SubscriptionRequest;
   }
+  parseUnsubscribeParams(
+    params: unknown,
+  ): Session.UnsubscribeByAttributesRequest | Session.UnsubscribeByIdRequest {
+    return params as
+      | Session.UnsubscribeByAttributesRequest
+      | Session.UnsubscribeByIdRequest;
+  }
   // keep-sorted end
 
   // Storage module

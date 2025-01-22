@@ -66,7 +66,7 @@ async def subscribe(websocket,
         command[channel_name
                 if channel_name is not None else "goog:channel"] = channel
 
-    await execute_command(websocket, command)
+    return await execute_command(websocket, command)
 
 
 async def send_JSON_command(websocket, command: dict) -> int:

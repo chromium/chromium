@@ -526,6 +526,18 @@ async def test_subscribeWithoutContext_bufferedEventsFromNotClosedContextsAreRet
 
 
 @pytest.mark.asyncio
+async def test_unsubscribe_by_id(websocket):
+    res = await subscribe(websocket, ["log.entryAdded"])
+    await execute_command(
+        websocket, {
+            "method": "session.unsubscribe",
+            "params": {
+                "subscriptions": [res["subscription"]]
+            }
+        })
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize("channel_name", ["channel", "goog:channel"])
 async def test_unsubscribeIsAtomic(websocket, context_id, iframe_id,
                                    channel_name):

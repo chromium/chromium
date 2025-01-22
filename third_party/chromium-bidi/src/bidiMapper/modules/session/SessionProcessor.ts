@@ -157,9 +157,13 @@ export class SessionProcessor {
   }
 
   async unsubscribe(
-    params: Session.SubscriptionRequest,
+    params: Session.UnsubscribeParameters,
     channel: BidiPlusChannel = {},
   ): Promise<EmptyResult> {
+    if ('subscriptions' in params) {
+      await this.#eventManager.unsubscribeByIds(params.subscriptions);
+      return {};
+    }
     await this.#eventManager.unsubscribe(
       params.events as ChromiumBidi.EventNames[],
       params.contexts ?? [],

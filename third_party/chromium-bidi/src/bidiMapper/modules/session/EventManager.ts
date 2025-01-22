@@ -306,6 +306,11 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     await this.toggleModulesIfNeeded();
   }
 
+  async unsubscribeByIds(subscriptionIds: string[]): Promise<void> {
+    this.#subscriptionManager.unsubscribeById(subscriptionIds);
+    await this.toggleModulesIfNeeded();
+  }
+
   async toggleModulesIfNeeded(): Promise<void> {
     // TODO(1): Only update changed subscribers
     // TODO(2): Enable for Worker Targets
