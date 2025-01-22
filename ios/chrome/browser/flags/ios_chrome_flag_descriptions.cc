@@ -691,6 +691,11 @@ const char kLensFiltersAblationModeEnabledName[] =
 const char kLensFiltersAblationModeEnabledDescription[] =
     "Enables the filters ablation mode.";
 
+const char kLensInkMultiSampleModeDisabledName[] =
+    "Disable Lens Ink multi-sample mode";
+const char kLensInkMultiSampleModeDisabledDescription[] =
+    "When disabled, turns off multi-sample mode and uses less memory.";
+
 extern const char kLensOverlayAlternativeOnboardingName[] =
     "Lens Overlay Onboarding";
 extern const char kLensOverlayAlternativeOnboardingDescription[] =

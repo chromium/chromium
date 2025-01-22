@@ -2292,6 +2292,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"download-auto-deletion", flag_descriptions::kDownloadAutoDeletionName,
      flag_descriptions::kDownloadAutoDeletionDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDownloadAutoDeletionFeatureEnabled)},
+    {"lens-ink-multi-sample-mode-disabled",
+     flag_descriptions::kLensInkMultiSampleModeDisabledName,
+     flag_descriptions::kLensInkMultiSampleModeDisabledDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensInkMultiSampleModeDisabled)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

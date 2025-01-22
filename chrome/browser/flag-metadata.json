@@ -5609,7 +5609,12 @@
     "owners": ["cmyang@google.com", "ericappelbaum@google.com"],
     "expiry_milestone": 135
   },
-    {
+  {
+    "name": "lens-ink-multi-sample-mode-disabled",
+    "owners": ["cmyang@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "lens-overlay-alternative-onboarding",
     "owners": [ "stkhapugin@chromium.org", "christianxu@chromium.org", "lens-chrome@google.com" ],
     "expiry_milestone": 135
