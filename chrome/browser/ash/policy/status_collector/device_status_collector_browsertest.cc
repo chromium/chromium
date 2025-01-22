@@ -1809,7 +1809,6 @@ TEST_F(DeviceStatusCollectorTest, VersionInfo) {
   // Expect the version info to be reported by default.
   GetStatus();
   EXPECT_TRUE(device_status_.has_browser_version());
-  EXPECT_TRUE(device_status_.has_is_lacros_primary_browser());
   EXPECT_TRUE(device_status_.has_channel());
   EXPECT_TRUE(device_status_.has_os_version());
   EXPECT_TRUE(device_status_.has_firmware_version());
@@ -1823,7 +1822,6 @@ TEST_F(DeviceStatusCollectorTest, VersionInfo) {
       ->set_status(::tpm_manager::STATUS_DBUS_ERROR);
   GetStatus();
   EXPECT_TRUE(device_status_.has_browser_version());
-  EXPECT_TRUE(device_status_.has_is_lacros_primary_browser());
   EXPECT_TRUE(device_status_.has_channel());
   EXPECT_TRUE(device_status_.has_os_version());
   EXPECT_TRUE(device_status_.has_firmware_version());
@@ -1840,7 +1838,6 @@ TEST_F(DeviceStatusCollectorTest, VersionInfo) {
       ash::kReportDeviceVersionInfo, false);
   GetStatus();
   EXPECT_FALSE(device_status_.has_browser_version());
-  EXPECT_FALSE(device_status_.has_is_lacros_primary_browser());
   EXPECT_FALSE(device_status_.has_channel());
   EXPECT_FALSE(device_status_.has_os_version());
   EXPECT_FALSE(device_status_.has_firmware_version());
@@ -1851,7 +1848,6 @@ TEST_F(DeviceStatusCollectorTest, VersionInfo) {
       ash::kReportDeviceVersionInfo, true);
   GetStatus();
   EXPECT_TRUE(device_status_.has_browser_version());
-  EXPECT_TRUE(device_status_.has_is_lacros_primary_browser());
   EXPECT_TRUE(device_status_.has_channel());
   EXPECT_TRUE(device_status_.has_os_version());
   EXPECT_TRUE(device_status_.has_firmware_version());

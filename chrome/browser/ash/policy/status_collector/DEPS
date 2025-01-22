@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/app_mode",
   "+chrome/browser/ash/child_accounts",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/ash/login",

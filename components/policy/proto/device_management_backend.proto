@@ -1683,17 +1683,6 @@ message NetworkAdapterInfo {
   repeated string driver = 7;
 }
 
-// Information about the list of browsers and profiles that are
-// running and installed on the device in the DeviceStatusReport
-message LaCrOsBrowserReport {
-  // Limited to one user since LaCrosBrowserReport is repeated based on each
-  // user. If multiple lacros user profiles exist, each LaCrOsBrowserReport
-  // message (one per lacros user profile) will contain the same |device_user|.
-  optional DeviceUser device_user = 1;
-  // Group of data regarding the browser and user profile.
-  optional BrowserReport browser_report = 2;
-}
-
 // Information specific to Demo Mode about the device and the demo context.
 message DemoModeDimensions {
   // Two-letter country code.
@@ -1715,7 +1704,7 @@ message DemoModeDimensions {
 
 // Report device level status.
 message DeviceStatusReportRequest {
-  reserved 4, 7, 13, 20;
+  reserved 4, 7, 13, 20, 46, 48;
 
   // The OS version reported by the device is a platform version
   // e.g. 1435.0.2011_12_16_1635.
@@ -1852,14 +1841,8 @@ message DeviceStatusReportRequest {
   // Information about the device's network hardware.
   repeated NetworkAdapterInfo network_adapter_info = 45;
 
-  // Information about LaCrOs
-  repeated LaCrOsBrowserReport lacros_browser_report = 46;
-
   // Root device size as displayed in the device UI.
   optional int64 root_device_total_storage_bytes = 47;
-
-  // Flag whether LaCros is the primary browser.
-  optional bool is_lacros_primary_browser = 48;
 
   // Information specific to Demo Mode about the device and the demo context.
   // Only included for devices in Demo Mode.
