@@ -8,6 +8,7 @@ android_library("java") {
   visibility = [
     "//chrome/android:*",
     "//chrome/android/javatests:*",
+    "//chrome/android/junit:*",
   ]
 
   # This target is currently used to ensure that we avoid regressing the Kotlin

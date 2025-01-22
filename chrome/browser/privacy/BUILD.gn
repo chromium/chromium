@@ -11,6 +11,7 @@ if (is_android) {
       ":*",
       "//chrome/android:*",
       "//chrome/android/javatests:*",
+      "//chrome/android/junit:*",
       "//chrome/browser/feed/android:*",
       "//chrome/browser/ui/android/omnibox:*",
       "//chrome/browser/ui/android/signin:*",
