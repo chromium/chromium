@@ -829,25 +829,6 @@ bool LayoutInline::MapToVisualRectInAncestorSpaceInternal(
       ancestor, transform_state, visual_rect_flags);
 }
 
-PhysicalOffset LayoutInline::OffsetFromContainerInternal(
-    const LayoutObject* container,
-    MapCoordinatesFlags mode) const {
-  NOT_DESTROYED();
-  DCHECK_EQ(container, Container());
-
-  PhysicalOffset offset;
-  if (IsStickyPositioned() && !(mode & kIgnoreStickyOffset)) {
-    offset += StickyPositionOffset();
-  }
-
-  if (container->IsScrollContainer()) {
-    offset +=
-        OffsetFromScrollableContainer(container, mode & kIgnoreScrollOffset);
-  }
-
-  return offset;
-}
-
 PaintLayerType LayoutInline::LayerTypeRequired() const {
   NOT_DESTROYED();
   return IsRelPositioned() || IsStickyPositioned() || CreatesGroup() ||

@@ -235,10 +235,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
                                const LayoutBoxModelObject* ancestor,
                                MapCoordinatesFlags) const override;
 
-  PhysicalOffset OffsetFromContainerInternal(
-      const LayoutObject*,
-      MapCoordinatesFlags mode) const final;
-
  private:
   bool AbsoluteTransformDependsOnPoint(const LayoutObject& object) const;
   void QuadsForSelfInternal(Vector<gfx::QuadF>& quads,

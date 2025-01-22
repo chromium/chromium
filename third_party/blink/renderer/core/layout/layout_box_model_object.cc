@@ -680,6 +680,17 @@ PhysicalOffset LayoutBoxModelObject::StickyPositionOffset() const {
   return constraints ? constraints->StickyOffset() : PhysicalOffset();
 }
 
+PhysicalOffset LayoutBoxModelObject::OffsetFromContainerInternal(
+    const LayoutObject* container,
+    MapCoordinatesFlags mode) const {
+  NOT_DESTROYED();
+  PhysicalOffset offset;
+  if (IsStickyPositioned() && !(mode & kIgnoreStickyOffset)) {
+    offset += StickyPositionOffset();
+  }
+  return offset + LayoutObject::OffsetFromContainerInternal(container, mode);
+}
+
 PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
     const PhysicalOffset& start_point,
     const Element* offset_parent) const {
