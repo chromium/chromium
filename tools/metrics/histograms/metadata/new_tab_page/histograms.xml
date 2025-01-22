@@ -1079,6 +1079,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.OutlookCalendar.RequestResult"
+    enum="OutlookCalendarRequestResult" expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The result from requesting calendar events from the Microsoft Graph API.
+    Recorded after every request. Only logged on the 1P NTP. Note that even if
+    the user has Google as their default search engine, Incognito and Guest mode
+    NTPs are not considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.OutlookCalendar.ResponseResult" units="count"
+    expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The number of calendar events retrieved from the Microsoft Graph API.
+    Recorded when a successful response is retrieved. A response is successful
+    only if it contains a list of events, which can be empty. May be more than
+    the amount of events shown. Only logged on the 1P NTP. Note that even if the
+    user has Google as their default search engine, Incognito and Guest mode
+    NTPs are not considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.OutlookCalendar.ThrottlingWaitTime" units="seconds"
+    expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Time in seconds that should be waited out before attempting another request
+    to the Microosft Graph API because of throttling. Recorded when the response
+    is receieved. Only logged on the 1P NTP. Note that even if the user has
+    Google as their default search engine, Incognito and Guest mode NTPs are not
+    considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.PrerenderNavigationToActivation" units="ms"
     expires_after="2025-04-13">
   <owner>robertlin@chromium.org</owner>

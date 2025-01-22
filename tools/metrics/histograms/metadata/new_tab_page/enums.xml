@@ -468,6 +468,14 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="History"/>
 </enum>
 
+<enum name="OutlookCalendarRequestResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Network error"/>
+  <int value="2" label="JSON parse error"/>
+  <int value="3" label="Content error"/>
+  <int value="4" label="Throttling error"/>
+</enum>
+
 <enum name="PromoBrowserCommandEnum">
   <int value="0" label="Unknown Command"/>
   <int value="1" label="Open Safety Check"/>
