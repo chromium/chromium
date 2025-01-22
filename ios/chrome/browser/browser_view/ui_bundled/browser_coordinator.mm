@@ -3023,7 +3023,7 @@ enum class ToolbarKind {
             (NSArray<CustomTextCheckingResult*>*)parcels
                                      forStep:(ParcelTrackingStep)step {
   web::WebState* activeWebState = self.activeWebState;
-  if(!activeWebState) {
+  if (!activeWebState) {
     return;
   }
   ProfileIOS* profile = self.browser->GetProfile();

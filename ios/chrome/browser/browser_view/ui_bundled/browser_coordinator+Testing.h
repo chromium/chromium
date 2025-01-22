@@ -19,7 +19,8 @@
 @property(nonatomic, strong, readonly) NewTabPageCoordinator* NTPCoordinator;
 
 // Coordinator for displaying the Save to Photos UI.
-@property(nonatomic, strong, readonly) SaveToPhotosCoordinator* saveToPhotosCoordinator;
+@property(nonatomic, strong, readonly)
+    SaveToPhotosCoordinator* saveToPhotosCoordinator;
 
 @end
 

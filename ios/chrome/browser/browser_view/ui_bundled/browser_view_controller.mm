@@ -412,8 +412,9 @@ enum HeaderBehaviour {
 
   _infobarBannerOverlayContainerViewController =
       infobarBannerOverlayContainerViewController;
-  if (!_infobarBannerOverlayContainerViewController)
+  if (!_infobarBannerOverlayContainerViewController) {
     return;
+  }
 
   DCHECK_EQ(_infobarBannerOverlayContainerViewController.parentViewController,
             self);
@@ -431,8 +432,9 @@ enum HeaderBehaviour {
 
   _infobarModalOverlayContainerViewController =
       infobarModalOverlayContainerViewController;
-  if (!_infobarModalOverlayContainerViewController)
+  if (!_infobarModalOverlayContainerViewController) {
     return;
+  }
 
   DCHECK_EQ(_infobarModalOverlayContainerViewController.parentViewController,
             self);
@@ -444,15 +446,17 @@ enum HeaderBehaviour {
 #pragma mark - Private Properties
 
 - (void)setVisible:(BOOL)visible {
-  if (_visible == visible)
+  if (_visible == visible) {
     return;
+  }
 
   _visible = visible;
 }
 
 - (void)setViewVisible:(BOOL)viewVisible {
-  if (_viewVisible == viewVisible)
+  if (_viewVisible == viewVisible) {
     return;
+  }
   _viewVisible = viewVisible;
   self.visible = viewVisible;
   [self.browserViewVisibilityConsumer browserViewDidChangeVisibility];
@@ -460,8 +464,9 @@ enum HeaderBehaviour {
 }
 
 - (void)setBroadcasting:(BOOL)broadcasting {
-  if (_broadcasting == broadcasting)
+  if (_broadcasting == broadcasting) {
     return;
+  }
   _broadcasting = broadcasting;
 
   ChromeBroadcaster* broadcaster = self.fullscreenController->broadcaster();
@@ -503,16 +508,18 @@ enum HeaderBehaviour {
 }
 
 - (void)setHideStatusBar:(BOOL)hideStatusBar {
-  if (_hideStatusBar == hideStatusBar)
+  if (_hideStatusBar == hideStatusBar) {
     return;
+  }
   _hideStatusBar = hideStatusBar;
   [self setNeedsStatusBarAppearanceUpdate];
 }
 
 - (NSArray<HeaderDefinition*>*)headerViews {
   NSMutableArray<HeaderDefinition*>* results = [[NSMutableArray alloc] init];
-  if (![self isViewLoaded])
+  if (![self isViewLoaded]) {
     return results;
+  }
 
   if (!IsRegularXRegularSizeClass(self)) {
     if (self.toolbarCoordinator.primaryToolbarViewController.view) {
@@ -836,14 +843,17 @@ enum HeaderBehaviour {
 // about the state of `self` can be made; accordingly, if there's anything
 // not initialized (or being torn down), this method should return NO.
 - (BOOL)shouldSupportKeyCommands {
-  if (_isShutdown)
+  if (_isShutdown) {
     return NO;
+  }
 
-  if (self.presentedViewController)
+  if (self.presentedViewController) {
     return NO;
+  }
 
-  if (_voiceSearchController.visible)
+  if (_voiceSearchController.visible) {
     return NO;
+  }
 
   return self.viewVisible;
 }
@@ -985,8 +995,9 @@ enum HeaderBehaviour {
   web::WebState* activeWebState = self.currentWebState;
   if (activeWebState) {
     [self updateWebStateVisibility:NO];
-    if (!self.presentedViewController)
+    if (!self.presentedViewController) {
       activeWebState->SetKeepRenderProcessAlive(false);
+    }
   }
 
   [_bookmarksCoordinator dismissSnackbar];
@@ -1037,8 +1048,9 @@ enum HeaderBehaviour {
   [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
   // After `-shutdown` is called, browser is invalid and will cause a crash.
-  if (_isShutdown)
+  if (_isShutdown) {
     return;
+  }
 
   // TODO(crbug.com/40432185): Support size changes for all popups and modal
   // dialogs.
@@ -1117,8 +1129,9 @@ enum HeaderBehaviour {
                             completion:^{
                               BrowserViewController* strongSelf = weakSelf;
                               strongSelf.dismissingModal = NO;
-                              if (completion)
+                              if (completion) {
                                 completion();
+                              }
                             }];
 }
 
@@ -1173,8 +1186,9 @@ enum HeaderBehaviour {
       finalCompletionHandler = ^{
         [launchScreenView removeFromSuperview];
         weakSelf.hideStatusBar = NO;
-        if (completion)
+        if (completion) {
           completion();
+        }
       };
     }
   }
@@ -1293,8 +1307,9 @@ enum HeaderBehaviour {
   UIView* primaryToolbar =
       self.toolbarCoordinator.primaryToolbarViewController.view;
   UIView* topmostHeader = [self.headerViews firstObject].view;
-  if (primaryToolbar != topmostHeader)
+  if (primaryToolbar != topmostHeader) {
     return height;
+  }
   // If the primary toolbar is topmost, subtract the height of the portion of
   // the unsafe area.
   CGFloat unsafeHeight = self.rootSafeAreaInsets.top;
@@ -1579,8 +1594,9 @@ enum HeaderBehaviour {
   UIView* presentedContainerView =
       containerViewController.presentedViewController.presentationController
           .containerView;
-  if (presentedContainerView.superview == self.view)
+  if (presentedContainerView.superview == self.view) {
     [self.view bringSubviewToFront:presentedContainerView];
+  }
 }
 
 #pragma mark - Private Methods: UI Configuration, update and Layout
@@ -1596,8 +1612,9 @@ enum HeaderBehaviour {
 - (void)dismissPopups {
   // The dispatcher may not be fully connected during shutdown, so selectors may
   // be unrecognized.
-  if (_isShutdown)
+  if (_isShutdown) {
     return;
+  }
 
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:NO];
   [self.helpHandler hideAllHelpBubbles];
@@ -1642,17 +1659,20 @@ enum HeaderBehaviour {
     CGRect frame = [header.view frame];
     frame.origin.y = yOrigin;
     [header.view setFrame:frame];
-    if (header.behaviour != Overlap)
+    if (header.behaviour != Overlap) {
       height += CGRectGetHeight(frame);
+    }
 
-    if (header.view == self.tabStripView)
+    if (header.view == self.tabStripView) {
       [self setNeedsStatusBarAppearanceUpdate];
+    }
   }
 }
 
 - (UIView*)viewForWebState:(web::WebState*)webState {
-  if (!webState)
+  if (!webState) {
     return nil;
+  }
   if (self.ntpCoordinator.isNTPActiveForCurrentWebState) {
     return self.ntpCoordinator.started ? self.ntpCoordinator.viewController.view
                                        : nil;
@@ -1890,8 +1910,9 @@ enum HeaderBehaviour {
 }
 
 - (void)updateForFullscreenEnabled:(BOOL)enabled {
-  if (!enabled)
+  if (!enabled) {
     [self updateForFullscreenProgress:1.0];
+  }
 }
 
 - (void)animateFullscreenWithAnimator:(FullscreenAnimator*)animator {
@@ -2037,8 +2058,9 @@ enum HeaderBehaviour {
 // Updates the browser container view such that its viewport is the space
 // between the primary and secondary toolbars.
 - (void)updateBrowserViewportForFullscreenProgress:(CGFloat)progress {
-  if (!self.currentWebState)
+  if (!self.currentWebState) {
     return;
+  }
 
   // Calculate the heights of the toolbars for `progress`.  `-toolbarHeight`
   // returns the height of the toolbar extending below this view controller's
@@ -2057,8 +2079,9 @@ enum HeaderBehaviour {
 // on the the proxy's `shouldUseViewContentInset` property.
 - (void)updateContentPaddingForTopToolbarHeight:(CGFloat)topToolbarHeight
                             bottomToolbarHeight:(CGFloat)bottomToolbarHeight {
-  if (!self.currentWebState)
+  if (!self.currentWebState) {
     return;
+  }
 
   id<CRWWebViewProxy> webViewProxy = self.currentWebState->GetWebViewProxy();
   UIEdgeInsets contentPadding = webViewProxy.contentInset;
@@ -2069,8 +2092,9 @@ enum HeaderBehaviour {
 
 - (CGFloat)currentHeaderOffset {
   NSArray<HeaderDefinition*>* headers = [self headerViews];
-  if (!headers.count)
+  if (!headers.count) {
     return 0.0;
+  }
 
   // Prerender tab does not have a toolbar, return `headerHeight` as promised by
   // API documentation.
@@ -2267,8 +2291,9 @@ enum HeaderBehaviour {
 - (void)executeAndClearForegroundTabWasAddedCompletionBlock:(BOOL)animated {
   // Test existence again as the block may have been deleted.
   ProceduralBlock completion = self.foregroundTabWasAddedCompletionBlock;
-  if (!completion)
+  if (!completion) {
     return;
+  }
 
   // Clear the property before executing the completion, in case the
   // completion calls appendTabAddedCompletion:tabAddedCompletion.
@@ -2342,8 +2367,9 @@ enum HeaderBehaviour {
     }
 
     // Do not resize the same view.
-    if (webStateView != newPage)
+    if (webStateView != newPage) {
       webStateView.frame = strongSelf.contentArea.bounds;
+    }
 
     if (currentAnimationIdentifier != strongSelf->_NTPAnimationIdentifier) {
       // Prevent the completion block from being executed if a new animation has
@@ -2357,8 +2383,9 @@ enum HeaderBehaviour {
     strongSelf.inNewTabAnimation = NO;
 
     [strongSelf webStateSelected];
-    if (completion)
+    if (completion) {
       completion();
+    }
 
     [strongSelf executeAndClearForegroundTabWasAddedCompletionBlock:YES];
   };
@@ -2540,14 +2567,17 @@ enum HeaderBehaviour {
 
 // TODO(crbug.com/40842427): Federate side swipe logic.
 - (BOOL)preventSideSwipe {
-  if ([self.popupMenuCoordinator isShowingPopupMenu])
+  if ([self.popupMenuCoordinator isShowingPopupMenu]) {
     return YES;
+  }
 
-  if (_voiceSearchController.visible)
+  if (_voiceSearchController.visible) {
     return YES;
+  }
 
-  if (!self.active)
+  if (!self.active) {
     return YES;
+  }
 
   BOOL isShowingIncognitoBlocker = (self.blockingView.superview != nil);
   if (isShowingIncognitoBlocker) {

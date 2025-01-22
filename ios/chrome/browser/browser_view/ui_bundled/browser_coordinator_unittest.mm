@@ -212,7 +212,6 @@ class BrowserCoordinatorTest : public PlatformTest {
 
 // Tests if the URL to open the downlads directory from files.app is valid.
 TEST_F(BrowserCoordinatorTest, ShowDownloadsFolder) {
-
   base::FilePath download_dir;
   GetDownloadsDirectory(&download_dir);
 

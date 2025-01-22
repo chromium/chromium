@@ -101,8 +101,9 @@
 - (void)DIABLED_testJavaScriptInOmnibox {
   // TODO(crbug.com/40511873): Keyboard entry inside the omnibox fails only on
   // iPad running iOS 10.
-  if ([ChromeEarlGrey isIPadIdiom])
+  if ([ChromeEarlGrey isIPadIdiom]) {
     return;
+  }
 
   // Preps the http server with two URLs serving content.
   std::map<GURL, std::string> responses;
@@ -223,8 +224,9 @@
 
 // TODO(crbug.com/40240588): Re-enable this test.
 - (void)DISABLED_testMultiWindowURLLoading {
-  if (![ChromeEarlGrey areMultipleWindowsSupported])
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
 
   // Preps the http server with two URLs serving content.
   std::map<GURL, std::string> responses;
