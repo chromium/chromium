@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/sessions/model/legacy_session_restoration_service.h"
 
+#import <concepts>
+
 #import "base/check.h"
 #import "base/containers/contains.h"
 #import "base/functional/callback.h"
@@ -35,25 +37,11 @@ struct CountingOutputIterator {
 
   CountingOutputIterator& operator*() { return *this; }
   CountingOutputIterator& operator=(const T1&) { return *this; }
-  CountingOutputIterator& operator=(const T2&) { return *this; }
-
-  uint32_t count = 0;
-};
-
-// Override of CountingOutputIterator<T1, T2> when types are identical.
-template <typename T>
-struct CountingOutputIterator<T, T> {
-  CountingOutputIterator& operator++() {
-    ++count;
+  CountingOutputIterator& operator=(const T2&)
+    requires(!std::same_as<T1, T2>)
+  {
     return *this;
   }
-  CountingOutputIterator& operator++(int) {
-    ++count;
-    return *this;
-  }
-
-  CountingOutputIterator& operator*() { return *this; }
-  CountingOutputIterator& operator=(const T&) { return *this; }
 
   uint32_t count = 0;
 };
