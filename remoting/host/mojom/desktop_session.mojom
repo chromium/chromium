@@ -499,6 +499,9 @@ struct VideoTrackLayout {
 
   // DPI of the screen being captured.
   DesktopVector dpi;
+
+  // Display name. This is displayed in the client UI and is informational only.
+  string display_name;
 };
 
 // This struct mirrors the remoting::protocol::VideoLayout message.
