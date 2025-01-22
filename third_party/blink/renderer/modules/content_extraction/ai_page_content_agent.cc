@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_agent.h"
 
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -105,6 +106,10 @@ bool HasEmphasis(const ComputedStyle& style) {
          style.HasAppliedTextDecorations() ||
          style.VerticalAlign() == EVerticalAlign::kSub ||
          style.VerticalAlign() == EVerticalAlign::kSuper;
+}
+
+RGBA32 GetColor(const ComputedStyle& style) {
+  return style.VisitedDependentColor(GetCSSPropertyColor()).Rgb();
 }
 
 const LayoutIFrame* GetIFrame(const LayoutObject& object) {
@@ -267,6 +272,7 @@ void ProcessTextNode(const LayoutText& layout_text,
   auto text_style = mojom::blink::AIPageContentTextStyle::New();
   text_style->text_size = GetTextSize(*layout_text.Style(), document_style);
   text_style->has_emphasis = HasEmphasis(*layout_text.Style());
+  text_style->color = GetColor(*layout_text.Style());
 
   auto text_info = mojom::blink::AIPageContentTextInfo::New();
   text_info->text_content = layout_text.TransformedText();

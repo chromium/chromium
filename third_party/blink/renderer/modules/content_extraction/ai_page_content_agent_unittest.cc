@@ -80,6 +80,13 @@ class AIPageContentAgentTest : public testing::Test {
               expected_has_emphasis);
   }
 
+  void CheckTextColor(const mojom::blink::AIPageContentNode& node,
+                      RGBA32 expected_color) {
+    const auto& attributes = *node.content_attributes;
+    ASSERT_TRUE(attributes.text_info);
+    EXPECT_EQ(attributes.text_info->text_style->color, expected_color);
+  }
+
   void CheckImageNode(const mojom::blink::AIPageContentNode& node,
                       const String& expected_caption) {
     const auto& attributes = *node.content_attributes;
@@ -628,6 +635,39 @@ TEST_F(AIPageContentAgentTest, TextEmphasis) {
   const auto& strong_text = *paragraph.children_nodes[7];
   CheckTextNode(strong_text, "Strong text");
   CheckTextEmphasis(strong_text, true);
+}
+
+TEST_F(AIPageContentAgentTest, TextColor) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "<p>Regular text</p>"
+      "<p style='color: red'>Red text</p>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  ASSERT_EQ(root.children_nodes.size(), 2u);
+
+  const auto& paragraph = *root.children_nodes[0];
+  CheckParagraphNode(paragraph);
+  ASSERT_EQ(paragraph.children_nodes.size(), 1u);
+
+  const auto& regular_text = *paragraph.children_nodes[0];
+  CheckTextNode(regular_text, "Regular text");
+  CheckTextColor(regular_text, Color(0, 0, 0).Rgb());
+
+  const auto& red_paragraph = *root.children_nodes[1];
+  CheckParagraphNode(paragraph);
+  ASSERT_EQ(paragraph.children_nodes.size(), 1u);
+
+  const auto& bolded_text = *red_paragraph.children_nodes[0];
+  CheckTextNode(bolded_text, "Red text");
+  CheckTextColor(bolded_text, Color(255, 0, 0).Rgb());
 }
 
 TEST_F(AIPageContentAgentTest, Table) {

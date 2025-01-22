@@ -83,6 +83,9 @@ enum AIPageContentTextSize {
 struct AIPageContentTextStyle {
   AIPageContentTextSize text_size;
   bool has_emphasis;
+
+  // Color as a 32 bit RGBA value.
+  uint32 color;
 };
 
 struct AIPageContentTextInfo {
