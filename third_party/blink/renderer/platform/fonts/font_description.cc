@@ -522,6 +522,13 @@ int FontDescription::MinimumPrefixWidthToHyphenate() const {
          kMinimumPrefixWidthDenominator;
 }
 
+ResolvedFontFeatures FontDescription::ResolveFontFeatures() const {
+  if (const FontVariantAlternates* alternates = GetFontVariantAlternates()) {
+    return alternates->GetResolvedFontFeatures();
+  }
+  return ResolvedFontFeatures();
+}
+
 String FontDescription::ToString(GenericFamilyType familyType) {
   switch (familyType) {
     case GenericFamilyType::kNoFamily:

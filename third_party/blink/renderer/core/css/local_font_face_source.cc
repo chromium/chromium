@@ -141,10 +141,7 @@ const SimpleFontData* LocalFontFaceSource::CreateFontData(
               font_description.GetFontSelectionRequest(),
               font_selection_capabilities, font_description.FontOpticalSizing(),
               font_description.TextRendering(),
-              font_description.GetFontVariantAlternates()
-                  ? font_description.GetFontVariantAlternates()
-                        ->GetResolvedFontFeatures()
-                  : ResolvedFontFeatures(),
+              font_description.ResolveFontFeatures(),
               font_description.Orientation(),
               font_description.VariationSettings(),
               font_description.GetFontPalette()));
