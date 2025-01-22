@@ -96,7 +96,7 @@ TEST_F(SpeechRecognitionRecognizerImplTest, OnLanguagePackInstalledTest) {
 TEST_F(SpeechRecognitionRecognizerImplTest,
        SpeechRecognitionRecognitionContextTest) {
   std::vector<media::SpeechRecognitionPhrase> phrases;
-  phrases.push_back(media::SpeechRecognitionPhrase("test phrase", 2.0));
+  phrases.emplace_back("test phrase", 2.0);
 
   auto recognizer = CreateRecognizer(
       CreateOptions(media::SpeechRecognitionRecognitionContext(phrases)));
@@ -121,11 +121,10 @@ TEST_F(SpeechRecognitionRecognizerImplTest, UpdateRecognitionContextTest) {
   auto* soda_client_ptr = soda_client.get();
   recognizer->SetSodaClientForTesting(std::move(soda_client));
 
-  media::mojom::SpeechRecognitionRecognitionContextPtr context =
-      media::mojom::SpeechRecognitionRecognitionContext::New();
-  context->phrases.emplace_back("test phrase", 2.0);
+  media::SpeechRecognitionRecognitionContext context;
+  context.phrases.emplace_back("test phrase", 2.0);
   EXPECT_CALL(*soda_client_ptr, UpdateRecognitionContext(_));
-  recognizer->UpdateRecognitionContext(std::move(context));
+  recognizer->UpdateRecognitionContext(context);
 }
 
 }  // namespace speech
