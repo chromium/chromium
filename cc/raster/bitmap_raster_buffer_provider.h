@@ -19,6 +19,10 @@ class ConvertableToTraceFormat;
 }
 }
 
+namespace gpu {
+class SharedImageInterface;
+}
+
 namespace cc {
 class LayerTreeFrameSink;
 
@@ -58,7 +62,7 @@ class CC_EXPORT BitmapRasterBufferProvider : public RasterBufferProvider {
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> StateAsValue()
       const;
 
-  const raw_ptr<LayerTreeFrameSink> frame_sink_;
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface_;
 };
 
 }  // namespace cc

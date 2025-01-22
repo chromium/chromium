@@ -30,17 +30,15 @@ class BitmapSoftwareBacking : public ResourcePool::SoftwareBacking {
 
     shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
     shared_image.reset();
-    // |shared_image_interface| might be null when
-    // gpu::GpuChannel::~GpuChannel() during shutdown or when gpu is crashed.
     // DestroySharedImage is a DeferredRequest, so it doesn't trigger IPC
     // itself. We need a flush here to trigger IPC. Without the flush, there
     // will be memory regressions in tiles.
-    if (frame_sink->shared_image_interface()) {
-      frame_sink->shared_image_interface()->Flush();
+    if (shared_image_interface) {
+      shared_image_interface->Flush();
     }
   }
 
-  raw_ptr<LayerTreeFrameSink> frame_sink;
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface;
 };
 
 class BitmapRasterBufferImpl : public RasterBuffer {
@@ -98,9 +96,9 @@ class BitmapRasterBufferImpl : public RasterBuffer {
 
 BitmapRasterBufferProvider::BitmapRasterBufferProvider(
     LayerTreeFrameSink* frame_sink)
-    : frame_sink_(frame_sink) {
-  auto sii = frame_sink_->shared_image_interface();
-  CHECK(sii) << "::BitmapRasterBufferProvider() SharedImageInterface is null!";
+    : shared_image_interface_(frame_sink->shared_image_interface()) {
+  CHECK(shared_image_interface_)
+      << "SharedImageInterface is null in BitmapRasterBufferProvider ctor!";
 }
 
 BitmapRasterBufferProvider::~BitmapRasterBufferProvider() = default;
@@ -119,16 +117,16 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
   const gfx::ColorSpace& color_space = resource.color_space();
   if (!resource.software_backing()) {
     auto backing = std::make_unique<BitmapSoftwareBacking>();
-    backing->frame_sink = frame_sink_;
-    auto sii = frame_sink_->shared_image_interface();
-    CHECK(sii) << "SharedImageInterface is null!";
-
-    backing->shared_image = sii->CreateSharedImageForSoftwareCompositor(
-        {viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
-         gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "BitmapRasterBufferProvider"});
+    backing->shared_image_interface = shared_image_interface_;
+    backing->shared_image =
+        shared_image_interface_->CreateSharedImageForSoftwareCompositor(
+            {viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
+             gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+             "BitmapRasterBufferProvider"});
     CHECK(backing->shared_image);
 
-    backing->mailbox_sync_token = sii->GenVerifiedSyncToken();
+    backing->mailbox_sync_token =
+        shared_image_interface_->GenVerifiedSyncToken();
 
     resource.set_software_backing(std::move(backing));
   }
