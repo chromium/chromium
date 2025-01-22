@@ -10835,6 +10835,8 @@ if (!is_android && !is_chromeos_device) {
       "//components/custom_handlers",
       "//components/embedder_support",
       "//components/enterprise:test_support",
+      "//components/favicon/content",
+      "//components/favicon/core",
       "//components/feature_engagement/public",
       "//components/feature_engagement/test:test_support",
       "//components/flags_ui",

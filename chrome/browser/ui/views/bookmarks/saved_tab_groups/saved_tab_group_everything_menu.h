@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/weak_ptr.h"
 #include "base/uuid.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -92,6 +93,8 @@ class STGEverythingMenu : public views::MenuDelegate,
                        ui::mojom::MenuSourceType source_type) override;
 
  private:
+  class SubMenuModel;
+  class SubMenuModelDelegate;
   friend class STGEverythingMenuUnitTest;
 
   int GenerateTabGroupCommandID(int idx_in_sorted_tab_groups);
@@ -144,7 +147,11 @@ class STGEverythingMenu : public views::MenuDelegate,
 
   // The submenu model of a saved tab group item in the Everything menu. Will be
   // created at run time from the 3-dot menu.
-  std::unique_ptr<ui::SimpleMenuModel> submenu_model_;
+  std::unique_ptr<STGEverythingMenu::SubMenuModel> submenu_model_;
+
+  // The delegate for the submenu model of a saved tab group item in the
+  // Everything menu. Will be created at run time from the 3-dot menu.
+  std::unique_ptr<STGEverythingMenu::SubMenuModelDelegate> submenu_delegate_;
 
   // The convenient controller that runs a context menu for saved tab group menu
   // items.

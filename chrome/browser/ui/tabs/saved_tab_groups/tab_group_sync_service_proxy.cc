@@ -141,22 +141,6 @@ void TabGroupSyncServiceProxy::UpdateTabProperties(
   service_->model()->UpdateTabInGroup(group->saved_guid(),
                                       tab_builder.Build(*tab),
                                       /*notify_observers=*/false);
-
-  service_->OnTabNavigatedLocally(group->saved_guid(), tab->saved_tab_guid());
-}
-
-void TabGroupSyncServiceProxy::SetFaviconForTab(
-    const LocalTabGroupID& group_id,
-    const LocalTabID& tab_id,
-    std::optional<gfx::Image> favicon) {
-  std::optional<SavedTabGroup> group = GetGroup(group_id);
-  CHECK(group.has_value());
-  SavedTabGroupTab* tab = group->GetTab(tab_id);
-  CHECK(tab);
-
-  tab->SetFavicon(favicon);
-  service_->model()->UpdateTabInGroup(group->saved_guid(), *tab,
-                                      /*notify_observers=*/false);
 }
 
 void TabGroupSyncServiceProxy::RemoveTab(const LocalTabGroupID& group_id,
@@ -375,6 +359,10 @@ void TabGroupSyncServiceProxy::RemoveObserver(Observer* observer) {
 
 void TabGroupSyncServiceProxy::SetIsInitializedForTesting(bool initialized) {
   service_->model()->LoadStoredEntries({}, {});
+}
+
+SavedTabGroupModel* TabGroupSyncServiceProxy::GetModelForTesting() {
+  return service_->model();
 }
 
 void TabGroupSyncServiceProxy::SavedTabGroupModelLoaded() {

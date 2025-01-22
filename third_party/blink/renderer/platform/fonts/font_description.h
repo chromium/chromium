@@ -490,6 +490,8 @@ class PLATFORM_EXPORT FontDescription {
 
   int MinimumPrefixWidthToHyphenate() const;
 
+  ResolvedFontFeatures ResolveFontFeatures() const;
+
   String ToString() const;
 
  private:

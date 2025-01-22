@@ -276,11 +276,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': 'ef7458f93fc4397705e3106761d32790b1157de0',
+  'src_internal_revision': 'd1c8f10e6f3656df275ccbf5d04fcffe210181a7',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '22640ab9e3c75699c8053e1a9deff1b9676b251d',
+  'skia_revision': '836fdfc670470b7c7a06a3bbdd592757adde8154',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '0b9ebe7e8bcbc1ab0cb6d59ff062af57d3ac94b7',
+  'devtools_frontend_revision': 'db5324b34d2bef4297298b5ea0d4de243f367f80',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1439,7 +1439,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'd5d6266b946f4b0ec60400f20cec0e6ee455abd4',
+    '7ba8003dc8fa57627ded924a0fd196fe4155cf64',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
