@@ -2598,6 +2598,9 @@
       name: "LayoutIgnoreMarginsForSticky",
     },
     {
+      name: "LayoutImageForceAspectRatioOfOneOnError",
+    },
+    {
       name: "LayoutJustifySelfForBlocks",
       status: "stable",
     },
