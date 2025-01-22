@@ -17282,15 +17282,14 @@
             "platforms": [
                 "android",
                 "chromeos",
-                "ios",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "enable_features": [
+                    "name": "Holdback",
+                    "disable_features": [
                         "PolicyBlocklistProceedUntilResponse"
                     ]
                 }
