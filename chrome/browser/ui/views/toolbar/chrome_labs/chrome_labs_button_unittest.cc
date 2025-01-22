@@ -168,7 +168,7 @@ class ChromeLabsButtonTestSafeMode : public ChromeLabsButtonTest {
 };
 
 TEST_F(ChromeLabsButtonTestSafeMode, ButtonShouldNotShowTest) {
-  EXPECT_EQ(browser_view()->toolbar()->GetChromeLabsButton(), nullptr);
+  EXPECT_FALSE(browser_view()->toolbar()->GetChromeLabsButton()->GetVisible());
 }
 
 class ChromeLabsButtonTestSecondaryUser : public ChromeLabsButtonTest {
@@ -184,7 +184,7 @@ class ChromeLabsButtonTestSecondaryUser : public ChromeLabsButtonTest {
 };
 
 TEST_F(ChromeLabsButtonTestSecondaryUser, ButtonShouldNotShowTest) {
-  EXPECT_EQ(browser_view()->toolbar()->GetChromeLabsButton(), nullptr);
+  EXPECT_FALSE(browser_view()->toolbar()->GetChromeLabsButton()->GetVisible());
 }
 
 #endif

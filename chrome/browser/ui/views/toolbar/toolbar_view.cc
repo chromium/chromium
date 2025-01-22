@@ -442,7 +442,9 @@ void ToolbarView::Init() {
       if (features::IsToolbarPinningEnabled()) {
         pinned_toolbar_actions_container_
             ->GetActionItemFor(kActionShowChromeLabs)
-            ->SetVisible(show_chrome_labs_button_.GetValue());
+            ->SetVisible(show_chrome_labs_button_.GetValue() &&
+                         ShouldShowChromeLabsUI(chrome_labs_model_.get(),
+                                                browser_->profile()));
       } else {
         chrome_labs_button_->SetVisible(show_chrome_labs_button_.GetValue());
       }
@@ -1245,7 +1247,9 @@ void ToolbarView::OnChromeLabsPrefChanged() {
     actions::ActionItem* chrome_labs_action =
         pinned_toolbar_actions_container_->GetActionItemFor(
             kActionShowChromeLabs);
-    chrome_labs_action->SetVisible(show_chrome_labs_button_.GetValue());
+    chrome_labs_action->SetVisible(
+        show_chrome_labs_button_.GetValue() &&
+        ShouldShowChromeLabsUI(chrome_labs_model_.get(), browser_->profile()));
     GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
         chrome_labs_action->GetVisible()
             ? IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_ADDED_BY_ENTERPRISE_POLICY
