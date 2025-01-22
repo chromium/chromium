@@ -159,14 +159,17 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
 
     void setStatusBarColor(@ColorInt int color) {
         mStatusBarPaint.setColor(color);
+        invalidate();
     }
 
     void setNavBarColor(@ColorInt int color) {
         mNavBarPaint.setColor(color);
+        invalidate();
     }
 
     void setNavBarDividerColor(@ColorInt int color) {
         mNavBarDividerPaint.setColor(color);
+        invalidate();
     }
 
     private static void colorRectOnDraw(Canvas canvas, Rect rect, Paint paint) {
