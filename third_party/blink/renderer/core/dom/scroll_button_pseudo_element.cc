@@ -5,8 +5,10 @@
 #include "third_party/blink/renderer/core/dom/scroll_button_pseudo_element.h"
 
 #include "cc/input/scroll_snap_data.h"
+#include "cc/input/snap_selection_strategy.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyboard_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -14,10 +16,36 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
+#include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 
 namespace blink {
+
+namespace {
+
+gfx::PointF CalculateSnappedScrollPosition(
+    const ScrollableArea* scrollable_area,
+    gfx::Vector2dF scaled_delta) {
+  gfx::PointF current_position = scrollable_area->ScrollPosition();
+  std::unique_ptr<cc::SnapSelectionStrategy> strategy =
+      cc::SnapSelectionStrategy::CreateForEndAndDirection(
+          current_position, scaled_delta,
+          RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
+  current_position += scaled_delta;
+  if (std::optional<cc::SnapPositionData> snap_position =
+          scrollable_area->GetSnapPosition(*strategy)) {
+    if (snap_position->type != cc::SnapPositionData::Type::kNone) {
+      current_position = snap_position->position;
+    }
+  }
+  current_position.SetToMax(gfx::PointF());
+  current_position.SetToMin(scrollable_area->ScrollOffsetToPosition(
+      scrollable_area->MaximumScrollOffset()));
+  return current_position;
+}
+
+}  // namespace
 
 ScrollButtonPseudoElement::ScrollButtonPseudoElement(
     Element* originating_element,
@@ -39,28 +67,40 @@ void ScrollButtonPseudoElement::DefaultEventHandler(Event& event) {
   bool is_enter_or_space =
       is_key_down && (To<KeyboardEvent>(event).keyCode() == VKEY_RETURN ||
                       To<KeyboardEvent>(event).keyCode() == VKEY_SPACE);
-  bool should_intercept =
-      event.target() == this && (is_click || is_enter_or_space);
+
+  Element* scrolling_element = UltimateOriginatingElement();
+  auto* scroller = DynamicTo<LayoutBox>(scrolling_element->GetLayoutObject());
+
+  bool should_intercept = scroller && scroller->IsScrollContainer() &&
+                          event.target() == this &&
+                          (is_click || is_enter_or_space);
   if (should_intercept) {
-    Element* scroller = UltimateOriginatingElement();
-    double dx =
-        PageSizePercent * scroller->GetLayoutBox()->Size().width.ToDouble();
-    double dy =
-        PageSizePercent * scroller->GetLayoutBox()->Size().height.ToDouble();
+    ScrollableArea* scrollable_area = scroller->GetScrollableArea();
+
     LogicalToPhysical<bool> mapping(
-        scroller->GetComputedStyle()->GetWritingDirection(),
+        scrolling_element->GetComputedStyle()->GetWritingDirection(),
         GetPseudoId() == kPseudoIdScrollButtonInlineStart,
         GetPseudoId() == kPseudoIdScrollButtonInlineEnd,
         GetPseudoId() == kPseudoIdScrollButtonBlockStart,
         GetPseudoId() == kPseudoIdScrollButtonBlockEnd);
     if (mapping.Top()) {
-      scroller->scrollBy(0, -dy);
+      scrolling_element->scrollBy(
+          0, -scrollable_area->ScrollStep(ui::ScrollGranularity::kScrollByPage,
+                                          kVerticalScrollbar));
     } else if (mapping.Bottom()) {
-      scroller->scrollBy(0, dy);
+      scrolling_element->scrollBy(
+          0, scrollable_area->ScrollStep(ui::ScrollGranularity::kScrollByPage,
+                                         kVerticalScrollbar));
     } else if (mapping.Left()) {
-      scroller->scrollBy(-dx, 0);
+      scrolling_element->scrollBy(
+          -scrollable_area->ScrollStep(ui::ScrollGranularity::kScrollByPage,
+                                       kHorizontalScrollbar),
+          0);
     } else if (mapping.Right()) {
-      scroller->scrollBy(dx, 0);
+      scrolling_element->scrollBy(
+          scrollable_area->ScrollStep(ui::ScrollGranularity::kScrollByPage,
+                                      kHorizontalScrollbar),
+          0);
     }
     GetDocument().SetFocusedElement(this,
                                     FocusParams(SelectionBehaviorOnFocus::kNone,
@@ -84,33 +124,53 @@ bool ScrollButtonPseudoElement::UpdateSnapshotInternal() {
     return true;
   }
   ScrollableArea* scrollable_area = scroller->GetScrollableArea();
-  Scrollbar* horizontal = scrollable_area->HorizontalScrollbar();
-  Scrollbar* vertical = scrollable_area->VerticalScrollbar();
   LogicalToPhysical<bool> mapping(
       scroller->StyleRef().GetWritingDirection(),
       GetPseudoId() == kPseudoIdScrollButtonInlineStart,
       GetPseudoId() == kPseudoIdScrollButtonInlineEnd,
       GetPseudoId() == kPseudoIdScrollButtonBlockStart,
       GetPseudoId() == kPseudoIdScrollButtonBlockEnd);
+
   bool enabled = enabled_;
-  if (vertical) {
-    if (mapping.Top()) {
-      enabled_ = vertical->CurrentPos() != 0.0f;
-    }
-    if (mapping.Bottom()) {
-      enabled_ = vertical->CurrentPos() != vertical->Maximum();
-    }
-  }
-  if (horizontal) {
-    if (mapping.Left()) {
-      enabled_ = horizontal->CurrentPos() != 0.0f;
-    }
-    if (mapping.Right()) {
-      enabled_ = horizontal->CurrentPos() != horizontal->Maximum();
-    }
+  if (mapping.Top()) {
+    enabled_ = scrollable_area->ScrollPosition().y() >
+               CalculateSnappedScrollPosition(
+                   scrollable_area,
+                   gfx::Vector2dF(0, -scrollable_area->ScrollStep(
+                                         ui::ScrollGranularity::kScrollByPage,
+                                         kVerticalScrollbar)))
+                   .y();
+  } else if (mapping.Bottom()) {
+    enabled_ = scrollable_area->ScrollPosition().y() <
+               CalculateSnappedScrollPosition(
+                   scrollable_area,
+                   gfx::Vector2dF(0, scrollable_area->ScrollStep(
+                                         ui::ScrollGranularity::kScrollByPage,
+                                         kVerticalScrollbar)))
+                   .y();
+  } else if (mapping.Left()) {
+    enabled_ = scrollable_area->ScrollPosition().x() >
+               CalculateSnappedScrollPosition(
+                   scrollable_area,
+                   gfx::Vector2dF(-scrollable_area->ScrollStep(
+                                      ui::ScrollGranularity::kScrollByPage,
+                                      kHorizontalScrollbar),
+                                  0))
+                   .x();
+  } else if (mapping.Right()) {
+    enabled_ = scrollable_area->ScrollPosition().x() <
+               CalculateSnappedScrollPosition(
+                   scrollable_area,
+                   gfx::Vector2dF(scrollable_area->ScrollStep(
+                                      ui::ScrollGranularity::kScrollByPage,
+                                      kHorizontalScrollbar),
+                                  0))
+                   .x();
   }
   if (enabled != enabled_) {
-    PseudoStateChanged(CSSSelector::kPseudoDisabled);
+    SetNeedsStyleRecalc(
+        StyleChangeType::kLocalStyleChange,
+        StyleChangeReasonForTracing::Create(style_change_reason::kControl));
     return false;
   }
   return true;
