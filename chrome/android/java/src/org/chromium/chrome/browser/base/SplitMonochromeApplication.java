@@ -35,6 +35,11 @@ public class SplitMonochromeApplication extends SplitChromeApplication {
 
     public SplitMonochromeApplication() {
         super(sImplClassName);
+        // Ensure that we don't try to load the native library until after attachBaseContext, since
+        // Monochrome attempts to call loadWebViewNativeLibraryFromPackage, which will fail until
+        // ActivityThread has an application set on it, which happens after attachBaseContext
+        // finishes. See crbug.com/390730928.
+        mPreloadLibraryAttachBaseContext = false;
     }
 
     @Override
