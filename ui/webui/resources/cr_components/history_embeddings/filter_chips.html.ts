@@ -1,3 +1,14 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {FilterChipsElement} from './filter_chips.js';
+
+export function getHtml(this: FilterChipsElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <select id="showByGroupSelectMenu" class="md-select"
     aria-label="${this.i18n('historyEmbeddingsShowByLabel')}"
     .value="${this.showResultsByGroup}"
@@ -24,3 +35,6 @@
     </cr-chip>
   `)}
 </div>
+<!--_html_template_end_-->`;
+  // clang-format on
+}

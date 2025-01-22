@@ -18,17 +18,18 @@ mojom("mojo_bindings") {
 
 build_webui("build") {
   grd_prefix = "cr_components_history_embeddings"
-  web_component_files = [
-    "filter_chips.ts",
-    "history_embeddings.ts",
-  ]
   non_web_component_files = [
     "browser_proxy.ts",
+    "filter_chips.html.ts",
+    "filter_chips.ts",
+    "history_embeddings.html.ts",
+    "history_embeddings.ts",
     "result_image.html.ts",
     "result_image.ts",
   ]
   css_files = [
     "filter_chips.css",
+    "history_embeddings.css",
     "result_image.css",
   ]
   icons_html_files = [ "icons.html" ]
