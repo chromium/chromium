@@ -131,24 +131,16 @@ def CheckWebDevStyle(input_api, output_api):
 
 def CheckNoNewJs(input_api, output_api):
   EXCLUDED_PATHS = [
-    'chrome/browser/resources/.eslintrc',
-    'chrome/browser/resources/about_sys/',
-    'chrome/browser/resources/ash/settings/.eslintrc',
     'chrome/browser/resources/bluetooth_internals/',
     'chrome/browser/resources/chromeos/',
     'chrome/browser/resources/device_log/',
-    'chrome/browser/resources/explore_sites_internals/',
     'chrome/browser/resources/gaia_auth_host/',
     'chrome/browser/resources/hangout_services/',
-    'chrome/browser/resources/image_editor/',
-    'chrome/browser/resources/identity_scope_approval_dialog/',
     'chrome/browser/resources/inspect/',
     'chrome/browser/resources/net_internals/',
     'chrome/browser/resources/network_speech_synthesis/',
     'chrome/browser/resources/new_tab_page_incognito_guest/',
     'chrome/browser/resources/reading_mode_gdocs_helper/',
-    'chrome/browser/resources/settings/',
-    'chrome/browser/resources/tools/',
   ]
 
   normalized_excluded_paths = []
