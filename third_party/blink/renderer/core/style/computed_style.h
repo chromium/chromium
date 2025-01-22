@@ -1084,6 +1084,17 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   // Grid axis utility functions, usable in Grid and Masonry.
+  const NGGridTrackList& AutoTracks(
+      GridTrackSizingDirection track_direction) const {
+    if (IsDisplayMasonryBox(Display())) {
+      DCHECK_EQ(track_direction, MasonryTrackSizingDirection())
+          << "Masonry containers have a single grid axis, we shouldn't try to "
+             "get the auto tracks of its stacking axis.";
+      return MasonryAutoTracks();
+    }
+    return (track_direction == kForColumns) ? GridAutoColumns()
+                                            : GridAutoRows();
+  }
   const ComputedGridTrackList& TemplateTracks(
       GridTrackSizingDirection track_direction) const {
     if (IsDisplayMasonryBox(Display())) {

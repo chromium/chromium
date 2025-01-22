@@ -449,10 +449,10 @@ wtf_size_t GridLayoutAlgorithm::BuildGridSizingSubtree(
   }
 
   auto BuildSizingCollection = [&](GridTrackSizingDirection track_direction) {
-    GridRangeBuilder range_builder(style, line_resolver, track_direction,
-                                   (track_direction == kForColumns)
-                                       ? column_start_offset
-                                       : row_start_offset);
+    GridRangeBuilder range_builder(
+        style, track_direction, line_resolver.AutoRepetitions(track_direction),
+        (track_direction == kForColumns) ? column_start_offset
+                                         : row_start_offset);
 
     bool must_create_baselines = false;
     for (auto& grid_item : sizing_node.grid_items.IncludeSubgriddedItems()) {

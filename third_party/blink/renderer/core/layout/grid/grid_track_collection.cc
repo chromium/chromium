@@ -64,43 +64,13 @@ void GridRange::SetIsImplicit() {
 }
 
 GridRangeBuilder::GridRangeBuilder(const ComputedStyle& grid_style,
-                                   const GridLineResolver& line_resolver,
                                    GridTrackSizingDirection track_direction,
+                                   wtf_size_t auto_repetitions,
                                    wtf_size_t start_offset)
-    : auto_repetitions_(line_resolver.AutoRepetitions(track_direction)),
-      start_offset_(start_offset),
-      must_sort_grid_lines_(false),
-      explicit_tracks_(grid_style.TemplateTracks(track_direction).track_list),
-      implicit_tracks_((track_direction == kForColumns)
-                           ? grid_style.GridAutoColumns()
-                           : grid_style.GridAutoRows()) {
-  // The implicit track list should have only one repeater, if any.
-  DCHECK_LE(implicit_tracks_.RepeaterCount(), 1u);
-  DCHECK_NE(auto_repetitions_, kNotFound);
-
-  const wtf_size_t repeater_count = explicit_tracks_.RepeaterCount();
-
-  // Add extra capacity for the extra lines needed for named grids.
-  start_lines_.ReserveInitialCapacity(repeater_count + 1);
-  end_lines_.ReserveInitialCapacity(repeater_count + 1);
-
-  wtf_size_t current_repeater_start_line = start_offset_;
-  for (wtf_size_t i = 0; i < repeater_count; ++i) {
-    const wtf_size_t repeater_track_count =
-        explicit_tracks_.RepeatCount(i, auto_repetitions_) *
-        explicit_tracks_.RepeatSize(i);
-
-    // Subgrids can have zero auto repetitions.
-    if (explicit_tracks_.IsSubgriddedAxis() && repeater_track_count == 0) {
-      continue;
-    }
-
-    DCHECK_NE(repeater_track_count, 0u);
-    start_lines_.emplace_back(current_repeater_start_line);
-    current_repeater_start_line += repeater_track_count;
-    end_lines_.emplace_back(current_repeater_start_line);
-  }
-
+    : GridRangeBuilder(grid_style.TemplateTracks(track_direction).track_list,
+                       grid_style.AutoTracks(track_direction),
+                       auto_repetitions,
+                       start_offset) {
   // There is a special scenario where named grid areas can be specified through
   // the "grid-template" property with no specified explicit grid; such case is
   // tricky because the computed value of "grid-template-columns" is expected to
@@ -115,6 +85,9 @@ GridRangeBuilder::GridRangeBuilder(const ComputedStyle& grid_style,
                                     ? grid_template_areas->column_count
                                     : grid_template_areas->row_count;
   }
+
+  const auto current_repeater_start_line =
+      end_lines_.empty() ? start_offset_ : end_lines_.back().grid_line;
 
   if (current_repeater_start_line < named_grid_area_end_line) {
     start_lines_.emplace_back(current_repeater_start_line);
@@ -351,21 +324,35 @@ GridRangeVector GridRangeBuilder::FinalizeRanges() {
 
 GridRangeBuilder::GridRangeBuilder(const NGGridTrackList& explicit_tracks,
                                    const NGGridTrackList& implicit_tracks,
-                                   wtf_size_t auto_repetitions)
+                                   wtf_size_t auto_repetitions,
+                                   wtf_size_t start_offset)
     : auto_repetitions_(auto_repetitions),
-      start_offset_(0),
-      must_sort_grid_lines_(false),
+      start_offset_(start_offset),
       explicit_tracks_(explicit_tracks),
       implicit_tracks_(implicit_tracks) {
+  // The implicit track list should have only one repeater, if any.
+  DCHECK_LE(implicit_tracks_.RepeaterCount(), 1u);
+  DCHECK_NE(auto_repetitions_, kNotFound);
+
   const wtf_size_t repeater_count = explicit_tracks_.RepeaterCount();
 
-  wtf_size_t current_repeater_start_line = 0;
+  // Add extra capacity for the extra lines needed for named grids.
+  start_lines_.ReserveInitialCapacity(repeater_count + 1);
+  end_lines_.ReserveInitialCapacity(repeater_count + 1);
+
+  wtf_size_t current_repeater_start_line = start_offset_;
   for (wtf_size_t i = 0; i < repeater_count; ++i) {
     const wtf_size_t repeater_track_count =
         explicit_tracks_.RepeatCount(i, auto_repetitions_) *
         explicit_tracks_.RepeatSize(i);
-    DCHECK_NE(repeater_track_count, 0u);
 
+    // Subgrids can have zero auto repetitions.
+    if (repeater_track_count == 0) {
+      DCHECK(explicit_tracks_.IsSubgriddedAxis());
+      continue;
+    }
+
+    DCHECK_NE(repeater_track_count, 0u);
     start_lines_.emplace_back(current_repeater_start_line);
     current_repeater_start_line += repeater_track_count;
     end_lines_.emplace_back(current_repeater_start_line);
@@ -1008,8 +995,7 @@ void GridSizingTrackCollection::BuildSets(
                                    : grid_available_size.block_size;
 
   BuildSets(grid_style.TemplateTracks(track_direction_).track_list,
-            (track_direction_ == kForColumns) ? grid_style.GridAutoColumns()
-                                              : grid_style.GridAutoRows(),
+            grid_style.AutoTracks(track_direction_),
             available_size == kIndefiniteSize);
   InitializeSets(available_size);
 }
