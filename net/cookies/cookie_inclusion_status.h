@@ -11,7 +11,6 @@
 #include <cstdint>
 #include <ostream>
 #include <string>
-#include <vector>
 
 #include "base/containers/enum_set.h"
 #include "net/base/net_export.h"
@@ -21,7 +20,7 @@ class GURL;
 namespace net {
 
 // This class represents if a cookie was included or excluded in a cookie get or
-// set operation, and if excluded why. It holds a vector of reasons for
+// set operation, and if excluded why. It holds a set of reasons for
 // exclusion, where cookie inclusion is represented by the absence of any
 // exclusion reasons. Also marks whether a cookie should be warned about, e.g.
 // for deprecation or intervention reasons.
@@ -382,20 +381,19 @@ class NET_EXPORT CookieInclusionStatus {
   std::string GetDebugString() const;
 
   // Checks whether the exclusion reasons are exactly the set of exclusion
-  // reasons in the vector. (Ignores warnings.)
+  // reasons in the set. (Ignores warnings.)
   bool HasExactlyExclusionReasonsForTesting(
-      const std::vector<ExclusionReason>& reasons) const;
+      ExclusionReasonBitset reasons) const;
 
   // Checks whether the warning reasons are exactly the set of warning
-  // reasons in the vector. (Ignores exclusions.)
-  bool HasExactlyWarningReasonsForTesting(
-      const std::vector<WarningReason>& reasons) const;
+  // reasons in the set. (Ignores exclusions.)
+  bool HasExactlyWarningReasonsForTesting(WarningReasonBitset reasons) const;
 
   // Makes a status that contains the given reasons. If the given reasons are
   // self-inconsistent, CHECKs.
   static CookieInclusionStatus MakeFromReasonsForTesting(
-      const std::vector<ExclusionReason>& exclusions,
-      const std::vector<WarningReason>& warnings = std::vector<WarningReason>(),
+      ExclusionReasonBitset exclusions,
+      WarningReasonBitset warnings = WarningReasonBitset(),
       ExemptionReason exemption = ExemptionReason::kNone);
 
   static std::optional<CookieInclusionStatus> MakeFromComponents(
@@ -423,10 +421,10 @@ class NET_EXPORT CookieInclusionStatus {
   // warning/exclusion reason in this case.
   void MaybeClearThirdPartyPhaseoutReason();
 
-  // A bit vector of the applicable exclusion reasons.
+  // A bitset of the applicable exclusion reasons.
   ExclusionReasonBitset exclusion_reasons_;
 
-  // A bit vector of the applicable warning reasons.
+  // A bitset of the applicable warning reasons.
   WarningReasonBitset warning_reasons_;
 
   // A cookie can only have at most one exemption reason.

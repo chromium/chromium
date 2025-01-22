@@ -2074,17 +2074,15 @@ TEST(CanonicalCookieTest, IncludeForRequestURLSameSite) {
        CookieEffectiveSameSite::NO_RESTRICTION,
        SameSiteCookieContext(SameSiteCookieContext::ContextType::CROSS_SITE),
        CookieInclusionStatus::MakeFromReasonsForTesting(
-           std::vector<CookieInclusionStatus::ExclusionReason>(),
-           {CookieInclusionStatus::WarningReason::
-                WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT})},
+           {}, {CookieInclusionStatus::WarningReason::
+                    WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT})},
       {"DefaultNone=2", CookieSameSite::UNSPECIFIED,
        CookieEffectiveSameSite::NO_RESTRICTION,
        SameSiteCookieContext(
            SameSiteCookieContext::ContextType::SAME_SITE_LAX_METHOD_UNSAFE),
        CookieInclusionStatus::MakeFromReasonsForTesting(
-           std::vector<CookieInclusionStatus::ExclusionReason>(),
-           {CookieInclusionStatus::WarningReason::
-                WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT})},
+           {}, {CookieInclusionStatus::WarningReason::
+                    WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT})},
 
       {"DefaultNone=3", CookieSameSite::UNSPECIFIED,
        CookieEffectiveSameSite::NO_RESTRICTION,
@@ -2113,9 +2111,8 @@ TEST(CanonicalCookieTest, IncludeForRequestURLSameSite) {
        SameSiteCookieContext(
            SameSiteCookieContext::ContextType::SAME_SITE_LAX_METHOD_UNSAFE),
        CookieInclusionStatus::MakeFromReasonsForTesting(
-           std::vector<CookieInclusionStatus::ExclusionReason>(),
-           {CookieInclusionStatus::WarningReason::
-                WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE}),
+           {}, {CookieInclusionStatus::WarningReason::
+                    WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE}),
        kShortAge},
       {"DefaultLax=3", CookieSameSite::UNSPECIFIED,
        CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
@@ -2166,53 +2163,47 @@ TEST(CanonicalCookieTest, IncludeForRequestURLSameSite) {
            SameSiteCookieContext::ContextType::SAME_SITE_STRICT,
            SameSiteCookieContext::ContextType::SAME_SITE_LAX),
        CookieInclusionStatus::MakeFromReasonsForTesting(
-           std::vector<CookieInclusionStatus::ExclusionReason>(),
-           {CookieInclusionStatus::WarningReason::
-                WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE})},
+           {}, {CookieInclusionStatus::WarningReason::
+                    WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE})},
       {"LEGACY_Schemeful=2;SameSite=Strict", CookieSameSite::STRICT_MODE,
        CookieEffectiveSameSite::STRICT_MODE,
        SameSiteCookieContext(
            SameSiteCookieContext::ContextType::SAME_SITE_STRICT,
            SameSiteCookieContext::ContextType::SAME_SITE_LAX_METHOD_UNSAFE),
        CookieInclusionStatus::MakeFromReasonsForTesting(
-           std::vector<CookieInclusionStatus::ExclusionReason>(),
-           {CookieInclusionStatus::WarningReason::
-                WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE})},
+           {}, {CookieInclusionStatus::WarningReason::
+                    WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE})},
       {"LEGACY_Schemeful=3;SameSite=Strict", CookieSameSite::STRICT_MODE,
        CookieEffectiveSameSite::STRICT_MODE,
        SameSiteCookieContext(
            SameSiteCookieContext::ContextType::SAME_SITE_STRICT,
            SameSiteCookieContext::ContextType::CROSS_SITE),
        CookieInclusionStatus::MakeFromReasonsForTesting(
-           std::vector<CookieInclusionStatus::ExclusionReason>(),
-           {CookieInclusionStatus::WarningReason::
-                WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE})},
+           {}, {CookieInclusionStatus::WarningReason::
+                    WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE})},
       {"LEGACY_Schemeful=4;SameSite=Lax", CookieSameSite::LAX_MODE,
        CookieEffectiveSameSite::LAX_MODE,
        SameSiteCookieContext(
            SameSiteCookieContext::ContextType::SAME_SITE_STRICT,
            SameSiteCookieContext::ContextType::SAME_SITE_LAX_METHOD_UNSAFE),
        CookieInclusionStatus::MakeFromReasonsForTesting(
-           std::vector<CookieInclusionStatus::ExclusionReason>(),
-           {CookieInclusionStatus::WarningReason::
-                WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE})},
+           {}, {CookieInclusionStatus::WarningReason::
+                    WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE})},
       {"LEGACY_Schemeful=5;SameSite=Lax", CookieSameSite::LAX_MODE,
        CookieEffectiveSameSite::LAX_MODE,
        SameSiteCookieContext(
            SameSiteCookieContext::ContextType::SAME_SITE_STRICT,
            SameSiteCookieContext::ContextType::CROSS_SITE),
        CookieInclusionStatus::MakeFromReasonsForTesting(
-           std::vector<CookieInclusionStatus::ExclusionReason>(),
-           {CookieInclusionStatus::WarningReason::
-                WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE})},
+           {}, {CookieInclusionStatus::WarningReason::
+                    WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE})},
       {"LEGACY_Schemeful=6;SameSite=Lax", CookieSameSite::LAX_MODE,
        CookieEffectiveSameSite::LAX_MODE,
        SameSiteCookieContext(SameSiteCookieContext::ContextType::SAME_SITE_LAX,
                              SameSiteCookieContext::ContextType::CROSS_SITE),
        CookieInclusionStatus::MakeFromReasonsForTesting(
-           std::vector<CookieInclusionStatus::ExclusionReason>(),
-           {CookieInclusionStatus::WarningReason::
-                WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE})},
+           {}, {CookieInclusionStatus::WarningReason::
+                    WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE})},
   };
 
   // Test cases that require NONLEGACY or UNKNOWN semantics with Schemeful
@@ -5574,9 +5565,8 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
           kCookieableSchemes),
       MatchesCookieAccessResult(
           HasExactlyExclusionReasonsForTesting(
-              std::vector<CookieInclusionStatus::ExclusionReason>(
-                  {CookieInclusionStatus::ExclusionReason::
-                       EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX})),
+              {CookieInclusionStatus::ExclusionReason::
+                   EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}),
           _, _, true));
   EXPECT_THAT(
       cookie_same_site_unspecified->IsSetPermittedInContext(
@@ -5633,9 +5623,8 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
           kCookieableSchemes),
       MatchesCookieAccessResult(
           HasExactlyExclusionReasonsForTesting(
-              std::vector<CookieInclusionStatus::ExclusionReason>(
-                  {CookieInclusionStatus::ExclusionReason::
-                       EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX})),
+              {CookieInclusionStatus::ExclusionReason::
+                   EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}),
           _, _, true));
   EXPECT_THAT(
       cookie_same_site_unspecified->IsSetPermittedInContext(

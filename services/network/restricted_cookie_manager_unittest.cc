@@ -1073,9 +1073,8 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicyWarnActual) {
                   CookieOrLine("cookie-name=cookie-value",
                                mojom::CookieOrLine::Tag::kCookie),
                   net::HasExactlyExclusionReasonsForTesting(
-                      std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                          net::CookieInclusionStatus::ExclusionReason::
-                              EXCLUDE_SAMESITE_NONE_INSECURE}))));
+                      {net::CookieInclusionStatus::ExclusionReason::
+                           EXCLUDE_SAMESITE_NONE_INSECURE}))));
 }
 
 TEST_P(RestrictedCookieManagerTest, SetCanonicalCookie) {
@@ -1269,16 +1268,14 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
 
   WaitForCallback();
   if (ThirdPartyCookieDisabledByDevtools()) {
-    EXPECT_THAT(
-        recorded_activity(),
-        Contains(MatchesCookieOp(
-            mojom::CookieAccessDetails::Type::kChange, "https://example.com/",
-            net::SiteForCookies(),
-            CookieOrLine("A=B", mojom::CookieOrLine::Tag::kCookie),
-            net::HasExactlyExclusionReasonsForTesting(
-                std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                    net::CookieInclusionStatus::ExclusionReason::
-                        EXCLUDE_THIRD_PARTY_PHASEOUT}))));
+    EXPECT_THAT(recorded_activity(),
+                Contains(MatchesCookieOp(
+                    mojom::CookieAccessDetails::Type::kChange,
+                    "https://example.com/", net::SiteForCookies(),
+                    CookieOrLine("A=B", mojom::CookieOrLine::Tag::kCookie),
+                    net::HasExactlyExclusionReasonsForTesting(
+                        {net::CookieInclusionStatus::ExclusionReason::
+                             EXCLUDE_THIRD_PARTY_PHASEOUT}))));
   } else {
     EXPECT_THAT(recorded_activity(),
                 ElementsAre(MatchesCookieOp(
@@ -1309,12 +1306,11 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
                   "https://example.com/", net::SiteForCookies(),
                   CookieOrLine("A2=B2", mojom::CookieOrLine::Tag::kCookie),
                   net::HasExactlyExclusionReasonsForTesting(
-                      std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                          ThirdPartyCookieDisabledByDevtools()
-                              ? net::CookieInclusionStatus::ExclusionReason::
-                                    EXCLUDE_THIRD_PARTY_PHASEOUT
-                              : net::CookieInclusionStatus::ExclusionReason::
-                                    EXCLUDE_USER_PREFERENCES}))));
+                      {ThirdPartyCookieDisabledByDevtools()
+                           ? net::CookieInclusionStatus::ExclusionReason::
+                                 EXCLUDE_THIRD_PARTY_PHASEOUT
+                           : net::CookieInclusionStatus::ExclusionReason::
+                                 EXCLUDE_USER_PREFERENCES}))));
 
   // Read back, in first-party context
   auto options = mojom::CookieManagerGetOptions::New();
@@ -1367,9 +1363,8 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicyWarnActual) {
                   "https://example.com/", net::SiteForCookies(),
                   CookieOrLine("A=B", mojom::CookieOrLine::Tag::kCookie),
                   net::HasExactlyExclusionReasonsForTesting(
-                      std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                          net::CookieInclusionStatus::ExclusionReason::
-                              EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}))));
+                      {net::CookieInclusionStatus::ExclusionReason::
+                           EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}))));
 }
 
 TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieWithInclusionStatus) {
