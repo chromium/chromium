@@ -51,6 +51,19 @@ namespace ui {
 
 namespace {
 
+// Floating points may have a precision error as they may not correctly be
+// represented in binary, but approximately. In order to mitigate that, round
+// the value to a specified precision to ensure consistency when working with
+// floating-point values. This avoids potential inaccuracies in calculations
+// that could arise from small rounding errors. This function rounds the input
+// value to the nearest multiple of the specified precision (0.001f in this
+// case, which is a default precision in cc/viz).
+double RoundToNearestThousandth(float value) {
+  // This is a default precision that cc/viz uses.
+  static constexpr float kPrecision = 0.001f;
+  return std::round(value / kPrecision) * kPrecision;
+}
+
 uint32_t TranslatePriority(gfx::OverlayPriorityHint priority_hint) {
   uint32_t priority = OVERLAY_PRIORITIZED_SURFACE_OVERLAY_PRIORITY_NONE;
   switch (priority_hint) {
@@ -755,9 +768,6 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
   if (crop.IsEmpty()) {
     viewport_src_dip = gfx::RectF(bounds);
   } else {
-    // TODO(crbug.com/359904707) Fix rounding errors which can lead to imprecise
-    // values below.
-
     // viewport_src_dip needs to be in post-transform coordinates.
     gfx::RectF crop_transformed = wl::ApplyWaylandTransform(
         crop, gfx::SizeF(1, 1),
@@ -779,14 +789,16 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
         viewport_src_dip.set_width(kViewPortSizeMinFloat);
         src_to_set[2] = kViewportSizeMin;
       } else {
-        src_to_set[2] = wl_fixed_from_double(viewport_src_dip.width());
+        src_to_set[2] = wl_fixed_from_double(
+            RoundToNearestThousandth(viewport_src_dip.width()));
       }
 
       if (wl_fixed_from_double(viewport_src_dip.height()) <= 0) {
         viewport_src_dip.set_height(kViewPortSizeMinFloat);
         src_to_set[3] = kViewportSizeMin;
       } else {
-        src_to_set[3] = wl_fixed_from_double(viewport_src_dip.height());
+        src_to_set[3] = wl_fixed_from_double(
+            RoundToNearestThousandth(viewport_src_dip.height()));
       }
     }
 
@@ -806,8 +818,10 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
       viewport_src_dip.set_y(std::max(viewport_src_dip.y(), 0.f));
     }
 
-    src_to_set[0] = wl_fixed_from_double(viewport_src_dip.x()),
-    src_to_set[1] = wl_fixed_from_double(viewport_src_dip.y());
+    src_to_set[0] =
+        wl_fixed_from_double(RoundToNearestThousandth(viewport_src_dip.x()));
+    src_to_set[1] =
+        wl_fixed_from_double(RoundToNearestThousandth(viewport_src_dip.y()));
   }
   // Apply crop (wp_viewport.set_source).
   if (viewport() && !base::ranges::equal(src_to_set, src_set_)) {
