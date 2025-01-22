@@ -283,6 +283,11 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
       stream_attempt_delay_(GetStreamAttemptDelay()),
       should_block_stream_attempt_(!stream_attempt_delay_.is_zero()) {
   CHECK(group_);
+
+  if (group_->force_quic()) {
+    allowed_alpns_.RemoveAll(kTcpBasedProtocols);
+  }
+
   net_log_.BeginEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_ALIVE, [&] {
         base::Value::Dict dict;
@@ -793,28 +798,24 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
 
   MaybeMarkQuicBroken();
 
-  // TODO(crbug.com/384759483): Tidy up the following logic. See the review
-  // comment at
-  // https://chromium-review.googlesource.com/c/chromium/src/+/6169787/comment/d1311bc2_045cddda/
-
-  const bool has_jobs = !jobs_.empty() || !notified_jobs_.empty();
-
   if (rv == OK) {
     HandleQuicSessionReady(StreamSocketCloseReason::kQuicSessionCreated);
-    if (has_jobs) {
+    if (!jobs_.empty()) {
       CreateQuicStreamAndNotify();
-      return;
+    } else {
+      MaybeCompleteLater();
     }
+    return;
   }
 
-  if (rv != OK &&
-      (tcp_based_attempt_state_ == TcpBasedAttemptState::kAllEndpointsFailed ||
-       group_->force_quic() || !CanUseTcpBasedProtocols())) {
+  if (tcp_based_attempt_state_ == TcpBasedAttemptState::kAllEndpointsFailed ||
+      !CanUseTcpBasedProtocols()) {
+    CancelStreamAttemptDelayTimer();
     HandleFinalError(rv);
     return;
   }
 
-  if (has_jobs && (rv != OK || should_block_stream_attempt_)) {
+  if (should_block_stream_attempt_) {
     CancelStreamAttemptDelayTimer();
     MaybeAttemptConnection();
   } else {
@@ -1123,10 +1124,6 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
     std::optional<IPEndPoint> exclude_ip_endpoint,
     std::optional<size_t> max_attempts) {
   if (is_failing_) {
-    return;
-  }
-
-  if (group_->force_quic()) {
     return;
   }
 
@@ -1944,7 +1941,7 @@ void HttpStreamPool::AttemptManager::UpdateStreamAttemptState() {
 
 void HttpStreamPool::AttemptManager::MaybeRunStreamAttemptDelayTimer() {
   if (!should_block_stream_attempt_ ||
-      stream_attempt_delay_timer_.IsRunning()) {
+      stream_attempt_delay_timer_.IsRunning() || !CanUseTcpBasedProtocols()) {
     return;
   }
   CHECK(!stream_attempt_delay_.is_zero());
@@ -1955,8 +1952,8 @@ void HttpStreamPool::AttemptManager::MaybeRunStreamAttemptDelayTimer() {
 }
 
 void HttpStreamPool::AttemptManager::CancelStreamAttemptDelayTimer() {
-  stream_attempt_delay_timer_.Stop();
   should_block_stream_attempt_ = false;
+  stream_attempt_delay_timer_.Stop();
 }
 
 void HttpStreamPool::AttemptManager::OnStreamAttemptDelayPassed() {
