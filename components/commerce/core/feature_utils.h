@@ -71,6 +71,10 @@ bool CanFetchProductSpecificationsData(AccountChecker* account_checker);
 // Returns whether we should show the settings UI for product specifications.
 bool IsProductSpecificationsSettingVisible(AccountChecker* account_checker);
 
+// Whether APIs like |GetDiscountInfoForUrls| are enabled and allowed to be
+// used.
+bool IsDiscountInfoApiEnabled(AccountChecker* account_checker);
+
 // This is a feature check for "show discounts on navigation", which will
 // return true if the user has the feature flag enabled, is signed-in and
 // synced, has MSBB enabled, and (if applicable) is in an eligible country and

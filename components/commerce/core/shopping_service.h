@@ -590,10 +590,6 @@ class ShoppingService : public KeyedService,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 
-  // Whether APIs like |GetDiscountInfoForUrls| are enabled and allowed to be
-  // used.
-  bool IsDiscountInfoApiEnabled();
-
   void GetDiscountInfoFromOptGuide(const GURL& url,
                                    DiscountInfoCallback callback);
 
