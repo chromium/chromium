@@ -14,6 +14,7 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -40,6 +41,7 @@
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -140,6 +142,42 @@ class BookmarkHTMLWriterTest : public testing::Test {
 
   BookmarkModel* model() {
     return BookmarkModelFactory::GetForBrowserContext(profile());
+  }
+
+  // Adds the following bookmark structure to the given parent:
+  //
+  //   F1
+  //     url1 (with favicon)
+  //     F2
+  //       url2
+  //   url3
+  void PopulateBookmarks(const BookmarkNode* parent) {
+    CHECK(parent);
+    std::u16string f1_title = u"F1";
+    std::u16string f2_title = u"F2";
+    std::u16string url1_title = u"url1";
+    std::u16string url2_title = u"url2";
+    std::u16string url3_title = u"url3";
+    GURL url1("http://url1");
+    GURL url2("http://url2");
+    GURL url3("http://url3");
+    GURL url1_favicon("http://url1/icon.ico");
+
+    const BookmarkNode* f1 = model()->AddFolder(parent, 0, f1_title);
+    model()->AddURL(f1, 0, url1_title, url1);
+    const BookmarkNode* f2 = model()->AddFolder(f1, 1, f2_title);
+    model()->AddURL(f2, 0, url2_title, url2);
+    model()->AddURL(parent, 1, url3_title, url3);
+
+    // Set up a favicon for url1.
+    HistoryServiceFactory::GetForProfile(profile(),
+                                         ServiceAccessType::EXPLICIT_ACCESS)
+        ->AddPage(url1, base::Time::Now(), history::SOURCE_BROWSED);
+    FaviconServiceFactory::GetForProfile(profile(),
+                                         ServiceAccessType::EXPLICIT_ACCESS)
+        ->SetFavicons({url1}, url1_favicon, favicon_base::IconType::kFavicon,
+                      gfx::Image::CreateFrom1xBitmap(
+                          MakeTestSkBitmap(kIconWidth, kIconHeight)));
   }
 
   BookmarksExportObserver::Result WriteBookmarksAndWait() {
@@ -248,7 +286,22 @@ TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenNoBookmarks) {
       path_, test_data_path_.AppendASCII("no_bookmarks.html")));
 }
 
-TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenBookmarksInBookmarkBar) {
+TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenNoBookmarksWithAccount) {
+  // Permanent account folders exist, but there are no local or account
+  // bookmarks.
+  base::test::ScopedFeatureList scoped_feature_list{
+      syncer::kSyncEnableBookmarksInTransportMode};
+  model()->CreateAccountPermanentFolders();
+
+  // Export.
+  ASSERT_EQ(WriteBookmarksAndWait(), BookmarksExportObserver::Result::kSuccess);
+
+  // Check against the golden file.
+  EXPECT_TRUE(base::TextContentsEqual(
+      path_, test_data_path_.AppendASCII("no_bookmarks.html")));
+}
+
+TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenBookmarksInLocalBookmarkBar) {
   // Populate the BookmarkModel. This creates the following bookmark structure:
   //
   // Bookmarks bar
@@ -257,20 +310,7 @@ TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenBookmarksInBookmarkBar) {
   //     F2
   //       url2
   //   url3
-  std::u16string f1_title = u"F1";
-  std::u16string f2_title = u"F2";
-  std::u16string url1_title = u"url1";
-  std::u16string url2_title = u"url2";
-  std::u16string url3_title = u"url3";
-  GURL url1("http://url1");
-  GURL url2("http://url2");
-  GURL url3("http://url3");
-  const BookmarkNode* f1 =
-      model()->AddFolder(model()->bookmark_bar_node(), 0, f1_title);
-  model()->AddURL(f1, 0, url1_title, url1);
-  const BookmarkNode* f2 = model()->AddFolder(f1, 1, f2_title);
-  model()->AddURL(f2, 0, url2_title, url2);
-  model()->AddURL(model()->bookmark_bar_node(), 1, url3_title, url3);
+  PopulateBookmarks(model()->bookmark_bar_node());
 
   // Export.
   ASSERT_EQ(WriteBookmarksAndWait(), BookmarksExportObserver::Result::kSuccess);
@@ -280,7 +320,30 @@ TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenBookmarksInBookmarkBar) {
       path_, test_data_path_.AppendASCII("bookmarks_in_bookmarks_bar.html")));
 }
 
-TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenBookmarksInOther) {
+TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenBookmarksInAccountBookmarkBar) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      syncer::kSyncEnableBookmarksInTransportMode};
+  model()->CreateAccountPermanentFolders();
+
+  // Populate the BookmarkModel. This creates the following bookmark structure:
+  //
+  // Bookmarks bar
+  //   F1
+  //     url1
+  //     F2
+  //       url2
+  //   url3
+  PopulateBookmarks(model()->account_bookmark_bar_node());
+
+  // Export.
+  ASSERT_EQ(WriteBookmarksAndWait(), BookmarksExportObserver::Result::kSuccess);
+
+  // Check against the golden file.
+  EXPECT_TRUE(base::TextContentsEqual(
+      path_, test_data_path_.AppendASCII("bookmarks_in_bookmarks_bar.html")));
+}
+
+TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenBookmarksInLocalOther) {
   // Populate the BookmarkModel. This creates the following bookmark structure:
   //
   // Other bookmarks
@@ -289,20 +352,30 @@ TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenBookmarksInOther) {
   //     F2
   //       url2
   //   url3
-  std::u16string f1_title = u"F1";
-  std::u16string f2_title = u"F2";
-  std::u16string url1_title = u"url1";
-  std::u16string url2_title = u"url2";
-  std::u16string url3_title = u"url3";
-  GURL url1("http://url1");
-  GURL url2("http://url2");
-  GURL url3("http://url3");
-  const BookmarkNode* f1 =
-      model()->AddFolder(model()->other_node(), 0, f1_title);
-  model()->AddURL(f1, 0, url1_title, url1);
-  const BookmarkNode* f2 = model()->AddFolder(f1, 1, f2_title);
-  model()->AddURL(f2, 0, url2_title, url2);
-  model()->AddURL(model()->other_node(), 1, url3_title, url3);
+  PopulateBookmarks(model()->other_node());
+
+  // Export.
+  ASSERT_EQ(WriteBookmarksAndWait(), BookmarksExportObserver::Result::kSuccess);
+
+  // Check against the golden file.
+  EXPECT_TRUE(base::TextContentsEqual(
+      path_, test_data_path_.AppendASCII("bookmarks_in_other.html")));
+}
+
+TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenBookmarksInAccountOther) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      syncer::kSyncEnableBookmarksInTransportMode};
+  model()->CreateAccountPermanentFolders();
+
+  // Populate the BookmarkModel. This creates the following bookmark structure:
+  //
+  // Other bookmarks
+  //   F1
+  //     url1
+  //     F2
+  //       url2
+  //   url3
+  PopulateBookmarks(model()->account_other_node());
 
   // Export.
   ASSERT_EQ(WriteBookmarksAndWait(), BookmarksExportObserver::Result::kSuccess);

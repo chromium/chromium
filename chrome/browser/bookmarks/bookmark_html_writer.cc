@@ -15,7 +15,9 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/check.h"
@@ -172,6 +174,17 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
     local_bookmarks_ =
         codec.Encode(model->bookmark_bar_node(), model->other_node(),
                      model->mobile_node(), /*sync_metadata_str=*/std::string());
+
+    if (model->account_bookmark_bar_node()) {
+      CHECK(model->account_other_node());
+      CHECK(model->account_mobile_node());
+      account_bookmarks_ = codec.Encode(
+          model->account_bookmark_bar_node(), model->account_other_node(),
+          model->account_mobile_node(), /*sync_metadata_str=*/std::string());
+    } else {
+      CHECK(!model->account_other_node());
+      CHECK(!model->account_mobile_node());
+    }
   }
 
   Writer(const Writer&) = delete;
@@ -204,6 +217,23 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
         BookmarkCodec::kMobileBookmarkFolderNameKey);
     CHECK(mobile_folder_value);
 
+    base::Value::Dict* account_permanent_folders =
+        account_bookmarks_.FindDict(BookmarkCodec::kRootsKey);
+    base::Value::Dict* account_bookmark_bar_folder_value = nullptr;
+    base::Value::Dict* account_other_folder_value = nullptr;
+    base::Value::Dict* account_mobile_folder_value = nullptr;
+    if (account_permanent_folders) {
+      account_bookmark_bar_folder_value = account_permanent_folders->FindDict(
+          BookmarkCodec::kBookmarkBarFolderNameKey);
+      account_other_folder_value = account_permanent_folders->FindDict(
+          BookmarkCodec::kOtherBookmarkFolderNameKey);
+      account_mobile_folder_value = account_permanent_folders->FindDict(
+          BookmarkCodec::kMobileBookmarkFolderNameKey);
+      CHECK(account_bookmark_bar_folder_value);
+      CHECK(account_other_folder_value);
+      CHECK(account_mobile_folder_value);
+    }
+
     IncrementIndent();
 
     // Bookmarks are written with the following hierarchy - note the descendents
@@ -212,14 +242,58 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
     // pre-existing file format user by other browsers.
     //
     // - Bookmarks bar (with PERSONAL_TOOLBAR_FOLDER="true" attribute)
-    //   - All descendants of the bookmark bar
-    // - All descendants of the other bookmarks folder
-    // - All descendants of the mobile bookmarks folder
+    //   - All descendants of the local bookmark bar
+    //   - All descendants of the account bookmark bar
+    // - All descendants of the local other bookmarks folder
+    // - All descendants of the account other bookmarks folder
+    // - All descendants of the local mobile bookmarks folder
+    // - All descendants of the account mobile bookmarks folder
+
+    // Add the bookmark bar folder, and local descendants.
     if (!WriteFolderStart(*bookmark_bar_folder_value,
+                          GetLatestTime({bookmark_bar_folder_value,
+                                         account_bookmark_bar_folder_value},
+                                        BookmarkCodec::kDateAddedKey),
+                          GetLatestTime({bookmark_bar_folder_value,
+                                         account_bookmark_bar_folder_value},
+                                        BookmarkCodec::kDateModifiedKey),
                           BookmarkNode::BOOKMARK_BAR) ||
-        !WriteDescendants(*bookmark_bar_folder_value) || !WriteFolderEnd() ||
-        !WriteDescendants(*other_folder_value) ||
-        !WriteDescendants(*mobile_folder_value)) {
+        !WriteDescendants(*bookmark_bar_folder_value)) {
+      NotifyOnFinish(BookmarksExportObserver::Result::kCouldNotWriteNodes);
+      return;
+    }
+
+    // Add account bookmark bar descendants if they exist.
+    if (account_bookmark_bar_folder_value &&
+        !WriteDescendants(*account_bookmark_bar_folder_value)) {
+      NotifyOnFinish(BookmarksExportObserver::Result::kCouldNotWriteNodes);
+      return;
+    }
+
+    // Close the bookmark bar folder.
+    if (!WriteFolderEnd()) {
+      NotifyOnFinish(BookmarksExportObserver::Result::kCouldNotWriteNodes);
+      return;
+    }
+
+    // Add the other bookmarks descendants: local, then account if they exist.
+    if (!WriteDescendants(*other_folder_value)) {
+      NotifyOnFinish(BookmarksExportObserver::Result::kCouldNotWriteNodes);
+      return;
+    }
+    if (account_other_folder_value &&
+        !WriteDescendants(*account_other_folder_value)) {
+      NotifyOnFinish(BookmarksExportObserver::Result::kCouldNotWriteNodes);
+      return;
+    }
+
+    // Add the mobile bookmarks descendants: local, then account if they exist.
+    if (!WriteDescendants(*mobile_folder_value)) {
+      NotifyOnFinish(BookmarksExportObserver::Result::kCouldNotWriteNodes);
+      return;
+    }
+    if (account_mobile_folder_value &&
+        !WriteDescendants(*account_mobile_folder_value)) {
       NotifyOnFinish(BookmarksExportObserver::Result::kCouldNotWriteNodes);
       return;
     }
@@ -249,6 +323,26 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
   };
 
   ~Writer() = default;
+
+  // Get the latest time of a given type, across a list of folders.
+  std::string GetLatestTime(const std::vector<base::Value::Dict*>& folders,
+                            std::string_view time_type_key) {
+    CHECK(base::ranges::any_of(
+        folders, [](const base::Value::Dict* folder) { return folder; }));
+
+    int64_t latest_time = 0;
+    for (base::Value::Dict* folder : folders) {
+      if (!folder) {
+        continue;
+      }
+      std::string* string_ptr = folder->FindString(time_type_key);
+      CHECK(string_ptr);
+      int64_t time;
+      CHECK(base::StringToInt64(*string_ptr, &time));
+      latest_time = std::max(latest_time, time);
+    }
+    return base::NumberToString(latest_time);
+  }
 
   // Opens the file, returning true on success.
   bool OpenFile() {
@@ -330,19 +424,14 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
   // out children of the folder. `value` is the folder to be written, which must
   // be of `folder_type` either `BOOKMARK_BAR` or `FOLDER`.
   bool WriteFolderStart(const base::Value::Dict& value,
+                        const std::string& date_added,
+                        const std::string& date_modified,
                         BookmarkNode::Type folder_type) {
     const std::string* title = value.FindString(BookmarkCodec::kNameKey);
     CHECK(title);
-    const std::string* date_added_string =
-        value.FindString(BookmarkCodec::kDateAddedKey);
-    CHECK(date_added_string);
-    const std::string* last_modified_date =
-        value.FindString(BookmarkCodec::kDateModifiedKey);
-    CHECK(last_modified_date);
 
-    if (!WriteIndent() || !Write(kFolderStart) ||
-        !WriteTime(*date_added_string) || !Write(kLastModified) ||
-        !WriteTime(*last_modified_date)) {
+    if (!WriteIndent() || !Write(kFolderStart) || !WriteTime(date_added) ||
+        !Write(kLastModified) || !WriteTime(date_modified)) {
       return false;
     }
 
@@ -402,6 +491,8 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
     const std::string* date_added_string =
         value.FindString(BookmarkCodec::kDateAddedKey);
     CHECK(date_added_string);
+    const std::string* date_modified_string =
+        value.FindString(BookmarkCodec::kDateModifiedKey);
     const std::string* type_string = value.FindString(BookmarkCodec::kTypeKey);
     CHECK(type_string);
     CHECK(*type_string == BookmarkCodec::kTypeURL ||
@@ -434,7 +525,9 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
     }
 
     // Folder.
-    if (!WriteFolderStart(value, BookmarkNode::FOLDER)) {
+    CHECK(date_modified_string);
+    if (!WriteFolderStart(value, *date_added_string, *date_modified_string,
+                          BookmarkNode::FOLDER)) {
       return false;
     }
 
@@ -449,9 +542,10 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
     return true;
   }
 
-  // The BookmarkModel as a base::Value, for the local or syncable bookmarks.
+  // The BookmarkModel as a base::Value, split into local and account bookmarks.
   // These values were generated from the BookmarkCodec.
   base::Value::Dict local_bookmarks_;
+  base::Value::Dict account_bookmarks_;
 
   // Path we're writing to.
   base::FilePath path_;
@@ -482,12 +576,23 @@ BookmarkFaviconFetcher::BookmarkFaviconFetcher(
 }
 
 void BookmarkFaviconFetcher::ExportBookmarks() {
-  ExtractUrls(BookmarkModelFactory::GetForBrowserContext(profile_)
-                  ->bookmark_bar_node());
-  ExtractUrls(
-      BookmarkModelFactory::GetForBrowserContext(profile_)->other_node());
-  ExtractUrls(
-      BookmarkModelFactory::GetForBrowserContext(profile_)->mobile_node());
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(profile_);
+  ExtractUrls(model->bookmark_bar_node());
+  ExtractUrls(model->other_node());
+  ExtractUrls(model->mobile_node());
+
+  if (model->account_bookmark_bar_node()) {
+    CHECK(model->account_other_node());
+    CHECK(model->account_mobile_node());
+    ExtractUrls(model->account_bookmark_bar_node());
+    ExtractUrls(model->account_other_node());
+    ExtractUrls(model->account_mobile_node());
+  } else {
+    CHECK(!model->account_other_node());
+    CHECK(!model->account_mobile_node());
+  }
+
   if (!bookmark_urls_.empty()) {
     FetchNextFavicon();
   } else {
@@ -496,6 +601,7 @@ void BookmarkFaviconFetcher::ExportBookmarks() {
 }
 
 void BookmarkFaviconFetcher::ExtractUrls(const BookmarkNode* node) {
+  CHECK(node);
   if (node->is_url()) {
     std::string url = node->url().spec();
     if (!url.empty()) {
