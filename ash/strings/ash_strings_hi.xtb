@@ -140,6 +140,7 @@
 <translation id="1415846719612499304">नेटवर्क की सूची दिखाएं. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">सूचना से जुड़ी कार्रवाई करने के लिए डिवाइस को अनलॉक करें</translation>
 <translation id="1420408895951708260">नाइट लाइट को टॉगल करें. <ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">सुझाया गया टैब ग्रुप</translation>
 <translation id="1426410128494586442">हां</translation>
 <translation id="1435537621343861112">बोलकर लिखवाने की सुविधा शुरू नहीं की जा सकती. आपका माइक बंद है.</translation>
 <translation id="1445031758921122223">फ़ेस कंट्रोल से जुड़ी फ़ाइलें डाउनलोड हो गईं</translation>
@@ -243,12 +244,14 @@
 <translation id="17722141032474077">कैलकुलेशन</translation>
 <translation id="1774796056689732716"><ph name="CURRENT_MONTH_YEAR" /> के कैलेंडर में फ़िलहाल <ph name="DATE" /> को चुना गया है.</translation>
 <translation id="178347895271755507">अपने फ़ोन में मौजूद हाल ही की फ़ोटो, कॉन्टेंट, और सूचनाओं को देखने की सुविधा सेट अप करें</translation>
+<translation id="1785317913592722944">सुझाए गए टैब ग्रुप से टैब हटाएं</translation>
 <translation id="1786487376942610288">पिक्चर में पिक्चर विंडो को, इसके ज़्यादा से ज़्यादा साइज़ या मौजूदा साइज़ में इस्तेमाल करें</translation>
 <translation id="1787955149152357925">बंद करें</translation>
 <translation id="1796561540704213354">वेबसाइटों की कैटगरी में वे पेज दिखाए जाते हैं जिन्हें आपने देखा या खोला होता है</translation>
 <translation id="179842970735685253">Google की सेवा की शर्तें</translation>
 <translation id="1805407494113167797">फ़ोकस मोड के लिए उपलब्ध साउंड नहीं चलाए जा सके</translation>
 <translation id="181103072419391116">सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />, आपका एडमिन प्रबंधित करता है</translation>
+<translation id="1815039896005206046">'नापसंद करें' आइकॉन को चुनने का मतलब है कि आपको सुझाया गया यह टैब ग्रुप पसंद नहीं आया</translation>
 <translation id="1816896987747843206">यह ऐसे सभी ऐप्लिकेशन और वेबसाइटों को कैमरा ऐक्सेस करने देता है जिनके पास इसकी अनुमति है</translation>
 <translation id="1823873187264960516">ईथरनेट: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">जगह की जानकारी शेयर करने की सुविधा चालू करें</translation>
@@ -390,6 +393,7 @@
 <translation id="2369165858548251131">चाइनीज़ भाषा में "नमस्ते" कैसे बोलते हैं</translation>
 <translation id="2370971919968699910">इससे डेटा खर्च हो सकता है.
 <ph name="DEVICECOUNT" /> डिवाइस कनेक्ट हैं.</translation>
+<translation id="2383521554963939360">ऐप्लिकेशन और टैब ग्रुप</translation>
 <translation id="2386292613071805067">पेज पर मौजूद सब कुछ चुनें</translation>
 <translation id="2389423187722941333">Gemini पर स्विच करें</translation>
 <translation id="2392659840443812875">कोई हॉटस्पॉट उपलब्ध नहीं है. पक्का करें कि आपका डिवाइस आस-पास हो और उसका ब्लूटूथ चालू हो.</translation>
@@ -921,6 +925,7 @@
 <translation id="4151054805501931758">अपने लुक को बेहतर बनाएं</translation>
 <translation id="4156293514828496577">बैटरी <ph name="PERCENTAGE" />% बची है (करीब <ph name="TIME_LEFT" />).
 बैटरी लाइफ़ बढ़ाने के लिए, कुछ सुविधाओं को सीमित किया गया है.</translation>
+<translation id="4158003972857765638">नए डेस्क में व्यवस्थित करें</translation>
 <translation id="4160919062868802509">ऑडियो के एक से ज़्यादा सोर्स मिले</translation>
 <translation id="416245495747357243">हो गया!</translation>
 <translation id="4165275524535002941">हो सकता है कि डिसप्ले पर यह केबल काम न करे</translation>
@@ -969,6 +974,7 @@
 <translation id="4285498937028063278">अनपिन करें</translation>
 <translation id="428715201724021596">प्रोफ़ाइल से कनेक्ट किया जा रहा है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="4287250812980588583">Chrome विंडो</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{माइक का वॉल्यूम, <ph name="APP_NAME" /> से कंट्रोल किया जा रहा है}one{माइक का वॉल्यूम, # ऐप्लिकेशन से कंट्रोल किया जा रहा है}other{माइक का वॉल्यूम, # ऐप्लिकेशन से कंट्रोल किया जा रहा है}}</translation>
 <translation id="4294319844246081198">गुड मॉर्निंग <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">सभी <ph name="COUNT" /> सूचनाएं हटाएं</translation>
 <translation id="4300272766492248925">ऐप्लिकेशन खोलें</translation>
@@ -985,6 +991,7 @@
 <translation id="4322742403972824594">Ctrl + Alt + अप ऐरो कीबोर्ड शॉर्टकट बदल गया है. Home बटन का इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + लेफ़्ट ऐरो दबाएं.</translation>
 <translation id="4324840740119394760">यह <ph name="APP_NAME" /> और ऐसे सभी ऐप्लिकेशन और वेबसाइटों को कैमरा ऐक्सेस करने देता है जिनके पास इसकी अनुमति है</translation>
 <translation id="4327147325944669226">गेम रिकॉर्ड करें</translation>
+<translation id="4329076911374908740">सेव किए जा सकने वाले टैब ग्रुप की तय सीमा पूरी हो गई है.</translation>
 <translation id="4338109981321384717">आवर्धक ग्लास</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, म्यूट किया गया</translation>
 <translation id="4351244548802238354">संवाद बंद करें</translation>
@@ -1942,6 +1949,7 @@
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">बनाएं</translation>
 <translation id="7526573455193969409">नेटवर्क की निगरानी की जा सकती है</translation>
+<translation id="7534543072325030705">'पसंद है' आइकॉन को चुनने का मतलब है कि आपको सुझाया गया यह टैब ग्रुप पसंद आया</translation>
 <translation id="7536035074519304529">आईपी पता: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">बाईं विंडो को अपडेट करें</translation>
 <translation id="7543399541175347147">फ़िलहाल, Linux ऐप्लिकेशन और गुप्त विंडो काम नहीं कर रही हैं. अन्य ऐप्लिकेशन सेव हो जाएंगे.</translation>
@@ -2106,6 +2114,7 @@
 <translation id="8004512796067398576">वृद्धि</translation>
 <translation id="8005527720597583355">फ़ोकस मोड का सेशन शुरू करें</translation>
 <translation id="8015361438441228492">टास्क में बदलाव नहीं किया जा सका.</translation>
+<translation id="8027187124910699148">सुझाए गए टैब ग्रुप को वापस लाएं</translation>
 <translation id="802782383769312836">पिछला डेस्क: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> में से <ph name="DESK_INDEX" /> डेस्क.</translation>
 <translation id="8029247720646289474">हॉटस्पॉट से कनेक्ट नहीं किया जा सका</translation>
 <translation id="8029629653277878342">ज़्यादा सुरक्षा के लिए पिन या पासवर्ड की ज़रूरत है</translation>
@@ -2214,6 +2223,7 @@
 <translation id="8426708595819210923">गुड ईवनिंग <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">सेटिंग</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> से <ph name="KEY_TWO" /></translation>
+<translation id="8429547770382807369">टैब ग्रुप को बाद में इस्तेमाल करने के लिए सेव करें</translation>
 <translation id="8433186206711564395">नेटवर्क सेटिंग</translation>
 <translation id="8433977262951327081">शेल्फ़ में इनपुट विकल्पों का मेन्यू बबल दिखाने वाला शॉर्टकट बदल गया है. कृपया <ph name="OLD_SHORTCUT" /> के बजाय <ph name="NEW_SHORTCUT" /> का इस्तेमाल करें.</translation>
 <translation id="8437311513256731931">सुझाव, शिकायत या राय से जुड़ा टूल खोलें</translation>
@@ -2222,6 +2232,7 @@
 <translation id="8446884382197647889">ज़्यादा जानें</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">'चुनें और सुनें' सुविधा बंद करें</translation>
+<translation id="8466665972451889002"><ph name="GROUP_NAME" /> में टैब दिखाएं</translation>
 <translation id="8468806060683421065">असाइनमेंट सबमिट करने की आखिरी तारीख <ph name="DUE_DATE_AND_TIME" /> है</translation>
 <translation id="847056008324733326">डिसप्ले पैमाने की सेटिंग</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> में <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> हैं.</translation>
@@ -2244,6 +2255,7 @@
 <translation id="8551588720239073785">तारीख और समय की सेटिंग</translation>
 <translation id="8553395910833293175">सभी डेस्क के लिए पहले से असाइन किया जा चुका है.</translation>
 <translation id="8555757996376137129">मौजूदा डेस्क हटाएं</translation>
+<translation id="8558521694042102707">ऐसा हो सकता है कि जनरेटिव एआई से मिले जवाब गलत हों. जैसे, यह किसी व्यक्ति के बारे में गलत जानकारी दिखा सकता है. इसलिए, इसके जवाबों की दोबारा जांच कर लें.</translation>
 <translation id="8559845965695780508"><ph name="USER" /> के बदलाव करने का समय</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">आज़माने के लिए यहां कुछ सुझाव दिए गए हैं</translation>
@@ -2266,6 +2278,7 @@
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />, आपका एडमिन प्रबंधित करता है</translation>
 <translation id="8638637208069328956">माइक्रोफ़ोन चालू/बंद करें</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> बाकी</translation>
+<translation id="8640470573049727749">टैब ग्रुप के सभी सुझाव छिपाएं</translation>
 <translation id="8641510901370802679"><ph name="ANSWER_TYPE" /> की जानकारी दिखाई जा रही है</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> टाइमर</translation>
 <translation id="8647931990447795414">किसी व्यक्ति को जोड़ने के लिए, अपने Family Link का अभिभावक ऐक्सेस कोड डालें</translation>
@@ -2348,6 +2361,7 @@
 <translation id="8905919797434099235">(टाइटल मौजूद नहीं है)</translation>
 <translation id="890616557918890486">स्रोत बदलें</translation>
 <translation id="8909138438987180327"><ph name="PERCENTAGE" /> बैटरी बची है.</translation>
+<translation id="8916866375277139011"><ph name="GROUP_NAME" /> में टैब छिपाएं</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant सेवा इस भाषा में उपलब्ध नहीं है.</translation>
 <translation id="8926951137623668982">शेल्फ़ को हमेशा के लिए छिपाकर रखा गया है</translation>

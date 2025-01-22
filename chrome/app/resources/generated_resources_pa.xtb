@@ -129,7 +129,6 @@
 <translation id="1079242569060319448">ਕੀ ਪਿੰਨ ਭੁੱਲ ਗਏ ਹੋ?</translation>
 <translation id="1079285777677001938">ਸ਼ਾਇਦ ਕੁਝ ਸਾਈਟਾਂ 'ਤੇ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਕੰਮ ਨਾ ਕਰਨ।</translation>
 <translation id="1079766198702302550">ਹਮੇਸ਼ਾਂ ਕੈਮਰਾ ਪਹੁੰਚ ਨੂੰ ਬਲੌਕ ਕਰੋ</translation>
-<translation id="1080365971383768617">ਤੁਹਾਡੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਪਾਸਵਰਡ</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 ਟੈਬ}one{<ph name="GROUP_TITLE" /> - # ਟੈਬ}other{<ph name="GROUP_TITLE" /> - # ਟੈਬ}}</translation>
 <translation id="1082214733466244292">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਇਸ ਡੀਵਾਈਸ ਲਈ ਕੁਝ ਪ੍ਰਕਾਰਜਾਤਮਕਤਾ ਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਹੈ</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> ਤੁਹਾਡੀਆਂ Chrome ਸੈਟਿੰਗਾਂ ਨੂੰ ਉਨ੍ਹਾਂ ਦੇ ਅਸਲੀ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਰੂਪ 'ਤੇ ਰੀਸਟੋਰ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ। ਇਹ ਤੁਹਾਡਾ ਹੋਮ ਪੰਨਾ, ਨਵਾਂ ਟੈਬ ਪੰਨਾ ਅਤੇ ਖੋਜ ਇੰਜਣ ਰੀਸੈੱਟ ਕਰੇਗਾ, ਤੁਹਾਡੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਬੰਦ ਕਰੇਗਾ ਅਤੇ ਸਾਰੀਆਂ ਟੈਬਾਂ ਨੂੰ ਅਣਪਿੰਨ ਕਰੇਗਾ। ਇਹ ਹੋਰ ਅਸਥਾਈ ਅਤੇ ਕੈਸ਼ੇ ਕੀਤਾ ਡਾਟਾ ਵੀ ਹਟਾ ਦੇਵੇਗਾ, ਜਿਵੇਂ ਕੁਕੀਜ਼, ਸਮੱਗਰੀ ਅਤੇ ਸਾਈਟ ਡਾਟਾ।</translation>
@@ -524,6 +523,7 @@
 <translation id="135389172849514421">ਆਫ਼ਲਾਈਨ ਕੰਮ ਕਰਦੀ ਹੈ</translation>
 <translation id="1353980523955420967">PPD ਲੱਭ ਨਹੀਂ ਸਕਦੇ। ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੀ Chromebook ਆਨਲਾਈਨ ਹੈ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> ਨੂੰ ਆਪਣਾ ਕੈਮਰਾ ਵਰਤਣ ਅਤੇ ਹਿਲਾਉਣ ਦੀ ਇਜਾਜ਼ਤ ਦੇਣੀ ਜਾਰੀ ਰੱਖੋ</translation>
+<translation id="1354148503392558902">ਪਾਸਵਰਡ ਬਦਲਿਆ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="1355088139103479645">ਕੀ ਸਾਰਾ ਡਾਟਾ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="1356376170199999104">ਆਗਿਆ ਹੈ – <ph name="PERMISSION_DETAILS" />। ਭੌਤਿਕ ਸਵਿੱਚ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="1356959069439783953">ਅਕਿਰਿਆਸ਼ੀਲ ਟੈਬਾਂ ਨੂੰ ਨਵੀਂ ਦਿੱਖ ਦਿੱਤੀ ਗਈ ਹੈ</translation>
@@ -1104,6 +1104,7 @@
 <translation id="1751335846119670066">ਪੜ੍ਹਨ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ</translation>
 <translation id="17513872634828108">ਟੈਬਸ ਖੋਲ੍ਹੋ</translation>
 <translation id="175196451752279553">ਬੰਦ ਟੈਬ ਦੁ&amp;ਬਾਰਾ ਖੋਲ੍ਹੋ</translation>
+<translation id="1752557850776261983">ਸਾਈਨ-ਇਨ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="1753067873202720523">ਤੁਹਾਡਾ Chromebook ਚਾਰਜ ਨਹੀਂ ਹੋ ਸਕਦਾ ਜਦੋਂ ਇਹ ਚਾਲੂ ਹੁੰਦਾ ਹੈ।</translation>
 <translation id="1753557900380512635">ਅੰਦਰਲੀਆਂ ਸਜਾਵਟਾਂ</translation>
 <translation id="1753905327828125965">ਸਭ ਤੋਂ ਵੱਧ ਵਿਜਿਟ ਕੀਤੇ</translation>
@@ -2385,6 +2386,7 @@
 <translation id="2638662041295312666">ਸਾਈਨ-ਇਨ ਚਿੱਤਰ</translation>
 <translation id="2640299212685523844">GTK ਵਰਤੋ</translation>
 <translation id="264083724974021997">ਆਪਣੇ ਫ਼ੋਨ ਨਾਲ ਕਨੈਕਟ ਕਰੋ - ਵਿੰਡੋ</translation>
+<translation id="2641098199809442625">ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਅੱਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ, ਪਰ ਤੁਸੀਂ ਹਾਲੇ ਵੀ ਆਪਣੇ ਪੁਰਾਣੇ ਪਾਸਵਰਡ ਨਾਲ ਸਾਈਟ ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕੋਗੇ।</translation>
 <translation id="2642111877055905627">ਫੁੱਟਬਾਲ</translation>
 <translation id="2642206811783203764">ਹਮੇਸ਼ਾਂ ਚਾਲੂ <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">ਤੁਸੀਂ ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟੇ ਨੂੰ ਮਿਟਾ ਕੇ ਕਦੇ ਵੀ ਆਪਣੇ ਵਿਗਿਆਪਨ ਮਾਪ ਡਾਟੇ ਨੂੰ ਮਿਟਾ ਸਕਦੇ ਹੋ</translation>
@@ -3034,6 +3036,7 @@
 <translation id="310297983047869047">ਪਿਛਲੀ ਸਲਾਈਡ</translation>
 <translation id="3103451787721578293">ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਡਾਟੇ ਨੂੰ ਅੱਪਲੋਡ ਕਰਨ ਦਾ ਕਾਰਨ ਦਾਖਲ ਕਰੋ:</translation>
 <translation id="3103512663951238230">Alt+ਕਲਿੱਕ</translation>
+<translation id="3104763887980088552">ਸਰਗਰਮੀ ਲੌਗ</translation>
 <translation id="3104948640446684649">ਵਰਤੋਂ ਅਤੇ ਤਸ਼ਖੀਸ ਡਾਟਾ ਭੇਜੋ। ਇਹ ਡੀਵਾਈਸ ਇਸ ਵੇਲੇ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਤਸ਼ਖੀਸ, ਡੀਵਾਈਸ ਅਤੇ ਐਪ ਵਰਤੋਂ ਡਾਟਾ Google ਨੂੰ ਭੇਜ ਰਿਹਾ ਹੈ। ਇਸ ਨਾਲ ਸਿਸਟਮ ਅਤੇ ਐਪ ਸਥਿਰਤਾ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਮਿਲੇਗੀ। ਇਕੱਤਰ ਕੀਤਾ ਕੁਝ ਡਾਟਾ Google ਐਪਾਂ ਅਤੇ Android Developers ਵਰਗੇ ਪਾਰਟਨਰਾਂ ਦੀ ਵੀ ਮਦਦ ਕਰੇਗਾ। ਜੇ ਤੁਹਾਡੀ ਵਧੀਕ 'ਵੈੱਬ ਅਤੇ ਐਪ ਸਰਗਰਮੀ' ਸੈਟਿੰਗ ਚਾਲੂ ਹੋਵੇ, ਤਾਂ ਇਹ ਡਾਟਾ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। <ph name="BEGIN_LINK2" />ਮਾਪਕਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="BEGIN_LINK2_END" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">ਪਿਛਲਾ ਅਸਫਲ ਅੱਪਡੇਟ</translation>
 <translation id="3105796011181310544">ਕੀ Google 'ਤੇ ਵਾਪਸ ਜਾਣਾ ਹੈ?</translation>
@@ -3748,6 +3751,7 @@
 <translation id="3629664892718440872">ਇਹ ਚੋਣ ਯਾਦ ਰੱਖੋ</translation>
 <translation id="3630132874740063857">ਤੁਹਾਡਾ ਫ਼ੋਨ</translation>
 <translation id="3630995161997703415">ਇਸ ਸਾਈਟ ਨੂੰ ਆਪਣੀ ਸ਼ੈਲਫ਼ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ ਤਾਂ ਕਿ ਕਿਸੇ ਵੀ ਸਮੇਂ ਤੁਸੀਂ ਇਸਦੀ ਵਰਤੋਂ ਕਰ ਸਕੋ</translation>
+<translation id="3632929818790223729">ਟੈਬ ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਟੈਬ ਨਾਲ ਸਪਲਿਟ ਕਰੋ</translation>
 <translation id="3634652306074934350">ਇਜਾਜ਼ਤ ਲਈ ਬੇਨਤੀ ਦੀ ਮਿਆਦ ਸਮਾਪਤ ਹੋ ਗਈ</translation>
 <translation id="3635199270495525546">ਭਰੋਸੇਯੋਗ ਪਲੇਟਫਾਰਮ ਮਾਡਿਊਲ (TPM) ਦੀ ਪਛਾਣ ਕੀਤੀ ਗਈ</translation>
 <translation id="3635353578505343390">Google ਨੂੰ ਵਿਚਾਰ ਭੇਜੋ</translation>
@@ -6248,9 +6252,6 @@
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) ਨੇ ਤੁਹਾਨੂੰ ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਹੈ। ਜਿਸ ਕੋਲ ਵੀ ਲਿੰਕ ਹੈ, ਉਹ ਸਾਰੀਆਂ ਟੈਬਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦਾ ਹੈ, ਇਸ ਲਈ ਸਾਵਧਾਨੀ ਨਾਲ ਸ਼ਾਮਲ ਹੋਵੋ। ਲਿੰਕ ਦੀ ਮਿਆਦ 48 ਘੰਟਿਆਂ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ।</translation>
 <translation id="5410889048775606433">ਫਿਊਸ਼ਾ</translation>
 <translation id="5411022484772257615">ਸਕੂਲ ਵਿੱਚ ਦਾਖਲੇ ਦੀ ਪ੍ਰਕਿਰਿਆ ਨੂੰ ਪੂਰਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
-<translation id="5411856344659127989">ਜੇ ਤੁਸੀਂ ਕਿਸੇ ਹੋਰ ਲਈ ਖਾਤਾ ਸ਼ਾਮਲ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ ਆਪਣੇ <ph name="DEVICE_TYPE" /> ਵਿੱਚ <ph name="LINK_BEGIN" />ਕੋਈ ਨਵਾਂ ਵਿਅਕਤੀ ਸ਼ਾਮਲ ਕਰੋ<ph name="LINK_END" />।
-
-ਵੈੱਬਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਨੂੰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਪਹਿਲਾਂ ਤੋਂ ਦਿੱਤੀਆਂ ਗਈਆਂ ਇਜਾਜ਼ਤਾਂ ਇਸ ਖਾਤੇ 'ਤੇ ਲਾਗੂ ਹੋ ਸਕਦੀਆਂ ਹਨ। ਤੁਸੀਂ <ph name="SETTINGS_LINK_BEGIN" />ਸੈਟਿੰਗਾਂ<ph name="SETTINGS_LINK_END" /> ਵਿੱਚ ਜਾ ਕੇ ਆਪਣੇ Google ਖਾਤਿਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="54118879136097217">ਆਪਣੀ <ph name="DEVICE_TYPE" /> 'ਤੇ ਐਪ ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="5413640305322530561">ਤਸ਼ਖੀਸ ਅਤੇ ਵਰਤੋਂ ਡਾਟਾ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="5414198321558177633">ਪ੍ਰੋਫਾਈਲ ਸੂਚੀ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
@@ -6529,7 +6530,6 @@
 <translation id="5610867721023328944">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜਾਂ ਹੇਠਾਂ ਉਪਲਬਧ ਥੀਮਾਂ ਵਿੱਚੋਂ ਇੱਕ ਥੀਮ ਨੂੰ ਚੁਣੋ।</translation>
 <translation id="5611398002774823980">ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5613074282491265467">ਤੁਹਾਡੇ ਵੱਲੋਂ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ, ਤੁਹਾਡੇ ਵੱਲੋਂ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਤੁਹਾਡੇ Google ਖਾਤੇ <ph name="USER_EMAIL" /> ਵਿੱਚ ਚਲੇ ਜਾਣਗੇ। ਇਸ ਸੁਵਿਧਾ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
 <translation id="5614190747811328134">ਵਰਤੋਂਕਾਰ ਨੋਟਿਸ</translation>
 <translation id="5614553682702429503">ਕੀ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
@@ -8563,7 +8563,6 @@
 <translation id="7088674813905715446">ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਪ੍ਰਬੰਧਕ ਵੱਲੋਂ ਵਾਂਝਾਕਰਨ ਸਥਿਤੀ ਵਿੱਚ ਰੱਖਿਆ ਗਿਆ ਹੈ। ਇਸਨੂੰ ਦਰਜਾਬੰਦੀ ਲਈ ਚਾਲੂ ਕਰਨ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਵਿਚਾਰ ਅਧੀਨ ਸਥਿਤੀ ਵਿੱਚ ਆਪਣੀ ਪ੍ਰਬੰਧਕ ਥਾਂ ਪ੍ਰਾਪਤ ਕਰੋ।</translation>
 <translation id="7088960765736518739">ਸਵਿੱਚ ਪਹੁੰਚ</translation>
 <translation id="7089253021944603172">ਟੈਬ ਦੁਬਾਰਾ ਕਿਰਿਆਸ਼ੀਲ ਹੈ</translation>
-<translation id="7090160970140261931">ਤੁਸੀਂ ਵੈੱਬਸਾਈਟਾਂ ਅਤੇ Android ਐਪਾਂ ਨਾਲ ਵਰਤਣ ਲਈ ਆਪਣੇ <ph name="DEVICE_TYPE" /> ਵਿੱਚ ਵਧੀਕ ਖਾਤੇ ਸ਼ਾਮਲ ਕਰ ਸਕਦੇ ਹੋ। ਤੁਸੀਂ ਇਹ ਵੀ ਕੰਟਰੋਲ ਕਰ ਸਕਦੇ ਹੋ ਕਿ Android ਐਪਾਂ ਨਾਲ ਕਿਹੜੇ ਖਾਤਿਆਂ ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾਵੇ।</translation>
 <translation id="7090714929377281710">ਹੌਟਸਪੌਟ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬੰਦ ਕਰੋ</translation>
 <translation id="7092504544229909737">Android ਐਪਾਂ ਨਾਲ ਨਹੀਂ ਵਰਤਿਆ ਜਾ ਸਕਦਾ</translation>
 <translation id="7093220653036489319">ਤਤਕਾਲ ਜਵਾਬ</translation>
@@ -9024,6 +9023,7 @@
 <translation id="7424818322350938336">ਨੈੱਟਵਰਕ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7425037327577270384">ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ</translation>
 <translation id="7427348830195639090">ਪਿਛੋਕੜ ਸਫ਼ਾ: <ph name="BACKGROUND_PAGE_URL" /></translation>
+<translation id="7427729970025360383">ਇਹ ਪ੍ਰੋਫਾਈਲ ਪ੍ਰਬੰਧਿਤ ਹੈ</translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> ਵੱਲੋਂ ਕਾਲ</translation>
 <translation id="7429415133937917139">ਸਕ੍ਰੀਨ ਦੇ ਸਿਖਰ 'ਤੇ ChromeVox ਪੈਨਲ ਵਿੱਚ ਕਿਸੇ ਰਿਫ੍ਰੈਸ਼ ਹੋਣ ਯੋਗ
     ਬਰੇਲ ਡਿਸਪਲੇ ਦੇ ਆਊਟਪੁੱਟ ਨੂੰ ਸਿਮੂਲੇਟ ਕਰਦਾ ਹੈ</translation>
@@ -10040,6 +10040,7 @@
 <translation id="8140869601171867148">ਤੁਹਾਡਾ Google ਖਾਤਾ ਉਹੀ ਖਾਤਾ ਹੈ, ਜਿਸ ਦੀ ਵਰਤੋਂ ਤੁਸੀਂ Gmail, YouTube, Chrome ਅਤੇ ਹੋਰ Google ਉਤਪਾਦਾਂ ਲਈ ਕਰਦੇ ਹੋ।
     ਆਪਣੇ ਸਾਰੇ ਬੁੱਕਮਾਰਕਾਂ, ਫ਼ਾਈਲਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਤੱਕ ਆਸਾਨੀ ਨਾਲ ਪਹੁੰਚ ਕਰਨ ਲਈ ਆਪਣੇ ਖਾਤੇ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="8141418916163800697">ਤੁਸੀਂ ਫ਼ੋਨ ਹੱਬ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਹੋਰ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦਾ ਸੈੱਟਅੱਪ ਕਰ ਸਕਦੇ ਹੋ</translation>
+<translation id="814156740715940972">ਟੈਬ ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਟੈਬ ਨਾਲ ਸਪਲਿਟ ਕਰੋ</translation>
 <translation id="8141584439523427891">ਹੁਣ ਵਿਕਲਪਿਕ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਖੋਲ੍ਹਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="8141725884565838206">ਆਪਣੇ ਪਾਸਵਰਡ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{ਇੱਕ ਵੀਡੀਓ}one{# ਵੀਡੀਓ}other{# ਵੀਡੀਓ}}</translation>
@@ -11173,9 +11174,6 @@
 <translation id="894360074127026135">Netscape ਅੰਤਰਰਾਸ਼ਟਰੀ ਸਟੈਪ-ਅਪ</translation>
 <translation id="8944099748578356325">ਵਧੇਰੇ ਤੇਜ਼ੀ ਨਾਲ ਬੈਟਰੀ ਵਰਤੇਗਾ (ਇਸ ਸਮੇਂ <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944633700466246631">Google Password Manager ਲਈ 6-ਅੰਕੀ ਰਿਕਵਰੀ ਪਿੰਨ ਬਣਾਓ</translation>
-<translation id="8944725102565796255">ਜੇ ਤੁਸੀਂ ਇਸ ਖਾਤੇ ਨੂੰ ਸਿਰਫ਼ ਇੱਕ ਵਾਰ ਵਰਤਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ ਤੁਸੀਂ <ph name="GUEST_LINK_BEGIN" />ਡੀਵਾਈਸ ਨੂੰ ਮਹਿਮਾਨ ਵਜੋਂ ਵਰਤ<ph name="GUEST_LINK_END" /> ਸਕਦੇ ਹੋ। ਜੇ ਤੁਸੀਂ ਕਿਸੇ ਹੋਰ ਲਈ ਖਾਤਾ ਸ਼ਾਮਲ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ ਆਪਣੇ <ph name="DEVICE_TYPE" /> ਵਿੱਚ <ph name="LINK_BEGIN" />ਕੋਈ ਨਵਾਂ ਵਿਅਕਤੀ ਸ਼ਾਮਲ ਕਰੋ<ph name="LINK_END" />।
-
-ਵੈੱਬਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਨੂੰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਪਹਿਲਾਂ ਤੋਂ ਦਿੱਤੀਆਂ ਗਈਆਂ ਇਜਾਜ਼ਤਾਂ ਇਸ ਖਾਤੇ 'ਤੇ ਲਾਗੂ ਹੋ ਸਕਦੀਆਂ ਹਨ। ਤੁਸੀਂ <ph name="SETTINGS_LINK_BEGIN" />ਸੈਟਿੰਗਾਂ<ph name="SETTINGS_LINK_END" /> ਵਿੱਚ ਜਾ ਕੇ ਆਪਣੇ Google ਖਾਤਿਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="8945274638472141382">ਪ੍ਰਤੀਕ ਆਕਾਰ</translation>
 <translation id="8945508919180478719">ਸਟੂਡੀਓ-ਸਟਾਈਲ ਮਾਈਕ</translation>
 <translation id="8946359700442089734">ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਡੀਬੱਗ ਕਰਨਾ ਇਸ <ph name="IDS_SHORT_PRODUCT_NAME" /> ਡੀਵਾਈਸ 'ਤੇ ਪੂਰੀ ਤਰ੍ਹਾਂ ਸਮਰਥਿਤ ਨਹੀਂ ਸੀ।</translation>

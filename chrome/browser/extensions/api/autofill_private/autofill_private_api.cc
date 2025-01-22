@@ -661,8 +661,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveIbanFunction::Run() {
   autofill::Iban iban_to_write =
       existing_iban ? *existing_iban : autofill::Iban();
 
-  iban_to_write.SetRawInfo(autofill::IBAN_VALUE,
-                           base::UTF8ToUTF16(*iban_entry->value));
+  iban_to_write.set_value(base::UTF8ToUTF16(*iban_entry->value));
 
   if (iban_entry->nickname) {
     iban_to_write.set_nickname(base::UTF8ToUTF16(*iban_entry->nickname));

@@ -85,6 +85,7 @@
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> a mis fin à la connexion de manière inattendue.</translation>
 <translation id="1160009341934077418">Historique des prix sur le Web</translation>
 <translation id="1161325031994447685">De vous reconnecter au réseau Wi-Fi</translation>
+<translation id="1161663161838091892">Synchroniser les onglets et l'historique pour continuer</translation>
 <translation id="1163507966173624031">Musique folk et traditionnelle</translation>
 <translation id="11635448457105324">Bouton Gérer les adresses, activez-le pour ajouter et gérer des adresses dans les paramètres de Chrome</translation>
 <translation id="1165039591588034296">Erreur</translation>
@@ -637,6 +638,7 @@
 <translation id="2105838220373099643">Jeux de rôles</translation>
 <translation id="2107021941795971877">Supports d'impression</translation>
 <translation id="2108755909498034140">Redémarrer l'ordinateur</translation>
+<translation id="2109845311767915560">Groupe d'onglets partagé</translation>
 <translation id="2111166930115883695">Appuyez sur la barre d'espacement pour jouer</translation>
 <translation id="2113977810652731515">Carte</translation>
 <translation id="2114841414352855701">Politique sans effet, car remplacée par <ph name="POLICY_NAME" />.</translation>
@@ -1105,6 +1107,7 @@
 <translation id="297173220375858963">Éditique</translation>
 <translation id="2972581237482394796">&amp;Rétablir</translation>
 <translation id="2974468223369775963">Cet IBAN n'a pas pu être enregistré dans votre compte Google. Il est plutôt enregistré dans Chrome sur cet appareil. Chrome vous le demandera à nouveau la prochaine fois que vous utiliserez cet IBAN.</translation>
+<translation id="297667759942911166">Collaborer dans des groupes d'onglets</translation>
 <translation id="2977665033722899841">Ligne <ph name="ROW_NAME" /> actuellement sélectionnée. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">verrouiller et utiliser votre clavier.</translation>
 <translation id="2978824962390592855">Opéra</translation>
@@ -2064,6 +2067,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4661556981531699496">Faune et animaux de compagnie</translation>
 <translation id="4661868874067696603">Rechercher plus d'options d'achat</translation>
 <translation id="4663373278480897665">La caméra est autorisée</translation>
+<translation id="4664084870155869900">Utilisez le remplissage automatique la prochaine fois. La carte est enregistrée sur votre appareil.</translation>
 <translation id="466561305373967878">Jeux de société</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Réalité virtuelle</translation>
@@ -2089,6 +2093,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4704745399240123930">Les cartes non acceptées par ce marchand, comme les cartes virtuelles, sont désactivées.</translation>
 <translation id="4708268264240856090">Votre connexion a été interrompue</translation>
 <translation id="4708276642004148190">Approvisionnement en eau et traitement de l'eau</translation>
+<translation id="4711628883879888561">Collaborer sur un groupe d'onglets</translation>
 <translation id="471880041731876836">Vous n'avez pas l'autorisation pour consulter ce site</translation>
 <translation id="4718897478554657123">600 mm x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />d'exécuter Windows Network Diagnostics<ph name="END_LINK" /></translation>
@@ -2673,6 +2678,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="573555826359077410">Bouton Créer un formulaire, activez-le pour créer rapidement un nouveau formulaire dans Google Formulaires</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Enregistrer la carte dans votre compte Google}one{Enregistrer la carte dans votre compte Google}other{Enregistrer les cartes dans votre compte Google}}</translation>
 <translation id="5738385766833540397">Gérez la façon dont vous recevez des alertes de réduction pour les produits que vous suivez</translation>
+<translation id="573974402615125334">Pour partager et rejoindre des groupes d'onglets ainsi que collaborer dans ces derniers, synchronisez votre historique et vos onglets</translation>
 <translation id="5740911612628596808">Enveloppe C9</translation>
 <translation id="5742806904559466333">Bars, clubs et vie nocturne</translation>
 <translation id="5743684619253032786">Produits de soins des ongles</translation>
@@ -2694,6 +2700,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="578305955206182703">Ambre</translation>
 <translation id="5783700460098783980">Valises et accessoires de voyage</translation>
 <translation id="57838592816432529">Désactiver le son</translation>
+<translation id="5783922175933467571">Le lien de <ph name="TAB_GROUP_DISPLAY_NAME" /> expirera dans 48 heures</translation>
 <translation id="5784606427469807560">Un problème est survenu lors de la confirmation de votre carte. Vérifiez votre connexion Internet et réessayez.</translation>
 <translation id="5785756445106461925">De plus, cette page inclut d'autres ressources qui ne sont pas sécurisées. Ces ressources peuvent être consultées par des tiers pendant leur transfert, et modifiées par un pirate informatique dans le but de changer l’apparence de cette page.</translation>
 <translation id="5793317771769868848">Ce mode de paiement sera supprimé de cet appareil</translation>
@@ -2766,6 +2773,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5930147475897662863">Activez ce paramètre pour utiliser l'Aide à la rédaction</translation>
 <translation id="593102073240001326">Contenu pour bricoleurs et professionnels</translation>
 <translation id="5932224571077948991">Site diffusant des annonces intrusives ou trompeuses</translation>
+<translation id="5933597524153120073">Tout ouvrir (<ph name="ITEMS" />) dans une nouvelle fenêtre</translation>
 <translation id="5937560539988385583">Page traduite</translation>
 <translation id="5938153366081463283">Ajouter une carte virtuelle</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3872,6 +3880,7 @@ Détails supplémentaires :
 <translation id="7865448901209910068">Meilleure vitesse</translation>
 <translation id="7870281855125116701">Rabais trouvé</translation>
 <translation id="7871445724586827387">Modifier le mot de passe de votre compte Google</translation>
+<translation id="787226752901403048">Connectez-vous à Chrome pour partager et rejoindre des groupes d'onglets et travailler ensemble sur des idées</translation>
 <translation id="7877007680666472091">identifiants de contenu protégé</translation>
 <translation id="7878562273885520351">Votre mot de passe a peut-être été compromis</translation>
 <translation id="7882421473871500483">Brun</translation>
@@ -4326,6 +4335,7 @@ Détails supplémentaires :
 <translation id="8702965365666568344">Ruban de montage</translation>
 <translation id="8703575177326907206">Votre connexion à <ph name="DOMAIN" /> n'est pas chiffrée.</translation>
 <translation id="8705331520020532516">Numéro de série</translation>
+<translation id="8706806585855470492">Vous pourrez partager et rejoindre des groupes d'onglets ainsi que collaborer dans ces derniers</translation>
 <translation id="8708134712139312373">Les sites peuvent demander à se connecter à des appareils Bluetooth</translation>
 <translation id="8710842507289500830">Style de police</translation>
 <translation id="8712637175834984815">OK</translation>
@@ -4468,6 +4478,7 @@ Détails supplémentaires :
 <translation id="8975263830901772334">Les noms des fichiers que vous imprimez</translation>
 <translation id="8982884016487650216">Chargement du fichier PDF terminé</translation>
 <translation id="8983369100812962543">Vous pouvez maintenant redimensionner l'application</translation>
+<translation id="8985112471026018799">Enregistrer la carte pour un paiement plus rapide</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour afficher votre historique de navigation dans Chrome</translation>
 <translation id="8987663052629670333">Services d'impression de photos</translation>
 <translation id="8987927404178983737">Mois</translation>
@@ -4534,6 +4545,7 @@ Détails supplémentaires :
 <translation id="9090993752571911635">Fournisseurs d'accès Internet (FAI)</translation>
 <translation id="9093723786115107672">Vêtements de nuit</translation>
 <translation id="9094544726794842788">La mention Je n'aime pas ouvre un formulaire permettant de soumettre des commentaires détaillés sur les raisons pour lesquelles vous n'aimez pas ces résultats</translation>
+<translation id="9094809883254050729">Utilisez le remplissage automatique la prochaine fois. La carte est chiffrée une fois enregistrée.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Appuyez sur Tabulation, puis sur Entrée pour définir Chrome comme navigateur par défaut du système dans les réglages iOS</translation>
 <translation id="9101450247048146228">Mouvement et utilisation de la caméra (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Bac 1</translation>

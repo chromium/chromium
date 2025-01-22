@@ -521,13 +521,15 @@ class TemplateURLService final : public WebDataServiceConsumer,
   void StopSyncing(syncer::DataType type) override;
   base::WeakPtr<SyncableService> AsWeakPtr() override;
 
-  // Processes a local TemplateURL change for Sync. |turl| is the TemplateURL
-  // that has been modified, and |type| is the Sync ChangeType that took place.
+  // Processes a TemplateURL change for Sync. `turl` is the TemplateURL
+  // that has been modified, and `type` is the Sync ChangeType that took place.
   // This may send a new SyncChange to the cloud. If our model has not yet been
   // associated with Sync, or if this is triggered by a Sync change, then this
-  // does nothing.
+  // does nothing. In case local and account data are kept separate, this copies
+  // the current active value, over to both the local and the account data,
+  // thereby dual-writing the the template url upon change.
   void ProcessTemplateURLChange(const base::Location& from_here,
-                                const TemplateURL* turl,
+                                TemplateURL* turl,
                                 syncer::SyncChange::SyncChangeType type);
 
   // Returns whether the device is from an EEA country. This is consistent with
@@ -564,9 +566,9 @@ class TemplateURLService final : public WebDataServiceConsumer,
       TemplateURLData::ActiveStatus is_active);
 
   // Returns a SyncData with a sync representation of the search engine data
-  // from |turl|.
-  static syncer::SyncData CreateSyncDataFromTemplateURL(
-      const TemplateURL& turl);
+  // from `data`.
+  static syncer::SyncData CreateSyncDataFromTemplateURLData(
+      const TemplateURLData& data);
 
   // Creates a new heap-allocated TemplateURL* which is populated by overlaying
   // |sync_data| atop |existing_turl|.  |existing_turl| may be NULL; if not it
@@ -733,15 +735,6 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // NOTE: This should not be called with an extension keyword as there are no
   // updates needed in that case.
   bool Update(TemplateURL* existing_turl, const TemplateURL& new_values);
-
-  // If the TemplateURL comes from a prepopulated URL available in the current
-  // country, update all its fields save for the keyword, short name and id so
-  // that they match the internal prepopulated URL. TemplateURLs not coming from
-  // a prepopulated URL are not modified.
-  static void UpdateTemplateURLIfPrepopulated(
-      TemplateURL* existing_turl,
-      PrefService* prefs,
-      search_engines::SearchEngineChoiceService* search_engine_choice_service);
 
   // If the TemplateURL's sync GUID matches the kSyncedDefaultSearchProviderGUID
   // preference it will be used to update the DSE in prefs.

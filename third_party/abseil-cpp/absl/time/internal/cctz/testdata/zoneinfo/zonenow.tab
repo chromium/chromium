@@ -97,9 +97,6 @@ XX	+1828-06954	America/Santo_Domingo	Atlantic Standard ("AST") - eastern Caribbe
 # -04/-03 (Chile DST)
 XX	-3327-07040	America/Santiago	most of Chile
 #
-# -04/-03 (Paraguay DST)
-XX	-2516-05740	America/Asuncion	Paraguay
-#
 # -04/-03 - AST/ADT (North America DST)
 XX	+4439-06336	America/Halifax	Atlantic ("AST/ADT") - Canada; Bermuda
 #
@@ -224,7 +221,7 @@ XX	+1345+10031	Asia/Bangkok	Russia; Indochina; Christmas Island
 XX	-0610+10648	Asia/Jakarta	Indonesia ("WIB")
 #
 # +08
-XX	+0117+10351	Asia/Singapore	Russia; Brunei; Malaysia; Singapore
+XX	+0117+10351	Asia/Singapore	Russia; Brunei; Malaysia; Singapore; Concordia
 #
 # +08 - AWST
 XX	-3157+11551	Australia/Perth	Western Australia ("AWST")
@@ -236,7 +233,7 @@ XX	+3114+12128	Asia/Shanghai	China ("CST")
 XX	+2217+11409	Asia/Hong_Kong	Hong Kong ("HKT")
 #
 # +08 - PHT
-XX	+1435+12100	Asia/Manila	Philippines ("PHT")
+XX	+143512+1205804	Asia/Manila	Philippines ("PHT")
 #
 # +08 - WITA
 XX	-0507+11924	Asia/Makassar	Indonesia ("WITA")
@@ -248,7 +245,7 @@ XX	-3143+12852	Australia/Eucla	Eucla
 XX	+5203+11328	Asia/Chita	Russia; Palau; East Timor
 #
 # +09 - JST
-XX	+353916+1394441	Asia/Tokyo	Japan ("JST")
+XX	+353916+1394441	Asia/Tokyo	Japan ("JST"); Eyre Bird Observatory
 #
 # +09 - KST
 XX	+3733+12658	Asia/Seoul	Korea ("KST")

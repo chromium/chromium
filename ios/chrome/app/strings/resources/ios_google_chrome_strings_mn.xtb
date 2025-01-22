@@ -169,6 +169,7 @@
 <translation id="5639704535586432836">Тохиргоо &gt; Нууцлал &gt; Камер &gt; Google Chrome-г нээж, камерыг асаана уу.</translation>
 <translation id="5642200033778930880">Google Chrome таны камерыг Хувааж харах горимд ашиглах боломжгүй</translation>
 <translation id="5661521615548540542">Google Password Manager бүх нууц үгийг шалгаж чадсангүй. Дараа дахин оролдоно уу.</translation>
+<translation id="5681291952421236520">Chrome-г асаах/унтраах</translation>
 <translation id="5690398455483874150">{count,plural, =1{Одоо Chrome-н 1 цонхыг харуулж байна}other{Одоо Chrome-н {count} цонхыг харуулж байна}}</translation>
 <translation id="5690427481109656848">Google ХХК</translation>
 <translation id="5709557627224531708">Chrome-г өгөгдмөл хөтчөөрөө тохируулна уу</translation>
@@ -204,6 +205,7 @@
 <translation id="6484712497741564393"><ph name="EMAIL" />-р нэвтэрсэн.
 
 Таны өгөгдлийг нэвтрэх үгээр тань шифрлэсэн. Google Бүртгэлдээ Chrome-н өгөгдлөө ашиглах болон хадгалахын тулд үүнийг оруулна уу.</translation>
+<translation id="6533470733797826516">Chrome-н автоматаар бөглөх хэсгийн тусламжтай илүү хурдан нэвтрээрэй</translation>
 <translation id="6545449117344801102">Chrome танд чиглэл болон орон нутгийн мэдээллийг өгөхийн тулд хаягуудыг илрүүлж, Google Газрын зургийг ашигладаг.</translation>
 <translation id="6634107063912726160">Та гарсан үед Chrome таны Google Бүртгэлд ямар ч шинэ өгөгдөл синк хийхгүй. Өмнө нь синк хийсэн өгөгдөл бүртгэлд үлдэнэ.</translation>
 <translation id="6636941099779251629">Танай байгууллага танаас Chrome-г ашиглахын тулд нэвтрэхийг шаарддаг. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>

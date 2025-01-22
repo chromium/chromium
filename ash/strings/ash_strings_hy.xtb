@@ -140,6 +140,7 @@
 <translation id="1415846719612499304">Ցուցադրել ցանցերի ցանկը։ <ph name="STATE_TEXT" />։</translation>
 <translation id="1419738280318246476">Ծանուցման հետ գործողություն կատարելու համար ապակողպեք սարքը</translation>
 <translation id="1420408895951708260">Միացնել/անջատել գիշերային ռեժիմը: <ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">Առաջարկվող խումբ</translation>
 <translation id="1426410128494586442">Այո</translation>
 <translation id="1435537621343861112">Հնարավոր չէ սկսել թելադրումը։ Խոսափողն անջատված է։</translation>
 <translation id="1445031758921122223">Դեմքի հետագծման ֆայլերը ներբեռնվեցին</translation>
@@ -243,12 +244,14 @@
 <translation id="17722141032474077">Հաշվարկներ</translation>
 <translation id="1774796056689732716">Օրացույց, <ph name="CURRENT_MONTH_YEAR" />, այժմ ընտրված է՝ <ph name="DATE" />։</translation>
 <translation id="178347895271755507">Կարգավորել հեռախոսի վերջին լուսանկարների, մեդիաֆայլերի և ծանուցումների դիտումը</translation>
+<translation id="1785317913592722944">Հեռացնել տարրը առաջարկվող խմբից</translation>
 <translation id="1786487376942610288">Օգտագործեք «Նկար նկարի մեջ» պատուհանը առավելագույն կամ ընթացիկ չափսով</translation>
 <translation id="1787955149152357925">Անջատված է</translation>
 <translation id="1796561540704213354">Վեբ կայքերը՝ ներառյալ էջերը, որոնք այցելել եք, և բացված էջերը</translation>
 <translation id="179842970735685253">Google-ի օգտագործման պայմանների</translation>
 <translation id="1805407494113167797">Չհաջողվեց նվագարկել Focus ռեժիմի ձայները</translation>
 <translation id="181103072419391116">Ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
+<translation id="1815039896005206046">«Վատն է» կոճակի սեղմումը բացասական կարծիք կուղարկի այս առաջարկվող խմբի մասին</translation>
 <translation id="1816896987747843206">Սա հասանելի է դարձնում տեսախցիկը բոլոր հավելվածներին և կայքերին, որոնք ունեն տեսախցիկի օգտագործման թույլտվություն</translation>
 <translation id="1823873187264960516">Ethernet՝ <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Միացնել տեղորոշման թույլտվությունը</translation>
@@ -390,6 +393,7 @@
 <translation id="2369165858548251131">Ինչպես չինարեն ասել «Բարև»</translation>
 <translation id="2370971919968699910">Տվյալների փոխանցման համար կարող է գումար գանձվել։
 Միացած է <ph name="DEVICECOUNT" /> սարք։</translation>
+<translation id="2383521554963939360">Հավելվածների և ներդիրների խմբեր</translation>
 <translation id="2386292613071805067">Ընտրել էջի ամբողջ բովանդակությունը</translation>
 <translation id="2389423187722941333">Միացնել/անջատել Gemini-ը</translation>
 <translation id="2392659840443812875">Հասանելի թեժ կետ չկա։ Համոզվեք, որ ձեր սարքը մոտակայքում է, և որ Bluetooth-ը միացված է։</translation>
@@ -920,6 +924,7 @@
 <translation id="4151054805501931758">Դիմանկարի ռետուշ</translation>
 <translation id="4156293514828496577">Մարտկոցի լիցքը՝ <ph name="PERCENTAGE" />%։ (մոտ <ph name="TIME_LEFT" />)։
 Որոշ գործառույթներ սահմանափակվել են՝ մարտկոցի աշխատաժամանակը երկարացնելու համար։</translation>
+<translation id="4158003972857765638">Դասավորել նոր աշխատասեղանին</translation>
 <translation id="4160919062868802509">Հայտնաբերվել է մի քանի աուդիո աղբյուր</translation>
 <translation id="416245495747357243">Վերջ։</translation>
 <translation id="4165275524535002941">Մալուխը կարող է համատեղելի չլինել էկրանների հետ</translation>
@@ -968,6 +973,7 @@
 <translation id="4285498937028063278">Ապամրացնել</translation>
 <translation id="428715201724021596">Միանում է պրոֆիլին։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="4287250812980588583">Chrome-ի պատուհան</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Խոսափողի ձայնի ուժգնությունը կառավարվում է <ph name="APP_NAME" /> հավելվածի միջոցով}one{Խոսափողի ձայնի ուժգնությունը կառավարվում է # հավելվածի միջոցով}other{Խոսափողի ձայնի ուժգնությունը կառավարվում է # հավելվածի միջոցով}}</translation>
 <translation id="4294319844246081198">Բարի լույս, <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Մաքրել բոլոր <ph name="COUNT" /> ծանուցումները</translation>
 <translation id="4300272766492248925">Բացել հավելվածը</translation>
@@ -984,6 +990,7 @@
 <translation id="4322742403972824594">«Ctrl + Alt + վեր սլաք» ստեղնային դյուրանցումը փոփոխվել է։ Home ստեղնի գործողություններն օգտագործելու համար սեղմեք «<ph name="LAUNCHER_KEY_NAME" /> + ձախ սլաք» ստեղնային դյուրանցումը։</translation>
 <translation id="4324840740119394760">Սա հասանելի է դարձնում տեսախցիկը <ph name="APP_NAME" /> հավելվածին, ինչպես նաև բոլոր հավելվածներին և կայքերին, որոնք ունեն տեսախցիկի օգտագործման թույլտվություն</translation>
 <translation id="4327147325944669226">Տեսագրել խաղը</translation>
+<translation id="4329076911374908740">Պահված խմբերի առավելագույն սահմանաչափը լրացել է։</translation>
 <translation id="4338109981321384717">Խոշորացույց</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, Ձայնն անջատված է</translation>
 <translation id="4351244548802238354">Փակել երկխոսությունը</translation>
@@ -1264,6 +1271,7 @@
 <translation id="5245201184978705914">Չհաջողվեց ստեղծել տեքստային տարբերակը</translation>
 <translation id="5251174953851719648">Թարմացնել բովանդակությունը</translation>
 <translation id="5253783950165989294">Կապ է հաստատվել «<ph name="DEVICE_NAME" />» սարքի հետ, մարտկոցի լիցքը՝ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5256939106029293271">Ստուգեք խոսափողը</translation>
 <translation id="5258528442992323769">Պահված աշխատասեղաններ չկան</translation>
 <translation id="5260676007519551770">Աշխատասեղան 4</translation>
 <translation id="5265391159779542051">Արդյունքները բեռնված են</translation>
@@ -1421,6 +1429,7 @@
 <translation id="5745612484876805746">Մութն ընկնելուն պես գիշերային ռեժիմը ավտոմատ կմիանա</translation>
 <translation id="5750765938512549687">Bluetooth-ն անջատված է</translation>
 <translation id="5758114525425072423">Անցնել առանց շեղումների ռեժիմին։ Սահմանվել է ժամաչափ՝ <ph name="FOCUS_DURATION" />։</translation>
+<translation id="5759522586053040964">Լսեք, թե ինչպես եք հնչելու այլ օգտատերերի համար։ Ավարտելու համար սեղմեք ստուգման պատկերակը կամ փակեք տեսազանգի վահանակը։</translation>
 <translation id="5760866832697883462">Կապեք ձեր «<ph name="NAME" />» սարքը</translation>
 <translation id="5762420912707163638">Միացնել/անջատել նշիչը։ <ph name="STATE_TEXT" /> Նշումներ արեք էկրանին հպահարթակի, հպէկրանի կամ ստիլուսի միջոցով։</translation>
 <translation id="576341972084747908">Ներբեռնվում է վտանգավոր ֆայլ՝ <ph name="FILENAME" /></translation>
@@ -1939,6 +1948,7 @@
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">Ստեղծել</translation>
 <translation id="7526573455193969409">Ցանցը կարող է վերահսկվել</translation>
+<translation id="7534543072325030705">«Լավն է» կոճակի սեղմումը դրական կարծիք կուղարկի առաջարկվող այս խմբի մասին</translation>
 <translation id="7536035074519304529">IP հասցե՝ <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Թարմացնել ձախ պատուհանը</translation>
 <translation id="7543399541175347147">Լինուքսի հավելվածներն ու ինկոգնիտո պատուհանները ներկայումս չեն աջակցվում։ Մյուս հավելվածները կպահվեն։</translation>
@@ -2103,6 +2113,7 @@
 <translation id="8004512796067398576">Մեծացնել</translation>
 <translation id="8005527720597583355">Սկսել Առանց շեղումների ռեժիմի աշխատաշրջան</translation>
 <translation id="8015361438441228492">Չհաջողվեց փոփոխել առաջադրանքը։</translation>
+<translation id="8027187124910699148">Շարունակել առաջարկվող խումբը</translation>
 <translation id="802782383769312836">Նախորդ աշխատասեղանը՝ <ph name="DESK_NAME" />։ Աշխատասեղան <ph name="DESK_INDEX" />՝ <ph name="DESK_COUNT" />-ից։</translation>
 <translation id="8029247720646289474">Չհաջողվեց միանալ թեժ կետին</translation>
 <translation id="8029629653277878342">Անվտանգության նկատառումներից ելնելով անհրաժեշտ է մուտքագրել PIN կոդը կամ գաղտնաբառը</translation>
@@ -2211,6 +2222,7 @@
 <translation id="8426708595819210923">Բարի երեկո, <ph name="GIVEN_NAME" /></translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" />-ից <ph name="KEY_TWO" /></translation>
+<translation id="8429547770382807369">Պահել խումբը հետոյի համար</translation>
 <translation id="8433186206711564395">Ցանցային կարգավորումներ</translation>
 <translation id="8433977262951327081">Ներածման ընտրանքների պղպջակը դարակում ցուցադրելու դյուրանցումը փոխվել է։ <ph name="OLD_SHORTCUT" />-ի փոխարեն օգտագործեք <ph name="NEW_SHORTCUT" />։</translation>
 <translation id="8437311513256731931">Բացել կարծիք հայտնելու գործիքը</translation>
@@ -2219,6 +2231,7 @@
 <translation id="8446884382197647889">Մանրամասն</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" />+V</translation>
 <translation id="8462305545768648477">Փակել «Ընտրեք և լսեք» գործառույթը</translation>
+<translation id="8466665972451889002">Ցույց տալ տարրերը <ph name="GROUP_NAME" /> խմբում</translation>
 <translation id="8468806060683421065">վերջնաժամկետը՝ <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Էկրանի մասշտաբի կարգավորումներ</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />-ն ունի <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />:</translation>
@@ -2241,6 +2254,7 @@
 <translation id="8551588720239073785">Ամսաթվի և ժամի կարգավորումներ</translation>
 <translation id="8553395910833293175">Արդեն հասանելի է բոլոր աշխատասեղաններին։</translation>
 <translation id="8555757996376137129">Հեռացնել ընթացիկ աշխատասեղանը</translation>
+<translation id="8558521694042102707">Գեներատիվ արհեստական բանականությունը կարող է սխալներ թույլ տալ, այդ թվում՝ մարդկանց մասին, ուստի ստուգեք դրա տրամադրած պատասխանները։</translation>
 <translation id="8559845965695780508">Փոփոխել է <ph name="USER" /> օգտատերը</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">Ահա մի քանի առաջարկ, որոնք կարող եք փորձել</translation>
@@ -2263,6 +2277,7 @@
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="8638637208069328956">Միացնել/անջատել խոսափողը</translation>
 <translation id="8639760480004882931">Մնացել է <ph name="PERCENTAGE" /></translation>
+<translation id="8640470573049727749">Թաքցնել խմբերի բոլոր առաջարկները</translation>
 <translation id="8641510901370802679">Ցուցադրվում են տեղեկություններ (<ph name="ANSWER_TYPE" />)</translation>
 <translation id="8646417893960517480">Ժամաչափ՝ <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Օգտատեր ավելացնելու համար մուտքագրեք Family Link-ի ծնողի մուտքի կոդը</translation>
@@ -2345,6 +2360,7 @@
 <translation id="8905919797434099235">(Անանուն)</translation>
 <translation id="890616557918890486">Փոխել աղբյուրը</translation>
 <translation id="8909138438987180327">Մարտկոցի լիցքը՝ <ph name="PERCENTAGE" />%</translation>
+<translation id="8916866375277139011">Թաքցնել տարրերը <ph name="GROUP_NAME" /> խմբում</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google օգնականն այս լեզվով չի խոսում:</translation>
 <translation id="8926951137623668982">Դարակը միշտ թաքցված է</translation>

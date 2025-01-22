@@ -828,7 +828,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4835385943915508971">Chrome tidak memiliki akses ke sumber daya yang diminta.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Pulihkan grup tab sebanyak <ph name="TAB_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />, sebagai grup tab latar belakang baru.}other{Pulihkan grup tab sebanyak <ph name="TAB_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />, sebagai grup tab latar belakang baru.}}</translation>
 <translation id="4837753911714442426">Membuka opsi untuk mencetak halaman</translation>
-<translation id="4842092870884894799">Menampilkan pop-up pembuatan sandi</translation>
 <translation id="4844633725025837809">Untuk keamanan tambahan, enkripsi sandi di perangkat Anda sebelum disimpan ke Pengelola Sandi Google</translation>
 <translation id="4850886885716139402">Lihat</translation>
 <translation id="4852014461738377247">Login \u2026</translation>
@@ -1003,6 +1002,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="5665379678064389456">Buat acara di <ph name="APP_NAME" /></translation>
 <translation id="5680616253592639556">Informasi tidak lengkap</translation>
 <translation id="5683547024293500885">Chrome tidak dapat memeriksa update</translation>
+<translation id="5683916195767086779">Grup tab</translation>
 <translation id="5686790454216892815">Nama file terlalu panjang</translation>
 <translation id="5687606994963670306">Chrome otomatis menghapus situs yang tersimpan lebih dari 30 hari. Situs yang Anda buka lagi dapat kembali muncul di daftar. Atau, Anda dapat memblokir situs agar tidak menyarankan iklan untuk Anda. Pelajari lebih lanjut <ph name="BEGIN_LINK" />cara mengelola privasi iklan Anda di Chrome<ph name="END_LINK" />.</translation>
 <translation id="569536719314091526">Terjemahkan halaman ini ke bahasa apa pun dari tombol Opsi lainnya</translation>

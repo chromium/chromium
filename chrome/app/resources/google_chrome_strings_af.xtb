@@ -59,7 +59,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1698376642261615901">Google Chrome is 'n webblaaier wat webbladsye en programme teen die spoed van lig laat loop. Dit is vinnig, stabiel en maklik om te gebruik. Blaai veiliger deur die web aangesien wanware- en uitvissingbeskerming by Google Chrome ingebou is.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome sal oor 'n uur herbegin}other{Chrome sal oor # uur herbegin}}</translation>
 <translation id="1722488837206509557">Hiermee sal jy uit beskikbare toestelle kan kies en inhoud daarop kan wys.</translation>
-<translation id="1734234790201236882">Chrome sal hierdie wagwoord in jou Google-rekening stoor. Jy sal dit nie hoef te onthou nie.</translation>
 <translation id="1786003790898721085">Maak seker dat jy by Chrome aangemeld is op jou <ph name="TARGET_DEVICE_NAME" /> en probeer dan weer stuur.</translation>
 <translation id="1786044937610313874">Kortpaaie maak oop in Chrome</translation>
 <translation id="178701303897325119">Hierdie uitbreiding word nie meer gesteun nie. Chrome beveel aan dat jy dit eerder verwyder.</translation>
@@ -327,6 +326,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4990567037958725628">Google Chrome Kanarie</translation>
 <translation id="4997044641749333913">Chrome kan hierdie oortjies onaktief maak om jou blaai-ervaring te verbeter en dinge vinnig te hou.</translation>
 <translation id="5003967926796347400">Klik “Google Wagwoordbestuurder”</translation>
+<translation id="5114340746415930644">Voer jou wagfrase in om Chrome-data in jou rekening, <ph name="USER_EMAIL" />, te gebruik en te stoor</translation>
 <translation id="5120334927898581447">Meld aan by Chrome wanneer jy by ander Google-dienste aanmeld</translation>
 <translation id="5126049312684316860">Chrome laai selfs nog meer bladsye wat jy moontlik sal besoek vooraf, sodat hulle vinniger laai wanneer jy hulle wel besoek</translation>
 <translation id="5132929315877954718">Ontdek wonderlike programme, speletjies, uitbreidings en temas vir Google Chrome.</translation>
@@ -478,9 +478,6 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="7024536598735240744">Uitpakfout: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installering is gestop.</translation>
 <translation id="7025800014283535195">Jy kan hier tussen Chrome-profiele wissel</translation>
-<translation id="7036251913954633326">Jy kan <ph name="GUEST_LINK_BEGIN" />gasmodus<ph name="GUEST_LINK_END" /> in Chrome-blaaier gebruik as jy hierdie rekening net een keer wil gebruik. <ph name="LINK_BEGIN" />Voeg ’n nuwe persoon<ph name="LINK_END" /> by jou <ph name="DEVICE_TYPE" /> as jy ’n rekening vir iemand anders wil byvoeg.
-
-Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekening van toepassing wees. Jy kan jou Google-rekeninge in <ph name="SETTINGS_LINK_BEGIN" />Instellings<ph name="SETTINGS_LINK_END" /> bestuur.</translation>
 <translation id="7048502283602470098">Verken AI</translation>
 <translation id="7059914902409643750">Maak Chrome jou eie</translation>
 <translation id="7071827361006050863">Chrome gaan blaaierdata binnekort uitvee</translation>

@@ -4,13 +4,13 @@
 
 #import "ios/web_view/internal/metrics/cwv_metrics_provider_internal.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/metrics/histogram_macros.h"
-#include "components/metrics/library_support/histogram_manager.h"
+#import "base/metrics/histogram_macros.h"
+#import "components/metrics/library_support/histogram_manager.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
+#import "testing/platform_test.h"
+#import "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace ios_web_view {
 

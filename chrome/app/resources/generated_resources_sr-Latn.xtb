@@ -129,7 +129,6 @@
 <translation id="1079242569060319448">Zaboravili ste PIN?</translation>
 <translation id="1079285777677001938">Funkcije na nekim sajtovima možda ne rade.</translation>
 <translation id="1079766198702302550">Uvek blokiraj pristup kameri</translation>
-<translation id="1080365971383768617">Lozinke na svim uređajima</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 kartica}one{<ph name="GROUP_TITLE" /> – # kartica}few{<ph name="GROUP_TITLE" /> – # kartice}other{<ph name="GROUP_TITLE" /> – # kartica}}</translation>
 <translation id="1082214733466244292">Administrator je blokirao neke funkcionalnosti za ovaj uređaj</translation>
 <translation id="1082398631555931481">Alatka <ph name="THIRD_PARTY_TOOL_NAME" /> želi da vrati podešavanja Chrome-a na prvobitne podrazumevane vrednosti. To će resetovati početnu stranicu, stranicu nove kartice i pretraživač, onemogućiće dodatke i otkačiti sve kartice. Takođe će obrisati druge privremene i keširane podatke, poput kolačića, sadržaja i podataka o sajtovima.</translation>
@@ -2296,6 +2295,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2581786034175502848">Pritisnite shift 5 puta da biste ga ponovo omogućili</translation>
 <translation id="2581992808349413349">Koristite bezbednu vezu da biste potražili IP adresu sajta u DNS-u (sistem imena domena). Koristite dobavljača usluga kojim se upravlja na <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
+<translation id="2583905535229480958">Bilo koji čitač pametnih kartica</translation>
 <translation id="2584109212074498965">Preuzimanje Kerberos tiketa nije uspelo. Probajte ponovo ili se obratite administratoru uređaja u organizaciji. (Kôd greške <ph name="ERROR_CODE" />)</translation>
 <translation id="2584974473573720127">Upravljajte dozvolama za mikrofon za veb-sajtove u Chrome-u</translation>
 <translation id="2586561813241011046">Instaliranje aplikacije <ph name="APP_NAME" /> nije uspelo. Probajte ponovo ili se obratite administratoru. Kôd greške: <ph name="ERROR_CODE" />.</translation>
@@ -3020,6 +3020,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="310297983047869047">Prethodni slajd</translation>
 <translation id="3103451787721578293">Unesite razlog za otpremanje ovih podataka:</translation>
 <translation id="3103512663951238230">alt + klik</translation>
+<translation id="3104763887980088552">Evidencija aktivnosti</translation>
 <translation id="3104948640446684649">Šaljite podatke o korišćenju i dijagnostičke podatke. Ovaj uređaj trenutno automatski šalje podatke o dijagnostici, uređaju i korišćenju aplikacija Google-u. To doprinosi održavanju stabilnosti sistema i aplikacije i drugim podešavanjima. Neki objedinjeni podaci će takođe pomoći Google aplikacijama i partnerima, poput Android programera. Ako uključite podešavanje dodatne aktivnosti na vebu i u aplikacijama, ti podaci mogu da se čuvaju na Google nalogu. <ph name="BEGIN_LINK2" />Saznajte više o pokazateljima<ph name="BEGIN_LINK2_END" />Saznajte više<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Poslednje neuspešno ažuriranje</translation>
 <translation id="3105796011181310544">Želite li da se vratite na Google?</translation>
@@ -6234,9 +6235,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) želi da se pridružite grupi kartica. Svako sa linkom može da menja sve kartice, pa budite pažljivi kada se pridružujete. Link ističe za 48 sati.</translation>
 <translation id="5410889048775606433">Fuksija</translation>
 <translation id="5411022484772257615">Registracija za školu nije uspela</translation>
-<translation id="5411856344659127989">Ako želite da dodate nalog za nekog drugog, <ph name="LINK_BEGIN" />dodajte novu osobu<ph name="LINK_END" /> na uređaj <ph name="DEVICE_TYPE" />.
-
-Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj nalog. Google nalozima možete da upravljate u <ph name="SETTINGS_LINK_BEGIN" />Podešavanjima<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="54118879136097217">Instalirajte aplikaciju na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="5413640305322530561">Saznajte više o dijagnostici i podacima o korišćenju</translation>
 <translation id="5414198321558177633">Lista profila se osvežava. To može da potraje nekoliko minuta.</translation>
@@ -6515,7 +6513,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="5610867721023328944">Probajte ponovo ili izaberite neku od dostupnih tema u nastavku.</translation>
 <translation id="5611398002774823980">Sačuvaj na nalogu</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5613074282491265467">Kada ste prijavljeni u Chrome, lozinke koje sačuvate idu na Google nalog, <ph name="USER_EMAIL" />. Da biste to isključili, idite u podešavanja.</translation>
 <translation id="5614190747811328134">Obaveštenje o korisniku</translation>
 <translation id="5614553682702429503">Želite li da sačuvate lozinku?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
@@ -8552,7 +8549,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7088674813905715446">Administrator je uklonio ovaj uređaj. Da biste ga omogućili za registraciju, zatražite od administratora da promeni njegov status u „Na čekanju“.</translation>
 <translation id="7088960765736518739">Pristup pomoću prekidača</translation>
 <translation id="7089253021944603172">Kartica je ponovo aktivna</translation>
-<translation id="7090160970140261931">Možete da dodajete dodatne naloge na <ph name="DEVICE_TYPE" /> koje ćete koristiti sa veb-sajtovima i Android aplikacijama. Možete i da kontrolišete koji nalozi se koriste sa Android aplikacijama.</translation>
 <translation id="7090714929377281710">Automatski isključi hotspot</translation>
 <translation id="7092504544229909737">Ne može da se koristi sa Android aplikacijama</translation>
 <translation id="7093220653036489319">Brzi odgovori</translation>
@@ -9013,6 +9009,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7424818322350938336">Mreža je dodata</translation>
 <translation id="7425037327577270384">Pomoć pri pisanju</translation>
 <translation id="7427348830195639090">Stranica u pozadini: <ph name="BACKGROUND_PAGE_URL" /></translation>
+<translation id="7427729970025360383">Ovim profilom se upravlja</translation>
 <translation id="7427798576651127129">Poziv sa uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="7429415133937917139">Simulira prikaz Brajevog ekrana koji može da se osvežava
         u ChromeVox oknu u vrhu ekrana</translation>
@@ -11166,9 +11163,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">brža potrošnja baterije (trenutno <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944633700466246631">Napravite šestocifreni PIN za vraćanje pristupa Google menadžeru lozinki</translation>
-<translation id="8944725102565796255">Ako želite da koristite ovaj nalog samo jednom, možete da <ph name="GUEST_LINK_BEGIN" />koristite uređaj kao gost<ph name="GUEST_LINK_END" />. Ako želite da dodate nalog za nekog drugog, <ph name="LINK_BEGIN" />dodajte novu osobu<ph name="LINK_END" /> na uređaj <ph name="DEVICE_TYPE" />.
-
-Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj nalog. Google nalozima možete da upravljate u <ph name="SETTINGS_LINK_BEGIN" />Podešavanjima<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="8945274638472141382">Veličina ikone</translation>
 <translation id="8945508919180478719">Mikrofon u studijskom stilu</translation>
 <translation id="8946359700442089734">Funkcije za otklanjanje grešaka nisu u potpunosti omogućene na ovom <ph name="IDS_SHORT_PRODUCT_NAME" /> uređaju.</translation>

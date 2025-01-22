@@ -101,7 +101,17 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
   ax_annotators_manager_ = std::make_unique<AXAnnotatorsManager>(this);
 }
 
-RenderAccessibilityImpl::~RenderAccessibilityImpl() = default;
+RenderAccessibilityImpl::~RenderAccessibilityImpl() {
+  if (ax_context_) {
+    // Accessibility has been turned off for this frame. Destruction of this
+    // instance's WebAXContext will destroy the document's AXObjectCache if
+    // there are no other active contexts on the document. If there are other
+    // active contexts, the serializer must be reset to ensure that the full
+    // tree is serialized should accessibility be once again turned on for this
+    // frame.
+    ax_context_->ResetSerializer();
+  }
+}
 
 void RenderAccessibilityImpl::DidCreateNewDocument() {
   const WebDocument& document = GetMainDocument();

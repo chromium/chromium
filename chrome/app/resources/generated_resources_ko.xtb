@@ -129,7 +129,6 @@
 <translation id="1079242569060319448">PIN 찾기</translation>
 <translation id="1079285777677001938">일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="1079766198702302550">카메라 액세스 항상 차단</translation>
-<translation id="1080365971383768617">모든 기기의 비밀번호</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 탭 1개}other{<ph name="GROUP_TITLE" /> - 탭 #개}}</translation>
 <translation id="1082214733466244292">관리자가 이 기기에서 일부 기능을 차단했습니다.</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" />에서 Chrome 설정을 기본값으로 복원하려 합니다. 홈페이지, 새 탭 페이지, 검색엔진이 초기화되고, 확장 프로그램이 사용 중지되며, 모든 탭이 고정 해제됩니다. 쿠키, 콘텐츠 데이터, 사이트 데이터 등 기타 임시 데이터와 캐시된 데이터도 삭제됩니다.</translation>
@@ -523,6 +522,7 @@
 <translation id="135389172849514421">오프라인에서 사용 가능</translation>
 <translation id="1353980523955420967">PPD를 찾을 수 없습니다. Chromebook이 온라인 상태인지 확인하고 다시 시도해 보세요.</translation>
 <translation id="1354045473509304750"><ph name="HOST" />의 카메라 사용 및 이동을 계속 허용</translation>
+<translation id="1354148503392558902">비밀번호 변경 중...</translation>
 <translation id="1355088139103479645">모든 데이터를 삭제하시겠습니까?</translation>
 <translation id="1356376170199999104">허용됨 – <ph name="PERMISSION_DETAILS" />. 물리적 스위치를 사용하여 마이크를 사용 설정하세요.</translation>
 <translation id="1356959069439783953">비활성 탭의 새로운 디자인</translation>
@@ -1103,6 +1103,7 @@
 <translation id="1751335846119670066">읽기 도우미</translation>
 <translation id="17513872634828108">열린 탭</translation>
 <translation id="175196451752279553">닫은 탭 다시 열기(&amp;E)</translation>
+<translation id="1752557850776261983">로그인 확인 중...</translation>
 <translation id="1753067873202720523">Chromebook이 켜져 있으면 충전되지 않을 수 있습니다.</translation>
 <translation id="1753557900380512635">인테리어</translation>
 <translation id="1753905327828125965">자주 방문한 페이지</translation>
@@ -3035,6 +3036,7 @@
 <translation id="310297983047869047">이전 슬라이드</translation>
 <translation id="3103451787721578293">이 데이터를 업로드하는 이유를 입력하세요</translation>
 <translation id="3103512663951238230">Alt + 클릭</translation>
+<translation id="3104763887980088552">활동 로그</translation>
 <translation id="3104948640446684649">사용 및 진단 데이터를 보냅니다. 이 기기는 현재 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내고 있습니다. 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 합산 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움이 됩니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK2" />측정항목에 관해 자세히 알아보기<ph name="BEGIN_LINK2_END" />자세히 알아보기<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">최근 업데이트 실패</translation>
 <translation id="3105796011181310544">Google로 되돌리시겠습니까?</translation>
@@ -3749,6 +3751,7 @@
 <translation id="3629664892718440872">이 선택사항 저장</translation>
 <translation id="3630132874740063857">휴대전화</translation>
 <translation id="3630995161997703415">이 사이트를 언제든지 사용할 수 있도록 앱 표시줄에 추가합니다</translation>
+<translation id="3632929818790223729">선택한 탭과 활성 탭 분할</translation>
 <translation id="3634652306074934350">권한 요청 만료됨</translation>
 <translation id="3635199270495525546">신뢰할 수 있는 플랫폼 모듈(TPM) 감지됨</translation>
 <translation id="3635353578505343390">Google에 의견 보내기</translation>
@@ -6249,9 +6252,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" />(<ph name="OWNER_EMAIL" />)님이 내가 탭 그룹에 참여하기를 바랍니다. 링크가 있는 사용자는 모든 탭을 수정할 수 있으므로, 신중하게 참여하세요. 링크는 48시간 후에 만료됩니다.</translation>
 <translation id="5410889048775606433">푸크시아</translation>
 <translation id="5411022484772257615">학교 등록을 완료할 수 없습니다</translation>
-<translation id="5411856344659127989">다른 사용자를 위해 계정을 추가하려면 <ph name="DEVICE_TYPE" />에 <ph name="LINK_BEGIN" />새 사용자를 추가<ph name="LINK_END" />하세요.
-
-이 계정에는 웹사이트와 앱에 이미 부여한 권한이 적용될 수 있습니다. <ph name="SETTINGS_LINK_BEGIN" />설정<ph name="SETTINGS_LINK_END" />에서 Google 계정을 관리할 수 있습니다.</translation>
 <translation id="54118879136097217"><ph name="DEVICE_TYPE" />에 앱 설치</translation>
 <translation id="5413640305322530561">진단 및 사용 데이터 자세히 알아보기</translation>
 <translation id="5414198321558177633">프로필 목록을 새로고침하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
@@ -6530,7 +6530,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5610867721023328944">다시 시도하거나 아래에서 사용 가능한 테마 중 하나를 선택하세요.</translation>
 <translation id="5611398002774823980">계정에 저장</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5613074282491265467">Chrome에 로그인하면, 저장하는 비밀번호가 내 Google 계정(<ph name="USER_EMAIL" />)에 저장됩니다. 이 기능을 사용 중지하려면 설정으로 이동하세요.</translation>
 <translation id="5614190747811328134">사용자 알림</translation>
 <translation id="5614553682702429503">비밀번호를 저장하시겠습니까?</translation>
 <translation id="5614947000616625327">iCloud 키체인</translation>
@@ -8562,7 +8561,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7088674813905715446">이 기기는 관리자에 의해 사용 중단 상태로 설정되었습니다. 기기를 등록에 사용하려면 관리자에게 기기를 대기 상태로 전환해 달라고 요청해야 합니다.</translation>
 <translation id="7088960765736518739">스위치 제어</translation>
 <translation id="7089253021944603172">탭이 다시 활성화됨</translation>
-<translation id="7090160970140261931"><ph name="DEVICE_TYPE" />에 계정을 추가하여 웹사이트 및 Android 앱에서 사용할 수 있습니다. Android 앱에서 어떤 계정을 사용할지 제어할 수도 있습니다.</translation>
 <translation id="7090714929377281710">핫스팟 자동 사용 중지</translation>
 <translation id="7092504544229909737">Android 앱에서 사용할 수 없음</translation>
 <translation id="7093220653036489319">빠른 답변</translation>
@@ -9023,6 +9021,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7424818322350938336">네트워크 추가됨</translation>
 <translation id="7425037327577270384">작성 지원 기능</translation>
 <translation id="7427348830195639090">백그라운드 페이지: <ph name="BACKGROUND_PAGE_URL" /></translation>
+<translation id="7427729970025360383">관리되는 프로필입니다</translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" />에서 전화 걸기</translation>
 <translation id="7429415133937917139">화면 상단의 ChromeVox 패널에서 새로고침할 수 있는 점자 디스플레이의 출력을 시뮬레이션합니다.</translation>
 <translation id="7429568074268678162"><ph name="FILENAME" /> 파일은 위험할 수 있습니다. 비밀번호를 추가하여 Chrome에서 확인하도록 하거나 직접 다운로드할 수 있습니다.</translation>
@@ -10041,6 +10040,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8140869601171867148">Google 계정이란 Gmail, YouTube, Chrome, 기타 Google 제품에 사용하는 계정과 동일한 계정입니다.
     내 계정을 사용하여 모든 북마크, 파일 등에 쉽게 액세스해 보세요.</translation>
 <translation id="8141418916163800697">휴대전화 허브 설정에서 더 많은 기능을 설정할 수 있습니다.</translation>
+<translation id="814156740715940972">선택한 탭과 활성 탭 분할</translation>
 <translation id="8141584439523427891">지금 대체 브라우저에서 열립니다.</translation>
 <translation id="8141725884565838206">비밀번호 관리</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{동영상 1개}other{동영상 #개}}</translation>
@@ -11173,9 +11173,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">배터리 소모가 빨라짐(현재 <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944633700466246631">Google 비밀번호 관리자에 사용할 6자리 복구 PIN을 만드세요</translation>
-<translation id="8944725102565796255">이 계정을 한 번만 사용하려면 <ph name="GUEST_LINK_BEGIN" />기기를 게스트로 사용<ph name="GUEST_LINK_END" />하세요. 다른 사용자를 위해 계정을 추가하려면 <ph name="DEVICE_TYPE" />에 <ph name="LINK_BEGIN" />새 사용자를 추가<ph name="LINK_END" />하세요.
-
-이 계정에는 웹사이트와 앱에 이미 부여한 권한이 적용될 수 있습니다. <ph name="SETTINGS_LINK_BEGIN" />설정<ph name="SETTINGS_LINK_END" />에서 Google 계정을 관리할 수 있습니다.</translation>
 <translation id="8945274638472141382">아이콘 크기</translation>
 <translation id="8945508919180478719">스튜디오 스타일 마이크</translation>
 <translation id="8946359700442089734">이 <ph name="IDS_SHORT_PRODUCT_NAME" /> 기기에서 디버깅 기능의 사용 설정을 완료하지 못했습니다.</translation>

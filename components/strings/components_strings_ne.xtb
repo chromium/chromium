@@ -85,6 +85,7 @@
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> ले अप्रत्याशित रूपमा जडान बन्द गर्यो।</translation>
 <translation id="1160009341934077418">वेबमा उपलब्ध भएको मूल्यको हिस्ट्री</translation>
 <translation id="1161325031994447685">Wi-Fi मा पुनः कनेक्ट गर्नुहोस्</translation>
+<translation id="1161663161838091892">जारी राख्न ट्याबहरू र हिस्ट्री सिंक गर्नुहोस्</translation>
 <translation id="1163507966173624031">लोक तथा परम्परागत सङ्गीत</translation>
 <translation id="11635448457105324">ठेगानाहरू व्यवस्थापन गर्ने बटन, Chrome का सेटिङमा गई ठेगानाहरू हाल्न तथा व्यवस्थापन गर्न यो बटन थिच्नुहोस्</translation>
 <translation id="1165039591588034296">त्रुटि</translation>
@@ -1105,6 +1106,7 @@
 <translation id="297173220375858963">डेस्कटप पब्लिसिङ</translation>
 <translation id="2972581237482394796">&amp;फेरि गर्नुहोस्</translation>
 <translation id="2974468223369775963">यो IBAN तपाईंको Google खातामा सेभ गर्न सकिएन। यसलाई बरु यो डिभाइसको Chrome मा सेभ गरिएको छ। तपाईंले अर्को पटक यो IBAN प्रयोग गर्दा Chrome ले तपाईंलाई सेभ गर्ने हो भनेर फेरि सोध्ने छ।</translation>
+<translation id="297667759942911166">ट्याब समूहहरूमा सहकार्य गर्नुहोस्</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, हाल चयन गरिएको छ। <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">किबोर्ड लक गर्नुहोस् र प्रयोग गर्नुहोस्</translation>
 <translation id="2978824962390592855">ओपेरा</translation>
@@ -1966,6 +1968,7 @@
 <translation id="4434045419905280838">पपअप तथा रिडिरेक्टहरू</translation>
 <translation id="443673843213245140">प्रोक्सीको प्रयोग असक्षम गरिएको छ तर एक सुस्पष्ट प्रोक्सी विन्यास तोकिएको छ।</translation>
 <translation id="4438821706955556403">औसत मूल्य</translation>
+<translation id="444116852243722675">सबै (<ph name="ITEMS" />) खोल्नुहोस्</translation>
 <translation id="4441832193888514600">क्लाउडका प्रयोगकर्ताले मात्र नीति तय गर्न मिल्ने भएकाले वेवास्ता गरिएको छ।</translation>
 <translation id="4445133368066241428">लोकप्रिय विषयहरू</translation>
 <translation id="4445964943162061557">यो परीक्षणका क्रममा रहेको सुविधा भएकाले यसले सधैँ सही जानकारी नदिन सक्छ।</translation>
@@ -2061,6 +2064,7 @@
 <translation id="4661556981531699496">घरपालुवा तथा अन्य जनावरहरू</translation>
 <translation id="4661868874067696603">खरिदसम्बन्धी थप विकल्पहरू खोज्नुहोस्</translation>
 <translation id="4663373278480897665">क्यामेरा प्रयोग गर्ने अनुमति छ</translation>
+<translation id="4664084870155869900">अर्को पटक स्वतः भर्नुहोस्। कार्ड तपाईंको डिभाइसमा सेभ गरिन्छ।</translation>
 <translation id="466561305373967878">बोर्ड गेमहरू</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">भर्चुअल रियालिटी</translation>
@@ -2632,6 +2636,7 @@
 <translation id="5675809467256309336">नृत्य तथा इलेक्ट्रोनिक सङ्गीत</translation>
 <translation id="5675959228867414813">मितिअनुसार देखाउनुहोस्</translation>
 <translation id="567604591393105935">कमर्स बटम सिट स्क्रिनको आधा भाग ओगट्ने गरी खोलिएको छ</translation>
+<translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">फोइल</translation>
 <translation id="5680642791693447368">थ्रिलर, अपराध तथा रहस्यमयी कथा भएका चलचित्रहरू</translation>
 <translation id="568292603005599551">छविको X स्थान</translation>
@@ -2669,6 +2674,7 @@
 <translation id="573555826359077410">फारम बनाउने बटन, Google Forms प्रयोग गरी तुरुन्तै नयाँ फारम बनाउन यो बटन थिच्नुहोस्</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{कार्डलाई आफ्नो Google खातामा सेभ गर्नुहोस्}other{कार्डहरूलाई आफ्नो Google खातामा सेभ गर्नुहोस्}}</translation>
 <translation id="5738385766833540397">तपाईं आफूले ट्र्याक गरेका उत्पादनको मूल्य घट्दा पठाइने अलर्टहरू कुन माध्यमबाट प्राप्त गर्न चाहनुहुन्छ भन्ने कुरा व्यवस्थापन गर्नुहोस्</translation>
+<translation id="573974402615125334">ट्याब समूह सेयर गर्न, तिनमा सामेल हुन र सहकार्य गर्न आफ्ना हिस्ट्री र ट्याबहरू सिंक गर्नुहोस्</translation>
 <translation id="5740911612628596808">Envelope C9</translation>
 <translation id="5742806904559466333">बार, क्लब तथा नाइटलाइफ</translation>
 <translation id="5743684619253032786">नङको हेरचाहसम्बन्धी उत्पादनहरू</translation>
@@ -3868,6 +3874,7 @@
 <translation id="7865448901209910068">उत्कृष्ट गति</translation>
 <translation id="7870281855125116701">छुट पाइयो</translation>
 <translation id="7871445724586827387">आफ्नो Google खाताको पासवर्ड बदल्नुहोस्</translation>
+<translation id="787226752901403048">ट्याब समूह सेयर गर्न, तिनमा सामेल हुन र आइडियाहरूमा मिलेर काम गर्न Chrome मा साइन इन गर्नुहोस्</translation>
 <translation id="7877007680666472091">संरक्षित सामग्रीका ID</translation>
 <translation id="7878562273885520351">तपाईंको पासवर्ड जोखिममा पर्न सक्छ</translation>
 <translation id="7882421473871500483">खैरो</translation>
@@ -4322,6 +4329,7 @@
 <translation id="8702965365666568344">माउन्टिङ टेप</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> सँग तपाईंको जडान गुप्तलिखित छैन।</translation>
 <translation id="8705331520020532516">क्रम संख्या</translation>
+<translation id="8706806585855470492">तपाईं ट्याब समूह सेयर गर्न, तिनमा सामेल हुन र सहकार्य गर्न पाउनु हुने छ</translation>
 <translation id="8708134712139312373">ब्लुटुथ चल्ने डिभाइसहरूमा कनेक्ट गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="8710842507289500830">फन्टको शैली</translation>
 <translation id="8712637175834984815">भयो</translation>
@@ -4464,6 +4472,7 @@
 <translation id="8975263830901772334">तपाईंले प्रिन्ट गर्ने फाइलका नामहरू</translation>
 <translation id="8982884016487650216">PDF लोड गरिसकियो</translation>
 <translation id="8983369100812962543">तपाईं अब एपको आकार बदल्न सक्नुहुन्छ</translation>
+<translation id="8985112471026018799">अझ छिटो चेकआउट गर्न कार्ड सेभ गर्नुहोस्</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome मा आफ्नो ब्राउजिङ इतिहास हेर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="8987663052629670333">फोटो प्रिन्टसम्बन्धी सेवाहरू</translation>
 <translation id="8987927404178983737">महिना</translation>
@@ -4530,6 +4539,7 @@
 <translation id="9090993752571911635">इन्टरनेट सेवा प्रदायकहरू (ISP)</translation>
 <translation id="9093723786115107672">सुत्दा लगाउने लुगा</translation>
 <translation id="9094544726794842788">थम्ब्स डाउनले तपाईंलाई यी परिणामहरू मन नपर्नुको कारणसहित विस्तृत प्रतिक्रिया पेस गर्ने फारम खोल्छ</translation>
+<translation id="9094809883254050729">अर्को पटक स्वतः भर्नुहोस्। सेभ गरेपछि कार्ड इन्क्रिप्ट गरिन्छ।</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS का सेटिङमा गई Chrome लाई सिस्टमको डिफल्ट ब्राउजरका रूपमा सेट गर्न ट्याब थिचेर इन्टर थिच्नुहोस्</translation>
 <translation id="9101450247048146228">क्यामेराको प्रयोग र चाल (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">ट्रे १</translation>

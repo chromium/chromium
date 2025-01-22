@@ -1040,7 +1040,7 @@ int WebRequestEventRouter::OnBeforeRequest(
   if (blocked_request.num_handlers_blocking == 0) {
     // If there are no blocking handlers, only the declarative rules tried
     // to modify the request and we can respond synchronously.
-    return ExecuteDeltas(browser_context, request, false /* call_callback*/);
+    return ExecuteDeltas(browser_context, request, /*call_callback=*/false);
   }
   return net::ERR_IO_PENDING;
 }

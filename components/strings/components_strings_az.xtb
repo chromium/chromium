@@ -85,6 +85,7 @@
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> gözlənilmədən bağlantını kəsdi.</translation>
 <translation id="1160009341934077418">Vebdə qiymət tarixçəsi</translation>
 <translation id="1161325031994447685">Wi-Fi şəbəkəsinə təkrar qoşulur</translation>
+<translation id="1161663161838091892">Davam etmək üçün tabları və tarixçəni sinxronlaşdırın</translation>
 <translation id="1163507966173624031">Xalq və Ənənəvi Musiqilər</translation>
 <translation id="11635448457105324">"Ünvanları idarə edin" düyməsi, aktivləşdirərək Chrome ayarlarında ünvan əlavə və idarə edin</translation>
 <translation id="1165039591588034296">Xəta</translation>
@@ -1105,6 +1106,7 @@
 <translation id="297173220375858963">Masaüstü Yayım</translation>
 <translation id="2972581237482394796">&amp;Yenidən edin</translation>
 <translation id="2974468223369775963">Bu IBAN-ı Google Hesabında yadda saxlamaq olmadı. Bu cihazda Chrome-da yadda saxlanıb. Növbəti dəfə bu IBAN-dan istifadə edəndə Chrome yenidən soruşacaq.</translation>
+<translation id="297667759942911166">Tab qruplarında əməkdaşlıq edin</translation>
 <translation id="2977665033722899841">Hazırda <ph name="ROW_NAME" /> seçilib. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">Klaviaturanı kilidləyin və istifadə edin</translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1964,6 +1966,7 @@
 <translation id="4434045419905280838">Popap və yönləndirmələr</translation>
 <translation id="443673843213245140">Proksi istifadəsi deaktiv edilib, amma ətraflı proksi konfiqurasiyası müəyyən edilib.</translation>
 <translation id="4438821706955556403">Tipik qiymət</translation>
+<translation id="444116852243722675">Hamısını açın (<ph name="ITEMS" />)</translation>
 <translation id="4441832193888514600">Siyasət yalnız bulud istifadəçisi siyasəti kimi təyin oluna bildiyi üçün nəzərə alınmadı.</translation>
 <translation id="4445133368066241428">Populyar mövzular</translation>
 <translation id="4445964943162061557">Bu, təcrübi funksiyadır və həmişə dəqiq olmaya bilər.</translation>
@@ -2059,6 +2062,7 @@
 <translation id="4661556981531699496">Ev heyvanları və Heyvanlar</translation>
 <translation id="4661868874067696603">Digər alış seçimlərini axtarın</translation>
 <translation id="4663373278480897665">Kameraya icazə verildi</translation>
+<translation id="4664084870155869900">Növbəti dəfə avtomatik doldurun. Kart cihazınızda yadda saxlanılıb.</translation>
 <translation id="466561305373967878">Stolüstü oyunlar</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Virtual reallıq</translation>
@@ -2630,6 +2634,7 @@
 <translation id="5675809467256309336">Rəqs və Elektronik Musiqi</translation>
 <translation id="5675959228867414813">Tarix üzrə göstərin</translation>
 <translation id="567604591393105935">Ticarət üzrə aşağıdakı vərəq yarı hündürlükdə açıldı</translation>
+<translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Folqa</translation>
 <translation id="5680642791693447368">Triller, cinayət və sirr filmləri</translation>
 <translation id="568292603005599551">Şəklin X oxu üzrə mövqeyi</translation>
@@ -2667,6 +2672,7 @@
 <translation id="573555826359077410">"Forma yaradın" düyməsi, aktivləşdirərək Google Formada cəld yeni forma yaradın</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Kartı Google Hesabında yadda saxlayın}other{Kartları Google Hesabında yadda saxlayın}}</translation>
 <translation id="5738385766833540397">İzlədiyiniz məhsullar üçün qiymət endirimi xəbərdarlıqlarını necə alacağınızı idarə edin</translation>
+<translation id="573974402615125334">Tab qruplarında paylaşmaq, qoşulmaq və əməkdaşlıq etmək üçün tarixçənizi və tabları sinxronlaşdırın</translation>
 <translation id="5740911612628596808">Zərf C9</translation>
 <translation id="5742806904559466333">Barlar, klublar və gecə həyatı</translation>
 <translation id="5743684619253032786">Dırnaq Baxım Məhsulları</translation>
@@ -3866,6 +3872,7 @@
 <translation id="7865448901209910068">Ən yüksək sürət</translation>
 <translation id="7870281855125116701">Endirim tapıldı</translation>
 <translation id="7871445724586827387">Google Hesabı parolunuzu dəyişin</translation>
+<translation id="787226752901403048">Tab qruplarını paylaşmaq və onlara qoşulmaq, ideyalarla bağlı birlikdə işləmək üçün Chrome-a daxil olun</translation>
 <translation id="7877007680666472091">qorunan məzmun ID-ləri</translation>
 <translation id="7878562273885520351">Parolunuz təhlükədə ola bilər</translation>
 <translation id="7882421473871500483">Qəhvəyi</translation>
@@ -4320,6 +4327,7 @@
 <translation id="8702965365666568344">Montaj lenti</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> domeninə olan bağlantınız şifrələnib.</translation>
 <translation id="8705331520020532516">Seriya Nömrəsi</translation>
+<translation id="8706806585855470492">Tab qruplarında paylaşmaq, qoşulmaq və əməkdaşlıq etmək imkanı əldə edəcəksiniz</translation>
 <translation id="8708134712139312373">Saytlar Bluetooth cihazlarına qoşulmaq üçün icazə istəyə bilər</translation>
 <translation id="8710842507289500830">Şrift üslubu</translation>
 <translation id="8712637175834984815">Anladım</translation>
@@ -4462,6 +4470,7 @@
 <translation id="8975263830901772334">Çap edilən fayl adları</translation>
 <translation id="8982884016487650216">PDF yükləndi</translation>
 <translation id="8983369100812962543">İndi tətbiqin ölçüsünü dəyişə bilərsiniz</translation>
+<translation id="8985112471026018799">Daha sürətli ödəniş üçün kartı yadda saxlayın</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome'da brauzer tarixçənizə baxın</translation>
 <translation id="8987663052629670333">Foto çap xidmətləri</translation>
 <translation id="8987927404178983737">Ay</translation>
@@ -4528,6 +4537,7 @@
 <translation id="9090993752571911635">İnternet xidmət provayderləri (ISP)</translation>
 <translation id="9093723786115107672">Gecə paltarı</translation>
 <translation id="9094544726794842788">"Baş barmaq aşağı" seçdikdə bu nəticələri bəyənməməyinizlə bağlı ətraflı rəy təqdim etmək üçün forma açılır</translation>
+<translation id="9094809883254050729">Növbəti dəfə avtomatik doldurun. Kart yadda saxlanıldıqda şifrələnir.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq iOS ayarlarında Chrome'u sistemin defolt brauzeri kimi ayarlayın</translation>
 <translation id="9101450247048146228">Kameranın istifadəsi və hərəkəti (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Qab 1</translation>

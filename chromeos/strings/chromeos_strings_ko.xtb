@@ -564,6 +564,7 @@
 <translation id="3740976234706877572">★ <ph name="AVERAGE_SCORE" />개(리뷰 <ph name="AGGREGATED_COUNT" />개)</translation>
 <translation id="3748026146096797577">연결되어 있지 않음</translation>
 <translation id="3749289110408117711">파일 이름</translation>
+<translation id="3763034084412196440">볼륨 조정</translation>
 <translation id="3767737419527918477">녹음 파일 검색</translation>
 <translation id="3771294271822695279">동영상 파일</translation>
 <translation id="3780740315729837296">키보드 키 할당</translation>
@@ -1218,6 +1219,7 @@
 <translation id="6747035363363040417">무채색</translation>
 <translation id="6747215703636344499">중지됨 - 배지대 가득 참</translation>
 <translation id="6749473226660745022">사진</translation>
+<translation id="6752960629591143793">설정 또는 <ph name="THREE_DOTS_MENU_ICON" /> 메뉴에서 스크립트 작성 언어를 선택하고 다운로드하세요.</translation>
 <translation id="6753452347192452143">컴퓨터 기기입니다.</translation>
 <translation id="6756731097889387912">스캔을 취소할 수 없음</translation>
 <translation id="6760706756348334449">볼륨 작게</translation>

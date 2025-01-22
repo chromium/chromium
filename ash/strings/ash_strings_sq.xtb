@@ -973,6 +973,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4285498937028063278">Zhgozhdo</translation>
 <translation id="428715201724021596">Po lidhet me profilin. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="4287250812980588583">Dritare e Chrome</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Volumi i mikrofonit kontrollohet nga <ph name="APP_NAME" />}other{Volumi i mikrofonit kontrollohet nga # aplikacione}}</translation>
 <translation id="4294319844246081198">Mirëmëngjesi <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Pastro të <ph name="COUNT" /> njoftimet</translation>
 <translation id="4300272766492248925">Hap aplikacionin</translation>
@@ -1270,6 +1271,7 @@ Gjithashtu, mund të përdorësh shkurtoren e tastierës. Fillimisht thekso teks
 <translation id="5245201184978705914">Transkripti nuk mund të krijohet</translation>
 <translation id="5251174953851719648">Rifresko përmbajtjen</translation>
 <translation id="5253783950165989294">U lidh me një pajisje me emrin "<ph name="DEVICE_NAME" />". Niveli i baterisë <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5256939106029293271">Testo mikrofonin</translation>
 <translation id="5258528442992323769">Nuk ka asnjë tavolinë pune të ruajtur</translation>
 <translation id="5260676007519551770">Tavolina e punës 4</translation>
 <translation id="5265391159779542051">Rezultatet u ngarkuan</translation>
@@ -1427,6 +1429,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="5745612484876805746">"Drita e natës" aktivizohet automatikisht kur perëndon dielli</translation>
 <translation id="5750765938512549687">Bluetooth-i është joaktiv</translation>
 <translation id="5758114525425072423">Fillo "Fokusin". Kohëmatësi është caktuar në <ph name="FOCUS_DURATION" />.</translation>
+<translation id="5759522586053040964">Dëgjo se si dëgjohesh nga të tjerët. Për të ndaluar, kliko tek ikona e testimit ose mbyll panelin e videotelefonatave.</translation>
 <translation id="5760866832697883462">Lidh <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Aktivizo/çaktivizo shënuesin. <ph name="STATE_TEXT" /> Përdor bllokun e prekjes, ekranin me prekje ose stilolapsin për të vizatuar në ekran.</translation>
 <translation id="576341972084747908">Shkarko <ph name="FILENAME" /> me rrezik</translation>

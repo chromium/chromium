@@ -243,6 +243,7 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
 
       Si cette règle est définie sur "False", la case "Toujours autoriser" n'est pas affichée, et l'utilisateur est invité à confirmer à chaque fois le lancement d'un protocole externe.</translation>
 <translation id="1181598794547737681">Activer l'interface utilisateur de la bulle de téléchargement</translation>
+<translation id="1182701225491473405">Paramètres Controlled Frame</translation>
 <translation id="1184531093651606913">Empêche le chargement des extensions depuis la ligne de commande</translation>
 <translation id="1184562656144537588">Manifest V2 n'est activé que pour les extensions installées d'office</translation>
 <translation id="11903325225202653">Définissez cette règle sur "True" pour maintenir le mode Contraste élevé activé. Définissez cette règle sur "False" pour le maintenir désactivé.
@@ -380,6 +381,11 @@ Cette règle remplace la règle <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLIC
 <translation id="1294263471858445589">Activer l'authentification ambiante pour les sessions standards et de navigation privée.</translation>
 <translation id="1295737447968372331">Activer la dictée sur l'écran de connexion</translation>
 <translation id="1297182715641689552">Utiliser un script de proxy .pac</translation>
+<translation id="1297909092292754072">Cette règle permet d'établir la liste des origines (URL) ou modèles de nom d'hôte non sécurisés (comme *.example.com) pour lesquels des restrictions de sécurité ne s'appliquent pas. Les modèles ne sont acceptés que pour les noms d'hôtes. Les URL/origines avec des schémas doivent être des chaînes exactes. Par exemple, les organisations peuvent indiquer des origines pour les anciennes applications qui ne peuvent pas déployer TLS, ou configurer un serveur intermédiaire pour les développements Web internes. Les développeurs peuvent ainsi tester des fonctionnalités nécessitant des contextes sécurisés, sans avoir à déployer TLS sur ce serveur intermédiaire. Cette règle évite également qu'une origine soit accompagnée de la mention "Non sécurisé" dans la barre d'adresse.
+
+La création d'une liste d'URL dans cette règle revient à définir l'option de ligne de commande "--unsafely-treat-insecure-origin-as-secure" sur une liste comportant les mêmes URL séparées par une virgule. Cette règle remplace l'option de ligne de commande et la règle UnsafelyTreatInsecureOriginAsSecure (si elles sont disponibles).
+
+Pour en savoir plus sur les contextes sécurisés, consultez la page https://www.w3.org/TR/secure-contexts.</translation>
 <translation id="1297961932043741908">Définir la quantité maximale (en mégaoctets) de mémoire qu'une instance de Chrome peut utiliser.</translation>
 <translation id="1304973015437969093">Identifiants d'extension ou d'application et URL de mise à jour à installer en arrière-plan</translation>
 <translation id="1305400589435476516">Si cette règle est activée, l'itinérance des données est autorisée sur l'appareil.
@@ -1009,6 +1015,7 @@ Cette règle constitue une solution temporaire au cas où des entreprises rencon
       Si cette règle n'est pas définie ou si elle est définie sur une liste vide, aucune donnée de débogage de bas niveau n'est jointe aux commentaires des utilisateurs.
       Consultez la description de chaque type d'appareil pour connaître le type spécifique de données de débogage de bas niveau.</translation>
 <translation id="1744340218280697033">Ne pas autoriser les parents à ajouter des comptes supervisés</translation>
+<translation id="1745981653910662565">Autoriser l'API Controlled Frame sur ces sites</translation>
 <translation id="1751429117283165017">Permet de dresser la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à demander aux utilisateurs un accès en écriture aux fichiers ou répertoires figurant dans le système de fichiers du système d'exploitation hôte.
 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, les paramètres spécifiés par les utilisateurs s'appliquent.
@@ -1229,6 +1236,7 @@ Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ferme l'onglet apr�
       Si cette règle n'est pas configurée, la méthode d'authentification <ph name="HTTP_NEGOTIATE" /> est désactivée sous Android.</translation>
 <translation id="1923704782248889851">Activer la dictée</translation>
 <translation id="1924085079572112898">Les paramètres F11 sont désactivés</translation>
+<translation id="1924393228810864764">Ne pas autoriser les origines d'applications Web isolées à utiliser Controlled Frame</translation>
 <translation id="1925529914257504750">P2P activé pour les mises à jour auto</translation>
 <translation id="1928355425032308464">Activer l'entrée vidéo</translation>
 <translation id="1930094135927166199">Désactiver le partage d'alimentation USB</translation>
@@ -1301,6 +1309,7 @@ Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ferme l'onglet apr�
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, la transition rapide n'est pas utilisée.</translation>
 <translation id="1972134432340252414">Bloquer les anciens points d'extension du processus du navigateur</translation>
+<translation id="1973804850652157024">Contrôler l'utilisation de l'API Controlled Frame</translation>
 <translation id="1977581177449752640">Si cette règle est configurée, l'hôte d'accès à distance utilise un certificat client avec le nom commun de l'émetteur pour s'identifier auprès de "<ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />". Pour permettre à cet hôte d'utiliser n'importe quel certificat client disponible, définissez cette règle sur "<ph name="WILDCARD_VALUE" />". Si cette règle est définie sur une chaîne vide ou qu'elle n'est pas configurée, elle est désactivée.</translation>
 <translation id="1984934843478301531">Automatisation du lancement des applis</translation>
 <translation id="1985545260037812875">Afficher l'écran de configuration de la taille d'affichage lors de la connexion</translation>
@@ -1917,6 +1926,7 @@ Si cette règle est activée ou n'est pas définie, l'utilisateur peut définir 
 
       Remarque : L'isolation de trop nombreux sites sur Android peut entraîner des problèmes de performances, surtout sur les appareils disposant de peu de mémoire. Cette règle ne concerne que Chrome, sur les appareils Android de plus de 1 Go de RAM. Pour les plates-formes autres qu'Android, utilisez <ph name="ISOLATE_ORIGINS_POLICY_NAME" />.</translation>
 <translation id="2407758458436268630">Autoriser le modèle de réduction intelligente de luminosité à augmenter le délai d'assombrissement de l'écran</translation>
+<translation id="2410163749464044777">Paramètres de stockage des données utilisateur locales</translation>
 <translation id="2411629345938804022">Si cette règle est définie sur "3", les sites Web peuvent demander l'accès aux appareils Bluetooth à proximité. Si cette règle est définie sur "2", la demande d'accès à ces appareils est refusée.
 
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
@@ -2432,6 +2442,9 @@ Si cette règle n'est pas configurée, la règle <ph name="BLOCK_POPUPS_POLICY_N
 <translation id="2801378553855965587">Désactiver l'intégration de <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
 <translation id="2805707493867224476">Autoriser tous les sites à afficher des fenêtres pop-up</translation>
 <translation id="2806804577787377637">Cette règle est obsolète et non compatible, veuillez utiliser la règle <ph name="PER_APP_TIME_LIMITS_ALLOWLIST" /> à la place.</translation>
+<translation id="2812417768214606683">Cette règle spécifie une liste d'appareils de stockage USB qui sont exclus des règles <ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" /> et <ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" />.
+
+Les entrées sont des paires composées d'un identifiant de fournisseur USB et d'un code produit qui identifient le modèle d'appareil USB spécifique.</translation>
 <translation id="2815701930753942156">Cette règle permet de spécifier une liste d'intervalles hebdomadaires pendant lesquels l'appareil <ph name="PRODUCT_OS_NAME" /> ne peut pas être utilisé. Toutes les sessions en cours seront fermées, et la connexion sera bloquée.
 
 Les intervalles qui se chevauchent ne sont pas acceptés.
@@ -4197,6 +4210,17 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="4146319954420095470">(Avertissement : Cette dépendance sera bientôt supprimée, veuillez commencer à utiliser la règle <ph name="GLS_POLICY_NAME" /> à la place). Si cette règle est définie sur <ph name="BLOCK_GEOLOCATION_SETTING" />, les services système <ph name="PRODUCT_OS_NAME" /> et les applications Android ne peuvent pas accéder aux informations de localisation. Si vous attribuez toute autre valeur pour cette règle, ou que vous ne la définissez pas, l'utilisateur doit donner son accord lorsqu'une application Android veut accéder aux informations de localisation.</translation>
 <translation id="4147818922357566987">Activer uniquement les variantes concernant les correctifs critiques</translation>
 <translation id="4150201353443180367">Écran</translation>
+<translation id="4150646872548223241">L'API Controlled Frame, disponible pour certains contextes isolés tels que les applications Web isolées (AWI), permet à une appli d'intégrer et de manipuler du contenu arbitraire.
+Pour en savoir plus, veuillez consulter https://github.com/WICG/controlled-frame.
+
+Cette règle permet de dresser la liste des formats d'URL indiquant les sites autorisés à utiliser l'API Controlled Frame.
+Les formats valides sont limités aux applications Web isolées.
+
+Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_CONTROLLED_FRAME_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie.
+
+Les formats d'URL ne doivent pas entrer en conflit avec ceux de la règle <ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" />. Aucune règle ne prévaut si un format d'URL est listé dans les deux règles.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="4154221011709068799">Interdire les appareils de stockage externe</translation>
 <translation id="415445772247959702">Web Store (compatible depuis la version 89)</translation>
 <translation id="4157003184375321727">Indiquer la version du système d'exploitation et du micrologiciel</translation>
@@ -5459,6 +5483,7 @@ Lorsque cette règle est activée ou n'est pas configurée, la propriété "zoom
 Lorsque cette règle est désactivée, la propriété "zoom" CSS fonctionne de la même manière qu'avant la spécification standard.
 
 Cette règle est proposée pour une durée limitée afin de laisser le temps de migrer le contenu Web en fonction de la nouvelle spécification. Il existe aussi un essai Original Trial (DisableStandardizedBrowserZoom) qui correspond au comportement quand cette règle est désactivée. Dans la version 134, cette règle sera supprimée et le zoom CSS suivra la spécification standard de façon permanente.</translation>
+<translation id="5088303895040832480">Utiliser UsbDeviceId dans le nouveau code.</translation>
 <translation id="5090791951240382356">Autoriser la fusion de règles de dictionnaire qui proviennent de sources différentes</translation>
 <translation id="5091315650312105069">Autoriser l'authentification <ph name="BASIC_AUTH" /> pour HTTP</translation>
 <translation id="5093603777978346818">Ne pas activer l'économiseur d'écran pour l'écran de verrouillage.</translation>
@@ -6922,6 +6947,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
       Sinon, il est possible de définir l'une des valeurs suivantes : "tls1.2" ou "tls1.3". Une fois cette option définie, <ph name="PRODUCT_NAME" /> n'utilise pas les versions SSL/TLS supérieures à la version spécifiée. Une valeur non reconnue sera ignorée.</translation>
 <translation id="6120909112796019291">Autoriser la retouche photo par IA générative et améliorer les modèles d'IA.</translation>
 <translation id="6123052603197028610">Ne pas autoriser l'envoi de requêtes aux serveurs Google visant à récupérer les horodatages</translation>
+<translation id="6128539430475678271">Bloquer l'API Controlled Frame sur ces sites</translation>
 <translation id="6130360423841559818">Contrôler le nouveau comportement de la boîte de dialogue d'annulation générée par l'événement beforeunload</translation>
 <translation id="6131803221304830537">Désactiver l'intégrité du code du moteur de rendu</translation>
 <translation id="6132506775968708399">Bloquer les cookies tiers</translation>
@@ -7369,6 +7395,7 @@ Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> stocke par 
       Si cette règle n'est pas définie pour un site, alors la règle <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> s'applique au site (si elle est définie). Sinon, les paramètres par défaut du navigateur s'appliquent, et les utilisateurs peuvent définir l'autorisation pour chaque site.</translation>
 <translation id="6383774771168138899">Configurer le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="MICROSOFT_ONE_DRIVE_NAME" /> et <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Activer l'affichage des pages de résultats du moteur de recherche par défaut dans un panneau latéral du navigateur.</translation>
+<translation id="6389240462871677239">Autoriser les origines d'applications Web isolées à utiliser Controlled Frame</translation>
 <translation id="6389858262577493180">Activer l'utilisation de <ph name="GLIC" /></translation>
 <translation id="6390338862225976270">Ces fonctionnalités des outils de développement de <ph name="PRODUCT_NAME" /> utilisent des modèles d'IA générative pour fournir des informations de débogage supplémentaires. Pour utiliser ces fonctionnalités, <ph name="PRODUCT_NAME" /> doit collecter des données telles que les messages d'erreur, les traces de la pile, les extraits de code et les requêtes réseau, puis les envoyer à un serveur de Google qui exécute un modèle d'IA générative. Le corps de la réponse ou les en-têtes d'authentification et de cookies dans les requêtes réseau ne sont pas inclus dans les données envoyées au serveur.
 
@@ -8140,6 +8167,17 @@ Si la règle est désactivée ou n'est pas configurée, le comportement par déf
 <translation id="692096803256767290">Effectuer un rollback de l'OS vers la version cible</translation>
 <translation id="6921241119085515674">Autoriser le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="MICROSOFT_ONE_DRIVE_NAME" /> et <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6921544339867564740">Autoriser les appareils à exécuter des machines virtuelles sur Chrome OS</translation>
+<translation id="692161853658983957">L'API Controlled Frame, disponible pour certains contextes isolés tels que les applications Web isolées (AWI), permet à une appli d'intégrer et de manipuler du contenu arbitraire.
+Pour en savoir plus, veuillez consulter https://github.com/WICG/controlled-frame.
+
+Cette règle permet de dresser la liste des formats d'URL indiquant les sites non autorisés à utiliser l'API Controlled Frame.
+Les formats valides sont limités aux applications Web isolées.
+
+Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_CONTROLLED_FRAME_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie.
+
+Les formats d'URL ne doivent pas entrer en conflit avec ceux de la règle <ph name="CONTROLLED_FRAME_ALLOWED_FOR_URLS_POLICY_NAME" />. Aucune règle ne prévaut si un format d'URL est listé dans les deux règles.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="6922265559343919728">Choisir si les URL blob sont partitionnées pendant l'extraction et la navigation</translation>
 <translation id="6922884955650325312">Bloquer le plug-in "<ph name="FLASH_PLUGIN_NAME" />"</translation>
 <translation id="6924223708804692571">Force la désactivation de la vérification orthographique pour certaines langues. Les langues non reconnues dans cette liste seront ignorées.
@@ -8157,6 +8195,12 @@ Si la règle est désactivée ou n'est pas configurée, le comportement par déf
 <translation id="6929639826067341257">Donner le choix aux utilisateurs d'importer ou non leurs données existantes dans le profil géré</translation>
 <translation id="6929746927224321095">Désactiver la saisie automatique</translation>
 <translation id="6931242315485576290">Désactiver la synchronisation des données avec Google</translation>
+<translation id="6931967294677760242">L'API Controlled Frame, disponible pour certains contextes isolés tels que les applications Web isolées (AWI), permet à une appli d'intégrer et de manipuler du contenu arbitraire.
+Pour en savoir plus, veuillez consulter https://github.com/WICG/controlled-frame.
+
+Si cette règle est définie sur "1" ou si elle n'est pas configurée, les origines d'applications Web isolées peuvent utiliser Controlled Frame.
+
+Si cette règle est définie sur "2", les origines d'applications Web isolées ne peuvent pas utiliser Controlled Frame.</translation>
 <translation id="6932282102911647185">Rétroéclairage du clavier violet</translation>
 <translation id="6938424179790370595">Définissez cette règle sur "None" pour désactiver la loupe.
 
@@ -8402,6 +8446,7 @@ Si cette règle est définie sur "False", <ph name="PRODUCT_NAME" /> utilisera t
 Cette règle ne concerne pas les gestionnaires de mots de passe tiers qui utilisent des API d'accessibilité.</translation>
 <translation id="7114169791477667553">Désactiver le moteur de recherche par défaut</translation>
 <translation id="7115684775550072082">Ne conserver les espaces blancs que pour les types MIME texte et XML</translation>
+<translation id="7119538491527883595">Stockage des données utilisateur locales</translation>
 <translation id="7121046543122812054">Cette règle étant obsolète, vous pouvez utiliser <ph name="BROWSER_SIGNIN_POLICY_NAME" /> à la place.
 
       Permet à l'utilisateur de se connecter à <ph name="PRODUCT_NAME" />.
@@ -8711,6 +8756,7 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 <translation id="7339315111520512972">Forcer le code réseau à s'exécuter dans le processus du navigateur</translation>
 <translation id="7340034977315324840">Indiquer les périodes d'activité de l'appareil</translation>
 <translation id="734095828044419464">Désactiver le provisionnement des certificats client</translation>
+<translation id="7341773449551289679">Liste d'autorisation de stockage externe</translation>
 <translation id="7343004974628511824">Procéder aux contrôles d'interception DNS</translation>
 <translation id="7343497214039883642">Fichier de configuration des imprimantes d'entreprise pour des appareils</translation>
 <translation id="7357148531287978404">Désactiver l'entrée audio</translation>

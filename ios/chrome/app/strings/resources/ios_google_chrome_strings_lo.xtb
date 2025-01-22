@@ -169,6 +169,7 @@
 <translation id="5639704535586432836">ເປີດການຕັ້ງຄ່າ &gt; ຄວາມເປັນສ່ວນຕົວ &gt; ກ້ອງຖ່າຍຮູບ &gt; Google Chrome ແລະ ເປີດກ້ອງຖ່າຍຮູບ.</translation>
 <translation id="5642200033778930880">Google Chrome ບໍ່ສາມາດໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານໃນໂໝດມຸມມອງແຍກກັນໄດ້</translation>
 <translation id="5661521615548540542">ຕົວຈັດການລະຫັດຜ່ານ Google ບໍ່ສາມາດກວດສອບລະຫັດຜ່ານທັງໝົດໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
+<translation id="5681291952421236520">ເປີດ Chrome</translation>
 <translation id="5690398455483874150">{count,plural, =1{ດຽວນີ້ກຳລັງສະແດງໜ້າຈໍ Chrome 1 ລາຍການ}other{ດຽວນີ້ກຳລັງສະແດງໜ້າຈໍ Chrome {count} ລາຍການ}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">ຕັ້ງຄ່າ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ</translation>
@@ -204,6 +205,7 @@
 <translation id="6484712497741564393">ເຂົ້າສູ່ລະບົບເປັນ <ph name="EMAIL" />.
 
 ຂໍ້ມູນຂອງທ່ານຖືກເຂົ້າລະຫັດໄວ້ດ້ວຍລະຫັດຜ່ານຂອງທ່ານ. ລະບຸລະຫັດຜ່ານເພື່ອໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
+<translation id="6533470733797826516">ເຂົ້າສູ່ລະບົບໄດ້ໄວຂຶ້ນດ້ວຍຄຸນສົມບັດຕື່ມຂໍ້ມູນອັດຕະໂນມັດຂອງ Chrome</translation>
 <translation id="6545449117344801102">Chrome ກວດຫາທີ່ຢູ່ ແລະ ໃຊ້ Google ແຜນທີ່ເພື່ອສະແດງເສັ້ນທາງ ແລະ ຂໍ້ມູນທ້ອງຖິ່ນໃຫ້ທ່ານ.</translation>
 <translation id="6634107063912726160">ເມື່ອທ່ານອອກຈາກລະບົບ, Chrome ຈະບໍ່ຊິ້ງຂໍ້ມູນໃໝ່ໃດໆກັບບັນຊີ Google ຂອງທ່ານ. ຂໍ້ມູນທີ່ຊິ້ງໄວ້ກ່ອນໜ້າຈະຍັງຢູ່ໃນບັນຊີ.</translation>
 <translation id="6636941099779251629">ອົງກອນຂອງທ່ານກຳນົດໃຫ້ທ່ານຕ້ອງເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ Chrome. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>

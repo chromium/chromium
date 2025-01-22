@@ -202,6 +202,11 @@ class CORE_EXPORT OffscreenCanvas final
     restoring_gpu_context_ = restoring_gpu_context;
   }
 
+  TextDirection GetTextDirection(const ComputedStyle*) override;
+  void SetTextDirection(TextDirection direction) {
+    text_direction_ = direction;
+  }
+
   FontSelector* GetFontSelector() override;
 
   void Trace(Visitor*) const override;
@@ -267,6 +272,7 @@ class CORE_EXPORT OffscreenCanvas final
   WeakMember<ExecutionContext> execution_context_;
 
   DOMNodeId placeholder_canvas_id_ = kInvalidDOMNodeId;
+  std::optional<TextDirection> text_direction_;
 
   bool disposing_ = false;
   bool is_neutered_ = false;

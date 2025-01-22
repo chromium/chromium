@@ -3015,10 +3015,6 @@ RenderWidgetHostViewBase* RenderWidgetHostImpl::GetRenderWidgetHostViewBase() {
   return GetView();
 }
 
-input::StylusInterface* RenderWidgetHostImpl::GetStylusInterface() {
-  return static_cast<input::StylusInterface*>(GetView());
-}
-
 void RenderWidgetHostImpl::OnStartStylusWriting() {
   if (view_) {
     view_->OnStartStylusWriting();
@@ -3283,6 +3279,9 @@ void RenderWidgetHostImpl::DecrementInFlightEventCount(
   }
 }
 
+input::StylusInterface* RenderWidgetHostImpl::GetStylusInterface() {
+  return static_cast<input::StylusInterface*>(GetView());
+}
 
 const mojo::AssociatedRemote<blink::mojom::FrameWidget>&
 RenderWidgetHostImpl::GetAssociatedFrameWidget() {

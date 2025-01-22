@@ -546,7 +546,7 @@
 <translation id="2876338922445400217">ซูมเข้าบนหน้าจอ</translation>
 <translation id="2878884018241093801">ไม่มีรายการล่าสุด</translation>
 <translation id="2880541185262491188">พยายามป้อน PIN หลายครั้งเกินไป โปรดรอ <ph name="TIME_LEFT" /> แล้วลองอีกครั้ง</translation>
-<translation id="2883271196820422439">แป้นเมาส์กลับมาทำงานอีกครั้ง</translation>
+<translation id="2883271196820422439">ทำให้แป้นเมาส์กลับมาทำงานอีกครั้ง</translation>
 <translation id="2885950158625301909">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="2891209721153296020">"ยกเลิกการเลือก"</translation>
 <translation id="2894949423239620203">สายสัญญาณอาจส่งผลต่อประสิทธิภาพ</translation>
@@ -1836,7 +1836,7 @@
 <translation id="7118268675952955085">ภาพหน้าจอ</translation>
 <translation id="7118597077555700347">เปิด <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">เลือกคำหรือตัวอักษรถัดไป</translation>
-<translation id="7124556000457919678">เมื่อเปิด แป้นเมาส์จะเป็นการหยุดชั่วคราวและกลับมาทำงานอีกครั้ง</translation>
+<translation id="7124556000457919678">เมื่อเปิด จะเป็นการหยุดแป้นเมาส์ชั่วคราวและทำให้แป้นเมาส์กลับมาทำงานอีกครั้ง</translation>
 <translation id="7126996685418858413">เปิดในสัปดาห์ที่ผ่านมา</translation>
 <translation id="7130207228079676353">น่าจะใช้มากที่สุด</translation>
 <translation id="7131634465328662194">คุณจะออกจากระบบโดยอัตโนมัติ</translation>

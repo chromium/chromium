@@ -564,6 +564,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> Rezensionen)</translation>
 <translation id="3748026146096797577">Nicht verbunden</translation>
 <translation id="3749289110408117711">Dateiname</translation>
+<translation id="3763034084412196440">Lautstärke anpassen</translation>
 <translation id="3767737419527918477">Aufnahmedateien suchen</translation>
 <translation id="3771294271822695279">Videodateien</translation>
 <translation id="3780740315729837296">Tastenbelegung zuweisen</translation>
@@ -1218,6 +1219,7 @@
 <translation id="6747035363363040417">neutral</translation>
 <translation id="6747215703636344499">Angehalten – Ausgabefach ist voll</translation>
 <translation id="6749473226660745022">Fotos</translation>
+<translation id="6752960629591143793">Wähle eine Sprache für das Transkript aus und lade sie in den Einstellungen oder im Dreipunkt-Menü <ph name="THREE_DOTS_MENU_ICON" /> herunter</translation>
 <translation id="6753452347192452143">Das Gerät ist ein Computer.</translation>
 <translation id="6756731097889387912">Scannen konnte nicht abgebrochen werden</translation>
 <translation id="6760706756348334449">Leiser</translation>
@@ -1441,7 +1443,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="779591286616261875">Neuen Bericht senden</translation>
 <translation id="7799817062559422778">Heller Modus</translation>
 <translation id="7802764839223122985">Keine Taste zugewiesen. <ph name="REASSIGN_INSTRUCTION" /></translation>
-<translation id="780301667611848630">Nein danke</translation>
+<translation id="780301667611848630">Nein, danke</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7811024689617730980">Wähle einen Tag für die automatische Zurücksetzung aus (zwischen 1 und 31, beide inklusive)</translation>
 <translation id="7813073042185856802">Berg</translation>

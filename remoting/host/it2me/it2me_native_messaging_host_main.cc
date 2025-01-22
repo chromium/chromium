@@ -99,14 +99,14 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
   base::apple::ScopedNSAutoreleasePool pool;
 #endif  // BUILDFLAG(IS_APPLE)
 
-#if defined(REMOTING_ENABLE_BREAKPAD)
-  // Initialize Breakpad as early as possible. On Mac the command-line needs to
-  // be initialized first, so that the preference for crash-reporting can be
-  // looked up in the config file.
+#if defined(REMOTING_ENABLE_CRASH_REPORTING)
+  // Initialize crash reporting as early as possible. On Mac the command-line
+  // needs to be initialized first, so that the preference for crash-reporting
+  // can be looked up in the config file.
   if (IsUsageStatsAllowed()) {
     InitializeCrashReporting();
   }
-#endif  // defined(REMOTING_ENABLE_BREAKPAD)
+#endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
 
 #if BUILDFLAG(IS_WIN)
   // Register and initialize common controls.

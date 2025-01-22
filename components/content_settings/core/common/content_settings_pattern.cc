@@ -780,26 +780,6 @@ ContentSettingsPattern::Relation ContentSettingsPattern::Compare(
   return path_relation;
 }
 
-bool ContentSettingsPattern::operator==(
-    const ContentSettingsPattern& other) const {
-  return Compare(other) == IDENTITY;
-}
-
-bool ContentSettingsPattern::operator!=(
-    const ContentSettingsPattern& other) const {
-  return !(*this == other);
-}
-
-bool ContentSettingsPattern::operator<(
-    const ContentSettingsPattern& other) const {
-  return Compare(other) < 0;
-}
-
-bool ContentSettingsPattern::operator>(
-    const ContentSettingsPattern& other) const {
-  return Compare(other) > 0;
-}
-
 // static
 ContentSettingsPattern::Relation ContentSettingsPattern::CompareScheme(
     const ContentSettingsPattern::PatternParts& parts,

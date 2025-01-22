@@ -828,7 +828,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4835385943915508971">O Chrome não tem acesso ao recurso solicitado.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Restaure o grupo de <ph name="TAB_COUNT_ONE" /> separador, com a cor <ph name="COLOR_NAME" />, como um novo grupo de separadores em segundo plano.}other{Restaure o grupo de <ph name="TAB_COUNT_MANY" /> separadores, com a cor <ph name="COLOR_NAME" />, como um novo grupo de separadores em segundo plano.}}</translation>
 <translation id="4837753911714442426">Abrir opções para imprimir página</translation>
-<translation id="4842092870884894799">A mostrar pop-up de geração de palavra-passe</translation>
 <translation id="4844633725025837809">Para maior segurança, encripte as palavras-passe no seu dispositivo antes de serem guardadas no Gestor de palavras-passe da Google</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4852014461738377247">A iniciar sessão\u2026</translation>
@@ -1003,6 +1002,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5665379678064389456">Criar evento no <ph name="APP_NAME" /></translation>
 <translation id="5680616253592639556">Informações em falta</translation>
 <translation id="5683547024293500885">O Chrome não consegue verificar se existem atualizações.</translation>
+<translation id="5683916195767086779">Grupo de separadores</translation>
 <translation id="5686790454216892815">O nome do ficheiro é demasiado longo</translation>
 <translation id="5687606994963670306">O Chrome elimina automaticamente os sites com mais de 30 dias. Um site que visita novamente pode voltar a aparecer na lista. Em alternativa, pode impedir que um site lhe sugira anúncios. Saiba mais sobre a <ph name="BEGIN_LINK" />gestão da privacidade dos anúncios no Chrome<ph name="END_LINK" />.</translation>
 <translation id="569536719314091526">Traduzir esta página para qualquer idioma a partir do botão Mais opções</translation>

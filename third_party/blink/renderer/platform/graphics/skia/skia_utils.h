@@ -39,6 +39,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "cc/paint/paint_canvas.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -48,6 +49,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -93,7 +95,15 @@ inline gfx::ColorSpace SkColorSpaceToGfxColorSpace(
                         : gfx::ColorSpace::CreateSRGB();
 }
 
-// Skia has problems when passed infinite, etc floats, filter them to 0.
+// Temporary utility while converting canvas code to use SharedImageFormat.
+// TODO(crbug.com/371227617): Determine best long-term plan once canvas code is
+// completely converted to SharedImageFormat.
+inline viz::SharedImageFormat GetN32FormatForCanvas() {
+  return kN32_SkColorType == kRGBA_8888_SkColorType
+             ? viz::SinglePlaneFormat::kRGBA_8888
+             : viz::SinglePlaneFormat::kBGRA_8888;
+}
+
 inline SkScalar WebCoreFloatToSkScalar(float f) {
   return SkFloatToScalar(std::isfinite(f) ? f : 0);
 }

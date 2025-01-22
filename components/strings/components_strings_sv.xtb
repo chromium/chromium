@@ -85,6 +85,7 @@
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> stängde oväntat ner anslutningen.</translation>
 <translation id="1160009341934077418">Prishistorik på webben</translation>
 <translation id="1161325031994447685">återansluta till wifi</translation>
+<translation id="1161663161838091892">Synkronisera flikar och historik för att fortsätta</translation>
 <translation id="1163507966173624031">Folkmusik och traditionell musik</translation>
 <translation id="11635448457105324">Knappen Hantera adresser: aktivera om du vill lägga till och hantera adresser i inställningarna för Chrome</translation>
 <translation id="1165039591588034296">Fel</translation>
@@ -637,6 +638,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2105838220373099643">Rollspel</translation>
 <translation id="2107021941795971877">Skriva ut underlag</translation>
 <translation id="2108755909498034140">Starta om datorn</translation>
+<translation id="2109845311767915560">Delad flikgrupp</translation>
 <translation id="2111166930115883695">Tryck på blanksteg för att spela</translation>
 <translation id="2113977810652731515">Kort</translation>
 <translation id="2114841414352855701">Ignoreras eftersom den åsidosätts av <ph name="POLICY_NAME" />.</translation>
@@ -1105,6 +1107,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="297173220375858963">Desktop Publishing</translation>
 <translation id="2972581237482394796">&amp;Upprepa</translation>
 <translation id="2974468223369775963">Detta IBAN gick inte att spara i ditt Google-konto. Det har sparats i Chrome på den här enheten i stället. Chrome frågar dig igen nästa gång du använder detta IBAN.</translation>
+<translation id="297667759942911166">Samarbeta i flikgrupper</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> är markerad just nu. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">Låsa och använda tangentbordet</translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -2064,6 +2067,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4661556981531699496">Sällskapsdjur och djur</translation>
 <translation id="4661868874067696603">Sök efter fler köpalternativ</translation>
 <translation id="4663373278480897665">Kamera är tillåten</translation>
+<translation id="4664084870155869900">Autofyll nästa gång. Kortet har sparats på enheten.</translation>
 <translation id="466561305373967878">Brädspel</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Virtuell verklighet</translation>
@@ -2089,6 +2093,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4704745399240123930">Kort som inte godkänns av den här säljaren, till exempel virtuella kort, inaktiveras.</translation>
 <translation id="4708268264240856090">Anslutningen avbröts</translation>
 <translation id="4708276642004148190">Vattenförsörjning och vattenbehandling</translation>
+<translation id="4711628883879888561">Samarbeta i flikgruppen</translation>
 <translation id="471880041731876836">Du har inte behörighet att besöka den här webbplatsen.</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" /> köra nätverksdiagnostik för Windows<ph name="END_LINK" /></translation>
@@ -2635,6 +2640,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5675809467256309336">Dansmusik och elektronisk musik</translation>
 <translation id="5675959228867414813">Visa efter datum</translation>
 <translation id="567604591393105935">Ark för handel på nedre delen av skärmen har öppnats över halva skärmen</translation>
+<translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Folie</translation>
 <translation id="5680642791693447368">Thriller- och kriminalfilmer</translation>
 <translation id="568292603005599551">Bild X – position</translation>
@@ -2672,6 +2678,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="573555826359077410">Knappen Skapa formulär: aktivera om du snabbt vill skapa ett nytt formulär i Google Formulär</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Spara kortet i Google-kontot}other{Spara korten i Google-kontot}}</translation>
 <translation id="5738385766833540397">Hantera hur du får sänkt pris-aviseringar för produkter du bevakar</translation>
+<translation id="573974402615125334">Om du vill dela, gå med i och samarbeta i flikgrupper måste du synkronisera din historik och dina flikar</translation>
 <translation id="5740911612628596808">C9-kuvert</translation>
 <translation id="5742806904559466333">Barer, klubbar och nattliv</translation>
 <translation id="5743684619253032786">Nagelvårdsprodukter</translation>
@@ -2693,6 +2700,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="578305955206182703">Bärnstensfärgad</translation>
 <translation id="5783700460098783980">Bagage och resetillbehör</translation>
 <translation id="57838592816432529">Stäng av ljudet</translation>
+<translation id="5783922175933467571">Länken till <ph name="TAB_GROUP_DISPLAY_NAME" /> löper ut om 48 timmar</translation>
 <translation id="5784606427469807560">Det gick inte att bekräfta kortet. Kontrollera internetanslutningen och försök igen.</translation>
 <translation id="5785756445106461925">Den här sidan innehåller emellertid andra resurser som inte är säkra. Andra kan se resurserna när de överförs och hackare kan ändra resurserna så att sidan får ett annat utseende.</translation>
 <translation id="5793317771769868848">Den här betalningsmetoden raderas från enheten</translation>
@@ -2765,6 +2773,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5930147475897662863">Aktivera den här inställningen för att använda Hjälp mig skriva</translation>
 <translation id="593102073240001326">Gör så här, gör det själv och expertinnehåll</translation>
 <translation id="5932224571077948991">Påträngande eller vilseledande annonser visas på webbplatsen</translation>
+<translation id="5933597524153120073">Öppna alla (<ph name="ITEMS" />) i ett nytt fönster</translation>
 <translation id="5937560539988385583">Sidan har översatts</translation>
 <translation id="5938153366081463283">Lägg till ett virtuellt kort</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3037,6 +3046,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6394852772105848029">Webbplatsen vill öppna <ph name="APP_NAME" />-appen</translation>
 <translation id="639673288733510393">Skotrar och mopeder</translation>
 <translation id="6398765197997659313">Avsluta helskärmsläge</translation>
+<translation id="6399633237874954301">Smartkortsläsare som tillåts av administratören</translation>
 <translation id="6401136357288658127">Den här principen är utfasad. Använd principen <ph name="NEW_POLICY" /> i stället.</translation>
 <translation id="640163077447496506">Löper ut i dag</translation>
 <translation id="6402537308870515461">Granskning krävs innan du flyttar</translation>
@@ -3872,6 +3882,7 @@ Mer information.
 <translation id="7865448901209910068">Bästa hastighet</translation>
 <translation id="7870281855125116701">En rabatt hittades</translation>
 <translation id="7871445724586827387">Byt lösenord till Google-kontot</translation>
+<translation id="787226752901403048">Logga in i Chrome för att dela och gå med i flikgrupper och samarbeta</translation>
 <translation id="7877007680666472091">skyddade innehålls-id:n</translation>
 <translation id="7878562273885520351">Lösenordet kan vara utsatt för risk</translation>
 <translation id="7882421473871500483">Brun</translation>
@@ -4327,6 +4338,7 @@ Mer information:
 <translation id="8702965365666568344">Monteringstejp</translation>
 <translation id="8703575177326907206">Din anslutning till <ph name="DOMAIN" /> är inte krypterad.</translation>
 <translation id="8705331520020532516">Serienummer</translation>
+<translation id="8706806585855470492">Du kan dela, gå med i och samarbeta i flikgrupper</translation>
 <translation id="8708134712139312373">Får begära tillstånd att ansluta till enheter via Bluetooth</translation>
 <translation id="8710842507289500830">Teckensnittsformat</translation>
 <translation id="8712637175834984815">Uppfattat</translation>
@@ -4469,6 +4481,7 @@ Mer information:
 <translation id="8975263830901772334">Namn på filer du skriver ut</translation>
 <translation id="8982884016487650216">PDF-filen har lästs in</translation>
 <translation id="8983369100812962543">Du kan nu ändra storleken på appen</translation>
+<translation id="8985112471026018799">Spara kort och betala snabbare</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill öppna webbhistoriken i Chrome</translation>
 <translation id="8987663052629670333">Fototryckstjänster</translation>
 <translation id="8987927404178983737">Månad</translation>
@@ -4535,6 +4548,7 @@ Mer information:
 <translation id="9090993752571911635">Internetleverantörer (ISP)</translation>
 <translation id="9093723786115107672">Sovplagg</translation>
 <translation id="9094544726794842788">En Gillar inte-markering öppnar ett formulär där du kan ange detaljerad feedback om varför du inte gillar dessa resultat</translation>
+<translation id="9094809883254050729">Autofyll nästa gång. Kortet krypteras när det sparas.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill ställa in Chrome som standardwebbläsare i systeminställningarna för iOS</translation>
 <translation id="9101450247048146228">Använda och röra kameran (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Fack 1</translation>

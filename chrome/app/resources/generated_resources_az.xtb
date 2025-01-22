@@ -127,7 +127,6 @@
 <translation id="1079242569060319448">PIN-i unutmusunuz?</translation>
 <translation id="1079285777677001938">Bəzi saytlardakı funksiyalar işləməyə bilər.</translation>
 <translation id="1079766198702302550">Kamera girişini həmişə blok edin</translation>
-<translation id="1080365971383768617">Bütün cihazlarınızda parollar</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 Tab}other{<ph name="GROUP_TITLE" /> - # Tab}}</translation>
 <translation id="1082214733466244292">Administratorunuz bu cihaz üçün bəzi funksiyaları blok edib</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> Chrome ayarlarını orijinal defolt ayarlarına sıfırlamaq istəyir. Bu əsas səhifənizi, yeni panel səhifəsi və axtarış sisteminizi sıfırlayacaq, artırmalarınızı deaktiv edəcək və bütün panelləri çıxaracaq. O, həmçinin, kuki, məzmun və sayt datası kimi müvəqqəti və keşlənmiş datanı siləcək.</translation>
@@ -521,6 +520,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="135389172849514421">Oflayn işləyir</translation>
 <translation id="1353980523955420967">PPD tapılmadı. Chromebook'un onlayn olduğuna əmin olun və yenidən cəhd edin.</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> hostuna kameranızı istifadə etmək və hərəkət etdirmək icazəsi verməyə davam edin</translation>
+<translation id="1354148503392558902">Parol dəyişdirilir...</translation>
 <translation id="1355088139103479645">Bütün data silinsin?</translation>
 <translation id="1356376170199999104">İcazə verilib – <ph name="PERMISSION_DETAILS" />. Fiziki dəyişdirici istifadə edərək mikrofonu yandırın.</translation>
 <translation id="1356959069439783953">Qeyri-aktiv tablar yeni görünüş əldə edir</translation>
@@ -1090,6 +1090,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1751335846119670066">Oxumağa kömək et</translation>
 <translation id="17513872634828108">Panelləri açın</translation>
 <translation id="175196451752279553">Bağlanmış Paneli yenidən açın</translation>
+<translation id="1752557850776261983">Giriş yoxlanılır...</translation>
 <translation id="1753067873202720523">Aktiv olan zaman Chromebook'unuz qidalana bilməz.</translation>
 <translation id="1753557900380512635">İnteryerlər</translation>
 <translation id="1753905327828125965">Ən çox ziyarət olunan</translation>
@@ -1921,6 +1922,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2323018538045954000">Yadda saxlanılmış Wi-Fi şəbəkələri</translation>
 <translation id="2325444234681128157">Parolu yadda saxlayın</translation>
 <translation id="2326188115274135041">Avtomatik kiliddən çıxarmanı aktiv etmək üçün PIN'i təsdiq edin</translation>
+<translation id="2326583548923775947">Bu, Google hesabı deyil. Chrome-da yadda saxladığınız elementlər digər cihazlarda əlçatan olmayacaq.</translation>
 <translation id="2326906096734221931">Tətbiq ayarlarını açın</translation>
 <translation id="2326931316514688470">Tətbiqi yenidən yükləyin</translation>
 <translation id="2327492829706409234">Tətbiqi aktiv edin</translation>
@@ -2369,6 +2371,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2638662041295312666">Daxil olma şəkli</translation>
 <translation id="2640299212685523844">GTK istifadə edin</translation>
 <translation id="264083724974021997">Telefonunuza qoşulun - Dialoq</translation>
+<translation id="2641098199809442625">Parolunuz güncəllənmədi, lakin yenə də köhnə parolunuzla sayta daxil ola bilərsiniz.</translation>
 <translation id="2642111877055905627">Futbol topu</translation>
 <translation id="2642206811783203764">Həmişə aktiv: <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">Baxış datanızı silməklə reklam ölçmə datasını hər zaman silə bilərsiniz</translation>
@@ -3017,6 +3020,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="310297983047869047">Əvvəlki slayd</translation>
 <translation id="3103451787721578293">Bu məlumatları yükləmək üçün səbəb daxil edin:</translation>
 <translation id="3103512663951238230">Alt+Klik</translation>
+<translation id="3104763887980088552">Fəaliyyət Qeydi</translation>
 <translation id="3104948640446684649">İstifadə və diaqnostika datasını göndərin. Bu cihaz hazırda diaqnostika, cihaz və tətbiqdən istifadə datasını avtomatik Google-a göndərir. Bu, sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Data məcmusunun bir qismi Google tətbiqləri və Android tərtibatçıları kimi partnyorlara da kömək edəcək. Əlavə Veb və Tətbiq Fəaliyyəti ayarı aktivdirsə, bu data Google Hesabında yadda saxlanıla bilər. <ph name="BEGIN_LINK2" />Göstəricilər haqqında ətraflı məlumat əldə edin<ph name="BEGIN_LINK2_END" />Ətraflı məlumat<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Son Uğursuz Güncəlləmə</translation>
 <translation id="3105796011181310544">Google seçiminə qayıtmaq istəyirsiniz?</translation>
@@ -3731,6 +3735,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3629664892718440872">Bu seçimi yadda saxlayın</translation>
 <translation id="3630132874740063857">Telefonunuz</translation>
 <translation id="3630995161997703415">Hər hansı bir vaxt istifadə etmək üçün bu saytı rəfinizə əlavə edin</translation>
+<translation id="3632929818790223729">Tabı aktiv tab ilə bölün</translation>
 <translation id="3634652306074934350">İcazə sorğusunun müddəti keçib</translation>
 <translation id="3635199270495525546">Etibarlı Platforma Modulu (TPM) aşkar edildi</translation>
 <translation id="3635353578505343390">Google'a rəy göndərin</translation>
@@ -6230,9 +6235,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) tab qrupuna qoşulmağınızı istəyir. Keçidi olan hər kəs bütün tablara düzəliş edə bilər, ona görə də qoşularkən diqqətli olun. Keçidin müddəti 48 saat ərzində bitir.</translation>
 <translation id="5410889048775606433">Fuksiya</translation>
 <translation id="5411022484772257615">Məktəb qeydiyyatı tamamlanmadı</translation>
-<translation id="5411856344659127989">Başqası üçün hesab əlavə etmək istəyirsinizsə, <ph name="DEVICE_TYPE" /> cihazına <ph name="LINK_BEGIN" />yeni şəxs əlavə edin<ph name="LINK_END" />.
-
-Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. Google Hesablarını <ph name="SETTINGS_LINK_BEGIN" />Ayarlarda<ph name="SETTINGS_LINK_END" /> idarə edə bilərsiniz.</translation>
 <translation id="54118879136097217"><ph name="DEVICE_TYPE" /> cihazında tətbiq quraşdırın</translation>
 <translation id="5413640305322530561">Diaqnostika və istifadə datası barədə ətraflı məlumat əldə edin</translation>
 <translation id="5414198321558177633">Profil siyahısı təzələnir. Bu, bir neçə dəqiqə çəkə bilər.</translation>
@@ -6511,7 +6513,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5610867721023328944">Yenidən cəhd edin, yaxud aşağıdakı temalardan birini seçin.</translation>
 <translation id="5611398002774823980">Hesabda yadda saxlayın</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5613074282491265467">Chrome-a daxil olduqda yadda saxladığınız parollar Google Hesabında (<ph name="USER_EMAIL" />) qeyd olunacaq. Deaktiv etmək üçün ayarlara keçin.</translation>
 <translation id="5614190747811328134">İstifadəçi bildirişi</translation>
 <translation id="5614553682702429503">Parol yadda saxlanılsın?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
@@ -8540,7 +8541,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7088674813905715446">Bu cihaz administrator tərəfindən deproviziya edilmiş duruma yerləşdirildi. Qeydiyyatdan keçirmək üçün administrator onu gözləmə durumuna keçirməlidir.</translation>
 <translation id="7088960765736518739">Açarlı idarəetmə</translation>
 <translation id="7089253021944603172">Tab Yenidən Aktivdir</translation>
-<translation id="7090160970140261931">Veb saytlar və Android tətbiqiləri ilə istifadə etmək üçün <ph name="DEVICE_TYPE" /> cihazınıza başqa hesabları da əlavə edə bilərsiniz. Həmçinin Android tətbiqləri ilə hansı hesabların istifadə olmasına nəzarət edə bilərsiniz.</translation>
 <translation id="7090714929377281710">Hotspotu avtomatik deaktiv edin</translation>
 <translation id="7092504544229909737">Android tətbiqləri ilə istifadə edilə bilməz</translation>
 <translation id="7093220653036489319">Sürətli cavablar</translation>
@@ -10018,6 +10018,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8140869601171867148">Google Hesabı Gmail, YouTube, Chrome və digər Google məhsulları üçün istifadə etdiyiniz eyni hesabdır.
     Əlfəcin, fayl və s. məlumatlara asan giriş üçün hesabdan istifadə edin.</translation>
 <translation id="8141418916163800697">Telefon Mərkəzi ayarlarında daha çox funksiya ayarlaya bilərsiniz</translation>
+<translation id="814156740715940972">Tabı aktiv tab ilə bölün</translation>
 <translation id="8141584439523427891">İndi alternativ brauzerdə açılır</translation>
 <translation id="8141725884565838206">Parollarınızı idarə edin</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{video}other{# video}}</translation>
@@ -11148,9 +11149,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Batareyanı daha sürətlə istifadə edin (hazırda <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944633700466246631">Google Parol Meneceri üçün 6 rəqəmli bərpa PIN-i yaradın</translation>
-<translation id="8944725102565796255">Hesabdan yalnız bir dəfə istifadə etmək istəyirsinizsə, <ph name="GUEST_LINK_BEGIN" />cihazı qonaq kimi istifadə edə<ph name="GUEST_LINK_END" /> bilərsiniz. Başqası üçün hesab əlavə etmək istəyirsinizsə, <ph name="DEVICE_TYPE" /> cihazına <ph name="LINK_BEGIN" />yeni şəxs əlavə edin<ph name="LINK_END" />.
-
-Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. Google Hesablarını <ph name="SETTINGS_LINK_BEGIN" />Ayarlarda<ph name="SETTINGS_LINK_END" /> idarə edə bilərsiniz.</translation>
 <translation id="8945274638472141382">İkona ölçüsü</translation>
 <translation id="8945508919180478719">Studio üslublu mikrofon</translation>
 <translation id="8946359700442089734">Debaq funksiyaları bu <ph name="IDS_SHORT_PRODUCT_NAME" /> cihazında yarımçıq aktiv edilib.</translation>

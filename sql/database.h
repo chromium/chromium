@@ -1024,9 +1024,8 @@ class COMPONENT_EXPORT(SQL) Database {
   // Init resulted in an error.
   raw_ptr<sqlite3> db_ = nullptr;
 
-  // TODO(shuagga@microsoft.com): Make `options_` const after removing all
-  // setters.
-  DatabaseOptions options_;
+  // Immutable options for the database.
+  const DatabaseOptions options_;
 
   // TODO(crbug.com/340805983): Remove this once virtual tables are no longer needed for
   // WebSQL, which requires them for fts3 support.

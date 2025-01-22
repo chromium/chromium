@@ -973,6 +973,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4285498937028063278">Losmaken</translation>
 <translation id="428715201724021596">Verbinding maken met profiel. Dit kan een paar minuten duren.</translation>
 <translation id="4287250812980588583">Chrome-venster</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Microfoonvolume wordt beheerd door <ph name="APP_NAME" />}other{Microfoonvolume wordt beheerd door # apps}}</translation>
 <translation id="4294319844246081198">Goedemorgen <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Alle <ph name="COUNT" /> meldingen wissen</translation>
 <translation id="4300272766492248925">App openen</translation>

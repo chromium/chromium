@@ -57,7 +57,6 @@
 <translation id="1698376642261615901">Google Chrome হল একটি ওয়েব ব্রাউজার যা ওয়েব পৃষ্ঠাগুলি এবং অ্যাপগুলিকে বিদ্যুৎ গতিতে চালনা করে৷ এটি দ্রুত, সুস্থির এবং সহজেই ব্যবহারযোগ্য৷ Google Chrome-এ অন্তর্গঠিত ম্যালওয়ার এবং ফিশিং সুরক্ষার সাথে আরও নিরাপদে ওয়েব ব্রাউজ করুন৷</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome ১ ঘণ্টার মধ্যে আবার লঞ্চ হবে}one{Chrome # ঘণ্টার মধ্যে আবার লঞ্চ হবে}other{Chrome # ঘণ্টার মধ্যে আবার লঞ্চ হবে}}</translation>
 <translation id="1722488837206509557">এর ফলে আপনি উপলভ্য় ডিভাইসগুলি থেকে বেছে নিতে পারবেন এবং সেগুলিতে কন্টেন্ট দেখাতে পারবেন।</translation>
-<translation id="1734234790201236882">Google অ্যাকাউন্টে এই পাসওয়ার্ডটি Chrome সেভ করবে। আপনার এটি মনে রাখার দরকার নেই।</translation>
 <translation id="1786003790898721085">আপনার <ph name="TARGET_DEVICE_NAME" />-এর Chrome-এ সাইন-ইন করেছেন কিনা তা দেখে নিন এবং তারপরে আবার পাঠানোর চেষ্টা করুন।</translation>
 <translation id="1786044937610313874">Chrome-এ শর্টকাট খুলবে</translation>
 <translation id="178701303897325119">এই এক্সটেনশন আর কাজ করবে না। পরিবর্তে, Chrome আপনাকে এটি সরিয়ে দেওয়ার সাজেশন দেয়।</translation>
@@ -325,6 +324,7 @@
 <translation id="4990567037958725628">Google Chrome  ক্যানারি</translation>
 <translation id="4997044641749333913">আপনার ব্রাউজ করার অভিজ্ঞতা উন্নত এবং দ্রুত করার জন্য Chrome এইসব ট্যাব বন্ধ করে দিতে পারে।</translation>
 <translation id="5003967926796347400">“Google Password Manager”-এ ক্লিক করুন</translation>
+<translation id="5114340746415930644">আপনার অ্যাকাউন্ট, <ph name="USER_EMAIL" />-এ Chrome ডেটা ব্যবহার এবং সেভ করার জন্য পাসফ্রেজ লিখুন</translation>
 <translation id="5120334927898581447">অন্যান্য Google পরিষেবায় সাইন-ইন করার সময় Chrome-এ সাইন-ইন করুন</translation>
 <translation id="5126049312684316860">আপনি ভিজিট করতে পারেন এমন আরও বেশি সংখ্যক পৃষ্ঠা Chrome প্রিলোড করে, যাতে সেই ভিজিট করার সময় সেই পৃষ্ঠাগুলি আরও দ্রুত লোড হয়</translation>
 <translation id="5132929315877954718">Google Chrome-এর দুর্দান্ত অ্যাপ্লিকেশান, গেম, এক্সটেনশান এবং থিম আবিষ্কার করুন৷</translation>
@@ -474,9 +474,6 @@
 <translation id="7024536598735240744">আনপ্যাক করার সময় সমস্যা হয়েছে: <ph name="UNPACK_ERROR" />।</translation>
 <translation id="7025789849649390912">ইনস্টলেশন বন্ধ হয়ে গেছে।</translation>
 <translation id="7025800014283535195">আপনি এখানে একটি Chrome প্রোফাইল থেকে আরেকটিতে পাল্টাতে পারেন</translation>
-<translation id="7036251913954633326">আপনি শুধু একবারের জন্য এই অ্যাকাউন্ট ব্যবহার করলে, Chrome ব্রাউজারের <ph name="GUEST_LINK_BEGIN" />গেস্ট মোড<ph name="GUEST_LINK_END" /> ব্যবহার করুন। অন্য কোনও ব্যক্তির জন্য অ্যাকাউন্ট যোগ করতে চাইলে, <ph name="DEVICE_TYPE" />-এ <ph name="LINK_BEGIN" />নতুন ব্যক্তিকে যোগ করুন<ph name="LINK_END" />।
-
-বিভিন্ন ওয়েবসাইট ও অ্যাপকে আপনার আগে দেওয়া অনুমতি এই অ্যাকাউন্টের ক্ষেত্রেও প্রযোজ্য হবে। <ph name="SETTINGS_LINK_BEGIN" />সেটিংস<ph name="SETTINGS_LINK_END" /> থেকে আপনার Google অ্যাকাউন্ট ম্যানেজ করতে পারবেন।</translation>
 <translation id="7048502283602470098">AI এক্সপ্লোর করুন</translation>
 <translation id="7059914902409643750">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="7071827361006050863">Chrome শীঘ্রই ব্রাউজ করা ডেটা মুছে ফেলবে</translation>

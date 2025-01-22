@@ -169,6 +169,7 @@ Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes
 <translation id="5639704535586432836">Åbn Indstillinger &gt; Privatliv &gt; Kamera &gt; Google Chrome, og slå kameraet til.</translation>
 <translation id="5642200033778930880">Google Chrome kan ikke bruge dit kamera i tilstanden Opdelt visning</translation>
 <translation id="5661521615548540542">Google Adgangs­kode­admin­istrator kunne ikke tjekke alle adgangskoder. Prøv igen senere.</translation>
+<translation id="5681291952421236520">Slå Chrome til/fra</translation>
 <translation id="5690398455483874150">{count,plural, =1{Viser nu 1 Chrome-vindue}one{Viser nu {count} Chrome-vindue}other{Viser nu {count} Chrome-vinduer}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Angiv Chrome som din standardbrowser</translation>
@@ -204,6 +205,7 @@ Prøv at vente et par minutter, før du skifter konto. Hvis du skifter konto nu,
 <translation id="6484712497741564393">Logget ind som <ph name="EMAIL" />.
 
 Dine data krypteres med din adgangssætning. Angiv adgangssætningen for at bruge og gemme Chrome-data på din Google-konto.</translation>
+<translation id="6533470733797826516">Log hurtigere ind med autofyld i Chrome</translation>
 <translation id="6545449117344801102">Chrome registrerer adresser og bruger Google Maps til at give dig rutevejledninger og lokale oplysninger.</translation>
 <translation id="6634107063912726160">Når du er logget ud, synkroniserer Chrome ikke nye data med din Google-konto. De data, der tidligere er blevet synkroniseret, forbliver på din konto.</translation>
 <translation id="6636941099779251629">Din organisation kræver, at du logger ind for at bruge Chrome. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>

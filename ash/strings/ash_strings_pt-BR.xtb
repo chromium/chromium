@@ -140,6 +140,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1415846719612499304">Mostrar lista de redes. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Desbloqueie o dispositivo para executar a ação de notificação</translation>
 <translation id="1420408895951708260">Alternar Modo noturno. <ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">Grupo sugerido</translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="1435537621343861112">Não foi possível iniciar o ditado. Seu microfone está desativado.</translation>
 <translation id="1445031758921122223">Transferência de arquivos de controle facial concluída</translation>
@@ -243,12 +244,14 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="17722141032474077">Cálculos</translation>
 <translation id="1774796056689732716">Agenda, <ph name="CURRENT_MONTH_YEAR" />, a data <ph name="DATE" /> está selecionada.</translation>
 <translation id="178347895271755507">Configurar a visualização de fotos, mídia e notificações recentes do smartphone</translation>
+<translation id="1785317913592722944">Remover item do grupo sugerido</translation>
 <translation id="1786487376942610288">Alternar entre o tamanho máximo e o atual da janela picture-in-picture</translation>
 <translation id="1787955149152357925">Desativado</translation>
 <translation id="1796561540704213354">Sites que incluem páginas visitadas e páginas abertas</translation>
 <translation id="179842970735685253">Termos de Serviço do Google</translation>
 <translation id="1805407494113167797">Não foi possível tocar os sons de foco</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> de intensidade de sinal , gerenciada pelo seu administrador</translation>
+<translation id="1815039896005206046">O botão "Não gostei" envia feedback informando que você não gostou do grupo sugerido</translation>
 <translation id="1816896987747843206">Dá acesso à câmera para todos os apps e sites com essa permissão</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Ativar o acesso à localização</translation>
@@ -390,6 +393,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2369165858548251131">"Olá" em chinês</translation>
 <translation id="2370971919968699910">Isso pode gerar custos de dados.
 <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
+<translation id="2383521554963939360">Grupos de guias e apps</translation>
 <translation id="2386292613071805067">Selecionar tudo na página</translation>
 <translation id="2389423187722941333">Ativar/desativar o Gemini</translation>
 <translation id="2392659840443812875">Nenhum ponto de acesso disponível. O dispositivo precisa estar por perto e com o Bluetooth ativado.</translation>
@@ -920,6 +924,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4151054805501931758">Retoque de retrato</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% de bateria (cerca de <ph name="TIME_LEFT" />).
 Alguns recursos estão limitados para aumentar a duração da bateria.</translation>
+<translation id="4158003972857765638">Organizar em um novo espaço de trabalho</translation>
 <translation id="4160919062868802509">Várias fontes de áudio detectadas</translation>
 <translation id="416245495747357243">Pronto!</translation>
 <translation id="4165275524535002941">Talvez o cabo não transmita sinal de vídeo</translation>
@@ -968,6 +973,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4285498937028063278">Soltar</translation>
 <translation id="428715201724021596">Conectando-se ao perfil. Pode levar alguns minutos..</translation>
 <translation id="4287250812980588583">Janela do Chrome</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Volume do microfone controlado pelo app <ph name="APP_NAME" />}one{Volume do microfone controlado por # app}other{Volume do microfone controlado por # apps}}</translation>
 <translation id="4294319844246081198">Bom dia, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Limpar todas as <ph name="COUNT" /> notificações</translation>
 <translation id="4300272766492248925">Abrir app</translation>
@@ -984,6 +990,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4322742403972824594">O atalho de teclado Ctrl + Alt + seta para cima mudou. Para usar a tecla Home, pressione <ph name="LAUNCHER_KEY_NAME" /> + seta para a esquerda.</translation>
 <translation id="4324840740119394760">Dá acesso à câmera para o app <ph name="APP_NAME" /> e todos os apps e sites com essa permissão</translation>
 <translation id="4327147325944669226">Gravar jogo</translation>
+<translation id="4329076911374908740">O número máximo de grupos salvos foi atingido.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, som desativado</translation>
 <translation id="4351244548802238354">Fechar caixa de diálogo</translation>
@@ -1941,6 +1948,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7524043547948122239">Google Tarefas</translation>
 <translation id="7525067979554623046">Criar</translation>
 <translation id="7526573455193969409">A rede pode ser monitorada</translation>
+<translation id="7534543072325030705">O botão "Gostei" envia feedback informando que você gostou do grupo sugerido</translation>
 <translation id="7536035074519304529">Endereço IP: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Atualizar a janela à esquerda</translation>
 <translation id="7543399541175347147">No momento, não há suporte para apps do Linux e janelas anônimas. Outros apps serão salvos.</translation>
@@ -2105,6 +2113,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8004512796067398576">Aumentar</translation>
 <translation id="8005527720597583355">Iniciar sessão de Foco</translation>
 <translation id="8015361438441228492">Não foi possível editar a tarefa.</translation>
+<translation id="8027187124910699148">Retomar grupo sugerido</translation>
 <translation id="802782383769312836">Espaço de trabalho anterior: <ph name="DESK_NAME" />. Espaço de trabalho <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Falha na conexão com o ponto de acesso</translation>
 <translation id="8029629653277878342">O PIN ou a senha são necessários para aumentar a segurança</translation>
@@ -2213,6 +2222,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8426708595819210923">Boa noite, <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Configurações</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> <ph name="DELIMITER" /> <ph name="KEY_ONE" /> a <ph name="KEY_TWO" /></translation>
+<translation id="8429547770382807369">Salvar grupo para mais tarde</translation>
 <translation id="8433186206711564395">Configurações de rede</translation>
 <translation id="8433977262951327081">O atalho para mostrar o balão de menu de opções de entrada na estante foi alterado. Use <ph name="NEW_SHORTCUT" /> em vez de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8437311513256731931">Abrir ferramenta de feedback</translation>
@@ -2221,6 +2231,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8446884382197647889">Saiba mais</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Fechar o Selecionar para ouvir</translation>
+<translation id="8466665972451889002">Mostrar itens no grupo <ph name="GROUP_NAME" /></translation>
 <translation id="8468806060683421065">prazo: <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Exibir configurações de escala</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> o recurso <ph name="FEATURE_NAME" />.</translation>
@@ -2243,6 +2254,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8551588720239073785">Configurações de data e hora</translation>
 <translation id="8553395910833293175">Já atribuído a todos os espaços de trabalho.</translation>
 <translation id="8555757996376137129">Remover o espaço de trabalho atual</translation>
+<translation id="8558521694042102707">A IA generativa pode cometer erros, inclusive sobre pessoas. Por isso, é importante checar as respostas.</translation>
 <translation id="8559845965695780508">Editado por <ph name="USER" /></translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">Confira algumas sugestões</translation>
@@ -2265,6 +2277,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />, gerenciada pelo seu administrador</translation>
 <translation id="8638637208069328956">Ativar/desativar o microfone</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> restante(s)</translation>
+<translation id="8640470573049727749">Ocultar todas as sugestões de grupos</translation>
 <translation id="8641510901370802679">Mostrando informações sobre <ph name="ANSWER_TYPE" /></translation>
 <translation id="8646417893960517480">Timer de <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Para adicionar uma pessoa, insira seu código de acesso do familiar responsável do Family Link</translation>
@@ -2347,6 +2360,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8905919797434099235">(Sem título)</translation>
 <translation id="890616557918890486">Alterar origem</translation>
 <translation id="8909138438987180327">Bateria em <ph name="PERCENTAGE" /> por cento.</translation>
+<translation id="8916866375277139011">Ocultar itens no grupo <ph name="GROUP_NAME" /></translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">O Google Assistente não fala esse idioma.</translation>
 <translation id="8926951137623668982">Estante sempre oculta</translation>

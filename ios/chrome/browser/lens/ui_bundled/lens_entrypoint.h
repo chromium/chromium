@@ -25,7 +25,8 @@ enum class LensEntrypoint {
   WhatsNewPromo = 13,
   LensOverlayLocationBar = 14,
   LensOverlayOverflowMenu = 15,
-  kMaxValue = LensOverlayOverflowMenu,
+  LensOverlayLvfEscapeHatch = 16,
+  kMaxValue = LensOverlayLvfEscapeHatch,
   //  LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:AmbientSearchEntryPoint)
 };
 

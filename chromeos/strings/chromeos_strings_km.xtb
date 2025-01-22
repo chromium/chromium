@@ -564,6 +564,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (ការវាយតម្លៃចំនួន <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">មិនបានភ្ជាប់ទេ</translation>
 <translation id="3749289110408117711">ឈ្មោះឯកសារ</translation>
+<translation id="3763034084412196440">កែតម្រូវ​កម្រិត​សំឡេង</translation>
 <translation id="3767737419527918477">ស្វែងរកឯកសារសំឡេងថត</translation>
 <translation id="3771294271822695279">ឯកសារវីដេអូ</translation>
 <translation id="3780740315729837296">ចាត់តាំង​គ្រាប់ចុច​លើក្ដារចុច</translation>
@@ -1218,6 +1219,7 @@
 <translation id="6747035363363040417">ធម្មតា</translation>
 <translation id="6747215703636344499">បានឈប់ - ថាសដាក់​ក្រដាស​បោះពុម្ព​ពេញហើយ</translation>
 <translation id="6749473226660745022">រូបថត</translation>
+<translation id="6752960629591143793">ជ្រើសរើសភាសា​ប្រតិចារឹក និងទាញយកនៅក្នុង "ការកំណត់" ឬនៅក្នុងម៉ឺនុយ <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="6753452347192452143">ឧបករណ៍គឺជាកុំព្យូទ័រ។</translation>
 <translation id="6756731097889387912">មិនអាចបោះបង់ការស្កេនបានទេ</translation>
 <translation id="6760706756348334449">បន្ថយ​សំឡេង</translation>

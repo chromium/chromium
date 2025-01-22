@@ -140,6 +140,7 @@
 <translation id="1415846719612499304">Показати список мереж. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Щоб виконати дію зі сповіщенням, розблокуйте пристрій</translation>
 <translation id="1420408895951708260">Увімкнути або вимкнути нічний екран. <ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">Запропонована група</translation>
 <translation id="1426410128494586442">Так</translation>
 <translation id="1435537621343861112">Не вдалося почати диктування. Мікрофон вимкнено.</translation>
 <translation id="1445031758921122223">Файли для функції визначення обличчя завантажено</translation>
@@ -243,12 +244,14 @@
 <translation id="17722141032474077">Обчислення</translation>
 <translation id="1774796056689732716">Календар, <ph name="CURRENT_MONTH_YEAR" />, зараз вибрано <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Налаштувати перегляд нещодавніх фотографій, медіафайлів і сповіщень на телефоні</translation>
+<translation id="1785317913592722944">Вилучити об’єкт із запропонованої групи</translation>
 <translation id="1786487376942610288">Змінити розмір вікна в режимі "картинка в картинці" на максимальний або поточний</translation>
 <translation id="1787955149152357925">Вимкнено</translation>
 <translation id="1796561540704213354">Веб-сайти, зокрема відвідані й відкриті сторінки</translation>
 <translation id="179842970735685253">Загальних положень і умов Google</translation>
 <translation id="1805407494113167797">Не вдалося відтворити звуки для концентрації уваги</translation>
 <translation id="181103072419391116">Рівень сигналу – <ph name="SIGNAL_STRENGTH" />. Мережею керує адміністратор</translation>
+<translation id="1815039896005206046">За допомогою позначки "Не подобається" можна надіслати негативний відгук про запропоновану групу</translation>
 <translation id="1816896987747843206">Буде надано доступ до камери для всіх додатків і веб-сайтів, де потрібен відповідний дозвіл</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Увімкнути доступ до геоданих</translation>
@@ -390,6 +393,7 @@
 <translation id="2369165858548251131">Як сказати "привіт" китайською</translation>
 <translation id="2370971919968699910">За передавання даних може стягуватися плата.
 Підключено пристроїв: <ph name="DEVICECOUNT" />.</translation>
+<translation id="2383521554963939360">Додатки й групи вкладок</translation>
 <translation id="2386292613071805067">Вибрати все на сторінці</translation>
 <translation id="2389423187722941333">Увімкнути або вимкнути Gemini</translation>
 <translation id="2392659840443812875">Немає точок доступу. Переконайтеся, що ваш пристрій поблизу, а Bluetooth увімкнено.</translation>
@@ -920,6 +924,7 @@
 <translation id="4151054805501931758">Портретне ретушування</translation>
 <translation id="4156293514828496577">Залишилось <ph name="PERCENTAGE" />% заряду акумулятора (приблизно на <ph name="TIME_LEFT" />).
 Роботу деяких функцій обмежено, щоб заощадити заряд.</translation>
+<translation id="4158003972857765638">Упорядкувати на новому робочому столі</translation>
 <translation id="4160919062868802509">Виявлено кілька джерел аудіо</translation>
 <translation id="416245495747357243">Готово!</translation>
 <translation id="4165275524535002941">Кабель може не підтримувати дисплеї</translation>
@@ -968,6 +973,7 @@
 <translation id="4285498937028063278">Відкріпити</translation>
 <translation id="428715201724021596">Триває підключення до профілю. Це може зайняти кілька хвилин.</translation>
 <translation id="4287250812980588583">Вікно Chrome</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Гучність мікрофона регулює додаток <ph name="APP_NAME" />}one{Гучність мікрофона регулює # додаток}few{Гучність мікрофона регулюють # додатки}many{Гучність мікрофона регулюють # додатків}other{Гучністю мікрофона регулюють # додатка}}</translation>
 <translation id="4294319844246081198">Доброго ранку, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Видаліть усі сповіщення (<ph name="COUNT" />)</translation>
 <translation id="4300272766492248925">Відкрити додаток</translation>
@@ -984,6 +990,7 @@
 <translation id="4322742403972824594">Комбінацію клавіш Ctrl + Alt + стрілка вгору змінено. Щоб скористатися клавішею Home, натисніть клавішу <ph name="LAUNCHER_KEY_NAME" /> + стрілку вліво.</translation>
 <translation id="4324840740119394760">Буде надано доступ до камери для додатка <ph name="APP_NAME" /> і всіх додатків та веб-сайтів, де потрібен відповідний дозвіл</translation>
 <translation id="4327147325944669226">Записати гру</translation>
+<translation id="4329076911374908740">Ви зберегли максимальну кількість груп.</translation>
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, звук вимкнено</translation>
 <translation id="4351244548802238354">Закрити діалогове вікно</translation>
@@ -1264,6 +1271,7 @@
 <translation id="5245201184978705914">Не вдалося створити текстову версію</translation>
 <translation id="5251174953851719648">Оновити контент</translation>
 <translation id="5253783950165989294">Підключено до пристрою "<ph name="DEVICE_NAME" />", заряд акумулятора – <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5256939106029293271">Перевірте мікрофон</translation>
 <translation id="5258528442992323769">Немає збережених робочих столів</translation>
 <translation id="5260676007519551770">Робочий стіл 4</translation>
 <translation id="5265391159779542051">Результати завантажено</translation>
@@ -1421,6 +1429,7 @@
 <translation id="5745612484876805746">Нічний екран увімкнеться автоматично після заходу сонця</translation>
 <translation id="5750765938512549687">Bluetooth вимкнено</translation>
 <translation id="5758114525425072423">Перейти в режим концентрації уваги. Таймер налаштовано на <ph name="FOCUS_DURATION" />.</translation>
+<translation id="5759522586053040964">Послухайте, як вас чутимуть інші. Щоб зупинити перевірку, натисніть відповідний значок або закрийте панель відеодзвінка.</translation>
 <translation id="5760866832697883462">Підключіть пристрій "<ph name="NAME" />"</translation>
 <translation id="5762420912707163638">Перемкнути маркер. <ph name="STATE_TEXT" /> Робіть помітки на екрані за допомогою сенсорної панелі, сенсорного екрана та стилуса.</translation>
 <translation id="576341972084747908">Завантажується небезпечний файл <ph name="FILENAME" /></translation>
@@ -1939,6 +1948,7 @@
 <translation id="7524043547948122239">Google Завдання</translation>
 <translation id="7525067979554623046">Створити</translation>
 <translation id="7526573455193969409">Мережевий трафік може відстежуватися</translation>
+<translation id="7534543072325030705">За допомогою позначки "Подобається" можна надіслати схвальний відгук про запропоновану групу</translation>
 <translation id="7536035074519304529">ІР-адреса: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Оновити вікно ліворуч</translation>
 <translation id="7543399541175347147">Додатки Linux і вікна в режимі анонімного перегляду наразі не підтримуються. Інші додатки буде збережено.</translation>
@@ -2103,6 +2113,7 @@
 <translation id="8004512796067398576">Підвищити</translation>
 <translation id="8005527720597583355">Увімкнути режим концентрації уваги</translation>
 <translation id="8015361438441228492">Не вдалося змінити завдання.</translation>
+<translation id="8027187124910699148">Відновити запропоновану групу</translation>
 <translation id="802782383769312836">Попередній робочий стіл: <ph name="DESK_NAME" />. Робочий стіл <ph name="DESK_INDEX" /> із <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Не вдалося підключити точку доступу</translation>
 <translation id="8029629653277878342">Для додаткового захисту потрібно ввести PIN-код або пароль</translation>
@@ -2211,6 +2222,7 @@
 <translation id="8426708595819210923">Доброго вечора, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8428213095426709021">Налаштування</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /> від <ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>
+<translation id="8429547770382807369">Зберегти групу</translation>
 <translation id="8433186206711564395">Налаштування мережі</translation>
 <translation id="8433977262951327081">Комбінація клавіш для виклику спливаючої підказки з опціями введення змінилась. Тепер це <ph name="NEW_SHORTCUT" />, а не <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8437311513256731931">Відкрити інструмент надсилання відгуків</translation>
@@ -2219,6 +2231,7 @@
 <translation id="8446884382197647889">Докладніше</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Закрити "Читання з екрана"</translation>
+<translation id="8466665972451889002">Показати об’єкти в групі "<ph name="GROUP_NAME" />"</translation>
 <translation id="8468806060683421065">термін здачі: <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Налаштування масштабу дисплея</translation>
 <translation id="8473301994082929012">На сайті <ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
@@ -2241,6 +2254,7 @@
 <translation id="8551588720239073785">Налаштування дати й часу</translation>
 <translation id="8553395910833293175">Уже призначено для всіх робочих столів.</translation>
 <translation id="8555757996376137129">Видалити поточний робочий стіл</translation>
+<translation id="8558521694042102707">Генеративний ШІ може припускатися помилок (зокрема щодо людей), тому радимо ретельно перевіряти його відповіді.</translation>
 <translation id="8559845965695780508">Відредаговано користувачем <ph name="USER" /></translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">Спробуйте ввести наведені нижче запити</translation>
@@ -2263,6 +2277,7 @@
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />. Мережею керує адміністратор</translation>
 <translation id="8638637208069328956">Увімкнути або вимкнути мікрофон</translation>
 <translation id="8639760480004882931">Залишилося <ph name="PERCENTAGE" /></translation>
+<translation id="8640470573049727749">Сховати всі пропозиції груп</translation>
 <translation id="8641510901370802679">Показано інформацію: <ph name="ANSWER_TYPE" /></translation>
 <translation id="8646417893960517480">Таймер на <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Щоб додати людину, введіть батьківський код доступу з Family Link</translation>
@@ -2345,6 +2360,7 @@
 <translation id="8905919797434099235">(Без назви)</translation>
 <translation id="890616557918890486">Змінити джерело</translation>
 <translation id="8909138438987180327">Акумулятор заряджено на <ph name="PERCENTAGE" />.</translation>
+<translation id="8916866375277139011">Сховати об’єкти в групі "<ph name="GROUP_NAME" />"</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Асистент не підтримує цю мову.</translation>
 <translation id="8926951137623668982">Полицю завжди сховано</translation>

@@ -29,7 +29,6 @@ class BitmapSoftwareBacking : public ResourcePool::SoftwareBacking {
     DCHECK(shared_image);
 
     shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
-    mapping.reset();
     shared_image.reset();
     // |shared_image_interface| might be null when
     // gpu::GpuChannel::~GpuChannel() during shutdown or when gpu is crashed.
@@ -42,7 +41,6 @@ class BitmapSoftwareBacking : public ResourcePool::SoftwareBacking {
   }
 
   raw_ptr<LayerTreeFrameSink> frame_sink;
-  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
 };
 
 class BitmapRasterBufferImpl : public RasterBuffer {
@@ -54,7 +52,6 @@ class BitmapRasterBufferImpl : public RasterBuffer {
                          uint64_t previous_content_id)
       : resource_size_(size),
         color_space_(color_space),
-        pixels_(backing->mapping->GetMemoryForPlane(0).data()),
         resource_has_previous_content_(
             resource_content_id && resource_content_id == previous_content_id),
         backing_(backing) {}
@@ -79,9 +76,11 @@ class BitmapRasterBufferImpl : public RasterBuffer {
 
     size_t stride = 0u;
     viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888;
+    auto mapping = backing_->shared_image->Map();
+    void* memory = mapping->GetMemoryForPlane(0).data();
     RasterBufferProvider::PlaybackToMemory(
-        pixels_, format, resource_size_, stride, raster_source,
-        raster_full_rect, playback_rect, transform, color_space_,
+        memory, format, resource_size_, stride, raster_source, raster_full_rect,
+        playback_rect, transform, color_space_,
         /*gpu_compositing=*/false, playback_settings);
   }
 
@@ -91,10 +90,6 @@ class BitmapRasterBufferImpl : public RasterBuffer {
   const gfx::Size resource_size_;
   const gfx::ColorSpace color_space_;
 
-  // `pixels_` is not a raw_ptr<...> for performance reasons: pointee is never
-  // protected by BackupRefPtr, because the pointer comes either from using
-  // `mmap`, MapViewOfFile or base::AllocPages directly.
-  RAW_PTR_EXCLUSION void* const pixels_;
   bool resource_has_previous_content_;
   raw_ptr<BitmapSoftwareBacking> backing_;
 };
@@ -133,7 +128,6 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
          gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "BitmapRasterBufferProvider"});
     CHECK(backing->shared_image);
 
-    backing->mapping = backing->shared_image->Map();
     backing->mailbox_sync_token = sii->GenVerifiedSyncToken();
 
     resource.set_software_backing(std::move(backing));

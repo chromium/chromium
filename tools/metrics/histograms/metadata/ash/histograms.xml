@@ -5742,62 +5742,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.LoginSessionRestore.AllBrowserWindowsCreated" units="ms"
-    expires_after="2025-02-23">
-  <owner>xiyuan@chromium.org</owner>
-  <owner>junis@google.com</owner>
-  <owner>cros-sw-perf@google.com</owner>
-  <summary>
-    Time between primary user logged in (i.e. a successful cryptohome mount) and
-    creation of all expected restored browser windows.
-  </summary>
-</histogram>
-
-<histogram name="Ash.LoginSessionRestore.AllBrowserWindowsPresented" units="ms"
-    expires_after="2025-02-23">
-  <owner>xiyuan@chromium.org</owner>
-  <owner>junis@google.com</owner>
-  <owner>cros-sw-perf@google.com</owner>
-  <summary>
-    The duration of how long it took for all pixels of expected restored windows
-    to be rendered after primary user logged in (i.e. a successful cryptohome
-    mount).
-  </summary>
-</histogram>
-
-<histogram name="Ash.LoginSessionRestore.AllBrowserWindowsShown" units="ms"
-    expires_after="2025-06-29">
-  <owner>xiyuan@chromium.org</owner>
-  <owner>junis@google.com</owner>
-  <owner>cros-sw-perf@google.com</owner>
-  <summary>
-    Time between primary user logged in (i.e. a successful cryptohome mount) and
-    the full manifestation of all expected restored browser windows.
-  </summary>
-</histogram>
-
-<histogram name="Ash.LoginSessionRestore.AllShelfIconsLoaded" units="ms"
-    expires_after="2025-06-29">
-  <owner>xiyuan@chromium.org</owner>
-  <owner>junis@google.com</owner>
-  <owner>cros-sw-perf@google.com</owner>
-  <summary>
-    Time between primary user logged in (i.e. a successful cryptohome mount) and
-    the complete loading of all pinned button icons for restored windows.
-  </summary>
-</histogram>
-
-<histogram name="Ash.LoginSessionRestore.ShelfLoginAnimationEnd" units="ms"
-    expires_after="2025-06-29">
-  <owner>xiyuan@chromium.org</owner>
-  <owner>junis@google.com</owner>
-  <owner>cros-sw-perf@google.com</owner>
-  <summary>
-    The duration of how long it took to load all the shelf icons of restored
-    windows after primary user logged in (i.e. a successful cryptohome mount).
-  </summary>
-</histogram>
-
 <histogram name="Ash.MagicBoost.DisclaimerView.{OptInFeatures}"
     enum="DisclaimerViewAction" expires_after="2025-07-07">
   <owner>leandre@google.com</owner>

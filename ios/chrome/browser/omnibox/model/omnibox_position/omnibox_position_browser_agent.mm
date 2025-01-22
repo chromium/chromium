@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/model/omnibox_position_browser_agent.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 
 BROWSER_USER_DATA_KEY_IMPL(OmniboxPositionBrowserAgent)
 

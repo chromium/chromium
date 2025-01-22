@@ -285,6 +285,7 @@
 <translation id="233375395665273385">Ջնջել և դուրս գալ</translation>
 <translation id="2341410551640223969">Չհաջողվեց տեղադրել <ph name="WEBAPK_NAME" /> հավելվածը։</translation>
 <translation id="2349710944427398404">Chrome-ի օգտագործած ընդհանուր տարածքը, ներառյալ` հաշիվները, էջանիշները և պահված կարգավորումները</translation>
+<translation id="2349954856814571872">«Էջանիշների գոտի» կոճակի պատկերակ</translation>
 <translation id="235789365079050412">Google-ի գաղտնիության քաղաքականություն</translation>
 <translation id="2359808026110333948">Շարունակել</translation>
 <translation id="2362083820973145409">Դուք մուտք եք գործել որպես <ph name="USER_NAME" />։ <ph name="USER_EMAIL" />։ Բացել կարգավորումները:</translation>
@@ -827,7 +828,6 @@
 <translation id="4835385943915508971">Հարցված ռեսուրսը հասանելի չէ Chrome-ին:</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Վերականգնել <ph name="TAB_COUNT_ONE" /> ներդիրից բաղկացած խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, որպես ներդիրների նոր ֆոնային խումբ։}one{Վերականգնել <ph name="TAB_COUNT_MANY" /> ներդիրից բաղկացած խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, որպես ներդիրների նոր ֆոնային խումբ։}other{Վերականգնել <ph name="TAB_COUNT_MANY" /> ներդիրից բաղկացած խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, որպես ներդիրների նոր ֆոնային խումբ։}}</translation>
 <translation id="4837753911714442426">Բացել էջը տպելու տարբերակները</translation>
-<translation id="4842092870884894799">Ցուցադրվում է գաղտնաբառի ստեղծման ելնող պատուհանը</translation>
 <translation id="4844633725025837809">Անվտանգության մակարդակը բարձրացնելու համար գաղտնաբառերը գաղտնագրեք ձեր սարքում՝ նախքան Google Գաղտնաբառերի կառավարիչում պահելը։</translation>
 <translation id="4850886885716139402">Տեսք</translation>
 <translation id="4852014461738377247">Մուտք\u2026</translation>

@@ -59,7 +59,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1698376642261615901">Google Chrome je spletni brskalnik, ki bliskovito odpira spletna mesta in izvaja programe. Je hiter, stabilen in preprost za uporabo. V Google Chrome je vgrajena zaščita pred zlonamerno programsko opremo in lažnim predstavljanjem, kar omogoča varnejše brskanje v spletu.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome se bo znova zagnal čez eno uro}one{Chrome se bo znova zagnal čez # uro}two{Chrome se bo znova zagnal čez # uri}few{Chrome se bo znova zagnal čez # ure}other{Chrome se bo znova zagnal čez # ur}}</translation>
 <translation id="1722488837206509557">Tako boste lahko izbirali med razpoložljivimi napravami in v njih prikazali vsebino.</translation>
-<translation id="1734234790201236882">Chrome bo shranil to geslo v Google Računu. Ni si vam ga treba zapomniti.</translation>
 <translation id="1786003790898721085">Preverite, ali ste v napravi <ph name="TARGET_DEVICE_NAME" /> prijavljeni v Chrome, nato poskusite znova poslati.</translation>
 <translation id="1786044937610313874">Bližnjice, odprte v Chromu</translation>
 <translation id="178701303897325119">Ta razširitev ni več podprta. Chrome priporoča, da jo odstranite.</translation>
@@ -327,6 +326,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="4997044641749333913">Chrome lahko zaradi izboljšanja izkušnje brskanja in zagotavljanja hitrega delovanja te zavihke spremeni v neaktivne.</translation>
 <translation id="5003967926796347400">Kliknite »Googlov upravitelj gesel«</translation>
+<translation id="5114340746415930644">Vnesite geslo, če želite podatke iz Chroma uporabljati in shranjevati v računu, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Prijavite se v Chrome, ko se prijavite v druge Googlove storitve</translation>
 <translation id="5126049312684316860">Chrome vnaprej naloži še več strani, ki jih boste verjetno obiskali, da se ob obisku naložijo še hitreje</translation>
 <translation id="5132929315877954718">Odkrijte zanimive aplikacije, igre, razširitve in teme za Google Chrome.</translation>
@@ -478,9 +478,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="7024536598735240744">Napaka pri odpakiranju: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Namestitev je prekinjena.</translation>
 <translation id="7025800014283535195">Med profili v Chromu lahko preklapljate tukaj</translation>
-<translation id="7036251913954633326">Če želite ta račun uporabiti samo enkrat, lahko v brskalniku Chrome uporabite <ph name="GUEST_LINK_BEGIN" />način za goste<ph name="GUEST_LINK_END" />. Če želite dodati račun za nekoga drugega, v napravi <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />dodajte novo osebo<ph name="LINK_END" />.
-
-Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljajo za ta račun. Račune Google lahko upravljate v <ph name="SETTINGS_LINK_BEGIN" />nastavitvah<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7048502283602470098">Raziščite umetno inteligenco</translation>
 <translation id="7059914902409643750">Prilagodite si Chrome</translation>
 <translation id="7071827361006050863">Chrome bo kmalu izbrisal podatke brskanja</translation>

@@ -191,6 +191,7 @@
 <translation id="1779354709911146450">Produciuse un erro de autenticación</translation>
 <translation id="1780152987505130652">Pechar grupo</translation>
 <translation id="178400879184240105">Ningún contrasinal reutilizado</translation>
+<translation id="17906873777101817">Ofrecer gardar contrasinais e claves de acceso</translation>
 <translation id="1807893857950749072">Permitir notificacións de seguimento de prezos…</translation>
 <translation id="1810976980198522421">Cancelar</translation>
 <translation id="1815941218935345331">Contrasinal</translation>
@@ -493,6 +494,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3130863904455712965">Historial e moito máis</translation>
 <translation id="313283613037595347">Crear nova pestana do modo de incógnito.</translation>
 <translation id="3138611310073113613">Descartar selección</translation>
+<translation id="3140825265190223781">Contrasinais e claves de acceso gardados</translation>
 <translation id="3143515551205905069">Cancelar sincronización</translation>
 <translation id="314837624430314508">Mantente ao día das noticias máis recentes, das actualizacións no seguimento de prezos e moito máis.</translation>
 <translation id="3157387275655328056">Engadir á lista de lectura</translation>
@@ -650,6 +652,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3955740319737378355">Feito</translation>
 <translation id="3955822496205734389">Tes contrasinais pouco seguros.</translation>
 <translation id="3958312024468322930">Arrastra a icona á barra de aplicacións que está na parte inferior da pantalla de inicio</translation>
+<translation id="3960218941754097036">Busca calquera cousa que apareza na pantalla con Google Lens</translation>
 <translation id="3962326069546168954">Gardar</translation>
 <translation id="3967327056943561740">Marcadores</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
@@ -692,6 +695,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4148023517926189160">Este sitio web quere descargar un ficheiro e engadilo ao teu calendario.</translation>
 <translation id="4152011295694446843">Aquí atoparás os teus marcadores</translation>
+<translation id="4154753961803534698">Buscar coa cámara</translation>
 <translation id="4158491215857439601">Xestor de contrasinais</translation>
 <translation id="4163699139741158298">{count,plural, =1{Gardouse o marcador en {title}. Está gardado só neste dispositivo.}other{Gardáronse {count} marcadores en {title}. Están gardados só neste dispositivo.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> que remata en <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -830,7 +834,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4764612367328936189">A túa organización só che permite iniciar sesión con certas contas. As contas que non están permitidas atópanse ocultas. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover e Seguindo</translation>
 <translation id="4769198578611055647">Axúdache a acceder ás claves de acceso gardadas en calquera dispositivo</translation>
-<translation id="4777866634702576038">Queres eliminar o grupo de pestanas?</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Queres abrir a ligazón no modo de incógnito?</translation>
 <translation id="4792385443586519711">Nome da empresa</translation>
@@ -1158,6 +1161,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6168647875670665004">Suxestións de artigos</translation>
 <translation id="6169031022444660352">Para eliminar todas as credenciais gardadas, primeiro debes configurar un contrasinal no teu dispositivo.</translation>
 <translation id="6173499589275053515">O contrasinal gardouse na túa Conta de Google, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Buscar na pantalla</translation>
 <translation id="6187302354554850004">Última sincronización: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Creado o <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Mensaxes non lidas</translation>
@@ -1319,6 +1323,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6732087373923685049">cámara</translation>
 <translation id="6746338529702829275">Revisa os datos da túa conta</translation>
 <translation id="6755200887046212842">Xestionar contas</translation>
+<translation id="6755733078693946548">Acceder aos contrasinais e claves de acceso desde calquera aplicación</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6779455296366983087">Eliminaranse os teus datos de navegación</translation>
 <translation id="6790502149545262384">Dentro de pouco verás as historias de <ph name="CHANNEL_NAME" /> cando abras unha pestana nova.</translation>
@@ -1586,6 +1591,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="7977451675950311423">Avísate cando usas un contrasinal vulnerado nunha violación da seguranza dos datos.</translation>
 <translation id="7977482887663636093">Pestanas novas: <ph name="NUMBER_OF_TABS_ADDED" />, pestanas pechadas: <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="797824194429476746">As pestanas permanecerán abertas neste dispositivo, pero o grupo eliminarase de maneira permanente.</translation>
+<translation id="797874245254030665">Accede aos contrasinais e claves de acceso desde calquera aplicación</translation>
 <translation id="7982789257301363584">Rede</translation>
 <translation id="7987685713885608670">Para dispoñer dunha maior seguranza, os teus contrasinais encríptanse no dispositivo antes de gardarse no xestor de contrasinais de Google.</translation>
 <translation id="798991908416757345">Os grupos de pestanas non están dispoñibles</translation>
@@ -1595,6 +1601,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8005666035647241369">No xestor de contrasinais de Google neste dispositivo</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="802154636333426148">Produciuse un erro na descarga</translation>
+<translation id="8023170444051056234">Perderás inmediatamente o acceso ao grupo de pestanas "<ph name="GROUP_NAME" />", que se eliminará de todos os dispositivos</translation>
 <translation id="8023878949384262191">Amplía a sección.</translation>
 <translation id="8027581147000338959">Abrir nunha ventá nova</translation>
 <translation id="8032569120109842252">Seguindo</translation>
@@ -1665,6 +1672,8 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8299613349954694191">Abre unha pestana do modo de incógnito para navegar pola Web de forma privada.</translation>
 <translation id="8307481894409578819">Non se puido cargar este ficheiro</translation>
 <translation id="8319076807703933069">Nova busca</translation>
+<translation id="8328607660158575887">Abre a opción de AutoFill &amp; Password (Autocompletar e contrasinal)</translation>
+<translation id="833647236762414178">Crea, garda e xestiona os teus contrasinais e claves de acceso para poder iniciar sesión facilmente nos sitios e nas aplicacións. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Fai unha copia de seguranza dos teus datos e úsaos en calquera dispositivo.</translation>
 <translation id="8349305172487531364">Barra de marcadores</translation>
 <translation id="8364563001733875155">Para cambiar o PIN, primeiro configura un contrasinal no teu dispositivo.</translation>
@@ -1816,6 +1825,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8909459547399237818">Selecciona o xestor de contrasinais e, a continuación, toca Engadir widget</translation>
 <translation id="891282356902782456">Este contrasinal está gardado só neste dispositivo. Para usalo noutros, gárdao na túa Conta de Google, <ph name="EMAIL" />.</translation>
 <translation id="8915916167043355778">Pechar todo</translation>
+<translation id="892185197271200809">Todas as persoas perderán inmediatamente o acceso ao grupo de pestanas "<ph name="GROUP_NAME" />", que se eliminará de todos os dispositivos</translation>
 <translation id="8921902386312975525">Opcións aplicables ao seguimento de paquetes</translation>
 <translation id="8923178205567790913">Contrasinais</translation>
 <translation id="892776311701544612">Máis información…</translation>

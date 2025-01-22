@@ -973,6 +973,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4285498937028063278">Banua</translation>
 <translation id="428715201724021596">Inaunganisha kwenye wasifu. Hatua hii inaweza kuchukua dakika kadhaa.</translation>
 <translation id="4287250812980588583">Kidirisha cha Chrome</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Kiwango cha sauti ya maikrofoni kinadhibitiwa na <ph name="APP_NAME" />}other{Kiwango cha sauti ya maikrofoni kinadhibitiwa na programu #}}</translation>
 <translation id="4294319844246081198">Habari za asubuhi <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Futa arifa zote <ph name="COUNT" /></translation>
 <translation id="4300272766492248925">Fungua programu</translation>

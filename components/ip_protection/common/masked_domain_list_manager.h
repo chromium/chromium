@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/url_matcher_with_bypass.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/network_anonymization_key.h"
@@ -53,9 +54,9 @@ class MaskedDomainListManager {
   // eligible for the proxy.
   // TODO(crbug.com/354649091): Public Suffix List domains and subdomains
   // proxy 1st party requests because no same-origin check is performed.
-  bool Matches(
-      const GURL& request_url,
-      const net::NetworkAnonymizationKey& network_anonymization_key) const;
+  bool Matches(const GURL& request_url,
+               const net::NetworkAnonymizationKey& network_anonymization_key,
+               MdlType mdl_type = MdlType::kDefault) const;
 
   // Use the Masked Domain List and exclusion list to generate the allow list
   // and the 1P bypass rules.

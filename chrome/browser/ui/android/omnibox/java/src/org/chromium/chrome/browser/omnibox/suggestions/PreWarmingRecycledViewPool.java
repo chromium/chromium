@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView.RecycledViewPool;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -29,6 +31,7 @@ import java.util.Optional;
  *   <li>Records the performance of the view recycling mechanism.
  * </ul>
  */
+@NullMarked
 public class PreWarmingRecycledViewPool extends RecycledViewPool {
     private static final long STEP_MILLIS = 50;
 
@@ -53,7 +56,7 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
                 new ViewTypeAndCount(OmniboxSuggestionUiType.ENTITY_SUGGESTION, 3)
             };
 
-    private OmniboxSuggestionsDropdownAdapter mAdapter;
+    private @Nullable OmniboxSuggestionsDropdownAdapter mAdapter;
     private final Optional<Handler> mHandler;
     private final FrameLayout mPlaceholderParent;
     private boolean mStopCreatingViews;
@@ -127,7 +130,7 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
     void stopCreatingViews() {
         if (mStopCreatingViews) return;
         mStopCreatingViews = true;
-        mHandler.ifPresent(h -> h.removeCallbacks(null));
+        mHandler.ifPresent(h -> h.removeCallbacksAndMessages(null));
         putViewsIntoPool();
     }
 
@@ -146,7 +149,7 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
     }
 
     @Override
-    public ViewHolder getRecycledView(int viewType) {
+    public @Nullable ViewHolder getRecycledView(int viewType) {
         stopCreatingViews();
         ViewHolder result = super.getRecycledView(viewType);
         if (result == null) {

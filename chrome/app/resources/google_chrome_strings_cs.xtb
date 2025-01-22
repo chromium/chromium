@@ -59,7 +59,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1698376642261615901">Webový prohlížeč Google Chrome spouští stránky a aplikace rychlostí blesku. Je rychlý, stabilní a snadno použitelný. S ochranou proti malwaru a phishingu integrovanou do prohlížeče Google Chrome můžete procházet web bezpečněji.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome se za hodinu restartuje}few{Chrome se za # hodiny restartuje}many{Chrome se za # hodiny restartuje}other{Chrome se za # hodin restartuje}}</translation>
 <translation id="1722488837206509557">Budete moci vybírat z dostupných zařízení a zobrazovat na nich obsah.</translation>
-<translation id="1734234790201236882">Chrome heslo uloží do vašeho účtu Google. Nebudete si ho muset pamatovat.</translation>
 <translation id="1786003790898721085">Zkontrolujte, zda jste v zařízení <ph name="TARGET_DEVICE_NAME" /> přihlášeni do Chromu, a potom zkuste číslo odeslat znovu.</translation>
 <translation id="1786044937610313874">Zástupci se otevírají v Chromu</translation>
 <translation id="178701303897325119">Toto rozšíření už není podporováno. Chrome vám doporučuje odstranit ho.</translation>
@@ -326,6 +325,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="4997044641749333913">Chrome může tyto karty deaktivovat, aby při procházení vše lépe fungovalo a prohlížeč byl celkově rychlejší.</translation>
 <translation id="5003967926796347400">Klikněte na Správce hesel Google</translation>
+<translation id="5114340746415930644">Pokud chcete používat a ukládat data Chromu ve svém účtu <ph name="USER_EMAIL" />, zadejte heslovou frázi</translation>
 <translation id="5120334927898581447">Přihlášení do Chromu při přihlášení do jiných služeb Google</translation>
 <translation id="5126049312684316860">Chrome předběžně načítá ještě více stránek, které byste pravděpodobně mohli navštívit. Když je navštívíte, načtou se tak rychleji</translation>
 <translation id="5132929315877954718">Objevte skvělé aplikace, hry, rozšíření a motivy prohlížeče Google Chrome.</translation>
@@ -477,9 +477,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7024536598735240744">Chyba rozbalení: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalace byla zastavena.</translation>
 <translation id="7025800014283535195">Zde můžete přepínat mezi profily Chrome</translation>
-<translation id="7036251913954633326">Pokud tento účet chcete použít pouze jednorázově, můžete v prohlížeči Chrome použít <ph name="GUEST_LINK_BEGIN" />režim hosta<ph name="GUEST_LINK_END" />. Pokud chcete přidat účet někoho dalšího, přidejte do zařízení <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />novou osobu<ph name="LINK_END" />.
-
-Na tento účet se mohou vztahovat oprávnění, která jste již udělili webům a aplikacím. Své účty Google můžete spravovat v <ph name="SETTINGS_LINK_BEGIN" />Nastavení<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7048502283602470098">Prozkoumat AI</translation>
 <translation id="7059914902409643750">Přizpůsobte si Chrome</translation>
 <translation id="7071827361006050863">Chrome brzy smaže údaje o prohlížení</translation>

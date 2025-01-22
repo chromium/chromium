@@ -39,9 +39,6 @@
 <translation id="1594928384848033697">Chromium želi izbrisati vaše podatke Upravitelja zaporki. Upišite svoju zaporku za Windows da biste to dopustili.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Vaš administrator zahtijeva da ponovno pokrenete Chromium radi primjene ažuriranja}=1{Vaš administrator zahtijeva da ponovno pokrenete Chromium radi primjene ažuriranja. Anonimni se prozor neće ponovno otvoriti.}one{Vaš administrator zahtijeva da ponovno pokrenete Chromium radi primjene ažuriranja. Vaš # anonimni prozor neće se ponovno otvoriti.}few{Vaš administrator zahtijeva da ponovno pokrenete Chromium radi primjene ažuriranja. Vaša # anonimna prozora neće se ponovno otvoriti.}other{Vaš administrator zahtijeva da ponovno pokrenete Chromium radi primjene ažuriranja. Vaših # anonimnih prozora neće se ponovno otvoriti.}}</translation>
 <translation id="1625909126243026060">Pregledajte ključne kontrole privatnosti i sigurnosti u Chromiumu</translation>
-<translation id="1632539827495546968">Ako ovaj račun želite upotrijebiti samo jednom, možete upotrijebiti <ph name="GUEST_LINK_BEGIN" />način rada za goste<ph name="GUEST_LINK_END" /> u pregledniku Chromium. Ako želite dodati račun za nekog drugog, <ph name="LINK_BEGIN" />dodajte novu osobu<ph name="LINK_END" /> na svoj <ph name="DEVICE_TYPE" />.
-
-Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti na ovaj račun. Svojim Google računima možete upravljati u <ph name="SETTINGS_LINK_BEGIN" />postavkama<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Preuzimanje...</translation>
 <translation id="1709772298389099340">Pruža dodatne ovlasti za <ph name="BROWSER_NAME" />.</translation>
 <translation id="1715127912119967311">Radi poboljšanja tih značajki Chromium šalje Googleu vaše interakcije s njim. Pregledatelji te podatke mogu čitati, obrađivati i označavati.</translation>
@@ -365,7 +362,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6096348254544841612">Prilagodite i kontrolirajte Chromium. Dostupno je ažuriranje.</translation>
 <translation id="6107893135096467929">Uključeno • Chromium ne može provjeriti odakle dolazi ovo proširenje</translation>
 <translation id="6119438414301547735">Omogućuje proširenju da prikazuje zahtjeve za pristup na alatnoj traci Chromiuma</translation>
-<translation id="6120345080069858279">Chromium će spremiti tu zaporku na vaš Google račun. Ne morate je pamtiti.</translation>
 <translation id="6129621093834146363">Datoteka <ph name="FILE_NAME" /> opasna je, pa ju je Chromium blokirao.</translation>
 <translation id="6132897690380286411">Chromium će se uskoro zatvoriti i izbrisati podatke</translation>
 <translation id="6145820983052037069">Ovdje se možete prebacivati između profila u Chromiumu</translation>

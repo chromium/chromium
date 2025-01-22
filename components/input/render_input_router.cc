@@ -239,7 +239,7 @@ void RenderInputRouter::OnImeCancelComposition() {
 }
 
 StylusInterface* RenderInputRouter::GetStylusInterface() {
-  return render_input_router_client_->GetStylusInterface();
+  return delegate_->GetStylusInterface();
 }
 
 void RenderInputRouter::OnStartStylusWriting() {
@@ -311,7 +311,7 @@ blink::mojom::InputEventResultState RenderInputRouter::FilterInputEvent(
 }
 
 void RenderInputRouter::IncrementInFlightEventCount() {
-  render_input_router_client_->IncrementInFlightEventCount();
+  delegate_->IncrementInFlightEventCount();
 }
 
 void RenderInputRouter::NotifyUISchedulerOfGestureEventUpdate(
@@ -321,7 +321,7 @@ void RenderInputRouter::NotifyUISchedulerOfGestureEventUpdate(
 
 void RenderInputRouter::DecrementInFlightEventCount(
     blink::mojom::InputEventResultSource ack_source) {
-  render_input_router_client_->DecrementInFlightEventCount(ack_source);
+  delegate_->DecrementInFlightEventCount(ack_source);
 }
 
 void RenderInputRouter::DidOverscroll(const ui::DidOverscrollParams& params) {

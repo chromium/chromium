@@ -973,6 +973,7 @@
 <translation id="4285498937028063278">고정 해제</translation>
 <translation id="428715201724021596">프로필에 연결하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="4287250812980588583">Chrome 창</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{마이크 볼륨은 <ph name="APP_NAME" />에 의해 제어됨}other{마이크 볼륨은 앱 #개에 의해 제어됨}}</translation>
 <translation id="4294319844246081198">좋은 아침이에요, <ph name="GIVEN_NAME" />님</translation>
 <translation id="4296136865091727875">알림 <ph name="COUNT" />개 모두 지우기</translation>
 <translation id="4300272766492248925">앱 열기</translation>

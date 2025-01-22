@@ -101,7 +101,7 @@ def validateTsconfigJson(tsconfig, tsconfig_file, is_base_tsconfig):
 # Note 2: Only add a directory here if you are in the process of migrating
 # legacy JS code to TS. Any new entries here should be accompanied by a bug
 # tracking the TS migration.
-def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
+def validateJavaScriptAllowed(source_dir, out_dir, platform):
   # Special case for iOS, which sets the root src/ directory as the source
   # directory for the ts_library() call, see
   # ios/web/public/js_messaging/compile_ts.gni.
@@ -109,41 +109,45 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
   # output directory against the standard ios directories instead. This is a
   # really broad check so also use the platform to make sure this is not abused
   # elsewhere; the iOS use case of using allowJs broadly is not supported.
-  if (is_ios and '/ios/' in out_dir):
+  if platform == 'ios' and '/ios/' in out_dir:
     return True, None
 
-  # Anything in these ChromeOS-specific directories is allowed to use allow_js.
-  # TODO (rbpotter): If possible, standardize the build setup in some of these
-  # folders such that they can be more accurately specified in the list below.
-  ash_directories = [
-      'ash/webui/annotator/resources/untrusted/',
-      'ash/webui/camera_app_ui/',
-      'ash/webui/color_internals/',
-      'ash/webui/common/resources/',
-      'ash/webui/file_manager/resources/labs/',
-      # TODO(b/314827247): Migrate media_app_ui to TypeScript and remove
-      # exception.
-      'ash/webui/media_app_ui/',
-      # TODO(b/313562946): Migrate help_app_ui mojo pipeline to TypeScript and
-      # remove.
-      'ash/webui/help_app_ui/',
-      # TODO(b/267329383): Migrate A11y to TypeScript.
-      'chrome/browser/resources/chromeos/accessibility',
-      'chrome/browser/resources/chromeos/crostini_installer',
-      'chrome/browser/resources/chromeos/crostini_upgrader',
-      'chrome/browser/resources/chromeos/gaia_action_buttons',
-      'ui/file_manager/',
-  ]
-  for directory in ash_directories:
-    if directory in source_dir:
-      return True, None
+  if platform == 'chromeos_ash':
+    # Anything in these ChromeOS-specific directories is allowed to use allow_js.
+    # TODO (rbpotter): If possible, standardize the build setup in some of these
+    # folders such that they can be more accurately specified in the list below.
+    ash_directories = [
+        'ash/webui/annotator/resources/untrusted/',
+        'ash/webui/camera_app_ui/',
+        'ash/webui/color_internals/',
+        'ash/webui/common/resources/',
+        'ash/webui/file_manager/resources/labs/',
+        # TODO(b/314827247): Migrate media_app_ui to TypeScript and remove
+        # exception.
+        'ash/webui/media_app_ui/',
+        # TODO(b/313562946): Migrate help_app_ui mojo pipeline to TypeScript and
+        # remove.
+        'ash/webui/help_app_ui/',
+        # TODO(b/267329383): Migrate A11y to TypeScript.
+        'chrome/browser/resources/chromeos/accessibility',
+        'chrome/browser/resources/chromeos/crostini_installer',
+        'chrome/browser/resources/chromeos/crostini_upgrader',
+        'chrome/browser/resources/chromeos/gaia_action_buttons',
+        'chrome/test/data/webui/chromeos',
+        'chrome/test/data/webui/chromeos/ash_common',
+        'chrome/test/data/webui/chromeos/nearby_share',
+        'chrome/test/data/webui/cr_components/chromeos',
+        'ui/file_manager/',
+    ]
+    for directory in ash_directories:
+      if directory in source_dir:
+        return True, None
 
   # Specific exceptions for directories that are still migrating to TS.
   migrating_directories = [
       # TODO(crbug.com/40848285): Migrate bluetooth-internals to TypeScript and
       # remove exception.
       'chrome/browser/resources/bluetooth_internals',
-      'chrome/browser/resources/chromeos/accessibility',
       # TODO(crbug.com/41484340): Migrate to TypeScript.
       'chrome/browser/resources/device_log',
       # TODO(crbug.com/385341235): Migrate inspect to TypeScript.
@@ -153,10 +157,6 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       # TODO(crbug.com/40848285): Migrate bluetooth-internals to TypeScript and
       # remove exception.
       'chrome/test/data/webui/bluetooth_internals',
-      'chrome/test/data/webui/chromeos',
-      'chrome/test/data/webui/chromeos/ash_common',
-      'chrome/test/data/webui/chromeos/nearby_share',
-      'chrome/test/data/webui/cr_components/chromeos',
       'components/management/resources',
       # TODO(crbug.com/373951324): Migrate offline dino game to TypeScript.
       'components/neterror/resources',

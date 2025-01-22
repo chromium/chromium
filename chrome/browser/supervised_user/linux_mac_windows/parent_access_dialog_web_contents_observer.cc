@@ -4,17 +4,15 @@
 
 #include "chrome/browser/supervised_user/linux_mac_windows/parent_access_dialog_web_contents_observer.h"
 
+#include "base/base64.h"
+#include "base/functional/callback.h"
+#include "components/supervised_user/core/browser/proto/parent_access_callback.pb.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "url/gurl.h"
+
 namespace {
-
-constexpr char kParentAccessResultQueryParameter[] = "result";
-
-constexpr char kPacpOriginUrlHost[] = "families.google.com";
-
-bool CanExtractLocalApprovalResultFromUrl(const GURL& url) {
-  return url.host().starts_with(kPacpOriginUrlHost) &&
-         url.query().starts_with(kParentAccessResultQueryParameter);
-}
-
 bool HasNavigatedToTerminalVerificationUrl(
     content::NavigationHandle* navigation_handle) {
   const GURL& handle_url = navigation_handle->GetURL();
@@ -39,9 +37,47 @@ void ParentAccessDialogWebContentsObserver::StopObserving() {
 void ParentAccessDialogWebContentsObserver::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   const GURL& handle_url = navigation_handle->GetURL();
-  if (CanExtractLocalApprovalResultFromUrl(handle_url)) {
-    // TODO(crbug.com/383997522): Extract the result and complete the flow.
-    result_ = supervised_user::LocalApprovalResult::kMaxValue;
+  std::optional<std::string> encoded_callback =
+      supervised_user::MaybeGetPacpResultFromUrl(handle_url);
+
+  if (!encoded_callback.has_value()) {
+    // Early exit when the observed url is not the one containing the result.
+    return;
+  }
+
+  if (encoded_callback.value().empty()) {
+    // The `result` query param was empty.
+    result_ = supervised_user::LocalApprovalResult::kMalformedPacpResult;
+    return;
+  }
+  supervised_user::ParentAccessCallbackParsedResult callback_result =
+      supervised_user::ParentAccessCallbackParsedResult::
+          ParseParentAccessCallbackResult(encoded_callback.value(),
+                                          base::Base64DecodePolicy::kForgiving);
+
+  // Set the `result_` according to the parsed PACP callback we received.
+  // This will be handled when the navigation completes.
+  if (callback_result.GetError().has_value()) {
+    result_ = supervised_user::LocalApprovalResult::kMalformedPacpResult;
+    // TODO(crbug.com/385354582): Add metrics on the error type we
+    // encountered.
+    return;
+  }
+  CHECK(callback_result.GetCallback().has_value());
+  kids::platform::parentaccess::client::proto::ParentAccessCallback
+      parent_access_callback = callback_result.GetCallback().value();
+
+  switch (parent_access_callback.callback_case()) {
+    case kids::platform::parentaccess::client::proto::ParentAccessCallback::
+        CallbackCase::kOnParentVerified:
+      result_ = supervised_user::LocalApprovalResult::kApproved;
+      break;
+    // TODO(crbug.com/385354582): Add support for the cancellation message
+    // once PACP returns it for the approval flow.
+    default:
+      // TODO(crbug.com/385354582): Add logging and handling of unexpected
+      // messages.
+      break;
   }
 }
 

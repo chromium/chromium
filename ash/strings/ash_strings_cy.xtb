@@ -973,6 +973,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4285498937028063278">Dad-binio</translation>
 <translation id="428715201724021596">Wrthi'n cysylltu â'r proffil. Gallai hyn gymryd ychydig funudau.</translation>
 <translation id="4287250812980588583">Ffenestr Chrome</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Lefel sain meic wedi'i reoli gan <ph name="APP_NAME" />}zero{Lefel sain meic wedi'i reoli gan # ap}two{Lefel sain meic wedi'i reoli gan # ap}few{Lefel sain meic wedi'i reoli gan # ap}many{Lefel sain meic wedi'i reoli gan # ap}other{Lefel sain meic wedi'i reoli gan # ap}}</translation>
 <translation id="4294319844246081198">Bore da <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Clirio'r holl <ph name="COUNT" /> hysbysiad</translation>
 <translation id="4300272766492248925">Agor yr ap</translation>
@@ -1270,6 +1271,7 @@ Gallwch hefyd ddefnyddio'r llwybr byr bysellfwrdd. Yn gyntaf, amlygwch y testun,
 <translation id="5245201184978705914">Methu â chynhyrchu trawsgrifiad</translation>
 <translation id="5251174953851719648">Ail-lwytho cynnwys</translation>
 <translation id="5253783950165989294">Wedi'i gysylltu â dyfais o'r enw <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% batri</translation>
+<translation id="5256939106029293271">Profwch eich meic</translation>
 <translation id="5258528442992323769">Nid oes unrhyw ddesgiau wedi'u cadw</translation>
 <translation id="5260676007519551770">Desg 4</translation>
 <translation id="5265391159779542051">Canlyniadau wedi'u llwytho</translation>
@@ -1427,6 +1429,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="5745612484876805746">Mae Golau Nos yn troi ymlaen yn awtomatig ar fachlud haul</translation>
 <translation id="5750765938512549687">Mae Bluetooth wedi'i ddiffodd</translation>
 <translation id="5758114525425072423">Dechrau Ffocysu. Amserydd wedi'i osod i <ph name="FOCUS_DURATION" />.</translation>
+<translation id="5759522586053040964">Clywch sut y byddwch yn swnio i eraill. I stopio, cliciwch yr eicon prawf neu caewch y panel galwad fideo.</translation>
 <translation id="5760866832697883462">Cysylltu eich <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Toglo'r marciwr. <ph name="STATE_TEXT" /> Defnyddiwch y pad cyffwrdd, y sgrîn gyffwrdd, neu'r pwyntil i dynnu llun ar y sgrîn.</translation>
 <translation id="576341972084747908">Lawrlwytho'r ffeil beryglus <ph name="FILENAME" /></translation>

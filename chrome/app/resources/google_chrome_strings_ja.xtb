@@ -55,7 +55,6 @@
 <translation id="1698376642261615901">Google Chrome は、ウェブページやアプリケーションを高速に実行できるスピードと、高い安定性を兼ね備えた非常に使いやすいウェブブラウザです。不正なソフトウェアやフィッシングに対する保護機能が組み込まれており、ウェブを安全にブラウジングできます。</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome は 1 時間後に再起動されます}other{Chrome は # 時間後に再起動されます}}</translation>
 <translation id="1722488837206509557">これにより、利用可能なデバイスから選択してコンテンツを表示できるようになります。</translation>
-<translation id="1734234790201236882">このパスワードは Google アカウントに保存されるため、覚えておく必要はありません。</translation>
 <translation id="1786003790898721085"><ph name="TARGET_DEVICE_NAME" /> で Chrome にログインしていることを確認してから、もう一度送信してください。</translation>
 <translation id="1786044937610313874">ショートカットは Chrome で開きます</translation>
 <translation id="178701303897325119">この拡張機能は現在サポートされていません。代わりに削除することをおすすめします。</translation>
@@ -322,6 +321,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="4997044641749333913">Chrome では、これらのタブを非アクティブにして、ブラウジング環境を改善し、処理を高速に保つことができます。</translation>
 <translation id="5003967926796347400">[Google パスワード マネージャー] をクリックします</translation>
+<translation id="5114340746415930644">アカウント「<ph name="USER_EMAIL" />」で Chrome のデータを使用、保存するには、パスフレーズを入力してください</translation>
 <translation id="5120334927898581447">他の Google サービスにログインしたときに Chrome にログインする</translation>
 <translation id="5126049312684316860">アクセスする可能性の高いページがさらに多くプリロードされ、該当のページにアクセスしたときにページの読み込み速度が向上します</translation>
 <translation id="5132929315877954718">Google Chrome のすばらしいアプリ、ゲーム、拡張機能、テーマをぜひご利用ください。</translation>
@@ -469,9 +469,6 @@
 <translation id="7024536598735240744">解凍エラー: <ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025789849649390912">インストールが停止しました。</translation>
 <translation id="7025800014283535195">こちらで Chrome プロファイルを切り替えることができます</translation>
-<translation id="7036251913954633326">このアカウントを 1 回だけ使用する場合は、Chrome ブラウザの<ph name="GUEST_LINK_BEGIN" />ゲストモード<ph name="GUEST_LINK_END" />を使用できます。他のユーザーのアカウントを追加する場合は、<ph name="DEVICE_TYPE" /> に<ph name="LINK_BEGIN" />新しいユーザーを追加<ph name="LINK_END" />します。
-
-これまでにウェブサイトやアプリに許可した権限がこのアカウントに適用される可能性があります。Google アカウントは [<ph name="SETTINGS_LINK_BEGIN" />設定<ph name="SETTINGS_LINK_END" />] で管理できます。</translation>
 <translation id="7048502283602470098">AI 機能を見る</translation>
 <translation id="7059914902409643750">Chrome を自分用にカスタマイズ</translation>
 <translation id="7071827361006050863">Chrome でまもなく閲覧データが削除されます</translation>

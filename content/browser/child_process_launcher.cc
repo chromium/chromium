@@ -100,8 +100,10 @@ ChildProcessLauncher::ChildProcessLauncher(
     mojo::OutgoingInvitation mojo_invitation,
     const mojo::ProcessErrorCallback& process_error_callback,
     std::unique_ptr<ChildProcessLauncherFileData> file_data,
-    base::UnsafeSharedMemoryRegion histogram_memory_region,
-    base::ReadOnlySharedMemoryRegion tracing_config_memory_region,
+    scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+        histogram_memory_region,
+    scoped_refptr<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>
+        tracing_config_memory_region,
     bool terminate_on_shutdown)
     : client_(client),
       starting_(true),

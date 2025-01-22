@@ -182,9 +182,8 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
         ThreadScheduler::Current()->CleanupTaskRunner(),
         std::move(release_callback),
         /*supports_display_compositing=*/true,
-        // TODO(junov): Figure out how to determine whether frame is an
-        // overlay candidate. StorageType info seems insufficient.
-        /*is_overlay_candidate=*/false);
+        /*is_overlay_candidate=*/
+        frame->shared_image()->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT));
   }
 
   gfx::Rect final_dest_rect = dest_rect;

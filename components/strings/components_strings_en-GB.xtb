@@ -85,6 +85,7 @@
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> unexpectedly closed the connection.</translation>
 <translation id="1160009341934077418">Price history across the web</translation>
 <translation id="1161325031994447685">Reconnecting to Wi-Fi</translation>
+<translation id="1161663161838091892">Sync tabs and history to continue</translation>
 <translation id="1163507966173624031">Folk and traditional music</translation>
 <translation id="11635448457105324">Manage addresses button, activate to add and manage addresses in Chrome settings</translation>
 <translation id="1165039591588034296">Error</translation>
@@ -1105,6 +1106,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="297173220375858963">Desktop publishing</translation>
 <translation id="2972581237482394796">&amp;Redo</translation>
 <translation id="2974468223369775963">This IBAN couldn't be saved in your Google Account. It's been saved to Chrome on this device instead. Chrome will ask you again the next time that you use this IBAN.</translation>
+<translation id="297667759942911166">Collaborate in tab groups</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, currently selected. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">Lock and use your keyboard</translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -2064,6 +2066,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4661556981531699496">Pets and animals</translation>
 <translation id="4661868874067696603">Search more buying options</translation>
 <translation id="4663373278480897665">Camera allowed</translation>
+<translation id="4664084870155869900">Autofill next time. Card is saved on your device.</translation>
 <translation id="466561305373967878">Board Games</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
@@ -2635,6 +2638,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5675809467256309336">Dance and electronic music</translation>
 <translation id="5675959228867414813">Show by date</translation>
 <translation id="567604591393105935">Commerce bottom sheet opened at half height</translation>
+<translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Foil</translation>
 <translation id="5680642791693447368">Thriller, crime and mystery films</translation>
 <translation id="568292603005599551">Image X position</translation>
@@ -2672,6 +2676,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="573555826359077410">Create form button, activate to quickly create a new form in Google Forms</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Save card in your Google Account}other{Save cards in your Google Account}}</translation>
 <translation id="5738385766833540397">Manage how you receive price drop alerts for products that you track</translation>
+<translation id="573974402615125334">To share, join and collaborate in tab groups, sync your history and tabs</translation>
 <translation id="5740911612628596808">Envelope C9</translation>
 <translation id="5742806904559466333">Bars, Clubs and Nightlife</translation>
 <translation id="5743684619253032786">Nail care products</translation>
@@ -3872,6 +3877,7 @@ Additional details:
 <translation id="7865448901209910068">Best speed</translation>
 <translation id="7870281855125116701">Discount found</translation>
 <translation id="7871445724586827387">Change your Google Account password</translation>
+<translation id="787226752901403048">Sign in to Chrome to share and join tab groups, and work together on ideas</translation>
 <translation id="7877007680666472091">protected content IDs</translation>
 <translation id="7878562273885520351">Your password may be compromised</translation>
 <translation id="7882421473871500483">Brown</translation>
@@ -4326,6 +4332,7 @@ Additional details:
 <translation id="8702965365666568344">Mounting tape</translation>
 <translation id="8703575177326907206">Your connection to <ph name="DOMAIN" /> is not encrypted.</translation>
 <translation id="8705331520020532516">Serial Number</translation>
+<translation id="8706806585855470492">You'll get to share, join and collaborate in tab groups</translation>
 <translation id="8708134712139312373">Can ask to connect to Bluetooth devices</translation>
 <translation id="8710842507289500830">Font style</translation>
 <translation id="8712637175834984815">Got it</translation>
@@ -4468,6 +4475,7 @@ Additional details:
 <translation id="8975263830901772334">Names of files that you print</translation>
 <translation id="8982884016487650216">Finished loading PDF</translation>
 <translation id="8983369100812962543">You can now resize the app</translation>
+<translation id="8985112471026018799">Save card for faster checkout</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to view your browsing history in Chrome</translation>
 <translation id="8987663052629670333">Photo Printing Services</translation>
 <translation id="8987927404178983737">Month</translation>
@@ -4534,6 +4542,7 @@ Additional details:
 <translation id="9090993752571911635">Internet service providers (ISPs)</translation>
 <translation id="9093723786115107672">Sleepwear</translation>
 <translation id="9094544726794842788">Thumbs down opens a form for submitting detailed feedback on why you dislike these results</translation>
+<translation id="9094809883254050729">Autofill next time. Card is encrypted when saved.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab and then Enter to set Chrome as the system's default browser in iOS settings</translation>
 <translation id="9101450247048146228">Camera use and movement (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Tray 1</translation>

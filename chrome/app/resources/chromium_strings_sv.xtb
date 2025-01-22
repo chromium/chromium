@@ -41,9 +41,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1594928384848033697">Chromium vill radera din data i Lösenordshantering. Skriv ditt Windows-lösenord om du vill tillåta detta.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administratören meddelar att du måste starta om Chromium så att en uppdatering tillämpas}=1{Administratören meddelar att du måste starta om Chromium så att en uppdatering tillämpas. Inkognitofönstret öppnas inte igen.}other{Administratören meddelar att du måste starta om Chromium så att en uppdatering tillämpas. De # inkognitofönstren öppnas inte igen.}}</translation>
 <translation id="1625909126243026060">Granska viktiga integritets- och säkerhetskontroller i Chromium</translation>
-<translation id="1632539827495546968">Om du bara vill använda det här kontot en enda gång kan du använda <ph name="GUEST_LINK_BEGIN" />gästläget<ph name="GUEST_LINK_END" /> i webbläsaren Chromium. Om du vill lägga till ett konto åt någon annan <ph name="LINK_BEGIN" />lägger du till en ny person<ph name="LINK_END" /> på <ph name="DEVICE_TYPE" />.
-
-Behörigheter som du redan har gett webbplatser och appar kan gälla för det här kontot. Du kan hantera dina Google-konton i <ph name="SETTINGS_LINK_BEGIN" />inställningarna<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Hämtar ...</translation>
 <translation id="1709772298389099340">Ger förhöjd behörighet för <ph name="BROWSER_NAME" />.</translation>
 <translation id="1715127912119967311">Din interaktion med dessa funktioner skickas till Google i syfte att förbättra dem. Denna data kan läsas, bearbetas och kommenteras av mänskliga granskare.</translation>
@@ -367,7 +364,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6096348254544841612">Anpassa och styr Chromium. En uppdatering är tillgänglig.</translation>
 <translation id="6107893135096467929">På • Chromium kan inte verifiera var tillägget kommer från</translation>
 <translation id="6119438414301547735">Tillåt att tillägg visar åtkomstförfrågningar i verktygsfältet i Chromium</translation>
-<translation id="6120345080069858279">Det här lösenordet sparas i ditt Google-konto. Du behöver inte komma ihåg det.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> är skadlig och har blockerats av Chromium.</translation>
 <translation id="6132897690380286411">Chromium avslutas snart och data raderas</translation>
 <translation id="6145820983052037069">Du kan byta mellan Chromium-profiler här</translation>
@@ -529,6 +525,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="813913629614996137">Initierar …</translation>
 <translation id="8166782796394721554">Aktivera ytterligare skydd i Chromiums JavaScript- och WebAssembly-motor</translation>
 <translation id="81770708095080097">Filen är farlig och har blockerats av Chromium.</translation>
+<translation id="8200109504272824693">Ange lösenfrasen om du vill använda och spara Chromium-data i ditt konto, <ph name="USER_EMAIL" /></translation>
 <translation id="8221491193165283816">Du blockerar aviseringar. Klicka här om du vill tillåta aviseringar från webbplatsen.</translation>
 <translation id="8223363452568144035">Ge Chromium åtkomst i <ph name="BEGIN_LINK" />systeminställningarna<ph name="END_LINK" /> om du vill använda kameran</translation>
 <translation id="8232193495299001329">Chromium kan inte verifiera var tillägget kommer från. Det kan vara osäkert. Ta bort det från Chromium så att det inte längre kan se och ändra data, inklusive personliga uppgifter, på webbplatser du besöker.</translation>

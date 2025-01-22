@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_POSITION_BROWSER_AGENT_OBSERVER_BRIDGE_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_POSITION_BROWSER_AGENT_OBSERVER_BRIDGE_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_POSITION_OMNIBOX_POSITION_BROWSER_AGENT_OBSERVER_BRIDGE_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_POSITION_OMNIBOX_POSITION_BROWSER_AGENT_OBSERVER_BRIDGE_H_
 
 #include "base/scoped_observation.h"
-#include "ios/chrome/browser/omnibox/model/omnibox_position_browser_agent.h"
+#include "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 
 @protocol OmniboxPositionBrowserAgentObserving;
 
@@ -31,4 +31,4 @@ class OmniboxPositionBrowserAgentObserverBridge final
       observation_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_POSITION_BROWSER_AGENT_OBSERVER_BRIDGE_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_POSITION_OMNIBOX_POSITION_BROWSER_AGENT_OBSERVER_BRIDGE_H_

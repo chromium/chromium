@@ -55,7 +55,6 @@
 <translation id="1698376642261615901">Google Chrome jest przeglądarką internetową, w której witryny internetowe i aplikacje są szybkie jak błyskawica. Jest szybka, stabilna i łatwa w obsłudze. Dzięki wbudowanej ochronie przed złośliwym oprogramowaniem i wyłudzaniem informacji przeglądanie internetu przy użyciu przeglądarki Google Chrome jest bezpieczniejsze.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome uruchomi się ponownie za godzinę}few{Chrome uruchomi się ponownie za # godziny}many{Chrome uruchomi się ponownie za # godzin}other{Chrome uruchomi się ponownie za # godziny}}</translation>
 <translation id="1722488837206509557">Umożliwi Ci to wybranie dostępnych urządzeń i wyświetlanie na nich treści.</translation>
-<translation id="1734234790201236882">Chrome zapisze to hasło na Twoim koncie Google. Nie musisz go pamiętać.</translation>
 <translation id="1786003790898721085">Najpierw zaloguj się w Chrome na swoim urządzeniu <ph name="TARGET_DEVICE_NAME" />, a potem ponów próbę wysyłania.</translation>
 <translation id="1786044937610313874">Skróty otwierają się w Chrome</translation>
 <translation id="178701303897325119">To rozszerzenie nie jest już obsługiwane. Chrome zaleca jego usunięcie.</translation>
@@ -322,6 +321,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="4997044641749333913">Chrome może dezaktywować te karty, aby ułatwić przeglądanie i przyspieszyć działanie przeglądarki.</translation>
 <translation id="5003967926796347400">Kliknij „Menedżer haseł Google”</translation>
+<translation id="5114340746415930644">Wpisz hasło, aby móc zapisywać dane z Chrome na koncie <ph name="USER_EMAIL" /> i ich używać</translation>
 <translation id="5120334927898581447">Loguj się w Chrome, gdy logujesz się w innych usługach Google</translation>
 <translation id="5126049312684316860">Chrome wstępnie wczytuje jeszcze więcej stron, które prawdopodobnie odwiedzisz, aby w razie potrzeby szybciej się ładowały</translation>
 <translation id="5132929315877954718">Odkryj znakomite aplikacje, gry, rozszerzenia i motywy do przeglądarki Google Chrome.</translation>
@@ -469,9 +469,6 @@
 <translation id="7024536598735240744">Błąd rozpakowywania: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalacja zatrzymana.</translation>
 <translation id="7025800014283535195">Tu możesz przełączać się między profilami Chrome</translation>
-<translation id="7036251913954633326">Jeśli chcesz użyć tego konta tylko raz, możesz skorzystać z <ph name="GUEST_LINK_BEGIN" />trybu gościa<ph name="GUEST_LINK_END" /> w przeglądarce Chrome. Jeśli chcesz dodać konto innej osoby, <ph name="LINK_BEGIN" />dodaj nową osobę<ph name="LINK_END" /> do urządzenia <ph name="DEVICE_TYPE" />.
-
-Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. Kontami Google możesz zarządzać w <ph name="SETTINGS_LINK_BEGIN" />Ustawieniach<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7048502283602470098">Poznaj AI</translation>
 <translation id="7059914902409643750">Dostosuj Chrome do swoich potrzeb</translation>
 <translation id="7071827361006050863">Chrome usunie wkrótce dane przeglądania</translation>

@@ -70,7 +70,13 @@ def Run():
                                                'gritsettings',
                                                'translation_expectations.pyl')
   translateable_grds = translation_helper.get_translatable_grds(
-      repo_root, grds, TRANSLATION_EXPECTATIONS_PATH)
+      repo_root,
+      grds,
+      TRANSLATION_EXPECTATIONS_PATH,
+      # Since we're using git ls-files above, this isn't being run in a Cog
+      # workspace.
+      is_cog=False,
+  )
   print('Found %d translateable .grd files in translation expectations.' %
         len(translateable_grds))
   for grd in translateable_grds:

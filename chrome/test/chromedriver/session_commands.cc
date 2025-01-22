@@ -417,7 +417,7 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
 
     // Execute session.new for the newly-created mapper instance.
     base::Value::Dict bidi_cmd;
-    bidi_cmd.Set("channel", "/init-bidi-session");
+    bidi_cmd.Set("goog:channel", "/init-bidi-session");
     bidi_cmd.Set("id", 1);
     bidi_cmd.Set("params", params.Clone());
     bidi_cmd.Set("method", "session.new");
@@ -1800,7 +1800,13 @@ Status ForwardBidiCommand(Session* session,
 
   base::Value::Dict bidi_cmd = data->Clone();
 
-  std::string* user_channel = bidi_cmd.FindString("channel");
+  if (bidi_cmd.FindString("channel") != nullptr) {
+    return Status{kInvalidArgument,
+                  "Legacy `channel` parameter is deprecated and not supported. "
+                  "Use `goog:channel` instead."};
+  }
+
+  std::string* user_channel = bidi_cmd.FindString("goog:channel");
   std::string channel;
   if (user_channel) {
     channel = *user_channel + "/" + base::NumberToString(*connection_id) +
@@ -1810,7 +1816,7 @@ Status ForwardBidiCommand(Session* session,
         "/" + base::NumberToString(*connection_id) + Session::kNoChannelSuffix;
   }
 
-  bidi_cmd.Set("channel", std::move(channel));
+  bidi_cmd.Set("goog:channel", std::move(channel));
   status = web_view->PostBidiCommand(std::move(bidi_cmd));
 
   return status;

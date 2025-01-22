@@ -129,7 +129,6 @@
 <translation id="1079242569060319448">PINa ahaztu zaizu?</translation>
 <translation id="1079285777677001938">Baliteke webgune batzuetako eginbideek ez funtzionatzea.</translation>
 <translation id="1079766198702302550">Blokeatu beti kamerarako sarbidea</translation>
-<translation id="1080365971383768617">Pasahitzak gailu guztietan</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" />: 1 fitxa}other{<ph name="GROUP_TITLE" />: # fitxa}}</translation>
 <translation id="1082214733466244292">Administratzaileak blokeatu egin ditu gailu honen funtzio batzuk</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> tresnak jatorrizko balio lehenetsietara leheneratuko ditu Chrome ezarpenak. Horrela, orri nagusia, fitxa berriaren orria eta bilatzailea leheneratuko dira, luzapenak desgaituko dira eta fitxa guztien aingurak kenduko dira. Gainera, aldi baterako datuak eta cachean gordetakoak (adibidez, cookieak, edukia eta webguneetako datuak) ezabatu egingo dira.</translation>
@@ -523,6 +522,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="135389172849514421">Interneteko konexiorik gabe funtzionatzen du</translation>
 <translation id="1353980523955420967">Ezin da aurkitu PPD fitxategia. Ziurtatu Chromebook-a Internetera konektatuta dagoela eta saiatu berriro.</translation>
 <translation id="1354045473509304750">Ez kendu kamera erabili eta mugitzeko baimena <ph name="HOST" /> ostalariari</translation>
+<translation id="1354148503392558902">Pasahitza aldatzen…</translation>
 <translation id="1355088139103479645">Datu guztiak ezabatu nahi dituzu?</translation>
 <translation id="1356376170199999104">Baimena dauka (<ph name="PERMISSION_DETAILS" />). Aktibatu mikrofonoa etengailu fisikoarekin.</translation>
 <translation id="1356959069439783953">Inaktibo dauden fitxek itxura berria dute</translation>
@@ -1094,6 +1094,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1751335846119670066">Irakurtzeko laguntza</translation>
 <translation id="17513872634828108">Fitxa irekiak</translation>
 <translation id="175196451752279553">Ir&amp;eki berriro fitxa</translation>
+<translation id="1752557850776261983">Saio-hasiera egiaztatzen…</translation>
 <translation id="1753067873202720523">Baliteke Chromebook-a ez kargatzea piztuta dagoen bitartean.</translation>
 <translation id="1753557900380512635">Barnealdea</translation>
 <translation id="1753905327828125965">Gehien bisitatutakoak</translation>
@@ -1922,6 +1923,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2323018538045954000">Gordetako wifi-sareak</translation>
 <translation id="2325444234681128157">Gogoratu pasahitza</translation>
 <translation id="2326188115274135041">Berretsi PINa desblokeo automatikoa aktibatzeko</translation>
+<translation id="2326583548923775947">Hau ez da Google-ko kontu bat. Chrome-n gordetzen dituzun elementuak ez dira erabilgarri egongo beste gailu batzuetan.</translation>
 <translation id="2326906096734221931">Ireki aplikazioaren ezarpenak</translation>
 <translation id="2326931316514688470">&amp;Kargatu berriro aplikazioa</translation>
 <translation id="2327492829706409234">Gaitu aplikazioa</translation>
@@ -3019,6 +3021,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="310297983047869047">Aurreko diapositiba</translation>
 <translation id="3103451787721578293">Idatzi datu hauek kargatzeko arrazoi bat:</translation>
 <translation id="3103512663951238230">Alt + klik</translation>
+<translation id="3104763887980088552">Jardueren erregistroa</translation>
 <translation id="3104948640446684649">Bidali erabilera- eta diagnostiko-datuak. Gailu honek automatikoki bidaltzen ditu Google-ra diagnostikoei buruzko datuak eta gailuaren eta aplikazioen erabilera-datuak. Horri esker, sistemaren eta aplikazioen egonkortasuna hobetuko da, besteak beste. Gainera, datu bateratu batzuk oso baliagarriak izango dira Google-ren aplikazioak hobetzeko eta bazkideei laguntzeko (adibidez, Android-en garatzaileei). Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago, baliteke datu horiek Google-ko kontuan gordetzea. <ph name="BEGIN_LINK2" />Lortu neurketei buruzko informazio gehiago<ph name="BEGIN_LINK2_END" />Lortu informazio gehiago<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Ezin izan da instalatu azken eguneratzea</translation>
 <translation id="3105796011181310544">Google-ra itzuli nahi duzu?</translation>
@@ -3731,6 +3734,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3629664892718440872">Gogoratu aukera hau</translation>
 <translation id="3630132874740063857">Zure telefonoa</translation>
 <translation id="3630995161997703415">Gehitu webgunea apalean edonoiz erabili ahal izateko</translation>
+<translation id="3632929818790223729">Zatitu fitxa hau aktibo dagoenarekin</translation>
 <translation id="3634652306074934350">Iraungi da baimen-eskaera</translation>
 <translation id="3635199270495525546">Trusted Platform Module (TPM) bat hauteman da</translation>
 <translation id="3635353578505343390">Bidali oharrak Google-ri</translation>
@@ -6230,9 +6234,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) erabiltzaileak zu fitxa talde batean sartzea nahi du. Esteka duten guztiek fitxa guztiak edita ditzakete; beraz, jokatu arduraz. 48 ordu barru iraungiko da esteka.</translation>
 <translation id="5410889048775606433">Fuksia</translation>
 <translation id="5411022484772257615">Ezin izan da osatu ikastetxeko gailuaren erregistroa</translation>
-<translation id="5411856344659127989">Kontu bat beste norbaitentzat gehitu nahi baduzu, <ph name="LINK_BEGIN" />gehitu beste pertsona bat<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> gailuan.
-
-Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Google-ko kontuak kudeatzeko, joan <ph name="SETTINGS_LINK_BEGIN" />Ezarpenak<ph name="SETTINGS_LINK_END" /> atalera.</translation>
 <translation id="54118879136097217">Instalatu aplikazioa <ph name="DEVICE_TYPE" /> gailuan</translation>
 <translation id="5413640305322530561">Lortu diagnostiko- eta erabilera-datuei buruzko informazio gehiago</translation>
 <translation id="5414198321558177633">Profilen zerrenda freskatzen. Agian minutu batzuk beharko dira.</translation>
@@ -6511,7 +6512,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5610867721023328944">Saiatu berriro edo hautatu erabilgarri dauden gaietako bat behean.</translation>
 <translation id="5611398002774823980">Gorde kontuan</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5613074282491265467">Chrome-n saioa hasita daukazunean, gordetzen dituzun pasahitzak Google-ko kontuan (<ph name="USER_EMAIL" />) biltegiratzen dira. Aukera hori desaktibatzeko, joan ezarpenetara.</translation>
 <translation id="5614190747811328134">Erabiltzaileentzako oharra</translation>
 <translation id="5614553682702429503">Pasahitza gorde nahi duzu?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
@@ -8287,7 +8287,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="6902066522699286937">Aurreikusteko ahotsa</translation>
 <translation id="6902336033320348843">Ez da onartzen atal hau: <ph name="ERROR_LINE" /></translation>
 <translation id="6903022061658753260">Kontu hau sinkronizatzeko aukera aktibatuta daukaten Chrome arakatzaile guztietan sinkronizatuko dira datuak. Chrome OS-ren sinkronizazio-aukerak ikusteko, joan <ph name="LINK_BEGIN" />Chrome OS-ren ezarpenetara<ph name="LINK_END" />.</translation>
-<translation id="6903437476849497868">Aukeratu ez ordaintzea</translation>
+<translation id="6903437476849497868">Aukeratu ez erabiltzea</translation>
 <translation id="6903590427234129279">Ireki guztiak (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Aktibatu sinkronizazioa</translation>
 <translation id="6903916726032521638">Bilatu "<ph name="QUERY_CLUSTER_NAME" />"</translation>
@@ -8539,7 +8539,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7088674813905715446">Administratzaileak gailuaren hornikuntza kendu du. Erregistratzeko gaitzeko, eskatu administratzaileari gailua zain ezartzeko.</translation>
 <translation id="7088960765736518739">Erabilerraztasun-osagarria</translation>
 <translation id="7089253021944603172">Fitxa aktibo dago berriro</translation>
-<translation id="7090160970140261931">Beste kontu batzuk gehi ditzakezu <ph name="DEVICE_TYPE" />-ean webguneekin eta Android-erako aplikazioekin erabili ahal izateko. Horrez gain, Android-erako aplikazioekin zer kontu erabiltzen diren kontrola dezakezu.</translation>
 <translation id="7090714929377281710">Desaktibatu automatikoki wifi-gunea</translation>
 <translation id="7092504544229909737">Ezin da erabili Android-erako aplikazioekin</translation>
 <translation id="7093220653036489319">Erantzun bizkorrak</translation>
@@ -10016,6 +10015,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8140869601171867148">Gmail, YouTube, Chrome eta Google-ren beste zerbitzuetan erabiltzen duzun kontua da Google-ko kontua.
     Erabili kontu hori zure laster-marka, fitxategi eta bestelako eduki guztiak erraz asko atzitzeko.</translation>
 <translation id="8141418916163800697">Eginbide gehiago konfiguratzeko, joan Phone Hub-en ezarpenetara</translation>
+<translation id="814156740715940972">Zatitu fitxa hau aktibo dagoenarekin</translation>
 <translation id="8141584439523427891">Beste arakatzaile batean irekitzen</translation>
 <translation id="8141725884565838206">Kudeatu pasahitzak</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{bideo bat}other{# bideo}}</translation>
@@ -11148,9 +11148,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="894360074127026135">Nazioarteko Netscape Step-Up ziurtagiria</translation>
 <translation id="8944099748578356325">Bateria gehiago kontsumitu (% <ph name="BATTERY_PERCENTAGE" /> geratzen zaizu)</translation>
 <translation id="8944633700466246631">Sortu kontua berreskuratzeko 6 digituko PIN bat Google-ren Pasahitz-kudeatzailea zerbitzurako</translation>
-<translation id="8944725102565796255">Kontu hau behin bakarrik erabili nahi baduzu, <ph name="GUEST_LINK_BEGIN" />erabili gailua gonbidatu gisa<ph name="GUEST_LINK_END" />. Kontu bat beste norbaitentzat gehitu nahi baduzu, <ph name="LINK_BEGIN" />gehitu beste pertsona bat<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> gailuan.
-
-Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Google-ko kontuak kudeatzeko, joan <ph name="SETTINGS_LINK_BEGIN" />Ezarpenak<ph name="SETTINGS_LINK_END" /> atalera.</translation>
 <translation id="8945274638472141382">Ikonoaren tamaina</translation>
 <translation id="8945508919180478719">Estudio-estiloko mikrofonoa</translation>
 <translation id="8946359700442089734">Arazketa-eginbideak ez dira guztiz gaitu <ph name="IDS_SHORT_PRODUCT_NAME" /> gailu honetan.</translation>

@@ -1119,13 +1119,7 @@ config("libcxx_hardening") {
   # TODO(crbug.com/40511454): Move this back to the `runtime_library` config
   # when NaCl is removed.
   if (use_safe_libcxx) {
-    # TODO(crbug.com/40275904): Switch saigo to hardened mode once it's rolled
-    # in.
-    if (is_nacl_saigo) {
-      defines = [ "_LIBCPP_ENABLE_ASSERTIONS=1" ]
-    } else {
-      defines = [ "_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE" ]
-    }
+    defines = [ "_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE" ]
   } else {
     defines = [ "_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_NONE" ]
   }

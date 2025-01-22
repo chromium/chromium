@@ -828,7 +828,6 @@
 <translation id="4835385943915508971">Chrome не мае доступу да запытанай крыніцы.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Аднавіць групу з <ph name="TAB_COUNT_ONE" /> укладкі, колер "<ph name="COLOR_NAME" />", як новую фонавую групу ўкладак.}one{Аднавіць групу з некалькіх укладак (<ph name="TAB_COUNT_MANY" />), колер "<ph name="COLOR_NAME" />", як новую фонавую групу ўкладак.}few{Аднавіць групу з некалькіх укладак (<ph name="TAB_COUNT_MANY" />), колер "<ph name="COLOR_NAME" />", як новую фонавую групу ўкладак.}many{Аднавіць групу з некалькіх укладак (<ph name="TAB_COUNT_MANY" />), колер "<ph name="COLOR_NAME" />", як новую фонавую групу ўкладак.}other{Аднавіць групу з некалькіх укладак (<ph name="TAB_COUNT_MANY" />), колер "<ph name="COLOR_NAME" />", як новую фонавую групу ўкладак.}}</translation>
 <translation id="4837753911714442426">Адкрыць параметры друку старонкі</translation>
-<translation id="4842092870884894799">Паказана выплыўное акно для стварэння пароля</translation>
 <translation id="4844633725025837809">Дзеля дадатковай бяспекі зашыфроўвайце паролі на прыладзе, перш чым захоўваць іх у Менеджары пароляў Google</translation>
 <translation id="4850886885716139402">Праглядзець</translation>
 <translation id="4852014461738377247">Уваход…</translation>

@@ -81,8 +81,6 @@ void AuthenticatorRequestDialogView::ReplaceCurrentSheetWith(
     std::unique_ptr<AuthenticatorRequestSheetView> new_sheet) {
   DCHECK(new_sheet);
 
-  other_mechanisms_menu_runner_.reset();
-
   delete sheet_;
   DCHECK(children().empty());
 

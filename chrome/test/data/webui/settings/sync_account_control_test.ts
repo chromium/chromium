@@ -7,7 +7,7 @@ import 'chrome://settings/settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrActionMenuElement, SettingsSyncAccountControlElement, StoredAccount} from 'chrome://settings/settings.js';
-import {MAX_SIGNIN_PROMO_IMPRESSION, Router, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {Router, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -18,23 +18,6 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 suite('SyncAccountControl', function() {
   let browserProxy: TestSyncBrowserProxy;
   let testElement: SettingsSyncAccountControlElement;
-
-  function forcePromoResetWithCount(count: number, syncing: boolean) {
-    browserProxy.setImpressionCount(count);
-    // Flipping syncStatus.signedInState will force promo state to be reset.
-    const opposite_syncing =
-        syncing ? SignedInState.SIGNED_OUT : SignedInState.SYNCING;
-    const sync_state =
-        syncing ? SignedInState.SYNCING : SignedInState.SIGNED_OUT;
-    testElement.syncStatus = {
-      signedInState: opposite_syncing,
-      statusAction: StatusAction.NO_ACTION,
-    };
-    testElement.syncStatus = {
-      signedInState: sync_state,
-      statusAction: StatusAction.NO_ACTION,
-    };
-  }
 
   setup(async function() {
     browserProxy = new TestSyncBrowserProxy();
@@ -74,33 +57,6 @@ suite('SyncAccountControl', function() {
 
   teardown(function() {
     testElement.remove();
-  });
-
-  test('promo shows/hides in the right states', async function() {
-    // Not signed in, no accounts, will show banner.
-    simulateStoredAccounts([]);
-    forcePromoResetWithCount(0, false);
-    const banner = testElement.shadowRoot!.querySelector('#banner');
-    assertTrue(isVisible(banner));
-    // Changing `signedInState` in forcePromoResetWithCount should increment
-    // count.
-    await browserProxy.whenCalled('incrementPromoImpressionCount');
-    forcePromoResetWithCount(MAX_SIGNIN_PROMO_IMPRESSION + 1, false);
-    assertFalse(isVisible(banner));
-
-    // Not signed in, has accounts, will show banner.
-    simulateStoredAccounts([{email: 'foo@foo.com'}]);
-    forcePromoResetWithCount(0, false);
-    assertTrue(isVisible(banner));
-    forcePromoResetWithCount(MAX_SIGNIN_PROMO_IMPRESSION + 1, false);
-    assertFalse(isVisible(banner));
-
-    // signed in, banners never show.
-    simulateStoredAccounts([{email: 'foo@foo.com'}]);
-    forcePromoResetWithCount(0, true);
-    assertFalse(isVisible(banner));
-    forcePromoResetWithCount(MAX_SIGNIN_PROMO_IMPRESSION + 1, true);
-    assertFalse(isVisible(banner));
   });
 
   test('promo header is visible', function() {
@@ -356,6 +312,8 @@ suite('SyncAccountControl', function() {
         assertTrue(displayedText.includes('fooName'));
         assertTrue(isChildVisible(testElement, '#sync-error-button'));
         assertTrue(isChildVisible(testElement, '#turn-off'));
+        assertFalse(
+            isVisible(testElement.shadowRoot!.querySelector('#banner')));
       });
 
 
@@ -382,6 +340,8 @@ suite('SyncAccountControl', function() {
             '[icon="settings:sync-problem"]'));
         assertTrue(isChildVisible(testElement, '#sync-error-button'));
         assertTrue(isChildVisible(testElement, '#turn-off'));
+        assertFalse(
+            isVisible(testElement.shadowRoot!.querySelector('#banner')));
       });
 
   test(
@@ -579,7 +539,20 @@ suite('SyncAccountControl', function() {
 
   test('embedded in another page', function() {
     testElement.embeddedInSubpage = true;
-    forcePromoResetWithCount(100, false);
+
+    // Force promo reset
+    const sync_state = SignedInState.SIGNED_OUT;
+    const opposite_syncing = SignedInState.SYNCING;
+
+    testElement.syncStatus = {
+      signedInState: opposite_syncing,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    testElement.syncStatus = {
+      signedInState: sync_state,
+      statusAction: StatusAction.NO_ACTION,
+    };
+
     const banner = testElement.shadowRoot!.querySelector('#banner');
     assertTrue(isVisible(banner));
 
@@ -784,6 +757,7 @@ suite('SyncAccountControl', function() {
           disabled: false,
         };
 
+        assertTrue(isVisible(testElement.shadowRoot!.querySelector('#banner')));
         assertTrue(isChildVisible(testElement, '#dropdown-arrow'));
 
         const continueAsButton =

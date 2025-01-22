@@ -85,6 +85,7 @@
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> એ અનપેક્ષિત રીતે કનેક્શન બંધ કર્યું.</translation>
 <translation id="1160009341934077418">સમગ્ર વેબ પર કિંમતનો ઇતિહાસ</translation>
 <translation id="1161325031994447685">વાઇ-ફાઇ સાથે ફરીથી કનેક્ટ કરીને</translation>
+<translation id="1161663161838091892">આગળ વધવા માટે ટૅબ અને ઇતિહાસ સિંક કરો</translation>
 <translation id="1163507966173624031">લોક અને પરંપરાગત મ્યુઝિક</translation>
 <translation id="11635448457105324">'ઍડ્રેસ મેનેજ કરો' બટન, Chrome સેટિંગમાં ઍડ્રેસ ઉમેરવા અને તેને મેનેજ કરવા માટે સક્રિય કરો</translation>
 <translation id="1165039591588034296">ભૂલ</translation>
@@ -637,6 +638,7 @@
 <translation id="2105838220373099643">રોલપ્લેઇંગ ગેમ</translation>
 <translation id="2107021941795971877">પ્રિન્ટ માટેના સપોર્ટ</translation>
 <translation id="2108755909498034140">તમારું કમ્પ્યુટર પુનઃપ્રારંભ કરો</translation>
+<translation id="2109845311767915560">શેર કરેલું ટૅબનું ગ્રૂપ</translation>
 <translation id="2111166930115883695">રમવા માટે સ્પેસબાર દબાવો</translation>
 <translation id="2113977810652731515">કાર્ડ</translation>
 <translation id="2114841414352855701">અવગણ્યું કારણ કે તે <ph name="POLICY_NAME" /> દ્વારા ઓવરરાઇડ થયું હતું.</translation>
@@ -1105,6 +1107,7 @@
 <translation id="297173220375858963">ડેસ્કટૉપ પબ્લિશિંગ</translation>
 <translation id="2972581237482394796">&amp;ફરી કરો</translation>
 <translation id="2974468223369775963">આ IBAN તમારા Google એકાઉન્ટમાં સાચવી શકાયો નથી. એના બદલે તેને આ ડિવાઇસ પર Chromeમાં સાચવવામાં આવ્યો છે. આગલી વખતે તમે આ IBANનો ઉપયોગ કરશો, ત્યારે Chrome તમને ફરીથી પૂછશે.</translation>
+<translation id="297667759942911166">ટૅબના ગ્રૂપમાં સહયોગ કરો</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, વર્તમાનમાં પસંદ કરેલ. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">તમારું કીબોર્ડ લૉક કરી તેનો ઉપયોગ કરવા</translation>
 <translation id="2978824962390592855">ઑપેરા</translation>
@@ -1968,6 +1971,7 @@
 <translation id="4434045419905280838">પૉપ-અપ અને રીડાયરેક્ટ</translation>
 <translation id="443673843213245140">પ્રૉક્સીનો ઉપયોગ બંધ કરેલો છે પણ એક સ્પષ્ટ પ્રૉક્સી ગોઠવણીનો ઉલ્લેખ કરેલો છે.</translation>
 <translation id="4438821706955556403">સામાન્ય કિંમત</translation>
+<translation id="444116852243722675">તમામ (<ph name="ITEMS" />) ખોલો</translation>
 <translation id="4441832193888514600">અવગણવામાં આવ્યું કારણ કે પૉલિસી માત્ર ક્લાઉડ વપરાશકર્તાની પૉલિસી તરીકે જ સેટ કરવામાં આવી શકે છે.</translation>
 <translation id="4445133368066241428">લોકપ્રિય વિષયો</translation>
 <translation id="4445964943162061557">આ એક પ્રાયોગિક સુવિધા છે અને તે હંમેશાં સચોટ જ હોય એવું જરૂરી નથી.</translation>
@@ -2063,6 +2067,7 @@
 <translation id="4661556981531699496">પાળેલાં પશુઓ અને પ્રાણીઓ</translation>
 <translation id="4661868874067696603">ખરીદવાના વધુ વિકલ્પો શોધો</translation>
 <translation id="4663373278480897665">કૅમેરાને મંજૂરી</translation>
+<translation id="4664084870155869900">આગલી વખતે ઑટોમૅટિક રીતે ભરો. કાર્ડને તમારા ડિવાઇસ પર સાચવવામાં આવે છે.</translation>
 <translation id="466561305373967878">બોર્ડ ગેમ</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">વર્ચ્યુઅલ રિયાલિટી</translation>
@@ -2088,6 +2093,7 @@
 <translation id="4704745399240123930">આ વેપારી દ્વારા સ્વીકારવામાં આવતા કાર્ડ જેમ કે વર્ચ્યુઅલ કાર્ડ બંધ કરવામાં આવ્યા છે.</translation>
 <translation id="4708268264240856090">તમારું કનેક્શન અવરોધાયું હતું</translation>
 <translation id="4708276642004148190">પાણી પુરવઠો અને તેનું શુદ્ધિકરણ</translation>
+<translation id="4711628883879888561">ટૅબના ગ્રૂપ પર સહયોગ કરો</translation>
 <translation id="471880041731876836">તમારી પાસે આ સાઇટની મુલાકાત લેવાની પરવાનગી નથી</translation>
 <translation id="4718897478554657123">600 x 900 મિમી</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows નેટવર્ક ડાયગ્નોસ્ટિક્સ ચલાવી રહ્યાં છે<ph name="END_LINK" /></translation>
@@ -2634,6 +2640,7 @@
 <translation id="5675809467256309336">ડાન્સ અને ઇલેક્ટ્રોનિક મ્યુઝિક</translation>
 <translation id="5675959228867414813">તારીખ અનુસાર બતાવો</translation>
 <translation id="567604591393105935">અડધી સ્ક્રીનમાં જોઈ શકાય એવી રીતે કૉમર્સ બોટમ શીટ ખોલવામાં આવી</translation>
+<translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">ફૉઇલ</translation>
 <translation id="5680642791693447368">થ્રિલર, ક્રાઇમ અને મિસ્ટ્રી મૂવી</translation>
 <translation id="568292603005599551">છબીની X અક્ષ પરની સ્થિતિ</translation>
@@ -2671,6 +2678,7 @@
 <translation id="573555826359077410">'ફોર્મ બનાવો' બટન, Google Formsમાં ઝડપથી કોઈ નવું ફોર્મ બનાવવા માટે સક્રિય કરો</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{તમારા Google એકાઉન્ટમાં કાર્ડ સાચવો}one{તમારા Google એકાઉન્ટમાં કાર્ડ સાચવો}other{તમારા Google એકાઉન્ટમાં કાર્ડ સાચવો}}</translation>
 <translation id="5738385766833540397">તમે ટ્રૅક કરો છો તે પ્રોડક્ટની કિંમતમાં ઘટાડા વિશેના અલર્ટ મેળવવાની રીત મેનેજ કરો</translation>
+<translation id="573974402615125334">ટૅબના ગ્રૂપ શેર કરવા, તેમાં જોડાવા અથવા તેમાં સહયોગ કરવા માટે, તમારો ઇતિહાસ અને ટૅબ સિંક કરો</translation>
 <translation id="5740911612628596808">એન્વલપ C9</translation>
 <translation id="5742806904559466333">બાર, ક્લબ અને નાઇટલાઇફ</translation>
 <translation id="5743684619253032786">નખની સંભાળ માટેની પ્રોડક્ટ</translation>
@@ -2692,6 +2700,7 @@
 <translation id="578305955206182703">પીળાશ પડતો નારંગી</translation>
 <translation id="5783700460098783980">સામાન અને મુસાફરીની વસ્તુઓ</translation>
 <translation id="57838592816432529">અવાજ બંધ કરો</translation>
+<translation id="5783922175933467571"><ph name="TAB_GROUP_DISPLAY_NAME" /> લિંકની સમયસીમા 48 કલાકમાં સમાપ્ત થાય છે</translation>
 <translation id="5784606427469807560">તમારા કાર્ડની પુષ્ટિ કરવામાં એક સમસ્યા આવી હતી. તમારું ઇન્ટરનેટ કનેક્શન તપાસો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="5785756445106461925">વળી, આ પેજમાં અન્ય એવા સાધનો છે જે સુરક્ષિત નથી. પરિવહનમાં હોવા પર અન્ય લોકો દ્વારા આ સાધનો જોઈ શકાય છે અને પેજનો દેખાવ બદલવા માટે હુમલાખોર દ્વારા ફેરફાર કરવામાં આવી શકે છે.</translation>
 <translation id="5793317771769868848">આ ડિવાઇસમાંથી આ ચુકવણી પદ્ધતિ ડિલીટ કરવામાં આવશે</translation>
@@ -2764,6 +2773,7 @@
 <translation id="5930147475897662863">'લખવામાં મારી સહાય કરો'નો ઉપયોગ કરવા માટે, આ સેટિંગ ચાલુ કરો</translation>
 <translation id="593102073240001326">કેવી રીતે કરવું, DIY અને નિષ્ણાતનું કન્ટેન્ટ</translation>
 <translation id="5932224571077948991">સાઇટ ઘૃણાસ્પદ અથવા ભ્રામક જાહેરાતો બતાવે છે</translation>
+<translation id="5933597524153120073">બધી (<ph name="ITEMS" />) નવી વિન્ડોમાં ખોલો</translation>
 <translation id="5937560539988385583">પેજનો અનુવાદ કર્યો</translation>
 <translation id="5938153366081463283">વર્ચ્યુઅલ કાર્ડ ઉમેરો</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3871,6 +3881,7 @@
 <translation id="7865448901209910068">શ્રેષ્ઠ ઝડપ</translation>
 <translation id="7870281855125116701">ડિસ્કાઉન્ટ મળ્યું</translation>
 <translation id="7871445724586827387">Google એકાઉન્ટનો તમારો પાસવર્ડ બદલો</translation>
+<translation id="787226752901403048">ટૅબના ગ્રૂપ શેર કરવા અને તેમાં જોડાવા માટે Chrome માં સાઇન ઇન કરો અને સાથે મળીને આઇડિયા પર કાર્ય કરો</translation>
 <translation id="7877007680666472091">સંરક્ષિત કન્ટેન્ટ IDs</translation>
 <translation id="7878562273885520351">તમારા પાસવર્ડ સાથે ચેડાં થઈ શકે છે</translation>
 <translation id="7882421473871500483">ભૂરો</translation>
@@ -4325,6 +4336,7 @@
 <translation id="8702965365666568344">માઉન્ટિંગ ટેપ</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> સાથેનું તમારું કનેક્શન એન્ક્રિપ્ટેડ નથી.</translation>
 <translation id="8705331520020532516">અનુક્રમ નંબર</translation>
+<translation id="8706806585855470492">તમને ટૅબના ગ્રૂપ શેર કરવા, તેમાં જોડાવા અથવા તેમાં સહયોગ કરવા મળશે</translation>
 <translation id="8708134712139312373">બ્લૂટૂથ ડિવાઇસ સાથે કનેક્ટ કરવાનું પૂછી શકે છે</translation>
 <translation id="8710842507289500830">ફૉન્ટની શૈલી</translation>
 <translation id="8712637175834984815">સમજાઈ ગયું</translation>
@@ -4467,6 +4479,7 @@
 <translation id="8975263830901772334">તમે પ્રિન્ટ કરો તે ફાઇલોના નામ</translation>
 <translation id="8982884016487650216">PDF લોડ કરવાની પ્રક્રિયા પૂર્ણ થઈ</translation>
 <translation id="8983369100812962543">તમે હવે ઍપનું કદ બદલી શકો છો</translation>
+<translation id="8985112471026018799">વધુ ઝડપી ચેકઆઉટ કરવા માટે કાર્ડને સાચવો</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeમાં તમારો બ્રાઉઝિંગ ઇતિહાસ જોવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="8987663052629670333">ફોટો પ્રિન્ટિંગ સેવાઓ</translation>
 <translation id="8987927404178983737">મહિનો</translation>
@@ -4533,6 +4546,7 @@
 <translation id="9090993752571911635">ઇન્ટરનેટ સેવા આપનાર કંપનીઓ (ISPs)</translation>
 <translation id="9093723786115107672">સૂતી વખતે પહેરવાના કપડા</translation>
 <translation id="9094544726794842788">થમ્બ્સ ડાઉન, આ પરિણામો તમને શા માટે નાપસંદ છે તેના વિશે વિગતવાર પ્રતિસાદ સબમિટ કરવા માટેનું ફોર્મ ખોલે છે</translation>
+<translation id="9094809883254050729">આગલી વખતે ઑટોમૅટિક રીતે ભરો. કાર્ડ સાચવવામાં આવે ત્યારે તેને એન્ક્રિપ્ટ કરવામાં આવે છે.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS સેટિંગમાં Chromeને સિસ્ટમના ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરવા માટે, પહેલાં tab અને પછી Enter કી દબાવો</translation>
 <translation id="9101450247048146228">કૅમેરાનો ઉપયોગ અને હિલચાલ (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">ટ્રે 1</translation>

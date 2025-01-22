@@ -6,12 +6,15 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Selection manager for RecyclerViews. */
+@NullMarked
 public class RecyclerViewSelectionController
         implements RecyclerView.OnChildAttachStateChangeListener {
     private static final int ADVANCE_EXPOSE_VIEWS = 2;

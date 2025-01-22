@@ -4,26 +4,26 @@
 
 #import "ios/net/protocol_handler_util.h"
 
-#include <string>
+#import <string>
 
-#include "base/base64.h"
-#include "base/logging.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/time/time.h"
-#include "ios/net/crn_http_url_response.h"
+#import "base/base64.h"
+#import "base/logging.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "ios/net/crn_http_url_response.h"
 #import "net/base/apple/url_conversions.h"
-#include "net/base/net_errors.h"
-#include "net/http/http_request_headers.h"
-#include "net/http/http_response_headers.h"
-#include "net/http/http_version.h"
-#include "net/url_request/referrer_policy.h"
-#include "net/url_request/url_request.h"
-#include "url/buildflags.h"
-#include "url/gurl.h"
+#import "net/base/net_errors.h"
+#import "net/http/http_request_headers.h"
+#import "net/http/http_response_headers.h"
+#import "net/http/http_version.h"
+#import "net/url_request/referrer_policy.h"
+#import "net/url_request/url_request.h"
+#import "url/buildflags.h"
+#import "url/gurl.h"
 
 #if !BUILDFLAG(USE_PLATFORM_ICU_ALTERNATIVES)
-#include "base/i18n/encoding_detection.h"  // nogncheck
-#include "base/i18n/icu_string_conversions.h"  // nogncheck
+#import "base/i18n/encoding_detection.h"  // nogncheck
+#import "base/i18n/icu_string_conversions.h"  // nogncheck
 #endif  // !BUILDFLAG(USE_PLATFORM_ICU_ALTERNATIVES)
 
 namespace {

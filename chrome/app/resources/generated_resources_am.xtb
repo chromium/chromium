@@ -129,7 +129,6 @@
 <translation id="1079242569060319448">ፒን ረስተዋል?</translation>
 <translation id="1079285777677001938">በአንዳንድ ጣቢያዎች ላይ ያሉ ባህሪያት ላይሠሩ ይችላሉ።</translation>
 <translation id="1079766198702302550">ሁልጊዜ የካሜራ መዳረሻ አግድ</translation>
-<translation id="1080365971383768617">በሁሉም መሣሪያዎችዎ ላይ የይለፍ ቃላት</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 ትር}one{<ph name="GROUP_TITLE" /> - # ትሮች}other{<ph name="GROUP_TITLE" /> - # ትሮች}}</translation>
 <translation id="1082214733466244292">የእርስዎ አስተዳዳሪ ለዚህ መሣሪያ አንዳንድ ተግባራትን አግዷል</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" />የእርስዎ Chrome ቅንብሮች ወደ የመጀመሪያቸው ነባሪዎች መመለስ ፈልጓል። ይሄ የእርስዎን መነሻ ገፅ፣ አዲስ የትር ገፅ እና የፍለጋ ፕሮግራም ዳግም ያስጀምራቸዋል፣ ቅጥያዎችዎን ያሰናክላቸዋል፣ እና ሁሉንም ትሮች ይነቅላቸዋል። እንዲሁም ሌሎች እንደ ኩኪዎች፣ ይዘት እና የጣቢያ ውሂብ ያለ ጊዜያዊ እና የተሸጎጠ ውሂብንም ያጸዳል።</translation>
@@ -524,6 +523,7 @@
 <translation id="135389172849514421">ከመስመር ውጭ ይሰራል</translation>
 <translation id="1353980523955420967">PPDን ማግኘት አልተቻለም። የእርስዎ Chromebook መስመር ላይ መሆኑን ያረጋግጡና እንደገና ይሞክሩ።</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> የእርስዎን ካሜራ እንዲጠቀም እና እንዲያንቀሳቅስ መፍቀዱን ይቀጥሉ</translation>
+<translation id="1354148503392558902">የይለፍ ቃልን በመለወጥ ላይ...</translation>
 <translation id="1355088139103479645">ሁሉም ውሂብ ይሰረዝ?</translation>
 <translation id="1356376170199999104">ተፈቅዷል – <ph name="PERMISSION_DETAILS" />። አካላዊ መቀያየሪያን በመጠቀም ማይክሮፎንን ያብሩ።</translation>
 <translation id="1356959069439783953">ገቢር ያልሁኑ ትሮች አዲስ መልክ ያገኛሉ</translation>
@@ -1102,6 +1102,7 @@
 <translation id="1751335846119670066">እንዳነብ እርዳኝ</translation>
 <translation id="17513872634828108">ትሮችን ክፈት</translation>
 <translation id="175196451752279553">የተ&amp;ዘጋውን ትር ዳግም ክፈት</translation>
+<translation id="1752557850776261983">መግባትን በመፈተሽ ላይ...</translation>
 <translation id="1753067873202720523">የእርስዎ Chromebook በርቶ ሳለ ባትሪ ላይሞላ ይችላል።</translation>
 <translation id="1753557900380512635">የውስጥ ክፍሎች</translation>
 <translation id="1753905327828125965">በይበልጥ የተጎበኙ</translation>
@@ -3029,6 +3030,7 @@
 <translation id="310297983047869047">ቀዳሚ ተንሸራታች</translation>
 <translation id="3103451787721578293">እባክዎ ይህን ውሂብ የሚሰቅሉበት ምክንያት ያስገቡ፦</translation>
 <translation id="3103512663951238230">Alt+ጠቅታ</translation>
+<translation id="3104763887980088552">የእንቅስቃሴ ምዝግብ ማስታወሻ</translation>
 <translation id="3104948640446684649">የአጠቃቀም እና የምርመራ ውሂብ ይላኩ። ይህ መሣሪያ በአሁኑ ጊዜ በራስ-ሰር የምርመራ፣ የመሣሪያ እና የመተግበሪያ አጠቃቀም ውሂብ ወደ Google እየላከ ነው። ይህ የሥርዓት እና የመተግበሪያ እርጋታን እና ሌሎች ማሻሻያዎችን ያግዛል። እንዲሁም አንዳንድ ውሑድ ውሂብ የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛል። የእርስዎ የተጨማሪ ድር እና መተግበሪያ እንቅስቃሴ ቅንብር ከበራ ይህ ውሂብ በGoogle መለያዎ ላይ ሊቀመጥ ይችላል። <ph name="BEGIN_LINK2" />ስለ መለኪያዎች የበለጠ ይረዱ<ph name="BEGIN_LINK2_END" />የበለጠ ለመረዳት<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">የመጨረሻው ያልተሳካ ዝማኔ</translation>
 <translation id="3105796011181310544">ወደ Google መልሰዉ ይቀይሩ?</translation>
@@ -3743,6 +3745,7 @@
 <translation id="3629664892718440872">ይህን ምርጫ አስታውስ</translation>
 <translation id="3630132874740063857">የእርስዎ ስልክ</translation>
 <translation id="3630995161997703415">ይህን ጣቢያ በማንኛውም ጊዜ ለመጠቀም ወደ መደርደሪያዎ ያክሉት</translation>
+<translation id="3632929818790223729">በገቢር ትር ትርን ይከፋፍሉ</translation>
 <translation id="3634652306074934350">የፈቃድ ጥያቄ ጊዜው አልፎበታል</translation>
 <translation id="3635199270495525546">የታመነ መሰረተ ስርዓት ሞዱል (TPM) ተገኝቷል</translation>
 <translation id="3635353578505343390">ግብረመልስ ወደ Google ይላኩ</translation>
@@ -6242,9 +6245,6 @@
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) እርስዎ የትር ቡድንን እንዲቀላቀሉ ይፈልጋሉ። አገናኙ ያላቸው ማንኛውም ሰው ሁሉንም ትሮች ማርትዕ ይችላሉ፣ ስለዚህ በጥንቃቄ ይቀላቀሉ። አገናኙ በ48 ሰዓት ውስጥ የአገልግሎት ጊዜው ያበቃል።</translation>
 <translation id="5410889048775606433">ትንሽ ሰማያዊ ያለበት ቀይ</translation>
 <translation id="5411022484772257615">የትምህርት ቤት ምዝገባን ማጠናቀቅ አልተቻለም</translation>
-<translation id="5411856344659127989">ለሌላ ሰው መለያ ማከል ከፈለጉ ወደ የእርስዎ <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />አዲስ ሰው ያክሉ<ph name="LINK_END" />።
-
-አስቀድመው ለድር ጣቢያዎች እና መተግበሪያዎች የሰጧቸው ፈቃዶች በዚህ መለያ ላይ ሊተገበሩ ይችላሉ። የእርስዎን Google መለያዎች በ<ph name="SETTINGS_LINK_BEGIN" />ቅንብሮች<ph name="SETTINGS_LINK_END" /> ውስጥ ማስተዳደር ይችላሉ።</translation>
 <translation id="54118879136097217">መተግበሪያውን በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ይጫኑት</translation>
 <translation id="5413640305322530561">ስለምርመራ እና የአጠቃቀም ውሂብ የበለጠ ይወቁ</translation>
 <translation id="5414198321558177633">የመገለጫ ዝርዝርን በማደስ ላይ። ይህ ጥቂት ደቂቃዎችን ሊወስድ ይችላል።</translation>
@@ -6523,7 +6523,6 @@
 <translation id="5610867721023328944">እንደገና ይሞክሩ ወይም ከታች ካሉት ገጽታዎች ውስጥ አንዱን ይምረጡ።</translation>
 <translation id="5611398002774823980">በመለያ ውስጥ አስቀምጥ</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />፣ <ph name="APP_FULL_NAME" /></translation>
-<translation id="5613074282491265467">ወደ Chrome በመለያ ሲገቡ የሚያስቀምጧቸው የይለፍ ቃላት ወደ Google መለያዎ ውስጥ ይገባሉ፣ <ph name="USER_EMAIL" />። ይህን ለማጥፋት፣ ወደ ቅንብሮች ይሂዱ።</translation>
 <translation id="5614190747811328134">የተጠቃሚ ማሳወቂያ</translation>
 <translation id="5614553682702429503">የይለፍ ቃል ይቀመጥ?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
@@ -8557,7 +8556,6 @@
 <translation id="7088674813905715446">ይህ መሣሪያ በአስተዳዳሪው ወዳልተከፋፈለ ሁኔታ ተቀምጧል። ለምዝገባ ለማንቃት፣ እባክዎ አስተዳዳሪዎ እየተካሄደ ወዳለ ሁኔታ እንዲለውጠው ያድርጉ።</translation>
 <translation id="7088960765736518739">የመዳረሻ መቀየሪያ</translation>
 <translation id="7089253021944603172">ትር እንደገና ገቢር ሆኗል</translation>
-<translation id="7090160970140261931">ከድር ጣቢያዎች እና Android መተግበሪያዎች ጋር ለመጠቀም ተጨማሪ መለያዎችን ወደ <ph name="DEVICE_TYPE" /> ማከል ይችላሉ። እንዲሁም የትኞቹ መለያዎች በAndroid መተግበሪያዎች ጥቅም ላይ እንደሚውሉ መቆጣጠር ይችላሉ።</translation>
 <translation id="7090714929377281710">መገናኛ ነጥብን በራስ ሰር አጥፋ</translation>
 <translation id="7092504544229909737">ከAndroid መተግበሪያዎች ጋር መጠቀም አይቻልም</translation>
 <translation id="7093220653036489319">ፈጣን መልሶች</translation>
@@ -9018,6 +9016,7 @@
 <translation id="7424818322350938336">አውታረመረብ ታክሏል</translation>
 <translation id="7425037327577270384">ለመጻፍ አግዘኝ</translation>
 <translation id="7427348830195639090">የጀርባው ገፅ፦ <ph name="BACKGROUND_PAGE_URL" /></translation>
+<translation id="7427729970025360383">ይህ መገለጫ ይተዳደራል</translation>
 <translation id="7427798576651127129">ጥሪ ከ<ph name="DEVICE_NAME" /></translation>
 <translation id="7429415133937917139">ሊታደስ የሚችል የብሬል ማሳያን ውጽዓት በማያ ገጹ አናት ላይ ባለው 
         የChromeVox ፓነል ውስጥ ያስመስላል</translation>
@@ -10041,6 +10040,7 @@ nil</translation>
 <translation id="8140869601171867148">የGoogle መለያዎ ለGmail፣ YouTube፣ Chrome እና ሌሎች የGoogle ምርቶች የሚጠቀሙት ተመሳሳይ መለያ ነው።
     ሁሉንም የእርስዎ ዕልባቶች፣ ፋይሎች እና ሌሎችም በቀላሉ ለመድረስ መለያዎን ይጠቀሙ።</translation>
 <translation id="8141418916163800697">በስልክ ሃብ ቅንብሮች ውስጥ ተጨማሪ ባህሪያትን ማዋቀር ይችላሉ</translation>
+<translation id="814156740715940972">በገቢር ትር ትርን ይከፋፍሉ</translation>
 <translation id="8141584439523427891">በአማራጭ አሳሽ ውስጥ አሁን በመክፈት ላይ</translation>
 <translation id="8141725884565838206">የይለፍ ቃልዎችዎን ያስተዳድሩ</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{አንድ ቪዲዮ}one{# ቪዲዮዎች}other{# ቪዲዮዎች}}</translation>
@@ -11174,9 +11174,6 @@ nil</translation>
 <translation id="894360074127026135">የNetscape ዓለምአቀፍ አወቃቀር</translation>
 <translation id="8944099748578356325">ባትሪዎን በበለጠ ፍጥነት ይጠቀሙ (በአሁኑ ጊዜ <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944633700466246631">ለGoogle የይለፍ ቃል አስተዳዳሪ ባለ 6 አኃዝ መልሶ ማግኛ ፒን ይፍጠሩ</translation>
-<translation id="8944725102565796255">ይህን መሣሪያ አንድ ጊዜ ብቻ መጠቀም ከፈለጉ <ph name="GUEST_LINK_BEGIN" />መሣሪያውን እንደ እንግዳ<ph name="GUEST_LINK_END" /> መጠቀም ይችላሉ። ለሌላ ሰው መለያ ማከል ከፈለጉ ወደ የእርስዎ <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />አዲስ ሰው ያክሉ<ph name="LINK_END" />።
-
-አስቀድመው ለድር ጣቢያዎች እና መተግበሪያዎች የሰጧቸው ፈቃዶች በዚህ መለያ ላይ ሊተገበሩ ይችላሉ። የእርስዎን Google መለያዎች በ<ph name="SETTINGS_LINK_BEGIN" />ቅንብሮች<ph name="SETTINGS_LINK_END" /> ውስጥ ማስተዳደር ይችላሉ።</translation>
 <translation id="8945274638472141382">የአዶ መጠን</translation>
 <translation id="8945508919180478719">የስቱዲዮ-ቅጥ ማይክሮፎን</translation>
 <translation id="8946359700442089734">የማረም ባህሪያት በዚህ የ<ph name="IDS_SHORT_PRODUCT_NAME" /> መሣሪያ ላይ ሙሉ ለሙሉ አልነቁም።</translation>

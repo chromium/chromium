@@ -417,8 +417,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
           }
           case data_sharing::MemberRole::kUnknown:
           case data_sharing::MemberRole::kInvitee:
-            // TODO(crbug.com/375587197): Add a NOTREACHED.
-            break;
+            NOTREACHED(base::NotFatalUntil::M137);
         }
       } else {
         [destructiveActions

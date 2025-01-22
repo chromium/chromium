@@ -1783,81 +1783,67 @@ TEST_P(CookieSettingsTestP, AnnotateAndMoveUserBlockedCookies_CrossSiteEmbed) {
                           net::CookieInclusionStatus::ExemptionReason::kNone)),
                 _, _, _))));
 
-    EXPECT_THAT(
-        excluded_cookies,
-        UnorderedElementsAre(
-            MatchesCookieWithAccessResult(
-                net::MatchesCookieWithName("excluded_other"),
-                MatchesCookieAccessResult(
-                    HasExactlyExclusionReasonsForTesting(
-                        std::vector<
-                            net::CookieInclusionStatus::ExclusionReason>{
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_SECURE_ONLY}),
-                    _, _, _)),
-            MatchesCookieWithAccessResult(
-                net::MatchesCookieWithName("third_party"),
-                MatchesCookieAccessResult(
-                    net::HasExclusionReason(
-                        net::CookieInclusionStatus::ExclusionReason::
-                            EXCLUDE_THIRD_PARTY_PHASEOUT),
-                    _, _, _)),
-            MatchesCookieWithAccessResult(
-                net::MatchesCookieWithName("excluded_samesitelax"),
-                MatchesCookieAccessResult(
-                    HasExactlyExclusionReasonsForTesting(
-                        std::vector<
-                            net::CookieInclusionStatus::ExclusionReason>{
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_SECURE_ONLY}),
-                    _, _, _))));
+    EXPECT_THAT(excluded_cookies,
+                UnorderedElementsAre(
+                    MatchesCookieWithAccessResult(
+                        net::MatchesCookieWithName("excluded_other"),
+                        MatchesCookieAccessResult(
+                            net::HasExactlyExclusionReasonsForTesting(
+                                {net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_SECURE_ONLY}),
+                            _, _, _)),
+                    MatchesCookieWithAccessResult(
+                        net::MatchesCookieWithName("third_party"),
+                        MatchesCookieAccessResult(
+                            net::HasExclusionReason(
+                                net::CookieInclusionStatus::ExclusionReason::
+                                    EXCLUDE_THIRD_PARTY_PHASEOUT),
+                            _, _, _)),
+                    MatchesCookieWithAccessResult(
+                        net::MatchesCookieWithName("excluded_samesitelax"),
+                        MatchesCookieAccessResult(
+                            net::HasExactlyExclusionReasonsForTesting(
+                                {net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_SECURE_ONLY}),
+                            _, _, _))));
   } else {
     // The 3pcs are blocked by user.
     EXPECT_THAT(maybe_included_cookies, IsEmpty());
-    EXPECT_THAT(
-        excluded_cookies,
-        UnorderedElementsAre(
-            MatchesCookieWithAccessResult(
-                net::MatchesCookieWithName("cookie"),
-                MatchesCookieAccessResult(
-                    HasExactlyExclusionReasonsForTesting(
-                        std::vector<
-                            net::CookieInclusionStatus::ExclusionReason>{
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_USER_PREFERENCES}),
-                    _, _, _)),
-            MatchesCookieWithAccessResult(
-                net::MatchesCookieWithName("excluded_other"),
-                MatchesCookieAccessResult(
-                    HasExactlyExclusionReasonsForTesting(
-                        std::vector<
-                            net::CookieInclusionStatus::ExclusionReason>{
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_SECURE_ONLY,
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_USER_PREFERENCES}),
-                    _, _, _)),
-            MatchesCookieWithAccessResult(
-                net::MatchesCookieWithName("excluded_samesitelax"),
-                MatchesCookieAccessResult(
-                    HasExactlyExclusionReasonsForTesting(
-                        std::vector<
-                            net::CookieInclusionStatus::ExclusionReason>{
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_SECURE_ONLY,
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_USER_PREFERENCES,
-                        }),
-                    _, _, _)),
-            MatchesCookieWithAccessResult(
-                net::MatchesCookieWithName("third_party"),
-                MatchesCookieAccessResult(
-                    HasExactlyExclusionReasonsForTesting(
-                        std::vector<
-                            net::CookieInclusionStatus::ExclusionReason>{
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_USER_PREFERENCES}),
-                    _, _, _))));
+    EXPECT_THAT(excluded_cookies,
+                UnorderedElementsAre(
+                    MatchesCookieWithAccessResult(
+                        net::MatchesCookieWithName("cookie"),
+                        MatchesCookieAccessResult(
+                            net::HasExactlyExclusionReasonsForTesting(
+                                {net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_USER_PREFERENCES}),
+                            _, _, _)),
+                    MatchesCookieWithAccessResult(
+                        net::MatchesCookieWithName("excluded_other"),
+                        MatchesCookieAccessResult(
+                            net::HasExactlyExclusionReasonsForTesting(
+                                {net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_SECURE_ONLY,
+                                 net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_USER_PREFERENCES}),
+                            _, _, _)),
+                    MatchesCookieWithAccessResult(
+                        net::MatchesCookieWithName("excluded_samesitelax"),
+                        MatchesCookieAccessResult(
+                            net::HasExactlyExclusionReasonsForTesting({
+                                net::CookieInclusionStatus::ExclusionReason::
+                                    EXCLUDE_SECURE_ONLY,
+                                net::CookieInclusionStatus::ExclusionReason::
+                                    EXCLUDE_USER_PREFERENCES,
+                            }),
+                            _, _, _)),
+                    MatchesCookieWithAccessResult(
+                        net::MatchesCookieWithName("third_party"),
+                        MatchesCookieAccessResult(
+                            net::HasExactlyExclusionReasonsForTesting(
+                                {net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_USER_PREFERENCES}),
+                            _, _, _))));
   }
 }
 
@@ -1878,27 +1864,24 @@ TEST_F(CookieSettingsTest,
       net::CookieSettingOverrides(), maybe_included_cookies, excluded_cookies));
 
   // Verify that the allowed cookie has the expected warning reason.
-  EXPECT_THAT(
-      maybe_included_cookies,
-      UnorderedElementsAre(
-          MatchesCookieWithAccessResult(
-              net::MatchesCookieWithName("lax_by_default"),
-              MatchesCookieAccessResult(
-                  AllOf(net::IsInclude(),
-                        Not(net::HasWarningReason(
-                            net::CookieInclusionStatus::WarningReason::
-                                WARN_THIRD_PARTY_PHASEOUT))),
-                  _, _, _)),
-          MatchesCookieWithAccessResult(
-              net::MatchesCookieWithName("third_party"),
-              MatchesCookieAccessResult(
-                  AllOf(net::IsInclude(),
-                        net::HasExactlyWarningReasonsForTesting(
-                            std::vector<
-                                net::CookieInclusionStatus::WarningReason>{
-                                net::CookieInclusionStatus::WarningReason::
-                                    WARN_THIRD_PARTY_PHASEOUT})),
-                  _, _, _))));
+  EXPECT_THAT(maybe_included_cookies,
+              UnorderedElementsAre(
+                  MatchesCookieWithAccessResult(
+                      net::MatchesCookieWithName("lax_by_default"),
+                      MatchesCookieAccessResult(
+                          AllOf(net::IsInclude(),
+                                Not(net::HasWarningReason(
+                                    net::CookieInclusionStatus::WarningReason::
+                                        WARN_THIRD_PARTY_PHASEOUT))),
+                          _, _, _)),
+                  MatchesCookieWithAccessResult(
+                      net::MatchesCookieWithName("third_party"),
+                      MatchesCookieAccessResult(
+                          AllOf(net::IsInclude(),
+                                net::HasExactlyWarningReasonsForTesting(
+                                    {net::CookieInclusionStatus::WarningReason::
+                                         WARN_THIRD_PARTY_PHASEOUT})),
+                          _, _, _))));
 }
 
 TEST_F(
@@ -1921,16 +1904,14 @@ TEST_F(
         net::FirstPartySetMetadata(), overrides, maybe_included_cookies,
         excluded_cookies));
 
-    EXPECT_THAT(
-        excluded_cookies,
-        UnorderedElementsAre(MatchesCookieWithAccessResult(
-            net::MatchesCookieWithName("third_party"),
-            MatchesCookieAccessResult(
-                net::HasExactlyExclusionReasonsForTesting(
-                    std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                        net::CookieInclusionStatus::ExclusionReason::
-                            EXCLUDE_USER_PREFERENCES}),
-                _, _, _))));
+    EXPECT_THAT(excluded_cookies,
+                UnorderedElementsAre(MatchesCookieWithAccessResult(
+                    net::MatchesCookieWithName("third_party"),
+                    MatchesCookieAccessResult(
+                        net::HasExactlyExclusionReasonsForTesting(
+                            {net::CookieInclusionStatus::ExclusionReason::
+                                 EXCLUDE_USER_PREFERENCES}),
+                        _, _, _))));
   }
   // Both overrides should be present to yield the phaseout exclusion reason.
   overrides.Put(
@@ -1945,16 +1926,14 @@ TEST_F(
         excluded_cookies));
 
     // Verify that the excluded cookie has the expected reason.
-    EXPECT_THAT(
-        excluded_cookies,
-        UnorderedElementsAre(MatchesCookieWithAccessResult(
-            net::MatchesCookieWithName("third_party"),
-            MatchesCookieAccessResult(
-                net::HasExactlyExclusionReasonsForTesting(
-                    std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                        net::CookieInclusionStatus::ExclusionReason::
-                            EXCLUDE_THIRD_PARTY_PHASEOUT}),
-                _, _, _))));
+    EXPECT_THAT(excluded_cookies,
+                UnorderedElementsAre(MatchesCookieWithAccessResult(
+                    net::MatchesCookieWithName("third_party"),
+                    MatchesCookieAccessResult(
+                        net::HasExactlyExclusionReasonsForTesting(
+                            {net::CookieInclusionStatus::ExclusionReason::
+                                 EXCLUDE_THIRD_PARTY_PHASEOUT}),
+                        _, _, _))));
   }
 }
 
@@ -2071,25 +2050,22 @@ TEST_P(CookieSettingsTestP,
                           net::CookieInclusionStatus::ExemptionReason::kNone)),
                   _, _, _))));
 
-  EXPECT_THAT(
-      excluded_cookies,
-      UnorderedElementsAre(
-          MatchesCookieWithAccessResult(
-              net::MatchesCookieWithName("excluded_other"),
-              MatchesCookieAccessResult(
-                  HasExactlyExclusionReasonsForTesting(
-                      std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                          net::CookieInclusionStatus::ExclusionReason::
-                              EXCLUDE_SECURE_ONLY}),
-                  _, _, _)),
-          MatchesCookieWithAccessResult(
-              net::MatchesCookieWithName("excluded_samesitelax"),
-              MatchesCookieAccessResult(
-                  HasExactlyExclusionReasonsForTesting(
-                      std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                          net::CookieInclusionStatus::ExclusionReason::
-                              EXCLUDE_SECURE_ONLY}),
-                  _, _, _))));
+  EXPECT_THAT(excluded_cookies,
+              UnorderedElementsAre(
+                  MatchesCookieWithAccessResult(
+                      net::MatchesCookieWithName("excluded_other"),
+                      MatchesCookieAccessResult(
+                          net::HasExactlyExclusionReasonsForTesting(
+                              {net::CookieInclusionStatus::ExclusionReason::
+                                   EXCLUDE_SECURE_ONLY}),
+                          _, _, _)),
+                  MatchesCookieWithAccessResult(
+                      net::MatchesCookieWithName("excluded_samesitelax"),
+                      MatchesCookieAccessResult(
+                          net::HasExactlyExclusionReasonsForTesting(
+                              {net::CookieInclusionStatus::ExclusionReason::
+                                   EXCLUDE_SECURE_ONLY}),
+                          _, _, _))));
 }
 
 TEST_P(CookieSettingsTestP,
@@ -2153,16 +2129,14 @@ TEST_P(CookieSettingsTestP,
                               net::CookieInclusionStatus::ExemptionReason::
                                   kNone)),
                     _, _, _))));
-    EXPECT_THAT(
-        excluded_cookies,
-        UnorderedElementsAre(MatchesCookieWithAccessResult(
-            net::MatchesCookieWithName("excluded_other"),
-            MatchesCookieAccessResult(
-                HasExactlyExclusionReasonsForTesting(
-                    std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                        net::CookieInclusionStatus::ExclusionReason::
-                            EXCLUDE_SECURE_ONLY}),
-                _, _, _))));
+    EXPECT_THAT(excluded_cookies,
+                UnorderedElementsAre(MatchesCookieWithAccessResult(
+                    net::MatchesCookieWithName("excluded_other"),
+                    MatchesCookieAccessResult(
+                        net::HasExactlyExclusionReasonsForTesting(
+                            {net::CookieInclusionStatus::ExclusionReason::
+                                 EXCLUDE_SECURE_ONLY}),
+                        _, _, _))));
   } else if (IsTPCDEnabled()) {
     EXPECT_THAT(
         maybe_included_cookies,
@@ -2181,62 +2155,50 @@ TEST_P(CookieSettingsTestP,
                       net::HasExactlyExemptionReason(
                           net::CookieInclusionStatus::ExemptionReason::kNone)),
                 _, _, _))));
-    EXPECT_THAT(
-        excluded_cookies,
-        UnorderedElementsAre(
-            MatchesCookieWithAccessResult(
-                net::MatchesCookieWithName("cookie"),
-                MatchesCookieAccessResult(
-                    HasExactlyExclusionReasonsForTesting(
-                        std::vector<
-                            net::CookieInclusionStatus::ExclusionReason>{
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_THIRD_PARTY_PHASEOUT}),
-                    _, _, _)),
-            MatchesCookieWithAccessResult(
-                net::MatchesCookieWithName("excluded_other"),
-                MatchesCookieAccessResult(
-                    HasExactlyExclusionReasonsForTesting(
-                        std::vector<
-                            net::CookieInclusionStatus::ExclusionReason>{
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_SECURE_ONLY}),
-                    _, _, _))));
+    EXPECT_THAT(excluded_cookies,
+                UnorderedElementsAre(
+                    MatchesCookieWithAccessResult(
+                        net::MatchesCookieWithName("cookie"),
+                        MatchesCookieAccessResult(
+                            net::HasExactlyExclusionReasonsForTesting(
+                                {net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_THIRD_PARTY_PHASEOUT}),
+                            _, _, _)),
+                    MatchesCookieWithAccessResult(
+                        net::MatchesCookieWithName("excluded_other"),
+                        MatchesCookieAccessResult(
+                            net::HasExactlyExclusionReasonsForTesting(
+                                {net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_SECURE_ONLY}),
+                            _, _, _))));
   } else {
     // 3pc is blocked by user.
     EXPECT_THAT(maybe_included_cookies, IsEmpty());
-    EXPECT_THAT(
-        excluded_cookies,
-        UnorderedElementsAre(
-            MatchesCookieWithAccessResult(
-                net::MatchesCookieWithName("cookie"),
-                MatchesCookieAccessResult(
-                    HasExactlyExclusionReasonsForTesting(
-                        std::vector<
-                            net::CookieInclusionStatus::ExclusionReason>{
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_USER_PREFERENCES}),
-                    _, _, _)),
-            MatchesCookieWithAccessResult(
-                net::MatchesCookieWithName("samesite_lax"),
-                MatchesCookieAccessResult(
-                    HasExactlyExclusionReasonsForTesting(
-                        std::vector<
-                            net::CookieInclusionStatus::ExclusionReason>{
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_USER_PREFERENCES}),
-                    _, _, _)),
-            MatchesCookieWithAccessResult(
-                net::MatchesCookieWithName("excluded_other"),
-                MatchesCookieAccessResult(
-                    HasExactlyExclusionReasonsForTesting(
-                        std::vector<
-                            net::CookieInclusionStatus::ExclusionReason>{
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_SECURE_ONLY,
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_USER_PREFERENCES}),
-                    _, _, _))));
+    EXPECT_THAT(excluded_cookies,
+                UnorderedElementsAre(
+                    MatchesCookieWithAccessResult(
+                        net::MatchesCookieWithName("cookie"),
+                        MatchesCookieAccessResult(
+                            net::HasExactlyExclusionReasonsForTesting(
+                                {net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_USER_PREFERENCES}),
+                            _, _, _)),
+                    MatchesCookieWithAccessResult(
+                        net::MatchesCookieWithName("samesite_lax"),
+                        MatchesCookieAccessResult(
+                            net::HasExactlyExclusionReasonsForTesting(
+                                {net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_USER_PREFERENCES}),
+                            _, _, _)),
+                    MatchesCookieWithAccessResult(
+                        net::MatchesCookieWithName("excluded_other"),
+                        MatchesCookieAccessResult(
+                            net::HasExactlyExclusionReasonsForTesting(
+                                {net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_SECURE_ONLY,
+                                 net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_USER_PREFERENCES}),
+                            _, _, _))));
   }
 }
 
@@ -2271,20 +2233,18 @@ TEST_P(CookieSettingsTestP,
       ElementsAre(MatchesCookieWithAccessResult(
           net::MatchesCookieWithName("third_party_but_member"),
           MatchesCookieAccessResult(
-              HasExactlyExclusionReasonsForTesting(
+              net::HasExactlyExclusionReasonsForTesting(
                   IsForceThirdPartyCookieBlockingFlagEnabled() ||
                           IsTrackingProtectionEnabledFor3pcd()
-                      ? std::vector<
-                            net::CookieInclusionStatus::
-                                ExclusionReason>{
+                      ? net::CookieInclusionStatus::ExclusionReasonBitset{
                                     net::CookieInclusionStatus::
                                         ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT,
                                     net::CookieInclusionStatus::
                                         ExclusionReason::EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET,
                                 }
-                      : std::vector<
+                      :
                             net::CookieInclusionStatus::
-                                ExclusionReason>{net::CookieInclusionStatus::
+                                ExclusionReasonBitset{net::CookieInclusionStatus::
                                                      ExclusionReason::EXCLUDE_USER_PREFERENCES}),
               _, _, _))));
 }
@@ -2340,20 +2300,20 @@ TEST_P(
       ElementsAre(MatchesCookieWithAccessResult(
           net::MatchesCookieWithName("third_party_but_member"),
           MatchesCookieAccessResult(
-              HasExactlyExclusionReasonsForTesting(
+              net::HasExactlyExclusionReasonsForTesting(
                   IsForceThirdPartyCookieBlockingFlagEnabled() ||
                           IsTrackingProtectionEnabledFor3pcd()
-                      ? std::vector<
+                      ?
                             net::CookieInclusionStatus::
-                                ExclusionReason>{
+                                ExclusionReasonBitset{
                                     net::CookieInclusionStatus::
                                                 ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT,
                                     net::CookieInclusionStatus::
                                                 ExclusionReason::EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET,
                                 }
-                      : std::vector<
+                      :
                             net::CookieInclusionStatus::
-                                ExclusionReason>{net::CookieInclusionStatus::
+                                ExclusionReasonBitset{net::CookieInclusionStatus::
                                                      ExclusionReason::EXCLUDE_USER_PREFERENCES}),
               _, _, _))));
 }
@@ -2737,41 +2697,34 @@ TEST_P(CookieSettingsTpcdMetadataGrantsTest,
                                   net::CookieInclusionStatus::ExemptionReason::
                                       k3PCDMetadata)),
                         _, _, _))));
-    EXPECT_THAT(
-        excluded_cookies,
-        UnorderedElementsAre(MatchesCookieWithAccessResult(
-            net::MatchesCookieWithName("excluded_other"),
-            MatchesCookieAccessResult(
-                HasExactlyExclusionReasonsForTesting(
-                    std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                        net::CookieInclusionStatus::ExclusionReason::
-                            EXCLUDE_SECURE_ONLY}),
-                _, _, _))));
+    EXPECT_THAT(excluded_cookies,
+                UnorderedElementsAre(MatchesCookieWithAccessResult(
+                    net::MatchesCookieWithName("excluded_other"),
+                    MatchesCookieAccessResult(
+                        net::HasExactlyExclusionReasonsForTesting(
+                            {net::CookieInclusionStatus::ExclusionReason::
+                                 EXCLUDE_SECURE_ONLY}),
+                        _, _, _))));
   } else {
     EXPECT_THAT(maybe_included_cookies, IsEmpty());
-    EXPECT_THAT(
-        excluded_cookies,
-        UnorderedElementsAre(
-            MatchesCookieWithAccessResult(
-                net::MatchesCookieWithName("excluded_other"),
-                MatchesCookieAccessResult(
-                    HasExactlyExclusionReasonsForTesting(
-                        std::vector<
-                            net::CookieInclusionStatus::ExclusionReason>{
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_SECURE_ONLY,
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_USER_PREFERENCES}),
-                    _, _, _)),
-            MatchesCookieWithAccessResult(
-                net::MatchesCookieWithName("third_party"),
-                MatchesCookieAccessResult(
-                    HasExactlyExclusionReasonsForTesting(
-                        std::vector<
-                            net::CookieInclusionStatus::ExclusionReason>{
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_USER_PREFERENCES}),
-                    _, _, _))));
+    EXPECT_THAT(excluded_cookies,
+                UnorderedElementsAre(
+                    MatchesCookieWithAccessResult(
+                        net::MatchesCookieWithName("excluded_other"),
+                        MatchesCookieAccessResult(
+                            net::HasExactlyExclusionReasonsForTesting(
+                                {net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_SECURE_ONLY,
+                                 net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_USER_PREFERENCES}),
+                            _, _, _)),
+                    MatchesCookieWithAccessResult(
+                        net::MatchesCookieWithName("third_party"),
+                        MatchesCookieAccessResult(
+                            net::HasExactlyExclusionReasonsForTesting(
+                                {net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_USER_PREFERENCES}),
+                            _, _, _))));
   }
 }
 
@@ -2989,41 +2942,34 @@ TEST_P(CookieSettingsTpcdTrialTest, AnnotateAndMoveUserBlockedCookies) {
                                   net::CookieInclusionStatus::ExemptionReason::
                                       k3PCDDeprecationTrial)),
                         _, _, _))));
-    EXPECT_THAT(
-        excluded_cookies,
-        UnorderedElementsAre(MatchesCookieWithAccessResult(
-            net::MatchesCookieWithName("excluded_other"),
-            MatchesCookieAccessResult(
-                HasExactlyExclusionReasonsForTesting(
-                    std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                        net::CookieInclusionStatus::ExclusionReason::
-                            EXCLUDE_SECURE_ONLY}),
-                _, _, _))));
+    EXPECT_THAT(excluded_cookies,
+                UnorderedElementsAre(MatchesCookieWithAccessResult(
+                    net::MatchesCookieWithName("excluded_other"),
+                    MatchesCookieAccessResult(
+                        net::HasExactlyExclusionReasonsForTesting(
+                            {net::CookieInclusionStatus::ExclusionReason::
+                                 EXCLUDE_SECURE_ONLY}),
+                        _, _, _))));
   } else {
     EXPECT_THAT(maybe_included_cookies, IsEmpty());
-    EXPECT_THAT(
-        excluded_cookies,
-        UnorderedElementsAre(
-            MatchesCookieWithAccessResult(
-                net::MatchesCookieWithName("excluded_other"),
-                MatchesCookieAccessResult(
-                    HasExactlyExclusionReasonsForTesting(
-                        std::vector<
-                            net::CookieInclusionStatus::ExclusionReason>{
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_SECURE_ONLY,
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_USER_PREFERENCES}),
-                    _, _, _)),
-            MatchesCookieWithAccessResult(
-                net::MatchesCookieWithName("third_party"),
-                MatchesCookieAccessResult(
-                    HasExactlyExclusionReasonsForTesting(
-                        std::vector<
-                            net::CookieInclusionStatus::ExclusionReason>{
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_USER_PREFERENCES}),
-                    _, _, _))));
+    EXPECT_THAT(excluded_cookies,
+                UnorderedElementsAre(
+                    MatchesCookieWithAccessResult(
+                        net::MatchesCookieWithName("excluded_other"),
+                        MatchesCookieAccessResult(
+                            net::HasExactlyExclusionReasonsForTesting(
+                                {net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_SECURE_ONLY,
+                                 net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_USER_PREFERENCES}),
+                            _, _, _)),
+                    MatchesCookieWithAccessResult(
+                        net::MatchesCookieWithName("third_party"),
+                        MatchesCookieAccessResult(
+                            net::HasExactlyExclusionReasonsForTesting(
+                                {net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_USER_PREFERENCES}),
+                            _, _, _))));
   }
 }
 
@@ -3272,41 +3218,34 @@ TEST_P(CookieSettingsTopLevelTpcdTrialTest, AnnotateAndMoveUserBlockedCookies) {
                                   net::CookieInclusionStatus::ExemptionReason::
                                       kTopLevel3PCDDeprecationTrial)),
                         _, _, _))));
-    EXPECT_THAT(
-        excluded_cookies,
-        UnorderedElementsAre(MatchesCookieWithAccessResult(
-            net::MatchesCookieWithName("excluded_other"),
-            MatchesCookieAccessResult(
-                HasExactlyExclusionReasonsForTesting(
-                    std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                        net::CookieInclusionStatus::ExclusionReason::
-                            EXCLUDE_SECURE_ONLY}),
-                _, _, _))));
+    EXPECT_THAT(excluded_cookies,
+                UnorderedElementsAre(MatchesCookieWithAccessResult(
+                    net::MatchesCookieWithName("excluded_other"),
+                    MatchesCookieAccessResult(
+                        net::HasExactlyExclusionReasonsForTesting(
+                            {net::CookieInclusionStatus::ExclusionReason::
+                                 EXCLUDE_SECURE_ONLY}),
+                        _, _, _))));
   } else {
     EXPECT_THAT(maybe_included_cookies, IsEmpty());
-    EXPECT_THAT(
-        excluded_cookies,
-        UnorderedElementsAre(
-            MatchesCookieWithAccessResult(
-                net::MatchesCookieWithName("excluded_other"),
-                MatchesCookieAccessResult(
-                    HasExactlyExclusionReasonsForTesting(
-                        std::vector<
-                            net::CookieInclusionStatus::ExclusionReason>{
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_SECURE_ONLY,
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_USER_PREFERENCES}),
-                    _, _, _)),
-            MatchesCookieWithAccessResult(
-                net::MatchesCookieWithName("third_party"),
-                MatchesCookieAccessResult(
-                    HasExactlyExclusionReasonsForTesting(
-                        std::vector<
-                            net::CookieInclusionStatus::ExclusionReason>{
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_USER_PREFERENCES}),
-                    _, _, _))));
+    EXPECT_THAT(excluded_cookies,
+                UnorderedElementsAre(
+                    MatchesCookieWithAccessResult(
+                        net::MatchesCookieWithName("excluded_other"),
+                        MatchesCookieAccessResult(
+                            net::HasExactlyExclusionReasonsForTesting(
+                                {net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_SECURE_ONLY,
+                                 net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_USER_PREFERENCES}),
+                            _, _, _)),
+                    MatchesCookieWithAccessResult(
+                        net::MatchesCookieWithName("third_party"),
+                        MatchesCookieAccessResult(
+                            net::HasExactlyExclusionReasonsForTesting(
+                                {net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_USER_PREFERENCES}),
+                            _, _, _))));
   }
 }
 
@@ -3779,27 +3718,22 @@ TEST_P(CookieSettingsTopLevelTpcdOriginTrialTest,
 
   if (IsTopLevel3pcdOriginTrialEligible()) {
     EXPECT_THAT(maybe_included_cookies, IsEmpty());
-    EXPECT_THAT(
-        excluded_cookies,
-        UnorderedElementsAre(
-            MatchesCookieWithAccessResult(
-                net::MatchesCookieWithName("excluded_other"),
-                MatchesCookieAccessResult(
-                    HasExactlyExclusionReasonsForTesting(
-                        std::vector<
-                            net::CookieInclusionStatus::ExclusionReason>{
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_SECURE_ONLY}),
-                    _, _, _)),
-            MatchesCookieWithAccessResult(
-                net::MatchesCookieWithName("third_party"),
-                MatchesCookieAccessResult(
-                    HasExactlyExclusionReasonsForTesting(
-                        std::vector<
-                            net::CookieInclusionStatus::ExclusionReason>{
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_THIRD_PARTY_PHASEOUT}),
-                    _, _, _))));
+    EXPECT_THAT(excluded_cookies,
+                UnorderedElementsAre(
+                    MatchesCookieWithAccessResult(
+                        net::MatchesCookieWithName("excluded_other"),
+                        MatchesCookieAccessResult(
+                            net::HasExactlyExclusionReasonsForTesting(
+                                {net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_SECURE_ONLY}),
+                            _, _, _)),
+                    MatchesCookieWithAccessResult(
+                        net::MatchesCookieWithName("third_party"),
+                        MatchesCookieAccessResult(
+                            net::HasExactlyExclusionReasonsForTesting(
+                                {net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_THIRD_PARTY_PHASEOUT}),
+                            _, _, _))));
   } else {
     EXPECT_THAT(
         maybe_included_cookies,
@@ -3810,16 +3744,14 @@ TEST_P(CookieSettingsTopLevelTpcdOriginTrialTest,
                       net::HasExactlyExemptionReason(
                           net::CookieInclusionStatus::ExemptionReason::kNone)),
                 _, _, _))));
-    EXPECT_THAT(
-        excluded_cookies,
-        UnorderedElementsAre(MatchesCookieWithAccessResult(
-            net::MatchesCookieWithName("excluded_other"),
-            MatchesCookieAccessResult(
-                HasExactlyExclusionReasonsForTesting(
-                    std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                        net::CookieInclusionStatus::ExclusionReason::
-                            EXCLUDE_SECURE_ONLY}),
-                _, _, _))));
+    EXPECT_THAT(excluded_cookies,
+                UnorderedElementsAre(MatchesCookieWithAccessResult(
+                    net::MatchesCookieWithName("excluded_other"),
+                    MatchesCookieAccessResult(
+                        net::HasExactlyExclusionReasonsForTesting(
+                            {net::CookieInclusionStatus::ExclusionReason::
+                                 EXCLUDE_SECURE_ONLY}),
+                        _, _, _))));
   }
 }
 

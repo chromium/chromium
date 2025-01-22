@@ -85,6 +85,7 @@
 <translation id="1158211211994409885">Serwer <ph name="HOST_NAME" /> nieoczekiwanie zakończył połączenie.</translation>
 <translation id="1160009341934077418">Historia cen w internecie</translation>
 <translation id="1161325031994447685">Ponownie połącz się z Wi-Fi</translation>
+<translation id="1161663161838091892">Aby kontynuować, zsynchronizuj karty i historię</translation>
 <translation id="1163507966173624031">Muzyka folkowa i tradycyjna</translation>
 <translation id="11635448457105324">Przycisk Zarządzaj adresami; aktywuj, aby dodawać adresy i zarządzać nimi w ustawieniach Chrome</translation>
 <translation id="1165039591588034296">Błąd</translation>
@@ -637,6 +638,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2105838220373099643">Gry RPG</translation>
 <translation id="2107021941795971877">Elementy pomocnicze drukowania</translation>
 <translation id="2108755909498034140">Uruchom ponownie komputer</translation>
+<translation id="2109845311767915560">Udostępniona grupa kart</translation>
 <translation id="2111166930115883695">Naciśnij spację, by zacząć grać</translation>
 <translation id="2113977810652731515">Karta</translation>
 <translation id="2114841414352855701">Ignorowana, ponieważ jest zastąpiona przez <ph name="POLICY_NAME" />.</translation>
@@ -1105,6 +1107,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="297173220375858963">Komputerowy skład tekstu</translation>
 <translation id="2972581237482394796">&amp;Ponów</translation>
 <translation id="2974468223369775963">Nie udało się zapisać tego numeru IBAN na Twoim koncie Google. Zamiast tego został on zapisany w Chrome na tym urządzeniu. Chrome poprosi Cię o to ponownie, gdy następnym razem użyjesz tego numeru IBAN.</translation>
+<translation id="297667759942911166">Współpraca w grupach kart</translation>
 <translation id="2977665033722899841">Obecnie wybrany wiersz to <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">Zablokować klawiaturę i jej używać</translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1968,6 +1971,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4434045419905280838">Pop-upy i przekierowania</translation>
 <translation id="443673843213245140">Korzystanie z serwera proxy jest wyłączone, ale podano konfigurację proxy.</translation>
 <translation id="4438821706955556403">Typowa cena</translation>
+<translation id="444116852243722675">Otwórz wszystkie (<ph name="ITEMS" />)</translation>
 <translation id="4441832193888514600">Ignorowana, ponieważ tę zasadę można skonfigurować wyłącznie jako dotyczącą użytkowników i obowiązującą w chmurze.</translation>
 <translation id="4445133368066241428">Popularne tematy</translation>
 <translation id="4445964943162061557">Jest to funkcja eksperymentalna, która nie zawsze działa prawidłowo.</translation>
@@ -2063,6 +2067,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4661556981531699496">Zwierzęta dzikie i domowe</translation>
 <translation id="4661868874067696603">Wyszukaj więcej opcji zakupu</translation>
 <translation id="4663373278480897665">Zezwolono na dostęp do kamery</translation>
+<translation id="4664084870155869900">Następnym razem uzupełnij automatycznie. Karta została zapisana na urządzeniu.</translation>
 <translation id="466561305373967878">Gry planszowe</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Rzeczywistość wirtualna</translation>
@@ -2088,6 +2093,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4704745399240123930">Karty nieakceptowane przez tego sprzedawcę (np. karty wirtualne) są wyłączone</translation>
 <translation id="4708268264240856090">Połączenie zostało przerwane</translation>
 <translation id="4708276642004148190">Dostarczanie i uzdatnianie wody</translation>
+<translation id="4711628883879888561">Współpraca w grupie kart</translation>
 <translation id="471880041731876836">Nie masz pozwolenia, by wejść na tę stronę</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Uruchom Diagnostykę sieci systemu Windows<ph name="END_LINK" /></translation>
@@ -2634,6 +2640,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5675809467256309336">Muzyka dance i elektroniczna</translation>
 <translation id="5675959228867414813">Pokaż według daty</translation>
 <translation id="567604591393105935">Plansza dolna Handel otwarta do połowy wysokości</translation>
+<translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Folia</translation>
 <translation id="5680642791693447368">Thrillery i filmy kryminalne</translation>
 <translation id="568292603005599551">Pozycja X obrazu</translation>
@@ -2671,6 +2678,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="573555826359077410">Przycisk Utwórz formularz; aktywuj, aby szybko utworzyć nowy formularz w Formularzach Google</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Zapisywanie karty na koncie Google}few{Zapisywanie kart na koncie Google}many{Zapisywanie kart na koncie Google}other{Zapisywanie kart na koncie Google}}</translation>
 <translation id="5738385766833540397">Zarządzaj sposobami otrzymywania alertów o obniżkach cen produktów, które śledzisz</translation>
+<translation id="573974402615125334">Aby udostępniać grupy kart, dołączać do nich i używać ich do współpracy, zsynchronizuj historię i karty</translation>
 <translation id="5740911612628596808">Koperta C9</translation>
 <translation id="5742806904559466333">Bary, kluby i życie nocne</translation>
 <translation id="5743684619253032786">Produkty do pielęgnacji paznokci</translation>
@@ -2692,6 +2700,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="578305955206182703">Bursztynowy</translation>
 <translation id="5783700460098783980">Walizki i akcesoria podróżne</translation>
 <translation id="57838592816432529">Wycisz</translation>
+<translation id="5783922175933467571">Link do grupy kart <ph name="TAB_GROUP_DISPLAY_NAME" /> wygaśnie za 48 godzin</translation>
 <translation id="5784606427469807560">Podczas potwierdzania karty wystąpił problem. Sprawdź połączenie internetowe i spróbuj ponownie.</translation>
 <translation id="5785756445106461925">Ta strona zawiera także niezabezpieczone zasoby. Podczas przesyłania mogą je wyświetlić inni użytkownicy, a osoby atakujące mogą je zmodyfikować, by zmienić wygląd strony.</translation>
 <translation id="5793317771769868848">Ta forma płatności zostanie usunięta z tego urządzenia</translation>
@@ -2764,6 +2773,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5930147475897662863">Aby korzystać z funkcji Pomóż mi napisać, włącz to ustawienie</translation>
 <translation id="593102073240001326">Wskazówki, zrób to sam i porady ekspertów</translation>
 <translation id="5932224571077948991">Na tej stronie wyświetlają się uciążliwe lub wprowadzające w błąd reklamy</translation>
+<translation id="5933597524153120073">Otwórz wszystkie (<ph name="ITEMS" />) w nowym oknie</translation>
 <translation id="5937560539988385583">Strona została przetłumaczona</translation>
 <translation id="5938153366081463283">Dodaj kartę wirtualną</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3871,6 +3881,7 @@ Dodatkowe informacje:
 <translation id="7865448901209910068">Optymalna szybkość</translation>
 <translation id="7870281855125116701">Znaleziono rabat</translation>
 <translation id="7871445724586827387">Zmień hasło do konta Google</translation>
+<translation id="787226752901403048">Zaloguj się w Chrome, aby udostępniać grupy kart i do nich dołączać oraz wspólnie pracować nad pomysłami</translation>
 <translation id="7877007680666472091">identyfikatory treści chronionych</translation>
 <translation id="7878562273885520351">Ktoś mógł poznać Twoje hasło</translation>
 <translation id="7882421473871500483">Brązowy</translation>
@@ -4325,6 +4336,7 @@ Dodatkowe informacje:
 <translation id="8702965365666568344">Taśma montażowa</translation>
 <translation id="8703575177326907206">Połączenie z witryną <ph name="DOMAIN" /> nie jest szyfrowane.</translation>
 <translation id="8705331520020532516">Numer seryjny</translation>
+<translation id="8706806585855470492">Będziesz mieć możliwość udostępniania grup kart, dołączania do nich i używania ich do współpracy</translation>
 <translation id="8708134712139312373">Może prosić o zgodę na połączenie z urządzeniami Bluetooth</translation>
 <translation id="8710842507289500830">Styl czcionki</translation>
 <translation id="8712637175834984815">OK</translation>
@@ -4467,6 +4479,7 @@ Dodatkowe informacje:
 <translation id="8975263830901772334">Nazwy drukowanych plików</translation>
 <translation id="8982884016487650216">PDF został wczytany</translation>
 <translation id="8983369100812962543">Teraz możesz zmienić rozmiar aplikacji</translation>
+<translation id="8985112471026018799">Zapisz kartę, aby szybciej płacić</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby wyświetlić historię przeglądania w Chrome, naciśnij Tab, a potem Enter</translation>
 <translation id="8987663052629670333">Usługi wywoływania zdjęć</translation>
 <translation id="8987927404178983737">Miesiąc</translation>
@@ -4533,6 +4546,7 @@ Dodatkowe informacje:
 <translation id="9090993752571911635">Dostawcy usług internetowych</translation>
 <translation id="9093723786115107672">Bielizna nocna</translation>
 <translation id="9094544726794842788">Opcja Nie lubię otwiera formularz, za pomocą którego możesz przesłać szczegółową opinię o tym, dlaczego te wyniki Ci się nie podobają</translation>
+<translation id="9094809883254050729">Następnym razem uzupełnij automatycznie. Podczas zapisywania karta jest szyfrowana.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, naciśnij Tab, a potem Enter, aby ustawić Chrome jako domyślną przeglądarkę systemową w ustawieniach iOS</translation>
 <translation id="9101450247048146228">Używanie kamery i poruszanie nią (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Taca 1</translation>

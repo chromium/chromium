@@ -828,7 +828,6 @@
 <translation id="4835385943915508971">Chrome ला विनंती केलेल्या संसाधनांचा ॲक्सेस नाही.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{नवीन बॅकग्राउंड टॅब गट म्हणून <ph name="TAB_COUNT_ONE" /> टॅबचा टॅब गट, <ph name="COLOR_NAME" /> रंग रिस्टोअर करा.}other{नवीन बॅकग्राउंड टॅब गट म्हणून <ph name="TAB_COUNT_MANY" /> टॅबचा टॅब गट, <ph name="COLOR_NAME" /> रंग रिस्टोअर करा.}}</translation>
 <translation id="4837753911714442426">पेज प्रिंट करण्‍यासाठी पर्याय उघडा</translation>
-<translation id="4842092870884894799">पासवर्ड निर्मिती पॉपअप दाखवत आहे</translation>
 <translation id="4844633725025837809">अतिरिक्त सुरक्षिततेसाठी, पासवर्ड हे Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केले जाण्यापूर्वी तुमच्या डिव्हाइसवर एंक्रिप्ट करा</translation>
 <translation id="4850886885716139402">पहा</translation>
 <translation id="4852014461738377247">साइन इन करत आहे\u2026</translation>
@@ -1003,6 +1002,7 @@
 <translation id="5665379678064389456"><ph name="APP_NAME" /> मध्ये इव्हेंट तयार करा</translation>
 <translation id="5680616253592639556">माहिती उपलब्ध नाही</translation>
 <translation id="5683547024293500885">Chrome अपडेट तपासू शकत नाही</translation>
+<translation id="5683916195767086779">टॅब गट</translation>
 <translation id="5686790454216892815">फाइलचे नाव खूप लांब आहे</translation>
 <translation id="5687606994963670306">Chrome हे ३० दिवसांपेक्षा जुन्या असलेल्या साइट ऑटो-डिलीट करते. तुम्ही पुन्हा भेट दिलेली साइट सूचीमध्ये परत दिसू शकते किंवा तुम्ही तुमच्यासाठी जाहिराती सुचवण्यापासून साइट ब्लॉक करू शकता. <ph name="BEGIN_LINK" />Chrome मध्ये तुमची जाहिरातीसंबंधित गोपनीयता व्यवस्थापित करणे<ph name="END_LINK" /> याविषयी अधिक जाणून घ्या.</translation>
 <translation id="569536719314091526">अधिक पर्याय बटणावरून या पेजचे कोणत्याही भाषेत भाषांतर करा</translation>

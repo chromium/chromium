@@ -974,6 +974,7 @@
 <translation id="4285498937028063278">Сонголтоос гаргах</translation>
 <translation id="428715201724021596">Профайлд холбогдож байна. Үүнд хэдэн минут шаардлагатай байж магадгүй.</translation>
 <translation id="4287250812980588583">Chrome-н цонх</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Микрофоны дууны түвшнийг <ph name="APP_NAME" /> хянадаг}other{Микрофоны дууны түвшнийг # апп хянадаг}}</translation>
 <translation id="4294319844246081198">Өглөөний мэнд <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Бүх <ph name="COUNT" /> мэдэгдлийг устгах</translation>
 <translation id="4300272766492248925">Апп нээх</translation>

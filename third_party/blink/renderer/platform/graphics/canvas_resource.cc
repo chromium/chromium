@@ -211,8 +211,7 @@ bool CanvasResource::PrepareTransferableResource(
 
   *out_resource = viz::TransferableResource::Make(
       client_shared_image, GetTransferableResourceSource(),
-      GetSyncTokenWithOptionalVerification(needs_verified_synctoken),
-      /*override=*/{.is_overlay_candidate = IsOverlayCandidate()});
+      GetSyncTokenWithOptionalVerification(needs_verified_synctoken));
 
   out_resource->hdr_metadata = GetHDRMetadata();
 
@@ -367,8 +366,6 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
                      color_space),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       is_accelerated_(is_accelerated),
-      is_overlay_candidate_(
-          shared_image_usage_flags.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)),
       supports_display_compositing_(
           shared_image_usage_flags.Has(gpu::SHARED_IMAGE_USAGE_DISPLAY_READ)),
       use_oop_rasterization_(is_accelerated &&
@@ -643,12 +640,14 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
   scoped_refptr<StaticBitmapImage> image;
   auto client_shared_image = GetClientSharedImage();
 
+  const bool is_overlay_candidate =
+      client_shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   // If its cross thread, then the sync token was already verified.
   image = AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       std::move(client_shared_image), GetSyncToken(), texture_id_for_image,
       image_info, context_provider_wrapper_, owning_thread_ref_,
       owning_thread_task_runner_, std::move(release_callback),
-      supports_display_compositing_, is_overlay_candidate_);
+      supports_display_compositing_, is_overlay_candidate);
 
   DCHECK(image);
   return image;
@@ -843,11 +842,13 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
       },
       base::RetainedRef(this));
 
+  const bool is_overlay_candidate =
+      client_si_->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       client_si_, GetSyncToken(), /*shared_image_texture_id=*/0u,
       CreateSkImageInfo(), context_provider_wrapper_, owning_thread_ref_,
       owning_thread_task_runner_, std::move(release_callback),
-      /*supports_display_compositing=*/true, is_overlay_candidate_);
+      /*supports_display_compositing=*/true, is_overlay_candidate);
 }
 
 const gpu::SyncToken
@@ -899,8 +900,6 @@ ExternalCanvasResource::ExternalCanvasResource(
       sync_token_(sync_token),
       resource_source_(resource_source),
       hdr_metadata_(hdr_metadata),
-      is_overlay_candidate_(
-          client_si_->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)),
       release_callback_(std::move(out_callback)) {
   CHECK(client_si_);
   DCHECK(!release_callback_ || sync_token_.HasData());
@@ -975,11 +974,13 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
       },
       base::RetainedRef(this));
 
+  const bool is_overlay_candidate =
+      back_buffer_shared_image_->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       back_buffer_shared_image_, GetSyncToken(), shared_texture_id, image_info,
       context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
       std::move(release_callback), /*supports_display_compositing=*/true,
-      /*is_overlay_candidate=*/true);
+      /*is_overlay_candidate=*/is_overlay_candidate);
 }
 
 scoped_refptr<gpu::ClientSharedImage>

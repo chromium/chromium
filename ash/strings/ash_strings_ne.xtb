@@ -140,6 +140,7 @@
 <translation id="1415846719612499304">नेटवर्कको सूची देखाउनुहोस्। <ph name="STATE_TEXT" />।</translation>
 <translation id="1419738280318246476">सूचनासम्बन्धी कारबाही गर्न डिभाइस अनलक गर्नुहोस्</translation>
 <translation id="1420408895951708260">रात्रि प्रकाश टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">सुझाइएको समूह</translation>
 <translation id="1426410128494586442">हो</translation>
 <translation id="1435537621343861112">स्पिच-टु-टेक्स्ट सुरु गर्न मिल्दैन। तपाईंको माइक अफ छ।</translation>
 <translation id="1445031758921122223">फेस कन्ट्रोलसम्बन्धी फाइलहरू डाउनलोड गरिएका छन्</translation>
@@ -243,12 +244,14 @@
 <translation id="17722141032474077">हिसाबहरू</translation>
 <translation id="1774796056689732716">पात्रो, <ph name="CURRENT_MONTH_YEAR" />, हाल चयन गरिएको मिति: <ph name="DATE" />।</translation>
 <translation id="178347895271755507">आफ्नो फोनमा भएका हालसालैका फोटो, मिडिया तथा सूचनाहरू हेर्ने सुविधा सेटअप गर्नुहोस्</translation>
+<translation id="1785317913592722944">यो सामग्री सुझाइएको समूहबाट हटाउनुहोस्</translation>
 <translation id="1786487376942610288">Picture-in-picture विन्डोको अधिकतम वा हालको आकारका बिचमा अदलबदल गर्नुहोस्</translation>
 <translation id="1787955149152357925">अफ छ</translation>
 <translation id="1796561540704213354">तपाईंले हेर्नुभएका पेज र हाल खोलिएका पेजलगायतका वेबसाइटहरू</translation>
 <translation id="179842970735685253">Google का सेवाका सर्तहरू</translation>
 <translation id="1805407494113167797">फोकस साउन्डहरू प्ले गर्न सकिएन</translation>
 <translation id="181103072419391116">सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
+<translation id="1815039896005206046">तपाईंले थम्ज डाउन बटनमा क्लिक गर्नुभयो भने तपाईंलाई सुझाइएको यो समूह मन परेन भन्ने अर्थ लाग्छ</translation>
 <translation id="1816896987747843206">यसले क्यामेरा प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा प्रयोग गर्ने अनुमति दिन्छ</translation>
 <translation id="1823873187264960516">इथरनेट: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">लोकेसन प्रयोग गर्ने अनुमति दिनुहोस्</translation>
@@ -390,6 +393,7 @@
 <translation id="2369165858548251131">चिनियाँ भाषामा "नमस्ते" कसरी भनिन्छ</translation>
 <translation id="2370971919968699910">यसो गर्दा प्रयोग हुने डेटाबापत शुल्क तिर्नु पर्ने हुन सक्छ।
 <ph name="DEVICECOUNT" /> वटा डिभाइस कनेक्ट गरिएका छन्।</translation>
+<translation id="2383521554963939360">एप तथा ट्याब समूहहरू</translation>
 <translation id="2386292613071805067">पेजमा भएका सबै सामग्री चयन गर्नुहोस्</translation>
 <translation id="2389423187722941333">Gemini टगल गर्नुहोस्</translation>
 <translation id="2392659840443812875">कुनै पनि हटस्पट उपलब्ध छैन। तपाईंको डिभाइस नजिकै छ र त्यसमा ब्लुटुथ अन गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
@@ -920,6 +924,7 @@
 <translation id="4151054805501931758">पोर्ट्रेट टच-अप</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% ब्याट्री बाँकी छ (लगभग <ph name="TIME_LEFT" />)।
 ब्याट्री अझ बढी टिकाउन केही सुविधाहरू सीमित गरिएका छन्।</translation>
+<translation id="4158003972857765638">नयाँ डेस्कमा व्यवस्थित गर्नुहोस्</translation>
 <translation id="4160919062868802509">एकभन्दा बढी अडियो स्रोतहरू पत्ता लागेका छन्</translation>
 <translation id="416245495747357243">पूरा भयो!</translation>
 <translation id="4165275524535002941">यो केबल डिस्प्लेहरूमा जोड्न मिल्दैन</translation>
@@ -968,6 +973,7 @@
 <translation id="4285498937028063278">अनपिन गर्नुहोस्</translation>
 <translation id="428715201724021596">प्रोफाइलमा कनेक्ट गरिँदै छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
 <translation id="4287250812980588583">Chrome को विन्डो</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> ले माइकको भोल्युम नियन्त्रण गरिरहेको छ}other{# वटा एपले माइकको भोल्युम नियन्त्रण गरिरहेका छन्}}</translation>
 <translation id="4294319844246081198">नमस्ते <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">सबै <ph name="COUNT" /> सूचनाहरू हटाउनुहोस्</translation>
 <translation id="4300272766492248925">एप खोल्नुहोस्</translation>
@@ -984,6 +990,7 @@
 <translation id="4322742403972824594">Ctrl + Alt + अप एरो किबोर्ड सर्टकट परिवर्तन गरिएको छ। Home की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + लेफ्ट एरो थिच्नुहोस्।</translation>
 <translation id="4324840740119394760">यसले <ph name="APP_NAME" /> र क्यामेरा प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा प्रयोग गर्ने अनुमति दिन्छ</translation>
 <translation id="4327147325944669226">गेम रेकर्ड गर्नुहोस्</translation>
+<translation id="4329076911374908740">योभन्दा बढी समूह सेभ गर्न सकिँदैन।</translation>
 <translation id="4338109981321384717">म्याग्निफाइङ्ग ग्लास</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, म्युट गरिएको</translation>
 <translation id="4351244548802238354">सम्बाद बन्द गर्नुहोस्</translation>
@@ -1264,6 +1271,7 @@
 <translation id="5245201184978705914">ट्रान्सक्रिप्ट बनाउन सकिएन</translation>
 <translation id="5251174953851719648">सामग्री रिफ्रेस गर्नुहोस्</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> नामक डिभाइसमा कनेक्ट गरिएको छ, <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ</translation>
+<translation id="5256939106029293271">माइक जाँच्नुहोस्</translation>
 <translation id="5258528442992323769">कुनै पनि डेस्क सेभ गरिएको छैन</translation>
 <translation id="5260676007519551770">डेस्क ४</translation>
 <translation id="5265391159779542051">परिणामहरू लोड गरिए</translation>
@@ -1421,6 +1429,7 @@
 <translation id="5745612484876805746">रात्रि प्रकाश सूर्यास्तको बेला स्वतः सक्रिय हुन्छ</translation>
 <translation id="5750765938512549687">ब्लुटुथ अफ छ</translation>
 <translation id="5758114525425072423">फोकस मोड सुरु गर्नुहोस्। <ph name="FOCUS_DURATION" /> को टाइमर सेट गरिएको छ।</translation>
+<translation id="5759522586053040964">अन्य मान्छेहरूलाई तपाईंको आवाज कस्तो सुनिने छ भन्ने कुरा थाहा पाउनुहोस्। माइक जाँच्न छाड्न "जाँच्नुहोस्" आइकनमा क्लिक गर्नुहोस् वा भिडियो कलसम्बन्धी प्यानल बन्द गर्नुहोस्।</translation>
 <translation id="5760866832697883462"><ph name="NAME" /> कनेक्ट गर्नुहोस्</translation>
 <translation id="5762420912707163638">मार्कर टगल गर्नुहोस्। <ph name="STATE_TEXT" /> ट्र्याकप्याड, टचस्क्रिन वा स्टाइलस प्रयोग गरी स्क्रिनमा चित्र बनाउनुहोस्।</translation>
 <translation id="576341972084747908">तपाईं <ph name="FILENAME" /> नामक जोखिमपूर्ण फाइल डाउनलोड गर्दै हुनुहुन्छ</translation>
@@ -1939,6 +1948,7 @@
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">सिर्जना गर्नुहोस्</translation>
 <translation id="7526573455193969409">नेटवर्कको अनुगमन गरिने सम्भावना छ</translation>
+<translation id="7534543072325030705">तपाईंले थम्ज अप बटनमा क्लिक गर्नुभयो भने तपाईंलाई सुझाइएको यो समूह मन पर्‍यो भन्ने अर्थ लाग्छ</translation>
 <translation id="7536035074519304529">IP एड्रेस: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">बायाँ विन्डो मिलाउनुहोस्</translation>
 <translation id="7543399541175347147">Linux एप र इन्कोग्निटो विन्डो हाल प्रयोग गर्न मिल्दैन। अन्य एपहरू सेभ गरिने छन्।</translation>
@@ -2103,6 +2113,7 @@
 <translation id="8004512796067398576">बृद्धि</translation>
 <translation id="8005527720597583355">फोकस मोडको सत्र सुरु गर्नुहोस्</translation>
 <translation id="8015361438441228492">कार्य सम्पादन गर्न सकिएन।</translation>
+<translation id="8027187124910699148">सुझाइएको समूह सूचारु गर्नुहोस्</translation>
 <translation id="802782383769312836">अघिल्लो डेस्क: <ph name="DESK_NAME" />। <ph name="DESK_COUNT" /> वटामध्ये <ph name="DESK_INDEX" /> औँ डेस्क।</translation>
 <translation id="8029247720646289474">हटस्पटमा कनेक्ट गर्न सकिएन</translation>
 <translation id="8029629653277878342">थप सुरक्षाका लागि PIN वा पासवर्ड चाहिन्छ</translation>
@@ -2211,6 +2222,7 @@
 <translation id="8426708595819210923">नमस्ते <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">सेटिङहरू</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> देखि <ph name="KEY_TWO" /> सम्म थिच्नुहोस्</translation>
+<translation id="8429547770382807369">यो समूह पछिका लागि सेभ गर्नुहोस्</translation>
 <translation id="8433186206711564395">नेटवर्क सम्बन्धी सेटिङहरू</translation>
 <translation id="8433977262951327081">सेल्फमा इनपुट विकल्पहरूको मेनु बबल देखाउने सर्टकट परिवर्तन भएको छ। कृपया <ph name="OLD_SHORTCUT" /> को सट्टामा  <ph name="NEW_SHORTCUT" /> प्रयोग गर्नुहोस्।</translation>
 <translation id="8437311513256731931">फिडब्याक टुल खोल्नुहोस्</translation>
@@ -2219,6 +2231,7 @@
 <translation id="8446884382197647889">थप जान्नुहोस्</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">'सेलेक्ट टु स्पिक' बन्द गर्नुहोस्</translation>
+<translation id="8466665972451889002"><ph name="GROUP_NAME" /> मा भएका सामग्री देखाउनुहोस्</translation>
 <translation id="8468806060683421065"><ph name="DUE_DATE_AND_TIME" /> भित्र सम्पन्न हुनु पर्ने</translation>
 <translation id="847056008324733326">प्रदर्शनको स्केलका सेटिङहरू</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> सँग <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> छ।</translation>
@@ -2241,6 +2254,7 @@
 <translation id="8551588720239073785">मिति र समयसम्बन्धी सेटिङ</translation>
 <translation id="8553395910833293175">सबै डेस्कलाई काम जिम्मा दिइसकिएको छ।</translation>
 <translation id="8555757996376137129">हालको डेस्क हटाउनुहोस्</translation>
+<translation id="8558521694042102707">जेनेरेटिभ AI ले मान्छे तथा अन्य कुराका बारेमा गलत जानकारी देखाउन सक्छ। त्यसैले यसले दिने जवाफ सही छ कि छैन फेरि जाँच्नुहोस्।</translation>
 <translation id="8559845965695780508"><ph name="USER" /> ले सम्पादन गर्नुभएको</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">तपाईंले अपनाई हेर्न सक्ने केही सुझाव यस प्रकार छन्</translation>
@@ -2263,6 +2277,7 @@
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="8638637208069328956">माइक्रोफोन अन/अफ गर्नुहोस्</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> बाँकी छ</translation>
+<translation id="8640470573049727749">समूहसम्बन्धी सबै सुझाव लुकाउनुहोस्</translation>
 <translation id="8641510901370802679"><ph name="ANSWER_TYPE" /> सम्बन्धी जानकारी देखाइँदै छ</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> टाइमर</translation>
 <translation id="8647931990447795414">कुनै व्यक्ति थप्न Family Link बाट प्राप्त अभिभावकको एक्सेस कोड हाल्नुहोस्</translation>
@@ -2345,6 +2360,7 @@
 <translation id="8905919797434099235">(शीर्षक छैन)</translation>
 <translation id="890616557918890486">स्रोत परिवर्तन गर्नुहोस्</translation>
 <translation id="8909138438987180327">ब्याट्री <ph name="PERCENTAGE" /> प्रतिशत छ।</translation>
+<translation id="8916866375277139011"><ph name="GROUP_NAME" /> मा भएका सामग्री लुकाउनुहोस्</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google सहायकले यो भाषा बोल्दैन।</translation>
 <translation id="8926951137623668982">सेल्फ सधैँ लुकेको हुन्छ</translation>

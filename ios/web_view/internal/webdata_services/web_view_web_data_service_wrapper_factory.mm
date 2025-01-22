@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web_view/internal/webdata_services/web_view_web_data_service_wrapper_factory.h"
+#import "ios/web_view/internal/webdata_services/web_view_web_data_service_wrapper_factory.h"
 
-#include "base/check.h"
-#include "base/files/file_path.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
-#include "base/no_destructor.h"
-#include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/signin/public/webdata/token_web_data.h"
-#include "components/sync/model/syncable_service.h"
-#include "components/webdata_services/web_data_service_wrapper.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
-#include "ios/web_view/internal/app/application_context.h"
-#include "ios/web_view/internal/web_view_browser_state.h"
+#import "base/check.h"
+#import "base/files/file_path.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
+#import "base/no_destructor.h"
+#import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/signin/public/webdata/token_web_data.h"
+#import "components/sync/model/syncable_service.h"
+#import "components/webdata_services/web_data_service_wrapper.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
+#import "ios/web_view/internal/app/application_context.h"
+#import "ios/web_view/internal/web_view_browser_state.h"
 
 namespace ios_web_view {
 

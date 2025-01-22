@@ -169,6 +169,7 @@ Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä d
 <translation id="5639704535586432836">Avaa Asetukset &gt; Tietosuoja &gt; Kamera &gt; Google Chrome ja ota kamera käyttöön.</translation>
 <translation id="5642200033778930880">Google Chrome ei voi käyttää kameraa jaetussa näkymässä.</translation>
 <translation id="5661521615548540542">Google Salasanat ei voinut tarkistaa kaikkia salasanoja. Yritä myöhemmin uudelleen.</translation>
+<translation id="5681291952421236520">Chromen päälle/pois</translation>
 <translation id="5690398455483874150">{count,plural, =1{Nyt näytetään 1 Chrome-ikkuna}other{Nyt näytetään {count} Chrome-ikkunaa}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Aseta Chrome oletusselaimeksi</translation>
@@ -204,6 +205,7 @@ Odota muutama minuutti ennen tilin vaihtamista. Jos vaihdat tiliä nyt, tämä d
 <translation id="6484712497741564393">Kirjautuneena tilillä <ph name="EMAIL" />.
 
 Datasi salataan tunnuslauseella. Lisää se, niin voit käyttää ja tallentaa Chrome-dataa Google-tililläsi.</translation>
+<translation id="6533470733797826516">Kirjaudu sisään nopeammin Chromen automaattisen täytön avulla</translation>
 <translation id="6545449117344801102">Chrome tunnistaa osoitteet ja tarjoaa Google Mapsin avulla reittiohjeita ja paikallisia tietoja.</translation>
 <translation id="6634107063912726160">Kun kirjaudut ulos, Chrome ei synkronoi uutta dataa Google-tilillesi. Aiemmin synkronoitu data säilytetään tilillä.</translation>
 <translation id="6636941099779251629">Organisaatiosi edellyttää sisäänkirjautumista, jotta voit käyttää Chromea. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>

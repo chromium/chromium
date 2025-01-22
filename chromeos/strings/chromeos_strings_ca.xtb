@@ -564,6 +564,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ressenyes)</translation>
 <translation id="3748026146096797577">Desconnectat</translation>
 <translation id="3749289110408117711">Nom del fitxer</translation>
+<translation id="3763034084412196440">Ajusta el volum</translation>
 <translation id="3767737419527918477">Cerca fitxers de gravacions</translation>
 <translation id="3771294271822695279">Fitxers de vídeo</translation>
 <translation id="3780740315729837296">Assigna una tecla del teclat</translation>
@@ -1218,6 +1219,7 @@
 <translation id="6747035363363040417">d'estil neutre</translation>
 <translation id="6747215703636344499">S'ha aturat: safata de sortida plena</translation>
 <translation id="6749473226660745022">Fotos</translation>
+<translation id="6752960629591143793">Selecciona l'idioma de transcripció i baixa'l a Configuració o al menú <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="6753452347192452143">El dispositiu és un ordinador.</translation>
 <translation id="6756731097889387912">No s'ha pogut cancel·lar l'escaneig</translation>
 <translation id="6760706756348334449">Abaixa el volum</translation>

@@ -55,7 +55,6 @@
 <translation id="1698376642261615901">Google Chrome adalah browser web yang menjalankan halaman dan aplikasi web secepat kilat. Cepat, stabil, dan mudah digunakan. Jelajahi web secara lebih aman dengan perlindungan terhadap software perusak dan phishing yang disertakan dalam Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome akan diluncurkan ulang dalam 1 jam}other{Chrome akan diluncurkan ulang dalam # jam}}</translation>
 <translation id="1722488837206509557">Tindakan ini akan memungkinkan Anda memilih dari perangkat yang tersedia dan menampilkan konten di perangkat tersebut.</translation>
-<translation id="1734234790201236882">Chrome akan menyimpan sandi ini di Akun Google. Anda tidak perlu mengingatnya.</translation>
 <translation id="1786003790898721085">Pastikan Anda login ke Chrome di <ph name="TARGET_DEVICE_NAME" /> Anda, lalu coba kirimkan lagi.</translation>
 <translation id="1786044937610313874">Pintasan terbuka di Chrome</translation>
 <translation id="178701303897325119">Ekstensi ini tidak lagi didukung. Chrome merekomendasikan agar Anda menghapusnya.</translation>
@@ -323,6 +322,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="4997044641749333913">Chrome dapat menonaktifkan tab ini untuk meningkatkan pengalaman penjelajahan dan menjaga agar performanya tetap cepat.</translation>
 <translation id="5003967926796347400">Klik “Pengelola Sandi Google”</translation>
+<translation id="5114340746415930644">Masukkan frasa sandi untuk menggunakan dan menyimpan data Chrome di akun Anda, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Login ke Chrome saat Anda login ke layanan Google lainnya</translation>
 <translation id="5126049312684316860">Chrome melakukan pramuat lebih banyak halaman yang mungkin akan Anda buka, agar halaman tersebut dimuat lebih cepat saat Anda membukanya</translation>
 <translation id="5132929315877954718">Temukan aplikasi, game, ekstensi, dan tema yang hebat untuk Google Chrome.</translation>
@@ -470,9 +470,6 @@
 <translation id="7024536598735240744">Error ekstrak: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Penginstalan Terhenti.</translation>
 <translation id="7025800014283535195">Anda dapat berpindah-pindah profil Chrome di sini</translation>
-<translation id="7036251913954633326">Jika Anda hanya ingin menggunakan akun ini sekali, Anda dapat menggunakan <ph name="GUEST_LINK_BEGIN" />mode Tamu<ph name="GUEST_LINK_END" /> di browser Chrome. Jika Anda ingin menambahkan akun untuk orang lain, <ph name="LINK_BEGIN" />tambahkan pengguna baru<ph name="LINK_END" /> ke <ph name="DEVICE_TYPE" />.
-
-Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini. Anda dapat mengelola Akun Google Anda di <ph name="SETTINGS_LINK_BEGIN" />Setelan<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7048502283602470098">Pelajari AI</translation>
 <translation id="7059914902409643750">Sesuaikan Chrome dengan Selera Anda</translation>
 <translation id="7071827361006050863">Chrome akan segera menghapus data penjelajahan</translation>

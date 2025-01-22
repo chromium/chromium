@@ -40,6 +40,7 @@ class PageActionModelInterface {
       const std::optional<std::u16string>& override_text) = 0;
 
   virtual bool GetVisible() const = 0;
+  virtual bool GetShowSuggestionChip() const = 0;
   virtual const ui::ImageModel& GetImage() const = 0;
   virtual const std::u16string GetText() const = 0;
   virtual const std::u16string GetTooltipText() const = 0;
@@ -68,6 +69,7 @@ class PageActionModel : public PageActionModelInterface {
 
   // The model distills all visibility properties into a single result.
   bool GetVisible() const override;
+  bool GetShowSuggestionChip() const override;
 
   const ui::ImageModel& GetImage() const override;
   const std::u16string GetText() const override;
@@ -79,6 +81,10 @@ class PageActionModel : public PageActionModelInterface {
 
   // Represents whether a feature requested to show this page action.
   bool show_requested_ = false;
+
+  // Represents whether the page action associated with this model should show
+  // as suggestion chip.
+  bool show_suggestion_chip_ = false;
 
   // Properties taken from ActionItem.
   bool action_item_enabled_ = false;

@@ -129,7 +129,6 @@
 <translation id="1079242569060319448">שכחת את קוד האימות?</translation>
 <translation id="1079285777677001938">יכול להיות שתכונות באתרים מסוימים לא יפעלו.</translation>
 <translation id="1079766198702302550">תמיד לחסום גישה למצלמה</translation>
-<translation id="1080365971383768617">סיסמאות בכל המכשירים</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – כרטיסייה אחת}one{<ph name="GROUP_TITLE" /> – # כרטיסיות}two{<ph name="GROUP_TITLE" /> – # כרטיסיות}other{<ph name="GROUP_TITLE" /> – # כרטיסיות}}</translation>
 <translation id="1082214733466244292">פונקציות מסוימות במכשיר הזה נחסמו על ידי מנהל המערכת</translation>
 <translation id="1082398631555931481">‏<ph name="THIRD_PARTY_TOOL_NAME" /> רוצה לשחזר את הגדרות Chrome לברירת המחדל המקורית שלהן. הפעולה הזו תגרום לאיפוס דף הבית, דף הכרטיסייה החדשה ומנוע החיפוש, תשבית את התוספים, ותבטל את ההצמדה של כל הכרטיסיות. כתוצאה מכך יימחקו גם נתונים אחרים מאחסון זמני ומהקובץ השמור, כמו נתונים של קובצי cookie, תוכן ואתרים.</translation>
@@ -1103,7 +1102,7 @@
 <translation id="1751335846119670066">עזרה בקריאה</translation>
 <translation id="17513872634828108">כרטיסיות פתוחות</translation>
 <translation id="175196451752279553">פ&amp;תיחה מחדש של הכרטיסייה הסגורה</translation>
-<translation id="1752557850776261983">הכניסה לחשבון בבדיקה…</translation>
+<translation id="1752557850776261983">פרטי הכניסה נבדקים…</translation>
 <translation id="1753067873202720523">‏ייתכן שמכשיר Chromebook שלך לא ייטען בזמן שהוא מופעל.</translation>
 <translation id="1753557900380512635">עיצוב פנים</translation>
 <translation id="1753905327828125965">עם המבקרים הרבים ביותר</translation>
@@ -2385,6 +2384,7 @@
 <translation id="2638662041295312666">תמונת המשתמש</translation>
 <translation id="2640299212685523844">‏שימוש ב-GTK</translation>
 <translation id="264083724974021997">התחברות לטלפון – תיבת דו-שיח</translation>
+<translation id="2641098199809442625">הסיסמה שלך לא עודכנה, אבל עדיין אמורה להיות לך אפשרות לגשת לאתר באמצעות הסיסמה הישנה.</translation>
 <translation id="2642111877055905627">כדורגל</translation>
 <translation id="2642206811783203764">תמיד באתר <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">תמיד אפשר למחוק את נתוני המדידה של ביצועי המודעות על ידי מחיקה של נתוני הגלישה</translation>
@@ -3033,6 +3033,7 @@
 <translation id="310297983047869047">לשקף הקודם</translation>
 <translation id="3103451787721578293">יש להזין סיבה להעלאת הנתונים האלה:</translation>
 <translation id="3103512663951238230">‏‫Alt + לחיצה</translation>
+<translation id="3104763887980088552">יומן פעילות</translation>
 <translation id="3104948640446684649">‏שליחת מידע לגבי אופן השימוש בנתונים וניתוח הביצועים. המכשיר הזה שולח עכשיו אל Google נתוני אבחון, נתוני מכשיר ונתוני שימוש באפליקציות באופן אוטומטי. הנתונים האלה יעזרו לשמור על היציבות של המערכת ושל האפליקציות ולבצע שיפורים אחרים. חלק מהנתונים הנצברים יעזרו גם לשפר את האפליקציות של Google ויעזרו לשותפים של Google, כמו מפתחים של Android. אם ההגדרה 'פעילות באפליקציות ובאתרי אינטרנט נוספים' הופעלה, יכול להיות שהנתונים האלה יישמרו בחשבון שלך ב-Google. <ph name="BEGIN_LINK2" />מידע נוסף על מדדים<ph name="BEGIN_LINK2_END" />מידע נוסף<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">העדכון האחרון נכשל</translation>
 <translation id="3105796011181310544">‏להחזיר אל Google?</translation>
@@ -3747,6 +3748,7 @@
 <translation id="3629664892718440872">אני רוצה להשתמש באפשרות הזו גם בעתיד</translation>
 <translation id="3630132874740063857">הטלפון שלך</translation>
 <translation id="3630995161997703415">כדי שניתן יהיה תמיד להשתמש באתר הזה יש להוסיף אותו למדף</translation>
+<translation id="3632929818790223729">פיצול הכרטיסייה עם הכרטיסייה הפעילה</translation>
 <translation id="3634652306074934350">פג תוקפה של הבקשה להרשאה</translation>
 <translation id="3635199270495525546">‏זוהה מודול פלטפורמה מהימן (TPM)</translation>
 <translation id="3635353578505343390">‏שליחת משוב ל-Google</translation>
@@ -6249,9 +6251,6 @@
 <translation id="5410300144953132176">‫<ph name="OWNER_FULL_NAME" />‏ (<ph name="OWNER_EMAIL" />) רוצה לצרף אותך לקבוצת כרטיסיות. לפני שמצטרפים, חשוב לדעת שכל מי שיש לו את הקישור יכול לערוך את כל הכרטיסיות. תוקף הקישור יפוג בעוד 48 שעות.</translation>
 <translation id="5410889048775606433">פוקסיה</translation>
 <translation id="5411022484772257615">לא ניתן היה להשלים את ההרשמה לשימוש בית ספרי</translation>
-<translation id="5411856344659127989">‏כדי להוסיף חשבון של מישהו אחר, <ph name="LINK_BEGIN" />יש להוסיף משתמש חדש<ph name="LINK_END" /> אל <ph name="DEVICE_TYPE" />.
-
-יכול להיות שהרשאות שכבר נתת לאתרים ולאפליקציות יחולו על החשבון הזה. יש לך גם אפשרות לנהל את חשבונות Google <ph name="SETTINGS_LINK_BEGIN" />בהגדרות<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="54118879136097217">התקנת האפליקציה במכשיר <ph name="DEVICE_TYPE" /></translation>
 <translation id="5413640305322530561">מידע נוסף על נתוני השימוש וניתוח הביצועים</translation>
 <translation id="5414198321558177633">מתבצע רענון של רשימת הפרופילים. הפעולה עשויה להימשך מספר דקות.</translation>
@@ -6530,7 +6529,6 @@
 <translation id="5610867721023328944">אפשר לנסות שוב או לבחור מתוך העיצובים שמוצגים למטה.</translation>
 <translation id="5611398002774823980">שמירה בחשבון</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />,‏ <ph name="APP_FULL_NAME" /></translation>
-<translation id="5613074282491265467">‏לאחר כניסה לחשבון ב-Chrome, סיסמאות שנשמרות מאוחסנות בחשבון Google ‏(<ph name="USER_EMAIL" />). אפשר להשבית את האפשרות הזו בהגדרות.</translation>
 <translation id="5614190747811328134">הודעת משתמש</translation>
 <translation id="5614553682702429503">לשמור את הסיסמה?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
@@ -8566,7 +8564,6 @@
 <translation id="7088674813905715446">המכשיר הזה הועבר למצב 'ללא הקצאה' על ידי מנהל המערכת. על מנת להפעיל אותו עבור הרשמה, יש לבקש ממנהל המערכת להעביר את המכשיר למצב המתנה.</translation>
 <translation id="7088960765736518739">גישה באמצעות מתג</translation>
 <translation id="7089253021944603172">הכרטיסייה פעילה שוב</translation>
-<translation id="7090160970140261931">‏יש לך אפשרות להוסיף חשבונות נוספים למכשיר <ph name="DEVICE_TYPE" /> לצורך שימוש באתרים ובאפליקציות ל-Android. אפשר לקבוע אילו חשבונות יהיו בשימוש באפליקציות ל-Android.</translation>
 <translation id="7090714929377281710">כיבוי אוטומטי של הנקודה לשיתוף אינטרנט</translation>
 <translation id="7092504544229909737">‏לא ניתן להשתמש בחשבון הזה עם אפליקציות ל-Android</translation>
 <translation id="7093220653036489319">תשובות מהירות</translation>
@@ -9027,6 +9024,7 @@
 <translation id="7424818322350938336">הרשת התווספה</translation>
 <translation id="7425037327577270384">עזרה בכתיבה</translation>
 <translation id="7427348830195639090">דף רקע: <ph name="BACKGROUND_PAGE_URL" /></translation>
+<translation id="7427729970025360383">הפרופיל הזה מנוהל</translation>
 <translation id="7427798576651127129">שיחה מ-<ph name="DEVICE_NAME" /></translation>
 <translation id="7429415133937917139">‏מדמה את הפלט של צג ברייל ניתן לרענון
     בחלונית ChromeVox שנמצאת בחלק העליון של המסך</translation>
@@ -10046,6 +10044,7 @@
 <translation id="8140869601171867148">‏חשבון Google הוא אותו חשבון שמשמש אותך ב-Gmail, ב-YouTube, ב-Chrome ובמוצרי Google אחרים.
     באמצעות החשבון, קל לגשת לכל הסימניות, הקבצים ועוד.</translation>
 <translation id="8141418916163800697">‏אפשר להגדיר תכונות נוספות בהגדרות Phone Hub</translation>
+<translation id="814156740715940972">פיצול הכרטיסייה עם הכרטיסייה הפעילה</translation>
 <translation id="8141584439523427891">נפתח עכשיו בדפדפן חלופי</translation>
 <translation id="8141725884565838206">ניהול הסיסמאות שלך</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{סרטון}one{# סרטונים}two{# סרטונים}other{# סרטונים}}</translation>
@@ -11180,9 +11179,6 @@
 <translation id="894360074127026135">‏הגברה בינלאומית של Netscape</translation>
 <translation id="8944099748578356325">אפשרות זו גורמת לפריקה מהירה יותר של הסוללה (כרגע %<ph name="BATTERY_PERCENTAGE" />)</translation>
 <translation id="8944633700466246631">‏יצירת קוד אימות בן 6 ספרות למנהל הסיסמאות של Google</translation>
-<translation id="8944725102565796255">‏רוצה להשתמש בחשבון הזה באופן חד-פעמי? אפשר <ph name="GUEST_LINK_BEGIN" />להשתמש במכשיר כאורח<ph name="GUEST_LINK_END" />. כדי להוסיף חשבון של מישהו אחר, <ph name="LINK_BEGIN" />יש להוסיף משתמש חדש<ph name="LINK_END" /> אל <ph name="DEVICE_TYPE" />.
-
-יכול להיות שהרשאות שכבר נתת לאתרים ולאפליקציות יחולו על החשבון הזה. יש לך גם אפשרות לנהל את חשבונות Google <ph name="SETTINGS_LINK_BEGIN" />בהגדרות<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="8945274638472141382">גודל סמלים</translation>
 <translation id="8945508919180478719">מיקרופון בסגנון אולפן</translation>
 <translation id="8946359700442089734">תכונות לניפוי באגים לא הופעלו באופן מלא במכשיר <ph name="IDS_SHORT_PRODUCT_NAME" /> זה.</translation>

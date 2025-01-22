@@ -39,9 +39,6 @@
 <translation id="1594928384848033697">O Chromium quer excluir seus dados do Gerenciador de senhas. Digite sua senha do Windows para conceder essa permissão.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Seu administrador exige que você reinicie o Chromium para que uma atualização seja feita.}=1{Seu administrador exige que você reinicie o Chromium para que uma atualização seja feita. Sua janela anônima não será aberta novamente.}one{Seu administrador exige que você reinicie o Chromium para que uma atualização seja feita. Sua janela anônima não será aberta novamente.}other{Seu administrador exige que você reinicie o Chromium para que uma atualização seja feita. Suas # janelas anônimas não serão abertas novamente.}}</translation>
 <translation id="1625909126243026060">Revise os principais controles de privacidade e segurança no Chromium</translation>
-<translation id="1632539827495546968">Se você quer usar essa conta apenas uma vez, use o <ph name="GUEST_LINK_BEGIN" />Modo convidado<ph name="GUEST_LINK_END" /> no navegador Chromium. Se quer adicionar uma conta para outra pessoa, <ph name="LINK_BEGIN" />adicione uma nova pessoa<ph name="LINK_END" /> ao <ph name="DEVICE_TYPE" />.
-
-As permissões que você já concedeu a sites e apps podem ser aplicadas a essa conta. É possível gerenciar suas Contas do Google nas <ph name="SETTINGS_LINK_BEGIN" />Configurações<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Fazendo download...</translation>
 <translation id="1709772298389099340">Fornece privilégios elevados ao <ph name="BROWSER_NAME" />.</translation>
 <translation id="1715127912119967311">Para ajudar a melhorar esses recursos, o Chromium envia ao Google suas interações com eles. Esses dados podem ser lidos, processados e anotados por revisores humanos.</translation>
@@ -363,7 +360,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="6096348254544841612">Personalize e controle o Chromium. Uma atualização está disponível.</translation>
 <translation id="6107893135096467929">Ativada: o Chromium não pode conferir a origem dessa extensão</translation>
 <translation id="6119438414301547735">Permitir que a extensão mostre solicitações de acesso na barra de ferramentas do Chromium</translation>
-<translation id="6120345080069858279">O Chromium salvará essa senha na sua Conta do Google. Você não precisará se lembrar dela.</translation>
 <translation id="6129621093834146363">O arquivo <ph name="FILE_NAME" /> é perigoso. Por isso ele foi bloqueado pelo Chromium.</translation>
 <translation id="6132897690380286411">O Chromium será fechado em breve, e os dados serão excluídos</translation>
 <translation id="6145820983052037069">Aqui, você pode alternar entre os perfis do Chromium</translation>
@@ -521,6 +517,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8166782796394721554">Ative a proteção extra no mecanismo JavaScript e WebAssembly do Chromium</translation>
 <translation id="81770708095080097">Esse arquivo é perigoso, por isso ele foi bloqueado pelo Chromium.</translation>
+<translation id="8200109504272824693">Digite a senha longa para usar e salvar os dados do Chromium na sua conta <ph name="USER_EMAIL" /></translation>
 <translation id="8221491193165283816">Você geralmente bloqueia notificações. Para permitir que esse site envie notificações, clique aqui.</translation>
 <translation id="8223363452568144035">Para usar a câmera, permita o acesso ao Chromium nas <ph name="BEGIN_LINK" />configurações do sistema<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">O Chromium não pode conferir a origem dessa extensão, e talvez ela não seja segura. Remova do Chromium para que ela não apareça mais e mude seus dados nos sites que você visitar, incluindo suas informações pessoais.</translation>

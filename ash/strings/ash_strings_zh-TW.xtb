@@ -140,6 +140,7 @@
 <translation id="1415846719612499304">顯示網路清單。<ph name="STATE_TEXT" />。</translation>
 <translation id="1419738280318246476">解鎖裝置即可執行通知動作</translation>
 <translation id="1420408895951708260">切換夜燈模式。<ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">建議的群組</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1435537621343861112">無法啟動語音輸入，因為麥克風已關閉。</translation>
 <translation id="1445031758921122223">臉部控制檔案下載完畢</translation>
@@ -243,12 +244,14 @@
 <translation id="17722141032474077">計算</translation>
 <translation id="1774796056689732716">日曆，<ph name="CURRENT_MONTH_YEAR" />，目前已選取 <ph name="DATE" />。</translation>
 <translation id="178347895271755507">配置以下設定：查看手機上最近的相片、媒體和通知</translation>
+<translation id="1785317913592722944">從建議群組中移除項目</translation>
 <translation id="1786487376942610288">將子母畫面視窗最大化或還原目前大小</translation>
 <translation id="1787955149152357925">關閉</translation>
 <translation id="1796561540704213354">網站，包括你造訪過的網頁和目前開啟的頁面</translation>
 <translation id="179842970735685253">Google 服務條款</translation>
 <translation id="1805407494113167797">無法播放專注模式音效</translation>
 <translation id="181103072419391116">訊號強度 <ph name="SIGNAL_STRENGTH" />，由系統管理員管理</translation>
+<translation id="1815039896005206046">按倒讚可給予這個建議群組負面評價</translation>
 <translation id="1816896987747843206">這將允許具有攝影機權限的所有應用程式和網站存取攝影機</translation>
 <translation id="1823873187264960516">乙太網路：<ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">開啟位置存取權</translation>
@@ -390,6 +393,7 @@
 <translation id="2369165858548251131">「你好」的英文</translation>
 <translation id="2370971919968699910">這種情況可能需要支付數據傳輸費用。
 已連線到 <ph name="DEVICECOUNT" /> 部裝置。</translation>
+<translation id="2383521554963939360">應用程式和分頁群組</translation>
 <translation id="2386292613071805067">選取網頁上的所有項目</translation>
 <translation id="2389423187722941333">切換 Gemini</translation>
 <translation id="2392659840443812875">沒有可用的無線基地台。請確認裝置在附近，而且藍牙已開啟。</translation>
@@ -917,6 +921,7 @@
 <translation id="4150201353443180367">顯示設定</translation>
 <translation id="4151054805501931758">人像修飾</translation>
 <translation id="4156293514828496577">剩餘電量：<ph name="PERCENTAGE" />% (約 <ph name="TIME_LEFT" />)。為延長電池續航力，某些功能會受到限制。</translation>
+<translation id="4158003972857765638">在新桌面中整理</translation>
 <translation id="4160919062868802509">偵測到多個音訊來源</translation>
 <translation id="416245495747357243">辛苦了！</translation>
 <translation id="4165275524535002941">連接線可能不支援螢幕</translation>
@@ -965,6 +970,7 @@
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="428715201724021596">正在連線至設定檔。請稍候片刻。</translation>
 <translation id="4287250812980588583">Chrome 視窗</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{麥克風音量由「<ph name="APP_NAME" />」控制}other{麥克風音量由 # 個應用程式控制}}</translation>
 <translation id="4294319844246081198">早安，<ph name="GIVEN_NAME" />：</translation>
 <translation id="4296136865091727875">清除全部 <ph name="COUNT" /> 則通知</translation>
 <translation id="4300272766492248925">開啟應用程式</translation>
@@ -981,6 +987,7 @@
 <translation id="4322742403972824594">「Ctrl + Alt + 向上鍵」的鍵盤快速鍵已變更。如要使用 Home 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向左鍵。</translation>
 <translation id="4324840740119394760">這將允許「<ph name="APP_NAME" />」和具有攝影機權限的所有應用程式和網站存取攝影機</translation>
 <translation id="4327147325944669226">錄製遊戲</translation>
+<translation id="4329076911374908740">儲存的群組數量已達上限。</translation>
 <translation id="4338109981321384717">放大鏡</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />，已設為靜音</translation>
 <translation id="4351244548802238354">關閉對話方塊</translation>
@@ -1937,6 +1944,7 @@
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">建立</translation>
 <translation id="7526573455193969409">網路可能會受到監控</translation>
+<translation id="7534543072325030705">按讚可給予這個建議群組正面評價</translation>
 <translation id="7536035074519304529">IP 位址：<ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">更新左側視窗</translation>
 <translation id="7543399541175347147">目前不支援 Linux 應用程式和無痕視窗。系統將儲存其他應用程式。</translation>
@@ -2101,6 +2109,7 @@
 <translation id="8004512796067398576">增加</translation>
 <translation id="8005527720597583355">啟動專注模式</translation>
 <translation id="8015361438441228492">無法編輯工作。</translation>
+<translation id="8027187124910699148">繼續使用建議的群組</translation>
 <translation id="802782383769312836">上一個桌面：<ph name="DESK_NAME" />。第 <ph name="DESK_INDEX" /> 個桌面，共 <ph name="DESK_COUNT" /> 個。</translation>
 <translation id="8029247720646289474">無線基地台連線失敗</translation>
 <translation id="8029629653277878342">基於安全考量，請輸入 PIN 碼或密碼</translation>
@@ -2209,6 +2218,7 @@
 <translation id="8426708595819210923">晚安，<ph name="GIVEN_NAME" />：</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428810263141909179">按下 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> 到 <ph name="KEY_TWO" /> 鍵</translation>
+<translation id="8429547770382807369">儲存群組供日後使用</translation>
 <translation id="8433186206711564395">網路設定</translation>
 <translation id="8433977262951327081">在檔案櫃中顯示輸入選項選單方塊的快速鍵已變更，請改用：<ph name="NEW_SHORTCUT" /> (停用 <ph name="OLD_SHORTCUT" />)。</translation>
 <translation id="8437311513256731931">開啟意見回饋工具</translation>
@@ -2217,6 +2227,7 @@
 <translation id="8446884382197647889">瞭解詳情</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">關閉隨選朗讀</translation>
+<translation id="8466665972451889002">顯示「<ph name="GROUP_NAME" />」中的項目</translation>
 <translation id="8468806060683421065">繳交期限：<ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">顯示比例設定</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> 已<ph name="FEATURE_STATE" /><ph name="FEATURE_NAME" />。</translation>
@@ -2239,6 +2250,7 @@
 <translation id="8551588720239073785">日期和時間設定</translation>
 <translation id="8553395910833293175">已指派給所有桌面。</translation>
 <translation id="8555757996376137129">移除目前的桌面</translation>
+<translation id="8558521694042102707">生成式 AI 回覆的資訊不一定正確 (包括人物相關資訊)，請多加查證。</translation>
 <translation id="8559845965695780508"><ph name="USER" />編輯過</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">試試以下幾項搜尋建議</translation>
@@ -2261,6 +2273,7 @@
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />，由系統管理員管理</translation>
 <translation id="8638637208069328956">開啟/關閉麥克風</translation>
 <translation id="8639760480004882931">剩餘電量：<ph name="PERCENTAGE" /></translation>
+<translation id="8640470573049727749">隱藏所有群組建議</translation>
 <translation id="8641510901370802679">目前顯示<ph name="ANSWER_TYPE" />資訊</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" />的計時器</translation>
 <translation id="8647931990447795414">如要新增使用者，請輸入 Family Link 家長存取碼</translation>
@@ -2342,6 +2355,7 @@
 <translation id="8905919797434099235">(未命名)</translation>
 <translation id="890616557918890486">變更來源</translation>
 <translation id="8909138438987180327">電池剩餘電量：<ph name="PERCENTAGE" />%。</translation>
+<translation id="8916866375277139011">隱藏「<ph name="GROUP_NAME" />」中的項目</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google 助理不支援這個語言。</translation>
 <translation id="8926951137623668982">一律隱藏檔案櫃</translation>

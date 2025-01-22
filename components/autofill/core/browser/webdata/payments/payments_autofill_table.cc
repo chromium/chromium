@@ -466,8 +466,7 @@ std::unique_ptr<Iban> IbanFromStatement(
   iban->usage_history().set_use_date(
       base::Time::FromTimeT(s.ColumnInt64(index++)));
 
-  iban->SetRawInfo(IBAN_VALUE,
-                   DecryptU16StringFromColumn(s, index++, encryptor));
+  iban->set_value(DecryptU16StringFromColumn(s, index++, encryptor));
   iban->set_nickname(s.ColumnString16(index++));
   return iban;
 }

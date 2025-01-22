@@ -129,7 +129,6 @@
 <translation id="1079242569060319448">Pincode vergeten?</translation>
 <translation id="1079285777677001938">Functies op bepaalde sites werken misschien niet.</translation>
 <translation id="1079766198702302550">Cameratoegang altijd blokkeren</translation>
-<translation id="1080365971383768617">Wachtwoorden op al je apparaten</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 tabblad}other{<ph name="GROUP_TITLE" /> - # tabbladen}}</translation>
 <translation id="1082214733466244292">Je beheerder heeft bepaalde functionaliteit geblokkeerd voor dit apparaat</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> wil de standaardwaarden van je Chrome-instellingen herstellen. Als je dit doet, worden je homepage, nieuwe tabbladpagina en zoekmachine opnieuw ingesteld, je extensies uitgezet en alle tabbladen losgemaakt. Ook worden alle andere tijdelijke en gecachte gegevens gewist, zoals cookies, content en sitegegevens.</translation>
@@ -523,6 +522,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="135389172849514421">Werkt offline</translation>
 <translation id="1353980523955420967">PPD kan niet worden gevonden. Zorg dat je Chromebook online is en probeer het opnieuw.</translation>
 <translation id="1354045473509304750">Blijven toestaan dat <ph name="HOST" /> de camera gebruikt en beweegt</translation>
+<translation id="1354148503392558902">Wachtwoord wijzigen...</translation>
 <translation id="1355088139103479645">Alle gegevens verwijderen?</translation>
 <translation id="1356376170199999104">Toegestaan: <ph name="PERMISSION_DETAILS" />. Zet de microfoon aan met de fysieke schakelaar.</translation>
 <translation id="1356959069439783953">Inactieve tabbladen krijgen een nieuwe look</translation>
@@ -1094,6 +1094,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1751335846119670066">Help me met lezen</translation>
 <translation id="17513872634828108">Geopende tabbladen</translation>
 <translation id="175196451752279553">Gesloten tabblad opni&amp;euw openen</translation>
+<translation id="1752557850776261983">Inloggen controleren...</translation>
 <translation id="1753067873202720523">Je Chromebook wordt mogelijk niet opgeladen als deze aanstaat.</translation>
 <translation id="1753557900380512635">Interieurs</translation>
 <translation id="1753905327828125965">Meest bezocht</translation>
@@ -3020,6 +3021,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="310297983047869047">Vorige dia</translation>
 <translation id="3103451787721578293">Geef een reden op voor het uploaden van deze gegevens:</translation>
 <translation id="3103512663951238230">Alt + klikken</translation>
+<translation id="3104763887980088552">Activiteitenlogboek</translation>
 <translation id="3104948640446684649">Stuur gebruiks- en diagnostische gegevens. Dit apparaat stuurt op dit moment automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Ook zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Als de instelling voor aanvullende Web- en app-activiteit aanstaat, kunnen deze gegevens worden opgeslagen in je Google-account. <ph name="BEGIN_LINK2" />Meer informatie over statistieken<ph name="BEGIN_LINK2_END" />Meer informatie<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Laatste mislukte update</translation>
 <translation id="3105796011181310544">Teruggaan naar Google?</translation>
@@ -3732,6 +3734,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3629664892718440872">Deze keuze onthouden</translation>
 <translation id="3630132874740063857">Je telefoon</translation>
 <translation id="3630995161997703415">Voeg deze site aan je plank toe om hem altijd te kunnen gebruiken</translation>
+<translation id="3632929818790223729">Tabblad splitsen met actief tabblad</translation>
 <translation id="3634652306074934350">Rechtenverzoek is verlopen</translation>
 <translation id="3635199270495525546">Trusted Platform Module (TPM) waargenomen</translation>
 <translation id="3635353578505343390">Feedback sturen naar Google</translation>
@@ -6230,9 +6233,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) vraagt je om lid te worden van een tabbladgroep. Iedereen met de link kan alle tabbladen bewerken. Overweeg dus goed of je lid wilt worden. De link verloopt over 48 uur.</translation>
 <translation id="5410889048775606433">Fuchsia</translation>
 <translation id="5411022484772257615">Kan schoolinschrijving niet afronden</translation>
-<translation id="5411856344659127989">Als je een account voor iemand anders wilt toevoegen, kun je <ph name="LINK_BEGIN" />een nieuwe persoon toevoegen<ph name="LINK_END" /> aan je <ph name="DEVICE_TYPE" />.
-
-Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn op dit account. Je kunt je Google-accounts beheren via <ph name="SETTINGS_LINK_BEGIN" />Instellingen<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="54118879136097217">App installeren op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="5413640305322530561">Meer informatie over diagnostische en gebruiksgegevens</translation>
 <translation id="5414198321558177633">Lijst met profielen vernieuwen. Dit kan een paar minuten duren.</translation>
@@ -6511,7 +6511,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5610867721023328944">Probeer het opnieuw of selecteer een van de beschikbare thema's hieronder.</translation>
 <translation id="5611398002774823980">Opslaan in account</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5613074282491265467">Als je bent ingelogd bij Chrome, worden wachtwoorden die je opslaat, opgeslagen in je Google-account, <ph name="USER_EMAIL" />. Ga naar de instellingen om dit uit te zetten.</translation>
 <translation id="5614190747811328134">Gebruikerskennisgeving</translation>
 <translation id="5614553682702429503">Wachtwoord opslaan?</translation>
 <translation id="5614947000616625327">iCloud Sleutelhanger</translation>
@@ -8540,7 +8539,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7088674813905715446">Dit apparaat is uit bedrijf genomen door de beheerder. Vraag je beheerder om het apparaat op 'in behandeling' in te stellen, zodat het kan worden aangemeld.</translation>
 <translation id="7088960765736518739">Toegang via schakelaar</translation>
 <translation id="7089253021944603172">Tabblad weer actief</translation>
-<translation id="7090160970140261931">Je kunt aanvullende accounts aan je <ph name="DEVICE_TYPE" /> toevoegen voor gebruik met websites en Android-apps. Je kunt ook beheren welke accounts worden gebruikt met Android-apps.</translation>
 <translation id="7090714929377281710">Hotspot automatisch uitzetten</translation>
 <translation id="7092504544229909737">Kan niet worden gebruikt met Android-apps</translation>
 <translation id="7093220653036489319">Snelle antwoorden</translation>
@@ -9001,6 +8999,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7424818322350938336">Netwerk toegevoegd</translation>
 <translation id="7425037327577270384">Help me met schrijven</translation>
 <translation id="7427348830195639090">Achtergrondpagina: <ph name="BACKGROUND_PAGE_URL" /></translation>
+<translation id="7427729970025360383">Dit profiel wordt beheerd</translation>
 <translation id="7427798576651127129">Gesprek van <ph name="DEVICE_NAME" /></translation>
 <translation id="7429415133937917139">Simuleert de uitvoer van een vernieuwbare brailleleesregel in het ChromeVox-venster bovenaan het scherm</translation>
 <translation id="7429568074268678162"><ph name="FILENAME" /> is misschien gevaarlijk. Voeg een wachtwoord toe als je wilt dat Chrome het verifieert. Je kunt het bestand ook rechtstreeks downloaden.</translation>
@@ -10017,6 +10016,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8140869601171867148">Je Google-account is hetzelfde account dat je gebruikt voor Gmail, YouTube, Chrome en andere Google-producten.
     Gebruik je account om makkelijk toegang te krijgen tot onder andere al je bookmarks en bestanden.</translation>
 <translation id="8141418916163800697">Je kunt meer functies instellen in de Telefoonhub-instellingen</translation>
+<translation id="814156740715940972">Tabblad splitsen met actief tabblad</translation>
 <translation id="8141584439523427891">Wordt nu geopend in een alternatieve browser</translation>
 <translation id="8141725884565838206">Je wachtwoorden beheren</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{een video}other{# video's}}</translation>
@@ -11150,9 +11150,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="894360074127026135">Internationale Netscape-step-up</translation>
 <translation id="8944099748578356325">De batterij sneller gebruiken (momenteel <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944633700466246631">Stel een 6-cijferige herstelpincode in voor Google Wachtwoordmanager</translation>
-<translation id="8944725102565796255">Als je dit account maar één keer wilt gebruiken, kun je <ph name="GUEST_LINK_BEGIN" />het apparaat gebruiken als gast<ph name="GUEST_LINK_END" />. Als je een account voor iemand anders wilt toevoegen, kun je <ph name="LINK_BEGIN" />een nieuwe persoon toevoegen<ph name="LINK_END" /> aan je <ph name="DEVICE_TYPE" />.
-
-Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn op dit account. Je kunt je Google-accounts beheren via <ph name="SETTINGS_LINK_BEGIN" />Instellingen<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="8945274638472141382">Icoonformaat</translation>
 <translation id="8945508919180478719">Studiomicrofoon</translation>
 <translation id="8946359700442089734">Foutopsporingsfuncties zijn niet volledig aangezet op dit <ph name="IDS_SHORT_PRODUCT_NAME" />-apparaat.</translation>

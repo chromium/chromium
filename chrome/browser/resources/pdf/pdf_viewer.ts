@@ -745,7 +745,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // Text fragment directives should be handled after the document is set to
     // finished loading.
     if (progress === 100) {
-      this.maybeRenderTextDirectiveHighlights_();
+      this.maybeRenderTextDirectiveHighlights_(this.originalUrl);
     }
   }
 
@@ -1026,6 +1026,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     assert(this.paramsParser);
     this.paramsParser.getViewportFromUrlParams(newUrl).then(
         params => this.handleUrlParams(params));
+    this.maybeRenderTextDirectiveHighlights_(newUrl);
   }
 
   // <if expr="enable_pdf_ink2">
@@ -1280,9 +1281,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    * Sends a message to the PDF plugin to highlight the provided text
    * directives if any.
    */
-  private maybeRenderTextDirectiveHighlights_() {
+  private maybeRenderTextDirectiveHighlights_(url: string) {
     assert(this.paramsParser);
-    const textDirectives = this.paramsParser.getTextFragments(this.originalUrl);
+    const textDirectives = this.paramsParser.getTextFragments(url);
     if (textDirectives.length > 0) {
       this.pluginController_.highlightTextFragments(textDirectives);
     }

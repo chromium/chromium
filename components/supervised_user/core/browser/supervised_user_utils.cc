@@ -19,11 +19,19 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/url_matcher/url_util.h"
+#include "net/base/url_util.h"
 #include "url/gurl.h"
 
 namespace supervised_user {
 
 namespace {
+
+// Url query param returned from the PACP widget with an encoded parent approval
+// result.
+constexpr char kParentAccessResultQueryParameter[] = "result";
+
+// Url that contains the approval result in PACP parent approval requests.
+constexpr char kPacpOriginUrlHost[] = "families.google.com";
 
 // A templated function to merge multiple values of the same type into either:
 // * An empty optional if none of the values are set
@@ -153,10 +161,11 @@ ParentAccessCallbackParsedResult::GetCallback() const {
 // static
 ParentAccessCallbackParsedResult
 ParentAccessCallbackParsedResult::ParseParentAccessCallbackResult(
-    const std::string& encoded_parent_access_callback_proto) {
+    const std::string& encoded_parent_access_callback_proto,
+    base::Base64DecodePolicy decoding_policy) {
   std::string decoded_parent_access_callback;
   if (!base::Base64Decode(encoded_parent_access_callback_proto,
-                          &decoded_parent_access_callback)) {
+                          &decoded_parent_access_callback, decoding_policy)) {
     LOG(ERROR) << "ParentAccessHandler::ParentAccessResult: Error decoding "
                   "parent_access_result from base64";
     return ParentAccessCallbackParsedResult(
@@ -173,6 +182,20 @@ ParentAccessCallbackParsedResult::ParseParentAccessCallbackResult(
   }
 
   return ParentAccessCallbackParsedResult(parent_access_callback);
+}
+
+std::optional<std::string> MaybeGetPacpResultFromUrl(const GURL& url) {
+  std::string result_value;
+  bool contains_result_query_param = net::GetValueForKeyInQuery(
+      url,
+      /*search_key=*/kParentAccessResultQueryParameter,
+      /*out_value=*/&result_value);
+
+  if (!url.host().starts_with(kPacpOriginUrlHost) ||
+      !contains_result_query_param) {
+    return std::nullopt;
+  }
+  return result_value;
 }
 
 std::string FamilyRoleToString(kidsmanagement::FamilyRole role) {

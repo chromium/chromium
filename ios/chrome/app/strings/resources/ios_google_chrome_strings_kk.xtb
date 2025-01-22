@@ -169,6 +169,7 @@
 <translation id="5639704535586432836">"Параметрлер &gt; Құпиялық &gt; Камера &gt; Google Chrome" тармағын ашып, микрофонды қосыңыз.</translation>
 <translation id="5642200033778930880">Google Chrome қолданбасы камераны қатар ашу режимінде пайдалана алмайды</translation>
 <translation id="5661521615548540542">Google Password Manager барлық құпия сөзді тексере алмады. Кейінірек қайталап көріңіз.</translation>
+<translation id="5681291952421236520">Chrome-ға ауысу</translation>
 <translation id="5690398455483874150">{count,plural, =1{Енді 1 Chrome терезесі көрсетіледі.}other{Енді {count} Chrome терезесі көрсетіледі.}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Chrome браузерін әдепкі етіп орнатыңыз</translation>
@@ -204,6 +205,7 @@
 <translation id="6484712497741564393"><ph name="EMAIL" /> аккаунтымен кірдіңіз.
 
 Деректер құпия фразаңызбен шифрланды. Google аккаунтыңызда Chrome деректерін пайдалану және сақтау үшін оны енгізіңіз.</translation>
+<translation id="6533470733797826516">Chrome автотолтыру функциясымен аккаунтқа жылдам кіріңіз.</translation>
 <translation id="6545449117344801102">Бағыттар мен жергілікті ақпаратты беру үшін Chrome браузері мекенжайларды анықтайды және Google Maps пайдаланады.</translation>
 <translation id="6634107063912726160">Сіз аккаунттан шыққанда, Chrome жаңа деректерді Google аккаунтыңызбен синхрондамайды. Бұған дейін синхрондалған деректер аккаунтыңызда қалады.</translation>
 <translation id="6636941099779251629">Ұйым талабы бойынша Chrome-ды пайдалану үшін аккаунтқа кіруіңіз керек. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>

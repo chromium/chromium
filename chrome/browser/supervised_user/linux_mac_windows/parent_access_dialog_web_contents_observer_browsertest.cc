@@ -5,13 +5,17 @@
 #include "chrome/browser/supervised_user/linux_mac_windows/parent_access_dialog_web_contents_observer.h"
 
 #include <optional>
+#include <string>
 
+#include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/supervised_user/supervision_mixin.h"
+#include "components/supervised_user/core/browser/proto/parent_access_callback.pb.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -29,23 +33,88 @@ struct TestParam {
   // Query paramerer containing the PACP parent approval result, if such a
   // result should be returned.
   std::optional<std::string> result_query_param;
+  // Expected local approval result, when a query parameter with a result is
+  // provided in the PACP response url.
+  std::optional<supervised_user::LocalApprovalResult> expected_approval_result;
+  // An string to be appended in the test name.
+  std::string test_name_suffix;
 };
 
-// TODO(crbug.com/383997522): Extend the test case with the actual query result
-// verification, when this logic added to the observer.
+// Helper method that returns a base64 encoded approval result.
+std::string CreatePacpApprovalResult() {
+  kids::platform::parentaccess::client::proto::ParentAccessCallback
+      parent_access_callback;
+  kids::platform::parentaccess::client::proto::OnParentVerified*
+      on_parent_verified = parent_access_callback.mutable_on_parent_verified();
+  kids::platform::parentaccess::client::proto::ParentAccessToken* token =
+      on_parent_verified->mutable_parent_access_token();
+  token->set_token("TEST_TOKEN");
+  kids::platform::parentaccess::client::proto::Timestamp* expire_time =
+      token->mutable_expire_time();
+  expire_time->set_seconds(123456);
+  return base::Base64Encode(parent_access_callback.SerializeAsString());
+}
+
+// Helper method that returns a base64 encoded resize result.
+std::string CreatePacpResizeResult() {
+  kids::platform::parentaccess::client::proto::ParentAccessCallback
+      parent_access_callback;
+  kids::platform::parentaccess::client::proto::OnPageSizeChanged*
+      on_page_size_changed =
+          parent_access_callback.mutable_on_page_size_changed();
+  on_page_size_changed->set_content_height(40);
+  return base::Base64Encode(parent_access_callback.SerializeAsString());
+}
+
+std::string CreateInvalidEncodingResult() {
+  // Non base64 characters.
+  return "*INVALID*CHARS";
+}
+
+std::string CreateInvalidPacpResponse() {
+  // Non PACP response.
+  return base::Base64Encode("invalid_response");
+}
+
+std::string GetPacpApprovalResultMatchingForgivingDecoding() {
+  // Returns a result that can be decoded only in base64 forgiving decoding
+  // mofe.
+  std::string encoded_result = CreatePacpApprovalResult();
+
+  // Make the input size non divisible by 4 in order to fail strict decoding.
+  // Remove the padding if there was any.
+  bool has_padding = false;
+  while (encoded_result.back() == '=') {
+    has_padding = true;
+    encoded_result.pop_back();
+  }
+  // If there was no padding to be removed, add an empty space instead.
+  if (!has_padding) {
+    encoded_result += "\n";
+  }
+  std::string strict_decoding_attempt;
+  CHECK(!base::Base64Decode(encoded_result, &strict_decoding_attempt,
+                            base::Base64DecodePolicy::kStrict));
+  return encoded_result;
+}
+
 class SupervisedUserParentAccessObserverTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<TestParam> {
  public:
   void MockCompletionCallback(supervised_user::LocalApprovalResult result) {
     is_callback_executed_ = true;
+    extracted_local_approval_result_ = result;
   }
 
  protected:
   bool IsCompletionCallbackExecuted() {
-    // TODO(crbug.com/383997522): Once result extraction is supported,
-    // check the expected result.
     return is_callback_executed_;
+  }
+
+  std::optional<supervised_user::LocalApprovalResult>
+  extracted_local_approval_result() {
+    return extracted_local_approval_result_;
   }
 
   content::WebContents* contents() {
@@ -93,6 +162,8 @@ class SupervisedUserParentAccessObserverTest
                                             kPacpHost}}};
 
   bool is_callback_executed_ = false;
+  std::optional<supervised_user::LocalApprovalResult>
+      extracted_local_approval_result_;
 };
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserParentAccessObserverTest,
@@ -126,32 +197,89 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserParentAccessObserverTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), pacp_origin_url_with_optional_result));
 
-  // The callback is executed at the end of the navigation if navigation
-  // reaches the target url and a query result has been parsed.
+  // The callback is executed at the end of the navigation if
+  // 1) the navigation reaches the target url and
+  // 2) a query result for the approval flow has been parsed or an error was
+  // detected.
   bool should_execute_completion_callback =
-      GetParam().result_query_param.has_value() &&
+      GetParam().expected_approval_result.has_value() &&
       GetParam().redirect_to_target_url;
   EXPECT_EQ(should_execute_completion_callback, IsCompletionCallbackExecuted());
-}
 
-std::string ParamToTestName(TestParam param) {
-  std::string name = param.result_query_param.has_value()
-                         ? "WithQueryResult"
-                         : "WithoutQueryResult";
-  name = name + (param.redirect_to_target_url ? "WhenEndPacpUrlReached"
-                                              : "WhenEndPacpUrlNotReached");
-  return name;
+  if (should_execute_completion_callback) {
+    // If we expect a valid local web approval result from the the callback,
+    // check that it is the expected one.
+    EXPECT_TRUE(extracted_local_approval_result().has_value());
+    EXPECT_EQ(GetParam().expected_approval_result.value(),
+              extracted_local_approval_result().value());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     SupervisedUserParentAccessObserverTest,
-    testing::Values(TestParam({.redirect_to_target_url = true,
-                               .result_query_param = "result=MgA"}),
-                    TestParam({.redirect_to_target_url = false,
-                               .result_query_param = "result=MgA"}),
-                    TestParam({.redirect_to_target_url = true,
-                               .result_query_param = std::nullopt})),
-    [](const auto& info) { return ParamToTestName(info.param); });
+    testing::Values(
+        TestParam({.redirect_to_target_url = true,
+                   // Approval result provided and navigation completes.
+                   .result_query_param =
+                       base::StringPrintf("result=%s",
+                                          CreatePacpApprovalResult()),
+                   .expected_approval_result =
+                       supervised_user::LocalApprovalResult::kApproved,
+                   .test_name_suffix = "CompletesApprovalFlow"}),
+        TestParam(
+            {.redirect_to_target_url = true,
+             // Approval result that can be extracted only by base64 forgiving
+             // decoding.
+             .result_query_param = base::StringPrintf(
+                 "result=%s",
+                 GetPacpApprovalResultMatchingForgivingDecoding()),
+             .expected_approval_result =
+                 supervised_user::LocalApprovalResult::kApproved,
+             .test_name_suffix = "CompletesApprovalFlowWithForgivingDecoding"}),
+        TestParam({.redirect_to_target_url = false,
+                   // Approval result provide by navigation does not complete.
+                   .result_query_param =
+                       base::StringPrintf("result=%s",
+                                          CreatePacpApprovalResult()),
+                   .test_name_suffix = "ApprovalFlowDoesNotReachEndUrl"}),
+        TestParam(
+            {.redirect_to_target_url = true,
+             // A result is provided and navigation completes,
+             // but the result should be ignored by the approval flow.
+             .result_query_param = base::StringPrintf("result=%s",
+                                                      CreatePacpResizeResult()),
+             .test_name_suffix = "IgnoresResult"}),
+        TestParam(
+            {.redirect_to_target_url = true,
+             // A result is provided and navigation completes,
+             // but the result is in invalid encoding (Malformed result).
+             .result_query_param =
+                 base::StringPrintf("result=%s", CreateInvalidEncodingResult()),
+             .expected_approval_result =
+                 supervised_user::LocalApprovalResult::kMalformedPacpResult,
+             .test_name_suffix = "FailsWithInvalidEncoding"}),
+        TestParam(
+            {.redirect_to_target_url = true,
+             // A result query param is provided but it's empty (Malformed
+             // result).
+             .result_query_param = "result=",
+             .expected_approval_result =
+                 supervised_user::LocalApprovalResult::kMalformedPacpResult,
+             .test_name_suffix = "FailsWithEmptyResult"}),
+        TestParam(
+            {.redirect_to_target_url = true,
+             // A result query param is provided it's not parsed to a PACP
+             // response (Malformed result).
+             .result_query_param =
+                 base::StringPrintf("result=%s", CreateInvalidPacpResponse()),
+             .expected_approval_result =
+                 supervised_user::LocalApprovalResult::kMalformedPacpResult,
+             .test_name_suffix = "FailsWithNonParsableResponse"}),
+        TestParam({.redirect_to_target_url = true,
+                   // No query result provided.
+                   .result_query_param = std::nullopt,
+                   .test_name_suffix = "HasNoResult"})),
+    [](const auto& info) { return info.param.test_name_suffix; });
 
 }  // namespace

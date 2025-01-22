@@ -232,6 +232,18 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET2},
       {"trackingProtectionExceptionsListDescription",
        IDS_SETTINGS_TRACKING_PROTECTION_EXCEPTIONS_LIST_DESCRIPTION},
+      {"cookiePageSettingsAllowBulletOne",
+       IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_ALLOW_BULLET_ONE},
+      {"cookiePageSettingsAllowBulletTwo",
+       IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_ALLOW_BULLET_TWO},
+      {"cookiePageSettingsAllowBulletThree",
+       IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_ALLOW_BULLET_THREE},
+      {"cookiePageSettingsBlockBulletOne",
+       IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_BLOCK_BULLET_ONE},
+      {"cookiePageSettingsBlockBulletTwo",
+       IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_BLOCK_BULLET_TWO},
+      {"cookiePageSettingsBlockBulletThree",
+       IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_BLOCK_BULLET_THREE},
 
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);

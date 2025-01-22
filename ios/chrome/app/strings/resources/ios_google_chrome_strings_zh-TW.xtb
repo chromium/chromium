@@ -169,6 +169,7 @@
 <translation id="5639704535586432836">請前往 [設定] &gt; [隱私權] &gt; [相機] &gt; [Google Chrome]，並開啟相機。</translation>
 <translation id="5642200033778930880">Google Chrome 無法在分割模式中使用你的相機</translation>
 <translation id="5661521615548540542">Google 密碼管理工具無法檢查所有密碼，請稍後再試。</translation>
+<translation id="5681291952421236520">切換 Chrome</translation>
 <translation id="5690398455483874150">{count,plural, =1{目前顯示 1 個 Chrome 視窗}other{目前顯示 {count} 個 Chrome 視窗}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">將 Chrome 設為預設網路瀏覽器</translation>
@@ -204,6 +205,7 @@
 <translation id="6484712497741564393">目前登入的帳戶是 <ph name="EMAIL" />。
 
 你已使用通關密語對資料進行加密。如要在 Google 帳戶中使用及儲存 Chrome 資料，請輸入通關密語。</translation>
+<translation id="6533470733797826516">使用 Chrome 自動填入功能快速登入</translation>
 <translation id="6545449117344801102">Chrome 會偵測地址，並使用 Google 地圖提供路線和當地資訊。</translation>
 <translation id="6634107063912726160">登出帳戶後，Chrome 就不會將任何新資料同步到你的 Google 帳戶。不過，先前已同步處理的資料仍會保存在帳戶中。</translation>
 <translation id="6636941099779251629">根據貴機構的政策規定，你必須先登入才能使用 Chrome。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>

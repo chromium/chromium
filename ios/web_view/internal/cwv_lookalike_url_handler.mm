@@ -4,7 +4,7 @@
 
 #import "ios/web_view/internal/cwv_lookalike_url_handler_internal.h"
 
-#include "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
+#import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "net/base/apple/url_conversions.h"
 

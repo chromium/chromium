@@ -140,6 +140,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1415846719612499304">Mostra la llista de xarxes. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Desbloqueja el dispositiu per dur a terme l'acció que indica la notificació</translation>
 <translation id="1420408895951708260">Activa o desactiva la funció Llum nocturna. <ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">Grup suggerit</translation>
 <translation id="1426410128494586442">Sí</translation>
 <translation id="1435537621343861112">No es pot iniciar el dictat. El micròfon està desactivat.</translation>
 <translation id="1445031758921122223">S'han baixat els fitxers de control facial</translation>
@@ -243,12 +244,14 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="17722141032474077">Càlculs</translation>
 <translation id="1774796056689732716">Calendari, <ph name="CURRENT_MONTH_YEAR" />, actualment està seleccionat el dia <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Configura la visualització de les notificacions, dels fitxers multimèdia i de les fotos recents del telèfon</translation>
+<translation id="1785317913592722944">Suprimeix l'element del grup suggerit</translation>
 <translation id="1786487376942610288">Canvia entre la mida màxima o l'actual de la finestra d'imatge sobre imatge</translation>
 <translation id="1787955149152357925">Desactivat</translation>
 <translation id="1796561540704213354">Llocs web que inclouen les pàgines que has visitat i les pàgines obertes</translation>
 <translation id="179842970735685253">condicions del servei de Google</translation>
 <translation id="1805407494113167797">No s'han pogut reproduir els sons de Concentració</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, xarxa gestionada per l'administrador</translation>
+<translation id="1815039896005206046">El botó No m'agrada indica que aquest grup suggerit no t'agrada</translation>
 <translation id="1816896987747843206">Permet l'accés a la càmera a totes les aplicacions i llocs web amb permís per accedir a la càmera</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Activa l'accés a la ubicació</translation>
@@ -390,6 +393,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2369165858548251131">"Hola" en xinès</translation>
 <translation id="2370971919968699910">Això pot comportar costos de dades.
 Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
+<translation id="2383521554963939360">Grups d'aplicacions i de pestanyes</translation>
 <translation id="2386292613071805067">Selecciona tots els elements de la pàgina</translation>
 <translation id="2389423187722941333">Activa o desactiva Gemini</translation>
 <translation id="2392659840443812875">No hi ha cap punt d'accés Wi‐Fi disponible. Assegura't que el dispositiu estigui a prop i que el Bluetooth estigui activat.</translation>
@@ -920,6 +924,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4151054805501931758">Retoc de retrat</translation>
 <translation id="4156293514828496577">Queda un <ph name="PERCENTAGE" /> % de bateria (aproximadament <ph name="TIME_LEFT" />).
 Algunes funcions estan limitades per allargar la durada de la bateria.</translation>
+<translation id="4158003972857765638">Organitza en un escriptori nou</translation>
 <translation id="4160919062868802509">S'han detectat diverses fonts d'àudio</translation>
 <translation id="416245495747357243">Fet!</translation>
 <translation id="4165275524535002941">És possible que el cable no sigui compatible amb pantalles</translation>
@@ -985,6 +990,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4322742403972824594">La tecla de drecera Ctrl+Alt+fletxa amunt ha canviat. Per fer servir la tecla d'inici, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+fletxa esquerra.</translation>
 <translation id="4324840740119394760">Permet l'accés a la càmera a <ph name="APP_NAME" /> i a totes les aplicacions i llocs web amb permís per accedir a la càmera</translation>
 <translation id="4327147325944669226">Grava la partida</translation>
+<translation id="4329076911374908740">S'ha arribat al nombre màxim de grups desats.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, silenciat</translation>
 <translation id="4351244548802238354">Tanca el quadre de diàleg</translation>
@@ -1265,6 +1271,7 @@ També pots utilitzar les tecles de drecera. Primer, marca el text i, a continua
 <translation id="5245201184978705914">No es pot generar una transcripció</translation>
 <translation id="5251174953851719648">Actualitza el contingut</translation>
 <translation id="5253783950165989294">Connectat a un dispositiu anomenat <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
+<translation id="5256939106029293271">Prova el micròfon</translation>
 <translation id="5258528442992323769">No s'ha desat cap escriptori</translation>
 <translation id="5260676007519551770">Escriptori 4</translation>
 <translation id="5265391159779542051">S'han carregat els resultats</translation>
@@ -1422,6 +1429,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="5745612484876805746">La funció Llum nocturna s'activa automàticament al vespre</translation>
 <translation id="5750765938512549687">El Bluetooth està desactivat</translation>
 <translation id="5758114525425072423">Inicia el mode Sense distraccions. El temporitzador està establert en <ph name="FOCUS_DURATION" />.</translation>
+<translation id="5759522586053040964">Escolta com et sentiran les altres persones. Per aturar-ho, fes clic a la icona de prova o tanca el tauler de la videotrucada.</translation>
 <translation id="5760866832697883462">Connecta el dispositiu <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Commuta el marcador. <ph name="STATE_TEXT" /> Utilitza el ratolí tàctil, la pantalla tàctil o el llapis òptic per dibuixar a la pantalla.</translation>
 <translation id="576341972084747908">Baixa el fitxer perillós <ph name="FILENAME" /></translation>
@@ -1940,6 +1948,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">Crea</translation>
 <translation id="7526573455193969409">És possible que la xarxa estigui supervisada</translation>
+<translation id="7534543072325030705">El botó M'agrada indica que aquest grup suggerit t'agrada</translation>
 <translation id="7536035074519304529">Adreça IP: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Actualitza la finestra esquerra</translation>
 <translation id="7543399541175347147">Les aplicacions de Linux i les finestres d'incògnit no s'admeten actualment. Les altres aplicacions es desaran.</translation>
@@ -2104,6 +2113,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8004512796067398576">Incrementa</translation>
 <translation id="8005527720597583355">Inicia la sessió de Sense distraccions</translation>
 <translation id="8015361438441228492">No s'ha pogut editar la tasca.</translation>
+<translation id="8027187124910699148">Reprèn el grup suggerit</translation>
 <translation id="802782383769312836">Escriptori anterior: <ph name="DESK_NAME" />. Escriptori <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">La connexió al punt d'accés Wi‑Fi ha fallat</translation>
 <translation id="8029629653277878342">Cal introduir el PIN o la contrasenya per disposar de més seguretat</translation>
@@ -2212,6 +2222,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8426708595819210923">Bon vespre, <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Configuració</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /> de l'<ph name="KEY_ONE" /> al <ph name="KEY_TWO" /></translation>
+<translation id="8429547770382807369">Desa el grup per a més tard</translation>
 <translation id="8433186206711564395">Configuració de la xarxa</translation>
 <translation id="8433977262951327081">La drecera per mostrar el quadre d'ajuda amb el menú d'opcions d'introducció al prestatge ha canviat. Fes servir <ph name="NEW_SHORTCUT" /> en lloc de la drecera <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8437311513256731931">Obre l'eina de suggeriments</translation>
@@ -2220,6 +2231,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8446884382197647889">Més informació</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" />+V</translation>
 <translation id="8462305545768648477">Tanca Escolta la selecció</translation>
+<translation id="8466665972451889002">Mostra els elements de <ph name="GROUP_NAME" /></translation>
 <translation id="8468806060683421065">venç el dia <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Configuració de l'escala de visualització</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> té la funció <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
@@ -2242,6 +2254,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8551588720239073785">Configuració de data i hora</translation>
 <translation id="8553395910833293175">Ja està assignada a tots els escriptoris.</translation>
 <translation id="8555757996376137129">Suprimeix l'escriptori actual</translation>
+<translation id="8558521694042102707">La IA generativa pot cometre errors, també sobre persones, així que comprova'n les respostes.</translation>
 <translation id="8559845965695780508"><ph name="USER" /> l'ha editat</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">Aquí tens alguns suggeriments que pots provar</translation>
@@ -2264,6 +2277,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, xarxa gestionada per l'administrador</translation>
 <translation id="8638637208069328956">Activa/desactiva el micròfon</translation>
 <translation id="8639760480004882931">Queda un <ph name="PERCENTAGE" /></translation>
+<translation id="8640470573049727749">Amaga tots els suggeriments de grups</translation>
 <translation id="8641510901370802679">S'està mostrant informació de <ph name="ANSWER_TYPE" /></translation>
 <translation id="8646417893960517480">Temporitzador de: <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Per afegir una persona, introdueix el codi d'accés parental de Family Link</translation>
@@ -2346,6 +2360,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8905919797434099235">(Sense títol)</translation>
 <translation id="890616557918890486">Canvia la font</translation>
 <translation id="8909138438987180327">La bateria està a un <ph name="PERCENTAGE" />%.</translation>
+<translation id="8916866375277139011">Amaga els elements de <ph name="GROUP_NAME" /></translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">L'Assistent de Google no parla aquest idioma.</translation>
 <translation id="8926951137623668982">El prestatge està sempre amagat</translation>

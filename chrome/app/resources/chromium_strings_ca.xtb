@@ -39,9 +39,6 @@
 <translation id="1594928384848033697">Chromium vol suprimir les dades del gestor de contrasenyes. Escriu la teva contrasenya de Windows per permetre-ho.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{L'administrador necessita que reiniciïs Chromium per aplicar una actualització}=1{L'administrador necessita que reiniciïs Chromium per aplicar una actualització. La finestra d'incògnit no es tornarà a obrir.}other{L'administrador necessita que reiniciïs Chromium per aplicar una actualització. Les # finestres d'incògnit no es tornaran a obrir.}}</translation>
 <translation id="1625909126243026060">Revisa els controls principals de privadesa i seguretat a Chromium</translation>
-<translation id="1632539827495546968">Si vols utilitzar aquest compte només una vegada, pots utilitzar el <ph name="GUEST_LINK_BEGIN" />mode de convidat<ph name="GUEST_LINK_END" /> al navegador Chromium. Si vols afegir un compte per a algú altre, <ph name="LINK_BEGIN" />afegeix una persona nova<ph name="LINK_END" /> al teu <ph name="DEVICE_TYPE" />.
-
-És possible que els permisos que ja hagis donat a llocs web i aplicacions s'apliquin a aquest compte. Pots gestionar els teus Comptes de Google a <ph name="SETTINGS_LINK_BEGIN" />Configuració<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">S'està baixant...</translation>
 <translation id="1709772298389099340">Proporciona privilegis elevats per a <ph name="BROWSER_NAME" />.</translation>
 <translation id="1715127912119967311">Per ajudar a millorar aquestes funcions, Chromium envia a Google les interaccions que hi mantinguis. És possible que revisors humans llegeixin, tractin i anotin aquestes dades.</translation>
@@ -365,7 +362,6 @@
 <translation id="6096348254544841612">Personalitza i controla Chromium. Hi ha una actualització disponible.</translation>
 <translation id="6107893135096467929">Activat • Chromium no pot verificar d'on prové aquesta extensió</translation>
 <translation id="6119438414301547735">Permet que l'extensió mostri sol·licituds d'accés a la barra d'eines de Chromium</translation>
-<translation id="6120345080069858279">Chromium desarà aquesta contrasenya al Compte de Google. No caldrà que la recordis.</translation>
 <translation id="6129621093834146363">Chromium ha bloquejat <ph name="FILE_NAME" /> perquè és perillós.</translation>
 <translation id="6132897690380286411">Chromium es tancarà aviat i suprimirà les dades</translation>
 <translation id="6145820983052037069">Pots canviar entre perfils de Chromium aquí</translation>

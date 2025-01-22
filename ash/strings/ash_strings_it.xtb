@@ -970,6 +970,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4285498937028063278">Sblocca</translation>
 <translation id="428715201724021596">Connessione al profilo in corso. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="4287250812980588583">Finestra di Chrome</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Volume del microfono controllato da <ph name="APP_NAME" />}other{Volume del microfono controllato da # app}}</translation>
 <translation id="4294319844246081198">Buongiorno <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Cancella tutte e <ph name="COUNT" /> le notifiche</translation>
 <translation id="4300272766492248925">Apri app</translation>

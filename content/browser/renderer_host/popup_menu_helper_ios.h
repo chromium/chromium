@@ -56,9 +56,6 @@ class PopupMenuHelper : public RenderWidgetHostObserver,
   void OnMenuItemSelected(int idx) override;
   void OnMenuCanceled() override;
 
-  // Immediately return from ShowPopupMenu.
-  CONTENT_EXPORT static void DontShowPopupMenuForTesting();
-
  private:
   // RenderWidgetHostObserver implementation:
   void RenderWidgetHostVisibilityChanged(RenderWidgetHost* widget_host,

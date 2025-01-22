@@ -973,6 +973,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4285498937028063278">Menyahpin</translation>
 <translation id="428715201724021596">Menyambung kepada profil. Proses ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="4287250812980588583">Tetingkap Chrome</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Kelantangan mikrofon dikawal oleh <ph name="APP_NAME" />}other{Kelantangan mikrofon dikawal oleh # apl}}</translation>
 <translation id="4294319844246081198">Selamat pagi <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Kosongkan kesemua <ph name="COUNT" /> pemberitahuan</translation>
 <translation id="4300272766492248925">Buka apl</translation>

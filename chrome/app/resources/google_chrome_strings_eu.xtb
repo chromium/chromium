@@ -59,7 +59,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1698376642261615901">Web-orriak eta aplikazioak ziztu bizian abiarazten dituen web-arakatzailea da Google Chrome. Bizkorra, egonkorra eta erabilerraza da. Sarea segurtasun osoz arakatu ahal izango duzu, Google Chrome-k malwarearen eta phishingaren aurkako babesa barneratuta baitu.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Ordubete barru exekutatuko da Chrome berriro}other{# ordu barru exekutatuko da Chrome berriro}}</translation>
 <translation id="1722488837206509557">Erabilgarri dauden gailuen artean hautatu ahal izango duzu, eta haietan edukia bistaratu.</translation>
-<translation id="1734234790201236882">Chrome-k Google-ko kontuan gordeko du pasahitz hau. Ez duzu gogoratu beharko.</translation>
 <translation id="1786003790898721085">Ziurtatu Chrome-ko saioa hasita daukazula <ph name="TARGET_DEVICE_NAME" /> gailuan eta saiatu berriro bidaltzen.</translation>
 <translation id="1786044937610313874">Lasterbideak Chrome-n irekitzen dira</translation>
 <translation id="178701303897325119">Luzapena ez da onartzen jada. Kentzea gomendatzen dizu Chrome-k.</translation>
@@ -326,6 +325,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="4997044641749333913">Chrome-k inaktibo ezar ditzake fitxa hauek, arakatzea hobetzeko eta bizkortzeko.</translation>
 <translation id="5003967926796347400">Sakatu Google-ren Pasahitz-kudeatzailea</translation>
+<translation id="5114340746415930644">Chrome-ko datuak zure kontuan (<ph name="USER_EMAIL" />) erabiltzeko eta gordetzeko, idatzi pasaesaldia</translation>
 <translation id="5120334927898581447">Hasi saioa Chrome-n Google-ren beste zerbitzuetan saioa hasten duzunean</translation>
 <translation id="5126049312684316860">Ziurrenik bisitatuko dituzun are orri gehiago aurrez kargatzen ditu Chrome-k, bisitatzen dituzunean bizkorrago karga daitezen</translation>
 <translation id="5132929315877954718">Ezagutu Google Chrome-rako aplikazio, joko, luzapen eta gai bikainak.</translation>
@@ -477,9 +477,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="7024536598735240744">Despaketatze-errorea: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Gelditu da instalazioa.</translation>
 <translation id="7025800014283535195">Aldatu Chrome-ko profila hemen</translation>
-<translation id="7036251913954633326">Kontu hau behin bakarrik erabili nahi baduzu, <ph name="GUEST_LINK_BEGIN" />gonbidatu modua<ph name="GUEST_LINK_END" /> erabil dezakezu Chrome arakatzailean. Kontu bat beste norbaitentzat gehitu nahi baduzu, <ph name="LINK_BEGIN" />gehitu beste pertsona bat<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> gailuan.
-
-Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Google-ko kontuak kudeatzeko, joan <ph name="SETTINGS_LINK_BEGIN" />Ezarpenak<ph name="SETTINGS_LINK_END" /> atalera.</translation>
 <translation id="7048502283602470098">Arakatu AA</translation>
 <translation id="7059914902409643750">Pertsonalizatu Chrome</translation>
 <translation id="7071827361006050863">Chrome-k arakatze-datuak ezabatuko ditu laster</translation>

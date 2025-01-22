@@ -17,9 +17,9 @@ generated using the spanification tool's Node::ToString() function.
 The string representation has the following format:
 `{is_buffer\,r:::<file path>:::<offset>:::<length>
 :::<replacement text>\,include-user-header:::<file path>:::-1:::-1
-:::<include text>\,size_info_available\,is_data_change\,is_deref_node}`
+:::<include text>\,size_info_available\,is_data_change\,is_dependent}`
 
-where `is_buffer`,`size_info_available`, `is_data_change` and `is_deref_node`
+where `is_buffer`,`size_info_available`, `is_data_change` and `is_dependent`
 are booleans represented as  0 or 1.
 
 extract_edits.py takes input that is concatenated from multiple tool
@@ -71,14 +71,11 @@ class Node:
     key_to_node = dict()
 
     def __init__(self, is_buffer, replacement, include_directive,
-                 size_info_available, is_deref_node, is_data_change) -> None:
+                 size_info_available, is_dependent, is_data_change) -> None:
         self.is_buffer = is_buffer
         self.replacement = replacement
         self.include_directive = include_directive
-        # We need to also rewrite deref expressions of the form:
-        # |*buf = something;| into |buf[0] = something;|
-        # for that, create a link between buf and the deref expression.
-        self.is_deref_node = is_deref_node
+        self.is_dependent = is_dependent
         self.is_data_change = is_data_change
 
         # Neighbors of the node in the graph. The graph is directed,
@@ -125,7 +122,7 @@ class Node:
         # - replacement
         # - include_directive
         # - size_info_available
-        # - is_deref_node
+        # - is_dependent
         # - is_data_change
         assert len(x) == 6, txt
 
@@ -298,11 +295,11 @@ def main():
         # info is available and explore the graph in depth-first search.
         DFS(node)
 
-    # Iterate over the deref_nodes and then check if their only neighbor was
+    # Iterate over the dependent nodes and then check if their only neighbor was
     # visited. Visited nodes here are nodes who's type was rewritten to span.
-    # In that case, the deref expression needs to be adapted(rewritten)
+    # In that case, the dependent expression needs to be adapted/rewritten.
     for node in Node.all():
-        if node.is_deref_node == '1':
+        if node.is_dependent == '1':
             neighbor = list(node.neighbors_directed)[0]
             if neighbor.visited:
                 neighbor.component.changes.add(node.replacement)

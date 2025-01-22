@@ -4,14 +4,14 @@
 
 #import "ios/web_view/public/cwv_credential_provider_extension_utils.h"
 
-#include "base/run_loop.h"
+#import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
-#include "components/autofill/core/browser/proto/password_requirements.pb.h"
+#import "components/autofill/core/browser/proto/password_requirements.pb.h"
 #import "ios/components/credential_provider_extension/password_spec_fetcher.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 using base::test::ios::kWaitForActionTimeout;

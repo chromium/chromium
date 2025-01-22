@@ -285,6 +285,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="233375395665273385">Eliminar e pechar sesión</translation>
 <translation id="2341410551640223969">Non se puido instalar <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Datos totais usados por Chrome, incluídas as contas, os marcadores e a configuración gardada</translation>
+<translation id="2349954856814571872">Icona do botón da barra de marcadores</translation>
 <translation id="235789365079050412">Política de privacidade de Google</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2362083820973145409">Iniciaches sesión como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Abre a configuración.</translation>
@@ -827,7 +828,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4835385943915508971">Chrome non ten acceso ao recurso solicitado.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Restaurar grupo de <ph name="TAB_COUNT_ONE" /> pestana, coa cor <ph name="COLOR_NAME" />, como un novo grupo de pestanas en segundo plano.}other{Restaurar grupo de <ph name="TAB_COUNT_MANY" /> pestanas, coa cor <ph name="COLOR_NAME" />, como un novo grupo de pestanas en segundo plano.}}</translation>
 <translation id="4837753911714442426">Abrir opcións para imprimir a páxina</translation>
-<translation id="4842092870884894799">Mostrando ventá emerxente de xeración de contrasinais</translation>
 <translation id="4844633725025837809">Para dispoñer dunha maior seguranza, os teus contrasinais encríptanse no dispositivo antes de gardarse no xestor de contrasinais de Google</translation>
 <translation id="4850886885716139402">Vista</translation>
 <translation id="4852014461738377247">Iniciando sesión…</translation>

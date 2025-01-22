@@ -638,6 +638,7 @@
 <translation id="2105838220373099643">Игре улога</translation>
 <translation id="2107021941795971877">Подршка за штампање</translation>
 <translation id="2108755909498034140">Поново покрените рачунар</translation>
+<translation id="2109845311767915560">Дељена група картица</translation>
 <translation id="2111166930115883695">Притисните тастер за размак да бисте играли</translation>
 <translation id="2113977810652731515">Картица</translation>
 <translation id="2114841414352855701">Занемарују се јер су замењене смерницама <ph name="POLICY_NAME" />.</translation>
@@ -2092,6 +2093,7 @@
 <translation id="4704745399240123930">Картице које овај продавац не прихвата су онемогућене, попут виртуелних картица.</translation>
 <translation id="4708268264240856090">Веза је прекинута</translation>
 <translation id="4708276642004148190">Снабдевање водом и прерада</translation>
+<translation id="4711628883879888561">Сарађујте на групи картица</translation>
 <translation id="471880041731876836">Немате дозволу да посетите овај сајт</translation>
 <translation id="4718897478554657123">600×900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />да покренете Windows дијагностику мреже<ph name="END_LINK" /></translation>
@@ -2698,6 +2700,7 @@
 <translation id="578305955206182703">Окер</translation>
 <translation id="5783700460098783980">Пртљаг и прибор за путовања</translation>
 <translation id="57838592816432529">Искључи звук</translation>
+<translation id="5783922175933467571"><ph name="TAB_GROUP_DISPLAY_NAME" /> – линк истиче за 48 сати</translation>
 <translation id="5784606427469807560">Дошло је до проблема при потврди картице. Проверите интернет везу и покушајте поново.</translation>
 <translation id="5785756445106461925">Поред тога, ова страница садржи и друге ресурсе који нису безбедни. Ове ресурсе могу да виде и други док су у пролазу и нападач може да их измени како би променио изглед странице.</translation>
 <translation id="5793317771769868848">Овај начин плаћања ће бити избрисан са овог уређаја</translation>
@@ -2770,6 +2773,7 @@
 <translation id="5930147475897662863">Укључите ово подешавање да бисте користили Помоћ при писању</translation>
 <translation id="593102073240001326">Практични савети, сам свој мајстор и стручни садржај</translation>
 <translation id="5932224571077948991">Сајт приказује огласе који ометају активности или обмањујуће огласе</translation>
+<translation id="5933597524153120073">Отвори све (<ph name="ITEMS" />) у новом прозору</translation>
 <translation id="5937560539988385583">Страница је преведена</translation>
 <translation id="5938153366081463283">Додајте виртуелну картицу</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3041,6 +3045,7 @@
 <translation id="6394852772105848029">Овај сајт жели да отвори апликацију <ph name="APP_NAME" /></translation>
 <translation id="639673288733510393">Скутери и мопеди</translation>
 <translation id="6398765197997659313">Изађи из режима целог екрана</translation>
+<translation id="6399633237874954301">Читач паметних картица који је дозволио администратор</translation>
 <translation id="6401136357288658127">Ове смернице су застареле. Уместо њих треба да користите нове смернице <ph name="NEW_POLICY" />.</translation>
 <translation id="640163077447496506">Истиче данас</translation>
 <translation id="6402537308870515461">Потребан је преглед пре премештања</translation>

@@ -61,6 +61,12 @@ OffscreenCanvas::OffscreenCanvas(ExecutionContext* context, gfx::Size size)
   // robust here as well.
   if (!context->IsContextDestroyed()) {
     if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+      // Snapshot the text direction. For a offscreen transferred from
+      // an element this will be over-written by the value from the element.
+      if (window->document()->documentElement()) {
+        text_direction_ =
+            window->document()->documentElement()->CachedDirectionality();
+      }
       // If this OffscreenCanvas is being created in the context of a
       // cross-origin iframe, it should prefer to use the low-power GPU.
       LocalFrame* frame = window->GetFrame();
@@ -686,11 +692,15 @@ void OffscreenCanvas::CheckForGpuContextLost() {
   }
 }
 
+TextDirection OffscreenCanvas::GetTextDirection(const ComputedStyle*) {
+  return text_direction_.value_or(TextDirection::kLtr);
+}
+
 FontSelector* OffscreenCanvas::GetFontSelector() {
   if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
     return window->document()->GetStyleEngine().GetFontSelector();
   }
-  // TODO(crbug.com/1334864): Temporary mitigation.  Remove the following
+  // TODO(crbug.com/40059901): Temporary mitigation.  Remove the following
   // CHECK once a more comprehensive solution has been implemented.
   CHECK(GetExecutionContext()->IsWorkerGlobalScope());
   return To<WorkerGlobalScope>(GetExecutionContext())->GetFontSelector();

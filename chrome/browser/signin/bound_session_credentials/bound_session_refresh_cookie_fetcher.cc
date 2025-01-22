@@ -53,9 +53,9 @@ bool BoundSessionRefreshCookieFetcher::IsPersistentError(Result result) {
     case Result::kSuccess:
     case Result::kConnectionError:
     case Result::kServerTransientError:
+    case Result::kServerUnexepectedResponse:
       return false;
     case Result::kServerPersistentError:
-    case Result::kServerUnexepectedResponse:
     case Result::kChallengeRequiredUnexpectedFormat:
     case Result::kChallengeRequiredLimitExceeded:
     case Result::kChallengeRequiredSessionIdMismatch:
@@ -67,7 +67,8 @@ bool BoundSessionRefreshCookieFetcher::IsPersistentError(Result result) {
 // static
 bool BoundSessionRefreshCookieFetcher::IsTransientError(Result result) {
   return result == Result::kConnectionError ||
-         result == Result::kServerTransientError;
+         result == Result::kServerTransientError ||
+         result == Result::kServerUnexepectedResponse;
 }
 
 std::ostream& operator<<(

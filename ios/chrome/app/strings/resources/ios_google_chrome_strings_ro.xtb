@@ -169,6 +169,7 @@ Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum
 <translation id="5639704535586432836">Deschide Setări &gt; Confidențialitate &gt; Cameră foto &gt; Google Chrome și activează camera foto.</translation>
 <translation id="5642200033778930880">Google Chrome nu poate folosi camera foto în modul Vizualizare împărțită</translation>
 <translation id="5661521615548540542">Managerul de parole Google nu a putut verifica toate parolele. Încearcă din nou mai târziu.</translation>
+<translation id="5681291952421236520">Activează în Chrome</translation>
 <translation id="5690398455483874150">{count,plural, =1{Se afișează o fereastră Chrome}few{Se afișează {count} ferestre Chrome}other{Se afișează {count} de ferestre Chrome}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Setează Chrome ca browser prestabilit</translation>
@@ -204,6 +205,7 @@ Așteaptă câteva minute înainte să schimbi contul. Dacă schimbi conturile a
 <translation id="6484712497741564393">Te-ai conectat ca <ph name="EMAIL" />.
 
 Datele tale sunt criptate cu expresia de acces. Introdu-o pentru a folosi și a salva datele Chrome în Contul Google.</translation>
+<translation id="6533470733797826516">Conectează-te mai rapid cu ajutorul completării automate din Chrome</translation>
 <translation id="6545449117344801102">Chrome detectează adresele și folosește Google Maps pentru a-ți oferi indicații de orientare și informații locale.</translation>
 <translation id="6634107063912726160">Când te deconectezi, Chrome nu va sincroniza datele noi cu Contul tău Google. Datele sincronizate anterior rămân în cont.</translation>
 <translation id="6636941099779251629">Organizația îți solicită să te conectezi pentru a folosi Chrome. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>

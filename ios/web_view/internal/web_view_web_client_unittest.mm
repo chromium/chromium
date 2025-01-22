@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web_view/internal/web_view_web_client.h"
+#import "ios/web_view/internal/web_view_web_client.h"
 
-#include "ios/web/common/user_agent.h"
+#import "ios/web/common/user_agent.h"
 #import "ios/web/common/web_view_creation_util.h"
 #import "ios/web/public/test/js_test_util.h"
-#include "ios/web/public/test/scoped_testing_web_client.h"
-#include "ios/web/public/test/web_test.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
+#import "ios/web/public/test/web_test.h"
 #import "ios/web_view/internal/cwv_web_view_internal.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "ui/base/l10n/l10n_util_mac.h"
-#include "ui/base/resource/resource_bundle.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/base/resource/resource_bundle.h"
 
 namespace ios_web_view {
 

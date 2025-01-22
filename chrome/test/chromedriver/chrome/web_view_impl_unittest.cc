@@ -191,7 +191,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
       good_child.SetByDottedPath("frame.id", "good");
       good_child.SetByDottedPath("frame.loaderId", "good_loader");
       // Default constructed WebViewImpl will point here
-      // Needed for the tests that are neutral to getFramTree
+      // Needed for the tests that are neutral to getFrameTree
       base::Value::Dict default_child;
       default_child.SetByDottedPath("frame.id", GetOwner()->GetId());
       default_child.SetByDottedPath("frame.loaderId", "default_loader");
@@ -1327,7 +1327,7 @@ class BidiDevToolsClient : public StubDevToolsClient {
                     "[BidiDevToolsClient], no 'params' in the BiDi command"};
     }
 
-    std::string* channel = command.FindString("channel");
+    std::string* channel = command.FindString("goog:channel");
 
     base::Value::Dict result;
     std::optional<int> ping = params->FindInt("ping");
@@ -1341,7 +1341,7 @@ class BidiDevToolsClient : public StubDevToolsClient {
     payload.Set("id", std::move(*id));
     payload.Set("result", std::move(result));
     if (channel != nullptr) {
-      payload.Set("channel", std::move(*channel));
+      payload.Set("goog:channel", std::move(*channel));
     }
 
     base::Value::Dict event_params;
@@ -1387,7 +1387,7 @@ TEST(SendBidiCommandTest, Success) {
 
   base::Value::Dict command;
   command.Set("id", 1);
-  command.Set("channel", "/test");
+  command.Set("goog:channel", "/test");
   command.Set("method", "some");
   command.Set("param", std::move(param));
 
@@ -1415,7 +1415,7 @@ TEST(SendBidiCommandTest, MaxJsUintId) {
 
   base::Value::Dict command;
   command.Set("id", 9007199254740991.0);
-  command.Set("channel", "/test");
+  command.Set("goog:channel", "/test");
   command.Set("method", "some");
   command.Set("param", std::move(param));
 
@@ -1443,7 +1443,7 @@ TEST(SendBidiCommandTest, NoId) {
   param.Set("ping", 123);
 
   base::Value::Dict command;
-  command.Set("channel", "/test");
+  command.Set("goog:channel", "/test");
   command.Set("method", "some");
   command.Set("param", std::move(param));
 
@@ -1463,7 +1463,7 @@ class SendBidiCommandBadChannelTest
 
 TEST_P(SendBidiCommandBadChannelTest, BadChannel) {
   // This test checks that the command responds with kUnknownError to the
-  // violation of the precondition that "channel" must be set.
+  // violation of the precondition that "goog:channel" must be set.
   std::unique_ptr<BidiDevToolsClient> client_uptr =
       std::make_unique<BidiDevToolsClient>("id");
   BidiDevToolsClient* client_ptr = client_uptr.get();
@@ -1480,7 +1480,7 @@ TEST_P(SendBidiCommandBadChannelTest, BadChannel) {
   command.Set("method", "some");
   command.Set("param", std::move(param));
   if (Channel().has_value()) {
-    command.Set("channel", *Channel());
+    command.Set("goog:channel", *Channel());
   }
 
   Timeout timeout{kErrorWaitDuration};
@@ -1489,7 +1489,7 @@ TEST_P(SendBidiCommandBadChannelTest, BadChannel) {
   Status status = view.SendBidiCommand(std::move(command), timeout, response);
   EXPECT_TRUE(StatusCodeIs<kUnknownError>(status));
   EXPECT_THAT(status.message(),
-              ::testing::ContainsRegex("non-empty string 'channel'"));
+              ::testing::ContainsRegex("non-empty string 'goog:channel'"));
   EXPECT_EQ(initial_listener_count, client_ptr->EventListenerCount());
 }
 
@@ -1520,7 +1520,7 @@ TEST_P(SendBidiCommandSpecialChannelTest, ChannelValues) {
 
   base::Value::Dict command;
   command.Set("id", 1);
-  command.Set("channel", Channel());
+  command.Set("goog:channel", Channel());
   command.Set("method", "some");
   command.Set("param", std::move(param));
 
@@ -1567,7 +1567,7 @@ TEST(SendBidiCommandTest, NoResponse) {
 
   base::Value::Dict command;
   command.Set("id", 1);
-  command.Set("channel", "/test");
+  command.Set("goog:channel", "/test");
   command.Set("method", "some");
   command.Set("param", std::move(param));
 

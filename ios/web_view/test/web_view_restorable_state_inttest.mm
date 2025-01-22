@@ -8,7 +8,7 @@
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web_view/test/web_view_inttest_base.h"
 #import "ios/web_view/test/web_view_test_util.h"
-#include "testing/gtest_mac.h"
+#import "testing/gtest_mac.h"
 
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;

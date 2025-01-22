@@ -1616,6 +1616,7 @@ TemplateURL::TemplateURL(const std::optional<TemplateURLData>& local_data,
       contextual_search_url_ref_(this, TemplateURLRef::CONTEXTUAL_SEARCH),
       type_(type),
       engine_type_(SEARCH_ENGINE_UNKNOWN) {
+  CHECK(local_data || account_data);
   ResizeURLRefVector();
   SetPrepopulateId(active_data().prepopulate_id);
 }
@@ -2188,4 +2189,10 @@ const std::optional<TemplateURLData>& TemplateURL::GetLocalData() const {
 
 const std::optional<TemplateURLData>& TemplateURL::GetAccountData() const {
   return account_data_;
+}
+
+void TemplateURL::CopyActiveValueToLocalAndAccount() {
+  TemplateURLData new_data = data();
+  local_data_ = new_data;
+  account_data_ = new_data;
 }

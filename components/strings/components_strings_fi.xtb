@@ -85,6 +85,7 @@
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> katkaisi yhteyden yllättäen.</translation>
 <translation id="1160009341934077418">Hintahistoria verkossa</translation>
 <translation id="1161325031994447685">Muodosta yhteys Wi-Fi-verkkoon uudelleen.</translation>
+<translation id="1161663161838091892">Jatka synkronoimalla välilehdet ja historia</translation>
 <translation id="1163507966173624031">Kansanmusiikki ja perinteinen musiikki</translation>
 <translation id="11635448457105324">Ylläpidä osoitteita ‑painike, aktivoi lisätäksesi ja muuttaaksesi osoitteita Chromen asetuksista</translation>
 <translation id="1165039591588034296">Virhe</translation>
@@ -1105,6 +1106,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="297173220375858963">Tietokonepohjainen taitto</translation>
 <translation id="2972581237482394796">&amp;Tee uudelleen</translation>
 <translation id="2974468223369775963">Tätä IBAN-numeroa ei voitu tallentaa Google-tilillesi. Se on sen sijaan tallennettu Chromeen tällä laitteella. Chrome kysyy tätä seuraavan kerran, kun käytät tätä IBAN-numeroa.</translation>
+<translation id="297667759942911166">Tee yhteistyötä välilehtiryhmissä</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, tällä hetkellä valittuna. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">lukita näppäimistön ja käyttää sitä</translation>
 <translation id="2978824962390592855">Ooppera</translation>
@@ -1969,6 +1971,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4434045419905280838">Ponn.ikkunat ja uudelleenohjaus</translation>
 <translation id="443673843213245140">Välityspalvelinta ei saa käyttää, mutta erilliset välityspalvelimen asetukset on määritetty.</translation>
 <translation id="4438821706955556403">Tyypillinen hinta</translation>
+<translation id="444116852243722675">Avaa kaikki (<ph name="ITEMS" />)</translation>
 <translation id="4441832193888514600">Ohitettu, koska käytäntö voidaan asettaa vain pilvikäyttäjäkäytäntönä.</translation>
 <translation id="4445133368066241428">Suositut aiheet</translation>
 <translation id="4445964943162061557">Tämä on kokeellinen ominaisuus, joka ei ehkä osu aina oikeaan.</translation>
@@ -2064,6 +2067,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4661556981531699496">Lemmikit ja eläimet</translation>
 <translation id="4661868874067696603">Hae lisää ostovaihtoehtoja</translation>
 <translation id="4663373278480897665">Kamera sallittu</translation>
+<translation id="4664084870155869900">Täytä ensi kerralla automaattisesti. Kortti on tallennettu laitteelle.</translation>
 <translation id="466561305373967878">Lautapelit</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Virtuaalitodellisuus</translation>
@@ -2635,6 +2639,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5675809467256309336">Dance‑ ja elektroninen musiikki</translation>
 <translation id="5675959228867414813">Näytä päivämäärän mukaan</translation>
 <translation id="567604591393105935">Kaupan alapaneeli avattu puoliksi</translation>
+<translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Folio</translation>
 <translation id="5680642791693447368">Trillerit, rikos‑ ja jännityselokuvat</translation>
 <translation id="568292603005599551">Kuvan X sijainti</translation>
@@ -2672,6 +2677,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="573555826359077410">Luo lomake ‑painike, aktivoi luodaksesi uusi lomake nopeasti Google Formsissa</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Tallenna kortti Google-tilillesi}other{Tallenna kortit Google-tilillesi}}</translation>
 <translation id="5738385766833540397">Valitse, miten saat hinnanlaskuilmoituksia seuraamistasi tuotteista</translation>
+<translation id="573974402615125334">Synkronoi historia ja välilehdet, jotta voit jakaa välilehtiryhmiä, liittyä niihin ja yhteiskäyttää niitä</translation>
 <translation id="5740911612628596808">Kirjekuori C9</translation>
 <translation id="5742806904559466333">Baarit, klubit ja yöelämä</translation>
 <translation id="5743684619253032786">Kynsienhoitotuotteet</translation>
@@ -3872,6 +3878,7 @@ Lisätietoja:
 <translation id="7865448901209910068">Paras nopeus</translation>
 <translation id="7870281855125116701">Alennus löydetty</translation>
 <translation id="7871445724586827387">Vaihda Google-tilin salasana</translation>
+<translation id="787226752901403048">Kirjaudu Chromeen, niin voit jakaa välilehtiryhmiä, liittyä niihin ja ideoida yhdessä</translation>
 <translation id="7877007680666472091">suojatun sisällön tunnukset</translation>
 <translation id="7878562273885520351">Salasanasi on saattanut vaarantua.</translation>
 <translation id="7882421473871500483">Ruskea</translation>
@@ -4327,6 +4334,7 @@ Lisätietoja:
 <translation id="8702965365666568344">Asennusteippi</translation>
 <translation id="8703575177326907206">Yhteyttäsi verkkotunnukseen <ph name="DOMAIN" /> ei ole salattu.</translation>
 <translation id="8705331520020532516">Sarjanumero</translation>
+<translation id="8706806585855470492">Voit jakaa välilehtiryhmiä, liittyä niihin ja yhteiskäyttää niitä</translation>
 <translation id="8708134712139312373">Saa pyytää lupaa yhdistää Bluetooth-laitteisiin</translation>
 <translation id="8710842507289500830">Fonttityyli</translation>
 <translation id="8712637175834984815">Ymmärretty</translation>
@@ -4469,6 +4477,7 @@ Lisätietoja:
 <translation id="8975263830901772334">Tulostamiesi tiedostojen nimet</translation>
 <translation id="8982884016487650216">PDF ladattu</translation>
 <translation id="8983369100812962543">Voit nyt muuttaa sovelluksen kokoa</translation>
+<translation id="8985112471026018799">Tallenna kortti, jotta voit maksaa nopeammin</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, katso selaushistoriaasi Chromessa painamalla sarkainta ja sitten Enter</translation>
 <translation id="8987663052629670333">Valokuvien tulostuspalvelut</translation>
 <translation id="8987927404178983737">Kuukausi</translation>
@@ -4535,6 +4544,7 @@ Lisätietoja:
 <translation id="9090993752571911635">Internetpalveluntarjoajat</translation>
 <translation id="9093723786115107672">Yöasut</translation>
 <translation id="9094544726794842788">En tykkää ‑painike avaa lomakkeen, jolla voit antaa yksityiskohtaista palautetta siitä, miksi et pidä näistä tuloksista</translation>
+<translation id="9094809883254050729">Täytä ensi kerralla automaattisesti. Kortti salataan tallennettaessa.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, paina ensin sarkainta ja sitten Enter, niin voit valita Chromen järjestelmän oletusselaimeksi iOS-asetuksista</translation>
 <translation id="9101450247048146228">Kameran käyttö ja liike (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Lokero 1</translation>

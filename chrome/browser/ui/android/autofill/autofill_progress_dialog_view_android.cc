@@ -40,21 +40,26 @@ void AutofillProgressDialogViewAndroid::Dismiss(
     // automatically without user actions.
     DCHECK(!is_canceled_by_user);
     std::u16string confirmation_message = controller_->GetConfirmationMessage();
-    controller_->OnDismissed(/*is_canceled_by_user=*/false);
-    controller_ = nullptr;
     ShowConfirmation(confirmation_message);
+    // Call to OnDismissed will destroy `this`.
+    controller_->OnDismissed(/*is_canceled_by_user=*/false);
     return;
   }
 
+  // Move the `java_object_` to a local since calling OnDismissed() below will
+  // destroy `this`.
+  base::android::ScopedJavaGlobalRef<jobject> java_object =
+      std::move(java_object_);
+
   if (controller_) {
+    // Call to OnDismissed will destroy `this`.
     controller_->OnDismissed(/*is_canceled_by_user=*/is_canceled_by_user);
-    controller_ = nullptr;
   }
+
+  // Don't "touch" `this` from here on.
   JNIEnv* env = base::android::AttachCurrentThread();
-  if (!java_object_.is_null()) {
-    Java_AutofillProgressDialogBridge_dismiss(env, java_object_);
-  } else {
-    OnDismissed(env);
+  if (!java_object.is_null()) {
+    Java_AutofillProgressDialogBridge_dismiss(env, java_object);
   }
 }
 
@@ -69,8 +74,8 @@ AutofillProgressDialogViewAndroid::GetWeakPtr() {
 
 void AutofillProgressDialogViewAndroid::OnDismissed(JNIEnv* env) {
   if (controller_) {
+    // Call to OnDismissed will destroy `this`.
     controller_->OnDismissed(/*is_canceled_by_user=*/true);
-    controller_ = nullptr;
   }
 }
 

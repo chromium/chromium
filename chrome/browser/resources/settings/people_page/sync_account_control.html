@@ -108,6 +108,7 @@
         background-size: 100% auto;
         display: none;
         padding-top: calc(120 / 680 * 100%); /* Keep background ratio. */
+        display: block;
       }
 
       @media (prefers-color-scheme: dark) {
@@ -116,9 +117,6 @@
         }
       }
 
-      :host([showing-promo]) #banner {
-        display: block;
-      }
     </style>
     <div id="banner" hidden="[[shouldHideBanner_(syncStatus.signedInState)]]"
         part="banner"></div>
@@ -194,7 +192,8 @@
             hidden="[[!shouldAllowAccountSwitch_(syncStatus.signedInState,
                 syncStatus.domain, syncStatus.signinPaused)]]"
             on-click="onMenuButtonClick_" id="dropdown-arrow"
-            aria-label="$i18n{useAnotherAccount}">
+            aria-label="$i18n{useAnotherAccount}"
+            aria-expanded="false">
         </cr-icon-button>
         <div class="separator"
             hidden="[[!shouldAllowAccountSwitch_(syncStatus.signedInState,

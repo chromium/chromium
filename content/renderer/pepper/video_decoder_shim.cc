@@ -677,17 +677,16 @@ void VideoDecoderShim::SendSharedImages() {
     // SharedImageInterface happens during Creation/Destruction, so we don't
     // need SyncToken here and ignore one returned from
     // CopyVideoFrameToSharedImage.
-    auto destination = gpu::MailboxHolder(*it, gpu::SyncToken(), GL_TEXTURE_2D);
+    auto mailbox = *it;
     std::ignore = video_renderer_->CopyVideoFrameToSharedImage(
-        shared_main_thread_context_provider_.get(), frame->video_frame,
-        destination, /*use_visible_rect=*/false);
-    available_shared_images_.erase(it);
+        shared_main_thread_context_provider_.get(), frame->video_frame, mailbox,
+        gpu::SyncToken(), /*use_visible_rect=*/false);
 
     DCHECK(frame->decode_id.has_value());
     host_->SharedImageReady(
-        base::checked_cast<int32_t>(frame->decode_id.value()),
-        destination.mailbox, frame->video_frame->coded_size(),
-        frame->video_frame->visible_rect());
+        base::checked_cast<int32_t>(frame->decode_id.value()), mailbox,
+        frame->video_frame->coded_size(), frame->video_frame->visible_rect());
+    available_shared_images_.erase(it);
     pending_frames_.pop();
   }
 

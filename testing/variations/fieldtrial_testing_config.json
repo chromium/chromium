@@ -8850,21 +8850,6 @@
             ]
         }
     ],
-    "EnableASWebAuthenticationSession": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableASWebAuthenticationSession"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableCertManagementUIV2": [
         {
             "platforms": [
@@ -9660,6 +9645,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableExternalDisplayHDR10Mode"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ExternalRateControlForMediaFoundationVideoEncoder": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MediaFoundationUseSWBRCForH264Camera"
                     ]
                 }
             ]
@@ -11487,9 +11487,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_WithScans_5",
+                    "name": "Enabled_WithThrottling_20250121_5",
                     "enable_features": [
                         "AutofillAcrossIframesIos",
+                        "AutofillAcrossIframesIosThrottling",
                         "AutofillAcrossIframesIosTriggerFormExtraction"
                     ]
                 }
@@ -17281,15 +17282,14 @@
             "platforms": [
                 "android",
                 "chromeos",
-                "ios",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "enable_features": [
+                    "name": "Holdback",
+                    "disable_features": [
                         "PolicyBlocklistProceedUntilResponse"
                     ]
                 }

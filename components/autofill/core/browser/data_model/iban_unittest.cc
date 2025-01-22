@@ -188,10 +188,8 @@ TEST(IbanTest, SetRawData) {
   Iban iban;
 
   // Verify RawInfo can be correctly set and read.
-  iban.SetRawInfoWithVerificationStatus(IBAN_VALUE,
-                                        u"DE91 1000 0000 0123 4567 89",
-                                        VerificationStatus::kUserVerified);
-  EXPECT_EQ(u"DE91100000000123456789", iban.GetRawInfo(IBAN_VALUE));
+  iban.set_value(u"DE91 1000 0000 0123 4567 89");
+  EXPECT_EQ(u"DE91100000000123456789", iban.value());
 }
 
 TEST(IbanTest, GetUserFacingValue_LocalIban) {

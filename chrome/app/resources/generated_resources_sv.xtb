@@ -129,7 +129,6 @@
 <translation id="1079242569060319448">Har du glömt pinkoden?</translation>
 <translation id="1079285777677001938">Vissa webbplatsers funktioner kanske inte fungerar.</translation>
 <translation id="1079766198702302550">Blockera alltid kameraåtkomsten</translation>
-<translation id="1080365971383768617">Lösenord på alla dina enheter</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 flik}other{<ph name="GROUP_TITLE" /> – # flikar}}</translation>
 <translation id="1082214733466244292">Administratören har blockerat vissa funktioner för den här enheten</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> önskar återställa inställningarna för Chrome till de ursprungliga standardinställningarna. Detta innebär att din startsida tillsammans med sidan ny flik och sökmotorn återställs liksom att tillägg inaktiveras och alla flikar lossas. Dessutom rensas alla tillfälliga och cachelagrade data, såsom cookies, innehåll och webbplatsdata</translation>
@@ -523,6 +522,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="135389172849514421">Fungerar offline</translation>
 <translation id="1353980523955420967">Det gick inte att hitta PPD-filen. Kontrollera att Chromebook är ansluten till internet och försök igen.</translation>
 <translation id="1354045473509304750">Tillåt <ph name="HOST" /> att använda och röra din kamera även i fortsättningen</translation>
+<translation id="1354148503392558902">Lösenordet ändras …</translation>
 <translation id="1355088139103479645">Vill du radera all data?</translation>
 <translation id="1356376170199999104">Tillåts – <ph name="PERMISSION_DETAILS" />. Slå på mikrofonen med det fysiska reglaget.</translation>
 <translation id="1356959069439783953">Inaktiva flikar får ett nytt utseende</translation>
@@ -1103,6 +1103,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1751335846119670066">Hjälp mig läsa</translation>
 <translation id="17513872634828108">Öppna flikar</translation>
 <translation id="175196451752279553">Ö&amp;ppna en stängd flik igen</translation>
+<translation id="1752557850776261983">Kontrollerar inloggning …</translation>
 <translation id="1753067873202720523">Din Chromebook kanske inte laddas medan den är på.</translation>
 <translation id="1753557900380512635">Inredning</translation>
 <translation id="1753905327828125965">Mest besökta</translation>
@@ -1935,6 +1936,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2323018538045954000">Sparade wifi-nätverk</translation>
 <translation id="2325444234681128157">Kom ihåg lösenordet</translation>
 <translation id="2326188115274135041">Bekräfta pinkoden om du vill aktivera automatisk upplåsning</translation>
+<translation id="2326583548923775947">Detta är inte ett Google-konto. Objekt som du sparar i Chrome blir inte tillgängliga på andra enheter.</translation>
 <translation id="2326906096734221931">Öppna appinställningarna</translation>
 <translation id="2326931316514688470">&amp;Läs in appen igen</translation>
 <translation id="2327492829706409234">Aktivera app</translation>
@@ -2308,6 +2310,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2581786034175502848">Tryck på Skift fem gånger för att återaktivera den</translation>
 <translation id="2581992808349413349">Använd en säker anslutning för att söka efter en webbplats IP-adress i domännamnssystemet (DNS). Detta använder en hanterad tjänsteleverantör på <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Plattform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
+<translation id="2583905535229480958">Alla smartkortsläsare</translation>
 <translation id="2584109212074498965">Det gick inte att hämta Kerberos-biljetten. Försök igen eller kontakta organisationens enhetsadministratör. (Felkod: <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Hantera webbplatsbehörigheter för mikrofonen i Chrome</translation>
 <translation id="2586561813241011046">Det gick inte att installera <ph name="APP_NAME" />. Försök igen eller kontakta administratören. Felkod: <ph name="ERROR_CODE" />.</translation>
@@ -3032,6 +3035,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="310297983047869047">Föregående bild</translation>
 <translation id="3103451787721578293">Ange en anledning till att du laddar upp datan:</translation>
 <translation id="3103512663951238230">Alt + klick</translation>
+<translation id="3104763887980088552">Aktivitetslogg</translation>
 <translation id="3104948640446684649">Skicka användnings- och diagnostikdata. Den här enheten skickar för närvarande diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används bland annat till att förbättra systemets och apparnas stabilitet. Viss samlad data används även till att förbättra appar från Google och Googles partners, till exempel Android-utvecklare. Om ytterligare webb- och appaktivitet har aktiverats kan denna data sparas i Google-kontot. <ph name="BEGIN_LINK2" />Läs mer om mätvärden<ph name="BEGIN_LINK2_END" />Läs mer<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Den senaste misslyckade uppdateringen</translation>
 <translation id="3105796011181310544">Vill du byta tillbaka till Google?</translation>
@@ -3746,6 +3750,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3629664892718440872">Kom ihåg det här valet</translation>
 <translation id="3630132874740063857">Din telefon</translation>
 <translation id="3630995161997703415">Lägg till den här webbplatsen på hyllan och använd den när som helst</translation>
+<translation id="3632929818790223729">Delad flik med aktiv flik</translation>
 <translation id="3634652306074934350">Begäran om behörighet har löpt ut</translation>
 <translation id="3635199270495525546">Trusted Platform Module (TPM) upptäcktes</translation>
 <translation id="3635353578505343390">Skicka feedback till Google</translation>
@@ -6247,9 +6252,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) vill att du ska gå med i en flikgrupp. Alla som har länken kan redigera alla flikar, så tänk efter innan du går med. Länken löper ut om 48 timmar.</translation>
 <translation id="5410889048775606433">Fuchsia</translation>
 <translation id="5411022484772257615">Det gick inte att slutföra registrering i skolan</translation>
-<translation id="5411856344659127989">Om du vill lägga till ett konto åt någon annan <ph name="LINK_BEGIN" />lägger du till en ny person<ph name="LINK_END" /> på <ph name="DEVICE_TYPE" />.
-
-Behörigheter som du redan har gett webbplatser och appar kan gälla för det här kontot. Du kan hantera dina Google-konton i <ph name="SETTINGS_LINK_BEGIN" />inställningarna<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="54118879136097217">Installera appen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="5413640305322530561">Läs mer om diagnostik- och användningsdata</translation>
 <translation id="5414198321558177633">Uppdaterar listan över profiler. Det kan ta några minuter.</translation>
@@ -6528,7 +6530,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5610867721023328944">Försök igen eller välj något av de tillgängliga temana nedan.</translation>
 <translation id="5611398002774823980">Spara i kontot</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5613074282491265467">När du är inloggad i Chrome lagras lösenord du sparar i Google-kontot <ph name="USER_EMAIL" />. Öppna inställningarna om du vill inaktivera detta.</translation>
 <translation id="5614190747811328134">Meddelande till användaren</translation>
 <translation id="5614553682702429503">Vill du spara lösenordet?</translation>
 <translation id="5614947000616625327">iCloud-nyckelring</translation>
@@ -8560,7 +8561,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7088674813905715446">Den här enheten har avaktualiserats av administratören. Du måste be administratören sätta enheten som väntande innan du kan registrera den.</translation>
 <translation id="7088960765736518739">Brytarstyrning</translation>
 <translation id="7089253021944603172">Fliken är aktiv igen</translation>
-<translation id="7090160970140261931">Du kan lägga till ytterligare konton på <ph name="DEVICE_TYPE" /> och använda dem på webbplatser och i Android-appar. Du kan även styra vilka konton som används i Android-appar.</translation>
 <translation id="7090714929377281710">Inaktivera surfzon automatiskt</translation>
 <translation id="7092504544229909737">Kan inte användas med Android-appar</translation>
 <translation id="7093220653036489319">Snabbinfo</translation>
@@ -9021,6 +9021,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7424818322350938336">Nätverket har lagts till</translation>
 <translation id="7425037327577270384">Hjälp mig skriva</translation>
 <translation id="7427348830195639090">Bakgrundssida: <ph name="BACKGROUND_PAGE_URL" /></translation>
+<translation id="7427729970025360383">Den här är en hanterad profil</translation>
 <translation id="7427798576651127129">Ring från <ph name="DEVICE_NAME" /></translation>
 <translation id="7429415133937917139">Simulerar utdatan från en uppdaterbar punktskriftsskärm
     på ChromeVox-panelen högst upp på skärmen</translation>
@@ -10039,6 +10040,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8140869601171867148">Google-kontot är samma konto som du använder för Gmail, YouTube, Chrome och andra produkter från Google.
     Med ditt konto kommer du enkelt åt alla dina bokmärken, filer och annat.</translation>
 <translation id="8141418916163800697">Du kan konfigurera fler funktioner i inställningarna för Phone Hub</translation>
+<translation id="814156740715940972">Delad flik med aktiv flik</translation>
 <translation id="8141584439523427891">Öppnas i en annan webbläsare nu</translation>
 <translation id="8141725884565838206">Hantera dina lösenord</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{en video}other{# videor}}</translation>
@@ -11171,9 +11173,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="894360074127026135">Netscapes internationella uppgradering</translation>
 <translation id="8944099748578356325">Batteriet förbrukas snabbare (för närvarande <ph name="BATTERY_PERCENTAGE" /> %)</translation>
 <translation id="8944633700466246631">Skapa en sexsiffrig pinkod för återställning för Google Lösenordshantering</translation>
-<translation id="8944725102565796255">Om du bara vill logga in en gång med kontot kan du <ph name="GUEST_LINK_BEGIN" />använda enheten som gäst<ph name="GUEST_LINK_END" />. Om du vill lägga till ett konto åt någon annan <ph name="LINK_BEGIN" />lägger du till en ny person<ph name="LINK_END" /> på <ph name="DEVICE_TYPE" />.
-
-Behörigheter som du redan har gett webbplatser och appar kan gälla för det här kontot. Du kan hantera dina Google-konton i <ph name="SETTINGS_LINK_BEGIN" />inställningarna<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="8945274638472141382">Ikonstorlek</translation>
 <translation id="8945508919180478719">Studiomikrofon</translation>
 <translation id="8946359700442089734">Felsökningsfunktionerna aktiverades inte helt på den här <ph name="IDS_SHORT_PRODUCT_NAME" />-enheten.</translation>

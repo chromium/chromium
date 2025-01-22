@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web_view/internal/signin/web_view_device_accounts_provider_impl.h"
+#import "ios/web_view/internal/signin/web_view_device_accounts_provider_impl.h"
 
-#include "base/check.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/check.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/web_view/internal/sync/cwv_sync_controller_internal.h"
 #import "ios/web_view/public/cwv_identity.h"
 #import "ios/web_view/public/cwv_sync_controller_data_source.h"

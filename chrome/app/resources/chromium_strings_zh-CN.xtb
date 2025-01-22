@@ -38,9 +38,6 @@
 <translation id="1594928384848033697">Chromium 想要删除您的密码管理工具数据。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{您的管理员要求您重新启动 Chromium 以应用一项更新}=1{您的管理员要求您重新启动 Chromium 以应用一项更新。您的无痕式窗口不会重新打开。}other{您的管理员要求您重新启动 Chromium 以应用一项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
 <translation id="1625909126243026060">检查 Chromium 中重要的隐私控制设置和安全控件</translation>
-<translation id="1632539827495546968">如果只想使用此账号一次，您可在 Chromium 浏览器中使用<ph name="GUEST_LINK_BEGIN" />访客模式<ph name="GUEST_LINK_END" />。如果想添加他人的账号，请向您的 <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />添加新用户<ph name="LINK_END" />。
-
-您已向网站和应用授予的权限可能会应用于此账号。您可在<ph name="SETTINGS_LINK_BEGIN" />设置<ph name="SETTINGS_LINK_END" />部分中管理您的 Google 账号。</translation>
 <translation id="1640672724030957280">正在下载...</translation>
 <translation id="1709772298389099340">为 <ph name="BROWSER_NAME" /> 提供提升的权限。</translation>
 <translation id="1715127912119967311">为帮助改进这些功能，Chromium 会将您与它们的互动数据发送给 Google。此类数据可能会由人工审核员读取、处理和注释。</translation>
@@ -364,7 +361,6 @@
 <translation id="6096348254544841612">有可用的更新。欢迎自定义和控制 Chromium。</translation>
 <translation id="6107893135096467929">已开启 • Chromium 无法验证此扩展程序的来源</translation>
 <translation id="6119438414301547735">允许扩展程序在 Chromium 工具栏中显示访问请求</translation>
-<translation id="6120345080069858279">Chromium 会将此密码保存在您的 Google 账号中，因此您不必记住它。</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> 存在危险，因此 Chromium 已将其拦截。</translation>
 <translation id="6132897690380286411">Chromium 即将关闭并删除数据</translation>
 <translation id="6145820983052037069">您可在此处切换 Chromium 个人资料</translation>

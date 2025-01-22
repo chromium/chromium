@@ -21,6 +21,11 @@ class WebState;
 
 - (void)updateNavigationEdgeSwipeForWebState:(web::WebState*)webState;
 
+// Determines whether edge navigation is enabled for the specified swipe
+// direction.
+- (BOOL)edgeNavigationIsEnabledForDirection:
+    (UISwipeGestureRecognizerDirection)direction;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SIDE_SWIPE_UI_BUNDLED_SIDE_SWIPE_MEDIATOR_TESTING_H_

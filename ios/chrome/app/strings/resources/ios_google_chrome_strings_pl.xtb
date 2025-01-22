@@ -169,6 +169,7 @@ Odczekaj kilka minut, zanim się wylogujesz. Jeśli wylogujesz się teraz, te da
 <translation id="5639704535586432836">Wybierz Ustawienia &gt; Prywatność &gt; Aparat &gt; Google Chrome i włącz aparat.</translation>
 <translation id="5642200033778930880">Google Chrome nie może używać aparatu w trybie widoku dzielonego</translation>
 <translation id="5661521615548540542">Menedżerowi haseł Google nie udało się sprawdzić wszystkich haseł. Spróbuj później.</translation>
+<translation id="5681291952421236520">Przełącz Chrome</translation>
 <translation id="5690398455483874150">{count,plural, =1{Pokazuję 1 okno Chrome}few{Pokazuję {count} okna Chrome}many{Pokazuję {count} okien Chrome}other{Pokazuję {count} okna Chrome}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Ustaw Chrome jako domyślną przeglądarkę</translation>
@@ -204,6 +205,7 @@ Zanim przełączysz się na inne konto, odczekaj kilka minut. Jeśli przełączy
 <translation id="6484712497741564393">Zalogowano jako <ph name="EMAIL" />.
 
 Dane zostały zaszyfrowane za pomocą Twojego hasła wielowyrazowego. Podaj to hasło, aby korzystać z danych Chrome i zapisywać je na swoim koncie Google.</translation>
+<translation id="6533470733797826516">Loguj się szybciej dzięki autouzupełnianiu w Chrome</translation>
 <translation id="6545449117344801102">Chrome wykrywa adresy i wykorzystuje Mapy Google, aby wyświetlać Ci wskazówki dojazdu i informacje lokalne.</translation>
 <translation id="6634107063912726160">Gdy się wylogujesz, Chrome nie zsynchronizuje żadnych nowych danych z Twoim kontem Google. Dane, które zostały zsynchronizowane wcześniej, pozostaną na koncie.</translation>
 <translation id="6636941099779251629">Twoja organizacja wymaga od Ciebie zalogowania się w Chrome. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>

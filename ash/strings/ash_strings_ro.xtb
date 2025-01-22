@@ -973,6 +973,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4285498937028063278">Anulați fixarea</translation>
 <translation id="428715201724021596">Se conectează la profil. Poate dura câteva minute.</translation>
 <translation id="4287250812980588583">Fereastră Chrome</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Volumul microfonului este controlat de <ph name="APP_NAME" />}few{Volumul microfonului este controlat de # aplicații}other{Volumul microfonului este controlat de # de aplicații}}</translation>
 <translation id="4294319844246081198">Bună dimineața, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Șterge toate cele <ph name="COUNT" /> notificări</translation>
 <translation id="4300272766492248925">Deschide aplicația</translation>

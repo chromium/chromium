@@ -16,15 +16,8 @@
 
 namespace input {
 
-class StylusInterface;
-
 class COMPONENT_EXPORT(INPUT) RenderInputRouterClient {
  public:
-  // TODO(b/331420891): Move these methods into RenderInputRouter.
-  virtual void IncrementInFlightEventCount() = 0;
-  virtual void DecrementInFlightEventCount(
-      blink::mojom::InputEventResultSource ack_source) = 0;
-
   virtual void ForwardWheelEventWithLatencyInfo(
       const blink::WebMouseWheelEvent& wheel_event,
       const ui::LatencyInfo& latency_info) = 0;
@@ -45,7 +38,6 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouterClient {
       const gfx::Range& range,
       const std::optional<std::vector<gfx::Rect>>& character_bounds,
       const std::optional<std::vector<gfx::Rect>>& line_bounds) = 0;
-  virtual StylusInterface* GetStylusInterface() = 0;
   // Initiate stylus handwriting.
   virtual void OnStartStylusWriting() = 0;
   // Update which editable element has focus for stylus writing. When

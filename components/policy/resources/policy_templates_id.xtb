@@ -384,6 +384,11 @@ Tindakan ini akan menggantikan kebijakan <ph name="DEFAULT_WINDOW_PLACEMENT_SETT
 <translation id="1294263471858445589">Mengaktifkan autentikasi pasif di sesi samaran dan reguler.</translation>
 <translation id="1295737447968372331">Mengaktifkan dikte di layar login</translation>
 <translation id="1297182715641689552">Gunakan skrip proxy .pac</translation>
+<translation id="1297909092292754072">Menetapkan kebijakan akan menentukan daftar origin (URL) atau pola nama host (seperti *.example.com) yang tidak dikenai pembatasan keamanan untuk origin yang tidak aman. Pola hanya diterima untuk nama host; URL/origin dengan skema harus berupa string yang sama persis. Organisasi dapat menentukan origin untuk aplikasi lama yang tidak dapat men-deploy TLS atau menyiapkan server staging untuk pengembangan web internal, sehingga developer dapat menguji fitur yang memerlukan konteks aman tanpa harus men-deploy TLS di server staging. Dengan kebijakan ini, origin tidak akan dilabeli "Not Secure" (Tidak Aman) di kolom URL.
+
+Menetapkan daftar URL dalam kebijakan ini memiliki efek yang sama dengan menetapkan tanda command line --unsafely-treat-insecure-origin-as-secure ke comma separated list, yang berisi URL yang sama. Jika ditetapkan, kebijakan ini akan menggantikan tanda command line dan UnsafelyTreatInsecureOriginAsSecure.
+
+Untuk informasi selengkapnya tentang konteks aman, lihat Konteks Aman (https://www.w3.org/TR/secure-contexts ).</translation>
 <translation id="1297961932043741908">Menetapkan batas megabyte memori yang dapat digunakan oleh satu instance Chrome.</translation>
 <translation id="1304973015437969093">ID Ekstensi/Aplikasi dan URL pembaruan akan dipasang di latar belakang</translation>
 <translation id="1305400589435476516">Jika kebijakan disetel ke Aktif, roaming data akan diizinkan untuk perangkat.
@@ -2018,6 +2023,7 @@ Jika kebijakan ini disetel ke aktif atau tidak disetel, pengguna dapat memilih f
 
       Catatan: Mengisolasi terlalu banyak situs di Android dapat menyebabkan masalah performa, terutama pada perangkat dengan memori rendah. Kebijakan ini hanya berlaku di Chrome pada perangkat Android dengan RAM lebih dari 1 GB. Untuk menerapkan kebijakan ini di platform non-Android, gunakan <ph name="ISOLATE_ORIGINS_POLICY_NAME" />.</translation>
 <translation id="2407758458436268630">Izinkan model redup smart untuk memperpanjang waktu hingga layar meredup</translation>
+<translation id="2410163749464044777">Setelan penyimpanan data pengguna lokal</translation>
 <translation id="2411629345938804022">Jika kebijakan disetel ke 3, situs akan meminta akses ke perangkat Bluetooth di sekitar. Jika kebijakan disetel ke 2, akses ke perangkat Bluetooth di sekitar akan ditolak.
 
       Jika kebijakan tidak disetel, situs akan meminta akses, tetapi pengguna dapat mengubah setelan ini.</translation>
@@ -2560,6 +2566,9 @@ Jika kebijakan tidak disetel, <ph name="BLOCK_POPUPS_POLICY_NAME" /> akan berlak
 <translation id="2801378553855965587">Nonaktifkan Integrasi <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
 <translation id="2805707493867224476">Izinkan semua situs menampilkan pop-up</translation>
 <translation id="2806804577787377637">Kebijakan ini tidak digunakan lagi dan tidak didukung. Sebagai gantinya, gunakan <ph name="PER_APP_TIME_LIMITS_ALLOWLIST" />.</translation>
+<translation id="2812417768214606683">Kebijakan ini menentukan daftar perangkat penyimpanan USB yang dikecualikan dari kebijakan <ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" /> dan <ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" />.
+
+Entri untuk kebijakan ini berupa pasangan ID Vendor dan Kode Produk USB yang mengidentifikasi model perangkat USB tertentu.</translation>
 <translation id="2815701930753942156">Kebijakan ini menentukan daftar interval mingguan selama perangkat <ph name="PRODUCT_OS_NAME" /> tidak dapat digunakan. Semua sesi yang sedang berlangsung akan ditutup dan login akan diblokir.
 
 Interval yang tumpang-tindih tidak didukung.
@@ -3759,6 +3768,7 @@ menyertakan keduanya di sertifikat RSA yang ditujukan untuk HTTPS.</translation>
 <translation id="3663124775601519286">Jika kebijakan ini disetel ke Aktif atau tidak disetel, penggunaan Translator API di <ph name="PRODUCT_NAME" /> akan diizinkan.
 
       Jika kebijakan ini disetel ke Nonaktif, penggunaan Translator API tidak akan diizinkan.</translation>
+<translation id="3664164569472125114">Mengontrol akses <ph name="GLIC" /></translation>
 <translation id="3665437376055221832">Hanya minta pengguna saat tidak ada sertifikat yang cocok dengan pemilihan otomatis.</translation>
 <translation id="3667467644216039144">Mengonfigurasi daftar jenis data penjelajahan yang harus dihapus saat pengguna menutup semua jendela browser.
 
@@ -5727,6 +5737,7 @@ Jika kebijakan ini disetel ke Aktif atau tidak disetel, "zoom" CSS akan mematuhi
 Jika Dinonaktifkan, properti "zoom" CSS akan kembali ke perilaku pra-standar lamanya.
 
 Kebijakan ini adalah penangguhan sementara agar pengguna memiliki waktu untuk memigrasikan konten web ke perilaku baru. Ada juga uji coba origin ("DisableStandardizedBrowserZoom") yang sesuai dengan perilaku saat kebijakan ini disetel ke Nonaktif. Kebijakan ini akan dihapus dan perilaku yang "Diaktifkan" akan dibuat permanen pada pencapaian 134.</translation>
+<translation id="5088303895040832480">Gunakan UsbDeviceId dalam kode baru.</translation>
 <translation id="5090791951240382356">Mengizinkan penggabungan kebijakan kamus dari sumber berbeda</translation>
 <translation id="5091315650312105069">Mengizinkan autentikasi <ph name="BASIC_AUTH" /> untuk HTTP</translation>
 <translation id="5093603777978346818">Jangan aktifkan screensaver di layar kunci.</translation>
@@ -8833,6 +8844,7 @@ Kebijakan ini tidak memengaruhi pengelola sandi pihak ketiga yang menggunakan
 API aksesibilitas.</translation>
 <translation id="7114169791477667553">Nonaktifkan penyedia penelusuran default</translation>
 <translation id="7115684775550072082">Hanya pertahankan spasi kosong untuk jenis MIME teks dan XML</translation>
+<translation id="7119538491527883595">Penyimpanan data pengguna lokal</translation>
 <translation id="7121046543122812054">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
 
       Mengizinkan pengguna login ke <ph name="PRODUCT_NAME" />.
@@ -9143,6 +9155,7 @@ Perilaku ini akan menggantikan kebijakan <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_
 <translation id="7339315111520512972">Paksa kode jaringan untuk dijalankan dalam proses browser</translation>
 <translation id="7340034977315324840">Laporkan waktu aktivitas perangkat</translation>
 <translation id="734095828044419464">Nonaktifkan penyediaan sertifikat klien</translation>
+<translation id="7341773449551289679">Daftar yang Diberi Akses ke Penyimpanan Eksternal</translation>
 <translation id="7343004974628511824">Lakukan pemeriksaan intersepsi DNS</translation>
 <translation id="7343497214039883642">File konfigurasi printer perusahaan untuk perangkat</translation>
 <translation id="7357148531287978404">Nonaktifkan input audio</translation>

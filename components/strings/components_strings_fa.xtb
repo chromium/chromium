@@ -85,6 +85,7 @@
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> به‌طور غیرمنتظره‌ای اتصال را قطع کرد.</translation>
 <translation id="1160009341934077418">سابقه قیمت در سراسر وب</translation>
 <translation id="1161325031994447685">‏اتصال مجدد به Wi-Fi</translation>
+<translation id="1161663161838091892">برای ادامه، برگه‌ها و سابقه را همگام‌سازی کنید</translation>
 <translation id="1163507966173624031">موسیقی سنتی و فولک</translation>
 <translation id="11635448457105324">‏دکمه مدیریت نشانی‌ها؛ برای افزودن و مدیریت نشانی‌ها در تنظیمات Chrome، آن را فعال کنید</translation>
 <translation id="1165039591588034296">خطا</translation>
@@ -637,6 +638,7 @@
 <translation id="2105838220373099643">بازی‌های نقش‌آفرینی</translation>
 <translation id="2107021941795971877">پشتیبان‌های چاپ</translation>
 <translation id="2108755909498034140">رایانه را راه‌اندازی مجدد کنید</translation>
+<translation id="2109845311767915560">گروه برگه هم‌رسانی‌شده</translation>
 <translation id="2111166930115883695">برای بازی کردن، کلید «فاصله» را فشار دهید</translation>
 <translation id="2113977810652731515">کارت</translation>
 <translation id="2114841414352855701">نادیده گرفته شد زیرا <ph name="POLICY_NAME" /> آن را لغو می‌کند.</translation>
@@ -1105,6 +1107,7 @@
 <translation id="297173220375858963">نشر رومیزی</translation>
 <translation id="2972581237482394796">ازنو انجام دادن</translation>
 <translation id="2974468223369775963">‏این IBAN در «حساب Google» شما ذخیره نشد. درعوض، در Chrome این دستگاه ذخیره شد. دفعه بعدی که از این IBAN استفاده کنید، Chrome دوباره این شماره را از شما درخواست خواهد کرد.</translation>
+<translation id="297667759942911166">در گروه‌های برگه مشارکت کنید</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />، درحال‌حاضر انتخاب شده است. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">صفحه‌کلید را قفل و از آن استفاده کند</translation>
 <translation id="2978824962390592855">اپرا</translation>
@@ -2064,6 +2067,7 @@
 <translation id="4661556981531699496">حیوانات خانگی و سایر حیوانات</translation>
 <translation id="4661868874067696603">گزینه‌های خرید بیشتری را جستجو کنید</translation>
 <translation id="4663373278480897665">دوربین مجاز است</translation>
+<translation id="4664084870155869900">دفعه بعد به‌طور خودکار تکمیل می‌شود. کارت در دستگاهتان ذخیره می‌شود.</translation>
 <translation id="466561305373967878">بازی‌های تخته‌ای</translation>
 <translation id="4668929960204016307">،</translation>
 <translation id="4670064810192446073">واقعیت مجازی</translation>
@@ -2089,6 +2093,7 @@
 <translation id="4704745399240123930">کارت‌هایی که این فروشنده نمی‌پذیرد مثل کارت‌های مجازی غیرفعال هستند.</translation>
 <translation id="4708268264240856090">اتصال شما قطع شد</translation>
 <translation id="4708276642004148190">تأمین و تصفیه آب</translation>
+<translation id="4711628883879888561">مشارکت کردن در گروه برگه</translation>
 <translation id="471880041731876836">برای بازدید کردن از این سایت، مجوز لازم ندارید</translation>
 <translation id="4718897478554657123">۹۰۰ × ۶۰۰ میلی‌متر</translation>
 <translation id="4722547256916164131">‏<ph name="BEGIN_LINK" />اجرای Windows Network Diagnostics<ph name="END_LINK" /></translation>
@@ -2635,6 +2640,7 @@
 <translation id="5675809467256309336">موسیقی الکترونیک و رقص</translation>
 <translation id="5675959228867414813">نمایش براساس تاریخ</translation>
 <translation id="567604591393105935">برگ زیرین تجارت به‌صورت نیمه باز شده است</translation>
+<translation id="5676641328629468296">‏‫Google Pay،‏ Pix</translation>
 <translation id="5678007133659493065">فویل</translation>
 <translation id="5680642791693447368">فیلم‌های هیجان‌انگیز، جنایی، و رازآلود</translation>
 <translation id="568292603005599551">‏موقعیت X تصویر</translation>
@@ -2672,6 +2678,7 @@
 <translation id="573555826359077410">‏دکمه ایجاد فرم؛ برای ایجاد سریع فرم جدید در «فرم‌نگار Google»، آن را فعال کنید</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{‏ذخیره کردن کارت در حساب Google شما}one{‏ذخیره کردن کارت‌ها در حساب Google}other{‏ذخیره کردن کارت‌ها در حساب Google}}</translation>
 <translation id="5738385766833540397">مدیریت نحوه دریافت هشدارهای کاهش قیمت برای محصولاتی که ردیابی می‌کنید</translation>
+<translation id="573974402615125334">برای هم‌رسانی، پیوستن، و مشارکت در گروه‌های برگه، سابقه و برگه‌هایتان را همگام‌سازی کنید</translation>
 <translation id="5740911612628596808">پاکت سی۹</translation>
 <translation id="5742806904559466333">میخانه، باشگاه، و تفریحات شبانه</translation>
 <translation id="5743684619253032786">محصولات مراقبت از ناخن</translation>
@@ -2693,6 +2700,7 @@
 <translation id="578305955206182703">کهربایی</translation>
 <translation id="5783700460098783980">لوازم سفر و چمدان</translation>
 <translation id="57838592816432529">بی‌صدا کردن</translation>
+<translation id="5783922175933467571">پیوند <ph name="TAB_GROUP_DISPLAY_NAME" /> ظرف ۴۸ ساعت منقضی می‌شود</translation>
 <translation id="5784606427469807560">هنگام تأیید کارت مشکلی پیش آمد. اتصال اینترنتتان را بررسی و دوباره امتحان کنید.</translation>
 <translation id="5785756445106461925">علاوه بر این، این صفحه دارای منابع دیگری است که امن نیستند. دیگران می‌توانند در حین انتقال، این منابع را ببینند و این منابع می‌توانند برای تغییر قفل صفحه، توسط یک مهاجم تغییر داده شوند.</translation>
 <translation id="5793317771769868848">این روش پرداخت از این دستگاه حذف خواهد شد</translation>
@@ -2765,6 +2773,7 @@
 <translation id="5930147475897662863">برای استفاده از «کمک به نوشتن»، این تنظیم را روشن کنید</translation>
 <translation id="593102073240001326">محتوای تخصصی، خودآموز، و خودانجام</translation>
 <translation id="5932224571077948991">سایتْ آگهی‌های مزاحم یا گمراه‌کننده نشان می‌دهد</translation>
+<translation id="5933597524153120073">باز کردن همه (<ph name="ITEMS" /> مورد) در پنجره جدید</translation>
 <translation id="5937560539988385583">صفحه ترجمه شد</translation>
 <translation id="5938153366081463283">افزودن کارت مجازی</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3872,6 +3881,7 @@
 <translation id="7865448901209910068">بهترین سرعت</translation>
 <translation id="7870281855125116701">تخفیف پیدا شد</translation>
 <translation id="7871445724586827387">‏تغییر گذرواژه «حساب Google»</translation>
+<translation id="787226752901403048">‏به سیستم Chrome وارد شوید و گروه‌های برگه را هم‌سانی کنید، به آن‌ها بپیوندید، و با هم روی ایده‌ها کار کنید</translation>
 <translation id="7877007680666472091">شناسه‌های محتوای محافظت‌شده</translation>
 <translation id="7878562273885520351">ممکن است گذرواژه‌تان درمعرض خطر باشد</translation>
 <translation id="7882421473871500483">قهوه‌ای</translation>
@@ -4326,6 +4336,7 @@
 <translation id="8702965365666568344">نوارچسب نصب</translation>
 <translation id="8703575177326907206">اتصال شما به <ph name="DOMAIN" /> رمزگذاری نشده است.</translation>
 <translation id="8705331520020532516">شمارهٔ سریال</translation>
+<translation id="8706806585855470492">امکان هم‌رسانی، پیوستن، و مشارکت در گروه‌های برگه را خواهید داشت</translation>
 <translation id="8708134712139312373">می‌تواند برای اتصال به دستگاه‌های بلوتوث درخواست دهد</translation>
 <translation id="8710842507289500830">سبک قلم</translation>
 <translation id="8712637175834984815">متوجه شدم</translation>
@@ -4468,6 +4479,7 @@
 <translation id="8975263830901772334">نام فایل‌هایی که چاپ می‌کنید</translation>
 <translation id="8982884016487650216">‏بار کردن PDF کامل شد</translation>
 <translation id="8983369100812962543">اکنون می‌توانید برنامه را تغییر اندازه دهید</translation>
+<translation id="8985112471026018799">کارت‌ها را برای تسویه‌حساب سریع‌تر ذخیره کنید</translation>
 <translation id="8987245424886630962">‏<ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مشاهده سابقه مرور در تنظیمات Chrome، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="8987663052629670333">خدمات چاپ عکس</translation>
 <translation id="8987927404178983737">ماه</translation>
@@ -4534,6 +4546,7 @@
 <translation id="9090993752571911635">‏رساننده خدمات اینترنتی (ISP)</translation>
 <translation id="9093723786115107672">لباس خواب</translation>
 <translation id="9094544726794842788">«رأی مخالف» فرمی را برای ارسال بازخورد دقیق درباره علت نپسندیدن این نتایج باز می‌کند</translation>
+<translation id="9094809883254050729">دفعه بعد به‌طور خودکار تکمیل می‌شود. کارت پس‌از ذخیره شدن رمزگذاری می‌شود.</translation>
 <translation id="9096425087209440047">‏<ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای تنظیم Chrome به‌عنوان مرورگر پیش‌فرض سیستم در تنظیمات iOS، کلید جهش و سپس ورود را فشار دهید</translation>
 <translation id="9101450247048146228">استفاده و حرکت دادن دوربین (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">سینی ۱</translation>

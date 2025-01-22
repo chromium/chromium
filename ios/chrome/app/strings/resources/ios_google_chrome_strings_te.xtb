@@ -169,6 +169,7 @@
 <translation id="5639704535586432836">సెట్టింగ్‌లు &gt; గోప్యత &gt; కెమెరా &gt; Google Chromeని తెరిచి, కెమెరాను ఆన్ చేయండి.</translation>
 <translation id="5642200033778930880">Google Chrome, విభజన వీక్షణ మోడ్‌లో మీ కెమెరాను ఉపయోగించలేదు</translation>
 <translation id="5661521615548540542">Google Password Manager అన్ని పాస్‌వర్డ్‌లను చెక్ చేయలేకపోయింది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
+<translation id="5681291952421236520">Chromeను టోగుల్ చేయండి</translation>
 <translation id="5690398455483874150">{count,plural, =1{ఇప్పుడు 1 Chrome విండో చూపబడుతుంది}other{ఇప్పుడు {count} Chrome విండోలు చూపబడుతున్నాయి}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Chromeని మీ డిఫాల్ట్ బ్రౌజర్‌గా సెట్ చేయండి</translation>
@@ -204,6 +205,7 @@
 <translation id="6484712497741564393"><ph name="EMAIL" />‌గా సైన్ ఇన్ చేశారు.
 
 మీ రహస్య పదబంధంతో మీ డేటా ఎన్‌క్రిప్ట్ చేయబడింది. మీ Google ఖాతాలో Chrome డేటాను ఉపయోగించడానికి, సేవ్ చేయడానికి దాన్ని ఎంటర్ చేయండి.</translation>
+<translation id="6533470733797826516">Chrome ఆటోఫిల్‌తో మరింత వేగంగా సైన్ ఇన్ చేయండి</translation>
 <translation id="6545449117344801102">Chrome అడ్రస్‌లను గుర్తిస్తుంది, మీకు దిశలను, లోకల్ సమాచారాన్ని అందించడానికి Google Maps‌ను ఉపయోగిస్తుంది.</translation>
 <translation id="6634107063912726160">మీరు సైన్ అవుట్ చేసినప్పుడు, మీ Google ఖాతాకు ఎలాంటి కొత్త డేటాను Chrome సింక్ చేయదు. ఇంతకుముందు సింక్ చేయబడిన డేటా ఖాతాలో ఉండిపోతుంది.</translation>
 <translation id="6636941099779251629">మీరు Chromeను ఉపయోగించడానికి సైన్ ఇన్ చేయాల్సిందిగా మీ సంస్థ కోరుతోంది. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>

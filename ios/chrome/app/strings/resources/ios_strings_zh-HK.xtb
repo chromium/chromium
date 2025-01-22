@@ -191,6 +191,7 @@
 <translation id="1779354709911146450">驗證錯誤</translation>
 <translation id="1780152987505130652">關閉群組</translation>
 <translation id="178400879184240105">你沒有重用密碼</translation>
+<translation id="17906873777101817">提示儲存密碼和密鑰</translation>
 <translation id="1807893857950749072">允許價格追蹤通知…</translation>
 <translation id="1810976980198522421">取消</translation>
 <translation id="1815941218935345331">密碼</translation>
@@ -542,6 +543,7 @@
 <translation id="3409785640040772790">地圖</translation>
 <translation id="3416023309465857378">2023 年 10 月 25 日</translation>
 <translation id="3435738964857648380">安全性</translation>
+<translation id="343850944564645513">你最常瀏覽的網站</translation>
 <translation id="3443810440409579745">已收到分頁。</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="344589138074534176">進一步瞭解「Google 智能鏡頭」</translation>
@@ -656,6 +658,7 @@
 <translation id="3967327056943561740">書籤</translation>
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3982893814825393515">報告問題…</translation>
+<translation id="3984527584375648997">隱藏「你最常瀏覽的網站」</translation>
 <translation id="398604237578616937">已使用 <ph name="USER_EMAIL" /> 的身分登入。開啟帳戶選單。</translation>
 <translation id="3986739045730058129">前往該分頁</translation>
 <translation id="3992684624889376114">關於本頁</translation>
@@ -833,7 +836,6 @@
 <translation id="4764612367328936189">您的機構只允許您透過特定帳戶登入。系統已隱藏不適用的帳戶。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">探索和追蹤</translation>
 <translation id="4769198578611055647">讓你在任何裝置上存取所儲存的密鑰</translation>
-<translation id="4777866634702576038">要刪除分頁群組嗎？</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">要以無痕模式開啟嗎？</translation>
 <translation id="4792385443586519711">公司名稱</translation>
@@ -1323,6 +1325,7 @@
 <translation id="6732087373923685049">攝錄機</translation>
 <translation id="6746338529702829275">查看帳戶資料</translation>
 <translation id="6755200887046212842">管理帳戶</translation>
+<translation id="6755733078693946548">透過任何應用程式存取密碼和密鑰</translation>
 <translation id="6761393919622941301">音訊</translation>
 <translation id="6779455296366983087">系統將刪除瀏覽資料</translation>
 <translation id="6790502149545262384">不久後，您將會在開啟新分頁時看到 <ph name="CHANNEL_NAME" /> 的內容。</translation>
@@ -1467,6 +1470,7 @@
 <translation id="746872191028309255">透過相機或相片庫購買所見內容。</translation>
 <translation id="7471557245617580330">新增分頁</translation>
 <translation id="7473891865547856676">不用了，謝謝</translation>
+<translation id="7476548258282096076">此資訊卡顯示你最常瀏覽的網站。</translation>
 <translation id="747956641630879526">隱藏此資訊卡後，系統將關閉包裹追蹤功能，並移除你的所有資料</translation>
 <translation id="7484645889979462775">永不儲存這個網站的密碼</translation>
 <translation id="7486006552035434095">讓你的裝置保持同步</translation>
@@ -1590,6 +1594,7 @@
 <translation id="7977451675950311423">如果你使用在資料外洩中被盜用的密碼，系統便會向你發出警告。</translation>
 <translation id="7977482887663636093">新增 <ph name="NUMBER_OF_TABS_ADDED" /> 個分頁，並關閉 <ph name="NUMBER_OF_TABS_REMOVED" /> 個分頁</translation>
 <translation id="797824194429476746">系統不會在此裝置上關閉這些分頁，但會永久刪除此群組。</translation>
+<translation id="797874245254030665">透過任何應用程式存取密碼和密鑰</translation>
 <translation id="7982789257301363584">網絡</translation>
 <translation id="7987685713885608670">為進一步增強安全性，請先在裝置上將密碼加密，然後才將密碼儲存至 Google 密碼管理工具。</translation>
 <translation id="798991908416757345">無法使用分頁群組</translation>
@@ -1670,6 +1675,7 @@
 <translation id="8299613349954694191">開啟無痕式分頁就能以私密模式瀏覽網頁。</translation>
 <translation id="8307481894409578819">無法上載這個檔案</translation>
 <translation id="8319076807703933069">新搜尋</translation>
+<translation id="8328607660158575887">開啟「自動填寫與密碼」設定</translation>
 <translation id="833647236762414178">建立、儲存及管理密碼和密鑰，輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">備份資料即可在任何裝置上使用。</translation>
 <translation id="8349305172487531364">書籤列</translation>
@@ -1822,6 +1828,7 @@
 <translation id="8909459547399237818">選取「密碼管理工具」，然後輕按 [新增小工具]</translation>
 <translation id="891282356902782456">此密碼只會儲存至此裝置。如要在其他裝置上使用此密碼，請將密碼儲存在您的 Google 帳戶 (<ph name="EMAIL" />) 中。</translation>
 <translation id="8915916167043355778">全部關閉</translation>
+<translation id="892185197271200809">所有人將立即無法再存取「<ph name="GROUP_NAME" />」分頁群組，此分頁群組亦會從所有裝置刪除</translation>
 <translation id="8921902386312975525">追蹤包裹選項</translation>
 <translation id="8923178205567790913">密碼</translation>
 <translation id="892776311701544612">瞭解詳情…</translation>

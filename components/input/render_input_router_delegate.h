@@ -19,6 +19,7 @@ class RenderWidgetHostViewInput;
 class RenderInputRouterIterator;
 class RenderWidgetHostInputEventRouter;
 class TouchEmulator;
+class StylusInterface;
 
 class COMPONENT_EXPORT(INPUT) RenderInputRouterDelegate {
  public:
@@ -90,6 +91,13 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouterDelegate {
   // Notifies when an input event is ignored, see `IsIgnoringWebInputEvents`
   // above.
   virtual void OnInputIgnored(const blink::WebInputEvent& event) = 0;
+
+  // TODO(391135801): Handle renderer unresponsiveness with InputVizard.
+  virtual void IncrementInFlightEventCount() = 0;
+  virtual void DecrementInFlightEventCount(
+      blink::mojom::InputEventResultSource ack_source) = 0;
+
+  virtual StylusInterface* GetStylusInterface() = 0;
 };
 
 }  // namespace input

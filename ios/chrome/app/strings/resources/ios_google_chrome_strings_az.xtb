@@ -169,6 +169,7 @@ Nəzərə alın ki:
 <translation id="5639704535586432836">Kameranı aktiv etmək üçün Ayarlar &gt; Gizlilik &gt; Kamera &gt; Google Chrome bölməsini açın.</translation>
 <translation id="5642200033778930880">Google Chrome kameranızı Bölünmüş Görüntü rejimində istifadə edə bilməz</translation>
 <translation id="5661521615548540542">Google Parol Meneceri bütün parolları yoxlaya bilmədi. Sonra cəhd edin.</translation>
+<translation id="5681291952421236520">Chrome-u aktiv/deaktiv edin</translation>
 <translation id="5690398455483874150">{count,plural, =1{İndi 1 Chrome pəncərəsi göstərilir}other{İndi {count} Chrome pəncərəsi göstərilir}}</translation>
 <translation id="5690427481109656848">Google MMC</translation>
 <translation id="5709557627224531708">Chrome'u defolt brauzer kimi quraşdırın</translation>
@@ -204,6 +205,7 @@ Hesabları dəyişməzdən əvvəl bir neçə dəqiqə gözləyin. İndi hesabla
 <translation id="6484712497741564393"><ph name="EMAIL" /> kimi daxil olunub.
 
 Data parol ifadəsi ilə şifrələnib. Google Hesabında Chrome datasını istifadə etmək və yadda saxlamaq üçün onu daxil edin.</translation>
+<translation id="6533470733797826516">Chrome avto-doldurma ilə daha sürətli daxil olun</translation>
 <translation id="6545449117344801102">Chrome istiqamət və yerli məlumat təqdim etmək üçün ünvanları aşkarlayır və Google Xəritədən istifadə edir.</translation>
 <translation id="6634107063912726160">Hesabdan çıxdığınız zaman Chrome heç bir yeni datanı Google Hesabınızla sinxronizasiya edilməyəcək. Daha əvvəl sinxronizasiya edilmiş data hesabda qalır.</translation>
 <translation id="6636941099779251629">Təşkilatınız Chrome-dan istifadə etmək üçün daxil olmağınızı tələb edir. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>

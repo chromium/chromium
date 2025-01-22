@@ -179,7 +179,24 @@
               label="$i18n{thirdPartyCookiesPageAllowRadioLabel}"
               expand-aria-label="$i18n{thirdPartyCookiesPageAllowExpandA11yLabel}">
             <div slot="collapse">
-              <!-- TODO(crbug.com/370008370): Update with content when finalized. -->
+              <div class="bullet-line">
+                <cr-icon icon="privacy:cookie"></cr-icon>
+                <div class="secondary">
+                  $i18n{cookiePageSettingsAllowBulletOne}
+                </div>
+              </div>
+              <div class="bullet-line one-line">
+                <cr-icon icon="settings20:incognito-unfilled"></cr-icon>
+                <div class="secondary">
+                  $i18n{cookiePageSettingsAllowBulletTwo}
+                </div>
+              </div>
+              <div class="bullet-line one-line">
+                <cr-icon icon="settings:web"></cr-icon>
+                <div class="secondary">
+                  $i18n{cookiePageSettingsAllowBulletThree}
+                </div>
+              </div>
             </div>
           </settings-collapse-radio-button>
           <settings-collapse-radio-button id="blockAll3pc"
@@ -188,7 +205,24 @@
               label="$i18n{thirdPartyCookiesPageBlockRadioLabel}"
               expand-aria-label="$i18n{thirdPartyCookiesPageBlockExpandA11yLabel}">
             <div slot="collapse">
-              <!-- TODO(crbug.com/370008370): Update with content when finalized. -->
+              <div class="bullet-line">
+                <cr-icon icon="privacy:cookie"></cr-icon>
+                <div class="secondary">
+                  $i18n{cookiePageSettingsBlockBulletOne}
+                </div>
+              </div>
+              <div class="bullet-line one-line">
+                <cr-icon icon="settings:block"></cr-icon>
+                <div class="secondary">
+                  $i18n{cookiePageSettingsBlockBulletTwo}
+                </div>
+              </div>
+              <div class="bullet-line one-line">
+                <cr-icon icon="settings:web"></cr-icon>
+                <div class="secondary">
+                  $i18n{cookiePageSettingsBlockBulletThree}
+                </div>
+              </div>
             </div>
             <template is="dom-if" if="[[enableFirstPartySetsUI_]]">
               <div slot="noSelectionCollapse">

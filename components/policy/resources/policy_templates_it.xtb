@@ -381,6 +381,11 @@ Questo sostituisce il criterio <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY
 <translation id="1294263471858445589">Attiva l'autenticazione ambientale nelle sessioni standard e in modalità in incognito.</translation>
 <translation id="1295737447968372331">Attiva la dettatura sulla schermata di accesso</translation>
 <translation id="1297182715641689552">Utilizza uno script proxy .pac</translation>
+<translation id="1297909092292754072">Questa policy consente di specificare un elenco di origini (URL) o pattern di nomi host (ad esempio *.example.com) per cui non vengono applicate limitazioni di sicurezza sulle origini non sicure. I pattern sono accettati solo per i nomi host; gli URL/le origini con schemi devono essere stringhe esatte. Le organizzazioni possono specificare le origini delle applicazioni precedenti che non possono implementare TLS o configurare un server temporaneo per lo sviluppo web interno, così che gli sviluppatori possano testare le funzionalità che richiedono contesti sicuri senza dover implementare TLS sul server temporaneo. Inoltre questa policy impedisce all'origine di essere etichettata come "Non sicura" nella barra degli indirizzi.
+
+La configurazione di un elenco di URL in questa policy equivale a impostare il flag della riga di comando unsafely-treat-insecure-origin-as-secure su un elenco separato da virgole degli stessi URL. La policy sovrascrive il flag della riga di comando e UnsafelyTreatInsecureOriginAsSecure, se presenti.
+
+Per ulteriori informazioni sui contesti sicuri, visita il sito Secure Contexts: https://www.w3.org/TR/secure-contexts.</translation>
 <translation id="1297961932043741908">Imposta un limite sui megabyte di memoria che una istanza singola di Chrome può usare.</translation>
 <translation id="1304973015437969093">ID app/estensioni e URL di aggiornamento da installare automaticamente</translation>
 <translation id="1305400589435476516">Se il criterio viene impostato su Attivato, il roaming dei dati è consentito per il dispositivo.
@@ -3672,6 +3677,7 @@ Le connessioni che non superano il controllo non andranno a buon fine e restitui
 <translation id="3663124775601519286">Se la policy viene impostata su Attivata o se non viene configurata, l'utilizzo dell'API Translator in <ph name="PRODUCT_NAME" /> è consentito.
 
       Se viene impostata su Disattivata, l'utilizzo dell'API Translator non è consentito.</translation>
+<translation id="3664164569472125114">Controllo accessi <ph name="GLIC" /></translation>
 <translation id="3665437376055221832">Richiedi la selezione da parte dell'utente quando nessun certificato corrisponde alla selezione automatica.</translation>
 <translation id="3667467644216039144">Consente di configurare un elenco dei tipi di dati di navigazione che dovrebbero essere eliminati alla chiusura di tutte le finestre del browser da parte dell'utente.
 
@@ -5562,6 +5568,7 @@ Se questo criterio viene impostato su Attivato o se non viene configurato, la pr
 Se viene impostato su Disattivato, la proprietà CSS "zoom" utilizzerà il comportamento precedente pre-standardizzato.
 
 Questo criterio è una sospensione temporanea per consentire la migrazione dei contenuti web al nuovo comportamento. Esiste anche una prova dell'origine ("DisableStandardizedBrowserZoom") che corrisponde al comportamento quando questo criterio è impostato su Disattivato. Questo criterio verrà rimosso e il comportamento "Attivato" verrà reso permanente nella versione 134.</translation>
+<translation id="5088303895040832480">Utilizza UsbDeviceId nel nuovo codice.</translation>
 <translation id="5090791951240382356">Consenti l'unione dei criteri del dizionario provenienti da origini diverse</translation>
 <translation id="5091315650312105069">Consenti l'autenticazione <ph name="BASIC_AUTH" /> per HTTP</translation>
 <translation id="5093603777978346818">Non attivare il salvaschermo nella schermata di blocco.</translation>

@@ -828,7 +828,6 @@
 <translation id="4835385943915508971">Chrome 沒有要求資源的存取權。</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{將有 <ph name="TAB_COUNT_ONE" /> 個分頁的分頁群組 (<ph name="COLOR_NAME" />) 還原為新的背景分頁群組。}other{將有 <ph name="TAB_COUNT_MANY" /> 個分頁的分頁群組 (<ph name="COLOR_NAME" />) 還原為新的背景分頁群組。}}</translation>
 <translation id="4837753911714442426">開啟列印網頁選項</translation>
-<translation id="4842092870884894799">正在顯示密碼產生彈出式視窗</translation>
 <translation id="4844633725025837809">為進一步增強安全性，請先在裝置上將密碼加密，然後才將密碼儲存至 Google 密碼管理工具</translation>
 <translation id="4850886885716139402">檢視</translation>
 <translation id="4852014461738377247">正在登入\u2026</translation>
@@ -1003,6 +1002,7 @@
 <translation id="5665379678064389456">在「<ph name="APP_NAME" />」中建立活動</translation>
 <translation id="5680616253592639556">遺漏資料</translation>
 <translation id="5683547024293500885">Chrome 無法檢查更新</translation>
+<translation id="5683916195767086779">分頁群組</translation>
 <translation id="5686790454216892815">檔案名稱過長</translation>
 <translation id="5687606994963670306">Chrome 會自動刪除超過 30 日的網站。再次瀏覽的網站可能會再度出現在清單中。您亦可封鎖網站，讓該網站無法為您建議廣告。進一步瞭解如何<ph name="BEGIN_LINK" />在 Chrome 中管理廣告私隱權。<ph name="END_LINK" /></translation>
 <translation id="569536719314091526">透過「更多選項」掣，將呢個網頁翻譯成任何語言</translation>

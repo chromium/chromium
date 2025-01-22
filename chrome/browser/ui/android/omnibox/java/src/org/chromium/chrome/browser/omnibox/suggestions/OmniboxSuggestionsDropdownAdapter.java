@@ -7,11 +7,11 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.TimingMetric;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionViewBinder;
@@ -33,6 +33,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** ModelListAdapter for OmniboxSuggestionsDropdown (RecyclerView version). */
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+@NullMarked
 public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter {
     private int mNumSessionViewsCreated;
     private int mNumSessionViewsBound;
@@ -134,13 +135,13 @@ public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         mNumSessionViewsCreated++;
         return super.onCreateViewHolder(parent, viewType);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, int position) {
         mNumSessionViewsBound++;
         super.onBindViewHolder(holder, position);
     }

@@ -191,6 +191,7 @@
 <translation id="1779354709911146450">توثیق کی خرابی</translation>
 <translation id="1780152987505130652">گروپ بند کریں</translation>
 <translation id="178400879184240105">آپ کے پاس ورڈز منفرد ہیں</translation>
+<translation id="17906873777101817">پاس ورڈز اور پاس کیز محفوظ کرنے کی پیشکش</translation>
 <translation id="1807893857950749072">قیمت کی ٹریکنگ سے متعلق اطلاعات کی اجازت دیں…</translation>
 <translation id="1810976980198522421">منسوخ کریں</translation>
 <translation id="1815941218935345331">پاس کوڈ</translation>
@@ -493,6 +494,7 @@
 <translation id="3130863904455712965">سرگزشت اور مزید</translation>
 <translation id="313283613037595347">نیا پوشیدگی ٹیب بنائیں۔</translation>
 <translation id="3138611310073113613">انتخاب کو مسترد کریں</translation>
+<translation id="3140825265190223781">محفوظ کردہ پاس ورڈز اور پاس کیز</translation>
 <translation id="3143515551205905069">مطابقت پذیری منسوخ کریں</translation>
 <translation id="314837624430314508">تازہ ترین خبروں، قیمت کی ٹریکنگ کی اپ ڈیٹس اور مزید سے باخبر رہیں۔</translation>
 <translation id="3157387275655328056">پڑھنے کی فہرست میں شامل کریں</translation>
@@ -832,7 +834,6 @@
 <translation id="4764612367328936189">آپ کی تنظیم آپ کو صرف مخصوص اکاؤنٹس کے ساتھ سائن ان کرنے کی اجازت دیتی ہے۔ جن اکاؤنٹس کی اجازت نہیں ہے وہ پوشیدہ ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">‏Discover اور پیروی کرنا</translation>
 <translation id="4769198578611055647">کسی بھی آلے پر محفوظ کردہ پاس کیز تک رسائی حاصل کرنے میں آپ کی مدد کرتا ہے</translation>
-<translation id="4777866634702576038">ٹیب گروپ کو حذف کریں؟</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />، <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">پوشیدگی وضع میں کھولیں؟</translation>
 <translation id="4792385443586519711">کمپنی کا نام</translation>
@@ -1322,6 +1323,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6732087373923685049">کیمرا</translation>
 <translation id="6746338529702829275">اپنے اکاؤنٹ کے ڈیٹا کا جائزہ لیں</translation>
 <translation id="6755200887046212842">اکاؤنٹس کا نظم کریں</translation>
+<translation id="6755733078693946548">کسی بھی ایپ سے پاس ورڈز اور پاس کیز تک رسائی حاصل کریں</translation>
 <translation id="6761393919622941301">آڈیو</translation>
 <translation id="6779455296366983087">آپ کا براؤزنگ ڈیٹا حذف کر دیا جائے گا</translation>
 <translation id="6790502149545262384">جلد ہی، نیا ٹیب کھولنے پر آپ کو <ph name="CHANNEL_NAME" /> سے کہانیاں دکھائی دیں گی۔</translation>
@@ -1589,6 +1591,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7977451675950311423">اگر آپ کوئی ایسا پاس ورڈ استعمال کرتے ہیں جس سے ڈیٹا کی خلاف ورزی میں سمجھوتہ کیا گیا ہو تو آپ کو متنبہ کرتا ہے۔</translation>
 <translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> نئے ٹیبز، <ph name="NUMBER_OF_TABS_REMOVED" /> بند کیے گئے</translation>
 <translation id="797824194429476746">اس آلے پر ٹیبز کھلے رہیں گے، لیکن گروپ مستقل طور پر حذف ہو جائے گا۔</translation>
+<translation id="797874245254030665">کسی بھی ایپ سے اپنے پاس ورڈز اور پاس کیز تک رسائی حاصل کریں</translation>
 <translation id="7982789257301363584">نیٹ ورک</translation>
 <translation id="7987685713885608670">‏اضافی حفاظت کے لیے، پاس ورڈز کو Google پاس ورڈ مینیجر میں محفوظ کرنے سے پہلے اپنے آلے پر مرموز کریں۔</translation>
 <translation id="798991908416757345">ٹیب گروپس دستیاب نہیں ہیں</translation>
@@ -1669,6 +1672,8 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8299613349954694191">ویب کو نجی طور پر براؤز کرنے کے لیے ایک پوشیدگی ٹیب کھولیں۔</translation>
 <translation id="8307481894409578819">یہ فائل اپ لوڈ نہیں ہو سکی</translation>
 <translation id="8319076807703933069">نئی تلاش</translation>
+<translation id="8328607660158575887">آٹو فل اور پاسورڈز کی ترتیبات کو کھولیں</translation>
+<translation id="833647236762414178">سائٹس اور ایپس میں آسانی سے سائن ان کرنے کے لیے اپنے پاس ورڈز اور پاس کیز بنائیں، محفوظ کریں اور ان کا نظم کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">اپنے ڈیٹا کا بیک اپ لیں اور اسے کسی بھی آلے پر استعمال کریں۔</translation>
 <translation id="8349305172487531364">بُک مارکس بار</translation>
 <translation id="8364563001733875155">‏اپنا PIN تبدیل کرنے کے لیے، پہلے اپنے آلے پر ایک پاس کوڈ سیٹ اپ کریں۔</translation>
@@ -1820,6 +1825,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8909459547399237818">پاس ورڈ مینیجر منتخب کریں، پھر 'ویجیٹ شامل کریں' پر تھپتھپائیں</translation>
 <translation id="891282356902782456">‏یہ پاس ورڈ صرف اس آلے میں محفوظ ہے۔ اسے اپنے دوسرے آلات پر استعمال کرنے کے لیے، اسے اپنے Google اکاؤنٹ <ph name="EMAIL" /> میں محفوظ کریں۔</translation>
 <translation id="8915916167043355778">تمام بند کریں</translation>
+<translation id="892185197271200809">ہر کوئی فوری طور پر "<ph name="GROUP_NAME" />" ٹیب گروپ تک رسائی سے محروم ہو جائے گا اور اسے تمام آلات سے حذف کر دیا جائے گا</translation>
 <translation id="8921902386312975525">پیکیجز کو ٹریک کرنے کے اختیارات</translation>
 <translation id="8923178205567790913">پاس ورڈز</translation>
 <translation id="892776311701544612">مزید جانیں…</translation>

@@ -37,7 +37,8 @@ MEDIA_EXPORT bool IsPixelFormatSupportedForYuvSharedImageConversion(
 MEDIA_EXPORT void ConvertYuvVideoFrameToRgbSharedImage(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider,
-    const gpu::MailboxHolder& dest_mailbox_holder,
+    const gpu::Mailbox& dest_mailbox,
+    const gpu::SyncToken& dest_sync_token,
     bool use_visible_rect,
     VideoFrameSharedImageCache* shared_image_cache);
 

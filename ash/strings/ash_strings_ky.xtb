@@ -973,6 +973,7 @@
 <translation id="4285498937028063278">Бошотуу</translation>
 <translation id="428715201724021596">Профилге туташууда. Бир нече мүнөткө созулушу мүмкүн.</translation>
 <translation id="4287250812980588583">Chrome терезеси</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Микрофондун үн көлөмүн <ph name="APP_NAME" /> көзөмөлдөйт}other{Микрофондун үн көлөмүн # колдонмо көзөмөлдөйт}}</translation>
 <translation id="4294319844246081198">Кутмандуу таңыңыз менен, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875"><ph name="COUNT" /> билдирменин баарын өчүрүү</translation>
 <translation id="4300272766492248925">Колдонмону ачуу</translation>
@@ -1270,6 +1271,7 @@
 <translation id="5245201184978705914">Транскрипция түзүлгөн жок</translation>
 <translation id="5251174953851719648">Контентти жаңыртуу</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> деп аталган түзмөккө туташты, батареянын кубаты: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5256939106029293271">Микрофонуңузду сынаңыз</translation>
 <translation id="5258528442992323769">Сакталган иш такталар жок</translation>
 <translation id="5260676007519551770">4-иш такта</translation>
 <translation id="5265391159779542051">Натыйжалар жүктөлдү</translation>
@@ -1427,6 +1429,7 @@
 <translation id="5745612484876805746">Түнкү режим күн батканда автоматтык түрдө күйөт</translation>
 <translation id="5750765938512549687">Bluetooth өчүк</translation>
 <translation id="5758114525425072423">Ынтаа коюу режимин күйгүзүңүз. Таймер төмөнкү убакытка коюлду: <ph name="FOCUS_DURATION" />.</translation>
+<translation id="5759522586053040964">Үнүңүз башкаларга кантип угуларын угуңуз. Токтотуу үчүн сыноо сүрөтчөсүн басып же видео чалуу панелин жабыңыз.</translation>
 <translation id="5760866832697883462"><ph name="NAME" /> түзмөгүңүздү туташтырыңыз</translation>
 <translation id="5762420912707163638">Маркерди өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /> Экранда тартуу үчүн трекпад, сенсордук экранды же стилусту колдонуңуз.</translation>
 <translation id="576341972084747908">Кооптуу <ph name="FILENAME" /> файлын жүктөп алуу</translation>

@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
+#import <memory>
 
 #import <ChromeWebView/ChromeWebView.h>
 #import <XCTest/XCTest.h>
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/web_view/shell/shell_view_controller.h"
 #import "ios/web_view/shell/test/earl_grey/web_view_shell_matchers.h"
 #import "ios/web_view/test/web_view_test_util.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 
 namespace {
 

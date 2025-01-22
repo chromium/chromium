@@ -140,19 +140,19 @@ Status WrapCdpCommandInBidiCommand(base::Value::Dict cdp_cmd,
   base::Value::Dict* cdp_params = cdp_cmd.FindDict("params");
 
   base::Value::Dict params;
-  params.Set("cdpMethod", std::move(*cdp_method));
+  params.Set("method", std::move(*cdp_method));
   if (cdp_session_id) {
-    params.Set("cdpSession", std::move(*cdp_session_id));
+    params.Set("session", std::move(*cdp_session_id));
   }
   if (cdp_params) {
-    params.Set("cdpParams", std::move(*cdp_params));
+    params.Set("params", std::move(*cdp_params));
   }
 
   base::Value::Dict dict;
   dict.Set("id", *cdp_cmd_id);
-  dict.Set("method", "cdp.sendCommand");
+  dict.Set("method", "goog:cdp.sendCommand");
   dict.Set("params", std::move(params));
-  dict.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
+  dict.Set("goog:channel", DevToolsClientImpl::kCdpTunnelChannel);
   *bidi_cmd = std::move(dict);
   return Status{kOk};
 }
@@ -193,26 +193,28 @@ bool ParseCdpTunnelMessage(base::Value::Dict payload,
   // handle CDP over BiDi events and responses
   const std::string* payload_method = payload.FindString("method");
 
-  if (payload_method && *payload_method == "cdp.eventReceived") {  // CDP event
+  // CDP events in BiDi have format "goog:cdp.<CDP EVENT NAME>".
+  if (payload_method && base::StartsWith(*payload_method, "goog:cdp.",
+                                         base::CompareCase::SENSITIVE)) {
     base::Value::Dict* payload_params = payload.FindDict("params");
     if (!payload_params) {
       LOG(WARNING) << "params field is missing in the payload of "
                       "Runtime.bindingCalled message";
       return false;
     }
-    const std::string* cdp_method = payload_params->FindString("cdpMethod");
+    const std::string* cdp_method = payload_params->FindString("method");
     if (!cdp_method) {
-      LOG(WARNING) << "params.cdpMethod is missing in the payload of "
+      LOG(WARNING) << "params.method is missing in the payload of "
                       "Runtime.bindingCalled message";
       return false;
     }
 
     type = internal::kEventMessageType;
     event.method = *cdp_method;
-    const std::string* cdp_session = payload_params->FindString("cdpSession");
+    const std::string* cdp_session = payload_params->FindString("session");
     session_id = cdp_session ? *cdp_session : "";
 
-    base::Value::Dict* cdp_params = payload_params->FindDict("cdpParams");
+    base::Value::Dict* cdp_params = payload_params->FindDict("params");
     if (cdp_params) {
       event.params = std::move(*cdp_params);
     } else {
@@ -226,7 +228,7 @@ bool ParseCdpTunnelMessage(base::Value::Dict payload,
       return false;
     }
 
-    const std::string* cdp_session = payload.FindString("cdpSession");
+    const std::string* cdp_session = payload.FindString("session");
     session_id = cdp_session ? *cdp_session : "";
 
     base::Value::Dict* cdp_result = payload.FindDict("result");
@@ -424,7 +426,7 @@ Status DevToolsClientImpl::StartBidiServer(
 
   if (event_tunneling_is_enabled_) {
     base::Value::Dict params;
-    params.Set("events", "cdp.eventReceived");
+    params.Set("events", "goog:cdp");
     base::Value::Dict bidi_cmd;
     bidi_cmd.Set("id", AdvanceNextMessageId());
     bidi_cmd.Set("method", "session.subscribe");
@@ -601,7 +603,7 @@ Status DevToolsClientImpl::SetUpDevTools() {
 }
 
 Status DevToolsClientImpl::PostBidiCommand(base::Value::Dict command) {
-  std::string* maybe_channel = command.FindString("channel");
+  std::string* maybe_channel = command.FindString("goog:channel");
   std::string channel =
       maybe_channel ? *maybe_channel + DevToolsClientImpl::kBidiChannelSuffix
                     : std::string();
@@ -817,7 +819,7 @@ Status DevToolsClientImpl::PostBidiCommandInternal(std::string channel,
         "uanble to send BiDi commands without BiDi server session id"};
   }
   if (!channel.empty()) {
-    command.Set("channel", std::move(channel));
+    command.Set("goog:channel", std::move(channel));
   }
 
   std::string json;
@@ -1398,7 +1400,7 @@ bool ParseInspectorMessage(const std::string& message,
         return false;
       }
 
-      std::string* channel = payload.FindString("channel");
+      std::string* channel = payload.FindString("goog:channel");
 
       if (channel && *channel == DevToolsClientImpl::kCdpTunnelChannel) {
         return ParseCdpTunnelMessage(std::move(payload), session_id, type,

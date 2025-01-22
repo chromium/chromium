@@ -110,10 +110,10 @@ class NewSubViewAddedObserver : content::RenderWidgetHostViewCocoaObserver {
   const gfx::Rect& view_bounds_in_screen() const { return bounds_; }
 
  private:
-  void DidAddSubviewWillBeDismissed(
-      const gfx::Rect& bounds_in_root_view) override {
+  void DidAttemptToShowPopup(const gfx::Rect& bounds,
+                             int selected_item) override {
     did_receive_rect_ = true;
-    bounds_ = bounds_in_root_view;
+    bounds_ = bounds;
     if (run_loop_)
       run_loop_->Quit();
   }
@@ -127,11 +127,7 @@ class NewSubViewAddedObserver : content::RenderWidgetHostViewCocoaObserver {
 class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
  public:
   WebViewInteractiveTest()
-      : guest_view_(nullptr),
-        embedder_web_contents_(nullptr),
-        corner_(gfx::Point()),
-        mouse_click_result_(false),
-        first_click_(true) {}
+      : guest_view_(nullptr), embedder_web_contents_(nullptr) {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     extensions::PlatformAppBrowserTest::SetUpCommandLine(command_line);
@@ -492,8 +488,8 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
       embedder_web_contents_;
 
   gfx::Point corner_;
-  bool mouse_click_result_;
-  bool first_click_;
+  bool mouse_click_result_ = false;
+  bool first_click_ = true;
 };
 
 class WebViewImeInteractiveTest : public WebViewInteractiveTest {

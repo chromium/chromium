@@ -41,9 +41,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1594928384848033697">Chromium želi izbrisati podatke upravitelja gesel. Če želite to omogočiti, vnesite geslo za Windows.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium.}=1{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. Anonimno okno se ne bo znova odprlo.}one{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimno okno se ne bo znova odprlo.}two{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimni okni se ne bosta znova odprli.}few{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimna okna se ne bodo znova odprla.}other{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimnih oken se ne bo znova odprlo.}}</translation>
 <translation id="1625909126243026060">Oglejte si ključne kontrolnike zasebnosti in varnosti v Chromiumu.</translation>
-<translation id="1632539827495546968">Če želite ta račun uporabiti samo enkrat, lahko v brskalniku Chromium uporabite <ph name="GUEST_LINK_BEGIN" />način za goste<ph name="GUEST_LINK_END" />. Če želite dodati račun za nekoga drugega, v napravi <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />dodajte novo osebo<ph name="LINK_END" />.
-
-Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljajo za ta račun. Račune Google lahko upravljate v <ph name="SETTINGS_LINK_BEGIN" />nastavitvah<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Prenos ...</translation>
 <translation id="1709772298389099340">Zagotovi povečane pravice za brskalnik <ph name="BROWSER_NAME" />.</translation>
 <translation id="1715127912119967311">Zaradi izboljšanja teh funkcij Chromium vaše interakcije z njimi pošilja Googlu. Pregledovalci lahko te podatke pregledajo, obdelajo in označijo.</translation>
@@ -367,7 +364,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="6096348254544841612">Prilagodite in nadzirajte Chromium. Posodobitev je na voljo.</translation>
 <translation id="6107893135096467929">Vklopljeno • Chromium ne more preveriti, od kod izvira ta razširitev</translation>
 <translation id="6119438414301547735">Omogočanje razširitve za prikaz zahtev za dostop v orodni vrstici Chromiuma</translation>
-<translation id="6120345080069858279">Chromium bo shranil to geslo v Google Računu. Ni si vam ga treba zapomniti.</translation>
 <translation id="6129621093834146363">Datoteka <ph name="FILE_NAME" /> je nevarna, zato jo je Chromium blokiral.</translation>
 <translation id="6132897690380286411">Chromium se bo kmalu zaprl in izbrisal bo podatke</translation>
 <translation id="6145820983052037069">Med profili v Chromiumu lahko preklapljate tukaj</translation>
@@ -529,6 +525,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="813913629614996137">Inicializiranje ...</translation>
 <translation id="8166782796394721554">Vklopite dodatno zaščito v mehanizmih za JavaScript in WebAssembly za Chromium</translation>
 <translation id="81770708095080097">Ta datoteka je nevarna, zato jo je Chromium blokiral.</translation>
+<translation id="8200109504272824693">Vnesite geslo, če želite podatke iz Chromiuma uporabljati in shranjevati v računu, <ph name="USER_EMAIL" /></translation>
 <translation id="8221491193165283816">Obvestila običajno blokirate. Če želite dovoliti, da vas to spletno mesto obvešča, kliknite tukaj.</translation>
 <translation id="8223363452568144035">Če želite uporabljati kamero, omogočite Chromiumu dostop v <ph name="BEGIN_LINK" />sistemskih nastavitvah<ph name="END_LINK" />.</translation>
 <translation id="8232193495299001329">Chromium ne more preveriti, od kod je ta razširitev, in morda ni varna. Odstranite jo iz Chromiuma, da si ne bo mogla več ogledati vaših podatkov na obiskanih spletnih mestih, vključno z osebnimi podatki, in jih spreminjati.</translation>

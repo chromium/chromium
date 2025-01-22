@@ -55,7 +55,6 @@
 <translation id="1698376642261615901">O Google Chrome é um navegador de internet que executa páginas Web e aplicações de forma extremamente rápida. É rápido, estável e fácil de utilizar. Navegue na Web com mais segurança com proteção contra phishing e programas maliciosos incorporada no Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{O Chrome será reiniciado dentro de uma hora}other{O Chrome será reiniciado dentro de # horas}}</translation>
 <translation id="1722488837206509557">Isto permite-lhe selecionar entre os dispositivos disponíveis e apresentar conteúdo nestes.</translation>
-<translation id="1734234790201236882">O Chrome vai guardar esta palavra-passe na sua Conta Google. Não tem de a memorizar.</translation>
 <translation id="1786003790898721085">Certifique-se de que tem sessão iniciada no Chrome no seu <ph name="TARGET_DEVICE_NAME" /> e, em seguida, tente enviar novamente.</translation>
 <translation id="1786044937610313874">Os atalhos abrem no Chrome</translation>
 <translation id="178701303897325119">Esta extensão já não é suportada. O Chrome recomenda que a remova.</translation>
@@ -471,9 +470,6 @@
 <translation id="7024536598735240744">Erro ao descompactar: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalação interrompida.</translation>
 <translation id="7025800014283535195">Pode alternar entre perfis do Chrome aqui</translation>
-<translation id="7036251913954633326">Se quiser utilizar esta conta apenas uma vez, pode utilizar o <ph name="GUEST_LINK_BEGIN" />Modo convidado<ph name="GUEST_LINK_END" /> no navegador Chrome. Se quiser adicionar uma conta para outra pessoa, <ph name="LINK_BEGIN" />adicione uma nova pessoa<ph name="LINK_END" /> ao seu dispositivo <ph name="DEVICE_TYPE" />.
-
-As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta conta. Pode gerir as suas Contas Google nas <ph name="SETTINGS_LINK_BEGIN" />Definições<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7048502283602470098">Explorar IA</translation>
 <translation id="7059914902409643750">Personalize o Chrome</translation>
 <translation id="7071827361006050863">O Chrome vai eliminar os dados de navegação em breve</translation>

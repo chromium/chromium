@@ -42,7 +42,8 @@ void ChildHistogramFetcherFactoryImpl::CreateFetcher(
   // global histogram allocator should already by setup. Otherwise, the region
   // is being passed via this IPC. We need to initialize the global histogram
   // allocator and the tracking histograms here.
-  if (shared_memory.IsValid() && !base::GlobalHistogramAllocator::Get()) {
+  if (shared_memory.IsValid()) {
+    CHECK(!base::GlobalHistogramAllocator::Get());
     base::GlobalHistogramAllocator::CreateWithSharedMemoryRegion(shared_memory);
     // Emit a local histogram, which should not be reported to servers. This is
     // monitored from the serverside.
@@ -82,7 +83,7 @@ void ChildHistogramFetcherImpl::GetChildNonPersistentHistogramData(
   }
 
   std::vector<std::string> deltas;
-  // "false" to PerpareAndSerializeDeltas() indicates to *not* include
+  // "false" to PrepareAndSerializeDeltas() indicates to *not* include
   // histograms held in persistent storage on the assumption that they will be
   // visible to the recipient through other means.
   histogram_delta_serialization_->PrepareAndSerializeDeltas(&deltas, false);

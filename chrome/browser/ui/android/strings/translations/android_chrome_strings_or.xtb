@@ -285,6 +285,7 @@
 <translation id="233375395665273385">ଡିଲିଟ କରି ସାଇନ ଆଉଟ କରନ୍ତୁ</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" />କୁ ଇନଷ୍ଟଲ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="2349710944427398404">ଆକାଉଣ୍ଟ, ବୁକ୍‌ମାର୍କ୍ସ ତଥା ସେଭ୍ କରାଯାଇଥିବା ସେଟିଂସ୍ ସମେତ Chrome ଦ୍ୱାରା ବ୍ୟବହୃତ ସମୁଦାୟ ଡାଟା</translation>
+<translation id="2349954856814571872">ବୁକମାର୍କ ବାର ବଟନର ଆଇକନ</translation>
 <translation id="235789365079050412">Google ଗୋପନୀୟତା ନୀତି</translation>
 <translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> ଭାବେ ସାଇନ ଇନ କରିଛନ୍ତି। <ph name="USER_EMAIL" />। ସେଟିଂସ ଖୋଲେ।</translation>
@@ -827,7 +828,6 @@
 <translation id="4835385943915508971">Chrome ପାଖରେ ଅନୁରୋଧ କରାଯାଇଥିବା ସମ୍ବଳକୁ ଆକ୍ସେସ୍‌ ନାହିଁ।</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ଟାବର ଟାବ ଗ୍ରୁପ, <ph name="COLOR_NAME" /> ରଙ୍ଗକୁ ଏକ ନୂଆ ବେକଗ୍ରାଉଣ୍ଡ ଟାବ ଗ୍ରୁପ ଭାବେ ରିଷ୍ଟୋର କରନ୍ତୁ।}other{<ph name="TAB_COUNT_MANY" /> ଟାବର ଟାବ ଗ୍ରୁପ, <ph name="COLOR_NAME" /> ରଙ୍ଗକୁ ଏକ ନୂଆ ବେକଗ୍ରାଉଣ୍ଡ ଟାବ ଗ୍ରୁପ ଭାବେ ରିଷ୍ଟୋର କରନ୍ତୁ।}}</translation>
 <translation id="4837753911714442426">ପୃଷ୍ଠା ପ୍ରିଣ୍ଟ କରିବାକୁ ବିକଳ୍ପଗୁଡ଼ିକ ଖୋଲନ୍ତୁ</translation>
-<translation id="4842092870884894799">ପାସ୍‌ୱର୍ଡ ତିଆରି ପପ୍-ଅପ୍ ଦେଖାଉଛି</translation>
 <translation id="4844633725025837809">ଅତିରିକ୍ତ ସୁରକ୍ଷା ପାଇଁ, ପାସୱାର୍ଡଗୁଡ଼ିକ Google ପାସୱାର୍ଡ ମ୍ୟାନେଜରରେ ସେଭ ହେବା ପୂର୍ବରୁ ସେଗୁଡ଼ିକୁ ଆପଣଙ୍କ ଡିଭାଇସରେ ଏନକ୍ରିପ୍ଟ କରନ୍ତୁ</translation>
 <translation id="4850886885716139402">ଦେଖନ୍ତୁ</translation>
 <translation id="4852014461738377247">ସାଇନ ଇନ କରାଯାଉଛି\u2026</translation>

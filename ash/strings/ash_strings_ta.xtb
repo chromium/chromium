@@ -140,6 +140,7 @@
 <translation id="1415846719612499304">நெட்வொர்க் பட்டியலைக் காட்டும். <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">அறிவிப்பில் வந்த செயலைச் செய்வதற்கு, சாதனத்தை அன்லாக் செய்யுங்கள்</translation>
 <translation id="1420408895951708260">நைட் லைட்டை ஆன்/ஆஃப் செய்யும். <ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">பரிந்துரைக்கப்பட்ட குழு</translation>
 <translation id="1426410128494586442">ஆம்</translation>
 <translation id="1435537621343861112">சொல்வதை எழுதும் வசதியைத் தொடங்க முடியவில்லை. உங்கள் மைக் முடக்கப்பட்டுள்ளது.</translation>
 <translation id="1445031758921122223">முக பாவனை ஃபைல்கள் பதிவிறக்கப்பட்டன</translation>
@@ -243,12 +244,14 @@
 <translation id="17722141032474077">கணக்கீடுகள்</translation>
 <translation id="1774796056689732716">கேலெண்டர், <ph name="CURRENT_MONTH_YEAR" />, தற்போது <ph name="DATE" /> என்ற தேதி தேர்ந்தெடுக்கப்பட்டுள்ளது.</translation>
 <translation id="178347895271755507">மொபைலில் உள்ள சமீபத்திய படங்கள், மீடியா, அறிவிப்புகள் ஆகியவற்றைப் பார்க்கும்படி அமைக்கும்</translation>
+<translation id="1785317913592722944">பரிந்துரைக்கப்பட்ட குழுவில் உள்ளவற்றை அகற்றலாம்</translation>
 <translation id="1786487376942610288">பிக்ச்சர்-இன்-பிக்ச்சர் சாளரத்தின் அதிகபட்ச அளவுக்கும் தற்போதைய அளவுக்கும் இடையே மாறலாம்</translation>
 <translation id="1787955149152357925">முடக்கு</translation>
 <translation id="1796561540704213354">நீங்கள் பார்வையிட்ட பக்கங்கள் மற்றும் திறந்துள்ள பக்கங்களை உள்ளடக்கிய இணையதளங்கள்</translation>
 <translation id="179842970735685253">Googleளின் சேவை விதிமுறைகளுக்கு</translation>
 <translation id="1805407494113167797">ஃபோகஸ் பயன்முறைக்கான ஒலிகளைப் பிளே முடியவில்லை</translation>
 <translation id="181103072419391116">சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />, உங்கள் நிர்வாகி நிர்வகிக்கிறார்</translation>
+<translation id="1815039896005206046">தம்ஸ்-டவுன் வழங்குவதால் இந்தக் குழுப் பரிந்துரையை நீங்கள் விரும்பவில்லை என்று கருத்து தெரிவிக்கப்படும்</translation>
 <translation id="1816896987747843206">கேமராவைப் பயன்படுத்த அனுமதி கேட்கும் ஆப்ஸ் மற்றும் இணையதளங்கள் அனைத்திற்கும் கேமராவிற்கான அணுகலை இது வழங்கும்</translation>
 <translation id="1823873187264960516">ஈதர்நெட்: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">இருப்பிட அணுகலை இயக்கு</translation>
@@ -390,6 +393,7 @@
 <translation id="2369165858548251131">சீன மொழியில் "ஹலோ"</translation>
 <translation id="2370971919968699910">இதற்கு டேட்டா கட்டணம் விதிக்கப்படலாம்.
 <ph name="DEVICECOUNT" /> சாதனங்கள் இணைக்கப்பட்டுள்ளன.</translation>
+<translation id="2383521554963939360">ஆப்ஸ் மற்றும் பக்கக் குழுக்கள்</translation>
 <translation id="2386292613071805067">பக்கத்தில் உள்ள அனைத்தையும் தேர்ந்தெடுக்கும்</translation>
 <translation id="2389423187722941333">Geminiயை இயக்க/முடக்க</translation>
 <translation id="2392659840443812875">ஹாட்ஸ்பாட் எதுவும் கிடைக்கவில்லை. உங்கள் சாதனம் அருகில் இருப்பதையும் புளூடூத் இயக்கப்பட்டுள்ளதையும் உறுதிசெய்துகொள்ளவும்.</translation>
@@ -920,6 +924,7 @@
 <translation id="4151054805501931758">போர்ட்ரெய்ட் டச்-அப்</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% பேட்டரி மீதமுள்ளது (<ph name="TIME_LEFT" /> நிமிடங்கள் நீடிக்கும்).
 பேட்டரி ஆயுளை அதிகரிக்க சில அம்சங்கள் கட்டுப்படுத்தப்படும்.</translation>
+<translation id="4158003972857765638">புதிய டெஸ்க்கில் ஒழுங்கமைக்கலாம்</translation>
 <translation id="4160919062868802509">பல ஆடியோ சாதனங்கள் கண்டறியப்பட்டுள்ளன</translation>
 <translation id="416245495747357243">அவ்வளவே!</translation>
 <translation id="4165275524535002941">டிஸ்ப்ளேக்களுக்கான சிக்னல்களைக் கேபிள் ஆதரிக்காமல் இருக்கக்கூடும்</translation>
@@ -968,6 +973,7 @@
 <translation id="4285498937028063278">பிரித்தெடு</translation>
 <translation id="428715201724021596">நெட்வொர்க் சுயவிவரத்துடன் இணைக்கிறது. இதற்குச் சில நிமிடங்கள் ஆகலாம்.</translation>
 <translation id="4287250812980588583">Chrome சாளரம்</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{மைக் ஒலியளவை <ph name="APP_NAME" /> கட்டுப்படுத்துகிறது}other{மைக் ஒலியளவை # ஆப்ஸ் கட்டுப்படுத்துகின்றன}}</translation>
 <translation id="4294319844246081198">காலை வணக்கம் <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875"><ph name="COUNT" /> அறிவிப்புகளையும் அழிக்கும்</translation>
 <translation id="4300272766492248925">பயன்பாட்டைத் திற</translation>
@@ -984,6 +990,7 @@
 <translation id="4322742403972824594">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: Ctrl + Alt + மேல்நோக்கிய அம்புக்குறி. Home பட்டனைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + இடது அம்புக்குறி பட்டனை அழுத்தவும்.</translation>
 <translation id="4324840740119394760">கேமராவைப் பயன்படுத்த அனுமதி கேட்கும் <ph name="APP_NAME" /> ஆப்ஸுக்கும், ஆப்ஸ் மற்றும் இணையதளங்கள் அனைத்திற்கும் கேமராவிற்கான அணுகலை இது வழங்கும்</translation>
 <translation id="4327147325944669226">கேமை ரெக்கார்டு செய்</translation>
+<translation id="4329076911374908740">குழுக்களைச் சேமிப்பதற்கான அதிகபட்ச வரம்பை அடைந்துவிட்டீர்கள்.</translation>
 <translation id="4338109981321384717">உருப்பெருக்கி</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, ஒலியடக்கப்பட்டது</translation>
 <translation id="4351244548802238354">அறிவிப்பை மூடு</translation>
@@ -1264,6 +1271,7 @@
 <translation id="5245201184978705914">டிரான்ஸ்கிரிப்ட்டை உருவாக்க முடியவில்லை</translation>
 <translation id="5251174953851719648">உள்ளடக்கத்தை ரெஃப்ரெஷ் செய்யும்</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> என்ற சாதனத்துடன் இணைக்கப்பட்டுள்ளது. பேட்டரி: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5256939106029293271">மைக்கைப் பரிசோதியுங்கள்</translation>
 <translation id="5258528442992323769">சேமிக்கப்பட்ட டெஸ்க்குகள் எதுவுமில்லை</translation>
 <translation id="5260676007519551770">மேசை 4</translation>
 <translation id="5265391159779542051">முடிவுகள் ஏற்றப்பட்டன</translation>
@@ -1421,6 +1429,7 @@
 <translation id="5745612484876805746">சூரிய அஸ்தமனத்தின் போது நைட் லைட் விருப்பம் தானாக இயக்கப்படும்</translation>
 <translation id="5750765938512549687">புளூடூத் முடக்கப்பட்டுள்ளது</translation>
 <translation id="5758114525425072423">ஃபோகஸ் பயன்முறையைத் தொடங்கும். <ph name="FOCUS_DURATION" />க்கு டைமர் அமைக்கப்பட்டுள்ளது.</translation>
+<translation id="5759522586053040964">உங்கள் குரல் பிறருக்கு எப்படிக் கேட்கும் என்று தெரிந்துகொள்ளுங்கள். நிறுத்த, பரிசோதனை ஐகானைக் கிளிக் செய்யவும் அல்லது வீடியோ அழைப்புப் பேனலை மூடவும்.</translation>
 <translation id="5760866832697883462">உங்கள் <ph name="NAME" /> சாதனத்தை இணைத்திடுங்கள்</translation>
 <translation id="5762420912707163638">மார்க்கரை இயக்கலாம்/முடக்கலாம். <ph name="STATE_TEXT" /> திரையில் வரைய டிராக்பேட், டச்ஸ்கிரீன், ஸ்டைலஸ் போன்றவற்றைப் பயன்படுத்தலாம்.</translation>
 <translation id="576341972084747908"><ph name="FILENAME" /> ஃபைலைப் பதிவிறக்குவது ஆபத்தானது</translation>
@@ -1939,6 +1948,7 @@
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">உருவாக்கு</translation>
 <translation id="7526573455193969409">நெட்வொர்க் கண்காணிக்கப்படலாம்</translation>
+<translation id="7534543072325030705">தம்ஸ்-அப் வழங்குவதால் இந்தக் குழுப் பரிந்துரையை விரும்புகிறீர்கள் என்று கருத்து தெரிவிக்கப்படும்</translation>
 <translation id="7536035074519304529">IP முகவரி: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">இடதுபுறச் சாளரத்தை ரெஃப்ரெஷ் செய்யும்</translation>
 <translation id="7543399541175347147">Linux ஆப்ஸ், மறைநிலைச் சாளரங்களைத் தற்போது பயன்படுத்த முடியாது. பிற ஆப்ஸ் சேமிக்கப்படும்.</translation>
@@ -2103,6 +2113,7 @@
 <translation id="8004512796067398576">அதிகரி</translation>
 <translation id="8005527720597583355">ஃபோகஸ் நேரத்தைத் தொடங்கும்</translation>
 <translation id="8015361438441228492">பணியைத் திருத்த முடியவில்லை.</translation>
+<translation id="8027187124910699148">பரிந்துரைக்கப்பட்ட குழுவை மீண்டும் தொடங்கலாம்</translation>
 <translation id="802782383769312836">முந்தைய டெஸ்க்: <ph name="DESK_NAME" />. டெஸ்க் <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">ஹாட்ஸ்பாட் இணைப்பு வேலை செய்யவில்லை</translation>
 <translation id="8029629653277878342">மேலும் பாதுகாப்பிற்குக் கடவுச்சொல் அல்லது பின் அவசியம்</translation>
@@ -2211,6 +2222,7 @@
 <translation id="8426708595819210923">மாலை வணக்கம் <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">அமைப்புகள்</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> முதல் <ph name="KEY_TWO" /> வரை ஏதேனும் ஒன்றை அழுத்தவும்</translation>
+<translation id="8429547770382807369">பின்னர் பயன்படுத்துவதற்காகக் குழுவைச் சேமி</translation>
 <translation id="8433186206711564395">நெட்வொர்க் அமைப்புகள்</translation>
 <translation id="8433977262951327081">உள்ளீட்டு விருப்பங்கள் மெனு குமிழியை அடுக்கில் காட்டுவதற்கான ஷார்ட்கட் மாறியுள்ளது. <ph name="OLD_SHORTCUT" />க்குப் பதிலாக <ph name="NEW_SHORTCUT" />ஐப் பயன்படுத்தவும்.</translation>
 <translation id="8437311513256731931">கருத்து தெரிவிப்பதற்கான கருவியைத் திற</translation>
@@ -2219,6 +2231,7 @@
 <translation id="8446884382197647889">மேலும் அறிக</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">பேசும் திரையை மூடுக</translation>
+<translation id="8466665972451889002"><ph name="GROUP_NAME" /> குழுவில் உள்ளவற்றைக் காட்டும்</translation>
 <translation id="8468806060683421065">கடைசித் தேதி: <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">திரை அளவு அமைப்புகள்</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />, <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />ஐ கொண்டுள்ளது.</translation>
@@ -2241,6 +2254,7 @@
 <translation id="8551588720239073785">தேதி &amp; நேர அமைப்புகள்</translation>
 <translation id="8553395910833293175">எல்லா டெஸ்க்குகளுக்கும் ஏற்கெனவே ஒதுக்கப்பட்டுள்ளது.</translation>
 <translation id="8555757996376137129">தற்போதைய டெஸ்க்கை அகற்று</translation>
+<translation id="8558521694042102707">நபர்களைப் பற்றிய விவரங்கள் உள்ளிட்ட துல்லியமற்ற தகவல்களை ஜெனரேட்டிவ் AI வழங்கக்கூடும் என்பதால் அதன் பதில்களைச் சரிபார்த்துக்கொள்ளுங்கள்.</translation>
 <translation id="8559845965695780508"><ph name="USER" /> திருத்தியுள்ளார்</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">இதோ சில பரிந்துரைகள்</translation>
@@ -2263,6 +2277,7 @@
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />, உங்கள் நிர்வாகி நிர்வகிக்கிறார்</translation>
 <translation id="8638637208069328956">மைக்ரோஃபோனை இயக்கு/முடக்கு</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> மீதமுள்ளது</translation>
+<translation id="8640470573049727749">குழுப் பரிந்துரைகள் எல்லாவற்றையும் மறை</translation>
 <translation id="8641510901370802679"><ph name="ANSWER_TYPE" /> தகவலைக் காட்டுகிறது</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> டைமர்</translation>
 <translation id="8647931990447795414">ஒரு நபரைச் சேர்க்க, Family Link பெற்றோர் அணுகல் குறியீட்டை உள்ளிடவும்</translation>
@@ -2345,6 +2360,7 @@
 <translation id="8905919797434099235">(தலைப்பு இல்லை)</translation>
 <translation id="890616557918890486">மூலத்தை மாற்று</translation>
 <translation id="8909138438987180327">பேட்டரி: <ph name="PERCENTAGE" /> சதவீதம்.</translation>
+<translation id="8916866375277139011"><ph name="GROUP_NAME" /> குழுவில் உள்ளவற்றை மறைக்கும்</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google அசிஸ்டண்ட், இந்த மொழியை ஆதரிக்கவில்லை.</translation>
 <translation id="8926951137623668982">ஷெல்ஃப் எப்போதும் மறைக்கப்படும்</translation>

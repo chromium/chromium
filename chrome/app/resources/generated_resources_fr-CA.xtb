@@ -129,7 +129,6 @@
 <translation id="1079242569060319448">Vous avez oublié votre NIP?</translation>
 <translation id="1079285777677001938">Les fonctionnalités de certains sites pourraient ne pas fonctionner.</translation>
 <translation id="1079766198702302550">Toujours bloquer l'accès à la caméra</translation>
-<translation id="1080365971383768617">Mots de passe sur tous vos appareils</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> : 1 onglet}one{<ph name="GROUP_TITLE" /> : # onglet}other{<ph name="GROUP_TITLE" /> : # onglets}}</translation>
 <translation id="1082214733466244292">Votre administrateur a bloqué certaines fonctionnalités pour cet appareil</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> souhaite restaurer vos paramètres Chrome par défaut. Votre page d'accueil, la page Nouvel onglet et votre moteur de recherche seront réinitialisés. Vos extensions seront désactivées et vos onglets ne seront plus épinglés. Les autres données temporaires ou mises en cache, telles que les témoins, les données relatives aux contenus et aux sites, seront effacées.</translation>
@@ -3025,6 +3024,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="310297983047869047">Diapositive précédente</translation>
 <translation id="3103451787721578293">Veuillez entrer la raison pour laquelle vous téléversez ces données :</translation>
 <translation id="3103512663951238230">Alt+Clic</translation>
+<translation id="3104763887980088552">Journal d'activité</translation>
 <translation id="3104948640446684649">Envoyez les données d'utilisation et de diagnostic. Actuellement, cet appareil envoie automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applis. Cela nous permettra d'assurer la stabilité du système et des applis, et d'apporter d'autres améliorations. Certaines données agrégées contribueront également à améliorer les applis Google et elles aideront nos partenaires, comme les développeurs Android. Si votre paramètre relatif aux autres activités sur le Web et dans les applis est activé, ces données peuvent être enregistrées dans votre compte Google. <ph name="BEGIN_LINK2" />En savoir plus sur les mesures<ph name="BEGIN_LINK2_END" />En savoir plus<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Dernière mise à jour échouée</translation>
 <translation id="3105796011181310544">Rétablir Google?</translation>
@@ -3739,6 +3739,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3629664892718440872">Mémoriser ce choix</translation>
 <translation id="3630132874740063857">Votre téléphone</translation>
 <translation id="3630995161997703415">Ajoutez ce site à votre étagère pour pouvoir l'utiliser à tout moment</translation>
+<translation id="3632929818790223729">Onglet divisé avec onglet actif</translation>
 <translation id="3634652306074934350">La demande d'autorisation a expiré</translation>
 <translation id="3635199270495525546">Module de plateforme de confiance (TPM) détecté</translation>
 <translation id="3635353578505343390">Envoyer un commentaire à Google</translation>
@@ -6238,9 +6239,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) souhaite que vous vous joigniez à un groupe d'onglets. Toute personne disposant du lien peut modifier l'ensemble des onglets, alors joignez-vous au groupe avec prudence. Le lien expire dans 48 heures.</translation>
 <translation id="5410889048775606433">Fuchsia</translation>
 <translation id="5411022484772257615">Impossible de terminer l'inscription scolaire</translation>
-<translation id="5411856344659127989">Si vous souhaitez ajouter un compte pour quelqu'un d'autre, <ph name="LINK_BEGIN" />ajoutez une nouvelle personne<ph name="LINK_END" /> à votre <ph name="DEVICE_TYPE" />.
-
-Les autorisations que vous avez déjà accordées à des sites Web et à des applications peuvent s'appliquer à ce compte. Vous pouvez gérer vos comptes Google dans les <ph name="SETTINGS_LINK_BEGIN" />Paramètres<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="54118879136097217">Installer l'application sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="5413640305322530561">En savoir plus sur les données de diagnostic et d'utilisation</translation>
 <translation id="5414198321558177633">Actualisation de la liste de profils en cours… Cette opération peut prendre quelques minutes.</translation>
@@ -6519,7 +6517,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5610867721023328944">Réessayez ou sélectionnez l'un des thèmes proposés ci-dessous.</translation>
 <translation id="5611398002774823980">Enregistrer dans le compte</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5613074282491265467">Lorsque vous êtes connecté à Chrome, les mots de passe que vous enregistrez sont conservés dans votre compte Google, <ph name="USER_EMAIL" />. Pour désactiver cette option, accédez aux paramètres.</translation>
 <translation id="5614190747811328134">Avis pour les utilisateurs</translation>
 <translation id="5614553682702429503">Enregistrer le mot de passe?</translation>
 <translation id="5614947000616625327">Trousseau iCloud</translation>
@@ -8552,7 +8549,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7088674813905715446">Cet appareil a été mis en état « révoqué » par l'administrateur. Pour activer son inscription, veuillez demander à l'administrateur d'activer l'état « en attente » pour cet appareil.</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7089253021944603172">Onglet à nouveau actif</translation>
-<translation id="7090160970140261931">Vous pouvez ajouter des comptes supplémentaires à votre <ph name="DEVICE_TYPE" /> pour les utiliser avec les sites Web et les applications Android. Vous pouvez également définir quels comptes sont utilisés avec les applications Android.</translation>
 <translation id="7090714929377281710">Désactiver automatiquement le point d'accès sans fil</translation>
 <translation id="7092504544229909737">Ne peut pas être utilisé avec les applis Android</translation>
 <translation id="7093220653036489319">Réponses rapides</translation>
@@ -9013,6 +9009,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7424818322350938336">Réseau ajouté</translation>
 <translation id="7425037327577270384">Aide à la rédaction</translation>
 <translation id="7427348830195639090">Page en arrière-plan : <ph name="BACKGROUND_PAGE_URL" /></translation>
+<translation id="7427729970025360383">Ce profil est géré</translation>
 <translation id="7427798576651127129">Appel de <ph name="DEVICE_NAME" /></translation>
 <translation id="7429415133937917139">Simule la sortie d'un afficheur braille actualisable
         dans le panneau ChromeVox, dans le haut de l'écran</translation>
@@ -10030,6 +10027,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8140869601171867148">Votre compte Google est le même compte que vous utilisez pour Gmail, YouTube, Chrome et d'autres produits Google.
     Utilisez votre compte pour accéder facilement à tous vos favoris, vos fichiers et plus encore.</translation>
 <translation id="8141418916163800697">Vous pouvez configurer d'autres fonctionnalités dans les paramètres de Phone Hub</translation>
+<translation id="814156740715940972">Onglet divisé avec onglet actif</translation>
 <translation id="8141584439523427891">Ouverture dans un navigateur secondaire en cours…</translation>
 <translation id="8141725884565838206">Gérer les mots de passe</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{une vidéo}one{# vidéo}other{# vidéos}}</translation>
@@ -11162,9 +11160,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="894360074127026135">Fonction d'optimisation internationale Netscape</translation>
 <translation id="8944099748578356325">Épuisera plus rapidement la pile (actuellement à <ph name="BATTERY_PERCENTAGE" /> %)</translation>
 <translation id="8944633700466246631">Créer un code NIP de récupération à six chiffres pour le gestionnaire de mots de passe Google</translation>
-<translation id="8944725102565796255">Si vous ne souhaitez utiliser ce compte qu'une seule fois, vous pouvez <ph name="GUEST_LINK_BEGIN" />utiliser l'appareil en tant qu'invité<ph name="GUEST_LINK_END" />. Si vous souhaitez ajouter un compte pour quelqu'un d'autre, <ph name="LINK_BEGIN" />ajoutez une nouvelle personne<ph name="LINK_END" /> à votre <ph name="DEVICE_TYPE" />.
-
-Les autorisations que vous avez déjà accordées à des sites Web et à des applications peuvent s'appliquer à ce compte. Vous pouvez gérer vos comptes Google dans les <ph name="SETTINGS_LINK_BEGIN" />Paramètres<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="8945274638472141382">Taille de l'icône</translation>
 <translation id="8945508919180478719">Micro de type studio</translation>
 <translation id="8946359700442089734">Les fonctionnalités de débogage ne sont pas complètement activées sur cet appareil <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>

@@ -85,6 +85,7 @@
 <translation id="1158211211994409885">Web <ph name="HOST_NAME" /> neočekávaně ukončil připojení.</translation>
 <translation id="1160009341934077418">Historie cen na webu</translation>
 <translation id="1161325031994447685">Obnovit připojení k síti Wi-Fi</translation>
+<translation id="1161663161838091892">Pokud chcete pokračovat, synchronizujte karty a historii</translation>
 <translation id="1163507966173624031">Lidová a tradiční hudba</translation>
 <translation id="11635448457105324">Tlačítko Spravovat adresy, aktivací můžete přidávat a spravovat adresy v nastavení Chromu</translation>
 <translation id="1165039591588034296">Chyba</translation>
@@ -1105,6 +1106,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="297173220375858963">Publikační software a pomůcky</translation>
 <translation id="2972581237482394796">&amp;Opakovat</translation>
 <translation id="2974468223369775963">Tento kód IBAN se nepodařilo uložit do vašeho účtu Google. Místo toho je uložen v Chromu na tomto zařízení. Při příštím použití tohoto kódu IBAN se vás Chrome zase zeptá.</translation>
+<translation id="297667759942911166">Spolupracujte ve skupinách karet</translation>
 <translation id="2977665033722899841">Aktuálně je vybrán řádek <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">Zamykat a používat klávesnici</translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1964,6 +1966,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4434045419905280838">Vyskakovací okna a přesměrování</translation>
 <translation id="443673843213245140">Využití proxy serveru je zakázáno, je však určena explicitní konfigurace proxy serveru.</translation>
 <translation id="4438821706955556403">Obvyklá cena</translation>
+<translation id="444116852243722675">Otevřít vše (<ph name="ITEMS" />)</translation>
 <translation id="4441832193888514600">Ignorováno, protože zásadu lze nastavit pouze jako zásadu cloudového uživatele.</translation>
 <translation id="4445133368066241428">Oblíbená témata</translation>
 <translation id="4445964943162061557">Tato funkce je experimentální funkce a ne vždy bude fungovat správně.</translation>
@@ -2059,6 +2062,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4661556981531699496">Zvířata a domácí mazlíčci</translation>
 <translation id="4661868874067696603">Vyhledat další možnosti nákupu</translation>
 <translation id="4663373278480897665">Kamera je povolena</translation>
+<translation id="4664084870155869900">Příště se vyplní automaticky. Karta se uloží na vašem zařízení.</translation>
 <translation id="466561305373967878">Deskové hry</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Virtuální realita</translation>
@@ -2630,6 +2634,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5675809467256309336">Taneční a elektronická hudba</translation>
 <translation id="5675959228867414813">Zobrazit podle data</translation>
 <translation id="567604591393105935">Spodní tabulka obchodu byla otevřena na polovinu výšky</translation>
+<translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Fólie</translation>
 <translation id="5680642791693447368">Thrillery, krimi a filmy o záhadách</translation>
 <translation id="568292603005599551">Pozice obrázku na ose X</translation>
@@ -2667,6 +2672,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="573555826359077410">Tlačítko Vytvořit formulář, aktivací rychle vytvoříte nový formulář ve Formulářích Google</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Uložit kartu do účtu Google}few{Uložit karty do účtu Google}many{Uložit karty do účtu Google}other{Uložit karty do účtu Google}}</translation>
 <translation id="5738385766833540397">Nastavte, jak chcete dostávat upozornění na pokles cen produktů, které sledujete</translation>
+<translation id="573974402615125334">Pokud chcete sdílet skupiny karet, připojovat se k nim a spolupracovat na nich, synchronizujte historii a karty</translation>
 <translation id="5740911612628596808">Obálka C9</translation>
 <translation id="5742806904559466333">Bary, kluby a noční život</translation>
 <translation id="5743684619253032786">Produkty péče o nehty</translation>
@@ -3865,6 +3871,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7865448901209910068">Nejlepší rychlost</translation>
 <translation id="7870281855125116701">Byla nalezena sleva</translation>
 <translation id="7871445724586827387">Změnit heslo účtu Google</translation>
+<translation id="787226752901403048">Přihlaste se do Chromu, abyste mohli sdílet skupiny karet, připojovat se k nim a spolupracovat na různých nápadech</translation>
 <translation id="7877007680666472091">chráněná ID obsahu</translation>
 <translation id="7878562273885520351">Heslo může být prolomeno</translation>
 <translation id="7882421473871500483">Hnědá</translation>
@@ -4320,6 +4327,7 @@ Další podrobnosti:
 <translation id="8702965365666568344">Montážní páska</translation>
 <translation id="8703575177326907206">Vaše spojení se serverem <ph name="DOMAIN" /> není šifrované.</translation>
 <translation id="8705331520020532516">Sériové číslo</translation>
+<translation id="8706806585855470492">Budete moct sdílet skupiny karet, připojovat se k nim a spolupracovat na nich</translation>
 <translation id="8708134712139312373">Může žádat o připojení k zařízením Bluetooth</translation>
 <translation id="8710842507289500830">Styl písma</translation>
 <translation id="8712637175834984815">Hotovo</translation>
@@ -4462,6 +4470,7 @@ Další podrobnosti:
 <translation id="8975263830901772334">Názvy souborů, které tisknete</translation>
 <translation id="8982884016487650216">Načítání PDF bylo dokončeno</translation>
 <translation id="8983369100812962543">Nyní můžete upravovat velikost aplikace</translation>
+<translation id="8985112471026018799">Uložte si kartu, abyste mohli platit rychleji</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter zobrazíte historii prohlížení v Chromu</translation>
 <translation id="8987663052629670333">Tisk fotografií</translation>
 <translation id="8987927404178983737">Měsíc</translation>
@@ -4528,6 +4537,7 @@ Další podrobnosti:
 <translation id="9090993752571911635">Poskytovatelé internetových služeb</translation>
 <translation id="9093723786115107672">Noční prádlo</translation>
 <translation id="9094544726794842788">Palec dolů otevře formulář k odeslání podrobné zpětné vazby o tom, proč se vám tyto výsledky nelíbí</translation>
+<translation id="9094809883254050729">Příště se vyplní automaticky. Karta se uloží zašifrovaná.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />: stisknutím klávesy Tab a pak Enter nastavíte Chrome jako výchozí prohlížeč v nastavení iOS</translation>
 <translation id="9101450247048146228">Používání a natáčení kamer (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Přihrádka 1</translation>

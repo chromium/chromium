@@ -974,6 +974,7 @@
 <translation id="4285498937028063278">అన్‌పిన్ చేయి</translation>
 <translation id="428715201724021596">ప్రొఫైల్‌కు కనెక్ట్ చేస్తోంది. దీనికి కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
 <translation id="4287250812980588583">Chrome విండో</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{మైక్ వాల్యూమ్‌ను <ph name="APP_NAME" /> కంట్రోల్ చేస్తుంది}other{మైక్ వాల్యూమ్‌ను # యాప్‌లు కంట్రోల్ చేస్తున్నాయి}}</translation>
 <translation id="4294319844246081198">శుభోదయం <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">మొత్తం <ph name="COUNT" /> నోటిఫికేషన్‌లను క్లియర్ చేస్తుంది</translation>
 <translation id="4300272766492248925">యాప్‌ను తెరువు</translation>

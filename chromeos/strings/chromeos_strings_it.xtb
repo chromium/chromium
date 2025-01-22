@@ -564,6 +564,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensioni)</translation>
 <translation id="3748026146096797577">Non connesso</translation>
 <translation id="3749289110408117711">Nome file</translation>
+<translation id="3763034084412196440">Regola il volume</translation>
 <translation id="3767737419527918477">Cerca file di registrazione</translation>
 <translation id="3771294271822695279">File video</translation>
 <translation id="3780740315729837296">Assegna un tasto della tastiera</translation>
@@ -1218,6 +1219,7 @@
 <translation id="6747035363363040417">neutro</translation>
 <translation id="6747215703636344499">Operazione interrotta - Vassoio di uscita pieno</translation>
 <translation id="6749473226660745022">Foto</translation>
+<translation id="6752960629591143793">Seleziona la lingua di trascrizione e scaricala nelle Impostazioni o nel menu <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="6753452347192452143">Il dispositivo è un computer.</translation>
 <translation id="6756731097889387912">Impossibile annullare la scansione</translation>
 <translation id="6760706756348334449">Abbassa il volume</translation>

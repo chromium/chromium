@@ -129,7 +129,6 @@
 <translation id="1079242569060319448">Code oublié ?</translation>
 <translation id="1079285777677001938">Il est possible que les fonctionnalités de certains sites ne fonctionnent pas.</translation>
 <translation id="1079766198702302550">Toujours bloquer l'accès à la caméra</translation>
-<translation id="1080365971383768617">Mots de passe sur tous vos appareils</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 onglet}one{<ph name="GROUP_TITLE" /> - # onglet}other{<ph name="GROUP_TITLE" /> - # onglets}}</translation>
 <translation id="1082214733466244292">Votre administrateur a bloqué l'accès à certaines fonctionnalités de l'appareil</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> souhaite rétablir les valeurs par défaut des paramètres Chrome. Suite à cette opération, votre page d'accueil, la page Nouvel onglet et le moteur de recherche seront la réinitialisés, vos extensions seront désactivées et tous les onglets épinglés seront supprimés. D'autres données temporaires et mises en cache seront également effacées, comme les cookies, les données relatives au contenu et les données de sites.</translation>
@@ -524,6 +523,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="135389172849514421">Fonctionne hors connexion</translation>
 <translation id="1353980523955420967">Impossible de trouver le fichier PPD. Vérifiez que votre Chromebook est connecté, puis réessayez.</translation>
 <translation id="1354045473509304750">Continuer d'autoriser <ph name="HOST" /> à utiliser et bouger la caméra</translation>
+<translation id="1354148503392558902">Modification du mot de passe...</translation>
 <translation id="1355088139103479645">Supprimer toutes les données ?</translation>
 <translation id="1356376170199999104">Accordée – <ph name="PERMISSION_DETAILS" />. Activez le micro à l'aide du bouton physique.</translation>
 <translation id="1356959069439783953">Les onglets inactifs changent d'apparence</translation>
@@ -1095,6 +1095,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1751335846119670066">M'aider à lire</translation>
 <translation id="17513872634828108">Onglets ouverts</translation>
 <translation id="175196451752279553">&amp;Rouvrir l'onglet fermé</translation>
+<translation id="1752557850776261983">Vérification de la connexion...</translation>
 <translation id="1753067873202720523">Votre Chromebook risque de ne pas se charger lorsqu'il est allumé.</translation>
 <translation id="1753557900380512635">Intérieur</translation>
 <translation id="1753905327828125965">Les plus visités</translation>
@@ -1923,6 +1924,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2323018538045954000">Réseaux Wi-Fi enregistrés</translation>
 <translation id="2325444234681128157">Mémoriser le mot de passe</translation>
 <translation id="2326188115274135041">Confirmez le code pour activer le déverrouillage automatique</translation>
+<translation id="2326583548923775947">Il ne s'agit pas d'un compte Google. Les éléments que vous enregistrez dans Chrome ne seront pas disponibles sur d'autres appareils.</translation>
 <translation id="2326906096734221931">Ouvrir les paramètres de l'appli</translation>
 <translation id="2326931316514688470">&amp;Actualiser l'application</translation>
 <translation id="2327492829706409234">Activer l'application</translation>
@@ -2371,6 +2373,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2638662041295312666">Image de connexion</translation>
 <translation id="2640299212685523844">Utiliser GTK</translation>
 <translation id="264083724974021997">Connexion à votre téléphone – Boîte de dialogue</translation>
+<translation id="2641098199809442625">Votre mot de passe n'a pas été mis à jour, mais vous devriez toujours pouvoir accéder au site avec votre ancien mot de passe.</translation>
 <translation id="2642111877055905627">Ballon de football</translation>
 <translation id="2642206811783203764">Toujours sur <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">Vous pouvez toujours supprimer les données de mesure des annonces en supprimant vos données de navigation</translation>
@@ -3019,6 +3022,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="310297983047869047">Diapositive précédente</translation>
 <translation id="3103451787721578293">Veuillez indiquer la raison pour laquelle vous importez ces données :</translation>
 <translation id="3103512663951238230">Alt+Clic</translation>
+<translation id="3104763887980088552">Journal d'activité</translation>
 <translation id="3104948640446684649">Envoyer des données d'utilisation et de diagnostic. Actuellement, cet appareil envoie automatiquement à Google des données liées aux diagnostics, à l'appareil et à l'utilisation des applis. Ces données nous aideront à améliorer, entre autres, la stabilité du système et des applis. Certaines données globales seront aussi utiles aux développeurs d'applis Google et à nos partenaires tels que les développeurs Android. Si le paramètre "Activité additionnelle sur le Web et les applications" est activé, ces données pourront être enregistrées dans votre compte Google. <ph name="BEGIN_LINK2" />En savoir plus sur les métriques<ph name="BEGIN_LINK2_END" />En savoir plus<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Échec de la dernière mise à jour</translation>
 <translation id="3105796011181310544">Revenir à Google ?</translation>
@@ -3731,6 +3735,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3629664892718440872">Mémoriser ce choix</translation>
 <translation id="3630132874740063857">Votre téléphone</translation>
 <translation id="3630995161997703415">Ajoutez ce site à votre étagère pour l'utiliser à tout moment</translation>
+<translation id="3632929818790223729">Diviser l'onglet avec l'onglet actif</translation>
 <translation id="3634652306074934350">La demande d'autorisation a expiré</translation>
 <translation id="3635199270495525546">TPM détecté</translation>
 <translation id="3635353578505343390">Envoyer des commentaires à Google</translation>
@@ -6230,9 +6235,6 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) vous invite à rejoindre un groupe d'onglets. Toutes les personnes disposant du lien peuvent modifier tous les onglets. Faites donc preuve de prudence en rejoignant le groupe. Le lien expire dans 48 heures.</translation>
 <translation id="5410889048775606433">Fuchsia</translation>
 <translation id="5411022484772257615">Impossible de finaliser l'enregistrement auprès de l'établissement</translation>
-<translation id="5411856344659127989">Pour ajouter le compte d'une autre personne, <ph name="LINK_BEGIN" />ajoutez un nouvel utilisateur<ph name="LINK_END" /> à votre <ph name="DEVICE_TYPE" />.
-
-Les autorisations que vous avez déjà accordées aux sites Web et aux applis peuvent s'appliquer à ce compte. Vous pouvez gérer vos comptes Google dans <ph name="SETTINGS_LINK_BEGIN" />Paramètres<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="54118879136097217">Installer l'appli sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="5413640305322530561">En savoir plus sur les données de diagnostic et d'utilisation</translation>
 <translation id="5414198321558177633">Actualisation de la liste de profils… Cela peut prendre quelques minutes.</translation>
@@ -6511,7 +6513,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5610867721023328944">Réessayez ou sélectionnez l'un des thèmes disponibles ci-dessous.</translation>
 <translation id="5611398002774823980">Enregistrer dans le compte</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5613074282491265467">Lorsque vous êtes connecté à Chrome, les mots de passe que vous enregistrez le sont dans votre compte Google (<ph name="USER_EMAIL" />). Pour désactiver cette option, accédez aux paramètres.</translation>
 <translation id="5614190747811328134">Avertissement utilisateur</translation>
 <translation id="5614553682702429503">Enregistrer le mot de passe ?</translation>
 <translation id="5614947000616625327">Trousseau iCloud</translation>
@@ -8546,7 +8547,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7088674813905715446">L'administrateur a associé l'état "Non géré" à cet appareil. Pour permettre son enregistrement, veuillez demander à l'administrateur d'activer l'état "En attente" pour cet appareil.</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7089253021944603172">Onglet de nouveau actif</translation>
-<translation id="7090160970140261931">Pour accéder à des sites Web et des applis Android avec votre <ph name="DEVICE_TYPE" />, ajoutez-y des comptes supplémentaires. Vous pouvez aussi contrôler les comptes qui sont utilisés avec les applis Android.</translation>
 <translation id="7090714929377281710">Désactiver le point d'accès automatiquement</translation>
 <translation id="7092504544229909737">Ne peut pas être utilisé avec les applis Android</translation>
 <translation id="7093220653036489319">Réponses rapides</translation>
@@ -10025,6 +10025,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8140869601171867148">Il s'agit du compte Google que vous utilisez pour Gmail, YouTube, Chrome et les autres produits Google.
     Utilisez votre compte pour accéder facilement à vos favoris, fichiers, etc.</translation>
 <translation id="8141418916163800697">Vous pouvez configurer d'autres fonctionnalités dans les paramètres de Phone Hub</translation>
+<translation id="814156740715940972">Diviser l'onglet avec l'onglet actif</translation>
 <translation id="8141584439523427891">Ouverture dans le navigateur secondaire…</translation>
 <translation id="8141725884565838206">Gérer les mots de passe</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{une vidéo}one{# vidéo}other{# vidéos}}</translation>
@@ -11158,9 +11159,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="894360074127026135">Fonction d'optimisation internationale Netscape </translation>
 <translation id="8944099748578356325">Sollicitera davantage la batterie (<ph name="BATTERY_PERCENTAGE" /> % actuellement)</translation>
 <translation id="8944633700466246631">Créer un code de récupération à six chiffres pour le Gestionnaire de mots de passe de Google</translation>
-<translation id="8944725102565796255">Si vous souhaitez utiliser ce compte une seule fois, vous pouvez <ph name="GUEST_LINK_BEGIN" />utiliser l'appareil en tant qu'invité<ph name="GUEST_LINK_END" />. Pour ajouter le compte d'une autre personne, <ph name="LINK_BEGIN" />ajoutez un nouvel utilisateur<ph name="LINK_END" /> à votre <ph name="DEVICE_TYPE" />.
-
-Les autorisations que vous avez déjà accordées aux sites Web et aux applis peuvent s'appliquer à ce compte. Vous pouvez gérer vos comptes Google dans <ph name="SETTINGS_LINK_BEGIN" />Paramètres<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="8945274638472141382">Taille des icônes</translation>
 <translation id="8945508919180478719">Micro de style studio</translation>
 <translation id="8946359700442089734">Les fonctionnalités de débogage n'ont pas été complètement activées sur cet appareil <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>

@@ -39,7 +39,7 @@ Status SplitChannel(std::string* channel,
   }
   if (k == 0) {
     return Status{kUnknownError,
-                  "channel does not end with an expected suffix"};
+                  "goog:channel does not end with an expected suffix"};
   }
   *suffix = channel->substr(k - 1);
   channel->erase(std::next(channel->begin(), k - 1), channel->end());
@@ -48,7 +48,7 @@ Status SplitChannel(std::string* channel,
   for (; k && (*channel)[k - 1] != '/'; --k) {
   }
   if (k == 0) {
-    return Status{kUnknownError, "channel does not contain connection_id"};
+    return Status{kUnknownError, "goog:channel does not contain connection_id"};
   }
   std::string connection_str = channel->substr(k);
   channel->erase(std::next(channel->begin(), k - 1), channel->end());
@@ -211,9 +211,10 @@ void Session::SwitchFrameInternal(bool for_top_frame) {
 }
 
 Status Session::OnBidiResponse(base::Value::Dict payload) {
-  std::string* channel = payload.FindString("channel");
+  std::string* channel = payload.FindString("goog:channel");
   if (!channel) {
-    return Status{kUnknownError, "channel is missing in the BiDi response"};
+    return Status{kUnknownError,
+                  "goog:channel is missing in the BiDi response"};
   }
 
   int connection_id = -1;
@@ -224,7 +225,7 @@ Status Session::OnBidiResponse(base::Value::Dict payload) {
   }
 
   if (suffix == kNoChannelSuffix) {
-    payload.Remove("channel");
+    payload.Remove("goog:channel");
   } else if (suffix != kChannelSuffix) {
     return Status{kUnknownError,
                   "unexpected channel name in the BiDi response"};
@@ -304,7 +305,7 @@ Status Session::SendBidiSessionEnd() {
     return status;
   }
   base::Value::Dict bidi_cmd;
-  bidi_cmd.Set("channel", "/before-session-shutdown");
+  bidi_cmd.Set("goog:channel", "/before-session-shutdown");
   bidi_cmd.Set("id", 1);
   bidi_cmd.Set("method", "session.end");
   bidi_cmd.Set("params", base::Value::Dict());

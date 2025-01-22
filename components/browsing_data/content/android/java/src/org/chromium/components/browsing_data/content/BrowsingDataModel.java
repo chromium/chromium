@@ -50,7 +50,7 @@ public class BrowsingDataModel {
     }
 
     public void destroy() {
-        BrowsingDataModelJni.get().destroy(mNativeBrowsingDataModel, BrowsingDataModel.this);
+        BrowsingDataModelJni.get().destroy(mNativeBrowsingDataModel);
     }
 
     @CalledByNative
@@ -74,6 +74,6 @@ public class BrowsingDataModel {
         void removeBrowsingData(
                 long nativeBrowsingDataModelAndroid, String host, Runnable completed);
 
-        void destroy(long nativeBrowsingDataModelAndroid, BrowsingDataModel caller);
+        void destroy(long nativeBrowsingDataModelAndroid);
     }
 }

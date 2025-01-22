@@ -285,6 +285,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="233375395665273385">Supprimer et se déconnecter</translation>
 <translation id="2341410551640223969">Impossible d'installer <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Espace de stockage utilisé pour l'ensemble des données Chrome, y compris les comptes, favoris et paramètres enregistrés</translation>
+<translation id="2349954856814571872">Icône de bouton de la barre de favoris</translation>
 <translation id="235789365079050412">Règles de confidentialité de Google</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2362083820973145409">Connecté en tant que <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ouvre les paramètres.</translation>
@@ -827,7 +828,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4835385943915508971">Chrome n'a pas accès à la ressource demandée.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Restaurer le groupe d'onglets de <ph name="TAB_COUNT_ONE" /> onglet (couleur : <ph name="COLOR_NAME" />) en tant que nouveau groupe d'onglets en arrière-plan.}one{Restaurer le groupe d'onglets de <ph name="TAB_COUNT_MANY" /> onglet (couleur : <ph name="COLOR_NAME" />) en tant que nouveau groupe d'onglets en arrière-plan.}other{Restaurer le groupe d'onglets de <ph name="TAB_COUNT_MANY" /> onglets (couleur : <ph name="COLOR_NAME" />) en tant que nouveau groupe d'onglets en arrière-plan.}}</translation>
 <translation id="4837753911714442426">Afficher les options d'impression de la page</translation>
-<translation id="4842092870884894799">Affichage de la fenêtre contextuelle de génération de mot de passe</translation>
 <translation id="4844633725025837809">Pour renforcer la sécurité, chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le Gestionnaire de mots de passe de Google</translation>
 <translation id="4850886885716139402">Afficher</translation>
 <translation id="4852014461738377247">Connexion\u2026</translation>

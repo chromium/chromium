@@ -543,6 +543,7 @@
 <translation id="3409785640040772790">Мапе</translation>
 <translation id="3416023309465857378">25. октобар 2023.</translation>
 <translation id="3435738964857648380">Безбедност</translation>
+<translation id="343850944564645513">Најпосећенији сајтови</translation>
 <translation id="3443810440409579745">Картица је примљена.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="344589138074534176">Сазнајте више о Google објективу</translation>
@@ -657,6 +658,7 @@
 <translation id="3967327056943561740">Обележивачи</translation>
 <translation id="3967822245660637423">Преузимање је довршено</translation>
 <translation id="3982893814825393515">Пријављивање проблема…</translation>
+<translation id="3984527584375648997">Сакриј Најпосећеније сајтове</translation>
 <translation id="398604237578616937">Пријављени сте као <ph name="USER_EMAIL" />. Отвори мени налога.</translation>
 <translation id="3986739045730058129">Иди на картицу</translation>
 <translation id="3992684624889376114">О овој страници</translation>
@@ -834,7 +836,6 @@
 <translation id="4764612367328936189">Организација вам дозвољава да се пријавите само помоћу одређених налога. Налози који нису дозвољени су скривени. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Откривање и праћење</translation>
 <translation id="4769198578611055647">Помаже вам да приступате сачуваним приступним кључевима на било ком уређају</translation>
-<translation id="4777866634702576038">Желите да избришете групу картица?</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Желите да отворите у режиму без архивирања?</translation>
 <translation id="4792385443586519711">Назив предузећа</translation>
@@ -1469,6 +1470,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="746872191028309255">Купујте оно што видите помоћу камере или фото-галерије.</translation>
 <translation id="7471557245617580330">Направи нову картицу</translation>
 <translation id="7473891865547856676">Не, хвала</translation>
+<translation id="7476548258282096076">Ова картица приказује најпосећеније сајтове.</translation>
 <translation id="747956641630879526">Скривањем ове картице искључујете праћење пакета и уклањате све податке</translation>
 <translation id="7484645889979462775">Никад за овај сајт</translation>
 <translation id="7486006552035434095">Синхронизујте уређаје</translation>

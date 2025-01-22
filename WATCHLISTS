@@ -57,6 +57,15 @@
     'agent_scheduling_group': {
       'filepath': '.*agent_scheduling_group|.*agent_group_scheduler',
     },
+    'android_accessibility': {
+      'filepath': 'WebContentsAccessibility' \
+                  '|content/browser/accessibility/.*android'
+                  '|content/public/android/java/src/org/chromium/content/browser/accessibility' \
+                  '|content/public/android/javatests/src/org/chromium/content/browser/accessibility' \
+                  '|components/browser_ui/accessibility/android/'
+                  '|ui/accessibility/platform/.*android' \
+                  '|ui/accessibility/android/java/src/org/chromium/ui/accessibility/' \
+    },
     'android_browser_controls': {
       'filepath': 'chrome/browser/browser_controls/android/java/src/org/chromium/chrome/browser/browser_controls/' \
                   '|chrome/android/java/src/org/chromium/chrome/browser/fullscreen/' \
@@ -1762,6 +1771,13 @@
       'filepath': 'chrome/browser/page_load_metrics/observers/gws_abandoned_page_load_metrics_observer.(cc|h)$|' \
                   'components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.(cc|h)$'
     },
+    'page_zoom': {
+      'filepath': 'host_zoom' \
+                  'HostZoom' \
+                  'page_zoom' \
+                  'PageZoom' \
+                  'zoom'
+    },
     'panels': {
       'filepath': 'chrome/browser/ui/panels'\
                   '|chrome/browser/ui/cocoa/panels'\
@@ -2463,6 +2479,7 @@
                           'webapks-watchlist@chromium.org'],
     'agent_scheduling_group': ['blink-isolation-reviews@chromium.org',
                                'chikamune+watch@chromium.org'],
+    'android_accessibility': ['mschillaci+watcha11y@google.com'],
     'android_browser_controls': ['peilinwang+watch@google.com'],
     'android_crash_reporting': ['asvitkine+watch@chromium.org',
                                 'wnwen+watch@chromium.org'],
@@ -3123,6 +3140,7 @@
                            'loading-reviews+metrics@chromium.org',
                            'speed-metrics-reviews@chromium.org'],
     'page_load_metrics_abandoned_navigations': ['suzukikeita+watch@chromium.org'],
+    'page_zoom': ['mschillaci+watchzoom@google.com'],
     'panels': ['dimich@chromium.org',
                'jennb@chromium.org',
                'jianli@chromium.org'],

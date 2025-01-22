@@ -991,7 +991,7 @@ const Position Document::PositionAdjustedToTreeScope(
 
 SelectorQueryCache& Document::GetSelectorQueryCache() {
   if (!selector_query_cache_)
-    selector_query_cache_ = std::make_unique<SelectorQueryCache>();
+    selector_query_cache_ = MakeGarbageCollected<SelectorQueryCache>();
   return *selector_query_cache_;
 }
 
@@ -8826,6 +8826,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(template_document_host_);
   visitor->Trace(user_action_elements_);
   visitor->Trace(svg_extensions_);
+  visitor->Trace(selector_query_cache_);
   visitor->Trace(layout_view_);
   visitor->Trace(document_animations_);
   visitor->Trace(timeline_);

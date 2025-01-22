@@ -129,7 +129,6 @@
 <translation id="1079242569060319448">Zapomněli jste PIN?</translation>
 <translation id="1079285777677001938">Některé weby mohou přestat fungovat.</translation>
 <translation id="1079766198702302550">Vždy blokovat přístup ke kameře</translation>
-<translation id="1080365971383768617">Hesla ve všech vašich zařízeních</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 karta}few{<ph name="GROUP_TITLE" /> – # karty}many{<ph name="GROUP_TITLE" /> – # karty}other{<ph name="GROUP_TITLE" /> – # karet}}</translation>
 <translation id="1082214733466244292">Váš administrátor zablokoval některé funkce tohoto zařízení</translation>
 <translation id="1082398631555931481">Nástroj <ph name="THIRD_PARTY_TOOL_NAME" /> chce obnovit vaše nastavení Chromu na výchozí hodnoty. Bude resetována vaše domovská stránka, stránka Nová karta a vyhledávač, budou deaktivována rozšíření a uvolněny všechny karty. Budou také vymazána další dočasná data a data uložená v mezipaměti, například soubory cookie, obsah a data webů.</translation>
@@ -525,6 +524,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="135389172849514421">Funguje offline</translation>
 <translation id="1353980523955420967">Soubor PPD nebyl nalezen. Zkontrolujte, zda je Chromebook online, a zkuste to znovu.</translation>
 <translation id="1354045473509304750">Povolit webu <ph name="HOST" /> používat a natáčet kameru i nadále</translation>
+<translation id="1354148503392558902">Změna hesla…</translation>
 <translation id="1355088139103479645">Smazat všechna data?</translation>
 <translation id="1356376170199999104">Povoleno – <ph name="PERMISSION_DETAILS" />. Zapněte mikrofon pomocí fyzického vypínače.</translation>
 <translation id="1356959069439783953">Neaktivní karty mají nový vzhled</translation>
@@ -1096,6 +1096,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1751335846119670066">Pomoz mi číst</translation>
 <translation id="17513872634828108">Otevřené karty</translation>
 <translation id="175196451752279553">Znovu ot&amp;evřít zavřenou kartu</translation>
+<translation id="1752557850776261983">Kontrola přihlášení…</translation>
 <translation id="1753067873202720523">Když bude Chromebook zapnutý, možná se nebude nabíjet.</translation>
 <translation id="1753557900380512635">Interiéry</translation>
 <translation id="1753905327828125965">Nejnavštěvovanější</translation>
@@ -1924,6 +1925,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2323018538045954000">Uložené sítě Wi-Fi</translation>
 <translation id="2325444234681128157">Zapamatovat heslo</translation>
 <translation id="2326188115274135041">Pokud chcete zapnout automatické odemykání, potvrďte PIN</translation>
+<translation id="2326583548923775947">Toto není účet Google. Položky, které uložíte do Chromu, nebudou dostupné na jiných zařízeních.</translation>
 <translation id="2326906096734221931">Otevřít nastavení aplikace</translation>
 <translation id="2326931316514688470">Znovu načíst &amp;aplikaci</translation>
 <translation id="2327492829706409234">Aktivovat aplikaci</translation>
@@ -2372,6 +2374,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2638662041295312666">Přihlašovací obrázek</translation>
 <translation id="2640299212685523844">Použít GTK</translation>
 <translation id="264083724974021997">Připojení k telefonu – dialogové okno</translation>
+<translation id="2641098199809442625">Heslo nebylo aktualizováno, ale pořád byste k webu měli mít přístup pomocí starého hesla.</translation>
 <translation id="2642111877055905627">Fotbalový míč</translation>
 <translation id="2642206811783203764">Vždy na webu <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">Údaje o měření reklam můžete kdykoli smazat smazáním údajů o prohlížení.</translation>
@@ -3020,6 +3023,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="310297983047869047">Předchozí snímek</translation>
 <translation id="3103451787721578293">Zadejte důvod nahrání těchto dat:</translation>
 <translation id="3103512663951238230">Alt + kliknutí</translation>
+<translation id="3104763887980088552">Protokol aktivit</translation>
 <translation id="3104948640446684649">Odesílat údaje o využití a diagnostice. Toto zařízení aktuálně automaticky odesílá do Googlu diagnostické údaje a údaje o zařízení a aplikacích a jejich využití. Tyto údaje nám pomohou se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, například vývojáři aplikací pro Android. Pokud je zapnuté dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do vašeho účtu Google. <ph name="BEGIN_LINK2" />Další informace o metrikách<ph name="BEGIN_LINK2_END" />Další informace<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Poslední neúspěšná aktualizace</translation>
 <translation id="3105796011181310544">Změnit zpět na Google?</translation>
@@ -3732,6 +3736,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3629664892718440872">Zapamatovat tuto volbu</translation>
 <translation id="3630132874740063857">Váš telefon</translation>
 <translation id="3630995161997703415">Pokud si tento web přidáte na poličku, budete jej moci kdykoliv použít</translation>
+<translation id="3632929818790223729">Zobrazit vedle sebe vybranou a aktivní kartu</translation>
 <translation id="3634652306074934350">Platnost žádosti o oprávnění vypršela</translation>
 <translation id="3635199270495525546">Byl zjištěn čip TPM (Trusted Platform Module)</translation>
 <translation id="3635353578505343390">Odeslat Googlu zpětnou vazbu</translation>
@@ -6230,9 +6235,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) vás zve do skupiny karet. Kdokoli s odkazem může upravovat všechny karty, proto si to dobře rozmyslete. Platnost odkazu vyprší za 48 hodin.</translation>
 <translation id="5410889048775606433">Fuchsie</translation>
 <translation id="5411022484772257615">Registraci do školy se nepodařilo dokončit</translation>
-<translation id="5411856344659127989">Pokud chcete přidat účet někoho dalšího, přidejte do zařízení <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />novou osobu<ph name="LINK_END" />.
-
-Na tento účet se mohou vztahovat oprávnění, která jste již udělili webům a aplikacím. Své účty Google můžete spravovat v <ph name="SETTINGS_LINK_BEGIN" />Nastavení<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="54118879136097217">Instalace aplikace do zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="5413640305322530561">Další informace o diagnostických datech a údajích o využití</translation>
 <translation id="5414198321558177633">Obnovování seznamu profilů. Může to trvat několik minut.</translation>
@@ -6511,7 +6513,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5610867721023328944">Zkuste to znovu nebo vyberte některý z níže uvedených dostupných motivů.</translation>
 <translation id="5611398002774823980">Uložit do účtu</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5613074282491265467">Když jste v Chromu přihlášeni, uložená hesla se ukládají do vašeho účtu Google <ph name="USER_EMAIL" />. Tuto funkci můžete vypnout v nastavení.</translation>
 <translation id="5614190747811328134">Sdělení pro uživatele</translation>
 <translation id="5614553682702429503">Uložit heslo?</translation>
 <translation id="5614947000616625327">Klíčenka na iCloudu</translation>
@@ -8544,7 +8545,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7088674813905715446">Zařízení bylo vyřazeno administrátorem. Chcete-li zařízení zaregistrovat, požádejte administrátora, aby jeho registraci umožnil.</translation>
 <translation id="7088960765736518739">Přístup pomocí přepínačů</translation>
 <translation id="7089253021944603172">Karta je opět aktivní</translation>
-<translation id="7090160970140261931">Do zařízení <ph name="DEVICE_TYPE" /> můžete přidat další účty k použití s weby a aplikacemi pro Android. Můžete také určit, které účty se s aplikacemi pro Android používají.</translation>
 <translation id="7090714929377281710">Automatické vypnutí hotspotu</translation>
 <translation id="7092504544229909737">Nelze použít s aplikacemi pro Android</translation>
 <translation id="7093220653036489319">Rychlé odpovědi</translation>
@@ -10022,6 +10022,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8140869601171867148">Váš účet Google je účet, který používáte pro Gmail, YouTube, Chrome a další služby Google.
     Pomocí svého účtu snadno získáte přístup ke všem svým záložkám, souborům a dalším položkám.</translation>
 <translation id="8141418916163800697">Další funkce můžete nastavit v nastavení Telefonního centra</translation>
+<translation id="814156740715940972">Zobrazit vedle sebe vybranou a aktivní kartu</translation>
 <translation id="8141584439523427891">Otevírá se alternativní prohlížeč</translation>
 <translation id="8141725884565838206">Správa hesel</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{video}few{# videa}many{# videa}other{# videí}}</translation>
@@ -11155,9 +11156,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Bude rychleji vybíjet baterii (aktuálně <ph name="BATTERY_PERCENTAGE" /> %)</translation>
 <translation id="8944633700466246631">Vytvořte šestimístný PIN pro obnovení pro Správce hesel Google</translation>
-<translation id="8944725102565796255">Pokud chcete tento účet použít pouze jednorázově, můžete <ph name="GUEST_LINK_BEGIN" />zařízení použít jako host<ph name="GUEST_LINK_END" />. Pokud chcete přidat účet někoho dalšího, přidejte do zařízení <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />novou osobu<ph name="LINK_END" />.
-
-Na tento účet se mohou vztahovat oprávnění, která jste již udělili webům a aplikacím. Své účty Google můžete spravovat v <ph name="SETTINGS_LINK_BEGIN" />Nastavení<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="8945274638472141382">Velikost ikon</translation>
 <translation id="8945508919180478719">Studiový mikrofon</translation>
 <translation id="8946359700442089734">V tomto zařízení <ph name="IDS_SHORT_PRODUCT_NAME" /> nebyly úplně povoleny funkce ladění.</translation>

@@ -75,8 +75,7 @@ BASE_FEATURE(kDiyAppsDefaultCaptureForcedOff,
 struct AppStateForNavigationCapturing {
   bool is_diy_app = false;
   bool is_preinstalled_browser_tab_app = false;
-  blink::Manifest::LaunchHandler::ClientMode client_mode =
-      blink::Manifest::LaunchHandler::ClientMode::kAuto;
+  bool client_mode_valid_and_specified = false;
 };
 
 bool IsNavigationCapturingSettingOffByDefault(
@@ -107,8 +106,9 @@ bool IsNavigationCapturingSettingOffByDefault(
     case features::CapturingState::kReimplDefaultOn:
       return false;
     case features::CapturingState::kReimplOnViaClientMode:
-      return app_state.client_mode ==
-             blink::Manifest::LaunchHandler::ClientMode::kAuto;
+      // Disallow navigation capturing if the client mode is invalid or not
+      // specified in the manifest.
+      return !app_state.client_mode_valid_and_specified;
   }
 }
 
@@ -1178,9 +1178,10 @@ bool WebAppRegistrar::CapturesLinksInScope(const webapps::AppId& app_id) const {
               {.is_diy_app = web_app->is_diy_app(),
                .is_preinstalled_browser_tab_app =
                    is_preinstalled_browser_tab_app,
-               .client_mode = web_app->launch_handler()
-                                  .value_or(LaunchHandler())
-                                  .parsed_client_mode()})) {
+               .client_mode_valid_and_specified =
+                   web_app->launch_handler()
+                       .value_or(LaunchHandler())
+                       .client_mode_valid_and_specified()})) {
         return false;
       }
       break;

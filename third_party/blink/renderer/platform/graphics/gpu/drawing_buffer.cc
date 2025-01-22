@@ -382,14 +382,18 @@ DrawingBuffer::GetSharedImageInterfaceProviderForBitmap() {
 DrawingBuffer::SoftwareResource
 DrawingBuffer::CreateOrRecycleSoftwareResource() {
   const viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888;
+  const gfx::ColorSpace& color_space =
+      back_color_buffer_->shared_image->color_space();
   // Must call GetSharedImageInterfaceProvider first so all base::WeakPtr
   // restored in |resource.sii_provider| is updated.
   auto* sii_provider = GetSharedImageInterfaceProviderForBitmap();
 
   auto it = std::remove_if(
       recycled_software_resources_.begin(), recycled_software_resources_.end(),
-      [this](const SoftwareResource& resource) {
-        return resource.shared_image->size() != size_ || !resource.sii_provider;
+      [&](const SoftwareResource& resource) {
+        return resource.shared_image->size() != size_ ||
+               resource.shared_image->color_space() != color_space ||
+               !resource.sii_provider;
       });
   recycled_software_resources_.Shrink(
       static_cast<wtf_size_t>(it - recycled_software_resources_.begin()));
@@ -405,10 +409,12 @@ DrawingBuffer::CreateOrRecycleSoftwareResource() {
   if (!shared_image_interface) {
     return SoftwareResource();
   }
+  // ReadFramebufferIntoBitmapPixels always produced bottom-Left origin.
   auto shared_image =
       shared_image_interface->CreateSharedImageForSoftwareCompositor(
-          {format, size_, gfx::ColorSpace(),
-           gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "DrawingBufferBitmap"});
+          {format, size_, color_space, kBottomLeft_GrSurfaceOrigin,
+           kPremul_SkAlphaType, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+           "DrawingBufferBitmap"});
 
   SoftwareResource resource = {std::move(shared_image),
                                shared_image_interface->GenVerifiedSyncToken(),
@@ -455,16 +461,7 @@ bool DrawingBuffer::PrepareTransferableResource(
     *out_resource = viz::TransferableResource::Make(
         resource.shared_image,
         viz::TransferableResource::ResourceSource::kDrawingBuffer,
-        resource.sync_token,
-        /*override=*/
-        {
-            .format = viz::SinglePlaneFormat::kBGRA_8888,
-            .size = size_,
-            .color_space = back_color_buffer_->shared_image->color_space(),
-            // ReadFramebufferIntoBitmapPixels always produced bottom-Left
-            // origin.
-            .origin = kBottomLeft_GrSurfaceOrigin,
-        });
+        resource.sync_token);
 
     out_resource->hdr_metadata = hdr_metadata_;
 

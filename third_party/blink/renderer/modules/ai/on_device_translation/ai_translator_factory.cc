@@ -23,6 +23,8 @@ class CreateTranslatorClient
   CreateTranslatorClient(
       ScriptState* script_state,
       AITranslatorFactory* translation,
+      const String& source_language,
+      const String& target_language,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       ScriptPromiseResolver<AITranslator>* resolver,
       mojo::PendingReceiver<
@@ -35,6 +37,8 @@ class CreateTranslatorClient
                      // TODO(crbug.com/331735396): Support abort signal.
                      /*abort_signal=*/nullptr),
         translation_(translation),
+        source_language_(source_language),
+        target_language_(target_language),
         receiver_(this, translation_->GetExecutionContext()),
         task_runner_(task_runner) {
     receiver_.Bind(std::move(pending_receiver), task_runner);
@@ -58,7 +62,8 @@ class CreateTranslatorClient
     }
     if (result->is_translator()) {
       GetResolver()->Resolve(MakeGarbageCollected<AITranslator>(
-          std::move(result->get_translator()), task_runner_));
+          std::move(result->get_translator()), task_runner_,
+          std::move(source_language_), std::move(target_language_)));
     } else {
       CHECK(result->is_error());
       GetResolver()->Reject(DOMException::Create(
@@ -72,6 +77,10 @@ class CreateTranslatorClient
 
  private:
   Member<AITranslatorFactory> translation_;
+
+  String source_language_;
+  String target_language_;
+
   HeapMojoReceiver<mojom::blink::TranslationManagerCreateTranslatorClient,
                    CreateTranslatorClient>
       receiver_;
@@ -104,8 +113,8 @@ ScriptPromise<AITranslator> AITranslatorFactory::create(
   mojo::PendingRemote<mojom::blink::TranslationManagerCreateTranslatorClient>
       client;
   MakeGarbageCollected<CreateTranslatorClient>(
-      script_state, this, task_runner_, resolver,
-      client.InitWithNewPipeAndPassReceiver());
+      script_state, this, options->sourceLanguage(), options->targetLanguage(),
+      task_runner_, resolver, client.InitWithNewPipeAndPassReceiver());
   GetTranslationManagerRemote()->CreateTranslator(
       std::move(client),
       mojom::blink::TranslatorCreateOptions::New(

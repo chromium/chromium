@@ -51,17 +51,6 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   // syncing state. In this state, data needs to be cleared on signout only when
   // kSeparateProfilesForManagedAccounts is disabled.
   SignedInUserStateWithManagedAccountAndMigratedFromSyncing,
-  // Sign-in with a managed account and sync is turned on.
-  SignedInUserStateWithManagedAccountAndSyncing,
-  // Sign-in with a managed account and sync is turned off.
-  SignedInUserStateWithManagedAccountAndNotSyncing,
-  // Sign-in with a regular account and sync is turned on.
-  SignedInUserStateWithNonManagedAccountAndSyncing,
-  // Sign-in with a regular account and sync is turned off.
-  SignedInUserStateWithNoneManagedAccountAndNotSyncing,
-  // Sign-in with a requirement to give more contextual information when the
-  // forced sign-in policy is enabled.
-  SignedInUserStateWithForcedSigninInfoRequired,
   // Signed in with managed account with the ClearDeviceDataOnSignoutForManaged
   // user feature enabled. In this state, data needs to be cleared on signout
   // only when kSeparateProfilesForManagedAccounts is disabled.
@@ -90,8 +79,6 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
     AuthenticationService* authenticationService;
 // Action sheet to display sign-out actions.
 @property(nonatomic, strong) ActionSheetCoordinator* actionSheetCoordinator;
-// YES if the user has confirmed that they want to signout.
-@property(nonatomic, assign) BOOL confirmSignOut;
 // YES if sign-in is forced by enterprise policy.
 @property(nonatomic, assign, readonly) BOOL isForceSigninEnabled;
 
@@ -134,13 +121,6 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
         [self startActionSheetCoordinatorForSignout];
       }
       break;
-    case SignedInUserStateWithManagedAccountAndSyncing:
-    case SignedInUserStateWithManagedAccountAndNotSyncing:
-    case SignedInUserStateWithNonManagedAccountAndSyncing:
-    case SignedInUserStateWithNoneManagedAccountAndNotSyncing:
-    case SignedInUserStateWithForcedSigninInfoRequired:
-      [self startActionSheetCoordinatorForSignout];
-      break;
   }
 }
 
@@ -179,8 +159,6 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 // Returns the user's sign-in and syncing state.
 - (SignedInUserState)signedInUserState {
   DCHECK(self.browser);
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForProfile(self.browser->GetProfile());
   ProfileIOS* profile = self.browser->GetProfile();
   AuthenticationService* authenticationService = self.authenticationService;
   const bool is_managed_account_migrated_from_syncing =
@@ -190,39 +168,13 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       authenticationService->HasPrimaryIdentityManaged(
           signin::ConsentLevel::kSignin);
 
-  // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
-  // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   if (is_managed_account_migrated_from_syncing) {
     return SignedInUserStateWithManagedAccountAndMigratedFromSyncing;
   }
   if (authenticationService->ShouldClearDataForSignedInPeriodOnSignOut()) {
     return SignedInUserStateWithManagedAccountClearsDataOnSignout;
   }
-  if (!authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
-    return SignedInUserStateWithNotSyncingAndReplaceSyncWithSignin;
-  }
-  BOOL syncEnabled =
-      syncService->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
-
-  // Need a first step to show logout contextual information about the forced
-  // sign-in policy. Only return this state when sync is enabled because it is
-  // already shown for sync disabled.
-  if (self.isForceSigninEnabled && syncEnabled && !self.confirmSignOut) {
-    return SignedInUserStateWithForcedSigninInfoRequired;
-  }
-
-  if (self.authenticationService->HasPrimaryIdentityManaged(
-          signin::ConsentLevel::kSignin)) {
-    // SignedInUserStateWithManagedAccountAndNotSyncing and
-    // SignedInUserStateWithManagedAccountAndSyncing are not possible if
-    // kSeparateProfilesForManagedAccounts is enabled.
-    CHECK(!(base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)),
-          base::NotFatalUntil::M140);
-    return syncEnabled ? SignedInUserStateWithManagedAccountAndSyncing
-                       : SignedInUserStateWithManagedAccountAndNotSyncing;
-  }
-  return syncEnabled ? SignedInUserStateWithNonManagedAccountAndSyncing
-                     : SignedInUserStateWithNoneManagedAccountAndNotSyncing;
+  return SignedInUserStateWithNotSyncingAndReplaceSyncWithSignin;
 }
 
 // Returns the title associated to the given user sign-in state or nil if no
@@ -236,8 +188,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       title = l10n_util::GetNSString(
           IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_AND_DELETE_TITLE);
       break;
-    case SignedInUserStateWithManagedAccountAndMigratedFromSyncing:
-    case SignedInUserStateWithManagedAccountAndSyncing: {
+    case SignedInUserStateWithManagedAccountAndMigratedFromSyncing: {
       std::u16string hostedDomain = HostedDomainForPrimaryAccount(self.browser);
       title = l10n_util::GetNSStringF(
           IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNCING_MANAGED_ACCOUNT,
@@ -251,23 +202,6 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
                     IDS_IOS_SWITCH_CLEARS_DATA_DIALOG_TITLE_WITH_MANAGED_ACCOUNT)
               : l10n_util::GetNSString(
                     IDS_IOS_SIGNOUT_CLEARS_DATA_DIALOG_TITLE_WITH_MANAGED_ACCOUNT);
-      break;
-    }
-    case SignedInUserStateWithNonManagedAccountAndSyncing: {
-      title = l10n_util::GetNSString(
-          IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNCING_ACCOUNT);
-      break;
-    }
-    case SignedInUserStateWithForcedSigninInfoRequired:
-    case SignedInUserStateWithManagedAccountAndNotSyncing:
-    case SignedInUserStateWithNoneManagedAccountAndNotSyncing: {
-      if (self.isForceSigninEnabled) {
-        title = l10n_util::GetNSString(
-            IDS_IOS_ENTERPRISE_FORCED_SIGNIN_SIGNOUT_DIALOG_TITLE);
-      } else if (self.showUnavailableFeatureDialogHeader) {
-        title = l10n_util::GetNSString(
-            IDS_IOS_SIGNOUT_DIALOG_TITLE_WITHOUT_SYNCING_ACCOUNT);
-      }
       break;
     }
   }
@@ -292,14 +226,6 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
                  : l10n_util::GetNSString(
                        IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_NOT_SAVED_DATA);
     }
-    case SignedInUserStateWithForcedSigninInfoRequired:
-    case SignedInUserStateWithNoneManagedAccountAndNotSyncing:
-    case SignedInUserStateWithManagedAccountAndNotSyncing: {
-      if (self.isForceSigninEnabled) {
-        return l10n_util::GetNSString(IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE);
-      }
-      return nil;
-    }
     case SignedInUserStateWithManagedAccountClearsDataOnSignout:
       // If `kIdentityDiscAccountMenu` is enabled, signing out may also cause
       // tabs to be closed, see `MainControllerAuthenticationServiceDelegate::
@@ -309,9 +235,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
                        IDS_IOS_SIGNOUT_CLOSES_TABS_AND_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT)
                  : l10n_util::GetNSString(
                        IDS_IOS_SIGNOUT_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT);
-    case SignedInUserStateWithManagedAccountAndMigratedFromSyncing:
-    case SignedInUserStateWithManagedAccountAndSyncing:
-    case SignedInUserStateWithNonManagedAccountAndSyncing: {
+    case SignedInUserStateWithManagedAccountAndMigratedFromSyncing: {
       return nil;
     }
   }
@@ -426,19 +350,6 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator start];
       return;
     }
-    case SignedInUserStateWithForcedSigninInfoRequired: {
-      NSString* const signOutButtonTitle =
-          l10n_util::GetNSString(IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON);
-      [self.actionSheetCoordinator
-          addItemWithTitle:signOutButtonTitle
-                    action:^{
-                      base::RecordAction(base::UserMetricsAction(
-                          "Signin_Signout_Confirm_ForcedSignin"));
-                      [weakSelf handleSignOutForForcedSigninUsers];
-                    }
-                     style:UIAlertActionStyleDestructive];
-      break;
-    }
     case SignedInUserStateWithManagedAccountClearsDataOnSignout: {
       self.actionSheetCoordinator.alertStyle = UIAlertControllerStyleAlert;
       NSString* const signOutButtonTitle =
@@ -475,8 +386,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator start];
       return;
     }
-    case SignedInUserStateWithManagedAccountAndMigratedFromSyncing:
-    case SignedInUserStateWithManagedAccountAndSyncing: {
+    case SignedInUserStateWithManagedAccountAndMigratedFromSyncing: {
       if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
         self.actionSheetCoordinator.alertStyle = UIAlertControllerStyleAlert;
       }
@@ -492,55 +402,6 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
                       // the account's state, AuthenticationService will decide
                       // to clear the data anyway.
                       [weakSelf signoutWithForceClearData:YES];
-                    }
-                     style:UIAlertActionStyleDestructive];
-      break;
-    }
-    case SignedInUserStateWithManagedAccountAndNotSyncing: {
-      NSString* const clearFromDeviceTitle =
-          l10n_util::GetNSString(IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON);
-      [self.actionSheetCoordinator
-          addItemWithTitle:clearFromDeviceTitle
-                    action:^{
-                      base::RecordAction(base::UserMetricsAction(
-                          "Signin_Signout_Confirm_Managed_NotSyncing"));
-                      [weakSelf signoutWithForceClearData:NO];
-                    }
-                     style:UIAlertActionStyleDestructive];
-      break;
-    }
-    case SignedInUserStateWithNonManagedAccountAndSyncing: {
-      NSString* const clearFromDeviceTitle =
-          l10n_util::GetNSString(IDS_IOS_SIGNOUT_DIALOG_CLEAR_DATA_BUTTON);
-      NSString* const keepOnDeviceTitle =
-          l10n_util::GetNSString(IDS_IOS_SIGNOUT_DIALOG_KEEP_DATA_BUTTON);
-      [self.actionSheetCoordinator
-          addItemWithTitle:clearFromDeviceTitle
-                    action:^{
-                      base::RecordAction(base::UserMetricsAction(
-                          "Signin_Signout_Confirm_Regular_Syncing_KeepData"));
-                      [weakSelf signoutWithForceClearData:YES];
-                    }
-                     style:UIAlertActionStyleDestructive];
-      [self.actionSheetCoordinator
-          addItemWithTitle:keepOnDeviceTitle
-                    action:^{
-                      base::RecordAction(base::UserMetricsAction(
-                          "Signin_Signout_Confirm_Regular_Syncing_RemoveData"));
-                      [weakSelf signoutWithForceClearData:NO];
-                    }
-                     style:UIAlertActionStyleDefault];
-      break;
-    }
-    case SignedInUserStateWithNoneManagedAccountAndNotSyncing: {
-      NSString* const signOutButtonTitle =
-          l10n_util::GetNSString(IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON);
-      [self.actionSheetCoordinator
-          addItemWithTitle:signOutButtonTitle
-                    action:^{
-                      base::RecordAction(base::UserMetricsAction(
-                          "Signin_Signout_Confirm_Regular_NotSyncing"));
-                      [weakSelf signoutWithForceClearData:NO];
                     }
                      style:UIAlertActionStyleDestructive];
       break;
@@ -583,14 +444,6 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   [self dismissActionSheetCoordinator];
 }
 
-- (void)handleSignOutForForcedSigninUsers {
-  self.confirmSignOut = YES;
-  // Stop the current action sheet coordinator and start a
-  // new one for the next step.
-  [self dismissActionSheetCoordinator];
-  [self startActionSheetCoordinatorForSignout];
-}
-
 // Signs the user out of the primary account and clears the data from their
 // device if specified to do so.
 - (void)handleSignOutWithForceClearData:(BOOL)forceClearData {
@@ -631,18 +484,6 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 - (MDCSnackbarMessage*)signoutSnackbarMessage {
   if (self.accountSwitch) {
     return nil;
-  }
-  switch (self.signedInUserState) {
-    case SignedInUserStateWithManagedAccountClearsDataOnSignout:
-    case SignedInUserStateWithNotSyncingAndReplaceSyncWithSignin:
-    case SignedInUserStateWithManagedAccountAndMigratedFromSyncing:
-      break;
-    case SignedInUserStateWithManagedAccountAndSyncing:
-    case SignedInUserStateWithManagedAccountAndNotSyncing:
-    case SignedInUserStateWithNonManagedAccountAndSyncing:
-    case SignedInUserStateWithNoneManagedAccountAndNotSyncing:
-    case SignedInUserStateWithForcedSigninInfoRequired:
-      return nil;
   }
   if (self.isForceSigninEnabled) {
     // Snackbar should be skipped since force sign-in dialog will be shown right

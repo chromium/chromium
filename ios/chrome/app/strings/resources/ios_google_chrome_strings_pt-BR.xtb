@@ -169,6 +169,7 @@ Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão ex
 <translation id="5639704535586432836">Abra Ajustes &gt; Privacidade &gt; Câmera &gt; Google Chrome e ative a câmera.</translation>
 <translation id="5642200033778930880">O Google Chrome não pode usar a câmera no modo Visualização dividida</translation>
 <translation id="5661521615548540542">O Gerenciador de senhas do Google não conseguiu verificar todas as senhas. Tente de novo mais tarde.</translation>
+<translation id="5681291952421236520">Ative o Chrome</translation>
 <translation id="5690398455483874150">{count,plural, =1{Mostrando agora 1 janela do Chrome}one{Mostrando agora {count} janela do Chrome}other{Mostrando agora {count} janelas do Chrome}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Definir o Chrome como seu navegador padrão</translation>
@@ -204,6 +205,7 @@ Aguarde alguns minutos antes de trocar de conta. Se você mudar de conta agora, 
 <translation id="6484712497741564393">Login feito como <ph name="EMAIL" />.
 
 Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os dados do Chrome na sua Conta do Google.</translation>
+<translation id="6533470733797826516">Faça login mais rápido com o preenchimento automático do Chrome</translation>
 <translation id="6545449117344801102">O Chrome detecta endereços e usa o Google Maps para mostrar rotas e informações locais.</translation>
 <translation id="6634107063912726160">Quando você se desconecta, o Chrome não sincroniza nenhum dado novo com sua Conta do Google. Os dados sincronizados anteriormente permanecem na conta.</translation>
 <translation id="6636941099779251629">Sua organização exige que você faça login para usar o Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>

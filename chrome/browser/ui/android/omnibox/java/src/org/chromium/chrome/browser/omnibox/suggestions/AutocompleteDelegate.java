@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 /** Provides the additional functionality to trigger and interact with autocomplete suggestions. */
+@NullMarked
 public interface AutocompleteDelegate extends UrlBarDelegate {
 
     /** Called when loadUrl is done on a {@link Tab}. */

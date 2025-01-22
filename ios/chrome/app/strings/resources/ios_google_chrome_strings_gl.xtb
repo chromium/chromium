@@ -169,6 +169,7 @@ Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos 
 <translation id="5639704535586432836">Abre Configuración &gt; Privacidade &gt; Cámara &gt; Google Chrome e activa a cámara.</translation>
 <translation id="5642200033778930880">Google Chrome non pode usar a cámara no modo Vista dividida</translation>
 <translation id="5661521615548540542">O xestor de contrasinais de Google non puido comprobar todos os contrasinais. Téntao de novo máis tarde.</translation>
+<translation id="5681291952421236520">Activa Chrome</translation>
 <translation id="5690398455483874150">{count,plural, =1{Mostrando 1 ventá de Chrome}other{Mostrando {count} ventás de Chrome}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Define Chrome como navegador predeterminado</translation>
@@ -204,6 +205,7 @@ Espera uns minutiños antes de cambiar de conta. Se a cambias agora, eliminarans
 <translation id="6484712497741564393">Tes a sesión iniciada como <ph name="EMAIL" />.
 
 Os teus datos están encriptados coa túa frase de acceso. Introdúcea para usar e gardar os datos de Chrome na túa Conta de Google.</translation>
+<translation id="6533470733797826516">Inicia sesión máis rápido coa función de autocompletar de Chrome</translation>
 <translation id="6545449117344801102">Chrome detecta enderezos e usa Google Maps para darche indicacións e información local.</translation>
 <translation id="6634107063912726160">Cando peches sesión, Chrome non sincronizará datos novos coa túa Conta de Google. Os datos que se sincronizasen antes permanecerán na conta.</translation>
 <translation id="6636941099779251629">Segundo as políticas da túa organización, cómpre que inicies sesión para usar Chrome. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>

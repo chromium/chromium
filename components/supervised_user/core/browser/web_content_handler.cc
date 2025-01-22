@@ -39,6 +39,8 @@ std::string LocalApprovalResultToString(
       return "Incomplete";
     case supervised_user::LocalApprovalResult::kError:
       return "Error";
+    case supervised_user::LocalApprovalResult::kMalformedPacpResult:
+      return "MalformedResponse";
   }
 }
 
@@ -71,6 +73,8 @@ void WebContentHandler::OnLocalApprovalRequestCompleted(
     case LocalApprovalResult::kCanceled:
       break;
     case LocalApprovalResult::kError:
+      break;
+    case LocalApprovalResult::kMalformedPacpResult:
       break;
   }
   RecordLocalWebApprovalResultMetric(approval_result);

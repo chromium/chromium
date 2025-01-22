@@ -129,7 +129,6 @@
 <translation id="1079242569060319448">पिन विसरला आहात का?</translation>
 <translation id="1079285777677001938">काही साइटवरील वैशिष्ट्ये कदाचित काम करणार नाहीत.</translation>
 <translation id="1079766198702302550">कॅमेरा ॲक्सेस नेहमी ब्लॉक करा</translation>
-<translation id="1080365971383768617">तुमच्या सर्व डिव्हाइसवरील पासवर्ड</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - एक टॅब}other{<ph name="GROUP_TITLE" /> - # टॅब}}</translation>
 <translation id="1082214733466244292">तुमच्ये अ‍ॅडमिनिस्ट्रेटरने या डिव्हाइससाठी काही कार्यक्षमता ब्लॉक केल्या आहेत</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> तुमच्या Chrome सेटिंग्ज त्यांच्या मूळ डीफॉल्टवर रिस्टोअर करू इच्छित आहे. हे तुमचे मुख्यपेज, नवीन टॅब पेज आणि शोध इंजीन रीसेट करेल, तुमच्या एक्स्टेंशनांना अक्षम करेल आणि सर्व टॅबना अनपिन करेल. ते कुकीज, आशय आणि साइट डेटासारखा इतर तात्पुरता आणि कॅशे केलेला डेटा देखील साफ करेल.</translation>
@@ -523,6 +522,7 @@
 <translation id="135389172849514421">ऑफलाइन काम करते</translation>
 <translation id="1353980523955420967">PPD सापडत नाही. तुमचे Chromebook ऑनलाइन असल्याची खात्री करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> ला तुमचा कॅमेरा वापरण्याची आणि हलवण्याची अनुमती देणे सुरू ठेवा</translation>
+<translation id="1354148503392558902">पासवर्ड बदलत आहे...</translation>
 <translation id="1355088139103479645">सर्व डेटा हटवायचा का?</translation>
 <translation id="1356376170199999104">अनुमती दिली आहे – <ph name="PERMISSION_DETAILS" />. प्रत्यक्ष स्विच वापरून मायक्रोफोन सुरू करा.</translation>
 <translation id="1356959069439783953">इनॅक्टिव्ह टॅबना नवीन लुक मिळतो</translation>
@@ -1102,6 +1102,7 @@
 <translation id="1751335846119670066">वाचायला मला मदत करा</translation>
 <translation id="17513872634828108">उघडे टॅब</translation>
 <translation id="175196451752279553">पु&amp;न्हा बंद टॅब उघडा</translation>
+<translation id="1752557850776261983">साइन इन तपासत आहे...</translation>
 <translation id="1753067873202720523">तुमचे Chromebook सुरू असताना ते शुल्क आकारु शकत नाही.</translation>
 <translation id="1753557900380512635">इंटिरिअर</translation>
 <translation id="1753905327828125965">सर्वाधिक भेट दिलेले</translation>
@@ -2383,6 +2384,7 @@
 <translation id="2638662041295312666">साइन इन इमेज</translation>
 <translation id="2640299212685523844">GTK वापरा</translation>
 <translation id="264083724974021997">तुमच्या फोनशी कनेक्ट करा - डायलॉग</translation>
+<translation id="2641098199809442625">तुमचा पासवर्ड अपडेट झाला नाही, पण तुम्हाला तरीही तुमचा जुना पासवर्ड वापरून साइट ॲक्सेस करता आली पाहिजे.</translation>
 <translation id="2642111877055905627">सॉकर बॉल</translation>
 <translation id="2642206811783203764"><ph name="SITE_NAME" /> वर नेहमी</translation>
 <translation id="2643064289437760082">तुमचा ब्राउझिंग डेटा हटवून तुम्ही कधीही जाहिरात मापन डेटा हटवू शकता</translation>
@@ -3031,6 +3033,7 @@
 <translation id="310297983047869047">मागील स्लाइड</translation>
 <translation id="3103451787721578293">कृपया हा डेटा अपलोड करण्यासाठीचे कारण एंटर करा:</translation>
 <translation id="3103512663951238230">Alt+Click</translation>
+<translation id="3104763887980088552">अ‍ॅक्टिव्हिटी लॉग</translation>
 <translation id="3104948640446684649">वापर आणि निदान डेटा पाठवा. हे डिव्हाइस सध्या Google ला आपोआप निदान, डिव्हाइस आणि अ‍ॅप वापर डेटा पाठवत आहे. हे सिस्टीम आणि अ‍ॅप स्थिरता व इतर सुधारणांसाठी मदत करेल. काही एकत्रित डेटा Google अ‍ॅप्स आणि Android डेव्हलपर यासारख्या भागीदारांनादेखील मदत करेल. जर तुमची अतिरिक्त वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी सेटिंग सुरू केलेली असल्यास, हा डेटा तुमच्या Google खाते वर सेव्ह केला जाऊ शकतो. <ph name="BEGIN_LINK2" />मेट्रिक <ph name="BEGIN_LINK2_END" /> बद्दल अधिक जाणून घ्या<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">शेवटचे अयशस्वी अपडेट</translation>
 <translation id="3105796011181310544">Google वर परत बदलायचे आहे का?</translation>
@@ -3745,6 +3748,7 @@
 <translation id="3629664892718440872">ही निवड लक्षात ठेवा</translation>
 <translation id="3630132874740063857">तुमचा फोन</translation>
 <translation id="3630995161997703415">कधीही वापरण्‍यासाठी ही साइट तुमच्या शेल्‍फवर जोडा</translation>
+<translation id="3632929818790223729">ॲक्टिव्ह टॅबसह टॅब विभाजित करा</translation>
 <translation id="3634652306074934350">परवानगीची विनंती एक्स्पायर झाली</translation>
 <translation id="3635199270495525546">विश्वासू प्लॅटफॉर्म मॉड्युल (TPM) डिटेक्ट केले</translation>
 <translation id="3635353578505343390">Google ला फीडबॅक पाठवा</translation>
@@ -6244,9 +6248,6 @@
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) यांना तुम्ही टॅब गटामध्ये सामील व्हावे असे वाटत आहे. लिंक असलेली कोणतीही व्यक्ती सर्व टॅब संपादित करू शकते, त्यामुळे काळजीपूर्वक सामील व्हा. लिंक ४८ तासांमध्ये एक्स्पायर होते.</translation>
 <translation id="5410889048775606433">फुशिया</translation>
 <translation id="5411022484772257615">शाळेशी संबंधित नोंदणी पूर्ण करता आली नाही</translation>
-<translation id="5411856344659127989">तुम्हाला दुसऱ्या व्यक्तीसाठी खाते जोडायचे असल्यास, तुमच्या <ph name="DEVICE_TYPE" /> मध्ये <ph name="LINK_BEGIN" />नवीन व्यक्ती जोडा<ph name="LINK_END" />.
-
-तुम्ही वेबसाइट आणि अ‍ॅप्सना आधीपासून दिलेल्या परवानग्या या खात्याला लागू होऊ शकतात. तुम्ही तुमची Google खाती <ph name="SETTINGS_LINK_BEGIN" />सेटिंग्ज<ph name="SETTINGS_LINK_END" /> मध्ये व्यवस्थापित करू शकता.</translation>
 <translation id="54118879136097217">तुमच्या <ph name="DEVICE_TYPE" /> वर अ‍ॅप इंस्टॉल करा</translation>
 <translation id="5413640305322530561">निदान आणि वापर डेटा याबद्दल अधिक जाणून घ्या</translation>
 <translation id="5414198321558177633">प्रोफाइल सूची रिफ्रेश करत आहे. याला काही मिनिटे लागू शकतात.</translation>
@@ -6525,7 +6526,6 @@
 <translation id="5610867721023328944">पुन्हा प्रयत्न करा किंवा खालील उपलब्ध थीमपैकी एक निवडा.</translation>
 <translation id="5611398002774823980">खात्यामध्ये सेव्ह करा</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5613074282491265467">तुम्ही Chrome मध्ये साइन इन केलेले असते, तेव्हा सेव्ह केलेले पासवर्ड <ph name="USER_EMAIL" /> तुमच्या या Google खाते मध्ये सेव्ह होतील. हे बंद करण्यासाठी सेटिंग्जवर जा.</translation>
 <translation id="5614190747811328134">वापरकर्ता सूचना</translation>
 <translation id="5614553682702429503">पासवर्ड सेव्ह करायचा आहे का?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
@@ -8560,7 +8560,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7088674813905715446">हे डिव्‍हाइस ॲडमिनिस्ट्रेटरद्वारे तरतूद नसलेल्‍या स्‍थितीमध्ये ठेवले गेले आहे. ते नोंदणीकरिता सक्षम करण्‍यासाठी, कृपया तुमच्या ॲडमिनिस्ट्रेटरने डिव्‍हाइस एका प्रलंबित स्‍थितीमध्‍ये ठेवावे.</translation>
 <translation id="7088960765736518739">स्विच ॲक्सेस</translation>
 <translation id="7089253021944603172">टॅब पुन्हा अ‍ॅक्टिव्ह केला आहे</translation>
-<translation id="7090160970140261931">वेबसाइट आणि Android अ‍ॅप्स वापरण्यासाठी, तुम्ही तुमच्या <ph name="DEVICE_TYPE" /> वर अतिरिक्त खाती जोडू शकता. Android अ‍ॅप्ससोबत कोणती खाती वापरली जातात हेदेखील तुम्ही नियंत्रित करू शकता.</translation>
 <translation id="7090714929377281710">हॉटस्पॉट आपोआप बंद करा</translation>
 <translation id="7092504544229909737">Android अ‍ॅप्ससोबत वापरू शकत नाही</translation>
 <translation id="7093220653036489319">क्विक आन्सर्स</translation>
@@ -9021,6 +9020,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7424818322350938336">नेटवर्क जोडले</translation>
 <translation id="7425037327577270384">मला लिहिण्यात मदत करा</translation>
 <translation id="7427348830195639090">बॅकग्राउंड पेज: <ph name="BACKGROUND_PAGE_URL" /></translation>
+<translation id="7427729970025360383">हे खाते व्यवस्थापित केलेले आहे</translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> चा कॉल</translation>
 <translation id="7429415133937917139">स्क्रीनच्या वरच्या बाजूला ChromeVox पॅनलमध्ये
     रिफ्रेश करता येण्यासारख्या ब्रेल डिस्प्लेचे आउटपुट सिम्युलेट करते</translation>
@@ -10037,6 +10037,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8140869601171867148">तुमचे Google खाते हे तुम्ही Gmail, YouTube, Chrome आणि इतर Google उत्पादनांसाठी वापरत असलेलेच खाते आहे.
     तुमचे सर्व बुकमार्क, फाइल आणि बरेच काही सहज अ‍ॅक्सेस करण्यासाठी तुमचे खाते वापरा.</translation>
 <translation id="8141418916163800697">तुम्ही फोन हब सेटिंग्जमध्ये आणखी वैशिष्ट्ये सेट करू शकता</translation>
+<translation id="814156740715940972">ॲक्टिव्ह टॅब सह विभाजित टॅब</translation>
 <translation id="8141584439523427891">आता पर्यायी ब्राउझरमध्ये उघडत आहे</translation>
 <translation id="8141725884565838206">तुमचे पासवर्ड व्यवस्थापित करा</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{व्हिडिओ}other{# व्हिडिओ}}</translation>
@@ -11170,9 +11171,6 @@ I feel - विटांची इमारत</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">अधिक द्रुतपणे बॅटरी वापरा (सध्या <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944633700466246631">Google Password Manager साठी ६ अंकी रिकव्‍हरी पिन तयार करा</translation>
-<translation id="8944725102565796255">तुम्हाला हे खाते फक्त एकदाच वापरायचे असल्यास, तुम्ही <ph name="GUEST_LINK_BEGIN" />अतिथी म्हणून डिव्हाइस वापरणे<ph name="GUEST_LINK_END" /> हे करू शकता. तुम्हाला दुसऱ्या व्यक्तीसाठी खाते जोडायचे असल्यास, तुमच्या <ph name="DEVICE_TYPE" /> मध्ये <ph name="LINK_BEGIN" />नवीन व्यक्ती जोडा<ph name="LINK_END" />.
-
-तुम्ही वेबसाइट आणि अ‍ॅप्सना आधीपासून दिलेल्या परवानग्या या खात्याला लागू होऊ शकतात. तुम्ही तुमची Google खाती <ph name="SETTINGS_LINK_BEGIN" />सेटिंग्ज<ph name="SETTINGS_LINK_END" /> मध्ये व्यवस्थापित करू शकता.</translation>
 <translation id="8945274638472141382">आयकन आकार</translation>
 <translation id="8945508919180478719">स्टुडिओ शैलीचा माइक</translation>
 <translation id="8946359700442089734">या <ph name="IDS_SHORT_PRODUCT_NAME" /> डिव्हाइसवर डीबगिंग वैशिष्ट्ये पूर्णपणे सक्षम केलेली नव्हती.</translation>

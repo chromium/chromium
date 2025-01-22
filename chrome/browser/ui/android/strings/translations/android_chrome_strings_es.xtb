@@ -828,7 +828,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4835385943915508971">Chrome no tiene acceso al recurso solicitado.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Restaurar grupo de <ph name="TAB_COUNT_ONE" /> pestaña, con el color <ph name="COLOR_NAME" />, como nuevo grupo de pestañas en segundo plano.}other{Restaurar grupo de <ph name="TAB_COUNT_MANY" /> pestañas, con el color <ph name="COLOR_NAME" />, como nuevo grupo de pestañas en segundo plano.}}</translation>
 <translation id="4837753911714442426">Abre las opciones para imprimir la página</translation>
-<translation id="4842092870884894799">Mostrando la ventana emergente de generación de contraseña</translation>
 <translation id="4844633725025837809">Para mayor seguridad, cifra las contraseñas en tu dispositivo antes de que se guarden en el gestor de contraseñas de Google</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4852014461738377247">Iniciando sesión\u2026</translation>
@@ -1003,6 +1002,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="5665379678064389456">Crear evento en <ph name="APP_NAME" /></translation>
 <translation id="5680616253592639556">Falta información</translation>
 <translation id="5683547024293500885">Chrome no puede comprobar si hay actualizaciones</translation>
+<translation id="5683916195767086779">Grupo de pestañas</translation>
 <translation id="5686790454216892815">El nombre del archivo es demasiado largo</translation>
 <translation id="5687606994963670306">Chrome elimina automáticamente los sitios que tienen una antigüedad superior a 30 días. Si visitas un sitio de nuevo, es posible que vuelva a aparecer en la lista. También puedes bloquear las sugerencias de anuncios de un sitio. Consulta más información sobre cómo <ph name="BEGIN_LINK" />gestionar la privacidad en la publicidad en Chrome<ph name="END_LINK" />.</translation>
 <translation id="569536719314091526">Traduce esta página a cualquier idioma con el botón Más opciones</translation>

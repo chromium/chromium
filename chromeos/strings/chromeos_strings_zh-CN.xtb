@@ -564,6 +564,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★（<ph name="AGGREGATED_COUNT" /> 条评价）</translation>
 <translation id="3748026146096797577">未建立连接</translation>
 <translation id="3749289110408117711">文件名</translation>
+<translation id="3763034084412196440">调整音量</translation>
 <translation id="3767737419527918477">搜索录音文件</translation>
 <translation id="3771294271822695279">视频文件</translation>
 <translation id="3780740315729837296">分配键盘按键</translation>
@@ -1218,6 +1219,7 @@
 <translation id="6747035363363040417">中性色</translation>
 <translation id="6747215703636344499">已停止 - 出纸盘已满</translation>
 <translation id="6749473226660745022">照片</translation>
+<translation id="6752960629591143793">请在“设置”或“<ph name="THREE_DOTS_MENU_ICON" />”菜单中选择转写语言并下载</translation>
 <translation id="6753452347192452143">设备类型是计算机。</translation>
 <translation id="6756731097889387912">无法取消扫描</translation>
 <translation id="6760706756348334449">调低音量</translation>

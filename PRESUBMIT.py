@@ -5575,7 +5575,7 @@ def CheckWATCHLISTS(input_api, output_api):
     return []
 
 def CheckGnRebasePath(input_api, output_api):
-    """Checks that target_gen_dir is not used wtih "//" in rebase_path().
+    """Checks that target_gen_dir is not used with "//" in rebase_path().
 
     Developers should use root_build_dir instead of "//" when using target_gen_dir because
     Chromium is sometimes built outside of the source tree.
@@ -6885,8 +6885,8 @@ def CheckStrings(input_api, output_api):
                                      (offset + start, offset + end + 1)))
         return variants, depth, offset + end + 1
 
+    old_sys_path = sys.path
     try:
-        old_sys_path = sys.path
         sys.path = sys.path + [
             input_api.os_path.join(input_api.PresubmitLocalPath(), 'tools',
                                    'translation')
@@ -7030,14 +7030,19 @@ def CheckTranslationExpectations(input_api, output_api,
     if not affected_grds:
         return []
 
+    old_sys_path = sys.path
     try:
-        old_sys_path = sys.path
         sys.path = sys.path + [
             input_api.os_path.join(input_api.PresubmitLocalPath(), 'tools',
                                    'translation')
         ]
+        sys.path = sys.path + [
+            input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                   'third_party', 'depot_tools')
+        ]
         from helper import git_helper
         from helper import translation_helper
+        import gclient_utils
     finally:
         sys.path = old_sys_path
 
@@ -7049,8 +7054,12 @@ def CheckTranslationExpectations(input_api, output_api,
     if not translation_expectations_path:
         translation_expectations_path = input_api.os_path.join(
             repo_root, 'tools', 'gritsettings', 'translation_expectations.pyl')
-    if not grd_files:
+    is_cog = gclient_utils.IsEnvCog()
+    # Git is not available in cog workspaces.
+    if not grd_files and not is_cog:
         grd_files = git_helper.list_grds_in_repository(repo_root)
+    if not grd_files:
+        grd_files = []
 
     # Ignore bogus grd files used only for testing
     # ui/webui/resources/tools/generate_grd.py.
@@ -7060,7 +7069,7 @@ def CheckTranslationExpectations(input_api, output_api,
 
     try:
         translation_helper.get_translatable_grds(
-            repo_root, grd_files, translation_expectations_path)
+            repo_root, grd_files, translation_expectations_path, is_cog)
     except Exception as e:
         return [
             output_api.PresubmitNotifyResult(

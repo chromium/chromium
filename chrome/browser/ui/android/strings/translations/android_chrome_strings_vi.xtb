@@ -285,6 +285,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="233375395665273385">Xoá và đăng xuất</translation>
 <translation id="2341410551640223969">Không cài đặt được <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Tổng số dữ liệu mà Chrome sử dụng, bao gồm tài khoản, dấu trang và cài đặt đã lưu</translation>
+<translation id="2349954856814571872">Biểu tượng của nút thanh dấu trang</translation>
 <translation id="235789365079050412">Chính sách quyền riêng tư của Google</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2362083820973145409">Đã đăng nhập bằng <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Mở phần cài đặt.</translation>
@@ -827,7 +828,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4835385943915508971">Chrome không có quyền truy cập vào tài nguyên đã yêu cầu.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Khôi phục nhóm <ph name="TAB_COUNT_ONE" /> thẻ, màu <ph name="COLOR_NAME" />, dưới dạng một nhóm thẻ mới trong nền.}other{Khôi phục nhóm <ph name="TAB_COUNT_MANY" /> thẻ, màu <ph name="COLOR_NAME" />, dưới dạng một nhóm thẻ mới trong nền.}}</translation>
 <translation id="4837753911714442426">Mở tùy chọn để in trang</translation>
-<translation id="4842092870884894799">Hiển thị cửa sổ bật lên tạo mật khẩu</translation>
 <translation id="4844633725025837809">Để tăng mức độ an toàn, hãy mã hoá mật khẩu trên thiết bị trước khi lưu vào Trình quản lý mật khẩu của Google</translation>
 <translation id="4850886885716139402">Xem</translation>
 <translation id="4852014461738377247">Đang đăng nhập\u2026</translation>
@@ -1002,6 +1002,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5665379678064389456">Tạo sự kiện trong <ph name="APP_NAME" /></translation>
 <translation id="5680616253592639556">Thiếu thông tin</translation>
 <translation id="5683547024293500885">Chrome không thể kiểm tra để tìm các bản cập nhật</translation>
+<translation id="5683916195767086779">Nhóm thẻ</translation>
 <translation id="5686790454216892815">Tên tệp quá dài</translation>
 <translation id="5687606994963670306">Chrome tự động xoá các trang web mà đã hơn 30 ngày bạn không truy cập. Những trang web bạn truy cập lại có thể xuất hiện lại trong danh sách. Ngoài ra, bạn có thể ngăn một trang web đề xuất quảng cáo cho bạn. Tìm hiểu thêm về <ph name="BEGIN_LINK" />quản lý quyền riêng tư trong quảng cáo trên Chrome.<ph name="END_LINK" /></translation>
 <translation id="569536719314091526">Dịch trang này sang ngôn ngữ bất kỳ từ nút Tùy chọn khác</translation>

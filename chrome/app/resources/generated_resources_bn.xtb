@@ -129,7 +129,6 @@
 <translation id="1079242569060319448">পিন ভুলে গেছেন?</translation>
 <translation id="1079285777677001938">কিছু সাইটের ফিচার কাজ নাও করতে পারে।</translation>
 <translation id="1079766198702302550">সর্বদা ক্যামেরার অ্যাক্সেস অবরুদ্ধ রাখুন</translation>
-<translation id="1080365971383768617">আপনার সমস্ত ডিভাইসে পাসওয়ার্ড</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - ১টি ট্যাব}one{<ph name="GROUP_TITLE" /> - #টি ট্যাব}other{<ph name="GROUP_TITLE" /> - #টি ট্যাব}}</translation>
 <translation id="1082214733466244292">আপনার অ্যাডমিনিস্ট্রেটর এই ডিভাইসের কয়েকটি ফিচার বন্ধ করে দিয়েছে</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> আপনার Chrome সেটিংসকে তাদের মূল ডিফল্টে পুনঃস্থাপন করতে চায়। এটি আপনার হোম পৃষ্ঠা, নতুন ট্যাব পৃষ্ঠা এবং সার্চ ইঞ্জিন আবার সেট করবে, আপনার এক্সটেনশনগুলি বন্ধ করবে এবং সমস্ত ট্যাবগুলি আনপিন করবে। এছাড়াও কুকিজ, কন্টেন্ট এবং সাইট ডেটার মত অন্যান্য অস্থায়ী এবং ক্যাশে ডেটা সাফ করবে।</translation>
@@ -524,6 +523,7 @@
 <translation id="135389172849514421">অফলাইনে কাজ করে</translation>
 <translation id="1353980523955420967">PPD খুঁজে পাওয়া যায়নি। আপনার Chromebook অনলাইন আছে কিনা দেখে নিয়ে আবার চেষ্টা করুন।</translation>
 <translation id="1354045473509304750">আপনার ক্যামেরা ব্যবহার করতে এবং সরাতে <ph name="HOST" />-কে অনুমতি দেওয়ার বিষয়টি চালিয়ে যান</translation>
+<translation id="1354148503392558902">পাসওয়ার্ড পরিবর্তন করা হচ্ছে...</translation>
 <translation id="1355088139103479645">সব ডেটা মুছতে চান?</translation>
 <translation id="1356376170199999104">ব্যবহারের অনুমতি দেওয়া হয়েছে – <ph name="PERMISSION_DETAILS" />। ফিজিক্যাল সুইচ ব্যবহার করে মাইক্রোফোন চালু করুন।</translation>
 <translation id="1356959069439783953">চালু নেই এমন ট্যাব নতুন লুকে দেখা যাবে</translation>
@@ -1104,6 +1104,7 @@
 <translation id="1751335846119670066">আমাকে পড়তে সাহায্য করো</translation>
 <translation id="17513872634828108">খোলা ট্যাব</translation>
 <translation id="175196451752279553">বন্ধ ট্যাবটি পু&amp;নঃরায় খুলুন</translation>
+<translation id="1752557850776261983">সাইন-ইন চেক করা হচ্ছে...</translation>
 <translation id="1753067873202720523">চালু থাকার সময় আপনার Chromebook চার্জ নাও হতে পারে৷</translation>
 <translation id="1753557900380512635">ইন্টিরিয়র</translation>
 <translation id="1753905327828125965">সর্বাধিক দেখা</translation>
@@ -1936,6 +1937,7 @@
 <translation id="2323018538045954000">সেভ করা ওয়াই-ফাই নেটওয়ার্ক</translation>
 <translation id="2325444234681128157">পাসওয়ার্ড মনে রাখুন</translation>
 <translation id="2326188115274135041">অটোমেটিক আনলক চালু করতে পিন কনফার্ম করুন</translation>
+<translation id="2326583548923775947">এটি Google অ্যাকাউন্ট নয়। Chrome-এ আপনার সেভ করা আইটেম অন্য ডিভাইসে উপলভ্য হবে না।</translation>
 <translation id="2326906096734221931">অ্যাপ সেটিংস খুলুন</translation>
 <translation id="2326931316514688470">&amp;অ্যাপ্লিকেশান আবার লোড করুন</translation>
 <translation id="2327492829706409234">অ্যাপ্লিকেশন সক্ষম করুন</translation>
@@ -2384,6 +2386,7 @@
 <translation id="2638662041295312666">সাইন-ইন স্ক্রিনের ছবি</translation>
 <translation id="2640299212685523844">GTK ব্যবহার করুন</translation>
 <translation id="264083724974021997">আপনার ফোনে কানেক্ট করুন - ডায়ালগ</translation>
+<translation id="2641098199809442625">আপনার পাসওয়ার্ড আপডেট করা হয়নি কিন্তু এখনও আপনার পুরনো পাসওয়ার্ড দিয়ে সাইট অ্যাক্সেস করার সুবিধা থাকা উচিত।</translation>
 <translation id="2642111877055905627">ফুটবল</translation>
 <translation id="2642206811783203764"><ph name="SITE_NAME" />-এর জন্য সবসময় অনুমতি দেওয়া</translation>
 <translation id="2643064289437760082">আপনি সবসময় আপনার ব্রাউজিং ডেটা মুছে বিজ্ঞাপন-পরিমাপ ডেটা মুছে ফেলতে পারেন</translation>
@@ -3032,6 +3035,7 @@
 <translation id="310297983047869047">আগের স্লাইড</translation>
 <translation id="3103451787721578293">এই ডেটা আপলোড করার জন্য একটি কারণ লিখুন:</translation>
 <translation id="3103512663951238230">Alt+Click</translation>
+<translation id="3104763887980088552">অ্যাক্টিভিটি লগ</translation>
 <translation id="3104948640446684649">ব্যবহার এবং ডায়াগনস্টিক সম্পর্কিত ডেটা পাঠান। এই ডিভাইস বর্তমানে Google-কে ডায়াগনস্টিক, ডিভাইস এবং অ্যাপ ব্যবহারের ডেটা অটোমেটিক পাঠাচ্ছে। এটি সিস্টেম ও অ্যাপের স্থায়িত্ব বাড়াতে এবং অন্যান্য উন্নতিতে সাহায্য করবে। কিছু পরিমাণ মোট ডেটা Android ডেভেলপারের মতো Google অ্যাপ এবং পার্টনারদেরও সাহায্য করবে। আপনার অতিরিক্ত ওয়েব ও অ্যাপ অ্যাক্টিভিটি সেটিং চালু থাকলে, এই ডেটা আপনার Google অ্যাকাউন্টে সেভ করা হতে পারে। <ph name="BEGIN_LINK2" />মেট্রিক সম্পর্কে আরও জানুন<ph name="BEGIN_LINK2_END" />আরও জানুন<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">শেষ যখন আপডেট করা যায়নি</translation>
 <translation id="3105796011181310544">আবার পরিবর্তন করে Google-এ ফিরে যেতে চান?</translation>
@@ -3746,6 +3750,7 @@
 <translation id="3629664892718440872">এই পছন্দ মনে রাখবেন</translation>
 <translation id="3630132874740063857">আপনার ফোন</translation>
 <translation id="3630995161997703415">যেকোনও সময় ব্যবহার করার জন্য এই সাইটটিকে আপনার শেল্ফে যোগ করুন</translation>
+<translation id="3632929818790223729">চালু ট্যাবের মাধ্যমে ট্যাব স্প্লিট করুন</translation>
 <translation id="3634652306074934350">অনুমতি পাওয়ার জন্য করা অনুরোধের সময়সীমা শেষ</translation>
 <translation id="3635199270495525546">ট্রাস্টেড প্ল্যাটফর্ম মডিউল (TPM) শনাক্ত করা হয়েছে</translation>
 <translation id="3635353578505343390">Google-এ মতামত জানান</translation>
@@ -6247,9 +6252,6 @@
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) চায় যে আপনি একটি ট্যাব গ্রুপে যোগ দিন। যেসব ব্যক্তির কাছে এই লিঙ্ক আছে, তারা প্রত্যেকে সব ট্যাব এডিট করতে পারবেন, তাই সাবধানে যোগ দিন। ৪৮ ঘণ্টার মধ্যে লিঙ্কের মেয়াদ শেষ হয়ে যাবে।</translation>
 <translation id="5410889048775606433">ফিউসা</translation>
 <translation id="5411022484772257615">স্কুলে নথিভুক্ত করার বিকল্প সম্পূর্ণ করা যায়নি</translation>
-<translation id="5411856344659127989">অন্য কোনও ব্যক্তির জন্য অ্যাকাউন্ট যোগ করতে চাইলে, <ph name="DEVICE_TYPE" />-এ <ph name="LINK_BEGIN" />নতুন ব্যক্তিকে যোগ করুন<ph name="LINK_END" />।
-
-বিভিন্ন ওয়েবসাইট ও অ্যাপকে আপনার আগে দেওয়া অনুমতি এই অ্যাকাউন্টের ক্ষেত্রেও প্রযোজ্য হবে। <ph name="SETTINGS_LINK_BEGIN" />সেটিংস<ph name="SETTINGS_LINK_END" /> থেকে আপনার Google অ্যাকাউন্ট ম্যানেজ করতে পারবেন।</translation>
 <translation id="54118879136097217">আপনার <ph name="DEVICE_TYPE" /> ডিভাইসে অ্যাপ ইনস্টল করুন</translation>
 <translation id="5413640305322530561">ডায়াগনস্টিক এবং ব্যবহার ডেটা সম্পর্কে আরও জানুন</translation>
 <translation id="5414198321558177633">প্রোফাইলের তালিকা রিফ্রেশ করা হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
@@ -6528,7 +6530,6 @@
 <translation id="5610867721023328944">আবার চেষ্টা করুন বা নিচে দেওয়া উপলভ্য থিম থেকে বেছে নিন।</translation>
 <translation id="5611398002774823980">অ্যাকাউন্টে সেভ করুন</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5613074282491265467">আপনি Chrome-এ সাইন-ইন করলে, আপনার সেভ করা পাসওয়ার্ডগুলি Google অ্যাকাউন্টে, <ph name="USER_EMAIL" /> স্টোর হবে। এটি বন্ধ করার জন্য, সেটিংসে যান।</translation>
 <translation id="5614190747811328134">ব্যবহারকারী বিজ্ঞপ্তি</translation>
 <translation id="5614553682702429503">পাসওয়ার্ড সেভ করবেন?</translation>
 <translation id="5614947000616625327">iCloud কী-চেন</translation>
@@ -8563,7 +8564,6 @@
 <translation id="7088674813905715446">প্রশাসকের দ্বারা এই ডিভাইসটি অ্যাক্সেসহীন অবস্থায় রাখা হয়েছে। নথীভুক্তের জন্য এটি সক্ষম করতে, দয়া করে একটি মুলতুবি স্থিতিতে আপনার প্রশাসককে ডিভাইসটি রাখতে দিন।</translation>
 <translation id="7088960765736518739">অ্যাক্সেস পাল্টান</translation>
 <translation id="7089253021944603172">আবার ট্যাব অ্যাক্টিভ করে</translation>
-<translation id="7090160970140261931">ওয়েবসাইট ও Android অ্যাপের সাথে ব্যবহার করার জন্য আপনার <ph name="DEVICE_TYPE" />-এ অতিরিক্ত অ্যাকাউন্ট যোগ করতে পারবেন। Android অ্যাপের সাথে কোন অ্যাকাউন্ট ব্যবহার করা হবে তাও নিয়ন্ত্রণ করতে পারবেন।</translation>
 <translation id="7090714929377281710">অটোমেটিক হটস্পট বন্ধ করুন</translation>
 <translation id="7092504544229909737">Android অ্যাপে এটি ব্যবহার করা যাবে না</translation>
 <translation id="7093220653036489319">দ্রুত উত্তর</translation>
@@ -9024,6 +9024,7 @@
 <translation id="7424818322350938336">নেটওয়ার্ক যোগ করা হয়েছে</translation>
 <translation id="7425037327577270384">আমাকে লিখতে সাহায্য করো</translation>
 <translation id="7427348830195639090">ব্যাকগ্রাউন্ড পৃষ্ঠা:<ph name="BACKGROUND_PAGE_URL" /></translation>
+<translation id="7427729970025360383">এই প্রোফাইল ম্যানেজ করা হয়</translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> থেকে কল করুন</translation>
 <translation id="7429415133937917139">স্ক্রিনের উপরের অংশে, ChromeVox প্যানেলে,
          ব্রেইল ডিসপ্লের রিফ্রেশ করা যাবে এমন কোনও আউটপুট অনুকরণ করা হয়</translation>
@@ -10041,6 +10042,7 @@
 <translation id="8140869601171867148">আপনার Google অ্যাকাউন্ট হল সেই একই অ্যাকাউন্ট যা আপনি Gmail, YouTube, Chrome ও অন্যান্য Google প্রোডাক্টের ব্যবহারের জন্য করেন।
     আপনার বুকমার্ক, ফাইল ও আরও অনেক কিছু সহজে ব্যবহার করতে আপনার অ্যাকাউন্ট ব্যবহার করুন।</translation>
 <translation id="8141418916163800697">আপনি ফোন হাব সেটিংসে আরও ফিচার সেট-আপ করতে পারেন</translation>
+<translation id="814156740715940972">চালু ট্যাবের মাধ্যমে ট্যাব স্প্লিট করুন</translation>
 <translation id="8141584439523427891">এখন অন্য ব্রাউজারে খোলা হচ্ছে</translation>
 <translation id="8141725884565838206">আপনার পাসওয়ার্ডগুলি পরিচালনা করুন</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{একটি ভিডিও}one{#টি ভিডিও}other{#টি ভিডিও}}</translation>
@@ -11174,9 +11176,6 @@
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">ব্যাটারি আরও দ্রুত শেষ হবে (বর্তমানে <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944633700466246631">Google Password Manager-এর জন্য ৬ সংখ্যার একটি ফিরিয়ে আনার পিন তৈরি করুন।</translation>
-<translation id="8944725102565796255">আপনি শুধু একবারের জন্য এই অ্যাকাউন্ট ব্যবহার করলে, আপনি <ph name="GUEST_LINK_BEGIN" />ডিভাইসটি গেস্ট হিসেবে ব্যবহার করতে পারবেন<ph name="GUEST_LINK_END" />। অন্য কোনও ব্যক্তির জন্য অ্যাকাউন্ট যোগ করতে চাইলে, <ph name="DEVICE_TYPE" />-এ <ph name="LINK_BEGIN" />নতুন ব্যক্তিকে যোগ করুন<ph name="LINK_END" />।
-
-বিভিন্ন ওয়েবসাইট ও অ্যাপকে আপনার আগে দেওয়া অনুমতি এই অ্যাকাউন্টের ক্ষেত্রেও প্রযোজ্য হবে। <ph name="SETTINGS_LINK_BEGIN" />সেটিংস<ph name="SETTINGS_LINK_END" /> থেকে আপনার Google অ্যাকাউন্ট ম্যানেজ করতে পারবেন।</translation>
 <translation id="8945274638472141382">আইকনের সাইজ</translation>
 <translation id="8945508919180478719">স্টুডিও-স্টাইলের মাইক</translation>
 <translation id="8946359700442089734">এই <ph name="IDS_SHORT_PRODUCT_NAME" /> ডিভাইসে ডিবাগিং বৈশিষ্ট্যগুলি সম্পূর্ণরূপে চালু করা নেই৷</translation>

@@ -39,9 +39,6 @@
 <translation id="1594928384848033697">A Chromium törölni szeretné a Jelszókezelőhöz tartozó adatait. Az engedélyezéshez adja meg Windows-jelszavát.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{A rendszergazda előírta, hogy újra kell indítania a Chromiumot a frissítés alkalmazásához.}=1{A rendszergazda előírta, hogy újra kell indítania a Chromiumot a frissítés alkalmazásához. Az inkognitó ablak nem fog újra megnyílni.}other{A rendszergazda előírta, hogy újra kell indítania a Chromiumot a frissítés alkalmazásához. A(z) # inkognitó ablak nem fog újra megnyílni.}}</translation>
 <translation id="1625909126243026060">A legfontosabb adatvédelmi és biztonsági beállítások áttekintése a Chromiumban</translation>
-<translation id="1632539827495546968">Ha csak egyszer szeretné használni ezt a fiókot, használhatja a <ph name="GUEST_LINK_BEGIN" />vendég módot<ph name="GUEST_LINK_END" /> a Chromium böngészőben. Ha más számára szeretne hozzáadni fiókot, <ph name="LINK_BEGIN" />inkább új személyt adjon hozzá<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> eszközéhez.
-
-A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra is érvényesek lehetnek. Google-fiókjait a <ph name="SETTINGS_LINK_BEGIN" />Beállításokban<ph name="SETTINGS_LINK_END" /> kezelheti.</translation>
 <translation id="1640672724030957280">Letöltés...</translation>
 <translation id="1709772298389099340">Magasabb szintű jogosultságokat biztosít a <ph name="BROWSER_NAME" /> számára.</translation>
 <translation id="1715127912119967311">A funkciók továbbfejlesztése érdekében a Chromium elküldi a velük végzett műveleteket a Google-nak. Ezeket az adatokat ellenőreink elolvashatják, feldolgozhatják és megjegyzésekkel láthatják el.</translation>
@@ -365,7 +362,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="6096348254544841612">A Chromium személyre szabása és vezérlése. Van rendelkezésre álló frissítés.</translation>
 <translation id="6107893135096467929">Be • A Chromium nem tudja ellenőrizni a bővítmény forrását</translation>
 <translation id="6119438414301547735">A bővítmény megjeleníthet hozzáférési kérelmeket a Chromium eszköztárán</translation>
-<translation id="6120345080069858279">A Chromium ezt a jelszót Google-fiókjába menti. Nem kell megjegyeznie.</translation>
 <translation id="6129621093834146363">A(z) <ph name="FILE_NAME" /> veszélyes, ezért a Chromium letiltotta.</translation>
 <translation id="6132897690380286411">A Chromium hamarosan bezáródik, és törli az adatokat</translation>
 <translation id="6145820983052037069">Itt válthat a Chromium-profilok között</translation>
@@ -525,6 +521,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="813913629614996137">Indítás…</translation>
 <translation id="8166782796394721554">Kiegészítő védelem bekapcsolása a Chromium JavaScript- és WebAssembly-motorjában</translation>
 <translation id="81770708095080097">Ez a fájl veszélyes, ezért a Chromium letiltotta.</translation>
+<translation id="8200109504272824693">Adja meg összetett jelszavát, ha a Chromium-adatokat szeretné használni és tárolni a fiókjában (<ph name="USER_EMAIL" />)</translation>
 <translation id="8221491193165283816">Ön általában letiltja az értesítéseket. Ha azt szeretné, hogy ez a webhely küldjön értesítéseket, kattintson ide.</translation>
 <translation id="8223363452568144035">A kamera használatához adjon hozzáférést a Chromiumnak a <ph name="BEGIN_LINK" />rendszerbeállításokban<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">A Chromium nem tudja ellenőrizni, hogy honnan származik a bővítmény, amely lehet, hogy nem biztonságos. Távolítsa el a Chromiumból, hogy a bővítmény a továbbiakban már ne láthassa és módosíthassa az Ön adatait a felkeresett webhelyeken (a személyes adatokat is beleértve).</translation>

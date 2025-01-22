@@ -662,8 +662,8 @@ XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
       ThreadScheduler::Current()->CleanupTaskRunner(),
       std::move(release_callback),
       /*supports_display_compositing=*/true,
-      // CreateColorBuffer() never sets the SCANOUT usage bit.
-      /*is_overlay_candidate=*/false);
+      /*is_overlay_candidate=*/
+      buffer->shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT));
 }
 
 // static

@@ -55,7 +55,6 @@
 <translation id="1698376642261615901">Google Chrome ialah penyemak imbas web yang menjalankan halaman web dan aplikasi dengan kelajuan kilat. Ia pantas, stabil dan mudah digunakan. Semak imbas web dengan lebih selamat dengan perlindungan daripada perisian berniat jahat dan pancingan data yang terbina dalam Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome akan dilancarkan semula dalam masa sejam}other{Chrome akan dilancarkan semula dalam masa # jam}}</translation>
 <translation id="1722488837206509557">Tindakan ini membenarkan anda memilih peranti yang sedia ada dan memaparkan kandungan pada peranti tersebut.</translation>
-<translation id="1734234790201236882">Chrome akan menyimpan kata laluan ini dalam Google Account anda. Anda tidak perlu mengingati kata laluan tersebut.</translation>
 <translation id="1786003790898721085">Pastikan anda telah log masuk ke Chrome pada <ph name="TARGET_DEVICE_NAME" /> anda, kemudian cuba hantar lagi.</translation>
 <translation id="1786044937610313874">Pintasan dibuka dalam Chrome</translation>
 <translation id="178701303897325119">Sambungan ini tidak disokong lagi. Chrome mengesyorkan supaya anda mengalih keluar sambungan tersebut.</translation>
@@ -323,6 +322,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="4997044641749333913">Chrome boleh menjadikan tab ini tidak aktif untuk meningkatkan pengalaman penyemakan imbas anda dan melancarkan pengalaman anda.</translation>
 <translation id="5003967926796347400">Klik “Google Password Manager”</translation>
+<translation id="5114340746415930644">Masukkan ungkapan laluan anda untuk menggunakan dan menyimpan data Chrome dalam akaun anda, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Log masuk ke Chrome apabila anda log masuk ke perkhidmatan Google yang lain</translation>
 <translation id="5126049312684316860">Chrome mempramuat lebih banyak halaman yang mungkin anda lawati, supaya halaman tersebut dimuatkan dengan lebih pantas apabila dilawati</translation>
 <translation id="5132929315877954718">Temui apl, permainan, sambungan dan tema hebat untuk Google Chrome.</translation>
@@ -470,9 +470,6 @@
 <translation id="7024536598735240744">Ralat penyahpadatan: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Pemasangan Dihentikan.</translation>
 <translation id="7025800014283535195">Anda boleh beralih antara profil Chrome di sini</translation>
-<translation id="7036251913954633326">Jika anda ingin menggunakan akaun ini sekali sahaja, anda boleh menggunakan <ph name="GUEST_LINK_BEGIN" />Mod Tetamu<ph name="GUEST_LINK_END" /> dalam penyemak imbas Chrome. Jika anda ingin menambah akaun untuk orang lain, <ph name="LINK_BEGIN" />tambahkan orang baharu<ph name="LINK_END" /> pada <ph name="DEVICE_TYPE" />.
-
-Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pada akaun ini. Anda boleh mengurus Google Account anda dalam <ph name="SETTINGS_LINK_BEGIN" />Tetapan<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7048502283602470098">Terokai AI</translation>
 <translation id="7059914902409643750">Peribadikan Chrome Anda</translation>
 <translation id="7071827361006050863">Chrome akan memadamkan data semakan imbas sebentar lagi</translation>

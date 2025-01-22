@@ -999,6 +999,10 @@
       status: "stable",
     },
     {
+      name: "CSSAnimationTriggerRange",
+      status: "test",
+    },
+    {
       name: "CSSAnimationTriggerTimeline",
       status: "test",
     },
@@ -2592,6 +2596,9 @@
     },
     {
       name: "LayoutIgnoreMarginsForSticky",
+    },
+    {
+      name: "LayoutImageForceAspectRatioOfOneOnError",
     },
     {
       name: "LayoutJustifySelfForBlocks",

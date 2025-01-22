@@ -129,7 +129,6 @@
 <translation id="1079242569060319448">Forgotten PIN?</translation>
 <translation id="1079285777677001938">Features on some sites may not work.</translation>
 <translation id="1079766198702302550">Always block camera access</translation>
-<translation id="1080365971383768617">Passwords on all of your devices</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 Tab}other{<ph name="GROUP_TITLE" /> – # Tabs}}</translation>
 <translation id="1082214733466244292">Your administrator has blocked some functionality for this device</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> wants to restore your Chrome settings to their original defaults. This will reset your homepage, new tab page and search engine, disable your extensions and unpin all tabs. It will also clear other temporary and cached data, such as cookies, content and site data.</translation>
@@ -523,6 +522,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="135389172849514421">Works offline</translation>
 <translation id="1353980523955420967">Can’t find PPD. Make sure that your Chromebook is online and try again.</translation>
 <translation id="1354045473509304750">Continue allowing <ph name="HOST" /> to use and move your camera</translation>
+<translation id="1354148503392558902">Changing password…</translation>
 <translation id="1355088139103479645">Delete all data?</translation>
 <translation id="1356376170199999104">Allowed – <ph name="PERMISSION_DETAILS" />. Turn on microphone using a physical switch.</translation>
 <translation id="1356959069439783953">Inactive tabs get a new look</translation>
@@ -1103,6 +1103,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1751335846119670066">Help me read</translation>
 <translation id="17513872634828108">Open tabs</translation>
 <translation id="175196451752279553">R&amp;eopen closed tab</translation>
+<translation id="1752557850776261983">Checking sign in…</translation>
 <translation id="1753067873202720523">Your Chromebook may not charge while it is turned on.</translation>
 <translation id="1753557900380512635">Interiors</translation>
 <translation id="1753905327828125965">Most Visited</translation>
@@ -3033,6 +3034,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="310297983047869047">Previous slide</translation>
 <translation id="3103451787721578293">Please enter a reason for uploading this data:</translation>
 <translation id="3103512663951238230">Alt+click</translation>
+<translation id="3104763887980088552">Activity log</translation>
 <translation id="3104948640446684649">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account. <ph name="BEGIN_LINK2" />Learn more about metrics<ph name="BEGIN_LINK2_END" />Learn more<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Last unsuccessful update</translation>
 <translation id="3105796011181310544">Change back to Google?</translation>
@@ -3747,6 +3749,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3629664892718440872">Remember this choice</translation>
 <translation id="3630132874740063857">Your phone</translation>
 <translation id="3630995161997703415">Add this site to your shelf to use it at any time</translation>
+<translation id="3632929818790223729">Split tab with active tab</translation>
 <translation id="3634652306074934350">Permission request expired</translation>
 <translation id="3635199270495525546">Trusted platform module (TPM) detected</translation>
 <translation id="3635353578505343390">Send feedback to Google</translation>
@@ -6248,9 +6251,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) wants you to join a tab group. Anyone with the link can edit all tabs, so join with care. Link expires in 48 hours.</translation>
 <translation id="5410889048775606433">Fuchsia</translation>
 <translation id="5411022484772257615">Couldn't complete school enrolment</translation>
-<translation id="5411856344659127989">If you'd like to add an account for someone else, <ph name="LINK_BEGIN" />add a new person<ph name="LINK_END" /> to your <ph name="DEVICE_TYPE" />.
-
-Permissions that you've already given to websites and apps may apply to this account. You can manage your Google Accounts in <ph name="SETTINGS_LINK_BEGIN" />settings<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="54118879136097217">Install app on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="5413640305322530561">Learn more about diagnostic and usage data</translation>
 <translation id="5414198321558177633">Refreshing profile list. This may take a few minutes.</translation>
@@ -6529,7 +6529,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5610867721023328944">Try again or select from one of the available themes below.</translation>
 <translation id="5611398002774823980">Save in account</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5613074282491265467">When you’re signed in to Chrome, passwords that you save will go in your Google Account, <ph name="USER_EMAIL" />. To turn this off, go to settings.</translation>
 <translation id="5614190747811328134">User Notice</translation>
 <translation id="5614553682702429503">Save password?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
@@ -8561,7 +8560,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7088674813905715446">This device has been placed into a deprovisioned state by the administrator. To enable it for enrolment, please have your administrator place the device into a pending state.</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7089253021944603172">Tab active again</translation>
-<translation id="7090160970140261931">You can add additional accounts to your <ph name="DEVICE_TYPE" /> to use with websites and Android apps. You can also control which accounts are used with Android apps.</translation>
 <translation id="7090714929377281710">Automatically turn off hotspot</translation>
 <translation id="7092504544229909737">Can't be used with Android apps</translation>
 <translation id="7093220653036489319">Quick Answers</translation>
@@ -10040,6 +10038,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8140869601171867148">Your Google Account is the same account that you use for Gmail, YouTube, Chrome and other Google products.
     Use your account to easily access all of your bookmarks, files and more.</translation>
 <translation id="8141418916163800697">You can set up more features in Phone Hub settings</translation>
+<translation id="814156740715940972">Split tab With active tab</translation>
 <translation id="8141584439523427891">Opening in alternative browser now</translation>
 <translation id="8141725884565838206">Manage your passwords</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{a video}other{# videos}}</translation>
@@ -11172,9 +11171,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Use the battery more quickly (currently <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944633700466246631">Create a six-digit recovery PIN for Google Password Manager</translation>
-<translation id="8944725102565796255">If you'd just like to use this account once, you can <ph name="GUEST_LINK_BEGIN" />use the device as guest<ph name="GUEST_LINK_END" />. If you'd like to add an account for someone else, <ph name="LINK_BEGIN" />add a new person<ph name="LINK_END" /> to your <ph name="DEVICE_TYPE" />.
-
-Permissions that you've already given to websites and apps may apply to this account. You can manage your Google Accounts in <ph name="SETTINGS_LINK_BEGIN" />settings<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="8945274638472141382">Icon size</translation>
 <translation id="8945508919180478719">Studio-style mic</translation>
 <translation id="8946359700442089734">Debugging features were not completely enabled on this <ph name="IDS_SHORT_PRODUCT_NAME" /> device.</translation>

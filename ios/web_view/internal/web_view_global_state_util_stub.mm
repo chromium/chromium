@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web_view/internal/web_view_global_state_util.h"
+#import "ios/web_view/internal/web_view_global_state_util.h"
 
 namespace ios_web_view {
 

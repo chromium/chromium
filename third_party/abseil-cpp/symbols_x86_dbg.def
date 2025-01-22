@@ -4105,6 +4105,9 @@ EXPORTS
     ?TryRemove@Mutex@absl@@AAEXPAUPerThreadSynch@base_internal@2@@Z
     ?TypeId@FlagImpl@flags_internal@absl@@EBEPBXXZ
     ?TypeId@PrivateHandleAccessor@flags_internal@absl@@SAPBXABVCommandLineFlag@3@@Z
+    ?TypeName@CommandLineFlag@absl@@EBE?AV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@XZ
+    ?TypeName@FlagImpl@flags_internal@absl@@EBE?AV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@XZ
+    ?TypeName@PrivateHandleAccessor@flags_internal@absl@@SA?AV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@ABVCommandLineFlag@3@@Z
     ?UTC@Impl@time_zone@cctz@time_internal@absl@@SA?AV2345@XZ
     ?UTC@TimeZoneIf@cctz@time_internal@absl@@SA?AV?$unique_ptr@VTimeZoneIf@cctz@time_internal@absl@@U?$default_delete@VTimeZoneIf@cctz@time_internal@absl@@@__Cr@std@@@__Cr@std@@XZ
     ?UTC@TimeZoneInfo@cctz@time_internal@absl@@SA?AV?$unique_ptr@VTimeZoneInfo@cctz@time_internal@absl@@U?$default_delete@VTimeZoneInfo@cctz@time_internal@absl@@@__Cr@std@@@__Cr@std@@XZ

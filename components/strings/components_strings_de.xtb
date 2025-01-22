@@ -85,6 +85,7 @@
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> hat die Verbindung unerwartet geschlossen.</translation>
 <translation id="1160009341934077418">Preisentwicklung im Web</translation>
 <translation id="1161325031994447685">WLAN-Verbindung erneut herstellen</translation>
+<translation id="1161663161838091892">Tabs und Verlauf synchronisieren, um fortzufahren</translation>
 <translation id="1163507966173624031">Volksmusik und traditionelle Musik</translation>
 <translation id="11635448457105324">Schaltfläche „Adressen verwalten“ – aktivieren, um in den Chrome-Einstellungen Adressen hinzuzufügen und zu verwalten</translation>
 <translation id="1165039591588034296">Fehler</translation>
@@ -1105,6 +1106,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="297173220375858963">Desktop-Publishing</translation>
 <translation id="2972581237482394796">&amp;Wiederholen</translation>
 <translation id="2974468223369775963">Diese IBAN konnte nicht in deinem Google-Konto gespeichert werden. Sie wurde stattdessen in Chrome auf diesem Gerät gespeichert. Wenn du diese IBAN das nächste Mal verwendest, fragt Chrome dich noch einmal.</translation>
+<translation id="297667759942911166">In Tabgruppen gemeinsam arbeiten</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, aktuell ausgewählt. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">Tastatur sperren und verwenden</translation>
 <translation id="2978824962390592855">Oper</translation>
@@ -2062,6 +2064,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4661556981531699496">Tiere</translation>
 <translation id="4661868874067696603">Weitere Kaufoptionen suchen</translation>
 <translation id="4663373278480897665">Kameranutzung zulässig</translation>
+<translation id="4664084870155869900">Beim nächsten Mal automatisch ausfüllen lassen. Die Karte wird auf deinem Gerät gespeichert.</translation>
 <translation id="466561305373967878">Brettspiele</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Virtual Reality</translation>
@@ -2633,6 +2636,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5675809467256309336">Dance und elektronische Musik</translation>
 <translation id="5675959228867414813">Nach Datum anzeigen</translation>
 <translation id="567604591393105935">Ansicht mit Preisinformationen am unteren Rand ist halb geöffnet</translation>
+<translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Folie</translation>
 <translation id="5680642791693447368">Thriller, Krimis und Mystery-Filme</translation>
 <translation id="568292603005599551">X-Position des Bilds</translation>
@@ -2670,6 +2674,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="573555826359077410">Schaltfläche „Formular erstellen“ – aktivieren, um schnell ein neues Formular in Google Formulare zu erstellen</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Karte in deinem Google-Konto speichern}other{Karten in deinem Google-Konto speichern}}</translation>
 <translation id="5738385766833540397">Lege fest, wie du über Preisnachlässe bei beobachteten Produkten benachrichtigt werden willst</translation>
+<translation id="573974402615125334">Wenn du Tabgruppen teilen, ihnen beitreten und gemeinsam mit anderen an ihnen arbeiten möchtest, synchronisiere deinen Verlauf und deine Tabs</translation>
 <translation id="5740911612628596808">Umschlag C9</translation>
 <translation id="5742806904559466333">Bars, Clubs und Nachtleben</translation>
 <translation id="5743684619253032786">Nagelpflegeprodukte</translation>
@@ -3841,7 +3846,7 @@ Weitere Details:
 <translation id="7800977246388195491">Chrome schließt aufgrund deines aktuellen Browserverlaufs auf Themen, die dich interessieren könnten. Außerdem können besuchte Websites feststellen, was dir gefällt. Websites können diese Informationen dann abfragen und dir personalisierte Werbung anzeigen. Du kannst festlegen, welche Themen und Websites für Werbung verwendet werden.</translation>
 <translation id="7802523362929240268">Website ist vertrauenswürdig</translation>
 <translation id="7802989406998618639">Gib den <ph name="NUMBER_OF_DIGITS" />-stelligen Sicherheitscode auf der <ph name="SIDE_OF_CARD" /> ein, damit deine Bank deine Identität bestätigen kann</translation>
-<translation id="780301667611848630">Nein danke</translation>
+<translation id="780301667611848630">Nein, danke</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Infofeld schließen</translation>
 <translation id="7810410097247356677">Damit Zahlungen zukünftig schneller abgewickelt werden können, speichere deine Karte und den verschlüsselten Sicherheitscode auf deinem Gerät</translation>
@@ -3870,6 +3875,7 @@ Weitere Details:
 <translation id="7865448901209910068">Beste Geschwindigkeit</translation>
 <translation id="7870281855125116701">Rabatt gefunden</translation>
 <translation id="7871445724586827387">Passwort des Google-Kontos ändern</translation>
+<translation id="787226752901403048">Melde dich in Chrome an, um Tabgruppen zu teilen, ihnen beizutreten und gemeinsam an Ideen zu arbeiten</translation>
 <translation id="7877007680666472091">geschützte Inhalts-IDs</translation>
 <translation id="7878562273885520351">Dein Passwort könnte gefährdet sein</translation>
 <translation id="7882421473871500483">Braun</translation>
@@ -4325,6 +4331,7 @@ Weitere Details:
 <translation id="8702965365666568344">Klebeband</translation>
 <translation id="8703575177326907206">Die Verbindung zu <ph name="DOMAIN" /> ist nicht verschlüsselt.</translation>
 <translation id="8705331520020532516">Seriennummer</translation>
+<translation id="8706806585855470492">Du kannst dann Tabgruppen teilen, ihnen beitreten und gemeinsam mit anderen an ihnen arbeiten</translation>
 <translation id="8708134712139312373">Darf nachfragen, wenn sie eine Verbindung mit Bluetooth-Geräten herstellen möchte</translation>
 <translation id="8710842507289500830">Schriftschnitt</translation>
 <translation id="8712637175834984815">Ok</translation>
@@ -4467,6 +4474,7 @@ Weitere Details:
 <translation id="8975263830901772334">Namen von Dateien, die du druckst</translation>
 <translation id="8982884016487650216">Laden des PDFs abgeschlossen</translation>
 <translation id="8983369100812962543">Du kannst die Größe der App jetzt ändern</translation>
+<translation id="8985112471026018799">Karte zum schnelleren Bezahlen speichern</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um deinen Browserverlauf in Chrome aufzurufen</translation>
 <translation id="8987663052629670333">Fotodruck</translation>
 <translation id="8987927404178983737">Monat</translation>
@@ -4534,6 +4542,7 @@ Weitere Details:
 <translation id="9090993752571911635">Internetanbieter (ISPs)</translation>
 <translation id="9093723786115107672">Schlafbekleidung</translation>
 <translation id="9094544726794842788">Wenn du „Mag ich nicht“ auswählst, wird ein Formular geöffnet, über das du detailliertes Feedback dazu geben kannst, warum dir diese Ergebnisse nicht gefallen.</translation>
+<translation id="9094809883254050729">Beim nächsten Mal automatisch ausfüllen lassen. Die Karte wird beim Speichern verschlüsselt.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" /> – Drück die Tabulatortaste und dann die Eingabetaste, um Chrome in den iOS-Einstellungen als Standardbrowser für das System festzulegen</translation>
 <translation id="9101450247048146228">Kamera-Nutzung und ‑Bewegung (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Fach 1</translation>

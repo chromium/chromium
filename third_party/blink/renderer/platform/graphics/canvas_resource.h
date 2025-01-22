@@ -183,7 +183,6 @@ class PLATFORM_EXPORT CanvasResource
 
   // Returns true if the resource is backed by memory such that it can be used
   // for direct scanout by the display.
-  virtual bool IsOverlayCandidate() const { return false; }
   virtual gfx::HDRMetadata GetHDRMetadata() const { return gfx::HDRMetadata(); }
   virtual viz::TransferableResource::ResourceSource
   GetTransferableResourceSource() const {
@@ -243,6 +242,7 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
   scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() final {
     return shared_image_;
   }
+
   const gpu::SyncToken GetSyncTokenWithOptionalVerification(
       bool needs_verified_token) final {
     return sync_token_;
@@ -358,7 +358,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
       const override;
   const gpu::SyncToken GetSyncTokenWithOptionalVerification(
       bool needs_verified_token) override;
-  bool IsOverlayCandidate() const final { return is_overlay_candidate_; }
   bool UsesAcceleratedRaster() const final { return is_accelerated_; }
 
   CanvasResourceSharedImage(gfx::Size size,
@@ -394,7 +393,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
 
   // Accessed on any thread.
   const bool is_accelerated_;
-  const bool is_overlay_candidate_;
   const bool supports_display_compositing_;
   const bool use_oop_rasterization_;
   OwningThreadData owning_thread_data_;
@@ -432,7 +430,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   }
 
  private:
-  bool IsOverlayCandidate() const final { return is_overlay_candidate_; }
   gfx::HDRMetadata GetHDRMetadata() const final { return hdr_metadata_; }
   viz::TransferableResource::ResourceSource GetTransferableResourceSource()
       const final {
@@ -459,7 +456,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   gpu::SyncToken sync_token_;
   viz::TransferableResource::ResourceSource resource_source_;
   gfx::HDRMetadata hdr_metadata_;
-  bool is_overlay_candidate_ = false;
   viz::ReleaseCallback release_callback_;
   bool resource_is_lost_ = false;
 };
@@ -493,7 +489,6 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
   scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() override;
 
  private:
-  bool IsOverlayCandidate() const final { return true; }
   bool UsesAcceleratedRaster() const final { return true; }
   const gpu::SyncToken GetSyncTokenWithOptionalVerification(
       bool needs_verified_token) override;

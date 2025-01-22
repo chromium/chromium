@@ -169,6 +169,7 @@ Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þ
 <translation id="5639704535586432836">Opnaðu Stillingar &gt; Persónuvernd &gt; Myndavél &gt; Chrome og kveiktu á myndavélinni.</translation>
 <translation id="5642200033778930880">Google Chrome getur ekki notað myndavélina á tvískiptum skjá</translation>
 <translation id="5661521615548540542">Google-aðgangsorðastjórnun gat ekki athugað öll aðgangsorð. Reyndu aftur síðar.</translation>
+<translation id="5681291952421236520">Veldu Chrome</translation>
 <translation id="5690398455483874150">{count,plural, =1{Sýnir núna 1 Chrome glugga}one{Sýnir núna {count} Chrome glugga}other{Sýnir núna {count} Chrome glugga}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Stilltu Chrome sem sjálfgefinn vafra</translation>
@@ -204,6 +205,7 @@ Prófaðu að bíða í nokkrar mínútur áður en þú skiptir um reikning. Ef
 <translation id="6484712497741564393">Skráð(ur) inn sem <ph name="EMAIL" />.
 
 Gögnin þín eru dulkóðuð með aðgangsorði. Sláðu það inn til að nota og vista Chrome-gögn á Google-reikningnum þínum.</translation>
+<translation id="6533470733797826516">Skráðu þig inn í hvelli með sjálfvirkri útfyllingu Chrome</translation>
 <translation id="6545449117344801102">Chrome greinir heimilisföng og notar Google-kort til að sýna þér leiðarlýsingu og staðbundnar upplýsingar.</translation>
 <translation id="6634107063912726160">Þegar þú skráir þig út mun Chrome ekki samstilla ný gögn við Google reikninginn þinn. Gögn sem voru samstillt áður verða áfram á reikningnum.</translation>
 <translation id="6636941099779251629">Fyrirtækið þitt krefst þess að þú skráir þig inn til að nota Chrome. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>

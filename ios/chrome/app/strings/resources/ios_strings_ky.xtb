@@ -191,6 +191,7 @@
 <translation id="1779354709911146450">Аныктыгын текшерүү катасы</translation>
 <translation id="1780152987505130652">Топту жабуу</translation>
 <translation id="178400879184240105">Сырсөздөрүңүз уникалдуу</translation>
+<translation id="17906873777101817">Сырсөздөрдү жана киргизүүчү ачкычтарды сактоону сунуштоо</translation>
 <translation id="1807893857950749072">Бааларга көз салуу билдирмелерине уруксат берүү…</translation>
 <translation id="1810976980198522421">Жокко чыгаруу</translation>
 <translation id="1815941218935345331">Өткөрүүчү код</translation>
@@ -542,6 +543,7 @@
 <translation id="3409785640040772790">Карталар</translation>
 <translation id="3416023309465857378">25-окт., 2023-ж.</translation>
 <translation id="3435738964857648380">Коопсуздук</translation>
+<translation id="343850944564645513">Көп кирген сайттарыңыз</translation>
 <translation id="3443810440409579745">Өтмөк алынды.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мүн.</translation>
 <translation id="344589138074534176">Google Lens тууралуу кеңири маалымат</translation>
@@ -651,10 +653,12 @@
 <translation id="3955740319737378355">Бүттү</translation>
 <translation id="3955822496205734389">Начар сырсөздөрүңүз бар.</translation>
 <translation id="3958312024468322930">Аны Башкы экрандын ылдый жагындагы докко сүйрөп келиңиз</translation>
+<translation id="3960218941754097036">Экраныңыздагы нерселерди Google Lens аркылуу издеңиз</translation>
 <translation id="3962326069546168954">Сактоо</translation>
 <translation id="3967327056943561740">Кыстармалар</translation>
 <translation id="3967822245660637423">Жүктөп алуу аяктады</translation>
 <translation id="3982893814825393515">Маселе жөнүндө кабарлоо…</translation>
+<translation id="3984527584375648997">"Көп кирген сайттарыңызды" жашыруу</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" /> катары кирдиңиз. Аккаунт менюсун ачуу.</translation>
 <translation id="3986739045730058129">Өтмөккө өтүү</translation>
 <translation id="3992684624889376114">Бул бет жөнүндө</translation>
@@ -693,6 +697,7 @@
 <translation id="4147897805161313378">Google Фото</translation>
 <translation id="4148023517926189160">Бул вебсайт файлды жүктөп алып, жылнаамаңызга кошкону жатат.</translation>
 <translation id="4152011295694446843">Кыстармаларыңызды ушул жерден табасыз</translation>
+<translation id="4154753961803534698">Камера менен издөө</translation>
 <translation id="4158491215857439601">Сырсөздөрдү башкаргыч</translation>
 <translation id="4163699139741158298">{count,plural, =1{Кыстарма төмөнкүгө сакталды: "{title}". Ал ушул түзмөктө гана сакталат.}other{{count} кыстарма төмөнкүгө сакталды: "{title}". Алар ушул түзмөктө гана сакталат.}}</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" /> менен бүткөн <ph name="NETWORK_NAME" /></translation>
@@ -831,7 +836,6 @@
 <translation id="4764612367328936189">Уюмуңуз белгилүү бир аккаунттар менен гана кирүүгө уруксат берет. Тыюу салынган аккаунттар жашырылды. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Сунуштар жана жазылуу</translation>
 <translation id="4769198578611055647">Сакталган киргизүүчү ачкычтарды бардык түзмөктөрдө колдонууга мүмкүндүк берет</translation>
-<translation id="4777866634702576038">Өтмөктөр тобу өчүрүлсүнбү?</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Жашыруун режимде ачылсынбы?</translation>
 <translation id="4792385443586519711">Компаниянын аталышы</translation>
@@ -1159,6 +1163,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6168647875670665004">Макалаларды сунуштоо</translation>
 <translation id="6169031022444660352">Сакталган эсептик дайындардын баарын өчүрүү үчүн алгач түзмөгүңүздө өткөрүүчү кодду тууралашыңыз керек.</translation>
 <translation id="6173499589275053515">Сырсөз Google аккаунтуңузга сакталды, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Экрандан издөө</translation>
 <translation id="6187302354554850004">Акркы жолу шайкешт: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" /> түзүлдү</translation>
 <translation id="6189413832092199491">Окулбагандар</translation>
@@ -1320,6 +1325,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6732087373923685049">камера</translation>
 <translation id="6746338529702829275">Аккаунтуңуздагы нерселерди карап чыгыңыз</translation>
 <translation id="6755200887046212842">Аккаунттарды башкаруу</translation>
+<translation id="6755733078693946548">Сырсөздөр менен киргизүүчү ачкычтарыңызды каалаган колдонмодон көрүңүз</translation>
 <translation id="6761393919622941301">Аудио</translation>
 <translation id="6779455296366983087">Серептөө дайындарыңыз өчүрүлөт</translation>
 <translation id="6790502149545262384">Жакында жаңы өтмөктү ачкан сайын <ph name="CHANNEL_NAME" /> окуяларын көрүп турасыз.</translation>
@@ -1464,6 +1470,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="746872191028309255">Сүрөт галереяңыз же камераңыз аркылуу товарларды сатып алыңыз.</translation>
 <translation id="7471557245617580330">Жаңы өтмөк түзүү</translation>
 <translation id="7473891865547856676">Жок, рахмат</translation>
+<translation id="7476548258282096076">Бул картада көп кирген сайттарыңыз көрсөтүлдү.</translation>
 <translation id="747956641630879526">Бул картаны жашырсаңыз, таңгактарга көз салуу функциясы жана бардык маалыматыңыз өчүрүлөт</translation>
 <translation id="7484645889979462775">Бул сайт үчүн эч качан</translation>
 <translation id="7486006552035434095">Түзмөктөрүңүздү шайкештириңиз</translation>
@@ -1587,6 +1594,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7977451675950311423">Колдонулган сызсөздү кимдир бирөө билип алган болсо, ал тууралуу эскертет.</translation>
 <translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> жаңы өтмөк, <ph name="NUMBER_OF_TABS_REMOVED" /> жабылды</translation>
 <translation id="797824194429476746">Өтмөктөр бул түзмөктө ачык бойдон калып, бирок топ биротоло өчүрүлөт.</translation>
+<translation id="797874245254030665">Сырсөздөрүңүз менен киргизүүчү ачкычтарыңызды каалаган колдонмодон көрүңүз</translation>
 <translation id="7982789257301363584">Тармак</translation>
 <translation id="7987685713885608670">Кошумча коопсуздук үчүн Google Сырсөздөрдү башкаргычка сакталганга чейин сырсөздөрдү түзмөгүңүздө шифрлеңиз.</translation>
 <translation id="798991908416757345">Өтмөктөр топтору жеткиликтүү эмес</translation>
@@ -1596,6 +1604,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8005666035647241369">Бул түзмөктөгү Google Сырсөздөрдү башкаргычка</translation>
 <translation id="8011489434346330032">Веб-инспектор</translation>
 <translation id="802154636333426148">Жүктөлүп алынбай калды</translation>
+<translation id="8023170444051056234">"<ph name="GROUP_NAME" />" өтмөктөр тобуна кирүү мүмкүнчүлүгүнөн дароо ажырап, ал бардык түзмөктөрүңүздөн өчүрүлөт</translation>
 <translation id="8023878949384262191">Бөлүмдү кеңейтет.</translation>
 <translation id="8027581147000338959">Жаңы терезеде ачуу</translation>
 <translation id="8032569120109842252">Жазылгансыз</translation>
@@ -1666,6 +1675,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8299613349954694191">Интернетте купуя серептөө үчүн жашыруун өтмөктү ачыңыз.</translation>
 <translation id="8307481894409578819">Бул файлды жүктөп берүүгө болбойт</translation>
 <translation id="8319076807703933069">Жаңы издөө</translation>
+<translation id="8328607660158575887">Автотолтуруу жана сырсөздөр параметрлерин ачыңыз</translation>
 <translation id="833647236762414178">Сайттарга жана колдонмолорго оңой кирүү үчүн сырсөздөрдү жана киргизүүчү ачкычтарды түзүп, сактап жана тескеңиз. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Маалыматтын камдык көчүрмөсүн сактап, башка түзмөктө колдоно аласыз.</translation>
 <translation id="8349305172487531364">Кыстармалар тилкеси</translation>
@@ -1818,6 +1828,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8909459547399237818">Сырсөздөрдү башкаргычты тандап, "Виджет кошуу" дегенди таптаңыз</translation>
 <translation id="891282356902782456">Бул сырсөз ушул түзмөктө гана сакталат. Аны башка түзмөктөрдө колдонуу үчүн Google аккаунтуңузда (<ph name="EMAIL" />) сактаңыз.</translation>
 <translation id="8915916167043355778">Баарын жабуу</translation>
+<translation id="892185197271200809">Бардык колдонуучулар "<ph name="GROUP_NAME" />" өтмөктөр тобуна кирүү мүмкүнчүлүгүнөн дароо ажырап, ал бардык түзмөктөрдөн өчүрүлөт</translation>
 <translation id="8921902386312975525">Таңгактарга көз салуу параметрлери</translation>
 <translation id="8923178205567790913">Сырсөздөр</translation>
 <translation id="892776311701544612">Көбүрөөк билүү…</translation>

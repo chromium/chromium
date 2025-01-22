@@ -129,7 +129,6 @@
 <translation id="1079242569060319448">পিন পাহৰিলে নেকি?</translation>
 <translation id="1079285777677001938">কিছুমান ছাইটত সুবিধাসমূহে কাম নকৰিবও পাৰে।</translation>
 <translation id="1079766198702302550">সদায় কেমেৰাৰ এক্সেছ অৱৰোধ কৰক</translation>
-<translation id="1080365971383768617">আপোনাৰ আটাইবোৰ ডিভাইচত পাছৱৰ্ড</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - ১ টা টেব}one{<ph name="GROUP_TITLE" /> - # টা টেব}other{<ph name="GROUP_TITLE" /> - # টা টেব}}</translation>
 <translation id="1082214733466244292">আপোনাৰ প্ৰশাসকে এই ডিভাইচটোৰ বাবে কিছু কাৰ্যকাৰিতা অৱৰোধ কৰিছে</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" />এ আপোনাৰ Chromeৰ ছেটিংসমূহ সেইটোৰ প্ৰকৃত ডিফ'ল্টলৈ পুনৰুদ্ধাৰ কৰিব বিচাৰে। এইটোৱে আপোনাৰ গৃহপৃষ্ঠা, নতুন টেবযুক্ত পৃষ্ঠা আৰু সন্ধান ইঞ্জিন ৰিছেট কৰিব, আপোনাৰ এক্সটেনশ্বনবোৰ অক্ষম কৰিব আৰু সকলো টেব আনপিন কৰিব। এইটোৱে লগতে কুকি, সমল আৰু ছাইটৰ ডেটাৰ দৰে অন্য সাময়িক আৰু কেশ্ব ডেটা মচিব।</translation>
@@ -524,6 +523,7 @@
 <translation id="135389172849514421">অফলাইনত কাম কৰে</translation>
 <translation id="1353980523955420967">PPD বিচাৰি পোৱা নগ’ল। আপোনাৰ Chromebook অনলাইন হৈ থকাটো সুনিশ্চিত কৰি আকৌ চেষ্টা কৰক।</translation>
 <translation id="1354045473509304750"><ph name="HOST" />ক আপোনাৰ কেমেৰা ব্যৱহাৰ আৰু লৰচৰ কৰিবলৈ অনুমতি দিয়াটো অব্যাহত ৰাখক</translation>
+<translation id="1354148503392558902">পাছৱৰ্ড সলনি কৰি থকা হৈছে...</translation>
 <translation id="1355088139103479645">আটাইবোৰ ডেটা মচিব নেকি?</translation>
 <translation id="1356376170199999104">অনুমতি দিয়া আছে – <ph name="PERMISSION_DETAILS" />। কায়িক ছুইচ ব্যৱহাৰ কৰি মাইক্ৰ’ফ’ন অন কৰক।</translation>
 <translation id="1356959069439783953">নিষ্ক্ৰিয় টেবসমূহে এটা নতুন ৰূপ পায়</translation>
@@ -1101,6 +1101,7 @@
 <translation id="1751335846119670066">হেল্প মী ৰীড</translation>
 <translation id="17513872634828108">খুলি ৰখা টেবসমূহ</translation>
 <translation id="175196451752279553">বন্ধ কৰা টেব পু&amp;নৰ খোলক</translation>
+<translation id="1752557850776261983">ছাইন ইন পৰীক্ষা কৰি থকা হৈছে...</translation>
 <translation id="1753067873202720523">আপোনাৰ Chromebook অন কৰি থোৱা অৱস্থাত চার্জ নহ'ব পাৰে।</translation>
 <translation id="1753557900380512635">ইণ্টেৰিয়ৰ</translation>
 <translation id="1753905327828125965">সকলোতকৈ বেছিকৈ চোৱা</translation>
@@ -2307,6 +2308,7 @@
 <translation id="2581786034175502848">এইটো পুনৰ সক্ষম কৰিবলৈ ৫ বাৰ শ্বিফ্ট টিপক</translation>
 <translation id="2581992808349413349">DNS (ড’মেইনৰ নামৰ ছিষ্টেম)ত কোনো ছাইটৰ আইপি ঠিকনা চাবলৈ এটা সুৰক্ষিত সংযোগ ব্যৱহাৰ কৰক। এইটোৱে <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />ত এটা পৰিচালিত সেৱা প্ৰদানকাৰী ব্যৱহাৰ কৰে</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (প্লেটফ’র্ম <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
+<translation id="2583905535229480958">যিকোনো স্মাৰ্ট কাৰ্ড ৰীডাৰ</translation>
 <translation id="2584109212074498965">Kerberos টিকেট লাভ কৰিব পৰা নগ’ল। আকৌ চেষ্টা কৰক অথবা আপোনাৰ প্ৰতিষ্ঠানৰ ডিভাইচ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক। (আসোঁৱাহ ক’ড <ph name="ERROR_CODE" />)।</translation>
 <translation id="2584974473573720127">Chromeত ৱেবছাইটৰ মাইক্ৰ’ফ’নৰ অনুমতি পৰিচালনা কৰক</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> ইনষ্টল কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক অথবা আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক। আসোঁৱাহ ক’ড: <ph name="ERROR_CODE" />।</translation>
@@ -2382,6 +2384,7 @@
 <translation id="2638662041295312666">ছাইন-ইন প্ৰতিচ্ছবি</translation>
 <translation id="2640299212685523844">GTK ব্যৱহাৰ কৰক</translation>
 <translation id="264083724974021997">আপোনাৰ ফ’নৰ সৈতে সংযোগ কৰক - ডায়ল’গ</translation>
+<translation id="2641098199809442625">আপোনাৰ পাছৱৰ্ড আপডে’ট কৰা হোৱা নাছিল, কিন্তু তথাপিও আপুনি আপোনাৰ পুৰণি পাছৱৰ্ডৰ সৈতে ছাইটটো এক্সেছ কৰিবলৈ সক্ষম হ'ব লাগিব।</translation>
 <translation id="2642111877055905627">ফুটবল</translation>
 <translation id="2642206811783203764">সদায় অন <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">আপোনাৰ ব্ৰাউজিঙৰ ডেটা মচি আপুনি যিকোনো সময়তে বিজ্ঞাপনৰ জোখ-মাখৰ ডেটা মচিব পাৰে</translation>
@@ -3030,6 +3033,7 @@
 <translation id="310297983047869047">পূৰ্বৱৰ্তী শ্লাইড</translation>
 <translation id="3103451787721578293">অনুগ্ৰহ কৰি এই ডেটাখিনি আপল’ড কৰাৰ এটা কাৰণ দিয়ক:</translation>
 <translation id="3103512663951238230">অল্‌ট + ক্লিক</translation>
+<translation id="3104763887980088552">কাৰ্যকলাপৰ লগ</translation>
 <translation id="3104948640446684649">ব্যৱহাৰ আৰু ডায়েগন’ষ্টিক ডেটা পঠিয়াওক। এই ডিভাইচটোৱে বৰ্তমান স্বয়ংক্ৰিয়ভাৱে Googleলৈ ডায়গন’ষ্টিক, ডিভাইচ আৰু এপ্ ব্যৱহাৰৰ ডেটা পঠিয়াই আছে। এই কাৰ্যটোৱে ছিষ্টেম আৰু এপৰ স্থিৰতা আৰু অন্য উন্নয়নত সহায় কৰিব। কিছুমান একত্ৰিত ডেটাই Google এপ্‌ আৰু Android বিকাশকৰ্তাৰ দৰে অংশীদাৰসকলকো সহায় কৰিব। যদি আপোনাৰ অতিৰিক্ত ৱেব আৰু এপৰ কাৰ্যকলাপৰ ছেটিং অন কৰা হয়, তেন্তে এই ডেটাখিনি আপোনাৰ Google একাউণ্টত ছেভ কৰা হ’ব পাৰে। <ph name="BEGIN_LINK2" />মেট্ৰিক্সৰ বিষয়ে অধিক জানক<ph name="BEGIN_LINK2_END" />অধিক জানক<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">অন্তিম অসফল আপডে’ট</translation>
 <translation id="3105796011181310544">পুনৰ Googleলৈ সলনি কৰিবনে?</translation>
@@ -3744,6 +3748,7 @@
 <translation id="3629664892718440872">এই বাছনিটো মনত ৰাখিব</translation>
 <translation id="3630132874740063857">আপোনাৰ ফ'ন</translation>
 <translation id="3630995161997703415">এই ছাইটটো যিকোনো সময়তে ব্যৱহাৰ কৰিবলৈ সেইটো আপোনাৰ শ্বেল্‌ফত যোগ কৰক</translation>
+<translation id="3632929818790223729">সক্ৰিয় টেবৰ জৰিয়তে টেব বিভক্ত কৰক</translation>
 <translation id="3634652306074934350">অনুমতি বিচাৰি কৰা অনুৰোধৰ ম্যাদ উকলিল</translation>
 <translation id="3635199270495525546">বিশ্বাসী প্লেটফৰ্ম মডিউল (TPM) চিনাক্ত কৰা হৈছে</translation>
 <translation id="3635353578505343390">Googleলৈ মতামত পঠিয়াওক</translation>
@@ -6244,9 +6249,6 @@
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />)এ আপুনি এটা টেবৰ গোটত যোগদান কৰাটো বিচাৰে। লিংকটো থকা সকলোৱে আটাইবোৰ টেব সম্পাদনা কৰিব পাৰে, গতিকে সাৱধানে যোগদান কৰক। লিংকটোৰ ম্যাদ ৪৮ ঘণ্টাত উকলিব।</translation>
 <translation id="5410889048775606433">ফিউশ্বা</translation>
 <translation id="5411022484772257615">বিদ্যালয়ৰ পঞ্জীয়ন সম্পূৰ্ণ কৰিব পৰা নগ’ল</translation>
-<translation id="5411856344659127989">যদি আপুনি অন্য কাৰোবাৰ বাবে এটা একাউণ্ট যোগ দিবলৈ বিচাৰে, আপোনাৰ <ph name="DEVICE_TYPE" />ত <ph name="LINK_BEGIN" />এগৰাকী নতুন ব্যক্তি যোগ দিয়ক<ph name="LINK_END" />।
-
-আপুনি ইতিমধ্যে ৱেবছাইট আৰু এপক দিয়া অনুমতি এই একাউণ্টটোত প্ৰযোজ্য হ’ব পাৰে। আপুনি <ph name="SETTINGS_LINK_BEGIN" />ছেটিঙ<ph name="SETTINGS_LINK_END" />ত আপোনাৰ Google একাউণ্ট পৰিচালনা কৰিব পাৰে।</translation>
 <translation id="54118879136097217">আপোনাৰ <ph name="DEVICE_TYPE" />ত এপ্‌টো ইনষ্টল কৰক</translation>
 <translation id="5413640305322530561">ডায়েগন’ষ্টিক আৰু ব্যৱহাৰৰ ডেটাৰ বিষয়ে অধিক জানক</translation>
 <translation id="5414198321558177633">প্ৰ’ফাইলৰ সূচী ৰিফ্ৰেশ্ব কৰি থকা হৈছে। এই কামত কেইমিনিটমান সময় লাগিব পাৰে।</translation>
@@ -6525,7 +6527,6 @@
 <translation id="5610867721023328944">পুনৰ চেষ্টা কৰক বা তলত উপলব্ধ থীমসমূহৰ এটাৰ পৰা বাছনি কৰক।</translation>
 <translation id="5611398002774823980">একাউণ্টত ছেভ কৰক</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5613074282491265467">যেতিয়া আপুনি Chromeত ছাইন ইন কৰিব, তেতিয়া আপুনি ছেভ কৰা পাছৱৰ্ডসমূহ আপোনাৰ Google একাউণ্ট <ph name="USER_EMAIL" />লৈ যাব। এইটো বন্ধ কৰিবলৈ, ছেটিঙলৈ যাওক।</translation>
 <translation id="5614190747811328134">ব্যৱহাৰকাৰীৰ জাননী</translation>
 <translation id="5614553682702429503">পাছৱৰ্ড ছেভ কৰিবনে?</translation>
 <translation id="5614947000616625327">iCloud কীচেইন</translation>
@@ -8558,7 +8559,6 @@
 <translation id="7088674813905715446">প্ৰশাসকে এই ডিভাইচটো ব্যৱস্থাপনা নকৰা অৱস্থাত ৰাখিছে। ইয়াক পঞ্জীকৰণৰ বাবে সক্ষম কৰিবলৈ আপোনাৰ প্ৰশাসকক ডিভাইচটো বিবেচনাধীন অৱস্থালৈ আনিবলৈ কওক।</translation>
 <translation id="7088960765736518739">ছুইচ্চ এক্সেছ</translation>
 <translation id="7089253021944603172">আকৌ সক্ৰিয় কৰকত টিপক</translation>
-<translation id="7090160970140261931">আপুনি ৱেবছাইট আৰু Android এপৰ সৈতে ব্যৱহাৰ কৰিবলৈ আপোনাৰ <ph name="DEVICE_TYPE" />ত অতিৰিক্ত একাউণ্টসমূহ যোগ দিব পাৰে। কোনটো একাউণ্ট Android এপৰ সৈতে ব্যৱহাৰ কৰা হয়, আপুনি সেইটোও নিয়ন্ত্ৰণ কৰিব পাৰে।</translation>
 <translation id="7090714929377281710">স্বয়ংক্ৰিয়ভাৱে হটস্পট অফ কৰক</translation>
 <translation id="7092504544229909737">Android এপৰ সৈতে ব্যৱহাৰ কৰিব নোৱাৰি</translation>
 <translation id="7093220653036489319">দ্ৰুত উত্তৰ</translation>
@@ -9019,6 +9019,7 @@
 <translation id="7424818322350938336">নেটৱৰ্ক যোগ দিয়া হৈছে</translation>
 <translation id="7425037327577270384">মোক লিখাত সহায় কৰক</translation>
 <translation id="7427348830195639090">নেপথ্যৰ পৃষ্ঠা: <ph name="BACKGROUND_PAGE_URL" /></translation>
+<translation id="7427729970025360383">এইটো পৰিচালিত প্ৰ’ফাইল</translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" />ৰ পৰা অহা কল</translation>
 <translation id="7429415133937917139">স্ক্ৰীনখনৰ ওপৰৰ অংশৰ ChromeVox পেনেলত
     থকা ৰিফ্ৰেশ্ব কৰিব পৰা কোনো ব্ৰেইল ডিছপ্লে’ৰ আউটপুট ছিমুলে’ট কৰে</translation>
@@ -10036,6 +10037,7 @@
 <translation id="8140869601171867148">আপোনাৰ Google একাউণ্টটো হৈছে আপুনি Gmail, YouTube, Chrome আৰু Googleৰ আন প্ৰ’ডাক্টসমূহৰ বাবে ব্যৱহাৰ কৰা একেটাই একাউণ্ট।
     আপোনাৰ আটাইবোৰ বুকমাৰ্ক, ফাইল আৰু আন বহুতো সহজে এক্সেছ কৰিবলৈ আপোনাৰ একাউণ্টটো ব্যৱহাৰ কৰক।</translation>
 <translation id="8141418916163800697">আপুনি ফ’ন হাবৰ ছেটিঙত অধিক সুবিধা ছেট আপ কৰিব পাৰে</translation>
+<translation id="814156740715940972">সক্ৰিয় টেবৰ জৰিয়তে টেব বিভক্ত কৰক</translation>
 <translation id="8141584439523427891">এতিয়া বিকল্প ব্ৰাউজাৰত খুলি আছে</translation>
 <translation id="8141725884565838206">আপোনাৰ পাছৱর্ডসমূহ পৰিচালনা কৰক</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{এটা ভিডিঅ’}one{# টা ভিডিঅ’}other{# টা ভিডিঅ’}}</translation>
@@ -11169,9 +11171,6 @@
 <translation id="894360074127026135">নেটস্কেপৰ আন্তঃৰাষ্ট্ৰীয় ষ্টেপ আপ</translation>
 <translation id="8944099748578356325">বেটাৰী খৰকৈ ব্যৱহাৰ কৰক (বৰ্তমান <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944633700466246631">Google Password Managerৰ বাবে এটা ৬ টা অংকৰ পুনৰুদ্ধাৰৰ পিন সৃষ্টি কৰক</translation>
-<translation id="8944725102565796255">যদি আপুনি এই একাউণ্টটো কেৱল এবাৰ ব্যৱহাৰ কৰিবলৈ বিচাৰে, আপুনি <ph name="GUEST_LINK_BEGIN" />ডিভাইচটো অতিথি হিচাপে ব্যৱহাৰ কৰিব পাৰে<ph name="GUEST_LINK_END" />। যদি আপুনি অন্য কাৰোবাৰ বাবে এটা একাউণ্ট যোগ দিবলৈ বিচাৰে, আপোনাৰ <ph name="DEVICE_TYPE" />ত <ph name="LINK_BEGIN" />এগৰাকী নতুন ব্যক্তি যোগ দিয়ক<ph name="LINK_END" />।
-
-আপুনি ইতিমধ্যে ৱেবছাইট আৰু এপক দিয়া অনুমতি এই একাউণ্টটোত প্ৰযোজ্য হ’ব পাৰে। আপুনি <ph name="SETTINGS_LINK_BEGIN" />ছেটিঙ<ph name="SETTINGS_LINK_END" />ত আপোনাৰ Google একাউণ্ট পৰিচালনা কৰিব পাৰে।</translation>
 <translation id="8945274638472141382">চিহ্নৰ আকাৰ</translation>
 <translation id="8945508919180478719">ষ্টুডিঅ’-ষ্টাইল মাইক</translation>
 <translation id="8946359700442089734">ডিবাগিঙৰ সুবিধাসমূহ এই <ph name="IDS_SHORT_PRODUCT_NAME" /> ডিভাইচটোত সম্পূৰ্ণৰূপে সক্ষম কৰা হোৱা নাছিল।</translation>

@@ -124,7 +124,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/lens_overlay/model",
     "//ios/chrome/browser/lens_overlay/ui",
-    "//ios/chrome/browser/omnibox/model",
+    "//ios/chrome/browser/omnibox/model/omnibox_position",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_internal",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",

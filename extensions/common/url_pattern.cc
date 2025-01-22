@@ -189,18 +189,6 @@ URLPattern& URLPattern::operator=(const URLPattern& other) = default;
 
 URLPattern& URLPattern::operator=(URLPattern&& other) = default;
 
-bool URLPattern::operator<(const URLPattern& other) const {
-  return GetAsString() < other.GetAsString();
-}
-
-bool URLPattern::operator>(const URLPattern& other) const {
-  return GetAsString() > other.GetAsString();
-}
-
-bool URLPattern::operator==(const URLPattern& other) const {
-  return GetAsString() == other.GetAsString();
-}
-
 std::ostream& operator<<(std::ostream& out, const URLPattern& url_pattern) {
   return out << '"' << url_pattern.GetAsString() << '"';
 }

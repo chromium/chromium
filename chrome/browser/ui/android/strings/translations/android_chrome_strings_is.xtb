@@ -828,7 +828,6 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="4835385943915508971">Chrome hefur ekki aðgang að umbeðnu tilfangi.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Endurheimta flipahóp í litnum „<ph name="COLOR_NAME" />“ með <ph name="TAB_COUNT_ONE" /> flipa sem nýjan flipahóp í bakgrunni.}one{Endurheimta flipahóp í litnum „<ph name="COLOR_NAME" />“ með <ph name="TAB_COUNT_MANY" /> flipa sem nýjan flipahóp í bakgrunni.}other{Endurheimta flipahóp í litnum „<ph name="COLOR_NAME" />“ með <ph name="TAB_COUNT_MANY" /> flipum sem nýjan flipahóp í bakgrunni.}}</translation>
 <translation id="4837753911714442426">Opna valkosti fyrir prentun síðunnar</translation>
-<translation id="4842092870884894799">Sýnir sprettiglugga fyrir myndun aðgangsorðs</translation>
 <translation id="4844633725025837809">Dulkóðaðu aðgangsorðin þín í tækinu áður en þau eru vistuð í aðgangsorðastjórnun Google til að auka öryggið</translation>
 <translation id="4850886885716139402">Yfirlit</translation>
 <translation id="4852014461738377247">Skráir inn\u2026</translation>
@@ -1003,6 +1002,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5665379678064389456">Búa til viðburð í <ph name="APP_NAME" /></translation>
 <translation id="5680616253592639556">Upplýsingar vantar</translation>
 <translation id="5683547024293500885">Chrome getur ekki leitað að uppfærslum.</translation>
+<translation id="5683916195767086779">Flipahópur</translation>
 <translation id="5686790454216892815">Skráarheiti of langt</translation>
 <translation id="5687606994963670306">Chrome eyðir vefsvæðum sem eru eldri en 30 daga sjálfkrafa. Vefsvæði sem þú heimsækir aftur gæti birst aftur á listanum. Þú getur einnig bannað vefsvæði að birta þér tillögur að auglýsingum. Nánar um <ph name="BEGIN_LINK" />umsjón með persónuvernd auglýsinga í Chrome.<ph name="END_LINK" /></translation>
 <translation id="569536719314091526">Notaðu hnappinn „Fleiri valkostir“ til að þýða þessa síðu yfir á hvaða tungumál sem er</translation>

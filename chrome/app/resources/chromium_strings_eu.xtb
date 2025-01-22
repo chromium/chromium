@@ -40,9 +40,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1594928384848033697">Chromium-ek Pasahitz-kudeatzailea zerbitzuan dauzkazun datuak ezabatu behar ditu. Horretarako baimena emateko, idatzi Windows-eko pasahitza.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Chromium berriro exekutatzea behar du administratzaileak, eguneratzea aplikatzeko}=1{Chromium berriro exekutatzea behar du administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko leihoa ez da berriro irekiko.}other{Chromium berriro exekutatzea behar du administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko # leihoak ez dira berriro irekiko.}}</translation>
 <translation id="1625909126243026060">Berrikusi pribatutasuna eta segurtasuna kontrolatzeko aukera garrantzitsuenak Chromium-en</translation>
-<translation id="1632539827495546968">Kontu hau behin bakarrik erabili nahi baduzu, <ph name="GUEST_LINK_BEGIN" />gonbidatu modua<ph name="GUEST_LINK_END" /> erabil dezakezu Chromium arakatzailean. Kontu bat beste norbaitentzat gehitu nahi baduzu, <ph name="LINK_BEGIN" />gehitu beste pertsona bat<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> gailuan.
-
-Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Google-ko kontuak kudeatzeko, joan <ph name="SETTINGS_LINK_BEGIN" />Ezarpenak<ph name="SETTINGS_LINK_END" /> atalera.</translation>
 <translation id="1640672724030957280">Deskargatzen…</translation>
 <translation id="1709772298389099340"><ph name="BROWSER_NAME" /> arakatzailerako gehiegizko baimenak ematen ditu.</translation>
 <translation id="1715127912119967311">Eginbide hauek hobetzen laguntzeko, Chromium-ek haiekin dituzun interakzioak bidaltzen dizkio Google-ri. Baliteke informazio hori gizakia den berrikusle batek irakurtzea, prozesatzea eta hari buruzko oharpenak egitea.</translation>
@@ -366,7 +363,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6096348254544841612">Pertsonalizatu eta kontrolatu Chromium. Eguneratze bat erabilgarri dago.</translation>
 <translation id="6107893135096467929">Aktibatuta • Chromium-ek ezin du egiaztatu luzapena nondik datorren</translation>
 <translation id="6119438414301547735">Eman Chromium-eko tresna-barran sarbide-eskaerak erakusteko baimena luzapenari</translation>
-<translation id="6120345080069858279">Chromium-ek Google-ko kontuan gordeko du pasahitz hau. Ez duzu gogoratu beharko.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> arriskutsua da; horregatik, blokeatu egin du Chromium-ek.</translation>
 <translation id="6132897690380286411">Chromium-ek arakatze-datuak ezabatuko ditu eta itxi egingo da laster</translation>
 <translation id="6145820983052037069">Aldatu Chromium-eko profila hemen</translation>
@@ -528,6 +524,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="813913629614996137">Hasieratzen…</translation>
 <translation id="8166782796394721554">Aktibatu babes gehigarria Chromium-en JavaScript eta WebAssembly motorrean</translation>
 <translation id="81770708095080097">Fitxategia arriskutsua da; horregatik, blokeatu egin du Chromium-ek.</translation>
+<translation id="8200109504272824693">Chromium-eko datuak zure kontuan (<ph name="USER_EMAIL" />) erabiltzeko eta gordetzeko, idatzi pasaesaldia</translation>
 <translation id="8221491193165283816">Jakinarazpenak blokeatu ohi dituzu. Webgune honen jakinarazpenak jasotzeko, egin klik hemen.</translation>
 <translation id="8223363452568144035">Kamera erabiltzeko, eman baimena Chromium-i <ph name="BEGIN_LINK" />sistemaren ezarpenetan<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">Chromium-ek ezin du egiaztatu luzapena nondik datorren, eta baliteke segurua ez izatea. Ken ezazu Chromium-etik, bisitatzen dituzun webguneetan zure datuak ikusi eta aldatu ezin izan ditzan, informazio pertsonala barne.</translation>

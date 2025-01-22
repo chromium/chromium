@@ -4,12 +4,12 @@
 
 #import "ios/web_view/internal/cwv_x509_certificate_internal.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "net/cert/x509_certificate.h"
-#include "net/test/test_certificate_data.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "base/strings/sys_string_conversions.h"
+#import "net/cert/x509_certificate.h"
+#import "net/test/test_certificate_data.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 
 namespace ios_web_view {
 

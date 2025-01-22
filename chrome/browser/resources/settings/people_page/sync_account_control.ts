@@ -32,7 +32,6 @@ import {Router} from '../router.js';
 
 import {getTemplate} from './sync_account_control.html.js';
 
-export const MAX_SIGNIN_PROMO_IMPRESSION: number = 10;
 
 export interface SettingsSyncAccountControlElement {
   $: {
@@ -100,12 +99,6 @@ export class SettingsSyncAccountControlElement extends
 
       shownAccount_: Object,
 
-      showingPromo: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-      },
-
       // This property should be set by the parent only and should not change
       // after the element is created.
       embeddedInSubpage: {
@@ -166,7 +159,6 @@ export class SettingsSyncAccountControlElement extends
   private storedAccounts_: StoredAccount[];
   private profileAvatarURL_: string;
   private shownAccount_: StoredAccount|null;
-  showingPromo: boolean;
   embeddedInSubpage: boolean;
   hideButtons: boolean;
   hideBanner: boolean;
@@ -202,19 +194,9 @@ export class SettingsSyncAccountControlElement extends
 
   private onSyncChanged_() {
     if (this.embeddedInSubpage) {
-      this.showingPromo = true;
       return;
     }
 
-    if (!this.showingPromo && !this.isSyncing_() &&
-        this.syncBrowserProxy_.getPromoImpressionCount() <
-            MAX_SIGNIN_PROMO_IMPRESSION) {
-      this.showingPromo = true;
-      this.syncBrowserProxy_.incrementPromoImpressionCount();
-    } else {
-      // Turn off the promo if the user is signed in.
-      this.showingPromo = false;
-    }
     if (!this.isSyncing_() && this.shownAccount_ !== undefined) {
       this.recordImpressionUserActions_();
     }
@@ -627,11 +609,23 @@ export class SettingsSyncAccountControlElement extends
     if (actionMenu) {
       actionMenu.close();
     }
+
+    const menuAnchor =
+        this.shadowRoot!.querySelector<HTMLElement>('#dropdown-arrow');
+    if (menuAnchor) {
+      menuAnchor.setAttribute('aria-expanded', 'false');
+    }
   }
 
   private onSignoutClick_() {
     this.syncBrowserProxy_.signOut(false /* deleteProfile */);
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
+
+    const menuAnchor =
+        this.shadowRoot!.querySelector<HTMLElement>('#dropdown-arrow');
+    if (menuAnchor) {
+      menuAnchor.setAttribute('aria-expanded', 'false');
+    }
   }
 
   private onSyncButtonClick_() {
@@ -662,6 +656,7 @@ export class SettingsSyncAccountControlElement extends
         this.shadowRoot!.querySelector<HTMLElement>('#dropdown-arrow');
     assert(anchor);
     actionMenu.showAt(anchor);
+    anchor.setAttribute('aria-expanded', 'true');
   }
 
   private onShouldShowAvatarRowChange_() {
@@ -670,6 +665,12 @@ export class SettingsSyncAccountControlElement extends
     const actionMenu = this.shadowRoot!.querySelector('cr-action-menu');
     if (!this.shouldShowAvatarRow_ && actionMenu && actionMenu.open) {
       actionMenu.close();
+    }
+
+    const menuAnchor =
+        this.shadowRoot!.querySelector<HTMLElement>('#dropdown-arrow');
+    if (menuAnchor) {
+      menuAnchor.setAttribute('aria-expanded', 'false');
     }
   }
 

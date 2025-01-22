@@ -140,6 +140,7 @@
 <translation id="1415846719612499304">നെറ്റ്‌വർക്ക് ലിസ്റ്റ് കാണിക്കുക. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">അറിയിപ്പ് പ്രവർത്തനം നിർവഹിക്കുന്നതിന് ഉപകരണം അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="1420408895951708260">നൈറ്റ് ലൈറ്റ് മാറ്റുക. <ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">നിർദ്ദേശിച്ച ഗ്രൂപ്പ്</translation>
 <translation id="1426410128494586442">അതെ</translation>
 <translation id="1435537621343861112">കേട്ടെഴുത്ത് ആരംഭിക്കാനാകുന്നില്ല. നിങ്ങളുടെ മൈക്ക് ഓഫാണ്.</translation>
 <translation id="1445031758921122223">ഫെയ്സ് കൺട്രോൾ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്‌തു</translation>
@@ -243,12 +244,14 @@
 <translation id="17722141032474077">കാൽക്കുലേഷനുകൾ</translation>
 <translation id="1774796056689732716">കലണ്ടർ, <ph name="CURRENT_MONTH_YEAR" />, നിലവിൽ <ph name="DATE" /> തിരഞ്ഞെടുത്തിരിക്കുന്നു.</translation>
 <translation id="178347895271755507">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും അറിയിപ്പുകളും കാണുന്നത് സജ്ജീകരിക്കുക</translation>
+<translation id="1785317913592722944">നിർദ്ദേശിച്ച ഗ്രൂപ്പിൽ നിന്ന് ഇനം നീക്കം ചെയ്യുക</translation>
 <translation id="1786487376942610288">'ചിത്രത്തിനുള്ളിൽ ചിത്രം' വിൻഡോയുടെ പരമാവധി വലുപ്പം അല്ലെങ്കിൽ നിലവിലെ വലുപ്പം എന്നിവയ്ക്കിടയിൽ മാറുക</translation>
 <translation id="1787955149152357925">ഓഫാണ്</translation>
 <translation id="1796561540704213354">നിങ്ങൾ സന്ദർശിച്ച പേജുകളും തുറന്ന പേജുകളും ഉൾപ്പെടെയുള്ള വെബ്‌സൈറ്റുകൾ</translation>
 <translation id="179842970735685253">Google-ന്റെ സേവന നിബന്ധനകൾ</translation>
 <translation id="1805407494113167797">ഫോക്കസ് ശബ്ദങ്ങൾ പ്ലേ ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="181103072419391116">സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്</translation>
+<translation id="1815039896005206046">തംബ്‌സ് ഡൗൺ, നിർദ്ദേശിച്ച ഈ ഗ്രൂപ്പ് നിങ്ങൾ ഡിസ്‌ലൈക്ക് ചെയ്യുന്നു എന്ന ഫീഡ്‌ബാക്ക് സമർപ്പിക്കും</translation>
 <translation id="1816896987747843206">ക്യാമറ ആക്‌സസ് ചെയ്യാൻ അനുമതിയുള്ള എല്ലാ ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും ഇത് ക്യാമറയിലേക്ക് ആക്‌സസ് അനുവദിക്കുന്നു</translation>
 <translation id="1823873187264960516">ഇതർനെറ്റ്: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">ലൊക്കേഷൻ ആക്‌സസ് ഓണാക്കുക</translation>
@@ -390,6 +393,7 @@
 <translation id="2369165858548251131">"ഹലോ" എന്നത് ചൈനീസിൽ</translation>
 <translation id="2370971919968699910">ഇതിന് ഡാറ്റാ നിരക്കുകൾ ഈടാക്കിയേക്കാം.
 <ph name="DEVICECOUNT" /> ഉപകരണങ്ങൾ കണക്‌റ്റ് ചെയ്‌തിരിക്കുന്നു.</translation>
+<translation id="2383521554963939360">ആപ്പ്, ടാബ് ഗ്രൂപ്പുകൾ</translation>
 <translation id="2386292613071805067">പേജിലെ എല്ലാം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="2389423187722941333">Gemini ടോഗിൾ ചെയ്യുക</translation>
 <translation id="2392659840443812875">ലഭ്യമായ ഹോട്ട്സ്പോട്ടുകളൊന്നുമില്ല. നിങ്ങളുടെ ഉപകരണം സമീപത്തുണ്ടെന്നും Bluetooth ഓണാക്കിയിട്ടുണ്ടെന്നും ഉറപ്പാക്കുക.</translation>
@@ -920,6 +924,7 @@
 <translation id="4151054805501931758">പോർട്രെയ്റ്റ് ടച്ച് അപ്പ്</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% ബാറ്ററി ചാർജ് ശേഷിക്കുന്നു (ഏകദേശം <ph name="TIME_LEFT" />).
 ബാറ്ററി ലൈഫ് വർദ്ധിപ്പിക്കുന്നതിന് ചില ഫീച്ചറുകൾ നിയന്ത്രിച്ചിരിക്കുന്നു.</translation>
+<translation id="4158003972857765638">പുതിയ ഡെസ്‌ക്കിൽ ഓർഗനൈസ് ചെയ്യുക</translation>
 <translation id="4160919062868802509">ഒന്നിലധികം ഓഡിയോ ഉറവിടങ്ങൾ കണ്ടെത്തി</translation>
 <translation id="416245495747357243">പൂർത്തിയായി!</translation>
 <translation id="4165275524535002941">കേബിൾ, ഡിസ്പ്ലേകളെ പിന്തുണച്ചേക്കില്ല</translation>
@@ -968,6 +973,7 @@
 <translation id="4285498937028063278">പിൻചെയ്യൽ മാറ്റുക</translation>
 <translation id="428715201724021596">പ്രൊഫൈലിലേക്ക് കണക്‌റ്റ് ചെയ്യുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="4287250812980588583">Chrome വിൻഡോ</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{മൈക്കിന്റെ വോളിയം നിയന്ത്രിക്കുന്നത് <ph name="APP_NAME" /> ആണ്}other{മൈക്കിന്റെ വോളിയം നിയന്ത്രിക്കുന്നത് # ആപ്പുകളാണ്}}</translation>
 <translation id="4294319844246081198">ഗുഡ്മോണിംഗ് <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">എല്ലാ <ph name="COUNT" /> അറിയിപ്പുകളും മായ്ക്കുക</translation>
 <translation id="4300272766492248925">ആപ്പ് തുറക്കുക</translation>
@@ -984,6 +990,7 @@
 <translation id="4322742403972824594">'Ctrl + Alt + മുകളിലേയ്ക്കുള്ള അമ്പടയാളം' കീബോഡ് കുറുക്കുവഴി മാറിയിട്ടുണ്ട്. Home കീ ഉപയോഗിക്കാൻ, <ph name="LAUNCHER_KEY_NAME" /> കീ+ ഇടത്തേയ്ക്കുള്ള അമ്പടയാളം അമർത്തുക.</translation>
 <translation id="4324840740119394760"><ph name="APP_NAME" /> എന്നതിനും ക്യാമറ ആക്‌സസ് ചെയ്യാൻ അനുമതിയുള്ള എല്ലാ ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും ഇത് ക്യാമറയിലേക്ക് ആക്‌സസ് അനുവദിക്കുന്നു</translation>
 <translation id="4327147325944669226">ഗെയിം റെക്കോർഡ് ചെയ്യുക</translation>
+<translation id="4329076911374908740">സംരക്ഷിച്ച ഗ്രൂപ്പുകളുടെ പരമാവധി എണ്ണം എത്തി.</translation>
 <translation id="4338109981321384717">മാഗ്‌നിഫൈയിംഗ് ഗ്ലാസ്</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, മ്യൂട്ട് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="4351244548802238354">ഡയലോഗ് അടയ്‌ക്കുക</translation>
@@ -1942,6 +1949,7 @@
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">സൃഷ്‌ടിക്കുക</translation>
 <translation id="7526573455193969409">നെറ്റ്‌വർക്ക് നിരീക്ഷിക്കപ്പെടാം</translation>
+<translation id="7534543072325030705">തംബ്‌സ് അപ്പ്, നിർദ്ദേശിച്ച ഈ ഗ്രൂപ്പ് നിങ്ങൾ ലൈക്ക് ചെയ്യുന്നു എന്ന ഫീഡ്‌ബാക്ക് സമർപ്പിക്കും</translation>
 <translation id="7536035074519304529">IP വിലാസം: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">ഇടതുവശത്തെ വിൻഡോ അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="7543399541175347147">Linux ആപ്പുകളും അദൃശ്യ വിൻഡോകളും നിലവിൽ പിന്തുണയ്ക്കുന്നില്ല. മറ്റ് ആപ്പുകൾ സംരക്ഷിക്കും.</translation>
@@ -2106,6 +2114,7 @@
 <translation id="8004512796067398576">വർദ്ധന</translation>
 <translation id="8005527720597583355">ഫോക്കസ് സെഷൻ ആരംഭിക്കുക</translation>
 <translation id="8015361438441228492">ടാസ്‌ക് എഡിറ്റ് ചെയ്യാനായില്ല.</translation>
+<translation id="8027187124910699148">നിർദ്ദേശിച്ച ഗ്രൂപ്പ് പുനരാരംഭിക്കുക</translation>
 <translation id="802782383769312836">മുമ്പത്തെ ഡെസ്‌ക്: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> ഡെസ്‌ക്കുകളിൽ <ph name="DESK_INDEX" />-ാമത്തേത്.</translation>
 <translation id="8029247720646289474">ഹോട്ട്‌സ്പോട്ട് കണക്‌റ്റ് ചെയ്യാനായില്ല</translation>
 <translation id="8029629653277878342">കൂടുതൽ സുരക്ഷയ്ക്ക് പിൻ അല്ലെങ്കിൽ പാസ്‍വേഡ് ആവശ്യമാണ്</translation>
@@ -2214,6 +2223,7 @@
 <translation id="8426708595819210923">ഗുഡ് ഈവനിംഗ് <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">ക്രമീകരണം</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> മുതൽ <ph name="KEY_TWO" /> വരെ</translation>
+<translation id="8429547770382807369">പിന്നീടുള്ള ആവശ്യത്തിനായി ഗ്രൂപ്പ് സംരക്ഷിക്കുക</translation>
 <translation id="8433186206711564395">നെറ്റ്‍വര്‍ക്ക് ക്രമീകരണങ്ങള്‍</translation>
 <translation id="8433977262951327081">ഷെൽഫിലെ ഇൻപുട്ട് ഓപ്ഷൻ മെനു ബബിൾ കാണുന്നതിനുള്ള കുറുക്കുവഴി മാറ്റി. <ph name="OLD_SHORTCUT" /> എന്നതിന് പകരം <ph name="NEW_SHORTCUT" /> ഉപയോഗിക്കുക.</translation>
 <translation id="8437311513256731931">ഫീഡ്‌ബാക്ക് ടൂൾ തുറക്കുക</translation>
@@ -2222,6 +2232,7 @@
 <translation id="8446884382197647889">കൂടുതലറിയുക</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക അടയ്ക്കുക</translation>
+<translation id="8466665972451889002"><ph name="GROUP_NAME" /> എന്നതിൽ ഇനങ്ങൾ കാണിക്കുക</translation>
 <translation id="8468806060683421065">അവസാന തീയതി <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">സ്‌കെയിൽ ക്രമീകരണം പ്രദർശിപ്പിക്കുക</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> എന്ന സ്ഥാപനം <ph name="FEATURE_NAME" /> എന്ന ഫീച്ചർ <ph name="FEATURE_STATE" />.</translation>
@@ -2244,6 +2255,7 @@
 <translation id="8551588720239073785">തീയതി, സമയ ക്രമീകരണം</translation>
 <translation id="8553395910833293175">എല്ലാ ഡെസ്ക്കുകൾക്കും ഇതിനകം അസൈൻ ചെയ്‌തിട്ടുണ്ട്.</translation>
 <translation id="8555757996376137129">നിലവിലെ ഡെസ്‌ക് നീക്കം ചെയ്യുക</translation>
+<translation id="8558521694042102707">ആളുകളെ കുറിച്ച് ഉൾപ്പെടെ, ജനറേറ്റീവ് AI-യ്ക്ക് തെറ്റുകൾ സംഭവിക്കാം, അതിനാൽ ഇത് വീണ്ടും പരിശോധിക്കുക.</translation>
 <translation id="8559845965695780508"><ph name="USER" /> എഡിറ്റ് ചെയ്‌തത്</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">പരീക്ഷിക്കാവുന്ന ചില നിർദ്ദേശങ്ങൾ ഇതാ</translation>
@@ -2266,6 +2278,7 @@
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="8638637208069328956">മൈക്രോഫോൺ ഓണാക്കുക/ഓഫാക്കുക</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> ശേഷിക്കുന്നു</translation>
+<translation id="8640470573049727749">എല്ലാ ഗ്രൂപ്പ് നിർദ്ദേശങ്ങളും മറയ്‌ക്കുക</translation>
 <translation id="8641510901370802679"><ph name="ANSWER_TYPE" /> വിവരങ്ങൾ കാണിക്കുന്നു</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> ടൈമർ</translation>
 <translation id="8647931990447795414">ഒരു വ്യക്തിയെ ചേർക്കാൻ, നിങ്ങളുടെ Family Link രക്ഷാകർതൃ ആക്‌സസ് കോഡ് നൽകുക</translation>
@@ -2348,6 +2361,7 @@
 <translation id="8905919797434099235">(പേരില്ല)</translation>
 <translation id="890616557918890486">ഉറവിടം മാറ്റുക</translation>
 <translation id="8909138438987180327">ബാറ്ററി <ph name="PERCENTAGE" /> ശതമാനം ഉണ്ട്..</translation>
+<translation id="8916866375277139011"><ph name="GROUP_NAME" /> എന്നതിൽ ഇനങ്ങൾ മറയ്‌ക്കുക</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google അസിസ്‌റ്റന്‍റ് ഈ ഭാഷ സംസാരിക്കില്ല.</translation>
 <translation id="8926951137623668982">ഷെൽഫ് എപ്പോഴും അദൃശ്യമാണ്</translation>

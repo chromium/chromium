@@ -169,6 +169,7 @@ Pirms izrakstāties, uzgaidiet dažas minūtes. Ja izrakstīsieties tūlīt, ši
 <translation id="5639704535586432836">Atveriet sadaļu Iestatījumi &gt; Konfidencialitāte &gt; Kamera &gt; Google Chrome un ieslēdziet kameru.</translation>
 <translation id="5642200033778930880">Google Chrome nevar izmantot kameru dalītā skata režīmā.</translation>
 <translation id="5661521615548540542">Google paroļu pārvaldnieks nevarēja pārbaudīt visas paroles. Vēlāk mēģiniet vēlreiz.</translation>
+<translation id="5681291952421236520">Pārslēdziet Chrome.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Tagad tiek rādīts 1 Chrome logs}zero{Tagad tiek rādīti {count} Chrome logi}one{Tagad tiek rādīts {count} Chrome logs}other{Tagad tiek rādīti {count} Chrome logi}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Chrome iestatīšana par noklusējuma pārlūku</translation>
@@ -204,6 +205,7 @@ Pirms kontu pārslēgšanas uzgaidiet dažas minūtes. Ja pārslēgsiet kontus t
 <translation id="6484712497741564393">Jūs esat pierakstījies kā <ph name="EMAIL" />.
 
 Jūsu dati ir šifrēti, izmantojot ieejas frāzi. Ievadiet ieejas frāzi, lai izmantotu un saglabātu Chrome datus savā Google kontā.</translation>
+<translation id="6533470733797826516">Pierakstieties ātrāk, izmantojot automātisko aizpildi pārlūkā Chrome.</translation>
 <translation id="6545449117344801102">Chrome nosaka adreses un izmanto pakalpojumu Google Maps, lai sniegtu jums norādes un vietējo informāciju.</translation>
 <translation id="6634107063912726160">Ja izrakstīsieties, jaunie dati pārlūkā Chrome netiks sinhronizēti ar jūsu Google kontu. Iepriekš sinhronizētie dati kontā saglabājas.</translation>
 <translation id="6636941099779251629">Saskaņā ar jūsu organizācijas prasībām, lai izmantotu pārlūku Chrome, jums ir jāpierakstās. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>

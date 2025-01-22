@@ -21,15 +21,17 @@ message RotationDebugInfo {
     CONNECTION_ERROR = 1;
     SERVER_ERROR = 2;
     TIMEOUT = 3;
+    SUCCESS_WITH_MISSING_COOKIES = 4;
   }
 
   // Persistent error type that may only be included in the last rotation
   // request ping before terminating the session on the client. Delivery of the
   // last ping request is not guaranteed.
   enum TerminationReason {
+    reserved 2;  // ROTATION_UNEXPECTED_RESPONSE
+
     TERMINATION_REASON_OTHER = 0;
     ROTATION_PERSISTENT_ERROR = 1;
-    ROTATION_UNEXPECTED_RESPONSE = 2;
     ROTATION_CHALLENGE_UNEXPECTED_FORMAT = 3;
     ROTATION_CHALLENGE_LIMIT_EXCEEDED = 4;
     ROTATION_SIGN_CHALLENGE_FAILED = 5;
@@ -50,6 +52,8 @@ message RotationDebugInfo {
     optional Timestamp failure_time = 1;
     optional FailureType type = 2;
     optional bool received_challenge = 3;
+    // Only set if `type` equals to `SUCCESS_WITH_MISSING_COOKIES`.
+    repeated string missing_cookies = 4;
   }
 
   optional Timestamp request_time = 1;

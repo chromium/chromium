@@ -828,7 +828,6 @@
 <translation id="4835385943915508971">Chrome 无权访问请求的资源。</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{将包含 <ph name="TAB_COUNT_ONE" /> 个标签页（颜色为<ph name="COLOR_NAME" />）的标签页分组恢复为新的背景标签页分组。}other{将包含 <ph name="TAB_COUNT_MANY" /> 个标签页（颜色为<ph name="COLOR_NAME" />）的标签页分组恢复为新的背景标签页分组。}}</translation>
 <translation id="4837753911714442426">打开选项以打印网页</translation>
-<translation id="4842092870884894799">目前显示的是密码生成弹出式窗口</translation>
 <translation id="4844633725025837809">为了提高安全性，请先在设备上对密码进行加密，然后再将其保存到 Google 密码管理工具中</translation>
 <translation id="4850886885716139402">查看</translation>
 <translation id="4852014461738377247">正在登录\u2026</translation>
@@ -1003,6 +1002,7 @@
 <translation id="5665379678064389456">在<ph name="APP_NAME" />中创建活动</translation>
 <translation id="5680616253592639556">信息缺失</translation>
 <translation id="5683547024293500885">Chrome 无法检查是否有更新</translation>
+<translation id="5683916195767086779">标签页分组</translation>
 <translation id="5686790454216892815">文件名过长</translation>
 <translation id="5687606994963670306">Chrome 会自动删除保留时长超过 30 天的网站。您再次访问的网站可能会重新出现在列表中。您还可禁止某个网站向您展示建议的广告。详细了解如何<ph name="BEGIN_LINK" />在 Chrome 中管理广告隐私权设置<ph name="END_LINK" />。</translation>
 <translation id="569536719314091526">通过“更多选项”按钮将此页面翻译成任何语言</translation>

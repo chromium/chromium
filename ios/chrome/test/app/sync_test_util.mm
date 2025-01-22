@@ -19,6 +19,7 @@
 #import "base/uuid.h"
 #import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/data_sharing/public/group_data.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/metrics/demographics/demographic_metrics_test_utils.h"
@@ -83,6 +84,17 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateBookmarkServerEntity(
   fake_server::BookmarkEntityBuilder bookmark_builder =
       entity_builder_factory.NewBookmarkEntityBuilder(title);
   return bookmark_builder.BuildBookmark(url);
+}
+
+// Returns CollaborationGroupSpecifics for the given `group_id`
+sync_pb::CollaborationGroupSpecifics MakeCollaborationGroupSpecifics(
+    const data_sharing::GroupId& group_id,
+    const base::Time& changed_at = base::Time::Now()) {
+  sync_pb::CollaborationGroupSpecifics result;
+  result.set_collaboration_id(group_id.value());
+  result.set_changed_at_timestamp_millis_since_unix_epoch(
+      changed_at.InMillisecondsSinceUnixEpoch());
+  return result;
 }
 
 }  // namespace
@@ -551,6 +563,26 @@ void DeleteTabOrGroupFromFakeServer(const base::Uuid& uuid) {
       return;
     }
   }
+}
+
+void AddColloaborationGroupToFakeServer(const std::string& collaboration_id) {
+  const data_sharing::GroupId group_id =
+      data_sharing::GroupId(collaboration_id);
+  const sync_pb::CollaborationGroupSpecifics collab_specifics =
+      MakeCollaborationGroupSpecifics(group_id, base::Time::Now());
+
+  sync_pb::EntitySpecifics entity_specifics;
+  *entity_specifics.mutable_collaboration_group() = collab_specifics;
+
+  std::string client_tag = collab_specifics.collaboration_id();
+  int64_t creation_time =
+      collab_specifics.changed_at_timestamp_millis_since_unix_epoch();
+  int64_t update_time = creation_time;
+
+  gSyncFakeServer->InjectEntity(
+      syncer::PersistentUniqueClientEntity::CreateFromSharedSpecificsForTesting(
+          "non_unique_name", client_tag, entity_specifics, creation_time,
+          update_time, collaboration_id));
 }
 
 }  // namespace chrome_test_util

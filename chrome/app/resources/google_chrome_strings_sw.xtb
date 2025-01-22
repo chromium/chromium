@@ -59,7 +59,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1698376642261615901">Google Chrome ni kivinjari cha wavuti kinachoendesha kurasa za wavuti na programu kwa kasi ya umeme. Ni ya kasi, thabiti, na rahisi kutumia. Vinjari wavuti kwa usalama zaidi kwa kinga dhidi ya programu hasidi na hadaa iliyojengwa ndani ya Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome itafunguka upya ndani ya saa moja}other{Chrome itafunguka upya ndani ya saa #}}</translation>
 <translation id="1722488837206509557">Hii itakuruhusu kuchagua kwenye vifaa vinavyopatikana na kuonyesha maudhui kwenye vifaa hivyo.</translation>
-<translation id="1734234790201236882">Chrome itahifadhi nenosiri hili kwenye Akaunti yako ya Google. Hutahitaji kulikumbuka.</translation>
 <translation id="1786003790898721085">Hakikisha kwamba umeingia katika akaunti kwenye Chrome kwa kutumia <ph name="TARGET_DEVICE_NAME" /> yako kisha ujaribu kutuma tena.</translation>
 <translation id="1786044937610313874">Njia za mkato hufunguka katika Chrome</translation>
 <translation id="178701303897325119">Kiendelezi hiki hakitumiki tena. Badala yake, Chrome inapendekeza ukiondoe.</translation>
@@ -327,6 +326,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="4990567037958725628">Kanari ya Google Chrome</translation>
 <translation id="4997044641749333913">Chrome inaweza kufanya vichupo hivi visitumike ili kuboresha hali yako ya kuvinjari na kutekeleza shughuli kwa haraka.</translation>
 <translation id="5003967926796347400">Bofya “Kidhibiti cha Manenosiri cha Google”</translation>
+<translation id="5114340746415930644">Weka kauli yako ya siri ili utumie na uhifadhi data ya Chrome katika akaunti yako, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Ingia katika akaunti kwenye Chrome unapoingia kwenye akaunti za huduma nyingine za Google</translation>
 <translation id="5126049312684316860">Chrome hupakia mapema kurasa nyingi zaidi ambazo unaweza kutembelea, ili zipakie kwa haraka zaidi unapozitembelea</translation>
 <translation id="5132929315877954718">Gundua programu, michezo, viendelezi na mandhari bora ya Google Chrome.</translation>
@@ -478,9 +478,6 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="7024536598735240744">Hitilafu ya kutekeleza kiendelezi cha ndani: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Usakinishaji Umesimamishwa.</translation>
 <translation id="7025800014283535195">Unaweza kubadilisha kati ya wasifu mmoja wa Chrome na mwingine hapa</translation>
-<translation id="7036251913954633326">Iwapo unataka kutumia akaunti hii mara moja tu, unaweza kutumia kipengele cha <ph name="GUEST_LINK_BEGIN" />Matumizi ya Wageni<ph name="GUEST_LINK_END" /> katika kivinjari cha Chrome. Iwapo unataka kuongeza akaunti ya mtu mwingine, <ph name="LINK_BEGIN" />ongeza mtu mpya<ph name="LINK_END" /> kwenye <ph name="DEVICE_TYPE" /> yako.
-
-Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti hii. Unaweza kudhibiti Akaunti zako za Google katika <ph name="SETTINGS_LINK_BEGIN" />Mipangilio<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7048502283602470098">Gundua AI</translation>
 <translation id="7059914902409643750">Weka Mipangilio ya Chrome Upendavyo</translation>
 <translation id="7071827361006050863">Chrome itafuta data ya kuvinjari hivi karibuni</translation>

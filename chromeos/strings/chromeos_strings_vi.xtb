@@ -564,6 +564,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> bài đánh giá)</translation>
 <translation id="3748026146096797577">Chưa được kết nối</translation>
 <translation id="3749289110408117711">Tên tệp</translation>
+<translation id="3763034084412196440">Điều chỉnh âm lượng</translation>
 <translation id="3767737419527918477">Tìm tệp ghi âm</translation>
 <translation id="3771294271822695279">Tệp video</translation>
 <translation id="3780740315729837296">Chỉ định một phím trên bàn phím</translation>
@@ -1218,6 +1219,7 @@
 <translation id="6747035363363040417">trung tính</translation>
 <translation id="6747215703636344499">Đã dừng – Khay giấy ra đã đầy</translation>
 <translation id="6749473226660745022">Ảnh</translation>
+<translation id="6752960629591143793">Chọn và tải ngôn ngữ của bản chép lời xuống trong phần Cài đặt hoặc trong trình đơn <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="6753452347192452143">Thiết bị là máy tính.</translation>
 <translation id="6756731097889387912">Không thể hủy quá trình quét</translation>
 <translation id="6760706756348334449">Giảm âm lượng</translation>

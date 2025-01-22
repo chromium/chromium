@@ -56,7 +56,6 @@
 <translation id="1698376642261615901">Google Chrome – veb sahifalarni va ilovalarni bir necha soniyada ochadigan brauzer. U tez, barqaror va undan foydalanish oson. Google Chrome brauzerining firibgarlik va zararli dasturlardan saqlovchi ichki o‘rnatilgan himoya vositasi Internetdagi faoliyatni maksimal havfsizlik bilan ta’minlaydi.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome bir soatdan keyin qayta ishga tushadi}other{Chrome # soatdan keyin qayta ishga tushadi}}</translation>
 <translation id="1722488837206509557">Bu mavjud qurilmalardan birini tanlash va undagi kontentni chiqarish imkonini beradi.</translation>
-<translation id="1734234790201236882">Chrome bu parolni Google hisobingizga saqlaydi. Uni eslab qolishingiz shart emas.</translation>
 <translation id="1786003790898721085"><ph name="TARGET_DEVICE_NAME" /> qurilmangizda Chrome hisobingizga kiring va keyin qaytadan yuborishga urining.</translation>
 <translation id="1786044937610313874">Yorliqlar Chrome ichida ochiladi</translation>
 <translation id="178701303897325119">Bu kengaytma endi dastaklanmaydi. Chrome uni olib tashlashni tavsiya qiladi.</translation>
@@ -475,9 +474,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7024536598735240744">Arxivdan chiqarish xatosi: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Oʻrnatish toʻxtatildi.</translation>
 <translation id="7025800014283535195">Bu yerda Chrome profillarini almashtirish mumkin</translation>
-<translation id="7036251913954633326">Bu hisobdan bir marta foydalanish uchun Chrome brauzerida <ph name="GUEST_LINK_BEGIN" />Mehmon rejimidan<ph name="GUEST_LINK_END" /> foydalanishingiz mumkin. Biror kishi uchun hisob qoʻshmoqchi boʻlsangiz, <ph name="LINK_BEGIN" />yangi shaxsni<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> qurilmasiga qoʻshing.
-
-Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google hisoblarini <ph name="SETTINGS_LINK_BEGIN" />Sozlamalar<ph name="SETTINGS_LINK_END" /> orqali boshqarish mumkin.</translation>
 <translation id="7048502283602470098">AI bilan tanishuv</translation>
 <translation id="7059914902409643750">Chrome brauzerini oʻzingizga moslashtiring</translation>
 <translation id="7071827361006050863">Chrome tez orada brauzer maʼlumotlarini oʻchirib tashlaydi</translation>

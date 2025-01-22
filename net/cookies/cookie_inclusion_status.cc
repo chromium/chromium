@@ -368,20 +368,20 @@ std::string CookieInclusionStatus::GetDebugString() const {
 }
 
 bool CookieInclusionStatus::HasExactlyExclusionReasonsForTesting(
-    const std::vector<ExclusionReason>& reasons) const {
+    ExclusionReasonBitset reasons) const {
   CookieInclusionStatus expected = MakeFromReasonsForTesting(reasons);
   return expected.exclusion_reasons_ == exclusion_reasons_;
 }
 
 bool CookieInclusionStatus::HasExactlyWarningReasonsForTesting(
-    const std::vector<WarningReason>& reasons) const {
+    WarningReasonBitset reasons) const {
   CookieInclusionStatus expected = MakeFromReasonsForTesting({}, reasons);
   return expected.warning_reasons_ == warning_reasons_;
 }
 
 CookieInclusionStatus CookieInclusionStatus::MakeFromReasonsForTesting(
-    const std::vector<ExclusionReason>& exclusions,
-    const std::vector<WarningReason>& warnings,
+    ExclusionReasonBitset exclusions,
+    WarningReasonBitset warnings,
     ExemptionReason exemption) {
   CookieInclusionStatus status;
   for (ExclusionReason reason : exclusions) {

@@ -1059,7 +1059,7 @@ Iban FormDataImporter::ExtractIbanFromForm(const FormStructure& form) {
     }
     FieldType field_type = field->Type().GetStorableType();
     if (field_type == IBAN_VALUE && Iban::IsValid(value)) {
-      candidate_iban.SetInfo(IBAN_VALUE, value, client_->GetAppLocale());
+      candidate_iban.set_value(value);
       break;
     }
   }

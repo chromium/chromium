@@ -85,6 +85,7 @@
 <translation id="1158211211994409885"><ph name="HOST_NAME" />-მა მოულოდნელად გაწყვიტა კავშირი.</translation>
 <translation id="1160009341934077418">ფასის ისტორია ვებში</translation>
 <translation id="1161325031994447685">Wi-Fi-სთან ხელახლა დაკავშირება</translation>
+<translation id="1161663161838091892">გასაგრძელებლად დაასინქრონეთ ჩანართები და ისტორია</translation>
 <translation id="1163507966173624031">ფოლკლორი და ტრადიციული მუსიკა</translation>
 <translation id="11635448457105324">მისამართების მართვის ღილაკი, მისამართების Chrome-ის პარამეტრებიდან დასამატებლად და სამართავად გაააქტიურეთ ის</translation>
 <translation id="1165039591588034296">შეცდომა</translation>
@@ -1105,6 +1106,7 @@
 <translation id="297173220375858963">დესკტოპის საგამომცემლო სისტემა</translation>
 <translation id="2972581237482394796">&amp;გამეორება</translation>
 <translation id="2974468223369775963">შეუძლებელია ამ IBAN-ის თქვენს Google ანგარიშში შენახვა. სანაცვლოდ ის შენახულია Chrome-ში, ამ მოწყობილობაზე. Chrome კვლავ გკითხავთ, როცა შემდეგ ჯერზე ამ IBAN-ს გამოიყენებთ.</translation>
+<translation id="297667759942911166">ჩანართების ჯგუფებში თანამშრომლობა</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, ამჟამად არჩეულია. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">თქვენი კლავიატურის დაბლოკვა და გამოყენება</translation>
 <translation id="2978824962390592855">ოპერა</translation>
@@ -2064,6 +2066,7 @@
 <translation id="4661556981531699496">შინაური და გარეული ცხოველები</translation>
 <translation id="4661868874067696603">ყიდვის მეტი ვარიანტის ძიება</translation>
 <translation id="4663373278480897665">კამერა დაშვებულია</translation>
+<translation id="4664084870155869900">შემდეგ ჯერზე ავტომატურად შეავსეთ. ბარათი შენახულია თქვენს მოწყობილობაში.</translation>
 <translation id="466561305373967878">სამაგიდო თამაშები</translation>
 <translation id="4668929960204016307">.</translation>
 <translation id="4670064810192446073">ვირტუალური რეალობა</translation>
@@ -2673,6 +2676,7 @@
 <translation id="573555826359077410">ფორმის შექმნის ღილაკი, Google Forms-ში ახალი ფორმის სწრაფად შესაქმნელად გაააქტიურეთ ის</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{შეინახეთ ბარათი თქვენს Google ანგარიშში}other{შეინახეთ ბარათები თქვენს Google ანგარიშში}}</translation>
 <translation id="5738385766833540397">მართეთ, როგორ იღებთ გაფრთხილებებს თქვენ მიერ თვალმიდევნებული პროდუქტების ფასების კლების შესახებ</translation>
+<translation id="573974402615125334">ჩანართების ჯგუფების გაზიარების, მათში შეერთებისა და თანამშრომლობისთვის საჭიროა თქვენი ისტორიისა და ჩანართების დასინქრონება</translation>
 <translation id="5740911612628596808">კონვერტი C9</translation>
 <translation id="5742806904559466333">ბარები, კლუბები და ღამის ცხოვრება</translation>
 <translation id="5743684619253032786">ფრჩხილების მოვლის საშუალებები</translation>
@@ -3872,6 +3876,7 @@
 <translation id="7865448901209910068">საუკეთესო სიჩქარე</translation>
 <translation id="7870281855125116701">მოიძებნა ფასდაკლება</translation>
 <translation id="7871445724586827387">თქვენი Google ანგარიშის პაროლის შეცვლა</translation>
+<translation id="787226752901403048">შედით Chrome-ში, რომ გააზიაროთ ჩანართების ჯგუფები, შეუერთდეთ მათ და ერთად იმუშაოთ იდეებზე</translation>
 <translation id="7877007680666472091">დაცული კონტენტის ID-ები</translation>
 <translation id="7878562273885520351">შესაძლოა თქვენს პაროლს საფრთხე ემუქრებოდეს</translation>
 <translation id="7882421473871500483">ყავისფერი</translation>
@@ -4326,6 +4331,7 @@
 <translation id="8702965365666568344">სამონტაჟო ლენტი</translation>
 <translation id="8703575177326907206">თქვენი კავშირი <ph name="DOMAIN" />-თან არ არის დაშიფრული.</translation>
 <translation id="8705331520020532516">სერიული ნომერი</translation>
+<translation id="8706806585855470492">თქვენ შეძლებთ ჩანართების ჯგუფების გაზიარებას, მათში შეერთებას და თანამშრომლობას</translation>
 <translation id="8708134712139312373">შეუძლია Bluetooth მოწყობილობებთან დაკავშირების თხოვნა</translation>
 <translation id="8710842507289500830">შრიფტის სტილი</translation>
 <translation id="8712637175834984815">კარგი</translation>
@@ -4468,6 +4474,7 @@
 <translation id="8975263830901772334">თქვენ მიერ ბეჭდვაზე გაშვებული ფაილების სახელები</translation>
 <translation id="8982884016487650216">PDF-ის ჩატვირთვა დასრულდა</translation>
 <translation id="8983369100812962543">ახლა შეგიძლიათ ფანჯრის ზომის შეცვლა</translation>
+<translation id="8985112471026018799">შეინახეთ ბარათი სწრაფი ანგარიშსწორებისთვის</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ში თქვენი დათვალიერების ისტორიის სანახავად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="8987663052629670333">ფოტოების ბეჭდვის მომსახურება</translation>
 <translation id="8987927404178983737">თვე</translation>
@@ -4534,6 +4541,7 @@
 <translation id="9090993752571911635">ინტერნეტპროვაიდერები</translation>
 <translation id="9093723786115107672">ღამის საცვლები</translation>
 <translation id="9094544726794842788">ქვემოთ დაწეული ცერის არჩევის შემთხვევაში გაიხსნება ფორმა, რომელშიც დეტალურად უნდა მიუთითოთ, რატომ არ მოგწონთ ეს შედეგები</translation>
+<translation id="9094809883254050729">შემდეგ ჯერზე ავტომატურად შეავსეთ. ბარათი შენახვისას დაიშიფრება.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS პარამეტრებიდან Chrome სისტემის ნაგულისხმევ ბრაუზერად რომ დააყენოთ, დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="9101450247048146228">კამერის გამოყენება და მოძრაობა (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">ლანგარი 1</translation>

@@ -33,6 +33,8 @@
 #import "ui/base/l10n/l10n_util.h"
 
 using chrome_test_util::CreateTabGroupAtIndex;
+using chrome_test_util::DeleteGroupButton;
+using chrome_test_util::DeleteGroupConfirmationButton;
 using chrome_test_util::ManageGroupButton;
 using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::NavigationBarSaveButton;
@@ -70,6 +72,34 @@ id<GREYMatcher> FakeJoinFlowView() {
 // Matcher for the face pile button.
 id<GREYMatcher> FacePileButton() {
   return grey_accessibilityID(kTabGroupFacePileButtonIdentifier);
+}
+
+// Matcher for the leave shared group button.
+id<GREYMatcher> LeaveSharedGroupButton() {
+  return chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+      IDS_IOS_CONTENT_CONTEXT_LEAVESHAREDGROUP);
+}
+
+// Matcher for the leave shared group button confirmation.
+id<GREYMatcher> LeaveSharedGroupConfirmationButton() {
+  return grey_allOf(grey_accessibilityID([l10n_util::GetNSString(
+                        IDS_IOS_CONTENT_CONTEXT_LEAVESHAREDGROUP)
+                        stringByAppendingString:@"AlertAction"]),
+                    grey_interactable(), nil);
+}
+
+// Matcher for the delete shared group button.
+id<GREYMatcher> DeleteSharedGroupButton() {
+  return chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+      IDS_IOS_CONTENT_CONTEXT_DELETESHAREDGROUP);
+}
+
+// Matcher for the delete shared group button confirmation.
+id<GREYMatcher> DeleteSharedConfirmationButton() {
+  return grey_allOf(grey_accessibilityID([l10n_util::GetNSString(
+                        IDS_IOS_CONTENT_CONTEXT_DELETESHAREDGROUP)
+                        stringByAppendingString:@"AlertAction"]),
+                    grey_interactable(), nil);
 }
 
 // Returns the completely configured AppLaunchConfiguration (i.e. setting all
@@ -368,6 +398,99 @@ void ShareGroupAtIndex(int index) {
                  grey_accessibilityLabel(l10n_util::GetNSString(
                      IDS_IOS_SHARED_GROUP_USER_EDUCATION_IPH_FOREGROUND))]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Checks opening the Share flow from the Tab Grid and actually sharing. Then
+// deleting the shared group as owner.
+- (void)testShareGroupAndDeleteUsingContextMenus {
+  // Open the tab grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Creates a tab group with an item at 0.
+  CreateTabGroupAtIndex(0, kGroup1Name);
+
+  // Share the first group.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
+      performAction:grey_tap()];
+
+  // Verify that this opened the fake Share flow.
+  [[EarlGrey selectElementWithMatcher:FakeShareFlowView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Actually share the group.
+  [[EarlGrey selectElementWithMatcher:NavigationBarSaveButton()]
+      performAction:grey_tap()];
+
+  // Verify that it closed the Share flow.
+  [[EarlGrey selectElementWithMatcher:FakeShareFlowView()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Long press the group.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_longPress()];
+
+  // Verify that the leave button is not available.
+  [[EarlGrey selectElementWithMatcher:LeaveSharedGroupButton()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Delete the shared group.
+  [[EarlGrey selectElementWithMatcher:DeleteSharedGroupButton()]
+      performAction:grey_tap()];
+  // Tap on the delete button again to confirm the deletion.
+  [[EarlGrey selectElementWithMatcher:DeleteSharedConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Check that the group is deleted.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:TabGridGroupCellAtIndex(0)];
+}
+
+// Checks joining a group. Then leaving the shared group as member.
+- (void)testJoinGroupAndLeaveUsingContextMenus {
+  [TabGroupSyncEarlGreyAppInterface mockSharedEntitiesPreview];
+  GURL joinGroupURL = data_sharing::GetDataSharingUrl(data_sharing::GroupToken(
+      data_sharing::GroupId("resources%2F3be"), "CggHBicxA_slvx"));
+  [ChromeEarlGrey loadURL:joinGroupURL waitForCompletion:NO];
+
+  // Verify that it opened the Join flow.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:FakeJoinFlowView()];
+
+  // Join the group.
+  [[EarlGrey selectElementWithMatcher:NavigationBarSaveButton()]
+      performAction:grey_tap()];
+
+  // Verify that it closed the Join flow.
+  [[EarlGrey selectElementWithMatcher:FakeJoinFlowView()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Open the tab grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Check that the group is loaded.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGridGroupCellAtIndex(1)];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Long press the group.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(1)]
+      performAction:grey_longPress()];
+
+  // Verify that the delete button is not available.
+  [[EarlGrey selectElementWithMatcher:DeleteGroupButton()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Leave the shared group.
+  [[EarlGrey selectElementWithMatcher:LeaveSharedGroupButton()]
+      performAction:grey_tap()];
+  // Tap on the leave button confirmation.
+  [[EarlGrey selectElementWithMatcher:LeaveSharedGroupConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Check that the group is removed locally.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:TabGridGroupCellAtIndex(1)];
 }
 
 @end

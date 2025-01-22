@@ -76,7 +76,8 @@ size_t MaskedDomainListManager::EstimateMemoryUsage() const {
 
 bool MaskedDomainListManager::Matches(
     const GURL& request_url,
-    const net::NetworkAnonymizationKey& network_anonymization_key) const {
+    const net::NetworkAnonymizationKey& network_anonymization_key,
+    MdlType mdl_type) const {
   std::optional<net::SchemefulSite> top_frame_site =
       network_anonymization_key.GetTopFrameSite();
 
@@ -101,7 +102,7 @@ bool MaskedDomainListManager::Matches(
     case IpProtectionProxyBypassPolicy::kNone:
     case IpProtectionProxyBypassPolicy::kExclusionList:
       match_result = url_matcher_with_bypass_.Matches(
-          request_url_ref, top_frame_site, MdlType::kDefault,
+          request_url_ref, top_frame_site, mdl_type,
           /*skip_bypass_check=*/true);
       break;
     case IpProtectionProxyBypassPolicy::kFirstPartyToTopLevelFrame:
@@ -139,7 +140,7 @@ bool MaskedDomainListManager::Matches(
       // opaque), we should skip the first party check and match only on the
       // request_url.
       match_result = url_matcher_with_bypass_.Matches(
-          request_url_ref, top_frame_site, MdlType::kDefault,
+          request_url_ref, top_frame_site, mdl_type,
           network_anonymization_key.IsTransient());
       break;
   }

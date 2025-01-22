@@ -828,7 +828,6 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4835385943915508971">Chrome nu are acces la resursa solicitată.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Restabilește grupul de <ph name="TAB_COUNT_ONE" /> filă de culoare <ph name="COLOR_NAME" /> ca pe un nou grup de file din fundal.}few{Restabilește grupul de <ph name="TAB_COUNT_MANY" /> file de culoare <ph name="COLOR_NAME" /> ca pe un nou grup de file din fundal.}other{Restabilește grupul de <ph name="TAB_COUNT_MANY" /> de file de culoare <ph name="COLOR_NAME" /> ca pe un nou grup de file din fundal.}}</translation>
 <translation id="4837753911714442426">Deschide opțiunile pentru a printa pagina</translation>
-<translation id="4842092870884894799">Fereastra pop-up pentru generarea parolelor este afișată</translation>
 <translation id="4844633725025837809">Pentru siguranță suplimentară, criptează parolele pe dispozitiv înainte să se salveze în Managerul de parole Google</translation>
 <translation id="4850886885716139402">Afișează</translation>
 <translation id="4852014461738377247">Se conectează\u2026</translation>
@@ -1003,6 +1002,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="5665379678064389456">Creează un eveniment în <ph name="APP_NAME" /></translation>
 <translation id="5680616253592639556">Informații lipsă</translation>
 <translation id="5683547024293500885">Chrome nu poate căuta actualizări</translation>
+<translation id="5683916195767086779">Grup de file</translation>
 <translation id="5686790454216892815">Numele fișierului este prea lung</translation>
 <translation id="5687606994963670306">Chrome șterge automat site-urile mai vechi de 30 de zile. Un site pe care îl accesezi din nou poate să reapară în listă. Sau poți să nu permiți unui site să îți sugereze anunțuri. Află mai multe despre <ph name="BEGIN_LINK" />gestionarea confidențialității anunțurilor în Chrome<ph name="END_LINK" />.</translation>
 <translation id="569536719314091526">Tradu această pagină în orice limbă folosind butonul Mai multe opțiuni</translation>

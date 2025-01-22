@@ -81,7 +81,7 @@ export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './peop
 // </if>
 export {SettingsPeoplePageElement} from './people_page/people_page.js';
 // <if expr="not chromeos_ash">
-export {MAX_SIGNIN_PROMO_IMPRESSION, SettingsSyncAccountControlElement} from './people_page/sync_account_control.js';
+export {SettingsSyncAccountControlElement} from './people_page/sync_account_control.js';
 // </if>
 export {BATTERY_SAVER_MODE_PREF, SettingsBatteryPageElement} from './performance_page/battery_page.js';
 export {MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF, MEMORY_SAVER_MODE_PREF, SettingsMemoryPageElement} from './performance_page/memory_page.js';

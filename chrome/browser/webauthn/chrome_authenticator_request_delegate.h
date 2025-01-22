@@ -84,10 +84,6 @@ class ChromeAuthenticatorRequestDelegate
     virtual void OnPreTransportAvailabilityEnumerated(
         ChromeAuthenticatorRequestDelegate* delegate) {}
 
-    // Called when ShowUI() is first invoked. The UI might not yet actually show
-    // at this point, depending on which step the model is at; see UIShown().
-    virtual void UIReady(ChromeAuthenticatorRequestDelegate* delegate) {}
-
     // Called when the UI dialog is shown.
     virtual void UIShown(ChromeAuthenticatorRequestDelegate* delegate) {}
 
@@ -333,11 +329,6 @@ class ChromeAuthenticatorRequestDelegate
   // state to load from the disk.
   std::unique_ptr<device::FidoRequestHandlerBase::TransportAvailabilityInfo>
       pending_transport_availability_info_;
-
-  std::optional<device::FidoRequestType> request_type_;
-
-  std::optional<device::UserVerificationRequirement>
-      user_verification_requirement_;
 
   // This holds a `TrustedVaultConnection` which will be set on
   // `enclave_controller_` when it is created.

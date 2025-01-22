@@ -1602,14 +1602,11 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   CHECK(rgb_shared_image);
 
   // On the source Raster context, do the YUV->RGB conversion.
-  gpu::MailboxHolder dest_holder;
-  dest_holder.mailbox = rgb_shared_image->mailbox();
-  dest_holder.texture_target = GL_TEXTURE_2D;
   // Pass the rgb sync token here to be waited upon before performing raster
   // tasks.
-  dest_holder.sync_token = rgb_sync_token;
   internals::ConvertYuvVideoFrameToRgbSharedImage(
-      video_frame.get(), raster_context_provider, dest_holder,
+      video_frame.get(), raster_context_provider, rgb_shared_image->mailbox(),
+      rgb_sync_token,
       /*use_visible_rect=*/false, yuv_cache_.yuv_shared_image_cache.get());
 
   gpu::SyncToken post_conversion_sync_token;
@@ -1881,7 +1878,8 @@ bool PaintCanvasVideoRenderer::CanUseCopyVideoFrameToSharedImage(
 gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
     viz::RasterContextProvider* raster_context_provider,
     scoped_refptr<VideoFrame> video_frame,
-    const gpu::MailboxHolder& destination,
+    const gpu::Mailbox& dest_mailbox,
+    const gpu::SyncToken& dest_sync_token,
     bool use_visible_rect) {
   auto* ri = raster_context_provider->RasterInterface();
 
@@ -1890,16 +1888,15 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
     auto source_rect = use_visible_rect ? video_frame->visible_rect()
                                         : gfx::Rect(video_frame->coded_size());
     ri->WaitSyncTokenCHROMIUM(video_frame->acquire_sync_token().GetConstData());
-    ri->WaitSyncTokenCHROMIUM(destination.sync_token.GetConstData());
-    ri->CopySharedImage(video_frame->shared_image()->mailbox(),
-                        destination.mailbox, 0, 0, source_rect.x(),
-                        source_rect.y(), source_rect.width(),
-                        source_rect.height());
+    ri->WaitSyncTokenCHROMIUM(dest_sync_token.GetConstData());
+    ri->CopySharedImage(video_frame->shared_image()->mailbox(), dest_mailbox, 0,
+                        0, source_rect.x(), source_rect.y(),
+                        source_rect.width(), source_rect.height());
   } else {
     // TODO(vasilyt): Add caching support
     internals::ConvertYuvVideoFrameToRgbSharedImage(
-        video_frame.get(), raster_context_provider, destination,
-        use_visible_rect,
+        video_frame.get(), raster_context_provider, dest_mailbox,
+        dest_sync_token, use_visible_rect,
         /*shared_image_cache=*/nullptr);
   }
 

@@ -828,7 +828,6 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4835385943915508971">Chrome n'a pas accès à la ressource demandée.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Restaurer le groupe d'onglets de <ph name="TAB_COUNT_ONE" /> onglet, de couleur <ph name="COLOR_NAME" />, en tant que nouveau groupe d'onglets en arrière-plan.}one{Restaurer le groupe d'onglets de <ph name="TAB_COUNT_MANY" /> onglet, de couleur <ph name="COLOR_NAME" />, en tant que nouveau groupe d'onglets en arrière-plan.}other{Restaurer le groupe d'onglets de <ph name="TAB_COUNT_MANY" /> onglets, de couleur <ph name="COLOR_NAME" />, en tant que nouveau groupe d'onglets en arrière-plan.}}</translation>
 <translation id="4837753911714442426">Ouvrir les options d'impression de la page</translation>
-<translation id="4842092870884894799">Affichage de la fenêtre contextuelle de génération de mot de passe</translation>
 <translation id="4844633725025837809">Pour renforcer la sécurité, chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le gestionnaire de mots de passe Google</translation>
 <translation id="4850886885716139402">Affichage</translation>
 <translation id="4852014461738377247">Connexion en cours…</translation>
@@ -1003,6 +1002,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5665379678064389456">Créer un événement dans <ph name="APP_NAME" /></translation>
 <translation id="5680616253592639556">Renseignements manquants</translation>
 <translation id="5683547024293500885">Chrome ne peut pas vérifier la présence de mises à jour</translation>
+<translation id="5683916195767086779">Groupe d'onglets</translation>
 <translation id="5686790454216892815">Nom de fichier trop long</translation>
 <translation id="5687606994963670306">Chrome supprime automatiquement les sites datant de plus de 30 jours. Un site que vous revisitez pourrait réapparaître dans la liste. Vous avez également la possibilité d'empêcher un site de vous suggérer des annonces. Apprenez-en plus sur comment <ph name="BEGIN_LINK" />gérer la confidentialité des annonces dans Chrome<ph name="END_LINK" />.</translation>
 <translation id="569536719314091526">Utilisez le bouton Plus d'options pour traduire cette page vers n'importe quelle langue</translation>

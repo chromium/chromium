@@ -4363,9 +4363,16 @@ void NavigatorAuction::AuctionHandle::AuctionComplete(
     base::UmaHistogramTimes(uma_prefix + "TimeToResolve",
                             end_time - start_time);
 
+    // If we're still waiting on some parameters to resolve, then there is no
+    // time between inputs resolved and auction resolving.
+    base::TimeTicks input_time =
+        time_of_final_input_promise_resolved_.has_value()
+            ? *time_of_final_input_promise_resolved_
+            : end_time;
+
     base::UmaHistogramTimes(
         uma_prefix + "TimeFromInputsResolvedToAuctionResolved",
-        end_time - *time_of_final_input_promise_resolved_);
+        end_time - input_time);
   }
 }
 
@@ -4529,6 +4536,12 @@ ScriptPromise<AdAuctionData> NavigatorAuction::getInterestGroupAdAuctionData(
     if (!config->hasSeller() && !config->hasSellers()) {
       exception_state.ThrowTypeError(
           "One of seller or sellers for AdAuctionDataConfig must be provided.");
+      return EmptyPromise();
+    }
+    if (config->hasCoordinatorOrigin() && config->hasSellers()) {
+      exception_state.ThrowTypeError(
+          "Cannot provide both coordinatorOrigin and sellers for "
+          "AdAuctionDataConfig.");
       return EmptyPromise();
     }
   }

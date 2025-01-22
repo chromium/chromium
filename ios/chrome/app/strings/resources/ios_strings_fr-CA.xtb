@@ -543,6 +543,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3409785640040772790">Google Maps</translation>
 <translation id="3416023309465857378">25 octobre 2023</translation>
 <translation id="3435738964857648380">Sécurité</translation>
+<translation id="343850944564645513">Sites les plus visités</translation>
 <translation id="3443810440409579745">Onglet reçu.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">En savoir plus sur Lentille Google</translation>
@@ -657,6 +658,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3967327056943561740">Favoris</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
 <translation id="3982893814825393515">Signaler un problème…</translation>
+<translation id="3984527584375648997">Masquer « Sites les plus visités »</translation>
 <translation id="398604237578616937">Connecté en tant que <ph name="USER_EMAIL" />. Ouvrez le menu du compte.</translation>
 <translation id="3986739045730058129">Accéder à l'onglet</translation>
 <translation id="3992684624889376114">À propos de cette page</translation>
@@ -834,7 +836,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4764612367328936189">Votre organisation vous autorise à vous connecter à certains comptes seulement. Les comptes qui ne sont pas autorisés seront masqués. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Découvrir et suivre</translation>
 <translation id="4769198578611055647">Vous aide à accéder aux clés d'accès enregistrées sur n'importe quel appareil</translation>
-<translation id="4777866634702576038">Supprimer le groupe d'onglets?</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Ouvrir en mode de navigation privée?</translation>
 <translation id="4792385443586519711">Nom de l'entreprise</translation>
@@ -1469,6 +1470,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="746872191028309255">Magasinez ce que vous voyez avec votre appareil photo ou dans votre galerie de photos.</translation>
 <translation id="7471557245617580330">Créer un onglet</translation>
 <translation id="7473891865547856676">Non, merci</translation>
+<translation id="7476548258282096076">Cette carte affiche vos sites les plus visités.</translation>
 <translation id="747956641630879526">Masquer cette carte désactivera le suivi des colis et retirera toutes vos données</translation>
 <translation id="7484645889979462775">Jamais pour ce site</translation>
 <translation id="7486006552035434095">Garder vos appareils synchronisés</translation>

@@ -169,6 +169,7 @@
 <translation id="5639704535586432836">સેટિંગ &gt; પ્રાઇવસી &gt; કૅમેરા &gt; Google Chrome ખોલો અને કૅમેરા ચાલુ કરો.</translation>
 <translation id="5642200033778930880">Google Chrome, વિભાજિત વ્યૂ મોડમાં તમારા કૅમેરાનો ઉપયોગ કરી શકતુંં નથી</translation>
 <translation id="5661521615548540542">Google Password Manager બધા પાસવર્ડ ચેક કરી શક્યું નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
+<translation id="5681291952421236520">Chromeને ટૉગલ કરો</translation>
 <translation id="5690398455483874150">{count,plural, =1{હમણાં 1 Chrome વિન્ડો બતાવવામાં આવી રહી છે}one{હમણાં {count} Chrome વિન્ડો બતાવવામાં આવી રહી છે}other{હમણાં {count} Chrome વિન્ડો બતાવવામાં આવી રહી છે}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Chromeને તમારા ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
@@ -204,6 +205,7 @@
 <translation id="6484712497741564393"><ph name="EMAIL" /> તરીકે સાઇન ઇન થયાં.
 
 તમારો ડેટા તમારા પાસફ્રેઝ સાથે એન્ક્રિપ્ટ કરવામાં આવ્યો છે. તમારા Google એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, તમારો પાસફ્રેઝ દાખલ કરો.</translation>
+<translation id="6533470733797826516">Chrome પર ઑટોમૅટિક રીતે ભરવાની સુવિધા વડે ઝડપથી સાઇન ઇન કરો</translation>
 <translation id="6545449117344801102">Chrome તમને દિશાનિર્દેશો તેમજ સ્થાનિક માહિતી આપવા માટે, Google Maps પર સરનામાં શોધે છે અને પછી તેનો ઉપયોગ કરે છે.</translation>
 <translation id="6634107063912726160">તમે સાઇન આઉટ કરશો, ત્યારે Chrome કોઈપણ નવા ડેટાને તમારા Google એકાઉન્ટ સાથે સિંક કરશે નહીં. અગાઉ સિંક કરેલો ડેટા એકાઉન્ટમાં રહે છે.</translation>
 <translation id="6636941099779251629">તમારી સંસ્થાની પૉલિસી અનુસાર જરૂરી છે કે Chromeનો ઉપયોગ કરવા માટે તમે સાઇન ઇન કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>

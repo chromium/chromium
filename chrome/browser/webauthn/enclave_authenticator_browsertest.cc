@@ -656,10 +656,6 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       pre_tai_run_loop_->QuitWhenIdle();
     }
 
-    void UIReady(ChromeAuthenticatorRequestDelegate* delegate) override {
-      ui_ready_run_loop_->QuitWhenIdle();
-    }
-
     void UIShown(ChromeAuthenticatorRequestDelegate* delegate) override {
       ui_shown_ = true;
       ui_shown_run_loop_->QuitWhenIdle();

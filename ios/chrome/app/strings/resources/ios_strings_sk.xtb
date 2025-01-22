@@ -191,6 +191,7 @@
 <translation id="1779354709911146450">Chyba overenia</translation>
 <translation id="1780152987505130652">Zavrieť skupinu</translation>
 <translation id="178400879184240105">Vaše heslá sú jedinečné</translation>
+<translation id="17906873777101817">Ponúkať ukladanie hesiel a prístupových kľúčov</translation>
 <translation id="1807893857950749072">Povoľte upozornenia na sledovanie cien…</translation>
 <translation id="1810976980198522421">Zrušiť</translation>
 <translation id="1815941218935345331">Vstupný kód</translation>
@@ -833,7 +834,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4764612367328936189">Vaša organizácia vám povoľuje prihlásiť sa iba určitými účtami. Nepovolené účty sú skryté. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Objaviť a sledovanie</translation>
 <translation id="4769198578611055647">Umožní vám získať prístup k uloženým prístupovým kľúčom vo všetkých zariadeniach</translation>
-<translation id="4777866634702576038">Chcete odstrániť skupinu kariet?</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Chcete otvoriť v režime inkognito?</translation>
 <translation id="4792385443586519711">Názov spoločnosti</translation>
@@ -1323,6 +1323,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="6732087373923685049">fotoaparát</translation>
 <translation id="6746338529702829275">Prezrite si údaje účtu</translation>
 <translation id="6755200887046212842">Spravovať účty</translation>
+<translation id="6755733078693946548">Prístup k heslám a prístupovým kľúčom z ľubovoľnej aplikácie</translation>
 <translation id="6761393919622941301">Zvuk</translation>
 <translation id="6779455296366983087">Dáta prehliadania budú odstránené</translation>
 <translation id="6790502149545262384">Čoskoro sa vám budú po otvorení novej karty zobrazovať príbehy z webu <ph name="CHANNEL_NAME" />.</translation>
@@ -1590,6 +1591,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="7977451675950311423">Upozorní vás, keď použijete heslo, ktoré bolo prezradené v rámci porušenia ochrany údajov.</translation>
 <translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> – nové karty, <ph name="NUMBER_OF_TABS_REMOVED" /> – zatvorené</translation>
 <translation id="797824194429476746">Karty zostanú v tomto zariadení otvorené, ale skupina bude natrvalo odstránená.</translation>
+<translation id="797874245254030665">Majte prístup k svojim heslám a prístupovým kľúčom z ľubovoľnej aplikácie</translation>
 <translation id="7982789257301363584">Sieť</translation>
 <translation id="7987685713885608670">V záujme zvýšenia zabezpečenia šifrujte heslá v zariadení ešte pred ich uložením do správcu hesiel Google.</translation>
 <translation id="798991908416757345">Skupiny kariet nie sú k dispozícii</translation>
@@ -1670,6 +1672,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8299613349954694191">Otvorte kartu inkognito a prehliadajte internet v súkromí.</translation>
 <translation id="8307481894409578819">Tento súbor sa nepodarilo nahrať</translation>
 <translation id="8319076807703933069">Nové vyhľadávanie</translation>
+<translation id="8328607660158575887">Otvorte nastavenia automatického dopĺňania a hesiel</translation>
 <translation id="833647236762414178">Vytvárajte, ukladajte a spravujte svoje heslá a prístupové kľúče, aby ste sa mohli ľahko prihlasovať na weboch a v aplikáciách. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Zálohujte svoj obsah a používajte ho v ľubovoľnom zariadení.</translation>
 <translation id="8349305172487531364">Panel so záložkami</translation>
@@ -1822,6 +1825,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8909459547399237818">Vyberte Správcu hesiel a potom klepnite na Pridať miniaplikáciu</translation>
 <translation id="891282356902782456">Toto heslo je uložené iba v tomto zariadení. Ak ho chcete používať v ďalších zariadeniach, uložte si ho do účtu Google <ph name="EMAIL" />.</translation>
 <translation id="8915916167043355778">Zavrieť všetko</translation>
+<translation id="892185197271200809">Všetci okamžite stratia prístup ku skupine kariet <ph name="GROUP_NAME" />, ktorá bude odstránená zo všetkých zariadení</translation>
 <translation id="8921902386312975525">Možnosti sledovania zásielok</translation>
 <translation id="8923178205567790913">Heslá</translation>
 <translation id="892776311701544612">Ďalšie informácie…</translation>

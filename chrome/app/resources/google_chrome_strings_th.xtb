@@ -55,7 +55,6 @@
 <translation id="1698376642261615901">Google Chrome คือเว็บเบราว์เซอร์ที่แสดงหน้าเว็บและแอปพลิเคชันต่างๆ ได้รวดเร็วในพริบตา โดยทำงานได้เร็ว มีเสถียรภาพ และใช้งานง่าย ช่วยให้คุณเรียกดูเว็บได้อย่างปลอดภัยมากขึ้นด้วยการป้องกันมัลแวร์และฟิชชิงซึ่งมีอยู่ใน Google Chrome</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome จะเปิดขึ้นมาใหม่ใน 1 ชั่วโมง}other{Chrome จะเปิดขึ้นมาใหม่ใน # ชั่วโมง}}</translation>
 <translation id="1722488837206509557">สิทธิ์นี้จะช่วยให้คุณสามารถเลือกจากอุปกรณ์ที่พร้อมใช้งานและแสดงเนื้อหาบนอุปกรณ์เหล่านั้น</translation>
-<translation id="1734234790201236882">Chrome จะบันทึกรหัสผ่านนี้ในบัญชี Google คุณจะได้ไม่ต้องจำรหัสผ่านเอง</translation>
 <translation id="1786003790898721085">ตรวจสอบว่าคุณลงชื่อเข้าใช้ Chrome ใน <ph name="TARGET_DEVICE_NAME" /> แล้วลองส่งอีกครั้ง</translation>
 <translation id="1786044937610313874">ทางลัดจะเปิดใน Chrome</translation>
 <translation id="178701303897325119">ระบบไม่รองรับส่วนขยายนี้แล้ว Chrome แนะนำให้คุณนำออกแทน</translation>
@@ -470,9 +469,6 @@
 <translation id="7024536598735240744">ข้อผิดพลาดในการคลายการแพคข้อมูล: <ph name="UNPACK_ERROR" /></translation>
 <translation id="7025789849649390912">หยุดการติดตั้งแล้ว</translation>
 <translation id="7025800014283535195">คุณสลับไปมาระหว่างโปรไฟล์ Chrome ได้ที่นี่</translation>
-<translation id="7036251913954633326">หากต้องการใช้บัญชีนี้เพียงครั้งเดียว คุณสามารถใช้<ph name="GUEST_LINK_BEGIN" />โหมดผู้มาเยือน<ph name="GUEST_LINK_END" />ในเบราว์เซอร์ Chrome ได้ หากต้องการเพิ่มบัญชีสำหรับผู้อื่น ให้<ph name="LINK_BEGIN" />เพิ่มบุคคลใหม่<ph name="LINK_END" />ลงใน <ph name="DEVICE_TYPE" />
-
-สิทธิ์ที่คุณให้กับเว็บไซต์และแอปต่างๆ ไว้แล้วอาจมีผลกับบัญชีนี้ คุณจัดการบัญชี Google ใน<ph name="SETTINGS_LINK_BEGIN" />การตั้งค่า<ph name="SETTINGS_LINK_END" />ได้</translation>
 <translation id="7048502283602470098">สำรวจ AI</translation>
 <translation id="7059914902409643750">ปรับเปลี่ยน Chrome ในแบบของคุณ</translation>
 <translation id="7071827361006050863">Chrome จะลบข้อมูลการท่องเว็บเร็วๆ นี้</translation>

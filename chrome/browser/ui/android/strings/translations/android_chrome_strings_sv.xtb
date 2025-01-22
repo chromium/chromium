@@ -285,6 +285,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="233375395665273385">Radera och logga ut</translation>
 <translation id="2341410551640223969">Det gick inte att installera <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Total data som används av Chrome, inklusive konton, bokmärken och sparade inställningar</translation>
+<translation id="2349954856814571872">Ikon för knappen för bokmärkesfältet</translation>
 <translation id="235789365079050412">Googles integritetspolicy</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2362083820973145409">Inloggad som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Öppnar inställningarna.</translation>
@@ -828,7 +829,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4835385943915508971">Chrome har inte tillgång till den begärda resursen.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Återställ flikgruppen med <ph name="TAB_COUNT_ONE" /> flik med färgen <ph name="COLOR_NAME" /> som en ny flikgrupp i bakgrunden.}other{Återställ flikgruppen med <ph name="TAB_COUNT_MANY" /> flikar med färgen <ph name="COLOR_NAME" /> som en ny flikgrupp i bakgrunden.}}</translation>
 <translation id="4837753911714442426">Öppna utskriftsalternativ</translation>
-<translation id="4842092870884894799">Visar popupfönster för lösenordsgenerering</translation>
 <translation id="4844633725025837809">Öka säkerheten genom att kryptera lösenord på enheten innan de sparas i Google Lösenordshantering.</translation>
 <translation id="4850886885716139402">Visa</translation>
 <translation id="4852014461738377247">Loggar in …</translation>
@@ -1003,6 +1003,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5665379678064389456">Skapa händelse i <ph name="APP_NAME" /></translation>
 <translation id="5680616253592639556">Information saknas</translation>
 <translation id="5683547024293500885">Chrome kan inte söka efter uppdateringar</translation>
+<translation id="5683916195767086779">Flikgrupp</translation>
 <translation id="5686790454216892815">Filnamnet är för långt</translation>
 <translation id="5687606994963670306">Chrome raderar webbplatser som är äldre än 30 dagar automatiskt. Om du besöker en webbplats på nytt kan den dyka upp på listan igen. Du kan även blockera en webbplats från att föreslå annonser för dig. Läs mer om hur du <ph name="BEGIN_LINK" />hanterar annonsintegritet i Chrome<ph name="END_LINK" />.</translation>
 <translation id="569536719314091526">Översätt den här sidan till vilket språk som helst via knappen Fler alternativ</translation>

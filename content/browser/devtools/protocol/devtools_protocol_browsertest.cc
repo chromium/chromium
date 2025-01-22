@@ -494,8 +494,7 @@ bool MatchesBitmap(const SkBitmap& expected_bmp,
                    const SkBitmap& actual_bmp,
                    const gfx::Rect& matching_mask,
                    float device_scale_factor,
-                   int max_collor_diff,
-                   int fuzz = 0) {
+                   int max_collor_diff) {
   // Number of pixels with an error
   int error_pixels_count = 0;
 
@@ -503,12 +502,6 @@ bool MatchesBitmap(const SkBitmap& expected_bmp,
 
   // Scale expectations along with the mask.
   device_scale_factor = device_scale_factor ? device_scale_factor : 1;
-
-  // Check that bitmaps have identical dimensions.
-  int expected_width = round(expected_bmp.width() * device_scale_factor);
-  int expected_height = round(expected_bmp.height() * device_scale_factor);
-  EXPECT_NEAR(expected_width, actual_bmp.width(), fuzz);
-  EXPECT_NEAR(expected_height, actual_bmp.height(), fuzz);
 
   DCHECK(gfx::SkIRectToRect(actual_bmp.bounds()).Contains(matching_mask));
 
@@ -610,8 +603,7 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
                                      float device_scale_factor = 0,
                                      const gfx::RectF& clip = gfx::RectF(),
                                      float clip_scale = 0,
-                                     bool capture_beyond_viewport = false,
-                                     int fuzz = 0) {
+                                     bool capture_beyond_viewport = false) {
     SkBitmap result_bitmap = CaptureScreenshot(
         encoding, from_surface, clip, clip_scale, capture_beyond_viewport);
 
@@ -630,7 +622,7 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
     int max_collor_diff = 20;
 
     EXPECT_TRUE(MatchesBitmap(expected_bitmap, result_bitmap, matching_mask,
-                              device_scale_factor, max_collor_diff, fuzz));
+                              device_scale_factor, max_collor_diff));
   }
 
   gfx::Size GetPageContentSize() {
@@ -800,8 +792,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
   CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG,
                                 /*from_surface=*/true, device_scale_factor,
                                 /*clip=*/gfx::RectF(), /*clip_scale=*/0,
-                                /*capture_beyond_viewport=*/true,
-                                /*fuzz*/ 3);
+                                /*capture_beyond_viewport=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,

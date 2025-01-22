@@ -40081,6 +40081,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signout_Confirm_ForcedSignin">
+  <obsolete>Deprecated 01/2025 after sync-the-feature deprecation</obsolete>
   <owner>chrome-signin-team@chromium.org</owner>
   <owner>arthurmilchior@chromium.org</owner>
   <description>
@@ -40100,6 +40101,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signout_Confirm_Managed_NotSyncing">
+  <obsolete>Deprecated 01/2025 after sync-the-feature deprecation</obsolete>
   <owner>chrome-signin-team@chromium.org</owner>
   <owner>arthurmilchior@chromium.org</owner>
   <description>
@@ -40118,6 +40120,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signout_Confirm_Regular_NotSyncing">
+  <obsolete>Deprecated 01/2025 after sync-the-feature deprecation</obsolete>
   <owner>chrome-signin-team@chromium.org</owner>
   <owner>arthurmilchior@chromium.org</owner>
   <description>
@@ -40127,6 +40130,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signout_Confirm_Regular_Syncing_KeepData">
+  <obsolete>Deprecated 01/2025 after sync-the-feature deprecation</obsolete>
   <owner>chrome-signin-team@chromium.org</owner>
   <owner>arthurmilchior@chromium.org</owner>
   <description>
@@ -40136,6 +40140,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signout_Confirm_Regular_Syncing_RemoveData">
+  <obsolete>Deprecated 01/2025 after sync-the-feature deprecation</obsolete>
   <owner>chrome-signin-team@chromium.org</owner>
   <owner>arthurmilchior@chromium.org</owner>
   <description>

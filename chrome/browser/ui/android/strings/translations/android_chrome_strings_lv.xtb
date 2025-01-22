@@ -285,6 +285,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="233375395665273385">Dzēst un izrakstīties</translation>
 <translation id="2341410551640223969">Nevarēja instalēt: <ph name="WEBAPK_NAME" /></translation>
 <translation id="2349710944427398404">Kopējais pārlūkā Chrome izmantoto datu apjoms, ieskaitot kontus, grāmatzīmes un saglabātos iestatījumus</translation>
+<translation id="2349954856814571872">Grāmatzīmju joslas pogas ikona</translation>
 <translation id="235789365079050412">Google konfidencialitātes politika</translation>
 <translation id="2359808026110333948">Turpināt</translation>
 <translation id="2362083820973145409">Pierakstījies kā <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Tiek atvērti iestatījumi.</translation>
@@ -827,7 +828,6 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4835385943915508971">Chrome nevar piekļūt pieprasītajam resursam.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Atjaunot ciļņu grupu ar <ph name="TAB_COUNT_ONE" /> cilni (krāsa: <ph name="COLOR_NAME" />) kā jaunu fona ciļņu grupu.}zero{Atjaunot ciļņu grupu ar <ph name="TAB_COUNT_MANY" /> cilnēm (krāsa: <ph name="COLOR_NAME" />) kā jaunu fona ciļņu grupu.}one{Atjaunot ciļņu grupu ar <ph name="TAB_COUNT_MANY" /> cilni (krāsa: <ph name="COLOR_NAME" />) kā jaunu fona ciļņu grupu.}other{Atjaunot ciļņu grupu ar <ph name="TAB_COUNT_MANY" /> cilnēm (krāsa: <ph name="COLOR_NAME" />) kā jaunu fona ciļņu grupu.}}</translation>
 <translation id="4837753911714442426">Atvērt iespējas, lai izdrukātu lapu</translation>
-<translation id="4842092870884894799">Tiek rādīts paroles ģenerēšanas uznirstošais logs</translation>
 <translation id="4844633725025837809">Lai gādātu par papildu drošību, šifrējiet paroles savā ierīcē, pirms tās tiek saglabātas Google paroļu pārvaldniekā.</translation>
 <translation id="4850886885716139402">Skatīt</translation>
 <translation id="4852014461738377247">Notiek pierakstīšanās\u2026</translation>

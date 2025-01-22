@@ -59,7 +59,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1698376642261615901">Ang Google Chrome ay isang web browser na nagpapatakbo ng mga webpage at application nang kasingbilis ng kidlat. Mabilis ito, matatag, at madaling gamitin. I-browse ang web nang mas ligtas na may proteksyon sa malware at phishing na isinama sa Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Muling ilulunsad ang Chrome sa loob ng isang oras}one{Muling ilulunsad ang Chrome sa loob ng # oras}other{Muling ilulunsad ang Chrome sa loob ng # na oras}}</translation>
 <translation id="1722488837206509557">Magbibigay-daan ito sa iyong pumili mula sa mga available na device at magpakita ng content sa mga ito.</translation>
-<translation id="1734234790201236882">Ise-save ng Chrome ang password na ito sa iyong Google Account. Hindi mo na ito kailangang tandaan.</translation>
 <translation id="1786003790898721085">Tiyaking naka-sign in ka sa Chrome sa iyong <ph name="TARGET_DEVICE_NAME" /> at pagkatapos ay subukang ipadala ulit.</translation>
 <translation id="1786044937610313874">Magbubukas ang mga shortcut sa Chrome</translation>
 <translation id="178701303897325119">Hindi na sinusuportahan ang extension na ito. Inirerekomenda ng Chrome na alisin mo na lang ito.</translation>
@@ -327,6 +326,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="4997044641749333913">Magagawa ng Chrome na gawing hindi aktibo ang mga tab na ito para pagandahin ang iyong experience sa pag-browse at panatilihing mabilis ang mga bagay.</translation>
 <translation id="5003967926796347400">I-click ang “Google Password Manager”</translation>
+<translation id="5114340746415930644">Ilagay ang iyong passphrase para magamit at ma-save ang data sa Chrome sa account mong <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Mag-sign in sa Chrome kapag nag-sign in ka sa iba pang serbisyo ng Google</translation>
 <translation id="5126049312684316860">Nagpi-preload ang Chrome ng mas marami pang page na malamang na bibisitahin mo, para mas mabilis na mag-load ang mga ito kapag binisita mo</translation>
 <translation id="5132929315877954718">Tumuklas ng mahuhusay na app, laro, extension at tema para sa Google Chrome.</translation>
@@ -478,9 +478,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7024536598735240744">Error sa pag-unpack: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Inihinto ang Pag-install.</translation>
 <translation id="7025800014283535195">Puwede kang magpalipat-lipat sa mga profile sa Chrome dito</translation>
-<translation id="7036251913954633326">Kung isang beses mo lang gustong gamitin ang account na ito, puwede mong gamitin ang <ph name="GUEST_LINK_BEGIN" />Guest mode<ph name="GUEST_LINK_END" /> sa Chrome browser. Kung gusto mong magdagdag ng account para sa ibang tao, <ph name="LINK_BEGIN" />magdagdag ng bagong tao<ph name="LINK_END" /> sa iyong <ph name="DEVICE_TYPE" />.
-
-Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga website at app. Puwede mong pamahalaan ang iyong mga Google Account sa <ph name="SETTINGS_LINK_BEGIN" />Mga Setting<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7048502283602470098">I-explore ang AI</translation>
 <translation id="7059914902409643750">Gawing Iyo ang Chrome</translation>
 <translation id="7071827361006050863">Ide-delete na ng Chrome ang data mula sa pag-browse sa ilang saglit</translation>

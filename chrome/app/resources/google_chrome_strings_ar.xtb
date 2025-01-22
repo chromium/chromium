@@ -57,7 +57,6 @@
 <translation id="1698376642261615901">‏إن Google Chrome هو متصفح ويب يشغّل صفحات الويب والتطبيقات بسرعة خاطفة. فهذا المتصفح سريع ويتميز بالثبات وسهولة الاستخدام، ويمكنك من خلاله تصفح الويب بقدر أكبر من الأمان من خلال وجود حماية مضمنة داخله ضد البرامج الضارة والتصيّد.</translation>
 <translation id="1713301662689114961">{0,plural, =1{‏ستتم إعادة تشغيل Chrome في غضون ساعة واحدة}zero{‏ستتم إعادة تشغيل Chrome في غضون # ساعة}two{‏ستتم إعادة تشغيل Chrome في غضون ساعتين}few{‏ستتم إعادة تشغيل Chrome في غضون # ساعات}many{‏ستتم إعادة تشغيل Chrome في غضون # ساعةً}other{‏ستتم إعادة تشغيل Chrome في غضون # ساعة}}</translation>
 <translation id="1722488837206509557">سيتيح لك هذا الإجراء الاختيار من بين الأجهزة المتاحة وعرض المحتوى عليها.</translation>
-<translation id="1734234790201236882">‏سيحفظ Chrome كلمة المرور هذه في حسابك على Google ولن تحتاج إلى تذكُّرها.</translation>
 <translation id="1786003790898721085">‏يُرجى التأكُّد من تسجيل الدخول إلى متصفِّح Chrome على جهازك <ph name="TARGET_DEVICE_NAME" /> ثم محاولة الإرسال مرة أخرى.</translation>
 <translation id="1786044937610313874">‏يتم فتح الاختصارات في متصفِّح Chrome</translation>
 <translation id="178701303897325119">‏لم تعُد هذه الإضافة متاحة. ينصح متصفّح Chrome بإزالتها.</translation>
@@ -325,6 +324,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="4997044641749333913">‏يمكن لمتصفِّح Chrome إيقاف علامات التبويب هذه لتحسين تجربة التصفُّح والحفاظ على سرعتها.</translation>
 <translation id="5003967926796347400">‏انقر على "مدير كلمات المرور في Google".</translation>
+<translation id="5114340746415930644">‏يجب إدخال عبارة المرور لاستخدام بيانات Chrome وحفظها في حسابك (<ph name="USER_EMAIL" />)</translation>
 <translation id="5120334927898581447">‏تسجيل الدخول إلى Chrome عند تسجيل الدخول إلى خدمات Google الأخرى</translation>
 <translation id="5126049312684316860">‏يُحمِّل Chrome مسبقًا المزيد من الصفحات التي من المرجَح أن تزورها، وذلك بهدف تحميلها بسرعة أكبر عند زيارتك لها.</translation>
 <translation id="5132929315877954718">‏يمكنك اكتشاف تطبيقات، وألعاب، وإضافات، ومظاهر رائعة لمتصفح Google Chrome.</translation>
@@ -474,7 +474,6 @@
 <translation id="7024536598735240744">حدث خطأ في فك ضغط الحزمة: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">تم إيقاف التثبيت.</translation>
 <translation id="7025800014283535195">‏يمكنك من هنا التبديل بين الملفات الشخصية على Chrome.</translation>
-<translation id="7036251913954633326">‏إذا أردت استخدام هذا الحساب لمرة واحدة فقط، يمكنك استخدام <ph name="GUEST_LINK_BEGIN" />وضع الضيف<ph name="GUEST_LINK_END" /> في متصفّح Chrome. وإذا أردت إضافة حساب لمستخدم آخر، <ph name="LINK_BEGIN" />أضِف مستخدمًا جديدًا<ph name="LINK_END" /> إلى <ph name="DEVICE_TYPE" />، مع العِلم بأنّ الأذونات التي سبق لك منحها إلى المواقع الإلكترونية والتطبيقات يمكن أن تنطبق على هذا الحساب. يمكنك إدارة حساباتك على Google من خلال <ph name="SETTINGS_LINK_BEGIN" />الإعدادات<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7048502283602470098">استكشاف ميزات الذكاء الاصطناعي</translation>
 <translation id="7059914902409643750">‏اجعل Chrome متصفِّحك الدائم</translation>
 <translation id="7071827361006050863">‏سيحذف Chrome بيانات التصفُّح قريبًا</translation>

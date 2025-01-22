@@ -299,6 +299,13 @@ class CORE_EXPORT CSSAnimations final {
     // convert any non-custom CSS properties in it to use CSSBitset instead.
     HashSet<PropertyHandle>* listed_properties;
     const CSSTransitionData* transition_data;
+    // @starting-style should inherited from the parent's after-change style. As
+    // for base_style, when old_style is the @starting-style it will have
+    // inherited from its ancestors with animation effects applied. So we need
+    // to compute the before-change style for the @starting-style case correctly
+    // by cascading after-change style for ancestors as necessary. This flag is
+    // set to true if before_change_style has been cascaded correctly.
+    bool before_change_style_is_accurate_for_starting_style = false;
   };
 
   static HeapHashSet<Member<const Animation>> CreateCancelledTransitionsSet(
@@ -415,9 +422,15 @@ class CORE_EXPORT CSSAnimations final {
   // on the element as of the previous style change event, except with any
   // styles derived from declarative animations updated to the current time.
   // https://drafts.csswg.org/css-transitions-1/#before-change-style
-  static const ComputedStyle* CalculateBeforeChangeStyle(
+  static const ComputedStyle& CalculateBeforeChangeStyle(
+      TransitionUpdateState& state,
+      const PropertyHandle& transitioning_property);
+
+  static const ComputedStyle* EnsureAfterChangeStyleIfNecessary(
       Element& animating_element,
-      const ComputedStyle& base_style);
+      const ComputedStyle& base_style,
+      const PropertyHandle& transitioning_property,
+      bool for_starting_style);
 
   // Compute the after-change style for animating_element. Used by
   // CalculateAfterChangeStyle if the base style can not be used for starting
@@ -425,9 +438,9 @@ class CORE_EXPORT CSSAnimations final {
   // a different computed value, for the property passed into
   // CalculateAfterChangeStyle, for the after-change style than for the base
   // style.
-  static const ComputedStyle& EnsureAfterChangeStyle(
-      Element& animating_element,
-      Element& after_change_root);
+  static const ComputedStyle& EnsureAfterChangeStyle(Element& animating_element,
+                                                     Element& after_change_root,
+                                                     bool for_starting_style);
 
   // The after-change style is defined as values of all properties on the
   // element based on the information known at the start of that style change

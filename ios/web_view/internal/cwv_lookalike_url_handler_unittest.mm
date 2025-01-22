@@ -4,18 +4,18 @@
 
 #import "ios/web_view/internal/cwv_lookalike_url_handler_internal.h"
 
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
-#include "components/lookalikes/core/lookalike_url_util.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
+#import "components/lookalikes/core/lookalike_url_util.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "net/base/apple/url_conversions.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 
 namespace ios_web_view {
 

@@ -41,9 +41,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1594928384848033697">Chromium wil jou Wagwoordbestuurder-data uitvee. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Jou administrateur vereis dat jy Chromium herbegin om 'n opdatering toe te pas}=1{Jou administrateur vereis dat jy Chromium herbegin om 'n opdatering toe te pas. Jou incognitovenster sal nie weer oopgemaak word nie.}other{Jou administrateur vereis dat jy Chromium herbegin om 'n opdatering toe te pas. Jou # incognitovensters sal nie weer oopgemaak word nie.}}</translation>
 <translation id="1625909126243026060">Gaan belangrike privaatheid- en sekuriteitkontroles in Chromium na</translation>
-<translation id="1632539827495546968">Jy kan <ph name="GUEST_LINK_BEGIN" />gasmodus<ph name="GUEST_LINK_END" /> in Chromium-blaaier gebruik as jy hierdie rekening net een keer wil gebruik. <ph name="LINK_BEGIN" />Voeg ’n nuwe persoon<ph name="LINK_END" /> by jou <ph name="DEVICE_TYPE" /> as jy ’n rekening vir iemand anders wil byvoeg.
-
-Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekening van toepassing wees. Jy kan jou Google-rekeninge in <ph name="SETTINGS_LINK_BEGIN" />Instellings<ph name="SETTINGS_LINK_END" /> bestuur.</translation>
 <translation id="1640672724030957280">Laai tans af …</translation>
 <translation id="1709772298389099340">Verskaf verhoogde voorregte vir <ph name="BROWSER_NAME" />.</translation>
 <translation id="1715127912119967311">Om hierdie kenmerke te help verbeter, stuur Chromium jou interaksies daarmee na Google. Hierdie data kan deur menslike kontroleerders gelees, verwerk en geannoteer word.</translation>
@@ -367,7 +364,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="6096348254544841612">Pasmaak en beheer Chromium. Opdatering is beskikbaar.</translation>
 <translation id="6107893135096467929">Aan • Chromium kan nie verifieer waarvandaan hierdie uitbreiding kom nie</translation>
 <translation id="6119438414301547735">Laat uitbreiding toe om toegangversoeke op die Chromium-nutsbalk te wys</translation>
-<translation id="6120345080069858279">Chromium sal hierdie wagwoord in jou Google-rekening stoor. Jy sal dit nie hoef te onthou nie.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> is gevaarlik en daarom het Chromium dit geblokkeer.</translation>
 <translation id="6132897690380286411">Chromium gaan binnekort toemaak en data uitvee</translation>
 <translation id="6145820983052037069">Jy kan hier tussen Chromium-profiele wissel</translation>
@@ -529,6 +525,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="813913629614996137">Inisialiseer tans …</translation>
 <translation id="8166782796394721554">Skakel bykomende beskerming in Chromium se JavaScript- en WebAssembly-enjin aan</translation>
 <translation id="81770708095080097">Hierdie lêer is gevaarlik en daarom het Chromium dit geblokkeer.</translation>
+<translation id="8200109504272824693">Voer jou wagfrase in om Chromium-data in jou rekening, <ph name="USER_EMAIL" />, te gebruik en te stoor</translation>
 <translation id="8221491193165283816">Jy blokkeer gewoonlik kennisgewings. Klik hier sodat dié werf jou in kennis kan stel.</translation>
 <translation id="8223363452568144035">Jy moet vir Chromium toegang in <ph name="BEGIN_LINK" />stelselinstellings<ph name="END_LINK" /> gee om jou kamera te gebruik</translation>
 <translation id="8232193495299001329">Chromium kan nie verifieer waar hierdie uitbreiding vandaan kom nie, en dit kan dalk onveilig wees. Verwyder dit uit Chromium sodat dit nie meer jou data, insluitend persoonlike inligting, op werwe wat jy besoek kan sien en verander nie.</translation>

@@ -18,7 +18,8 @@ class TcHelperTest(unittest.TestCase):
     grds = translation_helper.get_translatable_grds(
         testdata_path, ['test.grd', 'not_translated.grd', 'internal.grd'],
         os.path.join(testdata_path,
-                     'translation_expectations_without_unlisted_file.pyl'))
+                     'translation_expectations_without_unlisted_file.pyl'),
+        False)
     self.assertEqual(1, len(grds))
 
     # There should be no references to not_translated.grd (mentioning the
@@ -34,7 +35,7 @@ class TcHelperTest(unittest.TestCase):
     self.assertEqual({'en-GB': os.path.join(testdata_path, 'test_en-GB.xtb')},
                      grd.lang_to_xtb_path)
     self.assertTrue(grd.appears_translatable)
-    self.assertEquals(['en-GB'], grd.expected_languages)
+    self.assertEqual(['en-GB'], grd.expected_languages)
 
   # The expectations list an untranslatable file (not_translated.grd), but the
   # grd list doesn't contain it.
@@ -43,10 +44,28 @@ class TcHelperTest(unittest.TestCase):
         testdata_path, 'translation_expectations_without_unlisted_file.pyl')
     with self.assertRaises(Exception) as context:
       translation_helper.get_translatable_grds(
-          testdata_path, ['test.grd', 'internal.grd'], TRANSLATION_EXPECTATIONS)
+          testdata_path, ['test.grd', 'internal.grd'], TRANSLATION_EXPECTATIONS,
+          False)
     self.assertEqual(
         '%s needs to be updated. Please fix these issues:\n'
         ' - not_translated.grd is listed in the translation expectations, '
+        'but this grd file does not exist.' % TRANSLATION_EXPECTATIONS,
+        str(context.exception))
+
+  def test_missing_untranslatable_cog(self):
+    TRANSLATION_EXPECTATIONS = os.path.join(
+        testdata_path, 'translation_expectations_with_nonextant_grd.pyl')
+    with self.assertRaises(Exception) as context:
+      translation_helper.get_translatable_grds(
+          testdata_path,
+          # In cog, all_grd_paths is an empty list, and is generated from the
+          # expectations file, filtering by whether the file exists.
+          [],
+          TRANSLATION_EXPECTATIONS,
+          True)
+    self.assertEqual(
+        '%s needs to be updated. Please fix these issues:\n'
+        ' - does_not_exist.grd is listed in the translation expectations, '
         'but this grd file does not exist.' % TRANSLATION_EXPECTATIONS,
         str(context.exception))
 
@@ -54,17 +73,40 @@ class TcHelperTest(unittest.TestCase):
   # doesn't contain it.
   def test_missing_internal(self):
     TRANSLATION_EXPECTATIONS = os.path.join(
-        testdata_path, 'translation_expectations_without_unlisted_file.pyl')
+        testdata_path, 'translation_expectations_without_unlisted_file.pyl',
+        )
     with self.assertRaises(Exception) as context:
       translation_helper.get_translatable_grds(
           testdata_path, ['test.grd', 'not_translated.grd'],
-          TRANSLATION_EXPECTATIONS)
+          TRANSLATION_EXPECTATIONS, False)
     self.assertEqual(
         '%s needs to be updated. Please fix these issues:\n'
         ' - internal.grd is listed in translation expectations as an internal '
         'file to be ignored, but this grd file does not exist.' %
         TRANSLATION_EXPECTATIONS, str(context.exception))
 
+
+  def test_missing_internal_cog(self):
+    TRANSLATION_EXPECTATIONS = os.path.join(
+        testdata_path, 'translation_expectations_with_nonextant_internal_grd.pyl'
+    )
+    with self.assertRaises(Exception) as context:
+      translation_helper.get_translatable_grds(
+          testdata_path,
+          # In cog, all_grd_paths is an empty list, and is generated from the
+          # expectations file, filtering by whether the file exists.
+          [],
+          TRANSLATION_EXPECTATIONS,
+          True)
+    self.assertEqual(
+        '%s needs to be updated. Please fix these issues:\n'
+        ' - internal_does_not_exist.grd is listed in translation expectations '
+        'as an internal file to be ignored, but this grd file does not exist.'
+        % TRANSLATION_EXPECTATIONS,
+        str(context.exception),
+    )
+
+  # TODO: Add Cog test.
   # The expectations list a translatable file (test.grd), but the grd list
   # doesn't contain it.
   def test_missing_translatable(self):
@@ -73,12 +115,32 @@ class TcHelperTest(unittest.TestCase):
     with self.assertRaises(Exception) as context:
       translation_helper.get_translatable_grds(
           testdata_path, ['not_translated.grd', 'internal.grd'],
-          TRANSLATION_EXPECTATIONS)
+          TRANSLATION_EXPECTATIONS, False)
     self.assertEqual(
         '%s needs to be updated. Please fix these issues:\n'
         ' - test.grd is listed in the translation expectations, but this grd '
         'file does not exist.' % TRANSLATION_EXPECTATIONS,
         str(context.exception))
+
+  def test_missing_translatable_cog(self):
+    TRANSLATION_EXPECTATIONS = os.path.join(
+        testdata_path,
+        'translation_expectations_with_nonextant_translatable_grd.pyl')
+    with self.assertRaises(Exception) as context:
+      translation_helper.get_translatable_grds(
+          testdata_path,
+          # In cog, all_grd_paths is an empty list, and is generated from the
+          # expectations file, filtering by whether the file exists.
+          [],
+          TRANSLATION_EXPECTATIONS,
+          True)
+    self.assertEqual(
+        '%s needs to be updated. Please fix these issues:\n'
+        ' - translatable_does_not_exist.grd is listed in the translation '
+        'expectations, but this grd file does not exist.'
+        % TRANSLATION_EXPECTATIONS,
+        str(context.exception),
+    )
 
   # The grd list contains a file (part.grdp) that's not listed in translation
   # expectations.
@@ -89,7 +151,7 @@ class TcHelperTest(unittest.TestCase):
       translation_helper.get_translatable_grds(
           testdata_path,
           ['test.grd', 'part.grdp', 'not_translated.grd', 'internal.grd'],
-          TRANSLATION_EXPECTATIONS)
+          TRANSLATION_EXPECTATIONS, False)
     self.assertEqual(
         '%s needs to be updated. Please fix these issues:\n'
         ' - part.grdp appears to be translatable (because it contains <file> '

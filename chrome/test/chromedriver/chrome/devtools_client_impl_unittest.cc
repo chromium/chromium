@@ -151,7 +151,7 @@ Status CreateBidiCommand(int cmd_id,
   dict.Set("method", std::move(method));
   dict.Set("params", std::move(params));
   if (channel) {
-    dict.Set("channel", *channel);
+    dict.Set("goog:channel", *channel);
   }
   *cmd = std::move(dict);
   return Status{kOk};
@@ -1086,13 +1086,13 @@ TEST(ParseInspectorMessage, TunneledCdpEvent) {
   cdp_params.Set("data", "hello");
   // payload_params.
   base::Value::Dict params;
-  params.Set("cdpMethod", "event");
-  params.Set("cdpSession", "ABC");
-  params.Set("cdpParams", std::move(cdp_params));
+  params.Set("method", "event");
+  params.Set("session", "ABC");
+  params.Set("params", std::move(cdp_params));
   base::Value::Dict payload;
-  payload.Set("method", "cdp.eventReceived");
+  payload.Set("method", "goog:cdp.event");
   payload.Set("params", std::move(params));
-  payload.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
+  payload.Set("goog:channel", DevToolsClientImpl::kCdpTunnelChannel);
   base::Value::Dict evt;
   ASSERT_TRUE(
       StatusOk(WrapBidiEventInCdpEvent(std::move(payload), "333", &evt)));
@@ -1116,12 +1116,12 @@ TEST(ParseInspectorMessage, TunneledCdpEventNoCdpSession) {
   cdp_params.Set("data", "hello");
   // payload_params.
   base::Value::Dict params;
-  params.Set("cdpMethod", "event");
-  params.Set("cdpParams", std::move(cdp_params));
+  params.Set("method", "event");
+  params.Set("params", std::move(cdp_params));
   base::Value::Dict payload;
-  payload.Set("method", "cdp.eventReceived");
+  payload.Set("method", "goog:cdp.event");
   payload.Set("params", std::move(params));
-  payload.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
+  payload.Set("goog:channel", DevToolsClientImpl::kCdpTunnelChannel);
   base::Value::Dict evt;
   ASSERT_TRUE(
       StatusOk(WrapBidiEventInCdpEvent(std::move(payload), "333", &evt)));
@@ -1143,12 +1143,12 @@ TEST(ParseInspectorMessage, TunneledCdpEventNoCdpSession) {
 TEST(ParseInspectorMessage, TunneledCdpEventNoCdpParams) {
   // payload_params.
   base::Value::Dict params;
-  params.Set("cdpMethod", "event");
-  params.Set("cdpSession", "ABC");
+  params.Set("method", "event");
+  params.Set("session", "ABC");
   base::Value::Dict payload;
-  payload.Set("method", "cdp.eventReceived");
+  payload.Set("method", "goog:cdp.event");
   payload.Set("params", std::move(params));
-  payload.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
+  payload.Set("goog:channel", DevToolsClientImpl::kCdpTunnelChannel);
   base::Value::Dict evt;
   ASSERT_TRUE(
       StatusOk(WrapBidiEventInCdpEvent(std::move(payload), "333", &evt)));
@@ -1169,11 +1169,11 @@ TEST(ParseInspectorMessage, TunneledCdpEventNoCdpParams) {
 TEST(ParseInspectorMessage, TunneledCdpEventNoCdpMethod) {
   // payload_params.
   base::Value::Dict params;
-  params.Set("cdpSession", "ABC");
+  params.Set("session", "ABC");
   base::Value::Dict payload;
-  payload.Set("method", "cdp.eventReceived");
+  payload.Set("method", "goog:cdp.event");
   payload.Set("params", std::move(params));
-  payload.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
+  payload.Set("goog:channel", DevToolsClientImpl::kCdpTunnelChannel);
   base::Value::Dict evt;
   ASSERT_TRUE(
       StatusOk(WrapBidiEventInCdpEvent(std::move(payload), "333", &evt)));
@@ -1189,8 +1189,8 @@ TEST(ParseInspectorMessage, TunneledCdpEventNoCdpMethod) {
 
 TEST(ParseInspectorMessage, TunneledCdpEventNoPayloadParams) {
   base::Value::Dict payload;
-  payload.Set("method", "cdp.eventReceived");
-  payload.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
+  payload.Set("method", "goog:cdp.event");
+  payload.Set("goog:channel", DevToolsClientImpl::kCdpTunnelChannel);
   base::Value::Dict evt;
   ASSERT_TRUE(
       StatusOk(WrapBidiEventInCdpEvent(std::move(payload), "333", &evt)));
@@ -1209,9 +1209,9 @@ TEST(ParseInspectorMessage, TunneledCdpResponse) {
   result.Set("data", "hola");
   base::Value::Dict payload;
   payload.Set("id", 11);
-  payload.Set("cdpSession", "ABC");
+  payload.Set("session", "ABC");
   payload.Set("result", std::move(result));
-  payload.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
+  payload.Set("goog:channel", DevToolsClientImpl::kCdpTunnelChannel);
   base::Value::Dict resp;
   ASSERT_TRUE(
       StatusOk(WrapBidiResponseInCdpEvent(std::move(payload), "333", &resp)));
@@ -1236,7 +1236,7 @@ TEST(ParseInspectorMessage, TunneledCdpResponseNoSession) {
   base::Value::Dict payload;
   payload.Set("id", 11);
   payload.Set("result", std::move(result));
-  payload.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
+  payload.Set("goog:channel", DevToolsClientImpl::kCdpTunnelChannel);
   base::Value::Dict resp;
   ASSERT_TRUE(
       StatusOk(WrapBidiResponseInCdpEvent(std::move(payload), "333", &resp)));
@@ -1259,9 +1259,9 @@ TEST(ParseInspectorMessage, TunneledCdpResponseNoId) {
   base::Value::Dict result;
   result.Set("data", "hola");
   base::Value::Dict payload;
-  payload.Set("cdpSession", "ABC");
+  payload.Set("session", "ABC");
   payload.Set("result", std::move(result));
-  payload.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
+  payload.Set("goog:channel", DevToolsClientImpl::kCdpTunnelChannel);
   base::Value::Dict resp;
   ASSERT_TRUE(
       StatusOk(WrapBidiResponseInCdpEvent(std::move(payload), "333", &resp)));
@@ -1278,8 +1278,8 @@ TEST(ParseInspectorMessage, TunneledCdpResponseNoId) {
 TEST(ParseInspectorMessage, TunneledCdpResponseNoResult) {
   base::Value::Dict payload;
   payload.Set("id", 11);
-  payload.Set("cdpSession", "ABC");
-  payload.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
+  payload.Set("session", "ABC");
+  payload.Set("goog:channel", DevToolsClientImpl::kCdpTunnelChannel);
   base::Value::Dict resp;
   ASSERT_TRUE(
       StatusOk(WrapBidiResponseInCdpEvent(std::move(payload), "333", &resp)));
@@ -1302,9 +1302,9 @@ TEST(ParseInspectorMessage, TunneledCdpResponseError) {
   error.Set("data", "hola");
   base::Value::Dict payload;
   payload.Set("id", 11);
-  payload.Set("cdpSession", "ABC");
+  payload.Set("session", "ABC");
   payload.Set("error", std::move(error));
-  payload.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
+  payload.Set("goog:channel", DevToolsClientImpl::kCdpTunnelChannel);
   base::Value::Dict resp;
   ASSERT_TRUE(
       StatusOk(WrapBidiResponseInCdpEvent(std::move(payload), "333", &resp)));
@@ -2531,7 +2531,7 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
     dict.Set("id", std::move(cmd_id));
     dict.Set("result", std::move(result));
     if (channel) {
-      dict.Set("channel", *channel);
+      dict.Set("goog:channel", *channel);
     }
     *response = std::move(dict);
     return Status{kOk};
@@ -2565,10 +2565,10 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
     dict.Set("id", cmd_id);
     dict.Set("result", std::move(result));
     if (channel) {
-      dict.Set("channel", *channel);
+      dict.Set("goog:channel", *channel);
     }
     if (!cdp_session.empty()) {
-      dict.Set("cdpSession", std::move(cdp_session));
+      dict.Set("session", std::move(cdp_session));
     }
     *response = std::move(dict);
     return Status{kOk};
@@ -2647,10 +2647,10 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
                              std::string method,
                              base::Value::Dict params,
                              const std::string* channel) {
-    if (method == "cdp.sendCommand") {
-      const std::string* cdp_method = params.FindString("cdpMethod");
-      const std::string* cdp_session = params.FindString("cdpSession");
-      const base::Value::Dict* cdp_params = params.FindDict("cdpParams");
+    if (method == "goog:cdp.sendCommand") {
+      const std::string* cdp_method = params.FindString("method");
+      const std::string* cdp_session = params.FindString("session");
+      const base::Value::Dict* cdp_params = params.FindDict("params");
       EXPECT_NE(cdp_method, nullptr);
       EXPECT_NE(cdp_session, nullptr);
       EXPECT_TRUE(cdp_params);
@@ -2726,7 +2726,7 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
     std::optional<int> bidi_cmd_id = bidi_dict.FindInt("id");
     const std::string* bidi_method = bidi_dict.FindString("method");
     const base::Value::Dict* bidi_params = bidi_dict.FindDict("params");
-    const std::string* bidi_channel = bidi_dict.FindString("channel");
+    const std::string* bidi_channel = bidi_dict.FindString("goog:channel");
     EXPECT_TRUE(bidi_cmd_id);
     EXPECT_NE(bidi_method, nullptr);
     EXPECT_NE(bidi_params, nullptr);
@@ -2789,10 +2789,10 @@ class MultiSessionMockSyncWebSocket3 : public BidiMockSyncWebSocket {
     dict.Set("id", cmd_id);
     dict.Set("result", std::move(result));
     if (channel) {
-      dict.Set("channel", *channel);
+      dict.Set("goog:channel", *channel);
     }
     if (!cdp_session.empty()) {
-      dict.Set("cdpSession", std::move(cdp_session));
+      dict.Set("session", std::move(cdp_session));
     }
     *response = std::move(dict);
     return Status{kOk};
@@ -2941,14 +2941,14 @@ class MultiSessionMockSyncWebSocket4 : public BidiMockSyncWebSocket {
     base::Value::Dict cdp_evt_params;
     cdp_evt_params.Set("source", "cdp-over-bidi");
     base::Value::Dict bidi_params;
-    bidi_params.Set("cdpParams", std::move(cdp_evt_params));
-    bidi_params.Set("cdpSession", cdp_session);
-    bidi_params.Set("cdpMethod", "event");
+    bidi_params.Set("params", std::move(cdp_evt_params));
+    bidi_params.Set("session", cdp_session);
+    bidi_params.Set("method", "event");
     base::Value::Dict bidi_evt;
-    bidi_evt.Set("method", "cdp.eventReceived");
+    bidi_evt.Set("method", "goog:cdp.event");
     bidi_evt.Set("params", std::move(bidi_params));
     if (channel) {
-      bidi_evt.Set("channel", *channel);
+      bidi_evt.Set("goog:channel", *channel);
     }
     base::Value::Dict evt;
     Status status = WrapBidiEventInCdpEvent(bidi_evt, mapper_session_, &evt);
@@ -3003,7 +3003,7 @@ class MultiSessionMockSyncWebSocket4 : public BidiMockSyncWebSocket {
     bidi_evt_params.Set("source", "bidi");
     bidi_evt.Set("params", std::move(bidi_evt_params));
     if (channel) {
-      bidi_evt.Set("channel", *channel);
+      bidi_evt.Set("goog:channel", *channel);
     }
     base::Value::Dict evt;
     Status status = WrapBidiEventInCdpEvent(bidi_evt, mapper_session_, &evt);
@@ -3105,7 +3105,7 @@ TEST_F(DevToolsClientImplTest, BidiEventCrossRouting) {
   base::Value::Dict bidi_cmd;
   ASSERT_TRUE(StatusOk(CreateBidiCommand(414, "method", base::Value::Dict(),
                                          nullptr, &bidi_cmd)));
-  // The messasge is dispatched from a non-BiDiMapper client
+  // The message is dispatched from a non-BiDiMapper client
   ASSERT_TRUE(StatusOk(page_client.PostBidiCommand(std::move(bidi_cmd))));
   ASSERT_TRUE(StatusOk(page_client.HandleReceivedEvents()));
 
@@ -3168,7 +3168,7 @@ TEST_F(DevToolsClientImplTest, BidiChannels) {
     ASSERT_TRUE(StatusOk(mapper_client.HandleReceivedEvents()));
     ASSERT_EQ(static_cast<size_t>(2), mapper_bidi_listener.payload_list.size());
     for (const base::Value::Dict& payload : mapper_bidi_listener.payload_list) {
-      EXPECT_THAT(payload.FindString("channel"), Pointee(Eq(channel)));
+      EXPECT_THAT(payload.FindString("goog:channel"), Pointee(Eq(channel)));
     }
     mapper_bidi_listener.payload_list.clear();
   }
@@ -3182,7 +3182,7 @@ TEST_F(DevToolsClientImplTest, BidiChannels) {
     ASSERT_TRUE(StatusOk(mapper_client.HandleReceivedEvents()));
     ASSERT_EQ(static_cast<size_t>(2), mapper_bidi_listener.payload_list.size());
     for (const base::Value::Dict& payload : mapper_bidi_listener.payload_list) {
-      EXPECT_EQ(nullptr, payload.FindString("channel"));
+      EXPECT_EQ(nullptr, payload.FindString("goog:channel"));
     }
     mapper_bidi_listener.payload_list.clear();
   }
@@ -3269,7 +3269,7 @@ class BidiServerMockSyncWebSocket : public BidiMockSyncWebSocket {
     }
     EXPECT_EQ(DevToolsClientImpl::kCdpTunnelChannel, *channel);
     EXPECT_EQ("session.subscribe", method);
-    EXPECT_THAT(params.FindString("events"), Pointee(Eq("cdp.eventReceived")));
+    EXPECT_THAT(params.FindString("events"), Pointee(Eq("goog:cdp")));
     mapper_state_->subscribed_to_cdp = true;
     return !mapper_state_->fail_on_subscribe_to_cdp;
   }

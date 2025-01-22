@@ -140,6 +140,7 @@
 <translation id="1415846719612499304">ਨੈੱਟਵਰਕ ਸੂਚੀ ਨੂੰ ਦਿਖਾਓ। <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">ਸੂਚਨਾ 'ਤੇ ਕਾਰਵਾਈ ਕਰਨ ਲਈ ਡੀਵਾਈਸ ਨੂੰ ਅਣਲਾਕ ਕਰੋ</translation>
 <translation id="1420408895951708260">ਨਾਈਟ ਲਾਈਟ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">ਸੁਝਾਇਆ ਗਿਆ ਗਰੁੱਪ</translation>
 <translation id="1426410128494586442">ਹਾਂ</translation>
 <translation id="1435537621343861112">ਡਿਕਟੇਸ਼ਨ ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ। ਤੁਹਾਡਾ ਮਾਈਕ ਬੰਦ ਹੈ।</translation>
 <translation id="1445031758921122223">ਚਿਹਰਾ ਕੰਟਰੋਲ ਫ਼ਾਈਲਾਂ ਡਾਊਨਲੋਡ ਹੋ ਗਈਆਂ</translation>
@@ -243,12 +244,14 @@
 <translation id="17722141032474077">ਗਣਨਾਵਾਂ</translation>
 <translation id="1774796056689732716"><ph name="CURRENT_MONTH_YEAR" /> ਦੇ ਕੈਲੰਡਰ ਵਿੱਚ ਫ਼ਿਲਹਾਲ <ph name="DATE" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ ਹੈ।</translation>
 <translation id="178347895271755507">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ, ਮੀਡੀਆ ਅਤੇ ਸੂਚਨਾਵਾਂ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
+<translation id="1785317913592722944">ਸੁਝਾਏ ਗਏ ਗਰੁੱਪ ਵਿੱਚੋਂ ਆਈਟਮ ਨੂੰ ਹਟਾਓ</translation>
 <translation id="1786487376942610288">ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਵਿੰਡੋ ਦੇ ਵੱਧੋ-ਵੱਧ ਜਾਂ ਮੌਜੂਦਾ ਆਕਾਰ ਵਿਚਾਲੇ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="1787955149152357925">ਬੰਦ ਹੈ</translation>
 <translation id="1796561540704213354">ਵੈੱਬਸਾਈਟਾਂ ਦੀ ਸ਼੍ਰੇਣੀ ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਗਏ ਪੰਨੇ ਅਤੇ ਖੋਲ੍ਹੇ ਗਏ ਪੰਨੇ ਦਿਖਾਏ ਜਾਂਦੇ ਹਨ</translation>
 <translation id="179842970735685253">Google ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮ</translation>
 <translation id="1805407494113167797">ਫੋਕਸ ਧੁਨੀਆਂ ਨੂੰ ਚਲਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ</translation>
 <translation id="181103072419391116">ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
+<translation id="1815039896005206046">'ਨਾ ਸਲਾਹੋ' ਪ੍ਰਤੀਕ ਨਾਲ ਇਹ ਵਿਚਾਰ ਸਪੁਰਦ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਸ ਸੁਝਾਏ ਗਏ ਗਰੁੱਪ ਨੂੰ ਨਾਪਸੰਦ ਕੀਤਾ ਹੈ</translation>
 <translation id="1816896987747843206">ਇਸ ਨਾਲ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਹੈ</translation>
 <translation id="1823873187264960516">ਈਥਰਨੈੱਟ: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">ਟਿਕਾਣਾ ਪਹੁੰਚ ਚਾਲੂ ਕਰੋ</translation>
@@ -390,6 +393,7 @@
 <translation id="2369165858548251131">ਚੀਨੀ ਭਾਸ਼ਾ ਵਿੱਚ "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ"</translation>
 <translation id="2370971919968699910">ਇਸ ਨਾਲ ਡਾਟਾ ਖਰਚ ਹੋ ਸਕਦਾ ਹੈ।
 <ph name="DEVICECOUNT" /> ਡੀਵਾਈਸ ਕਨੈਕਟ ਕੀਤੇ ਗਏ।</translation>
+<translation id="2383521554963939360">ਐਪ ਅਤੇ ਟੈਬ ਗਰੁੱਪ</translation>
 <translation id="2386292613071805067">ਪੰਨੇ 'ਤੇ ਸਭ ਕੁਝ ਚੁਣੋ</translation>
 <translation id="2389423187722941333">Gemini ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="2392659840443812875">ਕੋਈ ਹੌਟਸਪੌਟ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਨਜ਼ਦੀਕ ਹੈ ਅਤੇ ਉਸਦਾ ਬਲੂਟੁੱਥ ਚਾਲੂ ਹੈ।</translation>
@@ -920,6 +924,7 @@
 <translation id="4151054805501931758">ਪੋਰਟਰੇਟ ਟੱਚ-ਅੱਪ</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% ਬੈਟਰੀ ਬਾਕੀ ਬਚੀ ਹੈ (ਲਗਭਗ <ph name="TIME_LEFT" />)।
 ਕੁਝ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬੈਟਰੀ ਲਾਈਫ਼ ਵਧਾਉਣ ਲਈ ਸੀਮਤ ਹਨ।</translation>
+<translation id="4158003972857765638">ਨਵੇਂ ਡੈਸਕ ਵਿੱਚ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="4160919062868802509">ਇੱਕ ਤੋਂ ਵੱਧ ਆਡੀਓ ਸਰੋਤਾਂ ਦਾ ਪਤਾ ਲੱਗਿਆ</translation>
 <translation id="416245495747357243">ਹੋ ਗਿਆ!</translation>
 <translation id="4165275524535002941">ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਕੇਬਲ ਡਿਸਪਲੇਆਂ ਦਾ ਸਮਰਥਨ ਨਾ ਕਰੇ</translation>
@@ -968,6 +973,7 @@
 <translation id="4285498937028063278">ਅਨਪਿਨ ਕਰੋ</translation>
 <translation id="428715201724021596">ਪ੍ਰੋਫਾਈਲ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
 <translation id="4287250812980588583">Chrome ਵਿੰਡੋ</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{ਮਾਈਕ ਦੀ ਅਵਾਜ਼ <ph name="APP_NAME" /> ਵੱਲੋਂ ਕੰਟਰੋਲ ਕੀਤੀ ਜਾਂਦੀ ਹੈ}one{ਮਾਈਕ ਦੀ ਅਵਾਜ਼ # ਐਪ ਵੱਲੋਂ ਕੰਟਰੋਲ ਕੀਤੀ ਜਾਂਦੀ ਹੈ}other{ਮਾਈਕ ਦੀ ਅਵਾਜ਼ # ਐਪਾਂ ਵੱਲੋਂ ਕੰਟਰੋਲ ਕੀਤੀ ਜਾਂਦੀ ਹੈ}}</translation>
 <translation id="4294319844246081198">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">ਸਾਰੀਆਂ <ph name="COUNT" /> ਸੂਚਨਾਵਾਂ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="4300272766492248925">ਐਪ ਖੋਲ੍ਹੋ</translation>
@@ -984,6 +990,7 @@
 <translation id="4322742403972824594">Ctrl + Alt + ਉੱਪਰ ਤੀਰ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। Home ਕੁੰਜੀ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + ਖੱਬਾ ਤੀਰ ਦਬਾਓ।</translation>
 <translation id="4324840740119394760">ਇਸ ਨਾਲ <ph name="APP_NAME" /> ਅਤੇ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਹੈ</translation>
 <translation id="4327147325944669226">ਗੇਮ ਰਿਕਾਰਡ ਕਰੋ</translation>
+<translation id="4329076911374908740">ਰੱਖਿਅਤ ਕੀਤੇ ਜਾ ਸਕਣ ਵਾਲੇ ਗਰੁੱਪਾਂ ਦੀ ਵੱਧੋ-ਵੱਧ ਗਿਣਤੀ ਪੂਰੀ ਹੋ ਗਈ ਹੈ।</translation>
 <translation id="4338109981321384717">ਸੂਖਮਦਰਸ਼ੀ ਕੱਚ</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, ਮਿਊਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4351244548802238354">ਡਾਇਲੌਗ ਬੰਦ ਕਰੋ</translation>
@@ -1942,6 +1949,7 @@
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">ਬਣਾਓ</translation>
 <translation id="7526573455193969409">ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਨੈੱਟਵਰਕ ਦੀ ਨਿਗਰਾਨੀ ਹੋ ਰਹੀ ਹੋਵੇ</translation>
+<translation id="7534543072325030705">'ਸਲਾਹੋ' ਪ੍ਰਤੀਕ ਨਾਲ ਇਹ ਵਿਚਾਰ ਸਪੁਰਦ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਸ ਸੁਝਾਏ ਗਏ ਗਰੁੱਪ ਨੂੰ ਪਸੰਦ ਕੀਤਾ ਹੈ</translation>
 <translation id="7536035074519304529">IP ਪਤਾ: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">ਖੱਬੀ ਵਿੰਡੋ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="7543399541175347147">Linux ਐਪਾਂ ਅਤੇ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਫ਼ਿਲਹਾਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ। ਹੋਰ ਐਪਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
@@ -2106,6 +2114,7 @@
 <translation id="8004512796067398576">ਵਧਾਓ</translation>
 <translation id="8005527720597583355">ਫੋਕਸ ਸੈਸ਼ਨ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="8015361438441228492">ਕਾਰਜ ਦਾ ਸੰਪਾਦਨ ਨਹੀਂ ਹੋ ਸਕਿਆ।</translation>
+<translation id="8027187124910699148">ਸੁਝਾਏ ਗਏ ਗਰੁੱਪ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="802782383769312836">ਪਿਛਲਾ ਡੈਸਕ: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> ਵਿੱਚੋਂ ਡੈਸਕ <ph name="DESK_INDEX" />.</translation>
 <translation id="8029247720646289474">ਹੌਟਸਪੌਟ ਕਨੈਕਸ਼ਨ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="8029629653277878342">ਵਧੇਰੇ ਸੁਰੱਖਿਆ ਲਈ ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ ਲੋੜੀਂਦਾ ਹੈ</translation>
@@ -2214,6 +2223,7 @@
 <translation id="8426708595819210923">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> ਤੋਂ <ph name="KEY_TWO" /> ਤੱਕ</translation>
+<translation id="8429547770382807369">ਬਾਅਦ ਵਿੱਚ ਦੇਖਣ ਲਈ ਗਰੁੱਪ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="8433186206711564395">ਨੈੱਟਵਰਕ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8433977262951327081">ਸ਼ੈਲਫ਼ ਵਿੱਚ ਇਨਪੁੱਟ ਵਿਕਲਪ ਮੀਨੂ ਬੁਲਬੁਲੇ ਨੂੰ ਦਿਖਾਉਣ ਵਾਲਾ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ <ph name="OLD_SHORTCUT" /> ਦੀ ਬਜਾਏ <ph name="NEW_SHORTCUT" /> ਵਰਤੋ।</translation>
 <translation id="8437311513256731931">ਵਿਚਾਰ ਟੂਲ ਖੋਲ੍ਹੋ</translation>
@@ -2222,6 +2232,7 @@
 <translation id="8446884382197647889">ਹੋਰ ਜਾਣੋ</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">'ਚੁਣੋ ਅਤੇ ਸੁਣੋ' ਨੂੰ ਬੰਦ ਕਰੋ</translation>
+<translation id="8466665972451889002"><ph name="GROUP_NAME" /> ਵਿੱਚ ਆਈਟਮਾਂ ਦਿਖਾਓ</translation>
 <translation id="8468806060683421065">ਨਿਯਤ ਤਾਰੀਖ <ph name="DUE_DATE_AND_TIME" /> ਹੈ</translation>
 <translation id="847056008324733326">ਡਿਸਪਲੇ ਸਕੇਲ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ਕੋਲ <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> ਹੈ।</translation>
@@ -2244,6 +2255,7 @@
 <translation id="8551588720239073785">ਤਾਰੀਖ ਅਤੇ ਸਮਾਂ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8553395910833293175">ਪਹਿਲਾਂ ਹੀ ਸਾਰੇ ਡੈਸਕਾਂ ਦੇ ਜ਼ਿੰਮੇ ਲਗਾਇਆ ਗਿਆ।</translation>
 <translation id="8555757996376137129">ਮੌਜੂਦਾ ਡੈਸਕ ਨੂੰ ਹਟਾਓ</translation>
+<translation id="8558521694042102707">ਜਨਰੇਟਿਵ AI ਗਲਤੀਆਂ ਕਰ ਸਕਦਾ ਹੈ, ਜਿਸ ਵਿੱਚ ਲੋਕਾਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਵੀ ਸ਼ਾਮਲ ਹੈ, ਇਸ ਲਈ ਇਸ ਦੀ ਦੋਹਰੀ-ਜਾਂਚ ਕਰੋ।</translation>
 <translation id="8559845965695780508"><ph name="USER" /> ਨੇ ਸੰਪਾਦਨ ਕੀਤਾ</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">ਅਜ਼ਮਾਉਣ ਲਈ ਇਹ ਕੁਝ ਸੁਝਾਅ ਹਨ</translation>
@@ -2266,6 +2278,7 @@
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="8638637208069328956">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਨੂੰ ਚਾਲੂ/ਬੰਦ ਕਰੋ</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> ਬਾਕੀ</translation>
+<translation id="8640470573049727749">ਗਰੁੱਪ ਦੇ ਸਾਰੇ ਸੁਝਾਅ ਲੁਕਾਓ</translation>
 <translation id="8641510901370802679"><ph name="ANSWER_TYPE" /> ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਦਿਖਾਈ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> ਟਾਈਮਰ</translation>
 <translation id="8647931990447795414">ਕਿਸੇ ਵਿਅਕਤੀ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ ਲਈ, ਆਪਣਾ Family Link ਮਾਂ-ਪਿਓ ਪਹੁੰਚ ਕੋਡ ਦਾਖਲ ਕਰੋ</translation>
@@ -2348,6 +2361,7 @@
 <translation id="8905919797434099235">(ਕੋਈ ਸਿਰਲੇਖ ਨਹੀਂ)</translation>
 <translation id="890616557918890486">ਸਰੋਤ ਬਦਲੋ</translation>
 <translation id="8909138438987180327">ਬੈਟਰੀ <ph name="PERCENTAGE" /> ਫ਼ੀਸਦ ਹੈ।</translation>
+<translation id="8916866375277139011"><ph name="GROUP_NAME" /> ਵਿੱਚ ਆਈਟਮਾਂ ਲੁਕਾਓ</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant ਇਹ ਭਾਸ਼ਾ ਨਹੀਂ ਬੋਲਦੀ।</translation>
 <translation id="8926951137623668982">ਸ਼ੈਲਫ਼ ਹਮੇਸ਼ਾਂ ਲੁਕੀ ਰਹਿੰਦੀ ਹੈ</translation>

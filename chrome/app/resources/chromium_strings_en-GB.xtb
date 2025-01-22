@@ -41,9 +41,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1594928384848033697">Chromium wants to delete your Password Manager data. Type in your Windows password to allow this.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Your administrator requires that you relaunch Chromium to apply an update}=1{Your administrator requires that you relaunch Chromium to apply an update. Your Incognito window won't reopen.}other{Your administrator requires that you relaunch Chromium to apply an update. Your # Incognito windows won't reopen.}}</translation>
 <translation id="1625909126243026060">Review key privacy and security controls in Chromium</translation>
-<translation id="1632539827495546968">If you only want to use this account once, you can use <ph name="GUEST_LINK_BEGIN" />guest mode<ph name="GUEST_LINK_END" /> in Chromium browser. If you want to add an account for someone else, <ph name="LINK_BEGIN" />add a new person<ph name="LINK_END" /> to your <ph name="DEVICE_TYPE" />.
-
-Permissions that you've already given to websites and apps may apply to this account. You can manage your Google Accounts in <ph name="SETTINGS_LINK_BEGIN" />Settings<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Downloading ...</translation>
 <translation id="1709772298389099340">Provides elevated privileges for <ph name="BROWSER_NAME" />.</translation>
 <translation id="1715127912119967311">To help improve these features, Chromium sends your interactions with them to Google. This data may be read, processed and annotated by human reviewers.</translation>
@@ -367,7 +364,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6096348254544841612">Customise and control Chromium. Update is available.</translation>
 <translation id="6107893135096467929">On • Chromium can't verify where this extension comes from</translation>
 <translation id="6119438414301547735">Allow extension to show access requests in the Chromium toolbar</translation>
-<translation id="6120345080069858279">Chromium will save this password in your Google Account. You won’t have to remember it.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> is dangerous, so Chromium has blocked it.</translation>
 <translation id="6132897690380286411">Chromium will soon close and delete data</translation>
 <translation id="6145820983052037069">You can switch between Chromium profiles here</translation>
@@ -529,6 +525,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="813913629614996137">Initialising...</translation>
 <translation id="8166782796394721554">Turn on additional protection in Chromium’s JavaScript and WebAssembly engine</translation>
 <translation id="81770708095080097">This file is dangerous, so Chromium has blocked it.</translation>
+<translation id="8200109504272824693">Enter your passphrase to use and save Chromium data in your account, <ph name="USER_EMAIL" /></translation>
 <translation id="8221491193165283816">You usually block notifications. To let this site notify you, click here.</translation>
 <translation id="8223363452568144035">To use your camera, give Chromium access in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">Chromium can't verify where this extension comes from, and it might be unsafe. Remove it from Chromium so that it can no longer see and change your data on sites that you visit, including personal info.</translation>

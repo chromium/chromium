@@ -973,6 +973,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4285498937028063278">Unpin</translation>
 <translation id="428715201724021596">Connecting to profile. This may take a few minutes.</translation>
 <translation id="4287250812980588583">Chrome window</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Mic volume controlled by <ph name="APP_NAME" />}other{Mic volume controlled by # apps}}</translation>
 <translation id="4294319844246081198">Good morning <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Clear all <ph name="COUNT" /> notifications</translation>
 <translation id="4300272766492248925">Open app</translation>

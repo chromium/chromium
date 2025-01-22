@@ -348,7 +348,8 @@ PhysicalNaturalSizingInfo LayoutImage::GetNaturalDimensions() const {
     if (StyleRef().GetObjectFit() == EObjectFit::kScaleDown) {
       natural_dimensions.size.Scale(1 / ImageDevicePixelRatio());
     }
-  } else {
+  } else if (RuntimeEnabledFeatures::
+                 LayoutImageForceAspectRatioOfOneOnErrorEnabled()) {
     // Don't compute an intrinsic ratio to preserve historical WebKit behavior
     // if we're painting alt text and/or a broken image.
     // Video is excluded from this behavior because video elements have a

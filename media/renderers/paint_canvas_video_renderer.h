@@ -206,7 +206,8 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   [[nodiscard]] gpu::SyncToken CopyVideoFrameToSharedImage(
       viz::RasterContextProvider* raster_context_provider,
       scoped_refptr<VideoFrame> video_frame,
-      const gpu::MailboxHolder& destination,
+      const gpu::Mailbox& dest_mailbox,
+      const gpu::SyncToken& dest_sync_token,
       bool use_visible_rect);
 
   // Check whether video frame can be uploaded through

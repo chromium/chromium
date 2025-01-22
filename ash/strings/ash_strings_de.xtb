@@ -973,6 +973,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4285498937028063278">Loslösen</translation>
 <translation id="428715201724021596">Verbindung zum Profil wird hergestellt. Das kann einige Minuten dauern.</translation>
 <translation id="4287250812980588583">Chrome-Fenster</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Mikrofonlautstärke wird von <ph name="APP_NAME" /> gesteuert}other{Mikrofonlautstärke wird von # Apps gesteuert}}</translation>
 <translation id="4294319844246081198">Guten Morgen <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Alle <ph name="COUNT" /> Benachrichtigungen löschen</translation>
 <translation id="4300272766492248925">App öffnen</translation>
@@ -1270,6 +1271,7 @@ Du kannst auch die entsprechende Tastenkombination verwenden. Markiere dazu zuer
 <translation id="5245201184978705914">Transkript konnte nicht erstellt werden</translation>
 <translation id="5251174953851719648">Inhalte aktualisieren</translation>
 <translation id="5253783950165989294">Mit einem Gerät namens „<ph name="DEVICE_NAME" />“ verbunden, <ph name="BATTERY_PERCENTAGE" /> % Akku</translation>
+<translation id="5256939106029293271">Mikrofon testen</translation>
 <translation id="5258528442992323769">Keine gespeicherten Desktops</translation>
 <translation id="5260676007519551770">Desktop 4</translation>
 <translation id="5265391159779542051">Ergebnisse geladen</translation>
@@ -1427,6 +1429,7 @@ Keine Geräte verbunden.</translation>
 <translation id="5745612484876805746">Die Funktion "Nachtlicht" wird bei Sonnenuntergang automatisch aktiviert</translation>
 <translation id="5750765938512549687">Bluetooth ist deaktiviert</translation>
 <translation id="5758114525425072423">Konzentrationsmodus starten. Timer auf <ph name="FOCUS_DURATION" /> gestellt.</translation>
+<translation id="5759522586053040964">Hör dir an, wie du für andere klingst. Klicke zum Beenden auf das Testsymbol oder schließe das Steuerfeld für den Videoanruf.</translation>
 <translation id="5760866832697883462">Mit <ph name="NAME" /> verbinden</translation>
 <translation id="5762420912707163638">Filzstift aktivieren oder deaktivieren. <ph name="STATE_TEXT" /> Mit dem Touchpad, Touchscreen oder Eingabestift kannst du auf dem Bildschirm zeichnen.</translation>
 <translation id="576341972084747908">Gefährlicher Download: „<ph name="FILENAME" />“</translation>
@@ -2028,7 +2031,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7793389284006812057">Generative KI ist experimentell, befindet sich noch in einem frühen Entwicklungsstadium und ist derzeit nur eingeschränkt verfügbar.</translation>
 <translation id="7796735576426975947">Neue Benachrichtigung ausgeblendet</translation>
 <translation id="7798302898096527229">Drücke die Such-Taste oder Umschalttaste, um die Aktivierung aufzuheben.</translation>
-<translation id="780301667611848630">Nein danke</translation>
+<translation id="780301667611848630">Nein, danke</translation>
 <translation id="7807067443225230855">Suche und Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> und <ph name="MINUTE" /></translation>
 <translation id="7825412704590278437">Von einem anstehenden Termin</translation>

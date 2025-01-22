@@ -59,7 +59,6 @@
 <translation id="1698376642261615901">Google Chrome é un navegador web que executa aplicacións e páxinas web á velocidade da luz. É rápido, estable e fácil de utilizar. Busca na web con máis seguranza grazas á protección contra software malicioso e phishing integrada en Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome reiniciarase en 1 hora}other{Chrome reiniciarase en # horas}}</translation>
 <translation id="1722488837206509557">Esta opción permitirache seleccionar dispositivos entre os que haxa dispoñibles e mostrar contido neles.</translation>
-<translation id="1734234790201236882">Chrome gardará este contrasinal na túa Conta de Google. Non terás que recordalo.</translation>
 <translation id="1786003790898721085">Asegúrate de ter a sesión iniciada en Chrome no <ph name="TARGET_DEVICE_NAME" /> e proba a enviar o número de novo.</translation>
 <translation id="1786044937610313874">Os atallos ábrense en Chrome</translation>
 <translation id="178701303897325119">Xa non se admite esta extensión. Chrome recomenda que a quites.</translation>
@@ -327,6 +326,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="4997044641749333913">Chrome pode desactivar estas pestanas para mellorar a experiencia de navegación e axilizar as operacións.</translation>
 <translation id="5003967926796347400">Fai clic en Xestor de contrasinais de Google</translation>
+<translation id="5114340746415930644">Escribe a túa frase de acceso para usar e gardar os datos de Chrome na túa conta (<ph name="USER_EMAIL" />)</translation>
 <translation id="5120334927898581447">Iniciar sesión en Chrome cando inicies sesión noutros servizos de Google</translation>
 <translation id="5126049312684316860">Chrome precargará aínda máis páxinas que é probable que visites para que carguen máis rapidamente cando accedas a elas</translation>
 <translation id="5132929315877954718">Descubre aplicacións, xogos, extensións e temas fantásticos para Google Chrome.</translation>
@@ -478,9 +478,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7024536598735240744">Produciuse un erro na descompresión: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Detívose a instalación.</translation>
 <translation id="7025800014283535195">Aquí podes cambiar entre perfís de Chrome</translation>
-<translation id="7036251913954633326">Se queres usar esta conta unha soa vez, podes utilizar o <ph name="GUEST_LINK_BEGIN" />modo de convidado<ph name="GUEST_LINK_END" /> no navegador Chrome. Se queres engadir unha conta para outra persoa, <ph name="LINK_BEGIN" />engade unha persoa nova<ph name="LINK_END" /> ao teu dispositivo (<ph name="DEVICE_TYPE" />).
-
-Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web e ás aplicacións. Podes xestionar as túas Contas de Google en <ph name="SETTINGS_LINK_BEGIN" />Configuración<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7048502283602470098">Explorar IA</translation>
 <translation id="7059914902409643750">Personaliza Chrome</translation>
 <translation id="7071827361006050863">Chrome eliminará os datos de navegación en breve</translation>

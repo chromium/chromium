@@ -85,6 +85,7 @@
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> e mbylli lidhjen papritur.</translation>
 <translation id="1160009341934077418">Historiku i çmimeve nëpër ueb</translation>
 <translation id="1161325031994447685">Të rilidhesh me Wi-Fi</translation>
+<translation id="1161663161838091892">Sinkronizo skedat dhe historikun për të vazhduar</translation>
 <translation id="1163507966173624031">Muzikë popullore dhe tradicionale</translation>
 <translation id="11635448457105324">Butoni "Menaxho adresat". Aktivizoje për të shtuar dhe menaxhuar adresat te cilësimet e Chrome</translation>
 <translation id="1165039591588034296">Gabim</translation>
@@ -1105,6 +1106,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="297173220375858963">Publikimi në desktop</translation>
 <translation id="2972581237482394796">&amp;Ribëje</translation>
 <translation id="2974468223369775963">Ky numër IBAN nuk mund të ruhej në "Llogarinë tënde të Google". Në vend të kësaj, ai është ruajtur në Chrome në këtë pajisje. Chrome do të të pyesë përsëri herën tjetër kur ta përdorësh këtë numër IBAN.</translation>
+<translation id="297667759942911166">Bashkëpuno në grupet e skedave</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, aktualisht e zgjedhur. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">Kyç dhe përdor tastierën</translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -2064,6 +2066,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4661556981531699496">Kafshë shtëpiake dhe kafshë të tjera</translation>
 <translation id="4661868874067696603">Kërko për opsione të tjera për të blerë</translation>
 <translation id="4663373278480897665">Kamera lejohet</translation>
+<translation id="4664084870155869900">Plotëso automatikisht herën tjetër. Karta ruhet në pajisjen tënde.</translation>
 <translation id="466561305373967878">Lojëra tavoline</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Realiteti virtual</translation>
@@ -2635,6 +2638,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5675809467256309336">Muzikë dance dhe elektronike</translation>
 <translation id="5675959228867414813">Shfaq sipas datës</translation>
 <translation id="567604591393105935">Fleta e poshtme e tregtisë u hap në gjysmë lartësi</translation>
+<translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Letër alumini</translation>
 <translation id="5680642791693447368">Filma melodramë, me krim dhe mister</translation>
 <translation id="568292603005599551">Pozicioni i imazhit në boshtin X</translation>
@@ -2672,6 +2676,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="573555826359077410">Butoni "Krijo formular". Aktivizoje për të krijuar me shpejtësi një formular të ri te "Formularët e Google"</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Ruaje kartën në "Llogarinë tënde të Google"}other{Ruaji kartat në "Llogarinë tënde të Google"}}</translation>
 <translation id="5738385766833540397">Menaxho se si i merr sinjalizimet për uljet e çmimeve për produktet që monitoron</translation>
+<translation id="573974402615125334">Për të ndarë, për t'u bashkuar dhe për të bashkëpunuar në grupet e skedave, sinkronizo historikun dhe skedat e tua</translation>
 <translation id="5740911612628596808">Zarf C9</translation>
 <translation id="5742806904559466333">Bare, klube dhe jeta e natës</translation>
 <translation id="5743684619253032786">Produkte për kujdesin e thonjve</translation>
@@ -3870,6 +3875,7 @@ Detaje shtesë:
 <translation id="7865448901209910068">Shpejtësia më e mirë</translation>
 <translation id="7870281855125116701">U gjet një zbritje çmimi</translation>
 <translation id="7871445724586827387">Ndrysho fjalëkalimin e "Llogarisë sate të Google"</translation>
+<translation id="787226752901403048">Identifikohu në Chrome për të ndarë dhe për t'u bashkuar në grupet e skedave dhe për të punuar së bashku për ide të ndryshme</translation>
 <translation id="7877007680666472091">ID-të e përmbajtjeve të mbrojtura</translation>
 <translation id="7878562273885520351">Fjalëkalimet e tua mund të jenë kompromentuar</translation>
 <translation id="7882421473871500483">Kafe</translation>
@@ -4324,6 +4330,7 @@ Detaje shtesë:
 <translation id="8702965365666568344">Shirit montimi</translation>
 <translation id="8703575177326907206">Lidhja me <ph name="DOMAIN" /> nuk është e enkriptuar.</translation>
 <translation id="8705331520020532516">Numri i serisë</translation>
+<translation id="8706806585855470492">Do të mund të ndash, të bashkohesh dhe të bashkëpunosh në grupet e skedave</translation>
 <translation id="8708134712139312373">Mund të kërkojë të lidhet me pajisjet me Bluetooth</translation>
 <translation id="8710842507289500830">Stili i fontit</translation>
 <translation id="8712637175834984815">E kuptova</translation>
@@ -4466,6 +4473,7 @@ Detaje shtesë:
 <translation id="8975263830901772334">Emrat e skedarëve që printon</translation>
 <translation id="8982884016487650216">Ngarkimi i PDF-së përfundoi</translation>
 <translation id="8983369100812962543">Tani mund t'i ndryshosh përmasat e aplikacionit</translation>
+<translation id="8985112471026018799">Ruaje kartën për përfundim më të shpejtë të blerjes</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të shikuar historikun tënd të shfletimit në Chrome</translation>
 <translation id="8987663052629670333">Shërbime printimi fotografish</translation>
 <translation id="8987927404178983737">Muaji</translation>
@@ -4532,6 +4540,7 @@ Detaje shtesë:
 <translation id="9090993752571911635">Ofruesit e shërbimeve të internetit (ISP-të)</translation>
 <translation id="9093723786115107672">Veshje gjumi</translation>
 <translation id="9094544726794842788">Opsioni i gishtave poshtë hap një formular për dërgimin e komenteve të detajuara se pse nuk të pëlqejnë këto rezultate</translation>
+<translation id="9094809883254050729">Plotëso automatikisht herën tjetër. Karta enkriptohet kur ruhet.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />; shtyp "Tab" dhe më pas "Enter" për të caktuar Chrome si shfletuesin e parazgjedhur të sistemit te cilësimet e iOS</translation>
 <translation id="9101450247048146228">Përdorimi dhe lëvizja e kamerës (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Tabakaja 1</translation>

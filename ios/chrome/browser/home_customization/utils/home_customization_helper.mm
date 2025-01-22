@@ -17,7 +17,7 @@
       // Main page toggles.
     case CustomizationToggleType::kMostVisited:
       return l10n_util::GetNSString(
-          IDS_IOS_HOME_CUSTOMIZATION_MOST_VISITED_TITLE);
+          IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE);
     case CustomizationToggleType::kMagicStack:
       return l10n_util::GetNSString(
           IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_TITLE);

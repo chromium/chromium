@@ -828,7 +828,6 @@
 <translation id="4835385943915508971">Chrome የተጠየቀው ግብዓት መዳረሻ የለውም።</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{የ<ph name="TAB_COUNT_ONE" /> ትር የትር ቡድን፣ ቀለም <ph name="COLOR_NAME" />፣ እንደ አዲስ የዳራ የትር ቡድን ወደነበረበት ይመልሱ።}one{የ<ph name="TAB_COUNT_MANY" /> ትር የትር ቡድን፣ ቀለም <ph name="COLOR_NAME" />፣ እንደ አዲስ የዳራ የትር ቡድን ወደነበረበት ይመልሱ።}other{የ<ph name="TAB_COUNT_MANY" /> ትሮች የትር ቡድን፣ ቀለም <ph name="COLOR_NAME" />፣ እንደ አዲስ የዳራ የትር ቡድን ወደነበረበት ይመልሱ።}}</translation>
 <translation id="4837753911714442426">ገጽን ለማተም አማራጮችን ክፈት</translation>
-<translation id="4842092870884894799">የይለፍ ቃል ማመንጨት ብቅ ይን በማሳየት ላይ</translation>
 <translation id="4844633725025837809">ለታከለው ደህንነት በመሣሪያዎ ላይ ያሉ የይለፍ ቃላትን ወደ Google የይለፍ ቃል አስተዳዳሪ ከመቀመጣቸው በፊት ያመስጥሩ</translation>
 <translation id="4850886885716139402">አሳይ</translation>
 <translation id="4852014461738377247">በመግባት ላይ\u2026</translation>
@@ -1003,6 +1002,7 @@
 <translation id="5665379678064389456">በ<ph name="APP_NAME" /> ውስጥ ክስተት ይፍጠሩ</translation>
 <translation id="5680616253592639556">የጎደለ መረጃ</translation>
 <translation id="5683547024293500885">Chrome ዝማኔዎች ካሉ መፈተሽ አይችልም</translation>
+<translation id="5683916195767086779">የትር ቡድን</translation>
 <translation id="5686790454216892815">የፋይሉ ስም በጣም ረጅም ነው</translation>
 <translation id="5687606994963670306">Chrome ከ30 ቀናት በላይ የሆናቸው ጣቢያዎችን በራስ-ሰር ይሰርዛል። እንደገና የሚጎበኙት ጣቢያ በዝርዝሩ ላይ እንደገና ሊታይ ይችላል። ወይም አንድን ጣቢያ ለእርስዎ ማስታወቂያዎችን እንዳይጠቁም ማገድ ይችላሉ። <ph name="BEGIN_LINK" />የማስታወቂያ ግላዊነትዎን በChrome ውስጥ ስለማስተዳደር<ph name="END_LINK" /> የበለጠ ይወቁ።</translation>
 <translation id="569536719314091526">ከተጨማሪ አማራጮች አዝራርሩ ይህን ገፅ ወደ ማንኛውም ቋንቋ ያስተርጉሙ</translation>

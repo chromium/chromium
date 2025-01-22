@@ -366,10 +366,6 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       ClientDataJsonParams params,
       std::optional<base::span<const uint8_t>> challenge);
 
-  void WaitForChallengeBeforeStartingRequest(
-      device::FidoRequestHandlerBase::RequestCallback callback,
-      const std::string& authenticator_id);
-
   // Get an identifier for the current request. Callbacks that might span a
   // cancelation must hold one of these values to check whether they're still
   // pertinent when called.

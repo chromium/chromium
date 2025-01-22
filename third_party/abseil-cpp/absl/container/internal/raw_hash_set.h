@@ -41,12 +41,6 @@
 // When heterogeneous lookup is disabled, only the explicit `key_type` overloads
 // exist.
 //
-// find() also supports passing the hash explicitly:
-//
-//   iterator find(const key_type& key, size_t hash);
-//   template <class U>
-//   iterator find(const U& key, size_t hash);
-//
 // In addition the pointer to element and iterator stability guarantees are
 // weaker: all iterators and pointers are invalidated after a new element is
 // inserted.
@@ -3209,17 +3203,33 @@ class raw_hash_set {
     return 1;
   }
 
-  // Erases the element pointed to by `it`.  Unlike `std::unordered_set::erase`,
-  // this method returns void to reduce algorithmic complexity to O(1).  The
-  // iterator is invalidated, so any increment should be done before calling
-  // erase.  In order to erase while iterating across a map, use the following
-  // idiom (which also works for some standard containers):
+  // Erases the element pointed to by `it`.
   //
-  // for (auto it = m.begin(), end = m.end(); it != end;) {
-  //   // `erase()` will invalidate `it`, so advance `it` first.
-  //   auto copy_it = it++;
-  //   if (<pred>) {
-  //     m.erase(copy_it);
+  // Unlike `std::unordered_set::erase`, this returns `void` to reduce
+  // algorithmic complexity to O(1). When erasing multiple elements, proper
+  // iterator management is crucial to avoid invalidation errors. The preferred
+  // method is `absl::erase_if`, which manages this complexity and simplifies
+  // the code. However, if specific requirements prevent using `absl::erase_if`
+  // (such as needing to perform extra operations on each element), the iterator
+  // must be manually advanced. Techniques like post-increment iteration with
+  // `erase` can ensure the iterator remains valid during the removal process.
+  //
+  // Example using absl::erase_if:
+  //
+  // absl::flat_hash_set<std::string> email_addresses = GetEmailAddresses();
+  // absl::erase_if(email_addresses,
+  //             [](const auto& a) { return !IsValidAddress(a); });
+  //
+  // Example using post-increment iteration:
+  //
+  // absl::flat_hash_set<std::string> email_addresses = GetEmailAddresses();
+  // for (auto it = email_addresses.begin(); it != email_addresses.end();) {
+  //   if (!IsValidAddress(*it)) {
+  //     process_element_being_erased(*it);
+  //     email_addresses.erase(it++);
+  //   } else {
+  //     process_element_being_kept(*it);
+  //     ++it;
   //   }
   // }
   void erase(const_iterator cit) { erase(cit.inner_); }
@@ -3421,20 +3431,14 @@ class raw_hash_set {
 #endif  // ABSL_HAVE_PREFETCH
   }
 
-  // The API of find() has two extensions.
-  //
-  // 1. The hash can be passed by the user. It must be equal to the hash of the
-  // key.
-  //
-  // 2. The type of the key argument doesn't have to be key_type. This is so
-  // called heterogeneous key support.
   template <class K = key_type>
+  ABSL_DEPRECATE_AND_INLINE()
   iterator find(const key_arg<K>& key,
-                size_t hash) ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    AssertOnFind(key);
-    if (is_soo()) return find_soo(key);
-    return find_non_soo(key, hash);
+                size_t) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return find(key);
   }
+  // The API of find() has one extension: the type of the key argument doesn't
+  // have to be key_type. This is so called heterogeneous key support.
   template <class K = key_type>
   iterator find(const key_arg<K>& key) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     AssertOnFind(key);
@@ -3444,9 +3448,10 @@ class raw_hash_set {
   }
 
   template <class K = key_type>
+  ABSL_DEPRECATE_AND_INLINE()
   const_iterator find(const key_arg<K>& key,
-                      size_t hash) const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return const_cast<raw_hash_set*>(this)->find(key, hash);
+                      size_t) const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return find(key);
   }
   template <class K = key_type>
   const_iterator find(const key_arg<K>& key) const

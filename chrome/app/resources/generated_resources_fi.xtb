@@ -129,7 +129,6 @@
 <translation id="1079242569060319448">Unohtuiko PIN-koodi?</translation>
 <translation id="1079285777677001938">Joidenkin sivustojen ominaisuudet eivät välttämättä toimi.</translation>
 <translation id="1079766198702302550">Estä aina kameran käyttö</translation>
-<translation id="1080365971383768617">Salasanat kaikilla laitteillasi</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 välilehti}other{<ph name="GROUP_TITLE" /> – # välilehteä}}</translation>
 <translation id="1082214733466244292">Järjestelmänvalvojasi on estänyt joitakin laitteen toimintoja</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> haluaa palauttaa Chrome-asetuksesi alkuperäisiksi. Etusivusi, Uusi välilehti -sivusi ja hakukoneesi palautetaan, laajennukset poistetaan käytöstä ja kaikki kiinnitetyt välilehdet irrotetaan. Myös kaikki väliaikaiset ja välimuistissa olevat tiedot, kuten evästeet, sisältö ja sivustotiedot, poistetaan.</translation>
@@ -523,6 +522,7 @@
 <translation id="135389172849514421">Toimii offline-tilassa</translation>
 <translation id="1353980523955420967">PPD:tä ei löydy. Varmista, että Chromebook on verkossa, ja yritä uudelleen.</translation>
 <translation id="1354045473509304750">Hyväksy edelleen, että <ph name="HOST" /> voi käyttää ja liikuttaa kameraasi</translation>
+<translation id="1354148503392558902">Vaihdetaan salasanaa…</translation>
 <translation id="1355088139103479645">Poistetaanko kaikki data?</translation>
 <translation id="1356376170199999104">Sallittu – <ph name="PERMISSION_DETAILS" />. Laita mikrofoni päälle fyysisellä kytkimellä.</translation>
 <translation id="1356959069439783953">Ei-aktiiviset välilehdet saavat uuden ilmeen</translation>
@@ -1102,6 +1102,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1751335846119670066">Apua lukemiseen</translation>
 <translation id="17513872634828108">Avoimet välilehdet</translation>
 <translation id="175196451752279553">A&amp;vaa suljettu välilehti uudelleen</translation>
+<translation id="1752557850776261983">Tarkistetaan sisäänkirjautumista…</translation>
 <translation id="1753067873202720523">Chromebook ei välttämättä lataudu sen ollessa päällä.</translation>
 <translation id="1753557900380512635">Sisätilat</translation>
 <translation id="1753905327828125965">Käydyimmät</translation>
@@ -1934,6 +1935,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2323018538045954000">Tallennetut Wi-Fi-verkot</translation>
 <translation id="2325444234681128157">Muista salasana</translation>
 <translation id="2326188115274135041">Vahvista PIN-koodi laittaaksesi automaattisen avaamisen päälle</translation>
+<translation id="2326583548923775947">Tämä ei ole Google-tili. Chromeen tallennetut kohteet eivät ole saatavilla muilla laitteilla.</translation>
 <translation id="2326906096734221931">Avaa sovellusasetukset</translation>
 <translation id="2326931316514688470">&amp;Lataa sovellus uudelleen</translation>
 <translation id="2327492829706409234">Ota sovellus käyttöön</translation>
@@ -2382,6 +2384,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2638662041295312666">Kirjautumiskuva</translation>
 <translation id="2640299212685523844">Käytä GTK:ta</translation>
 <translation id="264083724974021997">Muodosta yhteys puhelimeen – valintaikkuna</translation>
+<translation id="2641098199809442625">Salasanaasi ei päivitetty, mutta sinun pitäisi silti päästä sivustolle vanhalla salasanallasi.</translation>
 <translation id="2642111877055905627">Jalkapallo</translation>
 <translation id="2642206811783203764">Aina: <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">Voit poistaa mainosten mittausdataa milloin tahansa poistamalla selausdatasi</translation>
@@ -3030,6 +3033,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="310297983047869047">Edellinen dia</translation>
 <translation id="3103451787721578293">Kerro, miksi lataat tätä dataa:</translation>
 <translation id="3103512663951238230">Alt + klikkaus</translation>
+<translation id="3104763887980088552">Toimintaloki</translation>
 <translation id="3104948640446684649">Lähetä käyttö- ja diagnostiikkadataa. Laite lähettää tällä hetkellä diagnostiikkadataa sekä laitteen ja sovellusten käyttödataa automaattisesti Googlelle. Datan avulla parannetaan esimerkiksi järjestelmän ja sovellusten vakautta. Koostetusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, esim. Android-kehittäjille. Jos olet laittanut päälle muun verkko- ja sovellustoiminnan asetuksen, tätä dataa voidaan tallentaa Google-tilillesi. <ph name="BEGIN_LINK2" />Lue lisää mittareista<ph name="BEGIN_LINK2_END" />Lue lisää<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Viimeisin epäonnistunut päivitys</translation>
 <translation id="3105796011181310544">Vaihdetaanko takaisin Googleen?</translation>
@@ -3744,6 +3748,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3629664892718440872">Muista valinta</translation>
 <translation id="3630132874740063857">Oma puhelin</translation>
 <translation id="3630995161997703415">Lisää tämä sivusto hyllyysi, niin voit käyttää sitä milloin tahansa.</translation>
+<translation id="3632929818790223729">Luo välilehden ja aktiivisen välilehden jaettu näkymä</translation>
 <translation id="3634652306074934350">Lupapyyntö vanhentunut</translation>
 <translation id="3635199270495525546">Trusted Platform ‑moduuli (TPM) havaittu</translation>
 <translation id="3635353578505343390">Lähetä palautetta Googlelle</translation>
@@ -6242,9 +6247,6 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) haluaa sinun liittyvän välilehtiryhmään. Kaikki linkin saaneet voivat muokata kaikkia välilehtiä, joten liity harkiten. Linkki vanhenee 48 tunnin kuluttua.</translation>
 <translation id="5410889048775606433">Fuksia</translation>
 <translation id="5411022484772257615">Kouluun rekisteröinti ei onnistunut</translation>
-<translation id="5411856344659127989">Jos haluat lisätä tilin jollekulle toiselle, <ph name="LINK_BEGIN" />lisää uusi henkilö<ph name="LINK_END" /> <ph name="DEVICE_TYPE" />‑laitteelle.
-
-Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit ylläpitää Google-tilejä <ph name="SETTINGS_LINK_BEGIN" />asetuksista<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="54118879136097217">Asenna sovellus laitteelle (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="5413640305322530561">Lue lisää diagnostiikka- ja käyttödatasta</translation>
 <translation id="5414198321558177633">Päivitetään profiililistaa. Tämä voi kestää muutaman minuutin.</translation>
@@ -6523,7 +6525,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5610867721023328944">Yritä uudelleen tai valitse alta jokin käytettävissä olevista teemoista.</translation>
 <translation id="5611398002774823980">Tallenna tilille</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5613074282491265467">Kun olet kirjautuneena Chromeen, tallennetut salasanat tallennetaan Google-tilillesi (<ph name="USER_EMAIL" />). Voit laittaa tämän pois päältä asetuksista.</translation>
 <translation id="5614190747811328134">Käyttäjäilmoitus</translation>
 <translation id="5614553682702429503">Tallennetaanko salasana?</translation>
 <translation id="5614947000616625327">iCloud-avainnippu</translation>
@@ -8555,7 +8556,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7088674813905715446">Järjestelmänvalvoja on asettanut tämän laitteen poistotilaan. Voit asettaa sen käyttöönottotilaan pyytämällä järjestelmänvalvojaa asettamaan laitteen odottavaan tilaan.</translation>
 <translation id="7088960765736518739">Kytkimen käyttö</translation>
 <translation id="7089253021944603172">Välilehti on taas aktiivinen</translation>
-<translation id="7090160970140261931"><ph name="DEVICE_TYPE" /> voi olla kirjautuneena useille tileille, joita voi käyttää sivustoilla ja Android-sovelluksissa. Voit päättää, mitä tilejä Android-sovelluksissa käytetään.</translation>
 <translation id="7090714929377281710">Laita hotspot pois päältä automaattisesti</translation>
 <translation id="7092504544229909737">Ei toimi Android-sovellusten kanssa</translation>
 <translation id="7093220653036489319">Pikavastaukset</translation>
@@ -9016,6 +9016,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7424818322350938336">Verkko lisättiin</translation>
 <translation id="7425037327577270384">Auta minua kirjoittamaan</translation>
 <translation id="7427348830195639090">Taustasivu: <ph name="BACKGROUND_PAGE_URL" /></translation>
+<translation id="7427729970025360383">Profiilia hallinnoidaan</translation>
 <translation id="7427798576651127129">Puhelu laitteesta <ph name="DEVICE_NAME" /></translation>
 <translation id="7429415133937917139">Simuloi päivitettävän pistekirjoitusnäytön ulostuloa
     näytön yläreunan ChromeVox-paneelissa</translation>
@@ -10033,6 +10034,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8140869601171867148">Google-tilisi on sama tili, jolla käytät Gmailia, YouTubea, Chromea ja muita Googlen tuotteita.
     Tilin avulla voit helposti käyttää esimerkiksi kirjanmerkkejä tai tiedostoja.</translation>
 <translation id="8141418916163800697">Voit ottaa lisää ominaisuuksia käyttöön puhelinhubin asetuksissa</translation>
+<translation id="814156740715940972">Luo välilehden ja aktiivisen välilehden jaettu näkymä</translation>
 <translation id="8141584439523427891">Avataan pian toisessa selaimessa</translation>
 <translation id="8141725884565838206">Hallinnoi salasanoja</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{video}other{# videota}}</translation>
@@ -11165,9 +11167,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Käyttää akkua nopeammin (akkua tällä hetkellä <ph name="BATTERY_PERCENTAGE" /> %)</translation>
 <translation id="8944633700466246631">Luo Google Salasanoille kuusinumeroinen palautuksen PIN-koodi</translation>
-<translation id="8944725102565796255">Jos haluat käyttää tiliä vain tämän kerran, voit <ph name="GUEST_LINK_BEGIN" />käyttää laitetta vieraana<ph name="GUEST_LINK_END" />. Jos haluat lisätä tilin jollekulle toiselle, <ph name="LINK_BEGIN" />lisää uusi henkilö<ph name="LINK_END" /> <ph name="DEVICE_TYPE" />‑laitteelle.
-
-Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit ylläpitää Google-tilejä <ph name="SETTINGS_LINK_BEGIN" />asetuksista<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="8945274638472141382">Kuvakkeen koko</translation>
 <translation id="8945508919180478719">Studiotyylinen mikrofoni</translation>
 <translation id="8946359700442089734">Virheenkorjausominaisuudet eivät olleet täysin käytössä tällä <ph name="IDS_SHORT_PRODUCT_NAME" />-laitteella.</translation>

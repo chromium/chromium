@@ -974,6 +974,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4285498937028063278">Rögzítés megszüntetése</translation>
 <translation id="428715201724021596">Csatlakozás a profilhoz. Ez eltarthat néhány percig.</translation>
 <translation id="4287250812980588583">Chrome-ablak</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{A mikrofon hangerejét a(z) <ph name="APP_NAME" /> alkalmazás vezérli}other{A mikrofon hangerejét # alkalmazás vezérli}}</translation>
 <translation id="4294319844246081198">Jó reggelt, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Az összes (<ph name="COUNT" />) értesítés törlése</translation>
 <translation id="4300272766492248925">Alkalmazás megnyitása</translation>

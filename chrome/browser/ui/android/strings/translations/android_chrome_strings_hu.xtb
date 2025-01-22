@@ -828,7 +828,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4835385943915508971">A Chrome nem fér hozzá a kért forráshoz.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű lapcsoport visszaállítása új háttérbeli lapcsoportként.}other{<ph name="TAB_COUNT_MANY" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű lapcsoport visszaállítása új háttérbeli lapcsoportként.}}</translation>
 <translation id="4837753911714442426">Oldalnyomtatási lehetőségek megnyitása</translation>
-<translation id="4842092870884894799">Jelszógenerálás előugró ablakának megjelenítése</translation>
 <translation id="4844633725025837809">A fokozott biztonság érdekében titkosíthatja jelszavait eszközén, mielőtt a rendszer elmenti őket a Google Jelszókezelőbe</translation>
 <translation id="4850886885716139402">Nézet</translation>
 <translation id="4852014461738377247">Bejelentkezés…</translation>

@@ -85,6 +85,7 @@
 <translation id="1158211211994409885">Pinutol ng <ph name="HOST_NAME" /> ang koneksyon nang hindi inaasahan.</translation>
 <translation id="1160009341934077418">History ng Presyo sa Buong Web</translation>
 <translation id="1161325031994447685">Muling kumonekta sa Wi-Fi</translation>
+<translation id="1161663161838091892">I-sync ang mga tab at history para magpatuloy</translation>
 <translation id="1163507966173624031">Folk at Traditional Music</translation>
 <translation id="11635448457105324">Button na Pamahalaan ang mga address, i-activate para makapagdagdag at makapamahala ng mga address sa mga setting ng Chrome</translation>
 <translation id="1165039591588034296">Error</translation>
@@ -1105,6 +1106,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="297173220375858963">Desktop Publishing</translation>
 <translation id="2972581237482394796">&amp;I-redo</translation>
 <translation id="2974468223369775963">Hindi ma-save ang IBAN na ito sa iyong Google Account. Na-save lang ito sa Chrome sa device na ito. Tatanungin ka ulit ng Chrome sa susunod na pagkakataong gamitin mo ang IBAN na ito.</translation>
+<translation id="297667759942911166">Makipag-collaborate sa mga grupo ng tab</translation>
 <translation id="2977665033722899841">Kasalukuyang napili ang <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">I-lock at gamitin ang iyong keyboard</translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1968,6 +1970,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4434045419905280838">Mga pop-up at pag-redirect</translation>
 <translation id="443673843213245140">Hindi pinagana ang paggamit ng isang proxy ngunit tinutukoy ang isang tahasang configuration ng proxy.</translation>
 <translation id="4438821706955556403">Karaniwang presyo</translation>
+<translation id="444116852243722675">Buksan lahat (<ph name="ITEMS" />)</translation>
 <translation id="4441832193888514600">Binalewala dahil ang patakaran ay puwede lang itakda bilang patakaran ng user ng cloud.</translation>
 <translation id="4445133368066241428">Mga sikat na paksa</translation>
 <translation id="4445964943162061557">Isa itong pang-eksperimentong feature at hindi ito palaging tama.</translation>
@@ -2063,6 +2066,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4661556981531699496">Mga Alaga at Hayop</translation>
 <translation id="4661868874067696603">Maghanap ng Higit Pang Opsyon sa Pagbili</translation>
 <translation id="4663373278480897665">Pinapayagan ang camera</translation>
+<translation id="4664084870155869900">I-autofill sa susunod. Ise-save ang card sa iyong device.</translation>
 <translation id="466561305373967878">Mga Board Game</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
@@ -2634,6 +2638,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5675809467256309336">Dance at Electronic Music</translation>
 <translation id="5675959228867414813">Ipakita ayon sa petsa</translation>
 <translation id="567604591393105935">Binuksan nang kalahati ang bottom sheet ng commerce</translation>
+<translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Foil</translation>
 <translation id="5680642791693447368">Mga Pelikulang Thriller, Krimen, at Misteryo</translation>
 <translation id="568292603005599551">Posisyon ng larawan X</translation>
@@ -2671,6 +2676,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="573555826359077410">Button na Gumawa ng form, i-activate para mabilis na makagawa ng bagong form sa Google Forms</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{I-save ang card sa iyong Google Account}one{I-save ang mga card sa iyong Google Account}other{I-save ang mga card sa iyong Google Account}}</translation>
 <translation id="5738385766833540397">Pamahalaan kung paano mo matatanggap ang mga alerto sa pagbaba ng presyo para sa mga produktong tina-track mo</translation>
+<translation id="573974402615125334">Para magawang mag-share ng, sumali sa, at makipag-collaborate sa mga grupo ng tab, i-sync ang iyong history at mga tab</translation>
 <translation id="5740911612628596808">Envelope C9</translation>
 <translation id="5742806904559466333">Mga Bar, Club, at Nightlife</translation>
 <translation id="5743684619253032786">Mga Produkto para sa Pangangalaga ng Kuko</translation>
@@ -3871,6 +3877,7 @@ Mga karagdagang detalye:
 <translation id="7865448901209910068">Pinakamabilis</translation>
 <translation id="7870281855125116701">May Nakitang Diskwento</translation>
 <translation id="7871445724586827387">Palitan ang password ng iyong Google Account</translation>
+<translation id="787226752901403048">Mag-sign in sa Chrome para mag-share ng at sumali sa mga grupo ng tab, at makipagtulungan sa mga ideya</translation>
 <translation id="7877007680666472091">mga pinoprotektahang content ID</translation>
 <translation id="7878562273885520351">Maaaring makompromismo ang iyong password</translation>
 <translation id="7882421473871500483">Brown</translation>
@@ -4325,6 +4332,7 @@ Mga karagdagang detalye:
 <translation id="8702965365666568344">Mounting Tape</translation>
 <translation id="8703575177326907206">Ang iyong koneksyon sa <ph name="DOMAIN" /> ay hindi naka-encrypt.</translation>
 <translation id="8705331520020532516">Serial Number</translation>
+<translation id="8706806585855470492">Magagawa mong mag-share ng, sumali sa, at makipag-collaborate sa mga grupo ng tab</translation>
 <translation id="8708134712139312373">Puwedeng hilinging kumonekta sa mga Bluetooth device</translation>
 <translation id="8710842507289500830">Istilo ng font</translation>
 <translation id="8712637175834984815">Nakuha ko</translation>
@@ -4467,6 +4475,7 @@ Mga karagdagang detalye:
 <translation id="8975263830901772334">Mga pangalan ng mga file na pini-print mo</translation>
 <translation id="8982884016487650216">Na-load na ang PDF</translation>
 <translation id="8983369100812962543">Puwede mo na ngayong i-resize ang app</translation>
+<translation id="8985112471026018799">I-save ang card para sa mas mabilis na pag-checkout</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang tab at pagkatapos ay ang Enter para tingnan ang iyong history ng pag-browse sa Chrome</translation>
 <translation id="8987663052629670333">Mga Serbisyo sa Pag-print ng Larawan</translation>
 <translation id="8987927404178983737">Buwan</translation>
@@ -4533,6 +4542,7 @@ Mga karagdagang detalye:
 <translation id="9090993752571911635">Mga Internet Service Provider (mga ISP)</translation>
 <translation id="9093723786115107672">Damit na Pantulog</translation>
 <translation id="9094544726794842788">Nagbubukas ang thumbs down ng isang form para sa pagsusumite ng detalyadong feedback tungkol sa kung bakit hindi mo gusto ang mga resultang ito</translation>
+<translation id="9094809883254050729">I-autofill sa susunod. Naka-encrypt ang card kapag na-save.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang tab at pagkatapos ay ang Enter para itakda ang Chrome bilang default na browser ng system sa mga setting ng iOS</translation>
 <translation id="9101450247048146228">Paggamit at paggalaw ng camera (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Tray 1</translation>

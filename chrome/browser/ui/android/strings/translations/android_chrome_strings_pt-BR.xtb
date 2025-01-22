@@ -829,7 +829,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4835385943915508971">O Chrome não tem acesso ao recurso solicitado.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Restaurar grupo de <ph name="TAB_COUNT_ONE" /> guia na cor <ph name="COLOR_NAME" /> como um novo grupo de guias em segundo plano.}one{Restaurar grupo de <ph name="TAB_COUNT_MANY" /> guia na cor <ph name="COLOR_NAME" /> como um novo grupo de guias em segundo plano.}other{Restaurar grupo de <ph name="TAB_COUNT_MANY" /> guias na cor <ph name="COLOR_NAME" /> como um novo grupo de guias em segundo plano.}}</translation>
 <translation id="4837753911714442426">Abrir opções de impressão de página</translation>
-<translation id="4842092870884894799">Mostrando pop-up da criação de senhas</translation>
 <translation id="4844633725025837809">Para ter mais segurança, criptografe as senhas no dispositivo antes que elas sejam salvas no Gerenciador de senhas do Google</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4852014461738377247">Fazendo login\u2026</translation>

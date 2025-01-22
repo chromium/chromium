@@ -54,8 +54,20 @@ class TestShareKitService : public ShareKitService {
 
  private:
   // Sets the `collab_id` for the given `tab_group_id`.
-  void SetTabGroupCollabID(tab_groups::LocalTabGroupID tab_group_id,
-                           NSString* collab_id);
+  void SetTabGroupCollabIdFromGroupId(tab_groups::LocalTabGroupID tab_group_id,
+                                      NSString* collab_id);
+
+  // Sets the `collab_id` for the given `group_guid`.
+  void SetTabGroupCollabIdFromGroupGuid(base::Uuid group_guid,
+                                        NSString* collab_id);
+
+  // Called when the user joined a group with the given `collab_id` from the
+  // join flow.
+  void OnTabGroupJoined(NSString* collab_id);
+
+  // Whether the user is the owner of the group. This is a workaround to update
+  // the user's role based on the specific tested flow.
+  bool is_owner_ = false;
 
   raw_ptr<data_sharing::DataSharingService> data_sharing_service_;
   raw_ptr<tab_groups::TabGroupSyncService> sync_service_;

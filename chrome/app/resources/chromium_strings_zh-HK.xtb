@@ -40,9 +40,6 @@
 <translation id="1594928384848033697">Chromium 想刪除你的「密碼管理工具」資料。如果允許，請輸入 Windows 密碼。</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{管理員要求您重新啟動 Chromium，以套用更新}=1{管理員要求您重新啟動 Chromium，以套用更新。您的無痕式視窗不會重新開啟。}other{管理員要求您重新啟動 Chromium，以套用更新。您的 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="1625909126243026060">查看 Chromium 中重要的私隱和安全控制項</translation>
-<translation id="1632539827495546968">如果您只想使用此帳戶一次，可以在 Chromium 瀏覽器中使用<ph name="GUEST_LINK_BEGIN" />訪客模式<ph name="GUEST_LINK_END" />。如要新增其他人的帳戶，請<ph name="LINK_BEGIN" />新增使用者<ph name="LINK_END" />至您的 <ph name="DEVICE_TYPE" />。
-
-您已向網站和應用程式授予的權限，可能會套用到此帳戶。您可在「<ph name="SETTINGS_LINK_BEGIN" />設定<ph name="SETTINGS_LINK_END" />」中管理 Google 帳戶。</translation>
 <translation id="1640672724030957280">正在下載…</translation>
 <translation id="1709772298389099340">為 <ph name="BROWSER_NAME" /> 提供更高權限。</translation>
 <translation id="1715127912119967311">為協助改善這些功能，Chromium 會向 Google 傳送你與功能的互動資料。人手審查員可能會讀取、處理這些資料，並加上註解。</translation>
@@ -366,7 +363,6 @@
 <translation id="6096348254544841612">自訂和管理 Chromium。有可用的更新。</translation>
 <translation id="6107893135096467929">已開啟 • Chromium 無法驗證此擴充程式的來源</translation>
 <translation id="6119438414301547735">允許擴充程式在 Chromium 工具列中顯示存取要求</translation>
-<translation id="6120345080069858279">Chromium 會將此密碼儲存在您的 Google 帳戶內，您無需記住。</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> 不安全，因此 Chromium 已封鎖此檔案。</translation>
 <translation id="6132897690380286411">Chromium 即將關閉並刪除資料</translation>
 <translation id="6145820983052037069">您可在此處切換不同的 Chromium 設定檔</translation>
@@ -528,6 +524,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8166782796394721554">開啟 Chromium 的 JavaScript 和 WebAssembly 引擎額外防護</translation>
 <translation id="81770708095080097">此檔案不安全，因此 Chromium 已封鎖此檔案。</translation>
+<translation id="8200109504272824693">輸入用於在帳戶 <ph name="USER_EMAIL" /> 中使用及儲存 Chromium 資料的密碼短語</translation>
 <translation id="8221491193165283816">您通常會封鎖通知。如要允許此網站向您傳送通知，請按這裡。</translation>
 <translation id="8223363452568144035">如要使用攝錄機，請在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中向 Chromium 授予存取權</translation>
 <translation id="8232193495299001329">Chromium 無法驗證擴充程式的來源，因此可能不安全。請從 Chromium 中移除此擴充程式，令其無法再查看及變更你瀏覽的網站相關資料，包括個人資料。</translation>

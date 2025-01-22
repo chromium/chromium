@@ -85,6 +85,7 @@
 <translation id="1158211211994409885">Gwnaeth <ph name="HOST_NAME" /> gau'r cysylltiad yn annisgwyl.</translation>
 <translation id="1160009341934077418">Hanes Prisiau ar Draws y We</translation>
 <translation id="1161325031994447685">Wrthi'n ailgysylltu â Wi-Fi</translation>
+<translation id="1161663161838091892">Cysoni tabiau a hanes i barhau</translation>
 <translation id="1163507966173624031">Cerddoriaeth Werin a Thraddodiadol</translation>
 <translation id="11635448457105324">Botwm rheoli cyfeiriadau, gweithredwch i ychwanegu a rheoli cyfeiriadau yng ngosodiadau Chrome</translation>
 <translation id="1165039591588034296">Gwall</translation>
@@ -1105,6 +1106,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="297173220375858963">Cyhoeddi Bwrdd Gwaith</translation>
 <translation id="2972581237482394796">&amp;Ailwneud</translation>
 <translation id="2974468223369775963">Ni fu modd cadw'r IBAN hwn yn eich Cyfrif Google. Mae wedi'i gadw i Chrome ar y ddyfais hon yn lle hynny. Bydd Chrome yn gofyn i chi eto y tro nesaf y byddwch yn defnyddio'r IBAN hwn.</translation>
+<translation id="297667759942911166">Cydweithio mewn grwpiau tab</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, dewiswyd ar hyn o bryd. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">Cloi a defnyddio'ch bysellfwrdd</translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -2064,6 +2066,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4661556981531699496">Anifeiliaid ac Anifeiliaid Anwes</translation>
 <translation id="4661868874067696603">Chwilio am Ragor o Opsiynau Prynu</translation>
 <translation id="4663373278480897665">Caniateir camera</translation>
+<translation id="4664084870155869900">Awtolenwi y tro nesaf. Mae'r cerdyn wedi'i gadw ar eich dyfais.</translation>
 <translation id="466561305373967878">Gemau Bwrdd</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Realiti rhithwir</translation>
@@ -2635,6 +2638,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5675809467256309336">Cerddoriaeth Dawns ac Electronig</translation>
 <translation id="5675959228867414813">Dangos yn ôl dyddiad</translation>
 <translation id="567604591393105935">Dalen waelod masnach wedi'i hagor ar hanner uchder</translation>
+<translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Ffoil</translation>
 <translation id="5680642791693447368">Ffilmiau Cyffro, Trosedd a Dirgelwch</translation>
 <translation id="568292603005599551">Safle Llun X</translation>
@@ -2672,6 +2676,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="573555826359077410">Botwm creu ffurflen, gweithredwch i greu ffurflen newydd yn Google Forms yn gyflym</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Cadw cerdyn yn eich Cyfrif Google}zero{Cadw cardiau yn eich Cyfrif Google}two{Cadw cardiau yn eich Cyfrif Google}few{Cadw cardiau yn eich Cyfrif Google}many{Cadw cardiau yn eich Cyfrif Google}other{Cadw cardiau yn eich Cyfrif Google}}</translation>
 <translation id="5738385766833540397">Rheoli sut rydych yn derbyn rhybuddion gostyngiadau prisiau ar gyfer cynhyrchion rydych yn eu holrhain</translation>
+<translation id="573974402615125334">I rannu, ymuno a chydweithio mewn grwpiau tabiau, cysonwch eich hanes a'ch tabiau</translation>
 <translation id="5740911612628596808">Amlen C9</translation>
 <translation id="5742806904559466333">Bariau, Clybiau a Bywyd Nos</translation>
 <translation id="5743684619253032786">Cynhyrchion Gofal Ewinedd</translation>
@@ -3871,6 +3876,7 @@ Manylion ychwanegol:
 <translation id="7865448901209910068">Cyflymder gorau</translation>
 <translation id="7870281855125116701">Wedi Dod o Hyd i Ostyngiad</translation>
 <translation id="7871445724586827387">Newid cyfrinair eich Cyfrif Google</translation>
+<translation id="787226752901403048">Mewngofnodwch i Chrome i rannu ac ymuno â grwpiau tabiau, a chydweithio ar syniadau</translation>
 <translation id="7877007680666472091">dulliau adnabod cynnwys gwarchodedig</translation>
 <translation id="7878562273885520351">Mae'n bosib bod eich cyfrinair dan fygythiad</translation>
 <translation id="7882421473871500483">Brown</translation>
@@ -4325,6 +4331,7 @@ Manylion ychwanegol:
 <translation id="8702965365666568344">Tâp Gosod</translation>
 <translation id="8703575177326907206">Nid yw eich cysylltiad ag <ph name="DOMAIN" /> wedi'i amgryptio.</translation>
 <translation id="8705331520020532516">Rhif Cyfresol</translation>
+<translation id="8706806585855470492">Byddwch yn cael rhannu, ymuno a chydweithio mewn grwpiau tabiau</translation>
 <translation id="8708134712139312373">Yn gallu gofyn am gysylltu â dyfeisiau Bluetooth</translation>
 <translation id="8710842507289500830">Steil ffont</translation>
 <translation id="8712637175834984815">Iawn</translation>
@@ -4467,6 +4474,7 @@ Manylion ychwanegol:
 <translation id="8975263830901772334">Enwau ffeiliau rydych yn eu hargraffu</translation>
 <translation id="8982884016487650216">Wedi gorffen llwytho PDF</translation>
 <translation id="8983369100812962543">Gallwch bellach newid maint yr ap</translation>
+<translation id="8985112471026018799">Cadw cerdyn ar gyfer talu'n cyflymach</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pwyswch Tab yna Enter i weld eich hanes pori yn Chrome</translation>
 <translation id="8987663052629670333">Gwasanaethau Argraffu Lluniau</translation>
 <translation id="8987927404178983737">Mis</translation>
@@ -4533,6 +4541,7 @@ Manylion ychwanegol:
 <translation id="9090993752571911635">Darparwyr Gwasanaethau Rhyngrwyd (ISP)</translation>
 <translation id="9093723786115107672">Dillad Nos</translation>
 <translation id="9094544726794842788">Mae bawd i lawr yn agor ffurflen ar gyfer cyflwyno adborth manwl ar pam nad ydych yn hoffi'r canlyniadau hyn</translation>
+<translation id="9094809883254050729">Awtolenwi y tro nesaf. Mae'r cerdyn yn cael ei amgryptio pan gaiff ei gadw.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pwyswch Tab yna Enter i osod Chrome fel porwr diofyn y system yng ngosodiadau iOS</translation>
 <translation id="9101450247048146228">Symudiad a defnydd camera (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Hambwrdd 1</translation>

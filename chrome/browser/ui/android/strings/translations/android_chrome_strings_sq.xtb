@@ -285,6 +285,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="233375395665273385">Fshi dhe dil</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> nuk mund të instalohej.</translation>
 <translation id="2349710944427398404">Të dhënat gjithsej të përdorura nga Chrome, duke përfshirë llogaritë, faqeshënuesit dhe cilësimet e ruajtura</translation>
+<translation id="2349954856814571872">Ikona e butonit të shiritit të faqeshënuesve</translation>
 <translation id="235789365079050412">Politika e privatësisë së Google</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2362083820973145409">Identifikuar si <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Hap cilësimet.</translation>
@@ -827,7 +828,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4835385943915508971">Chrome nuk ka qasje te burimi i kërkuar.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Restauro grupin e skedave me <ph name="TAB_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />, si një grup të ri skedash në sfond.}other{Restauro grupin e skedave me <ph name="TAB_COUNT_MANY" /> skedë, ngjyrë <ph name="COLOR_NAME" />, si një grup të ri skedash në sfond.}}</translation>
 <translation id="4837753911714442426">Hap opsionet për të printuar faqen</translation>
-<translation id="4842092870884894799">Po shfaq dritaren kërcyese të krijimit të fjalëkalimit</translation>
 <translation id="4844633725025837809">Për më shumë siguri, enkripto fjalëkalimet në pajisjen tënde para se të ruhen në "Menaxherin e fjalëkalimeve të Google"</translation>
 <translation id="4850886885716139402">Pamja</translation>
 <translation id="4852014461738377247">Po identifikohesh\u2026</translation>

@@ -9,8 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -20,6 +21,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Handles property updates to the suggestion list component. */
+@NullMarked
 class SuggestionListViewBinder {
     /** Holds the view components needed to renderer the suggestion list. */
     public static class SuggestionListViewHolder {
