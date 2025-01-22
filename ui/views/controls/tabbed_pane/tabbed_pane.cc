@@ -455,6 +455,10 @@ TabbedPaneTabStrip::TabbedPaneTabStrip(TabbedPane::Orientation orientation,
   // See |selectionBar.expand| and |selectionBar.contract|.
   expand_animation_->SetDuration(base::Milliseconds(150));
   contract_animation_->SetDuration(base::Milliseconds(180));
+
+  // Callback when the enabled state changes.
+  enabled_changed_subscription_ = AddEnabledChangedCallback(base::BindRepeating(
+      &TabbedPaneTabStrip::OnEnableChanged, base::Unretained(this)));
 }
 
 TabbedPaneTabStrip::~TabbedPaneTabStrip() = default;
@@ -490,13 +494,13 @@ void TabbedPaneTabStrip::AnimationEnded(const gfx::Animation* animation) {
   }
 }
 
-void TabbedPaneTabStrip::SetEnabled(bool enabled) {
-  if (GetEnabled() == enabled) {
-    return;
-  }
-  View::SetEnabled(enabled);
+void TabbedPaneTabStrip::OnEnableChanged() {
+  const bool enabled = GetEnabled();
+
   for (size_t i = 0; i < GetTabCount(); ++i) {
-    GetTabAtIndex(i)->UpdateEnabledColor(enabled);
+    auto* tab = GetTabAtIndex(i);
+    tab->SetEnabled(enabled);
+    tab->UpdateEnabledColor(enabled);
   }
 }
 
