@@ -759,11 +759,11 @@ void GlicWindowController::OnWidgetVisibilityChanged(views::Widget* widget,
 }
 
 bool GlicWindowController::IsActive() {
-  return glic_window_widget_ && glic_window_widget_->IsActive();
+  return IsShowing() && glic_window_widget_ && glic_window_widget_->IsActive();
 }
 
-bool GlicWindowController::HasWindow() const {
-  return !!glic_window_widget_;
+bool GlicWindowController::IsShowing() const {
+  return state_ != State::kClosed;
 }
 
 base::CallbackListSubscription

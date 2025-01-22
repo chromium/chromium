@@ -103,12 +103,12 @@ class GlicWindowController : public views::WidgetObserver {
   void AddStateObserver(StateObserver* observer);
   void RemoveStateObserver(StateObserver* observer);
 
-  // Returns whether or not the glic window is currently active.
+  // Returns whether the views::Widget associated with the glic window is active
+  // (e.g. will receive keyboard events).
   bool IsActive();
 
-  // Returns whether there is a glic window, regardless of it's visibility to
-  // the user.
-  bool HasWindow() const;
+  // Returns true if the state is anything other than kClosed.
+  bool IsShowing() const;
 
   using WindowActivationChangedCallback =
       base::RepeatingCallback<void(bool active)>;

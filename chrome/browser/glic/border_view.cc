@@ -97,7 +97,7 @@ class BorderView::BorderViewUpdater {
     auto* service =
         GlicKeyedServiceFactory::GetGlicKeyedService(browser_->GetProfile());
     CHECK(service);
-    if (!service->window_controller().HasWindow()) {
+    if (!service->window_controller().IsShowing()) {
       return;
     }
     border_view_->StartAnimation();
