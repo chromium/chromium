@@ -1,6 +1,3 @@
-#[cfg(feature = "suggestions")]
-use std::cmp::Ordering;
-
 // Internal
 use crate::builder::Command;
 
@@ -13,15 +10,29 @@ where
     T: AsRef<str>,
     I: IntoIterator<Item = T>,
 {
-    let mut candidates: Vec<(f64, String)> = possible_values
-        .into_iter()
+    use std::cmp::Ordering;
+
+    let mut candidates: Vec<(f64, String)> = Vec::new();
+    for pv in possible_values {
         // GH #4660: using `jaro` because `jaro_winkler` implementation in `strsim-rs` is wrong
         // causing strings with common prefix >=10 to be considered perfectly similar
-        .map(|pv| (strsim::jaro(v, pv.as_ref()), pv.as_ref().to_owned()))
-        // Confidence of 0.7 so that bar -> baz is suggested
-        .filter(|(confidence, _)| *confidence > 0.7)
-        .collect();
-    candidates.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(Ordering::Equal));
+        let confidence = strsim::jaro(v, pv.as_ref());
+
+        if confidence > 0.7 {
+            let new_elem = (confidence, pv.as_ref().to_owned());
+            let pos = candidates
+                .binary_search_by(|probe| {
+                    if probe.0 > confidence {
+                        Ordering::Greater
+                    } else {
+                        Ordering::Less
+                    }
+                })
+                .unwrap_or_else(|e| e);
+            candidates.insert(pos, new_elem);
+        }
+    }
+
     candidates.into_iter().map(|(_, pv)| pv).collect()
 }
 

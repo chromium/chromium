@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.74"
 name = "clap_builder"
-version = "4.5.23"
+version = "4.5.27"
 build = false
 include = [
     "build.rs",
@@ -61,6 +61,49 @@ dependent-version = "upgrade"
 shared-version = true
 tag-name = "v{{version}}"
 
+[features]
+cargo = []
+color = ["dep:anstream"]
+debug = ["dep:backtrace"]
+default = [
+    "std",
+    "color",
+    "help",
+    "usage",
+    "error-context",
+    "suggestions",
+]
+deprecated = []
+env = []
+error-context = []
+help = []
+std = ["anstyle/std"]
+string = []
+suggestions = [
+    "dep:strsim",
+    "error-context",
+]
+unicode = [
+    "dep:unicode-width",
+    "dep:unicase",
+]
+unstable-doc = [
+    "cargo",
+    "wrap_help",
+    "env",
+    "unicode",
+    "string",
+    "unstable-ext",
+]
+unstable-ext = []
+unstable-styles = ["color"]
+unstable-v5 = ["deprecated"]
+usage = []
+wrap_help = [
+    "help",
+    "dep:terminal_size",
+]
+
 [lib]
 name = "clap_builder"
 path = "src/lib.rs"
@@ -104,49 +147,6 @@ version = "1.1.0"
 
 [dev-dependencies.unic-emoji-char]
 version = "0.9.0"
-
-[features]
-cargo = []
-color = ["dep:anstream"]
-debug = ["dep:backtrace"]
-default = [
-    "std",
-    "color",
-    "help",
-    "usage",
-    "error-context",
-    "suggestions",
-]
-deprecated = []
-env = []
-error-context = []
-help = []
-std = ["anstyle/std"]
-string = []
-suggestions = [
-    "dep:strsim",
-    "error-context",
-]
-unicode = [
-    "dep:unicode-width",
-    "dep:unicase",
-]
-unstable-doc = [
-    "cargo",
-    "wrap_help",
-    "env",
-    "unicode",
-    "string",
-    "unstable-ext",
-]
-unstable-ext = []
-unstable-styles = ["color"]
-unstable-v5 = ["deprecated"]
-usage = []
-wrap_help = [
-    "help",
-    "dep:terminal_size",
-]
 
 [lints.clippy]
 assigning_clones = "allow"

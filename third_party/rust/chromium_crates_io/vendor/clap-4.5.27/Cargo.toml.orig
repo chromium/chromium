@@ -6,7 +6,6 @@ members = [
   "clap_derive",
   "clap_lex",
   "clap_complete",
-  "clap_complete_fig",
   "clap_complete_nushell",
   "clap_mangen",
 ]
@@ -100,7 +99,7 @@ blocks_in_conditions = "allow"
 
 [package]
 name = "clap"
-version = "4.5.23"
+version = "4.5.27"
 description = "A simple to use, efficient, and full-featured Command Line Argument Parser"
 categories = ["command-line-interface"]
 keywords = [
@@ -176,8 +175,8 @@ unstable-derive-ui-tests = []
 bench = false
 
 [dependencies]
-clap_builder = { path = "./clap_builder", version = "=4.5.23", default-features = false }
-clap_derive = { path = "./clap_derive", version = "=4.5.18", optional = true }
+clap_builder = { path = "./clap_builder", version = "=4.5.27", default-features = false }
+clap_derive = { path = "./clap_derive", version = "=4.5.24", optional = true }
 
 [dev-dependencies]
 trybuild = "1.0.91"

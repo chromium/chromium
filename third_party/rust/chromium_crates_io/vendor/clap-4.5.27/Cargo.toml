@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.74"
 name = "clap"
-version = "4.5.23"
+version = "4.5.27"
 build = false
 include = [
     "build.rs",
@@ -108,12 +108,47 @@ file = "src/lib.rs"
 replace = "blob/v{{version}}/CHANGELOG.md"
 search = 'blob/v.+\..+\..+/CHANGELOG.md'
 
-[profile.bench]
-lto = true
-codegen-units = 1
-
-[profile.test]
-opt-level = 1
+[features]
+cargo = ["clap_builder/cargo"]
+color = ["clap_builder/color"]
+debug = [
+    "clap_builder/debug",
+    "clap_derive?/debug",
+]
+default = [
+    "std",
+    "color",
+    "help",
+    "usage",
+    "error-context",
+    "suggestions",
+]
+deprecated = [
+    "clap_builder/deprecated",
+    "clap_derive?/deprecated",
+]
+derive = ["dep:clap_derive"]
+env = ["clap_builder/env"]
+error-context = ["clap_builder/error-context"]
+help = ["clap_builder/help"]
+std = ["clap_builder/std"]
+string = ["clap_builder/string"]
+suggestions = ["clap_builder/suggestions"]
+unicode = ["clap_builder/unicode"]
+unstable-derive-ui-tests = []
+unstable-doc = [
+    "clap_builder/unstable-doc",
+    "derive",
+]
+unstable-ext = ["clap_builder/unstable-ext"]
+unstable-styles = ["clap_builder/unstable-styles"]
+unstable-v5 = [
+    "clap_builder/unstable-v5",
+    "clap_derive?/unstable-v5",
+    "deprecated",
+]
+usage = ["clap_builder/usage"]
+wrap_help = ["clap_builder/wrap_help"]
 
 [lib]
 name = "clap"
@@ -462,11 +497,11 @@ doc-scrape-examples = true
 required-features = ["derive"]
 
 [dependencies.clap_builder]
-version = "=4.5.23"
+version = "=4.5.27"
 default-features = false
 
 [dependencies.clap_derive]
-version = "=4.5.18"
+version = "=4.5.24"
 optional = true
 
 [dev-dependencies.automod]
@@ -499,48 +534,6 @@ features = [
     "examples",
 ]
 default-features = false
-
-[features]
-cargo = ["clap_builder/cargo"]
-color = ["clap_builder/color"]
-debug = [
-    "clap_builder/debug",
-    "clap_derive?/debug",
-]
-default = [
-    "std",
-    "color",
-    "help",
-    "usage",
-    "error-context",
-    "suggestions",
-]
-deprecated = [
-    "clap_builder/deprecated",
-    "clap_derive?/deprecated",
-]
-derive = ["dep:clap_derive"]
-env = ["clap_builder/env"]
-error-context = ["clap_builder/error-context"]
-help = ["clap_builder/help"]
-std = ["clap_builder/std"]
-string = ["clap_builder/string"]
-suggestions = ["clap_builder/suggestions"]
-unicode = ["clap_builder/unicode"]
-unstable-derive-ui-tests = []
-unstable-doc = [
-    "clap_builder/unstable-doc",
-    "derive",
-]
-unstable-ext = ["clap_builder/unstable-ext"]
-unstable-styles = ["clap_builder/unstable-styles"]
-unstable-v5 = [
-    "clap_builder/unstable-v5",
-    "clap_derive?/unstable-v5",
-    "deprecated",
-]
-usage = ["clap_builder/usage"]
-wrap_help = ["clap_builder/wrap_help"]
 
 [lints.clippy]
 assigning_clones = "allow"
@@ -611,3 +604,10 @@ unused_qualifications = "warn"
 [lints.rust.rust_2018_idioms]
 level = "warn"
 priority = -1
+
+[profile.bench]
+lto = true
+codegen-units = 1
+
+[profile.test]
+opt-level = 1

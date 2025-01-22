@@ -98,6 +98,10 @@ impl Arg {
     /// The name is used to check whether or not the argument was used at
     /// runtime, get values, set relationships with other args, etc..
     ///
+    /// By default, an `Arg` is
+    /// - Positional, see [`Arg::short`] or [`Arg::long`] turn it into an option
+    /// - Accept a single value, see [`Arg::action`] to override this
+    ///
     /// <div class="warning">
     ///
     /// **NOTE:** In the case of arguments that take values (i.e. [`Arg::action(ArgAction::Set)`])

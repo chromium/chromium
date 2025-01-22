@@ -194,8 +194,8 @@
 //!   [`Subcommand`][crate::Subcommand])
 //!   - When `Option<T>`, the subcommand becomes optional
 //!
-//! See [Configuring the Parser][_tutorial::chapter_1] and
-//! [Subcommands][_tutorial::chapter_2#subcommands] from the tutorial.
+//! See [Configuring the Parser][_tutorial#configuring-the-parser] and
+//! [Subcommands][_tutorial#subcommands] from the tutorial.
 //!
 //! ### ArgGroup Attributes
 //!
@@ -215,11 +215,14 @@
 //! - For `struct`s, [`multiple = true`][crate::ArgGroup::multiple] is implied
 //! - `enum` support is tracked at [#2621](https://github.com/clap-rs/clap/issues/2621)
 //!
-//! See [Argument Relations][_tutorial::chapter_3#argument-relations] from the tutorial.
+//! See [Argument Relations][_tutorial#argument-relations] from the tutorial.
 //!
 //! ### Arg Attributes
 //!
 //! These correspond to a [`Arg`][crate::Arg].
+//! The default state for a field without attributes is to be a positional argument with [behavior
+//! inferred from the field type](#arg-types).
+//! `#[arg(...)]` attributes allow overriding or extending those defaults.
 //!
 //! **Raw attributes:**  Any [`Arg` method][crate::Arg] can also be used as an attribute, see [Terminology](#terminology) for syntax.
 //! - e.g. `#[arg(num_args(..=3))]` would translate to `arg.num_args(..=3)`
@@ -266,7 +269,7 @@
 //!   - Requires field arg to be of type `Vec<T>` and `T` to implement `std::convert::Into<OsString>` or `#[arg(value_enum)]`
 //!   - `<expr>` must implement `IntoIterator<T>`
 //!
-//! See [Adding Arguments][_tutorial::chapter_2] and [Validation][_tutorial::chapter_3] from the
+//! See [Adding Arguments][_tutorial#adding-arguments] and [Validation][_tutorial#validation] from the
 //! tutorial.
 //!
 //! ### ValueEnum Attributes
@@ -275,7 +278,7 @@
 //!   - When not present: `"kebab-case"`
 //!   - Available values: `"camelCase"`, `"kebab-case"`, `"PascalCase"`, `"SCREAMING_SNAKE_CASE"`, `"snake_case"`, `"lower"`, `"UPPER"`, `"verbatim"`
 //!
-//! See [Enumerated values][_tutorial::chapter_3#enumerated-values] from the tutorial.
+//! See [Enumerated values][_tutorial#enumerated-values] from the tutorial.
 //!
 //! ### Possible Value Attributes
 //!

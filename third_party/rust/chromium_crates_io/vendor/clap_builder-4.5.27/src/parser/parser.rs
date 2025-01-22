@@ -1571,9 +1571,11 @@ impl Parser<'_> {
         );
 
         // Add the arg to the matches to build a proper usage string
-        if let Some((name, _)) = did_you_mean.as_ref() {
-            if let Some(arg) = self.cmd.get_keymap().get(&name.as_ref()) {
-                self.start_custom_arg(matcher, arg, ValueSource::CommandLine);
+        if !self.cmd.is_ignore_errors_set() {
+            if let Some((name, _)) = did_you_mean.as_ref() {
+                if let Some(arg) = self.cmd.get_keymap().get(&name.as_ref()) {
+                    self.start_custom_arg(matcher, arg, ValueSource::CommandLine);
+                }
             }
         }
         let did_you_mean = did_you_mean.map(|(arg, cmd)| (format!("--{arg}"), cmd));
