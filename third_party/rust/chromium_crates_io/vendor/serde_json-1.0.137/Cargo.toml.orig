@@ -1,6 +1,6 @@
 [package]
 name = "serde_json"
-version = "1.0.134"
+version = "1.0.137"
 authors = ["Erick Tryzelaar <erick.tryzelaar@gmail.com>", "David Tolnay <dtolnay@gmail.com>"]
 categories = ["encoding", "parser-implementations", "no-std"]
 description = "A JSON serialization file format"
@@ -38,7 +38,7 @@ targets = ["x86_64-unknown-linux-gnu"]
 rustdoc-args = ["--generate-link-to-definition"]
 
 [package.metadata.playground]
-features = ["raw_value"]
+features = ["float_roundtrip", "raw_value", "unbounded_depth"]
 
 
 ### FEATURES #################################################################

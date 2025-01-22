@@ -338,6 +338,14 @@ impl Map<String, Value> {
         }
     }
 
+    /// Gets an iterator over the values of the map.
+    #[inline]
+    pub fn into_values(self) -> IntoValues {
+        IntoValues {
+            iter: self.map.into_values(),
+        }
+    }
+
     /// Retains only the elements specified by the predicate.
     ///
     /// In other words, remove all pairs `(k, v)` such that `f(&k, &mut v)`
@@ -1155,3 +1163,17 @@ type ValuesMutImpl<'a> = btree_map::ValuesMut<'a, String, Value>;
 type ValuesMutImpl<'a> = indexmap::map::ValuesMut<'a, String, Value>;
 
 delegate_iterator!((ValuesMut<'a>) => &'a mut Value);
+
+//////////////////////////////////////////////////////////////////////////////
+
+/// An owning iterator over a serde_json::Map's values.
+pub struct IntoValues {
+    iter: IntoValuesImpl,
+}
+
+#[cfg(not(feature = "preserve_order"))]
+type IntoValuesImpl = btree_map::IntoValues<String, Value>;
+#[cfg(feature = "preserve_order")]
+type IntoValuesImpl = indexmap::map::IntoValues<String, Value>;
+
+delegate_iterator!((IntoValues) => Value);
