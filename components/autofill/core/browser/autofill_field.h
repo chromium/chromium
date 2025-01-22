@@ -167,11 +167,10 @@ class AutofillField : public FormFieldData {
   // As the |type| is expected to depend on |ComputedType|, the value will be
   // reset to |ComputedType| if some internal value change (e.g. on call to
   // (|set_heuristic_type|).
-  // |SetTypeTo| cannot be called with
-  // type.GetStoreableType() == NO_SERVER_DATA.
+  // |SetTypeTo| cannot be called with type.GetStorableType() == NO_SERVER_DATA.
   void SetTypeTo(const AutofillType& type);
 
-  // This function returns |ComputedType| unless the value has been overriden
+  // This function returns |ComputedType| unless the value has been overridden
   // by |SetTypeTo|.
   // (i.e. overall_type_ != NO_SERVER_DATA ? overall_type_ : ComputedType())
   AutofillType Type() const;
@@ -261,7 +260,7 @@ class AutofillField : public FormFieldData {
   //     it is FormFieldData::selected_text().
   //
   // The motivation behind (1) is that unchanged values usually carry little
-  // value for importing. The exception are <select> feilds, which often have
+  // value for importing. The exception are <select> fields, which often have
   // a correct default value, so we consider them for import even if their value
   // didn't change.
   // TODO: crbug.com/40137859 - Consider making an exception for also for
@@ -528,7 +527,7 @@ class AutofillField : public FormFieldData {
   // sensitive, it just means that is wasn't identified as such yet.
   bool value_identified_as_potentially_sensitive_ = false;
 
-  // Indicates if the field was determined to be eligable for prediction
+  // Indicates if the field was determined to be eligible for prediction
   // improvements. The `nullopt` state implies that the eligibility has not been
   // determined yet.
   std::optional<bool> field_is_eligible_for_autofill_ai_;
