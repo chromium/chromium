@@ -90,8 +90,9 @@ void WriteFirstRunSentinel() {
 }
 
 bool ShouldPresentFirstRunExperience() {
-  if (experimental_flags::AlwaysDisplayFirstRun())
+  if (experimental_flags::AlwaysDisplayFirstRun()) {
     return true;
+  }
 
   if (tests_hook::DisableDefaultFirstRun()) {
     return false;

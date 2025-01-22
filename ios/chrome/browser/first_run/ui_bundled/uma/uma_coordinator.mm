@@ -6,8 +6,8 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
-#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/first_run/ui_bundled/uma/uma_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 
 @interface UMACoordinator () <UIAdaptivePresentationControllerDelegate,
                               UMATableViewControllerPresentationDelegate>
