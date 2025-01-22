@@ -59,14 +59,13 @@ struct SwapChainInfo {
   SwapChainInfo& operator=(SwapChainInfo&&);
 
   void Clear();
-  gpu::MailboxHolder GetMailboxHolder() const;
 
   scoped_refptr<gpu::ClientSharedImage> shared_image;
   gpu::SyncToken sync_token;
 
 #if BUILDFLAG(IS_WIN)
-  // When shared images are being used, there is a corresponding MailboxHolder
-  // and D3D11Fence for each D3D11 texture in the vector.
+  // When shared images are being used, there is a corresponding
+  // ClientSharedImage and D3D11Fence for each D3D11 texture in the vector.
   raw_ptr<ID3D11Texture2D> d3d11_texture = nullptr;
   // If a shared handle cannot be created for the swap chain texture, a second
   // texture which is shareable will be created and passed to the renderer
