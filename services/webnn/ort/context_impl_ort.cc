@@ -126,7 +126,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*gather_elements_indices=*/{},
        /*gather_nd_input=*/{},
        /*gather_nd_indices=*/{},
-       /*gelu_input=*/{},
+       /*gelu_input=*/DataTypeConstraint::kFloat16To32,
        /*gemm_input=*/DataTypeConstraint::kFloat16To32Ints32To64,
        /*gru_input=*/{},
        /*gru_cell_input=*/{},
