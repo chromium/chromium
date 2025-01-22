@@ -96,8 +96,7 @@ public class AppFilterCoordinatorTest {
     private BottomSheetController createBottomSheetController() {
         ViewGroup activityContentView = getActivity().findViewById(android.R.id.content);
         ScrimCoordinator scrimCoordinator =
-                new ScrimCoordinator(
-                        getActivity(), /* systemUiScrimDelegate= */ null, activityContentView);
+                new ScrimCoordinator(getActivity(), activityContentView);
         return BottomSheetControllerFactory.createBottomSheetController(
                 () -> scrimCoordinator,
                 (unused) -> {},

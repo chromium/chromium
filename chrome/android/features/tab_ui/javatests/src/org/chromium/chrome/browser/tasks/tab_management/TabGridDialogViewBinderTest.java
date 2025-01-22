@@ -180,7 +180,7 @@ public class TabGridDialogViewBinderTest {
                         assertNull(mShareButton);
                         assertNull(mImageTilesContainer);
                     }
-                    mScrimCoordinator = new ScrimCoordinator(sActivity, null, parentView);
+                    mScrimCoordinator = new ScrimCoordinator(sActivity, parentView);
                     mTabGridDialogView.setupScrimCoordinator(mScrimCoordinator);
 
                     mModel =
