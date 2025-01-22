@@ -5255,7 +5255,6 @@ void EmitDidChangeHoverElement(Document& document, Element* new_hover_element) {
 }
 
 void Document::SetHoverElement(Element* new_hover_element) {
-  HTMLElement::HoveredElementChanged(hover_element_, new_hover_element);
   EmitDidChangeHoverElement(*this, new_hover_element);
 
   hover_element_ = new_hover_element;

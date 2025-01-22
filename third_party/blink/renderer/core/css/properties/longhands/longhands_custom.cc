@@ -4755,40 +4755,6 @@ const CSSValue* Height::CSSValueFromComputedStyleInternal(
                                                              style);
 }
 
-const CSSValue* PopoverShowDelay::ParseSingleValue(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    const CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ConsumeTime(
-      stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
-}
-
-const CSSValue* PopoverShowDelay::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject* layout_object,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return CSSNumericLiteralValue::Create(style.PopoverShowDelay(),
-                                        CSSPrimitiveValue::UnitType::kSeconds);
-}
-
-const CSSValue* PopoverHideDelay::ParseSingleValue(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    const CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ConsumeTime(
-      stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
-}
-
-const CSSValue* PopoverHideDelay::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject* layout_object,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return CSSNumericLiteralValue::Create(style.PopoverHideDelay(),
-                                        CSSPrimitiveValue::UnitType::kSeconds);
-}
-
 const CSSValue* InterestTargetShowDelay::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,

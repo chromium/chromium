@@ -1618,14 +1618,6 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   CHECK(!original_document.AllOpenPopovers().Contains(this));
   original_document.AllOpenPopovers().insert(this);
 
-  // Queue a delayed hide event, if necessary.
-  if (RuntimeEnabledFeatures::HTMLPopoverActionHoverEnabled()) {
-    if (!GetDocument().HoverElement() ||
-        !IsNodePopoverDescendant(*GetDocument().HoverElement())) {
-      MaybeQueuePopoverHideEvent();
-    }
-  }
-
   SetPopoverFocusOnShow();
 
   // Store the element to focus when this popover closes.
@@ -2184,11 +2176,9 @@ const HTMLElement* HTMLElement::TopLayerElementPopoverAncestor(
 
 namespace {
 // For light dismiss, we need to find the closest popover that the user has
-// clicked. For hover triggering, we need to find the closest popover that is
-// related to a hovered node. In both cases, this is the nearest DOM ancestor
-// that is either a popover or the invoking element for a popover. It is
-// possible both exist, in which case the topmost one (highest on the popover
-// stack) is returned.
+// clicked. This is the nearest DOM ancestor that is either a popover or the
+// invoking element for a popover. It is possible both exist, in which case the
+// topmost one (highest on the popover stack) is returned.
 const HTMLElement* FindTopmostRelatedPopover(
     const Node& node,
     const PopoverAncestorOptionsSet& ancestor_options =
@@ -2261,113 +2251,6 @@ void HTMLElement::HandlePopoverLightDismiss(const PointerEvent& event,
 void HTMLElement::InvokePopover(Element& invoker) {
   CHECK(HasPopoverAttribute());
   ShowPopoverInternal(&invoker, /*exception_state=*/nullptr);
-}
-
-// Must be called on an Element that is a popover. Returns true if |node| is a
-// descendant of this popover. This includes the case where |node| is contained
-// within another popover, and the container popover is a descendant of this
-// popover. This also includes "indirect" relationships that the popover API
-// provides, such as through invoking elements or via the anchor attribute.
-// Note that in the special case of popover=manual popovers, which do not
-// usually have ancestral relationships, this function *will* check for invoker
-// and anchor relationships to form descendant edges. This is important for the
-// `popover-hide-delay` CSS property, which works for all popover types, and
-// needs to keep popovers open when a descendant is hovered.
-bool HTMLElement::IsNodePopoverDescendant(const Node& node) const {
-  CHECK(RuntimeEnabledFeatures::HTMLPopoverActionHoverEnabled());
-  CHECK(HasPopoverAttribute());
-  const HTMLElement* ancestor = FindTopmostRelatedPopover(
-      node, {PopoverAncestorOptions::kIncludeManualPopovers});
-  while (ancestor) {
-    if (ancestor == this) {
-      return true;
-    }
-    const HTMLElement* new_ancestor = FindTopmostRelatedPopover(
-        *ancestor, PopoverAncestorOptionsSet{
-                       PopoverAncestorOptions::kExclusive,
-                       PopoverAncestorOptions::kIncludeManualPopovers});
-    DCHECK_NE(new_ancestor, ancestor);
-    ancestor = new_ancestor;
-  }
-  return false;
-}
-
-void HTMLElement::MaybeQueuePopoverHideEvent() {
-  CHECK(RuntimeEnabledFeatures::HTMLPopoverActionHoverEnabled());
-  CHECK(HasPopoverAttribute());
-  // If the popover isn't showing, or it has an infinite PopoverHideDelay, do
-  // nothing.
-  if (GetPopoverData()->visibilityState() == PopoverVisibilityState::kHidden) {
-    return;
-  }
-  if (!GetComputedStyle()) {
-    return;
-  }
-  float hide_delay_seconds = GetComputedStyle()->PopoverHideDelay();
-  // If the value is infinite or NaN, don't hide the popover.
-  if (!std::isfinite(hide_delay_seconds)) {
-    return;
-  }
-  // Queue the task to hide this popover.
-  GetPopoverData()->setHoverHideTask(PostDelayedCancellableTask(
-      *GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault),
-      FROM_HERE,
-      WTF::BindOnce(
-          [](HTMLElement* popover) {
-            if (!popover->HasPopoverAttribute()) {
-              return;
-            }
-            // We're hover-hiding this popover, so remove *all* hover show
-            // tasks.
-            popover->GetPopoverData()->hoverShowTasks().clear();
-            if (!popover->popoverOpen()) {
-              return;
-            }
-            popover->HidePopoverInternal(
-                HidePopoverFocusBehavior::kFocusPreviousElement,
-                HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
-                /*exception_state=*/nullptr);
-          },
-          WrapWeakPersistent(this)),
-      base::Seconds(hide_delay_seconds)));
-}
-
-// static
-void HTMLElement::HoveredElementChanged(Element* old_element,
-                                        Element* new_element) {
-  if (!RuntimeEnabledFeatures::HTMLPopoverActionHoverEnabled()) {
-    return;
-  }
-  // If either element has an interest target, do nothing.
-  // TODO(crbug.com/326681249): This will be handled in future by a separate
-  // InterestLost() function.
-  if ((old_element && old_element->interestTargetElement()) ||
-      (new_element && new_element->interestTargetElement())) {
-    return;
-  }
-  if (old_element) {
-    // For the previously-hovered element: loop through all showing popovers
-    // (including popover=manual) and see if the element that just lost focus
-    // was an ancestor. If so, queue a task to hide it after a delay.
-    for (auto& popover : old_element->GetDocument().AllOpenPopovers()) {
-      if (popover->IsNodePopoverDescendant(*old_element)) {
-        popover->MaybeQueuePopoverHideEvent();
-      }
-    }
-  }
-  // It is possible that both old_element and new_element are descendants of
-  // the same open popover, in which case we'll queue a hide task and then
-  // immediately cancel it, resulting in no change.
-  if (new_element) {
-    // For the newly-hovered element: loop through all showing popovers and see
-    // if the newly-focused element is an ancestor. If so, cancel that popover's
-    // hide-after-delay task.
-    for (auto& popover : new_element->GetDocument().AllOpenPopovers()) {
-      if (popover->IsNodePopoverDescendant(*new_element)) {
-        popover->GetPopoverData()->setHoverHideTask(TaskHandle());
-      }
-    }
-  }
 }
 
 void HTMLElement::SetImplicitAnchor(Element* element) {

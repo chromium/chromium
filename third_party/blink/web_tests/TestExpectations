@@ -9015,7 +9015,6 @@ crbug.com/380534434 [ Win ] external/wpt/css/css-scroll-snap/snap-fling-in-large
 # Gardener 2024-11-29
 crbug.com/381335068 [ Linux ] external/wpt/webdriver/tests/bidi/network/auth_required/unsubscribe.py [ Failure Pass ]
 crbug.com/381457334 external/wpt/event-timing/modal-dialog-interrupt-paint.html [ Crash Failure Pass Skip Timeout ]
-crbug.com/381444317 [ Linux ] external/wpt/html/semantics/popovers/popover-target-action-hover.tentative.html [ Failure Pass ]
 
 # Gardener 2024-12-05
 crbug.com/382506777 [ Linux ] external/wpt/scroll-animations/css/animation-inactive-outside-range-test.html [ Failure Pass ]

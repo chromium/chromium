@@ -375,8 +375,6 @@ placeContent
 placeItems
 placeSelf
 pointerEvents
-popoverHideDelay
-popoverShowDelay
 position
 positionAnchor
 positionArea

@@ -119,9 +119,6 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
 
   void DefaultEventHandler(Event&) override;
 
-  void SetHovered(bool hovered) override;
-  void HandlePopoverInvokerHovered(bool hovered);
-
   bool willValidate() const override;
 
   bool IsReadOnly() const;

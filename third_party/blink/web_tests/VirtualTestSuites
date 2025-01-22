@@ -3424,17 +3424,6 @@
     "owners": ["samomekarajr@microsoft.com", "almaher@microsoft.com"]
   },
   {
-    "prefix": "popover-hover-disabled",
-    "owners": ["masonf@chromium.org"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/html/semantics/popovers/popover-css-properties.tentative.html",
-      "external/wpt/html/semantics/popovers/popover-target-action-hover.tentative.html"
-    ],
-    "args": ["--disable-blink-features=HTMLPopoverActionHover"],
-    "expires": "Jun 1, 2025"
-  },
-  {
     "prefix": "disable-css-line-clamp",
     "platforms": ["Linux"],
     "bases": [

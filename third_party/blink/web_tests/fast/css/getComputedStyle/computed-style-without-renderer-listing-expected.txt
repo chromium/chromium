@@ -310,8 +310,6 @@ paint-order: normal
 perspective: none
 perspective-origin: 50% 50%
 pointer-events: auto
-popover-hide-delay: infinity * 1s
-popover-show-delay: 0.5s
 position: static
 position-anchor: auto
 position-area: none
