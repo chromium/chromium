@@ -30,8 +30,9 @@ void DeviceSharingManagerImpl::SetActiveBrowser(Browser* browser) {
 
 void DeviceSharingManagerImpl::UpdateActiveUrl(Browser* browser,
                                                const GURL& active_url) {
-  if (browser != active_browser_)
+  if (browser != active_browser_) {
     return;
+  }
 
   if (active_url.is_empty()) {
     ClearActiveUrl(browser);
@@ -43,15 +44,17 @@ void DeviceSharingManagerImpl::UpdateActiveUrl(Browser* browser,
 
 void DeviceSharingManagerImpl::UpdateActiveTitle(Browser* browser,
                                                  const std::u16string& title) {
-  if (browser != active_browser_)
+  if (browser != active_browser_) {
     return;
+  }
 
   [handoff_manager_ updateActiveTitle:title];
 }
 
 void DeviceSharingManagerImpl::ClearActiveUrl(Browser* browser) {
-  if (browser != active_browser_)
+  if (browser != active_browser_) {
     return;
+  }
 
   [handoff_manager_ updateActiveURL:GURL()];
   [handoff_manager_ updateActiveTitle:std::u16string()];
@@ -63,6 +66,7 @@ void DeviceSharingManagerImpl::UpdateHandoffManager() {
     return;
   }
 
-  if (!handoff_manager_)
+  if (!handoff_manager_) {
     handoff_manager_ = [[HandoffManager alloc] init];
+  }
 }
