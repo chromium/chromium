@@ -416,6 +416,7 @@ mojom("protected_buffer_manager") {
   sources = [ "protected_buffer_manager.mojom" ]
   public_deps = [
     "//media/mojo/mojom/stable:native_pixmap_handle",
+    "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
   ]
 }

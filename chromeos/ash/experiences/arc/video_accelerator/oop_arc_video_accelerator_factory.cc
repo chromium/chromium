@@ -46,10 +46,10 @@ class MojoProtectedBufferManager : public DecoderProtectedBufferManager {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     remote_->GetProtectedSharedMemoryFromHandle(
         mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(dummy_fd))),
+        // TODO(b/195769334): does anything need to be validated here?
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-            base::BindPostTaskToCurrentDefault(base::BindOnce(
-                &OnGetProtectedSharedMemoryRegionFor, std::move(response_cb))),
-            mojo::ScopedSharedBufferHandle()));
+            base::BindPostTaskToCurrentDefault(std::move(response_cb)),
+            base::UnsafeSharedMemoryRegion()));
   }
   void GetProtectedNativePixmapHandleFor(
       base::ScopedFD dummy_fd,
@@ -67,19 +67,6 @@ class MojoProtectedBufferManager : public DecoderProtectedBufferManager {
 
  private:
   ~MojoProtectedBufferManager() override = default;
-
-  static void OnGetProtectedSharedMemoryRegionFor(
-      GetProtectedSharedMemoryRegionForResponseCB response_cb,
-      mojo::ScopedSharedBufferHandle shared_memory_mojo_handle) {
-    if (!shared_memory_mojo_handle.is_valid()) {
-      return std::move(response_cb).Run(base::UnsafeSharedMemoryRegion());
-    }
-
-    // TODO(b/195769334): does anything need to be validated here?
-    std::move(response_cb)
-        .Run(mojo::UnwrapUnsafeSharedMemoryRegion(
-            std::move(shared_memory_mojo_handle)));
-  }
 
   static void OnGetProtectedNativePixmapHandleFor(
       GetProtectedNativePixmapHandleForResponseCB response_cb,

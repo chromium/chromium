@@ -8,11 +8,13 @@
 
 module arc.mojom;
 import "media/mojo/mojom/stable/native_pixmap_handle.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
 // This interface is exposed by the GPU process for translating dummy handles
 // for secure buffers into usable shared memory buffer or native pixmap handles.
-// Next Method ID: 4
+// Next Method ID: 5
+// Removed method ID: 1
 [Stable, Uuid="560fada2-b6b8-4b06-a337-188381028495",
  ServiceSandbox=sandbox.mojom.Sandbox.kGpu]
 interface ProtectedBufferManager {
@@ -38,11 +40,11 @@ interface ProtectedBufferManager {
   // a decryption operation can write to this shared memory and then the video
   // decoder can consume it.
   //
-  // Returns null on failure (including if the dummy handle does not correspond
-  // to a valid shared memory buffer).
+  // Returns invalid UnsafeSharedMemoryRegion instance on failure (including if
+  // the dummy handle does not correspond to a valid shared memory buffer).
   [MinVersion=1]
-  GetProtectedSharedMemoryFromHandle@1(handle dummy_handle)
-      => (handle<shared_buffer>? shared_memory_handle);
+  GetProtectedSharedMemoryFromHandle@4(handle dummy_handle)
+      => (mojo_base.mojom.UnsafeSharedMemoryRegion? unsafe_region);
 
   // Translates from a given |dummy_handle| to a native pixmap handle. The
   // intended use is for the video decoder to gain access to the output buffer.
