@@ -99,7 +99,6 @@ class AuthenticatorRequestDialogView
   raw_ptr<AuthenticatorRequestDialogModel> model_;
 
   raw_ptr<AuthenticatorRequestSheetView, DanglingUntriaged> sheet_ = nullptr;
-  std::unique_ptr<views::MenuRunner> other_mechanisms_menu_runner_;
 
   // web_contents_hidden_ is true if the |WebContents| that this dialog should
   // attach to is currently hidden. In this case, the dialog won't be shown
