@@ -40,11 +40,11 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
+using base::test::ios::kWaitForJSCompletionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
+using shared_highlighting::LinkGenerationError;
 using shared_highlighting::TextFragment;
 using web::FakeWebState;
-using base::test::ios::WaitUntilConditionOrTimeout;
-using base::test::ios::kWaitForJSCompletionTimeout;
-using shared_highlighting::LinkGenerationError;
 
 namespace {
 const CGFloat kCaretWidth = 4.0;
