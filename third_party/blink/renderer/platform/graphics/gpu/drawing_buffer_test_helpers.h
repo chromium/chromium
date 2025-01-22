@@ -421,7 +421,7 @@ class DrawingBufferForTests : public DrawingBuffer {
   static scoped_refptr<DrawingBufferForTests> Create(
       std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
       std::unique_ptr<TestWebGraphicsSharedImageInterfaceProvider>
-          shared_image_interface_provider_for_shared_bitmap,
+          shared_image_interface_provider_for_sw,
       const Platform::GraphicsInfo& graphics_info,
       DrawingBuffer::Client* client,
       const gfx::Size& size,
@@ -438,8 +438,8 @@ class DrawingBufferForTests : public DrawingBuffer {
       drawing_buffer->BeginDestruction();
       return nullptr;
     }
-    drawing_buffer->SetSharedImageInterfaceProviderForBitmapTest(
-        std::move(shared_image_interface_provider_for_shared_bitmap));
+    drawing_buffer->SetSharedImageInterfaceProviderForSoftwareRenderingTest(
+        std::move(shared_image_interface_provider_for_sw));
 
     return drawing_buffer;
   }

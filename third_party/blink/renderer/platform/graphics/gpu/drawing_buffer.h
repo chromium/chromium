@@ -341,7 +341,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   bool Initialize(const gfx::Size&, bool use_multisampling);
 
-  void SetSharedImageInterfaceProviderForBitmapTest(
+  void SetSharedImageInterfaceProviderForSoftwareRenderingTest(
       std::unique_ptr<WebGraphicsSharedImageInterfaceProvider> sii_provider);
 
   struct SoftwareResource {

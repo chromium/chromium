@@ -366,7 +366,7 @@ void DrawingBuffer::SetDrawBuffer(GLenum draw_buffer) {
   draw_buffer_ = draw_buffer;
 }
 
-void DrawingBuffer::SetSharedImageInterfaceProviderForBitmapTest(
+void DrawingBuffer::SetSharedImageInterfaceProviderForSoftwareRenderingTest(
     std::unique_ptr<WebGraphicsSharedImageInterfaceProvider> sii_provider) {
   shared_image_interface_provider_for_bitmap_test_ = std::move(sii_provider);
 }

@@ -29,14 +29,14 @@ class DrawingBufferSoftwareCompositingTest : public testing::Test {
         std::make_unique<WebGraphicsContext3DProviderForTests>(std::move(gl));
     GLES2InterfaceForTests* gl_ =
         static_cast<GLES2InterfaceForTests*>(provider->ContextGL());
-    auto sii_provider_for_bitmap =
+    auto sii_provider_for_sw =
         TestWebGraphicsSharedImageInterfaceProvider::Create();
     Platform::GraphicsInfo graphics_info;
     graphics_info.using_gpu_compositing = false;
 
     drawing_buffer_ = DrawingBufferForTests::Create(
-        std::move(provider), std::move(sii_provider_for_bitmap), graphics_info,
-        gl_, initial_size, DrawingBuffer::kPreserve, kDisableMultisampling);
+        std::move(provider), std::move(sii_provider_for_sw), graphics_info, gl_,
+        initial_size, DrawingBuffer::kPreserve, kDisableMultisampling);
     CHECK(drawing_buffer_);
   }
 

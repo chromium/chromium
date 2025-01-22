@@ -76,7 +76,7 @@ class DrawingBufferTest : public Test {
     Platform::GraphicsInfo graphics_info;
     graphics_info.using_gpu_compositing = true;
     drawing_buffer_ = DrawingBufferForTests::Create(
-        std::move(provider), /*sii_provider_for_bitmap=*/nullptr, graphics_info,
+        std::move(provider), /*sii_provider_for_sw=*/nullptr, graphics_info,
         gl_, initial_size, DrawingBuffer::kPreserve, use_multisampling);
     CHECK(drawing_buffer_);
     SetAndSaveRestoreState(false);
@@ -377,7 +377,7 @@ class DrawingBufferImageChromiumTest : public DrawingBufferTest,
     Platform::GraphicsInfo graphics_info;
     graphics_info.using_gpu_compositing = true;
     drawing_buffer_ = DrawingBufferForTests::Create(
-        std::move(provider), /*sii_provider_for_bitmap=*/nullptr, graphics_info,
+        std::move(provider), /*sii_provider_for_sw=*/nullptr, graphics_info,
         gl_, initial_size, DrawingBuffer::kPreserve, kDisableMultisampling);
     CHECK(drawing_buffer_);
     SetAndSaveRestoreState(true);
