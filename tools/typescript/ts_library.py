@@ -126,7 +126,7 @@ def main(argv):
     out_dir = os.path.realpath(os.path.join(_CWD, args.gen_dir,
                                             out_dir)).replace('\\', '/')
     is_js_allowed, error = validateJavaScriptAllowed(source_dir, out_dir,
-                                                     args.platform == 'ios')
+                                                     args.platform)
     if not is_js_allowed:
       raise AssertionError(error)
     tsconfig['compilerOptions']['allowJs'] = True
