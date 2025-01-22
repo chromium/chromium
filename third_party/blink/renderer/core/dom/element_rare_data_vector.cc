@@ -269,10 +269,10 @@ DOMTokenList* ElementRareDataVector::GetPart() const {
 }
 
 void ElementRareDataVector::SetPartNamesMap(const AtomicString part_names) {
-  EnsureWrappedField<NamesMap>(FieldId::kPartNamesMap).Set(part_names);
+  EnsureField<NamesMap>(FieldId::kPartNamesMap).Set(part_names);
 }
 const NamesMap* ElementRareDataVector::PartNamesMap() const {
-  return GetWrappedField<NamesMap>(FieldId::kPartNamesMap);
+  return static_cast<NamesMap*>(GetField(FieldId::kPartNamesMap));
 }
 
 InlineStylePropertyMap& ElementRareDataVector::EnsureInlineStylePropertyMap(

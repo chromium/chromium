@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/dom/space_split_string_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -23,7 +24,8 @@ namespace blink {
 // http://drafts.csswg.org/css-shadow-parts/.
 // TODO(crbug/805271): Deduplicate identical maps as SpaceSplitString does so
 // that elements with identical exportparts attributes share instances.
-class CORE_EXPORT NamesMap : public GarbageCollected<NamesMap> {
+class CORE_EXPORT NamesMap : public GarbageCollected<NamesMap>,
+                             public ElementRareDataField {
  public:
   NamesMap() = default;
   NamesMap(const NamesMap&) = delete;
@@ -40,7 +42,10 @@ class CORE_EXPORT NamesMap : public GarbageCollected<NamesMap> {
 
   size_t size() const { return data_.size(); }
 
-  void Trace(Visitor* visitor) const { visitor->Trace(data_); }
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(data_);
+    ElementRareDataField::Trace(visitor);
+  }
 
  private:
   template <typename CharacterType>
