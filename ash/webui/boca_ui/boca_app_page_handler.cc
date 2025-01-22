@@ -148,6 +148,28 @@ mojom::ConfigPtr SessionConfigProtoToMojom(::boca::Session* session) {
       std::move(students_join_via_code), std::move(on_task_config),
       std::move(caption_config), access_code);
 }
+
+std::vector<mojom::IdentifiedActivityPtr> SessionActivityProtoToMojom(
+    const std::map<std::string, ::boca::StudentStatus>& activities) {
+  std::vector<mojom::IdentifiedActivityPtr> result;
+  for (auto item : activities) {
+    for (auto device : item.second.devices()) {
+      // Only update state and active tab now.
+      auto identity_ptr = mojom::IdentifiedActivity::New(
+          item.first, mojom::StudentActivity::New(
+                          item.second.state() == ::boca::StudentStatus::ACTIVE,
+                          device.second.activity().active_tab().title(),
+                          /*is_caption_enabled=*/false,
+                          /*is_hand_raised=*/false, mojom::JoinMethod::kRoster,
+                          device.second.view_screen_config()
+                              .connection_param()
+                              .connection_code()));
+      result.push_back(std::move(identity_ptr));
+    }
+  }
+  return result;
+}
+
 }  // namespace
 
 BocaAppHandler::BocaAppHandler(
@@ -283,9 +305,14 @@ void BocaAppHandler::GetSession(GetSessionCallback callback) {
               return;
             }
             auto session = std::move(result.value());
-
-            std::move(callback).Run(mojom::SessionResult::NewConfig(
-                SessionConfigProtoToMojom(session.get())));
+            auto student_activity = SessionActivityProtoToMojom(
+                std::map<std::string, ::boca::StudentStatus>(
+                    session.get()->student_statuses().begin(),
+                    session.get()->student_statuses().end()));
+            auto session_config = SessionConfigProtoToMojom(session.get());
+            std::move(callback).Run(
+                mojom::SessionResult::NewSession(mojom::Session::New(
+                    std::move(session_config), std::move(student_activity))));
 
             // Load current session into memory;
             BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
@@ -465,7 +492,7 @@ void BocaAppHandler::OnStudentActivityUpdated(
   remote_->OnStudentActivityUpdated(std::move(activities));
 }
 
-void BocaAppHandler::OnSessionConfigUpdated(mojom::SessionResultPtr config) {
+void BocaAppHandler::OnSessionConfigUpdated(mojom::ConfigResultPtr config) {
   if (!test_config_callback_.is_null()) {
     CHECK_IS_TEST();
     std::move(test_config_callback_).Run(std::move(config));
@@ -481,23 +508,7 @@ void BocaAppHandler::OnActiveNetworkStateChanged(
 
 void BocaAppHandler::OnConsumerActivityUpdated(
     const std::map<std::string, ::boca::StudentStatus>& activities) {
-  std::vector<mojom::IdentifiedActivityPtr> result;
-  for (auto item : activities) {
-    for (auto device : item.second.devices()) {
-      // Only update state and active tab now.
-      auto identity_ptr = mojom::IdentifiedActivity::New(
-          item.first, mojom::StudentActivity::New(
-                          item.second.state() == ::boca::StudentStatus::ACTIVE,
-                          device.second.activity().active_tab().title(),
-                          /*is_caption_enabled=*/false,
-                          /*is_hand_raised=*/false, mojom::JoinMethod::kRoster,
-                          device.second.view_screen_config()
-                              .connection_param()
-                              .connection_code()));
-      result.push_back(std::move(identity_ptr));
-    }
-  }
-  OnStudentActivityUpdated(std::move(result));
+  OnStudentActivityUpdated(SessionActivityProtoToMojom(activities));
 }
 
 void BocaAppHandler::OnSessionStarted(const std::string& session_id,
@@ -507,7 +518,7 @@ void BocaAppHandler::OnSessionStarted(const std::string& session_id,
 
 void BocaAppHandler::OnSessionEnded(const std::string& session_id) {
   OnSessionConfigUpdated(
-      mojom::SessionResult::NewError(mojom::GetSessionError::kEmpty));
+      mojom::ConfigResult::NewError(mojom::GetSessionError::kEmpty));
 }
 
 void BocaAppHandler::OnBundleUpdated(const ::boca::Bundle& bundle) {
@@ -580,7 +591,7 @@ void BocaAppHandler::UpdateSessionConfig() {
     return;
   }
   OnSessionConfigUpdated(
-      mojom::SessionResult::NewConfig(SessionConfigProtoToMojom(session)));
+      mojom::ConfigResult::NewConfig(SessionConfigProtoToMojom(session)));
 }
 
 void BocaAppHandler::OnUpdatedOnTaskConfig(

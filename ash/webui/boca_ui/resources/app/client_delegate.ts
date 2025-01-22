@@ -176,14 +176,14 @@ export class ClientDelegateFactory {
       },
       getSession: async () => {
         const result = (await pageHandler.getSession()).result;
-        if (!result.config) {
+        if (!result.session) {
           return null;
         }
         return {
-          sessionConfig: getSessionConfigMojomToUI(result.config) as
+          sessionConfig: getSessionConfigMojomToUI(result.session.config) as
               SessionConfig,
-          // TODO(b/365191878): Fill in user activity.
-          activity: []
+          activity: getStudentActivityMojomToUI(result.session.activities) as
+              IdentifiedActivity[]
         };
       },
       endSession: async () => {

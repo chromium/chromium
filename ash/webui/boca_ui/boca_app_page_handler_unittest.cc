@@ -613,6 +613,24 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
 
         (*session->mutable_student_group_configs())[kMainStudentGroupName] =
             std::move(session_config);
+
+        auto* student_statuses = session->mutable_student_statuses();
+        std::map<std::string, ::boca::StudentStatus> activities;
+        ::boca::StudentStatus status_1;
+        status_1.set_state(::boca::StudentStatus::ACTIVE);
+        ::boca::StudentDevice device_1;
+        auto* activity_1 = device_1.mutable_activity();
+        activity_1->mutable_active_tab()->set_title("google");
+        ::boca::StudentDevice device_11;
+        auto* activity_11 = device_11.mutable_activity();
+        activity_11->mutable_active_tab()->set_title("google1");
+        device_11.mutable_view_screen_config()
+            ->mutable_connection_param()
+            ->set_connection_code("abcd");
+        (*status_1.mutable_devices())["device1"] = std::move(device_1);
+        (*status_1.mutable_devices())["device11"] = std::move(device_11);
+        (*student_statuses)["000"] = std::move(status_1);
+
         request->callback().Run(std::move(session));
       })));
 
@@ -622,8 +640,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
 
   boca_app_handler()->GetSession(future_1.GetCallback());
 
-  auto result = std::move(future_1.Take()->get_config());
-
+  auto result0 = std::move(future_1.Take()->get_session());
+  auto result = std::move(result0->config);
   EXPECT_EQ(120, result->session_duration.InSeconds());
   EXPECT_EQ(1111111.022,
             result->session_start_time->InSecondsFSinceUnixEpoch());
@@ -658,6 +676,9 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
             result->on_task_config->tabs[0]->tab->url.spec());
   EXPECT_EQ("google", result->on_task_config->tabs[0]->tab->title);
   EXPECT_EQ("data/image", result->on_task_config->tabs[0]->tab->favicon);
+
+  auto activities = std::move(result0->activities);
+  EXPECT_EQ(2u, activities.size());
 }
 
 TEST_F(BocaAppPageHandlerTest, GetSessionWithPartialInputTest) {
@@ -683,7 +704,7 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithPartialInputTest) {
 
   boca_app_handler()->GetSession(future_1.GetCallback());
 
-  auto result = std::move(future_1.Take()->get_config());
+  auto result = std::move(future_1.Take()->get_session()->config);
   EXPECT_EQ(120, result->session_duration.InSeconds());
 }
 
@@ -1539,7 +1560,7 @@ TEST_F(BocaAppPageHandlerTest, OnSessionSessionStartedSucceed) {
   auto session = GetCommonActiveSessionProto();
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillOnce(Return(&session));
-  base::test::TestFuture<mojom::SessionResultPtr> future;
+  base::test::TestFuture<mojom::ConfigResultPtr> future;
   boca_app_handler()->SetSessionConfigInterceptorCallbackForTesting(
       future.GetCallback());
   boca_app_handler()->OnSessionStarted(std::string(), ::boca::UserIdentity());
@@ -1548,7 +1569,7 @@ TEST_F(BocaAppPageHandlerTest, OnSessionSessionStartedSucceed) {
 }
 
 TEST_F(BocaAppPageHandlerTest, OnSessionEndedSucceed) {
-  base::test::TestFuture<mojom::SessionResultPtr> future;
+  base::test::TestFuture<mojom::ConfigResultPtr> future;
   boca_app_handler()->SetSessionConfigInterceptorCallbackForTesting(
       future.GetCallback());
   boca_app_handler()->OnSessionEnded("any");
@@ -1560,7 +1581,7 @@ TEST_F(BocaAppPageHandlerTest, OnSessionCaptionUpdatedSucceed) {
   auto session = GetCommonActiveSessionProto();
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillOnce(Return(&session));
-  base::test::TestFuture<mojom::SessionResultPtr> future;
+  base::test::TestFuture<mojom::ConfigResultPtr> future;
   boca_app_handler()->SetSessionConfigInterceptorCallbackForTesting(
       future.GetCallback());
   boca_app_handler()->OnSessionCaptionConfigUpdated(
@@ -1573,7 +1594,7 @@ TEST_F(BocaAppPageHandlerTest, OnSessionBundleUpdatedSucceed) {
   auto session = GetCommonActiveSessionProto();
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillOnce(Return(&session));
-  base::test::TestFuture<mojom::SessionResultPtr> future;
+  base::test::TestFuture<mojom::ConfigResultPtr> future;
   boca_app_handler()->SetSessionConfigInterceptorCallbackForTesting(
       future.GetCallback());
   boca_app_handler()->OnBundleUpdated(::boca::Bundle());
@@ -1585,7 +1606,7 @@ TEST_F(BocaAppPageHandlerTest, OnSessionRosterUpdatedSucceed) {
   auto session = GetCommonActiveSessionProto();
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillOnce(Return(&session));
-  base::test::TestFuture<mojom::SessionResultPtr> future;
+  base::test::TestFuture<mojom::ConfigResultPtr> future;
   boca_app_handler()->SetSessionConfigInterceptorCallbackForTesting(
       future.GetCallback());
   boca_app_handler()->OnSessionRosterUpdated({});

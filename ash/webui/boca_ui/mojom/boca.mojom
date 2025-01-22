@@ -121,6 +121,11 @@ enum JoinMethod {
   kAccessCode = 1,
 };
 
+struct Session {
+ Config config;
+ array<IdentifiedActivity> activities;
+};
+
 struct StudentActivity {
   // If the current student status is active.
   bool is_active;
@@ -150,7 +155,12 @@ enum GetSessionError{
 
 union SessionResult {
  GetSessionError error;
- Config config;
+ Session session;
+};
+
+union ConfigResult{
+  GetSessionError error;
+  Config config;
 };
 
 enum UpdateSessionError{
@@ -214,7 +224,7 @@ interface Page {
   // Notifies when student activities updated.
   OnStudentActivityUpdated(array<IdentifiedActivity> activities);
   // Notifies when session config updated.
-  OnSessionConfigUpdated(SessionResult config);
+  OnSessionConfigUpdated(ConfigResult config);
   // Notifies when active networks updated.
   OnActiveNetworkStateChanged(array<NetworkInfo> active_networks);
 };
