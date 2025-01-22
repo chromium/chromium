@@ -121,13 +121,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void DetachPanel() override { glic_service_->DetachPanel(); }
 
   void ResizeWidget(const gfx::Size& size,
+                    base::TimeDelta duration,
                     ResizeWidgetCallback callback) override {
-    std::optional<gfx::Size> actual_size = glic_service_->ResizePanel(size);
-    if (!actual_size) {
-      std::move(callback).Run(std::nullopt);
-      return;
-    }
-    std::move(callback).Run(actual_size);
+    glic_service_->ResizePanel(size, duration, std::move(callback));
   }
 
   void GetContextFromFocusedTab(

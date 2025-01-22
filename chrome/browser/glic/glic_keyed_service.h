@@ -74,7 +74,9 @@ class GlicKeyedService : public KeyedService {
   virtual void ClosePanel();
   void AttachPanel();
   void DetachPanel();
-  std::optional<gfx::Size> ResizePanel(const gfx::Size& size);
+  void ResizePanel(const gfx::Size& size,
+                   base::TimeDelta duration,
+                   base::OnceClosure callback);
   void SetPanelDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
   void SetContextAccessIndicator(bool show);
 

@@ -227,16 +227,16 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return convertTabContextResultFromPrivate(context.tabContextResult);
   }
 
-  async resizeWindow(width: number, height: number) {
-    const result = await this.sender.requestWithResponse(
-        'glicBrowserResizeWindow', {width, height});
-    if (result.actualHeight !== undefined && result.actualWidth !== undefined) {
-      return {
-        actualWidth: result.actualWidth,
-        actualHeight: result.actualHeight,
-      };
+  async resizeWindow(width: number, height: number, options?: {
+    durationMs?: number,
+  }): Promise<void> {
+    const durationMs = options?.durationMs;
+    if (durationMs !== undefined && !Number.isFinite(durationMs)) {
+      throw new Error('Invalid resize duration: ' + durationMs);
     }
-    throw new Error('Can\'t resize the widget while it\'s closed');
+
+    return this.sender.requestWithResponse(
+        'glicBrowserResizeWindow', {size: {width, height}, options});
   }
 
   setWindowDraggableAreas(areas: DraggableArea[]) {

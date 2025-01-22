@@ -132,11 +132,10 @@ void GlicKeyedService::DetachPanel() {
   window_controller_.Detach();
 }
 
-std::optional<gfx::Size> GlicKeyedService::ResizePanel(const gfx::Size& size) {
-  if (!window_controller_.Resize(size)) {
-    return std::nullopt;
-  }
-  return window_controller_.GetSize();
+void GlicKeyedService::ResizePanel(const gfx::Size& size,
+                                   base::TimeDelta duration,
+                                   base::OnceClosure callback) {
+  window_controller_.Resize(size, duration, std::move(callback));
 }
 
 void GlicKeyedService::SetPanelDraggableAreas(

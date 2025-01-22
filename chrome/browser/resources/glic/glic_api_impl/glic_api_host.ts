@@ -274,15 +274,14 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     };
   }
 
-  async glicBrowserResizeWindow(request: {width: number, height: number}) {
-    const response = await this.handler.resizeWidget(request);
-    if (!response.actualSize) {
-      return {};
-    }
-    return {
-      actualWidth: response.actualSize.width,
-      actualHeight: response.actualSize.height,
-    };
+  async glicBrowserResizeWindow(request: {
+    size: {width: number, height: number},
+    options?: {durationMs?: number},
+  }) {
+    const durationMs = request.options?.durationMs || 0;
+    return await this.handler.resizeWidget(request.size, {
+      microseconds: BigInt(Math.floor(durationMs * 1000)),
+    });
   }
 
   glicBrowserSetWindowDraggableAreas(request: {areas: DraggableArea[]}) {

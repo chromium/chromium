@@ -12,11 +12,9 @@
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/geometry/rect_f.h"
 
-namespace views {
-class Widget;
-}  // namespace views
-
 namespace glic {
+
+class GlicWindowController;
 
 // This class controls the animation of the glic window from one size to
 // another. It has the following constraints that the caller must enforce:
@@ -26,13 +24,11 @@ namespace glic {
 class GlicWindowResizeAnimation : public gfx::LinearAnimation,
                                   public gfx::AnimationDelegate {
  public:
-  // The caller is expected to destroy GlicWindowResizeAnimation upon receiving
-  // FinishedCallback. FinishedCallback is always invoked asynchronously.
-  using FinishedCallback = base::OnceClosure;
-  GlicWindowResizeAnimation(views::Widget* widget,
+  using DestructionCallback = base::OnceClosure;
+  GlicWindowResizeAnimation(GlicWindowController* window_controller,
                             const gfx::Rect& target_bounds,
                             base::TimeDelta duration,
-                            FinishedCallback finished_callback);
+                            DestructionCallback destruction_callback);
   GlicWindowResizeAnimation(const GlicWindowResizeAnimation&) = delete;
   GlicWindowResizeAnimation& operator=(const GlicWindowResizeAnimation&) =
       delete;
@@ -42,10 +38,11 @@ class GlicWindowResizeAnimation : public gfx::LinearAnimation,
   void AnimationEnded(const Animation* animation) override;
 
  private:
-  const raw_ptr<views::Widget> widget_;
+  // GlicWindowController owns GlicWindowResizeAnimation and will outlive it
+  const raw_ptr<GlicWindowController> window_controller_;
   const gfx::Rect initial_bounds_;
   const gfx::Rect new_bounds_;
-  FinishedCallback finished_callback_;
+  DestructionCallback destruction_callback_;
   base::WeakPtrFactory<GlicWindowResizeAnimation> weak_ptr_factory_{this};
 };
 

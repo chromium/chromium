@@ -74,9 +74,13 @@ class GlicWindowController : public views::WidgetObserver {
   // Destroy the glic panel and its web contents.
   void Shutdown();
 
-  // Sets the size of the glic window to the specified dimensions. Returns true
-  // if the operation succeeded.
-  bool Resize(const gfx::Size& size);
+  // Sets the size of the glic window to the specified dimensions. Callback runs
+  // when the animation finishes or is destroyed, or soon if the window
+  // doesn't exist yet. In this last case `size` will be used for the initial
+  // size when creating the widget later.
+  void Resize(const gfx::Size& size,
+              base::TimeDelta duration,
+              base::OnceClosure callback);
 
   // Returns the current size of the glic window.
   gfx::Size GetSize();
@@ -138,7 +142,11 @@ class GlicWindowController : public views::WidgetObserver {
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
   GlicView* GetGlicView();
-  views::Widget* GetGlicWidgetForTesting() { return glic_window_widget_.get(); }
+  views::Widget* GetGlicWidget() { return glic_window_widget_.get(); }
+
+  // Called when the programmatic resize has finished; public for use by
+  // GlicWindowResizeAnimation.
+  void ResizeFinished();
 
  private:
   // This sends a message to glic to get ready to show. This will eventually
@@ -224,9 +232,6 @@ class GlicWindowController : public views::WidgetObserver {
 
   // When the attached browser is closed, this is invoked so we can clean up.
   void AttachedBrowserDidClose(BrowserWindowInterface* browser);
-
-  // Called when the programmatic resize has finished.
-  void ResizeFinished();
 
   // Sets target bounds for the widget and creates a WindowResizeAnimation
   // instance to begin a new animation. Blocks any calls to animate if the

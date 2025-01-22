@@ -6,9 +6,8 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/glic/glic_view.h"
-#include "ui/gfx/animation/animation_container.h"
+#include "chrome/browser/glic/glic_window_controller.h"
 #include "ui/gfx/animation/tween.h"
-#include "ui/views/animation/compositor_animation_runner.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -18,15 +17,16 @@
 namespace glic {
 
 GlicWindowResizeAnimation::GlicWindowResizeAnimation(
-    views::Widget* widget,
+    GlicWindowController* window_controller,
     const gfx::Rect& target_bounds,
     base::TimeDelta duration,
-    FinishedCallback finished_callback)
+    DestructionCallback destruction_callback)
     : gfx::LinearAnimation(duration, kDefaultFrameRate, this),
-      widget_(widget),
-      initial_bounds_(widget->GetWindowBoundsInScreen()),
+      window_controller_(window_controller),
+      initial_bounds_(
+          window_controller_->GetGlicWidget()->GetWindowBoundsInScreen()),
       new_bounds_(target_bounds),
-      finished_callback_(std::move(finished_callback)) {
+      destruction_callback_(std::move(destruction_callback)) {
   // TODO(crbug.com/389238233): CompositorAnimationRunner does not appear to
   // be fully functional.
   // Use a CompositorAnimationRunner for smoother vsync driven resize animation.
@@ -38,17 +38,22 @@ GlicWindowResizeAnimation::GlicWindowResizeAnimation(
   Start();
 }
 
-GlicWindowResizeAnimation::~GlicWindowResizeAnimation() = default;
+GlicWindowResizeAnimation::~GlicWindowResizeAnimation() {
+  if (destruction_callback_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(destruction_callback_));
+  }
+}
 
 void GlicWindowResizeAnimation::AnimateToState(double state) {
-  widget_->SetBounds(gfx::Tween::RectValueBetween(
+  window_controller_->GetGlicWidget()->SetBounds(gfx::Tween::RectValueBetween(
       gfx::Tween::CalculateValue(gfx::Tween::EASE_IN_OUT_EMPHASIZED, state),
       initial_bounds_, new_bounds_));
 }
 
 void GlicWindowResizeAnimation::AnimationEnded(const Animation* animation) {
   // Destroys `this`.
-  std::move(finished_callback_).Run();
+  window_controller_->ResizeFinished();
 }
 
 }  // namespace glic

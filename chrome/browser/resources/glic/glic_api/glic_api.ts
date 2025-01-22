@@ -85,10 +85,12 @@ export declare interface GlicBrowserHost {
   // Returns Chrome's version.
   getChromeVersion(): Promise<ChromeVersion>;
 
-  // Sets the size of the glic window to the specified dimensions. Returns the
-  // resulting width and height of the window.
-  resizeWindow(width: number, height: number):
-      Promise<{actualWidth: number, actualHeight: number}>;
+  // Sets the size of the glic window to the specified dimensions. Resolves when
+  // the animation finishes, is interrupted, or immediately if the window
+  // doesn't exist yet, in which case the size will be used as the initial size
+  // when the widget is eventually created.
+  resizeWindow(width: number, height: number, options?: {durationMs?: number}):
+      Promise<void>;
 
   // Set the areas of the glic window from which it should be draggable. Returns
   // a promise that resolves when the browser has updated the draggable area.

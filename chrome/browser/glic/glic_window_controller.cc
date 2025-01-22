@@ -344,7 +344,10 @@ void GlicWindowController::GlicLoaded() {
 void GlicWindowController::OpenAnimationFinished() {
   if (state_ == State::kOpenAnimation) {
     state_ = State::kWaitingForGlicToLoad;
-    GetGlicView()->web_view()->SetWebContents(contents_->web_contents());
+
+    if (GetGlicView()) {
+      GetGlicView()->web_view()->SetWebContents(contents_->web_contents());
+    }
     if (glic_loaded_) {
       ShowFinish();
     }
@@ -438,9 +441,8 @@ void GlicWindowController::Detach() {
       display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel();
   final_widget_bounds_.set_origin(
       gfx::Point(screen_size.width() - final_widget_bounds_.width(), 0));
-  AnimateBounds(
-      final_widget_bounds_, base::Milliseconds(kEntryDurationMs),
-      base::BindOnce(&GlicWindowController::ResizeFinished, GetWeakPtr()));
+  AnimateBounds(final_widget_bounds_, base::Milliseconds(kEntryDurationMs),
+                base::DoNothing());
 }
 
 void GlicWindowController::AttachToBrowser(Browser* browser) {
@@ -473,31 +475,33 @@ void GlicWindowController::AttachToBrowser(Browser* browser) {
                           base::Unretained(this)));
 }
 
-bool GlicWindowController::Resize(const gfx::Size& size) {
+void GlicWindowController::Resize(const gfx::Size& size,
+                                  base::TimeDelta duration,
+                                  base::OnceClosure callback) {
   final_widget_bounds_.set_size(size);
-
-  if (!glic_window_widget_) {
-    return false;
-  }
-
-  AnimateBounds(
-      final_widget_bounds_, base::Milliseconds(0),
-      base::BindOnce(&GlicWindowController::ResizeFinished, GetWeakPtr()));
-
-  return true;
+  AnimateBounds(final_widget_bounds_, duration, std::move(callback));
 }
 
 void GlicWindowController::AnimateBounds(const gfx::Rect& target_bounds,
                                          base::TimeDelta duration,
                                          base::OnceClosure callback) {
   if (!glic_window_widget_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
     return;
   }
 
-  // TODO(iwells): Set animation duration based on value set by client.
+  // Stop the current animation if any.
+  if (window_resize_animation_) {
+    ResizeFinished();
+  }
+
+  if (duration < base::Milliseconds(0)) {
+    duration = base::Milliseconds(0);
+  }
+
   window_resize_animation_ = std::make_unique<GlicWindowResizeAnimation>(
-      glic_window_widget_.get(), target_bounds,
-      /*duration=*/duration, std::move(callback));
+      this, target_bounds, duration, std::move(callback));
 }
 
 gfx::Size GlicWindowController::GetSize() {
@@ -647,9 +651,8 @@ void GlicWindowController::MovePositionToBrowserGlicButton(Browser* browser,
   // Avoid conversions between pixels and DIP on non 1.0 scale factor displays
   // changing widget width and height.
   if (animate) {
-    AnimateBounds(
-        final_widget_bounds_, base::Milliseconds(kEntryDurationMs),
-        base::BindOnce(&GlicWindowController::ResizeFinished, GetWeakPtr()));
+    AnimateBounds(final_widget_bounds_, base::Milliseconds(kEntryDurationMs),
+                  base::DoNothing());
   } else {
     glic_window_widget_->SetBounds(final_widget_bounds_);
   }
@@ -690,12 +693,13 @@ bool GlicWindowController::IsBrowserGlicCompatible(Browser* browser) {
   views::Widget* window_widget =
       browser->window()->AsBrowserView()->GetWidget();
   // A browser is not compatible if it:
+  // - is not a TYPE_NORMAL browser
   // - is from a glic-disabled profile
   // - is not visible
   // - is a glic-owned widget
   // - uses a different BrowserContext from glic
   if (!GlicEnabling::IsEnabledForProfile(browser->profile()) ||
-      !browser->window()->IsVisible() ||
+      !browser->is_type_normal() || !browser->window()->IsVisible() ||
       window_widget == glic_window_widget_.get() ||
       window_widget == holder_widget_.get() ||
       browser->GetWebView()->GetBrowserContext() !=

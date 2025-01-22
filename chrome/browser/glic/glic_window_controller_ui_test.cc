@@ -103,8 +103,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, ShowAndCloseAttachedWidget) {
                   InAnyContext(WaitForShow(kGlicViewElementId)),
                   InSameContext(Steps(
                       Check([this]() {
-                        return window_controller().GetGlicWidgetForTesting() !=
-                               nullptr;
+                        return window_controller().GetGlicWidget() != nullptr;
                       }),
                       Do([this]() { window_controller().Close(); }),
                       WaitForHide(kGlicViewElementId))));
@@ -119,8 +118,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, ShowAndCloseDetachedWidget) {
                   InAnyContext(WaitForShow(kGlicViewElementId)),
                   InSameContext(Steps(
                       Check([this]() {
-                        return window_controller().GetGlicWidgetForTesting() !=
-                               nullptr;
+                        return window_controller().GetGlicWidget() != nullptr;
                       }),
                       Do([this]() { window_controller().Close(); }),
                       WaitForHide(kGlicViewElementId))));

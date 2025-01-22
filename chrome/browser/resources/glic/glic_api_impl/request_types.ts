@@ -79,14 +79,15 @@ export declare interface HostRequestTypes {
   };
   glicBrowserResizeWindow: {
     request: {
-      width: number,
-      height: number,
+      size: {
+        width: number,
+        height: number,
+      },
+      options?: {
+        durationMs?: number,
+      },
     },
-    response: {
-      // Not set on error.
-      actualWidth?: number,
-      actualHeight?: number,
-    },
+    response: void,
   };
   glicBrowserSetWindowDraggableAreas: {
     request: {
