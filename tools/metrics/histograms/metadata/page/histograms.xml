@@ -1055,15 +1055,19 @@ chromium-metrics-reviews@google.com.
       variants="BrowserInitializationStatus"/>
 </histogram>
 
-<histogram name="PageLoad.Clients.GoogleSearch.ConnectionReuseStatus"
+<histogram name="PageLoad.Clients.GoogleSearch.ConnectionReuseStatus{Profile}"
     enum="ConnectionReuseStatus" expires_after="2025-08-01">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
-    The possible status of connection reuse for Google search page loads. This
-    is only recorded for Search navigations and is recorded once after
-    navigation commit.
+    The possible status of connection reuse for Google search page loads for
+    {Profile}. This is only recorded for Search navigations and is recorded once
+    after navigation commit.
   </summary>
+  <token key="Profile">
+    <variant name="" summary="normal and incognito modes"/>
+    <variant name=".Incognito" summary="incognito mode"/>
+  </token>
 </histogram>
 
 <histogram
