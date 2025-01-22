@@ -76,6 +76,17 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
 // Submits encryption passphrase, if the user is on the Encryption page.
 + (void)submitSyncPassphrase:(NSString*)passphrase;
 
+// Ensure the fake add-account menu is displayed.
++ (void)assertFakeAddAccountMenuDisplayed;
+
+// Enters [fakeIdentity] in the fake add-account menu and validates it. The menu
+// should be opened
++ (void)addFakeAccountInFakeAddAccountMenu:(FakeSystemIdentity*)fakeIdentity;
+
+// Enters [fakeIdentity] in the fake add-account menu and validates it. The menu
+// should be opened
++ (void)addFakeAccountInFakeAddAccountMenu:(FakeSystemIdentity*)fakeIdentity
+                   withUnknownCapabilities:(BOOL)unknownCapabilities;
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_EARL_GREY_UI_TEST_UTIL_H_
