@@ -158,12 +158,6 @@
           <div class="secondary" id="email_[[index]]"
               aria-hidden="true">[[item.email]]</div>
           <!-- Display ARC status -->
-          <template is="dom-if" if="[[isArcAccountRestrictionsEnabled_]]">
-            <span class="arc-availability secondary" id="arcStatus_[[index]]"
-               aria-hidden="true" hidden$="[[item.isAvailableInArc]]">
-             $i18n{accountNotUsedInArcLabel}
-            </span>
-          </template>
           <span class="arc-availability secondary" id="arcStatus_[[index]]"
                aria-hidden="true" hidden$="[[item.isAvailableInArc]]">
              $i18n{accountNotAllowedInArcLabel}
@@ -216,23 +210,4 @@
           isSecondaryGoogleAccountSigninAllowed_)]]
     </cr-button>
   </div>
-
-  <cr-dialog id="removeConfirmationDialog">
-    <div slot="title" class="key-text">
-      $i18n{removeLacrosAccountDialogTitle}
-    </div>
-    <div slot="body" class="warning-message">
-      $i18n{removeLacrosAccountDialogBody}
-    </div>
-    <div slot="button-container">
-      <cr-button class="cancel-button"
-          on-click="onRemoveAccountDialogCancelClick_">
-        $i18n{removeLacrosAccountDialogCancel}
-      </cr-button>
-      <cr-button id="removeConfirmationButton" class="action-button"
-          on-click="onRemoveAccountDialogRemoveClick_">
-        $i18n{removeLacrosAccountDialogRemove}
-      </cr-button>
-    </div>
-  </cr-dialog>
 </settings-card>

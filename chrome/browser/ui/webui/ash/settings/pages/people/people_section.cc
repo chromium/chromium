@@ -170,16 +170,6 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_DESCRIPTION_V2},
       {"accountManagerSecondaryAccountsDisabledText",
        IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TEXT_V2},
-      {"removeLacrosAccountDialogTitle",
-       IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_TITLE},
-      {"removeLacrosAccountDialogBody",
-       IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_BODY},
-      {"removeLacrosAccountDialogRemove",
-       IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_REMOVE},
-      {"removeLacrosAccountDialogCancel",
-       IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_CANCEL},
-      {"accountNotUsedInArcLabel",
-       IDS_SETTINGS_ACCOUNT_MANAGER_NOT_USED_IN_ARC_LABEL},
       {"accountNotAllowedInArcLabel",
        IDS_SETTINGS_ACCOUNT_MANAGER_NOT_ALLOWED_IN_ARC_LABEL},
       {"accountUseInArcButtonLabel",
@@ -211,8 +201,6 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
       "accountManagerDescription",
       l10n_util::GetStringFUTF16(IDS_SETTINGS_ACCOUNT_MANAGER_DESCRIPTION_V2,
                                  ui::GetChromeOSDeviceName()));
-  html_source->AddBoolean("lacrosEnabled", false);
-  html_source->AddBoolean("arcAccountRestrictionsEnabled", false);
 }
 
 void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
