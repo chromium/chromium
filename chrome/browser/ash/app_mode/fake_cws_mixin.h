@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_FAKE_CWS_MIXIN_H_
 #define CHROME_BROWSER_ASH_APP_MODE_FAKE_CWS_MIXIN_H_
 
+#include <optional>
+
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
@@ -40,6 +43,8 @@ class FakeCwsMixin : InProcessBrowserTestMixin {
 
  private:
   CwsInstanceType instance_type_;
+
+  std::optional<base::AutoReset<bool>> disable_crx_publisher_verification_;
 
   net::EmbeddedTestServer test_server_;
   EmbeddedTestServerSetupMixin test_server_setup_mixin_;
