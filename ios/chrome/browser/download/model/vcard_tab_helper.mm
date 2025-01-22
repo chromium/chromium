@@ -36,8 +36,9 @@ void VcardTabHelper::Download(std::unique_ptr<web::DownloadTask> task) {
 void VcardTabHelper::OnDownloadUpdated(web::DownloadTask* updated_task) {
   auto iterator = tasks_.find(updated_task);
   DCHECK(iterator != tasks_.end());
-  if (!updated_task->IsDone())
+  if (!updated_task->IsDone()) {
     return;
+  }
 
   // Extract the std::unique_ptr<> from the std::set<>.
   auto node = tasks_.extract(iterator);

@@ -113,8 +113,9 @@ void DownloadManagerTabHelper::SetCurrentDownload(
 
 void DownloadManagerTabHelper::SetDelegate(
     id<DownloadManagerTabHelperDelegate> delegate) {
-  if (delegate == delegate_)
+  if (delegate == delegate_) {
     return;
+  }
 
   if (delegate_ && task_ && delegate_started_) {
     [delegate_ downloadManagerTabHelper:this

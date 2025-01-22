@@ -5,9 +5,9 @@
 #import "base/functional/bind.h"
 #import "base/path_service.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/download/ui_bundled/download_manager_constants.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/download/ui_bundled/download_manager_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -285,8 +285,9 @@ GetContentDispositionPDFResponse(const net::test_server::HttpRequest& request) {
 - (void)testVisibleFileNameAndOpenInDownloads {
   // Apple is hiding UIActivityViewController's contents from the host app on
   // iPad.
-  if ([ChromeEarlGrey isIPadIdiom])
+  if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
+  }
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:"Download"];

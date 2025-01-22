@@ -60,14 +60,16 @@ void BrowserDownloadService::OnDownloadCreated(
       !base::FeatureList::IsEnabled(kPassKitKillSwitch)) {
     PassKitTabHelper* tab_helper =
         PassKitTabHelper::GetOrCreateForWebState(web_state);
-    if (tab_helper)
+    if (tab_helper) {
       tab_helper->Download(std::move(task));
+    }
   } else if (IsUsdzFileFormat(task->GetMimeType(), task->GenerateFileName()) &&
              !base::FeatureList::IsEnabled(kARKillSwitch)) {
     ARQuickLookTabHelper* tab_helper =
         ARQuickLookTabHelper::GetOrCreateForWebState(web_state);
-    if (tab_helper)
+    if (tab_helper) {
       tab_helper->Download(std::move(task));
+    }
 
   } else if (task->GetMimeType() == kMobileConfigurationType &&
              (task->GetOriginalUrl().SchemeIsCryptographic() ||
@@ -75,27 +77,31 @@ void BrowserDownloadService::OnDownloadCreated(
     // SFSafariViewController can only open http and https URLs.
     SafariDownloadTabHelper* tab_helper =
         SafariDownloadTabHelper::FromWebState(web_state);
-    if (tab_helper)
+    if (tab_helper) {
       tab_helper->DownloadMobileConfig(std::move(task));
+    }
   } else if (task->GetMimeType() == kCalendarMimeType &&
              !base::FeatureList::IsEnabled(kCalendarKillSwitch) &&
              task->GetOriginalUrl().SchemeIsHTTPOrHTTPS()) {
     // SFSafariViewController can only open http and https URLs.
     SafariDownloadTabHelper* tab_helper =
         SafariDownloadTabHelper::FromWebState(web_state);
-    if (tab_helper)
+    if (tab_helper) {
       tab_helper->DownloadCalendar(std::move(task));
+    }
   } else if (task->GetMimeType() == kVcardMimeType &&
              !base::FeatureList::IsEnabled(kVCardKillSwitch)) {
     VcardTabHelper* tab_helper = VcardTabHelper::FromWebState(web_state);
-    if (tab_helper)
+    if (tab_helper) {
       tab_helper->Download(std::move(task));
+    }
   } else {
     DownloadManagerTabHelper* tab_helper =
         DownloadManagerTabHelper::FromWebState(web_state);
     // TODO(crbug.com/40216128): Investigate why tab_helper is sometimes nil.
-    if (tab_helper)
+    if (tab_helper) {
       tab_helper->SetCurrentDownload(std::move(task));
+    }
   }
 }
 

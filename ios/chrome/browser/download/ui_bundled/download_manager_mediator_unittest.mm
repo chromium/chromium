@@ -51,9 +51,7 @@ class DownloadManagerMediatorTest : public PlatformTest {
     DownloadManagerTabHelper::CreateForWebState(web_state_.get());
     task_.SetWebState(web_state_.get());
   }
-  ~DownloadManagerMediatorTest() override {
-    [application_ stopMocking];
-  }
+  ~DownloadManagerMediatorTest() override { [application_ stopMocking]; }
 
   web::FakeDownloadTask* task() { return &task_; }
 

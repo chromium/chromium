@@ -49,8 +49,8 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 
@@ -423,7 +423,8 @@ TEST_F(DownloadManagerCoordinatorTest, Close) {
   EXPECT_EQ(web::DownloadTask::State::kCancelled, task->GetState());
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileResult",
-      static_cast<base::HistogramBase::Sample32>(DownloadFileResult::NotStarted),
+      static_cast<base::HistogramBase::Sample32>(
+          DownloadFileResult::NotStarted),
       1);
   histogram_tester_.ExpectTotalCount("Download.IOSDownloadFileUIGoogleDrive",
                                      0);
@@ -832,7 +833,8 @@ TEST_F(DownloadManagerCoordinatorTest, RetryingDownload) {
                                        -net::ERR_INTERNET_DISCONNECTED, 1);
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileResult",
-      static_cast<base::HistogramBase::Sample32>(DownloadFileResult::Failure), 1);
+      static_cast<base::HistogramBase::Sample32>(DownloadFileResult::Failure),
+      1);
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileInBackground",
       static_cast<base::HistogramBase::Sample32>(
@@ -868,7 +870,8 @@ TEST_F(DownloadManagerCoordinatorTest, FailingInBackground) {
 
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileResult",
-      static_cast<base::HistogramBase::Sample32>(DownloadFileResult::Failure), 1);
+      static_cast<base::HistogramBase::Sample32>(DownloadFileResult::Failure),
+      1);
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileInBackground",
       static_cast<base::HistogramBase::Sample32>(

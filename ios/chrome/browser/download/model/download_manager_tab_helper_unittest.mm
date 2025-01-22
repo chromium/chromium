@@ -34,7 +34,7 @@
 namespace {
 char kUrl[] = "https://test.test/";
 const char kMimeType[] = "";
-}
+}  // namespace
 
 // Test fixture for testing DownloadManagerTabHelper class.
 class DownloadManagerTabHelperTest : public PlatformTest {

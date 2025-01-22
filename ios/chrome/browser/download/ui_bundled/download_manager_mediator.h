@@ -8,8 +8,8 @@
 #import "base/files/file_path.h"
 #import "base/memory/weak_ptr.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/drive/model/upload_task_observer.h"
 #import "ios/chrome/browser/download/ui_bundled/download_manager_consumer.h"
+#import "ios/chrome/browser/drive/model/upload_task_observer.h"
 #import "ios/web/public/download/download_task_observer.h"
 
 @protocol DownloadManagerConsumer;
