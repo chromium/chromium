@@ -106,7 +106,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="WebRTC.Audio.Agc.InputClippingRate" units="%"
     expires_after="2025-03-30">
   <owner>silen@chromium.org</owner>
-  <owner>alessiob@chromium.org</owner>
+  <owner>peah@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Logs the input clipping rate in AGC1 and in AGC2. A log call is made every
@@ -116,7 +116,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.Audio.Agc2.DigitalGainApplied" units="dB"
     expires_after="2025-03-30">
-  <owner>alessiob@chromium.org</owner>
+  <owner>peah@chromium.org</owner>
   <owner>silen@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -128,8 +128,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.Agc2.EstimatedNoiseLevel" units="dBFS (negated)"
-    expires_after="2025-01-26">
-  <owner>alessiob@chromium.org</owner>
+    expires_after="2025-03-30">
+  <owner>peah@chromium.org</owner>
   <owner>silen@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -142,7 +142,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.Audio.Agc2.FixedDigitalGainCurveRegion.{Region}"
     units="seconds" expires_after="2025-03-30">
-  <owner>alessiob@chromium.org</owner>
+  <owner>peah@chromium.org</owner>
   <owner>silen@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="WebRTC.Audio.Apm.RecommendedInputVolume.OnChangeToMatchTarget"
     units="volume" expires_after="2025-03-30">
   <owner>silen@chromium.org</owner>
-  <owner>alessiob@chromium.org</owner>
+  <owner>peah@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The recommended input volume when adjusted to match the target level - i.e.,
@@ -187,7 +187,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="WebRTC.Audio.Apm.{InputVolumeType}.OnChange" units="volume"
     expires_after="2025-03-30">
   <owner>silen@chromium.org</owner>
-  <owner>alessiob@chromium.org</owner>
+  <owner>peah@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The {InputVolumeType} input volume. A log call is made every time that the
@@ -202,7 +202,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="WebRTC.Audio.Apm.{InputVolumeType}.{Metric}Average"
     units="volume" expires_after="2025-03-30">
   <owner>silen@chromium.org</owner>
-  <owner>alessiob@chromium.org</owner>
+  <owner>peah@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The {InputVolumeType} input volume average {Metric} measured over 60 seconds
@@ -223,7 +223,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="WebRTC.Audio.Apm.{InputVolumeType}.{Metric}Rate"
     units="changes/minute" expires_after="2025-03-30">
   <owner>silen@chromium.org</owner>
-  <owner>alessiob@chromium.org</owner>
+  <owner>peah@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The {InputVolumeType} input volume {Metric} rate measured over 60 seconds in
