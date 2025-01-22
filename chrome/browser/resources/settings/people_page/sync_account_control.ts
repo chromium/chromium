@@ -609,11 +609,23 @@ export class SettingsSyncAccountControlElement extends
     if (actionMenu) {
       actionMenu.close();
     }
+
+    const menuAnchor =
+        this.shadowRoot!.querySelector<HTMLElement>('#dropdown-arrow');
+    if (menuAnchor) {
+      menuAnchor.setAttribute('aria-expanded', 'false');
+    }
   }
 
   private onSignoutClick_() {
     this.syncBrowserProxy_.signOut(false /* deleteProfile */);
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
+
+    const menuAnchor =
+        this.shadowRoot!.querySelector<HTMLElement>('#dropdown-arrow');
+    if (menuAnchor) {
+      menuAnchor.setAttribute('aria-expanded', 'false');
+    }
   }
 
   private onSyncButtonClick_() {
@@ -644,6 +656,7 @@ export class SettingsSyncAccountControlElement extends
         this.shadowRoot!.querySelector<HTMLElement>('#dropdown-arrow');
     assert(anchor);
     actionMenu.showAt(anchor);
+    anchor.setAttribute('aria-expanded', 'true');
   }
 
   private onShouldShowAvatarRowChange_() {
@@ -652,6 +665,12 @@ export class SettingsSyncAccountControlElement extends
     const actionMenu = this.shadowRoot!.querySelector('cr-action-menu');
     if (!this.shouldShowAvatarRow_ && actionMenu && actionMenu.open) {
       actionMenu.close();
+    }
+
+    const menuAnchor =
+        this.shadowRoot!.querySelector<HTMLElement>('#dropdown-arrow');
+    if (menuAnchor) {
+      menuAnchor.setAttribute('aria-expanded', 'false');
     }
   }
 
