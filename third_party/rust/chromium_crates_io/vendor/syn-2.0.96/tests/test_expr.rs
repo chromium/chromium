@@ -24,8 +24,8 @@ use syn::visit_mut::VisitMut as _;
 use syn::{
     parse_quote, token, AngleBracketedGenericArguments, Arm, BinOp, Block, Expr, ExprArray,
     ExprAssign, ExprAsync, ExprAwait, ExprBinary, ExprBlock, ExprBreak, ExprCall, ExprCast,
-    ExprClosure, ExprConst, ExprContinue, ExprField, ExprForLoop, ExprIf, ExprIndex, ExprLit,
-    ExprLoop, ExprMacro, ExprMatch, ExprMethodCall, ExprPath, ExprRange, ExprRawAddr,
+    ExprClosure, ExprConst, ExprContinue, ExprField, ExprForLoop, ExprIf, ExprIndex, ExprLet,
+    ExprLit, ExprLoop, ExprMacro, ExprMatch, ExprMethodCall, ExprPath, ExprRange, ExprRawAddr,
     ExprReference, ExprReturn, ExprStruct, ExprTry, ExprTryBlock, ExprTuple, ExprUnary, ExprUnsafe,
     ExprWhile, ExprYield, GenericArgument, Label, Lifetime, Lit, LitInt, Macro, MacroDelimiter,
     Member, Pat, PatWild, Path, PathArguments, PathSegment, PointerMutability, QSelf, RangeLimits,
@@ -799,6 +799,7 @@ fn test_fixup() {
         quote! { (1 + 1).abs() },
         quote! { (lo..hi)[..] },
         quote! { (a..b)..(c..d) },
+        quote! { (x > ..) > x },
         quote! { (&mut fut).await },
         quote! { &mut (x as i32) },
         quote! { -(x as i32) },
@@ -1072,6 +1073,20 @@ fn test_permutations() -> ExitCode {
                     stmts: Vec::new(),
                 },
                 else_branch: None,
+            }));
+        });
+
+        // Expr::Let
+        iter(depth, &mut |expr| {
+            f(Expr::Let(ExprLet {
+                attrs: Vec::new(),
+                let_token: Token![let](span),
+                pat: Box::new(Pat::Wild(PatWild {
+                    attrs: Vec::new(),
+                    underscore_token: Token![_](span),
+                })),
+                eq_token: Token![=](span),
+                expr: Box::new(expr),
             }));
         });
 

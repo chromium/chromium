@@ -3296,12 +3296,10 @@ pub(crate) mod printing {
             fixup.leftmost_subexpression_with_operator(&e.left, false, false, Precedence::Assign);
         print_subexpression(&e.left, left_prec <= Precedence::Range, tokens, left_fixup);
         e.eq_token.to_tokens(tokens);
-        let (right_prec, right_fixup) = fixup.rightmost_subexpression(&e.right, Precedence::Assign);
-        print_subexpression(
+        print_expr(
             &e.right,
-            right_prec < Precedence::Assign,
             tokens,
-            right_fixup,
+            fixup.rightmost_subexpression_fixup(false, false, Precedence::Assign),
         );
     }
 
@@ -3370,17 +3368,22 @@ pub(crate) mod printing {
             #[cfg(feature = "full")]
             binop_prec,
         );
+        let left_needs_group = match binop_prec {
+            Precedence::Assign => left_prec <= Precedence::Range,
+            Precedence::Compare => left_prec <= binop_prec,
+            _ => left_prec < binop_prec,
+        };
 
-        let (right_prec, right_fixup) = fixup.rightmost_subexpression(
-            &e.right,
+        let right_fixup = fixup.rightmost_subexpression_fixup(
+            #[cfg(feature = "full")]
+            false,
+            #[cfg(feature = "full")]
+            false,
             #[cfg(feature = "full")]
             binop_prec,
         );
-        let (left_needs_group, right_needs_group) = match binop_prec {
-            Precedence::Assign => (left_prec <= Precedence::Range, right_prec < binop_prec),
-            Precedence::Compare => (left_prec <= binop_prec, right_prec <= binop_prec),
-            _ => (left_prec < binop_prec, right_prec <= binop_prec),
-        };
+        let right_needs_group = binop_prec != Precedence::Assign
+            && right_fixup.rightmost_subexpression_precedence(&e.right) <= binop_prec;
 
         print_subexpression(&e.left, left_needs_group, tokens, left_fixup);
         e.op.to_tokens(tokens);
