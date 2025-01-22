@@ -19230,11 +19230,11 @@
             ],
             "experiments": [
                 {
-                    "name": "RedInterstitial_20250108",
+                    "name": "RedInterstitial_20241212",
                     "params": {
                         "RedWarningSurveyDidProceedFilter": "TRUE,FALSE",
-                        "RedWarningSurveyTriggerId": "tk2kQP2nR0ugnJ3q1cK0RSntPR9W",
-                        "probability": "0.5"
+                        "RedWarningSurveyTriggerId": "ZdMdCoDc50ugnJ3q1cK0VwqVnKb6",
+                        "probability": "1.0"
                     },
                     "enable_features": [
                         "RedWarningSurvey"
