@@ -20,13 +20,18 @@ class AITranslator final : public ScriptWrappable {
  public:
   explicit AITranslator(
       mojo::PendingRemote<mojom::blink::Translator> pending_remote,
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      String source_language,
+      String target_language);
   ~AITranslator() override = default;
 
   mojo::PendingReceiver<blink::mojom::blink::Translator>
   GetTranslatorReceiver();
 
   void Trace(Visitor* visitor) const override;
+
+  String sourceLanguage() const;
+  String targetLanguage() const;
 
   // ai_translator.idl implementation
   ScriptPromise<IDLString> translate(ScriptState* script_state,
@@ -37,6 +42,9 @@ class AITranslator final : public ScriptWrappable {
 
  private:
   HeapMojoRemote<blink::mojom::blink::Translator> translator_remote_{nullptr};
+
+  String source_language_;
+  String target_language_;
 };
 }  // namespace blink
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_ON_DEVICE_TRANSLATION_AI_TRANSLATOR_H_

@@ -16,13 +16,24 @@ namespace blink {
 
 AITranslator::AITranslator(
     mojo::PendingRemote<mojom::blink::Translator> pending_remote,
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    String source_language,
+    String target_language)
+    : source_language_(std::move(source_language)),
+      target_language_(std::move(target_language)) {
   translator_remote_.Bind(std::move(pending_remote), task_runner);
 }
 
 void AITranslator::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   visitor->Trace(translator_remote_);
+}
+
+String AITranslator::sourceLanguage() const {
+  return source_language_;
+}
+String AITranslator::targetLanguage() const {
+  return target_language_;
 }
 
 ScriptPromise<IDLString> AITranslator::translate(
