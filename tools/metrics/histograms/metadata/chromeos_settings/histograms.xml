@@ -206,7 +206,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.Device.Keyboard.AutoBrightnessEnabled.Changed"
-    enum="BooleanToggled" expires_after="2025-03-01">
+    enum="BooleanToggled" expires_after="2025-12-31">
   <owner>longbowei@google.com</owner>
   <owner>dpad@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -217,7 +217,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Device.Keyboard.BrightnessSliderAdjusted"
-    units="%" expires_after="2025-04-08">
+    units="%" expires_after="2025-12-31">
   <owner>longbo@google.com</owner>
   <owner>dpad@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -251,7 +251,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Device.KeyboardColorLinkClicks"
-    enum="Boolean" expires_after="2025-04-02">
+    enum="Boolean" expires_after="2025-12-31">
   <owner>longbowei@google.com</owner>
   <owner>dpad@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -330,7 +330,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="ChromeOS.Settings.Display.Internal.UserInitiated.AmbientLightSensorDisabledCause"
     enum="UserInitiatedAmbientLightSensorDisabledCause"
-    expires_after="2025-05-01">
+    expires_after="2025-12-31">
   <owner>longbowei@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -537,7 +537,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="ChromeOS.Settings.Keyboard.UserInitiated.AmbientLightSensorDisabledCause"
     enum="UserInitiatedAmbientLightSensorDisabledCause"
-    expires_after="2025-05-01">
+    expires_after="2025-12-31">
   <owner>longbowei@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
