@@ -452,6 +452,7 @@ void SavedTabGroupModel::RemoveTabFromGroupLocally(const base::Uuid& group_id,
 void SavedTabGroupModel::RemoveTabFromGroupFromSync(
     const base::Uuid& group_id,
     const base::Uuid& tab_id,
+    GaiaId removed_by,
     bool prevent_group_destruction_for_testing) {
   std::optional<int> index = GetIndexOf(group_id);
   CHECK(index.has_value());
@@ -463,7 +464,7 @@ void SavedTabGroupModel::RemoveTabFromGroupFromSync(
 
   const base::Uuid copy_tab_id = tab_id;
   saved_tab_groups_[index.value()].RemoveTabFromSync(
-      tab_id, prevent_group_destruction_for_testing);
+      tab_id, std::move(removed_by), prevent_group_destruction_for_testing);
 
   // The group became empty because of last tab deletion from sync. It could be
   // a transient state. Create a pending NTP since UI can't handle empty
@@ -728,7 +729,8 @@ void SavedTabGroupModel::MergePendingNtpWithIncomingTabIfAny(
   // Copy over local tab ID of the pending NTP to the incoming sync tab and then
   // delete it from the group.
   tab->SetLocalTabID(pending_ntp->local_tab_id());
-  group.RemoveTabFromSync(pending_ntp->saved_tab_guid());
+  group.RemoveTabFromSync(pending_ntp->saved_tab_guid(),
+                          /*removed_by=*/GaiaId());
 }
 
 SavedTabGroupTab* SavedTabGroupModel::FindPendingNtpInGroup(

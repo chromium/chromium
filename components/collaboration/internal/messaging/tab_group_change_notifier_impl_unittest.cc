@@ -18,6 +18,7 @@
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/tab_groups/tab_group_color.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -641,7 +642,8 @@ TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupTabUpdatesAtStartup) {
 
   // At init tab4 was added, tab2 was updated, and tab1 was removed.
   tab_groups::SavedTabGroup tab_group_init = tab_group_startup;
-  tab_group_init.RemoveTabFromSync(tab1.saved_tab_guid());
+  tab_group_init.RemoveTabFromSync(tab1.saved_tab_guid(),
+                                   /*removed_by=*/GaiaId());
   tab_groups::SavedTabGroupTab tab2_updated = tab2;
   tab2_updated.SetURL(GURL("https://example.com/subpage/"));
   tab_group_init.UpdateTab(tab2_updated);
@@ -724,13 +726,15 @@ TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupTabUpdatesAtRuntime) {
                                     tab_groups::TriggerSource::REMOTE);
 
   // Remove a tab from the group and update it.
-  tab_group.RemoveTabFromSync(tab1.saved_tab_guid());
+  GaiaId removed_by("user_id");
+  tab_group.RemoveTabFromSync(tab1.saved_tab_guid(), removed_by);
   EXPECT_CALL(
       *notifier_observer_,
       OnTabRemoved(TabGuidEq(tab1), Eq(tab_groups::TriggerSource::REMOTE)))
       .WillOnce(SaveArg<0>(&tab_received));
   tgss_observer_->OnTabGroupUpdated(tab_group,
                                     tab_groups::TriggerSource::REMOTE);
+  EXPECT_EQ(tab_received.shared_attribution().updated_by, removed_by);
 
   // Create an update of tab 2.
   tab_groups::SavedTabGroup updated_tab_group = tab_group;

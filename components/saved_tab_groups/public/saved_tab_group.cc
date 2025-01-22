@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
+#include "base/ranges/functional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -27,6 +28,10 @@
 namespace tab_groups {
 
 namespace {
+
+// The maximum number of the last removed tabs to keep metadata. This is used to
+// prevent keeping all the removed tabs when the group is huge.
+constexpr size_t kMaxLastRemovedTabsMetadata = 100;
 
 bool ShouldPlaceNewTabBeforeExistingTab(const SavedTabGroupTab& new_tab,
                                         const SavedTabGroupTab& existing_tab) {
@@ -80,6 +85,9 @@ SavedTabGroup::SavedTabGroup(SavedTabGroup&& other) = default;
 SavedTabGroup& SavedTabGroup::operator=(SavedTabGroup&& other) = default;
 
 SavedTabGroup::~SavedTabGroup() = default;
+
+SavedTabGroup::RemovedTabMetadata::RemovedTabMetadata() = default;
+SavedTabGroup::RemovedTabMetadata::~RemovedTabMetadata() = default;
 
 const SavedTabGroupTab* SavedTabGroup::GetTab(
     const base::Uuid& saved_tab_guid) const {
@@ -279,7 +287,26 @@ SavedTabGroup& SavedTabGroup::RemoveTabLocally(
 
 SavedTabGroup& SavedTabGroup::RemoveTabFromSync(
     const base::Uuid& saved_tab_guid,
+    GaiaId removed_by,
     bool ignore_empty_groups_for_testing) {
+  CHECK(removed_by.empty() || is_shared_tab_group());
+  if (!removed_by.empty()) {
+    last_removed_tabs_metadata_[saved_tab_guid].removed_by =
+        std::move(removed_by);
+    last_removed_tabs_metadata_[saved_tab_guid].removal_time =
+        base::Time::Now();
+
+    // Clean up old removed tabs metadata.
+    if (last_removed_tabs_metadata_.size() > kMaxLastRemovedTabsMetadata) {
+      // Erase only one minimal element because it should be the case in
+      // practice.
+      last_removed_tabs_metadata_.erase(base::ranges::min_element(
+          last_removed_tabs_metadata_, base::ranges::less(),
+          [](const auto& guid_and_metadata) {
+            return guid_and_metadata.second.removal_time;
+          }));
+    }
+  }
   RemoveTabImpl(saved_tab_guid, /*allow_empty_groups=*/true);
   SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   return *this;
@@ -429,6 +456,11 @@ bool SavedTabGroup::IsPendingSanitization() const {
     }
   }
   return false;
+}
+
+// static
+size_t SavedTabGroup::GetMaxLastRemovedTabsMetadataForTesting() {
+  return kMaxLastRemovedTabsMetadata;
 }
 
 void SavedTabGroup::RemoveTabImpl(const base::Uuid& saved_tab_guid,

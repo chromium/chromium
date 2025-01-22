@@ -35,6 +35,7 @@
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
@@ -592,13 +593,13 @@ SharedTabGroupDataSyncBridge::ApplyIncrementalSyncChanges(
           /*store_write_batch_on_destroy=*/false);
   CHECK(ongoing_write_batch_);
 
-  std::vector<std::string> deleted_entities;
+  std::vector<std::unique_ptr<syncer::EntityChange>> delete_changes;
 
   std::vector<std::unique_ptr<syncer::EntityChange>> tab_updates;
   for (std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     switch (change->type()) {
       case syncer::EntityChange::ACTION_DELETE: {
-        deleted_entities.push_back(change->storage_key());
+        delete_changes.push_back(std::move(change));
         break;
       }
       case syncer::EntityChange::ACTION_ADD:
@@ -630,8 +631,15 @@ SharedTabGroupDataSyncBridge::ApplyIncrementalSyncChanges(
   // an opportunity to resolve themselves before they become empty.
   // TODO(crbug.com/351357559): fix the order of applying updates (groups after
   // tabs).
-  for (const std::string& entity : deleted_entities) {
-    DeleteDataFromLocalStorage(entity, *ongoing_write_batch_);
+  for (const std::unique_ptr<syncer::EntityChange>& change : delete_changes) {
+    GaiaId last_updated_by;
+    if (change->data().collaboration_metadata) {
+      last_updated_by =
+          change->data().collaboration_metadata->last_updated_by();
+    }
+    DeleteDataFromLocalStorage(change->storage_key(),
+                               std::move(last_updated_by),
+                               *ongoing_write_batch_);
   }
 
   // Sort tab updates and creations in the reversed order. This is required to
@@ -1202,6 +1210,7 @@ SharedTabGroupDataSyncBridge::ApplyRemoteTabUpdate(
 
 void SharedTabGroupDataSyncBridge::DeleteDataFromLocalStorage(
     const std::string& storage_key,
+    GaiaId removed_by,
     syncer::DataTypeStore::WriteBatch& write_batch) {
   write_batch.DeleteData(storage_key);
 
@@ -1219,8 +1228,8 @@ void SharedTabGroupDataSyncBridge::DeleteDataFromLocalStorage(
 
   if (const SavedTabGroup* group_containing_tab =
           model_wrapper_->GetGroupContainingTab(guid)) {
-    model_wrapper_->RemoveTabFromGroup(group_containing_tab->saved_guid(),
-                                       guid);
+    model_wrapper_->RemoveTabFromGroup(group_containing_tab->saved_guid(), guid,
+                                       std::move(removed_by));
   }
 }
 

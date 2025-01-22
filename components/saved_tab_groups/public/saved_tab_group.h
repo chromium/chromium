@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/types.h"
@@ -46,6 +48,18 @@ class SavedTabGroup {
   SavedTabGroup(SavedTabGroup&& other);
   SavedTabGroup& operator=(SavedTabGroup&& other);
   ~SavedTabGroup();
+
+  // Contains metadata for a removed tab from the group.
+  struct RemovedTabMetadata {
+    RemovedTabMetadata();
+    ~RemovedTabMetadata();
+
+    // Gaia ID of the user who removed the tab. May be empty.
+    GaiaId removed_by;
+
+    // The time when the tab was removed on this device.
+    base::Time removal_time;
+  };
 
   // Metadata accessors.
   const base::Uuid& saved_guid() const { return saved_guid_; }
@@ -90,6 +104,11 @@ class SavedTabGroup {
   bool is_pinned() const { return position_.has_value(); }
   bool is_shared_tab_group() const { return collaboration_id_.has_value(); }
   bool is_transitioning_to_saved() const { return is_transitioning_to_saved_; }
+
+  const std::map<base::Uuid, RemovedTabMetadata>& last_removed_tabs_metadata()
+      const {
+    return last_removed_tabs_metadata_;
+  }
 
   std::vector<SavedTabGroupTab>& saved_tabs() { return saved_tabs_; }
 
@@ -158,10 +177,12 @@ class SavedTabGroup {
   // was the last tab in the group: crbug/1371959. If the tab was removed
   // locally update the positions of all tabs in the group. Otherwise, leave the
   // order of the group as is. CHECKs that the removed tab is not the last tab,
-  // unless `ignore_empty_groups_for_testing` is true.
+  // unless `ignore_empty_groups_for_testing` is true. `removed_by` is the user
+  // who removed the tab, used for shared groups only and may be empty.
   SavedTabGroup& RemoveTabLocally(const base::Uuid& saved_tab_guid);
   SavedTabGroup& RemoveTabFromSync(
       const base::Uuid& saved_tab_guid,
+      GaiaId removed_by,
       bool ignore_empty_groups_for_testing = false);
 
   // Replaces that tab denoted by `tab_id` with value of `tab` unless the
@@ -204,6 +225,8 @@ class SavedTabGroup {
 
   // Whether the TabGroup is pending sanitization.
   bool IsPendingSanitization() const;
+
+  static size_t GetMaxLastRemovedTabsMetadataForTesting();
 
  private:
   // Moves the tab denoted by `saved_tab_guid` to the position `new_index`.
@@ -290,6 +313,10 @@ class SavedTabGroup {
   // Whether the tab group is transitioning from shared to private, but not yet
   // completed. Can only be true if the tab group is currently shared.
   bool is_transitioning_to_saved_ = false;
+
+  // The last removed tabs which were removed from this group. Used for shared
+  // tab groups only.
+  std::map<base::Uuid, RemovedTabMetadata> last_removed_tabs_metadata_;
 };
 
 }  // namespace tab_groups
