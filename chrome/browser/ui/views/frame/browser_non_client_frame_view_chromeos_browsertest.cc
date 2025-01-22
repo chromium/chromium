@@ -1462,12 +1462,14 @@ using LockedFullscreenBrowserNonClientFrameViewChromeOSTest =
     TopChromeMdParamTest<ChromeOSBrowserUITest>;
 
 IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserNonClientFrameViewChromeOSTest,
-                       ToggleTabletMode) {
+                       ToggleTabletModeWhenNotLockedForOnTask) {
   if (!IsIsShelfVisibleSupported()) {
     GTEST_SKIP() << "Ash is too old.";
   }
 
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  browser()->SetLockedForOnTask(false);
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser());
   EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
 
   // Set locked fullscreen state.
@@ -1479,15 +1481,57 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserNonClientFrameViewChromeOSTest,
   EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
   EXPECT_FALSE(IsShelfVisible());
 
-  auto* widget = browser_view->GetWidget();
-  auto* immersive_controller = chromeos::ImmersiveFullscreenController::Get(
-      views::Widget::GetWidgetForNativeView(widget->GetNativeWindow()));
+  auto* const widget = browser_view->GetWidget();
+  auto* const immersive_controller =
+      chromeos::ImmersiveFullscreenController::Get(
+          views::Widget::GetWidgetForNativeView(widget->GetNativeWindow()));
   EXPECT_FALSE(immersive_controller->IsEnabled());
 
   EnterTabletMode();
-
   EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
   EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_FALSE(IsShelfVisible());
+
+  ExitTabletMode();
+  EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
+  EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_FALSE(IsShelfVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserNonClientFrameViewChromeOSTest,
+                       ToggleTabletModeWhenLockedForOnTask) {
+  if (!IsIsShelfVisibleSupported()) {
+    GTEST_SKIP() << "Ash is too old.";
+  }
+
+  browser()->SetLockedForOnTask(true);
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser());
+  EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+
+  // Set locked fullscreen state.
+  PinWindow(browser_view->GetWidget()->GetNativeWindow(), /*trusted=*/true);
+
+  // Verify immersive mode is enabled in locked fullscreen mode and when locked
+  // for OnTask. Also verify that the shelf is hidden.
+  EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
+  EXPECT_TRUE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_FALSE(IsShelfVisible());
+
+  auto* const widget = browser_view->GetWidget();
+  auto* const immersive_controller =
+      chromeos::ImmersiveFullscreenController::Get(
+          views::Widget::GetWidgetForNativeView(widget->GetNativeWindow()));
+  EXPECT_TRUE(immersive_controller->IsEnabled());
+
+  EnterTabletMode();
+  EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
+  EXPECT_TRUE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_FALSE(IsShelfVisible());
+
+  ExitTabletMode();
+  EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
+  EXPECT_TRUE(browser_view->immersive_mode_controller()->IsEnabled());
   EXPECT_FALSE(IsShelfVisible());
 }
 
