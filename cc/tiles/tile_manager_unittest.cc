@@ -136,9 +136,6 @@ class TileManagerTilePriorityQueueTest : public TestLayerTreeHostBase {
   }
 
   TileManager* tile_manager() { return host_impl()->tile_manager(); }
-
-  class StubGpuBacking : public ResourcePool::GpuBacking {
-  };
 };
 
 TEST_F(TileManagerTilePriorityQueueTest, RasterTilePriorityQueue) {
@@ -1604,7 +1601,7 @@ TEST_F(TileManagerTilePriorityQueueTest,
       host_impl()->resource_pool()->AcquireResource(
           gfx::Size(256, 256), viz::SinglePlaneFormat::kRGBA_8888,
           gfx::ColorSpace());
-  resource.set_gpu_backing(std::make_unique<StubGpuBacking>());
+  resource.set_gpu_backing(std::make_unique<ResourcePool::GpuBacking>());
 
   host_impl()->tile_manager()->CheckIfMoreTilesNeedToBePreparedForTesting();
   EXPECT_FALSE(host_impl()->is_likely_to_require_a_draw());
@@ -2546,16 +2543,12 @@ class InvalidResourceRasterBufferProvider
       bool depends_on_hardware_accelerated_jpeg_candidates,
       bool depends_on_hardware_accelerated_webp_candidates) override {
     if (!resource.gpu_backing()) {
-      auto backing = std::make_unique<StubGpuBacking>();
+      auto backing = std::make_unique<ResourcePool::GpuBacking>();
       // Don't set a mailbox to signal invalid resource.
       resource.set_gpu_backing(std::move(backing));
     }
     return std::make_unique<FakeRasterBuffer>();
   }
-
- private:
-  class StubGpuBacking : public ResourcePool::GpuBacking {
-  };
 };
 
 class InvalidResourceTileManagerTest : public TileManagerTest {
