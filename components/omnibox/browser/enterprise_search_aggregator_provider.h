@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_ENTERPRISE_SEARCH_AGGREGATOR_PROVIDER_H_
 #define COMPONENTS_OMNIBOX_BROWSER_ENTERPRISE_SEARCH_AGGREGATOR_PROVIDER_H_
 
+#include <memory>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -12,6 +13,7 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 
 class AutocompleteProviderClient;
+class AutocompleteProviderDebouncer;
 
 class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
  public:
@@ -36,8 +38,14 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
                                 const std::u16string& title,
                                 const std::u16string& additional_text);
 
+  // Called by `debouncer_`, queued when `Start()` is called.
+  void Run();
+
   // Owned by AutocompleteController.
   const raw_ptr<AutocompleteProviderClient> client_;
+
+  // Used to ensure that we don't send multiple requests in quick succession.
+  std::unique_ptr<AutocompleteProviderDebouncer> debouncer_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ENTERPRISE_SEARCH_AGGREGATOR_PROVIDER_H_
