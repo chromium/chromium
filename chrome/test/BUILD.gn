@@ -12409,7 +12409,7 @@ source_set("xr_browser_tests_common") {
   if (enable_vr) {
     deps += [ "//device/vr" ]
   }
-  if (is_win) {
+  if (enable_vr && is_win) {
     deps += [ "//device/vr:directx_helpers" ]
   }
 
