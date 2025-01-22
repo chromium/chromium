@@ -4529,8 +4529,6 @@ static_library("ui") {
       "views/relaunch_notification/relaunch_required_timer_internal.h",
       "views/sad_tab_view.cc",
       "views/sad_tab_view.h",
-      "views/safe_browsing/deep_scanning_failure_modal_dialog.cc",
-      "views/safe_browsing/deep_scanning_failure_modal_dialog.h",
       "views/safe_browsing/deep_scanning_modal_dialog.cc",
       "views/safe_browsing/deep_scanning_modal_dialog.h",
       "views/safe_browsing/password_reuse_modal_warning_dialog.cc",

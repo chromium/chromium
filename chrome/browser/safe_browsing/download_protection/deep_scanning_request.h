@@ -140,13 +140,6 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   // notifying |download_service_|.
   void FinishRequest(DownloadCheckResult result);
 
-  // Called to attempt to show the modal dialog for scan failure. Returns
-  // whether the dialog was successfully shown.
-  bool MaybeShowDeepScanFailureModalDialog(base::OnceClosure accept_callback,
-                                           base::OnceClosure cancel_callback,
-                                           base::OnceClosure close_callback,
-                                           base::OnceClosure open_now_callback);
-
   // Called to verify if `result` is considered as a failure and the scan should
   // end early.
   bool ShouldTerminateEarly(BinaryUploadService::Result result);

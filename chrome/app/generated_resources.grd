@@ -17707,23 +17707,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Open now
     </message>
 
-    <!-- Deep scanning timed out dialog -->
-    <message name="IDS_DEEP_SCANNING_TIMED_OUT_DIALOG_TITLE" desc="Title shown in tab modal dialog when deep scaning times out.">
-      Timed out
-    </message>
-    <message name="IDS_DEEP_SCANNING_TIMED_OUT_DIALOG_MESSAGE" desc="Message shown in tab modal dialog when the deep scanning times out.">
-      Something went wrong. Scanning could not be completed. Please try again.
-    </message>
-    <message name="IDS_DEEP_SCANNING_TIMED_OUT_DIALOG_ACCEPT_BUTTON" desc="The text on the accept button in tab modal dialog when deep scanning times out.">
-      Scan again
-    </message>
-    <message name="IDS_DEEP_SCANNING_TIMED_OUT_DIALOG_CANCEL_BUTTON" desc="The text on the cancel button in tab modal dialog when deep scanning times out.">
-      Cancel
-    </message>
-    <message name="IDS_DEEP_SCANNING_TIMED_OUT_DIALOG_OPEN_NOW_BUTTON" desc="The text on the open now button in tab modal dialog when deep scanning times out.">
-      Open now
-    </message>
-
     <!-- In product help bubble dialog for users referred from ESB promotions -->
     <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_IPH_BUBBLE_TEXT" desc="The text on an In-Product-Help bubble that is shown when a user navigates to the security settings page from an ESB promotion">
       Get more protection against dangerous websites and downloads
