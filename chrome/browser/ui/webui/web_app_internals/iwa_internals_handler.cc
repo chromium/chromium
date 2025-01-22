@@ -396,7 +396,7 @@ void IwaInternalsHandler::OnIsolatedWebAppDevModeBundleSelectedForUpdate(
   }
 
   IwaSourceDevModeWithFileOp source(
-      IwaSourceBundleDevModeWithFileOp(*path, kDefaultBundleDevFileOp));
+      IwaSourceBundleDevModeWithFileOp(*path, IwaSourceBundleDevFileOp::kCopy));
   ApplyDevModeUpdate(app_id, source, std::move(callback));
 }
 
@@ -537,8 +537,8 @@ void IwaInternalsHandler::ApplyDevModeUpdate(
   auto& manager = provider->iwa_update_manager();
   manager.DiscoverApplyAndPrioritizeLocalDevModeUpdate(
       location.has_value() ? *location
-                           : IwaSourceDevModeWithFileOp(
-                                 source.WithFileOp(kDefaultBundleDevFileOp)),
+                           : IwaSourceDevModeWithFileOp(source.WithFileOp(
+                                 IwaSourceBundleDevFileOp::kCopy)),
       *url_info,
       base::BindOnce([](base::expected<base::Version, std::string> result) {
         if (result.has_value()) {

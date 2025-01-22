@@ -367,7 +367,7 @@ TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
   base::test::TestFuture<base::expected<base::Version, std::string>> future;
   provider().iwa_update_manager().DiscoverApplyAndPrioritizeLocalDevModeUpdate(
       IwaSourceBundleDevModeWithFileOp(update_bundle->path(),
-                                       kDefaultBundleDevFileOp),
+                                       IwaSourceBundleDevFileOp::kCopy),
       url_info, future.GetCallback());
 
   EXPECT_THAT(future.Get(), ValueIs(Eq(base::Version("2.0.0"))));

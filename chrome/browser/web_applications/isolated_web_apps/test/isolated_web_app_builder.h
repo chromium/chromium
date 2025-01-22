@@ -383,7 +383,7 @@ class BundledIsolatedWebApp {
       Profile* profile,
       base::FunctionRef<IsolatedWebAppInstallSource(IwaSourceDevModeWithFileOp)>
           install_source_provider,
-      IwaSourceBundleDevFileOp file_op = kDefaultBundleDevFileOp,
+      IwaSourceBundleDevFileOp file_op = IwaSourceBundleDevFileOp::kCopy,
       InstallationTraits&&... traits);
 
   WITH_TRAITS(InstallationTraits)
