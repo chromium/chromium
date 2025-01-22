@@ -55,13 +55,11 @@ source_set("breakpad") {
 if (is_linux && enable_chromoting_crashpad) {
   source_set("crashpad") {
     sources = [
-      "breakpad.h",
       "crashpad.h",
       "crashpad_linux.cc",
     ]
     deps = [
       "//base",
-      "//remoting/base",
       "//remoting/base:logging",
       "//remoting/base:remoting_base_version",
       "//third_party/crashpad/crashpad/client",
