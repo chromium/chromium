@@ -51,6 +51,10 @@ std::optional<double> CSSTimeInterpolationType::GetSeconds(
       return style.PopoverShowDelay();
     case CSSPropertyID::kPopoverHideDelay:
       return style.PopoverHideDelay();
+    case CSSPropertyID::kInterestTargetShowDelay:
+      return style.InterestTargetShowDelay();
+    case CSSPropertyID::kInterestTargetHideDelay:
+      return style.InterestTargetHideDelay();
     default:
       NOTREACHED();
   }
@@ -70,6 +74,8 @@ double CSSTimeInterpolationType::ClampTime(const CSSPropertyID& property,
   switch (property) {
     case CSSPropertyID::kPopoverShowDelay:
     case CSSPropertyID::kPopoverHideDelay:
+    case CSSPropertyID::kInterestTargetShowDelay:
+    case CSSPropertyID::kInterestTargetHideDelay:
       return ClampTo<float>(value, 0);
     default:
       NOTREACHED();
@@ -98,6 +104,12 @@ void CSSTimeInterpolationType::ApplyStandardPropertyValue(
       break;
     case CSSPropertyID::kPopoverHideDelay:
       builder.SetPopoverHideDelay(clamped_seconds);
+      break;
+    case CSSPropertyID::kInterestTargetShowDelay:
+      builder.SetInterestTargetShowDelay(clamped_seconds);
+      break;
+    case CSSPropertyID::kInterestTargetHideDelay:
+      builder.SetInterestTargetHideDelay(clamped_seconds);
       break;
     default:
       NOTREACHED();

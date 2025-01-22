@@ -233,6 +233,8 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
         break;
       case CSSPropertyID::kPopoverShowDelay:
       case CSSPropertyID::kPopoverHideDelay:
+      case CSSPropertyID::kInterestTargetShowDelay:
+      case CSSPropertyID::kInterestTargetHideDelay:
         applicable_types->push_back(
             std::make_unique<CSSTimeInterpolationType>(used_property));
         break;

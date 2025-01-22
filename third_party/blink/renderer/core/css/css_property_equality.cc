@@ -455,6 +455,10 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.PopoverShowDelay() == b.PopoverShowDelay();
     case CSSPropertyID::kPopoverHideDelay:
       return a.PopoverHideDelay() == b.PopoverHideDelay();
+    case CSSPropertyID::kInterestTargetShowDelay:
+      return a.InterestTargetShowDelay() == b.InterestTargetShowDelay();
+    case CSSPropertyID::kInterestTargetHideDelay:
+      return a.InterestTargetHideDelay() == b.InterestTargetHideDelay();
     case CSSPropertyID::kHyphenateCharacter:
       return a.HyphenationString() == b.HyphenationString();
     case CSSPropertyID::kHyphenateLimitChars:

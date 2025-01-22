@@ -250,6 +250,8 @@ insetInline
 insetInlineEnd
 insetInlineStart
 interactivity
+interestTargetHideDelay
+interestTargetShowDelay
 interpolateSize
 isolation
 item

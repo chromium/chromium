@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/dom/element_data.h"
+#include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/core/dom/has_invalidation_flags.h"
@@ -103,6 +104,8 @@ class HTMLElement;
 class HTMLTemplateElement;
 class Image;
 class InputDeviceCapabilities;
+class InterestInvokerData;
+class InterestInvokerTargetData;
 class KURL;
 class Locale;
 class MutableCSSPropertyValueSet;
@@ -1071,9 +1074,16 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     return false;
   }
 
-  // Implementation of the `interesttarget` feature.
-  void InterestGained();
-  void InterestLost();
+  // Implementation of the `interesttarget` feature. These are called on the
+  // element with the `interesttarget` attribute, and not on the target itself.
+  // These are called when interest is actually gained or lost on the element,
+  // e.g. after any hover-delays. They return true if the event was *not*
+  // cancelled, and the action was performed.
+  bool InterestGained(Element& interest_target);
+  bool InterestLost(Element& interest_target);
+  // Returns the target of the `interesttarget` attribute, if any, and only if
+  // the element supports this attribute. For example, `interesttarget` is not
+  // allowed on a `<div>`.
   virtual Element* interestTargetElement() { return nullptr; }
 
   // The implementations of |innerText()| and |GetInnerTextWithoutUpdate()| are
@@ -1496,6 +1506,14 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   PopoverData& EnsurePopoverData();
   PopoverData* GetPopoverData() const;
 
+  void RemoveInterestInvokerData();
+  InterestInvokerData& EnsureInterestInvokerData();
+  InterestInvokerData* GetInterestInvokerData() const;
+
+  void RemoveInterestInvokerTargetData();
+  InterestInvokerTargetData& EnsureInterestInvokerTargetData();
+  InterestInvokerTargetData* GetInterestInvokerTargetData() const;
+
   // Retrieves the element pointed to by this element's 'anchor' content
   // attribute, if that element exists.
   // TODO(crbug.com/40059176) If the HTMLAnchorAttribute feature is disabled,
@@ -1715,7 +1733,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   enum class HighlightRecalc {
     // No highlight recalc is needed.
     kNone,
-    // The HighlightData from the old style can be re-used.
+    // The HighlightData from the old style can be reused.
     kReuse,
     // The HighlightData contains relative units and may need recalc.
     kOriginatingDependent,
@@ -1984,6 +2002,13 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool ShouldUpdateLastRememberedInlineSize() const;
 
   bool IsStyleAttributeChangeAllowed(const AtomicString& style_string);
+
+  // These schedule interest gained/lost events, for `interesttarget` invokers.
+  void ScheduleInterestGainedTask();
+  void ScheduleInterestLostTask();
+  // This returns the active interest invoker for which this element is the
+  // target.
+  Element* GetInterestInvoker() const;
 
   // Highlight pseudos inherit all properties from the corresponding highlight
   // in the parent, but virtually all existing content uses universal rules
