@@ -2717,8 +2717,6 @@ crbug.com/388922812 external/wpt/svg/animations/reftests/discard-rect-with-anim-
 crbug.com/388934352 external/wpt/trusted-types/block-eval-function-constructor.html [ Failure ]
 crbug.com/388934352 external/wpt/trusted-types/WorkerGlobalScope-importScripts.html [ Failure ]
 crbug.com/388580242 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/popup-redirect-same-origin-allow-popups.https.html [ Crash Failure ]
-crbug.com/391489537 [ Mac13 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Timeout ]
-[ Mac14 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Timeout ]
 crbug.com/388309400 [ Mac15 ] external/wpt/css/CSS2/backgrounds/background-position-applies-to-012.xht [ Crash ]
 crbug.com/388309400 [ Win ] external/wpt/css/CSS2/backgrounds/background-position-applies-to-012.xht [ Crash ]
 crbug.com/388319477 [ Mac13 ] external/wpt/css/css-page/margin-boxes/content-007-print.html [ Crash ]
@@ -9002,8 +9000,8 @@ crbug.com/380323589 [ Win11 ] external/wpt/pointerevents/pointerevent_sequence_a
 crbug.com/380327348 [ Mac ] media/encrypted-media/encrypted-media-async-creation-with-gc.html [ Crash Failure Pass ]
 crbug.com/380327348 [ Mac ] media/encrypted-media/encrypted-media-async-setcert-with-gc.html [ Crash Failure Pass ]
 
-# This test will [PRECONDITION_FAILED] on some bots and not others. Allow both passing and failing for now.
-crbug.com/381378075 [ Win11-arm64 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
+# Allow both passing and failing to unblock a WebRTC roll.
+crbug.com/381407888 external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
 # Will pass or fail depending on bot's HW capabilities, allow either while this feature is behind flag.
 crbug.com/388299759 virtual/webrtc-h265/external/wpt/webrtc/protocol/h265-level-id.https.html [ Failure Pass ]
 
