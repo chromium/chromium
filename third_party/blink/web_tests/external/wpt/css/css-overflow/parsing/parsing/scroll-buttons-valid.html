@@ -14,6 +14,11 @@
   test_valid_selector('::scroll-button(inline-start)');
   test_valid_selector('::scroll-button(inline-end)');
   test_valid_selector('::scroll-button(block-end)');
+  test_valid_selector('::scroll-button(*)');
+  test_valid_selector('::scroll-button( up)', '::scroll-button(up)');
+  test_valid_selector('::scroll-button(up )', '::scroll-button(up)');
+  test_valid_selector('::scroll-button( *)', '::scroll-button(*)');
+  test_valid_selector('::scroll-button(* )', '::scroll-button(*)');
 
   // :focus
   test_valid_selector('::scroll-button(up):focus');

@@ -480,6 +480,7 @@ TEST(CSSSelectorParserTest, ScrollControlPseudos) {
       {"li::scroll-marker", CSSSelector::kPseudoScrollMarker},
       {"div::scroll-button(up)", CSSSelector::kPseudoScrollButton},
       {"div::scroll-button(left)", CSSSelector::kPseudoScrollButton},
+      {"div::scroll-button(*)", CSSSelector::kPseudoScrollButton},
   };
 
   HeapVector<CSSSelector> arena;

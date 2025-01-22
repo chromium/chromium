@@ -322,6 +322,9 @@ namespace {
 
 PseudoId PseudoIdFromScrollButtonArgument(const AtomicString& argument,
                                           const ComputedStyle& style) {
+  if (argument == AtomicString("*")) {
+    return kPseudoIdScrollButton;
+  }
   if (argument == AtomicString("block-start")) {
     return kPseudoIdScrollButtonBlockStart;
   }
@@ -368,7 +371,8 @@ bool MatchScrollButton(const Element& element,
   // Check that pseudo ids match when checking for pseudo element,
   // but always match if checking for regular element to set the style
   // flag.
-  return element.GetPseudoId() == pseudo_id;
+  return pseudo_id == kPseudoIdScrollButton ||
+         element.GetPseudoId() == pseudo_id;
 }
 
 bool NeedsScopeActivation(
