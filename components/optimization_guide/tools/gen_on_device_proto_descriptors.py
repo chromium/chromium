@@ -241,6 +241,9 @@ def GenerateProtoDescriptors(out, messages: KnownMessages):
     _GetProtoFromAny.GenPublic(out, readable_messages)
     _SetProtoValue.GenPublic(out)
     _SetProtoFieldString(readable_messages).GenPublic(out)
+    _GetProtoMutableMessage(readable_messages).GenPublic(out)
+    _AddProtoMessage(readable_messages).GenPublic(out)
+    _GetProtoMutableRepeatedMessage(readable_messages).GenPublic(out)
     _NestedMessageIteratorGet.GenPublic(out, readable_messages)
     _ConvertValue.GenPublic(out, writable_messages)
     out.write("""\
@@ -445,6 +448,124 @@ class _GetProtoRepeated:
         else:
             out.write(f'return GetProtoRepeated('
                       f'&{field_expr}, proto_field, index+1);\n')
+        out.write('}\n')  # End case
+
+
+class _GetProtoMutableMessage:
+    """Code generator for _GetProtoMutableMessage."""
+
+    def __init__(self, supported_messages: list[Message]):
+        self._supported_messages = supported_messages
+
+    def GenPublic(self, out):
+        out.write("""
+          google::protobuf::MessageLite* GetProtoMutableMessage(
+              google::protobuf::MessageLite* msg,
+              int32_t tag_number) {
+          """)
+        for msg in self._supported_messages:
+            self._IfMsg(out, msg)
+        out.write('return nullptr;\n')
+        out.write('}\n\n')  # End function
+
+    def IsSupported(self, field: Field) -> bool:
+        return field.type == Type.MESSAGE and not field.is_repeated
+
+    def _IfMsg(self, out, msg: Message):
+        if not any(self.IsSupported(field) for field in msg.fields):
+            return
+        out.write(f'if (msg->GetTypeName() == "{msg.type_name}") {{\n')
+        out.write(f'auto* typed_msg = static_cast<{msg.cpp_name}*>(msg);\n')
+        out.write('switch (tag_number) {\n')
+        for field in msg.fields:
+            if self.IsSupported(field):
+                self.FieldCase(out, msg, field)
+        out.write('}\n')  # End switch
+        out.write('}\n\n')  # End if statement
+
+    def FieldCase(self, out, msg: Message, field: Field):
+        out.write(f'case {field.tag_number}: {{\n')
+        out.write(f'return typed_msg->mutable_{field.name}();\n')
+        out.write('}\n')  # End case
+
+
+class _AddProtoMessage:
+    """Code generator for _AddProtoMessage."""
+
+    def __init__(self, supported_messages: list[Message]):
+        self._supported_messages = supported_messages
+
+    def GenPublic(self, out):
+        out.write("""
+          int AddProtoMessage(
+              google::protobuf::MessageLite* msg,
+              int32_t tag_number) {
+          """)
+        for msg in self._supported_messages:
+            self._IfMsg(out, msg)
+        out.write('return 0;\n')
+        out.write('}\n\n')  # End function
+
+    def IsSupported(self, field: Field) -> bool:
+        return field.type == Type.MESSAGE and field.is_repeated
+
+    def _IfMsg(self, out, msg: Message):
+        if not any(self.IsSupported(field) for field in msg.fields):
+            return
+        out.write(f'if (msg->GetTypeName() == "{msg.type_name}") {{\n')
+        out.write(f'auto* typed_msg = static_cast<{msg.cpp_name}*>(msg);\n')
+        out.write('switch (tag_number) {\n')
+        for field in msg.fields:
+            if self.IsSupported(field):
+                self.FieldCase(out, msg, field)
+        out.write('}\n')  # End switch
+        out.write('}\n\n')  # End if statement
+
+    def FieldCase(self, out, msg: Message, field: Field):
+        out.write(f'case {field.tag_number}: {{\n')
+        out.write(f'typed_msg->add_{field.name}();\n')
+        out.write(f'return typed_msg->{field.name}_size();\n')
+        out.write('}\n')  # End case
+
+
+class _GetProtoMutableRepeatedMessage:
+    """Namespace class for GetProtoMutableRepeatedMessage method builder."""
+
+    def __init__(self, supported_messages: list[Message]):
+        self._supported_messages = supported_messages
+
+    def GenPublic(self, out):
+        out.write("""
+          google::protobuf::MessageLite* GetProtoMutableRepeatedMessage(
+              google::protobuf::MessageLite* parent,
+              int32_t tag_number,
+              int offset) {\n
+        """)
+        for msg in self._supported_messages:
+            self._IfMsg(out, msg)
+        out.write('return nullptr;\n')
+        out.write('}\n\n')  # End function
+
+    def IsSupported(self, field: Field) -> bool:
+        return field.type == Type.MESSAGE and field.is_repeated
+
+    def _IfMsg(self, out, msg: Message):
+        if not any(self.IsSupported(field) for field in msg.fields):
+            return
+        out.write(f'if (parent->GetTypeName() == "{msg.type_name}") {{\n')
+        out.write(f'auto* typed_msg = static_cast<{msg.cpp_name}*>(parent);\n')
+        out.write('switch (tag_number) {\n')
+        for field in msg.fields:
+            if self.IsSupported(field):
+                self.FieldCase(out, msg, field)
+        out.write('}\n')  # End switch
+        out.write('}\n\n')  # End if statement
+
+    def FieldCase(self, out, msg: Message, field: Field):
+        out.write(f'case {field.tag_number}: {{\n')
+        out.write(f'if (offset >= typed_msg->{field.name}_size()) {{'
+                  f'return nullptr; }};\n')
+        out.write(f'return typed_msg->mutable_{field.name}(offset);\n')
         out.write('}\n')  # End case
 
 
