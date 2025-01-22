@@ -342,6 +342,8 @@ void FlagImpl::StoreValue(const void* src, ValueSource source) {
 
 absl::string_view FlagImpl::Name() const { return name_; }
 
+absl::string_view FlagImpl::TypeName() const { return type_name_; }
+
 std::string FlagImpl::Filename() const {
   return flags_internal::GetUsageConfig().normalize_filename(filename_);
 }
