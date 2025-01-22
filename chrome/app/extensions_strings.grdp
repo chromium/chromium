@@ -499,6 +499,9 @@
   <message name="IDS_EXTENSIONS_EDIT_SHORTCUT_BUTTON_LABEL" desc="The label for a button to edit the shortcut.">
     Edit shortcut <ph name="SHORTCUT">$1</ph> for <ph name="EXTENSION_NAME">$2</ph>
   </message>
+  <message name="IDS_EXTENSIONS_SET_SHORTCUT_IN_SYSTEM_SETTINGS" desc="The label to indicate that shortcuts are managed in system settings instead of within Chrome.">
+    Set in system settings
+  </message>
   <message name="IDS_EXTENSIONS_SHORTCUT_SCOPE_LABEL" desc="The label for the dropdown menu that lets the user choose the scope of an extension command (within chrome or global).">
     Scope of <ph name="SHORTCUT">$1</ph> for <ph name="EXTENSION_NAME">$2</ph>
   </message>
