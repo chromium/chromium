@@ -12,7 +12,6 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestSyncBrowserProxy extends TestBrowserProxy implements
     SyncBrowserProxy {
-  private impressionCount_: number = 0;
   private resolveGetSyncStatus_: Function|null = null;
   private syncStatus_: SyncStatus|null = {
     signedInState: SignedInState.SYNCING,
@@ -36,11 +35,9 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
     super([
       'didNavigateAwayFromSyncPage',
       'didNavigateToSyncPage',
-      'getPromoImpressionCount',
       'getStoredAccounts',
       'getProfileAvatar',
       'getSyncStatus',
-      'incrementPromoImpressionCount',
       'setSyncDatatypes',
       'setEncryptionPassphrase',
       'setDecryptionPassphrase',
@@ -113,19 +110,6 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
 
   startSyncingWithEmail(email: string, isDefaultPromoAccount: boolean) {
     this.methodCalled('startSyncingWithEmail', [email, isDefaultPromoAccount]);
-  }
-
-  setImpressionCount(count: number) {
-    this.impressionCount_ = count;
-  }
-
-  getPromoImpressionCount() {
-    this.methodCalled('getPromoImpressionCount');
-    return this.impressionCount_;
-  }
-
-  incrementPromoImpressionCount() {
-    this.methodCalled('incrementPromoImpressionCount');
   }
 
   didNavigateToSyncPage() {

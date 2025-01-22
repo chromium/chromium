@@ -108,6 +108,7 @@
         background-size: 100% auto;
         display: none;
         padding-top: calc(120 / 680 * 100%); /* Keep background ratio. */
+        display: block;
       }
 
       @media (prefers-color-scheme: dark) {
@@ -116,9 +117,6 @@
         }
       }
 
-      :host([showing-promo]) #banner {
-        display: block;
-      }
     </style>
     <div id="banner" hidden="[[shouldHideBanner_(syncStatus.signedInState)]]"
         part="banner"></div>

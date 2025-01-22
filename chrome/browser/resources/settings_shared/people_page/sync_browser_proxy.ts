@@ -177,11 +177,6 @@ export interface ChromeSigninUserChoiceInfo {
   signedInEmail: string;
 }
 
-/**
- * Key to be used with localStorage.
- */
-const PROMO_IMPRESSION_COUNT_KEY: string = 'signin-promo-count';
-
 export interface SyncBrowserProxy {
   // <if expr="not chromeos_ash">
   /**
@@ -200,16 +195,6 @@ export interface SyncBrowserProxy {
    */
   pauseSync(): void;
   // </if>
-
-  /**
-   * @return the number of times the sync account promo was shown.
-   */
-  getPromoImpressionCount(): number;
-
-  /**
-   * Increment the number of times the sync account promo was shown.
-   */
-  incrementPromoImpressionCount(): void;
 
   // <if expr="chromeos_ash">
   /**
@@ -338,18 +323,6 @@ export class SyncBrowserProxyImpl implements SyncBrowserProxy {
     chrome.send('SyncSetupPauseSync');
   }
   // </if>
-
-  getPromoImpressionCount() {
-    return parseInt(
-               window.localStorage.getItem(PROMO_IMPRESSION_COUNT_KEY)!, 10) ||
-        0;
-  }
-
-  incrementPromoImpressionCount() {
-    window.localStorage.setItem(
-        PROMO_IMPRESSION_COUNT_KEY,
-        (this.getPromoImpressionCount() + 1).toString());
-  }
 
   // <if expr="chromeos_ash">
   attemptUserExit() {
