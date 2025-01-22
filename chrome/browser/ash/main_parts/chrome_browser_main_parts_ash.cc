@@ -25,6 +25,7 @@
 #include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
 #include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
 #include "ash/webui/camera_app_ui/document_scanner_installer.h"
+#include "ash/wm/coral/coral_controller.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -1039,6 +1040,12 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   browser_manager_ = std::make_unique<crosapi::BrowserManager>();
 
   chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
+
+  // CoralController depends on machine_learning::ServiceConnection, so needs to
+  // be initialized after it.
+  if (features::IsCoralFeatureEnabled()) {
+    Shell::Get()->coral_controller()->Initialize();
+  }
 
   // Needs to be initialized after crosapi_manager_.
   metrics::structured::ChromeStructuredMetricsDelegate::Get()->Initialize();

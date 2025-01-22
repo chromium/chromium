@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -18,6 +19,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/fetch/fetch_later_test_util.h"
+#include "third_party/blink/renderer/core/fetch/fetch_request_data.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -102,6 +105,8 @@ TEST(ComputeFetchLaterLoadPriorityTest,
   EXPECT_EQ(computed_priority, ResourceLoadPriority::kHigh);
 }
 
+// DeferredFetchPolicyTestBase supports setting up a page with multiple iframes
+// for testing against their `FramePolicy.deferred_fetch_policy`.
 class DeferredFetchPolicyTestBase : public SimTest {
  protected:
   const String kMainUrl = "https://example.com/";
@@ -170,8 +175,18 @@ class DeferredFetchPolicyTestBase : public SimTest {
 
   LocalFrame* GetMainFrame() { return GetDocument().GetFrame(); }
 
+  // SimTest overrides:
+  std::unique_ptr<frame_test_helpers::TestWebFrameClient>
+  CreateWebFrameClientForMainFrame() override {
+    auto client = std::make_unique<FakeWebFrameClient>();
+    client->GetLoaderFactoryBundle()->SetFetchLaterLoaderFactory(
+        factory_.BindNewEndpointAndPassDedicatedRemote());
+    return client;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  MockFetchLaterLoaderFactory factory_;
 };
 
 class CountDescendantsWithReservedMinimalQuotaTest
@@ -748,6 +763,388 @@ TEST_F(ShouldClearDeferredFetchPolicyTest, MultipleLevelFrames) {
   // Frame D and root are different origin, so Frame D should keep its owned
   // deferred fetch policy.
   EXPECT_FALSE(FetchLaterUtil::ShouldClearDeferredFetchPolicy(frame_d));
+}
+
+class GetAvailableDeferredFetchQuotaTest : public DeferredFetchPolicyTestBase {
+ protected:
+  // This helper method obtains the available deferred-fetch quota for the
+  // control document of `source_frame` when making a request to `url` from
+  // `source_frame`. This mimics how `GetDeferredFetchControlFrame()` is used
+  // in reality.
+  [[nodiscard]] uint64_t GetAvailableQuota(Frame* source_frame,
+                                           const KURL& url) {
+    // `GetDeferredFetchControlFrame() only accepts a control document.
+    auto* control_frame =
+        FetchLaterUtil::GetDeferredFetchControlFrame(source_frame);
+    return FetchLaterUtil::GetAvailableDeferredFetchQuota(control_frame, url);
+  }
+};
+
+// The main frame origin has a `kMaxPerRequestOriginScheduledDeferredBytes`
+// quota for all fetchLater() requests.
+TEST_F(GetAvailableDeferredFetchQuotaTest, SingleDocument) {
+  auto new_request_url = KURL(kMainUrl + "test.html");
+  NavigateTo(kMainUrl, "");
+
+  EXPECT_EQ(GetAvailableQuota(GetMainFrame(), new_request_url),
+            kMaxPerRequestOriginScheduledDeferredBytes);
+}
+
+// The main frame origin has a `kMaxPerRequestOriginScheduledDeferredBytes`
+// quota for all fetchLater() requests.
+TEST_F(GetAvailableDeferredFetchQuotaTest, SingleDocumentExistingRequest) {
+  auto new_request_url = KURL(kMainUrl + "test.html");
+  NavigateTo(kMainUrl, R"HTML(
+    <script>fetchLater("https://example.com");</script>
+  )HTML");
+
+  EXPECT_EQ(GetAvailableQuota(GetMainFrame(), new_request_url),
+            kMaxPerRequestOriginScheduledDeferredBytes);
+}
+
+TEST_F(GetAvailableDeferredFetchQuotaTest,
+       SingleDocumentSingleSameOriginFrame) {
+  auto new_request_url = KURL(kMainUrl + "test.html");
+  // The structure of the document:
+  // root -> frame_a (same-origin)
+  String root_url = kMainUrl;
+  String frame_a_url = kMainUrl + "frame-a.html";
+
+  NavigateTo(root_url, RenderWithIframes({frame_a_url}), {{frame_a_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+  // The main frame has its owned kMaxPerRequestOriginScheduledDeferredBytes
+  // quota.
+  EXPECT_EQ(GetAvailableQuota(root, new_request_url),
+            kMaxPerRequestOriginScheduledDeferredBytes);
+  // Frame A is same-origin and shares the same quota with the main frame.
+  EXPECT_EQ(GetAvailableQuota(frame_a, new_request_url),
+            kMaxPerRequestOriginScheduledDeferredBytes);
+}
+
+TEST_F(GetAvailableDeferredFetchQuotaTest,
+       SingleDocumentSingleCrossOriginFrame) {
+  // The structure of the document:
+  // root -> frame_a (cross-origin)
+  String root_url = kMainUrl;
+  String frame_a_url = kCrossSubdomainUrl + "frame-a.html";
+
+  NavigateTo(root_url, RenderWithIframes({frame_a_url}), {{frame_a_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+
+  auto new_request_url = KURL(kMainUrl + "test.html");
+  // The main frame has its owned kMaxPerRequestOriginScheduledDeferredBytes
+  // quota.
+  EXPECT_EQ(GetAvailableQuota(root, new_request_url),
+            kMaxPerRequestOriginScheduledDeferredBytes);
+  // Frame A is cross-origin and only comes with a small 8KB quota from the
+  // "deferred-fetch-minimal" permissions policy.
+  EXPECT_EQ(GetAvailableQuota(frame_a, new_request_url),
+            kMinimalReservedDeferredFetchQuota);
+}
+
+TEST_F(GetAvailableDeferredFetchQuotaTest,
+       MultipleDifferentOriginSiblingFrames) {
+  // The structure of the document:
+  // root -> frame_a (same-origin)
+  //      -> frame_b (same-origin)
+  //      -> frame_c (cross-origin)
+  //      -> frame_d (cross-origin)
+  String root_url = kMainUrl;
+  String frame_a_url = kMainUrl + "frame-a.html";
+  String frame_b_url = kMainUrl + "frame-b.html";
+  String frame_c_url = kCrossSubdomainUrl + "frame-c.html";
+  String frame_d_url = kCrossSubdomainUrl + "frame-d.html";
+
+  NavigateTo(root_url,
+             RenderWithIframes(
+                 {"frame-a.html", frame_b_url, frame_c_url, frame_d_url}),
+             {{frame_a_url, ""},
+              {frame_b_url, ""},
+              {frame_c_url, ""},
+              {frame_d_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+  auto* frame_b = frame_a->Tree().NextSibling();
+  auto* frame_c = frame_b->Tree().NextSibling();
+  auto* frame_d = frame_c->Tree().NextSibling();
+
+  auto new_request_url = KURL(kMainUrl + "test.html");
+  // The main frame, Frame A, Frame B have their shared
+  // kMaxPerRequestOriginScheduledDeferredBytes quota.
+  EXPECT_EQ(GetAvailableQuota(root, new_request_url),
+            kMaxPerRequestOriginScheduledDeferredBytes);
+  EXPECT_EQ(GetAvailableQuota(frame_a, new_request_url),
+            kMaxPerRequestOriginScheduledDeferredBytes);
+  EXPECT_EQ(GetAvailableQuota(frame_b, new_request_url),
+            kMaxPerRequestOriginScheduledDeferredBytes);
+  // Frame C, Frame D is cross-origin and only comes with a small 8KB quota from
+  // the "deferred-fetch-minimal" permissions policy.
+  EXPECT_EQ(GetAvailableQuota(frame_c, new_request_url),
+            kMinimalReservedDeferredFetchQuota);
+  EXPECT_EQ(GetAvailableQuota(frame_d, new_request_url),
+            kMinimalReservedDeferredFetchQuota);
+}
+
+TEST_F(GetAvailableDeferredFetchQuotaTest, MultipleLevelFrames) {
+  // The structure of the document:
+  // root -> frame_a (same-origin) -> frame_c (cross-origin)
+  //      -> frame_d (cross-origin) -> frame_b (same-origin)
+  String root_url = kMainUrl;
+  String frame_a_url = kMainUrl + "frame-a.html";
+  String frame_b_url = kMainUrl + "frame-b.html";
+  String frame_c_url = kCrossSubdomainUrl + "frame-c.html";
+  String frame_d_url = kCrossSubdomainUrl + "frame-d.html";
+
+  NavigateTo(root_url, RenderWithIframes({"frame-a.html", frame_d_url}),
+             {{frame_a_url, RenderWithIframes({frame_c_url})},
+              {frame_d_url, RenderWithIframes({frame_b_url})},
+              {frame_c_url, ""},
+              {frame_b_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+  auto* frame_d = frame_a->Tree().NextSibling();
+  auto* frame_c = frame_a->Tree().FirstChild();
+  auto* frame_b = frame_d->Tree().FirstChild();
+
+  auto new_request_url = KURL(kMainUrl + "test.html");
+  // The main frame, Frame A, Frame B have their shared
+  // kMaxPerRequestOriginScheduledDeferredBytes quota.
+  // See https://github.com/whatwg/fetch/pull/1647/files#r1906538637
+  EXPECT_EQ(GetAvailableQuota(root, new_request_url),
+            kMaxPerRequestOriginScheduledDeferredBytes);
+  EXPECT_EQ(GetAvailableQuota(frame_a, new_request_url),
+            kMaxPerRequestOriginScheduledDeferredBytes);
+  EXPECT_EQ(GetAvailableQuota(frame_b, new_request_url), 0u);
+  // Frame C, Frame D is cross-origin and only comes with a small 8KB quota from
+  // the "deferred-fetch-minimal" permissions policy.
+  EXPECT_EQ(GetAvailableQuota(frame_c, new_request_url),
+            kMinimalReservedDeferredFetchQuota);
+  EXPECT_EQ(GetAvailableQuota(frame_d, new_request_url),
+            kMinimalReservedDeferredFetchQuota);
+}
+
+class CalculateRequestSizeTestBase : public testing::Test {
+ protected:
+  static const KURL RequestURL() {
+    return KURL(AtomicString("http://www.example.com"));
+  }
+  static const KURL RequestURLWithFragment() {
+    return KURL(AtomicString("http://www.example.com/#tag"));
+  }
+  static const KURL ReferrerURL() {
+    return KURL(AtomicString("http://example.com"));
+  }
+
+  using HeadersType = const Vector<std::pair<const String, const String>>;
+  static uint64_t GetHeadersSize(const HeadersType& headers) {
+    uint64_t total = 0;
+    for (const auto& [key, value] : headers) {
+      total += key.length() + value.length();
+    }
+    return total;
+  }
+  static uint64_t GetUrlSize(const KURL& url) {
+    return FetchLaterUtil::GetUrlLengthWithoutFragment(url);
+  }
+};
+
+class CalculateGetRequestSizeTest : public CalculateRequestSizeTestBase {
+ protected:
+  static FetchRequestData* CreateFetchRequestDataForGet(
+      const KURL& url,
+      const HeadersType& headers,
+      const KURL& referrer = KURL("")) {
+    auto request = mojom::blink::FetchAPIRequest::New();
+    request->method = "GET";
+    request->url = url;
+    for (const auto& [key, value] : headers) {
+      request->headers.insert(key, value);
+    }
+    request->referrer = mojom::blink::Referrer::New(
+        referrer, network::mojom::ReferrerPolicy::kDefault);
+    return FetchRequestData::Create(
+        /*script_state=*/nullptr, std::move(request),
+        FetchRequestData::ForServiceWorkerFetchEvent::kFalse);
+  }
+};
+
+TEST_F(CalculateGetRequestSizeTest, WithoutHeaders) {
+  auto url = RequestURL();
+  auto* request = CreateFetchRequestDataForGet(url, {});
+
+  EXPECT_EQ(FetchLaterUtil::CalculateRequestSize(*request), GetUrlSize(url));
+}
+
+TEST_F(CalculateGetRequestSizeTest, WithHeaders) {
+  auto url = RequestURL();
+  HeadersType headers = {
+      {"key-1", "value 1"},
+      {"key-2", "value 2"},
+  };
+  auto* request = CreateFetchRequestDataForGet(RequestURL(), headers);
+
+  EXPECT_EQ(FetchLaterUtil::CalculateRequestSize(*request),
+            GetUrlSize(url) + GetHeadersSize(headers));
+}
+
+TEST_F(CalculateGetRequestSizeTest, WithFragmentURLAndHeaders) {
+  auto url = RequestURLWithFragment();
+  HeadersType headers = {
+      {"key-1", "value 1"},
+      {"key-2", "value 2"},
+  };
+  auto* request = CreateFetchRequestDataForGet(url, headers);
+
+  EXPECT_EQ(FetchLaterUtil::CalculateRequestSize(*request),
+            GetUrlSize(url) + GetHeadersSize(headers));
+}
+
+TEST_F(CalculateGetRequestSizeTest, WithFragmentURLAndHeadersAndReferrer) {
+  auto url = RequestURLWithFragment();
+  auto referrer = ReferrerURL();
+  HeadersType headers = {
+      {"key-1", "value 1"},
+      {"key-2", "value 2"},
+  };
+  auto* request = CreateFetchRequestDataForGet(url, headers, referrer);
+
+  EXPECT_EQ(FetchLaterUtil::CalculateRequestSize(*request),
+            GetUrlSize(url) + GetHeadersSize(headers) + GetUrlSize(referrer));
+}
+
+class CalculatePostRequestSizeTest : public CalculateRequestSizeTestBase {
+ protected:
+  static FetchRequestData* CreateFetchRequestDataForPost(
+      V8TestingScope& scope,
+      const KURL& url,
+      const HeadersType& headers,
+      std::optional<const String> body,
+      const KURL& referrer = KURL("")) {
+    auto request = mojom::blink::FetchAPIRequest::New();
+    request->method = "POST";
+    request->url = url;
+    for (const auto& [key, value] : headers) {
+      request->headers.insert(key, value);
+    }
+    if (body.has_value()) {
+      ResourceRequestBody request_body(EncodedFormData::Create());
+      request_body.FormBody()->AppendData(body->Ascii());
+      request->body = std::move(request_body);
+    }
+    request->referrer = mojom::blink::Referrer::New(
+        referrer, network::mojom::ReferrerPolicy::kDefault);
+    return FetchRequestData::Create(
+        scope.GetScriptState(), std::move(request),
+        FetchRequestData::ForServiceWorkerFetchEvent::kFalse);
+  }
+
+ private:
+  test::TaskEnvironment task_environment_;
+};
+
+TEST_F(CalculatePostRequestSizeTest, WithoutBodyWithoutHeaders) {
+  V8TestingScope scope;
+  const auto url = RequestURL();
+  const HeadersType headers = {};
+  auto* request =
+      CreateFetchRequestDataForPost(scope, url, headers, std::nullopt);
+
+  EXPECT_EQ(FetchLaterUtil::CalculateRequestSize(*request), GetUrlSize(url));
+}
+
+TEST_F(CalculatePostRequestSizeTest, WithoutBodyWithHeaders) {
+  V8TestingScope scope;
+  const auto url = RequestURL();
+  const HeadersType headers = {
+      {"key-1", "value 1"},
+      {"key-2", "value 2"},
+  };
+  auto* request =
+      CreateFetchRequestDataForPost(scope, url, headers, std::nullopt);
+
+  EXPECT_EQ(FetchLaterUtil::CalculateRequestSize(*request),
+            GetUrlSize(url) + GetHeadersSize(headers));
+}
+
+TEST_F(CalculatePostRequestSizeTest, WithoutBodyWithFragmentURLAndHeaders) {
+  V8TestingScope scope;
+  const auto url = RequestURLWithFragment();
+  const HeadersType headers = {
+      {"key-1", "value 1"},
+      {"key-2", "value 2"},
+  };
+  auto* request =
+      CreateFetchRequestDataForPost(scope, url, headers, std::nullopt);
+
+  EXPECT_EQ(FetchLaterUtil::CalculateRequestSize(*request),
+            GetUrlSize(url) + GetHeadersSize(headers));
+}
+
+TEST_F(CalculatePostRequestSizeTest,
+       WithoutBodyWithFragmentURLAndHeadersAndReferrer) {
+  V8TestingScope scope;
+  const auto url = RequestURLWithFragment();
+  const HeadersType headers = {
+      {"key-1", "value 1"},
+      {"key-2", "value 2"},
+  };
+  auto referrer = ReferrerURL();
+  auto* request = CreateFetchRequestDataForPost(scope, url, headers,
+                                                std::nullopt, referrer);
+
+  EXPECT_EQ(FetchLaterUtil::CalculateRequestSize(*request),
+            GetUrlSize(url) + GetHeadersSize(headers) + GetUrlSize(referrer));
+}
+
+TEST_F(CalculatePostRequestSizeTest, WithdHeaders) {
+  V8TestingScope scope;
+  const auto url = RequestURL();
+  const HeadersType headers = {
+      {"key-1", "value 1"},
+      {"key-2", "value 2"},
+  };
+  const String body = "test body content";
+  auto* request = CreateFetchRequestDataForPost(scope, url, headers, body);
+
+  EXPECT_EQ(FetchLaterUtil::CalculateRequestSize(*request),
+            GetUrlSize(url) + GetHeadersSize(headers) + body.length());
+}
+
+TEST_F(CalculatePostRequestSizeTest, WithFragmentURLAndHeaders) {
+  V8TestingScope scope;
+  const auto url = RequestURLWithFragment();
+  const HeadersType headers = {
+      {"key-1", "value 1"},
+      {"key-2", "value 2"},
+  };
+  const String body = "test body content";
+  auto* request = CreateFetchRequestDataForPost(scope, url, headers, body);
+
+  EXPECT_EQ(FetchLaterUtil::CalculateRequestSize(*request),
+            GetUrlSize(url) + GetHeadersSize(headers) + body.length());
+}
+
+TEST_F(CalculatePostRequestSizeTest, WithFragmentURLAndHeadersAndReferrer) {
+  V8TestingScope scope;
+  const auto url = RequestURLWithFragment();
+  const HeadersType headers = {
+      {"key-1", "value 1"},
+      {"key-2", "value 2"},
+  };
+  const String body = "test body content";
+  auto referrer = ReferrerURL();
+  auto* request =
+      CreateFetchRequestDataForPost(scope, url, headers, body, referrer);
+
+  EXPECT_EQ(FetchLaterUtil::CalculateRequestSize(*request),
+            GetUrlSize(url) + GetHeadersSize(headers) + body.length() +
+                GetUrlSize(referrer));
 }
 
 }  // namespace blink

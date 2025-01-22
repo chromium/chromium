@@ -166,13 +166,6 @@ void GPUDevice::Initialize(wgpu::Device handle,
   queue_ = MakeGarbageCollected<GPUQueue>(this, GetHandle().GetQueue(),
                                           descriptor->defaultQueue()->label());
 
-  wgpu::SupportedLimits limits = {};
-  // Chain to get subgroup limits, if device has subgroups feature.
-  wgpu::DawnExperimentalSubgroupLimits subgroupLimits = {};
-  if (features_->has(V8GPUFeatureName::Enum::kSubgroups)) {
-    limits.nextInChain = &subgroupLimits;
-  }
-
   // Increment subgroups features counter for OT.
   // TODO(crbug.com/349125474): Clean up after OT finished.
   if (features_->has(V8GPUFeatureName::Enum::kSubgroups) ||
@@ -183,6 +176,7 @@ void GPUDevice::Initialize(wgpu::Device handle,
                       WebFeature::kWebGPUSubgroupsFeatures);
   }
 
+  wgpu::SupportedLimits limits = {};
   GetHandle().GetLimits(&limits);
   limits_ = MakeGarbageCollected<GPUSupportedLimits>(limits);
 

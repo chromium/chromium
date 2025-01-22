@@ -50,6 +50,7 @@ import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.ParseUrlStatus;
+import org.chromium.components.data_sharing.SharedDataPreview;
 import org.chromium.components.data_sharing.SharedTabGroupPreview;
 import org.chromium.components.data_sharing.TabPreview;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
@@ -191,6 +192,13 @@ public class DataSharingTabManager {
     }
 
     /**
+     * @return The {@link DataSharingUiDelegate} instance associated with the tab manager.
+     */
+    public DataSharingUIDelegate getUiDelegate() {
+        return mDataSharingService.getUiDelegate();
+    }
+
+    /**
      * Initializes when profile is available.
      *
      * @param profile The loaded profile.
@@ -277,11 +285,6 @@ public class DataSharingTabManager {
         /** Set the session ID for join flow, used to destroy the flow. */
         void setSessionId(String id) {
             mSessionId = id;
-        }
-
-        /** Returns the session ID of the flow */
-        String getSessionId() {
-            return mSessionId;
         }
 
         /** Called to clean up the Join flow when tab group is fetched. */
@@ -404,6 +407,38 @@ public class DataSharingTabManager {
         DataSharingMetrics.recordJoinActionFlowState(
                 DataSharingMetrics.JoinActionStateAndroid.PREVIEW_FETCHED);
         SharedTabGroupPreview preview = previewData.sharedDataPreview.sharedTabGroupPreview;
+
+        DataSharingJoinUiConfig.JoinCallback joinCallback =
+                new DataSharingJoinUiConfig.JoinCallback() {
+                    @Override
+                    public void onGroupJoinedWithWait(
+                            org.chromium.components.sync.protocol.GroupData groupData,
+                            Callback<Boolean> onJoinFinished) {
+                        joinFlowTracker.onGroupJoined(onJoinFinished);
+                        DataSharingMetrics.recordJoinActionFlowState(
+                                DataSharingMetrics.JoinActionStateAndroid.ADD_MEMBER_SUCCESS);
+                        assert groupData.getGroupId().equals(groupToken.collaborationId);
+                    }
+                };
+
+        joinFlowTracker.setSessionId(
+                showJoinScreenWithPreview(activity, groupToken, preview, joinCallback));
+    }
+
+    /**
+     * Show the join UI with preview data.
+     *
+     * @param activity The current tabbed activity.
+     * @param token The {@link GroupToken} for the tab group.
+     * @param previewTabGroupData The {@link SharedTabGroupPreview} for the tab group.
+     * @param joinCallback The callbacks for the join ui.
+     * @return The session id of the join screen.
+     */
+    public String showJoinScreenWithPreview(
+            Activity activity,
+            GroupToken token,
+            SharedTabGroupPreview previewTabGroupData,
+            DataSharingJoinUiConfig.JoinCallback joinCallback) {
         DataSharingStringConfig stringConfig =
                 new DataSharingStringConfig.Builder()
                         .setResourceId(
@@ -428,28 +463,14 @@ public class DataSharingTabManager {
                                 DataSharingStringConfig.StringKey.LEARN_ABOUT_SHARED_TAB_GROUPS,
                                 R.string.collaboration_learn_about_shared_groups)
                         .build();
-        DataSharingJoinUiConfig.JoinCallback joinCallback =
-                new DataSharingJoinUiConfig.JoinCallback() {
-                    @Override
-                    public void onGroupJoinedWithWait(
-                            org.chromium.components.sync.protocol.GroupData groupData,
-                            Callback<Boolean> onJoinFinished) {
-                        joinFlowTracker.onGroupJoined(onJoinFinished);
-                        DataSharingMetrics.recordJoinActionFlowState(
-                                DataSharingMetrics.JoinActionStateAndroid.ADD_MEMBER_SUCCESS);
-                        assert groupData.getGroupId().equals(groupToken.collaborationId);
-                    }
 
-                    @Override
-                    public void onSessionFinished() {
-                        // TODO(haileywang) : Implement this.
-                    }
-                };
-        String tabGroupName = preview.title;
+        String tabGroupName = previewTabGroupData.title;
         if (TextUtils.isEmpty(tabGroupName)) {
-            tabGroupName = TabGroupTitleUtils.getDefaultTitle(activity, preview.tabs.size());
+            tabGroupName =
+                    TabGroupTitleUtils.getDefaultTitle(activity, previewTabGroupData.tabs.size());
         }
-        joinFlowTracker.setSessionId(
+
+        String sessionId =
                 mDataSharingService
                         .getUiDelegate()
                         .showJoinFlow(
@@ -458,11 +479,14 @@ public class DataSharingTabManager {
                                                 getCommonConfig(
                                                         activity, tabGroupName, stringConfig))
                                         .setJoinCallback(joinCallback)
-                                        .setGroupToken(groupToken)
-                                        .setSharedDataPreview(previewData.sharedDataPreview)
-                                        .build()));
+                                        .setGroupToken(token)
+                                        .setSharedDataPreview(
+                                                new SharedDataPreview(previewTabGroupData))
+                                        .build());
 
-        fetchFavicons(activity, joinFlowTracker.getSessionId(), preview.tabs, preview.tabs.size());
+        fetchFavicons(
+                activity, sessionId, previewTabGroupData.tabs, previewTabGroupData.tabs.size());
+        return sessionId;
     }
 
     private void fetchFavicons(

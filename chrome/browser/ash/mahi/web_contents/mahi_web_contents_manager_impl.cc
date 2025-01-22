@@ -22,7 +22,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/mahi/web_contents/mahi_content_extraction_delegate.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/favicon/favicon_utils.h"

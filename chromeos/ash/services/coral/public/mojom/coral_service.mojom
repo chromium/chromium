@@ -9,6 +9,7 @@
 // See go/coral-odml-dd.
 module coral.mojom;
 
+import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
 import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/token.mojom";
 
@@ -166,11 +167,10 @@ interface TitleObserver {
   TitleUpdated@0(mojo_base.mojom.Token group_id, string title);
 };
 
-// The ChromeOS odml daemon implements this service interface, utilizing the on
-// device models for backend logic. Ash Chrome is the client, implementing
-// UI features using this coral service.
+// The actual processor that handles the grouping requests from the client.
+// This will be initialized and returned by CoralService.
 [Stable]
-interface CoralService {
+interface CoralProcessor {
   // Group the request entities into suitable groups with titles. When the
   // observer is passed, the service could return groups with null title
   // before the title is generated, then trigger title updates on the observer
@@ -181,14 +181,33 @@ interface CoralService {
   // Generate and cache the embeddings for the request entities.
   CacheEmbeddings@1(CacheEmbeddingsRequest request)
       => (CacheEmbeddingsResult result);
+};
 
-  // Claim necessary resources (dlc download / model loading) for processing
-  // `Group` and `CacheEmbeddings` requests. It is not necessary to call
-  // `PrepareResource` before calling other methods, but in that case the first
-  // method request might take longer to run. Note that some resources might
-  // be released after the service is idle for a while, so if the caller
-  // expects that `Group` could be called soon after, the caller can call this
-  // method again. This method should have little/no overhead when all
-  // resources are already claimed.
+// The ChromeOS odml daemon implements this service interface, utilizing the on
+// device models for backend logic. Ash Chrome is the client, implementing
+// UI features using this coral service.
+[Stable]
+interface CoralService {
+  // This method is deprecated. Calling it before full deprecation will still
+  // work as
+  // CoralProcessor::Group.
+  GroupDeprecated@0(
+      GroupRequest request, pending_remote<TitleObserver>? observer)
+      => (GroupResult result);
+
+  // This method is deprecated. Calling it before full deprecation will still
+  // work as
+  // CoralProcessor::CacheEmbeddings.
+  CacheEmbeddingsDeprecated@1(CacheEmbeddingsRequest request)
+      => (CacheEmbeddingsResult result);
+
+  // This method is deprecated, and no-op now.
   PrepareResource@2();
+
+  // Initializes the processor with ML Service and prepare necessary resources.
+  [MinVersion=1]
+  Initialize@3(
+      pending_remote<chromeos.machine_learning.mojom.MachineLearningService>?
+          ml_service,
+      pending_receiver<CoralProcessor> processor);
 };

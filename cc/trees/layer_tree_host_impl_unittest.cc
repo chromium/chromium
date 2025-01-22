@@ -856,9 +856,6 @@ class LayerTreeHostImplTestBase : public testing::Test,
 
   InputHandler& GetInputHandler() { return host_impl_->GetInputHandler(); }
 
-  class StubGpuBacking : public ResourcePool::GpuBacking {
-  };
-
   FakeImplTaskRunnerProvider task_runner_provider_;
   DebugScopedSetMainThreadBlocked always_main_thread_blocked_;
 
@@ -13095,7 +13092,7 @@ TEST_P(LayerTreeHostImplTest, OnMemoryPressure) {
       host_impl_->resource_pool()->GetTotalMemoryUsageForTesting();
   EXPECT_EQ(current_memory_usage, 0u);
 
-  resource.set_gpu_backing(std::make_unique<StubGpuBacking>());
+  resource.set_gpu_backing(std::make_unique<ResourcePool::GpuBacking>());
 
   host_impl_->resource_pool()->ReleaseResource(std::move(resource));
 

@@ -1055,7 +1055,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter maxStorageTexturesInFragmentStage
 [Worker]     getter maxStorageTexturesInVertexStage
 [Worker]     getter maxStorageTexturesPerShaderStage
-[Worker]     getter maxSubgroupSize
 [Worker]     getter maxTextureArrayLayers
 [Worker]     getter maxTextureDimension1D
 [Worker]     getter maxTextureDimension2D
@@ -1066,7 +1065,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter maxVertexBufferArrayStride
 [Worker]     getter maxVertexBuffers
 [Worker]     getter minStorageBufferOffsetAlignment
-[Worker]     getter minSubgroupSize
 [Worker]     getter minUniformBufferOffsetAlignment
 [Worker]     method constructor
 [Worker] interface GPUTexture

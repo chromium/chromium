@@ -2453,18 +2453,11 @@ PhysicalOffset LayoutBox::OffsetFromContainerInternal(
 
   PhysicalOffset offset = PhysicalLocation();
 
-  if (IsStickyPositioned() && !(mode & kIgnoreStickyOffset)) {
-    offset += StickyPositionOffset();
-  }
-
-  if (o->IsScrollContainer())
-    offset += OffsetFromScrollableContainer(o, mode & kIgnoreScrollOffset);
-
   if (NeedsAnchorPositionScrollAdjustment()) {
     offset += AnchorPositionScrollTranslationOffset();
   }
 
-  return offset;
+  return offset + LayoutBoxModelObject::OffsetFromContainerInternal(o, mode);
 }
 
 bool LayoutBox::HasInlineFragments() const {

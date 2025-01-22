@@ -1476,6 +1476,7 @@ CanvasResourceProvider::CanvasResourceProvider(
                               sk_color_type,
                               alpha_type,
                               color_space.ToSkColorSpace())),
+      color_space_(color_space),
       resource_host_(resource_host),
       recorder_(std::make_unique<MemoryManagedPaintRecorder>(Size(), this)),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
@@ -1727,12 +1728,6 @@ SkSurfaceProps CanvasResourceProvider::GetSkSurfaceProps() const {
   const bool can_use_lcd_text =
       GetSkImageInfo().alphaType() == kOpaque_SkAlphaType;
   return skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
-}
-
-gfx::ColorSpace CanvasResourceProvider::GetColorSpace() const {
-  auto* color_space = GetSkImageInfo().colorSpace();
-  return color_space ? gfx::ColorSpace(*color_space)
-                     : gfx::ColorSpace::CreateSRGB();
 }
 
 SkAlphaType CanvasResourceProvider::GetAlphaType() const {

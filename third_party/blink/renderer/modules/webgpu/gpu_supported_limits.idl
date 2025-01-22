@@ -40,9 +40,6 @@
     readonly attribute unsigned long maxComputeWorkgroupSizeY;
     readonly attribute unsigned long maxComputeWorkgroupSizeZ;
     readonly attribute unsigned long maxComputeWorkgroupsPerDimension;
-    // Note that WebGPUSubgroupsFeatures is implied by WebGPUExperimentalFeatures.
-    [RuntimeEnabled=WebGPUSubgroupsFeatures] readonly attribute unsigned long minSubgroupSize;
-    [RuntimeEnabled=WebGPUSubgroupsFeatures] readonly attribute unsigned long maxSubgroupSize;
     [RuntimeEnabled=WebGPUExperimentalFeatures] readonly attribute unsigned long maxStorageBuffersInFragmentStage;
     [RuntimeEnabled=WebGPUExperimentalFeatures] readonly attribute unsigned long maxStorageTexturesInFragmentStage;
     [RuntimeEnabled=WebGPUExperimentalFeatures] readonly attribute unsigned long maxStorageBuffersInVertexStage;

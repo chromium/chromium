@@ -1489,6 +1489,7 @@ void PasswordAutofillAgent::SendPasswordForms(
   if (logger)
     logger->LogNumber(Logger::STRING_NUMBER_OF_ALL_FORMS, forms.size());
 
+  size_t num_fields_seen = 0;
   std::vector<FormData> password_forms_data;
   for (const WebFormElement& form_element : forms) {
     if (only_visible) {
@@ -1510,6 +1511,10 @@ void PasswordAutofillAgent::SendPasswordForms(
     if (!form_data || !IsRendererRecognizedCredentialForm(*form_data)) {
       continue;
     }
+    if (num_fields_seen + form_data->fields().size() > kMaxExtractableFields) {
+      break;
+    }
+    num_fields_seen += form_data->fields().size();
 
     FormStructureInfo form_structure_info =
         ExtractFormStructureInfo(*form_data);
@@ -1545,7 +1550,8 @@ void PasswordAutofillAgent::SendPasswordForms(
   if (add_unowned_inputs) {
     std::optional<FormData> form_data(
         GetFormDataFromUnownedInputElements(form_cache));
-    if (form_data && IsRendererRecognizedCredentialForm(*form_data)) {
+    if (form_data && IsRendererRecognizedCredentialForm(*form_data) &&
+        num_fields_seen + form_data->fields().size() <= kMaxExtractableFields) {
       password_forms_data.push_back(std::move(*form_data));
     }
   }

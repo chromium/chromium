@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/app_list/apps_collections_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
 #include <optional>
 #include <string>
 
@@ -265,5 +263,3 @@ bool GetModifiedOrdinals(const extensions::ExtensionId& extension_id,
 }
 
 }  // namespace apps_util
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

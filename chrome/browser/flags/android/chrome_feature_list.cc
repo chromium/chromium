@@ -126,7 +126,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &collaboration::features::kCollaborationFlowAndroid,
     &data_sharing::features::kDataSharingJoinOnly,
     &download::features::kSmartSuggestionForLargeDownloads,
-    &download::features::kDownloadsMigrateToJobsAPI,
     &base::features::kCollectAndroidFrameTimelineMetrics,
     &download::features::kDownloadNotificationServiceUnifiedAPI,
     &features::kAndroidBcivBottomControls,

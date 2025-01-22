@@ -60,7 +60,6 @@ static_library("handlers") {
     "//ash/public/cpp",
     "//base",
     "//build:buildflag_header_h",
-    "//build:chromeos_buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/crostini",

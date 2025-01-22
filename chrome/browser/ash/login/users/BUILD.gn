@@ -92,7 +92,6 @@ static_library("test_support") {
 
   public_deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/prefs:test_support",
     "//components/user_manager",
     "//components/user_manager:test_support",

@@ -67,8 +67,6 @@ class GPUSupportedLimits final : public ScriptWrappable {
   unsigned maxComputeWorkgroupSizeY() const;
   unsigned maxComputeWorkgroupSizeZ() const;
   unsigned maxComputeWorkgroupsPerDimension() const;
-  unsigned minSubgroupSize() const;
-  unsigned maxSubgroupSize() const;
   unsigned maxStorageBuffersInFragmentStage() const;
   unsigned maxStorageTexturesInFragmentStage() const;
   unsigned maxStorageBuffersInVertexStage() const;
@@ -76,9 +74,6 @@ class GPUSupportedLimits final : public ScriptWrappable {
 
  private:
   wgpu::Limits limits_;
-
-  bool subgroup_limits_initialized_;
-  wgpu::DawnExperimentalSubgroupLimits subgroup_limits_;
 };
 
 }  // namespace blink

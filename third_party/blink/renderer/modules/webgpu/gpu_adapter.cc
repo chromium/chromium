@@ -181,12 +181,6 @@ GPUAdapter::GPUAdapter(
   features_ = MakeFeatureNameSet(GetHandle(), gpu_->GetExecutionContext());
 
   wgpu::SupportedLimits limits = {};
-  // Chain to get subgroup limits, if support subgroups feature.
-  wgpu::DawnExperimentalSubgroupLimits subgroupLimits = {};
-  if (features_->has(V8GPUFeatureName::Enum::kSubgroups)) {
-    limits.nextInChain = &subgroupLimits;
-  }
-
   GetHandle().GetLimits(&limits);
   limits_ = MakeGarbageCollected<GPUSupportedLimits>(limits);
 

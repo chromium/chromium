@@ -168,6 +168,7 @@ test("blink_unittests") {
     data_deps = [
       ":blink_unittests_data",
       "//content/shell:pak",
+      "//testing/buildbot/filters:blink_unittests_filters",
     ]
   }
 

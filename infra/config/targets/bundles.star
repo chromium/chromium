@@ -6334,8 +6334,28 @@ targets.bundle(
 targets.bundle(
     name = "trees_in_viz_fyi_gtests",
     targets = [
-        "trees_in_viz_cc_unittests",
+        "blink_unittests",
+        "cc_unittests",
     ],
+    mixins = [
+        targets.mixin(
+            args = [
+                "--enable-features=TreesInViz",
+            ],
+        ),
+    ],
+    per_test_modifications = {
+        "blink_unittests": targets.mixin(
+            args = [
+                "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.blink_unittests.filter",
+            ],
+        ),
+        "cc_unittests": targets.mixin(
+            args = [
+                "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.cc_unittests.filter",
+            ],
+        ),
+    },
 )
 targets.bundle(
     name = "site_isolation_android_fyi_gtests",

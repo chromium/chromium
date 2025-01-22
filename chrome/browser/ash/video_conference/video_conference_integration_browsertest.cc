@@ -271,13 +271,8 @@ class VideoConferenceIntegrationTest
     // Flags use to automatically select the right desktop source and get
     // around security restrictions.
     // TODO(crbug.com/40274188): Use a less error-prone flag.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line->AppendSwitchASCII(::switches::kAutoSelectDesktopCaptureSource,
                                     "Display");
-#else
-    command_line->AppendSwitchASCII(::switches::kAutoSelectDesktopCaptureSource,
-                                    "Entire screen");
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // If in guest mode.
     if (is_guest_mode_) {

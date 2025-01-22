@@ -3758,13 +3758,6 @@ bool LayoutObject::OffsetForContainerDependsOnPoint(
           container->IsBox());
 }
 
-PhysicalOffset LayoutObject::OffsetFromContainer(
-    const LayoutObject* o,
-    MapCoordinatesFlags mode) const {
-  NOT_DESTROYED();
-  return OffsetFromContainerInternal(o, mode);
-}
-
 PhysicalOffset LayoutObject::OffsetFromContainerInternal(
     const LayoutObject* o,
     MapCoordinatesFlags mode) const {

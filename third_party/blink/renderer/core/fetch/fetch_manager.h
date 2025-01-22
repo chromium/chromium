@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace network {
 
@@ -81,6 +82,19 @@ class CORE_EXPORT FetchLaterManager final
                                AbortSignal*,
                                std::optional<DOMHighResTimeStamp>,
                                ExceptionState&);
+
+  // Updates two types of quotas using the Step 9 of the following algorithm:
+  // https://whatpr.org/fetch/1647.html#available-deferred-fetch-quota
+  // 9. For each deferred fetch record deferredRecord of controlDocument's
+  // fetch group’s deferred fetch records ...
+  //
+  // Specifically, the quotas are updated according to all the queued FetchLater
+  // requests from `deferred_loaders_`.
+  // Unlike spec, neither `quota_for_url_origin` nor `total_quota` can be
+  // negative. They will be set to zero if they would have become negative.
+  void UpdateDeferredBytesQuota(const KURL& url,
+                                uint64_t& quota_for_url_origin,
+                                uint64_t& total_quota) const;
 
   // ExecutionContextLifecycleObserver overrides:
   void ContextDestroyed() override;

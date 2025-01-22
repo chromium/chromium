@@ -1536,11 +1536,6 @@ const char kDownloadNotificationServiceUnifiedAPIDescription[] =
     "Migrate download notification service to use new unified API based on "
     "offline item and native persistence";
 
-const char kDownloadsMigrateToJobsAPIName[] = "Migrate downloads use jobs API";
-const char kDownloadsMigrateToJobsAPIDescription[] =
-    "Migrate downloads to use user-initiated jobs instead of foreground "
-    "service on Android 14";
-
 const char kEnablePerfettoSystemTracingName[] =
     "Enable Perfetto system tracing";
 const char kEnablePerfettoSystemTracingDescription[] =

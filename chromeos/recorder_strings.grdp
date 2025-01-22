@@ -174,7 +174,7 @@
     Allow
   </message>
   <message desc="Button to defer enabling speaker label and go next step in the speaker label enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_DEFER_BUTTON">
-    Skip
+    Not now
   </message>
   <message desc="The first item in the list of the explanation of the speaker label enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_DESCRIPTION_LIST_ITEM_1">
     Compute models of the voices detected in the recording
@@ -204,7 +204,7 @@
     Cancel
   </message>
   <message desc="Button to defer enabling transcription and go next step in the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_DEFER_BUTTON">
-    Skip
+    Not now
   </message>
   <message desc="Description of the transcription enable and download step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_DESCRIPTION">
     Recorder can create transcriptions for recordings with speech.

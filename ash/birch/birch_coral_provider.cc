@@ -320,8 +320,6 @@ BirchCoralProvider::BirchCoralProvider() {
     auto fake_response = std::make_unique<CoralResponse>();
     fake_response->set_groups(std::move(fake_groups));
     OverrideCoralResponseForTest(std::move(fake_response));
-  } else {
-    shell->coral_controller()->PrepareResource();
   }
 }
 

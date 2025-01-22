@@ -10,6 +10,7 @@ assert(is_chromeos_ash)
 mojom("mojom") {
   sources = [ "coral_service.mojom" ]
   public_deps = [
+    "//chromeos/services/machine_learning/public/mojom",
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]

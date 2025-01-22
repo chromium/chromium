@@ -2856,13 +2856,16 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
         });
       self.addEventListener('fetch', event => {
           if (event.preloadResponse !== undefined) {
-            event.respondWith(async function() {
-              const response = await event.preloadResponse;
-              if (response) return response;
-              return fetch(event.request);
-          });
+            event.respondWith(
+              (async function() {
+                const response = await event.preloadResponse;
+                if (response) return response;
+                return fetch(event.request);
+              })()
+            );
           }
-        });)";
+        });
+      )";
   std::string search_terms = "prefetch_content";
 
   auto [prefetch_url, search_url] =

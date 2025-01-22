@@ -365,22 +365,28 @@ void PasswordChangeDelegateImpl::OnPrivacyNoticeAccepted() {
 
 void PasswordChangeDelegateImpl::UpdateState(
     PasswordChangeDelegate::State new_state) {
-  if (new_state != current_state_) {
-    current_state_ = new_state;
-    observers_.Notify(&PasswordChangeDelegate::Observer::OnStateChanged,
-                      current_state_);
+  if (new_state == current_state_) {
+    return;
+  }
+  current_state_ = new_state;
+  observers_.Notify(&PasswordChangeDelegate::Observer::OnStateChanged,
+                    new_state);
 
-    switch (current_state_) {
-      case State::kWaitingForChangePasswordForm:
-      case State::kChangingPassword:
-        return;
-      case State::kWaitingForAgreement:
-      case State::kChangePasswordFormNotFound:
-      case State::kPasswordSuccessfullyChanged:
-      case State::kPasswordChangeFailed:
-        DisplayChangePasswordBubbleAutomatically(originator_, executor_);
-        break;
-    }
+  switch (current_state_) {
+    case State::kWaitingForChangePasswordForm:
+    case State::kChangingPassword:
+      return;
+    case State::kChangePasswordFormNotFound:
+    case State::kPasswordSuccessfullyChanged:
+      if (executor_ && !IsActive(executor_)) {
+        executor_->ClosePage();
+      }
+      // Fallthrough to trigger bubble display.
+      [[fallthrough]];
+    case State::kWaitingForAgreement:
+    case State::kPasswordChangeFailed:
+      DisplayChangePasswordBubbleAutomatically(originator_, executor_);
+      break;
   }
 }
 

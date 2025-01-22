@@ -407,12 +407,7 @@ IN_PROC_BROWSER_TEST_F(ConsumerUpdateScreenTest, LowBatteryStatus) {
 
 // TODO(crbug.com/330761947): Test flaking frequently on linux-chromeos
 // builders.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_SkipUpdate DISABLED_SkipUpdate
-#else
-#define MAYBE_SkipUpdate SkipUpdate
-#endif
-IN_PROC_BROWSER_TEST_F(ConsumerUpdateScreenTest, MAYBE_SkipUpdate) {
+IN_PROC_BROWSER_TEST_F(ConsumerUpdateScreenTest, DISABLED_SkipUpdate) {
   update_engine::StatusResult status;
   status.set_update_urgency(update_engine::UpdateUrgency::REGULAR);
 

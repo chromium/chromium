@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.collaboration;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -31,6 +33,9 @@ import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfi
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.components.collaboration.FlowType;
 import org.chromium.components.collaboration.Outcome;
+import org.chromium.components.data_sharing.GroupToken;
+import org.chromium.components.data_sharing.SharedTabGroupPreview;
+import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -190,6 +195,58 @@ public class CollaborationControllerDelegateImplUnitTest {
         mCollaborationControllerDelegateImpl.promoteTabGroup(collaborationId, resultCallback);
         verify(mDataSharingTabManager).promoteTabGroup(collaborationId);
         verify(mCollaborationControllerDelegateImplNativeMock)
+                .runResultCallback(eq(Outcome.SUCCESS), anyLong());
+    }
+
+    @Test
+    public void testShowJoinDialog() {
+        createDelegate(FlowType.JOIN);
+        String collabId = "Collaboration";
+        long resultCallback = 1;
+        GroupToken token = new GroupToken(collabId, /* accessToken= */ "");
+        org.chromium.components.sync.protocol.GroupData groupData =
+                org.chromium.components.sync.protocol.GroupData.newBuilder()
+                        .setGroupId(collabId)
+                        .build();
+        SharedTabGroupPreview previewData =
+                new SharedTabGroupPreview(/* title= */ "", /* tabs= */ null);
+
+        mCollaborationControllerDelegateImpl.showJoinDialog(token, previewData, resultCallback);
+
+        ArgumentCaptor<DataSharingJoinUiConfig.JoinCallback> joinCallbackCaptor =
+                ArgumentCaptor.forClass(DataSharingJoinUiConfig.JoinCallback.class);
+        verify(mDataSharingTabManager)
+                .showJoinScreenWithPreview(
+                        eq(mActivity), eq(token), eq(previewData), joinCallbackCaptor.capture());
+
+        joinCallbackCaptor.getValue().onGroupJoinedWithWait(groupData, null);
+        verify(mCollaborationControllerDelegateImplNativeMock)
                 .runResultCallback(eq(Outcome.SUCCESS), eq(resultCallback));
+
+        joinCallbackCaptor.getValue().onSessionFinished();
+        verify(mCollaborationControllerDelegateImplNativeMock, never())
+                .runResultCallback(eq(Outcome.CANCEL), eq(resultCallback));
+    }
+
+    @Test
+    public void testShowJoinDialogCancel() {
+        createDelegate(FlowType.JOIN);
+        String collabId = "Collaboration";
+        long resultCallback = 1;
+        GroupToken token = new GroupToken(collabId, /* accessToken= */ "");
+        SharedTabGroupPreview previewData =
+                new SharedTabGroupPreview(/* title= */ "", /* tabs= */ null);
+
+        mCollaborationControllerDelegateImpl.showJoinDialog(token, previewData, resultCallback);
+
+        ArgumentCaptor<DataSharingJoinUiConfig.JoinCallback> joinCallbackCaptor =
+                ArgumentCaptor.forClass(DataSharingJoinUiConfig.JoinCallback.class);
+        verify(mDataSharingTabManager)
+                .showJoinScreenWithPreview(
+                        eq(mActivity), eq(token), eq(previewData), joinCallbackCaptor.capture());
+
+        joinCallbackCaptor.getValue().onSessionFinished();
+        verify(mCollaborationControllerDelegateImplNativeMock)
+                .runResultCallback(eq(Outcome.CANCEL), eq(resultCallback));
     }
 }

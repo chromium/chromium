@@ -2396,10 +2396,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return AncestorToLocalPoint(nullptr, p, mode);
   }
 
-  // Return the offset from the container() layoutObject (excluding transforms
-  // and multicol).
-  PhysicalOffset OffsetFromContainer(const LayoutObject*,
-                                     MapCoordinatesFlags = 0) const;
+  // Return the offset from the Container() LayoutObject (excluding transforms
+  // and multicol). For efficiency reasons, the container is supplied as a
+  // parameter. It is however required that it be equal to Container().
+  PhysicalOffset OffsetFromContainer(const LayoutObject* container,
+                                     MapCoordinatesFlags mode = 0) const {
+    NOT_DESTROYED();
+    return OffsetFromContainerInternal(container, mode);
+  }
   // Return the offset from an object from the ancestor. The ancestor need
   // not be on the containing block chain of |this|. Note that this function
   // cannot be used when there are transforms between this object and the

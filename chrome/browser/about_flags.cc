@@ -7063,11 +7063,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kParallelDownloadingDescription, kOsAll,
      FEATURE_VALUE_TYPE(download::features::kParallelDownloading)},
 
-    {"downloads-migrate-to-jobs-api",
-     flag_descriptions::kDownloadsMigrateToJobsAPIName,
-     flag_descriptions::kDownloadsMigrateToJobsAPIDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(download::features::kDownloadsMigrateToJobsAPI)},
-
     {"download-notification-service-unified-api",
      flag_descriptions::kDownloadNotificationServiceUnifiedAPIName,
      flag_descriptions::kDownloadNotificationServiceUnifiedAPIDescription,
