@@ -108,7 +108,7 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   host_frame_sink_manager->RegisterFrameSinkId(
       frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kYes);
   host_frame_sink_manager->SetFrameSinkDebugLabel(frame_sink_id_, "Compositor");
-  root_web_layer_ = cc::Layer::Create();
+  root_cc_layer_ = cc::Layer::Create();
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
@@ -256,7 +256,7 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
       cc::AnimationTimeline::Create(cc::AnimationIdProvider::NextTimelineId());
   animation_host_->AddAnimationTimeline(animation_timeline_.get());
 
-  host_->SetRootLayer(root_web_layer_);
+  host_->SetRootLayer(root_cc_layer_);
 
   // This shouldn't be done in the constructor in order to match Widget.
   // See: http://crbug.com/956264.
@@ -388,9 +388,9 @@ void Compositor::SetRootLayer(Layer* root_layer) {
   if (root_layer_)
     root_layer_->ResetCompositor();
   root_layer_ = root_layer;
-  root_web_layer_->RemoveAllChildren();
+  root_cc_layer_->RemoveAllChildren();
   if (root_layer_)
-    root_layer_->SetCompositor(this, root_web_layer_);
+    root_layer_->SetCompositor(this, root_cc_layer_);
 }
 
 void Compositor::DisableAnimations() {
@@ -468,7 +468,7 @@ void Compositor::SetScaleAndSize(float scale,
     size_ = size_in_pixel;
     host_->SetViewportRectAndScale(gfx::Rect(size_in_pixel), scale,
                                    local_surface_id);
-    root_web_layer_->SetBounds(size_in_pixel);
+    root_cc_layer_->SetBounds(size_in_pixel);
     if (display_private_ && (size_changed || disabled_swap_until_resize_)) {
       display_private_->Resize(size_in_pixel);
       disabled_swap_until_resize_ = false;
