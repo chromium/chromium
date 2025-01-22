@@ -183,7 +183,6 @@ class PLATFORM_EXPORT CanvasResource
 
   // Returns true if the resource is backed by memory such that it can be used
   // for direct scanout by the display.
-  virtual bool IsOverlayCandidate() const = 0;
   virtual gfx::HDRMetadata GetHDRMetadata() const { return gfx::HDRMetadata(); }
   virtual viz::TransferableResource::ResourceSource
   GetTransferableResourceSource() const {
@@ -242,10 +241,6 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
   bool CreatesAcceleratedTransferableResources() const final { return false; }
   scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() final {
     return shared_image_;
-  }
-
-  bool IsOverlayCandidate() const final {
-    return shared_image_->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   }
 
   const gpu::SyncToken GetSyncTokenWithOptionalVerification(
@@ -363,7 +358,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
       const override;
   const gpu::SyncToken GetSyncTokenWithOptionalVerification(
       bool needs_verified_token) override;
-  bool IsOverlayCandidate() const final;
   bool UsesAcceleratedRaster() const final { return is_accelerated_; }
 
   CanvasResourceSharedImage(gfx::Size size,
@@ -436,9 +430,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   }
 
  private:
-  bool IsOverlayCandidate() const final {
-    return client_si_->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
-  }
   gfx::HDRMetadata GetHDRMetadata() const final { return hdr_metadata_; }
   viz::TransferableResource::ResourceSource GetTransferableResourceSource()
       const final {
@@ -498,10 +489,6 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
   scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() override;
 
  private:
-  bool IsOverlayCandidate() const final {
-    return front_buffer_shared_image_->usage().Has(
-        gpu::SHARED_IMAGE_USAGE_SCANOUT);
-  }
   bool UsesAcceleratedRaster() const final { return true; }
   const gpu::SyncToken GetSyncTokenWithOptionalVerification(
       bool needs_verified_token) override;

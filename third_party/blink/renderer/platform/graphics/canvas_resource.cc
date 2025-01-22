@@ -211,8 +211,7 @@ bool CanvasResource::PrepareTransferableResource(
 
   *out_resource = viz::TransferableResource::Make(
       client_shared_image, GetTransferableResourceSource(),
-      GetSyncTokenWithOptionalVerification(needs_verified_synctoken),
-      /*override=*/{.is_overlay_candidate = IsOverlayCandidate()});
+      GetSyncTokenWithOptionalVerification(needs_verified_synctoken));
 
   out_resource->hdr_metadata = GetHDRMetadata();
 
@@ -694,10 +693,6 @@ const scoped_refptr<gpu::ClientSharedImage>&
 CanvasResourceSharedImage::GetClientSharedImage() const {
   CHECK(owning_thread_data_.client_shared_image);
   return owning_thread_data_.client_shared_image;
-}
-
-bool CanvasResourceSharedImage::IsOverlayCandidate() const {
-  return GetClientSharedImage()->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
 }
 
 void CanvasResourceSharedImage::EndExternalWrite(
