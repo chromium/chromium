@@ -73,11 +73,10 @@ NSString* const kAuthenticationSnackbarCategory =
 void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
                                     SceneState* scene_state,
                                     base::OnceClosure closure) {
-  UIViewController* view_controller = scene_state.rootViewController;
   Browser* new_browser =
       scene_state.browserProviderInterface.currentBrowserProvider.browser;
 
-  std::move(completion).Run(/*success=*/true, new_browser, view_controller);
+  std::move(completion).Run(/*success=*/true, new_browser);
   std::move(closure).Run();
 }
 
@@ -203,8 +202,8 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
           ->FindProfileNameForGaiaID(GaiaId(identity.gaiaID));
   if (!profileName.has_value()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(completion), /*success=*/false, nullptr, nil));
+        FROM_HERE, base::BindOnce(std::move(completion), /*success=*/false,
+                                  /*new_profile_browser=*/nullptr));
     return;
   }
 
