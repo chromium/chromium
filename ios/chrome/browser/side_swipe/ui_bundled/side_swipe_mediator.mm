@@ -720,24 +720,36 @@ const CGFloat kIpadTabSwipeDistance = 100;
   // edge swipes from the right side.
   CGRect contentViewFrame =
       CGRectInset([[_swipeDelegate sideSwipeContentView] frame], -1, -1);
-  if (CGRectContainsPoint(contentViewFrame, location)) {
-    if (![gesture isEqual:_swipeGestureRecognizer]) {
-      return NO;
-    }
 
-    if (gesture.direction == UISwipeGestureRecognizerDirectionRight &&
-        !self.leadingEdgeNavigationEnabled) {
-      return NO;
-    }
-
-    if (gesture.direction == UISwipeGestureRecognizerDirectionLeft &&
-        !self.trailingEdgeNavigationEnabled) {
-      return NO;
-    }
-    _swipeType = SwipeType::CHANGE_PAGE;
-    return YES;
+  if (!CGRectContainsPoint(contentViewFrame, location)) {
+    return NO;
   }
-  return NO;
+
+  if (![gesture isEqual:_swipeGestureRecognizer]) {
+    return NO;
+  }
+
+  if (![self edgeNavigationIsEnabledForDirection:gesture.direction]) {
+    return NO;
+  }
+
+  _swipeType = SwipeType::CHANGE_PAGE;
+  return YES;
+}
+
+// Determines whether edge navigation is enabled for the specified swipe
+// direction.
+- (BOOL)edgeNavigationIsEnabledForDirection:
+    (UISwipeGestureRecognizerDirection)direction {
+  if (IsSwipingBack(direction) && !self.leadingEdgeNavigationEnabled) {
+    return NO;
+  }
+
+  if (IsSwipingForward(direction) && !self.trailingEdgeNavigationEnabled) {
+    return NO;
+  }
+
+  return YES;
 }
 
 // Always return yes, as this swipe should work with various recognizers,

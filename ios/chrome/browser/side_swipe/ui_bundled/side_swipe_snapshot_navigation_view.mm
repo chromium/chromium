@@ -48,7 +48,10 @@ const NSTimeInterval kNavigationDelay = 0.2;
      onOverThresholdCompletion:(void (^)(void))onOverThresholdCompletion
     onUnderThresholdCompletion:(void (^)(void))onUnderThresholdCompletion {
   CGPoint currentPoint = [gesture locationInView:gesture.view.superview];
-  CGFloat distance = currentPoint.x - gesture.swipeOffset;
+  CGFloat width = CGRectGetWidth(self.targetView.bounds);
+  CGFloat distance = gesture.direction == UISwipeGestureRecognizerDirectionLeft
+                         ? (width - currentPoint.x + gesture.swipeOffset)
+                         : currentPoint.x - gesture.swipeOffset;
   CGRect frame = self.targetView.frame;
   if (gesture.direction == UISwipeGestureRecognizerDirectionLeft) {
     frame.origin.x = -distance;
@@ -60,7 +63,6 @@ const NSTimeInterval kNavigationDelay = 0.2;
   if (gesture.state == UIGestureRecognizerStateEnded ||
       gesture.state == UIGestureRecognizerStateCancelled ||
       gesture.state == UIGestureRecognizerStateFailed) {
-    CGFloat width = CGRectGetWidth(self.targetView.bounds);
     CGFloat threshold = width * kSwipeThreshold;
     // Ensure the actual distance traveled has met the minimum arrow threshold
     // and that the distance including expected velocity is over `threshold`.
@@ -152,22 +154,16 @@ const NSTimeInterval kNavigationDelay = 0.2;
                                      (UISwipeGestureRecognizerDirection)
                                          direction {
   CGRect targetFrame = self.targetView.frame;
-  CGRect frame = self.frame;
   CGFloat width = CGRectGetWidth(targetFrame);
 
   if (completed) {
-    frame.origin.x = 0;
-    self.frame = frame;
     targetFrame.origin.x =
         direction == UISwipeGestureRecognizerDirectionRight ? width : -width;
-    self.targetView.frame = targetFrame;
   } else {
     targetFrame.origin.x = 0;
-    self.targetView.frame = targetFrame;
-    frame.origin.x =
-        direction == UISwipeGestureRecognizerDirectionLeft ? width : 0;
-    self.frame = frame;
   }
+
+  self.targetView.frame = targetFrame;
 }
 
 // Resets the target frame.

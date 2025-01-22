@@ -6,6 +6,7 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/i18n/rtl.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -175,6 +176,56 @@ TEST_F(SideSwipeMediatorTest, ObserversTriggerStateUpdate) {
   fake_web_state_ptr->OnNavigationFinished(&context);
   EXPECT_FALSE(side_swipe_mediator_.leadingEdgeNavigationEnabled);
   EXPECT_FALSE(side_swipe_mediator_.trailingEdgeNavigationEnabled);
+}
+
+// Tests if edge navigation is enabled on an RTL layout for a given direction.
+TEST_F(SideSwipeMediatorTest, TestNativeSwipeIsEnabledOnRtlEnv) {
+  side_swipe_mediator_.leadingEdgeNavigationEnabled = YES;
+  side_swipe_mediator_.trailingEdgeNavigationEnabled = NO;
+
+  // Set the env lang to Arabic.
+  base::i18n::SetICUDefaultLocale("ar");
+
+  BOOL edgeNavigationIsEnabledOnLeftDirection =
+      [side_swipe_mediator_ edgeNavigationIsEnabledForDirection:
+                                UISwipeGestureRecognizerDirectionLeft];
+
+  // On an RTL layout, edge navigation is enabled on left direction since
+  // leading edge navigation is enabled.
+  EXPECT_TRUE(edgeNavigationIsEnabledOnLeftDirection);
+
+  BOOL edgeNavigationIsEnabledOnRightDirection =
+      [side_swipe_mediator_ edgeNavigationIsEnabledForDirection:
+                                UISwipeGestureRecognizerDirectionRight];
+
+  // On an RTL layout, edge navigation is disabled on right direction since
+  // trailing edge navigation is disabled.
+  EXPECT_FALSE(edgeNavigationIsEnabledOnRightDirection);
+
+  // Reset the lang env to en-US.
+  base::i18n::SetICUDefaultLocale("en-US");
+}
+
+// Tests if edge navigation is enabled on an LTR layout for a given direction.
+TEST_F(SideSwipeMediatorTest, TestNativeSwipeIsEnabledOnLtrEnv) {
+  side_swipe_mediator_.leadingEdgeNavigationEnabled = YES;
+  side_swipe_mediator_.trailingEdgeNavigationEnabled = NO;
+
+  BOOL edgeNavigationIsEnabledOnLeftDirection =
+      [side_swipe_mediator_ edgeNavigationIsEnabledForDirection:
+                                UISwipeGestureRecognizerDirectionLeft];
+
+  // On an LTR layout, edge navigation is disabled on left direction since
+  // trailing edge navigation is disabled.
+  EXPECT_FALSE(edgeNavigationIsEnabledOnLeftDirection);
+
+  BOOL edgeNavigationIsEnabledOnRightDirection =
+      [side_swipe_mediator_ edgeNavigationIsEnabledForDirection:
+                                UISwipeGestureRecognizerDirectionRight];
+
+  // On an LTR layout, edge navigation is enabled on right direction since
+  // leading edge navigation is enabled.
+  EXPECT_TRUE(edgeNavigationIsEnabledOnRightDirection);
 }
 
 }  // anonymous namespace
