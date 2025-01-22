@@ -811,7 +811,8 @@ public class TabArchiverTest {
     public void testPersistedTabDataNull() throws Exception {
         doReturn(false).when(mTab).isInitialized();
         // This shouldn't NPE when the persisted tab data is null.
-        runOnUiThreadBlocking(() -> mTabArchiver.initializePersistedTabData(mTab));
+        runOnUiThreadBlocking(
+                () -> mTabArchiver.initializePersistedTabDataAsync(Arrays.asList(mTab)));
 
         CallbackHelper callbackHelper = new CallbackHelper();
         runOnUiThreadBlocking(
@@ -824,37 +825,5 @@ public class TabArchiverTest {
                             });
                 });
         callbackHelper.waitForNext();
-    }
-
-    @Test
-    @MediumTest
-    public void testAutodeleteDoneAfterArchive() throws Exception {
-        runOnUiThreadBlocking(
-                () -> {
-                    mTabArchiveSettings.setArchiveTimeDeltaHours(0);
-                    mTabArchiveSettings.setAutoDeleteEnabled(true);
-                    mTabArchiveSettings.setAutoDeleteTimeDeltaHours(0);
-                });
-
-        sActivityTestRule.loadUrlInNewTab(
-                sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
-
-        assertEquals(2, mRegularTabModel.getCount());
-        assertEquals(0, mArchivedTabModel.getCount());
-
-        // Set the clock to 1 hour after 0.
-        doReturn(TimeUnit.HOURS.toMillis(1)).when(mClock).currentTimeMillis();
-        // Set the timestamp for both tabs at 0, they should will be archived.
-        ((TabImpl) mRegularTabModel.getTabAt(0)).setTimestampMillisForTesting(0);
-        ((TabImpl) mRegularTabModel.getTabAt(1)).setTimestampMillisForTesting(0);
-
-        runOnUiThreadBlocking(
-                () -> {
-                    mTabArchiver.doArchivePass(
-                            sActivityTestRule.getActivity().getTabModelSelector());
-                });
-
-        CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
-        CriteriaHelper.pollUiThread(() -> 0 == mArchivedTabModel.getCount());
     }
 }

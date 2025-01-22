@@ -410,10 +410,16 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                                 .isEnabled()) {
                             mTabArchiveSettings.setArchiveTimeDeltaHours(archiveTimeHours);
                         }
-                        mTabArchiver.removeObserver(this);
                         enableSaveTabListAndSave(orchestrator);
                     }
+
+                    @Override
+                    public void onArchivePersistedTabDataCreated() {
+                        mTabArchiver.doAutodeletePass();
+                        mTabArchiver.removeObserver(this);
+                    }
                 });
+
         mTabArchiver.doArchivePass(orchestrator.getTabModelSelector());
     }
 
