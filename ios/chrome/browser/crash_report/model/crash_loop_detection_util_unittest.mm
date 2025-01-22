@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/crash_report/model/crash_loop_detection_util.h"
+
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/crash_report/model/crash_loop_detection_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
