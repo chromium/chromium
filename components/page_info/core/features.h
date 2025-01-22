@@ -49,6 +49,19 @@ extern const base::FeatureParam<bool> kMerchantTrustEnableOmniboxChip;
 extern bool IsMerchantTrustFeatureEnabled(const std::string& country_code,
                                           const std::string& locale);
 
+// Enables the 'Merchant trust' sentiment survey for control group. Used for
+// feature evaluation. This should be set in the fieldtrial config along with
+// the trigger ID for the corresponding survey (as en_site_id) and probability
+// (as probability).
+BASE_DECLARE_FEATURE(kMerchantTrustEvaluationControlSurvey);
+
+// Enables the 'Merchant trust' sentiment survey for experiment group. Used for
+// feature evaluation. The survey will be attempted to be shown on a new tab
+// when all the conditions apply. This should be set in the fieldtrial config
+// along with the trigger ID for the corresponding survey (as en_site_id) and
+// probability (as probability).
+BASE_DECLARE_FEATURE(kMerchantTrustEvaluationExperimentSurvey);
+
 }  // namespace page_info
 
 #endif  // COMPONENTS_PAGE_INFO_CORE_FEATURES_H_

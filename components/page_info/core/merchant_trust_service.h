@@ -29,11 +29,20 @@ namespace page_info {
 // Provides merchant information for a web site.
 class MerchantTrustService : public KeyedService {
  public:
+  class Delegate {
+   public:
+    // Launches the evaluation survey based on the experiment state.
+    virtual void ShowEvaluationSurvey() = 0;
+
+    virtual ~Delegate() = default;
+  };
+
   using DecisionAndMetadata =
       std::pair<optimization_guide::OptimizationGuideDecision,
                 std::optional<commerce::MerchantTrustSignalsV2>>;
 
-  explicit MerchantTrustService(
+  MerchantTrustService(
+      std::unique_ptr<Delegate> delegate,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
       bool is_off_the_record,
       PrefService* prefs);
@@ -46,7 +55,12 @@ class MerchantTrustService : public KeyedService {
   virtual void GetMerchantTrustInfo(const GURL& url,
                             MerchantDataCallback callback) const;
 
+  // Attempt to show an evaluation survey if the conditions apply. It will show
+  // either a control or an experiment survey depending on the feature state.
+  virtual void MaybeShowEvaluationSurvey();
+
  private:
+  std::unique_ptr<Delegate> delegate_;
   const raw_ptr<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_;
   const bool is_off_the_record_;
@@ -66,6 +80,10 @@ class MerchantTrustService : public KeyedService {
 
   std::optional<page_info::MerchantData> GetMerchantDataFromProto(
       const std::optional<commerce::MerchantTrustSignalsV2>& metadata) const;
+
+  // Whether the evaluation survey should be shown based on how long ago user
+  // interacted with the feature.
+  bool CanShowEvaluationSurvey();
 };
 
 }  // namespace page_info

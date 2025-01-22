@@ -60,11 +60,18 @@ OptimizationMetadata BuildMerchantTrustResponse() {
 
 }  // namespace
 
+class MockMerchantTrustServiceDelegate : public MerchantTrustService::Delegate {
+ public:
+  MOCK_METHOD(void, ShowEvaluationSurvey, (), (override));
+};
+
 class MockMerchantTrustService : public MerchantTrustService {
  public:
   explicit MockMerchantTrustService(
-      optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
-      : MerchantTrustService(optimization_guide_decider,
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
+      std::unique_ptr<MockMerchantTrustServiceDelegate> delegate)
+      : MerchantTrustService(std::move(delegate),
+                             optimization_guide_decider,
                              /*is_off_the_record=*/false,
                              nullptr) {}
 
@@ -74,7 +81,10 @@ class MockMerchantTrustService : public MerchantTrustService {
 class MerchantTrustServiceTest : public ::testing::Test {
  public:
   void SetUp() override {
-    service_ = std::make_unique<MockMerchantTrustService>(&opt_guide());
+    auto delegate = std::make_unique<MockMerchantTrustServiceDelegate>();
+    delegate_ = delegate.get();
+    service_ = std::make_unique<MockMerchantTrustService>(&opt_guide(),
+                                                          std::move(delegate));
     SetOptimizationGuideAllowed(true);
     SetResponse(GURL("https://foo.com"), OptimizationGuideDecision::kUnknown,
                 BuildMerchantTrustResponse());
@@ -107,6 +117,7 @@ class MerchantTrustServiceTest : public ::testing::Test {
   optimization_guide::MockOptimizationGuideDecider& opt_guide() {
     return opt_guide_;
   }
+  MockMerchantTrustServiceDelegate* delegate() { return delegate_; }
 
  private:
   base::test::TaskEnvironment task_environment_{
@@ -114,6 +125,7 @@ class MerchantTrustServiceTest : public ::testing::Test {
   testing::NiceMock<optimization_guide::MockOptimizationGuideDecider>
       opt_guide_;
   std::unique_ptr<MockMerchantTrustService> service_;
+  raw_ptr<MockMerchantTrustServiceDelegate> delegate_;
 };
 
 // Tests that proto are returned correctly when optimization guide decision is
@@ -225,4 +237,45 @@ TEST_F(MerchantTrustServiceTest, InvalidProto) {
   t.ExpectUniqueSample("Security.PageInfo.MerchantTrustStatus",
                        MerchantTrustStatus::kMissingReviewsSummary, 1);
 }
+
+// Test for control evaluation survey.
+TEST_F(MerchantTrustServiceTest, ControlSurvey) {
+  base::test::ScopedFeatureList feature_list;
+  EXPECT_CALL(*delegate(), ShowEvaluationSurvey()).Times(1);
+
+  feature_list.InitWithFeatureState(kMerchantTrustEvaluationControlSurvey,
+                                    true);
+  service()->MaybeShowEvaluationSurvey();
+}
+
+// Test for control evaluation survey disabled.
+TEST_F(MerchantTrustServiceTest, ControlSurveyDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  EXPECT_CALL(*delegate(), ShowEvaluationSurvey()).Times(0);
+
+  feature_list.InitWithFeatureState(kMerchantTrustEvaluationControlSurvey,
+                                    false);
+  service()->MaybeShowEvaluationSurvey();
+}
+
+// Test for experiment evaluation survey.
+TEST_F(MerchantTrustServiceTest, ExperimentSurvey) {
+  base::test::ScopedFeatureList feature_list;
+  EXPECT_CALL(*delegate(), ShowEvaluationSurvey()).Times(1);
+
+  feature_list.InitWithFeatureState(kMerchantTrustEvaluationExperimentSurvey,
+                                    true);
+  service()->MaybeShowEvaluationSurvey();
+}
+
+// Test for experiment evaluation survey disabled.
+TEST_F(MerchantTrustServiceTest, ExperimentSurveyDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  EXPECT_CALL(*delegate(), ShowEvaluationSurvey()).Times(0);
+
+  feature_list.InitWithFeatureState(kMerchantTrustEvaluationExperimentSurvey,
+                                    false);
+  service()->MaybeShowEvaluationSurvey();
+}
+
 }  // namespace page_info
