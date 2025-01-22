@@ -140,7 +140,6 @@ scoped_refptr<StaticBitmapImage> WrapAcceleratedBitmapImage(
     AcceleratedImageInfo image) {
   return AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
       image.shared_image, image.sync_token, image.image_info,
-      image.supports_display_compositing, image.is_overlay_candidate,
       std::move(image.release_callback));
 }
 }  // namespace blink
