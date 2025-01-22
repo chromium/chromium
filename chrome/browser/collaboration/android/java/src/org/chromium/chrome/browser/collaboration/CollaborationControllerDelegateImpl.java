@@ -11,6 +11,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
+import org.chromium.chrome.browser.data_sharing.DataSharingMetrics;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
@@ -24,7 +26,8 @@ import org.chromium.components.collaboration.FlowType;
 import org.chromium.components.collaboration.Outcome;
 import org.chromium.components.collaboration.Type;
 import org.chromium.components.data_sharing.GroupToken;
-import org.chromium.components.data_sharing.SharedDataPreview;
+import org.chromium.components.data_sharing.SharedTabGroupPreview;
+import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /** An interface to manage collaboration flow UI screens. */
@@ -189,13 +192,60 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
      * Show the join dialog screen.
      *
      * @param token Group id and token secret of the current join request.
-     * @param previewData Preview of shared data.
+     * @param previewTabData Preview of shared tab group data.
      * @param resultCallback The callback to notify the outcome of the UI screen.
      */
     @CalledByNative
-    void showJoinDialog(GroupToken token, SharedDataPreview previewData, long resultCallback) {
-        CollaborationControllerDelegateImplJni.get()
-                .runResultCallback(Outcome.FAILURE, resultCallback);
+    void showJoinDialog(GroupToken token, SharedTabGroupPreview previewData, long resultCallback) {
+        if (previewData == null) {
+            CollaborationControllerDelegateImplJni.get()
+                    .runResultCallback(Outcome.FAILURE, resultCallback);
+            return;
+        }
+
+        DataSharingJoinUiConfig.JoinCallback joinCallback =
+                new DataSharingJoinUiConfig.JoinCallback() {
+                    private long mResultCallback;
+
+                    {
+                        mResultCallback = resultCallback;
+                    }
+
+                    @Override
+                    public void onGroupJoinedWithWait(
+                            org.chromium.components.sync.protocol.GroupData groupData,
+                            Callback<Boolean> onJoinFinished) {
+                        DataSharingMetrics.recordJoinActionFlowState(
+                                DataSharingMetrics.JoinActionStateAndroid.ADD_MEMBER_SUCCESS);
+                        assert groupData.getGroupId().equals(token.collaborationId);
+                        mCloseScreenRunnable =
+                                () -> {
+                                    onJoinFinished.onResult(true);
+                                };
+                        long callback = mResultCallback;
+                        mResultCallback = 0;
+                        CollaborationControllerDelegateImplJni.get()
+                                .runResultCallback(Outcome.SUCCESS, callback);
+                    }
+
+                    @Override
+                    public void onSessionFinished() {
+                        mCloseScreenRunnable = null;
+                        if (mResultCallback != 0) {
+                            CollaborationControllerDelegateImplJni.get()
+                                    .runResultCallback(Outcome.CANCEL, mResultCallback);
+                        }
+                    }
+                };
+
+        String sessionId =
+                mDataSharingTabManager.showJoinScreenWithPreview(
+                        mActivity, token, previewData, joinCallback);
+
+        mCloseScreenRunnable =
+                () -> {
+                    mDataSharingTabManager.getUiDelegate().destroyFlow(sessionId);
+                };
     }
 
     /**
@@ -228,6 +278,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
      */
     @CalledByNative
     void promoteTabGroup(String collaborationId, long resultCallback) {
+        closeScreenIfNeeded();
         mDataSharingTabManager.promoteTabGroup(collaborationId);
         CollaborationControllerDelegateImplJni.get()
                 .runResultCallback(Outcome.SUCCESS, resultCallback);
@@ -241,10 +292,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     @CalledByNative
     void onFlowFinished() {
         // Destroy currently showing UI if any.
-        if (mCloseScreenRunnable != null) {
-            mCloseScreenRunnable.run();
-            mCloseScreenRunnable = null;
-        }
+        closeScreenIfNeeded();
         mDataSharingTabManager.onCollaborationDelegateFlowFinished();
         cleanUpPointers();
 
@@ -272,6 +320,13 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
         mActivity = null;
         mDataSharingTabManager = null;
         mSigninAndHistorySyncActivityLauncher = null;
+    }
+
+    private void closeScreenIfNeeded() {
+        if (mCloseScreenRunnable != null) {
+            mCloseScreenRunnable.run();
+            mCloseScreenRunnable = null;
+        }
     }
 
     @NativeMethods

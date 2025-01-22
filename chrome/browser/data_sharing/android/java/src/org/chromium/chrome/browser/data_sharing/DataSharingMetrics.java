@@ -11,7 +11,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-class DataSharingMetrics {
+/** Record data sharing flow metrics. */
+public class DataSharingMetrics {
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
     // LINT.IfChange(JoinActionStateAndroid)

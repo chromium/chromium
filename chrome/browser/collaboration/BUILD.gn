@@ -22,6 +22,7 @@ if (is_android) {
       "//chrome/browser/ui/android/signin:java",
       "//components/collaboration/public:java",
       "//components/data_sharing/public:public_java",
+      "//components/data_sharing/public/protocol:proto_java",
       "//components/signin/public/android:java",
       "//components/strings:components_strings_grd",
       "//third_party/androidx:androidx_annotation_annotation_java",
@@ -42,6 +43,7 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//components/collaboration/public:java",
+      "//components/data_sharing/public:public_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
