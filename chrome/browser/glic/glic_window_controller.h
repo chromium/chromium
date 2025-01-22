@@ -26,7 +26,6 @@ class Point;
 namespace glic {
 namespace {
 class ContentsAndProfileKeepAlive;
-class GlicWidgetObserver;
 class WindowEventObserver;
 }  // namespace
 
@@ -138,8 +137,8 @@ class GlicWindowController : public views::WidgetObserver {
   void SetWebClient(GlicWebClientAccess* web_client);
   GlicWebClientAccess* web_client() const { return web_client_; }
 
-  // views::WidgetObserver implementation, monitoring the GlicView.
-  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
+  // views::WidgetObserver implementation, monitoring the glic window widget.
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
   GlicView* GetGlicView();
   views::Widget* GetGlicWidget() { return glic_window_widget_.get(); }
@@ -195,23 +194,6 @@ class GlicWindowController : public views::WidgetObserver {
     raw_ptr<views::Widget> current_attachment_target_;
   };
 
-  // Helper class for observing activation events from the glic widget.
-  class GlicWidgetObserver : public views::WidgetObserver {
-   public:
-    explicit GlicWidgetObserver(
-        glic::GlicWindowController* glic_window_controller,
-        views::Widget* widget);
-    GlicWidgetObserver(const GlicWidgetObserver&) = delete;
-    GlicWidgetObserver& operator=(const GlicWidgetObserver&) = delete;
-    ~GlicWidgetObserver() override;
-
-    void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
-
-   private:
-    raw_ptr<glic::GlicWindowController> glic_window_controller_;
-    raw_ptr<views::Widget> widget_;
-  };
-
   // If `widget` is within attachment distance of a browser window's glic
   // button, attach the glic window to the button's position.
   void HandleAttachmentToBrowserWindows(views::Widget* widget);
@@ -227,6 +209,9 @@ class GlicWindowController : public views::WidgetObserver {
   // Checks if 'browser' is compatible with glic.
   bool IsBrowserGlicCompatible(Browser* browser);
 
+  // This method should be called anytime:
+  //  * state_ transitions to or from kClosed.
+  //  * attached_browser_ changes.
   void NotifyIfPanelStateChanged();
   mojom::PanelState ComputePanelState() const;
 
@@ -245,9 +230,6 @@ class GlicWindowController : public views::WidgetObserver {
   // Used for observing closing of the pinned browser.
   std::optional<base::CallbackListSubscription> browser_close_subscription_;
 
-  // Notifies subscribers of a change to the window activation.
-  void NotifyWindowActivationChanged(bool active);
-
   // List of callbacks to be notified when window activation has changed.
   base::RepeatingCallbackList<void(bool)> window_activation_callback_list_;
 
@@ -261,7 +243,6 @@ class GlicWindowController : public views::WidgetObserver {
 
   std::unique_ptr<views::Widget> glic_window_widget_;
   std::unique_ptr<GlicWindowResizeAnimation> window_resize_animation_;
-  bool glic_window_widget_visible_ = false;
 
   // True if we've hit a login page (and have not yet shown).
   bool login_page_committed_ = false;
@@ -270,9 +251,6 @@ class GlicWindowController : public views::WidgetObserver {
 
   // Used to monitor key and mouse events from native window.
   std::unique_ptr<WindowEventObserver> window_event_observer_;
-
-  // Used to monitor window activation changes from widget.
-  std::unique_ptr<GlicWidgetObserver> glic_widget_observer_;
 
   // True while RunMoveLoop() has been called on a widget.
   bool in_move_loop_ = false;

@@ -222,6 +222,11 @@ void GlicWindowController::SetWebClient(GlicWebClientAccess* web_client) {
   }
 }
 
+void GlicWindowController::OnWidgetActivationChanged(views::Widget* widget,
+                                                     bool active) {
+  window_activation_callback_list_.Notify(active);
+}
+
 void GlicWindowController::Show(views::View* glic_button_view) {
   // TODO(crbug.com/379943498): If a glic window already exists, handle showing
   // by bringing to front or activating.
@@ -267,10 +272,7 @@ void GlicWindowController::Show(views::View* glic_button_view) {
 
   glic_window_widget_ =
       glic::GlicView::CreateWidget(profile_, glic_window_widget_initial_rect);
-
   glic_window_widget_->AddObserver(this);
-  glic_widget_observer_ =
-      std::make_unique<GlicWidgetObserver>(this, glic_window_widget_.get());
 
   // This is used to handle the case where the native window is closed
   // directly (e.g., Windows context menu close on the title bar). The widget
@@ -320,6 +322,8 @@ void GlicWindowController::Show(views::View* glic_button_view) {
     // page. See LoginPageCommitted.
     ShowFinish();
   }
+
+  NotifyIfPanelStateChanged();
 }
 
 // This happens after the web client is initialized. It signals the web client
@@ -379,6 +383,7 @@ void GlicWindowController::ShowFinish() {
   // Set the draggable area to the top bar of the window, by default.
   GetGlicView()->SetDraggableAreas(
       {{0, 0, final_widget_bounds_.width(), kWidgetTopBarHeight}});
+  NotifyIfPanelStateChanged();
 }
 
 GlicView* GlicWindowController::GetGlicView() {
@@ -529,7 +534,6 @@ void GlicWindowController::Close() {
   state_ = State::kClosed;
   attached_browser_ = nullptr;
   window_resize_animation_.reset();
-  glic_widget_observer_.reset();
   window_event_observer_.reset();
   browser_close_subscription_.reset();
   glic_window_widget_->RemoveObserver(this);
@@ -727,7 +731,7 @@ void GlicWindowController::NotifyIfPanelStateChanged() {
 
 mojom::PanelState GlicWindowController::ComputePanelState() const {
   mojom::PanelState panel_state;
-  if (!glic_window_widget_visible_) {
+  if (state_ == State::kClosed) {
     panel_state.kind = mojom::PanelState_Kind::kHidden;
   } else if (attached_browser_) {
     panel_state.kind = mojom::PanelState_Kind::kAttached;
@@ -736,14 +740,6 @@ mojom::PanelState GlicWindowController::ComputePanelState() const {
     panel_state.kind = mojom::PanelState_Kind::kDetached;
   }
   return panel_state;
-}
-
-void GlicWindowController::OnWidgetVisibilityChanged(views::Widget* widget,
-                                                     bool visible) {
-  // Store visibility locally because calling glic_window_widget_->IsVisible()
-  // at this point returns the old value.
-  glic_window_widget_visible_ = visible;
-  NotifyIfPanelStateChanged();
 }
 
 bool GlicWindowController::IsActive() {
@@ -758,10 +754,6 @@ base::CallbackListSubscription
 GlicWindowController::AddWindowActivationChangedCallback(
     WindowActivationChangedCallback callback) {
   return window_activation_callback_list_.Add(std::move(callback));
-}
-
-void GlicWindowController::NotifyWindowActivationChanged(bool active) {
-  window_activation_callback_list_.Notify(active);
 }
 
 void GlicWindowController::Preload() {
@@ -821,33 +813,10 @@ void GlicWindowController::AttachedTargetWidgetObserver::OnWidgetDestroying(
   SetAttachedTargetWidget(nullptr);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// GlicWidgetObserver implementations:
-GlicWindowController::GlicWidgetObserver::GlicWidgetObserver(
-    glic::GlicWindowController* glic_window_controller,
-    views::Widget* widget)
-    : glic_window_controller_(glic_window_controller), widget_(widget) {
-  if (widget) {
-    widget->AddObserver(this);
-  }
-}
-
 void GlicWindowController::Shutdown() {
   // Hide first, then clean up.
   Close();
   contents_.reset();
-}
-
-GlicWindowController::GlicWidgetObserver::~GlicWidgetObserver() {
-  if (widget_ && widget_->HasObserver(this)) {
-    widget_->RemoveObserver(this);
-  }
-}
-
-void GlicWindowController::GlicWidgetObserver::OnWidgetActivationChanged(
-    views::Widget* widget,
-    bool active) {
-  glic_window_controller_->NotifyWindowActivationChanged(active);
 }
 
 }  // namespace glic
