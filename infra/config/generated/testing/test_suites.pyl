@@ -620,7 +620,7 @@
         'test': 'blink_wpt_tests',
         'results_handler': 'layout tests',
         'swarming': {
-          'shards': 3,
+          'shards': 1,
         },
       },
       'high_dpi_headless_shell_wpt_tests': {
@@ -690,7 +690,7 @@
         },
         'results_handler': 'layout tests',
         'swarming': {
-          'shards': 7,
+          'shards': 2,
         },
       },
       'chrome_wpt_tests': {
@@ -1950,7 +1950,7 @@
         'test': 'blink_wpt_tests',
         'results_handler': 'layout tests',
         'swarming': {
-          'shards': 10,
+          'shards': 2,
         },
       },
       'not_site_per_process_headless_shell_wpt_tests': {

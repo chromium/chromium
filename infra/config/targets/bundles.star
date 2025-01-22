@@ -2126,7 +2126,7 @@ targets.bundle(
         "brfetch_blink_wpt_tests": targets.mixin(
             ci_only = True,
             swarming = targets.swarming(
-                shards = 3,
+                shards = 1,
             ),
             experiment_percentage = 100,
         ),

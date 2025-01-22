@@ -1378,7 +1378,7 @@ ci.builder(
             ),
             "blink_wpt_tests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 18,
+                    shards = 6,
                 ),
             ),
             "browser_tests": targets.mixin(
