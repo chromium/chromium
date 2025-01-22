@@ -1898,6 +1898,30 @@ void HTMLCanvasElement::UnregisterContentsLayer(cc::Layer* layer) {
   SetNeedsCompositingUpdate();
 }
 
+TextDirection HTMLCanvasElement::GetTextDirection(const ComputedStyle* style) {
+  // In the absence of an explicit CSS direction property, the HTML dir
+  // attribute has been pushed as the default style direction. So we fallback
+  // to the HTML attribute if CSS has not provided a direction.
+  if (!style) {
+    GetDocument().UpdateStyleAndLayoutTreeForElement(
+        this, DocumentUpdateReason::kCanvas);
+    style = EnsureComputedStyle();
+  }
+  // Detached elements may still not have style.
+  if (style) {
+    if (CachedDirectionality() != style->Direction()) {
+      UseCounter::Count(GetDocument(),
+                        WebFeature::kCanvasTextDirectionConflict);
+    }
+    return style->Direction();
+  }
+
+  // In the absence of style, use the element's dir attribute to resolve the
+  // direction. This value would have been pushed to the style had there been
+  // a style.
+  return CachedDirectionality();
+}
+
 FontSelector* HTMLCanvasElement::GetFontSelector() {
   return GetDocument().GetStyleEngine().GetFontSelector();
 }

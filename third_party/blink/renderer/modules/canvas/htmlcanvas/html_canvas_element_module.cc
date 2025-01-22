@@ -77,6 +77,7 @@ OffscreenCanvas* HTMLCanvasElementModule::TransferControlToOffscreenInternal(
   DOMNodeId canvas_id = canvas.GetDomNodeId();
   canvas.RegisterPlaceholderCanvas(static_cast<int>(canvas_id));
   offscreen_canvas->SetPlaceholderCanvasId(canvas_id);
+  offscreen_canvas->SetTextDirection(canvas.GetTextDirection(nullptr));
 
   SurfaceLayerBridge* bridge = canvas.SurfaceLayerBridge();
   if (bridge) {

@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
@@ -25,6 +26,7 @@ namespace blink {
 class CanvasRenderingContext;
 class CanvasResource;
 class CanvasResourceDispatcher;
+class ComputedStyle;
 class FontSelector;
 class KURL;
 class StaticBitmapImage;
@@ -69,6 +71,10 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   virtual bool IsWebGLBlocked() const = 0;
   virtual void SetContextCreationWasBlocked() {}
 
+  // The ComputedStyle argument is optional. Use it if you already have the
+  // computed style for the host. If nullptr is passed, the style will be
+  // computed within the method.
+  virtual TextDirection GetTextDirection(const ComputedStyle*) = 0;
   virtual FontSelector* GetFontSelector() = 0;
 
   virtual bool ShouldAccelerate2dContext() const = 0;
