@@ -8,9 +8,9 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "components/sync_device_info/device_info.h"
+#import "ios/chrome/browser/bring_android_tabs/ui_bundled/bring_android_tabs_test_session.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
-#import "ios/chrome/browser/bring_android_tabs/ui_bundled/bring_android_tabs_test_session.h"
 #import "ios/chrome/test/app/sync_test_util.h"
 #import "url/gurl.h"
 

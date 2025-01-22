@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_BRING_ANDROID_TABS_UI_BUNDLED_TAB_LIST_FROM_ANDROID_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_BRING_ANDROID_TABS_UI_BUNDLED_TAB_LIST_FROM_ANDROID_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/tab_list_from_android_consumer.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
 @protocol TableViewFaviconDataSource;
 @protocol TabListFromAndroidViewControllerDelegate;
