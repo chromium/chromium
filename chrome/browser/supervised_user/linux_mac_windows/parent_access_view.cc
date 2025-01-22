@@ -55,7 +55,9 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
   auto dialog_delegate = std::make_unique<views::DialogDelegate>();
   dialog_delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   dialog_delegate->SetModalType(/*modal_type=*/ui::mojom::ModalType::kWindow);
-  dialog_delegate->SetShowCloseButton(/*show_close_button=*/false);
+  // TODO(crbug.com/391629329): Until a cancellation button is provided by the PACP,
+  // the dialog will offer a close "X" button.
+  dialog_delegate->SetShowCloseButton(/*show_close_button=*/true);
   dialog_delegate->SetOwnedByWidget(/*delete_self=*/true);
 
   // Obtain the default, platform-approriate, corner radius value computed by
