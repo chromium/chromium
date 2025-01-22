@@ -3274,6 +3274,10 @@ bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
     case CSSPropertyID::kAnimationRangeStart:
     case CSSPropertyID::kAnimationTimeline:
     case CSSPropertyID::kAnimationTimingFunction:
+    case CSSPropertyID::kAnimationTriggerRangeStart:
+    case CSSPropertyID::kAnimationTriggerRangeEnd:
+    case CSSPropertyID::kAnimationTriggerExitRangeStart:
+    case CSSPropertyID::kAnimationTriggerExitRangeEnd:
     case CSSPropertyID::kAnimationTriggerType:
     case CSSPropertyID::kAnimationTriggerTimeline:
     case CSSPropertyID::kContain:

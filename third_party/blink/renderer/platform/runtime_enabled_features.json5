@@ -999,6 +999,10 @@
       status: "stable",
     },
     {
+      name: "CSSAnimationTriggerRange",
+      status: "test",
+    },
+    {
       name: "CSSAnimationTriggerTimeline",
       status: "test",
     },

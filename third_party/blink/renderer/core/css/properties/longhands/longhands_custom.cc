@@ -629,6 +629,95 @@ const CSSValue* AnimationTimingFunction::InitialValue() const {
   return CSSIdentifierValue::Create(CSSValueID::kEase);
 }
 
+const CSSValue* AnimationTriggerRangeStart::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeCommaSeparatedList(
+      css_parsing_utils::ConsumeAnimationRange, stream, context,
+      /* default_offset_percent */ 0.0);
+}
+
+const CSSValue* AnimationTriggerRangeStart::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValueForAnimationTriggerRangeStartList(
+      style.Animations(), style);
+}
+
+const CSSValue* AnimationTriggerRangeStart::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kNormal);
+}
+
+const CSSValue* AnimationTriggerRangeEnd::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeCommaSeparatedList(
+      css_parsing_utils::ConsumeAnimationRange, stream, context,
+      /* default_offset_percent */ 100.0);
+}
+
+const CSSValue* AnimationTriggerRangeEnd::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValueForAnimationTriggerRangeEndList(
+      style.Animations(), style);
+}
+
+const CSSValue* AnimationTriggerRangeEnd::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kNormal);
+}
+
+const CSSValue* AnimationTriggerExitRangeStart::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeCommaSeparatedList(
+      css_parsing_utils::ConsumeAnimationRange, stream, context,
+      /* default_offset_percent */ 0.0);
+}
+
+const CSSValue*
+AnimationTriggerExitRangeStart::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValueForAnimationTriggerExitRangeStartList(
+      style.Animations(), style);
+}
+
+const CSSValue* AnimationTriggerExitRangeStart::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kNormal);
+}
+
+const CSSValue* AnimationTriggerExitRangeEnd::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeCommaSeparatedList(
+      css_parsing_utils::ConsumeAnimationRange, stream, context,
+      /* default_offset_percent */ 100.0);
+}
+
+const CSSValue* AnimationTriggerExitRangeEnd::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValueForAnimationTriggerExitRangeEndList(
+      style.Animations(), style);
+}
+
+const CSSValue* AnimationTriggerExitRangeEnd::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kNormal);
+}
+
 const CSSValue* AnimationTriggerType::InitialValue() const {
   return CSSIdentifierValue::Create(CSSValueID::kOnce);
 }

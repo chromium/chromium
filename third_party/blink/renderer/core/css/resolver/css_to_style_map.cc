@@ -807,4 +807,28 @@ StyleTimeline CSSToStyleMap::MapAnimationTriggerTimeline(
   return MapAnimationTimeline(state, value);
 }
 
+std::optional<TimelineOffset> CSSToStyleMap::MapAnimationTriggerRangeStart(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  return MapAnimationRange(state, value, 0);
+}
+
+std::optional<TimelineOffset> CSSToStyleMap::MapAnimationTriggerRangeEnd(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  return MapAnimationRange(state, value, 100);
+}
+
+std::optional<TimelineOffset> CSSToStyleMap::MapAnimationTriggerExitRangeStart(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  return MapAnimationRange(state, value, 0);
+}
+
+std::optional<TimelineOffset> CSSToStyleMap::MapAnimationTriggerExitRangeEnd(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  return MapAnimationRange(state, value, 100);
+}
+
 }  // namespace blink

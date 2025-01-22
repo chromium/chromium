@@ -179,6 +179,11 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForAnimationFillMode(Timing::FillMode);
   static CSSValue* ValueForAnimationIterationCount(double iteration_count);
   static CSSValue* ValueForAnimationPlayState(EAnimPlayState);
+  static CSSValue* ValueForAnimationRangeList(
+      const Vector<std::optional<TimelineOffset>>& range_list,
+      const CSSAnimationData* animation_data,
+      const ComputedStyle& style,
+      const Length& default_offset);
   static CSSValue* ValueForAnimationRangeStart(
       const std::optional<TimelineOffset>&,
       const ComputedStyle&);
@@ -210,6 +215,18 @@ class CORE_EXPORT ComputedStyleUtils {
                                                    TimelineAxis,
                                                    std::optional<TimelineInset>,
                                                    const ComputedStyle&);
+  static CSSValue* ValueForAnimationTriggerRangeStartList(
+      const CSSAnimationData* animation_data,
+      const ComputedStyle& style);
+  static CSSValue* ValueForAnimationTriggerRangeEndList(
+      const CSSAnimationData* animation_data,
+      const ComputedStyle& style);
+  static CSSValue* ValueForAnimationTriggerExitRangeStartList(
+      const CSSAnimationData* animation_data,
+      const ComputedStyle& style);
+  static CSSValue* ValueForAnimationTriggerExitRangeEndList(
+      const CSSAnimationData* animation_data,
+      const ComputedStyle& style);
   static CSSValue* ValueForAnimationTriggerType(const EAnimationTriggerType);
   static CSSValue* ValueForAnimationTriggerTypeList(const CSSAnimationData*);
   static CSSValue* ValueForAnimationTriggerTimelineList(

@@ -24,6 +24,10 @@ animationRangeEnd
 animationRangeStart
 animationTimeline
 animationTimingFunction
+animationTriggerExitRangeEnd
+animationTriggerExitRangeStart
+animationTriggerRangeEnd
+animationTriggerRangeStart
 animationTriggerTimeline
 animationTriggerType
 appRegion
