@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/coral/fake_coral_service.h"
+#include "ash/wm/coral/fake_coral_processor.h"
 
 namespace ash {
 
-void FakeCoralService::Group(
+void FakeCoralProcessor::Group(
     coral::mojom::GroupRequestPtr request,
     mojo::PendingRemote<coral::mojom::TitleObserver> observer,
     GroupCallback callback) {
@@ -76,13 +76,11 @@ void FakeCoralService::Group(
   std::move(callback).Run(std::move(group_result));
 }
 
-void FakeCoralService::CacheEmbeddings(
+void FakeCoralProcessor::CacheEmbeddings(
     coral::mojom::CacheEmbeddingsRequestPtr request,
     CacheEmbeddingsCallback callback) {
   std::move(callback).Run(coral::mojom::CacheEmbeddingsResult::NewResponse(
       coral::mojom::CacheEmbeddingsResponse::New()));
 }
-
-void FakeCoralService::PrepareResource() {}
 
 }  // namespace ash

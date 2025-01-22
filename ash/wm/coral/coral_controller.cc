@@ -13,7 +13,7 @@
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
-#include "ash/wm/coral/fake_coral_service.h"
+#include "ash/wm/coral/fake_coral_processor.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
@@ -25,6 +25,8 @@
 #include "base/command_line.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
+#include "chromeos/services/machine_learning/public/cpp/service_connection.h"
+#include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/restore_data.h"
 #include "components/desks_storage/core/desk_model.h"
@@ -106,13 +108,11 @@ CoralController::CoralController() = default;
 
 CoralController::~CoralController() = default;
 
-void CoralController::PrepareResource() {
-  CoralService* coral_service = EnsureCoralService();
-  if (!coral_service) {
-    LOG(ERROR) << "Failed to connect to coral service.";
-    return;
+void CoralController::Initialize() {
+  CoralProcessor* coral_processor = EnsureCoralProcessor();
+  if (!coral_processor) {
+    LOG(ERROR) << "Failed to connect to coral processor.";
   }
-  coral_service->PrepareResource();
 }
 
 void CoralController::GenerateContentGroups(
@@ -126,9 +126,9 @@ void CoralController::GenerateContentGroups(
     return;
   }
 
-  CoralService* coral_service = EnsureCoralService();
-  if (!coral_service) {
-    LOG(ERROR) << "Failed to connect to coral service.";
+  CoralProcessor* coral_processor = EnsureCoralProcessor();
+  if (!coral_processor) {
+    LOG(ERROR) << "Failed to connect to coral processor.";
     std::move(callback).Run(nullptr);
     return;
   }
@@ -146,7 +146,7 @@ void CoralController::GenerateContentGroups(
   for (size_t i = 0; i < items_in_request; i++) {
     group_request->entities.push_back(request.content()[i]->Clone());
   }
-  coral_service->Group(
+  coral_processor->Group(
       std::move(group_request), std::move(title_observer),
       base::BindOnce(&CoralController::HandleGroupResult,
                      weak_factory_.GetWeakPtr(), request.source(),
@@ -155,9 +155,9 @@ void CoralController::GenerateContentGroups(
 
 void CoralController::CacheEmbeddings(const CoralRequest& request,
                                       base::OnceCallback<void(bool)> callback) {
-  CoralService* coral_service = EnsureCoralService();
-  if (!coral_service) {
-    LOG(ERROR) << "Failed to connect to coral service.";
+  CoralProcessor* coral_processor = EnsureCoralProcessor();
+  if (!coral_processor) {
+    LOG(ERROR) << "Failed to connect to coral processor.";
     std::move(callback).Run(false);
     return;
   }
@@ -169,7 +169,7 @@ void CoralController::CacheEmbeddings(const CoralRequest& request,
     cache_embeddings_request->entities.push_back(entity->Clone());
   }
 
-  coral_service->CacheEmbeddings(
+  coral_processor->CacheEmbeddings(
       std::move(cache_embeddings_request),
       base::BindOnce(&CoralController::HandleCacheEmbeddingsResult,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -271,24 +271,41 @@ void CoralController::CreateSavedDeskFromGroup(coral::mojom::GroupPtr group,
       /*root_window_to_show=*/root_window, app_ids);
 }
 
-CoralController::CoralService* CoralController::EnsureCoralService() {
-  // Generate a fake service if --force-birch-fake-coral-backend is enabled.
+CoralController::CoralProcessor* CoralController::EnsureCoralProcessor() {
+  // Generate a fake processor if --force-birch-fake-coral-backend is enabled.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceBirchFakeCoralBackend)) {
-    if (!fake_service_) {
-      fake_service_ = std::make_unique<FakeCoralService>();
+    if (!fake_processor_) {
+      fake_processor_ = std::make_unique<FakeCoralProcessor>();
     }
-    return fake_service_.get();
+    return fake_processor_.get();
+  }
+
+  if (coral_processor_) {
+    return coral_processor_.get();
   }
 
   if (!coral_service_ && mojo_service_manager::IsServiceManagerBound()) {
     auto pipe_handle = coral_service_.BindNewPipeAndPassReceiver().PassPipe();
-    coral_service_.reset_on_disconnect();
     mojo_service_manager::GetServiceManagerProxy()->Request(
         chromeos::mojo_services::kCrosCoralService, kRequestCoralServiceTimeout,
         std::move(pipe_handle));
+    coral_service_.reset_on_disconnect();
   }
-  return coral_service_ ? coral_service_.get() : nullptr;
+
+  if (coral_service_) {
+    mojo::PendingRemote<
+        chromeos::machine_learning::mojom::MachineLearningService>
+        ml_service;
+    chromeos::machine_learning::ServiceConnection::GetInstance()
+        ->BindMachineLearningService(
+            ml_service.InitWithNewPipeAndPassReceiver());
+    coral_service_->Initialize(std::move(ml_service),
+                               coral_processor_.BindNewPipeAndPassReceiver());
+    coral_processor_.reset_on_disconnect();
+  }
+
+  return coral_processor_ ? coral_processor_.get() : nullptr;
 }
 
 void CoralController::HandleGroupResult(CoralSource source,
