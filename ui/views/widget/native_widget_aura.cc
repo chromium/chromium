@@ -1107,7 +1107,10 @@ gfx::Size NativeWidgetAura::GetMinimumSize() const {
 std::optional<gfx::Size> NativeWidgetAura::GetMaximumSize() const {
   // Do no check maximizability as EXO clients can have maximum size and be
   // maximizable at the same time.
-  return delegate_ ? delegate_->GetMaximumSize() : gfx::Size();
+  const gfx::Size max_size =
+      delegate_ ? delegate_->GetMaximumSize() : gfx::Size();
+  return !max_size.IsZero() ? std::make_optional<gfx::Size>(max_size)
+                            : std::nullopt;
 }
 
 void NativeWidgetAura::OnBoundsChanged(const gfx::Rect& old_bounds,

@@ -1262,8 +1262,11 @@ gfx::Size DesktopNativeWidgetAura::GetMinimumSize() const {
 }
 
 std::optional<gfx::Size> DesktopNativeWidgetAura::GetMaximumSize() const {
-  return native_widget_delegate_ ? native_widget_delegate_->GetMaximumSize()
+  const gfx::Size max_size = native_widget_delegate_
+                                 ? native_widget_delegate_->GetMaximumSize()
                                  : gfx::Size();
+  return !max_size.IsZero() ? std::make_optional<gfx::Size>(max_size)
+                            : std::nullopt;
 }
 
 gfx::NativeCursor DesktopNativeWidgetAura::GetCursor(const gfx::Point& point) {
