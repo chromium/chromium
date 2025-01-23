@@ -452,60 +452,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ActivityTracker.Collect.InitStatus"
-    enum="ActivityTrackerCollectInitStatus" expires_after="M90">
-  <owner>siggi@chromium.org</owner>
-  <summary>
-    Status of the initialization to collect stability debug files. Logged once,
-    during the initialization of the stability debug file collection.
-  </summary>
-</histogram>
-
-<histogram name="ActivityTracker.Collect.StabilityFileCount" units="count"
-    expires_after="M90">
-  <owner>siggi@chromium.org</owner>
-  <summary>
-    Number of files found during stability file collection. Logged each time the
-    stability file collection proceeds (at most once per launch).
-  </summary>
-</histogram>
-
-<histogram name="ActivityTracker.Collect.Status"
-    enum="ActivityTrackerCollectStatus" expires_after="M90">
-  <owner>siggi@chromium.org</owner>
-  <summary>
-    Status for the collection of a stability debug file. Logged each time a
-    debug file collection attempt is made.
-  </summary>
-</histogram>
-
-<histogram name="ActivityTracker.Collect.SystemSessionAnalysisStatus"
-    enum="ActivityTrackerSystemSessionAnalysisStatus" expires_after="M90">
-  <owner>siggi@chromium.org</owner>
-  <summary>
-    Status for the analysis of the system session state. Logged each time a
-    debug file is collected.
-  </summary>
-</histogram>
-
-<histogram name="ActivityTracker.Collect.TotalTime" units="ms"
-    expires_after="M90">
-  <owner>siggi@chromium.org</owner>
-  <summary>
-    Time spent collecting stability debug information. Logged each time a
-    collection is performed.
-  </summary>
-</histogram>
-
-<histogram name="ActivityTracker.Collect.WriteDumpStatus"
-    enum="ActivityTrackerWriteDumpStatus" expires_after="M90">
-  <owner>siggi@chromium.org</owner>
-  <summary>
-    Status of the minidump writing. Logged each time a writing a minidump is
-    attempted.
-  </summary>
-</histogram>
-
 <histogram name="Ads.InterestGroup.AtAuctionTotalSize.{Type}" units="KB"
     expires_after="2025-06-08">
   <owner>caraitto@chromium.org</owner>
