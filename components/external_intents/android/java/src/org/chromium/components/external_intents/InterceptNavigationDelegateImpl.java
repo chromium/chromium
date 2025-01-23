@@ -12,9 +12,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CancelableRunnable;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.RequiredCallback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
@@ -52,8 +50,8 @@ import java.lang.annotation.RetentionPolicy;
 @JNINamespace("external_intents")
 public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate {
     /**
-     * Histogram for the source of a main frame intent launch. This enum is used in UMA, do not
-     * reorder values.
+     * Histogram for the source of a main frame intent launch.
+     * This enum is used in UMA, do not reorder values.
      */
     @IntDef({
         MainFrameIntentLaunch.NOT_FROM_EXTERNAL_APP_TO_INTENT_SCHEME,
@@ -86,8 +84,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     }
 
     /**
-     * Histogram for the scheme of an overridden navigation. This enum is used in UMA, do not
-     * reorder values.
+     * Histogram for the scheme of an overridden navigation.
+     * This enum is used in UMA, do not reorder values.
      */
     @IntDef({
         InterceptScheme.NOT_INTERCEPTED,
@@ -125,8 +123,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     private boolean mClearAllForwardHistoryRequired;
 
     private boolean mShouldClearRedirectHistoryForTabClobbering;
-
-    private CancelableRunnable mPendingShouldIgnore;
 
     /** Default constructor of {@link InterceptNavigationDelegateImpl}. */
     public InterceptNavigationDelegateImpl(InterceptNavigationDelegateClient client) {
@@ -177,13 +173,11 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     }
 
     @Override
-    public void shouldIgnoreNavigation(
+    public boolean shouldIgnoreNavigation(
             NavigationHandle navigationHandle,
             GURL escapedUrl,
             boolean hiddenCrossFrame,
-            boolean isSandboxedFrame,
-            boolean shouldRunAsync,
-            RequiredCallback<Boolean> resultCallback) {
+            boolean isSandboxedFrame) {
         // We should never get here for non-main-frame navigations.
         if (!navigationHandle.isInPrimaryMainFrame()) throw new RuntimeException();
 
@@ -204,57 +198,25 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         this::onDidAsyncActionInMainFrame,
                         hiddenCrossFrame,
                         isSandboxedFrame,
-                        navigationHandle.getNavigationId(),
-                        shouldRunAsync,
-                        resultCallback);
-        if (!shouldRunAsync) {
-            onMainFrameShouldIgnoreNavigationResult(
-                    result, escapedUrl, navigationHandle.isExternalProtocol(), resultCallback);
-        }
-    }
+                        navigationHandle.getNavigationId());
 
-    private void onMainFrameShouldIgnoreNavigationResult(
-            OverrideUrlLoadingResult result,
-            GURL url,
-            boolean isExternalProtocol,
-            RequiredCallback<Boolean> resultCallback) {
-        mPendingShouldIgnore = null;
-        boolean shouldIgnore;
         switch (result.getResultType()) {
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
-                onDidFinishMainFrameIntentLaunch(true, url);
-                shouldIgnore = true;
-                break;
+                onDidFinishMainFrameIntentLaunch(true, escapedUrl);
+                return true;
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB:
                 clobberMainFrame(result.getTargetUrl(), result.getExternalNavigationParams());
-                shouldIgnore = true;
-                break;
+                return true;
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION:
             case OverrideUrlLoadingResultType.OVERRIDE_CLOSING_AFTER_AUTH:
-                shouldIgnore = true;
-                break;
+                return true;
             case OverrideUrlLoadingResultType.NO_OVERRIDE:
             default:
-                if (isExternalProtocol) {
-                    logBlockedNavigationToDevToolsConsole(url);
-                    shouldIgnore = true;
-                    break;
+                if (navigationHandle.isExternalProtocol()) {
+                    logBlockedNavigationToDevToolsConsole(escapedUrl);
+                    return true;
                 }
-                shouldIgnore = false;
-                break;
-        }
-        resultCallback.onResult(shouldIgnore);
-    }
-
-    @Override
-    public void finishPendingShouldIgnoreCheck() {
-        if (mPendingShouldIgnore != null) {
-            CancelableRunnable runnable = mPendingShouldIgnore;
-            runnable.run();
-            assert mPendingShouldIgnore == null;
-            // Cancel, ensuring any pending posted tasks do not execute by converting this runnable
-            // to a no-op.
-            runnable.cancel();
+                return false;
         }
     }
 
@@ -292,9 +254,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         this::onDidAsyncActionInSubFrame,
                         /* hiddenCrossFrame= */ false,
                         /* isSandboxedMainFrame= */ false,
-                        /* navigationId= */ -1,
-                        /* shouldRunAsync= */ false,
-                        /* resultCallback= */ null);
+                        /* navigationId */ -1);
 
         switch (result.getResultType()) {
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
@@ -326,10 +286,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             Callback<AsyncActionTakenParams> asyncActionTakenCallback,
             boolean hiddenCrossFrame,
             boolean isSandboxedMainFrame,
-            long navigationId,
-            boolean shouldRunAsync,
-            RequiredCallback<Boolean> resultCallback) {
-        assert mPendingShouldIgnore == null;
+            long navigationId) {
         boolean initialNavigation = isInitialNavigation();
         redirectHandler.updateNewUrlLoading(
                 pageTransition,
@@ -366,25 +323,10 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         .setIsSandboxedMainFrame(isSandboxedMainFrame)
                         .setNavigationId(navigationId)
                         .build();
-        if (!shouldRunAsync) return doShouldOverrideUrlLoading(params, isExternalProtocol);
-        mPendingShouldIgnore =
-                new CancelableRunnable(
-                        () -> {
-                            onMainFrameShouldIgnoreNavigationResult(
-                                    doShouldOverrideUrlLoading(params, isExternalProtocol),
-                                    params.getUrl(),
-                                    isExternalProtocol,
-                                    resultCallback);
-                        });
-        PostTask.postTask(TaskTraits.UI_DEFAULT, mPendingShouldIgnore);
-        return null;
-    }
 
-    private OverrideUrlLoadingResult doShouldOverrideUrlLoading(
-            ExternalNavigationParams params, boolean isExternalProtocol) {
         OverrideUrlLoadingResult result = mExternalNavHandler.shouldOverrideUrlLoading(params);
         if (mResultCallbackForTesting != null) {
-            mResultCallbackForTesting.onResult(Pair.create(params.getUrl(), result));
+            mResultCallbackForTesting.onResult(Pair.create(escapedUrl, result));
         }
 
         String protocolType = isExternalProtocol ? "ExternalProtocol" : "InternalProtocol";
@@ -396,11 +338,11 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         int scheme = InterceptScheme.UNKNOWN_SCHEME;
         if (result.getResultType() == OverrideUrlLoadingResultType.NO_OVERRIDE) {
             scheme = InterceptScheme.NOT_INTERCEPTED;
-        } else if (UrlUtilities.isAcceptedScheme(params.getUrl())) {
+        } else if (UrlUtilities.isAcceptedScheme(escapedUrl)) {
             scheme = InterceptScheme.ACCEPTED_SCHEME;
-        } else if (UrlUtilities.hasIntentScheme(params.getUrl())) {
+        } else if (UrlUtilities.hasIntentScheme(escapedUrl)) {
             scheme = InterceptScheme.INTENT_SCHEME;
-        } else if (MDOC_SCHEME.equals(params.getUrl().getScheme())) {
+        } else if (MDOC_SCHEME.equals(escapedUrl.getScheme())) {
             scheme = InterceptScheme.MDOC_SCHEME;
             ContentWebFeatureUsageUtils.logWebFeatureForCurrentPage(
                     mClient.getWebContents(), WebFeature.IDENTITY_DIGITAL_CREDENTIALS_DEEP_LINK);
@@ -411,7 +353,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                     "Android.TabNavigationInterceptResult.ForMdoc",
                     result.getResultType(),
                     OverrideUrlLoadingResultType.NUM_ENTRIES);
-        } else if (params.getUrl().getScheme().endsWith(OPENID4VP_SCHEME_SUFFIX)) {
+        } else if (escapedUrl.getScheme().endsWith(OPENID4VP_SCHEME_SUFFIX)) {
             scheme = InterceptScheme.OPENID4VP_SCHEME;
             ContentWebFeatureUsageUtils.logWebFeatureForCurrentPage(
                     mClient.getWebContents(), WebFeature.IDENTITY_DIGITAL_CREDENTIALS_DEEP_LINK);

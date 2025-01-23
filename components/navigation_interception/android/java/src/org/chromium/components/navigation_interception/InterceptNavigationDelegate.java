@@ -5,47 +5,31 @@
 package org.chromium.components.navigation_interception;
 
 import org.jni_zero.CalledByNative;
-import org.jni_zero.JNINamespace;
-import org.jni_zero.NativeMethods;
 
-import org.chromium.base.RequiredCallback;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
-@JNINamespace("navigation_interception")
 public abstract class InterceptNavigationDelegate {
     /**
-     * This method is called for every top-level navigation within the associated WebContents. The
-     * method allows the embedder to ignore navigations. This is used on Android to 'convert'
+     * This method is called for every top-level navigation within the associated WebContents.
+     * The method allows the embedder to ignore navigations. This is used on Android to 'convert'
      * certain navigations to Intents to 3rd party applications.
      *
      * @param navigationHandle parameters describing the navigation.
      * @param escapedUrl The url from the NavigationHandle, properly escaped for external
-     *     navigation.
+     *         navigation.
      * @param hiddenCrossFrame whether the navigation has been initiated by another (hidden) frame.
      * @param isSandboxedFrame whether the navigation was initiated by a sandboxed frame.
-     * @param shouldRunAsync whether any slow checks should run async.
-     * @param resultCallback the callback that must be called synchrnously unless |shouldRunAsync|
-     *     is true, in which case it must be called when the async check finishes, or before any
-     *     calls to {@link #finishPendingShouldIgnoreCheck()} return.
+     * @return true if the navigation should be ignored.
      */
-    public abstract void shouldIgnoreNavigation(
+    @CalledByNative
+    public abstract boolean shouldIgnoreNavigation(
             NavigationHandle navigationHandle,
             GURL escapedUrl,
             boolean hiddenCrossFrame,
-            boolean isSandboxedFrame,
-            boolean shouldRunAsync,
-            RequiredCallback<Boolean> resultCallback);
-
-    /**
-     * If an async shouldIgnoreNavigation request is in progress, finish it by calling the
-     * |resultCallback| before returning from this method.
-     */
-    @CalledByNative
-    protected void finishPendingShouldIgnoreCheck() {}
+            boolean isSandboxedFrame);
 
     /**
      * This method is called for navigations to external protocols in subframes, which on Android
@@ -54,12 +38,13 @@ public abstract class InterceptNavigationDelegate {
      * ever allowed to leave the browser.
      *
      * @param escapedUrl The url from the NavigationHandle, properly escaped for external
-     *     navigation.
+     *         navigation.
      * @param transition The {@link PageTransition} for the Navigation
      * @param hasUserGesture Whether the navigation is associated with a user gesture.
      * @param initiatorOrigin The Origin that initiated this navigation, if any.
+     *
      * @return Tri-state: An empty URL indicating an async action is pending, a URL to redirect the
-     *     subframe to, or null if no action is to be taken.
+     *         subframe to, or null if no action is to be taken.
      */
     @CalledByNative
     protected GURL handleSubframeExternalProtocol(
@@ -77,32 +62,4 @@ public abstract class InterceptNavigationDelegate {
      */
     @CalledByNative
     protected void onResourceRequestWithGesture() {}
-
-    @CalledByNative
-    private void callShouldIgnoreNavigation(
-            NavigationHandle navigationHandle,
-            GURL escapedUrl,
-            boolean hiddenCrossFrame,
-            boolean isSandboxedFrame,
-            boolean shouldRunAsync) {
-        RequiredCallback<Boolean> resultCallback =
-                new RequiredCallback<>(
-                        (Boolean shouldIgnore) -> {
-                            InterceptNavigationDelegateJni.get()
-                                    .onShouldIgnoreNavigationResult(
-                                            navigationHandle.getWebContents(), shouldIgnore);
-                        });
-        shouldIgnoreNavigation(
-                navigationHandle,
-                escapedUrl,
-                hiddenCrossFrame,
-                isSandboxedFrame,
-                shouldRunAsync,
-                resultCallback);
-    }
-
-    @NativeMethods
-    public interface Natives {
-        void onShouldIgnoreNavigationResult(WebContents webContents, boolean shouldIgnore);
-    }
 }
