@@ -499,6 +499,47 @@
         Summarize with Help me read
       </message>
 
+      <!-- Mako Feedback -->
+      <message name="IDS_MAKO_FEEDBACK_LINK_ARIA_LABEL" desc="aria-label for links on the Mako feedback form. Makes it clear that it will only open in a different tab. This is appened after the standard label for the link">
+        <ph name="LINK_TEXT">$1</ph>, opens in new tab
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_TITLE" desc="Title of the Mako feedback form">
+        Send feedback
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_SUBTITLE" desc="Subtitle of the Mako feedback form">
+        Thanks for sharing your experience. Your feedback helps us create more accurate and beneficial content.
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_QUESTION" desc="Label for the question on the Mako feedback form">
+        What didn’t work well?
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_QUESTION_PLACEHOLDER" desc="Placeholder for the question on the Mako feedback form">
+        Share your feedback or describe your issue. Make sure to not include anything that is personal, sensitive, or confidential.
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_OFFENSIVE_OR_UNSAFE" desc="Button label for &quot;offensive or unsafe&quot; on the Mako feedback form">
+        Offensive/Unsafe
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_FACTUALLY_INCORRECT" desc="Button label for &quot;factually incorrect&quot; on the Mako feedback form">
+        Factually incorrect
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_LEGAL_ISSUE" desc="Button label for &quot;legal issue&quot; on the Mako feedback form">
+        Legal issue
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_FEEDBACK_DISCLAIMER" desc="Label for the feedback disclaimer on the Mako feedback form">
+        When you select send, your feedback and content (shown below) will be sent to Google, reviewed by humans, and used to train or improve our products and services subject to the <ph name="LINK_POLICY_BEGIN">$1</ph>Privacy Policy<ph name="LINK_POLICY_END">$2</ph> and <ph name="LINK_TERMS_OF_SERVICE_BEGIN">$3</ph>Google Terms of Service<ph name="LINK_TERMS_OF_SERVICE_END">$4</ph>.
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_PRIVACY_POLICY" desc="Label for privacy policy links on the Mako feedback form">
+        Privacy Policy
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_TERMS_OF_SERVICE" desc="Label for Google Terms of Service links on the Mako feedback form">
+        Google Terms of Service
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_CANCEL" desc="Button label for cancelling feedback on the Mako feedback form">
+        Cancel
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_SEND" desc="Button label for sending feedback on the Mako feedback form">
+        Send
+      </message>
+
       <!-- Multitask Menu -->
       <message name="IDS_MULTITASK_MENU_HALF_BUTTON_NAME" desc="Title of the half button on the multitask menu." meaning="Splits the associated window into half snapped state.">
         Split
