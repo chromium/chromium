@@ -947,3 +947,107 @@ TEST_F(FeatureEngagementTest, TestEnhancedSafeBrowsingInlinePromoIsShown) {
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature));
 }
+
+// Verifies the Reminder Notifications Overflow Menu Bubble IPH should not
+// trigger after a reminder is scheduled (used event).
+TEST_F(
+    FeatureEngagementTest,
+    TestReminderNotificationsOverflowMenuBubbleIPHShouldNotTriggerAfterUsed) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::
+           kIPHiOSReminderNotificationsOverflowMenuBubbleFeature});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Ensures the tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Simulates a reminder scheduled (used event).
+  tracker->NotifyEvent(feature_engagement::events::kIOSTabReminderScheduled);
+
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuBubbleFeature));
+}
+
+// Verifies the Reminder Notifications Overflow Menu Bubble IPH can trigger
+// again the next day if preconditions are met again.
+TEST_F(
+    FeatureEngagementTest,
+    TestReminderNotificationsOverflowMenuBubbleIPHShouldTriggerAgainNextDay) {
+  base::ScopedMockClockOverride scoped_clock;
+  scoped_clock.Advance(base::Time::UnixEpoch() - base::Time());
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::
+           kIPHiOSReminderNotificationsOverflowMenuBubbleFeature});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Ensures the tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Day 1: Simulates precondition met and IPH triggered.
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuBubbleFeature));
+  tracker->Dismissed(feature_engagement::
+                         kIPHiOSReminderNotificationsOverflowMenuBubbleFeature);
+
+  // Day 2: Advances clock by 1 day and simulates precondition met again.
+  scoped_clock.Advance(base::Days(1));
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuBubbleFeature));
+}
+
+// Verifies the Reminder Notifications Overflow Menu Bubble IPH should not
+// trigger after reaching the trigger limit (3 times) across multiple days.
+TEST_F(
+    FeatureEngagementTest,
+    TestReminderNotificationsOverflowMenuBubbleIPHShouldNotTriggerAfterLimitMultiDays) {
+  base::ScopedMockClockOverride scoped_clock;
+  scoped_clock.Advance(base::Time::UnixEpoch() - base::Time());
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::
+           kIPHiOSReminderNotificationsOverflowMenuBubbleFeature});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Ensures the tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Day 1: Simulates precondition met and IPH triggered.
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuBubbleFeature));
+  tracker->Dismissed(feature_engagement::
+                         kIPHiOSReminderNotificationsOverflowMenuBubbleFeature);
+
+  // Day 2: Advances clock by 1 day and simulates precondition met again.
+  scoped_clock.Advance(base::Days(1));
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuBubbleFeature));
+  tracker->Dismissed(feature_engagement::
+                         kIPHiOSReminderNotificationsOverflowMenuBubbleFeature);
+
+  // Day 3: Advances clock by 1 day and simulates precondition met again.
+  scoped_clock.Advance(base::Days(1));
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuBubbleFeature));
+  tracker->Dismissed(feature_engagement::
+                         kIPHiOSReminderNotificationsOverflowMenuBubbleFeature);
+
+  // Day 4: Advances clock by 1 day and simulates precondition met again.
+  scoped_clock.Advance(base::Days(1));
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuBubbleFeature));
+}
