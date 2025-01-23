@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/cwv_lookalike_url_handler_internal.h"
-
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
@@ -12,6 +10,7 @@
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web_view/internal/cwv_lookalike_url_handler_internal.h"
 #import "net/base/apple/url_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -156,4 +155,4 @@ TEST_F(CWVLookalikeURLHandlerTest, Close) {
   EXPECT_TRUE(web_state_.IsClosed());
 }
 
-}  // ios_web_view
+}  // namespace ios_web_view

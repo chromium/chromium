@@ -30,8 +30,7 @@ WebViewStrikeDatabaseFactory* WebViewStrikeDatabaseFactory::GetInstance() {
 WebViewStrikeDatabaseFactory::WebViewStrikeDatabaseFactory()
     : BrowserStateKeyedServiceFactory(
           "AutofillStrikeDatabase",
-          BrowserStateDependencyManager::GetInstance()) {
-}
+          BrowserStateDependencyManager::GetInstance()) {}
 
 WebViewStrikeDatabaseFactory::~WebViewStrikeDatabaseFactory() {}
 

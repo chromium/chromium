@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/cwv_find_in_page_controller_internal.h"
-
 #import "ios/web/public/find_in_page/find_in_page_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#import "ios/web_view/internal/cwv_find_in_page_controller_internal.h"
 
 @interface CWVFindInPageController () <CRWWebStateObserver>
 @end

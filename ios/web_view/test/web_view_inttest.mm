@@ -16,8 +16,8 @@
 #import "testing/gtest_mac.h"
 #import "url/gurl.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace ios_web_view {
 

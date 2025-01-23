@@ -5,9 +5,8 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_CWV_X509_CERTIFICATE_INTERNAL_H_
 #define IOS_WEB_VIEW_INTERNAL_CWV_X509_CERTIFICATE_INTERNAL_H_
 
-#import "ios/web_view/public/cwv_x509_certificate.h"
-
 #include "base/memory/scoped_refptr.h"
+#import "ios/web_view/public/cwv_x509_certificate.h"
 
 namespace net {
 class X509Certificate;

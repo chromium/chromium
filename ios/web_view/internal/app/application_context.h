@@ -22,7 +22,7 @@ class ComponentUpdateService;
 namespace net {
 class NetLog;
 class URLRequestContextGetter;
-}
+}  // namespace net
 
 namespace network {
 class NetworkChangeManager;

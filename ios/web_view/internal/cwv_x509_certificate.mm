@@ -4,11 +4,10 @@
 
 #import "ios/web_view/public/cwv_x509_certificate.h"
 
-#import "ios/web_view/internal/cwv_x509_certificate_internal.h"
-
 #import "base/memory/scoped_refptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "ios/web_view/internal/cwv_x509_certificate_internal.h"
 #import "net/cert/x509_certificate.h"
 
 @implementation CWVX509Certificate {

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/web_view/internal/cwv_preview_element_info_internal.h"
-
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

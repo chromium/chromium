@@ -93,8 +93,9 @@ void ApplicationContext::SaveState() {
     sessions::SessionIdGenerator::GetInstance()->Shutdown();
   }
 
-  if (shared_url_loader_factory_)
+  if (shared_url_loader_factory_) {
     shared_url_loader_factory_->Detach();
+  }
 
   if (network_context_) {
     web::GetIOThreadTaskRunner({})->DeleteSoon(

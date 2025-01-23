@@ -29,8 +29,7 @@ WebViewSigninClientFactory* WebViewSigninClientFactory::GetInstance() {
 WebViewSigninClientFactory::WebViewSigninClientFactory()
     : BrowserStateKeyedServiceFactory(
           "SigninClient",
-          BrowserStateDependencyManager::GetInstance()) {
-}
+          BrowserStateDependencyManager::GetInstance()) {}
 
 std::unique_ptr<KeyedService>
 WebViewSigninClientFactory::BuildServiceInstanceFor(

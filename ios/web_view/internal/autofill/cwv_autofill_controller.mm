@@ -309,8 +309,9 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
   web::WebFrame* frame =
       framesManager->GetFrameWithId(_lastFormActivityWebFrameID);
 
-  if (!frame)
+  if (!frame) {
     return;
+  }
 
   autofill::SuggestionControllerJavaScriptFeature::GetInstance()
       ->SelectPreviousElementInFrame(frame);
@@ -323,8 +324,9 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
   web::WebFrame* frame =
       framesManager->GetFrameWithId(_lastFormActivityWebFrameID);
 
-  if (!frame)
+  if (!frame) {
     return;
+  }
 
   autofill::SuggestionControllerJavaScriptFeature::GetInstance()
       ->SelectNextElementInFrame(frame);
@@ -404,8 +406,8 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
             (const autofill::CardUnmaskPromptOptions&)cardUnmaskPromptOptions
                        delegate:(base::WeakPtr<autofill::CardUnmaskDelegate>)
                                     delegate {
-  if ([_delegate respondsToSelector:@selector
-                 (autofillController:verifyCreditCardWithVerifier:)]) {
+  if ([_delegate respondsToSelector:@selector(autofillController:
+                                        verifyCreditCardWithVerifier:)]) {
     ios_web_view::WebViewBrowserState* browserState =
         ios_web_view::WebViewBrowserState::FromBrowserState(
             _webState->GetBrowserState());

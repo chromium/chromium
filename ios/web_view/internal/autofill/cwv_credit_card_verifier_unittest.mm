@@ -161,14 +161,14 @@ TEST_F(CWVCreditCardVerifierTest, IsCVCValid) {
 
 // Tests CWVCreditCardVerifier's |isExpirationDateValidForMonth:year:| method.
 TEST_F(CWVCreditCardVerifierTest, IsExpirationDateValid) {
-  EXPECT_FALSE(
-      [credit_card_verifier_ isExpirationDateValidForMonth:@"1" year:@"2"]);
-  EXPECT_FALSE(
-      [credit_card_verifier_ isExpirationDateValidForMonth:@"11" year:@"2"]);
-  EXPECT_TRUE(
-      [credit_card_verifier_ isExpirationDateValidForMonth:@"1" year:@"26"]);
-  EXPECT_TRUE(
-      [credit_card_verifier_ isExpirationDateValidForMonth:@"11" year:@"2226"]);
+  EXPECT_FALSE([credit_card_verifier_ isExpirationDateValidForMonth:@"1"
+                                                               year:@"2"]);
+  EXPECT_FALSE([credit_card_verifier_ isExpirationDateValidForMonth:@"11"
+                                                               year:@"2"]);
+  EXPECT_TRUE([credit_card_verifier_ isExpirationDateValidForMonth:@"1"
+                                                              year:@"26"]);
+  EXPECT_TRUE([credit_card_verifier_ isExpirationDateValidForMonth:@"11"
+                                                              year:@"2226"]);
 }
 
 // Tests CWVCreditCardVerifier's verification method handles success case.

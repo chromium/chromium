@@ -59,7 +59,7 @@ typedef NS_OPTIONS(NSInteger, CWVPasswordLeakType) {
 // <form name='_formName_'>
 //   <input id='_fieldIdentifier_' value='_value_' type='_fieldType_'>
 // </form>
-@protocol CWVAutofillControllerDelegate<NSObject>
+@protocol CWVAutofillControllerDelegate <NSObject>
 
 @optional
 

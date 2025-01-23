@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/web/public/security/ssl_status.h"
-
 #import "ios/web_view/internal/cwv_ssl_status_internal.h"
 #import "ios/web_view/internal/cwv_ssl_util.h"
 #import "ios/web_view/internal/cwv_x509_certificate_internal.h"

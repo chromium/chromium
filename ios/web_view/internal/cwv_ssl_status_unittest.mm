@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/web_view/internal/cwv_ssl_status_internal.h"
-
 #import "net/test/test_certificate_data.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"

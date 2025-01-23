@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/cwv_download_task_internal.h"
-
 #import <Foundation/Foundation.h>
 
 #import "base/files/file_path.h"
@@ -13,6 +11,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
+#import "ios/web_view/internal/cwv_download_task_internal.h"
 #import "net/base/net_errors.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -20,8 +19,8 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForFileOperationTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace ios_web_view {
 

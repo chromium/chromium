@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/web_view/internal/passwords/cwv_leak_check_credential_internal.h"
-#import "ios/web_view/internal/passwords/cwv_leak_check_service_internal.h"
-
 #import "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #import "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
+#import "ios/web_view/internal/passwords/cwv_leak_check_credential_internal.h"
+#import "ios/web_view/internal/passwords/cwv_leak_check_service_internal.h"
 #import "ios/web_view/public/cwv_leak_check_service_observer.h"
 
 using password_manager::BulkLeakCheckServiceInterface;
@@ -112,8 +111,9 @@ class ObserverBridge : public BulkLeakCheckServiceInterface::Observer {
 
 - (void)checkCredentials:(NSArray<CWVLeakCheckCredential*>*)credentials {
   std::vector<LeakCheckCredential> internalCredentials;
-  if (!credentials.count)
+  if (!credentials.count) {
     return;
+  }
 
   for (CWVLeakCheckCredential* credential in credentials) {
     internalCredentials.emplace_back(credential.internalCredential.username(),

@@ -21,7 +21,7 @@ extern const char kUseSyncSandboxFlagName[];
 extern const char kUseWalletSandboxFlagName[];
 extern const char kUseWalletSandboxFlagNameEnabled[];
 extern const char kUseWalletSandboxFlagNameDisabled[];
-}  // namespace
+}  // namespace ios_web_view
 
 class PrefService;
 
