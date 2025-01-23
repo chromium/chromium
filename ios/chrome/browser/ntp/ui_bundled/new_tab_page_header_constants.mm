@@ -13,4 +13,4 @@ const CGFloat kCenteredHintLabelSidePadding = 37;
 const CGFloat kHintLabelHeightMargin = 2;
 const CGFloat kFakeOmniboxScrolledToTopMargin = 14;
 
-}  // ntp_header
+}  // namespace ntp_header

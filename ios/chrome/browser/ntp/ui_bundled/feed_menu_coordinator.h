@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_NTP_UI_BUNDLED_FEED_MENU_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_NTP_UI_BUNDLED_FEED_MENU_COORDINATOR_H_
 
-#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_menu_commands.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 // An enum of all the Feed Menu item types.
 enum class FeedMenuItemType {
