@@ -15,7 +15,8 @@ namespace commerce {
 class CompareSubMenuModel : public ui::SimpleMenuModel {
  public:
   CompareSubMenuModel(ui::SimpleMenuModel::Delegate* delegate,
-                      Browser* browser);
+                      Browser* browser,
+                      ProductSpecificationsService* product_specs_service);
   CompareSubMenuModel(const CompareSubMenuModel&) = delete;
   CompareSubMenuModel& operator=(const CompareSubMenuModel&) = delete;
   ~CompareSubMenuModel() override;
