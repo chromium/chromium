@@ -28,7 +28,7 @@ public class CastBrowserHelper {
         Log.d(TAG, "Performing one-time browser initialization asynchronously");
 
         CastCommandLineHelper.initCommandLine(intent);
-        DeviceUtils.addDeviceSpecificUserAgentSwitch();
+        DeviceUtils.updateDeviceSpecificUserAgentSwitch(context);
         LibraryLoader.getInstance().ensureInitialized();
 
         Log.d(TAG, "Loading BrowserStartupController...");

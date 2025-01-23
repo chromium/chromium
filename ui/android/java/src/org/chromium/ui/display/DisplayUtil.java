@@ -19,6 +19,7 @@ import android.view.WindowInsets;
 import android.view.WindowManager;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -183,23 +184,30 @@ public abstract class DisplayUtil {
     }
 
     /**
-     * Get current smallest screen width in dp. This method uses {@link WindowManager} on
-     * Android R and above; otherwise, {@link DisplayUtil#getSmallestWidth(DisplayAndroid)}.
+     * Get current smallest screen width in dp.
+     *
+     * <p>This method uses {@link WindowManager} on Android R and above; otherwise, {@link
+     * DisplayUtil#getSmallestWidth(DisplayAndroid)}.
+     *
+     * <p>This method raises an exception when it gets a context not associated with a display (e.g.
+     * application contexts) and the strict mode is enabled. Use {@link
+     * DisplayUtil#getCurrentSmallestScreenWidthAllowingFallback(Context)} if you want to fall back
+     * to the default display in such cases.
      *
      * @param context {@link Context} used to get system service and target display.
      * @return Smallest screen width in dp.
      */
     public static int getCurrentSmallestScreenWidth(Context context) {
         DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(context);
-        // Android T does not receive updated width upon foldable unfold from window context.
-        // Continue to rely on context on this case.
-        Context windowManagerContext =
-                (VERSION.SDK_INT >= VERSION_CODES.R && VERSION.SDK_INT < VERSION_CODES.TIRAMISU)
-                        ? (display.getWindowContext() != null
-                                ? display.getWindowContext()
-                                : context)
-                        : context;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // Android T does not receive updated width upon foldable unfold from window context.
+            // Continue to rely on context on this case.
+            Context windowManagerContext =
+                    (VERSION.SDK_INT >= VERSION_CODES.R && VERSION.SDK_INT < VERSION_CODES.TIRAMISU)
+                            ? (display.getWindowContext() != null
+                                    ? display.getWindowContext()
+                                    : context)
+                            : context;
             // Context#getSystemService(Context.WINDOW_SERVICE) is preferred over
             // Activity#getWindowManager, because during #attachBaseContext, #getWindowManager
             // is not ready yet and always returns null. See crbug.com/1252150.
@@ -210,6 +218,40 @@ public abstract class DisplayUtil {
             return DisplayUtil.pxToDp(
                     display, Math.min(bounds.right - bounds.left, bounds.bottom - bounds.top));
         }
+        return DisplayUtil.pxToDp(display, DisplayUtil.getSmallestWidth(display));
+    }
+
+    /**
+     * Get current smallest screen width in dp.
+     *
+     * <p>This method is similar to {@link DisplayUtil#getCurrentSmallestScreenWidth(Context)}, but
+     * it accepts contexts not associated with a display (e.g. application contexts). In such cases,
+     * it returns the smallest width of the default display.
+     *
+     * <p>Do not use this method unless you need to fall back to the default display when the
+     * current display is not available. It is undesirable in most cases.
+     *
+     * @param context {@link Context} used to get the current display.
+     * @return Smallest screen width in dp.
+     */
+    public static int getCurrentSmallestScreenWidthAllowingFallback(Context context) {
+        boolean isUiContext;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            isUiContext = context.isUiContext();
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            isUiContext = ContextUtils.activityFromContext(context) != null;
+        } else {
+            // On Android older than R, getCurrentSmallestScreenWidth behaves identically for UI
+            // contexts and non-UI contexts.
+            isUiContext = true;
+        }
+        if (isUiContext) {
+            return getCurrentSmallestScreenWidth(context);
+        }
+
+        // Fall back to the default display. We do not use WindowManager because we can't obtain it
+        // from non-UI contexts.
+        DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(context);
         return DisplayUtil.pxToDp(display, DisplayUtil.getSmallestWidth(display));
     }
 

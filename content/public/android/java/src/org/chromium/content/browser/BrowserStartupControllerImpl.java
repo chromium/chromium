@@ -474,7 +474,8 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
             }
 
             // TODO(yfriedman): Remove dependency on a command line flag for this.
-            DeviceUtilsImpl.addDeviceSpecificUserAgentSwitch();
+            DeviceUtilsImpl.updateDeviceSpecificUserAgentSwitch(
+                    ContextUtils.getApplicationContext());
             BrowserStartupControllerImplJni.get().setCommandLineFlags(singleProcess);
         }
 

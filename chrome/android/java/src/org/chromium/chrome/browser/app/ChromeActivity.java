@@ -2768,13 +2768,14 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     /**
-     * Switch between phone and tablet mode and do the tab re-parenting in the meantime.
-     * Also update switch USE_MOBILE_UA depends on whether the device is tablet sized.
+     * Switch between phone and tablet mode and do the tab re-parenting in the meantime. Also update
+     * switch USE_MOBILE_UA depends on whether the device is tablet sized.
+     *
      * @param isTablet whether the current screen is tablet size.
      * @return whether screen layout change lead to a recreate.
      */
     private boolean onScreenLayoutSizeChange(boolean isTablet) {
-        DeviceUtils.updateDeviceSpecificUserAgentSwitch(isTablet);
+        DeviceUtils.updateDeviceSpecificUserAgentSwitch(this);
 
         if (mTabReparentingControllerSupplier.get() != null && !mIsTabReparentingPrepared) {
             mTabReparentingControllerSupplier.get().prepareTabsForReparenting();
