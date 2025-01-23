@@ -114,10 +114,6 @@ void CookieSettings::SetCookieSetting(const GURL& primary_url,
 bool CookieSettings::IsAllowedByTpcdMetadataGrant(const GURL& url,
                                                   const GURL& first_party_url,
                                                   SettingInfo* out_info) const {
-  if (!ShouldConsider3pcdMetadataGrantsSettings(
-          first_party_url, net::CookieSettingOverrides())) {
-    return false;
-  }
   if (!tpcd_metadata_manager_) {
     return false;
   }
