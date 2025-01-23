@@ -16,9 +16,12 @@ import {PolymerElement, templatize} from 'chrome://resources/polymer/v3_0/polyme
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {recordOccurence as recordOccurrence} from '../../metrics_utils.js';
+import type {PageHandlerRemote} from '../../new_tab_page.mojom-webui.js';
 import {IphFeature} from '../../new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from '../../new_tab_page_proxy.js';
+import {AuthState} from '../../ntp_microsoft_auth_shared_ui.mojom-webui.js';
 import {WindowProxy} from '../../window_proxy.js';
+import {ParentTrustedDocumentProxy} from '../microsoft_auth_frame_connector.js';
 import type {Module} from '../module_descriptor.js';
 import {ModuleRegistry} from '../module_registry.js';
 import type {ModuleInstance, ModuleWrapperElement} from '../module_wrapper.js';
@@ -115,6 +118,15 @@ export class ModulesV2Element extends AppElementBase {
   private setDisabledModulesListenerId_: number|null = null;
   private containerObserver_: MutationObserver|null = null;
   private templateInstances_: TemplateInstanceBase[] = [];
+  private microsoftAuthEnabled_: boolean =
+      loadTimeData.getBoolean('microsoftAuthEnabled');
+
+  private handler_: PageHandlerRemote;
+
+  constructor() {
+    super();
+    this.handler_ = NewTabPageProxy.getInstance().handler;
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -125,7 +137,7 @@ export class ModulesV2Element extends AppElementBase {
                 (all: boolean, ids: string[]) => {
                   this.disabledModules_ = {all, ids};
                 });
-    NewTabPageProxy.getInstance().handler.updateDisabledModules();
+    this.handler_.updateDisabledModules();
 
     const widths: Set<number> = new Set();
     for (let i = 0; i < SUPPORTED_MODULE_WIDTHS.length; i++) {
@@ -203,7 +215,59 @@ export class ModulesV2Element extends AppElementBase {
     this.containerMaxWidth_ =
         this.maxColumnCount_ * SUPPORTED_MODULE_WIDTHS[0].value +
         (this.maxColumnCount_ - 1) * CONTAINER_GAP_WIDTH;
+
+    if (this.microsoftAuthEnabled_) {
+      this.startMicrosoftAuth();
+    }
+    // TODO(crbug.com/390713116): If Microsoft Auth is enabled and silent
+    // auth is occurring, do not load modules until the handler observes
+    // a change in auth status.
     this.loadModules_();
+  }
+
+  private async startMicrosoftAuth(): Promise<void> {
+    const {state} = await this.handler_.getMicrosoftAuthState();
+    switch (state) {
+      case AuthState.kNone:
+        const loaded = await this.waitForMicrosoftAuthFrameConnector_();
+        if (loaded) {
+          ParentTrustedDocumentProxy.getInstance()
+              ?.getChildDocument()
+              .acquireTokenSilent();
+        } else {
+          // TODO(crbug.com/391660892): Load modules without Microsoft modules
+          // if failed to load.
+        }
+        break;
+      case AuthState.kError:
+        // TODO(crbug.com/377379228): Load Promo UI + other modules.
+        break;
+      case AuthState.kSuccess:
+        // TODO(crbug.com/390713715): Load Microsoft modules + other modules.
+        break;
+    }
+  }
+
+  // Wait for the Microsoft auth frame to connect and become available to call.
+  // Using a listener on NewTabPageProxy ends up being a race condition where
+  // sometimes the call is missed because it connects before this element
+  // loads.
+  private waitForMicrosoftAuthFrameConnector_(): Promise<boolean> {
+    return new Promise<boolean>((resolve) => {
+      let tries = 0;
+      // Wait for the child frame to connect. Give up after 5 tries (250 ms).
+      const wait = () => {
+        if (ParentTrustedDocumentProxy.getInstance()) {
+          resolve(true);
+        } else if (tries > 5) {
+          resolve(false);
+        } else {
+          setTimeout(wait, 50);
+        }
+        tries += 1;
+      };
+      wait();
+    });
   }
 
   private moduleDisabled_(
@@ -214,14 +278,13 @@ export class ModulesV2Element extends AppElementBase {
   }
 
   private async loadModules_(): Promise<void> {
-    const modulesIdNames =
-        (await NewTabPageProxy.getInstance().handler.getModulesIdNames()).data;
+    const modulesIdNames = (await this.handler_.getModulesIdNames()).data;
     const modules =
         await ModuleRegistry.getInstance().initializeModulesHavingIds(
             modulesIdNames.map(m => m.id),
             loadTimeData.getInteger('modulesLoadTimeout'));
     if (modules) {
-      NewTabPageProxy.getInstance().handler.onModulesLoadedWithData(
+      this.handler_.onModulesLoadedWithData(
           modules.map(module => module.descriptor.id));
 
       const template = this.shadowRoot!.querySelector('template')!;
@@ -296,8 +359,7 @@ export class ModulesV2Element extends AppElementBase {
         // between the registration of the anchor element and the promo
         // invocation, else the anchor element will not be ready for use.
         setTimeout(() => {
-          NewTabPageProxy.getInstance().handler.maybeShowFeaturePromo(
-              IphFeature.kCustomizeModules);
+          this.handler_.maybeShowFeaturePromo(IphFeature.kCustomizeModules);
         }, 1000);
       }
     }
@@ -383,7 +445,7 @@ export class ModulesV2Element extends AppElementBase {
         if (restoreCallback) {
           restoreCallback();
         }
-        NewTabPageProxy.getInstance().handler.setModuleDisabled(id, false);
+        this.handler_.setModuleDisabled(id, false);
         chrome.metricsPrivate.recordSparseValueWithPersistentHash(
             'NewTabPage.Modules.Enabled', id);
         chrome.metricsPrivate.recordSparseValueWithPersistentHash(
@@ -391,7 +453,7 @@ export class ModulesV2Element extends AppElementBase {
       },
     };
 
-    NewTabPageProxy.getInstance().handler.setModuleDisabled(id, true);
+    this.handler_.setModuleDisabled(id, true);
     this.$.undoToast.show();
     chrome.metricsPrivate.recordSparseValueWithPersistentHash(
         METRIC_NAME_MODULE_DISABLED, id);
@@ -431,8 +493,7 @@ export class ModulesV2Element extends AppElementBase {
     // Notify the user.
     this.$.undoToast.show();
 
-    NewTabPageProxy.getInstance().handler.onDismissModule(
-        wrapper.module.descriptor.id);
+    this.handler_.onDismissModule(wrapper.module.descriptor.id);
   }
 
   private onDismissModuleElement_(e: DismissModuleElementEvent) {

@@ -26,12 +26,12 @@ void MicrosoftAuthService::SetAuthStateError() {
 // TODO(crbug.com/386385415): Connect with Microsoft modules handlers to get
 // access token to populate API call headers.
 std::string MicrosoftAuthService::GetAccessToken() {
-  MicrosoftAuthService::CheckAccessTokenExpiration();
+  CheckAccessTokenExpiration();
   return access_token_->token;
 }
 
 new_tab_page::mojom::AuthState MicrosoftAuthService::GetAuthState() {
-  MicrosoftAuthService::CheckAccessTokenExpiration();
+  CheckAccessTokenExpiration();
   return state_;
 }
 

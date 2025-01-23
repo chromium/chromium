@@ -16,11 +16,14 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/token.h"
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
+#include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service.h"
+#include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/promos/promo_data.h"
@@ -250,6 +253,11 @@ class MockFeaturePromoHelper : public NewTabPageFeaturePromoHelper {
   ~MockFeaturePromoHelper() override = default;
 };
 
+class MockMicrosoftAuthService : public MicrosoftAuthService {
+ public:
+  MOCK_METHOD0(GetAuthState, new_tab_page::mojom::AuthState());
+};
+
 std::unique_ptr<TestingProfile> MakeTestingProfile(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   TestingProfile::Builder profile_builder;
@@ -258,6 +266,12 @@ std::unique_ptr<TestingProfile> MakeTestingProfile(
       base::BindRepeating([](content::BrowserContext* context)
                               -> std::unique_ptr<KeyedService> {
         return std::make_unique<testing::NiceMock<MockPromoService>>();
+      }));
+  profile_builder.AddTestingFactory(
+      MicrosoftAuthServiceFactory::GetInstance(),
+      base::BindRepeating([](content::BrowserContext* context)
+                              -> std::unique_ptr<KeyedService> {
+        return std::make_unique<testing::NiceMock<MockMicrosoftAuthService>>();
       }));
   profile_builder.SetSharedURLLoaderFactory(url_loader_factory);
   auto profile = profile_builder.Build();
@@ -291,7 +305,9 @@ class NewTabPageHandlerTest : public testing::Test {
         mock_feature_promo_helper_ptr_(std::unique_ptr<MockFeaturePromoHelper>(
             mock_feature_promo_helper_)),
         mock_customize_chrome_tab_helper_(
-            std::make_unique<MockCustomizeChromeTabHelper>()) {
+            std::make_unique<MockCustomizeChromeTabHelper>()),
+        mock_microsoft_auth_service_(static_cast<MockMicrosoftAuthService*>(
+            MicrosoftAuthServiceFactory::GetForProfile(profile_.get()))) {
     mock_hats_service_ = static_cast<MockHatsService*>(
         HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile_.get(), base::BindRepeating(&BuildMockHatsService)));
@@ -375,6 +391,10 @@ class NewTabPageHandlerTest : public testing::Test {
     return doodle;
   }
 
+  MockMicrosoftAuthService& mock_microsoft_auth_service() {
+    return *mock_microsoft_auth_service_;
+  }
+
  protected:
   testing::NiceMock<MockPage> mock_page_;
   // NOTE: The initialization order of these members matters.
@@ -410,6 +430,7 @@ class NewTabPageHandlerTest : public testing::Test {
   const std::vector<ntp::ModuleIdDetail> module_id_details = {
       {ntp_modules::kDriveModuleId, IDS_NTP_MODULES_DRIVE_NAME}};
   raw_ptr<MockHatsService> mock_hats_service_;
+  raw_ptr<MockMicrosoftAuthService> mock_microsoft_auth_service_;
 };
 
 class NewTabPageHandlerThemeTest : public NewTabPageHandlerTest,
@@ -899,6 +920,17 @@ TEST_F(NewTabPageHandlerTest, OnDoodleShared) {
   EXPECT_TRUE(test_url_loader_factory_.IsPending(
       "https://www.google.com/"
       "gen_204?atype=i&ct=doodle&ntp=2&cad=sh,5,ct:food_id&ei=bar_id"));
+}
+
+TEST_F(NewTabPageHandlerTest, GetMicrosoftAuthState) {
+  base::MockCallback<NewTabPageHandler::GetMicrosoftAuthStateCallback> callback;
+  new_tab_page::mojom::AuthState result;
+  ON_CALL(mock_microsoft_auth_service(), GetAuthState())
+      .WillByDefault(testing::Return(new_tab_page::mojom::AuthState::kSuccess));
+  EXPECT_CALL(callback, Run).WillOnce(MoveArg<0>(&result));
+  handler_->GetMicrosoftAuthState(callback.Get());
+
+  EXPECT_EQ(result, new_tab_page::mojom::AuthState::kSuccess);
 }
 
 TEST_F(NewTabPageHandlerTest, GetModulesIdNames) {

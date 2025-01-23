@@ -21,7 +21,7 @@ class MicrosoftAuthService : public KeyedService {
   // Get the current access token. If the current access token is expired,
   // clear it, and return an empty string.
   std::string GetAccessToken();
-  new_tab_page::mojom::AuthState GetAuthState();
+  virtual new_tab_page::mojom::AuthState GetAuthState();
 
  private:
   void CheckAccessTokenExpiration();
