@@ -2528,6 +2528,10 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SSLConfigChangedCloseIdleStream) {
 
   ssl_config_service()->NotifySSLContextConfigChange();
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+
+  // Ensure the group is destroyed.
+  FastForwardUntilNoTasksRemain();
+  ASSERT_FALSE(pool().GetGroupForTesting(requester.GetStreamKey()));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest,
