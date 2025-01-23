@@ -370,11 +370,10 @@ ValidateSplitAndInferOutput(const ContextProperties& context_properties,
                             const OperandDescriptor& input,
                             const SplitAttribute& attributes) {
   const std::string& label = attributes.label;
-  if (!context_properties.data_type_limits.split_input.Has(input.data_type())) {
+  if (!context_properties.data_type_limits.split_input.Supports(input)) {
     return base::unexpected(ErrorWithLabel(
-        label, NotSupportedInputArgumentTypeError(
-                   input.data_type(),
-                   context_properties.data_type_limits.split_input)));
+        label, NotSupportedInputArgumentError(
+                   input, context_properties.data_type_limits.split_input)));
   }
 
   if (attributes.axis >= input.Rank()) {

@@ -921,9 +921,9 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
 
   MLSplitSupportLimits* split = MLSplitSupportLimits::Create();
   split->setInput(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.split_input));
-  split->setOutputs(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.split_input));
+      SupportedTensorLimitsToTensorLimits(data_type_limits.split_input));
+  split->setOutputs(SupportedDataTypesToDataTypeLimits(
+      data_type_limits.split_input.data_types));
   op_support_limits->setSplit(split);
 
   MLSingleInputSupportLimits* tanh = MLSingleInputSupportLimits::Create();

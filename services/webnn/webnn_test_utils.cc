@@ -674,7 +674,7 @@ ContextProperties GetContextPropertiesForTesting() {
        /*softmax_input=*/SupportedDataTypes::All(),
        /*softplus_input=*/SupportedDataTypes::All(),
        /*softsign_input=*/SupportedDataTypes::All(),
-       /*split_input=*/SupportedDataTypes::All(),
+       /*split_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*tanh_input=*/SupportedDataTypes::All(),
        /*tile_input=*/SupportedDataTypes::All(),
        /*transpose_input=*/SupportedDataTypes::All(),

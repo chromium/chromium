@@ -359,7 +359,7 @@ ContextProperties ContextImplDml::GetProperties(
        /*softsign_input=*/DataTypeConstraint::kFloat16To32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_split_operator_desc#tensor-support
-       /*split_input=*/kFloat16To32Ints8To32,
+       /*split_input=*/{kFloat16To32Ints8To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_tanh_operator_desc#tensor-support
        /*tanh_input=*/DataTypeConstraint::kFloat16To32,
@@ -427,7 +427,7 @@ ContextProperties ContextImplDml::GetProperties(
         DataTypeConstraint::kFloat16To32Int8To64;
     properties.data_type_limits.slice_input =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
-    properties.data_type_limits.split_input =
+    properties.data_type_limits.split_input.data_types =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.transpose_input =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;

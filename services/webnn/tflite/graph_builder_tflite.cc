@@ -563,7 +563,8 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*softmax_input=*/DataTypeConstraint::kFloat16To32,
        /*softplus_input=*/DataTypeConstraint::kFloat16To32,
        /*softsign_input=*/DataTypeConstraint::kFloat16To32,
-       /*split_input=*/kFloat16To32AndInt8To64AndUint8,
+       /*split_input=*/
+       {kFloat16To32AndInt8To64AndUint8, SupportedRanks::UpTo(8)},
        /*tanh_input=*/DataTypeConstraint::kFloat16To32,
        /*tile_input=*/kFloat16To32AndInt32To64AndUint8,
        /*transpose_input=*/kFloat16To32AndInt8To64AndUint8,
@@ -5235,8 +5236,8 @@ auto GraphBuilderTflite::SerializeSoftsign(const mojom::Softsign& softsign)
 
 auto GraphBuilderTflite::SerializeSplit(const mojom::Split& split)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.split_input.Has(
-      GetOperand(split.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.split_input.Supports(
+      GetOperand(split.input_operand_id).descriptor));
 
   // Serialize the axis tensor to split input tensor along it.
   const auto checked_axis = base::MakeCheckedNum<int32_t>(split.axis);

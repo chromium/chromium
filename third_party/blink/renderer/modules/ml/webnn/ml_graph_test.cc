@@ -646,7 +646,7 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          /*softmax_input=*/webnn::SupportedDataTypes::All(),
          /*softplus_input=*/webnn::SupportedDataTypes::All(),
          /*softsign_input=*/webnn::SupportedDataTypes::All(),
-         /*split_input=*/webnn::SupportedDataTypes::All(),
+         /*split_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*tanh_input=*/webnn::SupportedDataTypes::All(),
          /*tile_input=*/webnn::SupportedDataTypes::All(),
          /*transpose_input=*/webnn::SupportedDataTypes::All(),

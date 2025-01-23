@@ -1121,7 +1121,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // Note that BOOL is also supported by CoreML, but WebNN does not have a
        // corresponding BOOL type. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.split
-       /*split_input=*/kFloatsAndInt32,
+       /*split_input=*/{kFloatsAndInt32, kMaxRank},
        /*tanh_input=*/DataTypeConstraint::kFloat16To32,
        // Note that BOOL is also supported by CoreML, but WebNN does not have a
        // corresponding BOOL type. See docs here:
@@ -4347,7 +4347,7 @@ GraphBuilderCoreml::AddOperationForSplit(
                              output_operand_ids[0], block);
   }
   const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
-  CHECK(context_properties_.data_type_limits.split_input.Has(
+  CHECK(context_properties_.data_type_limits.split_input.data_types.Has(
       MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();

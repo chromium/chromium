@@ -156,7 +156,7 @@ dictionary MLScatterSupportLimits {
 };
 
 dictionary MLSplitSupportLimits {
-  MLDataTypeLimits input;
+  MLTensorLimits input;
   MLDataTypeLimits outputs;
 };
 

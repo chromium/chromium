@@ -160,7 +160,8 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kUint32},
        /*softsign_input=*/webnn::SupportedDataTypes::All(),
        /*split_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kInt8},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kInt8},
+        kMaxRank},
        /*tanh_input=*/
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kUint8},
        /*tile_input=*/{webnn::OperandDataType::kUint8},

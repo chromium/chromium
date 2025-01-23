@@ -110,7 +110,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes softmax_input,
                  SupportedDataTypes softplus_input,
                  SupportedDataTypes softsign_input,
-                 SupportedDataTypes split_input,
+                 SupportedTensors split_input,
                  SupportedDataTypes tanh_input,
                  SupportedDataTypes tile_input,
                  SupportedDataTypes transpose_input,
@@ -224,7 +224,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes softmax_input;
   SupportedDataTypes softplus_input;
   SupportedDataTypes softsign_input;
-  SupportedDataTypes split_input;
+  SupportedTensors split_input;
   SupportedDataTypes tanh_input;
   SupportedDataTypes tile_input;
   SupportedDataTypes transpose_input;
