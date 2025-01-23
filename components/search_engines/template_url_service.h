@@ -537,6 +537,9 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // prompt. "Default country" or "country at install" are used for
   // SearchEngineChoiceCountry. It might be different than what LocaleUtils
   // returns.
+  //
+  // DEPRECATED. Prefer using `RegionalCapabilitiesService::IsInEeaCountry()`.
+  // TODO(crbug.com/391570180): Remove this class method.
   bool IsEeaChoiceCountry();
 
   // Returns a SearchTermsData which can be used to call TemplateURL methods.

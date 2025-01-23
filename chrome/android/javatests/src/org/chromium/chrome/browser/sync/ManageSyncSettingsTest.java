@@ -73,7 +73,7 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.password_manager.account_storage_toggle.AccountStorageToggleFragmentArgs;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
@@ -96,7 +96,7 @@ import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.DataType;
@@ -178,7 +178,7 @@ public class ManageSyncSettingsTest {
                     .build();
 
     @Mock private UnifiedConsentServiceBridge.Natives mUnifiedConsentServiceBridgeMock;
-    @Mock private TemplateUrlService mTemplateUrlService;
+    @Mock private RegionalCapabilitiesService mRegionalCapabilities;
     @Mock private GoogleActivityController mGoogleActivityController;
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
     @Mock private HistorySyncHelper mHistorySyncHelperMock;
@@ -200,8 +200,8 @@ public class ManageSyncSettingsTest {
         ServiceLoaderUtil.setInstanceForTesting(
                 GoogleActivityController.class, mGoogleActivityController);
 
-        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
-        when(mTemplateUrlService.isEeaChoiceCountry()).thenReturn(false);
+        RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
+        when(mRegionalCapabilities.isInEeaCountry()).thenReturn(false);
 
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelperMock);
 
@@ -1152,7 +1152,7 @@ public class ManageSyncSettingsTest {
     @Feature({"PersonalizedGoogleServices", "RenderTest"})
     @EnableFeatures({ChromeFeatureList.LINKED_SERVICES_SETTING})
     public void testLinkedServicesSettingEea() throws Exception {
-        when(mTemplateUrlService.isEeaChoiceCountry()).thenReturn(true);
+        when(mRegionalCapabilities.isInEeaCountry()).thenReturn(true);
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
         ThreadUtils.runOnUiThreadBlocking(
@@ -1202,7 +1202,7 @@ public class ManageSyncSettingsTest {
     @Feature({"PersonalizedGoogleServices"})
     @EnableFeatures({ChromeFeatureList.LINKED_SERVICES_SETTING})
     public void testClickPersonalizeGoogleServicesEEA() {
-        when(mTemplateUrlService.isEeaChoiceCountry()).thenReturn(true);
+        when(mRegionalCapabilities.isInEeaCountry()).thenReturn(true);
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
         ThreadUtils.runOnUiThreadBlocking(

@@ -432,16 +432,6 @@ public class TemplateUrlService {
                         mNativeTemplateUrlServiceAndroid, TemplateUrlService.this);
     }
 
-    /**
-     * Whether the device is from an EEA country. This is consistent with countries which are
-     * eligible for the EEA default search engine choice prompt. "Default country: or "country at
-     * install" are used for SearchEngineChoiceCountry. It might be different than what LocaleUtils
-     * returns.
-     */
-    public boolean isEeaChoiceCountry() {
-        return TemplateUrlServiceJni.get().isEeaChoiceCountry(mNativeTemplateUrlServiceAndroid);
-    }
-
     @NativeMethods
     public interface Natives {
         void load(long nativeTemplateUrlServiceAndroid, TemplateUrlService caller);
@@ -526,7 +516,5 @@ public class TemplateUrlService {
 
         String[] getImageUrlAndPostContent(
                 long nativeTemplateUrlServiceAndroid, TemplateUrlService caller);
-
-        boolean isEeaChoiceCountry(long nativeTemplateUrlServiceAndroid);
     }
 }
