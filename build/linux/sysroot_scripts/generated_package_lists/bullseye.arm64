@@ -40,6 +40,8 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/c/cairo/li
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/c/cairo/libcairo2_1.16.0-5_arm64.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/c/chromaprint/libchromaprint1_1.5.0-2_arm64.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/c/codec2/libcodec2-0.9_0.9.2-4_arm64.deb
+https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/c/colord/gir1.2-colord-1.0_1.4.5-3_arm64.deb
+https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/c/colord/libcolord-dev_1.4.5-3_arm64.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/c/colord/libcolord2_1.4.5-3_arm64.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/c/coreutils/coreutils_8.32-4_arm64.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/c/cryptsetup/libcryptsetup12_2.3.7-1+deb11u1_arm64.deb
@@ -198,6 +200,7 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/k/krb5/lib
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/k/krb5/libkrb5support0_1.18.3-6+deb11u3_arm64.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/l/lame/libmp3lame0_3.100-3_arm64.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/l/lcms2/liblcms2-2_2.12~rc1-2_arm64.deb
+https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/l/lcms2/liblcms2-dev_2.12~rc1-2_arm64.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/l/lerc/liblerc4_4.0.0+ds-2_arm64.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/l/linux/linux-libc-dev_6.1.20-2~bpo11+1_arm64.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/l/llvm-toolchain-11/libllvm11_11.0.1-2_arm64.deb
