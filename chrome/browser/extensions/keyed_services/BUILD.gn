@@ -14,9 +14,13 @@ source_set("keyed_service_factories") {
   sources = [
     "browser_context_keyed_service_factories.cc",
     "browser_context_keyed_service_factories.h",
+    "chrome_browser_context_keyed_service_factories.cc",
+    "chrome_browser_context_keyed_service_factories.h",
   ]
 
   deps = [
+    "//base",
+    "//chrome/browser/extensions",
     "//chrome/browser/extensions/api:keyed_service_factories",
     "//chrome/common:buildflags",
     "//extensions/buildflags",
@@ -24,12 +28,4 @@ source_set("keyed_service_factories") {
     "//ppapi/buildflags:buildflags",
     "//printing/buildflags:buildflags",
   ]
-
-  if (enable_extensions) {
-    sources += [
-      "chrome_browser_context_keyed_service_factories.cc",
-      "chrome_browser_context_keyed_service_factories.h",
-    ]
-    deps += [ "//chrome/browser/extensions" ]
-  }
 }

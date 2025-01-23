@@ -97,6 +97,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (instancetype)init {
   PinnedTabsLayout* layout = [[PinnedTabsLayout alloc] init];
   if ((self = [super initWithCollectionViewLayout:layout])) {
+    // Do not automatically adjust the safe area, otherwise pinned tabs
+    // can disappear when they are populated while they are behind the keyboard.
+    self.collectionView.contentInsetAdjustmentBehavior =
+        UIScrollViewContentInsetAdjustmentNever;
   }
   return self;
 }

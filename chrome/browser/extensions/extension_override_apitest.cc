@@ -10,15 +10,10 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/extensions/chrome_manifest_url_handlers.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/navigation_entry.h"
@@ -33,14 +28,30 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_platform_apitest.h"
+#else
+#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif
+
 using content::WebContents;
 
 namespace extensions {
 
-class ExtensionOverrideTest : public ExtensionApiTest {
+#if BUILDFLAG(IS_ANDROID)
+using ExtensionApiTestBase = ExtensionPlatformApiTest;
+#else
+using ExtensionApiTestBase = ExtensionApiTest;
+#endif
+
+class ExtensionOverrideTest : public ExtensionApiTestBase {
  protected:
   void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
+    ExtensionApiTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -48,8 +59,7 @@ class ExtensionOverrideTest : public ExtensionApiTest {
   bool CheckHistoryOverridesContainsNoDupes() {
     // There should be no duplicate entries in the preferences.
     const base::Value::Dict& overrides =
-        browser()->profile()->GetPrefs()->GetDict(
-            ExtensionWebUI::kExtensionURLOverrides);
+        profile()->GetPrefs()->GetDict(ExtensionWebUI::kExtensionURLOverrides);
 
     const base::Value::List* values = overrides.FindList("history");
     if (!values)
@@ -99,16 +109,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTab) {
     // Navigate to the new tab page.  The overridden new tab page
     // will call chrome.test.sendMessage('controlled by first').
     ExtensionTestMessageListener listener;
-    ASSERT_TRUE(
-        ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab/")));
-    EXPECT_TRUE(ExtensionControlsPage(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        extension->id()));
+    ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                       GURL("chrome://newtab/")));
+    EXPECT_TRUE(ExtensionControlsPage(GetActiveWebContents(), extension->id()));
     EXPECT_TRUE(listener.WaitUntilSatisfied());
     EXPECT_EQ("controlled by first", listener.message());
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Check having multiple extensions with the same override.
 IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTabMultiple) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -368,5 +377,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, ShouldCleanUpDuplicateEntries) {
 
   ASSERT_TRUE(CheckHistoryOverridesContainsNoDupes());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

@@ -1756,4 +1756,35 @@ UIViewController* TopPresentedViewController() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Ensures that creating a group doesn't change the state of pinned tabs.
+- (void)testCreateGroupWithPinnedTab {
+  // This test is not relevant on iPads because there is no pinned tabs in iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
+  }
+
+  // Create a pinned tab.
+  CreatePinnedTabs(1, self.testServer);
+
+  // Open the creation view.
+  [ChromeEarlGreyUI openTabGrid];
+  OpenTabGroupCreationViewUsingLongPressForCellAtIndex(0);
+
+  // Set the group name.
+  SetTabGroupCreationName(kGroup1Name);
+
+  // Valid the creation.
+  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:TabGroupCreationView()];
+
+  // Ensure that the group is created and the pinned tab is visible.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup1Name, 1)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:GetMatcherForPinnedCellWithTitle(@"PinnedTab0")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 @end

@@ -73,37 +73,6 @@ using testing::Return;
 
 namespace {
 
-class TestQuietNotificationPermissionUiSelector
-    : public permissions::PermissionUiSelector {
- public:
-  explicit TestQuietNotificationPermissionUiSelector(
-      QuietUiReason simulated_reason_for_quiet_ui)
-      : simulated_reason_for_quiet_ui_(simulated_reason_for_quiet_ui) {}
-
-  TestQuietNotificationPermissionUiSelector(
-      const TestQuietNotificationPermissionUiSelector&) = delete;
-  TestQuietNotificationPermissionUiSelector& operator=(
-      const TestQuietNotificationPermissionUiSelector&) = delete;
-
-  ~TestQuietNotificationPermissionUiSelector() override = default;
-
- protected:
-  // permissions::PermissionUiSelector:
-  void SelectUiToUse(permissions::PermissionRequest* request,
-                     DecisionMadeCallback callback) override {
-    std::move(callback).Run(
-        Decision(simulated_reason_for_quiet_ui_, std::nullopt));
-  }
-
-  bool IsPermissionRequestSupported(
-      permissions::RequestType request_type) override {
-    return request_type == permissions::RequestType::kNotifications;
-  }
-
- private:
-  QuietUiReason simulated_reason_for_quiet_ui_;
-};
-
 class ContentSettingImageModelTest : public BrowserWithTestWindowTest {
  public:
   // Some dependencies of this test execute code on the UI thread, while other

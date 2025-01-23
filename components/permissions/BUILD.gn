@@ -241,6 +241,8 @@ source_set("test_support") {
     "test/mock_permission_prompt_factory.h",
     "test/mock_permission_request.cc",
     "test/mock_permission_request.h",
+    "test/mock_permission_ui_selector.cc",
+    "test/mock_permission_ui_selector.h",
     "test/object_permission_context_base_mock_permission_observer.cc",
     "test/object_permission_context_base_mock_permission_observer.h",
     "test/permission_request_observer.cc",

@@ -388,6 +388,8 @@ if (!is_cronet_build) {
         "content/accessibility_metrics_provider.h",
         "content/content_stability_metrics_provider.cc",
         "content/content_stability_metrics_provider.h",
+        "content/dwa_web_contents_observer.cc",
+        "content/dwa_web_contents_observer.h",
         "content/extensions_helper.h",
         "content/gpu_metrics_provider.cc",
         "content/gpu_metrics_provider.h",
@@ -401,6 +403,7 @@ if (!is_cronet_build) {
       public_deps = [ ":metrics" ]
       deps = [
         "//base",
+        "//components/metrics/dwa",
         "//content/public/browser",
         "//extensions/buildflags",
         "//gpu/config",
@@ -605,6 +608,7 @@ if (!is_cronet_build) {
       "//build:branding_buildflags",
       "//components/component_updater:test_support",
       "//components/encrypted_messages:encrypted_message_proto",
+      "//components/metrics/dwa",
       "//components/metrics/public/mojom:call_stack_mojo_bindings",
       "//components/network_time:network_time_test_support",
       "//components/prefs:test_support",
@@ -677,6 +681,7 @@ if (!is_cronet_build) {
     } else {
       sources += [
         "content/content_stability_metrics_provider_unittest.cc",
+        "content/dwa_web_contents_observer_unittest.cc",
         "content/subprocess_metrics_provider_unittest.cc",
       ]
       deps += [ "//extensions/buildflags" ]

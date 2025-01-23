@@ -177,6 +177,7 @@ android_library("test_java") {
   resources_package = "org.chromium.chrome.browser.autofill"
 
   sources = [
+    "javatest/src/org/chromium/chrome/browser/autofill/AutofillThirdPartyModeContentProviderIntegrationTest.java",
     "javatest/src/org/chromium/chrome/browser/autofill/editors/AddressEditorRenderTest.java",
     "javatest/src/org/chromium/chrome/browser/autofill/editors/DropdownFieldViewTest.java",
   ]
@@ -202,6 +203,7 @@ android_library("test_java") {
     "//components/sync/android:sync_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",

@@ -9,12 +9,12 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "chrome/browser/extensions/window_controller.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 // gn check doesn't understand this conditional, hence the nogncheck directives
 // below.
-#include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/common/extensions/api/tab_groups.h"
@@ -308,11 +308,13 @@ class ExtensionTabUtil {
                         WindowOpenDisposition disposition,
                         const blink::mojom::WindowFeatures& window_features,
                         bool user_gesture);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Executes the specified callback for all tabs in all browser windows.
   static void ForEachTab(
       base::RepeatingCallback<void(content::WebContents*)> callback);
 
+#if !BUILDFLAG(IS_ANDROID)
   static WindowController* GetWindowControllerOfTab(
       const content::WebContents* web_contents);
 

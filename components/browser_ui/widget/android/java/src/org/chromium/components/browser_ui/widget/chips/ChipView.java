@@ -540,18 +540,4 @@ public class ChipView extends LinearLayout {
                     MeasureSpec.makeMeasureSpec(mMaxWidth, MeasureSpec.EXACTLY), heightMeasureSpec);
         }
     }
-
-    @Override
-    public boolean isFocused() {
-        // When the selection does not follow focus, we still want to properly reflect the user
-        // selection by highlighting the chip.
-        // An example where this happens is: the user interacts with the Omnibox, and the typed
-        // query triggers an Action chip to be shown.
-        // These chips can be navigated to using physical keyboard (arrow keys to select
-        // corresponding suggestion, tab to activate the chip).
-        // At this time the Omnibox continues to retain focus, but Chip should be highlighted, as
-        // pressing <Enter> on the keyboard will activate the Chip.
-        // Make sure the highlight is properly reflected.
-        return super.isFocused() || isSelected();
-    }
 }

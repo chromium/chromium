@@ -79,7 +79,7 @@ void LeakDetectionDelegate::StartLeakCheck(LeakDetectionInitiator initiator,
     if (base::FeatureList::IsEnabled(
             features::kImprovedPasswordChangeService)) {
       client_->GetAffiliationService()->PrefetchChangePasswordURLs(
-          {form_url}, base::DoNothing());
+          {credentials.url}, base::DoNothing());
     }
   }
 }

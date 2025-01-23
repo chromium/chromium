@@ -56,6 +56,7 @@
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
+#include "components/metrics/content/dwa_web_contents_observer.h"
 #include "components/permissions/permission_indicators_tab_data.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -143,6 +144,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
     privacy_sandbox_tab_observer_ =
         std::make_unique<privacy_sandbox::PrivacySandboxTabObserver>(
+            tab.GetContents());
+
+    dwa_web_contents_observer_ =
+        std::make_unique<metrics::DwaWebContentsObserver>(
             tab.GetContents());
 
     tab_groups::TabGroupSyncService* tab_group_sync_service =
@@ -284,6 +289,13 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     privacy_sandbox_tab_observer_.reset();
     privacy_sandbox_tab_observer_ =
         std::make_unique<privacy_sandbox::PrivacySandboxTabObserver>(
+            tab->GetContents());
+  }
+
+  if (dwa_web_contents_observer_) {
+    dwa_web_contents_observer_.reset();
+    dwa_web_contents_observer_ =
+        std::make_unique<metrics::DwaWebContentsObserver>(
             tab->GetContents());
   }
 

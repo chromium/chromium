@@ -73,10 +73,13 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/extension_web_ui.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/extensions/extension_webkit_preferences.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #endif
@@ -870,7 +873,7 @@ void ChromeContentBrowserClientExtensionsPart::OverrideWebPreferences(
 
 void ChromeContentBrowserClientExtensionsPart::BrowserURLHandlerCreated(
     BrowserURLHandler* handler) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   handler->AddHandlerPair(&ExtensionWebUI::HandleChromeURLOverride,
                           BrowserURLHandler::null_handler());
   handler->AddHandlerPair(BrowserURLHandler::null_handler(),

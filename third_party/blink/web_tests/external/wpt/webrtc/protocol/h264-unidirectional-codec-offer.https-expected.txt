@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-[FAIL] Offer to send a sendonly H264 codec
-  promise_test: Unhandled rejection with value: object "InvalidModificationError: Failed to execute 'setCodecPreferences' on 'RTCRtpTransceiver': Invalid codec preferences: invalid codec with name "H264"."
+[FAIL] Offering a recvonly codec on a sendrecv transceiver
+  assert_equals: Two codecs are offered (H264, VP8). expected 2 but got 1
+[FAIL] Offer to send a sendonly H264 codec on a sendonly transceiver
+  assert_true: The first offered codec's sdpFmtpLine is the sendonly one. expected true got false
 Harness: the test ran to completion.
 

@@ -5,6 +5,9 @@
 #include "chrome/browser/extensions/keyed_services/chrome_browser_context_keyed_service_factories.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/chrome_app_icon_service_factory.h"
@@ -16,7 +19,6 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_sync_service_factory.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
-#include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/install_verifier_factory.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
@@ -25,10 +27,14 @@
 #include "chrome/browser/extensions/plugin_manager.h"
 #include "chrome/browser/extensions/warning_badge_service_factory.h"
 #include "ppapi/buildflags/buildflags.h"
+#endif
 
 namespace chrome_extensions {
 
 void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
+  extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance();
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   ExtensionSyncServiceFactory::GetInstance();
   extensions::AccountExtensionTracker::GetFactory();
   extensions::ActivityLog::GetFactoryInstance();
@@ -40,7 +46,6 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ExtensionGCMAppHandler::GetFactoryInstance();
   extensions::ExtensionManagementFactory::GetInstance();
   extensions::ExtensionSystemFactory::GetInstance();
-  extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance();
   extensions::InstallTrackerFactory::GetInstance();
   extensions::InstallVerifierFactory::GetInstance();
   extensions::ManifestV2ExperimentManager::GetFactory();
@@ -50,6 +55,7 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::PluginManager::GetFactoryInstance();
 #endif
   extensions::WarningBadgeServiceFactory::GetInstance();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 }  // namespace chrome_extensions

@@ -2156,6 +2156,34 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         feature_engagement::events::kIOSPullToRefreshIPHDismissButtonTapped);
   }
 
+  if (kIPHiOSReminderNotificationsOverflowMenuBubbleFeature.name ==
+      feature->name) {
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    // No availability requirement for this feature.
+    config->availability = Comparator(ANY, 0);
+    // No session rate limit for this feature.
+    config->session_rate = Comparator(ANY, 0);
+    // Initially, show to users who haven't scheduled a tab reminder yet.
+    config->used =
+        EventConfig(feature_engagement::events::kIOSTabReminderScheduled,
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    // The Overflow Menu Bubble IPH should not be triggered more than 3 times in
+    // total.
+    config->trigger = EventConfig(
+        feature_engagement::events::
+            kIOSReminderNotificationsOverflowMenuBubbleIPHTrigger,
+        Comparator(LESS_THAN, 3), feature_engagement::kMaxStoragePeriod,
+        feature_engagement::kMaxStoragePeriod);
+    // Space out IPH triggers to once per day.
+    config->event_configs.insert(EventConfig(
+        feature_engagement::events::
+            kIOSReminderNotificationsOverflowMenuBubbleIPHTrigger,
+        Comparator(EQUAL, 0), 1, feature_engagement::kMaxStoragePeriod));
+    return config;
+  }
+
   if (kIPHiOSReplaceSyncPromosWithSignInPromos.name == feature->name) {
     // A config to show a user education bubble from the account row in the
     // settings page. Will be shown only the first time user signs-in from

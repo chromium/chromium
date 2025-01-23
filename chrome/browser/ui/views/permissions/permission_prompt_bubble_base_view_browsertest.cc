@@ -44,6 +44,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "components/permissions/test/mock_permission_ui_selector.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -72,34 +73,6 @@
 //
 // Check go/brapp-desktop-pixel-tests for more info.
 
-namespace {
-// Test implementation of PermissionUiSelector that always returns a canned
-// decision.
-class TestQuietNotificationPermissionUiSelector
-    : public permissions::PermissionUiSelector {
- public:
-  explicit TestQuietNotificationPermissionUiSelector(
-      const Decision& canned_decision)
-      : canned_decision_(canned_decision) {}
-  ~TestQuietNotificationPermissionUiSelector() override = default;
-
- protected:
-  // permissions::PermissionUiSelector:
-  void SelectUiToUse(permissions::PermissionRequest* request,
-                     DecisionMadeCallback callback) override {
-    std::move(callback).Run(canned_decision_);
-  }
-
-  bool IsPermissionRequestSupported(
-      permissions::RequestType request_type) override {
-    return request_type == permissions::RequestType::kNotifications;
-  }
-
- private:
-  Decision canned_decision_;
-};
-}  // namespace
-
 class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
  public:
   // DialogBrowserTest:
@@ -120,7 +93,7 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
   void SetCannedUiDecision(std::optional<QuietUiReason> quiet_ui_reason,
                            std::optional<WarningReason> warning_reason) {
     GetTestApi().manager()->set_permission_ui_selector_for_testing(
-        std::make_unique<TestQuietNotificationPermissionUiSelector>(
+        std::make_unique<MockPermissionUiSelector>(
             permissions::PermissionUiSelector::Decision(quiet_ui_reason,
                                                         warning_reason)));
   }
@@ -592,13 +565,24 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                                QuietUiReason::kTriggeredDueToAbusiveContent}) {
     SetCannedUiDecision(reason, std::nullopt);
 
-    ShowUi("geolocation");
+    ShowUi("camera");
 
     EXPECT_EQ(GetTestApi()
                   .manager()
                   ->current_request_prompt_disposition_for_testing(),
               permissions::PermissionPromptDisposition::
                   LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
+
+    GetTestApi().manager()->Accept();
+    base::RunLoop().RunUntilIdle();
+
+    ShowUi("geolocation");
+
+    EXPECT_EQ(GetTestApi()
+                  .manager()
+                  ->current_request_prompt_disposition_for_testing(),
+              permissions::PermissionPromptDisposition::
+                  LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
 
     GetTestApi().manager()->Accept();
     base::RunLoop().RunUntilIdle();

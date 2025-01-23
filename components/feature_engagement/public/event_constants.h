@@ -278,6 +278,12 @@ extern const char kHomeCustomizationMenuUsed[];
 // The user has tapped on the lens overlay entrypoint.
 extern const char kLensOverlayEntrypointUsed[];
 
+// The user has scheduled a tab reminder.
+extern const char kIOSTabReminderScheduled[];
+
+// The Reminder Notifications Overflow Menu Bubble IPH was triggered.
+extern const char kIOSReminderNotificationsOverflowMenuBubbleIPHTrigger[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

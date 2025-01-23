@@ -1806,6 +1806,7 @@ if (is_android) {
         "../browser/extensions/cross_origin_isolation_browsertest.cc",
         "../browser/extensions/desktop_android/desktop_android_extensions_browsertest.cc",
         "../browser/extensions/extension_incognito_apitest.cc",
+        "../browser/extensions/extension_override_apitest.cc",
         "../browser/extensions/extension_platform_browsertest_browsertest.cc",
         "../browser/extensions/shared_module_apitest.cc",
         "../browser/extensions/system_cpu_apitest.cc",
@@ -8699,6 +8700,7 @@ test("unit_tests") {
   # Unit tests that run on Win/Mac/Linux and Android desktop.
   if (enable_extensions_core) {
     sources += [
+      "../common/extensions/chrome_manifest_url_handlers_unittest.cc",
       "../common/extensions/manifest_handlers/automation_unittest.cc",
       "../common/extensions/manifest_handlers/content_scripts_manifest_unittest.cc",
       "../common/extensions/manifest_handlers/exclude_matches_manifest_unittest.cc",
@@ -8991,7 +8993,6 @@ test("unit_tests") {
       "../common/extensions/api/storage/storage_schema_manifest_handler_unittest.cc",
       "../common/extensions/api/url_handlers/url_handlers_parser_unittest.cc",
       "../common/extensions/chrome_extensions_client_unittest.cc",
-      "../common/extensions/chrome_manifest_url_handlers_unittest.cc",
       "../common/extensions/extension_unittest.cc",
 
       # Side panel is not yet supported on desktop Android.

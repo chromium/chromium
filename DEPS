@@ -352,7 +352,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling chromium_variations
   # and whatever else without interference from each other.
-  'chromium_variations_revision': 'bac8937443f145f5c54feceb74965ae65dbcedeb',
+  'chromium_variations_revision': 'b22468e119e0b08e733ab2af72b8e893c7baa694',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
@@ -4449,7 +4449,7 @@ deps = {
 
   'src/components/autofill/core/browser/form_parsing/internal_resources': {
       'url': Var('chrome_git') + '/chrome/components/autofill_regex_patterns.git' + '@' +
-        'd74d93ad9bc077c106419510e7aa08fa5d618cf1',
+        '54cf3a0c1c4fe79d1007bd18933c50968185cc33',
       'condition': 'checkout_src_internal',
   },
 
@@ -4508,7 +4508,7 @@ deps = {
 
   'src/components/test/data/autofill/heuristics-json/internal': {
       'url': Var('chrome_git') + '/chrome/test/autofill/structured_forms.git' + '@' +
-        '868d3dca11f4ecca239de85e60f46de0b10ad106',
+        '8d6fd5f4cbf9d2af443eb9b9f129612f466e5b14',
       'condition': 'checkout_chromium_autofill_test_dependencies',
   },
 
@@ -4538,7 +4538,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '54ea678d535e85ebc1d8c13a16ffdb7da92142e1',
+        '964840c27884951e3f5bb1cf3312e001da4ea7c3',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

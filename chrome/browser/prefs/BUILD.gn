@@ -281,14 +281,16 @@ source_set("impl") {
   if (enable_extensions) {
     deps += [
       "//chrome/browser/apps/platform_apps",
-      "//chrome/browser/extensions",
       "//extensions/browser/api/audio",
       "//extensions/browser/api/runtime",
     ]
   }
 
   if (enable_extensions_core) {
-    deps += [ "//extensions/browser" ]
+    deps += [
+      "//chrome/browser/extensions",
+      "//extensions/browser",
+    ]
   }
 
   if (enable_on_device_translation) {

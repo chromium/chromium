@@ -5264,13 +5264,17 @@ static_library("ui") {
     ]
   }
 
+  if (enable_extensions_core) {
+    deps += [ "//chrome/browser/extensions" ]
+    allow_circular_includes_from += [ "//chrome/browser/extensions" ]
+  }
+
   if (enable_extensions) {
     deps += [
       "//apps",
       "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/apps/platform_apps/api",
-      "//chrome/browser/extensions",
       "//chrome/browser/extensions/api/omnibox",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications/app_service",
@@ -5292,7 +5296,6 @@ static_library("ui") {
     allow_circular_includes_from += [
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/apps/platform_apps/api",
-      "//chrome/browser/extensions",
     ]
 
     sources += [

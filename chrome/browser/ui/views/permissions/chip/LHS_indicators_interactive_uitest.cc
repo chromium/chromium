@@ -25,6 +25,7 @@
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
+#include "components/permissions/test/mock_permission_ui_selector.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -76,33 +77,6 @@ class ChipAnimationObserver : PermissionChipView::Observer {
       observation_{this};
   base::RunLoop loop_;
   QuitOnEvent quiet_on_event = QuitOnEvent::kExpand;
-};
-
-// Test implementation of PermissionUiSelector that always returns a canned
-// decision.
-class TestQuietNotificationPermissionUiSelector
-    : public permissions::PermissionUiSelector {
- public:
-  explicit TestQuietNotificationPermissionUiSelector(
-      const Decision& canned_decision)
-      : canned_decision_(canned_decision) {}
-  ~TestQuietNotificationPermissionUiSelector() override = default;
-
- protected:
-  // permissions::PermissionUiSelector:
-  void SelectUiToUse(permissions::PermissionRequest* request,
-                     DecisionMadeCallback callback) override {
-    std::move(callback).Run(canned_decision_);
-  }
-
-  bool IsPermissionRequestSupported(
-      permissions::RequestType request_type) override {
-    return request_type == permissions::RequestType::kNotifications ||
-           request_type == permissions::RequestType::kGeolocation;
-  }
-
- private:
-  Decision canned_decision_;
 };
 }  // namespace
 
@@ -295,7 +269,7 @@ class LHSIndicatorsInteractiveUITest : public UiBrowserTest {
   void SetCannedUiDecision(std::optional<QuietUiReason> quiet_ui_reason,
                            std::optional<WarningReason> warning_reason) {
     test_api_->manager()->set_permission_ui_selector_for_testing(
-        std::make_unique<TestQuietNotificationPermissionUiSelector>(
+        std::make_unique<MockPermissionUiSelector>(
             permissions::PermissionUiSelector::Decision(quiet_ui_reason,
                                                         warning_reason)));
   }

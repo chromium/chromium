@@ -30,8 +30,8 @@ public final class AutofillThirdPartyModeContentProvider extends ContentProvider
     private static final String AUTOFILL_THIRD_PARTY_MODE_URI_AUTHORITY_SUFFIX =
             ".AutofillThirdPartyModeContentProvider";
 
-    private static final String AUTOFILL_THIRD_PARTY_MODE_ACTIONS_URI_PATH =
-            "autofill_third_party_mode";
+    @VisibleForTesting
+    static final String AUTOFILL_THIRD_PARTY_MODE_ACTIONS_URI_PATH = "autofill_third_party_mode";
 
     @VisibleForTesting
     static final String AUTOFILL_THIRD_PARTY_MODE_COLUMN = "autofill_third_party_state";

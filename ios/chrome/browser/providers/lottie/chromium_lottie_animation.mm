@@ -9,6 +9,7 @@
 
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
 #import <Lottie/Lottie.h>
+
 #import "base/check.h"
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
 
