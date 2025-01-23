@@ -22,8 +22,20 @@
       {
         "id": "FolderType",
         "type": "string",
-        "enum": ["bookmarks-bar", "other", "mobile", "managed"],
-        "description": "Indicates the type of folder. <ul><li>bookmarks-bar: The folder whose contents is displayed at the top of the browser window<li>other: Bookmarks which are displayed in the full list of bookmarks on all platforms<li>mobile: bookmarks generally available on the user's mobile devices, but modifiable by extension or in the bookmarks manager<li>managed: a top-level folder that may be present if the system administrator or the custodian of a supervised user has configured bookmarks.</ul>"
+        "enum": [{
+          "name": "bookmarks-bar",
+          "description": "The folder whose contents is displayed at the top of the browser window."
+        }, {
+          "name": "other",
+          "description": "Bookmarks which are displayed in the full list of bookmarks on all platforms."
+        }, {
+          "name": "mobile",
+          "description": "Bookmarks generally available on the user's mobile devices, but modifiable by extension or in the bookmarks manager."
+        }, {
+          "name": "managed",
+          "description": "A top-level folder that may be present if the system administrator or the custodian of a supervised user has configured bookmarks."
+        }],
+        "description": "Indicates the type of folder."
       },
       {
         "id": "BookmarkTreeNodeUnmodifiable",
