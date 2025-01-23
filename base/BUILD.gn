@@ -3386,7 +3386,6 @@ test("base_unittests") {
     "profiler/stack_sampling_profiler_unittest.cc",
     "profiler/thread_group_profiler_unittest.cc",
     "rand_util_unittest.cc",
-    "ranges/algorithm_unittest.cc",
     "ranges/functional_unittest.cc",
     "run_loop_unittest.cc",
     "safe_numerics_unittest.cc",
