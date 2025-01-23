@@ -81,6 +81,10 @@ class AshTestHelper : public aura::test::AuraTestHelper {
 
     // True if the user should log in.
     bool start_session = true;
+
+    // True if the signin pref services should be created.
+    bool create_signin_pref_service = true;
+
     // If this is not set, a TestShellDelegate will be used automatically.
     std::unique_ptr<ShellDelegate> delegate;
     raw_ptr<PrefService> local_state = nullptr;

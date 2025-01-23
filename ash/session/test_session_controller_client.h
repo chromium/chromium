@@ -10,12 +10,14 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "ash/public/cpp/session/session_controller_client.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/token.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
 
 namespace views {
@@ -41,15 +43,14 @@ class TestPrefServiceProvider;
 class TestSessionControllerClient : public SessionControllerClient {
  public:
   TestSessionControllerClient(SessionControllerImpl* controller,
-                              TestPrefServiceProvider* prefs_provider);
+                              TestPrefServiceProvider* prefs_provider,
+                              bool create_signin_pref_service);
 
   TestSessionControllerClient(const TestSessionControllerClient&) = delete;
   TestSessionControllerClient& operator=(const TestSessionControllerClient&) =
       delete;
 
   ~TestSessionControllerClient() override;
-
-  static void DisableAutomaticallyProvideSigninPref();
 
   // Initialize using existing info in |controller| and set as its client.
   void InitializeAndSetClient();
@@ -80,19 +81,23 @@ class TestSessionControllerClient : public SessionControllerClient {
   void SetIsRunningInAppMode(bool app_mode);
   void SetIsDemoSession();
 
-  // Adds a user session from a given display email. If |provide_pref_service|
-  // is true, eagerly inject a PrefService for this user. |is_new_profile|
+  // Adds a user session from a given display email. If `provide_pref_service`
+  // is true, eagerly inject a PrefService for this user. `is_new_profile`
   // indicates whether the user has a newly created profile on the device.
   //
-  // For convenience |display_email| is used to create an |AccountId|. For
-  // testing behavior where |AccountId|s are compared, prefer the method of the
-  // same name that takes an |AccountId| created with a valid storage key
-  // instead. See the documentation for|AccountId::GetUserEmail| for
-  // discussion.
+  // For convenience `display_email` is used to create an `AccountId`. For
+  // testing behavior where `AccountId`s are compared, prefer the method of the
+  // same name that takes an `AccountId` created with a valid storage key
+  // instead. See the documentation for`AccountId::GetUserEmail` for discussion.
+  // `provide_or_pref_service` is a variant of bool, which indicates if the perf
+  // service should be automatically created (true) or not(false), or a
+  // PrefService instance which will be used for the session. Passing nullptr
+  // will result in a check failure.
   void AddUserSession(
       const std::string& display_email,
       user_manager::UserType user_type = user_manager::UserType::kRegular,
-      std::optional<bool> provide_pref_service = std::nullopt,
+      std::variant<bool, std::unique_ptr<PrefService>> provide_or_pref_service =
+          true,
       bool is_new_profile = false,
       const std::string& given_name = std::string(),
       bool is_account_managed = false);
@@ -102,13 +107,14 @@ class TestSessionControllerClient : public SessionControllerClient {
       const AccountId& account_id,
       const std::string& display_email,
       user_manager::UserType user_type = user_manager::UserType::kRegular,
-      std::optional<bool> provide_pref_service = std::nullopt,
+      std::variant<bool, std::unique_ptr<PrefService>> provide_or_pref_service =
+          true,
       bool is_new_profile = false,
       const std::string& given_name = std::string(),
       bool is_account_managed = false);
 
   // Creates a test PrefService and associates it with the user.
-  void ProvidePrefServiceForUser(const AccountId& account_id);
+  PrefService* ProvidePrefServiceForUser(const AccountId& account_id);
 
   // Synchronously lock screen by requesting screen lock and waiting for the
   // request to complete.
@@ -126,8 +132,6 @@ class TestSessionControllerClient : public SessionControllerClient {
   void SetSigninScreenPrefService(std::unique_ptr<PrefService> pref_service);
 
   // Use |pref_service| for the user identified by |account_id|.
-  void SetUserPrefService(const AccountId& account_id,
-                          std::unique_ptr<PrefService> pref_service);
   void SetUnownedUserPrefService(const AccountId& account_id,
                                  raw_ptr<PrefService> unowned_pref_service);
 

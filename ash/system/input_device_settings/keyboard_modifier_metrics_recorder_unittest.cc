@@ -229,23 +229,14 @@ TEST_P(KeyboardModifierMetricsRecorderPrefStartedTest, InitializeTest) {
   const AccountId account_id1 = AccountId::FromUserEmail(kUserEmail1);
   const AccountId account_id2 = AccountId::FromUserEmail(kUserEmail2);
 
-  std::unique_ptr<TestingPrefServiceSimple> pref_service1 =
-      std::make_unique<TestingPrefServiceSimple>();
-  ash::RegisterUserProfilePrefs(pref_service1->registry(), /*country=*/"",
-                                true);
-
-  std::unique_ptr<TestingPrefServiceSimple> pref_service2 =
-      std::make_unique<TestingPrefServiceSimple>();
-  ash::RegisterUserProfilePrefs(pref_service2->registry(), /*country=*/"",
-                                true);
+  auto* session_controller_client = GetSessionControllerClient();
+  auto* pref_service1 =
+      session_controller_client->ProvidePrefServiceForUser(account_id1);
+  auto* pref_service2 =
+      session_controller_client->ProvidePrefServiceForUser(account_id2);
 
   pref_service1->SetInteger(data_.pref_name, static_cast<int>(modifier_key_));
   pref_service2->SetInteger(data_.pref_name, static_cast<int>(modifier_key_));
-
-  ash_test_helper()->test_session_controller_client()->SetUserPrefService(
-      account_id1, std::move(pref_service1));
-  ash_test_helper()->test_session_controller_client()->SetUserPrefService(
-      account_id2, std::move(pref_service2));
 
   ResetHistogramTester();
 
@@ -371,25 +362,16 @@ TEST_P(KeyboardModifierMetricsRecorderHashTest, HashTest) {
   const AccountId account_id1 = AccountId::FromUserEmail(kUserEmail1);
   const AccountId account_id2 = AccountId::FromUserEmail(kUserEmail2);
 
-  std::unique_ptr<TestingPrefServiceSimple> pref_service1 =
-      std::make_unique<TestingPrefServiceSimple>();
-  ash::RegisterUserProfilePrefs(pref_service1->registry(), /*country=*/"",
-                                true);
-
-  std::unique_ptr<TestingPrefServiceSimple> pref_service2 =
-      std::make_unique<TestingPrefServiceSimple>();
-  ash::RegisterUserProfilePrefs(pref_service2->registry(), /*country=*/"",
-                                true);
+  auto* session_controller_client = GetSessionControllerClient();
+  auto* pref_service1 =
+      session_controller_client->ProvidePrefServiceForUser(account_id1);
+  auto* pref_service2 =
+      session_controller_client->ProvidePrefServiceForUser(account_id2);
 
   for (const auto& [pref, remapping] : data_.modifier_remappings) {
     pref_service1->SetInteger(pref, static_cast<int>(remapping));
     pref_service2->SetInteger(pref, static_cast<int>(remapping));
   }
-
-  ash_test_helper()->test_session_controller_client()->SetUserPrefService(
-      account_id1, std::move(pref_service1));
-  ash_test_helper()->test_session_controller_client()->SetUserPrefService(
-      account_id2, std::move(pref_service2));
 
   ResetHistogramTester();
 

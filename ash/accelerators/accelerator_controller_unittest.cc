@@ -2723,17 +2723,13 @@ class SystemShortcutBehaviorTest : public AcceleratorControllerTest {
   void SetUp() override {
     AcceleratorControllerTest::SetUp();
 
-    auto* session_controller = GetSessionControllerClient();
-
     auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
     user_prefs_ = user_prefs.get();
     RegisterUserProfilePrefs(user_prefs->registry(), /*country=*/"",
                              /*for_test=*/true);
-    session_controller->AddUserSession(kUserEmail,
-                                       user_manager::UserType::kRegular,
-                                       /*provide_pref_service=*/false);
-    session_controller->SetUserPrefService(AccountId::FromUserEmail(kUserEmail),
-                                           std::move(user_prefs));
+    auto* session_controller = GetSessionControllerClient();
+    session_controller->AddUserSession(
+        kUserEmail, user_manager::UserType::kRegular, std::move(user_prefs));
     SimulateUserLogin(AccountId::FromUserEmail(kUserEmail));
   }
 

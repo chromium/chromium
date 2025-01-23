@@ -42,7 +42,7 @@ class PolicyRecommendationRestorerTest : public NoSessionAshTestBase {
 
   // NoSessionAshTestBase override:
   void SetUp() override {
-    TestSessionControllerClient::DisableAutomaticallyProvideSigninPref();
+    set_create_signin_pref_service(false);
     NoSessionAshTestBase::SetUp();
 
     // Register sigin prefs but not connected to pref service yet. This allows

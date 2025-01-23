@@ -14,6 +14,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
+#include "ash/test/ash_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_types.h"
@@ -274,15 +275,22 @@ class AshTestBase : public testing::Test {
   virtual std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const;
 
-  void set_start_session(bool start_session) { start_session_ = start_session; }
+  void set_start_session(bool start_session) {
+    init_params_.start_session = start_session;
+  }
+
+  void set_create_signin_pref_service(bool create_signin_pref_service) {
+    init_params_.create_signin_pref_service = create_signin_pref_service;
+  }
 
   void set_create_global_cras_audio_handler(
       bool create_global_cras_audio_handler) {
-    create_global_cras_audio_handler_ = create_global_cras_audio_handler;
+    init_params_.create_global_cras_audio_handler =
+        create_global_cras_audio_handler;
   }
 
   void set_create_quick_pair_mediator(bool create_quick_pair_mediator) {
-    create_quick_pair_mediator_ = create_quick_pair_mediator;
+    init_params_.create_quick_pair_mediator = create_quick_pair_mediator;
   }
 
   base::test::TaskEnvironment* task_environment() {
@@ -389,16 +397,8 @@ class AshTestBase : public testing::Test {
   bool setup_called_ = false;
   bool teardown_called_ = false;
 
-  // SetUp() doesn't activate session if this is set to false.
-  bool start_session_ = true;
-
-  // `SetUp()` doesn't create a global `CrasAudioHandler` instance if this is
-  // set to false.
-  bool create_global_cras_audio_handler_ = true;
-
-  // `SetUp()` doesn't create a global `QuickPairMediator` instance if this is
-  // set to false.
-  bool create_quick_pair_mediator_ = true;
+  // AshTestHelper's init params.
+  AshTestHelper::InitParams init_params_;
 
   // |task_environment_| is initialized-once at construction time but
   // subclasses may elect to provide their own.

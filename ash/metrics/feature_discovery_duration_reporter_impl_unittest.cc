@@ -69,23 +69,9 @@ class FeatureDiscoveryDurationReporterImplTest : public AshTestBase {
     GetSessionController()->ClearUserSessionsForTest();
     TestSessionControllerClient* session_client = GetSessionControllerClient();
     session_client->AddUserSession(kPrimaryUserEmail,
-                                   user_manager::UserType::kRegular,
-                                   /*provide_pref_service=*/false);
+                                   user_manager::UserType::kRegular);
     session_client->AddUserSession(kSecondaryUserEmail,
-                                   user_manager::UserType::kRegular,
-                                   /*provide_pref_service=*/false);
-
-    auto user_1_prefs = std::make_unique<TestingPrefServiceSimple>();
-    RegisterUserProfilePrefs(user_1_prefs->registry(), /*country=*/"",
-                             /*for_test=*/true);
-    auto user_2_prefs = std::make_unique<TestingPrefServiceSimple>();
-    RegisterUserProfilePrefs(user_2_prefs->registry(), /*country=*/"",
-                             /*for_test=*/true);
-    session_client->SetUserPrefService(primary_account_id_,
-                                       std::move(user_1_prefs));
-    session_client->SetUserPrefService(secondary_account_id_,
-                                       std::move(user_2_prefs));
-
+                                   user_manager::UserType::kRegular);
     // Switch to the primary account and lock the screen.
     session_client->SwitchActiveUser(primary_account_id_);
     GetSessionControllerClient()->SetSessionState(

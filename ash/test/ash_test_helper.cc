@@ -397,7 +397,9 @@ void AshTestHelper::SetUp(InitParams init_params) {
   shell->system_tray_model()->SetClient(system_tray_client_.get());
 
   session_controller_client_ = std::make_unique<TestSessionControllerClient>(
-      shell->session_controller(), prefs_provider_.get());
+      shell->session_controller(), prefs_provider_.get(),
+      init_params.create_signin_pref_service);
+
   session_controller_client_->InitializeAndSetClient();
 
   // Requires the AppListController the Shell creates.

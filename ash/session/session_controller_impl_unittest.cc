@@ -524,21 +524,17 @@ TEST_F(SessionControllerImplPrefsTest, Observer) {
   // Setup 2 users.
   TestSessionControllerClient* session = GetSessionControllerClient();
   // Disable auto-provision of PrefService for each user.
-  constexpr bool kProvidePrefService = false;
   session->AddUserSession(kUser1, user_manager::UserType::kRegular,
-                          kProvidePrefService);
+                          /*provide_user_prefs=*/false);
   session->AddUserSession(kUser2, user_manager::UserType::kRegular,
-                          kProvidePrefService);
+                          /*provide_user_prefs=*/false);
 
   // The observer is not notified because the PrefService for kUser1 is not yet
   // ready.
   session->SwitchActiveUser(kUserAccount1);
   EXPECT_EQ(nullptr, observer.last_user_pref_service());
 
-  auto pref_service = std::make_unique<TestingPrefServiceSimple>();
-  RegisterUserProfilePrefs(pref_service->registry(), /*country=*/"",
-                           /*for_test=*/true);
-  session->SetUserPrefService(kUserAccount1, std::move(pref_service));
+  session->ProvidePrefServiceForUser(kUserAccount1);
   EXPECT_EQ(controller->GetUserPrefServiceForUser(kUserAccount1),
             observer.last_user_pref_service());
   EXPECT_EQ(controller->GetUserPrefServiceForUser(kUserAccount1),
@@ -560,10 +556,7 @@ TEST_F(SessionControllerImplPrefsTest, Observer) {
 
   // There should be no notification about a PrefService for an inactive user
   // becoming initialized.
-  pref_service = std::make_unique<TestingPrefServiceSimple>();
-  RegisterUserProfilePrefs(pref_service->registry(), /*country=*/"",
-                           /*for_text=*/true);
-  session->SetUserPrefService(kUserAccount2, std::move(pref_service));
+  session->ProvidePrefServiceForUser(kUserAccount2);
   EXPECT_EQ(nullptr, observer.last_user_pref_service());
 
   session->SwitchActiveUser(kUserAccount2);

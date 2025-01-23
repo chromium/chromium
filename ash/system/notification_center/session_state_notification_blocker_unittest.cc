@@ -258,7 +258,7 @@ TEST_F(SessionStateNotificationBlockerTest, BlockOnPrefService) {
       GetSessionControllerClient();
   session_controller_client->AddUserSession(kUserAccountId.GetUserEmail(),
                                             user_manager::UserType::kRegular,
-                                            false /* provide_pref_service */);
+                                            /*provide_pref_service=*/false);
   EXPECT_EQ(0, GetStateChangedCountAndReset());
   EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
 

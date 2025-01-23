@@ -67,7 +67,6 @@ class ActiveSessionAuthControllerTest
 
     AshTestBase::SetUp();
 
-    GetSessionControllerClient()->DisableAutomaticallyProvideSigninPref();
     GetSessionControllerClient()->Reset();
     GetSessionControllerClient()->AddUserSession(
         kUserEmail, user_manager::UserType::kRegular);

@@ -4825,8 +4825,8 @@ class DesksMultiUserTest : public NoSessionAshTestBase,
   MultiUserWindowManager* multi_user_window_manager() {
     return multi_user_window_manager_.get();
   }
-  TestingPrefServiceSimple* user_1_prefs() { return user_1_prefs_; }
-  TestingPrefServiceSimple* user_2_prefs() { return user_2_prefs_; }
+  PrefService* user_1_prefs() { return user_1_prefs_; }
+  PrefService* user_2_prefs() { return user_2_prefs_; }
 
   // AshTestBase:
   void SetUp() override {
@@ -4835,30 +4835,19 @@ class DesksMultiUserTest : public NoSessionAshTestBase,
     TestSessionControllerClient* session_controller =
         GetSessionControllerClient();
     session_controller->Reset();
-
-    // Inject our own PrefServices for each user which enables us to setup the
-    // desks restore data before the user signs in.
-    auto user_1_prefs = std::make_unique<TestingPrefServiceSimple>();
-    user_1_prefs_ = user_1_prefs.get();
-    RegisterUserProfilePrefs(user_1_prefs_->registry(), /*country=*/"",
-                             /*for_test=*/true);
-    auto user_2_prefs = std::make_unique<TestingPrefServiceSimple>();
-    user_2_prefs_ = user_2_prefs.get();
-    RegisterUserProfilePrefs(user_2_prefs_->registry(), /*country=*/"",
-                             /*for_test=*/true);
     session_controller->AddUserSession(kUser1Email,
-                                       user_manager::UserType::kRegular,
-                                       /*provide_pref_service=*/false);
-    session_controller->SetUserPrefService(GetUser1AccountId(),
-                                           std::move(user_1_prefs));
+                                       user_manager::UserType::kRegular);
+    user_1_prefs_ = session_controller->GetUserPrefService(GetUser1AccountId());
+    CHECK(user_1_prefs_);
     session_controller->AddUserSession(kUser2Email,
-                                       user_manager::UserType::kRegular,
-                                       /*provide_pref_service=*/false);
-    session_controller->SetUserPrefService(GetUser2AccountId(),
-                                           std::move(user_2_prefs));
+                                       user_manager::UserType::kRegular);
+    user_2_prefs_ = session_controller->GetUserPrefService(GetUser2AccountId());
+    CHECK(user_1_prefs_);
   }
 
   void TearDown() override {
+    user_1_prefs_ = nullptr;
+    user_2_prefs_ = nullptr;
     multi_user_window_manager_.reset();
     NoSessionAshTestBase::TearDown();
   }
@@ -4915,8 +4904,8 @@ class DesksMultiUserTest : public NoSessionAshTestBase,
  private:
   std::unique_ptr<MultiUserWindowManager> multi_user_window_manager_;
 
-  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged> user_1_prefs_ = nullptr;
-  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged> user_2_prefs_ = nullptr;
+  raw_ptr<PrefService> user_1_prefs_ = nullptr;
+  raw_ptr<PrefService> user_2_prefs_ = nullptr;
 };
 
 TEST_F(DesksMultiUserTest, SwitchUsersBackAndForth) {
