@@ -7,6 +7,16 @@ found in the LICENSE file.
 <meta charset="utf-8" />
 
 <style>
+  html {
+    height: 100%;
+  }
+  body {
+    background-color: white;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
+  }
   #pageHeader.connected {
     background-color: green;
   }
@@ -15,10 +25,14 @@ found in the LICENSE file.
     color: white;
     display: flex;
     justify-content: space-between;
+    height: 2em;
+    margin: 0;
+  }
+  #pageHeader h1 {
+    margin: 0;
   }
   .section h1 {
     text-align: center;
-    margin: 0.2em;
     font-size: 15pt;
   }
   .section {
@@ -28,9 +42,6 @@ found in the LICENSE file.
     padding: 3px;
     margin-top: 0.5em;
     margin-bottom: 0.5em;
-  }
-  body {
-    background-color: white;
   }
   .permission-switch {
     display: flex;
@@ -47,13 +58,21 @@ found in the LICENSE file.
     border: thick double black;
     background-image: linear-gradient(cyan, fuchsia);
   }
+  #content {
+    overflow-y: scroll;
+    position: absolute;
+    top: 2em;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
 </style>
 <div id="pageHeader">
-  <h2>Test Web Client</h2>
+  <h1>Test Web Client</h1>
   <button id="refreshbn">🔄</button>
   <button id="closebn">❌</button>
 </div>
-
+<div id="content">
 <div class="section">
   <h1>Test SetPermissionState() and NotifyPermissionChanged()</h1>
   <div class="permission-switches">
@@ -179,6 +198,6 @@ found in the LICENSE file.
 </div>
 <br />
 <div id="status"></div>
-
+</div>
 <script src="./test_client.js" type="module">
 </script>
