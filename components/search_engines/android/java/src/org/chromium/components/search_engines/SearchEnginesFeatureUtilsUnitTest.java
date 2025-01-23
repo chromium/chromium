@@ -97,10 +97,10 @@ public class SearchEnginesFeatureUtilsUnitTest {
     public void clayBlockingEnableVerboseLogging() {
         FeatureOverrides.Builder overrides = FeatureOverrides.newBuilder().enable(CLAY_BLOCKING);
         overrides.apply();
-        assertFalse(SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging());
-
-        overrides.param("enable_verbose_logging", true).apply();
         assertTrue(SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging());
+
+        overrides.param("enable_verbose_logging", false).apply();
+        assertFalse(SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging());
     }
 
     @Test
