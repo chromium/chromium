@@ -20,8 +20,8 @@ namespace arc {
 
 namespace mojom {
 
-// Instead of including ash/components/arc/mojom/arc_bridge.mojom.h, list all
-// the instance classes here for faster build.
+// Instead of including chromeos/ash/experiences/arc/mojom/arc_bridge.mojom.h,
+// list all the instance classes here for faster build.
 class AdbdMonitorHost;
 class AdbdMonitorInstance;
 class AppHost;

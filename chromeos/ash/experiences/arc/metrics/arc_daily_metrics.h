@@ -10,10 +10,10 @@
 #include <string>
 #include <unordered_set>
 
-#include "ash/components/arc/mojom/process.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
+#include "chromeos/ash/experiences/arc/mojom/process.mojom.h"
 #include "components/metrics/daily_event.h"
 
 class PrefService;

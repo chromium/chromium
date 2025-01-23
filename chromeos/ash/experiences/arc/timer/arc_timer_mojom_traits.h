@@ -7,7 +7,7 @@
 
 #include <time.h>
 
-#include "ash/components/arc/mojom/timer.mojom-shared.h"
+#include "chromeos/ash/experiences/arc/mojom/timer.mojom-shared.h"
 
 namespace mojo {
 

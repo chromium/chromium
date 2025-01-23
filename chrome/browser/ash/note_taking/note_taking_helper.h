@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_observer.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom-forward.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 
 class Profile;

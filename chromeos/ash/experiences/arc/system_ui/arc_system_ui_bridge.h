@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_SYSTEM_UI_ARC_SYSTEM_UI_BRIDGE_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_SYSTEM_UI_ARC_SYSTEM_UI_BRIDGE_H_
 
-#include "ash/components/arc/mojom/system_ui.mojom-shared.h"
-#include "ash/components/arc/mojom/system_ui.mojom.h"
 #include "ash/shell_observer.h"
 #include "ash/style/color_palette_controller.h"
 #include "base/check_is_test.h"
@@ -14,6 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
+#include "chromeos/ash/experiences/arc/mojom/system_ui.mojom-shared.h"
+#include "chromeos/ash/experiences/arc/mojom/system_ui.mojom.h"
 #include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 

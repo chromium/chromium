@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_FILE_SYSTEM_FILE_SYSTEM_MOJOM_TRAITS_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_FILE_SYSTEM_FILE_SYSTEM_MOJOM_TRAITS_H_
 
-#include "ash/components/arc/mojom/file_system.mojom-shared.h"
+#include "chromeos/ash/experiences/arc/mojom/file_system.mojom-shared.h"
 #include "storage/browser/file_system/watcher_manager.h"
 
 namespace mojo {

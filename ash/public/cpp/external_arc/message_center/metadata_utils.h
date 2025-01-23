@@ -5,7 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_EXTERNAL_ARC_MESSAGE_CENTER_METADATA_UTILS_H_
 #define ASH_PUBLIC_CPP_EXTERNAL_ARC_MESSAGE_CENTER_METADATA_UTILS_H_
 
-#include "ash/components/arc/mojom/notifications.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/notifications.mojom.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notification_types.h"

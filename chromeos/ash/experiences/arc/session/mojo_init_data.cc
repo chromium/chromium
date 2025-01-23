@@ -11,12 +11,12 @@
 #include <type_traits>
 #include <vector>
 
-#include "ash/components/arc/mojom/arc_bridge.mojom.h"
-#include "ash/components/arc/mojom/power.mojom.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/mojom/arc_bridge.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/power.mojom.h"
 
 namespace arc {
 

@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/mojom/timer.mojom.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
@@ -23,6 +22,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
+#include "chromeos/ash/experiences/arc/mojom/timer.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/session/connection_holder.h"

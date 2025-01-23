@@ -8,9 +8,9 @@
 #include <map>
 #include <memory>
 
-#include "ash/components/arc/mojom/wake_lock.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/experiences/arc/mojom/wake_lock.mojom.h"
 #include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"

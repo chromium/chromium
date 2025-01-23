@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/arc/mojom/webapk.mojom.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -14,6 +13,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_install_task.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/arc/mojom/webapk.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 

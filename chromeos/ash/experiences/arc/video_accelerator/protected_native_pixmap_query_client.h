@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_VIDEO_ACCELERATOR_PROTECTED_NATIVE_PIXMAP_QUERY_CLIENT_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_VIDEO_ACCELERATOR_PROTECTED_NATIVE_PIXMAP_QUERY_CLIENT_H_
 
-#include "ash/components/arc/mojom/protected_buffer_manager.mojom.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/experiences/arc/mojom/protected_buffer_manager.mojom.h"
 #include "components/exo/protected_native_pixmap_query_delegate.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

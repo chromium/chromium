@@ -12,7 +12,7 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/mojom/bluetooth.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/bluetooth.mojom.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 #include "device/bluetooth/bluez/bluetooth_service_attribute_value_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_service_record_bluez.h"

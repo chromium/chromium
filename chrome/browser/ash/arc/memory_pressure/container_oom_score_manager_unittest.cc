@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/arc/memory_pressure/container_oom_score_manager.h"
 
-#include "ash/components/arc/mojom/process.mojom.h"  // For ProcessState.
+#include "chromeos/ash/experiences/arc/mojom/process.mojom.h"  // For ProcessState.
 #include "content/public/common/content_constants.h"  // For kLowestRendererOomScore.
 #include "testing/gtest/include/gtest/gtest.h"        // For TEST.
 

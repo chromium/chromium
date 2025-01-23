@@ -16,8 +16,8 @@ static_library("tts") {
 
   deps = [
     "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//base",
+    "//chromeos/ash/experiences/arc/mojom",
     "//components/keyed_service/core",
     "//content/public/browser",
   ]

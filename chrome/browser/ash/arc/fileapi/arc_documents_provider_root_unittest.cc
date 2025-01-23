@@ -8,13 +8,13 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/mojom/file_system.mojom.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/mojom/file_system.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/test/connection_holder_util.h"

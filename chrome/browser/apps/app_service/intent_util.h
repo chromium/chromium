@@ -15,8 +15,8 @@
 #include "components/services/app_service/public/cpp/intent_filter.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom-forward.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom-forward.h"
-#include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
 
 namespace arc {
 class ArcIntentHelperBridge;

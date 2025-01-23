@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_PRIVACY_ITEMS_INSTANCE_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_PRIVACY_ITEMS_INSTANCE_H_
 
-#include "ash/components/arc/mojom/privacy_items.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/privacy_items.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/display/display.h"

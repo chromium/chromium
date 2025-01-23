@@ -15,8 +15,8 @@ static_library("apps") {
   ]
 
   public_deps = [
-    "//ash/components/arc/mojom",
     "//base",
+    "//chromeos/ash/experiences/arc/mojom",
   ]
 
   deps = [ "//extensions/common" ]

@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/mojom/compatibility_mode.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -54,6 +53,7 @@
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/compat_mode/arc_resize_lock_manager.h"
+#include "chromeos/ash/experiences/arc/mojom/compatibility_mode.mojom.h"
 #include "chromeos/ash/experiences/arc/net/arc_net_host_impl.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"

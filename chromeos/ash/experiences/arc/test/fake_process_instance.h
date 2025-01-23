@@ -9,7 +9,7 @@
 #include <optional>
 #include <utility>
 
-#include "ash/components/arc/mojom/process.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/process.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

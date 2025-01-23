@@ -84,11 +84,11 @@ source_set("task_manager") {
       "sampling/arc_shared_sampler.h",
     ]
     public_deps += [
-      "//ash/components/arc/mojom",
       "//chromeos/ash/components/dbus/concierge",
       "//chromeos/ash/components/dbus/concierge:concierge_proto",
       "//chromeos/ash/components/process_snapshot",
       "//chromeos/ash/experiences/arc/intent_helper",
+      "//chromeos/ash/experiences/arc/mojom",
       "//chromeos/ash/experiences/arc/process",
       "//chromeos/ash/experiences/arc/session:connection_holder",
     ]

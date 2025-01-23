@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_ADBD_MONITOR_INSTANCE_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_ADBD_MONITOR_INSTANCE_H_
 
-#include "ash/components/arc/mojom/adbd.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/adbd.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"

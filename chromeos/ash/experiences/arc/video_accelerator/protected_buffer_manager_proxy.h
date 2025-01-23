@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_VIDEO_ACCELERATOR_PROTECTED_BUFFER_MANAGER_PROXY_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_VIDEO_ACCELERATOR_PROTECTED_BUFFER_MANAGER_PROXY_H_
 
-#include "ash/components/arc/mojom/protected_buffer_manager.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/protected_buffer_manager.mojom.h"
 
 namespace arc {
 

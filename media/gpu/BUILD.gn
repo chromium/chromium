@@ -32,10 +32,10 @@ component("gpu") {
   # media-related content code should access //media/gpu.
   visibility = [
     ":*",
-    "//ash/components/arc/mojom:media",
-    "//ash/components/arc/mojom:media_mojolpm",
     "//chrome/gpu",
     "//chromecast/*",
+    "//chromeos/ash/experiences/arc/mojom:media",
+    "//chromeos/ash/experiences/arc/mojom:media_mojolpm",
     "//chromeos/ash/experiences/arc/video_accelerator:common",
     "//components/chromeos_camera/*",
     "//components/mirroring/service:mirroring_service",

@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/mojom/auth.mojom-shared.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/command_line.h"
@@ -41,6 +40,7 @@
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/mojom/auth.mojom-shared.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_management_transition.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
@@ -168,8 +168,8 @@ bool IsPrimaryOrDeviceLocalAccount(
   return IsPrimaryGaiaAccount(account_info.gaia);
 }
 
-// See //ash/components/arc/mojom/auth.mojom RequestPrimaryAccount() for the
-// spec. See also go/arc-primary-account.
+// See //chromeos/ash/experiences/arc/mojom/auth.mojom RequestPrimaryAccount()
+// for the spec. See also go/arc-primary-account.
 std::string GetAccountName(Profile* profile) {
   switch (GetAccountType(profile)) {
     case mojom::ChromeAccountType::USER_ACCOUNT:

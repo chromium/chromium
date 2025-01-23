@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_SYSTEM_UI_INSTANCE_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_SYSTEM_UI_INSTANCE_H_
 
-#include "ash/components/arc/mojom/system_ui.mojom-shared.h"
-#include "ash/components/arc/mojom/system_ui.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/system_ui.mojom-shared.h"
+#include "chromeos/ash/experiences/arc/mojom/system_ui.mojom.h"
 
 namespace arc {
 

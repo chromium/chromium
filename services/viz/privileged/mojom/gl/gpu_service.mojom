@@ -26,19 +26,19 @@ import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gl/mojom/gpu_preference.mojom";
 
 [EnableIf=is_chromeos]
-import "ash/components/arc/mojom/protected_buffer_manager.mojom";
+import "chromeos/ash/experiences/arc/mojom/protected_buffer_manager.mojom";
 
 [EnableIf=is_chromeos]
-import "ash/components/arc/mojom/video_decode_accelerator.mojom";
+import "chromeos/ash/experiences/arc/mojom/video_decode_accelerator.mojom";
 
 [EnableIf=is_chromeos]
-import "ash/components/arc/mojom/video_decoder.mojom";
+import "chromeos/ash/experiences/arc/mojom/video_decoder.mojom";
 
 [EnableIf=is_chromeos]
-import "ash/components/arc/mojom/video_encode_accelerator.mojom";
+import "chromeos/ash/experiences/arc/mojom/video_encode_accelerator.mojom";
 
 [EnableIf=is_chromeos]
-import "ash/components/arc/mojom/video_protected_buffer_allocator.mojom";
+import "chromeos/ash/experiences/arc/mojom/video_protected_buffer_allocator.mojom";
 
 [EnableIf=is_chromeos]
 import "components/chromeos_camera/common/jpeg_encode_accelerator.mojom";

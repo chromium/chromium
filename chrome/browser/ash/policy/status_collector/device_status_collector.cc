@@ -24,7 +24,6 @@
 #include <string_view>
 #include <utility>
 
-#include "ash/components/arc/mojom/enterprise_reporting.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -84,6 +83,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "chromeos/ash/experiences/arc/mojom/enterprise_reporting.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"

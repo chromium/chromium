@@ -54,7 +54,6 @@ static_library("reporting") {
 
   deps = [
     "//ash/components/arc:prefs",
-    "//ash/components/arc/mojom",
     "//ash/constants",
     "//base",
     "//base:i18n",
@@ -76,6 +75,7 @@ static_library("reporting") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/dbus/power",
     "//components/policy:generated",
     "//components/policy/core/common",
@@ -143,7 +143,6 @@ source_set("unit_tests") {
     ":test_support",
     ":user_event_reporter_testing_record_proto",
     "//ash/components/arc:prefs",
-    "//ash/components/arc/mojom",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
@@ -161,6 +160,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/disks:test_support",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/dbus/power",
     "//components/policy:generated",
     "//components/policy/core/common",

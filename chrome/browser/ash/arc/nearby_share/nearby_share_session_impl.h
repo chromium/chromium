@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_NEARBY_SHARE_NEARBY_SHARE_SESSION_IMPL_H_
 #define CHROME_BROWSER_ASH_ARC_NEARBY_SHARE_NEARBY_SHARE_SESSION_IMPL_H_
 
-#include "ash/components/arc/mojom/nearby_share.mojom.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -14,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/nearby_share/share_info_file_handler.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
+#include "chromeos/ash/experiences/arc/mojom/nearby_share.mojom.h"
 #include "chromeos/components/sharesheet/constants.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "mojo/public/cpp/bindings/receiver.h"

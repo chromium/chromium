@@ -7,11 +7,11 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/arc/mojom/arc_wifi.mojom.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
+#include "chromeos/ash/experiences/arc/mojom/arc_wifi.mojom.h"
 #include "net/cert/scoped_nss_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"

@@ -13,13 +13,13 @@
 #include <set>
 #include <string>
 
-#include "ash/components/arc/mojom/metrics.mojom.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
 #include "chrome/browser/ash/arc/tracing/uma_perf_reporting.h"
+#include "chromeos/ash/experiences/arc/mojom/metrics.mojom.h"
 #include "components/exo/surface_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/aura/window_observer.h"

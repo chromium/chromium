@@ -17,10 +17,10 @@ test("ash_components_unittests") {
 
   deps = [
     "//ash/components/arc:unit_tests",
-    "//ash/components/arc/mojom:unit_tests",
     "//base/test:test_support",
     "//chromeos/ash/components:test_support",
     "//chromeos/ash/components/chaps_util:unit_tests",
+    "//chromeos/ash/experiences/arc/mojom:unit_tests",
     "//mojo/core/embedder",
 
     # TODO(crbug.com/386148857): Temporarily refer chromeos/ash/experiences

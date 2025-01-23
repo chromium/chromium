@@ -11,13 +11,13 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/mojom/process.mojom.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/process/process.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "chromeos/ash/experiences/arc/mojom/process.mojom.h"
 #include "chromeos/ash/experiences/arc/process/arc_process_service.h"
 
 namespace task_manager {

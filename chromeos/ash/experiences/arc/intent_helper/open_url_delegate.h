@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_INTENT_HELPER_OPEN_URL_DELEGATE_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_INTENT_HELPER_OPEN_URL_DELEGATE_H_
 
-#include "ash/components/arc/mojom/intent_helper.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
 
 class GURL;
 

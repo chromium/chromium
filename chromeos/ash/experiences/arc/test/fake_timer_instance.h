@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_TIMER_INSTANCE_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_TIMER_INSTANCE_H_
 
-#include "ash/components/arc/mojom/timer.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/timer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

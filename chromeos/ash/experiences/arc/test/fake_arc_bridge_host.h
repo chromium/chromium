@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_ARC_BRIDGE_HOST_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_ARC_BRIDGE_HOST_H_
 
-#include "ash/components/arc/mojom/arc_bridge.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/arc_bridge.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace arc {

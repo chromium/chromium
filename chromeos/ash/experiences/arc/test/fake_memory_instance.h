@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_MEMORY_INSTANCE_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_MEMORY_INSTANCE_H_
 
-#include "ash/components/arc/mojom/memory.mojom.h"
 #include "base/functional/callback.h"
+#include "chromeos/ash/experiences/arc/mojom/memory.mojom.h"
 
 namespace arc {
 

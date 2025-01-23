@@ -7,10 +7,10 @@
 
 #include <memory>
 
-#include "ash/components/arc/mojom/on_device_safety.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/on_device_safety.mojom.h"
 #include "chromeos/ash/services/cros_safety/cloud_safety_session.h"
 #include "chromeos/ash/services/cros_safety/public/mojom/cros_safety.mojom.h"
 #include "chromeos/ash/services/cros_safety/public/mojom/cros_safety_service.mojom.h"

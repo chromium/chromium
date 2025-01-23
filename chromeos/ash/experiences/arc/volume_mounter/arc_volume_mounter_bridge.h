@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "ash/components/arc/mojom/volume_mounter.mojom.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
@@ -18,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/experiences/arc/mojom/volume_mounter.mojom.h"
 #include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/keyed_service/core/keyed_service.h"

@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_VIDEO_GPU_ARC_VIDEO_SERVICE_HOST_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_VIDEO_GPU_ARC_VIDEO_SERVICE_HOST_H_
 
-#include "ash/components/arc/mojom/video.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "chromeos/ash/experiences/arc/mojom/video.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 

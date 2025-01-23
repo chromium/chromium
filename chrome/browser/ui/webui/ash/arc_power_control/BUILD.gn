@@ -16,10 +16,10 @@ static_library("arc_power_control") {
 
   public_deps = [
     "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/common",
+    "//chromeos/ash/experiences/arc/mojom",
     "//content/public/browser",
     "//content/public/common",
     "//ui/aura",

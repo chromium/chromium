@@ -5,10 +5,10 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_MEMORY_ARC_MEMORY_BRIDGE_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_MEMORY_ARC_MEMORY_BRIDGE_H_
 
-#include "ash/components/arc/mojom/memory.mojom.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "chromeos/ash/experiences/arc/mojom/memory.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

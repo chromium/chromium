@@ -76,7 +76,6 @@ static_library("file_manager") {
   deps = [
     "//ash",
     "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//ash/constants",
     "//ash/webui/settings/public/constants",
     "//base",
@@ -129,6 +128,7 @@ static_library("file_manager") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/experiences/arc/intent_helper",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/components/disks:prefs",
     "//chromeos/components/sharesheet:constants",
     "//chromeos/dbus/dlp",

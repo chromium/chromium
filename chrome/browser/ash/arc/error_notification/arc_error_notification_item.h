@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_ARC_ERROR_NOTIFICATION_ARC_ERROR_NOTIFICATION_ITEM_H_
 #define CHROME_BROWSER_ASH_ARC_ERROR_NOTIFICATION_ARC_ERROR_NOTIFICATION_ITEM_H_
 
-#include "ash/components/arc/mojom/error_notification.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/error_notification/arc_error_notification_bridge.h"
+#include "chromeos/ash/experiences/arc/mojom/error_notification.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 

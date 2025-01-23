@@ -265,7 +265,7 @@ static_library("arc_base") {
 
   public_deps = [
     ":arc_base_utils",
-    "//ash/components/arc/mojom",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/experiences/arc/session",
     "//chromeos/ash/experiences/arc/session:arc_base_enums",
     "//chromeos/ash/experiences/arc/session:connection_holder",
@@ -302,7 +302,7 @@ static_library("notification_test_support") {
   ]
 
   public_deps = [
-    "//ash/components/arc/mojom:notifications",
+    "//chromeos/ash/experiences/arc/mojom:notifications",
     "//chromeos/ash/experiences/arc/session:connection_holder",
   ]
 }
@@ -402,10 +402,10 @@ static_library("arc_test_support") {
 
   deps = [
     ":arc",
-    "//ash/components/arc/mojom",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/experiences/arc/session:connection_holder",
     "//chromeos/components/payments:test_support",
     "//components/exo",

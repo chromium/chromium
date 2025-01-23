@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/mojom/intent_helper.mojom-shared.h"
 #include "base/containers/span.h"
 #include "chromeos/ash/experiences/arc/intent_helper/intent_filter.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom-shared.h"
 
 namespace mojo {
 

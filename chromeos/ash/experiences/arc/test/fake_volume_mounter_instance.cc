@@ -7,8 +7,8 @@
 #include <map>
 #include <string>
 
-#include "ash/components/arc/mojom/volume_mounter.mojom.h"
 #include "base/check.h"
+#include "chromeos/ash/experiences/arc/mojom/volume_mounter.mojom.h"
 
 namespace arc {
 

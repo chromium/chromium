@@ -8,13 +8,13 @@
 #include <string_view>
 #include <utility>
 
-#include "ash/components/arc/mojom/file_system.mojom.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "chromeos/ash/experiences/arc/mojom/file_system.mojom.h"
 #include "net/base/mime_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "url/gurl.h"

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -16,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/apps/apk_web_app_installer.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/webapps/browser/uninstall_result_code.h"

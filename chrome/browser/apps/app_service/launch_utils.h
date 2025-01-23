@@ -20,8 +20,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom-forward.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom-forward.h"
-#include "ash/components/arc/mojom/app.mojom-forward.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 class Browser;

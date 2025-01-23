@@ -4,7 +4,7 @@
 
 module ash.camera_app.mojom;
 
-import "ash/components/arc/mojom/camera_intent.mojom";
+import "chromeos/ash/experiences/arc/mojom/camera_intent.mojom";
 import "ash/webui/camera_app_ui/events_sender.mojom";
 import "ash/webui/camera_app_ui/ocr.mojom";
 import "ash/webui/camera_app_ui/pdf_builder.mojom";

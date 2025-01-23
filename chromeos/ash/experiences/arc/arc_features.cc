@@ -283,7 +283,7 @@ BASE_FEATURE(kRoundedWindowCompat,
 
 const char kRoundedWindowCompatStrategy[] = "RoundedWindowCompatStrategy";
 // The following values must be matched with `RoundedWindowCompatStrategy` enum
-// defined in //ash/components/arc/mojom/chrome_feature_flags.mojom.
+// defined in //chromeos/ash/experiences/arc/mojom/chrome_feature_flags.mojom.
 const char kRoundedWindowCompatStrategy_BottomOnlyGesture[] = "1";
 const char kRoundedWindowCompatStrategy_LeftRightBottomGesture[] = "2";
 

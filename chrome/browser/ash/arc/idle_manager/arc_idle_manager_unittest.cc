@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/mojom/power.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/ash/arc/idle_manager/arc_window_observer.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/mojom/power.mojom.h"
 #include "chromeos/ash/experiences/arc/power/arc_power_bridge.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"

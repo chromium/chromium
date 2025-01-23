@@ -8,11 +8,11 @@
 #include <memory>
 #include <vector>
 
-#include "ash/components/arc/mojom/arc_bridge.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/arc_bridge.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/connection_holder.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

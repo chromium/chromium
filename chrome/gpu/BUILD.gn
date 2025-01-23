@@ -34,7 +34,7 @@ static_library("gpu") {
   }
   if (is_chromeos_ash) {
     deps += [
-      "//ash/components/arc/mojom:media",
+      "//chromeos/ash/experiences/arc/mojom:media",
       "//gpu/command_buffer/service",
       "//services/service_manager/public/cpp",
       "//ui/ozone",

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "ash/components/arc/mojom/print_spooler.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
@@ -15,6 +14,7 @@
 #include "base/values.h"
 #include "chrome/services/printing/public/mojom/pdf_flattener.mojom.h"
 #include "chromeos/ash/experiences/arc/custom_tab/arc_custom_tab_modal_dialog_host.h"
+#include "chromeos/ash/experiences/arc/mojom/print_spooler.mojom.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

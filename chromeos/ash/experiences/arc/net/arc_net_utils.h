@@ -12,13 +12,13 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/mojom/arc_wifi.mojom.h"
-#include "ash/components/arc/mojom/net.mojom.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_service.pb.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/experiences/arc/mojom/arc_wifi.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/net.mojom.h"
 
 namespace arc::net_utils {
 

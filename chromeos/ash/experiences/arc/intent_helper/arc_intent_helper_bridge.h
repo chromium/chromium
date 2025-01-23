@@ -11,13 +11,13 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_icon_cache_delegate.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_observer.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
 

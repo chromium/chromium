@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_VOLUME_MOUNTER_VOLUME_MOUNTER_MOJOM_TRAITS_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_VOLUME_MOUNTER_VOLUME_MOUNTER_MOJOM_TRAITS_H_
 
-#include "ash/components/arc/mojom/volume_mounter.mojom-shared.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/experiences/arc/mojom/volume_mounter.mojom-shared.h"
 
 namespace mojo {
 

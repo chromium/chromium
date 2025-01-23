@@ -13,6 +13,6 @@ specific_include_rules = {
     "+components/app_restore/full_restore_utils.h",
   ],
   "chrome/browser/ui/views/apps/app_dialog/app_dialog_view_browsertest.cc": [
-    "+ash/components/arc/mojom/app.mojom.h",
+    "+chromeos/ash/experiences/arc/mojom/app.mojom.h",
   ],
 }

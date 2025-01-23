@@ -6,9 +6,9 @@
 
 #include <optional>
 
-#include "ash/components/arc/mojom/memory.mojom-shared.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "chromeos/ash/experiences/arc/mojom/memory.mojom-shared.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/test/connection_holder_util.h"

@@ -18,10 +18,10 @@ static_library("memory_pressure") {
 
   deps = [
     "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//base",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/resourced",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/experiences/arc/process",
     "//content/public/browser",
     "//content/public/common",
@@ -38,8 +38,8 @@ source_set("unit_tests") {
 
   deps = [
     ":memory_pressure",
-    "//ash/components/arc/mojom",
     "//base",
+    "//chromeos/ash/experiences/arc/mojom",
     "//content/public/common",
     "//content/test:test_support",
     "//testing/gtest",

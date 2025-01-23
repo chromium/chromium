@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/arc/mojom/process.mojom.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_number_conversions.h"
@@ -14,6 +13,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/mojom/process.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "content/public/browser/browser_task_traits.h"

@@ -14,8 +14,8 @@ static_library("video") {
 
   deps = [
     "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//base",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
     "//components/keyed_service/core",
     "//content/public/browser",

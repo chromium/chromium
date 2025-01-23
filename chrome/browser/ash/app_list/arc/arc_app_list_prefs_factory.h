@@ -8,9 +8,9 @@
 #include <memory>
 #include <unordered_map>
 
-#include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom-forward.h"
 #include "chromeos/ash/experiences/arc/session/connection_holder.h"
 
 class ArcAppListPrefs;

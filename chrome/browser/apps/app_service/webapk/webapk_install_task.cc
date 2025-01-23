@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/arc/mojom/webapk.mojom.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
+#include "chromeos/ash/experiences/arc/mojom/webapk.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/services/app_service/public/cpp/share_target.h"

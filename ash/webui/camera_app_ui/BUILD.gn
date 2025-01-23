@@ -149,7 +149,7 @@ mojom("mojo_bindings") {
   deps = [
     ":ocr",
     ":pdf_builder",
-    "//ash/components/arc/mojom:camera_intent",
+    "//chromeos/ash/experiences/arc/mojom:camera_intent",
     "//chromeos/services/machine_learning/public/mojom:document_scanner_param_types",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",

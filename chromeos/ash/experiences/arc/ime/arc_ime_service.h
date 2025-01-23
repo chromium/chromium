@@ -8,12 +8,12 @@
 #include <memory>
 #include <optional>
 
-#include "ash/components/arc/mojom/ime.mojom-forward.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/experiences/arc/ime/arc_ime_bridge.h"
 #include "chromeos/ash/experiences/arc/ime/key_event_result_receiver.h"
+#include "chromeos/ash/experiences/arc/mojom/ime.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/env_observer.h"

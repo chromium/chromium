@@ -4,8 +4,8 @@
 
 #include "chromeos/ash/experiences/arc/file_system/file_system_mojom_traits.h"
 
-#include "ash/components/arc/mojom/file_system.mojom.h"
 #include "base/notreached.h"
+#include "chromeos/ash/experiences/arc/mojom/file_system.mojom.h"
 
 namespace mojo {
 

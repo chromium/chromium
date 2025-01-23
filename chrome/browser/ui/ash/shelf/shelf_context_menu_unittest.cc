@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -52,6 +51,7 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/policy/core/common/policy_pref_names.h"

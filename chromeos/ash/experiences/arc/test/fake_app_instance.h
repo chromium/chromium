@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/mojom/app.mojom.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

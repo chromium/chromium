@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/arc/instance_throttle/arc_power_throttle_observer.h"
 
-#include "ash/components/arc/mojom/anr.mojom.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/experiences/arc/mojom/anr.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"

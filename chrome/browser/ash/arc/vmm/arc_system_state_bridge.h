@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_ARC_VMM_ARC_SYSTEM_STATE_BRIDGE_H_
 #define CHROME_BROWSER_ASH_ARC_VMM_ARC_SYSTEM_STATE_BRIDGE_H_
 
-#include "ash/components/arc/mojom/system_state.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chromeos/ash/experiences/arc/mojom/system_state.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;

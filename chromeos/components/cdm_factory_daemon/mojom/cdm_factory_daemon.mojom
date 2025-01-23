@@ -14,9 +14,9 @@
 module chromeos.cdm.mojom;
 
 [EnableIf=is_chromeos_ash]
-import "ash/components/arc/mojom/oemcrypto.mojom";
+import "chromeos/ash/experiences/arc/mojom/oemcrypto.mojom";
 [EnableIf=is_chromeos_ash]
-import "ash/components/arc/mojom/protected_buffer_manager.mojom";
+import "chromeos/ash/experiences/arc/mojom/protected_buffer_manager.mojom";
 import "chromeos/components/cdm_factory_daemon/mojom/cdm_storage.mojom";
 import "chromeos/components/cdm_factory_daemon/mojom/content_decryption_module.mojom";
 import "chromeos/components/cdm_factory_daemon/mojom/output_protection.mojom";

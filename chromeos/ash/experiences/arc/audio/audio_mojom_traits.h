@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_AUDIO_AUDIO_MOJOM_TRAITS_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_AUDIO_AUDIO_MOJOM_TRAITS_H_
 
-#include "ash/components/arc/mojom/audio.mojom-shared.h"
 #include "chromeos/ash/components/audio/audio_device.h"
+#include "chromeos/ash/experiences/arc/mojom/audio.mojom-shared.h"
 
 namespace mojo {
 

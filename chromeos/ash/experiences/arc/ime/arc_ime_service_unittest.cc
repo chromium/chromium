@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/mojom/ime.mojom.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_content_view.h"
 #include "base/memory/ptr_util.h"
@@ -17,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/experiences/arc/mojom/ime.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/test_window_delegate.h"

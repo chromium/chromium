@@ -8,12 +8,12 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_icon_loader_delegate.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 
 class AppListControllerDelegate;
