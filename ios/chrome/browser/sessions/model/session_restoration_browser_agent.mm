@@ -384,8 +384,9 @@ bool SessionRestorationBrowserAgent::IsRestoringSession() {
 void SessionRestorationBrowserAgent::SaveSession(bool immediately) {
   DCHECK(session_identifier_.length != 0);
 
-  if (!CanSaveSession())
+  if (!CanSaveSession()) {
     return;
+  }
 
   WebStateList* const web_state_list = browser_->GetWebStateList();
   if (web_state_list->IsBatchInProgress()) {

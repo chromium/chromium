@@ -24,12 +24,10 @@ FakeTabRestoreService::GetTestingFactory() {
 }
 
 void FakeTabRestoreService::AddObserver(
-    sessions::TabRestoreServiceObserver* observer) {
-}
+    sessions::TabRestoreServiceObserver* observer) {}
 
 void FakeTabRestoreService::RemoveObserver(
-    sessions::TabRestoreServiceObserver* observer) {
-}
+    sessions::TabRestoreServiceObserver* observer) {}
 
 std::optional<SessionID> FakeTabRestoreService::CreateHistoricalTab(
     sessions::LiveTab* live_tab,
@@ -69,8 +67,7 @@ void FakeTabRestoreService::GroupCloseStopped(
   NOTREACHED();
 }
 
-void FakeTabRestoreService::ClearEntries() {
-}
+void FakeTabRestoreService::ClearEntries() {}
 
 void FakeTabRestoreService::DeleteNavigationEntries(
     const DeletionPredicate& predicate) {
@@ -110,8 +107,7 @@ bool FakeTabRestoreService::IsLoaded() const {
   NOTREACHED();
 }
 
-void FakeTabRestoreService::DeleteLastSession() {
-}
+void FakeTabRestoreService::DeleteLastSession() {}
 
 bool FakeTabRestoreService::IsRestoring() const {
   NOTREACHED();
