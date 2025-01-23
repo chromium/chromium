@@ -27,6 +27,7 @@
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/bidder_worklet_thread_selector.h"
+#include "content/services/auction_worklet/deprecated_url_lazy_filler.h"
 #include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
@@ -35,11 +36,13 @@
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom-forward.h"
+#include "content/services/auction_worklet/report_bindings.h"
 #include "content/services/auction_worklet/set_bid_bindings.h"
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/trusted_signals_kvv2_manager.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
 #include "content/services/auction_worklet/worklet_loader.h"
+#include "gin/dictionary.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -490,6 +493,71 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       bool script_timed_out;
       std::vector<std::string> error_msgs;
     };
+
+    bool SetBrowserSignals(
+        bool is_for_additional_bid,
+        const std::optional<std::string>& interest_group_name_reporting_id,
+        const std::optional<std::string>& buyer_reporting_id,
+        const std::optional<std::string>& buyer_and_seller_reporting_id,
+        const std::optional<std::string>&
+            selected_buyer_and_seller_reporting_id,
+        const GURL& browser_signal_render_url,
+        DeprecatedUrlLazyFiller* deprecated_render_url,
+        double browser_signal_bid,
+        const std::optional<blink::AdCurrency>& browser_signal_bid_currency,
+        double browser_signal_highest_scoring_other_bid,
+        const std::optional<blink::AdCurrency>&
+            browser_signal_highest_scoring_other_bid_currency,
+        bool browser_signal_made_highest_scoring_other_bid,
+        const std::optional<double>& browser_signal_ad_cost,
+        const std::optional<uint16_t>& browser_signal_modeling_signals,
+        uint8_t browser_signal_join_count,
+        uint8_t browser_signal_recency,
+        const url::Origin& browser_signal_seller_origin,
+        const std::optional<url::Origin>&
+            browser_signal_top_level_seller_origin,
+        const std::optional<uint32_t>& bidding_signals_data_version,
+        const std::string& kanon_status,
+        const base::TimeDelta reporting_timeout,
+        v8::Local<v8::Object> browser_signals,
+        gin::Dictionary& browser_signals_dict);
+
+    // Sets up arguments for the `reportAggregateWin()` JavaScript function,
+    // returning true on success, false on failure.
+    bool SetReportAggregateWinArgs(
+        v8::Local<v8::Context>& context,
+        const std::optional<std::string>& auction_signals_json,
+        const std::optional<std::string>& per_buyer_signals_json,
+        const std::string seller_signals_json,
+        bool is_for_additional_bid,
+        const std::optional<std::string>& interest_group_name_reporting_id,
+        const std::optional<std::string>& buyer_reporting_id,
+        const std::optional<std::string>& buyer_and_seller_reporting_id,
+        const std::optional<std::string>&
+            selected_buyer_and_seller_reporting_id,
+        const GURL& browser_signal_render_url,
+        double browser_signal_bid,
+        const std::optional<blink::AdCurrency>& browser_signal_bid_currency,
+        double browser_signal_highest_scoring_other_bid,
+        const std::optional<blink::AdCurrency>&
+            browser_signal_highest_scoring_other_bid_currency,
+        bool browser_signal_made_highest_scoring_other_bid,
+        const std::optional<double>& browser_signal_ad_cost,
+        const std::optional<uint16_t>& browser_signal_modeling_signals,
+        uint8_t browser_signal_join_count,
+        uint8_t browser_signal_recency,
+        const url::Origin& browser_signal_seller_origin,
+        const std::optional<url::Origin>&
+            browser_signal_top_level_seller_origin,
+        const std::optional<base::TimeDelta> browser_signal_reporting_timeout,
+        const std::optional<uint32_t>& bidding_signals_data_version,
+        const std::string& kanon_status,
+        const std::optional<std::string>& aggregate_win_signals,
+        const base::TimeDelta reporting_timeout,
+        const v8::Local<v8::Value>& per_buyer_signals,
+        const v8::Local<v8::Value>& auction_signals,
+        const ReportBindings::ModelingSignalsConfig& modeling_signals_config,
+        v8::LocalVector<v8::Value>& report_aggregate_win_args);
 
     void ReportWin(
         bool is_for_additional_bid,

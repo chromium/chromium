@@ -2198,6 +2198,80 @@ class PrivateModelTrainingEnabledTest : public BidderWorkletTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// When an error happens within reportAggregateWin(), it should be within the
+// errors, but not disrupt the flow of the callback, in this case
+// sendReportTo().
+TEST_F(PrivateModelTrainingEnabledTest, ReportAggregateWinError) {
+  const char kScript[] = R"(
+    function reportWin() {
+        queueReportAggregateWin({
+          modelingSignalsConfig: {
+            destination: "https://example.test",
+            aggregationCoordinatorOrigin: "https://example.test",
+            payloadLength: -1,
+          }
+        });
+      sendReportTo("https://report-win.test/");
+    }
+
+    function reportAggregateWin() {
+      throw "reportAggregateWin error";
+    }
+  )";
+
+  RunReportWinWithJavascriptExpectingResult(
+      kScript, GURL("https://report-win.test/"), /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{}, /*expected_pa_requests=*/{},
+      /*expected_errors=*/
+      {"https://url.test/:14 Uncaught reportAggregateWin error."});
+}
+
+TEST_F(PrivateModelTrainingEnabledTest, ReportAggregateWinTimeout) {
+  const char kScript[] = R"(
+    function reportWin() {
+        queueReportAggregateWin({
+          modelingSignalsConfig: {
+            destination: "https://example.test",
+            aggregationCoordinatorOrigin: "https://example.test",
+            payloadLength: 256,
+          }
+        });
+      sendReportTo("https://report-win.test/");
+    }
+
+    function reportAggregateWin() {
+      while(true){};
+    }
+  )";
+
+  RunReportWinWithJavascriptExpectingResult(
+      kScript, GURL("https://report-win.test/"), /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{}, /*expected_pa_requests=*/{},
+      /*expected_errors=*/
+      {"https://url.test/ execution of `reportAggregateWin` timed out."});
+}
+
+TEST_F(PrivateModelTrainingEnabledTest, NoReportAggregateWinFunction) {
+  const char kScript[] = R"(
+    function reportWin() {
+        queueReportAggregateWin({
+          modelingSignalsConfig: {
+            destination: "https://example.test",
+            aggregationCoordinatorOrigin: "https://example.test",
+            payloadLength: 256,
+          }
+        });
+      sendReportTo("https://report-win.test/");
+    }
+  )";
+
+  RunReportWinWithJavascriptExpectingResult(
+      kScript, GURL("https://report-win.test/"), /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{}, /*expected_pa_requests=*/{},
+      /*expected_errors=*/
+      {"https://url.test/ `reportAggregateWin` is not a function."});
+}
+
 TEST_F(PrivateModelTrainingEnabledTest, GenerateBidAggregateWinSignals) {
   const std::string kGenerateBidBody =
       R"({bid:1, render:"https://response.test/",
@@ -2229,47 +2303,51 @@ TEST_F(PrivateModelTrainingEnabledTest, GenerateBidInvalidAggregateWinSignals) {
 TEST_F(PrivateModelTrainingEnabledTest,
        QueueAggregateReportWinModelingSignalsConfig) {
   // Valid case
-  RunReportWinWithFunctionBodyExpectingResult(
-      R"(
-        queueReportAggregateWin({
+  const char kScript[] = R"(
+    function reportWin() {
+      queueReportAggregateWin({
         modelingSignalsConfig: {
-          destination: "https://example.test",
-          aggregationCoordinatorOrigin: "https://example.test",
-          payloadLength: 256,
+        destination: "%s",
+        aggregationCoordinatorOrigin: "%s",
+        payloadLength: %d,
         }
       });
-      sendReportTo("https://foo.test"))",
+      sendReportTo("https://foo.test");
+    }
+
+    function reportAggregateWin() {}
+  )";
+  RunReportWinWithJavascriptExpectingResult(
+      base::StringPrintf(kScript, "https://example.test",
+                         "https://example.test", 256),
       GURL("https://foo.test/"));
 
   // A negative payload length will get through.
-  // Negative numbers are converted to large unsigned values due to Web IDL's
-  // modulo arithmetic.
-  RunReportWinWithFunctionBodyExpectingResult(
-      R"(
-          queueReportAggregateWin({
-          modelingSignalsConfig: {
-            destination: "https://example.test",
-            aggregationCoordinatorOrigin: "https://example.test",
-            payloadLength: -1,
-          }
-        });
-        sendReportTo("https://foo.test"))",
+  // Negative numbers are converted to large unsigned values due to Web
+  // IDL's modulo arithmetic.
+  RunReportWinWithJavascriptExpectingResult(
+      base::StringPrintf(kScript, "https://example.test",
+                         "https://example.test", -1),
       GURL("https://foo.test/"));
 
   // Payload length as a string
   // Non-numeric strings provided will be converted to 0 due to Web IDL's
   // conversion rules.
-  RunReportWinWithFunctionBodyExpectingResult(
-      R"(
-          queueReportAggregateWin({
-          modelingSignalsConfig: {
-            destination: "https://example.test",
-            aggregationCoordinatorOrigin: "https://example.test",
-            payloadLength: "invalid",
-          }
-        });
-        sendReportTo("https://foo.test"))",
-      GURL("https://foo.test/"));
+  RunReportWinWithJavascriptExpectingResult(R"(
+    function reportWin() {
+      queueReportAggregateWin({
+        modelingSignalsConfig: {
+          destination: "https://example.test",
+          aggregationCoordinatorOrigin: "https://example.test",
+          payloadLength: "invalid",
+        }
+      });
+      sendReportTo("https://foo.test");
+    }
+
+    function reportAggregateWin() {}
+  )",
+                                            GURL("https://foo.test/"));
 }
 
 TEST_F(PrivateModelTrainingEnabledTest,
@@ -2278,12 +2356,12 @@ TEST_F(PrivateModelTrainingEnabledTest,
   RunReportWinWithFunctionBodyExpectingResult(
       R"(
         queueReportAggregateWin({
-        modelingSignalsConfig: {
-          destination: "",
-          aggregationCoordinatorOrigin: "https://example.test",
-          payloadLength: 256,
-        }
-      });
+          modelingSignalsConfig: {
+            destination: "",
+            aggregationCoordinatorOrigin: "https://example.test",
+            payloadLength: 256,
+          }
+       });
       sendReportTo("https://foo.test"))",
       /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
@@ -2295,7 +2373,7 @@ TEST_F(PrivateModelTrainingEnabledTest,
   // Invalid aggregation coordinator origin
   RunReportWinWithFunctionBodyExpectingResult(
       R"(
-        queueReportAggregateWin({
+      queueReportAggregateWin({
         modelingSignalsConfig: {
           destination: "https://example.test",
           aggregationCoordinatorOrigin: 123,
@@ -2312,15 +2390,16 @@ TEST_F(PrivateModelTrainingEnabledTest,
        "valid HTTPS url."});
 
   // Error when called twice
-  RunReportWinWithFunctionBodyExpectingResult(
+  RunReportWinWithJavascriptExpectingResult(
       R"(
+    function reportWin() {
         queueReportAggregateWin({
-        modelingSignalsConfig: {
-          destination: "https://example.test",
-          aggregationCoordinatorOrigin: "https://example.test",
-          payloadLength: 256,
-        }
-      });
+          modelingSignalsConfig: {
+            destination: "https://example.test",
+            aggregationCoordinatorOrigin: "https://example.test",
+            payloadLength: 256,
+          }
+        });
       sendReportTo("https://foo.test");
       queueReportAggregateWin({
         modelingSignalsConfig: {
@@ -2329,12 +2408,15 @@ TEST_F(PrivateModelTrainingEnabledTest,
           payloadLength: 256,
         }
       });
-      )",
+    }
+
+    function reportAggregateWin() {}
+  )",
       /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
-      {"https://url.test/:20 Uncaught TypeError: queueReportAggregateWin() may "
+      {"https://url.test/:11 Uncaught TypeError: queueReportAggregateWin() may "
        "be called at most once."});
 }
 
@@ -2349,71 +2431,52 @@ TEST_F(PrivateModelTrainingEnabledTest,
       std::string(url::kMaxURLChars - almost_too_long_report_url.size(), '1');
   std::string too_long_report_url = almost_too_long_report_url + "2";
 
-  // Error when destination URL is too long
-  RunReportWinWithFunctionBodyExpectingResult(
-      base::StringPrintf(R"(
+  const char kScript[] = R"(
+    function reportWin() {
         queueReportAggregateWin({
-        modelingSignalsConfig: {
-          destination: "%s",
-          aggregationCoordinatorOrigin: "https://example.test",
-          payloadLength: 256,
-        }
-      });
-      sendReportTo("https://foo.test"))",
-                         too_long_report_url),
+          modelingSignalsConfig: {
+            destination: "%s",
+            aggregationCoordinatorOrigin: "%s",
+            payloadLength: 256,
+          }
+        });
+      sendReportTo("https://foo.test");
+    }
+
+    function reportAggregateWin() {}
+  )";
+
+  // Error when destination URL is too long
+  RunReportWinWithJavascriptExpectingResult(
+      base::StringPrintf(kScript, too_long_report_url, "https://example.test"),
       /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
-      {"https://url.test/:12 Uncaught TypeError: modelingSignalsConfig's "
+      {"https://url.test/:3 Uncaught TypeError: modelingSignalsConfig's "
        "destination exceeds the maximum URL length."});
 
   // Valid when destination URL is almost too long
-  RunReportWinWithFunctionBodyExpectingResult(
-      base::StringPrintf(R"(
-        queueReportAggregateWin({
-        modelingSignalsConfig: {
-          destination: "https://example.test",
-          aggregationCoordinatorOrigin: "%s",
-          payloadLength: 256,
-        }
-      });
-      sendReportTo("https://foo.test"))",
-                         almost_too_long_report_url),
-      GURL("https://foo.test/"));
+  RunReportWinWithJavascriptExpectingResult(
+      base::StringPrintf(kScript, almost_too_long_report_url,
+                         "https://example.test"),
+      /*expected_report_url=*/GURL("https://foo.test/"));
 
   // Error when aggregationCoordinatorOrigin URL is too long
-  RunReportWinWithFunctionBodyExpectingResult(
-      base::StringPrintf(R"(
-        queueReportAggregateWin({
-        modelingSignalsConfig: {
-          destination: "https://example.test",
-          aggregationCoordinatorOrigin: "%s",
-          payloadLength: 256,
-        }
-      });
-      sendReportTo("https://foo.test"))",
-                         too_long_report_url),
+  RunReportWinWithJavascriptExpectingResult(
+      base::StringPrintf(kScript, "https://example.test", too_long_report_url),
       /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
-      {"https://url.test/:12 Uncaught TypeError: modelingSignalsConfig's "
+      {"https://url.test/:3 Uncaught TypeError: modelingSignalsConfig's "
        "aggregationCoordinatorOrigin exceeds the maximum URL length."});
 
   // Valid with aggregationCoordinatorOrigin having an almost too long URL
-  RunReportWinWithFunctionBodyExpectingResult(
-      base::StringPrintf(R"(
-        queueReportAggregateWin({
-        modelingSignalsConfig: {
-          destination: "https://example.test",
-          aggregationCoordinatorOrigin: "%s",
-          payloadLength: 256,
-        }
-      });
-      sendReportTo("https://foo.test"))",
+  RunReportWinWithJavascriptExpectingResult(
+      base::StringPrintf(kScript, "https://example.test",
                          almost_too_long_report_url),
-      GURL("https://foo.test/"));
+      /*expected_report_url=*/GURL("https://foo.test/"));
 }
 
 class PrivateModelTrainingDisabledTest : public BidderWorkletTest {
