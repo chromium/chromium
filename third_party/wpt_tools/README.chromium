@@ -12,6 +12,3 @@ Description: This includes code for the manifest tool, lint tool, and wptserve.
     for more details on maintenance.
 Local Modifications:
 - Removed all files except for those listed in wpt/WPTIncludeList.
-- Local patch to the webtransport-H3 server to stay on `aioquic` 0.x, which
-  can't be upgraded to 1.x until chromium/src is on python3.11
-  (https://crbug.com/387535231).
