@@ -520,13 +520,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 deleteContentsOnPackageDowngrade(packageInfo);
             }
 
-            boolean partitionedCookies =
-                    androidXConfig.getPartitionedCookiesEnabled() == null
-                            ? shouldEnableChips()
-                            : androidXConfig.getPartitionedCookiesEnabled();
-            if (!partitionedCookies) {
-                cl.appendSwitch("disable-partitioned-cookies");
-            }
+            // TODO (crbug.com/389121692): Add a check here to configure partitioned cookies based
+            // on what we get back from AndroidX.
 
             // Now safe to use WebView data directory.
 
