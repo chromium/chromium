@@ -210,18 +210,17 @@ bool InFlowSuccessorInteractionState::IsAtSuccessor() const {
 
 }  // namespace dips
 
-DipsNavigationFlowDetector::DipsNavigationFlowDetector(
-    WebContents* web_contents)
+BtmNavigationFlowDetector::BtmNavigationFlowDetector(WebContents* web_contents)
     : WebContentsObserver(web_contents),
-      WebContentsUserData<DipsNavigationFlowDetector>(*web_contents),
+      WebContentsUserData<BtmNavigationFlowDetector>(*web_contents),
       current_page_visit_info_(dips::PageVisitInfo()) {
   redirect_chain_observation_.Observe(
       RedirectChainDetector::FromWebContents(web_contents));
 }
 
-DipsNavigationFlowDetector::~DipsNavigationFlowDetector() = default;
+BtmNavigationFlowDetector::~BtmNavigationFlowDetector() = default;
 
-void DipsNavigationFlowDetector::OnNavigationCommitted(
+void BtmNavigationFlowDetector::OnNavigationCommitted(
     NavigationHandle* navigation_handle) {
   bool primary_page_changed = navigation_handle->IsInPrimaryMainFrame() &&
                               !navigation_handle->IsSameDocument() &&
@@ -298,7 +297,7 @@ void DipsNavigationFlowDetector::OnNavigationCommitted(
   }
 }
 
-void DipsNavigationFlowDetector::MaybeEmitNavFlowNodeUkmForPreviousPage() {
+void BtmNavigationFlowDetector::MaybeEmitNavFlowNodeUkmForPreviousPage() {
   if (!CanEmitNavFlowNodeUkmForPreviousPage()) {
     return;
   }
@@ -322,7 +321,7 @@ void DipsNavigationFlowDetector::MaybeEmitNavFlowNodeUkmForPreviousPage() {
       .Record(ukm::UkmRecorder::Get());
 }
 
-bool DipsNavigationFlowDetector::CanEmitNavFlowNodeUkmForPreviousPage() const {
+bool BtmNavigationFlowDetector::CanEmitNavFlowNodeUkmForPreviousPage() const {
   bool page_is_in_series_of_three = two_pages_ago_visit_info_.has_value() &&
                                     !two_pages_ago_visit_info_->site.empty() &&
                                     previous_page_visit_info_.has_value() &&
@@ -347,7 +346,7 @@ bool DipsNavigationFlowDetector::CanEmitNavFlowNodeUkmForPreviousPage() const {
          is_site_different_from_prior_page && is_site_different_from_next_page;
 }
 
-void DipsNavigationFlowDetector::
+void BtmNavigationFlowDetector::
     MaybeEmitSuspectedTrackerFlowUkmForServerRedirectExit(
         const BtmRedirectInfo* exit_info,
         int32_t flow_id) {
@@ -360,7 +359,7 @@ void DipsNavigationFlowDetector::
                               BtmRedirectType::kServer);
 }
 
-bool DipsNavigationFlowDetector::
+bool BtmNavigationFlowDetector::
     CanEmitSuspectedTrackerFlowUkmForServerRedirectExit(
         const BtmRedirectInfo* exit_info) const {
   if (!previous_page_visit_info_.has_value() || exit_info == nullptr ||
@@ -375,7 +374,7 @@ bool DipsNavigationFlowDetector::
       *current_page_visit_info_);
 }
 
-void DipsNavigationFlowDetector::
+void BtmNavigationFlowDetector::
     MaybeEmitSuspectedTrackerFlowUkmForClientRedirectExit(int32_t flow_id) {
   if (!CanEmitSuspectedTrackerFlowUkmForClientRedirectExit()) {
     return;
@@ -386,7 +385,7 @@ void DipsNavigationFlowDetector::
                               BtmRedirectType::kClient);
 }
 
-bool DipsNavigationFlowDetector::
+bool BtmNavigationFlowDetector::
     CanEmitSuspectedTrackerFlowUkmForClientRedirectExit() const {
   bool page_is_in_series_of_three = two_pages_ago_visit_info_.has_value() &&
                                     previous_page_visit_info_.has_value() &&
@@ -408,7 +407,7 @@ bool DipsNavigationFlowDetector::
                                         current_page_visit_info_.value());
 }
 
-bool DipsNavigationFlowDetector::CanEmitSuspectedTrackerFlowUkm(
+bool BtmNavigationFlowDetector::CanEmitSuspectedTrackerFlowUkm(
     const dips::PageVisitInfo& referrer_page_info,
     const dips::EntrypointInfo& entrypoint_info,
     const dips::PageVisitInfo& exit_page_info) const {
@@ -428,7 +427,7 @@ bool DipsNavigationFlowDetector::CanEmitSuspectedTrackerFlowUkm(
          entrypoint_info.was_referral_client_redirect;
 }
 
-void DipsNavigationFlowDetector::MaybeEmitInFlowInteraction(int32_t flow_id) {
+void BtmNavigationFlowDetector::MaybeEmitInFlowInteraction(int32_t flow_id) {
   if (!CanEmitSuspectedTrackerFlowUkmForClientRedirectExit() ||
       !previous_page_visit_info_->did_page_receive_user_activation) {
     return;
@@ -440,7 +439,7 @@ void DipsNavigationFlowDetector::MaybeEmitInFlowInteraction(int32_t flow_id) {
       .Record(ukm::UkmRecorder::Get());
 }
 
-void DipsNavigationFlowDetector::MaybeEmitInFlowSuccessorInteraction() {
+void BtmNavigationFlowDetector::MaybeEmitInFlowSuccessorInteraction() {
   if (!successor_interaction_tracking_state_.has_value() ||
       successor_interaction_tracking_state_->successor_interaction_indices()
           .empty()) {
@@ -459,7 +458,7 @@ void DipsNavigationFlowDetector::MaybeEmitInFlowSuccessorInteraction() {
   }
 }
 
-dips::FlowStatus DipsNavigationFlowDetector::FlowStatusAfterNavigation(
+dips::FlowStatus BtmNavigationFlowDetector::FlowStatusAfterNavigation(
     bool did_most_recent_navigation_start_new_flow) const {
   if (!current_page_visit_info_->WasNavigationToPageClientRedirect()) {
     return dips::FlowStatus::kInvalidated;
@@ -497,7 +496,7 @@ dips::FlowStatus DipsNavigationFlowDetector::FlowStatusAfterNavigation(
   }
 }
 
-bool DipsNavigationFlowDetector::
+bool BtmNavigationFlowDetector::
     MaybeInitializeSuccessorInteractionTrackingState() {
   if (flow_status_ == dips::FlowStatus::kOngoing) {
     return false;
@@ -544,12 +543,12 @@ bool DipsNavigationFlowDetector::
   return true;
 }
 
-const BtmRedirectContext& DipsNavigationFlowDetector::GetRedirectContext()
+const BtmRedirectContext& BtmNavigationFlowDetector::GetRedirectContext()
     const {
   return redirect_chain_observation_.GetSource()->CommittedRedirectContext();
 }
 
-void DipsNavigationFlowDetector::OnCookiesAccessed(
+void BtmNavigationFlowDetector::OnCookiesAccessed(
     RenderFrameHost* render_frame_host,
     const CookieAccessDetails& details) {
   // Ignore notifications for prerenders, fenced frames, etc., and for blocked
@@ -579,7 +578,7 @@ void DipsNavigationFlowDetector::OnCookiesAccessed(
   }
 }
 
-void DipsNavigationFlowDetector::OnCookiesAccessed(
+void BtmNavigationFlowDetector::OnCookiesAccessed(
     NavigationHandle* navigation_handle,
     const CookieAccessDetails& details) {
   // Ignore notifications for prerenders, fenced frames, etc., and for blocked
@@ -633,7 +632,7 @@ void DipsNavigationFlowDetector::OnCookiesAccessed(
   }
 }
 
-void DipsNavigationFlowDetector::NotifyStorageAccessed(
+void BtmNavigationFlowDetector::NotifyStorageAccessed(
     RenderFrameHost* render_frame_host,
     blink::mojom::StorageTypeAccessed storage_type,
     bool blocked) {
@@ -648,7 +647,7 @@ void DipsNavigationFlowDetector::NotifyStorageAccessed(
   }
 }
 
-void DipsNavigationFlowDetector::FrameReceivedUserActivation(
+void BtmNavigationFlowDetector::FrameReceivedUserActivation(
     RenderFrameHost* render_frame_host) {
   current_page_visit_info_->did_page_receive_user_activation = true;
 
@@ -659,7 +658,7 @@ void DipsNavigationFlowDetector::FrameReceivedUserActivation(
   }
 }
 
-void DipsNavigationFlowDetector::WebAuthnAssertionRequestSucceeded(
+void BtmNavigationFlowDetector::WebAuthnAssertionRequestSucceeded(
     RenderFrameHost* render_frame_host) {
   if (!render_frame_host->IsInPrimaryMainFrame()) {
     return;
@@ -667,10 +666,10 @@ void DipsNavigationFlowDetector::WebAuthnAssertionRequestSucceeded(
   current_page_visit_info_->did_page_have_successful_waa = true;
 }
 
-void DipsNavigationFlowDetector::WebContentsDestroyed() {
+void BtmNavigationFlowDetector::WebContentsDestroyed() {
   redirect_chain_observation_.Reset();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(DipsNavigationFlowDetector);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(BtmNavigationFlowDetector);
 
 }  // namespace content

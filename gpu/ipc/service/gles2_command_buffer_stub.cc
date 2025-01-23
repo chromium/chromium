@@ -344,14 +344,6 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
       UMA_HISTOGRAM_ENUMERATION("GPU.WebGLDisplayType",
                                 display_egl->GetDisplayType(),
                                 gl::DISPLAY_TYPE_MAX);
-
-      constexpr uint64_t kLargeCanvasNumPixels = 128 * 128;
-      uint64_t surface_area = surface_->GetSize().Area64();
-      if (surface_area >= kLargeCanvasNumPixels) {
-        UMA_HISTOGRAM_ENUMERATION("GPU.WebGLDisplayTypeLarge",
-                                  display_egl->GetDisplayType(),
-                                  gl::DISPLAY_TYPE_MAX);
-      }
     }
   }
 

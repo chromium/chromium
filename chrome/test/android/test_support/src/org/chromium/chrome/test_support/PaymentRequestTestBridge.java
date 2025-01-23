@@ -329,7 +329,7 @@ public class PaymentRequestTestBridge {
         if (authnUi != null) return authnUi.cancelForTest();
 
         SecurePaymentConfirmationNoMatchingCredController noMatchingUi =
-                PaymentRequestService.getSecurePaymentConfirmationNoMatchingCredUiForTesting();
+                getSecurePaymentConfirmationNoMatchingCredUi();
         if (noMatchingUi != null) {
             noMatchingUi.closeForTest();
             return true;
@@ -343,7 +343,7 @@ public class PaymentRequestTestBridge {
         SecurePaymentConfirmationAuthnController authnUi = getSecurePaymentConfirmationAuthnUi();
         if (authnUi != null) return authnUi.optOutForTest();
         SecurePaymentConfirmationNoMatchingCredController noMatchingUi =
-                PaymentRequestService.getSecurePaymentConfirmationNoMatchingCredUiForTesting();
+                getSecurePaymentConfirmationNoMatchingCredUi();
         if (noMatchingUi != null) return noMatchingUi.optOutForTest();
         return false;
     }
@@ -355,6 +355,17 @@ public class PaymentRequestTestBridge {
                         PaymentRequestService.getBrowserPaymentRequestForTesting();
         return chromeService != null
                 ? chromeService.getSecurePaymentConfirmationAuthnUiForTesting()
+                : null;
+    }
+
+    @Nullable
+    private static SecurePaymentConfirmationNoMatchingCredController
+            getSecurePaymentConfirmationNoMatchingCredUi() {
+        ChromePaymentRequestService chromeService =
+                (ChromePaymentRequestService)
+                        PaymentRequestService.getBrowserPaymentRequestForTesting();
+        return chromeService != null
+                ? chromeService.getSecurePaymentConfirmationNoMatchingCredUiForTesting()
                 : null;
     }
 

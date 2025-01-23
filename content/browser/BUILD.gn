@@ -955,6 +955,8 @@ source_set("browser") {
     "devtools/worker_or_worklet_devtools_agent_host.h",
     "devtools/worklet_devtools_agent_host.cc",
     "devtools/worklet_devtools_agent_host.h",
+    "dips/btm_page_visit_observer.cc",
+    "dips/btm_page_visit_observer.h",
     "dips/cookie_access_filter.cc",
     "dips/cookie_access_filter.h",
     "dips/dips_bounce_detector.cc",

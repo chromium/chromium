@@ -2545,16 +2545,8 @@ if (current_toolchain == default_toolchain) {
              "--zero-tests-executed-ok",
            ]
     data = [
-      # TODO(crbug.com/391427630): Put the common expectation files behind a
-      # shared target
-      "//third_party/blink/web_tests/LeakExpectations",
-      "//third_party/blink/web_tests/MobileTestExpectations",
-      "//third_party/blink/web_tests/NeverFixTests",
-      "//third_party/blink/web_tests/SlowTests",
-      "//third_party/blink/web_tests/StaleTestExpectations",
-      "//third_party/blink/web_tests/TestExpectations",
-
       "//third_party/blink/web_tests/platform/android/",
+      "//third_party/blink/web_tests/MobileTestExpectations",
     ]
     data_deps = [
       ":chrome_public_apk",

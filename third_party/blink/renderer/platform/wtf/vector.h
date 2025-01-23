@@ -363,15 +363,28 @@ struct VectorTypeOperations {
     }
     if constexpr (std::is_same_v<T, U> && VectorTraits<T>::kCanCopyWithMemcpy) {
       Copy(src, src_end, dst, origin);
-    } else if (origin == VectorOperationOrigin::kConstruction) {
+    } else {
+      UninitializedTransform(src, src_end, dst, origin, std::identity());
+    }
+  }
+
+  template <typename InputIterator, typename Proj>
+  static void UninitializedTransform(InputIterator src,
+                                     InputIterator src_end,
+                                     T* dst,
+                                     VectorOperationOrigin origin,
+                                     Proj proj) {
+    if (origin == VectorOperationOrigin::kConstruction) {
       while (src != src_end) {
-        ConstructTraits::Construct(dst, *src);
+        ConstructTraits::Construct(
+            dst, std::invoke(proj, std::forward<decltype(*src)>(*src)));
         ++dst;
         ++src;
       }
     } else {
       while (src != src_end) {
-        ConstructTraits::ConstructAndNotifyElement(dst, *src);
+        ConstructTraits::ConstructAndNotifyElement(
+            dst, std::invoke(proj, std::forward<decltype(*src)>(*src)));
         ++dst;
         ++src;
       }
@@ -1254,6 +1267,8 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
 
   // Copying.
   Vector(const Vector&);
+  template <wtf_size_t otherCapacity>
+  explicit Vector(const Vector<T, otherCapacity, Allocator>&);
 
   Vector& operator=(const Vector&);
   template <wtf_size_t otherCapacity>
@@ -1263,9 +1278,8 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   // optional projection.
   template <typename Range, typename Proj = std::identity>
     requires VectorCanAssignFromRange<T, InlineCapacity, Allocator, Range, Proj>
-  explicit Vector(Range&& range, Proj proj = {}) : Vector() {
-    assign(std::forward<Range>(range), std::move(proj));
-  }
+  explicit Vector(Range&&, Proj = {});
+
   // Replaces the vector with elements copied from an input and sized range.
   template <typename Range, typename Proj = std::identity>
     requires VectorCanAssignFromRange<T, InlineCapacity, Allocator, Range, Proj>
@@ -1727,6 +1741,34 @@ Vector<T, InlineCapacity, Allocator>::Vector(const Vector& other)
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+template <wtf_size_t otherCapacity>
+Vector<T, InlineCapacity, Allocator>::Vector(
+    const Vector<T, otherCapacity, Allocator>& other)
+    : Base(other.capacity()) {
+  ANNOTATE_NEW_BUFFER(data(), capacity(), other.size());
+  size_ = other.size();
+  TypeOperations::UninitializedCopy(other.data(), other.DataEnd(), data(),
+                                    VectorOperationOrigin::kConstruction);
+}
+
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+template <typename Range, typename Proj>
+  requires VectorCanAssignFromRange<T, InlineCapacity, Allocator, Range, Proj>
+Vector<T, InlineCapacity, Allocator>::Vector(Range&& other, Proj proj)
+    : Base(std::ranges::size(other)) {
+  // Note that `size(other)` may become smaller if `other` is a hash table
+  // with WeakMember keys and `Base(size(other))` above caused GC which
+  // removed some entries from `other`, see crbug.com/40448463. This won't
+  // cause problems as long as we won't use the old `size(other)` in the
+  // following code.
+  ANNOTATE_NEW_BUFFER(data(), capacity(), std::ranges::size(other));
+  TypeOperations::UninitializedTransform(
+      std::ranges::begin(other), std::ranges::end(other), data(),
+      VectorOperationOrigin::kConstruction, std::move(proj));
+  size_ = std::ranges::size(other);
+}
+
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 Vector<T, InlineCapacity, Allocator>&
 Vector<T, InlineCapacity, Allocator>::operator=(
     const Vector<T, InlineCapacity, Allocator>& other) {
@@ -1791,15 +1833,27 @@ Vector<T, InlineCapacity, Allocator>::operator=(
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename Range, typename Proj>
   requires VectorCanAssignFromRange<T, InlineCapacity, Allocator, Range, Proj>
-void Vector<T, InlineCapacity, Allocator>::assign(Range&& range, Proj proj) {
-  {
-    // Disallow GC across resize allocation, see crbug.com/568173.
-    GCForbiddenScope scope;
-    reserve(base::checked_cast<wtf_size_t>(std::ranges::size(range)));
+void Vector<T, InlineCapacity, Allocator>::assign(Range&& other, Proj proj) {
+  if (std::ranges::size(other) > capacity()) {
+    clear();
+    reserve(std::ranges::size(other));
+    // Note that `size(other)` may become smaller if `other` is a hash table
+    // with `WeakMember` keys and `reserve` caused GC which removed some
+    // entries from `other`, see crbug.com/40448463. This won't cause problems
+    // as long as we won't use the old `size(other)` in the following code.
+  } else {
+    if (std::ranges::size(other) < size()) {
+      Shrink(std::ranges::size(other));
+    }
+    TypeOperations::Destruct(data(), DataEnd());
   }
 
-  base::ranges::transform(std::forward<Range>(range), std::back_inserter(*this),
-                          std::move(proj));
+  MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, data(), capacity(), size_,
+                                     std::ranges::size(other));
+  TypeOperations::UninitializedTransform(
+      std::ranges::begin(other), std::ranges::end(other), data(),
+      VectorOperationOrigin::kRegularModification, std::move(proj));
+  size_ = std::ranges::size(other);
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>

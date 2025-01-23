@@ -168,8 +168,9 @@ void BlockedPopupTabHelper::OnManagerShuttingDown(
 void BlockedPopupTabHelper::ShowInfoBar() {
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state_);
-  if (!popups_.size() || !infobar_manager)
+  if (!popups_.size() || !infobar_manager) {
     return;
+  }
 
   RegisterAsInfoBarManagerObserverIfNeeded(infobar_manager);
 

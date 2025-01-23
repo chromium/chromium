@@ -31,8 +31,9 @@ NSString* GetErrorPage(const GURL& url,
   DCHECK_EQ(url, GURL(base::SysNSStringToUTF8(
                      error.userInfo[NSURLErrorFailingURLStringErrorKey])));
   NSError* final_error = base::ios::GetFinalUnderlyingErrorFromError(error);
-  if (!final_error)
+  if (!final_error) {
     final_error = error;
+  }
   int net_error = net::ERR_FAILED;
   if ([final_error.domain isEqualToString:net::kNSErrorDomain]) {
     net_error = final_error.code;

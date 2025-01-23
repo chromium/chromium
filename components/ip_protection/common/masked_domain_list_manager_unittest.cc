@@ -278,6 +278,26 @@ TEST_F(MaskedDomainListManagerTest, ShouldMatchHttp) {
                                                      kHttpCrossSiteNak));
 }
 
+TEST_F(MaskedDomainListManagerTest, ShouldMatchWss) {
+  const auto kWssRequestUrl = GURL(base::StrCat({"wss://", kTestDomain}));
+  const auto kHttpCrossSiteNak = net::NetworkAnonymizationKey::CreateCrossSite(
+      net::SchemefulSite(GURL("http://top.com")));
+
+  EXPECT_TRUE(allow_list_no_bypass_.Matches(kWssRequestUrl, kHttpCrossSiteNak));
+  EXPECT_TRUE(allow_list_first_party_bypass_.Matches(kWssRequestUrl,
+                                                     kHttpCrossSiteNak));
+}
+
+TEST_F(MaskedDomainListManagerTest, ShouldMatchWs) {
+  const auto kWsRequestUrl = GURL(base::StrCat({"ws://", kTestDomain}));
+  const auto kHttpCrossSiteNak = net::NetworkAnonymizationKey::CreateCrossSite(
+      net::SchemefulSite(GURL("http://top.com")));
+
+  EXPECT_TRUE(allow_list_no_bypass_.Matches(kWsRequestUrl, kHttpCrossSiteNak));
+  EXPECT_TRUE(
+      allow_list_first_party_bypass_.Matches(kWsRequestUrl, kHttpCrossSiteNak));
+}
+
 TEST_F(MaskedDomainListManagerTest, ShouldMatchThirdPartyToTopLevelFrame) {
   const auto kHttpsCrossSiteNak = net::NetworkAnonymizationKey::CreateCrossSite(
       net::SchemefulSite(GURL("https://top.com")));
@@ -579,10 +599,18 @@ TEST_F(MaskedDomainListManagerBaseTest, ExclusionSetDomainsRemovedFromMDL) {
   for (auto const& [domain, subdomains] : tld_map_with_domains) {
     EXPECT_TRUE(mdl_manager.Matches(GURL(base::StrCat({"https://", domain})),
                                     net::NetworkAnonymizationKey()));
+    EXPECT_TRUE(mdl_manager.Matches(GURL(base::StrCat({"wss://", domain})),
+                                    net::NetworkAnonymizationKey()));
+    EXPECT_TRUE(mdl_manager.Matches(GURL(base::StrCat({"ws://", domain})),
+                                    net::NetworkAnonymizationKey()));
     for (auto const& subdomain : subdomains) {
       EXPECT_TRUE(
           mdl_manager.Matches(GURL(base::StrCat({"https://", subdomain})),
                               net::NetworkAnonymizationKey()));
+      EXPECT_TRUE(mdl_manager.Matches(GURL(base::StrCat({"wss://", subdomain})),
+                                      net::NetworkAnonymizationKey()));
+      EXPECT_TRUE(mdl_manager.Matches(GURL(base::StrCat({"ws://", subdomain})),
+                                      net::NetworkAnonymizationKey()));
     }
   }
 

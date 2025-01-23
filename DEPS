@@ -280,7 +280,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'eb9ff8e42760a250e456eb72aedc01bcb1357cd5',
+  'skia_revision': 'b34b6f115fb0087ae234e0fad974af5835a0c738',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -328,7 +328,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling freetype
   # and whatever else without interference from each other.
-  'freetype_revision': 'a059b237bb01eb3e4f9f8b1618dda8c117498bab',
+  'freetype_revision': 'bfe793ccecb910608f3930a04f3b4307ccb4b3a0',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling freetype
   # and whatever else without interference from each other.
@@ -1439,7 +1439,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'a0f4515049603aa36f60836240023c7f808e2e52',
+    'b96dda9dacecbd7e7be38a294aa144aec94c79dc',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1598,7 +1598,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'aFOPWG7Sj-IEqJ4eaqB5lH9AHzvVSHmRNpIXiF4xDjYC',
+          'version': 'JnIjviDAjCfHRu7c2i3reVPqGvxvLIbe9E4mdb2-ma0C',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -2436,7 +2436,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'c6a6337e6a6fe9c6e81e01a7e9c304ddb1a3af7d',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + '5cf56ed9d52ebc939f294b595bfe00c3750465bb',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',
@@ -2618,7 +2618,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/r8',
-              'version': 'ZTHhAJg0CQvNxfBmE7mECwY-jJDQ7kknVwVvZpQzLLIC',
+              'version': '3iC3eGx7wAPZJhIJjRdLvqyiJHhKFVT1Eq6-uccHw9oC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -2946,7 +2946,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': 'PH-VCH0WkYKlK7lHE5l_Y--zMkLOEp6s_Ms37K9MjGUC',
+        'version': 'uI04oZ1khnf3eRhmAYSxxFnDXbxgWpu-HUnITxVx-P0C',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',

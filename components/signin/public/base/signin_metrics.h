@@ -127,9 +127,7 @@ enum class ProfileSignout {
 };
 
 // Enum values which enumerates all access points where sign in could be
-// initiated. Not all of them exist on all platforms. They are used with
-// "Signin.SigninStartedAccessPoint" and "Signin.SigninCompletedAccessPoint"
-// histograms.
+// initiated. Not all of them exist on all platforms.
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SigninAccessPoint

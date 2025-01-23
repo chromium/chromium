@@ -96,20 +96,23 @@ void WebNavigationBrowserAgent::GoBack() {
 
 void WebNavigationBrowserAgent::GoForward() {
   web::WebState* active_web_state = web_state_list_->GetActiveWebState();
-  if (active_web_state)
+  if (active_web_state) {
     web_navigation_util::GoForward(active_web_state);
+  }
 }
 
 void WebNavigationBrowserAgent::StopLoading() {
   web::WebState* active_web_state = web_state_list_->GetActiveWebState();
-  if (active_web_state)
+  if (active_web_state) {
     active_web_state->Stop();
+  }
 }
 
 void WebNavigationBrowserAgent::Reload() {
   web::WebState* active_web_state = web_state_list_->GetActiveWebState();
-  if (!active_web_state)
+  if (!active_web_state) {
     return;
+  }
 
   if (delegate_.NTPActiveForCurrentWebState) {
     [delegate_ reloadNTPForWebState:active_web_state];
@@ -140,8 +143,9 @@ void WebNavigationBrowserAgent::RequestMobileSite() {
 void WebNavigationBrowserAgent::ReloadWithUserAgentType(
     web::UserAgentType userAgentType) {
   web::WebState* web_state = web_state_list_->GetActiveWebState();
-  if (UserAgentType(web_state) == userAgentType)
+  if (UserAgentType(web_state) == userAgentType) {
     return;
+  }
 
   web_state->GetNavigationManager()->ReloadWithUserAgentType(userAgentType);
 }

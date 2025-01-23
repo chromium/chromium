@@ -285,13 +285,15 @@ std::string ChromeWebClient::GetUserAgent(web::UserAgentType type) const {
       command_line->HasSwitch(switches::kUserAgent)) {
     std::string user_agent =
         command_line->GetSwitchValueASCII(switches::kUserAgent);
-    if (net::HttpUtil::IsValidHeaderValue(user_agent))
+    if (net::HttpUtil::IsValidHeaderValue(user_agent)) {
       return user_agent;
+    }
     LOG(WARNING) << "Ignored invalid value for flag --" << switches::kUserAgent;
   }
 
-  if (type == web::UserAgentType::DESKTOP)
+  if (type == web::UserAgentType::DESKTOP) {
     return web::BuildDesktopUserAgent(GetDesktopProduct());
+  }
   return web::BuildMobileUserAgent(GetMobileProduct());
 }
 

@@ -5549,10 +5549,9 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBufferForTexImage(
   // TODO(https://crbug.com/1341235): The choice of color type should match the
   // format of the TexImage function. The choice of alpha type should opaque for
   // opaque images. The color space should match the unpack color space.
-  const auto resource_provider_info = SkImageInfo::Make(
-      width, height, kN32_SkColorType, kPremul_SkAlphaType, nullptr);
   CanvasResourceProvider* resource_provider =
-      generated_image_cache_.GetCanvasResourceProvider(resource_provider_info);
+      generated_image_cache_.GetCanvasResourceProvider(
+          {width, height}, kN32_SkColorType, kPremul_SkAlphaType, nullptr);
   if (!resource_provider) {
     SynthesizeGLError(GL_OUT_OF_MEMORY, function_name, "out of memory");
     return nullptr;
@@ -6342,19 +6341,22 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
 
   // TODO(https://crbug.com/1341235): The choice of color type will clamp
   // higher precision sources to 8 bit per color.
-  const auto resource_provider_info = SkImageInfo::Make(
-      gfx::SizeToSkISize(dest_rect.size()), kN32_SkColorType,
-      media::IsOpaque(media_video_frame->format()) ? kOpaque_SkAlphaType
-                                                   : kPremul_SkAlphaType,
+  SkISize size = gfx::SizeToSkISize(dest_rect.size());
+  SkColorType sk_color_type = kN32_SkColorType;
+  SkAlphaType alpha_type = media::IsOpaque(media_video_frame->format())
+                               ? kOpaque_SkAlphaType
+                               : kPremul_SkAlphaType;
+  sk_sp<SkColorSpace> sk_color_space =
       params.unpack_colorspace_conversion
           ? media_video_frame->CompatRGBColorSpace().ToSkColorSpace()
-          : SkColorSpace::MakeSRGB());
+          : SkColorSpace::MakeSRGB();
 
   // Since TexImageStaticBitmapImage() and TexImageGPU() don't know how to
   // handle tagged orientation, we set |prefer_tagged_orientation| to false.
   scoped_refptr<StaticBitmapImage> image = CreateImageFromVideoFrame(
       std::move(media_video_frame), kAllowZeroCopyImages,
-      image_cache.GetCanvasResourceProvider(resource_provider_info),
+      image_cache.GetCanvasResourceProvider(size, sk_color_type, alpha_type,
+                                            sk_color_space),
       video_renderer, dest_rect, /*prefer_tagged_orientation=*/false,
       /*reinterpret_video_as_srgb=*/!params.unpack_colorspace_conversion);
   if (!image)
@@ -8590,23 +8592,29 @@ WebGLRenderingContextBase::LRUCanvasResourceProviderCache::
 
 CanvasResourceProvider* WebGLRenderingContextBase::
     LRUCanvasResourceProviderCache::GetCanvasResourceProvider(
-        const SkImageInfo& info) {
+        SkISize size,
+        SkColorType sk_color_type,
+        SkAlphaType alpha_type,
+        sk_sp<SkColorSpace> sk_color_space) {
   wtf_size_t i;
   for (i = 0; i < resource_providers_.size(); ++i) {
     CanvasResourceProvider* resource_provider = resource_providers_[i].get();
     if (!resource_provider)
       break;
-    if (resource_provider->GetSkImageInfo() != info) {
-      // Detect and allow for the case wherein the passed-info implicitly
-      // specifies sRGB via a null SkColorSpace whereas the resource provider is
-      // explicitly storing sRGB.
-      if (info.colorSpace()) {
-        continue;
-      }
-      if (resource_provider->GetSkImageInfo() !=
-          info.makeColorSpace(SkColorSpace::MakeSRGB())) {
-        continue;
-      }
+    const SkImageInfo& provider_info = resource_provider->GetSkImageInfo();
+
+    // Detect and allow for the case wherein the passed-info implicitly
+    // specifies sRGB via a null SkColorSpace whereas the resource provider is
+    // explicitly storing sRGB.
+    const bool color_spaces_match =
+        provider_info.colorSpace() == sk_color_space.get() ||
+        (!sk_color_space &&
+         provider_info.colorSpace() == SkColorSpace::MakeSRGB().get());
+    if (provider_info.width() != size.width() ||
+        provider_info.height() != size.height() ||
+        provider_info.colorType() != sk_color_type ||
+        provider_info.alphaType() != alpha_type || !color_spaces_match) {
+      continue;
     }
     BubbleToFront(i);
     return resource_provider;
@@ -8619,12 +8627,14 @@ CanvasResourceProvider* WebGLRenderingContextBase::
       raster_context_provider =
           wrapper->ContextProvider().RasterContextProvider();
     }
-    temp = CreateResourceProviderForVideoFrame(info, raster_context_provider);
+    temp = CreateResourceProviderForVideoFrame(
+        SkImageInfo::Make(size, sk_color_type, alpha_type, sk_color_space),
+        raster_context_provider);
   } else {
     // TODO(fserb): why is this a BITMAP?
     temp = CanvasResourceProvider::CreateBitmapProvider(
-        gfx::Size(info.width(), info.height()), info.colorType(),
-        info.alphaType(), SkColorSpaceToGfxColorSpace(info.refColorSpace()),
+        gfx::Size(size.width(), size.height()), sk_color_type, alpha_type,
+        SkColorSpaceToGfxColorSpace(sk_color_space),
         CanvasResourceProvider::ShouldInitialize::kNo);  // TODO: should this
                                                          // use the canvas's
   }

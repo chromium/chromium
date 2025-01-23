@@ -43,8 +43,9 @@ RepostFormTabHelper::~RepostFormTabHelper() {
 
 void RepostFormTabHelper::DismissReportFormDialog() {
   weak_factory_.InvalidateWeakPtrs();
-  if (is_presenting_dialog_)
+  if (is_presenting_dialog_) {
     [delegate_ repostFormTabHelperDismissRepostFormDialog:this];
+  }
   is_presenting_dialog_ = false;
 }
 

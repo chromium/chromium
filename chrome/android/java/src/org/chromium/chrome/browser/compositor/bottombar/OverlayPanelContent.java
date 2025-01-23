@@ -18,7 +18,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.RequiredCallback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.browser.content.ContentUtils;
@@ -174,31 +173,24 @@ public class OverlayPanelContent {
         }
 
         @Override
-        public void shouldIgnoreNavigation(
+        public boolean shouldIgnoreNavigation(
                 NavigationHandle navigationHandle,
                 GURL escapedUrl,
                 boolean hiddenCrossFrame,
-                boolean isSandboxedFrame,
-                boolean shouldRunAsync,
-                RequiredCallback<Boolean> resultCallback) {
+                boolean isSandboxedFrame) {
             // If either of the required params for the delegate are null, do not call the
             // delegate and ignore the navigation.
-            if (mExternalNavHandler == null || navigationHandle == null) {
-                resultCallback.onResult(true);
-                return;
-            }
-            boolean result =
-                    !mContentDelegate.shouldInterceptNavigation(
-                            mExternalNavHandler,
-                            escapedUrl,
-                            navigationHandle.pageTransition(),
-                            navigationHandle.isRedirect(),
-                            navigationHandle.hasUserGesture(),
-                            navigationHandle.isRendererInitiated(),
-                            navigationHandle.getReferrerUrl(),
-                            navigationHandle.isInPrimaryMainFrame(),
-                            navigationHandle.isExternalProtocol());
-            resultCallback.onResult(result);
+            if (mExternalNavHandler == null || navigationHandle == null) return true;
+            return !mContentDelegate.shouldInterceptNavigation(
+                    mExternalNavHandler,
+                    escapedUrl,
+                    navigationHandle.pageTransition(),
+                    navigationHandle.isRedirect(),
+                    navigationHandle.hasUserGesture(),
+                    navigationHandle.isRendererInitiated(),
+                    navigationHandle.getReferrerUrl(),
+                    navigationHandle.isInPrimaryMainFrame(),
+                    navigationHandle.isExternalProtocol());
         }
 
         @Override

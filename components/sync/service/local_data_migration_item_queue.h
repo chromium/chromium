@@ -20,6 +20,11 @@ class DataTypeManager;
 
 // This class is used to migrate data to account storage once the sync service
 // activates, if the user is eligible for account storage.
+// The queue `items_` is cleared when sync is paused or disabled, for example
+// when the user signs out. An item is removed from the queue if it had been
+// added more than `kTimeLimitForActivatingDataType` minutes ago, or if its data
+// type is non-preferred. If the data type is not active, the item stays in the
+// queue.
 class LocalDataMigrationItemQueue : public SyncServiceObserver {
  public:
   // `sync_service` and `data_type_manager` must not be null and must outlive
@@ -39,6 +44,9 @@ class LocalDataMigrationItemQueue : public SyncServiceObserver {
   void OnSyncShutdown(SyncService* sync_service) override;
 
   void SetClockForTesting(base::Clock* clock);
+
+  // Returns the number of items in the queue `items_`.
+  size_t GetItemsCountForTesting() const;
 
  private:
   const raw_ptr<SyncService> sync_service_;

@@ -963,15 +963,8 @@ void MenuController::OnMouseReleased(SubmenuView* source,
     }
   }
 
-  // A plain left click on a folder that has children serves to open that folder
-  // by setting the selection, rather than executing a command via the delegate
-  // or doing anything else.
-  // TODO(ellyjones): Why isn't a case needed here for EF_CONTROL_DOWN?
-  bool plain_left_click_with_children =
-      part.should_submenu_show && part.menu && part.menu->HasSubmenu() &&
-      (event.flags() & ui::EF_LEFT_MOUSE_BUTTON) &&
-      !(event.flags() & ui::EF_COMMAND_DOWN);
-  if (!part.is_scroll() && part.menu && !plain_left_click_with_children) {
+  if (!part.is_scroll() && part.menu &&
+      part.menu->GetDelegate()->IsTriggerableEvent(part.menu, event)) {
     if (active_mouse_view_tracker_->view()) {
       SendMouseReleaseToActiveView(source, event);
       return;

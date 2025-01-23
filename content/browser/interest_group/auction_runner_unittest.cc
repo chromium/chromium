@@ -21122,6 +21122,191 @@ TEST_F(AuctionRunnerTest, RecencyPassedGenerateBid) {
   EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
 }
 
+class AuctionRunnerPrivateModelTrainingEnabledTest : public AuctionRunnerTest {
+ public:
+  AuctionRunnerPrivateModelTrainingEnabledTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kFledgePrivateModelTraining);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// This test verifies that reportAggregateWin() receives the correct arguments
+// by comparing them to those received by reportWin(). It also checks that
+// the aggregateWinSignals and modelingSignalsConfig are correctly passed
+// to reportAggregateWin().
+TEST_F(AuctionRunnerPrivateModelTrainingEnabledTest,
+       ReportAggregateWinGetsAllArgs) {
+  const char kBidScript[] = R"(
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      return {'ad': 'example', 'bid': 1,
+            'render': interestGroup.ads[0].renderURL,
+            'aggregateWinSignals': {"test_array":[1,2,3]}
+      };
+    }
+    function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
+                       browserSignals, directFromSellerSignals) {
+      // Store the arguments in global variables
+      globalThis.reportWin_auctionSignals = auctionSignals;
+      globalThis.reportWin_perBuyerSignals = perBuyerSignals;
+      globalThis.reportWin_sellerSignals = sellerSignals;
+      globalThis.reportWin_browserSignals = browserSignals;
+      globalThis.reportWin_directFromSellerSignals = directFromSellerSignals;
+      queueReportAggregateWin({
+        modelingSignalsConfig: {
+          destination: "https://destination.test/",
+          aggregationCoordinatorOrigin: "https://origin.test/",
+          payloadLength: 256,
+        }
+      });
+    }
+
+    function reportAggregateWin(aggregateWinSignals, modelingSignalsConfig,
+                                auctionSignals,perBuyerSignals, sellerSignals,
+                                browserSignals, directFromSellerSignals ) {
+      if (aggregateWinSignals.test_array[0] !== 1 ||
+        aggregateWinSignals.test_array[1] !== 2 ||
+        aggregateWinSignals.test_array[2] !== 3) {
+          throw new Error("aggregateWinSignals not what was expected!");
+      }
+
+      if (modelingSignalsConfig.destination !== "https://destination.test/" ||
+        modelingSignalsConfig.aggregationCoordinatorOrigin !== "https://origin.test/" ||
+        modelingSignalsConfig.payloadLength !== 256) {
+          throw new Error("modelingSignalsConfig not what was expected!");
+      }
+
+      if (auctionSignals !== globalThis.reportWin_auctionSignals) {
+        throw new Error("auctionSignals not what was expected!");
+      }
+
+      let aggregateWin_perBuyerSignals = perBuyerSignals["https://adstuff.publisher1.comSignals/"];
+      let expected_perBuyerSignals = globalThis.reportWin_perBuyerSignals["https://adstuff.publisher1.comSignals/"];
+
+      if (aggregateWin_perBuyerSignals !== expected_perBuyerSignals) {
+        throw new Error("perBuyerSignals not what was expected!");
+      }
+
+      if (sellerSignals !== globalThis.reportWin_sellerSignals) {
+        throw new Error("sellerSignals not what was expected!");
+      }
+
+      // We do not pass the deprecated `renderUrl` into `reportAggregateWin()`.
+      // It's removed since it was in browserSignals at the time of `reportWin()`.
+      delete globalThis.reportWin_browserSignals.renderUrl;
+      if (JSON.stringify(browserSignals) !== JSON.stringify(globalThis.reportWin_browserSignals)) {
+        throw new Error("browserSignals not what was expected!");
+      }
+
+      if (directFromSellerSignals.perBuyerSignals !== globalThis.reportWin_directFromSellerSignals.perBuyerSignals ||
+        directFromSellerSignals.auctionSignals !== globalThis.reportWin_directFromSellerSignals.auctionSignals) {
+        throw new Error("directFromSellerSignals not what was expected!");
+      }
+    }
+  )";
+
+  const std::string kSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      return bid;
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         kBidScript);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/std::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  RunAuctionAndWait(kSellerUrl, std::move(bidders));
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+}
+
+TEST_F(AuctionRunnerPrivateModelTrainingEnabledTest,
+       ReportAggregateWinErrorDoesNotStopNormalReporting) {
+  const char kBidScript[] = R"(
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      return {bid: 1,
+              render: interestGroup.ads[0].renderURL};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+      queueReportAggregateWin({
+        modelingSignalsConfig: {
+          destination: "https://destination.test/",
+          aggregationCoordinatorOrigin: "https://origin.test/",
+          payloadLength: 256,
+        }
+      });
+      sendReportTo("https://buyer-reporting.example.com/?bid=" +
+                   browserSignals.bid);
+    }
+
+    function reportAggregateWin(aggregateWinSignals, modelingSignalsConfig,
+                                auctionSignals,perBuyerSignals, sellerSignals,
+                                browserSignals, directFromSellerSignals ) {
+      throw new Error("reportAggregateWin Error!");
+    }
+  )";
+
+  const std::string kSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      return bid;
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+          sendReportTo("https://seller-reporting.example.com/?bid=" +
+                   browserSignals.bid);
+
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         kBidScript);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  // Only one bidder, to keep things simple.
+  interest_group_buyers_ = {{kBidder1}};
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_FALSE(result_.aborted_by_script);
+  EXPECT_EQ(kBidder1Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+
+  EXPECT_THAT(
+      result_.report_urls,
+      testing::AnyOf(testing::ElementsAre(
+                         GURL("https://seller-reporting.example.com/?bid=1"),
+                         GURL("https://buyer-reporting.example.com/?bid=1")),
+                     testing::ElementsAre(
+                         GURL("https://seller-reporting.example.com/?bid=1"),
+                         GURL("https://buyer-reporting.example.com/?bid=1"))));
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/std::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  RunAuctionAndWait(kSellerUrl, std::move(bidders));
+  EXPECT_THAT(result_.errors,
+              testing::UnorderedElementsAre(
+                  "https://adplatform.com/offers.js:25 "
+                  "Uncaught Error: reportAggregateWin Error!."));
+}
+
 TEST_F(RoundingTest, BidRounded) {
   const char kBidScript[] = R"(
     function generateBid(

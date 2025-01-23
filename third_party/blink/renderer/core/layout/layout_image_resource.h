@@ -69,6 +69,7 @@ class CORE_EXPORT LayoutImageResource
 
   virtual bool HasIntrinsicSize() const;
 
+  virtual gfx::SizeF ImageSize(float multiplier) const;
   virtual gfx::SizeF ConcreteObjectSize(
       float multiplier,
       const gfx::SizeF& default_object_size) const;

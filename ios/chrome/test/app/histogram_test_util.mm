@@ -43,7 +43,7 @@ HistogramTester::~HistogramTester() {
 BOOL HistogramTester::ExpectUniqueSample(
     const std::string& name,
     base::HistogramBase::Sample32 sample,
-    base::HistogramBase::Count expected_count,
+    base::HistogramBase::Count32 expected_count,
     FailureBlock failure_block) const {
   base::HistogramBase* histogram = FindHistogram(name, failure_block);
   if (!histogram) {
@@ -64,7 +64,7 @@ BOOL HistogramTester::ExpectUniqueSample(
 BOOL HistogramTester::ExpectBucketCount(
     const std::string& name,
     base::HistogramBase::Sample32 sample,
-    base::HistogramBase::Count expected_count,
+    base::HistogramBase::Count32 expected_count,
     FailureBlock failure_block) const {
   BOOL not_found_fails = expected_count > 0;
   FailureBlock not_found_block =
@@ -80,7 +80,7 @@ BOOL HistogramTester::ExpectBucketCount(
 }
 
 BOOL HistogramTester::ExpectTotalCount(const std::string& name,
-                                       base::HistogramBase::Count count,
+                                       base::HistogramBase::Count32 count,
                                        FailureBlock failure_block) const {
   BOOL not_found_fails = count > 0;
   FailureBlock not_found_block =
@@ -101,7 +101,7 @@ std::vector<Bucket> HistogramTester::GetAllSamples(
   if (snapshot) {
     for (auto it = snapshot->Iterator(); !it->Done(); it->Next()) {
       base::HistogramBase::Sample32 sample;
-      base::HistogramBase::Count count;
+      base::HistogramBase::Count32 count;
       it->Get(&sample, nullptr, &count);
       samples.push_back(Bucket(sample, count));
     }
@@ -136,7 +136,7 @@ HistogramTester::GetHistogramSamplesSinceCreation(
 BOOL HistogramTester::CheckBucketCount(
     const std::string& name,
     base::HistogramBase::Sample32 sample,
-    base::HistogramBase::Count expected_count,
+    base::HistogramBase::Count32 expected_count,
     const base::HistogramSamples& samples,
     FailureBlock failure_block) const {
   int actual_count = samples.GetCount(sample);
@@ -159,7 +159,7 @@ BOOL HistogramTester::CheckBucketCount(
 }
 
 BOOL HistogramTester::CheckTotalCount(const std::string& name,
-                                      base::HistogramBase::Count expected_count,
+                                      base::HistogramBase::Count32 expected_count,
                                       const base::HistogramSamples& samples,
                                       FailureBlock failure_block) const {
   int actual_count = samples.TotalCount();

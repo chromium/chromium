@@ -29,6 +29,7 @@ class CORE_EXPORT MathMLElement : public Element {
   ~MathMLElement() override;
 
   bool HasTagName(const MathMLQualifiedName& name) const {
+    DCHECK_EQ(name.NamespaceURI(), namespaceURI());
     return HasLocalName(name.LocalName());
   }
 

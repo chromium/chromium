@@ -162,16 +162,14 @@ class HudSoftwareBacking : public ResourcePool::SoftwareBacking {
     shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
 
     shared_image.reset();
-    // |shared_image_interface| might be null when
-    // gpu::GpuChannel::~GpuChannel() during shutdown or when gpu is crashed.
     // DestroySharedImage is a DeferredRequest, so it doesn't trigger IPC
     // itself. Flush here to trigger IPC.
-    if (layer_tree_frame_sink->shared_image_interface()) {
-      layer_tree_frame_sink->shared_image_interface()->Flush();
+    if (shared_image_interface) {
+      shared_image_interface->Flush();
     }
   }
 
-  raw_ptr<LayerTreeFrameSink> layer_tree_frame_sink;
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface;
 };
 
 bool HeadsUpDisplayLayerImpl::WillDraw(
@@ -317,7 +315,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
 
     if (!pool_resource.software_backing()) {
       auto backing = std::make_unique<HudSoftwareBacking>();
-      backing->layer_tree_frame_sink = layer_tree_frame_sink;
+      backing->shared_image_interface = sii;
       backing->shared_image = sii->CreateSharedImageForSoftwareCompositor(
           {pool_resource.format(), pool_resource.size(),
            pool_resource.color_space(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,

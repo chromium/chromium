@@ -17,9 +17,9 @@
 #import "ui/base/l10n/l10n_util.h"
 
 using base::test::ios::kWaitForUIElementTimeout;
-using chrome_test_util::NTPCollectionView;
 using chrome_test_util::BackButton;
 using chrome_test_util::ForwardButton;
+using chrome_test_util::NTPCollectionView;
 using chrome_test_util::OmniboxText;
 
 namespace {

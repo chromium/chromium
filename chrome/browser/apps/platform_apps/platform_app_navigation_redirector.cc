@@ -28,29 +28,22 @@ using extensions::UrlHandlerInfo;
 
 namespace {
 
-void LaunchAppWithUrl(
-    const scoped_refptr<const Extension> app,
-    const std::string& handler_id,
-    content::NavigationHandle* navigation_handle,
-    bool should_run_async,
-    navigation_interception::InterceptNavigationThrottle::ResultCallback
-        result_callback) {
+bool LaunchAppWithUrl(const scoped_refptr<const Extension> app,
+                      const std::string& handler_id,
+                      content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(navigation_handle->IsInMainFrame());
-  CHECK(!should_run_async);
 
   // Redirect top-level navigations only. This excludes iframes and webviews
   // in particular.
   if (navigation_handle->GetWebContents()->IsInnerWebContentsForGuest()) {
     DVLOG(1) << "Cancel redirection: source is a guest inner WebContents";
-    std::move(result_callback).Run(false);
-    return;
+    return false;
   }
 
   if (navigation_handle->IsInPrerenderedMainFrame()) {
     // If it's from prerendering, don't launch the app but abort the navigation.
-    std::move(result_callback).Run(true);
-    return;
+    return true;
   }
 
   // If no-state prefetching, don't launch the app but abort the navigation.
@@ -60,8 +53,7 @@ void LaunchAppWithUrl(
   if (no_state_prefetch_contents) {
     no_state_prefetch_contents->Destroy(
         prerender::FINAL_STATUS_NAVIGATION_INTERCEPTED);
-    std::move(result_callback).Run(true);
-    return;
+    return true;
   }
 
   // These are guaranteed by MaybeCreateThrottleFor below.
@@ -78,7 +70,7 @@ void LaunchAppWithUrl(
                                  navigation_handle->GetURL(),
                                  navigation_handle->GetReferrer().url);
 
-  std::move(result_callback).Run(true);
+  return true;
 }
 
 }  // namespace
@@ -138,7 +130,7 @@ PlatformAppNavigationRedirector::MaybeCreateThrottleFor(
           navigation_interception::InterceptNavigationThrottle>(
           handle,
           base::BindRepeating(&LaunchAppWithUrl, extension_ref, handler->id),
-          navigation_interception::SynchronyMode::kSync, std::nullopt);
+          navigation_interception::SynchronyMode::kSync);
     }
   }
 

@@ -18,7 +18,6 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.RequiredCallback;
 import org.chromium.base.SysUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
@@ -210,17 +209,14 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         mCustomTabNavigationDelegate =
                 new InterceptNavigationDelegate() {
                     @Override
-                    public void shouldIgnoreNavigation(
+                    public boolean shouldIgnoreNavigation(
                             NavigationHandle navigationHandle,
                             GURL escapedUrl,
                             boolean hiddenCrossFrame,
-                            boolean isSandboxedFrame,
-                            boolean shouldRunAsync,
-                            RequiredCallback<Boolean> resultCallback) {
+                            boolean isSandboxedFrame) {
                         if (DomDistillerUrlUtils.isDistilledPage(navigationHandle.getUrl())
                                 || navigationHandle.isExternalProtocol()) {
-                            resultCallback.onResult(false);
-                            return;
+                            return false;
                         }
 
                         Intent returnIntent =
@@ -237,7 +233,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
                         activity.startActivity(returnIntent);
                         activity.finish();
-                        resultCallback.onResult(true);
+                        return true;
                     }
                 };
 

@@ -196,8 +196,9 @@ void SadTabTabHelper::ReloadTab() {
 }
 
 void SadTabTabHelper::OnAppDidBecomeActive() {
-  if (!requires_reload_on_becoming_active_)
+  if (!requires_reload_on_becoming_active_) {
     return;
+  }
   if (web_state_->IsVisible()) {
     ReloadTab();
   } else {

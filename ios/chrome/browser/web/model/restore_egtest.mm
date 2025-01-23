@@ -23,10 +23,10 @@
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
 
-using chrome_test_util::OmniboxText;
-using chrome_test_util::NTPCollectionView;
 using chrome_test_util::BackButton;
 using chrome_test_util::ForwardButton;
+using chrome_test_util::NTPCollectionView;
+using chrome_test_util::OmniboxText;
 
 namespace {
 
@@ -99,7 +99,7 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
         return error == nil;
       });
 }
-}
+}  // namespace
 
 // Integration tests for restoring session history.
 @interface RestoreWithCacheTestCase : ChromeTestCase {

@@ -27,4 +27,4 @@ double CalculateAbsoluteFirstContentfulPaint(
   return navigation_start_time + relative_first_contentful_paint;
 }
 
-}
+}  // namespace web_performance_metrics

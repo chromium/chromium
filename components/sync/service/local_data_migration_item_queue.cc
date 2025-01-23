@@ -167,4 +167,8 @@ void LocalDataMigrationItemQueue::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
 }
 
+size_t LocalDataMigrationItemQueue::GetItemsCountForTesting() const {
+  return items_.size();
+}
+
 }  // namespace syncer

@@ -36,6 +36,7 @@ import org.chromium.components.payments.PaymentRequestUpdateEventListener;
 import org.chromium.components.payments.PaymentResponseHelper;
 import org.chromium.components.payments.PaymentResponseHelperInterface;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationAuthnController;
+import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationNoMatchingCredController;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PayerDetail;
@@ -90,6 +91,9 @@ public class ChromePaymentRequestService
 
     // mSpcAuthnUiController is null when it is closed and before it is shown.
     @Nullable private SecurePaymentConfirmationAuthnController mSpcAuthnUiController;
+
+    // mNoMatchingController is null when it is closed and before it is shown.
+    @Nullable private SecurePaymentConfirmationNoMatchingCredController mNoMatchingController;
 
     /** The delegate of this class */
     public interface Delegate extends PaymentRequestService.Delegate {
@@ -305,6 +309,42 @@ public class ChromePaymentRequestService
             return;
         }
         mPaymentUiService.dimBackground();
+    }
+
+    // Implements BrowserPaymentRequest:
+    @Override
+    public boolean showNoMatchingPaymentCredential() {
+        assert mSpec != null;
+        assert !mSpec.isDestroyed();
+        assert mSpec.isSecurePaymentConfirmationRequested();
+        assert !hasAvailableApps();
+
+        mJourneyLogger.setNoMatchingCredentialsShown();
+        mNoMatchingController =
+                SecurePaymentConfirmationNoMatchingCredController.create(mWebContents);
+        Runnable continueCallback =
+                () -> {
+                    mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+                    disconnectFromClientWithDebugMessage(
+                            ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
+                            PaymentErrorReason.NOT_ALLOWED_ERROR);
+                };
+        Runnable optOutCallback =
+                () -> {
+                    mJourneyLogger.setAborted(AbortReason.USER_OPTED_OUT);
+                    disconnectFromClientWithDebugMessage(
+                            ErrorStrings.SPC_USER_OPTED_OUT, PaymentErrorReason.USER_OPT_OUT);
+                };
+        PaymentMethodData spcMethodData =
+                mSpec.getMethodData().get(MethodStrings.SECURE_PAYMENT_CONFIRMATION);
+        assert spcMethodData != null;
+        mNoMatchingController.show(
+                continueCallback,
+                optOutCallback,
+                spcMethodData.securePaymentConfirmation.showOptOut,
+                spcMethodData.securePaymentConfirmation.rpId);
+
+        return true;
     }
 
     // Implements BrowserPaymentRequest:
@@ -555,6 +595,11 @@ public class ChromePaymentRequestService
             mSpcAuthnUiController = null;
         }
 
+        if (mNoMatchingController != null) {
+            mNoMatchingController.close();
+            mNoMatchingController = null;
+        }
+
         if (mPaymentRequestService != null) {
             mPaymentRequestService.close();
             mPaymentRequestService = null;
@@ -684,5 +729,12 @@ public class ChromePaymentRequestService
     public SecurePaymentConfirmationAuthnController
             getSecurePaymentConfirmationAuthnUiForTesting() {
         return mSpcAuthnUiController;
+    }
+
+    @VisibleForTesting
+    @Nullable
+    public SecurePaymentConfirmationNoMatchingCredController
+            getSecurePaymentConfirmationNoMatchingCredUiForTesting() {
+        return mNoMatchingController;
     }
 }

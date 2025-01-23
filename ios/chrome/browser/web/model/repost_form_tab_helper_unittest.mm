@@ -14,7 +14,7 @@
 
 // A configurable TabHelper delegate for testing.
 @interface RepostFormTabHelperTestDelegate
-    : NSObject<RepostFormTabHelperDelegate>
+    : NSObject <RepostFormTabHelperDelegate>
 
 // YES if repost form dialog is currently presented.
 @property(nonatomic, readonly, getter=isPresentingDialog) BOOL presentingDialog;

@@ -125,12 +125,12 @@ std::string_view kSiteC = "c.test";
 std::string_view kSiteD = "d.test";
 }  // namespace
 
-class DipsNavigationFlowDetectorTest : public ContentBrowserTest {
+class BtmNavigationFlowDetectorTest : public ContentBrowserTest {
  public:
-  DipsNavigationFlowDetectorTest()
+  BtmNavigationFlowDetectorTest()
       : embedded_https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
-  ~DipsNavigationFlowDetectorTest() override = default;
+  ~BtmNavigationFlowDetectorTest() override = default;
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
@@ -227,8 +227,8 @@ class DipsNavigationFlowDetectorTest : public ContentBrowserTest {
     return testing::AssertionSuccess();
   }
 
-  DipsNavigationFlowDetector* GetDetector() {
-    return DipsNavigationFlowDetector::FromWebContents(GetActiveWebContents());
+  BtmNavigationFlowDetector* GetDetector() {
+    return BtmNavigationFlowDetector::FromWebContents(GetActiveWebContents());
   }
 
   void SimulateBookmarkNavigation(WebContents* web_contents, const GURL& url) {
@@ -250,21 +250,21 @@ class DipsNavigationFlowDetectorTest : public ContentBrowserTest {
   }
 };
 
-class DipsNavigationFlowDetectorPrerenderTest
-    : public DipsNavigationFlowDetectorTest {
+class BtmNavigationFlowDetectorPrerenderTest
+    : public BtmNavigationFlowDetectorTest {
  public:
-  DipsNavigationFlowDetectorPrerenderTest() {
+  BtmNavigationFlowDetectorPrerenderTest() {
     prerender_test_helper_ =
         std::make_unique<test::PrerenderTestHelper>(base::BindRepeating(
-            &DipsNavigationFlowDetectorTest::GetActiveWebContents,
+            &BtmNavigationFlowDetectorTest::GetActiveWebContents,
             base::Unretained(this)));
   }
-  ~DipsNavigationFlowDetectorPrerenderTest() override = default;
+  ~BtmNavigationFlowDetectorPrerenderTest() override = default;
 
   void SetUpOnMainThread() override {
     prerender_test_helper_->RegisterServerRequestMonitor(
         embedded_https_test_server_);
-    DipsNavigationFlowDetectorTest::SetUpOnMainThread();
+    BtmNavigationFlowDetectorTest::SetUpOnMainThread();
   }
 
  protected:
@@ -276,10 +276,10 @@ class DipsNavigationFlowDetectorPrerenderTest
   std::unique_ptr<test::PrerenderTestHelper> prerender_test_helper_;
 };
 
-class DipsNavigationFlowDetectorPATApiTest
-    : public DipsNavigationFlowDetectorTest {
+class BtmNavigationFlowDetectorPATApiTest
+    : public BtmNavigationFlowDetectorTest {
  public:
-  DipsNavigationFlowDetectorPATApiTest() {
+  BtmNavigationFlowDetectorPATApiTest() {
     // Enable Privacy Sandbox APIs on all sites.
     scoped_feature_list_.InitWithFeatures(
         {features::kPrivacySandboxAdsAPIsOverride}, {});
@@ -289,7 +289,7 @@ class DipsNavigationFlowDetectorPATApiTest
     RegisterTrustTokenTestHandler(&trust_token_request_handler_);
     browser_client_.emplace();
     browser_client().SetBlockThirdPartyCookiesByDefault(true);
-    DipsNavigationFlowDetectorTest::SetUpOnMainThread();
+    BtmNavigationFlowDetectorTest::SetUpOnMainThread();
   }
 
   base::expected<std::vector<url::Origin>, std::string>
@@ -427,7 +427,7 @@ class DipsNavigationFlowDetectorPATApiTest
   std::optional<ContentBrowserTestTpcBlockingBrowserClient> browser_client_;
 };
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
                        DirectNavigationEmittedForTypedUrl) {
   WebContents* web_contents = GetActiveWebContents();
   GURL url = embedded_https_test_server_.GetURL(kSiteA, "/title1.html");
@@ -448,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
       static_cast<int64_t>(dips::DirectNavigationSource::kOmnibar));
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
                        DirectNavigationEmittedForBookmark) {
   WebContents* web_contents = GetActiveWebContents();
   GURL url = embedded_https_test_server_.GetURL(kSiteA, "/title1.html");
@@ -469,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
       static_cast<int64_t>(dips::DirectNavigationSource::kBookmark));
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
                        DirectNavigationEmittedForServerRedirect) {
   WebContents* web_contents = GetActiveWebContents();
   GURL redirector_url = embedded_https_test_server_.GetURL(
@@ -493,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
       static_cast<int64_t>(dips::DirectNavigationSource::kOmnibar));
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
                        DirectNavigationNotEmittedWhenNoPageCommits) {
   WebContents* web_contents = GetActiveWebContents();
   GURL url = embedded_https_test_server_.GetURL(kSiteA, "/page204.html");
@@ -503,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   ExpectNoUkmEventsOfType(kDirectNavigationUkmEventName);
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
                        DirectNavigationNotEmittedForLinkClick) {
   WebContents* web_contents = GetActiveWebContents();
   GURL initial_url = embedded_https_test_server_.GetURL(kSiteA, "/title1.html");
@@ -536,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
 #define MAYBE_SuspectedTrackerFlowEmittedForServerRedirectExit \
   SuspectedTrackerFlowEmittedForServerRedirectExit
 #endif
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
                        MAYBE_SuspectedTrackerFlowEmittedForServerRedirectExit) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -589,7 +589,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   SuspectedTrackerFlowEmittedForServerRedirectExitConsecutiveEvents
 #endif
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorTest,
+    BtmNavigationFlowDetectorTest,
     MAYBE_SuspectedTrackerFlowEmittedForServerRedirectExitConsecutiveEvents) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -672,8 +672,8 @@ const std::vector<std::string_view> kClientRedirectTypeNames = {
     "MetaTag", "JsWindowLocationReplace", "RedirectLikeNavigation"};
 }  // namespace
 
-class DipsNavigationFlowDetectorClientRedirectTest
-    : public DipsNavigationFlowDetectorTest,
+class BtmNavigationFlowDetectorClientRedirectTest
+    : public BtmNavigationFlowDetectorTest,
       public testing::WithParamInterface<ClientRedirectType> {
  protected:
   ClientRedirectType client_redirect_type() { return GetParam(); }
@@ -696,7 +696,7 @@ class DipsNavigationFlowDetectorClientRedirectTest
 };
 
 IN_PROC_BROWSER_TEST_P(
-    DipsNavigationFlowDetectorClientRedirectTest,
+    BtmNavigationFlowDetectorClientRedirectTest,
     SuspectedTrackerFlowEmittedForClientRedirectWithInteraction) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -757,7 +757,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 IN_PROC_BROWSER_TEST_P(
-    DipsNavigationFlowDetectorClientRedirectTest,
+    BtmNavigationFlowDetectorClientRedirectTest,
     SuspectedTrackerFlowEmittedForClientRedirectWithoutInteraction) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -806,7 +806,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorTest,
+    BtmNavigationFlowDetectorTest,
     SuspectedTrackerFlowNotEmittedWhenServerRedirectIsMultiHop) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -832,7 +832,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorTest,
+    BtmNavigationFlowDetectorTest,
     SuspectedTrackerFlowNotEmittedWhenRedirectDoesNotWriteCookies) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -852,7 +852,7 @@ IN_PROC_BROWSER_TEST_F(
   ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
                        SuspectedTrackerFlowNotEmittedForSameSiteReferral) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -876,7 +876,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
                        SuspectedTrackerFlowNotEmittedForSameSiteExit) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -901,7 +901,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorTest,
+    BtmNavigationFlowDetectorTest,
     SuspectedTrackerFlowNotEmittedWhenReferralIsUserInitiated) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -926,7 +926,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorTest,
+    BtmNavigationFlowDetectorTest,
     SuspectedTrackerFlowNotEmittedWhenReferralIsBrowserInitiated) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -950,7 +950,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorTest,
+    BtmNavigationFlowDetectorTest,
     SuspectedTrackerFlowNotEmittedWhenEntrypointDidNotAccessStorage) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -973,7 +973,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorTest,
+    BtmNavigationFlowDetectorTest,
     SuspectedTrackerFlowNotEmittedForSameSiteClientSideExit) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1001,7 +1001,7 @@ IN_PROC_BROWSER_TEST_F(
   ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
                        SuspectedTrackerFlowNotEmittedForUserInitiatedReferral) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1030,7 +1030,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorTest,
+    BtmNavigationFlowDetectorTest,
     SuspectedTrackerFlowNotEmittedForBrowserInitiatedReferral) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1058,7 +1058,7 @@ IN_PROC_BROWSER_TEST_F(
   ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
 }
 
-IN_PROC_BROWSER_TEST_P(DipsNavigationFlowDetectorClientRedirectTest,
+IN_PROC_BROWSER_TEST_P(BtmNavigationFlowDetectorClientRedirectTest,
                        InFlowSuccessorInteractionEmittedForAllClientRedirects) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1099,7 +1099,7 @@ IN_PROC_BROWSER_TEST_P(DipsNavigationFlowDetectorClientRedirectTest,
 }
 
 IN_PROC_BROWSER_TEST_P(
-    DipsNavigationFlowDetectorClientRedirectTest,
+    BtmNavigationFlowDetectorClientRedirectTest,
     InFlowSuccessorInteractionEmittedForMixOfClientAndServerRedirects) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1143,7 +1143,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorTest,
+    BtmNavigationFlowDetectorTest,
     InFlowSuccessorInteractionEmittedForMultipleSuccessorInteractions) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1201,7 +1201,7 @@ IN_PROC_BROWSER_TEST_F(
                                    false);
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
                        InFlowSuccessorInteractionEmittedForConsecutiveFlows) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1280,7 +1280,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   //                                  "DidEntrypointAccessStorage", true);
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
                        InFlowSuccessorInteractionNotEmittedWhenNoFlowEnd) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1307,7 +1307,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorTest,
+    BtmNavigationFlowDetectorTest,
     InFlowSuccessorInteractionNotEmittedWhenMultipleCrossSiteServerRedirects) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1341,7 +1341,7 @@ IN_PROC_BROWSER_TEST_F(
   ExpectNoUkmEventsOfType(kInFlowSuccessorInteractionUkmEventName);
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
                        InFlowSuccessorInteractionOnlyEmittedOncePerSuccessor) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1396,7 +1396,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorTest,
+    BtmNavigationFlowDetectorTest,
     NavigationFlowNodeNotEmittedWhenLessThanThreePagesVisited) {
   // Visit a page on site A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1410,7 +1410,7 @@ IN_PROC_BROWSER_TEST_F(
   ExpectNoNavigationFlowNodeUkmEvents();
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
                        NavigationFlowNodeNotEmittedWhenSameSiteWithPriorPage) {
   // Visit a page on site A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1428,7 +1428,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   ExpectNoNavigationFlowNodeUkmEvents();
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
                        NavigationFlowNodeNotEmittedWhenSameSiteWithNextPage) {
   // Visit a page on site A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1447,7 +1447,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorTest,
+    BtmNavigationFlowDetectorTest,
     NavigationFlowNodeNotEmittedWhenSiteDidNotAccessStorage) {
   // Visit A->B->C without storage access on B.
   WebContents* web_contents = GetActiveWebContents();
@@ -1472,7 +1472,7 @@ IN_PROC_BROWSER_TEST_F(
   NavigationFlowNodeNotEmittedWhenCookiesReadViaHeaders
 #endif
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorTest,
+    BtmNavigationFlowDetectorTest,
     MAYBE_NavigationFlowNodeNotEmittedWhenCookiesReadViaHeaders) {
   // Pre-write a cookie for site B so it can be passed in request headers later.
   WebContents* web_contents = GetActiveWebContents();
@@ -1508,7 +1508,7 @@ IN_PROC_BROWSER_TEST_F(
   NavigationFlowNodeNotEmittedForCookieAccessInPrerenders
 #endif
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorPrerenderTest,
+    BtmNavigationFlowDetectorPrerenderTest,
     MAYBE_NavigationFlowNodeNotEmittedForCookieAccessInPrerenders) {
   // Visit site A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1546,7 +1546,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorPATApiTest,
+    BtmNavigationFlowDetectorPATApiTest,
     NavigationFlowNodeNotEmittedWhenOnlyStorageAccessIsTopicsApi) {
   // Visit site A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1573,7 +1573,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorPATApiTest,
+    BtmNavigationFlowDetectorPATApiTest,
     NavigationFlowNodeNotEmittedWhenOnlyStorageAccessIsProtectedAudienceApi) {
   // Visit site A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1615,7 +1615,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorPATApiTest,
+    BtmNavigationFlowDetectorPATApiTest,
     NavigationFlowNodeNotEmittedWhenOnlyStorageAccessIsPrivateStateTokensApi) {
   // Visit site A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1654,7 +1654,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorPATApiTest,
+    BtmNavigationFlowDetectorPATApiTest,
     NavigationFlowNodeNotEmittedWhenOnlyStorageAccessIsAttributionReportingApi) {
   // Visit site A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1687,7 +1687,7 @@ IN_PROC_BROWSER_TEST_F(
   ExpectNoNavigationFlowNodeUkmEvents();
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
                        NavigationFlowNodeEmitsWhenVisitingABA) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1733,7 +1733,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
                                        visit_duration.InMilliseconds()));
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
                        NavigationFlowNodeEmitsWhenWritingCookiesInHeaders) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1775,7 +1775,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorTest,
+    BtmNavigationFlowDetectorTest,
     NavigationFlowNodeEmitsWhenIframeWritesCookiesInHeaders) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1824,7 +1824,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorTest,
+    BtmNavigationFlowDetectorTest,
     NavigationFlowNodeNotEmittedWhenReadingNonexistentCookiesWithJavascript) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1845,7 +1845,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorTest,
+    BtmNavigationFlowDetectorTest,
     NavigationFlowNodeEmitsWhenReadingCookiesWithJavascript) {
   // Pre-write a cookie for site B so it can be read later.
   WebContents* web_contents = GetActiveWebContents();
@@ -1891,7 +1891,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorTest,
+    BtmNavigationFlowDetectorTest,
     NavigationFlowNodeEmitsWhenWritingCookiesWithJavascript) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1937,7 +1937,7 @@ IN_PROC_BROWSER_TEST_F(
                                        visit_duration.InMilliseconds()));
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
                        NavigationFlowNodeEmitsWhenLocalStorageAccessed) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -1982,7 +1982,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorTest,
+    BtmNavigationFlowDetectorTest,
     NavigationFlowNodeCorrectWhenEntryAndExitRendererInitiated) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -2027,7 +2027,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DipsNavigationFlowDetectorTest,
+    BtmNavigationFlowDetectorTest,
     NavigationFlowNodeCorrectWhenOnlyEntryRendererInitiated) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -2071,7 +2071,7 @@ IN_PROC_BROWSER_TEST_F(
   ukm_recorder().ExpectEntryMetric(ukm_entry, "VisitDurationMilliseconds", 0l);
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
                        NavigationFlowNodeCorrectWhenOnlyExitRendererInitiated) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -2115,7 +2115,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   ukm_recorder().ExpectEntryMetric(ukm_entry, "VisitDurationMilliseconds", 0l);
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
                        NavigationFlowNodeReportsNegativeDurationAsZero) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -2160,15 +2160,15 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
 // permits it (Requires mocking the Android Platform Authenticator i.e. GMS
 // Core).
 #if !BUILDFLAG(IS_ANDROID)
-class DipsNavigationFlowDetectorWebAuthnTest : public ContentBrowserTest {
+class BtmNavigationFlowDetectorWebAuthnTest : public ContentBrowserTest {
  public:
-  DipsNavigationFlowDetectorWebAuthnTest()
+  BtmNavigationFlowDetectorWebAuthnTest()
       : embedded_https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
-  DipsNavigationFlowDetectorWebAuthnTest(
-      const DipsNavigationFlowDetectorWebAuthnTest&) = delete;
-  DipsNavigationFlowDetectorWebAuthnTest& operator=(
-      const DipsNavigationFlowDetectorWebAuthnTest&) = delete;
+  BtmNavigationFlowDetectorWebAuthnTest(
+      const BtmNavigationFlowDetectorWebAuthnTest&) = delete;
+  BtmNavigationFlowDetectorWebAuthnTest& operator=(
+      const BtmNavigationFlowDetectorWebAuthnTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
@@ -2267,7 +2267,7 @@ class DipsNavigationFlowDetectorWebAuthnTest : public ContentBrowserTest {
   std::optional<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorWebAuthnTest,
+IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorWebAuthnTest,
                        NavigationFlowNodeReportsWAA) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -2312,12 +2312,12 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorWebAuthnTest,
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    DipsNavigationFlowDetectorClientRedirectTest,
+    BtmNavigationFlowDetectorClientRedirectTest,
     testing::Values(ClientRedirectType::kMetaTag,
                     ClientRedirectType::kJsWindowLocationReplace,
                     ClientRedirectType::kRedirectLikeNavigation),
     [](const testing::TestParamInfo<
-        DipsNavigationFlowDetectorClientRedirectTest::ParamType>& param_info) {
+        BtmNavigationFlowDetectorClientRedirectTest::ParamType>& param_info) {
       ClientRedirectType client_redirect_type = param_info.param;
       CHECK(client_redirect_type >= 0 &&
             client_redirect_type < kClientRedirectTypeNames.size());

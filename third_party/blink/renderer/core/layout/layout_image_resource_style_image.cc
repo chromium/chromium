@@ -70,6 +70,16 @@ scoped_refptr<Image> LayoutImageResourceStyleImage::GetImage(
                                 layout_object_->StyleRef(), size);
 }
 
+gfx::SizeF LayoutImageResourceStyleImage::ImageSize(float multiplier) const {
+  // TODO(davve): Find out the correct default object size in this context.
+  auto* list_marker = DynamicTo<LayoutListMarkerImage>(layout_object_.Get());
+  gfx::SizeF default_size = list_marker
+                                ? list_marker->DefaultSize()
+                                : gfx::SizeF(LayoutReplaced::kDefaultWidth,
+                                             LayoutReplaced::kDefaultHeight);
+  return ConcreteObjectSize(multiplier, default_size);
+}
+
 gfx::SizeF LayoutImageResourceStyleImage::ConcreteObjectSize(
     float multiplier,
     const gfx::SizeF& default_object_size) const {

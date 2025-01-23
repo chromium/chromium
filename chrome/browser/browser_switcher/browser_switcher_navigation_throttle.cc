@@ -42,36 +42,26 @@ void OpenBrowserSwitchPage(base::WeakPtr<content::WebContents> web_contents,
   web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
-void MaybeLaunchAlternativeBrowser(
-    content::NavigationHandle* navigation_handle,
-    bool should_run_async,
-    navigation_interception::InterceptNavigationThrottle::ResultCallback
-        result_callback) {
+bool MaybeLaunchAlternativeBrowser(
+    content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  CHECK(!should_run_async);
 
   BrowserSwitcherService* service =
       BrowserSwitcherServiceFactory::GetForBrowserContext(
           navigation_handle->GetWebContents()->GetBrowserContext());
-  if (!service) {
-    std::move(result_callback).Run(false);
-    return;
-  }
+  if (!service)
+    return false;
 
   const GURL& url = navigation_handle->GetURL();
   bool should_switch = service->sitelist()->ShouldSwitch(url);
 
-  if (!should_switch) {
-    std::move(result_callback).Run(false);
-    return;
-  }
+  if (!should_switch)
+    return false;
 
   // This check is for GuestViews in particular. This works because we can only
   // navigate a guest after attaching to the outer WebContents.
-  if (navigation_handle->GetWebContents()->GetOuterWebContents()) {
-    std::move(result_callback).Run(false);
-    return;
-  }
+  if (navigation_handle->GetWebContents()->GetOuterWebContents())
+    return false;
 
   // If no-state prefetching, don't launch the alternative browser but abort the
   // navigation.
@@ -80,8 +70,7 @@ void MaybeLaunchAlternativeBrowser(
           navigation_handle->GetWebContents());
   if (no_state_prefetch_contents) {
     no_state_prefetch_contents->Destroy(prerender::FINAL_STATUS_BROWSER_SWITCH);
-    std::move(result_callback).Run(true);
-    return;
+    return true;
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -89,7 +78,7 @@ void MaybeLaunchAlternativeBrowser(
       base::BindOnce(&OpenBrowserSwitchPage,
                      navigation_handle->GetWebContents()->GetWeakPtr(), url,
                      navigation_handle->GetPageTransition()));
-  std::move(result_callback).Run(true);
+  return true;
 }
 
 }  // namespace
@@ -112,7 +101,7 @@ BrowserSwitcherNavigationThrottle::MaybeCreateThrottleFor(
 
   return std::make_unique<navigation_interception::InterceptNavigationThrottle>(
       navigation, base::BindRepeating(&MaybeLaunchAlternativeBrowser),
-      navigation_interception::SynchronyMode::kSync, std::nullopt);
+      navigation_interception::SynchronyMode::kSync);
 }
 
 }  // namespace browser_switcher

@@ -57,24 +57,18 @@ MaybeCreateWebViewSidePanelThrottleFor(content::NavigationHandle* handle) {
   return std::make_unique<navigation_interception::InterceptNavigationThrottle>(
       handle,
       base::BindRepeating(
-          [](const GURL& observed_url, content::NavigationHandle* handle,
-             bool should_run_async,
-             navigation_interception::InterceptNavigationThrottle::
-                 ResultCallback result_callback) {
+          [](const GURL& observed_url, content::NavigationHandle* handle) {
             DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-            CHECK(!should_run_async);
             auto* data = static_cast<WebViewSidePanelWebContentsUserData*>(
                 handle->GetWebContents()->GetUserData(
                     kWebViewSidePanelWebContentsUserDataKey));
             // The delegate is stored in a WeakPtr. Check if it is still there.
             if (!data->delegate()) {
-              std::move(result_callback).Run(true);
-              return;
+              return true;
             }
             const GURL& next_url = handle->GetURL();
             if (CanNavigateInPanel(handle, observed_url, next_url)) {
-              std::move(result_callback).Run(false);
-              return;
+              return false;
             }
 
             content::OpenURLParams params(
@@ -84,8 +78,8 @@ MaybeCreateWebViewSidePanelThrottleFor(content::NavigationHandle* handle) {
             params.initiator_origin = handle->GetInitiatorOrigin();
             params.initiator_base_url = handle->GetInitiatorBaseUrl();
             data->delegate()->OpenUrlInBrowser(params);
-            std::move(result_callback).Run(true);
+            return true;
           },
           observed_url),
-      navigation_interception::SynchronyMode::kSync, std::nullopt);
+      navigation_interception::SynchronyMode::kSync);
 }

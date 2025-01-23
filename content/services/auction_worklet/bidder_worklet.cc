@@ -855,6 +855,200 @@ BidderWorklet::V8State::SingleGenerateBidResult&
 BidderWorklet::V8State::SingleGenerateBidResult::operator=(
     SingleGenerateBidResult&&) = default;
 
+bool BidderWorklet::V8State::SetBrowserSignals(
+    bool is_for_additional_bid,
+    const std::optional<std::string>& interest_group_name_reporting_id,
+    const std::optional<std::string>& buyer_reporting_id,
+    const std::optional<std::string>& buyer_and_seller_reporting_id,
+    const std::optional<std::string>& selected_buyer_and_seller_reporting_id,
+    const GURL& browser_signal_render_url,
+    DeprecatedUrlLazyFiller* deprecated_render_url,
+    double browser_signal_bid,
+    const std::optional<blink::AdCurrency>& browser_signal_bid_currency,
+    double browser_signal_highest_scoring_other_bid,
+    const std::optional<blink::AdCurrency>&
+        browser_signal_highest_scoring_other_bid_currency,
+    bool browser_signal_made_highest_scoring_other_bid,
+    const std::optional<double>& browser_signal_ad_cost,
+    const std::optional<uint16_t>& browser_signal_modeling_signals,
+    uint8_t browser_signal_join_count,
+    uint8_t browser_signal_recency,
+    const url::Origin& browser_signal_seller_origin,
+    const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
+    const std::optional<uint32_t>& bidding_signals_data_version,
+    const std::string& kanon_status,
+    const base::TimeDelta reporting_timeout,
+    v8::Local<v8::Object> browser_signals,
+    gin::Dictionary& browser_signals_dict) {
+  if (!browser_signals_dict.Set("topWindowHostname",
+                                top_window_origin_.host()) ||
+      !browser_signals_dict.Set(
+          "interestGroupOwner",
+          url::Origin::Create(script_source_url_).Serialize()) ||
+      (interest_group_name_reporting_id.has_value() &&
+       !browser_signals_dict.Set("interestGroupName",
+                                 *interest_group_name_reporting_id)) ||
+      (buyer_reporting_id.has_value() &&
+       !browser_signals_dict.Set("buyerReportingId", *buyer_reporting_id)) ||
+      (buyer_and_seller_reporting_id.has_value() &&
+       !browser_signals_dict.Set("buyerAndSellerReportingId",
+                                 *buyer_and_seller_reporting_id)) ||
+      (selected_buyer_and_seller_reporting_id.has_value() &&
+       !browser_signals_dict.Set("selectedBuyerAndSellerReportingId",
+                                 *selected_buyer_and_seller_reporting_id)) ||
+      !browser_signals_dict.Set("renderURL",
+                                browser_signal_render_url.spec()) ||
+      // TODO(crbug.com/40266734): Remove deprecated `renderUrl` alias.
+      (deprecated_render_url && !deprecated_render_url->AddDeprecatedUrlGetter(
+                                    browser_signals, "renderUrl")) ||
+      !browser_signals_dict.Set("bid", browser_signal_bid) ||
+      !browser_signals_dict.Set(
+          "bidCurrency",
+          blink::PrintableAdCurrency(browser_signal_bid_currency)) ||
+      (browser_signal_ad_cost.has_value() &&
+       !browser_signals_dict.Set("adCost", *browser_signal_ad_cost)) ||
+      (browser_signal_modeling_signals.has_value() &&
+       !browser_signals_dict.Set(
+           "modelingSignals",
+           static_cast<double>(*browser_signal_modeling_signals))) ||
+      !browser_signals_dict.Set(
+          "joinCount", static_cast<double>(browser_signal_join_count)) ||
+      (!is_for_additional_bid &&
+       !browser_signals_dict.Set(
+           "recency", static_cast<double>(browser_signal_recency))) ||
+      !browser_signals_dict.Set("highestScoringOtherBid",
+                                browser_signal_highest_scoring_other_bid) ||
+      !browser_signals_dict.Set(
+          "highestScoringOtherBidCurrency",
+          blink::PrintableAdCurrency(
+              browser_signal_highest_scoring_other_bid_currency)) ||
+      !browser_signals_dict.Set(
+          "madeHighestScoringOtherBid",
+          browser_signal_made_highest_scoring_other_bid) ||
+      !browser_signals_dict.Set("seller",
+                                browser_signal_seller_origin.Serialize()) ||
+      (browser_signal_top_level_seller_origin &&
+       !browser_signals_dict.Set(
+           "topLevelSeller",
+           browser_signal_top_level_seller_origin->Serialize())) ||
+      (bidding_signals_data_version.has_value() &&
+       !browser_signals_dict.Set("dataVersion",
+                                 bidding_signals_data_version.value())) ||
+      (!kanon_status.empty() &&
+       !browser_signals_dict.Set("kAnonStatus", kanon_status)) ||
+      (base::FeatureList::IsEnabled(blink::features::kFledgeReportingTimeout) &&
+       !browser_signals_dict.Set("reportingTimeout",
+                                 reporting_timeout.InMilliseconds()))) {
+    return false;
+  }
+  return true;
+}
+
+bool BidderWorklet::V8State::SetReportAggregateWinArgs(
+    v8::Local<v8::Context>& context,
+    const std::optional<std::string>& auction_signals_json,
+    const std::optional<std::string>& per_buyer_signals_json,
+    const std::string seller_signals_json,
+    bool is_for_additional_bid,
+    const std::optional<std::string>& interest_group_name_reporting_id,
+    const std::optional<std::string>& buyer_reporting_id,
+    const std::optional<std::string>& buyer_and_seller_reporting_id,
+    const std::optional<std::string>& selected_buyer_and_seller_reporting_id,
+    const GURL& browser_signal_render_url,
+    double browser_signal_bid,
+    const std::optional<blink::AdCurrency>& browser_signal_bid_currency,
+    double browser_signal_highest_scoring_other_bid,
+    const std::optional<blink::AdCurrency>&
+        browser_signal_highest_scoring_other_bid_currency,
+    bool browser_signal_made_highest_scoring_other_bid,
+    const std::optional<double>& browser_signal_ad_cost,
+    const std::optional<uint16_t>& browser_signal_modeling_signals,
+    uint8_t browser_signal_join_count,
+    uint8_t browser_signal_recency,
+    const url::Origin& browser_signal_seller_origin,
+    const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
+    const std::optional<base::TimeDelta> browser_signal_reporting_timeout,
+    const std::optional<uint32_t>& bidding_signals_data_version,
+    const std::string& kanon_status,
+    const std::optional<std::string>& aggregate_win_signals,
+    const base::TimeDelta reporting_timeout,
+    const v8::Local<v8::Value>& per_buyer_signals,
+    const v8::Local<v8::Value>& auction_signals,
+    const ReportBindings::ModelingSignalsConfig& modeling_signals_config,
+    v8::LocalVector<v8::Value>& report_aggregate_win_args) {
+  v8::Isolate* isolate = v8_helper_->isolate();
+  v8::Local<v8::Object> report_aggregate_win_browser_signals =
+      v8::Object::New(isolate);
+  gin::Dictionary report_aggregate_win_browser_signals_dict(
+      isolate, report_aggregate_win_browser_signals);
+
+  v8::Local<v8::Object> report_aggregate_win_direct_from_seller_signals =
+      v8::Object::New(isolate);
+  gin::Dictionary report_aggregate_win_direct_from_seller_signals_dict(
+      isolate, report_aggregate_win_direct_from_seller_signals);
+
+  v8::Local<v8::Object> modeling_signals_config_v8 = v8::Object::New(isolate);
+  gin::Dictionary modeling_signals_config_dict(isolate,
+                                               modeling_signals_config_v8);
+
+  v8::Local<v8::Value> aggregate_win_signals_v8 = v8::Null(isolate);
+  if (aggregate_win_signals) {
+    if (!v8_helper_->CreateValueFromJson(context, aggregate_win_signals.value())
+             .ToLocal(&aggregate_win_signals_v8)) {
+      return false;
+    }
+    report_aggregate_win_args.push_back(aggregate_win_signals_v8);
+  }
+
+  modeling_signals_config_dict.Set("destination",
+                                   modeling_signals_config.destination.spec());
+  modeling_signals_config_dict.Set(
+      "aggregationCoordinatorOrigin",
+      modeling_signals_config.aggregation_coordinator_origin.spec());
+  modeling_signals_config_dict.Set("payloadLength",
+                                   modeling_signals_config.payload_length);
+  report_aggregate_win_args.push_back(modeling_signals_config_v8);
+
+  if (!AppendJsonValueOrNull(v8_helper_.get(), context,
+                             base::OptionalToPtr(auction_signals_json),
+                             &report_aggregate_win_args) ||
+      !AppendJsonValueOrNull(v8_helper_.get(), context,
+                             base::OptionalToPtr(per_buyer_signals_json),
+                             &report_aggregate_win_args) ||
+      !v8_helper_->AppendJsonValue(context, seller_signals_json,
+                                   &report_aggregate_win_args)) {
+    return false;
+  }
+
+  if (!SetBrowserSignals(
+          is_for_additional_bid, interest_group_name_reporting_id,
+          buyer_reporting_id, buyer_and_seller_reporting_id,
+          selected_buyer_and_seller_reporting_id, browser_signal_render_url,
+          /*deprecated_render_url=*/nullptr, browser_signal_bid,
+          browser_signal_bid_currency, browser_signal_highest_scoring_other_bid,
+          browser_signal_highest_scoring_other_bid_currency,
+          browser_signal_made_highest_scoring_other_bid, browser_signal_ad_cost,
+          browser_signal_modeling_signals, browser_signal_join_count,
+          browser_signal_recency, browser_signal_seller_origin,
+          browser_signal_top_level_seller_origin, bidding_signals_data_version,
+          kanon_status, reporting_timeout, report_aggregate_win_browser_signals,
+          report_aggregate_win_browser_signals_dict)) {
+    return false;
+  }
+  report_aggregate_win_args.push_back(report_aggregate_win_browser_signals);
+
+  if (!report_aggregate_win_direct_from_seller_signals_dict.Set(
+          "perBuyerSignals", per_buyer_signals) ||
+      !report_aggregate_win_direct_from_seller_signals_dict.Set(
+          "auctionSignals", auction_signals)) {
+    return false;
+  }
+  report_aggregate_win_args.push_back(
+      report_aggregate_win_direct_from_seller_signals);
+
+  return true;
+}
+
 void BidderWorklet::V8State::ReportWin(
     bool is_for_additional_bid,
     const std::optional<std::string>& interest_group_name_reporting_id,
@@ -971,65 +1165,19 @@ void BidderWorklet::V8State::ReportWin(
       browser_signal_reporting_timeout.has_value()
           ? *browser_signal_reporting_timeout
           : AuctionV8Helper::kScriptTimeout;
-  if (!browser_signals_dict.Set("topWindowHostname",
-                                top_window_origin_.host()) ||
-      !browser_signals_dict.Set(
-          "interestGroupOwner",
-          url::Origin::Create(script_source_url_).Serialize()) ||
-      (interest_group_name_reporting_id.has_value() &&
-       !browser_signals_dict.Set("interestGroupName",
-                                 *interest_group_name_reporting_id)) ||
-      (buyer_reporting_id.has_value() &&
-       !browser_signals_dict.Set("buyerReportingId", *buyer_reporting_id)) ||
-      (buyer_and_seller_reporting_id.has_value() &&
-       !browser_signals_dict.Set("buyerAndSellerReportingId",
-                                 *buyer_and_seller_reporting_id)) ||
-      (selected_buyer_and_seller_reporting_id.has_value() &&
-       !browser_signals_dict.Set("selectedBuyerAndSellerReportingId",
-                                 *selected_buyer_and_seller_reporting_id)) ||
-      !browser_signals_dict.Set("renderURL",
-                                browser_signal_render_url.spec()) ||
-      // TODO(crbug.com/40266734): Remove deprecated `renderUrl` alias.
-      !deprecated_render_url.AddDeprecatedUrlGetter(browser_signals,
-                                                    "renderUrl") ||
-      !browser_signals_dict.Set("bid", browser_signal_bid) ||
-      !browser_signals_dict.Set(
-          "bidCurrency",
-          blink::PrintableAdCurrency(browser_signal_bid_currency)) ||
-      (browser_signal_ad_cost.has_value() &&
-       !browser_signals_dict.Set("adCost", *browser_signal_ad_cost)) ||
-      (browser_signal_modeling_signals.has_value() &&
-       !browser_signals_dict.Set(
-           "modelingSignals",
-           static_cast<double>(*browser_signal_modeling_signals))) ||
-      !browser_signals_dict.Set(
-          "joinCount", static_cast<double>(browser_signal_join_count)) ||
-      (!is_for_additional_bid &&
-       !browser_signals_dict.Set(
-           "recency", static_cast<double>(browser_signal_recency))) ||
-      !browser_signals_dict.Set("highestScoringOtherBid",
-                                browser_signal_highest_scoring_other_bid) ||
-      !browser_signals_dict.Set(
-          "highestScoringOtherBidCurrency",
-          blink::PrintableAdCurrency(
-              browser_signal_highest_scoring_other_bid_currency)) ||
-      !browser_signals_dict.Set(
-          "madeHighestScoringOtherBid",
-          browser_signal_made_highest_scoring_other_bid) ||
-      !browser_signals_dict.Set("seller",
-                                browser_signal_seller_origin.Serialize()) ||
-      (browser_signal_top_level_seller_origin &&
-       !browser_signals_dict.Set(
-           "topLevelSeller",
-           browser_signal_top_level_seller_origin->Serialize())) ||
-      (bidding_signals_data_version.has_value() &&
-       !browser_signals_dict.Set("dataVersion",
-                                 bidding_signals_data_version.value())) ||
-      (!kanon_status.empty() &&
-       !browser_signals_dict.Set("kAnonStatus", kanon_status)) ||
-      (base::FeatureList::IsEnabled(blink::features::kFledgeReportingTimeout) &&
-       !browser_signals_dict.Set("reportingTimeout",
-                                 reporting_timeout.InMilliseconds()))) {
+  const bool browser_signals_set = SetBrowserSignals(
+      is_for_additional_bid, interest_group_name_reporting_id,
+      buyer_reporting_id, buyer_and_seller_reporting_id,
+      selected_buyer_and_seller_reporting_id, browser_signal_render_url,
+      &deprecated_render_url, browser_signal_bid, browser_signal_bid_currency,
+      browser_signal_highest_scoring_other_bid,
+      browser_signal_highest_scoring_other_bid_currency,
+      browser_signal_made_highest_scoring_other_bid, browser_signal_ad_cost,
+      browser_signal_modeling_signals, browser_signal_join_count,
+      browser_signal_recency, browser_signal_seller_origin,
+      browser_signal_top_level_seller_origin, bidding_signals_data_version,
+      kanon_status, reporting_timeout, browser_signals, browser_signals_dict);
+  if (!browser_signals_set) {
     PostReportWinCallbackToUserThread(std::move(callback),
                                       /*report_url=*/std::nullopt,
                                       /*ad_beacon_map=*/{},
@@ -1135,6 +1283,39 @@ void BidderWorklet::V8State::ReportWin(
     return;
   }
 
+  // If there was a config that means they called queueReportAggregateWin
+  if (context_recycler.report_bindings()
+          ->modeling_signals_config()
+          .has_value()) {
+    v8::LocalVector<v8::Value> report_aggregate_win_args(isolate);
+
+    const bool report_aggregate_win_signals_set = SetReportAggregateWinArgs(
+        context, auction_signals_json, per_buyer_signals_json,
+        seller_signals_json, is_for_additional_bid,
+        interest_group_name_reporting_id, buyer_reporting_id,
+        buyer_and_seller_reporting_id, selected_buyer_and_seller_reporting_id,
+        browser_signal_render_url, browser_signal_bid,
+        browser_signal_bid_currency, browser_signal_highest_scoring_other_bid,
+        browser_signal_highest_scoring_other_bid_currency,
+        browser_signal_made_highest_scoring_other_bid, browser_signal_ad_cost,
+        browser_signal_modeling_signals, browser_signal_join_count,
+        browser_signal_recency, browser_signal_seller_origin,
+        browser_signal_top_level_seller_origin,
+        browser_signal_reporting_timeout, bidding_signals_data_version,
+        kanon_status, aggregate_win_signals, reporting_timeout,
+        per_buyer_signals, auction_signals,
+        context_recycler.report_bindings()->modeling_signals_config().value(),
+        report_aggregate_win_args);
+
+    if (report_aggregate_win_signals_set) {
+      v8::MaybeLocal<v8::Value> maybe_report_aggregate_win_result_ret;
+      result = v8_helper_->CallFunction(
+          context, debug_id_.get(),
+          v8_helper_->FormatScriptName(unbound_worklet_script),
+          "reportAggregateWin", report_aggregate_win_args, total_timeout.get(),
+          maybe_report_aggregate_win_result_ret, errors_out);
+    }
+  }
   // This covers both the case where a report URL was provided, and the case one
   // was not.
   PostReportWinCallbackToUserThread(
@@ -1143,7 +1324,8 @@ void BidderWorklet::V8State::ReportWin(
       context_recycler.register_ad_macro_bindings()->TakeAdMacroMap(),
       context_recycler.private_aggregation_bindings()
           ->TakePrivateAggregationRequests(),
-      elapsed, /*script_timed_out=*/false, std::move(errors_out));
+      elapsed,
+      /*script_timed_out=*/false, std::move(errors_out));
 }
 
 void BidderWorklet::V8State::GenerateBid(

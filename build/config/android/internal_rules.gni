@@ -3491,9 +3491,6 @@ if (enable_java_templates) {
   #    generated wrapper script.
   #
   template("java_library_impl") {
-    # TODO(crbug.com/40114668): Remove.
-    not_needed(invoker, [ "no_build_hooks" ])
-
     forward_variables_from(invoker, [ "testonly" ])
 
     _target_dir = get_label_info(":any_name_here", "dir")
