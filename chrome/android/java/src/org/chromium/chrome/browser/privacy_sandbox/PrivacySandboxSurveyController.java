@@ -46,6 +46,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /** Class that controls and manages when and if surveys should be shown. */
 public class PrivacySandboxSurveyController {
@@ -242,6 +243,27 @@ public class PrivacySandboxSurveyController {
                 getAdsCctDelayMilliseconds());
     }
 
+    // Does a local random roll to determine if a EEA survey should be shown based on the trigger
+    // rate
+    private boolean isSelectedForEeaSurvey(@PrivacySandboxSurveyType int surveyType) {
+        switch (surveyType) {
+            case PrivacySandboxSurveyType.CCT_EEA_ACCEPTED:
+                return new Random().nextFloat()
+                        < ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                                ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY,
+                                "accepted-trigger-rate",
+                                0.0);
+            case PrivacySandboxSurveyType.CCT_EEA_DECLINED:
+                return new Random().nextFloat()
+                        < ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                                ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY,
+                                "declined-trigger-rate",
+                                0.0);
+            default:
+                return false;
+        }
+    }
+
     // Determines the appropriate survey to launch based on the user interaction with either the EEA
     // consent or the ROW notice and launches the survey.
     private void maybeLaunchAdsCctTreatmentSurvey() {
@@ -253,6 +275,9 @@ public class PrivacySandboxSurveyController {
                 surveyType = PrivacySandboxSurveyType.CCT_EEA_ACCEPTED;
             } else {
                 surveyType = PrivacySandboxSurveyType.CCT_EEA_DECLINED;
+            }
+            if (!isSelectedForEeaSurvey(surveyType)) {
+                return;
             }
             // Check if the ROW notice was acknowledged.
         } else if (prefs.getBoolean(Pref.PRIVACY_SANDBOX_M1_ROW_NOTICE_ACKNOWLEDGED)) {
