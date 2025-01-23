@@ -232,14 +232,6 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
     password_label_->SetText(password);
   }
 
-  void UpdateBackground(ui::ColorId color) {
-    SetBackground(views::CreateThemedSolidBackground(color));
-    // Setting a background color on the labels may change the text color to
-    // improve contrast.
-    password_label_->SetBackgroundColorId(color);
-    suggestion_label_->SetBackgroundColorId(color);
-  }
-
   void reset_controller() {
     controller_ = nullptr;
     UpdateAccessibleNameAndDescription();
@@ -262,14 +254,6 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
         controller_->GetPrimaryAccountEmail()));
   }
 
-  // Implements the View interface.
-  void OnMouseEntered(const ui::MouseEvent& event) override;
-  void OnMouseExited(const ui::MouseEvent& event) override;
-  bool OnMousePressed(const ui::MouseEvent& event) override;
-  void OnMouseReleased(const ui::MouseEvent& event) override;
-  void OnGestureEvent(ui::GestureEvent* event) override;
-
-  raw_ptr<views::Label> suggestion_label_ = nullptr;
   raw_ptr<views::Label> password_label_ = nullptr;
   base::WeakPtr<PasswordGenerationPopupController> controller_ = nullptr;
 };
@@ -293,7 +277,7 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
   AddSpacerWithSize(PopupBaseView::ArrowHorizontalMargin(),
                     /*resize=*/false, this);
 
-  suggestion_label_ = AddChildView(std::make_unique<views::Label>(
+  AddChildView(std::make_unique<views::Label>(
       controller_->SuggestedText(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       controller_->state() ==
               PasswordGenerationPopupController::kOfferGeneration
@@ -311,53 +295,6 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
       views::style::STYLE_SECONDARY_MONOSPACED));
   layout->SetFlexForView(password_label_, 1);
   UpdateAccessibleNameAndDescription();
-}
-
-void PasswordGenerationPopupViewViews::GeneratedPasswordBox::OnMouseEntered(
-    const ui::MouseEvent& event) {
-  if (controller_) {
-    controller_->SetSelected();
-  }
-}
-
-void PasswordGenerationPopupViewViews::GeneratedPasswordBox::OnMouseExited(
-    const ui::MouseEvent& event) {
-  if (controller_) {
-    controller_->SelectionCleared();
-  }
-}
-
-bool PasswordGenerationPopupViewViews::GeneratedPasswordBox::OnMousePressed(
-    const ui::MouseEvent& event) {
-  return event.GetClickCount() == 1;
-}
-
-void PasswordGenerationPopupViewViews::GeneratedPasswordBox::OnMouseReleased(
-    const ui::MouseEvent& event) {
-  if (event.IsOnlyLeftMouseButton() && controller_) {
-    controller_->PasswordAccepted();
-  }
-}
-
-void PasswordGenerationPopupViewViews::GeneratedPasswordBox::OnGestureEvent(
-    ui::GestureEvent* event) {
-  if (!controller_) {
-    return;
-  }
-  switch (event->type()) {
-    case ui::EventType::kGestureTapDown:
-      controller_->SetSelected();
-      break;
-    case ui::EventType::kGestureTap:
-      controller_->PasswordAccepted();
-      break;
-    case ui::EventType::kGestureTapCancel:
-    case ui::EventType::kGestureEnd:
-      controller_->SelectionCleared();
-      break;
-    default:
-      return;
-  }
 }
 
 BEGIN_METADATA(PasswordGenerationPopupViewViews, GeneratedPasswordBox)
@@ -420,28 +357,7 @@ bool PasswordGenerationPopupViewViews::UpdateBoundsAndRedrawPopup() {
   return DoUpdateBoundsAndRedrawPopup();
 }
 
-void PasswordGenerationPopupViewViews::PasswordSelectionUpdated() {
-  if (!password_view_) {
-    return;
-  }
-
-  if (controller_->password_selected()) {
-    NotifyAXSelection(*this->password_view_);
-  }
-  password_view_->GetViewAccessibility().SetIsSelected(
-      controller_->password_selected());
-
-  if (!GetWidget()) {
-    return;
-  }
-
-  password_view_->UpdateBackground(controller_->password_selected()
-                                       ? ui::kColorDropdownBackgroundSelected
-                                       : ui::kColorDropdownBackground);
-  SchedulePaint();
-}
-
-void PasswordGenerationPopupViewViews::NudgePasswordSelectionUpdated() {
+void PasswordGenerationPopupViewViews::ButtonSelectionUpdated() {
   if (!GetWidget() || !nudge_password_buttons_view_) {
     return;
   }
@@ -488,7 +404,6 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
       gfx::Insets::VH(kVerticalPadding, kHorizontalMargin)));
   password_view->Init(controller_);
   password_view_ = AddChildView(std::move(password_view));
-  PasswordSelectionUpdated();
 
   AddChildView(views::Builder<views::Separator>()
                    .SetOrientation(views::Separator::Orientation::kHorizontal)

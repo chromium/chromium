@@ -51,12 +51,8 @@ class MockPasswordGenerationPopupController
   // PasswordGenerationPopupController:
   MOCK_METHOD(void, PasswordAccepted, (), (override));
   MOCK_METHOD(void, PasswordRejected, (), (override));
-  MOCK_METHOD(void, SetSelected, (), (override));
-  MOCK_METHOD(void, SelectionCleared, (), (override));
   MOCK_METHOD(std::u16string, GetPrimaryAccountEmail, (), (override));
-  MOCK_METHOD(bool, ShouldShowNudgePassword, (), (const override));
   MOCK_METHOD(GenerationUIState, state, (), (const override));
-  MOCK_METHOD(bool, password_selected, (), (const override));
   MOCK_METHOD(bool, accept_button_selected, (), (const override));
   MOCK_METHOD(bool, cancel_button_selected, (), (const override));
   MOCK_METHOD(const std::u16string&, password, (), (const override));
@@ -99,7 +95,6 @@ class PasswordGenerationPopupViewBrowsertest
     ON_CALL(controller(), SuggestedText)
         .WillByDefault(Return(
             l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_SUGGESTION_GPM)));
-    ON_CALL(controller(), ShouldShowNudgePassword).WillByDefault(Return(true));
   }
 
   void PrepareEditingSuggestionState() {
@@ -111,18 +106,9 @@ class PasswordGenerationPopupViewBrowsertest
             IDS_PASSWORD_GENERATION_EDITING_SUGGESTION)));
   }
 
-  // Marks the popup as selected (i.e. the state it is in when a user hovers
-  // over it).
-  void SetSelected(bool selected) {
-    ON_CALL(controller(), password_selected).WillByDefault(Return(selected));
-  }
-
   void ShowUi(const std::string& name) override {
     PopupPixelTest::ShowUi(name);
     ASSERT_TRUE(view()->Show());
-    // If this update is not forced, the password selection state does not get
-    // taken into account.
-    view()->PasswordSelectionUpdated();
   }
 
  protected:
@@ -146,22 +132,8 @@ IN_PROC_BROWSER_TEST_P(PasswordGenerationPopupViewBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_P(PasswordGenerationPopupViewBrowsertest,
-                       OfferPasswordGenerationHovered) {
-  PrepareOfferGenerationState();
-  SetSelected(true);
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(PasswordGenerationPopupViewBrowsertest,
                        EditingSuggestionState) {
   PrepareEditingSuggestionState();
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(PasswordGenerationPopupViewBrowsertest,
-                       EditingSuggestionStateHovered) {
-  PrepareEditingSuggestionState();
-  SetSelected(true);
   ShowAndVerifyUi();
 }
 

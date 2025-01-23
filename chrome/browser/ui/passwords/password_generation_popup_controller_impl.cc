@@ -164,10 +164,9 @@ bool PasswordGenerationPopupControllerImpl::HandleKeyPressEvent(
         return false;
       }
 
-      SelectElement(
-          cancel_button_selected()
-              ? PasswordGenerationPopupElement::kNudgePasswordAcceptButton
-              : PasswordGenerationPopupElement::kNudgePasswordCancelButton);
+      SelectElement(cancel_button_selected()
+                        ? PasswordGenerationPopupElement::kAcceptButton
+                        : PasswordGenerationPopupElement::kCancelButton);
       return true;
     case ui::VKEY_ESCAPE:
       HideImpl();
@@ -188,11 +187,10 @@ bool PasswordGenerationPopupControllerImpl::IsVisible() const {
 
 bool PasswordGenerationPopupControllerImpl::PossiblyAcceptSelectedElement() {
   switch (selected_element_) {
-    case PasswordGenerationPopupElement::kUseStrongPassword:
-    case PasswordGenerationPopupElement::kNudgePasswordAcceptButton:
+    case PasswordGenerationPopupElement::kAcceptButton:
       PasswordAccepted();
       return true;
-    case PasswordGenerationPopupElement::kNudgePasswordCancelButton:
+    case PasswordGenerationPopupElement::kCancelButton:
       PasswordRejected();
       return true;
     default:
@@ -210,15 +208,8 @@ void PasswordGenerationPopupControllerImpl::SelectElement(
     return;
   }
 
-  if (element == PasswordGenerationPopupElement::kNone) {
-    driver_->ClearPreviewedForm();
-  } else {
-    driver_->PreviewGenerationSuggestion(current_generated_password_);
-  }
-
   selected_element_ = element;
-  view_->PasswordSelectionUpdated();
-  view_->NudgePasswordSelectionUpdated();
+  view_->ButtonSelectionUpdated();
 }
 
 void PasswordGenerationPopupControllerImpl::PasswordAccepted() {
@@ -297,7 +288,7 @@ void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
 
     // For the screen reader users, move the focus to the accept button on show.
     if (accessibility_state_utils::IsScreenReaderEnabled()) {
-      SelectElement(PasswordGenerationPopupElement::kNudgePasswordAcceptButton);
+      SelectElement(PasswordGenerationPopupElement::kAcceptButton);
     }
   }
 
@@ -353,14 +344,6 @@ void PasswordGenerationPopupControllerImpl::ViewDestroyed() {
   view_ = nullptr;
 
   HideImpl();
-}
-
-void PasswordGenerationPopupControllerImpl::SelectionCleared() {
-  SelectElement(PasswordGenerationPopupElement::kNone);
-}
-
-void PasswordGenerationPopupControllerImpl::SetSelected() {
-  SelectElement(PasswordGenerationPopupElement::kUseStrongPassword);
 }
 
 std::u16string PasswordGenerationPopupControllerImpl::GetPrimaryAccountEmail() {
@@ -428,19 +411,12 @@ PasswordGenerationPopupControllerImpl::state() const {
   return state_;
 }
 
-bool PasswordGenerationPopupControllerImpl::password_selected() const {
-  return selected_element_ ==
-         PasswordGenerationPopupElement::kUseStrongPassword;
-}
-
 bool PasswordGenerationPopupControllerImpl::accept_button_selected() const {
-  return selected_element_ ==
-         PasswordGenerationPopupElement::kNudgePasswordAcceptButton;
+  return selected_element_ == PasswordGenerationPopupElement::kAcceptButton;
 }
 
 bool PasswordGenerationPopupControllerImpl::cancel_button_selected() const {
-  return selected_element_ ==
-         PasswordGenerationPopupElement::kNudgePasswordCancelButton;
+  return selected_element_ == PasswordGenerationPopupElement::kCancelButton;
 }
 
 const std::u16string& PasswordGenerationPopupControllerImpl::password() const {

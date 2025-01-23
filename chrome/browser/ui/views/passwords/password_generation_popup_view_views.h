@@ -34,8 +34,7 @@ class PasswordGenerationPopupViewViews : public autofill::PopupBaseView,
   void UpdateState() override;
   void UpdateGeneratedPasswordValue() override;
   [[nodiscard]] bool UpdateBoundsAndRedrawPopup() override;
-  void PasswordSelectionUpdated() override;
-  void NudgePasswordSelectionUpdated() override;
+  void ButtonSelectionUpdated() override;
 
   const views::ViewAccessibility& GetPasswordViewViewAccessibilityForTest();
   const views::ViewAccessibility& GetAcceptButtonViewAccessibilityForTest();
