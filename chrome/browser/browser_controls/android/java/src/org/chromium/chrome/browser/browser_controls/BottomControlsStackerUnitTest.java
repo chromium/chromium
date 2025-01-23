@@ -994,7 +994,7 @@ public class BottomControlsStackerUnitTest {
         assertLayerYOffset(bottom, 0);
 
         // When animation finished, the hidden layer has its yOffset is set to its height.
-        onBottomControlsOffsetChanged(0, 0, false);
+        onBottomControlsOffsetChanged(0, 0, true);
         assertLayerYOffset(top, 100);
         assertLayerYOffset(bottom, 0);
     }
