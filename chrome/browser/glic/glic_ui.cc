@@ -15,6 +15,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/glic_resources.h"
 #include "chrome/grit/glic_resources_map.h"
 #include "content/public/browser/browser_context.h"
@@ -37,6 +38,13 @@ bool GlicUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
 }
 
 GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
+  static constexpr webui::LocalizedString kStrings[] = {
+      {"offlineNotice", IDS_GLIC_OFFLINE_NOTICE},
+      {"offlineNoticeAction", IDS_GLIC_OFFLINE_NOTICE_ACTION},
+      {"offlineNoticeActionButton", IDS_GLIC_OFFLINE_NOTICE_ACTION_BUTTON},
+      {"offlineNoticeHeader", IDS_GLIC_OFFLINE_NOTICE_HEADER},
+  };
+
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
 
@@ -46,6 +54,9 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
 
   // Add required resources.
   webui::SetupWebUIDataSource(source, kGlicResources, IDR_GLIC_GLIC_HTML);
+
+  // Add localized strings.
+  source->AddLocalizedStrings(kStrings);
 
   // Register auto-granted permissions.
   auto* allowlist = WebUIAllowlist::GetOrCreate(browser_context);

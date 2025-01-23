@@ -5,9 +5,25 @@
   <link rel="stylesheet" href="glic.css">
   <script type="module" src="main.js"></script>
 </head>
-
 <body>
-  <webview id="guest-frame" partition="persist:glicpart">
+  <section class="hidden dialog" id="offline-panel">
+    <div class="container">
+      <div class="header">
+        <img class="logo" src="glic_logo.svg">
+        <cr-icon-button class="close-button"
+          iron-icon="cr:close"></cr-icon-button>
+      </div>
+      <div class="notice">
+        <div class="icon"><cr-icon icon="glic:offline"></cr-icon></div>
+        <p class="headline"><b>$i18n{offlineNoticeHeader}</b></p>
+        <p>$i18n{offlineNotice}</p>
+        <p>$i18n{offlineNoticeAction}</p>
+        <cr-button class="tonal-button" id="retry"
+          role="button">$i18n{offlineNoticeActionButton}</cr-button>
+      </div>
+    </div>
+  </section>
+  <webview class="hidden" id="guest-frame" partition="persist:glicpart">
   </webview>
 </body>
 </html>

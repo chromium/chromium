@@ -525,7 +525,13 @@ void GlicWindowController::AttachToBrowser(Browser* browser) {
 void GlicWindowController::Resize(const gfx::Size& size,
                                   base::TimeDelta duration,
                                   base::OnceClosure callback) {
+  int original_top_right =
+      final_widget_bounds_.x() + final_widget_bounds_.width();
   final_widget_bounds_.set_size(size);
+
+  // Keep top-right corner in place as the widget is resized.
+  final_widget_bounds_.set_x(original_top_right - final_widget_bounds_.width());
+
   AnimateBounds(final_widget_bounds_, duration, std::move(callback));
 }
 

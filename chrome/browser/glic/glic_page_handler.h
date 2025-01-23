@@ -52,6 +52,12 @@ class GlicPageHandler : public glic::mojom::PageHandler {
   // Called whenever the webview mainframe commits.
   void WebviewCommitted(const GURL& origin) override;
 
+  void ClosePanel() override;
+
+  void ResizeWidget(const gfx::Size& size,
+                    base::TimeDelta duration,
+                    ResizeWidgetCallback callback) override;
+
  private:
   GlicKeyedService* GetGlicService();
 

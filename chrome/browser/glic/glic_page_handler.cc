@@ -293,6 +293,7 @@ void GlicPageHandler::CreateWebClient(
   web_client_handler_ = std::make_unique<GlicWebClientHandler>(
       this, browser_context_, std::move(web_client_receiver));
 }
+
 void GlicPageHandler::SyncWebviewCookies(SyncWebviewCookiesCallback callback) {
   GetGlicService()->SyncWebviewCookies(std::move(callback));
 }
@@ -308,6 +309,16 @@ void GlicPageHandler::WebviewCommitted(const GURL& url) {
 
 void GlicPageHandler::GuestAdded(content::WebContents* guest_contents) {
   guest_contents_ = guest_contents->GetWeakPtr();
+}
+
+void GlicPageHandler::ClosePanel() {
+  GetGlicService()->ClosePanel();
+}
+
+void GlicPageHandler::ResizeWidget(const gfx::Size& size,
+                                   base::TimeDelta duration,
+                                   ResizeWidgetCallback callback) {
+  GetGlicService()->ResizePanel(size, duration, std::move(callback));
 }
 
 }  // namespace glic

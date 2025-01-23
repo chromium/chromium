@@ -28,6 +28,13 @@ interface PageHandler {
 
   // Called whenever the webview mainframe commits.
   WebviewCommitted(url.mojom.Url url);
+
+  // Closes the Glic panel.
+  ClosePanel();
+
+  // Resize the widget hosting the WebUI to the given size.
+  // If `duration` is 0 or less, instantly resize, otherwise run an animation.
+  ResizeWidget(gfx.mojom.Size size, mojo_base.mojom.TimeDelta duration) => ();
 };
 
 // Reason why getting tab context failed.
