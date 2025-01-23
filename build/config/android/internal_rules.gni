@@ -3032,19 +3032,21 @@ if (enable_java_templates) {
       _srcjar_deps = invoker.srcjar_deps
     }
 
-    _java_srcjars = []
-    foreach(dep, _srcjar_deps) {
-      _dep_gen_dir = get_label_info(dep, "target_gen_dir")
-      _dep_name = get_label_info(dep, "name")
-      _java_srcjars += [ "$_dep_gen_dir/$_dep_name.srcjar" ]
-    }
-    if (defined(invoker.srcjars)) {
-      _java_srcjars += invoker.srcjars
-    }
+    if (!invoker.enable_errorprone) {
+      _java_srcjars = []
+      foreach(dep, _srcjar_deps) {
+        _dep_gen_dir = get_label_info(dep, "target_gen_dir")
+        _dep_name = get_label_info(dep, "name")
+        _java_srcjars += [ "$_dep_gen_dir/$_dep_name.srcjar" ]
+      }
+      if (defined(invoker.srcjars)) {
+        _java_srcjars += invoker.srcjars
+      }
 
-    # generated_jar_path is an output when use_turbine and an input otherwise.
-    if (!invoker.use_turbine && defined(invoker.generated_jar_path)) {
-      _java_srcjars += [ invoker.generated_jar_path ]
+      # generated_jar_path is an output when use_turbine and an input otherwise.
+      if (!invoker.use_turbine && defined(invoker.generated_jar_path)) {
+        _java_srcjars += [ invoker.generated_jar_path ]
+      }
     }
 
     _javac_args = []
@@ -3059,6 +3061,9 @@ if (enable_java_templates) {
           "//third_party/jdk/current/bin/java",
           android_sdk_jar,
         ]
+      } else if (invoker.enable_errorprone) {
+        script = "//build/android/gyp/errorprone.py"
+        inputs = javac_paths_for_inputs
       } else {
         script = "//build/android/gyp/compile_java.py"
         inputs = javac_paths_for_inputs
@@ -3076,11 +3081,33 @@ if (enable_java_templates) {
         deps += invoker.deps
       }
 
-      outputs = [ invoker.output_jar_path ]
-      if (!invoker.enable_errorprone && !invoker.use_turbine) {
-        outputs += [ invoker.output_jar_path + ".info" ]
+      args = []
+      if (invoker.enable_errorprone) {
+        _stamp_file = "$target_out_dir/$target_name.stamp"
+        outputs = [ _stamp_file ]
+        _rebased_stamp_file = rebase_path(_stamp_file, root_build_dir)
+        args += [ "--stamp=$_rebased_stamp_file" ]
+      } else {
+        outputs = [ invoker.output_jar_path ]
+        if (!invoker.use_turbine) {
+          outputs += [ invoker.output_jar_path + ".info" ]
+        }
+        _rebased_output_jar_path =
+            rebase_path(invoker.output_jar_path, root_build_dir)
+
+        # Error Prone does not run on srcjar, and they are not needed as inputs thanks to Turbine.
+        _rebased_java_srcjars = rebase_path(_java_srcjars, root_build_dir)
+        _rebased_generated_dir = rebase_path(
+                "$target_gen_dir/${invoker.main_target_name}/generated_java",
+                root_build_dir)
+        args += [
+          "--jar-path=$_rebased_output_jar_path",
+          "--java-srcjars=$_rebased_java_srcjars",
+          "--generated-dir=$_rebased_generated_dir",
+        ]
+        inputs += _java_srcjars
       }
-      inputs += invoker.source_files + _java_srcjars + [
+      inputs += invoker.source_files + [
                   "$android_sdk/optional/android.test.base.jar",
                   "$android_sdk/optional/org.apache.http.legacy.jar",
                   _build_config,
@@ -3091,18 +3118,9 @@ if (enable_java_templates) {
       }
 
       _rebased_build_config = rebase_path(_build_config, root_build_dir)
-      _rebased_output_jar_path =
-          rebase_path(invoker.output_jar_path, root_build_dir)
-      _rebased_java_srcjars = rebase_path(_java_srcjars, root_build_dir)
       _rebased_depfile = rebase_path(depfile, root_build_dir)
-      _rebased_generated_dir = rebase_path(
-              "$target_gen_dir/${invoker.main_target_name}/generated_java",
-              root_build_dir)
-      args = [
+      args += [
         "--depfile=$_rebased_depfile",
-        "--generated-dir=$_rebased_generated_dir",
-        "--jar-path=$_rebased_output_jar_path",
-        "--java-srcjars=$_rebased_java_srcjars",
         "--target-name",
         get_label_info(":${target_name}", "label_no_toolchain"),
       ]
@@ -3165,7 +3183,7 @@ if (enable_java_templates) {
         args += [ "--enable-kythe-annotations" ]
       }
       if (_chromium_code) {
-        args += [ "--chromium-code=1" ]
+        args += [ "--chromium-code" ]
         if (treat_warnings_as_errors) {
           args += [ "--warnings-as-errors" ]
         }
@@ -3183,10 +3201,7 @@ if (enable_java_templates) {
         _rebased_errorprone_buildconfig =
             rebase_path("$_dep_gen_dir/$_dep_name.build_config.json",
                         root_build_dir)
-        args += [
-          "--processorpath=@FileArg($_rebased_errorprone_buildconfig:deps_info:host_classpath)",
-          "--enable-errorprone",
-        ]
+        args += [ "--processorpath=@FileArg($_rebased_errorprone_buildconfig:deps_info:host_classpath)" ]
         inputs += [
           # errorprone requires the plugin directory to detect src dir.
           # https://source.chromium.org/chromium/chromium/src/+/main:tools/android/errorprone_plugin/src/org/chromium/tools/errorprone/plugin/UseNetworkAnnotations.java;l=84;drc=dfd88085261b662a5c0a1abea1a3b120b08e8e48
@@ -3201,12 +3216,12 @@ if (enable_java_templates) {
             "--enable-nullaway",
           ]
         }
-      }
-      if (defined(invoker.skip_build_server) && invoker.skip_build_server) {
-        # Nocompile tests need lint to fail through ninja.
-        args += [ "--skip-build-server" ]
-      } else if (android_static_analysis == "build_server") {
-        args += [ "--use-build-server" ]
+        if (defined(invoker.skip_build_server) && invoker.skip_build_server) {
+          # Nocompile tests need lint to fail through ninja.
+          args += [ "--skip-build-server" ]
+        } else if (android_static_analysis == "build_server") {
+          args += [ "--use-build-server" ]
+        }
       }
 
       foreach(e, _processor_args) {
@@ -3974,7 +3989,6 @@ if (enable_java_templates) {
           if (defined(invoker.deps)) {
             deps += invoker.deps
           }
-          output_jar_path = invoker.output_jar_path
           if (defined(invoker.kotlin_jar_path)) {
             deps += [ ":$_compile_kt_target_name" ]
             kotlin_jar_path = invoker.kotlin_jar_path
@@ -3982,14 +3996,15 @@ if (enable_java_templates) {
           enable_errorprone = _enable_errorprone
           use_turbine = defined(invoker.use_turbine) && invoker.use_turbine
 
-          main_target_name = _main_target_name
           build_config = _build_config
 
           if (_enable_errorprone) {
             source_files = _errorprone_source_files
           } else {
+            main_target_name = _main_target_name
             source_files = _source_files
             srcjar_deps = _srcjar_deps
+            srcjars = _srcjars
           }
 
           if (source_files != []) {
@@ -4005,8 +4020,6 @@ if (enable_java_templates) {
         "jar_excluded_patterns",
         "javac_args",
         "processor_args_javac",
-        "skip_build_server",
-        "srcjars",
       ]
 
       if (!_skip_header_jar) {
@@ -4045,6 +4058,7 @@ if (enable_java_templates) {
         _compile_java_errorprone_target = "${_main_target_name}__errorprone"
         compile_java_helper(_compile_java_errorprone_target) {
           forward_variables_from(invoker, _compile_java_forward_variables)
+          forward_variables_from(invoker, [ "skip_build_server" ])
           enable_errorprone = true
           if (defined(invoker.errorprone_args)) {
             if (!defined(javac_args)) {
@@ -4058,9 +4072,7 @@ if (enable_java_templates) {
           if (!_skip_header_jar) {
             deps = [ ":$_header_target_name" ]
             header_jar_path = _final_ijar_path
-            generated_jar_path = _generated_jar_path
           }
-          output_jar_path = "$target_out_dir/$target_name.errorprone.stamp"
         }
         _java_validate_deps += [ ":$_compile_java_errorprone_target" ]
       }
