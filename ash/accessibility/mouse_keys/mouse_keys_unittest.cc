@@ -1102,6 +1102,21 @@ TEST_F(MouseKeysTest, Dragging) {
   EXPECT_EQ(mouse_events[0].location(), position);
 }
 
+TEST_F(MouseKeysTest, LeftHandDraggingBubble) {
+  SetEnabled(true);
+  SetLeftHanded(true);
+  ClearEvents();
+
+  // Start Drag.
+  PressAndReleaseKey(ui::VKEY_Z);
+
+  // Bubble view with the correct message and icon should be displayed.
+  EXPECT_TRUE(IsBubbleVisible());
+  EXPECT_EQ(GetBubbleText(), u"Press \"c\" to release");
+  EXPECT_TRUE(IsMouseDraggedIconVisible());
+  EXPECT_FALSE(IsButtonChangeIconVisible());
+}
+
 TEST_F(MouseKeysTest, DragWithClick) {
   // Enough time for the initial event and 9 updates.
   constexpr auto kTenEventsInSeconds =
