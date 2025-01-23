@@ -167,11 +167,6 @@ used when committed.
 *   [Guidelines for considering branch dates in project planning](release_branch_guidance.md) -
     What to do (and not to do) around branch dates when scheduling your project
     work.
-*   [WebUI Explainer](webui_explainer.md) - An explanation of C++ and JavaScript
-    infrastructural code for Chrome UIs implemented with web technologies (i.e.
-    chrome:// URLs).
-*   [Optimizing Chrome Web UIs](optimizing_web_uis.md) - Notes on making webuis
-    more performant
 *   [Watchlists](infra/watchlists.md) - Use watchlists to get notified of CLs
     you are interested in.
 *   [Shutdown](shutdown.md) - Explains the steps of Chrome shutdown, to make it
@@ -337,12 +332,15 @@ used when committed.
 *   [Debugging tips](testing/chromeos_debugging_tips.md)
 
 ### Misc WebUI-Specific Docs
-*   [Creating WebUI Interfaces in components/](webui_in_components.md) - How to
-    create a new WebUI component in the `components/` directory.
-*   [Trusted Types on WebUI](trusted_types_on_webui.md) - Tips for coding in
-    WebUI with Trusted Types in mind.
-*   [chrome-untrusted:// FAQ](chrome_untrusted.md) - Explainer on the usage of
-    the `chrome-untrusted://` scheme for hosting WebUIs that handle
+*   [WebUI Explainer](webui/webui_explainer.md) - An explanation of C++ and
+    TypeScript infrastructural code for Chrome UIs implemented with web
+    technologies (i.e. chrome:// URLs).
+*   [Optimizing Chrome Web UIs](webui/optimizing_web_uis.md) - Notes on making
+    WebUIs more performant
+*   [Trusted Types on WebUI](webui/trusted_types_on_webui.md) - Tips for coding
+    in WebUI with Trusted Types in mind.
+*   [chrome-untrusted:// FAQ](webui/chrome_untrusted.md) - Explainer on the
+    usage of the `chrome-untrusted://` scheme for hosting WebUIs that handle
     untrustworthy content.
 
 ### Media
