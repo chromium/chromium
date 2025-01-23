@@ -41,8 +41,6 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
     ui::ButtonStyle button_style,
     std::u16string button_text)
     : account_(std::nullopt) {
-  views::MdTextButton* text_button = nullptr;
-
   views::Builder<BubbleSignInPromoSignInButtonView>(this)
       .SetUseDefaultFillLayout(true)
       .AddChild(
@@ -50,12 +48,12 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
           views::Builder<views::MdTextButton>()
               .SetText(button_text)
               .SetStyle(button_style)
-              .CopyAddressTo(&text_button))
+              .CopyAddressTo(&text_button_))
       .BuildChildren();
 
   // Add the callback to the button with a delay if it is an autofill sign in
   // promo.
-  AddOrDelayCallbackForSignInButton(text_button, callback, is_autofill_promo);
+  AddOrDelayCallbackForSignInButton(callback, is_autofill_promo);
 
   SetProperty(views::kElementIdentifierKey, kPromoSignInButton);
 }
@@ -85,7 +83,6 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
                             : BadgedProfilePhoto::BADGE_TYPE_SYNC_OFF,
           account_icon),
       card_title, base::ASCIIToUTF16(account_->email));
-  views::MdTextButton* text_button = nullptr;
 
   hover_button->SetProperty(views::kBoxLayoutFlexKey,
                             views::BoxLayoutFlexSpecification());
@@ -116,23 +113,26 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
                    views::Builder<views::MdTextButton>()
                        .SetText(button_text)
                        .SetStyle(ui::ButtonStyle::kProminent)
-                       .CopyAddressTo(&text_button))
+                       .CopyAddressTo(&text_button_))
       .BuildChildren();
 
   if (!button_accessibility_text.empty()) {
-    text_button->GetViewAccessibility().SetName(
+    text_button_->GetViewAccessibility().SetName(
         std::move(button_accessibility_text));
   }
 
   // Add the callback to the button with a delay if it is an autofill sign in
   // promo.
-  AddOrDelayCallbackForSignInButton(text_button, callback, is_autofill_promo);
+  AddOrDelayCallbackForSignInButton(callback, is_autofill_promo);
 
   SetProperty(views::kElementIdentifierKey, kPromoSignInButton);
 }
 
+views::View* BubbleSignInPromoSignInButtonView::GetSignInButton() const {
+  return text_button_ ? text_button_ : nullptr;
+}
+
 void BubbleSignInPromoSignInButtonView::AddOrDelayCallbackForSignInButton(
-    views::MdTextButton* text_button,
     views::Button::PressedCallback& callback,
     bool is_autofill_promo) {
   // If the promo is triggered from an autofill bubble, ignore any interaction
@@ -147,18 +147,17 @@ void BubbleSignInPromoSignInButtonView::AddOrDelayCallbackForSignInButton(
         FROM_HERE,
         base::BindOnce(
             &BubbleSignInPromoSignInButtonView::AddCallbackToSignInButton,
-            weak_ptr_factory_.GetWeakPtr(), text_button, std::move(callback)),
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
         kDoubleClickSignInPreventionDelay);
   } else {
     // Add the callback to the button immediately.
-    AddCallbackToSignInButton(text_button, std::move(callback));
+    AddCallbackToSignInButton(std::move(callback));
   }
 }
 
 void BubbleSignInPromoSignInButtonView::AddCallbackToSignInButton(
-    views::MdTextButton* text_button,
     views::Button::PressedCallback callback) {
-  text_button->SetCallback(std::move(callback));
+  text_button_->SetCallback(std::move(callback));
 
   // Triggers an event for testing.
   if (GetWidget()) {

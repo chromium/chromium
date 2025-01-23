@@ -693,6 +693,8 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
                    kBubbleSignInPromoSignInButtonHasCallback),
       EnsureNotPresent(SaveAddressProfileView::kTopViewId),
       EnsurePresent(AddressSignInPromoView::kBubbleFrameViewId),
+      // Click the promo to put the bubble into focus.
+      MoveMouseTo(AddressSignInPromoView::kBubbleFrameViewId), ClickMouse(),
       SendKeyPress(ui::VKEY_ESCAPE),
       WaitForHide(AddressSignInPromoView::kBubbleFrameViewId));
 

@@ -49,6 +49,8 @@ class BubbleSignInPromoView : public views::View {
   BubbleSignInPromoView& operator=(const BubbleSignInPromoView&) = delete;
   ~BubbleSignInPromoView() override;
 
+  View* GetSignInButton() const;
+
  private:
   // Used to sign in in the DiceAccountsMenu and when |signin_button_| is
   // pressed.

@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_signin_promo_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/browser/ui/views/promos/bubble_signin_promo_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -76,8 +75,14 @@ AutofillBubbleSignInPromoView::AutofillBubbleSignInPromoView(
 
   signin::RecordSignInPromoShown(access_point, profile);
 
-  AddChildView(new BubbleSignInPromoView(
+  bubble_sign_in_promo_view_ = AddChildView(new BubbleSignInPromoView(
       profile, dice_sign_in_promo_delegate_.get(), access_point));
+}
+
+views::View* AutofillBubbleSignInPromoView::GetSignInButton() const {
+  return bubble_sign_in_promo_view_
+             ? bubble_sign_in_promo_view_->GetSignInButton()
+             : nullptr;
 }
 
 void AutofillBubbleSignInPromoView::AddedToWidget() {

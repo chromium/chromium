@@ -262,6 +262,10 @@ BubbleSignInPromoView::BubbleSignInPromoView(
 
 BubbleSignInPromoView::~BubbleSignInPromoView() = default;
 
+views::View* BubbleSignInPromoView::GetSignInButton() const {
+  return signin_button_view_ ? signin_button_view_->GetSignInButton() : nullptr;
+}
+
 void BubbleSignInPromoView::SignIn() {
   std::optional<AccountInfo> account = signin_button_view_->account();
   delegate_->OnSignIn(account.value_or(AccountInfo()));
