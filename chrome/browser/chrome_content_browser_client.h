@@ -308,6 +308,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldTryToUpdateServiceWorkerRegistration(
       const GURL& scope,
       content::BrowserContext* browser_context) override;
+  bool AllowServiceWorkerToControlSrcdocIframe(
+      content::BrowserContext* context) override;
   bool AllowSharedWorker(
       const GURL& worker_url,
       const net::SiteForCookies& site_for_cookies,

@@ -486,6 +486,11 @@ bool ContentBrowserClient::AllowCompressionDictionaryTransport(
   return true;
 }
 
+bool ContentBrowserClient::AllowServiceWorkerToControlSrcdocIframe(
+    BrowserContext* context) {
+  return true;
+}
+
 bool ContentBrowserClient::AllowSharedWorkerBlobURLFix(
     BrowserContext* context) {
   return true;

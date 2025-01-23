@@ -882,6 +882,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // feature can be used. This is called on the UI thread.
   virtual bool AllowCompressionDictionaryTransport(BrowserContext* context);
 
+  // Allow to make ServiceWorker to control srcdoc iframe.
+  // https://github.com/w3c/ServiceWorker/issues/765
+  virtual bool AllowServiceWorkerToControlSrcdocIframe(BrowserContext* context);
+
   // Allow to apply the fix to make SharedWorker with a blob URL inherit a
   // ServiceWorker controller, which is aligned with the specification.
   // https://w3c.github.io/ServiceWorker/#control-and-use-worker-client.
