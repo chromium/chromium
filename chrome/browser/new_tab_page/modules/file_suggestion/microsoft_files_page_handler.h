@@ -7,9 +7,13 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files.mojom.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -25,7 +29,11 @@ class MicrosoftFilesPageHandler
       Profile* profile);
   ~MicrosoftFilesPageHandler() override;
 
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
   // file_suggestion::mojom::MicrosoftFilesPageHandler
+  void DismissModule() override;
+  void RestoreModule() override;
   void GetFiles(GetFilesCallback callback) override;
 
  private:
@@ -36,6 +44,7 @@ class MicrosoftFilesPageHandler
   void OnJsonParsed(GetFilesCallback callback,
                     data_decoder::DataDecoder::ValueOrError result);
   mojo::Receiver<file_suggestion::mojom::MicrosoftFilesPageHandler> handler_;
+  raw_ptr<PrefService> pref_service_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   base::WeakPtrFactory<MicrosoftFilesPageHandler> weak_factory_{this};
