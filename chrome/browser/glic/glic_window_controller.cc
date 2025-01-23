@@ -298,60 +298,10 @@ void GlicWindowController::Show(views::View* glic_button_view) {
     contents_ = std::make_unique<ContentsAndProfileKeepAlive>(profile_, this);
   }
 
-  gfx::Point top_right_point;
-
-  gfx::Size default_widget_size(kWidgetDefaultWidth, kWidgetTopBarHeight);
-  if (final_widget_bounds_.IsEmpty()) {
-    final_widget_bounds_.set_size(default_widget_size);
-  }
-  gfx::Rect glic_window_widget_initial_rect;
-  if (!glic_button_view) {
-    // Right now this only detects whether the glic widget is summoned from the
-    // OS entrypoint and positions itself detached from the browser.
-    // TODO(crbug.com/384061064): Add more logic for when the glic window should
-    // show up in a detached state.
-    top_right_point = GetTopRightPositionForDetachedGlicWindow();
-    int padding = 50;
-    final_widget_bounds_.set_x(top_right_point.x() -
-                               final_widget_bounds_.width() - padding);
-    final_widget_bounds_.set_y(top_right_point.y() + padding);
-    glic_window_widget_initial_rect = final_widget_bounds_;
-  } else {
-    // If summoned from the tab strip button. This will always show up attached
-    // because it is tied to a views::View object within the current browser
-    // window.
-    top_right_point =
-        GetTopRightPositionForAttachedGlicWindow(glic_button_view);
-    glic_window_widget_initial_rect = glic_button_view->GetBoundsInScreen();
-  }
-
-  glic_attached_widget_ =
-      CreateAttachedWidget(profile_, glic_window_widget_initial_rect);
-  glic_widget_observation_.Observe(glic_attached_widget_.get());
-
   if (browser) {
-    GetGlicWidget()->Show();
-    AttachToBrowser(browser);
-    // Set target bounds for animation and run the open attached animation.
-    gfx::Rect target_bounds = GetGlicWidget()->GetWindowBoundsInScreen();
-    int final_x = top_right_point.x() - final_widget_bounds_.width();
-    target_bounds.set_x(final_x);
-    target_bounds.set_width(final_widget_bounds_.width());
-    target_bounds.set_height(final_widget_bounds_.height());
-
-    // TODO(crbug.com/389982576): Match the background color of the widget with
-    // the web client background.
-    GetGlicView()->SetBackground(
-        views::CreateRoundedRectBackground(SK_ColorBLACK, 12));
-
-    // If there's a browser, then animate.
-    AnimateBounds(target_bounds, base::Milliseconds(kEntryDurationMs),
-                  base::BindOnce(&GlicWindowController::OpenAnimationFinished,
-                                 GetWeakPtr()));
+    OpenAttached(browser, glic_button_view);
   } else {
-    // Otherwise, skip straight to waiting for glic to load.
-    state_ = State::kWaitingForGlicToLoad;
-    GetGlicView()->web_view()->SetWebContents(contents_->web_contents());
+    OpenDetached();
   }
 
   // If the web client is already initialized, wait for it to load in parallel.
@@ -364,6 +314,77 @@ void GlicWindowController::Show(views::View* glic_button_view) {
   }
 
   NotifyIfPanelStateChanged();
+}
+
+gfx::Rect GlicWindowController::GetInitialDetachedBounds() {
+  gfx::Size default_widget_size(kWidgetDefaultWidth, kWidgetTopBarHeight);
+  if (!final_widget_bounds_.IsEmpty()) {
+    default_widget_size = final_widget_bounds_.size();
+  }
+  gfx::Rect initial_rect;
+  // Right now this only detects whether the glic widget is summoned from the
+  // OS entrypoint and positions itself detached from the browser.
+  // TODO(crbug.com/384061064): Add more logic for when the glic window should
+  // show up in a detached state.
+  gfx::Point top_right_point = GetTopRightPositionForDetachedGlicWindow();
+  int padding = 50;
+  initial_rect.set_x(top_right_point.x() - default_widget_size.width() -
+                     padding);
+  initial_rect.set_y(top_right_point.y() + padding);
+  initial_rect.set_size(default_widget_size);
+  return initial_rect;
+}
+
+void GlicWindowController::OpenAttached(Browser* browser,
+                                        views::View* glic_button_view) {
+  gfx::Size default_widget_size(kWidgetDefaultWidth, kWidgetTopBarHeight);
+  if (final_widget_bounds_.IsEmpty()) {
+    final_widget_bounds_.set_size(default_widget_size);
+  }
+  gfx::Rect glic_window_widget_initial_rect;
+
+  // If summoned from the tab strip button. This will always show up attached
+  // because it is tied to a views::View object within the current browser
+  // window.
+  gfx::Point top_right_point =
+      GetTopRightPositionForAttachedGlicWindow(glic_button_view);
+  glic_window_widget_initial_rect = glic_button_view->GetBoundsInScreen();
+
+  glic_attached_widget_ =
+      CreateAttachedWidget(profile_, glic_window_widget_initial_rect);
+  glic_widget_observation_.Observe(glic_attached_widget_.get());
+
+  glic_attached_widget_->Show();
+  AttachToBrowser(browser);
+  // Set target bounds for animation and run the open attached animation.
+  gfx::Rect target_bounds = glic_attached_widget_->GetWindowBoundsInScreen();
+  int final_x = top_right_point.x() - final_widget_bounds_.width();
+  target_bounds.set_x(final_x);
+  target_bounds.set_width(final_widget_bounds_.width());
+  target_bounds.set_height(final_widget_bounds_.height());
+
+  // TODO(crbug.com/389982576): Match the background color of the widget with
+  // the web client background.
+  GetGlicView()->SetBackground(
+      views::CreateRoundedRectBackground(SK_ColorBLACK, 12));
+
+  // If there's a browser, then animate.
+  AnimateBounds(target_bounds, base::Milliseconds(kEntryDurationMs),
+                base::BindOnce(&GlicWindowController::OpenAnimationFinished,
+                               GetWeakPtr()));
+}
+
+void GlicWindowController::OpenDetached() {
+  gfx::Rect initial_bounds = GetInitialDetachedBounds();
+
+  // Make the widget.
+  glic_attached_widget_ = CreateAttachedWidget(profile_, initial_bounds);
+  glic_widget_observation_.Observe(glic_attached_widget_.get());
+
+  // We skip the showing animation and jump straight to waiting for glic to
+  // load.
+  GetGlicView()->web_view()->SetWebContents(contents_->web_contents());
+  state_ = State::kWaitingForGlicToLoad;
 }
 
 // This happens after the web client is initialized. It signals the web client
@@ -389,9 +410,7 @@ void GlicWindowController::OpenAnimationFinished() {
   if (state_ == State::kOpenAnimation) {
     state_ = State::kWaitingForGlicToLoad;
 
-    if (GetGlicView()) {
-      GetGlicView()->web_view()->SetWebContents(contents_->web_contents());
-    }
+    GetGlicView()->web_view()->SetWebContents(contents_->web_contents());
     if (glic_loaded_) {
       ShowFinish();
     }

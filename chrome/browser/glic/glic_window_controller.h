@@ -158,6 +158,15 @@ class GlicWindowController : public views::WidgetObserver {
   views::Widget* GetGlicWidget();
 
  private:
+  gfx::Rect GetInitialDetachedBounds();
+
+  // Performs initialization for the attached/detached opening flows. Important
+  // difference: currently attached has an animation, so we immediately show the
+  // widget. Detached does not have an animation, and we wait until glic is
+  // ready to show anything.
+  void OpenAttached(Browser* browser, views::View* glic_button_view);
+  void OpenDetached();
+
   // This sends a message to glic to get ready to show. This will eventually
   // result in the callback GlicLoaded().
   void WaitForGlicToLoad();
