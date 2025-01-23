@@ -1,2 +1,6 @@
 per-file *password*=file://components/password_manager/OWNERS
 per-file *username*=file://components/password_manager/OWNERS
+# Domain experts:
+schwering@google.com
+jihadghanna@google.com
+# For non-complex reviews feel free to fall back to components/autofill/OWNERS.
