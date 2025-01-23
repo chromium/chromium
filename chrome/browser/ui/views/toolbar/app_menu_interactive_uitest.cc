@@ -67,8 +67,7 @@ class AppMenuDragAndDropInteractiveTest : public InteractiveBrowserTest {
 // never invoked because the platform is registering the drag as "exited"
 // from the view bounds.
 #if BUILDFLAG(IS_OZONE_X11) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_OZONE_WAYLAND) ||                  \
-    (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
+    BUILDFLAG(IS_OZONE_WAYLAND) || BUILDFLAG(IS_MAC)
 #define MAYBE_DISABLED(test_name) DISABLED_##test_name
 #else
 #define MAYBE_DISABLED(test_name) test_name
