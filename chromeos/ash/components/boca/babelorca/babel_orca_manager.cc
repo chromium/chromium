@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/boca/babelorca/live_caption_controller_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/live_caption_controller_wrapper_impl.h"
 #include "chromeos/ash/components/boca/babelorca/oauth_token_fetcher.h"
+#include "chromeos/ash/components/boca/babelorca/pref_names.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_client_impl.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_registrar.h"
 #include "chromeos/ash/components/boca/babelorca/token_manager_impl.h"
@@ -28,10 +29,21 @@
 #include "components/live_caption/caption_bubble_context.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/translation_dispatcher.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash::boca {
+
+// static
+void BabelOrcaManager::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  constexpr char kEnglish[] = "en";
+  registry->RegisterBooleanPref(babelorca::prefs::kLiveCaptionBubbleExpanded,
+                                false);
+  registry->RegisterStringPref(
+      babelorca::prefs::kLiveTranslateTargetLanguageCode, kEnglish);
+}
 
 // static
 std::unique_ptr<BabelOrcaManager> BabelOrcaManager::CreateAsProducer(

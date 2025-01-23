@@ -46,6 +46,10 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
+
 namespace ash::boca {
 
 // Manager for BabelOrca observing BOCA session events and doing captions
@@ -57,6 +61,8 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
       base::OnceCallback<std::unique_ptr<babelorca::BabelOrcaController>(
           babelorca::TokenManager*,
           babelorca::TachyonRequestDataProvider*)>;
+
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   static std::unique_ptr<BabelOrcaManager> CreateAsProducer(
       signin::IdentityManager* identity_manager,
