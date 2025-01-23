@@ -41,6 +41,9 @@ class GlicProfileManager {
   // True if the given profile should be considered for preloading.
   bool ShouldPreloadForProfile(Profile* profile) const;
 
+  // Returns true if there is an active Glic window.
+  bool HasActiveGlicWindow() const;
+
   // Static in order to permit setting forced values before the manager is
   // constructed.
   static void ForceProfileForLaunchForTesting(Profile* profile);

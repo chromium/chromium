@@ -52,7 +52,10 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "glic_background_mode_manager_browsertest.cc" ]
+  sources = [
+    "glic_background_mode_manager_browsertest.cc",
+    "glic_controller_browsertest.cc",
+  ]
 
   deps = [
     ":launcher",
