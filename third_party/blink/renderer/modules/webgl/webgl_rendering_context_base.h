@@ -900,7 +900,11 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     enum class CacheType { kImage, kVideo };
     LRUCanvasResourceProviderCache(wtf_size_t capacity, CacheType type);
     // The pointer returned is owned by the image buffer map.
-    CanvasResourceProvider* GetCanvasResourceProvider(const SkImageInfo&);
+    CanvasResourceProvider* GetCanvasResourceProvider(
+        SkISize size,
+        SkColorType sk_color_type,
+        SkAlphaType alpha_type,
+        sk_sp<SkColorSpace> sk_color_space);
 
    private:
     void BubbleToFront(wtf_size_t idx);
