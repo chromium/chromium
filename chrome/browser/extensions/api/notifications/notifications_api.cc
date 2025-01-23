@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/extensions/api/notifications/notifications_api.h"
 
 #include <stddef.h>
@@ -126,13 +131,12 @@ bool NotificationBitmapToGfxImage(
     return false;
 
   // Ensure we have rgba data.
-  if (!notification_bitmap.data) {
+  const std::optional<std::vector<uint8_t>>& rgba_data =
+      notification_bitmap.data;
+  if (!rgba_data)
     return false;
-  }
 
-  const std::vector<uint8_t>& rgba_data = *notification_bitmap.data;
-
-  const size_t rgba_data_length = rgba_data.size();
+  const size_t rgba_data_length = rgba_data->size();
   const size_t rgba_area = width * height;
 
   if (rgba_data_length != rgba_area * kBytesPerPixel)
@@ -140,22 +144,24 @@ bool NotificationBitmapToGfxImage(
 
   SkBitmap bitmap;
   // Allocate the actual backing store with the sanitized dimensions.
-  std::vector<uint32_t> pixels(rgba_area);
-  SkImageInfo info = SkImageInfo::MakeN32Premul(width, height);
-  bitmap.setInfo(info, width * kBytesPerPixel);
-  bitmap.setPixels(&pixels[0]);
+  if (!bitmap.tryAllocN32Pixels(width, height))
+    return false;
 
   // Ensure that our bitmap and our data now refer to the same number of pixels.
   if (rgba_data_length != bitmap.computeByteSize())
     return false;
 
+  uint32_t* pixels = bitmap.getAddr32(0, 0);
+  const uint8_t* c_rgba_data = rgba_data->data();
+
   for (size_t t = 0; t < rgba_area; ++t) {
-    // `rgba_data` is RGBA, pixels is ARGB.
+    // |c_rgba_data| is RGBA, pixels is ARGB.
     size_t rgba_index = t * kBytesPerPixel;
-    pixels[t] = SkPreMultiplyColor(((rgba_data[rgba_index + 3] & 0xFF) << 24) |
-                                   ((rgba_data[rgba_index + 0] & 0xFF) << 16) |
-                                   ((rgba_data[rgba_index + 1] & 0xFF) << 8) |
-                                   ((rgba_data[rgba_index + 2] & 0xFF) << 0));
+    pixels[t] =
+        SkPreMultiplyColor(((c_rgba_data[rgba_index + 3] & 0xFF) << 24) |
+                           ((c_rgba_data[rgba_index + 0] & 0xFF) << 16) |
+                           ((c_rgba_data[rgba_index + 1] & 0xFF) << 8) |
+                           ((c_rgba_data[rgba_index + 2] & 0xFF) << 0));
   }
 
   // TODO(dewittj): Handle HiDPI images with more than one scale factor
