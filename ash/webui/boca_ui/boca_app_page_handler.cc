@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -37,6 +38,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "chromeos/ui/wm/constants.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -170,6 +172,16 @@ std::vector<mojom::IdentifiedActivityPtr> SessionActivityProtoToMojom(
   return result;
 }
 
+std::string GetPrefName(mojom::BocaValidPref pref) {
+  switch (pref) {
+    case mojom::BocaValidPref::kNavigationSetting:
+      return ash::prefs::kClassManagementToolsNavRuleSetting;
+    case mojom::BocaValidPref::kCaptionEnablementSetting:
+      return ash::prefs::kClassManagementToolsCaptionEnablementSetting;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 BocaAppHandler::BocaAppHandler(
@@ -194,6 +206,7 @@ BocaAppHandler::BocaAppHandler(
   user_identity_.set_gaia_id(user->GetAccountId().GetGaiaId().ToString());
   user_identity_.set_full_name(base::UTF16ToUTF8(user->GetDisplayName()));
   user_identity_.set_photo_url(user->image_url().spec());
+  pref_service_ = user->GetProfilePrefs();
   // BocaAppClient is guaranteed to be live here.
   BocaAppClient::Get()->GetSessionManager()->AddObserver(this);
   network_info_provider_ = std::make_unique<NetworkInfoProvider>(
@@ -480,6 +493,19 @@ void BocaAppHandler::ViewStudentScreen(const std::string& id,
             }
           },
           std::move(callback)));
+}
+
+void BocaAppHandler::GetUserPref(mojom::BocaValidPref pref,
+                                 GetUserPrefCallback callback) {
+  const auto& value = pref_service_->GetValue(GetPrefName(pref));
+  std::move(callback).Run(value.Clone());
+}
+
+void BocaAppHandler::SetUserPref(mojom::BocaValidPref pref,
+                                 base::Value value,
+                                 SetUserPrefCallback callback) {
+  pref_service_->Set(GetPrefName(pref), std::move(value));
+  std::move(callback).Run();
 }
 
 void BocaAppHandler::OnStudentActivityUpdated(

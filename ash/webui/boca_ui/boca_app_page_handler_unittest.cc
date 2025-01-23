@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
+#include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
@@ -39,6 +40,7 @@
 #include "chromeos/ash/components/browser_context_helper/fake_browser_context_helper_delegate.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -254,6 +256,7 @@ class BocaAppPageHandlerTest : public testing::Test {
                                           /*disabled_features=*/{});
     // Set up UserManager related modules.
     user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
+    ash::boca_util::RegisterPrefs(local_state_.registry());
     fake_user_manager_.Reset(
         std::make_unique<user_manager::FakeUserManager>(&local_state_));
 
@@ -314,6 +317,8 @@ class BocaAppPageHandlerTest : public testing::Test {
         /*classroom_client_impl=*/nullptr, &session_client_impl_,
         /*is_producer=*/true);
     boca_app_handler_->SetSpotlightService(&spotlight_service_);
+    // Explicitly set pref
+    boca_app_handler_->SetPrefForTesting(&local_state_);
   }
 
   void TearDown() override {
@@ -330,6 +335,18 @@ class BocaAppPageHandlerTest : public testing::Test {
   }
 
  protected:
+  void TestUserPref(mojom::BocaValidPref pref, base::Value value) {
+    base::test::TestFuture<void> set_pref_future;
+    boca_app_handler_.get()->SetUserPref(pref, value.Clone(),
+                                         set_pref_future.GetCallback());
+    set_pref_future.Get();
+
+    base::test::TestFuture<base::Value> get_pref_future;
+    boca_app_handler_.get()->GetUserPref(pref, get_pref_future.GetCallback());
+
+    EXPECT_EQ(get_pref_future.Get(), value);
+  }
+
   MockSessionClientImpl* session_client_impl() { return &session_client_impl_; }
   MockBocaAppClient* boca_app_client() { return boca_app_client_.get(); }
   MockSessionManager* session_manager() { return session_manager_.get(); }
@@ -1728,6 +1745,16 @@ TEST_F(BocaAppPageHandlerTest, AuthenticateWebviewFailure) {
   run_loop.Run();
 }
 
+TEST_F(BocaAppPageHandlerTest, TestPrefGetterAndSetter) {
+  base::Value::Dict nav_map;
+  base::Value::Dict nav_occurrence;
+  nav_occurrence.Set("navRule", 0);
+  nav_occurrence.Set("occurence", 1);
+  nav_map.Set("google.com", std::move(nav_occurrence));
+  TestUserPref(mojom::BocaValidPref::kNavigationSetting,
+               /*value=*/base::Value(nav_map.Clone()));
+}
+
 class BocaAppPageHandlerFloatModeTest : public AshTestBase {
  public:
   BocaAppPageHandlerFloatModeTest() = default;
@@ -1765,5 +1792,6 @@ TEST_F(BocaAppPageHandlerFloatModeTest, SetFloatModeTestWithFalse) {
 
   EXPECT_FALSE(future.Get());
 }
+
 }  // namespace
 }  // namespace ash::boca

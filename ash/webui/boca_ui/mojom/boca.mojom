@@ -7,6 +7,7 @@ module ash.boca.mojom;
 import "chromeos/services/network_config/public/mojom/network_types.mojom";
 import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/values.mojom";
 
 // Refer ///depot/google3/google/internal/chrome/cros/edu/schooltools/v1/
 // For detailed type definition.
@@ -121,9 +122,17 @@ enum JoinMethod {
   kAccessCode = 1,
 };
 
+enum BocaValidPref {
+  // Default navigation rule setting.
+  kNavigationSetting = 0,
+  // Default caption enablement setting.
+  kCaptionEnablementSetting = 1,
+};
+
 struct Session {
  Config config;
  array<IdentifiedActivity> activities;
+
 };
 
 struct StudentActivity {
@@ -217,6 +226,12 @@ interface PageHandler {
   SubmitAccessCode(string access_code) => (SubmitAccessCodeError? error);
   // Requests to view screen of a given student.
   ViewStudentScreen(string id) => (ViewStudentScreenError? error);
+  // Get the value of a boca specific user pref.
+  GetUserPref(BocaValidPref pref)
+    => (mojo_base.mojom.Value value);
+  // Set the value of a boca specific user pref.
+  SetUserPref(BocaValidPref pref, mojo_base.mojom.Value value)
+    => ();
 };
 
 // Implemented by renderer process

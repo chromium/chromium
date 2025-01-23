@@ -76,6 +76,11 @@ class BocaAppHandler : public mojom::PageHandler,
 
   void ViewStudentScreen(const std::string& id,
                          ViewStudentScreenCallback callback) override;
+  void GetUserPref(mojom::BocaValidPref pref,
+                   GetUserPrefCallback callback) override;
+  void SetUserPref(mojom::BocaValidPref pref,
+                   base::Value value,
+                   SetUserPrefCallback callback) override;
   // mojom::Page:
   void OnStudentActivityUpdated(
       std::vector<mojom::IdentifiedActivityPtr> activities) override;
@@ -112,6 +117,9 @@ class BocaAppHandler : public mojom::PageHandler,
   WebviewAuthHandler* GetWebviewAuthHandlerForTesting() {
     return auth_handler_.get();
   }
+  void SetPrefForTesting(PrefService* pref_service) {
+    pref_service_ = pref_service;
+  }
 
  private:
   void UpdateSessionConfig();
@@ -135,7 +143,6 @@ class BocaAppHandler : public mojom::PageHandler,
   TabInfoCollector tab_info_collector_;
   std::unique_ptr<WebviewAuthHandler> auth_handler_;
   std::unique_ptr<ClassroomPageHandlerImpl> class_room_page_handler_;
-  raw_ptr<SpotlightService> spotlight_service_;
   // Latest config is not always the same as the instance maintained in
   // boca_session_manager as it contains the async config that hasn't been
   // committed yet. OnTask and caption config use the same server endpoint. We
@@ -149,8 +156,10 @@ class BocaAppHandler : public mojom::PageHandler,
   mojo::Remote<boca::mojom::Page> remote_;
   ActivityInterceptorCallback test_activity_callback_;
   SessionConfigInterceptorCallback test_config_callback_;
+  raw_ptr<SpotlightService> spotlight_service_;
   raw_ptr<SessionClientImpl> session_client_impl_;
   raw_ptr<content::WebUI> web_ui_;
+  raw_ptr<PrefService> pref_service_;
   base::WeakPtrFactory<BocaAppHandler> weak_ptr_factory_{this};
 };
 
