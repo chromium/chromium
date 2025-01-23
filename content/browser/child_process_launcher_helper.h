@@ -136,7 +136,9 @@ class ChildProcessLauncherHelper
       scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
           histogram_memory_region,
       scoped_refptr<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>
-          tracing_config_memory_region);
+          tracing_config_memory_region,
+      scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+          tracing_output_memory_region);
 
   // The methods below are defined in the order they are called.
 
@@ -366,6 +368,12 @@ class ChildProcessLauncherHelper
   // asynchronously.
   scoped_refptr<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>
       tracing_config_memory_region_;
+
+  // Startup tracing output shared memory region. Ownership of the memory region
+  // object is shared with the process host which runs, and is destroyed,
+  // asynchronously.
+  scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+      tracing_output_memory_region_;
 
   // Creation time of the helper, used for metrics.
   // TODO(crbug.com/40287847): Remove when parallel launching is finished.

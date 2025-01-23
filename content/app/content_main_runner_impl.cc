@@ -850,6 +850,9 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
   g_fds->Set(kTraceConfigSharedMemoryDescriptor,
              kTraceConfigSharedMemoryDescriptor +
                  base::GlobalDescriptors::kBaseDescriptor);
+  g_fds->Set(kTraceOutputSharedMemoryDescriptor,
+             kTraceOutputSharedMemoryDescriptor +
+                 base::GlobalDescriptors::kBaseDescriptor);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OPENBSD)

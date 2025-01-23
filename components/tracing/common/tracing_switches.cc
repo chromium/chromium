@@ -46,6 +46,11 @@ const char kEnableTracing[] = "enable-tracing";
 // ignored if --trace-startup or --trace-shutdown is provided.
 const char kTraceConfigHandle[] = "trace-config-handle";
 
+// Handle to the shared memory segment a child process should use to transmit
+// tracing data back to the tracing service. This flag allows tracing to be
+// recorded before sandbox setup.
+const char kTraceBufferHandle[] = "trace-buffer-handle";
+
 // Sets the time in seconds until startup tracing ends. If omitted:
 // - if --trace-startup is specified, a default of 5 seconds is used.
 // - if --enable-tracing is specified, tracing lasts until the browser is

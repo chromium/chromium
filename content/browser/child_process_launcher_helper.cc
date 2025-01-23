@@ -196,6 +196,51 @@ void PassStartupTracingConfigSharedMemoryHandle(
 #endif  // BUILDFLAG(USE_BLINK)
 }
 
+// This function is NOP if the platform does not use Blink.
+void PassStartupOutputSharedMemoryHandle(
+    [[maybe_unused]] const base::UnsafeSharedMemoryRegion*
+        trace_output_memory_region,
+    [[maybe_unused]] base::CommandLine* command_line,
+    [[maybe_unused]] base::LaunchOptions* launch_options,
+    [[maybe_unused]] FileMappedForLaunch* files_to_register) {
+#if BUILDFLAG(USE_BLINK)
+  CHECK(command_line);
+  if (!trace_output_memory_region || !trace_output_memory_region->IsValid()) {
+    return;
+  }
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+  // TODO(crbug.com/40109064): content::FileMappedForLaunch (POSIX) is redundant
+  // wrt the base::LaunchOptions::<platform-specific-handles-to-transfer>
+  // members. Refactor this so that the details of base::Launch vs Zygote on
+  // (some) POSIX platforms is an implementation detail and not exposed here.
+  // I.e., populate launch options (like for all other platforms) then if it's
+  // a Zygote launch pull out the handles to transfer and send them to the
+  // zygote, instead of (for posix only) ignoring the launch-options here,
+  // populating the |files_to_register| param then (if there's no zygote)
+  // filling in |launch_options|
+  CHECK(files_to_register);
+  base::ScopedFD descriptor_to_transfer;
+#else
+  CHECK(launch_options);
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+
+  tracing::AddTraceOutputToLaunchParameters(*trace_output_memory_region,
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+                                            kTraceOutputSharedMemoryDescriptor,
+                                            descriptor_to_transfer,
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+                                            command_line, launch_options);
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+  if (descriptor_to_transfer.is_valid()) {
+    files_to_register->Transfer(kTraceOutputSharedMemoryDescriptor,
+                                std::move(descriptor_to_transfer));
+  }
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+#endif  // BUILDFLAG(USE_BLINK)
+}
+
 }  // namespace
 
 ChildProcessLauncherHelper::Process::Process() = default;
@@ -234,7 +279,9 @@ ChildProcessLauncherHelper::ChildProcessLauncherHelper(
     scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
         histogram_memory_region,
     scoped_refptr<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>
-        tracing_config_memory_region)
+        tracing_config_memory_region,
+    scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+        tracing_output_memory_region)
     : child_process_id_(child_process_id),
       client_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       command_line_(std::move(command_line)),
@@ -249,6 +296,7 @@ ChildProcessLauncherHelper::ChildProcessLauncherHelper(
 #endif
       histogram_memory_region_(std::move(histogram_memory_region)),
       tracing_config_memory_region_(std::move(tracing_config_memory_region)),
+      tracing_output_memory_region_(std::move(tracing_output_memory_region)),
       init_start_time_(base::TimeTicks::Now()) {
   if (!mojo::core::GetConfiguration().is_broker_process &&
       !command_line_->HasSwitch(switches::kDisableMojoBroker)) {
@@ -327,6 +375,10 @@ void ChildProcessLauncherHelper::LaunchOnLauncherThread() {
                                    files_to_register.get());
   PassStartupTracingConfigSharedMemoryHandle(
       tracing_config_memory_region_ ? &tracing_config_memory_region_->data
+                                    : nullptr,
+      command_line(), options_ptr, files_to_register.get());
+  PassStartupOutputSharedMemoryHandle(
+      tracing_output_memory_region_ ? &tracing_output_memory_region_->data
                                     : nullptr,
       command_line(), options_ptr, files_to_register.get());
 

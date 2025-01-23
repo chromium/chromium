@@ -1775,6 +1775,12 @@ bool RenderProcessHostImpl::Init() {
     tracing_config_memory_region_ =
         MakeRefCounted<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>(
             tracing::CreateTracingConfigSharedMemory());
+    tracing_output_memory_region_ =
+        tracing_config_memory_region_->data.IsValid()
+            ? MakeRefCounted<
+                  base::RefCountedData<base::UnsafeSharedMemoryRegion>>(
+                  tracing::CreateTracingOutputSharedMemory())
+            : nullptr;
 
     auto file_data = std::make_unique<ChildProcessLauncherFileData>();
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
@@ -1793,7 +1799,7 @@ bool RenderProcessHostImpl::Init() {
             PROCESS_TYPE_RENDERER)
             ? metrics_memory_region_
             : nullptr,
-        tracing_config_memory_region_);
+        tracing_config_memory_region_, tracing_output_memory_region_);
     channel_->Pause();
 
     // In single process mode, browser-side tracing and memory will cover the

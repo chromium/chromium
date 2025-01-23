@@ -69,7 +69,7 @@ constexpr size_t kMaxInfoPlistDataSize = 18 * 1024;
 #endif
 
 // This limit is arbitrary and can be safely increased in the future.
-constexpr size_t kMaximumRendezvousPorts = 5;
+constexpr size_t kMaximumRendezvousPorts = 6;
 
 enum MachRendezvousMsgId : mach_msg_id_t {
   kMachRendezvousMsgIdRequest = 'mrzv',

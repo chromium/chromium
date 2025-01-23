@@ -5,15 +5,18 @@
 #include "services/tracing/public/cpp/perfetto/perfetto_tracing_backend.h"
 
 #include "base/auto_reset.h"
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/shared_memory_switch.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/tracing/tracing_tls.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "components/tracing/common/tracing_switches.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "services/tracing/public/cpp/perfetto/shared_memory.h"
@@ -44,9 +47,6 @@ constexpr size_t kDefaultSMBPageSizeBytes = 4 * 1024;
 #else
 constexpr size_t kDefaultSMBPageSizeBytes = 32 * 1024;
 #endif
-
-// TODO(crbug.com/40574594): Figure out a good buffer size.
-constexpr size_t kDefaultSMBSizeBytes = 4 * 1024 * 1024;
 
 constexpr char kErrorTracingFailed[] = "Tracing failed";
 
@@ -683,12 +683,25 @@ PerfettoTracingBackend::ConnectProducer(const ConnectProducerArgs& args) {
   uint32_t shmem_size_hint = args.shmem_size_hint_bytes;
   uint32_t shmem_page_size_hint = args.shmem_page_size_hint_bytes;
   if (shmem_size_hint == 0)
-    shmem_size_hint = kDefaultSMBSizeBytes;
+    shmem_size_hint = kDefaultSharedMemorySize;
   if (shmem_page_size_hint == 0)
     shmem_page_size_hint = kDefaultSMBPageSizeBytes;
 
   if (args.use_producer_provided_smb) {
-    shm = std::make_unique<ChromeBaseSharedMemory>(shmem_size_hint);
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    base::UnsafeSharedMemoryRegion unsafe_shm;
+    if (command_line->HasSwitch(switches::kTraceBufferHandle)) {
+      auto shmem_region = base::shared_memory::UnsafeSharedMemoryRegionFrom(
+          command_line->GetSwitchValueASCII(switches::kTraceBufferHandle));
+      if (shmem_region->IsValid()) {
+        DCHECK_EQ(shmem_size_hint, shmem_region->GetSize());
+        unsafe_shm = std::move(shmem_region.value());
+      }
+    }
+    if (!unsafe_shm.IsValid()) {
+      unsafe_shm = base::UnsafeSharedMemoryRegion::Create(shmem_size_hint);
+    }
+    shm = std::make_unique<ChromeBaseSharedMemory>(std::move(unsafe_shm));
     arbiter = perfetto::SharedMemoryArbiter::CreateUnboundInstance(
         shm.get(), shmem_page_size_hint, ShmemMode::kDefault);
   }

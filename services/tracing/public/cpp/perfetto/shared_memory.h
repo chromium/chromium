@@ -14,6 +14,9 @@
 
 namespace tracing {
 
+// TODO(crbug.com/40574594): Figure out a good buffer size.
+inline constexpr size_t kDefaultSharedMemorySize = 4 * 1024 * 1024;  // 4 KB
+
 // This wraps //base's shmem implementation for Perfetto to consume.
 class COMPONENT_EXPORT(TRACING_CPP) ChromeBaseSharedMemory
     : public perfetto::SharedMemory {
