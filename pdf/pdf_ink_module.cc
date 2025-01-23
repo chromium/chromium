@@ -142,6 +142,15 @@ PdfInkModule::PdfInkModule(PdfInkModuleClient& client)
 
 PdfInkModule::~PdfInkModule() = default;
 
+bool PdfInkModule::HasInputsToDraw() const {
+  if (!enabled_ || !is_drawing_stroke()) {
+    return false;
+  }
+
+  const DrawingStrokeState& state = drawing_stroke_state();
+  return !state.inputs.empty();
+}
+
 void PdfInkModule::Draw(SkCanvas& canvas) {
   ink::SkiaRenderer skia_renderer;
 
@@ -150,9 +159,7 @@ void PdfInkModule::Draw(SkCanvas& canvas) {
   const float zoom = client_->GetZoom();
 
   auto in_progress_stroke = CreateInProgressStrokeSegmentsFromInputs();
-  if (in_progress_stroke.empty()) {
-    return;
-  }
+  CHECK(!in_progress_stroke.empty());
 
   DrawingStrokeState& state = drawing_stroke_state();
 

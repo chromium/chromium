@@ -595,7 +595,7 @@ void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
   canvas->drawImage(snapshot_, 0, 0);
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-  if (ink_module_) {
+  if (ink_module_ && ink_module_->HasInputsToDraw()) {
     SkBitmap sk_bitmap;
     sk_bitmap.allocPixels(
         SkImageInfo::MakeN32Premul(rect.width(), rect.height()));
