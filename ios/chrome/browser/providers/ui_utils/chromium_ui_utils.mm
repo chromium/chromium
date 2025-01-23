@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
-
 #import <CoreGraphics/CoreGraphics.h>
 
 #import "ios/chrome/browser/providers/ui_utils/chromium_logo_controller.h"
+#import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 
 namespace ios {
 namespace provider {
