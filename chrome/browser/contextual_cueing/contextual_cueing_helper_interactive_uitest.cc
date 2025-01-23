@@ -20,6 +20,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
+#include "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #include "components/optimization_guide/proto/icon_view_metadata.pb.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "content/public/browser/web_contents.h"
@@ -62,15 +63,14 @@ class ContextualCueingHelperBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpEnabledHints() {
-    optimization_guide::proto::OptimizationGuideIconViewMetadata
-        icon_view_metadata;
-    icon_view_metadata.set_cue_label("test label");
+    optimization_guide::proto::GlicContextualCueingMetadata cueing_metadata;
+    cueing_metadata.add_cueing_configurations()->set_cue_label("test label");
     optimization_guide::OptimizationMetadata metadata;
-    metadata.SetAnyMetadataForTesting(icon_view_metadata);
+    metadata.SetAnyMetadataForTesting(cueing_metadata);
     OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-        ->AddHintForTesting(
-            GURL("https://enabled.com/"),
-            optimization_guide::proto::OPTIMIZATION_GUIDE_ICON_VIEW, metadata);
+        ->AddHintForTesting(GURL("https://enabled.com/"),
+                            optimization_guide::proto::GLIC_CONTEXTUAL_CUEING,
+                            metadata);
   }
 
   void EnableSignIn() {
