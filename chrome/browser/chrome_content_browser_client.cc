@@ -5882,7 +5882,8 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
   std::optional<safe_browsing::internal::ReferringAppInfo> referring_app_info =
       std::nullopt;
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
+  if (safe_browsing::IsEnhancedProtectionEnabled(*profile->GetPrefs()) &&
+      base::FeatureList::IsEnabled(
           safe_browsing::kAddReferringAppInfoToProtegoPings)) {
     WebContents* web_contents = wc_getter.Run();
     if (web_contents) {
