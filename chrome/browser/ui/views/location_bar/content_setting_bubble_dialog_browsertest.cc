@@ -38,6 +38,7 @@
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "components/permissions/test/mock_permission_ui_selector.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -52,39 +53,7 @@
 namespace {
 
 using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
-
-// Test implementation of NotificationPermissionUiSelector that always forces
-// the quiet UI to be used for surfacing notification permission requests.
-class TestQuietNotificationPermissionUiSelector
-    : public permissions::PermissionUiSelector {
- public:
-  explicit TestQuietNotificationPermissionUiSelector(
-      QuietUiReason simulated_reason_for_quiet_ui)
-      : simulated_reason_for_quiet_ui_(simulated_reason_for_quiet_ui) {}
-
-  TestQuietNotificationPermissionUiSelector(
-      const TestQuietNotificationPermissionUiSelector&) = delete;
-  TestQuietNotificationPermissionUiSelector& operator=(
-      const TestQuietNotificationPermissionUiSelector&) = delete;
-
-  ~TestQuietNotificationPermissionUiSelector() override = default;
-
- protected:
-  // permissions::PermissionUiSelector:
-  void SelectUiToUse(permissions::PermissionRequest* request,
-                     DecisionMadeCallback callback) override {
-    std::move(callback).Run(
-        Decision(simulated_reason_for_quiet_ui_, std::nullopt));
-  }
-
-  bool IsPermissionRequestSupported(
-      permissions::RequestType request_type) override {
-    return request_type == permissions::RequestType::kNotifications;
-  }
-
- private:
-  QuietUiReason simulated_reason_for_quiet_ui_;
-};
+using Decision = permissions::PermissionUiSelector::Decision;
 
 // An override that returns a fake URL for every blocked popup, so the UI
 // displays consistent strings for pixel tests.
@@ -238,8 +207,8 @@ void ContentSettingBubbleDialogTest::TriggerQuietNotificationPermissionRequest(
   auto* permission_request_manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
   permission_request_manager->set_permission_ui_selector_for_testing(
-      std::make_unique<TestQuietNotificationPermissionUiSelector>(
-          simulated_reason_for_quiet_ui));
+      std::make_unique<MockPermissionUiSelector>(
+          Decision(simulated_reason_for_quiet_ui, std::nullopt)));
   DCHECK(!notification_permission_request_);
   notification_permission_request_.emplace(
       GURL("https://example.com"), permissions::RequestType::kNotifications);
