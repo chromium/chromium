@@ -657,7 +657,8 @@ void FakeHermesEuiccClient::DoUninstallProfile(
     return;
   }
 
-  // TODO(azeemarshad): Remove Shill service after removing carrier profile.
+  // TODO(crbug.com/390258073): Remove Shill service after removing carrier
+  // profile.
   bool remove_success = RemoveCarrierProfile(euicc_path, carrier_profile_path);
   std::move(callback).Run(remove_success
                               ? HermesResponseStatus::kSuccess

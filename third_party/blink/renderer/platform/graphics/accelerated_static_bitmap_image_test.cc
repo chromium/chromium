@@ -62,7 +62,7 @@ scoped_refptr<StaticBitmapImage> CreateBitmap() {
       SharedGpuContext::ContextProviderWrapper(),
       base::PlatformThread::CurrentRef(),
       base::MakeRefCounted<base::NullTaskRunner>(), base::DoNothing(),
-      /*supports_display_compositing=*/true, /*is_overlay_candidate=*/true);
+      /*supports_display_compositing=*/true);
 }
 
 class AcceleratedStaticBitmapImageTest : public Test {

@@ -83,10 +83,10 @@ criteria = []
 [policy."cfg-if:1.0.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."clap:4.5.23"]
+[policy."clap:4.5.27"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."clap_builder:4.5.23"]
+[policy."clap_builder:4.5.27"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."clap_lex:0.7.4"]
@@ -179,7 +179,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."ppv-lite86:0.2.20"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."proc-macro2:1.0.92"]
+[policy."proc-macro2:1.0.93"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."prost-derive:0.13.4"]
@@ -245,7 +245,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."ryu:1.0.18"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."semver:1.0.24"]
+[policy."semver:1.0.25"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."serde:1.0.217"]
@@ -254,7 +254,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."serde_derive:1.0.217"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."serde_json:1.0.134"]
+[policy."serde_json:1.0.137"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."serde_json_lenient:0.2.4"]
@@ -284,7 +284,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."strum_macros:0.25.3"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."syn:2.0.95"]
+[policy."syn:2.0.96"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."termcolor:1.4.1"]
@@ -436,7 +436,7 @@ Exemption updated to 1.0.18 in May 2024.
 """
 
 [[exemptions.syn]]
-version = "2.0.95"
+version = "2.0.96"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -468,6 +468,7 @@ Exemption updated to 2.0.87 when updating the crate in November 2024.
 Exemption updated to 2.0.90 when updating the crate in November 2024.
 Exemption updated to 2.0.91 when updating the crate in December 2024.
 Exemption updated to 2.0.95 when updating the crate in January 2025.
+Exemption updated to 2.0.96 when updating the crate in January 2025.
 """
 
 [[exemptions.zerocopy]]

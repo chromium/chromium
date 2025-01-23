@@ -594,6 +594,11 @@ extern const char kLensClearcutLoggerFastQosEnabledDescription[];
 extern const char kLensFiltersAblationModeEnabledName[];
 extern const char kLensFiltersAblationModeEnabledDescription[];
 
+// Title and description for the flag to disable Lens ink library's multi-sample
+// mode.
+extern const char kLensInkMultiSampleModeDisabledName[];
+extern const char kLensInkMultiSampleModeDisabledDescription[];
+
 // Title and description for the flag to force show lens overlay onboarding
 // screen.
 extern const char kLensOverlayForceShowOnboardingScreenName[];
@@ -860,6 +865,11 @@ extern const char kPageInfoLastVisitedIOSDescription[];
 // Title and description for the flag to enable page visibility.
 extern const char kPageVisibilityPageContentAnnotationsName[];
 extern const char kPageVisibilityPageContentAnnotationsDescription[];
+
+// Title and description for the flag to enable clientside password form
+// parsing model.
+extern const char kPasswordFormClientsideClassifierName[];
+extern const char kPasswordFormClientsideClassifierDescription[];
 
 // Title and description for the flag to enable PhishGuard password reuse
 // detection.

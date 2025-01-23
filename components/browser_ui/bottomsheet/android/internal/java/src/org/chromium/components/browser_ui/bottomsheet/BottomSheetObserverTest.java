@@ -126,10 +126,7 @@ public class BottomSheetObserverTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             mScrimCoordinator =
-                                    new ScrimCoordinator(
-                                            sTestRule.getActivity(),
-                                            /* systemUiScrimDelegate= */ null,
-                                            rootView);
+                                    new ScrimCoordinator(sTestRule.getActivity(), rootView);
                             Supplier<ScrimCoordinator> scrimSupplier = () -> mScrimCoordinator;
                             Callback<View> initializedCallback = (v) -> {};
                             return new BottomSheetControllerImpl(

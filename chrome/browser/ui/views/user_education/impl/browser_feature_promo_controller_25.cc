@@ -8,8 +8,13 @@
 
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
+#include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_preconditions.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_precondition.h"
+#include "components/user_education/common/feature_promo/feature_promo_session_policy.h"
+#include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
@@ -31,7 +36,9 @@ BrowserFeaturePromoController25::BrowserFeaturePromoController25(
                                messaging_controller),
       browser_view_(browser_view) {}
 
-BrowserFeaturePromoController25::~BrowserFeaturePromoController25() = default;
+BrowserFeaturePromoController25::~BrowserFeaturePromoController25() {
+  OnDestroying();
+}
 
 ui::ElementContext BrowserFeaturePromoController25::GetAnchorContext() const {
   return views::ElementTrackerViews::GetContextForView(browser_view_);
@@ -68,4 +75,122 @@ BrowserFeaturePromoController25::GetScreenReaderPromptPromoFeature() const {
 const char*
 BrowserFeaturePromoController25::GetScreenReaderPromptPromoEventName() const {
   return feature_engagement::events::kFocusHelpBubbleAcceleratorPromoRead;
+}
+
+void BrowserFeaturePromoController25::Init() {
+  FeaturePromoController25::Init();
+
+  // Create shared preconditions. This should be called after the browser view
+  // is set.
+  CHECK(browser_view_);
+  CHECK(shared_preconditions_.empty());
+  PreconditionPtr ptr =
+      std::make_unique<OmniboxNotOpenPrecondition>(*browser_view_);
+  CHECK(shared_preconditions_.emplace(ptr->GetIdentifier(), std::move(ptr))
+            .second);
+  ptr = std::make_unique<ToolbarNotCollapsedPrecondition>(*browser_view_);
+  CHECK(shared_preconditions_.emplace(ptr->GetIdentifier(), std::move(ptr))
+            .second);
+  ptr = std::make_unique<BrowserNotClosingPrecondition>(*browser_view_);
+  CHECK(shared_preconditions_.emplace(ptr->GetIdentifier(), std::move(ptr))
+            .second);
+  ptr = std::make_unique<NoCriticalNoticeShowingPrecondition>(*browser_view_);
+  CHECK(shared_preconditions_.emplace(ptr->GetIdentifier(), std::move(ptr))
+            .second);
+  // Ensure that this uses the same time source as the rest of the User
+  // Education system, so tests are consistent.
+  ptr = std::make_unique<UserNotActivePrecondition>(*browser_view_,
+                                                    *storage_service());
+  CHECK(shared_preconditions_.emplace(ptr->GetIdentifier(), std::move(ptr))
+            .second);
+}
+
+void BrowserFeaturePromoController25::AddDemoPreconditionProviders(
+    user_education::ComposingPreconditionListProvider& to_add_to,
+    bool required) {
+  FeaturePromoController25::AddDemoPreconditionProviders(to_add_to, required);
+  if (required) {
+    to_add_to.AddProvider(base::BindRepeating(
+        [](base::WeakPtr<const user_education::FeaturePromoController> ptr,
+           const user_education::FeaturePromoSpecification&,
+           const user_education::FeaturePromoParams&) {
+          user_education::FeaturePromoPreconditionList preconditions;
+          if (const auto* const controller = GetFromWeakPtr(ptr)) {
+            preconditions.AddPrecondition(controller->WrapSharedPrecondition(
+                kBrowserNotClosingPrecondition));
+          }
+          return preconditions;
+        },
+        GetAsWeakPtr()));
+  }
+}
+
+void BrowserFeaturePromoController25::AddPreconditionProviders(
+    user_education::ComposingPreconditionListProvider& to_add_to,
+    Priority priority,
+    bool required) {
+  FeaturePromoController25::AddPreconditionProviders(to_add_to, priority,
+                                                     required);
+
+  if (required) {
+    to_add_to.AddProvider(base::BindRepeating(
+        [](base::WeakPtr<const user_education::FeaturePromoController> ptr,
+           const user_education::FeaturePromoSpecification&,
+           const user_education::FeaturePromoParams&) {
+          user_education::FeaturePromoPreconditionList preconditions;
+          if (const auto* const controller = GetFromWeakPtr(ptr)) {
+            preconditions.AddPrecondition(controller->WrapSharedPrecondition(
+                kBrowserNotClosingPrecondition));
+            preconditions.AddPrecondition(controller->WrapSharedPrecondition(
+                kNoCriticalNoticeShowingPrecondition));
+          }
+          return preconditions;
+        },
+        GetAsWeakPtr()));
+  } else {
+    to_add_to.AddProvider(base::BindRepeating(
+        [](base::WeakPtr<const user_education::FeaturePromoController> ptr,
+           const user_education::FeaturePromoSpecification& spec,
+           const user_education::FeaturePromoParams&) {
+          user_education::FeaturePromoPreconditionList preconditions;
+          if (const auto* const controller = GetFromWeakPtr(ptr)) {
+            preconditions.AddPrecondition(
+                std::make_unique<WindowActivePrecondition>());
+            preconditions.AddPrecondition(controller->WrapSharedPrecondition(
+                kOmniboxNotOpenPrecondition));
+            preconditions.AddPrecondition(controller->WrapSharedPrecondition(
+                kToolbarNotCollapsedPrecondition));
+
+            // Higher priority and lightweight messages are not subject to
+            // browser activity checks.
+            const auto info =
+                controller->session_policy()->GetPromoPriorityInfo(spec);
+            if (info.priority == Priority::kLow &&
+                info.weight == PromoWeight::kHeavy) {
+              preconditions.AddPrecondition(controller->WrapSharedPrecondition(
+                  kUserNotActivePrecondition));
+            }
+          }
+          return preconditions;
+        },
+        GetAsWeakPtr()));
+  }
+}
+
+// static
+const BrowserFeaturePromoController25*
+BrowserFeaturePromoController25::GetFromWeakPtr(
+    base::WeakPtr<const user_education::FeaturePromoController> ptr) {
+  const auto* const actual = ptr.get();
+  return actual ? static_cast<const BrowserFeaturePromoController25*>(actual)
+                : nullptr;
+}
+
+BrowserFeaturePromoController25::PreconditionPtr
+BrowserFeaturePromoController25::WrapSharedPrecondition(
+    PreconditionId id) const {
+  const auto it = shared_preconditions_.find(id);
+  CHECK(it != shared_preconditions_.end());
+  return std::make_unique<user_education::ForwardingFeaturePromoPrecondition>(
+      *it->second);
 }

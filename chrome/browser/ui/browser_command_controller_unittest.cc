@@ -57,7 +57,7 @@ class BrowserCommandControllerTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKey) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // F1-3 keys are reserved Chrome accelerators on Chrome OS.
   EXPECT_TRUE(browser()->command_controller()->IsReservedCommandOrKey(
       IDC_BACK, input::NativeWebKeyboardEvent(ui::KeyEvent(
@@ -114,7 +114,7 @@ TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKey) {
       -1, input::NativeWebKeyboardEvent(ui::KeyEvent(
               ui::EventType::kKeyPressed, ui::VKEY_F3, ui::DomCode::F3,
               ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN))));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if defined(USE_AURA)
   // Ctrl+n, Ctrl+w are reserved while Ctrl+f is not.
@@ -147,7 +147,7 @@ TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKeyIsApp) {
   ASSERT_TRUE(browser()->is_type_app());
 
   // When is_type_app(), no keys are reserved.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       IDC_BACK,
       input::NativeWebKeyboardEvent(ui::KeyEvent(
@@ -163,7 +163,7 @@ TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKeyIsApp) {
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       -1, input::NativeWebKeyboardEvent(ui::KeyEvent(
               ui::EventType::kKeyPressed, ui::VKEY_F4, ui::DomCode::F4, 0))));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if defined(USE_AURA)
   // The input::NativeWebKeyboardEvent constructor is available only when
@@ -237,7 +237,7 @@ TEST_F(BrowserCommandControllerTest, AvatarAcceleratorEnabledOnDesktop) {
   const CommandUpdater* command_updater = &command_controller;
 
   // Chrome OS uses system tray menu to handle multi-profiles.
-  bool enabled = !BUILDFLAG(IS_CHROMEOS_ASH);
+  bool enabled = !BUILDFLAG(IS_CHROMEOS);
 
   ASSERT_EQ(1u, profile_manager->GetNumberOfProfiles());
   EXPECT_EQ(enabled, command_updater->IsCommandEnabled(IDC_SHOW_AVATAR_MENU));

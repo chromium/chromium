@@ -276,16 +276,7 @@ using chrome_test_util::SettingsDoneButton;
       performAction:grey_tap()];
   // Set up a fake identity to add and sign-in with.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(
-                                       kFakeAuthAddAccountButtonIdentifier),
-                                   grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
-  // Make sure the fake SSO view controller is fully removed.
-  [ChromeEarlGreyUI waitForAppToIdle];
-
+  [SigninEarlGreyUI addFakeAccountInFakeAddAccountMenu:fakeIdentity];
   // Verify the user got signed in and the promo hidden.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI verifySigninPromoNotVisible];

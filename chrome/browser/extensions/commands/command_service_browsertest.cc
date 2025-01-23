@@ -25,6 +25,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/command.h"
+#include "ui/base/accelerators/command_constants.h"
 
 namespace {
 const char kBasicBrowserActionKeybinding[] = "Ctrl+Shift+F";
@@ -45,17 +46,17 @@ constexpr char kManifestTemplate[] = R"({
     },
     "%s": {}})";
 
-// Get another command platform, whcih is used for simulating a command has been
+// Get another command platform, which is used for simulating a command has been
 // assigned with a shortcut on another platform.
 std::string GetAnotherCommandPlatform() {
 #if BUILDFLAG(IS_WIN)
-  return extensions::manifest_values::kKeybindingPlatformMac;
+  return ui::kKeybindingPlatformMac;
 #elif BUILDFLAG(IS_MAC)
-  return extensions::manifest_values::kKeybindingPlatformChromeOs;
+  return ui::kKeybindingPlatformChromeOs;
 #elif BUILDFLAG(IS_CHROMEOS)
-  return extensions::manifest_values::kKeybindingPlatformLinux;
+  return ui::kKeybindingPlatformLinux;
 #elif BUILDFLAG(IS_LINUX)
-  return extensions::manifest_values::kKeybindingPlatformWin;
+  return ui::kKeybindingPlatformWin;
 #else
   return "";
 #endif

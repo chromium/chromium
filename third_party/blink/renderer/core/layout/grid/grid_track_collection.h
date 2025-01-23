@@ -12,8 +12,6 @@
 
 namespace blink {
 
-class GridLineResolver;
-
 // |GridTrackCollectionBase| provides an implementation for some shared
 // functionality on grid collections, specifically binary search on the
 // collection to get the range that contains a specific grid line.
@@ -88,8 +86,8 @@ class CORE_EXPORT GridRangeBuilder {
   GridRangeBuilder() = delete;
 
   GridRangeBuilder(const ComputedStyle& grid_style,
-                   const GridLineResolver& line_resolver,
                    GridTrackSizingDirection track_direction,
+                   wtf_size_t auto_repetitions,
                    wtf_size_t start_offset);
 
   // Ensures that after FinalizeRanges is called, a range will start at the
@@ -122,15 +120,15 @@ class CORE_EXPORT GridRangeBuilder {
     wtf_size_t* grid_item_range_index_to_cache;
   };
 
-  // This constructor is used exclusively in testing.
   GridRangeBuilder(const NGGridTrackList& explicit_tracks,
                    const NGGridTrackList& implicit_tracks,
-                   wtf_size_t auto_repetitions);
+                   wtf_size_t auto_repetitions,
+                   wtf_size_t start_offset = 0);
 
   wtf_size_t auto_repetitions_;
   wtf_size_t start_offset_;
 
-  bool must_sort_grid_lines_ : 1;
+  bool must_sort_grid_lines_{false};
 
   // Stores the grid's explicit and implicit tracks.
   const NGGridTrackList& explicit_tracks_;

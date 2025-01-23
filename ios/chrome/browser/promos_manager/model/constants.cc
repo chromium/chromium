@@ -20,26 +20,33 @@ const char kImpressionFeatureEngagementMigrationCompletedKey[] =
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.
 std::optional<Promo> PromoForName(std::string_view promo) {
-  if (promo == "promos_manager::Promo::Test")
+  if (promo == "promos_manager::Promo::Test") {
     return promos_manager::Promo::Test;
+  }
 
-  if (promo == "promos_manager::Promo::DefaultBrowser")
+  if (promo == "promos_manager::Promo::DefaultBrowser") {
     return promos_manager::Promo::DefaultBrowser;
+  }
 
-  if (promo == "promos_manager::Promo::AppStoreRating")
+  if (promo == "promos_manager::Promo::AppStoreRating") {
     return promos_manager::Promo::AppStoreRating;
+  }
 
-  if (promo == "promos_manager::Promo::CredentialProviderExtension")
+  if (promo == "promos_manager::Promo::CredentialProviderExtension") {
     return promos_manager::Promo::CredentialProviderExtension;
+  }
 
-  if (promo == "promos_manager::Promo::PostRestoreSignInFullscreen")
+  if (promo == "promos_manager::Promo::PostRestoreSignInFullscreen") {
     return promos_manager::Promo::PostRestoreSignInFullscreen;
+  }
 
-  if (promo == "promos_manager::Promo::PostRestoreSignInAlert")
+  if (promo == "promos_manager::Promo::PostRestoreSignInAlert") {
     return promos_manager::Promo::PostRestoreSignInAlert;
+  }
 
-  if (promo == "promos_manager::Promo::WhatsNew")
+  if (promo == "promos_manager::Promo::WhatsNew") {
     return promos_manager::Promo::WhatsNew;
+  }
 
   if (promo == "promos_manager::Promo::PostRestoreDefaultBrowserAlert") {
     return promos_manager::Promo::PostRestoreDefaultBrowserAlert;

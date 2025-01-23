@@ -6,7 +6,10 @@ package org.chromium.components.search_engines;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Helpers to access feature params for {@link SearchEnginesFeatures}. */
+@NullMarked
 public final class SearchEnginesFeatureUtils {
     /**
      * Whether the feature should be powered by a fake backend. This avoid having dependencies on

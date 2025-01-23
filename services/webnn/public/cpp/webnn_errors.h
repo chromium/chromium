@@ -137,6 +137,9 @@ std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
     NotSupportedInputArgumentTypeError(OperandDataType type,
                                        SupportedDataTypes supported_types);
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
+    NotSupportedInputArgumentError(const OperandDescriptor& descriptor,
+                                   SupportedTensors supported_tensors);
+std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
     NotSupportedInputTypeError(std::string_view input_name,
                                OperandDataType type,
                                SupportedDataTypes supported_types);

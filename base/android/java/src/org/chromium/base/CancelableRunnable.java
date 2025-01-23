@@ -5,6 +5,8 @@
 package org.chromium.base;
 
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * CancelableRunnable is a Runnable class that can be canceled. A canceled task is not removed from
@@ -13,9 +15,10 @@ import org.chromium.build.BuildConfig;
  * <p>This class is *not* threadsafe, and is only for canceling tasks from the thread on which it
  * would be run.
  */
+@NullMarked
 public class CancelableRunnable implements Runnable {
-    private Runnable mRunnable;
-    private Thread mExpectedThread;
+    private @Nullable Runnable mRunnable;
+    private @Nullable Thread mExpectedThread;
 
     public CancelableRunnable(Runnable runnable) {
         mRunnable = runnable;

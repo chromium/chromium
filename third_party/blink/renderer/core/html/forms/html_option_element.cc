@@ -697,20 +697,28 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
   const auto* mouse_event = DynamicTo<MouseEvent>(event);
   if (mouse_event && event.type() == event_type_names::kMouseup &&
       mouse_event->button() ==
-          static_cast<int16_t>(WebPointerProperties::Button::kLeft) &&
-      select->MouseupShouldClosePicker()) {
-    select->SelectOptionByPopup(this);
-    select->HidePopup(SelectPopupHideBehavior::kNormal);
-    event.SetDefaultHandled();
+          static_cast<int16_t>(WebPointerProperties::Button::kLeft)) {
+    // We leave the picker open, and do not "pick" an option, only if:
+    //  1. The mousedown was on the <select> button, so we have a mousedown
+    //     location stored, and
+    //  2. The mouseup on this <option> was within kEpsilon layout units
+    //     (post zoom, page-relative) of the location of the mousedown. I.e.
+    //     the mouse was not dragged between mousedown and mouseup.
+    std::optional<gfx::PointF> mouse_down_loc =
+        GetDocument().CustomizableSelectMousedownLocation();
+    constexpr float kEpsilon = 5;  // 5 pixels in any direction
+    bool mouse_moved = !mouse_down_loc.has_value() ||
+                       !mouse_down_loc->IsWithinDistance(
+                           mouse_event->AbsoluteLocation(), kEpsilon);
+    if (mouse_moved) {
+      select->SelectOptionByPopup(this);
+      select->HidePopup(SelectPopupHideBehavior::kNormal);
+      event.SetDefaultHandled();
+    }
+    GetDocument().SetCustomizableSelectMousedownLocation(std::nullopt);
     return;
-  } else if (event.type() == event_type_names::kMouseleave ||
-             event.type() == event_type_names::kMousedown) {
-    // In the case that the picker overlaps the invoker button and the user
-    // clicks and drags between options, releasing the pointer should choose an
-    // option and close the picker after the mouse has left an option or
-    // released the pointer and clicked down again.
-    // https://issues.chromium.org/issues/385300320
-    select->SetMouseupShouldClosePicker(true);
+  } else if (event.type() == event_type_names::kMousedown) {
+    GetDocument().SetCustomizableSelectMousedownLocation(std::nullopt);
   }
 
   auto* keyboard_event = DynamicTo<KeyboardEvent>(event);

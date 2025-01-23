@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Assign String to SVGScriptElement.innerHTML.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to set the 'data' property on 'HTMLObjectElement': This document requires 'TrustedScriptURL' assignment."
+[FAIL] Assign TrustedHTML to SVGScriptElement.innerHTML.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to set the 'data' property on 'HTMLObjectElement': This document requires 'TrustedScriptURL' assignment."
+[FAIL] Assign TrustedHTML to SVGScriptElement.innerHTML and execute it.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to set the 'data' property on 'HTMLObjectElement': This document requires 'TrustedScriptURL' assignment."
+[FAIL] Modify SVGScriptElement via DOM manipulation.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to set the 'data' property on 'HTMLObjectElement': This document requires 'TrustedScriptURL' assignment."
+Harness: the test ran to completion.
+

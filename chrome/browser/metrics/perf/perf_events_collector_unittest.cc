@@ -76,7 +76,7 @@ const char kPerfETMCmd[] =
 // Converts a protobuf to serialized format as a byte vector.
 std::vector<uint8_t> SerializeMessageToVector(
     const google::protobuf::MessageLite& message) {
-  std::vector<uint8_t> result(message.ByteSize());
+  std::vector<uint8_t> result(message.ByteSizeLong());
   message.SerializeToArray(result.data(), result.size());
   return result;
 }
@@ -371,7 +371,7 @@ TEST_F(PerfCollectorTest, NoCollectionWhenProfileCacheFull) {
 // ParseOutputProtoIfValid().
 TEST_F(PerfCollectorTest, IncognitoWindowOpened) {
   PerfDataProto perf_data_proto = GetExamplePerfDataProto();
-  EXPECT_GT(perf_data_proto.ByteSize(), 0);
+  EXPECT_GT(perf_data_proto.ByteSizeLong(), 0U);
   task_environment_.RunUntilIdle();
 
   auto sampled_profile = std::make_unique<SampledProfile>();

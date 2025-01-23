@@ -12,12 +12,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** This is a helper class for app menu. */
+@NullMarked
 public class AppMenuUtil {
     /** MenuItem Animation Constants */
     static final int ENTER_ITEM_DURATION_MS = 350;

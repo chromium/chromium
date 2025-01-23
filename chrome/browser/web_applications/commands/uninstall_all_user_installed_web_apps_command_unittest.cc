@@ -166,8 +166,6 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest,
       web_app::IsolatedWebAppBuilder(
           web_app::ManifestBuilder().SetName("iwa from dev ui"))
           .BuildBundle();
-  app_bundle4->FakeInstallPageState(profile());
-  app_bundle4->TrustSigningKey();
   webapps::AppId app_id4 =
       app_bundle4
           ->InstallWithSource(profile(),
@@ -179,8 +177,6 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest,
       web_app::IsolatedWebAppBuilder(
           web_app::ManifestBuilder().SetName("iwa from dev command line"))
           .BuildBundle();
-  app_bundle5->FakeInstallPageState(profile());
-  app_bundle5->TrustSigningKey();
   webapps::AppId app_id5 =
       app_bundle5
           ->InstallWithSource(profile(),

@@ -9,7 +9,6 @@
 
 #include "base/callback_list.h"
 #include "base/check_op.h"
-#include "base/dcheck_is_on.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
@@ -36,13 +35,11 @@ std::vector<std::unique_ptr<KeyProvider>> SortProviders(
     return a.first < b.first;
   });
 
-#if DCHECK_IS_ON()
   for (auto it = input_providers.cbegin(); it != input_providers.cend() - 1;
        ++it) {
-    DCHECK_NE(it->first, (it + 1)->first)
+    CHECK_NE(it->first, (it + 1)->first)
         << "Cannot have two providers with same precedence.";
   }
-#endif  // DCHECK_IS_ON()
 
   base::ranges::transform(std::make_move_iterator(input_providers.begin()),
                           std::make_move_iterator(input_providers.end()),
@@ -81,20 +78,20 @@ void OSCryptAsync::HandleKey(ProviderIterator current,
                              std::optional<Encryptor::Key> key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (key && !tag.empty()) {
-#if DCHECK_IS_ON()
-    for (const auto& [key_name, key_value] : key_ring_) {
-      // Check for overlapping names. Two providers called TEST and TEST2 are
-      // likely incorrectly named, since TEST might try to decrypt TEST2's data.
-      if (tag.size() > key_name.size()) {
-        DCHECK(!std::equal(key_name.begin(), key_name.end(), tag.begin()))
-            << "Tags must not overlap.";
-      } else {
-        DCHECK(!std::equal(tag.begin(), tag.end(), key_name.begin()))
-            << "Tags must not overlap.";
-      }
+  CHECK(!tag.empty()) << "Tag cannot be empty.";
+  for (const auto& [key_name, key_value] : key_ring_) {
+    // Check for overlapping names. Two providers called TEST and TEST2 are
+    // likely incorrectly named, since TEST might try to decrypt TEST2's data.
+    if (tag.size() > key_name.size()) {
+      CHECK(!std::equal(key_name.begin(), key_name.end(), tag.begin()))
+          << "Tags must not overlap.";
+    } else {
+      CHECK(!std::equal(tag.begin(), tag.end(), key_name.begin()))
+          << "Tags must not overlap.";
     }
-#endif  // DCHECK_IS_ON()
+  }
+
+  if (key) {
     key->is_os_crypt_sync_compatible_ =
         ((*current)->IsCompatibleWithOsCryptSync());
     key_ring_.emplace(tag, std::move(*key));
@@ -130,7 +127,7 @@ base::CallbackListSubscription OSCryptAsync::GetInstance(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (is_initialized_) {
-    DCHECK(!is_initializing_);
+    CHECK(!is_initializing_);
     std::move(callback).Run(encryptor_instance_->Clone(option),
                             /*result=*/true);
     return base::CallbackListSubscription();
@@ -144,7 +141,7 @@ base::CallbackListSubscription OSCryptAsync::GetInstance(
     return subscription;
   }
 
-  DCHECK(key_ring_.empty());
+  CHECK(key_ring_.empty());
   is_initializing_ = true;
 
   const ProviderIterator start = providers_.cbegin();

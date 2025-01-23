@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_HISTORY_EMBEDDINGS_MOCK_EMBEDDER_H_
 #define COMPONENTS_HISTORY_EMBEDDINGS_MOCK_EMBEDDER_H_
 
+#include <string>
+#include <vector>
+
 #include "components/history_embeddings/embedder.h"
 
 namespace history_embeddings {
@@ -21,6 +24,10 @@ class MockEmbedder : public Embedder {
       ComputePassagesEmbeddingsCallback callback) override;
 
   void SetOnEmbedderReady(OnEmbedderReadyCallback callback) override;
+
+ protected:
+  std::vector<Embedding> ComputeEmbeddingsForPassages(
+      const std::vector<std::string>& passages);
 };
 
 }  // namespace history_embeddings

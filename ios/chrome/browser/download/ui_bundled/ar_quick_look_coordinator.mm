@@ -90,8 +90,9 @@ PresentQLPreviewController GetHistogramEnum(
 
 - (void)viewPresented {
   web::WebState* webState = _weakWebState.get();
-  if (webState)
+  if (webState) {
     webState->DidCoverWebContent();
+  }
 }
 
 #pragma mark - QLPreviewControllerDataSource
@@ -114,8 +115,9 @@ PresentQLPreviewController GetHistogramEnum(
 
 - (void)previewControllerDidDismiss:(QLPreviewController*)controller {
   web::WebState* webState = _weakWebState.get();
-  if (webState)
+  if (webState) {
     webState->DidRevealWebContent();
+  }
 
   if (_dismissBlock) {
     _dismissBlock();
@@ -180,8 +182,9 @@ PresentQLPreviewController GetHistogramEnum(
 
   // Do not present if the URL is invalid or if there is already
   // a preview in progress.
-  if (!fileURL || _delegate)
+  if (!fileURL || _delegate) {
     return;
+  }
 
   __weak ARQuickLookCoordinator* weakSelf = self;
   _delegate = [[ARQuickLookPreviewControllerDelegate alloc]

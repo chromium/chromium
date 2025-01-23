@@ -27011,6 +27011,10 @@ Called by update_use_counter_css.py.-->
   <int value="820" label="animation-trigger-range-end"/>
   <int value="821" label="animation-trigger-exit-range-start"/>
   <int value="822" label="animation-trigger-exit-range-end"/>
+  <int value="823" label="interest-target-show-delay"/>
+  <int value="824" label="interest-target-hide-delay"/>
+  <int value="825" label="animation-trigger-range"/>
+  <int value="826" label="animation-trigger-exit-range"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->
@@ -34818,6 +34822,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="-1331415629" label="chrome://os-settings/"/>
   <int value="-1313432739" label="chrome://plugins/"/>
   <int value="-1296182448" label="chrome://vc-tray-tester/"/>
+  <int value="-1294799178" label="chrome://signout-confirmation/"/>
   <int value="-1293039192" label="chrome://os-feedback/"/>
   <int value="-1282128285" label="chrome://suggest-internals/"/>
   <int value="-1267771224" label="chrome://sensor-info/"/>

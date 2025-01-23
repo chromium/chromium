@@ -4,6 +4,8 @@
 
 package org.chromium.components.facilitated_payments;
 
+import androidx.annotation.Nullable;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -20,10 +22,26 @@ class SecurePayload {
     private final byte[] mActionToken;
     private final List<SecureData> mSecureData;
 
-    @CalledByNative
-    public SecurePayload(byte[] actionToken, @JniType("std::vector") Object[] secureData) {
+    private SecurePayload(byte[] actionToken, @JniType("std::vector") Object[] secureData) {
         this.mActionToken = actionToken;
         this.mSecureData = (List<SecureData>) (List<?>) Arrays.asList(secureData);
+    }
+
+    /**
+     * Creates a SecurePayload object.
+     *
+     * @param actionToken the action token used to trigger Google play services.
+     * @param secureData decrypted secure data passed along with the action token.
+     * @return null if either of the params are null
+     */
+    @CalledByNative
+    @Nullable
+    public static SecurePayload create(
+            byte[] actionToken, @JniType("std::vector") Object[] secureData) {
+        if (actionToken == null || secureData == null) {
+            return null;
+        }
+        return new SecurePayload(actionToken, secureData);
     }
 
     /** Returns an action token that can be used to trigger a UI flow in Google Play Services. */

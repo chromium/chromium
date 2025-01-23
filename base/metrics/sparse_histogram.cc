@@ -23,7 +23,7 @@
 
 namespace base {
 
-typedef HistogramBase::Count Count;
+typedef HistogramBase::Count32 Count32;
 
 // static
 HistogramBase* SparseHistogram::FactoryGet(std::string_view name,
@@ -216,7 +216,7 @@ SparseHistogram::SparseHistogram(PersistentHistogramAllocator* allocator,
       // have no such initial allocation. Each sample has its own record
       // attached to a single PersistentSampleMap by a common 64-bit identifier.
       // Since a sparse histogram has two sample maps (active and logged),
-      // there must be two sets of sample records with diffent IDs. The
+      // there must be two sets of sample records with different IDs. The
       // "active" samples use, for convenience purposes, an ID matching
       // that of the histogram while the "logged" samples use that number
       // plus 1.

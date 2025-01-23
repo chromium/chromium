@@ -395,7 +395,6 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
   <owner>jkarlin@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
     Records the time from frame navigation start to FirstContentfulPaint of each
@@ -418,7 +417,7 @@ chromium-metrics-reviews@google.com.
     name="PageLoad.AdPaintTiming.TopFrameNavigationToFirstContentfulPaint"
     units="ms" expires_after="2025-10-12">
   <owner>jkarlin@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
   <summary>
     Records the time from top frame navigation start to FirstContentfulPaint of
     each ad frame that receives a FirstContentfulPaint. The time could be quite
@@ -473,7 +472,7 @@ chromium-metrics-reviews@google.com.
 <histogram base="true" name="PageLoad.Bytes" units="KB"
     expires_after="2025-07-10">
   <owner>jkarlin@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Only recorded if the page has at least one identified ad frame. Recorded in
@@ -513,7 +512,7 @@ chromium-metrics-reviews@google.com.
     name="PageLoad.Clients.Ads.AdPaintTiming.TopFrameNavigationToFirstAdFirstContentfulPaint"
     units="ms" expires_after="2025-06-22">
   <owner>jkarlin@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
     Records the time from the top frame navigation until the first ad-frame on
@@ -580,7 +579,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageLoad.Clients.Ads.AllPages.NonAdNetworkBytes" units="KB"
     expires_after="2025-10-20">
   <owner>alexmt@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Total number of network bytes that went towards loading non-ad resources for
@@ -594,7 +592,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageLoad.Clients.Ads.AllPages.PercentNetworkBytesAds"
     units="%" expires_after="2025-10-20">
   <owner>alexmt@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The percentage of network bytes loaded by the page that are attributed to ad
     resources (including ad resources in the main frame) across the entire page
@@ -607,7 +605,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageLoad.Clients.Ads.AllPages.PercentTotalBytesAds" units="%"
     expires_after="2025-06-22">
   <owner>alexmt@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The percentage of all bytes loaded by the page that are attributed to ad
@@ -621,7 +618,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageLoad.Clients.Ads.AverageViewportAdDensity" units="%"
     expires_after="2025-07-13">
   <owner>yaoxia@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -635,7 +631,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageLoad.Clients.Ads.HeavyAds.DisallowedByBlocklist"
     enum="BooleanBlocked" expires_after="2025-06-22">
-  <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -647,7 +642,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageLoad.Clients.Ads.HeavyAds.NetworkBytesAtFrameUnload"
     units="bytes" expires_after="2025-06-22">
-  <owner>johnidel@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Records the number of network bytes used by a heavy ad unloaded due to
@@ -661,7 +656,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-11-10">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The maximum reported number of kilobytes of memory used by V8 by the main
@@ -681,7 +675,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-11-10">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The number of V8 memory measurement updates received by
@@ -696,7 +689,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageLoad.Clients.Ads.Resources.Bytes.Ads2" units="KB"
     expires_after="2025-06-22">
-  <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -2004,7 +1996,6 @@ chromium-metrics-reviews@google.com.
     name="PageLoad.Clients.PrivacySandboxAds.InteractiveTiming.FirstInputDelay4.{PrivacySandboxAdsApi}"
     units="ms" expires_after="2025-06-08">
   <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     PageLoad.InteractiveTiming.FirstInputDelay4, but recorded iff
@@ -2017,7 +2008,6 @@ chromium-metrics-reviews@google.com.
     name="PageLoad.Clients.PrivacySandboxAds.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2.{PrivacySandboxAdsApi}"
     units="ms" expires_after="2025-07-06">
   <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2,
@@ -2030,7 +2020,6 @@ chromium-metrics-reviews@google.com.
     name="PageLoad.Clients.PrivacySandboxAds.PaintTiming.NavigationToFirstContentfulPaint.{PrivacySandboxAdsApi}"
     units="ms" expires_after="2025-06-08">
   <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     PageLoad.PaintTiming.NavigationToFirstContentfulPaint, but recorded iff
@@ -2043,7 +2032,6 @@ chromium-metrics-reviews@google.com.
     name="PageLoad.Clients.PrivacySandboxAds.PaintTiming.NavigationToLargestContentfulPaint2.{PrivacySandboxAdsApi}"
     units="ms" expires_after="2025-06-08">
   <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     PageLoad.PaintTiming.NavigationToLargestContentfulPaint2, but recorded iff
@@ -2098,7 +2086,7 @@ chromium-metrics-reviews@google.com.
     name="PageLoad.Clients.ThirdParty.Frames.NavigationToFirstContentfulPaint3"
     units="ms" expires_after="2025-06-01">
   <owner>jkarlin@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The time from navigation start to the first contentful paint of third-party
     (in respect to scheme://eTLD+1) frames on pages. Note that this can be
@@ -2169,7 +2157,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageLoad.Clients.TPCD.AdTPCAccess.BlockedByExperiment2"
     enum="Boolean" expires_after="2025-07-13">
-  <owner>johnidel@chromium.org</owner>
   <owner>victortan@chromium.org</owner>
   <owner>src/chrome/browser/tpcd/OWNERS</owner>
   <summary>
@@ -2230,7 +2217,6 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PageLoad.Clients.TPCD.TPCAccess.BlockedByExperiment.IsAdOrNonAd2"
     enum="Boolean" expires_after="2025-07-13">
-  <owner>johnidel@chromium.org</owner>
   <owner>victortan@chromium.org</owner>
   <owner>src/chrome/browser/tpcd/OWNERS</owner>
   <summary>
@@ -2243,7 +2229,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageLoad.Clients.TPCD.TPCAccess.CookieReadStatus2"
     enum="CookieReadStatus" expires_after="2025-07-13">
-  <owner>johnidel@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
   <owner>src/chrome/browser/tpcd/OWNERS</owner>
   <summary>
     For an attempted cookie read access (document.cookie or via headers),
@@ -2567,7 +2553,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="PageLoad.Cpu" units="units"
     expires_after="2025-07-10">
-  <owner>johnidel@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Only recorded if the page has at least one identified ad frame. Recorded in
@@ -2586,7 +2572,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageLoad.Cpu.TotalUsage" units="ms" expires_after="2025-06-22">
   <owner>alexmt@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Recorded when the page is destroyed or the app is backgrounded on mobile.
     Records the total wall time of tasks attributable to the page across its
@@ -2598,7 +2584,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageLoad.Cpu.TotalUsageForegrounded" units="ms"
     expires_after="2025-07-13">
   <owner>alexmt@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Recorded when the page is destroyed or the app is backgrounded on mobile.
     Records the total wall time of tasks attributable to the page across its
@@ -2690,7 +2676,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-11-10">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The maximum reported number of kilobytes of memory used by V8 by the main
@@ -2708,7 +2693,6 @@ chromium-metrics-reviews@google.com.
     units="KiB" expires_after="2024-11-10">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The maximum reported aggregate number of kilobytes of memory used by V8 by
@@ -2727,7 +2711,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-11-10">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The maximum reported aggregate number of kilobytes of memory used by V8 by
@@ -3108,7 +3091,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageLoad.FrameCounts.AdFrames.PerFrame.OriginStatus"
     enum="CrossOriginAdStatus" expires_after="2025-07-10">
-  <owner>johnidel@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     For each identified ad frame, whether the origin of the ad matches the
@@ -3127,8 +3110,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageLoad.FrameCounts.AdFrames.PerFrame.UserActivation"
     enum="AdUserActivationStatus" expires_after="2024-04-17">
-  <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     For each identified ad frame, whether the sticky user activation bit was
     ever set on the frame. Recorded for each ad frame when the page is destroyed
@@ -3144,7 +3127,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageLoad.FrameCounts.AdFrames.Total" units="Ad frames"
     expires_after="2025-04-17">
   <owner>jkarlin@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The number of frames on the page that have loaded more than 0 bytes of
     content or had non-zero CPU usage.
@@ -3159,8 +3142,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="PageLoad.HeavyAds.ComputedTypeWithThresholdNoise"
     enum="HeavyAdStatus2" expires_after="2024-04-17">
-  <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Records heavy ad type for each ad frame, as determined by the first
     threshold hit (see FrameData::HeavyadStatus). This is recorded regardless of
@@ -3179,8 +3162,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="PageLoad.HeavyAds.InterventionType2"
     enum="HeavyAdStatus2" expires_after="2024-04-17">
-  <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Records the type of heavy ad unloaded by the heavy ad intervention. Heavy ad
     type is determined by the first threshold hit. This is not recorded for ad

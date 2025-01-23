@@ -128,8 +128,9 @@ std::vector<CreditCard> FetchCards(
 - (std::optional<const CreditCard>)findCreditCardfromGUID:(NSString*)GUID {
   for (const CreditCard& card : _cards) {
     NSString* cppGUID = base::SysUTF8ToNSString(card.guid());
-    if ([cppGUID isEqualToString:GUID])
+    if ([cppGUID isEqualToString:GUID]) {
       return card;
+    }
   }
   return std::nullopt;
 }

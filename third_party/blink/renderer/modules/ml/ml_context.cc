@@ -921,9 +921,9 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
 
   MLSplitSupportLimits* split = MLSplitSupportLimits::Create();
   split->setInput(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.split_input));
-  split->setOutputs(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.split_input));
+      SupportedTensorLimitsToTensorLimits(data_type_limits.split_input));
+  split->setOutputs(SupportedDataTypesToDataTypeLimits(
+      data_type_limits.split_input.data_types));
   op_support_limits->setSplit(split);
 
   MLSingleInputSupportLimits* tanh = MLSingleInputSupportLimits::Create();
@@ -956,13 +956,13 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
 
   MLWhereSupportLimits* where = MLWhereSupportLimits::Create();
   where->setCondition(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.where_condition));
+      SupportedTensorLimitsToTensorLimits(data_type_limits.where_condition));
   where->setTrueValue(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.where_value));
+      SupportedTensorLimitsToTensorLimits(data_type_limits.where_value));
   where->setFalseValue(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.where_value));
-  where->setOutput(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.where_value));
+      SupportedTensorLimitsToTensorLimits(data_type_limits.where_value));
+  where->setOutput(SupportedDataTypesToDataTypeLimits(
+      data_type_limits.where_value.data_types));
   op_support_limits->setWhere(where);
 
   return op_support_limits;

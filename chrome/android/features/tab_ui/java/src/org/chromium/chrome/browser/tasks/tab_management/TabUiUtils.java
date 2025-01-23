@@ -122,6 +122,8 @@ public class TabUiUtils {
     public static void ungroupTabGroup(TabGroupModelFilter filter, int tabId) {
         TabModel tabModel = filter.getTabModel();
         int rootId = tabModel.getTabById(tabId).getRootId();
+        if (rootId == Tab.INVALID_TAB_ID) return;
+
         filter.getTabUngrouper().ungroupTabs(rootId, /* trailing= */ true, /* allowDialog= */ true);
     }
 

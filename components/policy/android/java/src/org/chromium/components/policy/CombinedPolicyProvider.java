@@ -4,6 +4,8 @@
 
 package org.chromium.components.policy;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
@@ -15,6 +17,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,15 +29,16 @@ import java.util.List;
  * subsystem.
  */
 @JNINamespace("policy::android")
+@NullMarked
 public class CombinedPolicyProvider {
     private static final String TAG = "CombinedPProvider";
 
-    private static CombinedPolicyProvider sInstance;
+    private static @Nullable CombinedPolicyProvider sInstance;
 
     private long mNativeCombinedPolicyProvider;
 
-    private PolicyConverter mPolicyConverter;
-    private PolicyCacheProvider mPolicyCacheProvider;
+    private @Nullable PolicyConverter mPolicyConverter;
+    private @Nullable PolicyCacheProvider mPolicyCacheProvider;
     private final List<PolicyProvider> mPolicyProviders = new ArrayList<>();
     private final List<Bundle> mCachedPolicies = new ArrayList<>();
     private final List<PolicyChangeListener> mPolicyChangeListeners = new ArrayList<>();
@@ -124,7 +129,7 @@ public class CombinedPolicyProvider {
         for (Bundle settings : policies) {
             for (String key : settings.keySet()) {
                 Log.i(TAG, "#setPolicy() " + key + " -> " + settings.get(key));
-                mPolicyConverter.setPolicy(key, settings.get(key));
+                assumeNonNull(mPolicyConverter).setPolicy(key, settings.get(key));
             }
         }
         Log.i(TAG, "#flushPolicies()");
@@ -150,7 +155,7 @@ public class CombinedPolicyProvider {
     @CalledByNative
     public void refreshPolicies() {
         if (isPolicyCacheEnabled()) {
-            mPolicyCacheProvider.refresh();
+            assumeNonNull(mPolicyCacheProvider).refresh();
             return;
         }
 

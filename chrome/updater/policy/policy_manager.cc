@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -99,7 +100,7 @@ std::optional<bool> PolicyManager::CloudPolicyOverridesPlatformPolicy() const {
 }
 
 bool PolicyManager::HasActiveDevicePolicies() const {
-  return !policies_.empty();
+  return true;
 }
 
 std::string PolicyManager::source() const {
@@ -238,4 +239,12 @@ std::optional<std::string> PolicyManager::GetStringPolicy(
   const std::string* policy = policies_.FindString(base::ToLowerASCII(key));
   return policy ? std::make_optional(*policy) : std::nullopt;
 }
+
+scoped_refptr<PolicyManagerInterface> CreateDictPolicyManager(
+    base::Value::Dict policies) {
+  return policies.empty()
+             ? nullptr
+             : base::MakeRefCounted<PolicyManager>(std::move(policies));
+}
+
 }  // namespace updater

@@ -293,13 +293,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
       performAction:grey_tap()];
   // Set up a fake identity to add and sign-in with.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(
-                                       kFakeAuthAddAccountButtonIdentifier),
-                                   grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
+  [SigninEarlGreyUI addFakeAccountInFakeAddAccountMenu:fakeIdentity];
   // Make sure the fake SSO view controller is fully removed.
   [ChromeEarlGreyUI waitForAppToIdle];
   // Verify that buttons of the History Sync screen have the expected colors.
@@ -354,14 +348,8 @@ using chrome_test_util::SettingsSignInRowMatcher;
       performAction:grey_tap()];
   // Set up a fake identity with unset capabilities to add and sign-in with.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity
-                                  withUnknownCapabilities:YES];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(
-                                       kFakeAuthAddAccountButtonIdentifier),
-                                   grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
+  [SigninEarlGreyUI addFakeAccountInFakeAddAccountMenu:fakeIdentity
+                               withUnknownCapabilities:YES];
   // Make sure the fake SSO view controller is fully removed.
   [ChromeEarlGreyUI waitForAppToIdle];
   // Wait for the History Sync Opt-In screen.

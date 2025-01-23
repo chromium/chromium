@@ -103,6 +103,19 @@ void SetUpPriceInsightsEligibility(base::test::ScopedFeatureList* feature_list,
   account_checker->SetAnonymizedUrlDataCollectionEnabled(is_eligible);
 }
 
+void SetUpDiscountEligibility(base::test::ScopedFeatureList* feature_list,
+                              MockAccountChecker* account_checker,
+                              bool is_eligible) {
+  feature_list->InitAndEnableFeature(kEnableDiscountInfoApi);
+  SetUpDiscountEligibilityForAccount(account_checker, is_eligible);
+}
+
+void SetUpDiscountEligibilityForAccount(MockAccountChecker* account_checker,
+                                        bool is_eligible) {
+  account_checker->SetSignedIn(is_eligible);
+  account_checker->SetAnonymizedUrlDataCollectionEnabled(is_eligible);
+}
+
 std::optional<PriceInsightsInfo> CreateValidPriceInsightsInfo(
     bool has_price_range_data,
     bool has_price_history_data,

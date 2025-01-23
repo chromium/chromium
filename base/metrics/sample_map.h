@@ -24,7 +24,7 @@ namespace base {
 class BASE_EXPORT SampleMap : public HistogramSamples {
  public:
   using SampleToCountMap =
-      std::map<HistogramBase::Sample32, HistogramBase::Count>;
+      std::map<HistogramBase::Sample32, HistogramBase::Count32>;
 
   explicit SampleMap(uint64_t id = 0);
 
@@ -35,15 +35,15 @@ class BASE_EXPORT SampleMap : public HistogramSamples {
 
   // HistogramSamples:
   void Accumulate(HistogramBase::Sample32 value,
-                  HistogramBase::Count count) override;
-  HistogramBase::Count GetCount(HistogramBase::Sample32 value) const override;
-  HistogramBase::Count TotalCount() const override;
+                  HistogramBase::Count32 count) override;
+  HistogramBase::Count32 GetCount(HistogramBase::Sample32 value) const override;
+  HistogramBase::Count32 TotalCount() const override;
   std::unique_ptr<SampleCountIterator> Iterator() const override;
   std::unique_ptr<SampleCountIterator> ExtractingIterator() override;
   bool IsDefinitelyEmpty() const override;
 
  protected:
-  // Performs arithemetic. |op| is ADD or SUBTRACT.
+  // Performs arithmetic. |op| is ADD or SUBTRACT.
   bool AddSubtractImpl(SampleCountIterator* iter, Operator op) override;
 
  private:

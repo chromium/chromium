@@ -3431,8 +3431,8 @@
       invalidate: ["layout", "paint"],
     },
     {
-      name: "popover-show-delay",
-      runtime_flag: "HTMLPopoverActionHover",
+      name: "interest-target-show-delay",
+      runtime_flag: "HTMLInterestTargetAttribute",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "primitive",
@@ -3444,8 +3444,8 @@
       supports_incremental_style: true,
     },
     {
-      name: "popover-hide-delay",
-      runtime_flag: "HTMLPopoverActionHover",
+      name: "interest-target-hide-delay",
+      runtime_flag: "HTMLInterestTargetAttribute",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "primitive",
@@ -3453,7 +3453,7 @@
       interpolable: true,
       typedom_types: ["Time"],
       converter: "ConvertTimeValue",
-      default_value: "HUGE_VALF",
+      default_value: "0.5",
       supports_incremental_style: true,
     },
     {
@@ -7775,6 +7775,27 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       supports_incremental_style: false,
       valid_for_keyframe: false,
+    },
+    {
+      name: "animation-trigger-range",
+      longhands: [
+        "animation-trigger-range-start", "animation-trigger-range-end",
+      ],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      supports_incremental_style: false,
+      valid_for_keyframe: false,
+      runtime_flag: "CSSAnimationTriggerRange",
+    },
+    {
+      name: "animation-trigger-exit-range",
+      longhands: [
+        "animation-trigger-exit-range-start",
+        "animation-trigger-exit-range-end",
+      ],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      supports_incremental_style: false,
+      valid_for_keyframe: false,
+      runtime_flag: "CSSAnimationTriggerRange",
     },
     {
       name: "background",

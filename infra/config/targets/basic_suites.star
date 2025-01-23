@@ -499,7 +499,7 @@ targets.legacy_basic_suite(
         # running Layout Tests with forced device scale factor.
         "high_dpi_blink_wpt_tests": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 3,
+                shards = 1,
             ),
         ),
         # high_dpi_headless_shell_wpt_tests provides coverage for
@@ -522,7 +522,7 @@ targets.legacy_basic_suite(
         ),
         "blink_wpt_tests": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 7,
+                shards = 2,
             ),
         ),
         "chrome_wpt_tests": targets.legacy_test_config(
@@ -1459,7 +1459,7 @@ targets.legacy_basic_suite(
         # direct Android coverage.
         "not_site_per_process_blink_wpt_tests": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 10,
+                shards = 2,
             ),
         ),
         "not_site_per_process_headless_shell_wpt_tests": targets.legacy_test_config(

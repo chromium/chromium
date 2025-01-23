@@ -193,6 +193,7 @@ class WebThemeEngine {
   // Extra parameters for scrollbar thumb.
   struct ScrollbarThumbExtraParams {
     std::optional<SkColor> thumb_color;
+    std::optional<SkColor> track_color;
     bool is_thumb_minimal_mode = false;
     bool is_web_test = false;
   };

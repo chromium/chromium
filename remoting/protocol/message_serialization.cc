@@ -21,7 +21,7 @@ scoped_refptr<net::IOBufferWithSize> SerializeAndFrameMessage(
   // Create a buffer with 4 extra bytes. This is used as prefix to write an
   // int32_t of the serialized message size for framing.
   const int kExtraBytes = sizeof(int32_t);
-  int size = msg.ByteSize() + kExtraBytes;
+  size_t size = msg.ByteSizeLong() + kExtraBytes;
   scoped_refptr<net::IOBufferWithSize> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(size);
   rtc::SetBE32(buffer->data(), msg.GetCachedSize());

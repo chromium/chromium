@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -359,4 +360,31 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
       performAction:grey_tap()];
 }
 
++ (void)assertFakeAddAccountMenuDisplayed {
+  // The existence of the "add account" accessibility button on screen verifies
+  // that the screen  was shown.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAuthAddAccountButtonIdentifier)]
+      assertWithMatcher:grey_notNil()];
+}
+
++ (void)addFakeAccountInFakeAddAccountMenu:(FakeSystemIdentity*)fakeIdentity {
+  [self addFakeAccountInFakeAddAccountMenu:fakeIdentity
+                   withUnknownCapabilities:NO];
+}
+
++ (void)addFakeAccountInFakeAddAccountMenu:(FakeSystemIdentity*)fakeIdentity
+                   withUnknownCapabilities:(BOOL)unknownCapabilities {
+  [SigninEarlGreyUI assertFakeAddAccountMenuDisplayed];
+  [SigninEarlGrey addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity
+                                  withUnknownCapabilities:unknownCapabilities];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kFakeAuthAddAccountButtonIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Make sure the fake SSO view controller is fully removed.
+  [ChromeEarlGreyUI waitForAppToIdle];
+}
 @end

@@ -115,7 +115,6 @@
     "toggle",
     "show",
     "hide",
-    "hover",
 
     // dialog closedby attribute
     // See https://github.com/whatwg/html/pull/10737.

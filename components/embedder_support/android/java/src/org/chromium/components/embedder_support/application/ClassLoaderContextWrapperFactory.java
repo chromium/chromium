@@ -17,6 +17,8 @@ import android.view.LayoutInflater;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.WrappedClassLoader;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
@@ -26,6 +28,7 @@ import java.util.WeakHashMap;
  * from a separate APK can correctly reference both org.chromium.* and application classes which is
  * necessary to properly inflate UI.
  */
+@NullMarked
 public class ClassLoaderContextWrapperFactory {
     private static final String TAG = "ClsLdrContextWrapper";
 
@@ -54,7 +57,7 @@ public class ClassLoaderContextWrapperFactory {
         }
     }
 
-    private static OverrideInfo sOverrideInfo;
+    private static @Nullable OverrideInfo sOverrideInfo;
 
     /**
      * Sets necessary info for calling createPackageContext to create resource override contexts.
@@ -108,9 +111,9 @@ public class ClassLoaderContextWrapperFactory {
     }
 
     private static class ClassLoaderContextWrapper extends ContextWrapper {
-        private Context mApplicationContext;
+        private @Nullable Context mApplicationContext;
 
-        private Context mResourceOverrideContext;
+        private @Nullable Context mResourceOverrideContext;
 
         public ClassLoaderContextWrapper(Context base) {
             super(base);

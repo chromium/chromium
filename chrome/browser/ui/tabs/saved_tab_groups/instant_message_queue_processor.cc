@@ -155,7 +155,8 @@ bool InstantMessageQueueProcessor::MaybeShowToastInBrowser(
     return false;
   }
 
-  ToastController* toast_controller = browser->GetFeatures().toast_controller();
+  ToastController* toast_controller =
+      browser->browser_window_features()->toast_controller();
   if (!toast_controller) {
     // Encountered an issue with the toast controller for this browser.
     return false;
@@ -166,8 +167,66 @@ bool InstantMessageQueueProcessor::MaybeShowToastInBrowser(
 
 std::optional<ToastParams> InstantMessageQueueProcessor::GetParamsForMessage(
     const InstantMessage& message) {
-  // TODO(crbug.com/370781127): Add ToastParams construction.
-  return std::nullopt;
+  using collaboration::messaging::TabGroupMessageMetadata;
+  using collaboration::messaging::TabMessageMetadata;
+
+  switch (message.collaboration_event) {
+    case CollaborationEvent::TAB_REMOVED: {
+      std::optional<data_sharing::GroupMember> user =
+          message.attribution.triggering_user;
+      std::optional<TabMessageMetadata> tab_metadata =
+          message.attribution.tab_metadata;
+      const bool has_title = tab_metadata.has_value() &&
+                             tab_metadata->last_known_title.has_value();
+      if (!user.has_value() || !has_title) {
+        return std::nullopt;
+      }
+
+      ToastParams params(ToastId::kTabGroupSyncTabRemoved);
+      params.body_string_replacement_params = {
+          base::UTF8ToUTF16(user->given_name),
+          base::UTF8ToUTF16(tab_metadata->last_known_title.value()),
+      };
+      return params;
+    }
+    case CollaborationEvent::COLLABORATION_MEMBER_ADDED: {
+      std::optional<data_sharing::GroupMember> user =
+          message.attribution.triggering_user;
+      std::optional<TabGroupMessageMetadata> tab_group_metadata =
+          message.attribution.tab_group_metadata;
+      const bool has_group_title =
+          tab_group_metadata.has_value() &&
+          tab_group_metadata->last_known_title.has_value();
+      if (!user.has_value() || !has_group_title) {
+        return std::nullopt;
+      }
+
+      ToastParams params(ToastId::kTabGroupSyncUserJoined);
+      params.body_string_replacement_params = {
+          base::UTF8ToUTF16(user->given_name),
+          base::UTF8ToUTF16(tab_group_metadata->last_known_title.value()),
+      };
+      return params;
+    }
+    case CollaborationEvent::COLLABORATION_REMOVED: {
+      std::optional<TabGroupMessageMetadata> tab_group_metadata =
+          message.attribution.tab_group_metadata;
+      const bool has_group_title =
+          tab_group_metadata.has_value() &&
+          tab_group_metadata->last_known_title.has_value();
+      if (!has_group_title) {
+        return std::nullopt;
+      }
+
+      ToastParams params(ToastId::kTabGroupSyncRemovedFromGroup);
+      params.body_string_replacement_params = {
+          base::UTF8ToUTF16(tab_group_metadata->last_known_title.value()),
+      };
+      return params;
+    }
+    default:
+      return std::nullopt;
+  }
 }
 
 base::TimeDelta InstantMessageQueueProcessor::GetMessageInterval() {

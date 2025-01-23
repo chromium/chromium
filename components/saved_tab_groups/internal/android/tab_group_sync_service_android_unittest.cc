@@ -223,8 +223,9 @@ TEST_F(TabGroupSyncServiceAndroidTest, MakeTabGroupShared) {
   JNIEnv* env = AttachCurrentThread();
   const std::string collaboration_id = "collaboration";
 
-  EXPECT_CALL(tab_group_sync_service_,
-              MakeTabGroupShared(Eq(test_tab_group_id_), Eq(collaboration_id)));
+  EXPECT_CALL(
+      tab_group_sync_service_,
+      MakeTabGroupShared(Eq(test_tab_group_id_), Eq(collaboration_id), _));
   ScopedJavaLocalRef<jstring> j_collaboration_id =
       base::android::ConvertUTF8ToJavaString(env, collaboration_id);
   Java_TabGroupSyncServiceAndroidUnitTest_testMakeTabGroupShared(

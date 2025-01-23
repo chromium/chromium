@@ -779,8 +779,7 @@ void StyleAdjuster::AdjustStyleForDisplay(
   }
 
   // display: -webkit-box when used with (-webkit)-line-clamp
-  if (RuntimeEnabledFeatures::CSSLineClampWebkitBoxBlockificationEnabled() &&
-      builder.BoxOrient() == EBoxOrient::kVertical &&
+  if (builder.BoxOrient() == EBoxOrient::kVertical &&
       (builder.WebkitLineClamp() != 0 || builder.StandardLineClamp() != 0 ||
        builder.HasAutoStandardLineClamp())) {
     if (builder.Display() == EDisplay::kWebkitBox) {

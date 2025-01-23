@@ -273,8 +273,9 @@ bool IsStateless() {
       // `_suggestionProviders` is immutable, so the subscripting is
       // always valid.
       FormSuggestionController* strongSelf = weakSelf;
-      if (!strongSelf)
+      if (!strongSelf) {
         return;
+      }
       id<FormSuggestionProvider> provider = strongSelf->_suggestionProviders[i];
       [provider checkIfSuggestionsAvailableForForm:formQuery
                                     hasUserGesture:hasUserGesture
@@ -310,8 +311,9 @@ bool IsStateless() {
       return;
     }
     FormSuggestionController* strongSelf = weakSelf;
-    if (!strongSelf)
+    if (!strongSelf) {
       return;
+    }
     id<FormSuggestionProvider> provider =
         strongSelf->_suggestionProviders[providerIndex];
     [provider retrieveSuggestionsForForm:formQuery
@@ -379,16 +381,18 @@ bool IsStateless() {
 
 - (void)clearSuggestions {
   // Note that other parts of the suggestionsState are not reset.
-  if (!_suggestionState.get())
+  if (!_suggestionState.get()) {
     return;
+  }
   _suggestionState->suggestions = [[NSArray alloc] init];
   [self updateKeyboard:_suggestionState.get()];
 }
 
 - (void)updateKeyboard:(AutofillSuggestionState*)suggestionState {
   if (!suggestionState) {
-    if (_accessoryViewUpdateBlock)
+    if (_accessoryViewUpdateBlock) {
       _accessoryViewUpdateBlock(nil, self);
+    }
   } else {
     [self updateKeyboardWithSuggestions:suggestionState->suggestions];
   }

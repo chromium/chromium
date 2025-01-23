@@ -19,6 +19,8 @@ public class NotificationConstants {
             "org.chromium.chrome.browser.notifications.COMMIT_UNSUBSCRIBE";
     static final String ACTION_SHOW_ORIGINAL_NOTIFICATION =
             "org.chromium.chrome.browser.notifications.SHOW_ORIGINAL_NOTIFICATION";
+    static final String ACTION_ALWAYS_ALLOW =
+            "org.chromium.chrome.browser.notifications.ALWAYS_ALLOW";
 
     /**
      * Name of the Intent extra set by the framework when a notification preferences intent has been

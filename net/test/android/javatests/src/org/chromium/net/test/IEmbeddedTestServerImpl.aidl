@@ -75,6 +75,13 @@ interface IEmbeddedTestServerImpl {
      */
     String[] getRequestHeadersForUrl(String relativeUrl);
 
+    /** Get the count of the request observed on the server for the given relative URL.
+     *
+     *  @param relativeUrl The relative URL for which request count should be returned.
+     *  @return The request count.
+     */
+    int getRequestCountForUrl(String relativeUrl);
+
     /** Shut down the server.
      *
      *  @return Whether the server was successfully shut down.

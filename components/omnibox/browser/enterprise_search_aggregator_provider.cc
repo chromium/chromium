@@ -4,6 +4,7 @@
 
 #include "enterprise_search_aggregator_provider.h"
 
+#include <memory>
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
@@ -12,6 +13,7 @@
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/autocomplete_provider_debouncer.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/search_engines/template_url_data.h"
 #include "ui/base/page_transition_types.h"
@@ -21,7 +23,8 @@ EnterpriseSearchAggregatorProvider::EnterpriseSearchAggregatorProvider(
     AutocompleteProviderClient* client)
     : AutocompleteProvider(
           AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR),
-      client_(client) {}
+      client_(client),
+      debouncer_(std::make_unique<AutocompleteProviderDebouncer>(true, 300)) {}
 
 EnterpriseSearchAggregatorProvider::~EnterpriseSearchAggregatorProvider() =
     default;
@@ -48,11 +51,13 @@ void EnterpriseSearchAggregatorProvider::Start(const AutocompleteInput& input,
         TemplateURLData::PolicyOrigin::kSearchAggregator);
 
   matches_.clear();
-  auto match = CreateMatch(input, template_url->keyword(), true, 1500,
-                           "https://wikipedia.org", u"Your document",
-                           u"Last edited Feb 25");
-  matches_.push_back(match);
+
+  // Unretained is safe because `this` owns `debouncer_`.
+  debouncer_->RequestRun(base::BindOnce(
+      &EnterpriseSearchAggregatorProvider::Run, base::Unretained(this)));
 }
+
+void EnterpriseSearchAggregatorProvider::Run() {}
 
 void EnterpriseSearchAggregatorProvider::Stop(bool clear_cached_results,
                                               bool due_to_user_inactivity) {

@@ -924,12 +924,17 @@ public class TabGridDialogMediator
     }
 
     @VisibleForTesting
-    public void onToolbarMenuItemClick(int menuId, int tabId, String collaborationId) {
-        assert tabId == mCurrentTabId;
+    public void onToolbarMenuItemClick(int menuId, Token tabGroupId, String collaborationId) {
+        // Collaboration IDs will not change without the menu somehow being dismissed. This assert
+        // should always hold.
         assert mTransitiveSharedGroupObserver == null
                 || Objects.equals(
                         collaborationId,
                         mTransitiveSharedGroupObserver.getCollaborationIdSupplier().get());
+
+        int tabId = mCurrentTabId;
+        if (tabId == Tab.INVALID_TAB_ID) return;
+
         if (menuId == R.id.ungroup_tab || menuId == R.id.select_tabs) {
             RecordUserAction.record("TabGridDialogMenu.SelectTabs");
             mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, false);
@@ -947,7 +952,8 @@ public class TabGridDialogMediator
                     TabGroupColorChangeActionType.VIA_OVERFLOW_MENU);
         } else if (menuId == R.id.manage_sharing) {
             RecordUserAction.record("TabGridDialogMenu.ManageSharing");
-            mDataSharingTabManager.showManageSharing(mActivity, collaborationId);
+            mDataSharingTabManager.showManageSharing(
+                    mActivity, collaborationId, /* finishRunnable= */ null);
         } else if (menuId == R.id.recent_activity) {
             RecordUserAction.record("TabGridDialogMenu.RecentActivity");
             mDataSharingTabManager.showRecentActivity(mActivity, collaborationId);
@@ -986,11 +992,17 @@ public class TabGridDialogMediator
         assert mTabListEditorControllerSupplier != null;
 
         if (mTabGridDialogMenuCoordinator == null) {
+            Supplier<Token> tabGroupIdSupplier =
+                    () -> {
+                        TabModel tabModel = mCurrentTabGroupModelFilterSupplier.get().getTabModel();
+                        @Nullable Tab tab = tabModel.getTabById(mCurrentTabId);
+                        return tab == null ? null : tab.getTabGroupId();
+                    };
             mTabGridDialogMenuCoordinator =
                     new TabGridDialogMenuCoordinator(
                             this::onToolbarMenuItemClick,
                             () -> mCurrentTabGroupModelFilterSupplier.get().getTabModel(),
-                            () -> mCurrentTabId,
+                            tabGroupIdSupplier,
                             mTabGroupSyncService,
                             mCollaborationService);
         }

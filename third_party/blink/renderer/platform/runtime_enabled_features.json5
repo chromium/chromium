@@ -1105,6 +1105,12 @@
       status: "experimental",
     },
     {
+      // CSS if() function for custom properties. Supports only style
+      // queries in conditions.
+      // https://github.com/w3c/csswg-drafts/issues/10064.
+      name: "CSSInlineIfForStyleQueries",
+    },
+    {
       // https://chromestatus.com/feature/6289894144212992
       name: "CSSKeyframesRuleLength",
       status: "stable",
@@ -1120,11 +1126,6 @@
     {
       name: "CSSLineClampLineBreakingEllipsis",
       depends_on: ["CSSLineClamp"],
-    },
-    {
-      // https://github.com/w3c/csswg-drafts/issues/10435
-      name: "CSSLineClampWebkitBoxBlockification",
-      status: "stable",
     },
     {
       name: "CSSLogicalOverflow",
@@ -1423,11 +1424,6 @@
     {
       name: "DesktopPWAsSubApps",
       status: "test",
-    },
-    {
-      // Enabled in M131.  Can be removed a bit after M131 reaches stable.
-      name: "DetailsStyling",
-      status: "stable",
     },
     {
       name: "DeviceAttributes",
@@ -2312,8 +2308,9 @@
     },
     {
       // TODO(crbug.com/376516550): Enables dialog light dismiss functionality.
+      // This feature shipped in M134, so this flag can be removed in M136.
       name: "HTMLDialogLightDismiss",
-      status: "experimental",
+      status: "stable",
     },
     // The `<embed>` should follow the specification, layout is not forced
     // when the `type` attribute is set to `image`.
@@ -2364,12 +2361,6 @@
       // This helps when debugging flaky tests caused by parser
       // yielding heuristics.
       name: "HTMLParserYieldAndDelayOftenForTesting",
-    },
-    {
-      // A flag to control the popovertargetaction=hover behavior,
-      // and associated CSS properties.
-      name: "HTMLPopoverActionHover",
-      status: "test",
     },
     {
       // TODO(crbug.com/1416284): Enables popover=hint functionality.
@@ -3625,12 +3616,6 @@
     {
       // New behavior when line breaker rewinds floats. crbug.com/1499290
       name: "RewindFloats",
-      status: "stable",
-    },
-    {
-      // When enabled, the root element will have a placeholder after all text is deleted.
-      // crbug.com/40702380
-      name: "RootElementWithPlaceHolderAfterDeletingSelection",
       status: "stable",
     },
     {

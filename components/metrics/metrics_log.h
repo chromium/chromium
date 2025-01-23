@@ -47,7 +47,7 @@ enum UkmLogSourceType {
 // Holds optional metadata associated with a log to be stored.
 struct LogMetadata {
   LogMetadata();
-  LogMetadata(std::optional<base::HistogramBase::Count> samples_count,
+  LogMetadata(std::optional<base::HistogramBase::Count32> samples_count,
               std::optional<uint64_t> user_id,
               std::optional<UkmLogSourceType> log_source_type);
   LogMetadata(const LogMetadata& other);
@@ -55,10 +55,10 @@ struct LogMetadata {
 
   // Adds |sample_count| to |samples_count|. If |samples_count| is empty, then
   // |sample_count| will populate |samples_count|.
-  void AddSampleCount(base::HistogramBase::Count sample_count);
+  void AddSampleCount(base::HistogramBase::Count32 sample_count);
 
   // The total number of samples in this log if applicable.
-  std::optional<base::HistogramBase::Count> samples_count;
+  std::optional<base::HistogramBase::Count32> samples_count;
 
   // User id associated with the log.
   std::optional<uint64_t> user_id;

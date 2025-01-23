@@ -103,7 +103,7 @@ class LogsPrefWriter {
     std::reverse(list_value_->begin(), list_value_->end());
   }
 
-  base::HistogramBase::Count unsent_samples_count() const {
+  base::HistogramBase::Count32 unsent_samples_count() const {
     return unsent_samples_count_;
   }
 
@@ -119,7 +119,7 @@ class LogsPrefWriter {
   bool finished_ = false;
 
   // The total number of histogram samples written so far.
-  base::HistogramBase::Count unsent_samples_count_ = 0;
+  base::HistogramBase::Count32 unsent_samples_count_ = 0;
 
   // The total size of logs written so far.
   size_t unsent_persisted_size_ = 0;
@@ -509,8 +509,8 @@ void UnsentLogStore::ReadLogsFromPrefList(const base::Value::List& list_value) {
 }
 
 void UnsentLogStore::WriteToMetricsPref(
-    base::HistogramBase::Count unsent_samples_count,
-    base::HistogramBase::Count sent_samples_count,
+    base::HistogramBase::Count32 unsent_samples_count,
+    base::HistogramBase::Count32 sent_samples_count,
     size_t unsent_persisted_size) const {
   if (metadata_pref_name_ == nullptr)
     return;

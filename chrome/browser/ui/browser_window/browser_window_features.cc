@@ -15,6 +15,7 @@
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
+#include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -139,6 +140,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   // logic for code shared by both normal and non-normal windows.
   lens_overlay_entry_point_controller_ =
       std::make_unique<lens::LensOverlayEntryPointController>();
+  lens_region_search_controller_ =
+      std::make_unique<lens::LensRegionSearchController>();
 
   tab_strip_model_ = browser->GetTabStripModel();
 }

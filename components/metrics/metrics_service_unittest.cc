@@ -382,7 +382,8 @@ bool HistogramExists(std::string_view name) {
   return base::StatisticsRecorder::FindHistogram(name) != nullptr;
 }
 
-base::HistogramBase::Count GetHistogramDeltaTotalCount(std::string_view name) {
+base::HistogramBase::Count32 GetHistogramDeltaTotalCount(
+    std::string_view name) {
   return base::StatisticsRecorder::FindHistogram(name)
       ->SnapshotDelta()
       ->TotalCount();

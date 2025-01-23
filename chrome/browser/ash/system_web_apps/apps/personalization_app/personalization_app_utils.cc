@@ -129,27 +129,6 @@ bool IsEligibleForSeaPen(Profile* profile) {
     return true;
   }
 
-  // TODO(b/365134596): remove the exception for Googlers and Demo Mode once the
-  // SeaPenEnterprise flag is removed.
-  if (gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName())) {
-    DVLOG(1) << __func__ << " Google internal account";
-    return true;
-  }
-
-  if (features::IsSeaPenDemoModeEnabled() &&
-      DemoSession::IsDeviceInDemoMode()) {
-    DVLOG(1) << __func__ << " demo mode";
-    const auto* user = GetUser(profile);
-    return DemoSession::Get() && user &&
-           user->GetType() == user_manager::UserType::kPublicAccount;
-  }
-
-  if (!features::IsSeaPenEnterpriseEnabled()) {
-    // Without the experiment, managed users are not allowed for SeaPen.
-    DVLOG(1) << __func__ << " managed profile";
-    return false;
-  }
-
   return CanAccessMantaFeaturesWithoutMinorRestrictions(profile);
 }
 
@@ -192,11 +171,6 @@ bool IsAllowedToInstallSeaPen(Profile* profile) {
     case user_manager::UserType::kGuest:
       return false;
     case user_manager::UserType::kRegular:
-      if (profile->GetProfilePolicyConnector()->IsManaged()) {
-        // Without the experiment, managed users are not allowed for SeaPen.
-        DVLOG(1) << __func__ << " managed profile";
-        return features::IsSeaPenEnterpriseEnabled();
-      }
       return true;
   }
 }

@@ -155,4 +155,101 @@ public class DisplayUtilTest {
                                     configuration.screenHeightDp);
                         });
     }
+
+    // Unit Tests for Android XR based on Android 14.
+    @Test
+    @Config(sdk = Build.VERSION_CODES.TIRAMISU)
+    public void testGetUiDensityForXr() {
+        assertEquals(
+                "Density 160 should be scaled to 174.0 and adjusted up to Density 190.",
+                190,
+                DisplayUtil.getUiDensityForXr(
+                        ContextUtils.getApplicationContext(), DisplayMetrics.DENSITY_DEFAULT));
+        assertEquals(
+                "Density 250 should be scaled to 290.0 and adjusted up to Density 290",
+                290,
+                DisplayUtil.getUiDensityForXr(ContextUtils.getApplicationContext(), 250));
+        assertEquals(
+                "Density 210 should be scaled to 243.6 and adjusted up to Density 250.",
+                250,
+                DisplayUtil.getUiDensityForXr(ContextUtils.getApplicationContext(), 210));
+        assertEquals(
+                "Density 300 should be scaled to 348.0 and adjusted up to Density 350.",
+                350,
+                DisplayUtil.getUiDensityForXr(ContextUtils.getApplicationContext(), 300));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.TIRAMISU)
+    public void testScaleUpDisplayMetricsForXr() {
+        final int densityDefaultScale = 190;
+        final int widthInPixels = 100;
+        final int heightInPixels = 100;
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        displayMetrics.density = 1.0f;
+        displayMetrics.densityDpi = DisplayMetrics.DENSITY_DEFAULT;
+        displayMetrics.xdpi = DisplayMetrics.DENSITY_DEFAULT;
+        displayMetrics.ydpi = DisplayMetrics.DENSITY_DEFAULT;
+        displayMetrics.widthPixels = widthInPixels;
+        displayMetrics.heightPixels = heightInPixels;
+
+        DisplayMetrics scaledDisplayMetrics =
+                DisplayUtil.scaleUpDisplayMetricsForXr(
+                        ContextUtils.getApplicationContext(), displayMetrics);
+        assertEquals(
+                "The DisplayMetrics densityDpi should be scaled up by the " + "XR scale-up factor.",
+                densityDefaultScale,
+                displayMetrics.densityDpi);
+        assertEquals(
+                "The DisplayMetrics xdpi should be scaled up by the " + "XR scale-up factor.",
+                densityDefaultScale,
+                (int) displayMetrics.xdpi);
+        assertEquals(
+                "The DisplayMetrics ydpi should be scaled up by the " + "XR scale-up factor.",
+                densityDefaultScale,
+                (int) displayMetrics.ydpi);
+        assertEquals(
+                "The DisplayMetrics widthPixels should not be affected by the "
+                        + "XR scale-up factor.",
+                widthInPixels,
+                displayMetrics.widthPixels);
+        assertEquals(
+                "The DisplayMetrics heightPixels should not be affected by the "
+                        + "XR scale-up factor.",
+                heightInPixels,
+                displayMetrics.heightPixels);
+        assertEquals(
+                "The scaled DisplayMetrics should same as input DisplayMetrics",
+                scaledDisplayMetrics,
+                displayMetrics);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.TIRAMISU)
+    public void testScaleUpConfigurationForXr() {
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            Configuration configuration = new Configuration();
+                            DisplayUtil.setUiScalingFactorForXrForTesting(1f);
+                            DisplayUtil.scaleUpConfigurationForXr(activity, configuration);
+                            DisplayUtil.resetUiScalingFactorForXrForTesting();
+
+                            assertEquals(
+                                    "Configuration.densityDpi should be 1.",
+                                    activity.getResources().getDisplayMetrics().densityDpi,
+                                    configuration.densityDpi);
+                            assertEquals(
+                                    "Configuration.widthPixels should be same with scale factor of"
+                                            + " 1.",
+                                    activity.getResources().getDisplayMetrics().widthPixels,
+                                    configuration.screenWidthDp);
+                            assertEquals(
+                                    "Configuration.heightPixels should be same with scale factor of"
+                                            + " 1.",
+                                    activity.getResources().getDisplayMetrics().heightPixels,
+                                    configuration.screenHeightDp);
+                        });
+    }
 }

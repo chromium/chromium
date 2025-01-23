@@ -321,6 +321,12 @@ export default [
         {
           selector: 'classProperty',
           format: ['camelCase'],
+          modifiers: ['protected'],
+          trailingUnderscore: 'allow',
+        },
+        {
+          selector: 'classProperty',
+          format: ['camelCase'],
           modifiers: ['private'],
           trailingUnderscore: 'allow',
         },

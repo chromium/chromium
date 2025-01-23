@@ -466,10 +466,26 @@ void ViewAccessibility::SetName(const std::string& name,
 }
 
 void ViewAccessibility::SetName(const std::string& name) {
+  if (GetCachedNameFrom() == ax::mojom::NameFrom::kAttributeExplicitlyEmpty &&
+      !name.empty()) {
+    // If the name was set to be explicitly empty, but then a value was set, we
+    // must reset the cached name from. As a default, Views have in the past
+    // used the kAttribute name from.
+    SetName(name, ax::mojom::NameFrom::kAttribute);
+    return;
+  }
   SetName(name, GetCachedNameFrom());
 }
 
 void ViewAccessibility::SetName(const std::u16string& name) {
+  if (GetCachedNameFrom() == ax::mojom::NameFrom::kAttributeExplicitlyEmpty &&
+      !name.empty()) {
+    // If the name was set to be explicitly empty, but then a value was set, we
+    // must reset the cached name from. As a default, Views have in the past
+    // used the kAttribute name from.
+    SetName(name, ax::mojom::NameFrom::kAttribute);
+    return;
+  }
   SetName(name, GetCachedNameFrom());
 }
 

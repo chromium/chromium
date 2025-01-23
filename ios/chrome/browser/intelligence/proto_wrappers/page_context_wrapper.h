@@ -8,11 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/functional/callback_forward.h"
-#import "components/optimization_guide/optimization_guide_buildflags.h"
-
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 namespace web {
 class WebState;
@@ -29,7 +25,6 @@ class WebState;
 // disable-by-default behaviour.
 @interface PageContextWrapper : NSObject
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 // Initializer which takes everything needed to construct the PageContext proto
 // as arguments.
@@ -69,7 +64,6 @@ class WebState;
 // origin as the main WebFrame.
 @property(nonatomic, assign) BOOL shouldGetInnerText;
 
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 @end
 

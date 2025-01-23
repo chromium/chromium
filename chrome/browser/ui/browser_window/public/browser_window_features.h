@@ -42,6 +42,7 @@ class GlicNudgeController;
 
 namespace lens {
 class LensOverlayEntryPointController;
+class LensRegionSearchController;
 }  // namespace lens
 
 namespace media_router {
@@ -123,6 +124,10 @@ class BrowserWindowFeatures {
     return lens_overlay_entry_point_controller_.get();
   }
 
+  lens::LensRegionSearchController* lens_region_search_controller() {
+    return lens_region_search_controller_.get();
+  }
+
   tabs::TabDeclutterController* tab_declutter_controller() {
     return tab_declutter_controller_.get();
   }
@@ -180,6 +185,9 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<lens::LensOverlayEntryPointController>
       lens_overlay_entry_point_controller_;
+
+  std::unique_ptr<lens::LensRegionSearchController>
+      lens_region_search_controller_;
 
   std::unique_ptr<extensions::Mv2DisabledDialogController>
       mv2_disabled_dialog_controller_;

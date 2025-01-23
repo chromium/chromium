@@ -8,7 +8,7 @@ import collections
 import functools
 import itertools
 import logging
-import optparse
+import argparse
 import os
 import pathlib
 import re
@@ -29,128 +29,6 @@ import zip_helpers
 _JAVAC_EXTRACTOR = os.path.join(build_utils.DIR_SOURCE_ROOT, 'third_party',
                                 'android_prebuilts', 'build_tools', 'common',
                                 'framework', 'javac_extractor.jar')
-
-# Add a check here to cause the suggested fix to be applied while compiling.
-# Use this when trying to enable more checks.
-ERRORPRONE_CHECKS_TO_APPLY = []
-
-# Checks to disable in tests.
-TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE = [
-    # Too much effort to enable.
-    'UnusedVariable',
-    # These are allowed in tests.
-    'NoStreams',
-]
-
-# Full list of checks: https://errorprone.info/bugpatterns
-ERRORPRONE_WARNINGS_TO_DISABLE = [
-    'InlineMeInliner',
-    'InlineMeSuggester',
-    # High priority to enable:
-    'HidingField',
-    'AlreadyChecked',
-    'DirectInvocationOnMock',
-    'MockNotUsedInProduction',
-    # High priority to enable in non-tests:
-    'JdkObsolete',
-    'ReturnValueIgnored',
-    'StaticAssignmentInConstructor',
-    # These are all for Javadoc, which we don't really care about.
-    # vvv
-    'InvalidBlockTag',
-    'InvalidParam',
-    'InvalidLink',
-    'InvalidInlineTag',
-    'MalformedInlineTag',
-    'MissingSummary',
-    'UnescapedEntity',
-    'UnrecognisedJavadocTag',
-    # ^^^
-    'MutablePublicArray',
-    'NonCanonicalType',
-    'DoNotClaimAnnotations',
-    'JavaUtilDate',
-    'IdentityHashMapUsage',
-    'StaticMockMember',
-    # Triggers in tests where this is useful to do.
-    'StaticAssignmentOfThrowable',
-    # TODO(crbug.com/41384349): Follow steps in bug.
-    'CatchAndPrintStackTrace',
-    # TODO(crbug.com/41364806): Follow steps in bug.
-    'TypeParameterUnusedInFormals',
-    # Android platform default is always UTF-8.
-    # https://developer.android.com/reference/java/nio/charset/Charset.html#defaultCharset()
-    'DefaultCharset',
-    # There are lots of times when we just want to post a task.
-    'FutureReturnValueIgnored',
-    # Just false positives in our code.
-    'ThreadJoinLoop',
-    # Low priority corner cases with String.split.
-    # Linking Guava and using Splitter was rejected
-    # in the https://chromium-review.googlesource.com/c/chromium/src/+/871630.
-    'StringSplitter',
-    # Preferred to use another method since it propagates exceptions better.
-    'ClassNewInstance',
-    # Results in false positives.
-    'ThreadLocalUsage',
-    # Low priority.
-    'EqualsHashCode',
-    # Not necessary for tests.
-    'OverrideThrowableToString',
-    # Not that useful.
-    'UnsafeReflectiveConstructionCast',
-    # Not that useful.
-    'MixedMutabilityReturnType',
-    # Nice to have.
-    'EqualsGetClass',
-    # A lot of false-positives from CharSequence.equals().
-    'UndefinedEquals',
-    # Dagger generated code triggers this.
-    'SameNameButDifferent',
-    # Does not apply to Android because it assumes no desugaring.
-    'UnnecessaryLambda',
-    # Nice to have.
-    'EmptyCatch',
-    # Nice to have.
-    'BadImport',
-    # Nice to have.
-    'UseCorrectAssertInTests',
-    # Must be off since we are now passing in annotation processor generated
-    # code as a source jar (deduplicating work with turbine).
-    'RefersToDaggerCodegen',
-    # We already have presubmit checks for this. We don't want it to fail
-    # local compiles.
-    'RemoveUnusedImports',
-    # Only has false positives (would not want to enable this).
-    'UnicodeEscape',
-    # A lot of existing violations. e.g. Should return List and not ArrayList
-    'NonApiType',
-    # Nice to have.
-    'StringCharset',
-    # Nice to have.
-    'StringCaseLocaleUsage',
-    # Low priority.
-    'RedundantControlFlow',
-]
-
-# Full list of checks: https://errorprone.info/bugpatterns
-# Only those marked as "experimental" need to be listed here in order to be
-# enabled.
-ERRORPRONE_WARNINGS_TO_ENABLE = [
-    'BinderIdentityRestoredDangerously',
-    'EmptyIf',
-    'EqualsBrokenForNull',
-    'InvalidThrows',
-    'LongLiteralLowerCaseSuffix',
-    'MultiVariableDeclaration',
-    'RedundantOverride',
-    'StaticQualifiedUsingExpression',
-    'TimeUnitMismatch',
-    'UnnecessaryStaticImport',
-    'UseBinds',
-    'WildcardImport',
-    'NoStreams',
-]
 
 
 def ProcessJavacOutput(output, target_name):
@@ -345,17 +223,14 @@ class _MetadataParser:
     logging.info('Completed info file: %s', output_path)
 
 
-def _OnStaleMd5(changes, options, javac_cmd, javac_args, java_files, kt_files):
+def _OnStaleMd5(changes,
+                options,
+                javac_cmd,
+                javac_args,
+                java_files,
+                kt_files,
+                use_errorprone=False):
   logging.info('Starting _OnStaleMd5')
-
-  # Use the build server for errorprone runs.
-  if (options.enable_errorprone and not options.skip_build_server and
-      server_utils.MaybeRunCommand(name=options.target_name,
-                                   argv=sys.argv,
-                                   stamp_file=options.jar_path,
-                                   use_build_server=options.use_build_server)):
-    logging.info('Using build server')
-    return
 
   if options.enable_kythe_annotations:
     # Kythe requires those env variables to be set and compile_java.py does the
@@ -392,7 +267,7 @@ def _OnStaleMd5(changes, options, javac_cmd, javac_args, java_files, kt_files):
 
   intermediates_out_dir = None
   jar_info_path = None
-  if not options.enable_errorprone:
+  if not use_errorprone:
     # Delete any stale files in the generated directory. The purpose of
     # options.generated_dir is for codesearch and Android Studio.
     shutil.rmtree(options.generated_dir, True)
@@ -410,6 +285,7 @@ def _OnStaleMd5(changes, options, javac_cmd, javac_args, java_files, kt_files):
                  javac_cmd + javac_args,
                  java_files,
                  options.jar_path,
+                 use_errorprone=use_errorprone,
                  kt_files=kt_files,
                  jar_info_path=jar_info_path,
                  intermediates_out_dir=intermediates_out_dir,
@@ -429,6 +305,7 @@ def _RunCompiler(changes,
                  javac_cmd,
                  java_files,
                  jar_path,
+                 use_errorprone=False,
                  kt_files=None,
                  jar_info_path=None,
                  intermediates_out_dir=None,
@@ -559,7 +436,7 @@ def _RunCompiler(changes,
         raise Exception('need java files for --print-javac-command-line.')
       metadata_parser.ParseAndWriteInfoFile(jar_info_path, java_files, kt_files)
 
-    if options.enable_errorprone:
+    if use_errorprone:
       # There is no jar file when running errorprone and jar_path is actually
       # just the stamp file for that target.
       server_utils.MaybeTouch(jar_path)
@@ -585,90 +462,70 @@ def _RunCompiler(changes,
 
 
 def _ParseOptions(argv):
-  parser = optparse.OptionParser()
+  parser = argparse.ArgumentParser()
   action_helpers.add_depfile_arg(parser)
 
-  parser.add_option('--target-name', help='Fully qualified GN target name.')
-  parser.add_option('--skip-build-server',
-                    action='store_true',
-                    help='Avoid using the build server.')
-  parser.add_option('--use-build-server',
-                    action='store_true',
-                    help='Always use the build server.')
-  parser.add_option('--java-srcjars',
-                    action='append',
-                    default=[],
-                    help='List of srcjars to include in compilation.')
-  parser.add_option(
+  parser.add_argument('--target-name', help='Fully qualified GN target name.')
+  parser.add_argument('--java-srcjars',
+                      action='append',
+                      default=[],
+                      help='List of srcjars to include in compilation.')
+  parser.add_argument(
       '--generated-dir',
       help='Subdirectory within target_gen_dir to place extracted srcjars and '
       'annotation processor output for codesearch to find.')
-  parser.add_option('--classpath', action='append', help='Classpath to use.')
-  parser.add_option(
+  parser.add_argument('--classpath', action='append', help='Classpath to use.')
+  parser.add_argument(
       '--processorpath',
       action='append',
       help='GN list of jars that comprise the classpath used for Annotation '
       'Processors.')
-  parser.add_option(
-      '--processor-arg',
-      dest='processor_args',
-      action='append',
-      help='key=value arguments for the annotation processors.')
-  parser.add_option(
+  parser.add_argument('--processor-arg',
+                      dest='processor_args',
+                      action='append',
+                      help='key=value arguments for the annotation processors.')
+  parser.add_argument(
       '--additional-jar-file',
       dest='additional_jar_files',
       action='append',
       help='Additional files to package into jar. By default, only Java .class '
       'files are packaged into the jar. Files should be specified in '
       'format <filename>:<path to be placed in jar>.')
-  parser.add_option(
+  parser.add_argument(
       '--jar-info-exclude-globs',
       help='GN list of exclude globs to filter from generated .info files.')
-  parser.add_option(
+  parser.add_argument(
       '--chromium-code',
-      type='int',
+      action='store_true',
       help='Whether code being compiled should be built with stricter '
       'warnings for chromium code.')
-  parser.add_option(
-      '--errorprone-path', help='Use the Errorprone compiler at this path.')
-  parser.add_option(
-      '--enable-errorprone',
-      action='store_true',
-      help='Enable errorprone checks')
-  parser.add_option('--enable-nullaway',
-                    action='store_true',
-                    help='Enable NullAway (requires --enable-errorprone)')
-  parser.add_option('--testonly',
-                    action='store_true',
-                    help='Disable some Error Prone checks')
-  parser.add_option('--warnings-as-errors',
-                    action='store_true',
-                    help='Treat all warnings as errors.')
-  parser.add_option('--jar-path', help='Jar output path.')
-  parser.add_option(
-      '--javac-arg',
-      action='append',
-      default=[],
-      help='Additional arguments to pass to javac.')
-  parser.add_option('--print-javac-command-line',
-                    action='store_true',
-                    help='Just show javac command line (for ide_query).')
-  parser.add_option(
+  parser.add_argument('--warnings-as-errors',
+                      action='store_true',
+                      help='Treat all warnings as errors.')
+  parser.add_argument('--jar-path', required=True, help='Jar output path.')
+  parser.add_argument('--javac-arg',
+                      action='append',
+                      default=[],
+                      help='Additional arguments to pass to javac.')
+  parser.add_argument('--print-javac-command-line',
+                      action='store_true',
+                      help='Just show javac command line (for ide_query).')
+  parser.add_argument(
       '--enable-kythe-annotations',
       action='store_true',
       help='Enable generation of Kythe kzip, used for codesearch. Ensure '
       'proper environment variables are set before using this flag.')
-  parser.add_option(
+  parser.add_argument(
       '--header-jar',
       help='This is the header jar for the current target that contains '
       'META-INF/services/* files to be included in the output jar.')
-  parser.add_option(
+  parser.add_argument(
       '--kotlin-jar-path',
       help='Kotlin jar to be merged into the output jar. This contains the '
       ".class files from this target's .kt files.")
+  parser.add_argument('sources', nargs='*')
 
-  options, args = parser.parse_args(argv)
-  build_utils.CheckOptions(options, parser, required=('jar_path', ))
+  options = parser.parse_args(argv)
 
   options.classpath = action_helpers.parse_gn_list(options.classpath)
   options.processorpath = action_helpers.parse_gn_list(options.processorpath)
@@ -683,7 +540,7 @@ def _ParseOptions(argv):
   options.additional_jar_files = additional_jar_files
 
   files = []
-  for arg in args:
+  for arg in options.sources:
     # Interpret a path prefixed with @ as a file containing a list of sources.
     if arg.startswith('@'):
       files.extend(build_utils.ReadSourcesList(arg[1:]))
@@ -701,7 +558,10 @@ def _ParseOptions(argv):
   return options, java_files, kt_files
 
 
-def main(argv):
+def main(argv,
+         extra_javac_args=None,
+         use_errorprone=False,
+         write_depfile_only=False):
   build_utils.InitLogging('JAVAC_DEBUG')
   argv = build_utils.ExpandFileArgs(argv)
   options, java_files, kt_files = _ParseOptions(argv)
@@ -731,108 +591,13 @@ def main(argv):
       '-Xlint:-removal',
       # https://crbug.com/1441023
       '-J-XX:+PerfDisableSharedMem',
+
+      # Disable all annotation processors (we run them via Turbine).
+      '-proc:none',
   ]
 
-  if options.enable_errorprone:
-    # All errorprone args are passed space-separated in a single arg.
-    errorprone_flags = ['-Xplugin:ErrorProne']
-
-    if options.enable_nullaway:
-      # See: https://github.com/uber/NullAway/wiki/Configuration
-      # Check nullability only for classes marked with @NullMarked (this is our
-      # migration story).
-      errorprone_flags += ['-XepOpt:NullAway:OnlyNullMarked']
-      errorprone_flags += [
-          '-XepOpt:NullAway:CustomContractAnnotations='
-          'org.chromium.build.annotations.Contract,'
-          'org.chromium.support_lib_boundary.util.Contract'
-      ]
-      # TODO(agrieve): Re-enable once this is fixed:
-      #     https://github.com/uber/NullAway/issues/1104
-      # errorprone_flags += ['-XepOpt:NullAway:CheckContracts=true']
-
-      # Make it a warning to use assumeNonNull() with a @NonNull.
-      errorprone_flags += [('-XepOpt:NullAway:CastToNonNullMethod='
-                            'org.chromium.build.NullUtil.assumeNonNull')]
-      # Detect "assert foo != null" as a null check.
-      errorprone_flags += ['-XepOpt:NullAway:AssertsEnabled=true']
-      # Do not ignore @Nullable & @NonNull in non-@NullMarked classes.
-      errorprone_flags += [
-          '-XepOpt:NullAway:AcknowledgeRestrictiveAnnotations=true'
-      ]
-      # Treat @RecentlyNullable the same as @Nullable.
-      errorprone_flags += ['-XepOpt:Nullaway:AcknowledgeAndroidRecent=true']
-      # Enable experimental checking of @Nullable generics.
-      # https://github.com/uber/NullAway/wiki/JSpecify-Support
-      errorprone_flags += ['-XepOpt:NullAway:JSpecifyMode=true']
-      # Treat these the same as constructors.
-      init_methods = [
-          'android.app.Application.onCreate',
-          'android.app.Activity.onCreate',
-          'android.app.Service.onCreate',
-          'android.app.backup.BackupAgent.onCreate',
-          'android.content.ContentProvider.attachInfo',
-          'android.content.ContentProvider.onCreate',
-          'android.content.ContextWrapper.attachBaseContext',
-      ]
-      errorprone_flags += [
-          '-XepOpt:NullAway:KnownInitializers=' + ','.join(init_methods)
-      ]
-
-    # Make everything a warning so that when treat_warnings_as_errors is false,
-    # they do not fail the build.
-    errorprone_flags += ['-XepAllErrorsAsWarnings']
-    # Don't check generated files (those tagged with @Generated).
-    errorprone_flags += ['-XepDisableWarningsInGeneratedCode']
-    errorprone_flags.extend('-Xep:{}:OFF'.format(x)
-                            for x in ERRORPRONE_WARNINGS_TO_DISABLE)
-    errorprone_flags.extend('-Xep:{}:WARN'.format(x)
-                            for x in ERRORPRONE_WARNINGS_TO_ENABLE)
-    if options.testonly:
-      errorprone_flags.extend('-Xep:{}:OFF'.format(x)
-                              for x in TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE)
-
-    if ERRORPRONE_CHECKS_TO_APPLY:
-      to_apply = list(ERRORPRONE_CHECKS_TO_APPLY)
-      if options.testonly:
-        to_apply = [
-            x for x in to_apply
-            if x not in TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE
-        ]
-      errorprone_flags += [
-          '-XepPatchLocation:IN_PLACE', '-XepPatchChecks:,' + ','.join(to_apply)
-      ]
-
-    # These are required to use JDK 16, and are taken directly from
-    # https://errorprone.info/docs/installation
-    javac_args += [
-        '-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED',
-        '-J--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED',
-        '-J--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED',
-        '-J--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED',
-        '-J--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED',
-        '-J--add-exports=jdk.compiler/com.sun.tools.javac.processing='
-        'ALL-UNNAMED',
-        '-J--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
-        '-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED',
-        '-J--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED',
-        '-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED',
-    ]
-
-    javac_args += ['-XDcompilePolicy=simple', ' '.join(errorprone_flags)]
-
-    javac_args += ['-XDshould-stop.ifError=FLOW']
-    # This flag quits errorprone after checks and before code generation, since
-    # we do not need errorprone outputs, this speeds up errorprone by 4 seconds
-    # for chrome_java.
-    if not ERRORPRONE_CHECKS_TO_APPLY:
-      javac_args += ['-XDshould-stop.ifNoError=FLOW']
-
-  # This effectively disables all annotation processors, even including
-  # annotation processors in service provider configuration files named
-  # META-INF/. See the following link for reference:
-  #     https://docs.oracle.com/en/java/javase/11/tools/javac.html
-  javac_args.extend(['-proc:none'])
+  if extra_javac_args:
+    javac_args.extend(extra_javac_args)
 
   if options.processorpath:
     javac_args.extend(['-processorpath', ':'.join(options.processorpath)])
@@ -842,38 +607,46 @@ def main(argv):
 
   javac_args.extend(options.javac_arg)
 
+  do_it = lambda changes: _OnStaleMd5(changes,
+                                      options,
+                                      javac_cmd,
+                                      javac_args,
+                                      java_files,
+                                      kt_files,
+                                      use_errorprone=use_errorprone)
+
   if options.print_javac_command_line:
     if options.java_srcjars:
       raise Exception(
           '--print-javac-command-line does not work with --java-srcjars')
-    _OnStaleMd5(None, options, javac_cmd, javac_args, java_files, kt_files)
+    do_it(None)
     return 0
 
-  classpath_inputs = options.classpath + options.processorpath
-
-  depfile_deps = classpath_inputs
-  # Files that are already inputs in GN should go in input_paths.
-  input_paths = ([build_utils.JAVAC_PATH] + depfile_deps +
-                 options.java_srcjars + java_files + kt_files)
-  if options.header_jar:
-    input_paths.append(options.header_jar)
-  input_paths += [x[0] for x in options.additional_jar_files]
+  depfile_deps = options.classpath + options.processorpath
 
   output_paths = [options.jar_path]
-  if not options.enable_errorprone:
-    output_paths += [options.jar_path + '.info']
+  if not use_errorprone:
+    jar_info_path = options.jar_path + '.info'
+    output_paths.append(jar_info_path)
 
-  input_strings = (javac_cmd + javac_args + options.classpath + java_files +
-                   kt_files +
-                   [options.warnings_as_errors, options.jar_info_exclude_globs])
-
-  do_it = lambda changes: _OnStaleMd5(changes, options, javac_cmd, javac_args,
-                                      java_files, kt_files)
   # Incremental build optimization doesn't work for ErrorProne. Skip md5 check.
-  if options.enable_errorprone:
+  if write_depfile_only:
+    action_helpers.write_depfile(options.depfile, output_paths[0], depfile_deps)
+  elif use_errorprone:
     do_it(None)
     action_helpers.write_depfile(options.depfile, output_paths[0], depfile_deps)
   else:
+    # Files that are already inputs in GN should go in input_paths.
+    input_paths = ([build_utils.JAVAC_PATH] + depfile_deps +
+                   options.java_srcjars + java_files + kt_files)
+    if options.header_jar:
+      input_paths.append(options.header_jar)
+    input_paths += [x[0] for x in options.additional_jar_files]
+
+    input_strings = (
+        javac_cmd + javac_args + options.classpath + java_files + kt_files +
+        [options.warnings_as_errors, options.jar_info_exclude_globs])
+
     # Use md5_check for |pass_changes| feature.
     md5_check.CallAndWriteDepfileIfStale(do_it,
                                          options,

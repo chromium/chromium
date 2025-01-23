@@ -1116,6 +1116,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.GestureTransition.{Scenario}"
+    enum="NavigationRequestSchemeType" expires_after="M140">
+  <owner>lazzzis@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Record the scheme type of the new commit when a new commit happens
+    {Scenario}.
+  </summary>
+  <token key="Scenario">
+    <variant name="NewCommitInPrimaryMainFrame"
+        summary="in primary main frame"/>
+    <variant name="NewCommitWhileDisplayingCanceledAnimation"
+        summary="while a canceled animation is displaying"/>
+    <variant name="NewCommitWhileDisplayingCrossFadeAnimation"
+        summary="while a cross fade animation is displaying"/>
+    <variant name="NewCommitWhileWaitingForNewRendererToDraw"
+        summary="while waiting for new renderer to draw"/>
+  </token>
+</histogram>
+
 <histogram name="Navigation.GetFrameHostForNavigation" units="ms"
     expires_after="2025-06-08">
   <owner>rakina@chromium.org</owner>

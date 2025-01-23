@@ -691,6 +691,11 @@ const char kLensFiltersAblationModeEnabledName[] =
 const char kLensFiltersAblationModeEnabledDescription[] =
     "Enables the filters ablation mode.";
 
+const char kLensInkMultiSampleModeDisabledName[] =
+    "Disable Lens Ink multi-sample mode";
+const char kLensInkMultiSampleModeDisabledDescription[] =
+    "When disabled, turns off multi-sample mode and uses less memory.";
+
 extern const char kLensOverlayAlternativeOnboardingName[] =
     "Lens Overlay Onboarding";
 extern const char kLensOverlayAlternativeOnboardingDescription[] =
@@ -973,6 +978,11 @@ const char kPageVisibilityPageContentAnnotationsName[] =
 const char kPageVisibilityPageContentAnnotationsDescription[] =
     "Enables annotating the page visibility model for each page load "
     "on-device.";
+
+const char kPasswordFormClientsideClassifierName[] =
+    "Clientside password form classifier.";
+const char kPasswordFormClientsideClassifierDescription[] =
+    "Enable usage of new password form classifier on the client.";
 
 const char kPasswordReuseDetectionName[] =
     "PhishGuard password reuse detection";

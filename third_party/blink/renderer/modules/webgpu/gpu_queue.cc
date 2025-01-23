@@ -443,23 +443,15 @@ void OnWorkDoneCallback(ScriptPromiseResolver<IDLUndefined>* resolver,
     case wgpu::QueueWorkDoneStatus::Success:
       resolver->Resolve();
       break;
-    case wgpu::QueueWorkDoneStatus::Error:
-      resolver->RejectWithDOMException(
-          DOMExceptionCode::kOperationError,
-          "Unexpected failure in onSubmittedWorkDone");
-      break;
-    case wgpu::QueueWorkDoneStatus::Unknown:
-      resolver->RejectWithDOMException(
-          DOMExceptionCode::kOperationError,
-          "Unknown failure in onSubmittedWorkDone");
-      break;
     case wgpu::QueueWorkDoneStatus::InstanceDropped:
       resolver->RejectWithDOMException(
           DOMExceptionCode::kOperationError,
           "Instance dropped in onSubmittedWorkDone");
       break;
     default:
-      DCHECK(false);
+      resolver->RejectWithDOMException(
+          DOMExceptionCode::kOperationError,
+          "Unknown failure in onSubmittedWorkDone");
   }
 }
 

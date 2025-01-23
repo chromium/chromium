@@ -50,10 +50,6 @@ bool IsLacrosEnabled() {
   return false;
 }
 
-bool IsAshWebBrowserEnabled() {
-  return true;
-}
-
 base::Version GetRootfsLacrosVersionMayBlock(
     const base::FilePath& version_file_path) {
   if (!base::PathExists(version_file_path)) {

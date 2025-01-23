@@ -108,7 +108,7 @@ void ValidateHistograms(base::span<const RecordedHistogram> recorded) {
       if (std::string(r.name) == histogram->histogram_name()) {
         std::unique_ptr<base::HistogramSamples> snapshot =
             histogram->SnapshotSamples();
-        base::HistogramBase::Count sample_count = snapshot->TotalCount();
+        base::HistogramBase::Count32 sample_count = snapshot->TotalCount();
         EXPECT_EQ(r.count, sample_count);
 
         EXPECT_EQ(r.type, histogram->GetHistogramType());

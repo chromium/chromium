@@ -83,4 +83,12 @@ extern bool IsMerchantTrustFeatureEnabled(const std::string& country_code,
          base::ToLowerASCII(locale) == kMerchantTrustEnabledForLocale;
 }
 
+BASE_FEATURE(kMerchantTrustEvaluationControlSurvey,
+             "MerchantTrustEvaluationControlSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kMerchantTrustEvaluationExperimentSurvey,
+             "MerchantTrustEvaluationExperimentSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace page_info

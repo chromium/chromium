@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <Foundation/Foundation.h>
-
 #import "ios/chrome/common/app_group/app_group_utils.h"
+
+#import <Foundation/Foundation.h>
 
 #import "ios/chrome/common/app_group/app_group_constants.h"
 
@@ -41,7 +41,7 @@ void ClearAppGroupUserDefaults(NSString* app_group) {
   }
   [user_defaults synchronize];
 }
-}
+}  // namespace
 
 namespace app_group {
 

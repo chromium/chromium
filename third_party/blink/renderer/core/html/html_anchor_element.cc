@@ -614,10 +614,6 @@ void HTMLAnchorElementBase::NavigateToHyperlink(
   }
 }
 
-void HTMLAnchorElementBase::SetHovered(bool hovered) {
-  HTMLElement::SetHovered(hovered);
-}
-
 Element* HTMLAnchorElementBase::interestTargetElement() {
   CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
 

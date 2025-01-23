@@ -11,6 +11,9 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Set;
@@ -23,11 +26,12 @@ import java.util.Set;
  * Threading model: all calls to/from C++ happen on the UI thread.
  */
 @JNINamespace("gcm")
+@NullMarked
 public class GCMDriver {
     private static final String TAG = "GCMDriver";
 
     // The instance of GCMDriver currently owned by a C++ GCMDriverAndroid, if any.
-    private static GCMDriver sInstance;
+    private static @Nullable GCMDriver sInstance;
 
     private long mNativeGCMDriverAndroid;
     private GoogleCloudMessagingSubscriber mSubscriber;
@@ -87,8 +91,9 @@ public class GCMDriver {
     @CalledByNative
     private void register(final String appId, final String senderId) {
         new AsyncTask<String>() {
+            @NullUnmarked
             @Override
-            protected String doInBackground() {
+            protected @Nullable String doInBackground() {
                 try {
                     String subtype = appId;
                     String registrationId = mSubscriber.subscribe(senderId, subtype, null);
@@ -177,11 +182,11 @@ public class GCMDriver {
         void onMessageReceived(
                 long nativeGCMDriverAndroid,
                 GCMDriver caller,
-                String appId,
-                String senderId,
-                String messageId,
-                String collapseKey,
-                byte[] rawData,
-                String[] dataKeysAndValues);
+                @Nullable String appId,
+                @Nullable String senderId,
+                @Nullable String messageId,
+                @Nullable String collapseKey,
+                byte @Nullable [] rawData,
+                String @Nullable [] dataKeysAndValues);
     }
 }

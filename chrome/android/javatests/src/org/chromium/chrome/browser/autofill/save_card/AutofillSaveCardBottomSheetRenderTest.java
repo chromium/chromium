@@ -78,10 +78,7 @@ public class AutofillSaveCardBottomSheetRenderTest {
                     ViewGroup activityContentView = mActivity.findViewById(android.R.id.content);
                     activityContentView.removeAllViews();
                     ScrimCoordinator scrimCoordinator =
-                            new ScrimCoordinator(
-                                    mActivity,
-                                    /* systemUiScrimDelegate= */ null,
-                                    activityContentView);
+                            new ScrimCoordinator(mActivity, activityContentView);
                     mBottomSheetController =
                             BottomSheetControllerFactory.createFullWidthBottomSheetController(
                                     () -> scrimCoordinator,

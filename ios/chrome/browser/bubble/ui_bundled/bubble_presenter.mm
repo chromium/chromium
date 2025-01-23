@@ -240,8 +240,9 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                   anchorPoint:discoverFeedMenuAnchor
                 presentAction:nil
                 dismissAction:nil];
-  if (!presenter)
+  if (!presenter) {
     return;
+  }
 
   _discoverFeedHeaderMenuTipBubblePresenter = presenter;
 }
@@ -287,8 +288,9 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                                              popupMenuHandler:
                                                  (id<PopupMenuCommands>)
                                                      popupMenuHandler {
-  if (![self canPresentBubble])
+  if (![self canPresentBubble]) {
     return;
+  }
 
   BubbleArrowDirection arrowDirection =
       IsSplitToolbarMode(self.rootViewController) ? BubbleArrowDirectionDown
@@ -344,8 +346,9 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
         voiceOverAnnouncement:l10n_util::GetNSString(
                                   IDS_IOS_DEFAULT_PAGE_MODE_TIP_VOICE_OVER)
                   anchorPoint:toolsMenuAnchor];
-  if (!presenter)
+  if (!presenter) {
     return;
+  }
   [popupMenuHandler notifyIPHBubblePresenting];
   _defaultPageModeTipBubblePresenter = presenter;
 }

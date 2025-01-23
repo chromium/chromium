@@ -639,7 +639,14 @@ void TileManager::ExternalDependencyCompletedForNonRasterTask(
 
 void TileManager::ExternalDependencyCompletedForRasterTask(
     scoped_refptr<TileTask> dependent) {
-  tile_task_manager_->ExternalDependencyCompletedForTask(std::move(dependent));
+  // We may get here during the scope of FinishTasksAndCleanUp(), in which case
+  // tile_task_manager_ will already have been reset to null. If that is the
+  // case, we expect any outstanding raster tasks to have been canceled.
+  CHECK(tile_task_manager_ || dependent->state().IsCanceled());
+  if (tile_task_manager_) {
+    tile_task_manager_->ExternalDependencyCompletedForTask(
+        std::move(dependent));
+  }
 }
 
 bool TileManager::PrepareTiles(

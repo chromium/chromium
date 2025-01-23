@@ -606,7 +606,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   bool widget_valid_ = false;
   bool layer_tree_frame_sink_requested_ = false;
   const viz::FrameSinkId frame_sink_id_;
-  scoped_refptr<cc::Layer> root_web_layer_;
+  scoped_refptr<cc::Layer> root_cc_layer_;
   std::unique_ptr<cc::AnimationHost> animation_host_;
   std::unique_ptr<cc::LayerTreeHost> host_;
   base::WeakPtr<cc::InputHandler> input_handler_weak_;

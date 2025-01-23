@@ -63,8 +63,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       base::PlatformThreadRef context_thread_ref,
       scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
       viz::ReleaseCallback release_callback,
-      bool supports_display_compositing,
-      bool is_overlay_candidate);
+      bool supports_display_compositing);
 
   // Creates an image wrapping an external shared image.
   // The shared image may come from a different context,
@@ -75,8 +74,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       const gpu::ExportedSharedImage& exported_shared_image,
       const gpu::SyncToken& sync_token,
       const SkImageInfo& sk_image_info,
-      bool supports_display_compositing,
-      bool is_overlay_candidate,
       base::OnceCallback<void(const gpu::SyncToken&)> release_callback);
 
   bool CurrentFrameKnownToBeOpaque() override;
@@ -128,10 +125,9 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   bool IsOriginTopLeft() const final {
     return shared_image_->surface_origin() == kTopLeft_GrSurfaceOrigin;
   }
-  bool SupportsDisplayCompositing() const final {
-    return supports_display_compositing_;
+  bool IsOverlayCandidate() const final {
+    return shared_image_->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   }
-  bool IsOverlayCandidate() const final { return is_overlay_candidate_; }
 
   PaintImage PaintImageForCurrentFrame() override;
 
@@ -151,8 +147,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       const gpu::SyncToken&,
       GLuint shared_image_texture_id,
       const SkImageInfo& sk_image_info,
-      bool supports_display_compositing,
-      bool is_overlay_candidate,
       const ImageOrientation& orientation,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::PlatformThreadRef context_thread_ref,
@@ -164,8 +158,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
 
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
   const SkImageInfo sk_image_info_;
-  const bool supports_display_compositing_ : 1;
-  const bool is_overlay_candidate_ : 1;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   scoped_refptr<MailboxRef> mailbox_ref_;

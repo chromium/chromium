@@ -106,7 +106,7 @@ class BASE_EXPORT Histogram : public HistogramBase {
   // this value).
   static constexpr size_t kBucketCount_MAX = 1002;
 
-  typedef std::vector<Count> Counts;
+  using Counts = std::vector<Count32>;
 
   Histogram(const Histogram&) = delete;
   Histogram& operator=(const Histogram&) = delete;

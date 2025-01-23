@@ -139,8 +139,10 @@ class SingleClientSharedTabGroupDataSyncTest : public SyncTest {
 
   void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
                           std::string_view collaboration_id) {
-    GetTabGroupSyncService()->MakeTabGroupShared(local_group_id,
-                                                 collaboration_id);
+    // TODO(crbug.com/382557489): use the proper callback.
+    GetTabGroupSyncService()->MakeTabGroupShared(
+        local_group_id, collaboration_id,
+        TabGroupSyncService::TabGroupSharingCallback());
   }
 
   // Returns the only saved tab group specifics from the fake server. The group

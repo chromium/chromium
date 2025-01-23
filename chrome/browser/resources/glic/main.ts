@@ -3,11 +3,16 @@
 // found in the LICENSE file.
 
 import '/strings.m.js';
-
-import {loadTimeData} from '//resources/js/load_time_data.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_iconset.js';
+import './icons.html.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {GlicApiHost} from './glic_api_impl/glic_api_host.js';
+import {GlicAppController} from './glic_app_controller.js';
 
 const browserProxy = BrowserProxyImpl.getInstance();
 const webview =
@@ -53,9 +58,16 @@ class GlicAppHostManager {
     }
     if (webview.contentWindow) {
       this.host = new GlicApiHost(
-          browserProxy, webview.contentWindow, new URL(url).origin);
+          browserProxy, webview.contentWindow, new URL(url).origin,
+          appController!);
     }
     browserProxy.handler.webviewCommitted({url});
+
+    // TODO(https://crbug.com/388328847): Remove when login issues are resolved.
+    if (url.startsWith('https://login.corp.google.com/') ||
+        url.startsWith('https://accounts.google.com/')) {
+      appController!.showLogin();
+    }
   }
 
   contentLoaded() {
@@ -65,10 +77,16 @@ class GlicAppHostManager {
   }
 }
 
-// Blocking on cookie syncing here introduces latency, we should consider ways
-// to avoid it.
-browserProxy.handler.syncWebviewCookies().then(() => {
-  // Load the web client only after cookie sync is complete.
-  webview.src = loadTimeData.getString('glicGuestURL');
-  new GlicAppHostManager();
+new GlicAppHostManager();
+
+const appController = new GlicAppController(browserProxy);
+
+window.addEventListener('load', () => {
+  // Allow WebUI close button to close the window.
+  document.querySelector('.close-button')!.addEventListener('click', () => {
+    browserProxy.handler.closePanel();
+  });
+  document.getElementById('retry')!.addEventListener('click', () => {
+    appController!.updateOnlineState(navigator.onLine);
+  });
 });

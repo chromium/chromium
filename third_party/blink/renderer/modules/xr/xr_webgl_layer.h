@@ -82,10 +82,6 @@ class XRWebGLLayer final : public XRLayer, public XRWebGLLayerClient {
   void OnFrameEnd() override;
   void OnResize() override;
 
-  // Called from XRSession::OnFrame handler. Params are background texture
-  // mailbox holder and its size respectively.
-  void HandleBackgroundImage(const gpu::MailboxHolder&, const gfx::Size&) {}
-
   void Trace(Visitor*) const override;
 
  private:

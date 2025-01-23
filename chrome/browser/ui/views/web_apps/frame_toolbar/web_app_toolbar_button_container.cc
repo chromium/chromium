@@ -32,7 +32,7 @@
 #include "ui/views/window/hit_test_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
@@ -143,10 +143,19 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
   page_action_icon_controller_->Init(params, this);
 
   bool create_extensions_container = true;
+  auto display_mode =
+      base::FeatureList::IsEnabled(features::kDesktopPWAsElidedExtensionsMenu)
+          ? ExtensionsToolbarContainer::DisplayMode::kAutoHide
+          : ExtensionsToolbarContainer::DisplayMode::kCompact;
 #if BUILDFLAG(IS_CHROMEOS)
-  // Do not create the extensions or browser actions container if it is a
-  // System Web App.
-  create_extensions_container = !ash::IsSystemWebApp(browser_view_->browser());
+  // Let the system web app decide if it needs to show the extensions container.
+  // Use compact display mode because we do not render the app menu for system
+  // web apps.
+  if (app_controller->system_app()) {
+    create_extensions_container =
+        app_controller->system_app()->ShouldHaveExtensionsContainerInToolbar();
+    display_mode = ExtensionsToolbarContainer::DisplayMode::kCompact;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (create_extensions_container) {
@@ -154,11 +163,6 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
     // for example, the menu button or other toolbar buttons, and pinned
     // extensions should hide before other toolbar buttons.
     constexpr int kLowPriorityFlexOrder = 2;
-
-    auto display_mode =
-        base::FeatureList::IsEnabled(features::kDesktopPWAsElidedExtensionsMenu)
-            ? ExtensionsToolbarContainer::DisplayMode::kAutoHide
-            : ExtensionsToolbarContainer::DisplayMode::kCompact;
     extensions_container_ =
         AddChildView(std::make_unique<ExtensionsToolbarContainer>(
             browser_view_->browser(), display_mode));

@@ -44,7 +44,7 @@ using autofill::FillingProduct;
 using autofill::FormRendererId;
 
 // Test provider that records invocations of its interface methods.
-@interface TestSuggestionProvider : NSObject<FormSuggestionProvider>
+@interface TestSuggestionProvider : NSObject <FormSuggestionProvider>
 
 @property(weak, nonatomic, readonly) FormSuggestion* suggestion;
 @property(nonatomic, assign) NSInteger index;

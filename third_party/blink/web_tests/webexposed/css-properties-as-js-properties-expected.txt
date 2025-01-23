@@ -24,8 +24,10 @@ animationRangeEnd
 animationRangeStart
 animationTimeline
 animationTimingFunction
+animationTriggerExitRange
 animationTriggerExitRangeEnd
 animationTriggerExitRangeStart
+animationTriggerRange
 animationTriggerRangeEnd
 animationTriggerRangeStart
 animationTriggerTimeline
@@ -250,6 +252,8 @@ insetInline
 insetInlineEnd
 insetInlineStart
 interactivity
+interestTargetHideDelay
+interestTargetShowDelay
 interpolateSize
 isolation
 item
@@ -373,8 +377,6 @@ placeContent
 placeItems
 placeSelf
 pointerEvents
-popoverHideDelay
-popoverShowDelay
 position
 positionAnchor
 positionArea

@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom.h"
@@ -78,6 +79,7 @@ class OutlookCalendarPageHandlerTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::IO};
   std::unique_ptr<TestingProfile> profile_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+  base::HistogramTester histogram_tester_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -135,6 +137,13 @@ TEST_F(OutlookCalendarPageHandlerTest, GetEvents) {
   handler->GetEvents(future.GetCallback());
 
   EXPECT_EQ(future.Get().size(), 3u);
+
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.RequestResult",
+      OutlookCalendarRequestResult::kSuccess, 1);
+  // The response from `GetFakeJsonResponse` has 3 hardcoded events.
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.ResponseResult", 3, 1);
 }
 
 TEST_F(OutlookCalendarPageHandlerTest, EmptyResponse) {
@@ -148,6 +157,10 @@ TEST_F(OutlookCalendarPageHandlerTest, EmptyResponse) {
                                                              "");
 
   EXPECT_EQ(future.Get().size(), 0u);
+
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.RequestResult",
+      OutlookCalendarRequestResult::kJsonParseError, 1);
 }
 
 TEST_F(OutlookCalendarPageHandlerTest, MalformedResponse) {
@@ -161,6 +174,10 @@ TEST_F(OutlookCalendarPageHandlerTest, MalformedResponse) {
                                                              "} {");
 
   EXPECT_EQ(future.Get().size(), 0u);
+
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.RequestResult",
+      OutlookCalendarRequestResult::kJsonParseError, 1);
 }
 
 TEST_F(OutlookCalendarPageHandlerTest, ResponseMissingData) {
@@ -196,6 +213,12 @@ TEST_F(OutlookCalendarPageHandlerTest, ResponseMissingData) {
                                                              response);
 
   EXPECT_EQ(future.Get().size(), 0u);
+
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.RequestResult",
+      OutlookCalendarRequestResult::kContentError, 1);
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.ResponseResult", 1, 1);
 }
 
 TEST_F(OutlookCalendarPageHandlerTest, ResponsePropertyHasWrongDataType) {
@@ -212,7 +235,7 @@ TEST_F(OutlookCalendarPageHandlerTest, ResponsePropertyHasWrongDataType) {
       {
         "id": "1",
         "hasAttachments": "false",
-        "subject": "Event"
+        "subject": "Event",
         "isCancelled": false,
         "isOrganizer": true,
         "responseStatus": {
@@ -232,6 +255,12 @@ TEST_F(OutlookCalendarPageHandlerTest, ResponsePropertyHasWrongDataType) {
                                                              response);
 
   EXPECT_EQ(future.Get().size(), 0u);
+
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.RequestResult",
+      OutlookCalendarRequestResult::kContentError, 1);
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.ResponseResult", 1, 1);
 }
 
 TEST_F(OutlookCalendarPageHandlerTest, OptionalDataMissing) {
@@ -268,6 +297,12 @@ TEST_F(OutlookCalendarPageHandlerTest, OptionalDataMissing) {
                                                              response);
 
   EXPECT_EQ(future.Get().size(), 1u);
+
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.RequestResult",
+      OutlookCalendarRequestResult::kSuccess, 1);
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.ResponseResult", 1, 1);
 }
 
 TEST_F(OutlookCalendarPageHandlerTest, HasOtherAttendeeWhenNotOrganizer) {
@@ -333,6 +368,12 @@ TEST_F(OutlookCalendarPageHandlerTest, HasOtherAttendeeWhenNotOrganizer) {
   for (auto& event : events) {
     EXPECT_TRUE(event->has_other_attendee);
   }
+
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.RequestResult",
+      OutlookCalendarRequestResult::kSuccess, 1);
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.ResponseResult", 1, 1);
 }
 
 TEST_F(OutlookCalendarPageHandlerTest, AttendeesAccepted) {
@@ -397,6 +438,12 @@ TEST_F(OutlookCalendarPageHandlerTest, AttendeesAccepted) {
   for (auto& event : events) {
     EXPECT_TRUE(event->has_other_attendee);
   }
+
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.RequestResult",
+      OutlookCalendarRequestResult::kSuccess, 1);
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.ResponseResult", 1, 1);
 }
 
 TEST_F(OutlookCalendarPageHandlerTest, AttendeesDeclined) {
@@ -461,6 +508,12 @@ TEST_F(OutlookCalendarPageHandlerTest, AttendeesDeclined) {
   for (auto& event : events) {
     EXPECT_FALSE(event->has_other_attendee);
   }
+
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.RequestResult",
+      OutlookCalendarRequestResult::kSuccess, 1);
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.ResponseResult", 1, 1);
 }
 
 TEST_F(OutlookCalendarPageHandlerTest, EventCanceled) {
@@ -524,6 +577,12 @@ TEST_F(OutlookCalendarPageHandlerTest, EventCanceled) {
   for (auto& event : events) {
     EXPECT_FALSE(event->has_other_attendee);
   }
+
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.RequestResult",
+      OutlookCalendarRequestResult::kSuccess, 1);
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.ResponseResult", 1, 1);
 }
 
 TEST_F(OutlookCalendarPageHandlerTest, AttachmentCreation) {
@@ -653,6 +712,12 @@ TEST_F(OutlookCalendarPageHandlerTest, AttachmentCreation) {
     EXPECT_EQ(attachment->resource_url,
               GURL(kBaseAttachmentResourceUrl + id_paths[i]));
   }
+
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.RequestResult",
+      OutlookCalendarRequestResult::kSuccess, 1);
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.ResponseResult", 1, 1);
 }
 
 // Verifies that a "Retry-After" header is parsed and the earliest next retry
@@ -693,6 +758,12 @@ TEST_F(OutlookCalendarPageHandlerTest, HandleThrottlingError) {
   EXPECT_EQ(
       profile_->GetPrefs()->GetTime(prefs::kNtpOutlookCalendarRetryAfterTime),
       base::Time::Now() + base::Seconds(10));
+
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.RequestResult",
+      OutlookCalendarRequestResult::kThrottlingError, 1);
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.OutlookCalendar.ThrottlingWaitTime", 1);
 }
 
 // Verifies that requests aren't made if there is a retry timeout that should be
@@ -730,6 +801,12 @@ TEST_F(OutlookCalendarPageHandlerTest, MakeRequestAfterRetryTimeout) {
   handler->GetEvents(future.GetCallback());
 
   EXPECT_EQ(future.Get().size(), 3u);
+
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.RequestResult",
+      OutlookCalendarRequestResult::kSuccess, 1);
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.ResponseResult", 3, 1);
 }
 
 // Verifies that prefs are accurately set on dismissal and restoring of module.
@@ -806,6 +883,12 @@ TEST_F(OutlookCalendarPageHandlerTest, DeclinedEventNotCreated) {
   test_url_loader_factory_.SimulateResponseForPendingRequest(GetRequestUrl(),
                                                              response);
   EXPECT_EQ(future.Get().size(), 0u);
+
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.RequestResult",
+      OutlookCalendarRequestResult::kSuccess, 1);
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.ResponseResult", 1, 1);
 }
 
 // Ensures attachment `resource_url's` are not set when there's an error

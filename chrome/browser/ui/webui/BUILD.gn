@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//chromeos/dbus/config/use_real_dbus_clients.gni")
+import("//components/signin/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//tools/metrics/generate_allowlist_from_histograms_file.gni")
 
@@ -65,6 +66,10 @@ source_set("configs") {
       "//chrome/browser/ui/webui/ash/config",
       "//chromeos/constants",
     ]
+  }
+
+  if (enable_dice_support) {
+    deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation" ]
   }
 
   if (enable_glic) {

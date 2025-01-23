@@ -934,6 +934,7 @@ base::expected<std::unique_ptr<GraphBuilderCoreml::Result>, mojom::ErrorPtr>
 GraphBuilderCoreml::CreateAndBuild(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
+    mojom::CreateContextOptions::Device device,
     const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
         constant_operands,
     const base::FilePath& working_directory) {
@@ -955,9 +956,9 @@ GraphBuilderCoreml::CreateAndBuild(
     return NewUnknownError(kWriteWeightsErrorMessage);
   }
 
-  GraphBuilderCoreml graph_builder(graph_info, std::move(context_properties),
-                                   constant_operands, std::move(ml_package_dir),
-                                   std::move(*weights_handle));
+  GraphBuilderCoreml graph_builder(
+      graph_info, std::move(context_properties), device, constant_operands,
+      std::move(ml_package_dir), std::move(*weights_handle));
 
   RETURN_IF_ERROR(graph_builder.BuildCoreMLModel());
   RETURN_IF_ERROR(graph_builder.SerializeModel());
@@ -984,6 +985,9 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
   static constexpr uint64_t kTensorByteLengthLimit =
       std::numeric_limits<int32_t>::max();
 
+  // In general Core ML supports up to 5D tensors.
+  static constexpr SupportedRanks kMaxRank = SupportedRanks::UpTo(5);
+
   // TODO: crbug.com/345271830 - specify data types for all parameters.
   return ContextProperties(
       InputOperandLayout::kNchw, Resample2DAxes::kChannelsFirst,
@@ -1008,25 +1012,25 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // DequantizeLinear is not implemented.
        /*dequantize_linear_input=*/{},
        /*dequantize_linear_scale=*/{},
-       /*add_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*sub_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*mul_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*div_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*max_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*min_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*pow_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*equal_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*greater_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*greater_or_equal_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*not_equal_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*lesser_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*lesser_or_equal_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
+       /*add_input=*/{kFloatsAndInt32, kMaxRank},
+       /*sub_input=*/{kFloatsAndInt32, kMaxRank},
+       /*mul_input=*/{kFloatsAndInt32, kMaxRank},
+       /*div_input=*/{kFloatsAndInt32, kMaxRank},
+       /*max_input=*/{kFloatsAndInt32, kMaxRank},
+       /*min_input=*/{kFloatsAndInt32, kMaxRank},
+       /*pow_input=*/{kFloatsAndInt32, kMaxRank},
+       /*equal_input=*/{kFloatsAndInt32, kMaxRank},
+       /*greater_input=*/{kFloatsAndInt32, kMaxRank},
+       /*greater_or_equal_input=*/{kFloatsAndInt32, kMaxRank},
+       /*not_equal_input=*/{kFloatsAndInt32, kMaxRank},
+       /*lesser_input=*/{kFloatsAndInt32, kMaxRank},
+       /*lesser_or_equal_input=*/{kFloatsAndInt32, kMaxRank},
        /*logical_and_input=*/
-       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(5)},
+       {DataTypeConstraint::kUint8, kMaxRank},
        /*logical_or_input=*/
-       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(5)},
+       {DataTypeConstraint::kUint8, kMaxRank},
        /*logical_xor_input=*/
-       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(5)},
+       {DataTypeConstraint::kUint8, kMaxRank},
        /*logical_not_input=*/DataTypeConstraint::kUint8,
        /*logical_output=*/DataTypeConstraint::kUint8,
        /*abs_input=*/kFloatsAndInt32,
@@ -1074,7 +1078,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // LstmCell is implemented with lstm, they should have the same
        // constraints.
        /*lstm_cell_input=*/DataTypeConstraint::kFloat16To32,
-       /*matmul_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
+       /*matmul_input=*/{kFloatsAndInt32, kMaxRank},
        /*pad_input=*/DataTypeConstraint::kFloat16To32,
        /*average_pool2d_input=*/DataTypeConstraint::kFloat16To32,
        /*l2_pool2d_input=*/DataTypeConstraint::kFloat16To32,
@@ -1117,7 +1121,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // Note that BOOL is also supported by CoreML, but WebNN does not have a
        // corresponding BOOL type. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.split
-       /*split_input=*/kFloatsAndInt32,
+       /*split_input=*/{kFloatsAndInt32, kMaxRank},
        /*tanh_input=*/DataTypeConstraint::kFloat16To32,
        // Note that BOOL is also supported by CoreML, but WebNN does not have a
        // corresponding BOOL type. See docs here:
@@ -1132,16 +1136,17 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // corresponding BOOL type. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.band_part
        /*triangular_input=*/kFloatsAndInt32,
-       /*where_condition=*/DataTypeConstraint::kUint8,
+       /*where_condition=*/{DataTypeConstraint::kUint8, kMaxRank},
        // Note that BOOL is also supported by CoreML, but WebNN does not have a
        // corresponding BOOL type. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.transpose
-       /*where_value=*/kFloatsAndInt32});
+       /*where_value=*/{kFloatsAndInt32, kMaxRank}});
 }
 
 GraphBuilderCoreml::GraphBuilderCoreml(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
+    mojom::CreateContextOptions::Device device,
     const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
         constant_operands,
     base::FilePath ml_package_dir,
@@ -1149,6 +1154,7 @@ GraphBuilderCoreml::GraphBuilderCoreml(
     : graph_info_(graph_info),
       constant_operands_(constant_operands),
       context_properties_(std::move(context_properties)),
+      device_(device),
       internal_operand_id_(
           base::ranges::max_element(
               graph_info_->id_to_operand_map,
@@ -1792,10 +1798,27 @@ GraphBuilderCoreml::AddOperationForBatchNormalization(
         "dimension.");
   }
 
+  uint64_t input_operand_id = operation.input_operand_id;
+  // Rank of 5 causes crashes when not targeting `MLComputeUnitsCPUOnly`, see
+  // crbug.com/391566721, so reshape to 4 to perform batch norm, then reshape
+  // back.
+  if (device_ != mojom::CreateContextOptions::Device::kCpu &&
+      input_operand_info.dimensions.size() == 5) {
+    std::array<uint32_t, 4> flattened_dims{
+        input_operand_info.dimensions[0], input_operand_info.dimensions[1],
+        input_operand_info.dimensions[2],
+        input_operand_info.dimensions[3] * input_operand_info.dimensions[4]};
+    ASSIGN_OR_RETURN(input_operand_id,
+                     GenerateInternalOperandInfo(
+                         input_operand_info.mil_data_type, flattened_dims));
+    RETURN_IF_ERROR(AddOperationForReshape(operation.input_operand_id,
+                                           input_operand_id, block));
+  }
+
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpBatchNormalizationTypeName);
-  RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
-                                      operation.input_operand_id));
+  RETURN_IF_ERROR(
+      SetInputFromOperand(*op->mutable_inputs(), kOpParamX, input_operand_id));
 
   static constexpr char kParamMean[] = "mean";
   static constexpr char kParamVariance[] = "variance";
@@ -1818,8 +1841,18 @@ GraphBuilderCoreml::AddOperationForBatchNormalization(
       *op->mutable_inputs(), kOpParamEpsilon,
       CreateFloatValue(input_operand_info.mil_data_type, operation.epsilon));
 
-  CoreML::Specification::MILSpec::NamedValueType& output = *op->add_outputs();
-  PopulateNamedValueType(operation.output_operand_id, output);
+  if (input_operand_id != operation.input_operand_id) {
+    ASSIGN_OR_RETURN(uint64_t output_operand_id,
+                     GenerateInternalOperandInfo(
+                         input_operand_info.mil_data_type,
+                         GetOperandInfo(input_operand_id).dimensions));
+    PopulateNamedValueType(output_operand_id, *op->add_outputs());
+    RETURN_IF_ERROR(AddOperationForReshape(output_operand_id,
+                                           operation.output_operand_id, block));
+
+  } else {
+    PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  }
   return base::ok();
 }
 
@@ -4314,7 +4347,7 @@ GraphBuilderCoreml::AddOperationForSplit(
                              output_operand_ids[0], block);
   }
   const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
-  CHECK(context_properties_.data_type_limits.split_input.Has(
+  CHECK(context_properties_.data_type_limits.split_input.data_types.Has(
       MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
@@ -4382,7 +4415,7 @@ GraphBuilderCoreml::AddOperationForTranspose(
   CHECK(context_properties_.data_type_limits.transpose_input.Has(
       MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
-  if (input_operand_info.dimensions.empty()) {
+  if (input_operand_info.dimensions.size() <= 1) {
     return AddUnaryOperation(kOpIdentityTypeName, input_operand_id,
                              output_operand_id, block);
   }
@@ -4421,11 +4454,11 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForWhere(
       GetOperandInfo(operation.false_value_operand_id);
   const OperandInfo& condition_operand_info =
       GetOperandInfo(operation.condition_operand_id);
-  CHECK(context_properties_.data_type_limits.where_value.Has(
+  CHECK(context_properties_.data_type_limits.where_value.data_types.Has(
       MILDataTypeToOperandType(true_operand_info.mil_data_type)));
-  CHECK(context_properties_.data_type_limits.where_value.Has(
+  CHECK(context_properties_.data_type_limits.where_value.data_types.Has(
       MILDataTypeToOperandType(false_operand_info.mil_data_type)));
-  CHECK(context_properties_.data_type_limits.where_condition.Has(
+  CHECK(context_properties_.data_type_limits.where_condition.data_types.Has(
       MILDataTypeToOperandType(condition_operand_info.mil_data_type)));
 
   ASSIGN_OR_RETURN(uint64_t bool_condition_operand_id,

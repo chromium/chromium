@@ -5,6 +5,7 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/expected_signin_histograms.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -74,13 +75,7 @@ FakeSystemIdentity* const kPrimaryIdentity = [FakeSystemIdentity fakeIdentity1];
               IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PRIMARY_ACTION_SHORT))]
       performAction:grey_tap()];
 
-  // Ensure the fake add-account menu is
-  // displayed. The existence of the "add
-  // account" accessibility button on screen verifies that the screen
-  // was shown.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kFakeAuthAddAccountButtonIdentifier)]
-      assertWithMatcher:grey_notNil()];
+  [SigninEarlGreyUI assertFakeAddAccountMenuDisplayed];
 
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
       initWithAccessPoint:signin_metrics::AccessPoint::

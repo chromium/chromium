@@ -20,11 +20,16 @@ BASE_FEATURE(kAsyncCheck,
 InterceptNavigationThrottle::InterceptNavigationThrottle(
     content::NavigationHandle* navigation_handle,
     CheckCallback should_ignore_callback,
-    SynchronyMode async_mode)
+    SynchronyMode async_mode,
+    std::optional<base::RepeatingClosure> finish_async_work_callback)
     : content::NavigationThrottle(navigation_handle),
       should_ignore_callback_(should_ignore_callback),
+      finish_async_work_callback_(finish_async_work_callback),
       ui_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-      mode_(async_mode) {}
+      mode_(async_mode) {
+  CHECK(mode_ == SynchronyMode::kSync ||
+        finish_async_work_callback_.has_value());
+}
 
 InterceptNavigationThrottle::~InterceptNavigationThrottle() = default;
 
@@ -37,22 +42,19 @@ InterceptNavigationThrottle::WillStartRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 InterceptNavigationThrottle::WillRedirectRequest() {
-  if (should_ignore_)
+  FinishPendingCheck();
+  if (should_ignore_) {
     return content::NavigationThrottle::CANCEL_AND_IGNORE;
+  }
   DCHECK(navigation_handle()->WasServerRedirect());
   return CheckIfShouldIgnoreNavigation();
 }
 
 content::NavigationThrottle::ThrottleCheckResult
 InterceptNavigationThrottle::WillProcessResponse() {
-  DCHECK(!deferring_);
+  FinishPendingCheck();
   if (should_ignore_)
     return content::NavigationThrottle::CANCEL_AND_IGNORE;
-
-  if (pending_checks_ > 0) {
-    deferring_ = true;
-    return content::NavigationThrottle::DEFER;
-  }
 
   return content::NavigationThrottle::PROCEED;
 }
@@ -63,42 +65,34 @@ const char* InterceptNavigationThrottle::GetNameForLogging() {
 
 content::NavigationThrottle::ThrottleCheckResult
 InterceptNavigationThrottle::CheckIfShouldIgnoreNavigation() {
-  if (ShouldCheckAsynchronously()) {
-    pending_checks_++;
-    ui_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&InterceptNavigationThrottle::RunCheckAsync,
-                                  weak_factory_.GetWeakPtr()));
+  bool async = ShouldCheckAsynchronously();
+  pending_check_ = true;
+  auto weak_this = weak_factory_.GetWeakPtr();
+  should_ignore_callback_.Run(
+      navigation_handle(), async,
+      base::BindOnce(&InterceptNavigationThrottle::OnCheckComplete, weak_this));
+  // Clients should not synchronously cause the navigation to be deleted.
+  CHECK(weak_this);
+  if (pending_check_) {
+    CHECK(async);
     return content::NavigationThrottle::PROCEED;
   }
-  auto weak_this = weak_factory_.GetWeakPtr();
-  // No need to set |should_ignore_| since if it is true, we'll cancel the
-  // navigation immediately.
-  return should_ignore_callback_.Run(navigation_handle())
-             ? content::NavigationThrottle::CANCEL_AND_IGNORE
-             : content::NavigationThrottle::PROCEED;
-  // Clients should not synchronously cause the navigation to be deleted.
-  CHECK(weak_this);
+  if (should_ignore_) {
+    return content::NavigationThrottle::CANCEL_AND_IGNORE;
+  }
+  return content::NavigationThrottle::PROCEED;
 }
 
-void InterceptNavigationThrottle::RunCheckAsync() {
-  DCHECK(base::FeatureList::IsEnabled(kAsyncCheck));
-  DCHECK_GT(pending_checks_, 0);
-  pending_checks_--;
-  bool final_deferred_check = deferring_ && pending_checks_ == 0;
-  auto weak_this = weak_factory_.GetWeakPtr();
-  bool should_ignore = should_ignore_callback_.Run(navigation_handle());
-  // Clients should not synchronously cause the navigation to be deleted.
-  CHECK(weak_this);
-
-  should_ignore_ |= should_ignore;
-  if (!final_deferred_check)
-    return;
-
-  if (should_ignore) {
-    CancelDeferredNavigation(content::NavigationThrottle::CANCEL_AND_IGNORE);
-  } else {
-    Resume();
+void InterceptNavigationThrottle::FinishPendingCheck() {
+  if (pending_check_) {
+    finish_async_work_callback_->Run();
+    CHECK(!pending_check_);
   }
+}
+
+void InterceptNavigationThrottle::OnCheckComplete(bool should_ignore) {
+  should_ignore_ = should_ignore;
+  pending_check_ = false;
 }
 
 bool InterceptNavigationThrottle::ShouldCheckAsynchronously() const {

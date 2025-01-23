@@ -29,10 +29,10 @@ namespace {
 
 const char kVideoConferencingHistogram[] =
     "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
-    "VideoConferencing";
+    "VideoConferencing.PromptResultV2";
 const char kMediaPlaybackHistogram[] =
     "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
-    "MediaPlayback";
+    "MediaPlayback.PromptResultV2";
 
 struct TestParams {
   std::string histogram_name;
@@ -119,7 +119,7 @@ class AutoPipSettingHelperTest
   // Ask the helper for the overlay view, and return whatever it gives us.  This
   // may be null if it decides that one shouldn't be shown.
   AutoPipSettingOverlayView* AttachOverlayView(
-      std::string histogram_name_for_autopip_reason = "") {
+      std::string histogram_name_for_autopip_reason = std::string()) {
     auto* anchor_view =
         anchor_view_widget_->SetContentsView(std::make_unique<views::View>());
     auto setting_overlay = setting_helper_->CreateOverlayViewIfNeeded(
@@ -297,7 +297,7 @@ TEST_F(AutoPipSettingHelperTest, DismissNotifiesEmbargoIfUiIsCreated) {
   EXPECT_CALL(close_cb(), Run()).Times(0);
   AttachOverlayView();
   EXPECT_TRUE(setting_overlay());
-  setting_helper()->OnUserClosedWindow();
+  setting_helper()->OnUserClosedWindow(std::string());
   EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ASK);
 }
 
@@ -314,7 +314,7 @@ TEST_F(AutoPipSettingHelperTest,
   EXPECT_CALL(close_cb(), Run()).Times(0);
   // Do not attach the overlay view, which should prevent a callback since the
   // user wasn't presented with any UI.
-  setting_helper()->OnUserClosedWindow();
+  setting_helper()->OnUserClosedWindow(std::string());
   EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ASK);
 }
 
@@ -339,7 +339,7 @@ TEST_F(AutoPipSettingHelperTest,
 }
 
 const struct TestParams kTestHistogramNameParams[] = {
-    {""},
+    {std::string()},
     {kVideoConferencingHistogram},
     {kMediaPlaybackHistogram}};
 

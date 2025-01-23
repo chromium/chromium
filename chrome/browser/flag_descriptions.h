@@ -4137,9 +4137,6 @@ extern const char kSealKeyDescription[];
 extern const char kSeaPenName[];
 extern const char kSeaPenDescription[];
 
-extern const char kSeaPenEnterpriseName[];
-extern const char kSeaPenEnterpriseDescription[];
-
 extern const char kShelfAutoHideSeparationName[];
 extern const char kShelfAutoHideSeparationDescription[];
 

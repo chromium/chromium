@@ -755,13 +755,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kNTPFeedHeaderIdentityDisc)]
       performAction:grey_tap()];
-
-  // Ensure the fake add-account menu is displayed. The existence of the "add
-  // account" accessibility button on screen verifies that the screen
-  // was shown.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kFakeAuthAddAccountButtonIdentifier)]
-      assertWithMatcher:grey_notNil()];
+  [SigninEarlGreyUI assertFakeAddAccountMenuDisplayed];
 }
 
 // Tests that a signed-out user can open "Sign in and sync" screen from the NTP.
@@ -771,13 +765,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
                  grey_accessibilityLabel(GetNSString(
                      IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL))]
       performAction:grey_tap()];
-
-  // Ensure the fake add-account menu is displayed. The existence of the "add
-  // account" accessibility button on screen verifies that the screen
-  // was shown.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kFakeAuthAddAccountButtonIdentifier)]
-      assertWithMatcher:grey_notNil()];
+  [SigninEarlGreyUI assertFakeAddAccountMenuDisplayed];
 }
 
 // Tests that a signed-out user with device accounts can open "Sign in" sheet

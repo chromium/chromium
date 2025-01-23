@@ -28,7 +28,6 @@ import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.widget.FadingShadow;
@@ -40,6 +39,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.widget.LoadingView;
 
 import java.util.HashSet;
@@ -466,7 +466,7 @@ public class SelectableListLayout<E> extends FrameLayout
         if (displayStyle.horizontal == HorizontalDisplayStyle.WIDE) {
             float dpToPx = resources.getDisplayMetrics().density;
             int screenWidthDp = 0;
-            if (BuildInfo.getInstance().isAutomotive && view != null) {
+            if (DisplayUtil.isUiScaled() && view != null) {
                 screenWidthDp = (int) (view.getMeasuredWidth() / dpToPx);
             } else {
                 screenWidthDp = resources.getConfiguration().screenWidthDp;

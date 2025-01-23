@@ -108,6 +108,7 @@ void EditorMenuControllerImpl::OnTextAvailable(
                           : EditorTextSelectionMode::kNoSelection,
                       /*consent_status_settled=*/false,
                       /*preset_queries=*/{}));
+    return;
   }
 
   card_session_->editor_manager()->GetEditorPanelContext(base::BindOnce(
@@ -313,7 +314,7 @@ void EditorMenuControllerImpl::OnGetAnchorBoundsAndEditorContext(
     case TextAndImageMode::kBlocked:
       break;
     case TextAndImageMode::kPromoCard:
-      if (ash::features::IsMagicBoostRevampEnabled()) {
+      if (chromeos::features::IsMagicBoostRevampEnabled()) {
         NOTREACHED();
       }
       editor_menu_widget_ =

@@ -563,7 +563,8 @@ void TabGroupSyncServiceImpl::UnsaveGroup(const LocalTabGroupID& local_id) {
 
 void TabGroupSyncServiceImpl::MakeTabGroupShared(
     const LocalTabGroupID& local_group_id,
-    std::string_view collaboration_id) {
+    std::string_view collaboration_id,
+    TabGroupSharingCallback callback) {
   const SavedTabGroup* saved_group = model_->Get(local_group_id);
   CHECK(saved_group);
   CHECK(!saved_group->is_shared_tab_group());
@@ -588,6 +589,7 @@ void TabGroupSyncServiceImpl::MakeTabGroupShared(
     tab.SetUpdatedByAttribution(account_id.value());
   }
 
+  // TODO(crbug.com/382557489): use `callback` when provided.
   model_->AddedLocally(std::move(shared_group));
 }
 

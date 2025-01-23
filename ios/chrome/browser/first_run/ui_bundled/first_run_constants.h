@@ -33,6 +33,6 @@ extern NSString* const kLaunchScreenAccessibilityIdentifier;
 // Accessibility identifier of the enterprise loading screen.
 extern NSString* const kEnterpriseLoadingScreenAccessibilityIdentifier;
 
-}  // first_run
+}  // namespace first_run
 
 #endif  // IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_FIRST_RUN_CONSTANTS_H_

@@ -1841,6 +1841,7 @@ TEST_F(FederatedAuthRequestImplTest, WellKnownNotInListButRegistered) {
       .WillOnce(Return(registry));
 
   RunAuthTest(requestParameters, kExpectationSuccess, config);
+  EXPECT_FALSE(DidFetch(FetchedEndpoint::CLIENT_METADATA));
 }
 
 // Test that the well-known file has too many provider urls.

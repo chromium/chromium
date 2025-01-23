@@ -108,31 +108,31 @@ class ExtensionBookmarksTest : public testing::Test {
 TEST_F(ExtensionBookmarksTest, GetFullTreeFromRoot) {
   BookmarkTreeNode tree =
       GetBookmarkTreeNode(model_, managed_, model_->root_node(),
-                          true,    // Recurse.
-                          false);  // Not only folders.
+                          /*recurse=*/true,
+                          /*only_folders=*/false);
   ASSERT_EQ(2U, tree.children->size());
 }
 
 TEST_F(ExtensionBookmarksTest, GetTreeFromOtherPermanentNode) {
   BookmarkTreeNode tree =
       GetBookmarkTreeNode(model_, managed_, model_->other_node(),
-                          true,    // Recurse.
-                          false);  // Not only folders.
+                          /*recurse=*/true,
+                          /*only_folders=*/false);
   ASSERT_EQ(3U, tree.children->size());
 }
 
 TEST_F(ExtensionBookmarksTest, GetFoldersOnlyFromOtherPermanentNode) {
   BookmarkTreeNode tree =
       GetBookmarkTreeNode(model_, managed_, model_->other_node(),
-                          true,   // Recurse.
-                          true);  // Only folders.
+                          /*recurse=*/true,
+                          /*only_folders=*/true);
   ASSERT_EQ(1U, tree.children->size());
 }
 
 TEST_F(ExtensionBookmarksTest, GetSubtree) {
   BookmarkTreeNode tree = GetBookmarkTreeNode(model_, managed_, folder_,
-                                              true,    // Recurse.
-                                              false);  // Not only folders.
+                                              /*recurse=*/true,
+                                              /*only_folders=*/false);
   ASSERT_EQ(4U, tree.children->size());
   const BookmarkTreeNode& digg = tree.children->at(1);
   ASSERT_EQ("Digg", digg.title);
@@ -140,8 +140,8 @@ TEST_F(ExtensionBookmarksTest, GetSubtree) {
 
 TEST_F(ExtensionBookmarksTest, GetSubtreeFoldersOnly) {
   BookmarkTreeNode tree = GetBookmarkTreeNode(model_, managed_, folder_,
-                                              true,   // Recurse.
-                                              true);  // Only folders.
+                                              /*recurse=*/true,
+                                              /*only_folders=*/true);
   ASSERT_EQ(2U, tree.children->size());
   const BookmarkTreeNode& inner_folder = tree.children->at(1);
   ASSERT_EQ("inner folder 1", inner_folder.title);
@@ -149,8 +149,8 @@ TEST_F(ExtensionBookmarksTest, GetSubtreeFoldersOnly) {
 
 TEST_F(ExtensionBookmarksTest, GetModifiableNode) {
   BookmarkTreeNode tree = GetBookmarkTreeNode(model_, managed_, node_,
-                                              false,   // Recurse.
-                                              false);  // Only folders.
+                                              /*recurse=*/false,
+                                              /*only_folders=*/false);
   EXPECT_EQ("Digg", tree.title);
   ASSERT_TRUE(tree.url);
   EXPECT_EQ("http://www.reddit.com/", *tree.url);
@@ -165,8 +165,8 @@ TEST_F(ExtensionBookmarksTest, GetManagedNode) {
                      GURL("http://www.chromium.org/"));
   BookmarkTreeNode tree =
       GetBookmarkTreeNode(model_, managed_, managed_bookmark,
-                          false,   // Recurse.
-                          false);  // Only folders.
+                          /*recurse=*/false,
+                          /*only_folders=*/false);
   EXPECT_EQ("Chromium", tree.title);
   EXPECT_EQ("http://www.chromium.org/", *tree.url);
   EXPECT_EQ(api::bookmarks::BookmarkTreeNodeUnmodifiable::kManaged,

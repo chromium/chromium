@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <limits>
 
+#include "base/strings/utf_string_conversions.h"
+
 namespace remoting {
 
 namespace {
@@ -52,19 +54,15 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderWin::GetCurrentDisplayInfo() {
     EnumDisplaySettingsEx(device.DeviceName, ENUM_CURRENT_SETTINGS, &devmode,
                           0);
 
-    DisplayGeometry info;
-    info.id = device_index;
-    info.is_default = is_default;
-    info.x = devmode.dmPosition.x;
-    info.y = devmode.dmPosition.y;
-    info.width = devmode.dmPelsWidth;
-    info.height = devmode.dmPelsHeight;
-    info.dpi = devmode.dmLogPixels;
-    info.bpp = devmode.dmBitsPerPel;
-    displays.push_back(info);
+    int32_t x = devmode.dmPosition.x;
+    int32_t y = devmode.dmPosition.y;
+    displays.emplace_back(
+        /* id */ device_index, x, y, devmode.dmPelsWidth, devmode.dmPelsHeight,
+        /* dpi */ devmode.dmLogPixels, devmode.dmBitsPerPel, is_default,
+        base::WideToUTF8(devmode.dmDeviceName));
 
-    lowest_x = std::min(info.x, lowest_x);
-    lowest_y = std::min(info.y, lowest_y);
+    lowest_x = std::min(x, lowest_x);
+    lowest_y = std::min(y, lowest_y);
   }
 
   // Normalize the displays so the bounding-box's top-left corner is at (0, 0).

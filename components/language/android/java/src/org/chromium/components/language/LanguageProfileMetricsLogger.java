@@ -8,11 +8,13 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Class to record metrics about the user's Language Profile (ULP). */
+@NullMarked
 public class LanguageProfileMetricsLogger {
     @VisibleForTesting
     static final String INITIATION_STATUS_HISTOGRAM = "LanguageUsage.ULP.Initiation.Status";

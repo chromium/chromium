@@ -163,7 +163,7 @@ constexpr base::FeatureParam<bool> kUseOauthForLensOverlayRequests{
     &kLensOverlay, "use-oauth-for-requests", true};
 
 constexpr base::FeatureParam<int> kLensOverlayClusterInfoLifetimeSeconds{
-    &kLensOverlay, "cluster-info-lifetime-seconds", 600};
+    &kLensOverlay, "cluster-info-lifetime-seconds", 1800};
 
 constexpr base::FeatureParam<int> kLensOverlayTapRegionHeight{
     &kLensOverlay, "tap-region-height", 300};

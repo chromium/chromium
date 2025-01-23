@@ -26,6 +26,7 @@ source_set("glic") {
     "glic_view.h",
     "glic_web_client_access.h",
     "glic_window_controller.h",
+    "glic_window_resize_animation.h",
     "guest_util.h",
   ]
   public_deps = [
@@ -64,7 +65,6 @@ source_set("impl") {
     "glic_view.cc",
     "glic_window_controller.cc",
     "glic_window_resize_animation.cc",
-    "glic_window_resize_animation.h",
     "guest_util.cc",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -128,6 +128,16 @@ source_set("enabling") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "interactive_glic_test.cc",
+    "interactive_glic_test.h",
+  ]
+  deps = [ ":glic" ]
+  public_deps = [ "//chrome/test:test_support" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -153,6 +163,7 @@ source_set("browser_tests") {
   sources = [
     "glic_browsertest.cc",
     "glic_policy_browsertest.cc",
+    "glic_window_resize_animation_browsertest.cc",
     "guest_util_browsertest.cc",
   ]
   deps = [
@@ -182,6 +193,7 @@ source_set("interactive_ui_tests") {
   ]
   deps = [
     ":glic",
+    ":test_support",
     "//chrome/browser",
     "//chrome/browser/ui",
     "//chrome/common",

@@ -122,7 +122,7 @@ void OpenURLAfterCheckIsDefaultBrowser(
     case shell_integration::UNKNOWN_DEFAULT:
     case shell_integration::OTHER_MODE_IS_DEFAULT:
       platform_util::OpenExternal(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
           profile,
 #endif
           params.url);
@@ -346,7 +346,7 @@ bool ChromeAppDelegate::CheckMediaAccessPermission(
 }
 
 int ChromeAppDelegate::PreferredIconSize() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Use a size appropriate for the ash shelf (see ash::kShelfSize).
   return extension_misc::EXTENSION_ICON_MEDIUM;
 #else

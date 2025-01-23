@@ -589,10 +589,9 @@ void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
   // TODO(crbug.com/40208255): Refactor relevant code to reuse common
   // code, and ensure metrics are correctly recorded.
   DCHECK(!AutocompleteMatch::IsSearchType(match.type));
-  gfx::Rect container_bounds = web_contents->GetContainerBounds();
+
   predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
-      ->StartPrerendering(match.destination_url, *web_contents,
-                          container_bounds.size());
+      ->StartPrerendering(match.destination_url, *web_contents);
 }
 
 void ChromeOmniboxClient::DoPreconnect(const AutocompleteMatch& match) {

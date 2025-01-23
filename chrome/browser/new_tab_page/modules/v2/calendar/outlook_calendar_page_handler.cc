@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/i18n/time_formatting.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom.h"
@@ -186,6 +187,26 @@ GURL GetRequestUrl() {
   return GURL(request_url);
 }
 
+// Emits the total number of events found in the response. Note: The Microsoft
+// Graph API by default returns a max of 100 events.
+void RecordResponseValueCount(int count) {
+  base::UmaHistogramCounts100("NewTabPage.OutlookCalendar.ResponseResult",
+                              count);
+}
+
+// Emits the result of the request for events.
+void RecordCalendarRequestResult(OutlookCalendarRequestResult result) {
+  base::UmaHistogramEnumeration("NewTabPage.OutlookCalendar.RequestResult",
+                                result);
+}
+
+// Emits the time in seconds that should be waited before attempting another
+// request.
+void RecordThrottlingWaitTime(base::TimeDelta seconds) {
+  base::UmaHistogramTimes("NewTabPage.OutlookCalendar.ThrottlingWaitTime",
+                          seconds);
+}
+
 }  // namespace
 
 // static
@@ -278,6 +299,8 @@ void OutlookCalendarPageHandler::OnJsonReceived(
     GetEventsCallback callback,
     std::unique_ptr<std::string> response_body) {
   const int net_error = url_loader_->NetError();
+  OutlookCalendarRequestResult request_result =
+      OutlookCalendarRequestResult::kNetworkError;
 
   // Check for throttling errors.
   auto* response_info = url_loader_->ResponseInfo();
@@ -285,6 +308,8 @@ void OutlookCalendarPageHandler::OnJsonReceived(
     int64_t wait_time =
         response_info->headers->GetInt64HeaderValue("Retry-After");
     if (wait_time != -1) {
+      request_result = OutlookCalendarRequestResult::kThrottlingError;
+      RecordThrottlingWaitTime(base::Seconds(wait_time));
       pref_service_->SetTime(prefs::kNtpOutlookCalendarRetryAfterTime,
                              base::Time::Now() + base::Seconds(wait_time));
     }
@@ -298,6 +323,7 @@ void OutlookCalendarPageHandler::OnJsonReceived(
         base::BindOnce(&OutlookCalendarPageHandler::OnJsonParsed,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   } else {
+    RecordCalendarRequestResult(request_result);
     std::move(callback).Run(
         std::vector<ntp::calendar::mojom::CalendarEventPtr>());
   }
@@ -307,16 +333,19 @@ void OutlookCalendarPageHandler::OnJsonParsed(
     GetEventsCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.has_value()) {
+    RecordCalendarRequestResult(OutlookCalendarRequestResult::kJsonParseError);
     std::move(callback).Run(
         std::vector<ntp::calendar::mojom::CalendarEventPtr>());
     return;
   }
   auto* events = result->GetDict().FindList("value");
   if (!events) {
+    RecordCalendarRequestResult(OutlookCalendarRequestResult::kContentError);
     std::move(callback).Run(
         std::vector<ntp::calendar::mojom::CalendarEventPtr>());
     return;
   }
+  RecordResponseValueCount(events->size());
 
   std::vector<ntp::calendar::mojom::CalendarEventPtr> created_events;
   const size_t max_events =
@@ -358,6 +387,7 @@ void OutlookCalendarPageHandler::OnJsonParsed(
         !location || !response_status || !is_canceled.has_value() ||
         !base::Time::FromUTCString((*start_time).c_str(), &start_timestamp) ||
         !base::Time::FromUTCString((*end_time).c_str(), &end_timestamp)) {
+      RecordCalendarRequestResult(OutlookCalendarRequestResult::kContentError);
       std::move(callback).Run(
           std::vector<ntp::calendar::mojom::CalendarEventPtr>());
       return;
@@ -386,6 +416,8 @@ void OutlookCalendarPageHandler::OnJsonParsed(
         const std::string* attendee_response =
             attendee.GetDict().FindStringByDottedPath("status.response");
         if (!attendee_response) {
+          RecordCalendarRequestResult(
+              OutlookCalendarRequestResult::kContentError);
           std::move(callback).Run(
               std::vector<ntp::calendar::mojom::CalendarEventPtr>());
           return;
@@ -408,6 +440,8 @@ void OutlookCalendarPageHandler::OnJsonParsed(
       const std::string* content_type =
           attachment_dict.FindString("contentType");
       if (!id || !name || !content_type) {
+        RecordCalendarRequestResult(
+            OutlookCalendarRequestResult::kContentError);
         std::move(callback).Run(
             std::vector<ntp::calendar::mojom::CalendarEventPtr>());
         return;
@@ -441,6 +475,7 @@ void OutlookCalendarPageHandler::OnJsonParsed(
     }
     created_events.push_back(std::move(created_event));
   }
+  RecordCalendarRequestResult(OutlookCalendarRequestResult::kSuccess);
 
   // Determine whether attachment's `resource_url` should be validated.
   base::Time last_request_time = pref_service_->GetTime(

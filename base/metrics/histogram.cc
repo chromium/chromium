@@ -67,7 +67,7 @@ bool ReadHistogramArguments(PickleIterator* iter,
   // checks above and beyond those in Histogram::Initialize()
   if (*declared_max <= 0 || *declared_min <= 0 ||
       *declared_max < *declared_min ||
-      INT_MAX / sizeof(HistogramBase::Count) <= *bucket_count ||
+      INT_MAX / sizeof(HistogramBase::Count32) <= *bucket_count ||
       *bucket_count < 2) {
     DLOG(ERROR) << "Values error decoding Histogram: " << histogram_name;
     return false;
@@ -95,7 +95,7 @@ bool ValidateRangeChecksum(const HistogramBase& histogram,
 
 }  // namespace
 
-typedef HistogramBase::Count Count;
+typedef HistogramBase::Count32 Count32;
 typedef HistogramBase::Sample32 Sample32;
 
 class Histogram::Factory {
@@ -1085,7 +1085,7 @@ void ScaledLinearHistogram::AddScaledCount(Sample32 value, int64_t count) {
         &remainders_[static_cast<size_t>(value)], remainder);
     // If remainder passes 1/2 scale, increment main count (thus rounding up).
     // The remainder is decremented by the full scale, though, which will
-    // cause it to go negative and thus requrire another increase by the full
+    // cause it to go negative and thus require another increase by the full
     // scale amount before another bump of the scaled count.
     if (remainder >= scale_ / 2) {
       scaled_count += 1;
@@ -1308,7 +1308,7 @@ CustomHistogram::CustomHistogram(
 void CustomHistogram::SerializeInfoImpl(Pickle* pickle) const {
   Histogram::SerializeInfoImpl(pickle);
 
-  // Serialize ranges. First and last ranges are alwasy 0 and INT_MAX, so don't
+  // Serialize ranges. First and last ranges are always 0 and INT_MAX, so don't
   // write them.
   for (size_t i = 1; i < bucket_ranges()->bucket_count(); ++i) {
     pickle->WriteInt(bucket_ranges()->range(i));

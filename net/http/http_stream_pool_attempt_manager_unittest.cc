@@ -2199,7 +2199,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, IgnoreLimitsAll) {
 
 // Tests that the group and pool limits are ignored for requests that set
 // LOAD_IGNORE_LIMITS, but once these requests are completed, subsequent
-// normal requests repsect group and pool limits.
+// normal requests respect group and pool limits.
 TEST_F(HttpStreamPoolAttemptManagerTest, IgnoreAndRespectLimits) {
   constexpr size_t kMaxPerGroup = 2;
   constexpr size_t kMaxPerPool = 3;
@@ -2528,6 +2528,10 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SSLConfigChangedCloseIdleStream) {
 
   ssl_config_service()->NotifySSLContextConfigChange();
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+
+  // Ensure the group is destroyed.
+  FastForwardUntilNoTasksRemain();
+  ASSERT_FALSE(pool().GetGroupForTesting(requester.GetStreamKey()));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest,
@@ -4273,7 +4277,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, FailingIsNotStalled) {
   EXPECT_THAT(requester_b.result(), Optional(IsOk()));
 
   // Release the connection for B. It triggers processing pending requests in
-  // group/attemt manager for A. The group/attempt manager for A is still alive
+  // group/attempt manager for A. The group/attempt manager for A is still alive
   // because we don't release `requester_a` yet. The group/attempt manager
   // should not be treated as stalled because these are failing.
   requester_b.ReleaseStream().reset();
@@ -5350,6 +5354,72 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   FastForwardBy(kQuicDelay);
   requester.WaitForResult();
   EXPECT_THAT(requester.result(), Optional(IsOk()));
+}
+
+// Test the behavior of the stream attempt delay timer with
+// StreamAttemptDelayBehavior::kStartTimerOnFirstQuicAttempt.
+// A preconnect should complete with a TCP connection when there is no known
+// QUIC version and DNS resolution indicates that the endpoint doesn't support
+// QUIC.
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       StreamAttemptDelayPassedForPreconnectTimerStartOnFirstQuicAttempt) {
+  constexpr base::TimeDelta kDelay = base::Milliseconds(40);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{features::kAsyncQuicSession, {}},
+       {features::kHappyEyeballsV3,
+        {{HttpStreamPool::kStreamAttemptDelayBehaviorParamName.data(),
+          HttpStreamPool::kStreamAttemptDelayBehaviorOptions[1].name}}}},
+      /*disabled_features=*/{});
+
+  quic_session_pool()->SetTimeDelayForWaitingJobForTesting(kDelay);
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  MockConnectCompleter connect_completer;
+  SequencedSocketData tcp_data;
+  tcp_data.set_connect_data(MockConnect(&connect_completer));
+  socket_factory()->AddSocketDataProvider(&tcp_data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  Preconnector preconnector(kDefaultDestination);
+  preconnector.Preconnect(pool());
+  ASSERT_FALSE(preconnector.result().has_value());
+
+  AttemptManager* manager =
+      pool()
+          .GetOrCreateGroupForTesting(preconnector.GetStreamKey())
+          .GetAttemptManagerForTesting();
+
+  // Provide an IP address. QUIC attempt isn't triggered yet since it's not
+  // ready for cryptographic handshakes.
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointsUpdated();
+  ASSERT_FALSE(preconnector.result().has_value());
+  ASSERT_FALSE(manager->quic_task_for_testing());
+
+  // Complete service endpoint resolution with a delay. The QuicTask should
+  // complete with an error and a TCP-based attempt should be triggered.
+  FastForwardBy(kDelay);
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+  // QuicAttempt uses PostTask to notify the error
+  // (ERR_DNS_NO_MATCHING_SUPPORTED_ALPN). This FastForwardBy() is needed to run
+  // the task. Note that FastForwardUntilNoTasksRemain() doesn't work since it
+  // causes a connection timeout.
+  FastForwardBy(base::Milliseconds(1));
+  EXPECT_FALSE(preconnector.result().has_value());
+  EXPECT_FALSE(manager->quic_task_for_testing());
+  EXPECT_THAT(manager->GetQuicTaskResultForTesting(),
+              Optional(IsError(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN)));
+  EXPECT_EQ(manager->InFlightAttemptCount(), 1u);
+
+  connect_completer.Complete(OK);
+  preconnector.WaitForResult();
+  EXPECT_THAT(preconnector.result(), Optional(IsOk()));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest,

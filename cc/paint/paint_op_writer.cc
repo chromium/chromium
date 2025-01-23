@@ -180,6 +180,12 @@ size_t PaintOpWriter::SerializedSize(
   return SerializeSizeSimpleValueUniforms<SkV4>(uniforms);
 }
 
+// static:
+size_t PaintOpWriter::SerializedSize(
+    const std::vector<PaintShader::IntUniform>& uniforms) {
+  return SerializeSizeSimpleValueUniforms<int>(uniforms);
+}
+
 // static
 size_t PaintOpWriter::SerializedSize(const ColorFilter* filter) {
   if (!filter) {
@@ -592,6 +598,19 @@ void PaintOpWriter::Write(
   }
 }
 
+void PaintOpWriter::Write(
+    const std::vector<PaintShader::IntUniform>& uniforms) {
+  const size_t count = CountNonEmptyUniforms(uniforms);
+  WriteSize(count);
+  for (const auto& [name, value] : uniforms) {
+    if (name.isEmpty()) {
+      continue;
+    }
+    Write(name);
+    WriteSimple(value);
+  }
+}
+
 void PaintOpWriter::Write(const SkGainmapInfo& gainmap_info) {
   Write(gainmap_info.fGainmapRatioMin);
   Write(gainmap_info.fGainmapRatioMax);
@@ -775,6 +794,7 @@ void PaintOpWriter::Write(const PaintShader* shader,
   Write(shader->scalar_uniforms_);
   Write(shader->float2_uniforms_);
   Write(shader->float4_uniforms_);
+  Write(shader->int_uniforms_);
 }
 
 void PaintOpWriter::Write(SkYUVColorSpace yuv_color_space) {

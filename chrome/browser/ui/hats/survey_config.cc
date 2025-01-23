@@ -14,6 +14,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/lens/lens_features.h"
+#include "components/page_info/core/features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_hats_trigger_helper.h"
 #include "components/plus_addresses/features.h"
@@ -159,6 +160,10 @@ constexpr char
         "plus-address-filled-plus-address-via-manual-fallback";
 constexpr char kHatsSurveyTriggerPrivacySandboxSentimentSurvey[] =
     "privacy-sandbox-sentiment-survey";
+constexpr char kHatsSurveyTriggerMerchantTrustEvaluationControlSurvey[] =
+    "merchant-trust-evaluation-control-survey";
+constexpr char kHatsSurveyTriggerMerchantTrustEvaluationExperimentSurvey[] =
+    "merchant-trust-evaluation-experiment-survey";
 
 namespace {
 
@@ -567,6 +572,15 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &lens::features::kLensOverlaySurvey, kHatsSurveyTriggerLensOverlayResults,
       /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
       std::vector<std::string>{"ID that's tied to your Google Lens session"});
+
+  // Merchant trust surveys
+  survey_configs.emplace_back(
+      &page_info::kMerchantTrustEvaluationControlSurvey,
+      kHatsSurveyTriggerMerchantTrustEvaluationControlSurvey);
+
+  survey_configs.emplace_back(
+      &page_info::kMerchantTrustEvaluationExperimentSurvey,
+      kHatsSurveyTriggerMerchantTrustEvaluationExperimentSurvey);
 
 #else
   survey_configs.emplace_back(&chrome::android::kChromeSurveyNextAndroid,

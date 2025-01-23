@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_view.h"
 
-@protocol ContentSuggestionsMenuProvider;
+@protocol ContentSuggestionsMenuElementsProvider;
 @class ContentSuggestionsMostVisitedItem;
 @class FaviconView;
 
@@ -24,8 +24,9 @@
 // FaviconView displaying the favicon.
 @property(nonatomic, strong, readonly) FaviconView* faviconView;
 
-// Provider of menu configurations for this tile.
-@property(nonatomic, weak) id<ContentSuggestionsMenuProvider> menuProvider;
+// Provider of menu actions for this tile.
+@property(nonatomic, weak) id<ContentSuggestionsMenuElementsProvider>
+    menuElementsProvider;
 
 // Tap gesture recognizer for this view.
 @property(nonatomic, strong) UITapGestureRecognizer* tapRecognizer;

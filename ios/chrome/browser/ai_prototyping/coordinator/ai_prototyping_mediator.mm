@@ -19,14 +19,12 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 #import "components/optimization_guide/proto/features/bling_prototyping.pb.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/optimization_guide/proto/features/tab_organization.pb.h"
 #import "components/optimization_guide/proto/string_value.pb.h"  // nogncheck
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
-#endif
 
 @implementation AIPrototypingMediator {
   raw_ptr<WebStateList> _webStateList;
@@ -46,10 +44,8 @@
   std::unique_ptr<ai::TabOrganizationServiceImpl>
       _tab_organization_service_impl;
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   // The Tab Organization feature's request wrapper.
   TabOrganizationRequestWrapper* _tabOrganizationRequestWrapper;
-#endif
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList {
@@ -78,14 +74,11 @@
 }
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-#pragma mark - AIPrototypingMutator
 
-- (void)executeServerQuery:
-    (optimization_guide::proto::BlingPrototypingRequest)request {
+- (void)executeOnDeviceQuery:(optimization_guide::proto::StringValue)request {
   ::mojo_base::ProtoWrapper proto_wrapper = mojo_base::ProtoWrapper(request);
   __weak __typeof(self) weakSelf = self;
-
-  _ai_prototyping_service->ExecuteServerQuery(
+  _ai_prototyping_service->ExecuteOnDeviceQuery(
       std::move(proto_wrapper),
       base::BindOnce(^void(const std::string& response_string) {
         [weakSelf.consumer
@@ -94,10 +87,16 @@
       }));
 }
 
-- (void)executeOnDeviceQuery:(optimization_guide::proto::StringValue)request {
+#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+
+#pragma mark - AIPrototypingMutator
+
+- (void)executeServerQuery:
+    (optimization_guide::proto::BlingPrototypingRequest)request {
   ::mojo_base::ProtoWrapper proto_wrapper = mojo_base::ProtoWrapper(request);
   __weak __typeof(self) weakSelf = self;
-  _ai_prototyping_service->ExecuteOnDeviceQuery(
+
+  _ai_prototyping_service->ExecuteServerQuery(
       std::move(proto_wrapper),
       base::BindOnce(^void(const std::string& response_string) {
         [weakSelf.consumer
@@ -158,7 +157,5 @@
                    completionCallback:std::move(completion_callback)];
   [_tabOrganizationRequestWrapper populateRequestFieldsAsync];
 }
-
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 @end

@@ -7,9 +7,11 @@
 #include "base/functional/bind.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/command_updater.h"
+#include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
@@ -17,6 +19,7 @@
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
+#include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
@@ -156,6 +159,34 @@ void LensOverlayEntryPointController::InvokeAction(
     const actions::ActionInvocationContext& context) {
   LensOverlayController* controller =
       active_tab->GetTabFeatures()->lens_overlay_controller();
+
+  std::underlying_type_t<page_actions::PageActionTrigger> page_action_trigger =
+      context.GetProperty(page_actions::kPageActionTriggerKey);
+  // The Lens Overlay action item has different entry points that may trigger it
+  // (e.g., toolbar, page action, etc.). Triggers from a page action will have a
+  // valid PageActionTrigger property set.
+  if (page_action_trigger != page_actions::kInvalidPageActionTrigger) {
+    switch (static_cast<page_actions::PageActionTrigger>(page_action_trigger)) {
+      case page_actions::PageActionTrigger::kKeyboard:
+        active_tab->GetBrowserWindowInterface()
+            ->GetFeatures()
+            .lens_region_search_controller()
+            ->Start(active_tab->GetContents(), /*use_fullscreen_capture=*/true,
+                    /*is_google_default_search_provider=*/true,
+                    lens::AmbientSearchEntryPoint::
+                        LENS_OVERLAY_LOCATION_BAR_ACCESSIBILITY_FALLBACK);
+
+        break;
+      default:
+        lens::RecordAmbientSearchQuery(
+            lens::AmbientSearchEntryPoint::LENS_OVERLAY_LOCATION_BAR);
+        controller->ShowUI(lens::LensOverlayInvocationSource::kOmnibox);
+        active_tab->GetBrowserWindowInterface()
+            ->GetUserEducationInterface()
+            ->NotifyNewBadgeFeatureUsed(lens::features::kLensOverlay);
+    }
+    return;
+  }
 
   // Toggle the Lens overlay. There's no need to show or hide the side
   // panel as the overlay controller will handle that.

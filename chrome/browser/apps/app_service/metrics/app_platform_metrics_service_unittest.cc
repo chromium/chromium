@@ -472,13 +472,13 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
     return AppPlatformMetrics::GetURLForApp(profile(), app_id);
   }
 
-  void VerifyAppLaunchPerAppTypeHistogram(base::HistogramBase::Count count,
+  void VerifyAppLaunchPerAppTypeHistogram(base::HistogramBase::Count32 count,
                                           AppTypeName app_type_name) {
     histogram_tester().ExpectBucketCount(kAppLaunchPerAppTypeHistogramName,
                                          app_type_name, count);
   }
 
-  void VerifyAppLaunchPerAppTypeV2Histogram(base::HistogramBase::Count count,
+  void VerifyAppLaunchPerAppTypeV2Histogram(base::HistogramBase::Count32 count,
                                             AppTypeNameV2 app_type_name_v2) {
     histogram_tester().ExpectBucketCount(kAppLaunchPerAppTypeV2HistogramName,
                                          app_type_name_v2, count);
@@ -502,7 +502,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
   }
 
   void VerifyAppRunningDurationCountHistogram(
-      base::HistogramBase::Count expected_count,
+      base::HistogramBase::Count32 expected_count,
       AppTypeName app_type_name) {
     histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsRunningDurationHistogramNameForTest(
@@ -512,7 +512,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
 
   void VerifyAppRunningDurationHistogram(
       base::TimeDelta time_delta,
-      base::HistogramBase::Count expected_count,
+      base::HistogramBase::Count32 expected_count,
       AppTypeName app_type_name) {
     histogram_tester().ExpectTimeBucketCount(
         AppPlatformMetrics::GetAppsRunningDurationHistogramNameForTest(
@@ -521,7 +521,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
   }
 
   void VerifyAppRunningPercentageCountHistogram(
-      base::HistogramBase::Count expected_count,
+      base::HistogramBase::Count32 expected_count,
       AppTypeName app_type_name) {
     histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsRunningPercentageHistogramNameForTest(
@@ -531,7 +531,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
 
   void VerifyAppRunningPercentageHistogram(
       int count,
-      base::HistogramBase::Count expected_count,
+      base::HistogramBase::Count32 expected_count,
       AppTypeName app_type_name) {
     histogram_tester().ExpectBucketCount(
         AppPlatformMetrics::GetAppsRunningPercentageHistogramNameForTest(
@@ -555,7 +555,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
   }
 
   void VerifyAppActivatedCountHistogram(
-      base::HistogramBase::Count expected_count,
+      base::HistogramBase::Count32 expected_count,
       AppTypeName app_type_name) {
     histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsActivatedCountHistogramNameForTest(
@@ -564,7 +564,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
   }
 
   void VerifyAppActivatedHistogram(int count,
-                                   base::HistogramBase::Count expected_count,
+                                   base::HistogramBase::Count32 expected_count,
                                    AppTypeName app_type_name) {
     histogram_tester().ExpectBucketCount(
         AppPlatformMetrics::GetAppsActivatedCountHistogramNameForTest(
@@ -573,7 +573,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
   }
 
   void VerifyAppUsageTimeCountHistogram(
-      base::HistogramBase::Count expected_count,
+      base::HistogramBase::Count32 expected_count,
       AppTypeName app_type_name) {
     histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(app_type_name),
@@ -581,7 +581,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
   }
 
   void VerifyAppUsageTimeCountHistogram(
-      base::HistogramBase::Count expected_count,
+      base::HistogramBase::Count32 expected_count,
       AppTypeNameV2 app_type_name) {
     histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(app_type_name),
@@ -589,7 +589,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
   }
 
   void VerifyAppUsageTimeHistogram(base::TimeDelta time_delta,
-                                   base::HistogramBase::Count expected_count,
+                                   base::HistogramBase::Count32 expected_count,
                                    AppTypeName app_type_name) {
     histogram_tester().ExpectTimeBucketCount(
         AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(app_type_name),
@@ -597,7 +597,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
   }
 
   void VerifyAppUsageTimeHistogram(base::TimeDelta time_delta,
-                                   base::HistogramBase::Count expected_count,
+                                   base::HistogramBase::Count32 expected_count,
                                    AppTypeNameV2 app_type_name) {
     histogram_tester().ExpectTimeBucketCount(
         AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(app_type_name),
@@ -1598,18 +1598,18 @@ TEST_F(AppPlatformMetricsServiceTest, LaunchApps) {
       kWebAppId2, LaunchContainer::kLaunchContainerTab,
       WindowOpenDisposition::NEW_FOREGROUND_TAB, LaunchSource::kFromTest));
 
-    VerifyAppsLaunchUkm("https://foo2.com", AppTypeName::kChromeBrowser,
-                        LaunchSource::kFromTest);
-    VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kChromeBrowser);
-    VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kWebTab);
+  VerifyAppsLaunchUkm("https://foo2.com", AppTypeName::kChromeBrowser,
+                      LaunchSource::kFromTest);
+  VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kChromeBrowser);
+  VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kWebTab);
 
-    proxy->BrowserAppLauncher()->LaunchAppWithParamsForTesting(AppLaunchParams(
-        kSystemWebAppId, LaunchContainer::kLaunchContainerTab,
-        WindowOpenDisposition::NEW_FOREGROUND_TAB, LaunchSource::kFromTest));
-    VerifyAppsLaunchUkm("app://" + std::string(kSystemWebAppId),
-                        AppTypeName::kSystemWeb, LaunchSource::kFromTest);
-    VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kSystemWeb);
-    VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kSystemWeb);
+  proxy->BrowserAppLauncher()->LaunchAppWithParamsForTesting(AppLaunchParams(
+      kSystemWebAppId, LaunchContainer::kLaunchContainerTab,
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, LaunchSource::kFromTest));
+  VerifyAppsLaunchUkm("app://" + std::string(kSystemWebAppId),
+                      AppTypeName::kSystemWeb, LaunchSource::kFromTest);
+  VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kSystemWeb);
+  VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kSystemWeb);
 }
 
 TEST_F(AppPlatformMetricsServiceTest, UninstallAppUkm) {

@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
+#include "cc/input/scroll_snap_data.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -731,6 +732,11 @@ bool RootFrameViewport::SnapContainerDataNeedsUpdate() const {
 
 void RootFrameViewport::SetSnapContainerDataNeedsUpdate(bool needs_update) {
   LayoutViewport().SetSnapContainerDataNeedsUpdate(needs_update);
+}
+
+std::optional<cc::SnapPositionData> RootFrameViewport::GetSnapPosition(
+    const cc::SnapSelectionStrategy& strategy) const {
+  return LayoutViewport().GetSnapPosition(strategy);
 }
 
 std::optional<gfx::PointF> RootFrameViewport::GetSnapPositionAndSetTarget(

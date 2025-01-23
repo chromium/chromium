@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/glic_keyed_service.h"
 
+#include "base/containers/flat_set.h"
 #include "chrome/browser/glic/border_view.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enabling.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "components/guest_view/browser/guest_view_base.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/page_transition_types.h"
@@ -51,6 +53,33 @@ void GlicKeyedService::LaunchUI(views::View* glic_button_view) {
 
   profile_manager_->OnUILaunching(this);
   window_controller_.Show(glic_button_view);
+}
+
+void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
+  content::WebContents* top =
+      guest_view::GuestViewBase::GetTopLevelWebContents(guest_contents);
+  auto* page_handler = GetPageHandler(top);
+  if (page_handler) {
+    page_handler->GuestAdded(guest_contents);
+  }
+}
+
+void GlicKeyedService::PageHandlerAdded(GlicPageHandler* page_handler) {
+  page_handlers_.insert(page_handler);
+}
+
+void GlicKeyedService::PageHandlerRemoved(GlicPageHandler* page_handler) {
+  page_handlers_.erase(page_handler);
+}
+
+GlicPageHandler* GlicKeyedService::GetPageHandler(
+    const content::WebContents* webui_contents) {
+  for (GlicPageHandler* page_handler : page_handlers_) {
+    if (page_handler->webui_contents() == webui_contents) {
+      return page_handler;
+    }
+  }
+  return nullptr;
 }
 
 base::CallbackListSubscription GlicKeyedService::AddFocusedTabChangedCallback(
@@ -103,11 +132,10 @@ void GlicKeyedService::DetachPanel() {
   window_controller_.Detach();
 }
 
-std::optional<gfx::Size> GlicKeyedService::ResizePanel(const gfx::Size& size) {
-  if (!window_controller_.Resize(size)) {
-    return std::nullopt;
-  }
-  return window_controller_.GetSize();
+void GlicKeyedService::ResizePanel(const gfx::Size& size,
+                                   base::TimeDelta duration,
+                                   base::OnceClosure callback) {
+  window_controller_.Resize(size, duration, std::move(callback));
 }
 
 void GlicKeyedService::SetPanelDraggableAreas(

@@ -1,0 +1,21 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module signout_confirmation.mojom;
+
+// Factory ensures that the Page and Handler interfaces
+// are always created together without requiring an initialization call from the
+// WebUI to the handler.
+interface PageHandlerFactory {
+  // Creates both the `page `and `handler` to be used for communication between
+  // the Browser and the Renderer.
+  CreateSignoutConfirmationHandler(pending_remote<Page> page,
+                           pending_receiver<PageHandler> handler);
+};
+
+// Called from TS side of chrome://signout-confirmation (Renderer -> Browser)
+interface PageHandler {};
+
+// Called from C++ side of chrome://signout-confirmation. (Browser -> Renderer)
+interface Page {};

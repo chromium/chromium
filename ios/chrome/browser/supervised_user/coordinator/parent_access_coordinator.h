@@ -10,20 +10,17 @@
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-typedef void (^ParentAccessCallbackCompletion)(
-    supervised_user::LocalApprovalResult result);
-
 // Coordinator for local website approval, allowing parents to authenticate
 // to approve website navigation requests from a supervised user.
 // This will be presented within the same browser session where the supervised
 // user is signed in.
-@interface ParentAccessCoordinator : ChromeCoordinator <WKScriptMessageHandler>
+@interface ParentAccessCoordinator : ChromeCoordinator
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                completion:
-                                    (ParentAccessCallbackCompletion)completion
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                    completion:(void (^)(supervised_user::LocalApprovalResult))
+                                   completion NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 @end

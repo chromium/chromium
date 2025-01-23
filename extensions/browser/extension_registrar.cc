@@ -294,15 +294,6 @@ void ExtensionRegistrar::DisableExtension(
         extensions::disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION,
     };
 
-#if BUILDFLAG(IS_CHROMEOS)
-    // For controlled extensions, only allow disabling not ash-keeplisted
-    // extensions if Lacros is the only browser.
-    if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
-      internal_disable_reasons.insert(
-          extensions::disable_reason::DISABLE_NOT_ASH_KEEPLISTED);
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
     disable_reasons = base::STLSetIntersection<base::flat_set<int>>(
         disable_reasons, internal_disable_reasons);
 

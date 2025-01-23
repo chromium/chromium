@@ -249,6 +249,23 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   base::flat_map<std::string, bool> urls_allowlist_match_;
 };
 
+class MockClientSideDetectionHostDelegate
+    : public ChromeClientSideDetectionHostDelegate {
+ public:
+  explicit MockClientSideDetectionHostDelegate(
+      content::WebContents* web_contents)
+      : ChromeClientSideDetectionHostDelegate(web_contents) {}
+
+  void GetInnerText(HostInnerTextCallback callback) override {
+    std::move(callback).Run(inner_text_);
+  }
+
+  void ForceEmptyInnerText() { inner_text_ = ""; }
+
+ private:
+  std::string inner_text_ = "inner text";
+};
+
 }  // namespace
 
 class FakePhishingDetector : public mojom::PhishingDetector {
@@ -373,6 +390,10 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
         std::make_unique<StrictMock<MockSafeBrowsingTokenFetcher>>();
     raw_token_fetcher_ = token_fetcher.get();
     csd_host_->set_token_fetcher_for_testing(std::move(token_fetcher));
+    auto delegate =
+        std::make_unique<MockClientSideDetectionHostDelegate>(web_contents());
+    raw_delegate_ = delegate.get();
+    csd_host_->set_delegate_for_testing(std::move(delegate));
     // Commit to a URL for tests that do not explicitly NavigateAndCommit.
     // Committing to "about:blank" avoids triggering logic irrelevant for tests.
     NavigateAndCommit(GURL("about:blank"));
@@ -382,6 +403,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     raw_token_fetcher_ = nullptr;
+    raw_delegate_ = nullptr;
 
     // Delete the host object on the UI thread and release the
     // SafeBrowsingService.
@@ -487,6 +509,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
   FakePhishingDetector fake_phishing_detector_;
   raw_ptr<StrictMock<MockSafeBrowsingTokenFetcher>> raw_token_fetcher_ =
       nullptr;
+  raw_ptr<MockClientSideDetectionHostDelegate> raw_delegate_ = nullptr;
   base::SimpleTestTickClock clock_;
   const bool is_incognito_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -2329,6 +2352,48 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelHasSuccessfulResponse", true, 1);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       EmptyInnerTextDoesNotTriggersOnDeviceLLM) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  raw_delegate_->ForceEmptyInnerText();
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
+
+  base::HistogramTester histogram_tester;
+
+  ClientPhishingRequest verdict;
+  verdict.set_url("http://example.com/");
+  verdict.set_client_score(0.0f);
+  verdict.set_is_phishing(false);
+
+  // Because the inner text is empty, we will NOT inquire the on-device model.
+  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _, _)).Times(0);
+
+  // We can expect the token fetcher to occur as usual because ESB preference is
+  // enabled.
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 PartiallyEqualVerdict(verdict), _,
+                                 "fake_access_token_keyboard_lock"));
+
+  SafeBrowsingTokenFetcher::Callback cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_)).WillOnce(MoveArg<0>(&cb));
+
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict),
+                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
+
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+
+  ASSERT_FALSE(cb.is_null());
+  std::move(cb).Run("fake_access_token_keyboard_lock");
+
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
 }
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,

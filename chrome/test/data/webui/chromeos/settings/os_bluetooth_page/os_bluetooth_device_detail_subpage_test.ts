@@ -408,7 +408,7 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
         await waitAfterNextRender(bluetoothDeviceDetailPage);
 
         // This is needed or other tests will fail.
-        // TODO(gordonseto): Figure out how to remove this.
+        // TODO(crbug.com/390256207): Figure out how to remove this.
         getChangeKeyboardSettings()!.click();
         await flushTasks();
       });
@@ -525,7 +525,7 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
     assertTrue(!!getChangeKeyboardSettings());
 
     // This is needed or other tests will fail.
-    // TODO(gordonseto): Figure out how to remove this.
+    // TODO(crbug.com/390256207): Figure out how to remove this.
     getChangeKeyboardSettings()!.click();
     await flushTasks();
   });

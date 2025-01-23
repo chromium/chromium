@@ -74,7 +74,8 @@ class TabGroupSyncServiceProxy : public TabGroupSyncService,
   void UnsaveGroup(const LocalTabGroupID& local_id) override;
 
   void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
-                          std::string_view collaboration_id) override;
+                          std::string_view collaboration_id,
+                          TabGroupSharingCallback callback) override;
 
   void AboutToUnShareTabGroup(const LocalTabGroupID& local_group_id,
                               base::OnceClosure on_complete_cb) override;

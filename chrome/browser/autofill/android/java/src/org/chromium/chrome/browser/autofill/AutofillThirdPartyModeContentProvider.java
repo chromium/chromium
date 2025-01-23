@@ -14,8 +14,11 @@ import android.net.Uri;
 import android.support.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** A {@link ContentProvider} to fetch Autofill third party mode state. */
+@NullMarked
 public final class AutofillThirdPartyModeContentProvider extends ContentProvider {
     @VisibleForTesting
     static final String AUTOFILL_THIRD_PARTY_MODE_SHARED_PREFS_FILE =
@@ -40,30 +43,34 @@ public final class AutofillThirdPartyModeContentProvider extends ContentProvider
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String where, String[] whereArgs) {
+    public int update(
+            Uri uri,
+            @Nullable ContentValues values,
+            @Nullable String where,
+            String @Nullable [] whereArgs) {
         // Not supported
         return 0;
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(Uri uri, @Nullable String selection, String @Nullable [] selectionArgs) {
         // Not supported
         return 0;
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public @Nullable Uri insert(Uri uri, @Nullable ContentValues values) {
         // Not supported
         return null;
     }
 
     @Override
-    public Cursor query(
+    public @Nullable Cursor query(
             Uri uri,
-            String[] projection,
-            String selection,
-            String[] selectionArgs,
-            String sortOrder) {
+            String @Nullable [] projection,
+            @Nullable String selection,
+            String @Nullable [] selectionArgs,
+            @Nullable String sortOrder) {
         if (createContentUri().equals(uri)) {
             final String[] columns = {AUTOFILL_THIRD_PARTY_MODE_COLUMN};
             MatrixCursor cursor = new MatrixCursor(columns, 1);
@@ -80,7 +87,7 @@ public final class AutofillThirdPartyModeContentProvider extends ContentProvider
     }
 
     @Override
-    public String getType(Uri ui) {
+    public @Nullable String getType(Uri ui) {
         // Not supported
         return null;
     }

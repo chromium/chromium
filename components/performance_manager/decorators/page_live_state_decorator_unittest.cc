@@ -224,7 +224,7 @@ class PageLiveStateDecoratorTest : public PerformanceManagerTestHarness {
 TEST_F(PageLiveStateDecoratorTest, Usb) {
   auto setter = [](content::WebContents* contents, bool value) {
     PageLiveStateDecorator::OnCapabilityTypesChanged(
-        contents, content::WebContents::CapabilityType::kUSB, value);
+        contents, content::WebContentsCapabilityType::kUSB, value);
   };
   testing::EndToEndBooleanPropertyTest(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
@@ -237,7 +237,7 @@ TEST_F(PageLiveStateDecoratorTest, Usb) {
 TEST_F(PageLiveStateDecoratorTest, Bluetooth) {
   auto setter = [](content::WebContents* contents, bool value) {
     PageLiveStateDecorator::OnCapabilityTypesChanged(
-        contents, content::WebContents::CapabilityType::kBluetoothConnected,
+        contents, content::WebContentsCapabilityType::kBluetoothConnected,
         value);
   };
   testing::EndToEndBooleanPropertyTest(
@@ -251,7 +251,7 @@ TEST_F(PageLiveStateDecoratorTest, Bluetooth) {
 TEST_F(PageLiveStateDecoratorTest, Hid) {
   auto setter = [](content::WebContents* contents, bool value) {
     PageLiveStateDecorator::OnCapabilityTypesChanged(
-        contents, content::WebContents::CapabilityType::kHID, value);
+        contents, content::WebContentsCapabilityType::kHID, value);
   };
   testing::EndToEndBooleanPropertyTest(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
@@ -264,7 +264,7 @@ TEST_F(PageLiveStateDecoratorTest, Hid) {
 TEST_F(PageLiveStateDecoratorTest, Serial) {
   auto setter = [](content::WebContents* contents, bool value) {
     PageLiveStateDecorator::OnCapabilityTypesChanged(
-        contents, content::WebContents::CapabilityType::kSerial, value);
+        contents, content::WebContentsCapabilityType::kSerial, value);
   };
   testing::EndToEndBooleanPropertyTest(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,

@@ -2337,8 +2337,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIsolatedWebAppBrowserTest,
       IsolatedWebAppBuilder(ManifestBuilder().SetStartUrl("/index.html"))
           .AddHtml("/index.html", "<html></html>")
           .BuildBundle();
-  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info,
-                       app->TrustBundleAndInstall(profile()));
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
 
   UpdateCheckResultAwaiter awaiter(
       url_info.origin().GetURL().Resolve("/index.html"));

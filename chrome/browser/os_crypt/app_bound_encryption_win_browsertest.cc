@@ -108,6 +108,8 @@ class AppBoundEncryptionWinTest : public InProcessBrowserTest {
   std::optional<base::ScopedClosureRunner> maybe_uninstall_service_;
   ScopedLogGrabber log_grabber_;
 
+  void TearDown() override { maybe_uninstall_service_.reset(); }
+
  private:
   install_static::ScopedInstallDetails scoped_install_details_;
 };
@@ -211,8 +213,7 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, MANUAL_Uninstall) {}
 
 using AppBoundEncryptionWinTestNoService = InProcessBrowserTest;
 
-// TODO(https://crbug.com/328398409): Flakily fails
-IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTestNoService, DISABLED_NoService) {
+IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTestNoService, NoService) {
   const std::string plaintext("plaintext");
   std::string ciphertext;
   DWORD last_error;

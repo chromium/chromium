@@ -425,11 +425,6 @@ ci.builder(
                     shards = 12,
                 ),
             ),
-            "blink_wpt_tests": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 18,
-                ),
-            ),
             "browser_tests": targets.mixin(
                 # Only retry the individual failed tests instead of rerunning
                 # entire shards.
@@ -518,11 +513,6 @@ ci.thin_tester(
             "blink_web_tests": targets.mixin(
                 swarming = targets.swarming(
                     shards = 12,
-                ),
-            ),
-            "blink_wpt_tests": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 18,
                 ),
             ),
             "browser_tests": targets.mixin(
@@ -674,11 +664,6 @@ ci.thin_tester(
             "win-arm64",
         ],
         per_test_modifications = {
-            "blink_wpt_tests": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 18,
-                ),
-            ),
             "browser_tests": targets.mixin(
                 swarming = targets.swarming(
                     # This is for slow test execution that often becomes a

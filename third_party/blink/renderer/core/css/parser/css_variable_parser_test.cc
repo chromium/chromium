@@ -105,6 +105,58 @@ const char* invalid_appearance_auto_base_select_values[] = {
     // clang-format on
 };
 
+const char* valid_if_values[] = {
+    // clang-format off
+    "if(style(--prop: abc): true_val;)",
+    "if(  style(--prop: abc): true_val;)",
+    "if(style(--prop: abc): true_val;   )",
+    "if(   style(--prop: abc): true_val   )",
+    "if(   style(--prop: abc):   true_val   )",
+    "if(   style(   --prop:   abc   ):   true_val   )",
+    "if(style(--prop: abc): true_val; else: false_val)",
+    "if(style(--prop: abc): true_val; else: false_val;)",
+    "if(style((--prop: abc) and (--prop: def)): true_val; else: false_val)",
+    "if(style(--prop1: abc): val1; else: val2)",
+    "if(style(((--prop1: abc) and (--prop2: def)) or (not (--prop3: ghi))): val1; else: val2)",
+    "if(style(not (--prop: abc)): true_val; else: false_val; style(not (--prop: def)): true_val)",
+    "if(style(not (--prop: abc)): true_val; style(not (--prop: def)): true_val)",
+    "if(style(--prop: abc): abc; else: if (style(--prop: def): def))",
+    "if(style(--prop: abc): abc; else: def; else: ghi)",
+    "if(style(--prop: abc): if(style(--prop1: def): x); else: if(style(--prop2: ghi): y))",
+    "if(style(--x): a; style(--y): b; style(--z): c;)",
+    "if(style(--x): a; style(--y): b; else: c;)",
+    "if(style(--prop: abc): )",
+    "if(style(--prop: abc): ;)",
+    "if(style(--prop: abc): abc; else:)",
+    "if(style(--prop: abc): ; else: )",
+    "if(style(--prop: abc) : true_val;)",
+    "if(style(--prop: abc): true_val; else : false_val;)",
+    "if(style(--prop: abc) : true_val; else : false_val)",
+    // clang-format on
+};
+
+const char* invalid_if_values[] = {
+    // clang-format off
+    "if(style(--prop: abc): true_val!)",
+    "if(!style(--prop: abc): true_val)",
+    "if(style(--prop abc): true_val)",
+    "if(style(--x and --y): true_val)",
+    "if(style(--x) true_val)",
+    "if(style(--x!): true_val)",
+    "if(style(--prop)): abc",
+    "if(style(--prop: abc) abc; else: cba)",
+    "if(style(prop: abc): abc; else: cba)",
+    "if(style(--prop: abc): abc; else cba)",
+    "if(style(--prop1: abc): abc; style(--prop2: def) cba)",
+    "if(not style(--prop: abc): true_val; else: false_val; (not style(--prop: def)): true_val)",
+    "if(style(--prop: abc): if(style(--prop1: def): x); else: if(style(--prop2: ghi) y))",
+    "if(style(--prop: abc) and style(--prop: def): true_val; else: false_val)",
+    "if((style(--prop1: abc)): val1; else: val2)","if((style(--prop1: abc)): val1; else: val2)",
+    "if(not style(--prop: abc): true_val; else: false_val; (not style(--prop: def)): true_val)",
+    "if(not style(--prop: abc): true_val; (not style(--prop: def)): true_val)",
+    // clang-format on
+};
+
 class ValidVariableReferenceTest
     : public testing::Test,
       public testing::WithParamInterface<const char*> {
@@ -274,6 +326,48 @@ TEST_P(InvalidAppearanceAutoBaseSelectTest, ContainsInvalidFunction) {
   CSSParserTokenStream stream{GetParam()};
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kUASheetMode, SecureContextMode::kInsecureContext);
+  bool important;
+  EXPECT_FALSE(CSSVariableParser::ConsumeUnparsedDeclaration(
+      stream, /*allow_important_annotation=*/false,
+      /*is_animation_tainted=*/false, /*must_contain_variable_reference=*/true,
+      /*restricted_value=*/true, /*comma_ends_declaration=*/false, important,
+      *context));
+}
+
+class ValidIfTest : public testing::Test,
+                    public testing::WithParamInterface<const char*> {};
+
+INSTANTIATE_TEST_SUITE_P(All, ValidIfTest, testing::ValuesIn(valid_if_values));
+
+TEST_P(ValidIfTest, ContainsValidIf) {
+  ScopedCSSInlineIfForStyleQueriesForTest scoped_feature(true);
+
+  SCOPED_TRACE(GetParam());
+  CSSParserTokenStream stream{GetParam()};
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  bool important;
+  EXPECT_TRUE(CSSVariableParser::ConsumeUnparsedDeclaration(
+      stream, /*allow_important_annotation=*/false,
+      /*is_animation_tainted=*/false, /*must_contain_variable_reference=*/true,
+      /*restricted_value=*/true, /*comma_ends_declaration=*/false, important,
+      *context));
+}
+
+class InvalidIfTest : public testing::Test,
+                      public testing::WithParamInterface<const char*> {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         InvalidIfTest,
+                         testing::ValuesIn(invalid_if_values));
+
+TEST_P(InvalidIfTest, ContainsInvalidIf) {
+  ScopedCSSInlineIfForStyleQueriesForTest scoped_feature(true);
+
+  SCOPED_TRACE(GetParam());
+  CSSParserTokenStream stream{GetParam()};
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
   bool important;
   EXPECT_FALSE(CSSVariableParser::ConsumeUnparsedDeclaration(
       stream, /*allow_important_annotation=*/false,

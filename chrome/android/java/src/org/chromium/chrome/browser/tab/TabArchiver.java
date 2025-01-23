@@ -16,7 +16,14 @@ public interface TabArchiver extends Destroyable {
 
     /** Provides an interface to observer the declutter process. */
     public interface Observer {
-        void onDeclutterPassCompleted();
+        /** Called when a declutter pass is completeled. */
+        default void onDeclutterPassCompleted() {}
+
+        /** Called when the persisted tab data for the archive pass is created. */
+        default void onArchivePersistedTabDataCreated() {}
+
+        /** Called when an autodelete pass is completed. */
+        default void onAutodeletePassCompleted() {}
     }
 
     /** Adds an observer to the class. */

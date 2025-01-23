@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.model_execution;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 
 /** Base class that exposes methods to execute models with streaming results. */
+@NullMarked
 public abstract class ModelExecutionSession {
 
     public boolean isAvailable() {

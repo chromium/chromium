@@ -763,7 +763,7 @@ void FileMetricsProvider::AppendToSamplesCountPref(
 
 // static
 size_t FileMetricsProvider::CollectFileMetadataFromSource(SourceInfo* source) {
-  base::HistogramBase::Count samples_count = 0;
+  base::HistogramBase::Count32 samples_count = 0;
   base::PersistentHistogramAllocator::Iterator it{source->allocator.get()};
   std::unique_ptr<base::HistogramBase> histogram;
   while ((histogram = it.GetNext()) != nullptr) {

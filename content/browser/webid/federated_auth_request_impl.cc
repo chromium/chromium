@@ -2121,7 +2121,8 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
 
       bool need_client_metadata = false;
 
-      if (!GetDisclosureFields(*idp_info->provider).empty()) {
+      if (!idp_info->provider->config->from_idp_registration_api &&
+          !GetDisclosureFields(*idp_info->provider).empty()) {
         for (const auto& account : accounts) {
           // ComputeLoginStates() should have populated
           // IdentityRequestAccount::login_state.

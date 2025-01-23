@@ -16,7 +16,7 @@ class DownloadTask;
 
 // Coordinates presentation of Download Manager UI.
 @interface DownloadManagerCoordinator
-    : ChromeCoordinator<DownloadManagerTabHelperDelegate>
+    : ChromeCoordinator <DownloadManagerTabHelperDelegate>
 
 // Presents the receiver's view controller.
 @property(nonatomic) id<ContainedPresenter> presenter;

@@ -227,7 +227,7 @@ ShoppingService::ShoppingService(
       types.push_back(
           optimization_guide::proto::OptimizationType::PRICE_INSIGHTS);
     }
-    if (IsDiscountInfoApiEnabled()) {
+    if (IsDiscountInfoApiEnabled(account_checker_.get())) {
       types.push_back(
           optimization_guide::proto::OptimizationType::SHOPPING_DISCOUNTS);
     }
@@ -274,7 +274,8 @@ ShoppingService::ShoppingService(
         std::make_unique<metrics::ScheduledMetricsManager>(pref_service_, this);
   }
 
-  if (IsDiscountInfoApiEnabled() && discounts_proto_db && history_service) {
+  if (IsDiscountInfoApiEnabled(account_checker_.get()) && discounts_proto_db &&
+      history_service) {
     discounts_storage_ =
         std::make_unique<DiscountsStorage>(discounts_proto_db, history_service);
   }
@@ -840,15 +841,6 @@ bool ShoppingService::IsMerchantViewerEnabled() {
                                       kCommerceMerchantViewerRegionLaunched);
 }
 
-bool ShoppingService::IsDiscountEligibleToShowOnNavigation() {
-  if (!IsRegionLockedFeatureEnabled(kEnableDiscountInfoApi,
-                                    kEnableDiscountInfoApiRegionLaunched)) {
-    return false;
-  }
-  return account_checker_ && account_checker_->IsSignedIn() &&
-         account_checker_->IsAnonymizedUrlDataCollectionEnabled();
-}
-
 bool ShoppingService::IsParcelTrackingEligible() {
   if (!IsRegionLockedFeatureEnabled(kParcelTracking,
                                     kParcelTrackingRegionLaunched)) {
@@ -860,11 +852,6 @@ bool ShoppingService::IsParcelTrackingEligible() {
 bool ShoppingService::IsShoppingPageTypesApiEnabled() {
   return IsRegionLockedFeatureEnabled(kShoppingPageTypes,
                                       kShoppingPageTypesRegionLaunched);
-}
-
-bool ShoppingService::IsDiscountInfoApiEnabled() {
-  return IsRegionLockedFeatureEnabled(kEnableDiscountInfoApi,
-                                      kEnableDiscountInfoApiRegionLaunched);
 }
 
 const std::vector<UrlInfo> ShoppingService::GetUrlInfosForActiveWebWrappers() {
@@ -1484,7 +1471,7 @@ void ShoppingService::HandleOptGuideShoppingPageTypesResponse(
 void ShoppingService::GetDiscountInfoFromOptGuide(
     const GURL& url,
     DiscountInfoCallback callback) {
-  if (!opt_guide_ || !IsDiscountInfoApiEnabled()) {
+  if (!opt_guide_ || !IsDiscountInfoApiEnabled(account_checker_.get())) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), url, std::vector<DiscountInfo>()));

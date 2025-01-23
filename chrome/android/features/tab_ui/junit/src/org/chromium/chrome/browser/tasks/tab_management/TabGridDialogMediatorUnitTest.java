@@ -68,8 +68,8 @@ import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
@@ -99,7 +99,6 @@ import org.chromium.chrome.browser.tabmodel.TabUiUnitTestUtils;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.collaboration.CollaborationService;
@@ -307,7 +306,8 @@ public class TabGridDialogMediatorUnitTest {
         ArgumentCaptor<List<TabListEditorAction>> captor =
                 ArgumentCaptor.forClass((Class) List.class);
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
-        mMediator.onToolbarMenuItemClick(R.id.select_tabs, TAB1_ID, /* collaborationId= */ null);
+        mMediator.onToolbarMenuItemClick(
+                R.id.select_tabs, TAB_GROUP_ID, /* collaborationId= */ null);
         verify(mTabListEditorController).configureToolbarWithMenuItems(captor.capture());
         verify(mRecyclerViewPositionSupplier, times(1)).get();
         verify(mTabListEditorController).show(any(), eq(null));
@@ -1360,7 +1360,8 @@ public class TabGridDialogMediatorUnitTest {
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
-        mMediator.onToolbarMenuItemClick(R.id.select_tabs, TAB1_ID, /* collaborationId= */ null);
+        mMediator.onToolbarMenuItemClick(
+                R.id.select_tabs, TAB_GROUP_ID, /* collaborationId= */ null);
 
         assertThat(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED), equalTo(false));
         verify(mRecyclerViewPositionSupplier, times(1)).get();
@@ -1377,7 +1378,7 @@ public class TabGridDialogMediatorUnitTest {
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
         mMediator.onToolbarMenuItemClick(
-                R.id.edit_group_name, TAB1_ID, /* collaborationId= */ null);
+                R.id.edit_group_name, TAB_GROUP_ID, /* collaborationId= */ null);
         assertTrue(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.Rename"));
     }
@@ -1389,7 +1390,7 @@ public class TabGridDialogMediatorUnitTest {
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
         mMediator.onToolbarMenuItemClick(
-                R.id.edit_group_color, TAB1_ID, /* collaborationId= */ null);
+                R.id.edit_group_color, TAB_GROUP_ID, /* collaborationId= */ null);
         verify(mShowColorPickerPopupRunnable).run();
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.EditColor"));
     }
@@ -1401,7 +1402,7 @@ public class TabGridDialogMediatorUnitTest {
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
         mMediator.onToolbarMenuItemClick(
-                R.id.close_tab_group, TAB1_ID, /* collaborationId= */ null);
+                R.id.close_tab_group, TAB_GROUP_ID, /* collaborationId= */ null);
         verify(mTabRemover)
                 .closeTabs(
                         eq(
@@ -1422,7 +1423,7 @@ public class TabGridDialogMediatorUnitTest {
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
         mMediator.onToolbarMenuItemClick(
-                R.id.delete_tab_group, TAB1_ID, /* collaborationId= */ null);
+                R.id.delete_tab_group, TAB_GROUP_ID, /* collaborationId= */ null);
         verify(mTabRemover)
                 .closeTabs(
                         eq(
@@ -1439,16 +1440,16 @@ public class TabGridDialogMediatorUnitTest {
     public void testDialogToolbarMenu_ManageSharing() {
         resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
 
-        mMediator.onToolbarMenuItemClick(R.id.manage_sharing, TAB1_ID, COLLABORATION_ID1);
+        mMediator.onToolbarMenuItemClick(R.id.manage_sharing, TAB_GROUP_ID, COLLABORATION_ID1);
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.ManageSharing"));
-        verify(mDataSharingTabManager).showManageSharing(any(), eq(COLLABORATION_ID1));
+        verify(mDataSharingTabManager).showManageSharing(any(), eq(COLLABORATION_ID1), eq(null));
     }
 
     @Test
     public void testDialogToolbarMenu_RecentActivity() {
         resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
 
-        mMediator.onToolbarMenuItemClick(R.id.recent_activity, TAB1_ID, COLLABORATION_ID1);
+        mMediator.onToolbarMenuItemClick(R.id.recent_activity, TAB_GROUP_ID, COLLABORATION_ID1);
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.RecentActivity"));
         verify(mDataSharingTabManager).showRecentActivity(mActivity, COLLABORATION_ID1);
     }
@@ -1462,7 +1463,7 @@ public class TabGridDialogMediatorUnitTest {
                 CoreAccountInfo.createFromEmailAndGaiaId(EMAIL1, GAIA_ID1);
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
 
-        mMediator.onToolbarMenuItemClick(R.id.delete_shared_group, TAB1_ID, COLLABORATION_ID1);
+        mMediator.onToolbarMenuItemClick(R.id.delete_shared_group, TAB_GROUP_ID, COLLABORATION_ID1);
         verify(mActionConfirmationManager).processDeleteSharedGroupAttempt(eq(GROUP_TITLE), any());
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.DeleteShared"));
     }
@@ -1476,7 +1477,7 @@ public class TabGridDialogMediatorUnitTest {
                 CoreAccountInfo.createFromEmailAndGaiaId(EMAIL2, GAIA_ID2);
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
 
-        mMediator.onToolbarMenuItemClick(R.id.leave_group, TAB1_ID, COLLABORATION_ID1);
+        mMediator.onToolbarMenuItemClick(R.id.leave_group, TAB_GROUP_ID, COLLABORATION_ID1);
         verify(mActionConfirmationManager).processLeaveGroupAttempt(eq(GROUP_TITLE), any());
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.LeaveShared"));
     }

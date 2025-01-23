@@ -29,6 +29,7 @@
 #include "components/live_caption/caption_bubble_controller.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "content/public/test/browser_test.h"
@@ -198,14 +199,14 @@ class SystemLiveCaptionServiceTestBase
     speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
         speech::GetLanguageCode(GetLanguageCode()));
     speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
-    // Events must propogate, so we wait after install.
+    // Events must propagate, so we wait after install.
     base::RunLoop().RunUntilIdle();
     MaybeNotifyNonChromeOutputStarted();
     base::RunLoop().RunUntilIdle();
   }
 
   // These methods require GetParam() so they're implemented with the
-  // paramaterized test interface.
+  // parameterized test interface.
   virtual SystemLiveCaptionService* GetServiceUnderTest() = 0;
   virtual const std::string GetLanguageCode() const = 0;
   virtual const std::string GetAltLanguageCode() const = 0;

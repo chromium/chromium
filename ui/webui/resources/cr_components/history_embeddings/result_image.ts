@@ -64,7 +64,7 @@ export class HistoryEmbeddingsResultImageElement extends CrLitElement {
     const {result} =
         await PageImageServiceBrowserProxy.getInstance()
             .handler.getPageImageUrl(
-                PageImageServiceClientId.Journeys, searchResultUrl,
+                PageImageServiceClientId.HistoryEmbeddings, searchResultUrl,
                 {suggestImages: true, optimizationGuideImages: true});
     if (result && searchResultUrl === this.searchResult.url) {
       this.imageUrl_ = result.imageUrl.url;

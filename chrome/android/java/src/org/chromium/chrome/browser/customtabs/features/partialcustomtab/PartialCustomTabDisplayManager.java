@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.AnimRes;
+import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
@@ -193,13 +194,9 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
         return mStrategy.handleCloseAnimation(finishRunnable);
     }
 
-    /**
-     * Set the scrim value to apply to partial CCT UI.
-     * @param scrimFraction Scrim fraction.
-     */
     @Override
-    public void setScrimFraction(float scrimFraction) {
-        mStrategy.setScrimFraction(scrimFraction);
+    public void setScrimColor(@ColorInt int scrimColor) {
+        mStrategy.setScrimColor(scrimColor);
     }
 
     // FindToolbarObserver implementation.

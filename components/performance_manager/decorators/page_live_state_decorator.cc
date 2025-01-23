@@ -322,27 +322,27 @@ PageLiveStateDecorator::~PageLiveStateDecorator() = default;
 // static
 void PageLiveStateDecorator::OnCapabilityTypesChanged(
     content::WebContents* contents,
-    content::WebContents::CapabilityType capability_type,
+    content::WebContentsCapabilityType capability_type,
     bool used) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   switch (capability_type) {
-    case content::WebContents::CapabilityType::kUSB:
+    case content::WebContentsCapabilityType::kUSB:
       SetPropertyForWebContentsPageNode(
           contents, &PageLiveStateDataImpl::set_is_connected_to_usb_device,
           used);
       break;
-    case content::WebContents::CapabilityType::kBluetoothConnected:
+    case content::WebContentsCapabilityType::kBluetoothConnected:
       SetPropertyForWebContentsPageNode(
           contents,
           &PageLiveStateDataImpl::set_is_connected_to_bluetooth_device, used);
       break;
-    case content::WebContents::CapabilityType::kHID:
+    case content::WebContentsCapabilityType::kHID:
       SetPropertyForWebContentsPageNode(
           contents, &PageLiveStateDataImpl::set_is_connected_to_hid_device,
           used);
       break;
-    case content::WebContents::CapabilityType::kSerial:
+    case content::WebContentsCapabilityType::kSerial:
       SetPropertyForWebContentsPageNode(
           contents, &PageLiveStateDataImpl::set_is_connected_to_serial_port,
           used);

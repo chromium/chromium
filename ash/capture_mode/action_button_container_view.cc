@@ -11,30 +11,54 @@
 
 #include "ash/capture_mode/action_button_view.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/capture_mode/capture_mode_util.h"
+#include "ash/style/system_shadow.h"
+#include "ash/style/typography.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/animation/animation_builder.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 
 namespace {
+
+// Horizontal spacing between the error view and action buttons.
+constexpr int kErrorViewActionButtonSpacing = 6;
+
+constexpr auto kErrorViewBorderInsets = gfx::Insets::TLBR(8, 8, 8, 12);
+
+constexpr int kErrorViewCornerRadius = 18;
+
+constexpr int kErrorViewLeadingIconSize = 20;
+
+// Padding to the right of the error view's leading icon, to separate the icon
+// from the error message label.
+constexpr auto kErrorViewLeadingIconRightPadding = 4;
 
 // The horizontal distance between action buttons in a row.
 constexpr int kActionButtonSpacing = 10;
@@ -56,8 +80,82 @@ constexpr base::TimeDelta kSmartActionsButtonTransitionSlideInDuration =
 
 }  // namespace
 
+ActionButtonContainerView::ErrorView::ErrorView()
+    : shadow_(SystemShadow::CreateShadowOnTextureLayer(
+          SystemShadow::Type::kElevation12)) {
+  SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  SetInsideBorderInsets(kErrorViewBorderInsets);
+
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemBaseElevated,
+      gfx::RoundedCornersF(kErrorViewCornerRadius)));
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+  shadow_->SetRoundedCornerRadius(kErrorViewCornerRadius);
+  capture_mode_util::SetHighlightBorder(
+      this, kErrorViewCornerRadius,
+      views::HighlightBorder::Type::kHighlightBorderNoShadow);
+
+  AddChildView(views::Builder<views::ImageView>()
+                   .SetPreferredSize(gfx::Size(kErrorViewLeadingIconSize,
+                                               kErrorViewLeadingIconSize))
+                   .SetImage(ui::ImageModel::FromVectorIcon(
+                       views::kInfoIcon, cros_tokens::kCrosSysSecondary))
+                   .SetProperty(views::kMarginsKey,
+                                gfx::Insets::TLBR(
+                                    0, 0, 0, kErrorViewLeadingIconRightPadding))
+                   .Build());
+
+  AddChildView(
+      views::Builder<views::Label>()
+          .CopyAddressTo(&error_label_)
+          .SetEnabledColorId(cros_tokens::kCrosSysSecondary)
+          .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+              TypographyToken::kCrosAnnotation1))
+          .Build());
+}
+
+ActionButtonContainerView::ErrorView::~ErrorView() = default;
+
+void ActionButtonContainerView::ErrorView::AddedToWidget() {
+  views::BoxLayoutView::AddedToWidget();
+
+  // Attach the shadow at the bottom of the widget layer.
+  ui::Layer* shadow_layer = shadow_->GetLayer();
+  ui::Layer* widget_layer = GetWidget()->GetLayer();
+  widget_layer->Add(shadow_layer);
+  widget_layer->StackAtBottom(shadow_layer);
+
+  // Make the shadow observe the color provider source change to update the
+  // colors.
+  shadow_->ObserveColorProviderSource(GetWidget());
+}
+
+void ActionButtonContainerView::ErrorView::OnBoundsChanged(
+    const gfx::Rect& previous_bounds) {
+  // The shadow layer is a sibling of this view's layer, and should have the
+  // same bounds.
+  shadow_->SetContentBounds(layer()->bounds());
+}
+
+void ActionButtonContainerView::ErrorView::SetErrorMessage(
+    const std::u16string& error_message) {
+  error_label_->SetText(error_message);
+}
+
+const std::u16string&
+ActionButtonContainerView::ErrorView::GetErrorMessageForTesting() const {
+  return error_label_->GetText();
+}
+
 ActionButtonContainerView::ActionButtonContainerView() {
-  SetUseDefaultFillLayout(true);
+  auto* box_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal));
+  box_layout->set_between_child_spacing(kErrorViewActionButtonSpacing);
+
+  error_view_ = AddChildView(std::make_unique<ErrorView>());
+  error_view_->SetVisible(false);
+
   AddChildView(
       views::Builder<views::BoxLayoutView>()
           .CopyAddressTo(&action_button_row_)
@@ -122,6 +220,16 @@ void ActionButtonContainerView::RemoveAllActionButtons() {
 
 const views::View::Views& ActionButtonContainerView::GetActionButtons() const {
   return action_button_row_->children();
+}
+
+void ActionButtonContainerView::ShowErrorView(
+    const std::u16string& error_message) {
+  error_view_->SetErrorMessage(error_message);
+  error_view_->SetVisible(true);
+}
+
+void ActionButtonContainerView::HideErrorView() {
+  error_view_->SetVisible(false);
 }
 
 void ActionButtonContainerView::StartSmartActionsButtonTransition() {
@@ -213,6 +321,9 @@ void ActionButtonContainerView::SetWidgetEventsEnabled(bool enabled) {
       enabled ? aura::EventTargetingPolicy::kTargetAndDescendants
               : aura::EventTargetingPolicy::kNone);
 }
+
+BEGIN_METADATA(ActionButtonContainerView, ErrorView)
+END_METADATA
 
 BEGIN_METADATA(ActionButtonContainerView)
 END_METADATA

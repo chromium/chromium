@@ -15,6 +15,8 @@
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/has_invalidation_flags.h"
+#include "third_party/blink/renderer/core/dom/interest_invoker_data.h"
+#include "third_party/blink/renderer/core/dom/interest_invoker_target_data.h"
 #include "third_party/blink/renderer/core/dom/named_node_map.h"
 #include "third_party/blink/renderer/core/dom/names_map.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
@@ -410,6 +412,31 @@ PopoverData& ElementRareDataVector::EnsurePopoverData() {
 }
 void ElementRareDataVector::RemovePopoverData() {
   SetField(FieldId::kPopoverData, nullptr);
+}
+
+InterestInvokerData* ElementRareDataVector::GetInterestInvokerData() const {
+  return static_cast<InterestInvokerData*>(
+      GetField(FieldId::kInterestInvokerData));
+}
+InterestInvokerData& ElementRareDataVector::EnsureInterestInvokerData() {
+  return EnsureField<InterestInvokerData>(FieldId::kInterestInvokerData);
+}
+void ElementRareDataVector::RemoveInterestInvokerData() {
+  SetField(FieldId::kInterestInvokerData, nullptr);
+}
+
+InterestInvokerTargetData* ElementRareDataVector::GetInterestInvokerTargetData()
+    const {
+  return static_cast<InterestInvokerTargetData*>(
+      GetField(FieldId::kInterestInvokerTargetData));
+}
+InterestInvokerTargetData&
+ElementRareDataVector::EnsureInterestInvokerTargetData() {
+  return EnsureField<InterestInvokerTargetData>(
+      FieldId::kInterestInvokerTargetData);
+}
+void ElementRareDataVector::RemoveInterestInvokerTargetData() {
+  SetField(FieldId::kInterestInvokerTargetData, nullptr);
 }
 
 AnchorPositionScrollData* ElementRareDataVector::GetAnchorPositionScrollData()

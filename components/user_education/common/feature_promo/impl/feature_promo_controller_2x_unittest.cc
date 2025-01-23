@@ -44,6 +44,14 @@ using PriorityInfo = FeaturePromoPriorityProvider::PromoPriorityInfo;
 using PromoPriority = FeaturePromoPriorityProvider::PromoPriority;
 using PromoWeight = FeaturePromoPriorityProvider::PromoWeight;
 
+// Implementation of V2.5 controller that cleans itself up properly.
+// Normally this would be done by a derived class.
+class TestFeaturePromoController25 : public FeaturePromoController25 {
+ public:
+  using FeaturePromoController25::FeaturePromoController25;
+  ~TestFeaturePromoController25() override { OnDestroying(); }
+};
+
 }  // namespace
 
 enum class PromoControllerVersion { kV20, kV25 };
@@ -92,7 +100,7 @@ class FeaturePromoControllerQueueTest
       }
       case PromoControllerVersion::kV25: {
         auto result =
-            std::make_unique<TestPromoController<FeaturePromoController25>>(
+            std::make_unique<TestPromoController<TestFeaturePromoController25>>(
                 &tracker(), &promo_registry(), &help_bubble_factory_registry(),
                 &storage_service(), &session_policy(), &tutorial_service(),
                 &messaging_controller());

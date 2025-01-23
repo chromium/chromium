@@ -582,22 +582,16 @@ public class TabSwitcherPaneUnitTest {
     public void testShowTabListEditor() {
         MenuOrKeyboardActionHandler handler = mTabSwitcherPane.getMenuOrKeyboardActionHandler();
         assertNotNull(handler);
-        assertFalse(
-                handler.handleMenuOrKeyboardAction(
-                        org.chromium.chrome.tab_ui.R.id.menu_select_tabs, false));
+        assertFalse(handler.handleMenuOrKeyboardAction(R.id.menu_select_tabs, false));
 
         mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
         mTabSwitcherPane.initWithNative();
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
 
-        assertFalse(
-                handler.handleMenuOrKeyboardAction(
-                        org.chromium.chrome.tab_ui.R.id.new_tab_menu_id, false));
+        assertFalse(handler.handleMenuOrKeyboardAction(R.id.new_tab_menu_id, false));
         verify(coordinator, never()).showTabListEditor();
 
-        assertTrue(
-                handler.handleMenuOrKeyboardAction(
-                        org.chromium.chrome.tab_ui.R.id.menu_select_tabs, false));
+        assertTrue(handler.handleMenuOrKeyboardAction(R.id.menu_select_tabs, false));
         verify(coordinator).showTabListEditor();
     }
 

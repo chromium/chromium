@@ -12,6 +12,8 @@ import androidx.core.app.NotificationManagerCompat;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -20,9 +22,10 @@ import java.lang.annotation.RetentionPolicy;
  * Base interface for NofificationManagerProxy that only supports simple functionalities. Remove
  * this once AsyncNofificationManagerProxy is set to default.
  */
+@NullMarked
 public class NotificationProxyUtils {
-    private static Boolean sAreNotificationsEnabled;
-    private static Boolean sAreNotificationsEnabledForTest;
+    private static @Nullable Boolean sAreNotificationsEnabled;
+    private static @Nullable Boolean sAreNotificationsEnabledForTest;
 
     /** Defines the notification event */
     @IntDef({

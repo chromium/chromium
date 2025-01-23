@@ -18,7 +18,7 @@ found in the LICENSE file.
     android:paddingStart="@dimen/auxiliary_search_module_padding_start"
     android:paddingEnd="@dimen/auxiliary_search_module_padding_start"
     android:paddingTop="@dimen/single_tab_module_padding_top"
-    android:paddingBottom="@dimen/auxiliary_search_module_padding_bottom"
+    android:paddingBottom="@dimen/single_tab_module_padding_top"
     android:background="@drawable/home_surface_ui_background"
     android:foreground="@drawable/single_tab_card_ripple"
     android:orientation="vertical">

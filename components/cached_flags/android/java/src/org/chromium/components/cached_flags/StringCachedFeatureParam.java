@@ -7,22 +7,21 @@ package org.chromium.components.cached_flags;
 import android.content.SharedPreferences;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
 
 import org.chromium.base.FeatureMap;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** A String-type {@link CachedFeatureParam}. */
+@NullMarked
 public class StringCachedFeatureParam extends CachedFeatureParam<String> {
-    private Supplier<String> mValueSupplier;
+    private @Nullable Supplier<String> mValueSupplier;
 
     public StringCachedFeatureParam(
-            FeatureMap featureMap,
-            String featureName,
-            String variationName,
-            @NonNull String defaultValue) {
+            FeatureMap featureMap, String featureName, String variationName, String defaultValue) {
         super(featureMap, featureName, variationName, FeatureParamType.STRING, defaultValue);
     }
 

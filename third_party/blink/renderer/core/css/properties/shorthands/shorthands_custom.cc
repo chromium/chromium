@@ -272,22 +272,54 @@ bool ConsumeAnimationRangeItemInto(CSSParserTokenStream& stream,
   return true;
 }
 
-}  // namespace
+const CSSValue* AnimationRangeCSSValueFromComputedStyle(
+    const ComputedStyle& style,
+    const Vector<std::optional<TimelineOffset>>& range_start_list,
+    const Vector<std::optional<TimelineOffset>>& range_end_list) {
+  if (range_start_list.size() != range_end_list.size()) {
+    return nullptr;
+  }
 
-bool AnimationRange::ParseShorthand(
+  TimelineOffset default_start(TimelineOffset::NamedRange::kNone,
+                               Length::Percent(0));
+  TimelineOffset default_end(TimelineOffset::NamedRange::kNone,
+                             Length::Percent(100));
+  auto* outer_list = CSSValueList::CreateCommaSeparated();
+
+  for (wtf_size_t i = 0; i < range_start_list.size(); ++i) {
+    const std::optional<TimelineOffset>& start = range_start_list[i];
+    const std::optional<TimelineOffset>& end = range_end_list[i];
+
+    auto* inner_list = CSSValueList::CreateSpaceSeparated();
+    inner_list->Append(*ComputedStyleUtils::ValueForAnimationRange(
+        start, style, Length::Percent(0.0)));
+
+    // The form "name X name 100%" must contract to "name X".
+    //
+    // https://github.com/w3c/csswg-drafts/issues/8438
+    TimelineOffset omittable_end(start.value_or(default_start).name,
+                                 Length::Percent(100));
+    if (end.value_or(default_end) != omittable_end) {
+      inner_list->Append(*ComputedStyleUtils::ValueForAnimationRange(
+          end, style, Length::Percent(100.0)));
+    }
+    outer_list->Append(*inner_list);
+  }
+
+  return outer_list;
+}
+
+bool ParseAnimationRangeShorthand(
+    const StylePropertyShorthand& shorthand,
+    CSSPropertyID start_longhand_id,
+    CSSPropertyID end_longhand_id,
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) {
   using css_parsing_utils::AddProperty;
   using css_parsing_utils::ConsumeCommaIncludingWhitespace;
   using css_parsing_utils::IsImplicitProperty;
-
-  const StylePropertyShorthand shorthand = animationRangeShorthand();
-  DCHECK_EQ(2u, shorthand.length());
-  DCHECK_EQ(&GetCSSPropertyAnimationRangeStart(), shorthand.properties()[0]);
-  DCHECK_EQ(&GetCSSPropertyAnimationRangeEnd(), shorthand.properties()[1]);
 
   CSSValueList* start_list = CSSValueList::CreateCommaSeparated();
   CSSValueList* end_list = CSSValueList::CreateCommaSeparated();
@@ -302,14 +334,30 @@ bool AnimationRange::ParseShorthand(
   DCHECK(end_list->length());
   DCHECK_EQ(start_list->length(), end_list->length());
 
-  AddProperty(CSSPropertyID::kAnimationRangeStart,
-              CSSPropertyID::kAnimationRange, *start_list, important,
+  AddProperty(start_longhand_id, shorthand.id(), *start_list, important,
               IsImplicitProperty::kNotImplicit, properties);
-  AddProperty(CSSPropertyID::kAnimationRangeEnd, CSSPropertyID::kAnimationRange,
-              *end_list, important, IsImplicitProperty::kNotImplicit,
-              properties);
+  AddProperty(end_longhand_id, shorthand.id(), *end_list, important,
+              IsImplicitProperty::kNotImplicit, properties);
 
   return true;
+}
+
+}  // namespace
+
+bool AnimationRange::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  const StylePropertyShorthand shorthand = animationRangeShorthand();
+  DCHECK_EQ(2u, shorthand.length());
+  DCHECK_EQ(&GetCSSPropertyAnimationRangeStart(), shorthand.properties()[0]);
+  DCHECK_EQ(&GetCSSPropertyAnimationRangeEnd(), shorthand.properties()[1]);
+  return ParseAnimationRangeShorthand(shorthand,
+                                      CSSPropertyID::kAnimationRangeStart,
+                                      CSSPropertyID::kAnimationRangeEnd,
+                                      important, stream, context, properties);
 }
 
 const CSSValue* AnimationRange::CSSValueFromComputedStyleInternal(
@@ -326,38 +374,81 @@ const CSSValue* AnimationRange::CSSValueFromComputedStyleInternal(
                          : Vector<std::optional<TimelineOffset>>{
                                CSSAnimationData::InitialRangeEnd()};
 
-  if (range_start_list.size() != range_end_list.size()) {
-    return nullptr;
-  }
+  return AnimationRangeCSSValueFromComputedStyle(style, range_start_list,
+                                                 range_end_list);
+}
 
-  TimelineOffset default_start(TimelineOffset::NamedRange::kNone,
-                               Length::Percent(0));
-  TimelineOffset default_end(TimelineOffset::NamedRange::kNone,
-                             Length::Percent(100));
+bool AnimationTriggerRange::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  const StylePropertyShorthand shorthand = animationTriggerRangeShorthand();
+  DCHECK_EQ(2u, shorthand.length());
+  DCHECK_EQ(&GetCSSPropertyAnimationTriggerRangeStart(),
+            shorthand.properties()[0]);
+  DCHECK_EQ(&GetCSSPropertyAnimationTriggerRangeEnd(),
+            shorthand.properties()[1]);
+  return ParseAnimationRangeShorthand(
+      shorthand, CSSPropertyID::kAnimationTriggerRangeStart,
+      CSSPropertyID::kAnimationTriggerRangeEnd, important, stream, context,
+      properties);
+}
 
-  auto* outer_list = CSSValueList::CreateCommaSeparated();
+const CSSValue* AnimationTriggerRange::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  const Vector<std::optional<TimelineOffset>>& range_start_list =
+      style.Animations() ? style.Animations()->TriggerRangeStartList()
+                         : Vector<std::optional<TimelineOffset>>{
+                               CSSAnimationData::InitialTriggerRangeStart()};
+  const Vector<std::optional<TimelineOffset>>& range_end_list =
+      style.Animations() ? style.Animations()->TriggerRangeEndList()
+                         : Vector<std::optional<TimelineOffset>>{
+                               CSSAnimationData::InitialTriggerRangeEnd()};
 
-  for (wtf_size_t i = 0; i < range_start_list.size(); ++i) {
-    const std::optional<TimelineOffset>& start = range_start_list[i];
-    const std::optional<TimelineOffset>& end = range_end_list[i];
+  return AnimationRangeCSSValueFromComputedStyle(style, range_start_list,
+                                                 range_end_list);
+}
 
-    auto* inner_list = CSSValueList::CreateSpaceSeparated();
-    inner_list->Append(
-        *ComputedStyleUtils::ValueForAnimationRangeStart(start, style));
+bool AnimationTriggerExitRange::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  const StylePropertyShorthand shorthand = animationTriggerExitRangeShorthand();
+  DCHECK_EQ(2u, shorthand.length());
+  DCHECK_EQ(&GetCSSPropertyAnimationTriggerExitRangeStart(),
+            shorthand.properties()[0]);
+  DCHECK_EQ(&GetCSSPropertyAnimationTriggerExitRangeEnd(),
+            shorthand.properties()[1]);
+  return ParseAnimationRangeShorthand(
+      shorthand, CSSPropertyID::kAnimationTriggerExitRangeStart,
+      CSSPropertyID::kAnimationTriggerExitRangeEnd, important, stream, context,
+      properties);
+}
 
-    // The form "name X name 100%" must contract to "name X".
-    //
-    // https://github.com/w3c/csswg-drafts/issues/8438
-    TimelineOffset omittable_end(start.value_or(default_start).name,
-                                 Length::Percent(100));
-    if (end.value_or(default_end) != omittable_end) {
-      inner_list->Append(
-          *ComputedStyleUtils::ValueForAnimationRangeEnd(end, style));
-    }
-    outer_list->Append(*inner_list);
-  }
+const CSSValue* AnimationTriggerExitRange::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  const Vector<std::optional<TimelineOffset>>& range_start_list =
+      style.Animations()
+          ? style.Animations()->TriggerExitRangeStartList()
+          : Vector<std::optional<TimelineOffset>>{
+                CSSAnimationData::InitialTriggerExitRangeStart()};
+  const Vector<std::optional<TimelineOffset>>& range_end_list =
+      style.Animations() ? style.Animations()->TriggerExitRangeEndList()
+                         : Vector<std::optional<TimelineOffset>>{
+                               CSSAnimationData::InitialTriggerExitRangeEnd()};
 
-  return outer_list;
+  return AnimationRangeCSSValueFromComputedStyle(style, range_start_list,
+                                                 range_end_list);
 }
 
 bool Background::ParseShorthand(

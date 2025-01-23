@@ -53,8 +53,9 @@ class GURL;
 // Adds `fakeIdentity` to the fake system identity interaction manager with
 // capabilities set or unset. This is used to simulate adding the `fakeIdentity`
 // through the fake SSO Auth flow done by
-// `FakeSystemIdentityInteractionManager`. See
-// `kFakeAuthAddAccountButtonIdentifier` to trigger the add account flow.
+// `FakeSystemIdentityInteractionManager`. Use
+// `[SigninEarlGreyUI addFakeAccountInFakeAddAccountMenu:fakeIdentity];` to
+// trigger the add account flow.
 - (void)addFakeIdentityForSSOAuthAddAccountFlow:
             (FakeSystemIdentity*)fakeIdentity
                         withUnknownCapabilities:(BOOL)usingUnknownCapabilities;

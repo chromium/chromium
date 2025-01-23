@@ -294,6 +294,10 @@ class ClientSideDetectionHost
   void set_high_confidence_allowlist_acceptance_rate_for_testing(
       float acceptance_rate);
 
+  void set_delegate_for_testing(std::unique_ptr<Delegate> delegate) {
+    delegate_ = std::move(delegate);
+  }
+
   // Check if CSD can get an access Token. Should be enabled only for ESB
   // users, who are signed in and not in incognito mode.
   bool CanGetAccessToken();

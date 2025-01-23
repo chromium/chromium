@@ -1027,19 +1027,6 @@
     "expires": "Jun 1, 2025"
   },
   {
-    "prefix": "details-styling-disabled",
-    "owners": ["dbaron@chromium.org", "dom-dev@google.com"],
-    "platforms": ["Linux"],
-    "bases": [
-      "external/wpt/html/rendering/the-details-element",
-      "fast/multicol/span/summary-split.html",
-      "html/details_summary/details-inline.html",
-      "wpt_internal/html/rendering/the-details-element"
-    ],
-    "args": ["--disable-blink-features=DetailsStyling"],
-    "expires": "Dec 1, 2024"
-  },
-  {
     "prefix": "backface-visibility-interop",
     "owners": ["dbaron@chromium.org", "paint-dev@chromium.org"],
     "platforms": ["Linux"],
@@ -3422,17 +3409,6 @@
     "args": ["--enable-blink-features=CSSGapDecoration"],
     "expires": "Oct 1, 2025",
     "owners": ["samomekarajr@microsoft.com", "almaher@microsoft.com"]
-  },
-  {
-    "prefix": "popover-hover-disabled",
-    "owners": ["masonf@chromium.org"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/html/semantics/popovers/popover-css-properties.tentative.html",
-      "external/wpt/html/semantics/popovers/popover-target-action-hover.tentative.html"
-    ],
-    "args": ["--disable-blink-features=HTMLPopoverActionHover"],
-    "expires": "Jun 1, 2025"
   },
   {
     "prefix": "disable-css-line-clamp",

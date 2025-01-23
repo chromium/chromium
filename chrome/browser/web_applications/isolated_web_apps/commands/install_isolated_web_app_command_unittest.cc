@@ -728,8 +728,9 @@ TEST_F(InstallIsolatedWebAppCommandTest,
 TEST_F(InstallIsolatedWebAppCommandTest, FailsWhenAppInstalledAlready) {
   auto app = IsolatedWebAppBuilder(ManifestBuilder())
                  .BuildBundle(test::GetDefaultEd25519KeyPair());
-  auto install_source = IsolatedWebAppInstallSource::FromDevUi(
-      IwaSourceBundleDevModeWithFileOp(app->path(), kDefaultBundleDevFileOp));
+  auto install_source =
+      IsolatedWebAppInstallSource::FromDevUi(IwaSourceBundleDevModeWithFileOp(
+          app->path(), IwaSourceBundleDevFileOp::kCopy));
   app->FakeInstallPageState(profile());
   app->TrustSigningKey();
   IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();
@@ -786,7 +787,7 @@ class InstallIsolatedWebAppCommandBundleTest
     if (is_dev_mode_) {
       install_source_ = IsolatedWebAppInstallSource::FromDevUi(
           IwaSourceBundleDevModeWithFileOp(bundle_path,
-                                           kDefaultBundleDevFileOp));
+                                           IwaSourceBundleDevFileOp::kCopy));
     } else {
       install_source_ = IsolatedWebAppInstallSource::FromGraphicalInstaller(
           IwaSourceBundleProdModeWithFileOp(bundle_path,

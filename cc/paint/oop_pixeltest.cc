@@ -2927,9 +2927,12 @@ TEST_F(OopPixelTest, SkSLCommandShader) {
     uniform float2 u_btm_right;
     uniform vec4 u_border_color;
     uniform vec4 u_center_color;
+    uniform int u_nudge;
 
     vec4 main(float2 coord) {
-      if (all(greaterThanEqual(coord, u_top_left)) &&
+      float2 adjusted = u_top_left;
+      adjusted.x = u_top_left.x + float(u_nudge);
+      if (all(greaterThanEqual(coord, adjusted)) &&
           all(lessThan(coord, u_btm_right))) {
         return u_center_color;
       } else {
@@ -2941,13 +2944,15 @@ TEST_F(OopPixelTest, SkSLCommandShader) {
       kDrawRedRect,
       /*float_uniforms=*/{{.name = SkString("u_border_alpha"), .value = 0.5f}},
       /*float2_uniforms=*/
-      {{.name = SkString("u_top_left"), .value = SkV2{25.f, 25.f}},
+      {{.name = SkString("u_top_left"), .value = SkV2{23.f, 25.f}},
        {.name = SkString("u_btm_right"), .value = SkV2{75.f, 75.f}}},
       /*float4_uniforms=*/
       {{.name = SkString("u_border_color"),
         .value = SkColorToSkV4(SkColors::kRed)},
        {.name = SkString("u_center_color"),
-        .value = SkColorToSkV4(SkColors::kGreen)}});
+        .value = SkColorToSkV4(SkColors::kGreen)}},
+      /*int_uniforms=*/
+      {{.name = SkString("u_nudge"), .value = 2}});
   ASSERT_TRUE(shader);
 
   const gfx::Size rect(100, 100);

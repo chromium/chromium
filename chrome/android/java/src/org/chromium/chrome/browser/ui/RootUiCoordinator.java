@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -1694,23 +1695,20 @@ public class RootUiCoordinator
     }
 
     /**
-     * Gives concrete implementation of {@link ScrimCoordinator.SystemUiScrimDelegate} and
-     * constructs {@link ScrimCoordinator}.
+     * Constructs a {@link ScrimCoordinator} and sets up observers. Lifetime of all these objects
+     * should match.
      */
     protected ScrimCoordinator buildScrimWidget() {
         ViewGroup coordinator = mActivity.findViewById(R.id.coordinator);
-        ScrimCoordinator.SystemUiScrimDelegate delegate =
-                new ScrimCoordinator.SystemUiScrimDelegate() {
-                    @Override
-                    public void setStatusBarScrimFraction(float scrimFraction) {
-                        RootUiCoordinator.this.setStatusBarScrimFraction(scrimFraction);
-                    }
-                };
-        return new ScrimCoordinator(mActivity, delegate, coordinator);
+        ScrimCoordinator scrimCoordinator = new ScrimCoordinator(mActivity, coordinator);
+        scrimCoordinator
+                .getStatusBarColorSupplier()
+                .addObserver(RootUiCoordinator.this::onScrimColorChanged);
+        return scrimCoordinator;
     }
 
-    protected void setStatusBarScrimFraction(float scrimFraction) {
-        mStatusBarColorController.setStatusBarScrimFraction(scrimFraction);
+    protected void onScrimColorChanged(@ColorInt int scrimColor) {
+        mStatusBarColorController.setScrimColor(scrimColor);
     }
 
     protected void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {

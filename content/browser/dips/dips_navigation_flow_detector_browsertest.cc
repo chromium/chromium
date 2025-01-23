@@ -443,8 +443,9 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   ASSERT_EQ(direct_navigation_entries.size(), 1u);
   auto direct_navigation_entry = direct_navigation_entries.at(0);
   ukm_recorder().ExpectEntrySourceHasUrl(direct_navigation_entry, url);
-  ukm_recorder().ExpectEntryMetric(direct_navigation_entry, "NavigationSource",
-                                   dips::kOmnibar);
+  ukm_recorder().ExpectEntryMetric(
+      direct_navigation_entry, "NavigationSource",
+      static_cast<int64_t>(dips::DirectNavigationSource::kOmnibar));
 }
 
 IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
@@ -463,8 +464,9 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   ASSERT_EQ(direct_navigation_entries.size(), 1u);
   auto direct_navigation_entry = direct_navigation_entries.at(0);
   ukm_recorder().ExpectEntrySourceHasUrl(direct_navigation_entry, url);
-  ukm_recorder().ExpectEntryMetric(direct_navigation_entry, "NavigationSource",
-                                   dips::kBookmark);
+  ukm_recorder().ExpectEntryMetric(
+      direct_navigation_entry, "NavigationSource",
+      static_cast<int64_t>(dips::DirectNavigationSource::kBookmark));
 }
 
 IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
@@ -486,8 +488,9 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   auto direct_navigation_entry = direct_navigation_entries.at(0);
   ukm_recorder().ExpectEntrySourceHasUrl(direct_navigation_entry,
                                          redirector_url);
-  ukm_recorder().ExpectEntryMetric(direct_navigation_entry, "NavigationSource",
-                                   dips::kOmnibar);
+  ukm_recorder().ExpectEntryMetric(
+      direct_navigation_entry, "NavigationSource",
+      static_cast<int64_t>(dips::DirectNavigationSource::kOmnibar));
 }
 
 IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
@@ -519,8 +522,9 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   ASSERT_EQ(direct_navigation_entries.size(), 1u);
   auto direct_navigation_entry = direct_navigation_entries.at(0);
   ukm_recorder().ExpectEntrySourceHasUrl(direct_navigation_entry, initial_url);
-  ukm_recorder().ExpectEntryMetric(direct_navigation_entry, "NavigationSource",
-                                   dips::kOmnibar);
+  ukm_recorder().ExpectEntryMetric(
+      direct_navigation_entry, "NavigationSource",
+      static_cast<int64_t>(dips::DirectNavigationSource::kOmnibar));
   // Implied assert: no DirectNavigation UKM entry for link_target_url.
 }
 

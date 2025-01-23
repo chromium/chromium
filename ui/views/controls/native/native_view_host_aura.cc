@@ -41,7 +41,7 @@ class NativeViewHostAura::ClippingWindowDelegate : public aura::WindowDelegate {
 
   gfx::Size GetMinimumSize() const override { return gfx::Size(); }
   std::optional<gfx::Size> GetMaximumSize() const override {
-    return gfx::Size();
+    return std::nullopt;
   }
   void OnBoundsChanged(const gfx::Rect& old_bounds,
                        const gfx::Rect& new_bounds) override {}

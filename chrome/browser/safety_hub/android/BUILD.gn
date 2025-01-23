@@ -19,6 +19,8 @@ generate_jni("jni_headers") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/safety_hub/DeprecatedSafetyHubModuleProperties.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/DeprecatedSafetyHubModuleViewBinder.java",
     "java/src/org/chromium/chrome/browser/safety_hub/MagicStackBridge.java",
     "java/src/org/chromium/chrome/browser/safety_hub/MagicStackEntry.java",
     "java/src/org/chromium/chrome/browser/safety_hub/NotificationPermissionReviewBridge.java",
@@ -42,8 +44,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubMetricUtils.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleDelegate.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleDelegateImpl.java",
-    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleProperties.java",
-    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleViewBinder.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubNotificationsFragment.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubNotificationsPreference.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPasswordModuleHelper.java",
@@ -110,6 +110,7 @@ android_library("java") {
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.safety_hub"
   sources = [
+    "junit/src/org/chromium/chrome/browser/safety_hub/DeprecatedSafetyHubModuleViewBinderTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/MagicStackBridgeTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchServiceTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchTaskTest.java",
@@ -117,7 +118,6 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackViewBinderTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleDelegateTest.java",
-    "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleViewBinderTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubTestRule.java",
   ]
   deps = [

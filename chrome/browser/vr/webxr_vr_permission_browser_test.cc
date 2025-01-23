@@ -12,11 +12,10 @@
 #include "content/public/test/browser_test_utils.h"
 
 namespace vr {
-// TODO(https://crbug.com/381000093): Fix tests on Android
-#if !BUILDFLAG(IS_ANDROID)
 // Tests that WebXR sessions can be created when permission is granted.
 IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTestBase,
                        TestGrantingPermissionCreatesSession) {
+  MockXRDeviceHookBase mock;
   SetPermissionAutoResponse(
       permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
 
@@ -31,6 +30,7 @@ IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTestBase,
 // Tests that a session is not created if the user explicitly denies permission.
 IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTestBase,
                        TestDenyingPermissionFailsSessionCreation) {
+  MockXRDeviceHookBase mock;
   SetPermissionAutoResponse(
       permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
 
@@ -50,6 +50,7 @@ IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTestBase,
 // dialog.
 IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTestBase,
                        TestDismissingPromptCloseFailsSessionCreation) {
+  MockXRDeviceHookBase mock;
   SetPermissionAutoResponse(
       permissions::PermissionRequestManager::AutoResponseType::DISMISS);
 
@@ -94,7 +95,6 @@ IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTestBase, TestPermissionPersists) {
   ASSERT_EQ(GetPermissionPromptFactory()->show_count(), 1)
       << "Permission prompt should've only been shown once";
 }
-#endif  // if !BUILDFLAG(IS_ANDROID)
 
 // Verify that inline with no session parameters doesn't prompt for permission.
 IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTestBase,

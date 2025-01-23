@@ -131,6 +131,7 @@ group("resources") {
     public_deps += [
       "intro:resources",
       "signin/batch_upload:resources",
+      "signin/signout_confirmation:resources",
     ]
   }
 

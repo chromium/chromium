@@ -4,8 +4,15 @@
 
 #include "chrome/browser/ui/browser_navigator_browsertest.h"
 
+#include "ash/constants/ash_switches.h"
+#include "ash/wm/window_pin_util.h"
 #include "base/command_line.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/login/chrome_restart_request.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
+#include "chrome/browser/ui/ash/multi_user/test_multi_user_window_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -19,21 +26,9 @@
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_switches.h"
-#include "ash/wm/window_pin_util.h"
-#include "chrome/browser/ash/login/chrome_restart_request.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
-#include "chrome/browser/ui/ash/multi_user/test_multi_user_window_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace {
 
 using BrowserNavigatorTestChromeOS = BrowserNavigatorTest;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 GURL GetGoogleURL() {
   return GURL("http://www.google.com/");
@@ -89,7 +84,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
       params.browser->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Verify that page navigation is allowed in locked fullscreen mode when locked
 // for OnTask. Only applicable for non-web browser scenarios.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
@@ -118,7 +112,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
       kUrl,
       params.browser->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Subclass that tests navigation while in the Guest session.
 class BrowserGuestSessionNavigatorTest : public BrowserNavigatorTest {
@@ -214,7 +207,5 @@ IN_PROC_BROWSER_TEST_F(BrowserGuestSessionNavigatorTest,
     ASSERT_FALSE(window_manager->created_window());
   }
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace

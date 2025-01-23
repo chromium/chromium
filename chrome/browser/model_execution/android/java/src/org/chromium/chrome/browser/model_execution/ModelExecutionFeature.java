@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.model_execution;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -13,6 +15,7 @@ import java.lang.annotation.RetentionPolicy;
     ModelExecutionFeature.PAGE_INFO,
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface ModelExecutionFeature {
     public static int PAGE_INFO = 1;
 }

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_DELEGATE_H_
 
 #import <Foundation/Foundation.h>
+
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
 
 // Delegate for the payments bottom sheet.

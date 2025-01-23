@@ -1182,16 +1182,20 @@ bool BrowserNonClientFrameViewChromeOS::ShouldEnableImmersiveModeController(
     return false;
   }
 
-  // Enabling immersive mode controller would allow for the user to exit
-  // fullscreen. We don't want this for locked fullscreen windows.
-  if (!CanUserExitFullscreen()) {
+  // Disable immersive mode controller in locked fullscreen mode to prevent
+  // users from exiting this mode. One exception for this is when the browsing
+  // instance is locked for OnTask. Only applicable for non-web browser
+  // scenarios.
+  bool is_locked_for_on_task = browser_view()->browser()->IsLockedForOnTask();
+  if (!CanUserExitFullscreen() && !is_locked_for_on_task) {
     return false;
   }
 
-  // If tablet mode is just enabled, we should exit immersive mode for TabStrip.
-  // Note that we can still enter immersive mode if it's toggled after entering
-  // tablet mode.
-  if (on_tablet_enabled && browser_view()->GetSupportsTabStrip()) {
+  // If tablet mode is just enabled and not locked for OnTask, we should exit
+  // immersive mode for TabStrip. Note that we can still enter immersive mode if
+  // it's toggled after entering tablet mode.
+  if (on_tablet_enabled && !is_locked_for_on_task &&
+      browser_view()->GetSupportsTabStrip()) {
     return false;
   }
 

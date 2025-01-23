@@ -4767,7 +4767,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordProtection.CSDCacheSizeAtHit" units="bytes"
-    expires_after="2025-02-23">
+    expires_after="2026-02-23">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -4802,13 +4802,14 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordProtection.ModalWarningDialogAction"
-    enum="PasswordProtectionWarningAction" expires_after="2024-12-08">
+    enum="PasswordProtectionWarningAction" expires_after="2025-12-08">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records how a user interacts with the password protection modal warning
     dialog. Logged when the dialog is shown and when the user chooses to change
-    their password, ignore warning, or navigate away.
+    their password, ignore warning, or navigate away. Warning: this histogram
+    was expired from 2024-12-08 to 2025-01-22; data may be missing.
   </summary>
 </histogram>
 
@@ -4883,12 +4884,13 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordProtection.RequestNetworkDuration" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-12-08">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time it takes for PasswordProtectionService request. It is not recorded
-    for requests that were canceled.
+    for requests that were canceled. Warning: this histogram expired from
+    2024-12-08 to 2025-01-22; data may be missing.
   </summary>
 </histogram>
 
@@ -4986,7 +4988,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordProtection.VisualFeaturesClearReason"
-    enum="CanExtractVisualFeaturesResult" expires_after="2025-03-02">
+    enum="CanExtractVisualFeaturesResult" expires_after="2026-03-02">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

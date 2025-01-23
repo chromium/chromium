@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address+AutofillProfile.h"
-
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address+AutofillProfile.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

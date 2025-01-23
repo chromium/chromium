@@ -1061,10 +1061,10 @@ class TestWebContentsObserver : public content::WebContentsObserver {
   ~TestWebContentsObserver() override = default;
 
   void OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType capability_type,
+      content::WebContentsCapabilityType capability_type,
       bool used) override {
     EXPECT_EQ(capability_type,
-              content::WebContents::CapabilityType::kBluetoothConnected);
+              content::WebContentsCapabilityType::kBluetoothConnected);
     ++num_capability_types_changed_;
     last_device_used_ = used;
     if (quit_closure_ &&

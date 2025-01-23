@@ -1247,7 +1247,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   // Verify that EventLatency histograms are recorded.
   struct {
     const char* name;
-    const base::HistogramBase::Count count;
+    const base::HistogramBase::Count32 count;
   } expected_counts[] = {
       {"EventLatency.TouchPressed.TotalLatency", 1},
       {"EventLatency.TouchMoved.TotalLatency", 2},
@@ -1339,7 +1339,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   // Verify that EventLatency histograms are recorded.
   struct {
     const char* name;
-    const base::HistogramBase::Count count;
+    const base::HistogramBase::Count32 count;
   } expected_counts[] = {
       {"EventLatency.GestureScrollBegin.Wheel.TotalLatency2", 1},
       {"EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency2", 1},
@@ -1513,7 +1513,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   // Verify that EventLatency histograms are recorded.
   struct {
     const char* name;
-    const base::HistogramBase::Count count;
+    const base::HistogramBase::Count32 count;
   } expected_counts[] = {
       {"EventLatency.GesturePinchBegin.Touchpad.TotalLatency", 1},
       {"EventLatency.GesturePinchUpdate.Touchpad.TotalLatency", 1},
@@ -1586,7 +1586,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   // recorded using the presentation time of the second frame (presented).
   struct {
     const char* name;
-    const base::HistogramBase::Count count;
+    const base::HistogramBase::Count32 count;
   } expected_counts[] = {
       {"EventLatency.TouchPressed.TotalLatency", 1},
       {"EventLatency.TouchMoved.TotalLatency", 2},

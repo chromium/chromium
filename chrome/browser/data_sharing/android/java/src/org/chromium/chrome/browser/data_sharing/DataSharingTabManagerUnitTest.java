@@ -402,7 +402,8 @@ public class DataSharingTabManagerUnitTest {
 
     @Test
     public void testManageSharing() {
-        mDataSharingTabManager.showManageSharing(mActivity, COLLABORATION_ID1);
+        mDataSharingTabManager.showManageSharing(
+                mActivity, COLLABORATION_ID1, /* finishRunnable= */ null);
     }
 
     @Test
@@ -469,7 +470,7 @@ public class DataSharingTabManagerUnitTest {
                         any(),
                         eq(ShareDelegate.ShareOrigin.TAB_GROUP));
         ShareParams shareParams = mShareParamsCaptor.getValue();
-        assertEquals("Shared tab group link expires in 48 hours\n", shareParams.getText());
+        assertEquals("Shared tab group link expires in 48 hours", shareParams.getText());
         assertEquals(shareParams.getUrl(), TEST_URL.getSpec());
         assertEquals("Collaborate on tab group", shareParams.getTitle());
     }
@@ -535,7 +536,7 @@ public class DataSharingTabManagerUnitTest {
                         any(),
                         eq(ShareDelegate.ShareOrigin.TAB_GROUP));
         ShareParams shareParams = mShareParamsCaptor.getValue();
-        assertEquals("test title link expires in 48 hours\n", shareParams.getText());
+        assertEquals("test title link expires in 48 hours", shareParams.getText());
         assertEquals(shareParams.getUrl(), TEST_URL.getSpec());
         assertEquals("Collaborate on tab group", shareParams.getTitle());
     }

@@ -6,9 +6,12 @@ package org.chromium.components.cached_flags;
 
 import android.content.SharedPreferences;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.List;
 
 /** Utility methods for {@link CachedFlag}s. */
+@NullMarked
 public class CachedFlagUtils {
     /** Caches flags that must take effect on startup but are set via native code. */
     public static void cacheNativeFlags(List<List<CachedFlag>> listsOfFeaturesToCache) {

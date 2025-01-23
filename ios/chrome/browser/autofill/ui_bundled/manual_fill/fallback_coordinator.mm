@@ -19,7 +19,7 @@
 #import "ios/public/provider/chrome/browser/keyboard/keyboard_api.h"
 #import "ui/base/device_form_factor.h"
 
-@interface FallbackCoordinator ()<UIPopoverPresentationControllerDelegate>
+@interface FallbackCoordinator () <UIPopoverPresentationControllerDelegate>
 
 @end
 

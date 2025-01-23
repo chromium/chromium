@@ -1150,6 +1150,13 @@ void ServiceWorkerTaskQueue::DidVerifyRegistration(
     return;
   }
 
+  // It is possible that the extension got reloaded while we were verifying the
+  // registration. Ignore the request if it is not the current activation.
+  // TODO(crbug.com/391414854): Add a test for this.
+  if (!IsCurrentActivation(extension_id, context_id.token)) {
+    return;
+  }
+
   base::UmaHistogramEnumeration(
       "Extensions.ServiceWorkerBackground.RegistrationMismatchLocation",
       extension->location());

@@ -348,6 +348,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="kCrashedSubframe"/>
 </enum>
 
+<!-- LINT.IfChange(NavigationRequestSchemeType) -->
+
+<enum name="NavigationRequestSchemeType">
+  <int value="0" label="Other"/>
+  <int value="1" label="Chrome UI"/>
+  <int value="2" label="Chrome Native"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/navigation_transitions/back_forward_transition_animator.cc:NavigationRequestSchemeType) -->
+
 <enum name="NavigationRequiresDedicatedProcess">
   <int value="0" label="Does not require dedicated process"/>
   <int value="1" label="Requires dedicated process"/>

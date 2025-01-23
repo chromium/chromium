@@ -42,6 +42,8 @@ class ResizeObservation;
 class StyleScopeData;
 class CustomElementDefinition;
 class PopoverData;
+class InterestInvokerData;
+class InterestInvokerTargetData;
 class OutOfFlowData;
 class HTMLElement;
 
@@ -82,8 +84,10 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     kRestrictionTargetId = 28,
     kStyleScopeData = 29,
     kOutOfFlowData = 30,
+    kInterestInvokerData = 31,
+    kInterestInvokerTargetData = 32,
 
-    kNumFields = 31,
+    kNumFields = 33,
   };
 
   ElementRareDataField* GetField(FieldId field_id) const;
@@ -264,6 +268,17 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   PopoverData* GetPopoverData() const;
   PopoverData& EnsurePopoverData();
   void RemovePopoverData();
+
+  InterestInvokerData* GetInterestInvokerData() const;
+  InterestInvokerData& EnsureInterestInvokerData();
+  void RemoveInterestInvokerData();
+
+  InterestInvokerTargetData* GetInterestInvokerTargetData() const;
+  InterestInvokerTargetData& EnsureInterestInvokerTargetData();
+  void RemoveInterestInvokerTargetData();
+
+  Element* GetInterestInvoker() const;
+  void SetInterestInvoker(Element* element);
 
   bool HasElementFlag(ElementFlags mask) const {
     return element_flags_ & static_cast<uint16_t>(mask);

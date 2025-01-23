@@ -43,7 +43,7 @@ class SignedExchangePageLoadMetricsObserverTest
     base::HistogramTester::CountsMap empty_counts_map =
         tester()->histogram_tester().GetTotalCountsForPrefix(prefix);
     for (const auto& it : empty_counts_map) {
-      base::HistogramBase::Count count = it.second;
+      base::HistogramBase::Count32 count = it.second;
       EXPECT_EQ(0, count) << "Histogram \"" << it.first
                           << "\" should be empty.";
     }

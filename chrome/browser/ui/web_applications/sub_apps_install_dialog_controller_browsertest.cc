@@ -39,7 +39,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =
       IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
   ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo parent_app,
-                       app->TrustBundleAndInstall(profile()));
+                       app->Install(profile()));
   const webapps::AppId parent_app_id = parent_app.app_id();
 
   auto controller = std::make_unique<SubAppsInstallDialogController>();

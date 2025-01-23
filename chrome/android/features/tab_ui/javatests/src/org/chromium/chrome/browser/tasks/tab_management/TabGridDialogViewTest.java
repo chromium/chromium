@@ -106,7 +106,7 @@ public class TabGridDialogViewTest {
                             mTabGridDialogView.findViewById(R.id.dialog_animation_card_view);
                     mBackgroundFrameView = mTabGridDialogView.findViewById(R.id.dialog_frame);
                     ScrimCoordinator scrimCoordinator =
-                            new ScrimCoordinator(sActivity, null, mTestParent);
+                            new ScrimCoordinator(sActivity, mTestParent);
                     mTabGridDialogView.setupScrimCoordinator(scrimCoordinator);
                     mTabGridDialogView.setScrimClickRunnable(() -> {});
 

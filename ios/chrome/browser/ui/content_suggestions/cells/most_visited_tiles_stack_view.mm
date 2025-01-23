@@ -84,7 +84,7 @@
         [[ContentSuggestionsMostVisitedTileView alloc]
              initInMagicStack:config.inMagicStack
             withConfiguration:item];
-    view.menuProvider = item.menuProvider;
+    view.menuElementsProvider = item.menuElementsProvider;
     view.accessibilityIdentifier = [NSString
         stringWithFormat:
             @"%@%li",

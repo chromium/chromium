@@ -32,7 +32,7 @@ class RenderFrameHost;
 namespace dips {
 
 // Should match BtmDirectNavigationSource in tools/metrics/histograms/enums.xml
-enum DirectNavigationSource {
+enum class DirectNavigationSource {
   kUnknown = 0,
   kOmnibar = 1,
   kBookmark = 2,
@@ -70,10 +70,10 @@ struct EntrypointInfo {
   bool was_referral_client_redirect;
 };
 
-enum FlowStatus {
-  kFlowInvalidated = 0,
-  kFlowOngoing,
-  kFlowEnded,
+enum class FlowStatus {
+  kInvalidated = 0,
+  kOngoing,
+  kEnded,
 };
 
 class InFlowSuccessorInteractionState {
@@ -180,7 +180,7 @@ class CONTENT_EXPORT DipsNavigationFlowDetector
 
   // The status of a flow for the purposes of InFlowSuccessorInteraction, after
   // the most recent primary page change.
-  dips::FlowStatus flow_status_ = dips::FlowStatus::kFlowInvalidated;
+  dips::FlowStatus flow_status_ = dips::FlowStatus::kInvalidated;
   // Data needed for emitting DIPS.TrustIndicator.InFlowSuccessorInteraction.
   // Set only when there's an ongoing flow that's possibly valid (we can't know
   // for sure until it ends or is invalidated).

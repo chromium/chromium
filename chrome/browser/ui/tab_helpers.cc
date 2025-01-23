@@ -699,7 +699,11 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
               kPerformanceControlsMemorySaverOptOutSurvey) ||
       base::FeatureList::IsEnabled(
           performance_manager::features::
-              kPerformanceControlsBatterySaverOptOutSurvey)) {
+              kPerformanceControlsBatterySaverOptOutSurvey) ||
+      base::FeatureList::IsEnabled(
+          page_info::kMerchantTrustEvaluationControlSurvey) ||
+      base::FeatureList::IsEnabled(
+          page_info::kMerchantTrustEvaluationExperimentSurvey)) {
     HatsHelper::CreateForWebContents(web_contents);
   }
   SharedHighlightingPromo::CreateForWebContents(web_contents);

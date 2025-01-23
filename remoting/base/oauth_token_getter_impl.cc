@@ -201,7 +201,7 @@ void OAuthTokenGetterImpl::InvalidateCache() {
   access_token_expiry_time_ = base::Time();
 }
 
-base::WeakPtr<OAuthTokenGetterImpl> OAuthTokenGetterImpl::GetWeakPtr() {
+base::WeakPtr<OAuthTokenGetter> OAuthTokenGetterImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 

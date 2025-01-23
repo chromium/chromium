@@ -531,6 +531,9 @@ ci.builder(
                 ),
             ),
             "chrome_public_test_apk": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.chrome_public_test_apk.filter",
+                ],
                 swarming = targets.swarming(
                     dimensions = {
                         # use 8-core to shorten runtime
@@ -565,10 +568,21 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.content_unittests.filter",
                 ],
             ),
+            "gl_tests_validating": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p_10.gl_tests.filter",
+                ],
+            ),
             "perfetto_unittests": targets.mixin(
                 args = [
                     # TODO(crbug.com/40201873): Fix the failed test
                     "--gtest_filter=-ScopedDirTest.CloseOutOfScope",
+                ],
+            ),
+            "media_unittests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/391490503): Disable the failing tests
+                    "--gtest_filter=-AAC/AACAudioEncoderTest.*",
                 ],
             ),
             "services_unittests": targets.mixin(
@@ -587,6 +601,11 @@ ci.builder(
                 # webview instead of the full browser, so explicitly specify it here.
                 args = [
                     "--browser=android-chromium",
+                ],
+            ),
+            "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.webview_instrumentation_test_apk.filter",
                 ],
             ),
         },

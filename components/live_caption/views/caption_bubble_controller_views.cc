@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/live_caption/caption_bubble_context.h"
+#include "components/live_caption/caption_bubble_settings.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/views/caption_bubble.h"
 #include "components/live_caption/views/caption_bubble_model.h"
@@ -25,18 +26,18 @@ namespace captions {
 
 // Static
 std::unique_ptr<CaptionBubbleController> CaptionBubbleController::Create(
-    PrefService* profile_prefs,
+    CaptionBubbleSettings* caption_bubble_settings,
     const std::string& application_locale) {
-  return std::make_unique<CaptionBubbleControllerViews>(profile_prefs,
+  return std::make_unique<CaptionBubbleControllerViews>(caption_bubble_settings,
                                                         application_locale);
 }
 
 CaptionBubbleControllerViews::CaptionBubbleControllerViews(
-    PrefService* profile_prefs,
+    CaptionBubbleSettings* caption_bubble_settings,
     const std::string& application_locale)
     : application_locale_(application_locale) {
   caption_bubble_ = new CaptionBubble(
-      profile_prefs, application_locale,
+      caption_bubble_settings, application_locale,
       base::BindOnce(&CaptionBubbleControllerViews::OnCaptionBubbleDestroyed,
                      base::Unretained(this)));
   caption_widget_ =

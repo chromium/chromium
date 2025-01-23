@@ -345,7 +345,8 @@ void NotificationPlatformBridgeAndroid::Display(
           ? test_is_suspicious_value_
           : (persistent_notification_metadata
                  ? persistent_notification_metadata->is_suspicious
-                 : false));
+                 : false),
+      persistent_notification_metadata->skip_ua_buttons);
 
   regenerated_notification_infos_[notification.id()] =
       RegeneratedNotificationInfo(scope_url, std::nullopt);
@@ -445,8 +446,10 @@ void NotificationPlatformBridgeAndroid::AlwaysAllowNotifications(
       message_center::NotifierId(), message_center::RichNotificationData(),
       nullptr);
   // Create new `PersistentNotificationMetadata`, where `is_suspicious` is set
-  // to false by default.
+  // to false by default. Set `skip_ua_buttons` to true so the confirmation
+  // notification does not restore any UA buttons.
   auto metadata = std::make_unique<PersistentNotificationMetadata>();
+  metadata->skip_ua_buttons = true;
   Display(NotificationHandler::Type::WEB_PERSISTENT, profile, notification,
           std::move(metadata));
 }

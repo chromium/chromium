@@ -555,6 +555,12 @@ bool mojo::StructTraits<remoting::mojom::VideoTrackLayoutDataView,
   out_track->set_x_dpi(dpi.x());
   out_track->set_y_dpi(dpi.y());
 
+  std::string display_name;
+  if (!data_view.ReadDisplayName(&display_name)) {
+    return false;
+  }
+  out_track->set_display_name(std::move(display_name));
+
   return true;
 }
 

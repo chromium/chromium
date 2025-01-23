@@ -38,6 +38,7 @@
 #include "content/public/browser/prerender_handle.h"
 #include "content/public/browser/save_page_type.h"
 #include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents_capability_type.h"
 #include "content/public/common/stop_find_action.h"
 #include "net/base/network_handle.h"
 #include "net/http/http_request_headers.h"
@@ -153,21 +154,6 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   ADVANCED_MEMORY_SAFETY_CHECKS();
 
  public:
-  // Device activity types that can be used by a WebContents.
-  enum class CapabilityType {
-    // WebUSB
-    kUSB,
-    // Web Bluetooth
-    kBluetoothConnected,
-    kBluetoothScanning,
-    // WebHID
-    kHID,
-    // Web Serial
-    kSerial,
-    // Geolocation
-    kGeolocation
-  };
-
   struct CONTENT_EXPORT CreateParams {
     explicit CreateParams(
         BrowserContext* context,
@@ -831,8 +817,9 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   virtual bool IsCurrentlyAudible() = 0;
 
   // Indicates whether any frame in the WebContents is connected to anything in
-  // the WebContents::CapabilityType enum.
-  virtual bool IsCapabilityActive(CapabilityType capability_type) = 0;
+  // the WebContentsCapabilityType enum.
+  virtual bool IsCapabilityActive(
+      WebContentsCapabilityType capability_type) = 0;
 
   // Indicates whether any frame in the WebContents has File System Access
   // handles.

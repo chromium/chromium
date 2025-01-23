@@ -18,6 +18,8 @@ namespace webnn {
 
 namespace {
 
+static constexpr char kInputParam[] = "input";
+
 std::string SupportedDataTypesString(SupportedDataTypes supported_types) {
   std::vector<std::string> type_strings;
   base::ranges::transform(
@@ -96,8 +98,12 @@ std::string NotSupportedConstantTypeError(OperandDataType type,
 std::string NotSupportedInputArgumentTypeError(
     OperandDataType type,
     SupportedDataTypes supported_types) {
-  static constexpr char kInputParam[] = "input";
   return NotSupportedArgumentTypeError(kInputParam, type, supported_types);
+}
+
+std::string NotSupportedInputArgumentError(const OperandDescriptor& descriptor,
+                                           SupportedTensors supported_tensors) {
+  return NotSupportedArgumentError(kInputParam, descriptor, supported_tensors);
 }
 
 std::string NotSupportedInputTypeError(std::string_view input_name,

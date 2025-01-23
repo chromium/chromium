@@ -150,6 +150,11 @@ class SystemWebAppDelegate {
   // applicable if the app's window has a tab-strip.
   virtual bool ShouldHideNewTabButton() const;
 
+  // If true, enables the extensions container in the window toolbar. Only
+  // applicable in exceptional scenarios where the SWA hosts 3P content.
+  // Defaults to false because most conventional SWAs work with 0P content.
+  virtual bool ShouldHaveExtensionsContainerInToolbar() const;
+
   // If false, the app will not have the reload button in minimal ui
   // mode.
   virtual bool ShouldHaveReloadButtonInMinimalUi() const;

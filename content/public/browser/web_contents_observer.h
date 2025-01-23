@@ -21,7 +21,7 @@
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
-#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_capability_type.h"
 #include "ipc/ipc_message.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
@@ -88,6 +88,7 @@ struct MediaPlayerId;
 struct PrunedDetails;
 struct Referrer;
 struct TrustTokenAccessDetails;
+class WebContents;
 
 // Note: before adding a new `WebContentsObserver` subclass, consider if simpler
 // helpers will suffice:
@@ -789,7 +790,7 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // arguments indicate the capability type that starts/stops being used
   // and whether it is in use (true if it starts being used, false if it stops).
   virtual void OnCapabilityTypesChanged(
-      WebContents::CapabilityType capability_type,
+      WebContentsCapabilityType capability_type,
       bool used) {}
 
   // Invoked when the WebContents is muted/unmuted.

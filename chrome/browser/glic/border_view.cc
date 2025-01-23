@@ -97,7 +97,7 @@ class BorderView::BorderViewUpdater {
     auto* service =
         GlicKeyedServiceFactory::GetGlicKeyedService(browser_->GetProfile());
     CHECK(service);
-    if (!service->window_controller().HasWindow()) {
+    if (!service->window_controller().IsShowing()) {
       return;
     }
     border_view_->StartAnimation();
@@ -174,7 +174,7 @@ void BorderView::OnPaint(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   flags.setShader(cc::PaintShader::MakeSkSLCommand(
       kDrawRect, /*float_uniforms=*/{}, std::move(float2_uniforms),
-      std::move(float4_uniforms)));
+      std::move(float4_uniforms), /*int_uniforms=*/{}));
   canvas->DrawRect(gfx::RectF(bounds()), flags);
 }
 

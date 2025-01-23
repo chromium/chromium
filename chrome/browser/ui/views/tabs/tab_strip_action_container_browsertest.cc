@@ -342,6 +342,6 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(
           browser()->GetProfile());
 
-  EXPECT_TRUE(glic_keyed_service->window_controller().HasWindow());
+  EXPECT_TRUE(glic_keyed_service->window_controller().IsShowing());
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)

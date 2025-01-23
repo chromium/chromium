@@ -14,10 +14,9 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/boca/babelorca/caption_controller.h"
 
-class PrefService;
-
 namespace captions {
 class CaptionBubbleController;
+class CaptionBubbleSettings;
 }  // namespace captions
 
 namespace media {
@@ -39,7 +38,8 @@ class FakeCaptionControllerDelegate : public CaptionController::Delegate {
   ~FakeCaptionControllerDelegate() override;
 
   std::unique_ptr<captions::CaptionBubbleController>
-  CreateCaptionBubbleController(PrefService*, const std::string&) override;
+  CreateCaptionBubbleController(captions::CaptionBubbleSettings*,
+                                const std::string&) override;
 
   void AddCaptionStyleObserver(ui::NativeThemeObserver* observer) override;
 

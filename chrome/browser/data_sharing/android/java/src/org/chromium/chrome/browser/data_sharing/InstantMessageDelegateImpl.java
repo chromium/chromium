@@ -324,7 +324,8 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                 () -> {
                     // TODO(crbug.com/379148260): Use shared #isCollaborationIdValid.
                     if (!TextUtils.isEmpty(collaborationId)) {
-                        dataSharingTabManager.showManageSharing(activity, collaborationId);
+                        dataSharingTabManager.showManageSharing(
+                                activity, collaborationId, /* finishRunnable= */ null);
                     }
                 };
 

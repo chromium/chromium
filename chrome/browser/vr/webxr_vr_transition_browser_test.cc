@@ -42,11 +42,13 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(
   t->WaitOnJavaScriptStep();
   t->EndTest();
 }
+#endif  // if !BUILDFLAG(IS_ANDROID)
 
 // Tests that a successful requestPresent or requestSession call enters
 // an immersive session.
 void TestPresentationEntryImpl(WebXrVrBrowserTestBase* t,
                                std::string filename) {
+  MockXRDeviceHookBase mock;
   t->LoadFileAndAwaitInitialization(filename);
   t->EnterSessionWithUserGestureOrFail();
   t->AssertNoJavaScriptErrors();
@@ -57,6 +59,8 @@ WEBXR_VR_ALL_RUNTIMES_PLUS_INCOGNITO_BROWSER_TEST_F(
   TestPresentationEntryImpl(t, "generic_webxr_page");
 }
 
+// TODO(https://crbug.com/381000093): Fix tests on Android
+#if !BUILDFLAG(IS_ANDROID)
 // Tests that window.requestAnimationFrame continues to fire while in
 // WebXR presentation since the tab is still visible.
 void TestWindowRafFiresWhilePresentingImpl(WebXrVrBrowserTestBase* t,

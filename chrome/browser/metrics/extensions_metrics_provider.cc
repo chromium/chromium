@@ -259,7 +259,7 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
        ExtensionInstallProto::REINSTALL},
       {extensions::disable_reason::DISABLE_NOT_ALLOWLISTED,
        ExtensionInstallProto::NOT_ALLOWLISTED},
-      {extensions::disable_reason::DISABLE_NOT_ASH_KEEPLISTED,
+      {extensions::disable_reason::DEPRECATED_DISABLE_NOT_ASH_KEEPLISTED,
        ExtensionInstallProto::NOT_ASH_KEEPLISTED},
       {extensions::disable_reason::
            DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY,

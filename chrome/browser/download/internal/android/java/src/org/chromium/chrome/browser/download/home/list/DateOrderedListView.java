@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.widget.RecyclerView.Recycler;
 import androidx.recyclerview.widget.RecyclerView.State;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.list.DateOrderedListCoordinator.DateOrderedListObserver;
 import org.chromium.chrome.browser.download.home.list.ListItem.OfflineItemListItem;
@@ -27,13 +26,14 @@ import org.chromium.chrome.browser.download.home.list.holder.ListItemViewHolder;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modelutil.ForwardingListObservable;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
 
 /**
- * The View component of a DateOrderedList.  This takes the DateOrderedListModel and creates the
- * glue to display it on the screen.
+ * The View component of a DateOrderedList. This takes the DateOrderedListModel and creates the glue
+ * to display it on the screen.
  */
 class DateOrderedListView {
     private final DownloadManagerUiConfig mConfig;
@@ -150,7 +150,7 @@ class DateOrderedListView {
         if (displayStyle.horizontal == HorizontalDisplayStyle.WIDE) {
             float dpToPx = resources.getDisplayMetrics().density;
             int screenWidthDp = 0;
-            if (BuildInfo.getInstance().isAutomotive && view != null) {
+            if (DisplayUtil.isUiScaled() && view != null) {
                 screenWidthDp = (int) (view.getMeasuredWidth() / dpToPx);
             } else {
                 screenWidthDp = resources.getConfiguration().screenWidthDp;

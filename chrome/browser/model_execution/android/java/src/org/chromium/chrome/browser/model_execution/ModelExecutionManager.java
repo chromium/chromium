@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.model_execution;
 
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
 
 /** Class in charge of creating and maintaining model execution sessions for multiple features. */
+@NullMarked
 public class ModelExecutionManager {
 
     public ModelExecutionSession createSession(@ModelExecutionFeature int feature) {

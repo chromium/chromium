@@ -144,6 +144,7 @@ source_set("sender") {
     "//components/openscreen_platform",
     "//media",
     "//media/capture:capture_base",
+    "//third_party/libyuv",
     "//third_party/openscreen/src/cast/streaming:sender",
     "//third_party/openscreen/src/platform:api",
     "//ui/gfx/geometry",

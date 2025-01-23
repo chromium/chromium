@@ -36,6 +36,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -46,6 +47,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.MenuUtils;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Public transit tests for the Hub's history pane. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -76,6 +78,7 @@ public class BookmarkPaneTest {
 
     @Test
     @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testBookmarkIsDisplayed() {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         String urlOne =
@@ -98,6 +101,7 @@ public class BookmarkPaneTest {
 
     @Test
     @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testBookmarkSearchMatch() {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         String urlOne =
@@ -124,6 +128,7 @@ public class BookmarkPaneTest {
 
     @Test
     @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testBookmarkClickOpens() {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         String urlOne =

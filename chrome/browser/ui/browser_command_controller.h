@@ -96,7 +96,7 @@ class BrowserCommandController : public CommandUpdater,
       Profile* profile);
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   friend class BrowserCommandControllerBrowserTestLockedFullscreen;
 #endif
 

@@ -5,12 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_ERROR_DIALOG_AUTOFILL_ERROR_DIALOG_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_ERROR_DIALOG_AUTOFILL_ERROR_DIALOG_MEDIATOR_H_
 
-#import "components/autofill/core/browser/ui/payments/autofill_error_dialog_view.h"
-
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
 #import "base/memory/weak_ptr.h"
+#import "components/autofill/core/browser/ui/payments/autofill_error_dialog_view.h"
 
 @protocol AutofillErrorDialogMediatorDelegate;
 

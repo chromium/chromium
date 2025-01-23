@@ -131,6 +131,9 @@ NET_ERROR(BLOCKED_BY_ORB, -32)
 // network access.
 NET_ERROR(NETWORK_ACCESS_REVOKED, -33)
 
+// The request was blocked by fingerprinting protections.
+NET_ERROR(BLOCKED_BY_FINGERPRINTING_PROTECTION, -34)
+
 // A connection was closed (corresponding to a TCP FIN).
 NET_ERROR(CONNECTION_CLOSED, -100)
 

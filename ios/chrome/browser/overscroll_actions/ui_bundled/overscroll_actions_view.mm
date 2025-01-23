@@ -91,10 +91,12 @@ const CGFloat kActionLabelSidePadding = 15.0;
 // This function maps a value from a range to another.
 CGFloat MapValueToRange(FloatRange from, FloatRange to, CGFloat value) {
   DCHECK(from.min < from.max);
-  if (value <= from.min)
+  if (value <= from.min) {
     return to.min;
-  if (value >= from.max)
+  }
+  if (value >= from.max) {
     return to.max;
+  }
   const CGFloat fromDst = from.max - from.min;
   const CGFloat toDst = to.max - to.min;
   return to.min + ((value - from.min) / fromDst) * toDst;
@@ -121,7 +123,7 @@ const CGFloat kActionViewBackgroundColorBrightnessNonIncognito = 242.0 / 256.0;
 // The brightness of the actions view background color for incognito mode.
 const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 
-@interface OverscrollActionsView ()<UIGestureRecognizerDelegate> {
+@interface OverscrollActionsView () <UIGestureRecognizerDelegate> {
   // True when the first layout has been done.
   BOOL _initialLayoutDone;
   // True when an action trigger animation is currently playing.
@@ -398,15 +400,18 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 }
 
 - (void)updateWithHorizontalOffset:(CGFloat)offset {
-  if (_animatingActionTrigger || _viewTouched)
+  if (_animatingActionTrigger || _viewTouched) {
     return;
+  }
   self.horizontalOffset = offset;
   // Absorb out of range offset values so that the user doesn't need to
   // compensate in order to move the cursor in the other direction.
-  if ([self absoluteHorizontalOffset] < -1)
+  if ([self absoluteHorizontalOffset] < -1) {
     _snappingOffset = -self.horizontalOffset - 1;
-  if ([self absoluteHorizontalOffset] > 1)
+  }
+  if ([self absoluteHorizontalOffset] > 1) {
     _snappingOffset = 1 - self.horizontalOffset;
+  }
   [self setNeedsLayout];
 }
 
@@ -462,8 +467,9 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 
   [CATransaction begin];
   [CATransaction setDisableActions:YES];
-  if (self.snapshotView)
+  if (self.snapshotView) {
     self.backgroundView.frame = self.snapshotView.bounds;
+  }
   _selectionCircleCroppingLayer.frame = self.bounds;
 
   [CATransaction commit];
@@ -478,13 +484,15 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
   [self centerSubviewsVertically];
   [self layoutActions];
   [self layoutActionLabels];
-  if (_deformationBehaviorEnabled)
+  if (_deformationBehaviorEnabled) {
     [self layoutSelectionCircleWithDeformation];
-  else
+  } else {
     [self layoutSelectionCircle];
+  }
   [self updateSelectedAction];
-  if (disableActionsOnInitialLayout)
+  if (disableActionsOnInitialLayout) {
     [CATransaction commit];
+  }
 }
 
 #if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
@@ -627,8 +635,9 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
   const CGFloat actionsPositionMargin = [self actionsPositionMarginFromCenter];
   const CGFloat transformedOffset = [self
       absorbsHorizontalMovementAroundActions:[self absoluteHorizontalOffset]];
-  return CGPointMake(MapValueToRange({-1, 1}, {centerX - actionsPositionMargin,
-                                               centerX + actionsPositionMargin},
+  return CGPointMake(MapValueToRange({-1, 1},
+                                     {centerX - actionsPositionMargin,
+                                      centerX + actionsPositionMargin},
                                      transformedOffset),
                      self.bounds.size.height / 2.0);
 }
@@ -685,10 +694,11 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
       [CATransaction commit];
     }
     [CATransaction begin];
-    if (!animate)
+    if (!animate) {
       [CATransaction setDisableActions:YES];
-    else
+    } else {
       [CATransaction setAnimationDuration:kSelectionSnappingAnimationDuration];
+    }
     self.selectionCircleLayer.position = [self selectionCirclePosition];
     [CATransaction commit];
   }
@@ -754,8 +764,9 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
       previousActionLabel:[self labelForAction:previousAction]];
 
   if (self.overscrollState == OverscrollViewState::PREPARE ||
-      _animatingActionTrigger)
+      _animatingActionTrigger) {
     return;
+  }
 
   __weak OverscrollActionsView* weakSelf = self;
   [UIView animateWithDuration:kSelectionSnappingAnimationDuration
@@ -806,8 +817,7 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 
 - (void)updateState {
   if (self.verticalOffset > 1) {
-    const base::TimeDelta elapsedTime =
-        base::TimeTicks::Now() - _pullStartTime;
+    const base::TimeDelta elapsedTime = base::TimeTicks::Now() - _pullStartTime;
     const BOOL isMinimumTimeElapsed =
         elapsedTime >= kMinimumPullDurationToTransitionToReady;
     const BOOL isPullingDownOrAlreadyTriggeredOnce =
@@ -835,8 +845,9 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 }
 
 - (void)onStateChange {
-  if (_animatingActionTrigger)
+  if (_animatingActionTrigger) {
     return;
+  }
 
   if (self.overscrollState != OverscrollViewState::NONE) {
     [UIView animateWithDuration:kSelectionSnappingAnimationDuration
@@ -997,8 +1008,9 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 // Clear the direct touch interaction after a small delay to prevent graphic
 // glitch with pan gesture selection deformation animations.
 - (void)clearDirectTouchInteraction {
-  if (!_viewTouched)
+  if (!_viewTouched) {
     return;
+  }
   __weak OverscrollActionsView* weakSelf = self;
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(^{
@@ -1028,8 +1040,9 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 - (void)fadeInActionLabel:(UILabel*)actionLabel
       previousActionLabel:(UILabel*)previousLabel {
   NSUInteger labelCount = (actionLabel ? 1 : 0) + (previousLabel ? 1 : 0);
-  if (!labelCount)
+  if (!labelCount) {
     return;
+  }
 
   NSTimeInterval duration = labelCount * kActionLabelFadeDuration;
   NSTimeInterval relativeDuration = 1.0 / labelCount;
@@ -1064,8 +1077,9 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 
 - (void)touchesBegan:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
   [super touchesBegan:touches withEvent:event];
-  if (_viewTouched)
+  if (_viewTouched) {
     return;
+  }
 
   _deformationBehaviorEnabled = NO;
   _snappingOffset = 0;

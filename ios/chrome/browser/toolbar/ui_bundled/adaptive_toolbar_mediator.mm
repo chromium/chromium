@@ -12,7 +12,6 @@
 #import "components/collaboration/public/messaging/message.h"
 #import "components/collaboration/public/messaging/messaging_backend_service.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
-#import "components/optimization_guide/optimization_guide_buildflags.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_bridge.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
@@ -30,6 +29,7 @@
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_tab_group_state.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/tab_group_indicator_features_utils.h"
@@ -543,13 +543,15 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
     cameraSearch = [self.actionFactory actionToShowQRScanner];
   }
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-  UIAction* openAIMenu = [self.actionFactory actionToOpenAIMenu];
-  staticActions =
-      @[ newSearch, newIncognitoSearch, voiceSearch, cameraSearch, openAIMenu ];
-#else
-  staticActions = @[ newSearch, newIncognitoSearch, voiceSearch, cameraSearch ];
-#endif
+  if (experimental_flags::EnableAIPrototypingMenu()) {
+    UIAction* openAIMenu = [self.actionFactory actionToOpenAIMenu];
+    staticActions = @[
+      newSearch, newIncognitoSearch, voiceSearch, cameraSearch, openAIMenu
+    ];
+  } else {
+    staticActions =
+        @[ newSearch, newIncognitoSearch, voiceSearch, cameraSearch ];
+  }
 
   UIMenuElement* clipboardAction = [self menuElementForPasteboard];
 

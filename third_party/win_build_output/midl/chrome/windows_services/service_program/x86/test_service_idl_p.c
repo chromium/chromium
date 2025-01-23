@@ -49,8 +49,8 @@
 
 #include "test_service_idl.h"
 
-#define TYPE_FORMAT_STRING_SIZE   7                                 
-#define PROC_FORMAT_STRING_SIZE   37                                
+#define TYPE_FORMAT_STRING_SIZE   11                                
+#define PROC_FORMAT_STRING_SIZE   73                                
 #define EXPR_FORMAT_STRING_SIZE   1                                 
 #define TRANSMIT_AS_TABLE_SIZE    0            
 #define WIRE_MARSHAL_TABLE_SIZE   0            
@@ -199,6 +199,37 @@ static const test_service_idl_MIDL_PROC_FORMAT_STRING test_service_idl__MIDL_Pro
 /* 34 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
+	/* Procedure IsRunningUnattended */
+
+/* 36 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 38 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 42 */	NdrFcShort( 0x4 ),	/* 4 */
+/* 44 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 46 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 48 */	NdrFcShort( 0x22 ),	/* 34 */
+/* 50 */	0x44,		/* Oi2 Flags:  has return, has ext, */
+			0x2,		/* 2 */
+/* 52 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 54 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 56 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 58 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Parameter is_running_unattended */
+
+/* 60 */	NdrFcShort( 0x2150 ),	/* Flags:  out, base type, simple ref, srv alloc size=8 */
+/* 62 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 64 */	0x6,		/* FC_SHORT */
+			0x0,		/* 0 */
+
+	/* Return value */
+
+/* 66 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 68 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 70 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
 			0x0
         }
     };
@@ -211,6 +242,10 @@ static const test_service_idl_MIDL_TYPE_FORMAT_STRING test_service_idl__MIDL_Typ
 /*  2 */	
 			0x11, 0xc,	/* FC_RP [alloced_on_stack] [simple_pointer] */
 /*  4 */	0x8,		/* FC_LONG */
+			0x5c,		/* FC_PAD */
+/*  6 */	
+			0x11, 0xc,	/* FC_RP [alloced_on_stack] [simple_pointer] */
+/*  8 */	0x6,		/* FC_SHORT */
 			0x5c,		/* FC_PAD */
 
 			0x0
@@ -228,7 +263,8 @@ static const test_service_idl_MIDL_TYPE_FORMAT_STRING test_service_idl__MIDL_Typ
 #pragma code_seg(".orpc")
 static const unsigned short ITestService_FormatStringOffsetTable[] =
     {
-    0
+    0,
+    36
     };
 
 static const MIDL_STUBLESS_PROXY_INFO ITestService_ProxyInfo =
@@ -252,21 +288,22 @@ static const MIDL_SERVER_INFO ITestService_ServerInfo =
     0,
     0,
     0};
-CINTERFACE_PROXY_VTABLE(4) _ITestServiceProxyVtbl = 
+CINTERFACE_PROXY_VTABLE(5) _ITestServiceProxyVtbl = 
 {
     &ITestService_ProxyInfo,
     &IID_ITestService,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    (void *) (INT_PTR) -1 /* ITestService::GetProcessHandle */
+    (void *) (INT_PTR) -1 /* ITestService::GetProcessHandle */ ,
+    (void *) (INT_PTR) -1 /* ITestService::IsRunningUnattended */
 };
 
 const CInterfaceStubVtbl _ITestServiceStubVtbl =
 {
     &IID_ITestService,
     &ITestService_ServerInfo,
-    4,
+    5,
     0, /* pure interpreted */
     CStdStubBuffer_METHODS
 };

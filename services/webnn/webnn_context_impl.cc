@@ -270,8 +270,8 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.tanh_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
-  backend_context_properties.data_type_limits.where_condition.RetainAll(
-      DataTypeConstraint::kUint8);
+  backend_context_properties.data_type_limits.where_condition.data_types
+      .RetainAll(DataTypeConstraint::kUint8);
   return backend_context_properties;
 }
 

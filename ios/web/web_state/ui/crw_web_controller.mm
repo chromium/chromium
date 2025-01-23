@@ -1084,34 +1084,6 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
     _documentURL = newURL;
     _userInteractionState.SetUserInteractionRegisteredSinceLastUrlChange(false);
   }
-  if (context && !context->IsLoadingErrorPage() &&
-      !context->IsLoadingHtmlString() && !newURL.SchemeIs(url::kAboutScheme) &&
-      self.webView) {
-    // On iOS13, WebKit started changing the URL visible webView.URL when
-    // opening a new tab and then writing to it, e.g.
-    // window.open('javascript:document.write(1)').  This URL is never commited,
-    // so it should be OK to ignore this URL change.
-    if (oldDocumentURL.IsAboutBlank() &&
-        !self.webStateImpl->GetNavigationManager()->GetLastCommittedItem() &&
-        !self.webView.loading) {
-      return;
-    }
-
-    // Ignore mismatches triggered by a WKWebView out-of-sync back forward list.
-    if (![self.webView.backForwardList.currentItem.URL
-            isEqual:self.webView.URL]) {
-      return;
-    }
-
-    GURL documentOrigin = newURL.DeprecatedGetOriginAsURL();
-    web::NavigationItem* committedItem =
-        self.webStateImpl->GetNavigationManager()->GetLastCommittedItem();
-    GURL committedURL = committedItem ? committedItem->GetURL() : GURL();
-    GURL committedOrigin = committedURL.DeprecatedGetOriginAsURL();
-
-    DCHECK_EQ(documentOrigin, committedOrigin)
-        << "Old and new URL detection system have a mismatch";
-  }
 }
 
 - (BOOL)isUserInitiatedAction:(WKNavigationAction*)action {

@@ -9,7 +9,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.ui.display.DisplayUtil;
 
 /** Util class for @{@link org.chromium.components.browser_ui.widget.displaystyle.ViewResizer}. */
 public class ViewResizerUtil {
@@ -26,7 +26,7 @@ public class ViewResizerUtil {
         int screenWidthDp = 0;
         // Some automotive devices with wide displays show side UI components, which should not be
         // included in the padding calculations.
-        if (BuildInfo.getInstance().isAutomotive && view != null) {
+        if (DisplayUtil.isUiScaled() && view != null) {
             screenWidthDp = (int) (view.getMeasuredWidth() / dpToPx);
         }
         if (screenWidthDp == 0) {

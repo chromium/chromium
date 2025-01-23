@@ -40,10 +40,12 @@ std::optional<page_info::MerchantData> GetSampleData() {
 }  // namespace
 
 MerchantTrustService::MerchantTrustService(
+    std::unique_ptr<Delegate> delegate,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
     bool is_off_the_record,
     PrefService* prefs)
-    : optimization_guide_decider_(optimization_guide_decider),
+    : delegate_(std::move(delegate)),
+      optimization_guide_decider_(optimization_guide_decider),
       is_off_the_record_(is_off_the_record),
       prefs_(prefs),
       weak_ptr_factory_(this) {
@@ -70,6 +72,12 @@ void MerchantTrustService::GetMerchantTrustInfo(
       url, optimization_guide::proto::MERCHANT_TRUST_SIGNALS_V2,
       base::BindOnce(&MerchantTrustService::OnCanApplyOptimizationComplete,
                      weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
+}
+
+void MerchantTrustService::MaybeShowEvaluationSurvey() {
+  if (CanShowEvaluationSurvey()) {
+    delegate_->ShowEvaluationSurvey();
+  }
 }
 
 void MerchantTrustService::OnCanApplyOptimizationComplete(
@@ -137,6 +145,22 @@ MerchantTrustService::GetMerchantDataFromProto(
   }
 
   return merchant_data;
+}
+
+bool MerchantTrustService::CanShowEvaluationSurvey() {
+  if (base::FeatureList::IsEnabled(
+          page_info::kMerchantTrustEvaluationControlSurvey)) {
+    // TODO(crbug.com/378854311): Check when the feature was used.
+    return true;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          page_info::kMerchantTrustEvaluationExperimentSurvey)) {
+    // TODO(crbug.com/378854311): Check when the feature was used.
+    return true;
+  }
+
+  return false;
 }
 
 }  // namespace page_info

@@ -89,9 +89,12 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   // UnifiedSystemTray::Observer:
   void OnSliderBubbleHeightChanged() override;
 
+  views::Widget* widget_for_testing();
+
+  views::Button* button_for_testing();
+
  private:
   friend class ToastManagerImplTest;
-  friend class DesksTestApi;
 
   class ToastDisplayObserver;
   class ToastHoverObserver;
@@ -121,9 +124,6 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   void OnShelfWorkAreaInsetsChanged() override;
   void OnHotseatStateChanged(HotseatState old_state,
                              HotseatState new_state) override;
-
-  views::Widget* widget_for_testing();
-  views::Button* button_for_testing();
 
   const raw_ptr<Delegate> delegate_;
   const std::u16string text_;

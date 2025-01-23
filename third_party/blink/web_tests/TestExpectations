@@ -2689,6 +2689,12 @@ crbug.com/383880384 [ Mac ] external/wpt/css/css-properties-values-api/registere
 crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registered-property-change-style-002.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/391728750 [ Win11 ] external/wpt/ai/translator/ai_translator_translate.tentative.https.any.html [ Skip Timeout ]
+crbug.com/391728750 [ Win11 ] external/wpt/ai/translator/ai_translator_translate.tentative.https.any.serviceworker.html [ Skip Timeout ]
+crbug.com/391728750 [ Linux ] external/wpt/ai/translator/ai_translator_translate.tentative.https.any.serviceworker.html [ Skip Timeout ]
+crbug.com/391728750 [ Win11 ] external/wpt/ai/translator/ai_translator_translate.tentative.https.any.sharedworker.html [ Skip Timeout ]
+crbug.com/391728750 [ Linux ] external/wpt/ai/translator/ai_translator_translate.tentative.https.any.sharedworker.html [ Failure Timeout ]
+crbug.com/391753680 external/wpt/css/css-scoping/has-slotted-flattened-004.html [ Failure ]
 crbug.com/391520705 external/wpt/dom/nodes/MutationObserver-textContent.html [ Timeout ]
 crbug.com/390467419 [ Mac15-arm64 ] external/wpt/geolocation/enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html [ Timeout ]
 crbug.com/390467419 [ Mac15 ] external/wpt/geolocation/enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html [ Failure Timeout ]
@@ -2702,12 +2708,11 @@ crbug.com/390467419 [ Mac11 ] external/wpt/geolocation/enabled-by-permission-pol
 crbug.com/390467419 [ Mac14 ] external/wpt/geolocation/enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html [ Failure Timeout ]
 crbug.com/390467419 [ Linux ] external/wpt/geolocation/enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html [ Timeout ]
 crbug.com/390467419 [ Win ] external/wpt/geolocation/enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html [ Timeout ]
-crbug.com/390864966 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-summary-display-inline-001.html [ Failure ]
-crbug.com/390864966 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-summary-display-inline-002.html [ Failure ]
 crbug.com/389978322 [ Mac12 ] virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-fractional-offset.html [ Failure ]
 crbug.com/389978322 [ Mac13 ] virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-fractional-offset.html [ Failure ]
 crbug.com/389545685 [ Mac11 ] external/wpt/css/css-position/sticky/position-sticky-fractional-offset.html [ Failure ]
 crbug.com/389545685 [ Mac12 ] external/wpt/css/css-position/sticky/position-sticky-fractional-offset.html [ Failure ]
+crbug.com/389545685 [ Mac13 ] external/wpt/css/css-position/sticky/position-sticky-fractional-offset.html [ Failure ]
 crbug.com/389545685 [ Mac14 ] external/wpt/css/css-position/sticky/position-sticky-fractional-offset.html [ Failure ]
 crbug.com/388922812 external/wpt/svg/animations/reftests/discard-check-remove.svg [ Failure ]
 crbug.com/388922812 external/wpt/svg/animations/reftests/discard-rect-as-child.svg [ Failure ]
@@ -5065,23 +5070,6 @@ crbug.com/995663 [ Linux ] http/tests/media/autoplay/document-user-activation-cr
 
 # Sheriff 2020-01-30
 crbug.com/1047293 [ Mac ] editing/pasteboard/pasteboard_with_unfocused_selection.html [ Failure Pass ]
-
-# Tests that expect the DetailsStyling feature to be disabled:
-crbug.com/1469418 fast/multicol/span/summary-split.html [ Failure ]
-crbug.com/1469418 virtual/details-styling-disabled/fast/multicol/span/summary-split.html [ Pass ]
-crbug.com/1469418 html/details_summary/details-inline.html [ Failure ]
-crbug.com/1469418 virtual/details-styling-disabled/html/details_summary/details-inline.html [ Pass ]
-crbug.com/1469418 wpt_internal/html/rendering/the-details-element/details-pseudo-elements-disabled-001.tentative.html [ Failure ]
-crbug.com/1469418 virtual/details-styling-disabled/wpt_internal/html/rendering/the-details-element/details-pseudo-elements-disabled-001.tentative.html [ Pass ]
-# Tests that expect the DetailsStyling feature to be enabled:
-crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-display-type-001.html [ Failure ]
-crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-display-type-002.html [ Failure ]
-crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-001.html [ Failure ]
-crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-002.html [ Failure ]
-crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-003.html [ Failure ]
-crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-004.html [ Failure ]
-crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-005.html [ Failure ]
-crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-006.html [ Failure ]
 
 # "in-multicol-child.html" is laid out in legacy layout due by "multicol" but
 # reference is laid out by LayoutNG.
@@ -9015,7 +9003,6 @@ crbug.com/380534434 [ Win ] external/wpt/css/css-scroll-snap/snap-fling-in-large
 # Gardener 2024-11-29
 crbug.com/381335068 [ Linux ] external/wpt/webdriver/tests/bidi/network/auth_required/unsubscribe.py [ Failure Pass ]
 crbug.com/381457334 external/wpt/event-timing/modal-dialog-interrupt-paint.html [ Crash Failure Pass Skip Timeout ]
-crbug.com/381444317 [ Linux ] external/wpt/html/semantics/popovers/popover-target-action-hover.tentative.html [ Failure Pass ]
 
 # Gardener 2024-12-05
 crbug.com/382506777 [ Linux ] external/wpt/scroll-animations/css/animation-inactive-outside-range-test.html [ Failure Pass ]

@@ -22,6 +22,19 @@ class PrefRegistrySimple;
 class PrefService;
 class Profile;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OutlookCalendarRequestResult {
+  // Success parsing necessary event data from the response.
+  kSuccess = 0,
+  kNetworkError = 1,
+  kJsonParseError = 2,
+  // Error retrieving all the expected event data from the response.
+  kContentError = 3,
+  kThrottlingError = 4,
+  kMaxValue = kThrottlingError,
+};
+
 class OutlookCalendarPageHandler
     : public ntp::calendar::mojom::OutlookCalendarPageHandler {
  public:

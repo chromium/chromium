@@ -22,7 +22,6 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
-#include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -191,6 +190,11 @@
 
 #if BUILDFLAG(ENABLE_VR)
 #include "device/vr/public/cpp/features.h"
+#endif
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/ui/webui/settings/glic_handler.h"
 #endif
 
 namespace settings {
@@ -554,6 +558,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(blink::features::kWebAppInstallation));
 
 #if BUILDFLAG(ENABLE_GLIC)
+  AddSettingsPageUIHandler(std::make_unique<GlicHandler>());
   html_source->AddBoolean("showGlicSettings", GlicEnabling::IsEnabledByFlags());
 #endif
 

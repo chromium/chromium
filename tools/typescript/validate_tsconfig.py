@@ -157,7 +157,6 @@ def validateJavaScriptAllowed(source_dir, out_dir, platform):
       # TODO(crbug.com/40848285): Migrate bluetooth-internals to TypeScript and
       # remove exception.
       'chrome/test/data/webui/bluetooth_internals',
-      'components/management/resources',
       # TODO(crbug.com/373951324): Migrate offline dino game to TypeScript.
       'components/neterror/resources',
       'components/net_log/resources',

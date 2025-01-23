@@ -106,6 +106,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser:primitives",
     "//chrome/browser/feedback",
+    "//chrome/browser/lens/region_search",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles",
     "//chrome/browser/resources/lens/overlay:resources",

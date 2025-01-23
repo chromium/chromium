@@ -13,6 +13,7 @@
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "crypto/process_bound_string.h"
@@ -403,6 +404,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   base::Time last_update_date_;
   CookiePriority priority_{COOKIE_PRIORITY_MEDIUM};
   CookieSourceType source_type_{CookieSourceType::kUnknown};
+  base::MetricsSubSampler metrics_subsampler_;
 };
 
 // Used to pass excluded cookie information when it's possible that the

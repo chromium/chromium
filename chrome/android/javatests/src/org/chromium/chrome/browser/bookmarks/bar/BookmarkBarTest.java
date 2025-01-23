@@ -34,6 +34,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Integration tests for the bookmark bar feature. */
 @Batch(Batch.PER_CLASS)
@@ -58,6 +59,7 @@ public class BookmarkBarTest {
 
     @Test
     @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testOnAllBookmarksButtonClick() {
         onViewWaiting(withText("All Bookmarks")).perform(click());
         onViewWaiting(

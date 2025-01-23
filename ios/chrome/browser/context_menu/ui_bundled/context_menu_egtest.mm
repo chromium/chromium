@@ -600,8 +600,9 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
 // Checks that "open in new window" shows up on a long press of a url link
 // and that it actually opens in a new window.
 - (void)testOpenLinkInNewWindow {
-  if (![ChromeEarlGrey areMultipleWindowsSupported])
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
 
   // Loads url in first window.
   const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
@@ -629,8 +630,9 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
 // and that it actually opens in a new window, and that when the link is in an
 // incognito webstate, the newly opened webstate is also incognito.
 - (void)testOpenIncognitoLinkInNewWindow {
-  if (![ChromeEarlGrey areMultipleWindowsSupported])
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
 
   [ChromeEarlGrey openNewIncognitoTab];
 

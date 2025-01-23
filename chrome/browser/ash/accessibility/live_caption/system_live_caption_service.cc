@@ -21,6 +21,7 @@
 #include "components/live_caption/pref_names.h"
 #include "components/live_caption/translation_util.h"
 #include "components/live_caption/views/caption_bubble_model.h"
+#include "components/prefs/pref_service.h"
 #include "components/soda/constants.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/media_switches.h"

@@ -122,7 +122,7 @@ class PageLiveStateDecoratorHelper::WebContentsObserver
 
   // content::WebContentsObserver:
   void OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType capability_type,
+      content::WebContentsCapabilityType capability_type,
       bool used) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     PageLiveStateDecorator::OnCapabilityTypesChanged(web_contents(),

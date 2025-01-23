@@ -19,7 +19,7 @@ struct SupportedRanks {
   uint32_t min;
   uint32_t max;
 
-  static SupportedRanks UpTo(uint32_t max) { return {0, max}; }
+  static constexpr SupportedRanks UpTo(uint32_t max) { return {0, max}; }
 
   friend bool operator==(const SupportedRanks& lhs, const SupportedRanks& rhs);
 };

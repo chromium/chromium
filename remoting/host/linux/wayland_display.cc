@@ -235,13 +235,15 @@ DesktopDisplayInfo WaylandDisplay::GetCurrentDisplayInfo() const {
     DCHECK(display_info.y >= 0);
     DCHECK(display_info.width >= 0);
     DCHECK(display_info.height >= 0);
-    result.AddDisplay({
-        .id = static_cast<webrtc::ScreenId>(base::Hash(display_info.name)),
-        .x = display_info.x,
-        .y = display_info.y,
-        .width = static_cast<uint32_t>(display_info.width),
-        .height = static_cast<uint32_t>(display_info.height),
-    });
+    result.AddDisplay(
+        {static_cast<webrtc::ScreenId>(base::Hash(display_info.name)),
+         display_info.x, display_info.y,
+         static_cast<uint32_t>(display_info.width),
+         static_cast<uint32_t>(display_info.height),
+         /* dpi */ 0,
+         /* bpp */ 0,
+         /* is_default */ false,
+         /* display_name */ std::string()});
   }
   return result;
 }

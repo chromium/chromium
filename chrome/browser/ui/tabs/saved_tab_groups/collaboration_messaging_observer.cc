@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -246,6 +247,58 @@ void CollaborationMessagingObserver::DisplayInstantaneousMessage(
     InstantMessageSuccessCallback success_callback) {
   instant_message_queue_processor_.Enqueue(message,
                                            std::move(success_callback));
+}
+
+void CollaborationMessagingObserver::ReopenTabForCurrentInstantMessage() {
+  CHECK(instant_message_queue_processor_.IsMessageShowing());
+
+  const InstantMessage& message =
+      instant_message_queue_processor_.GetCurrentMessage();
+  auto tab_metadata = message.attribution.tab_metadata;
+  auto tab_group_metadata = message.attribution.tab_group_metadata;
+  if (!tab_metadata || !tab_group_metadata) {
+    return;
+  }
+
+  std::optional<LocalTabGroupID> group_id =
+      tab_group_metadata->local_tab_group_id;
+  std::optional<std::string> tab_url = tab_metadata->last_known_url;
+  if (!group_id.has_value() || !tab_url.has_value()) {
+    return;
+  }
+
+  if (Browser* browser =
+          tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(
+              group_id.value())) {
+    SavedTabGroupUtils::OpenTabInBrowser(
+        GURL(tab_url.value()), browser, profile_,
+        WindowOpenDisposition::NEW_BACKGROUND_TAB, std::nullopt,
+        group_id.value());
+  }
+}
+
+void CollaborationMessagingObserver::ManageSharingForCurrentInstantMessage() {
+  CHECK(instant_message_queue_processor_.IsMessageShowing());
+
+  const InstantMessage& message =
+      instant_message_queue_processor_.GetCurrentMessage();
+  auto tab_group_metadata = message.attribution.tab_group_metadata;
+  if (!tab_group_metadata) {
+    return;
+  }
+
+  std::optional<LocalTabGroupID> group_id =
+      tab_group_metadata->local_tab_group_id;
+  if (!group_id.has_value()) {
+    return;
+  }
+
+  if (Browser* browser =
+          tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(
+              group_id.value())) {
+    DataSharingBubbleController::GetOrCreateForBrowser(browser)->Show(
+        group_id.value());
+  }
 }
 
 }  // namespace tab_groups

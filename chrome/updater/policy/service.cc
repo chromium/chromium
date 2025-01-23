@@ -61,7 +61,7 @@ void PolicyService::PolicyManagers::CreateManagers(
   dm_policy_manager_ =
       CreateDMPolicyManager(external_constants->IsMachineManaged());
   external_constants_policy_manager_ =
-      base::MakeRefCounted<PolicyManager>(external_constants->DictPolicies());
+      CreateDictPolicyManager(external_constants->DictPolicies());
   platform_policy_manager_ =
       CreatePlatformPolicyManager(external_constants->IsMachineManaged());
 }

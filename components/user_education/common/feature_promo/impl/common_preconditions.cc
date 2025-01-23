@@ -46,11 +46,19 @@ FeatureEngagementTrackerInitializedPrecondition::
           "Feature Engagement Tracker Initialized",
           FeaturePromoResult::kBlockedByConfig) {
   if (tracker) {
-    tracker->AddOnInitializedCallback(
-        base::BindOnce(&FeatureEngagementTrackerInitializedPrecondition::
-                           OnFeatureEngagementTrackerInitialized,
-                       weak_ptr_factory_.GetWeakPtr()));
+    // Want to return true immediately if the tracker is initialized so spot
+    // queries (e.g. `CanShowPromo()`) won't fail.
+    if (tracker->IsInitialized()) {
+      OnFeatureEngagementTrackerInitialized(true);
+    } else {
+      // Otherwise, wait for initialization.
+      tracker->AddOnInitializedCallback(
+          base::BindOnce(&FeatureEngagementTrackerInitializedPrecondition::
+                             OnFeatureEngagementTrackerInitialized,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
   } else {
+    // If no tracker, then it cannot be initialized.
     OnFeatureEngagementTrackerInitialized(false);
   }
 }

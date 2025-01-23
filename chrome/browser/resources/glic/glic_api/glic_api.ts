@@ -46,34 +46,47 @@ export declare interface GlicWebClient {
   // retryable errors.
   initialize(glicBrowserHost: GlicBrowserHost): Promise<void>;
 
-  // Called right before the panel is made visible to the user.
-  // Important: the returned promise must be fulfilled for the panel
-  // to be made visible to the user.
-  // This event is always called no matter how the panel opening is
-  // initiated.
-  notifyPanelWillOpen?(panelState: PanelState): Promise<void>;
+  /**
+   * @todo Remove void promise value once the web client returns OpenPanelInfo.
+   *       https://crbug.com/390176911
+   *
+   * Called right before the panel is made visible to the user. This event is
+   * always called no matter how the panel opening is initiated.
+   * The fulfilled promise should return an OpenPanelInfo containing relevant
+   * information from the web client.
+   * Important: the returned promise must be fulfilled for the panel
+   * to be made visible to the user.
+   */
+  notifyPanelWillOpen?(panelState: PanelState): Promise<void|OpenPanelInfo>;
 
-  // Called right after the panel was hidden away and is not visible to
-  // the user anymore.
-  // Important: the returned promise must be fulfilled to allow the browser
-  // to free any needed resources. The browser will keep the web client
-  // alive until the promise is resolved.
-  // This event is always called no matter how the panel closing is
-  // initiated.
+  /**
+   * Called right after the panel was hidden away and is not visible to
+   * the user anymore. This event is always called no matter how the panel
+   * closing is initiated.
+   * Important: the returned promise must be fulfilled to allow the browser
+   * to free any needed resources. The browser will keep the web client
+   * alive until the promise is resolved.
+   */
   notifyPanelWasClosed?(): Promise<void>;
 
-  // The user has requested activation of the web client.
-  // The attachedToWindowId identifies the browser window to which the
-  // panel is attached to. It is undefined if it is detached.
-  // Note: The returned promise is currently not used in the browser.
-  // @deprecated: Not supported anymore and will eventually be removed.
+  /**
+   * The user has requested activation of the web client.
+   * The attachedToWindowId identifies the browser window to which the
+   * panel is attached to. It is undefined if it is detached.
+   * Note: The returned promise is currently not used in the browser.
+   *
+   * @deprecated: Not supported anymore and will eventually be removed.
+   */
   notifyPanelOpened?(attachedToWindowId: string|undefined): Promise<void>;
 
-  // The user has closed the web client window. The window may be activated
-  // again later.
-  // The promise being resolved indicates the web client has stored any needed
-  // information and stopped accepting the user's input.
-  // @deprecated: Not supported anymore and will eventually be removed.
+  /**
+   * The user has closed the web client window. The window may be activated
+   * again later.
+   * The promise being resolved indicates the web client has stored any needed
+   * information and stopped accepting the user's input.
+   *
+   * @deprecated: Not supported anymore and will eventually be removed.
+   */
   notifyPanelClosed?(): Promise<void>;
 }
 
@@ -85,10 +98,12 @@ export declare interface GlicBrowserHost {
   // Returns Chrome's version.
   getChromeVersion(): Promise<ChromeVersion>;
 
-  // Sets the size of the glic window to the specified dimensions. Returns the
-  // resulting width and height of the window.
-  resizeWindow(width: number, height: number):
-      Promise<{actualWidth: number, actualHeight: number}>;
+  // Sets the size of the glic window to the specified dimensions. Resolves when
+  // the animation finishes, is interrupted, or immediately if the window
+  // doesn't exist yet, in which case the size will be used as the initial size
+  // when the widget is eventually created.
+  resizeWindow(width: number, height: number, options?: {durationMs?: number}):
+      Promise<void>;
 
   // Set the areas of the glic window from which it should be draggable. Returns
   // a promise that resolves when the browser has updated the draggable area.
@@ -97,10 +112,22 @@ export declare interface GlicBrowserHost {
   /**
    * Fetches page context for the currently focused tab, optionally including
    * more expensive-to-generate data.
+   *
    * @throws {GetTabContextError} on failure.
    */
   getContextFromFocusedTab?
       (options: TabContextOptions): Promise<TabContextResult>;
+
+  /**
+   * @todo Not yet implemented. https://crbug.com/384728537
+   *
+   * Requests the host to capture a screenshot. The choice of the screenshot
+   * target is made by the host, possibly allowing the user to choose between a
+   * desktop, window or arbitrary region.
+   * The promise will be failed if the user rejects the capture or another
+   * problem happens.
+   */
+  captureScreenshot?(): Promise<Screenshot>;
 
   // Creates a tab and navigates to a url. It is made the active tab by default
   // but that can be changed using the openInBackground option.
@@ -137,7 +164,18 @@ export declare interface GlicBrowserHost {
   // Returns the state of the panel.
   getPanelState?(): Observable<PanelState>;
 
-  // Returns the state of the currently focused tab.
+  /**
+   * @todo Replace with the separate notifications about tab change and tab
+   *       navigation. https://crbug.com/390741160
+   *
+   * Returns the observable state of the currently focused tab. Updates are sent
+   * whenever the focus changes due to the user switching tabs or navigating the
+   * current focused tab.
+   *
+   * @returns An observable for `TabData` values that will be updated when a new
+   *          tab is focused or the current tab is navigated. The value will be
+   *          `undefined` if there's no active tab or it cannot be focused.
+   */
   getFocusedTabState?(): Observable<TabData|undefined>;
 
   // Returns the state of the microphone permission.
@@ -187,19 +225,42 @@ export declare interface GlicBrowserHost {
    * hiding the indicators when tab context permissions are revoked.
    */
   setContextAccessIndicator?(show: boolean): void;
+
+  /**
+   * Allows the web client to control audio ducking (aka audio suppression) of
+   * other sounds, beyond what's played by itself. It is important that ducking
+   * be enabled only when it's necessary.
+   */
+  setAudioDucking?(enabled: boolean): void;
 }
 
-// A panel can be in one of these three states.
+/** Web client's operation modes */
+export enum WebClientMode {
+  /** Text operation mode. */
+  TEXT = 0,
+  /** Audio operation mode. */
+  AUDIO = 1,
+}
+
+/**
+ * Data sent back to the host about the opening of the panel.
+ */
+export declare interface OpenPanelInfo {
+  /** The mode in which the web client is opening at. */
+  startingMode: WebClientMode;
+}
+
+/** A panel can be in one of these three states. */
 export enum PanelStateKind {
-  // Not shown. This is the initial state.
+  /** Not shown. This is the initial state. */
   HIDDEN = 0,
-  /** @deprecated */
+  /** @deprecated Use DETACHED instead. */
   FLOATING = 1,
-  // A floating window detached from any Chrome window.
+  /** A floating window detached from any Chrome window. */
   DETACHED = 1,
-  /** @deprecated */
+  /** @deprecated Use ATTACHED instead.*/
   DOCKED = 2,
-  // Attached to a Chrome window.
+  /** Attached to a Chrome window. */
   ATTACHED = 2,
 }
 
@@ -212,6 +273,9 @@ export declare interface PanelState {
 /** The default for TabContextOptions.pdfSizeLimit. */
 export const DEFAULT_PDF_SIZE_LIMIT = 64 * 1024 * 1024;
 
+/** @todo The default for TabContextOptions.innerTextBytesLimit. */
+export const DEFAULT_INNER_TEXT_BYTES_LIMIT = 20000;
+
 /** Options for getting context from a tab. */
 export declare interface TabContextOptions {
   /**
@@ -219,6 +283,16 @@ export declare interface TabContextOptions {
    * response.
    */
   innerText?: boolean;
+  /**
+   * @todo Not yet implemented. https://crbug.com/383110287
+   *
+   * Maximum size in UTF-8 bytes that the returned innerText data may contain.
+   * If exceeded, the innerText will be truncated to the nearest character that
+   * will leave the string less than or equal to the specified byte size.
+   * Defaults to DEFAULT_INNER_TEXT_BYTES_LIMIT. If it is zero or negative,
+   * the innerText will be empty.
+   */
+  innerTextBytesLimit?: number;
   /**
    * If true, a screenshot of the user visible viewport will be included in the
    * response.
@@ -321,7 +395,7 @@ export declare interface Screenshot {
   // Width and height of the image in pixels.
   widthPixels: number;
   heightPixels: number;
-  // Encoded image data. ArrayBuffer is transferrable, so it should be copied
+  // Encoded image data. ArrayBuffer is transferable, so it should be copied
   // more efficiently over postMessage.
   data: ArrayBuffer;
   // The image encoding format represented as a MIME type.

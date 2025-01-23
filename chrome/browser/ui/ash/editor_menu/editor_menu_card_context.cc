@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_card_context.h"
 
-#include "ash/constants/ash_features.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_strings.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/text_and_image_mode.h"
+#include "chromeos/constants/chromeos_features.h"
 
 namespace chromeos::editor_menu {
 
@@ -25,7 +25,7 @@ TextAndImageMode EditorMenuCardContext::text_and_image_mode() const {
     case EditorMode::kWrite:
     case EditorMode::kConsentNeeded:
       if (editor_mode_ == EditorMode::kConsentNeeded &&
-          !ash::features::IsMagicBoostRevampEnabled()) {
+          !chromeos::features::IsMagicBoostRevampEnabled()) {
         return TextAndImageMode::kPromoCard;
       }
       if (lobster_mode_ == LobsterMode::kBlocked) {

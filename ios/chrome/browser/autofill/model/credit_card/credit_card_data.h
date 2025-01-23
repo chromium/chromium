@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_AUTOFILL_MODEL_CREDIT_CARD_CREDIT_CARD_DATA_H_
 
 #import <UIKit/UIKit.h>
+
 #import "components/autofill/core/browser/data_model/credit_card.h"
 
 // Data source for each individual credit card.

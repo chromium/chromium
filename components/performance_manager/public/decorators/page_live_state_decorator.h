@@ -43,7 +43,7 @@ class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
   // Must be called when the capability types used by `contents` change.
   static void OnCapabilityTypesChanged(
       content::WebContents* contents,
-      content::WebContents::CapabilityType capability_type,
+      content::WebContentsCapabilityType capability_type,
       bool used);
 
   // Functions that should be called by a MediaStreamCaptureIndicator::Observer.

@@ -5,9 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_BROWSER_VIEW_UI_BUNDLED_BROWSER_VIEW_CONTROLLER_PRIVATE_H_
 #define IOS_CHROME_BROWSER_BROWSER_VIEW_UI_BUNDLED_BROWSER_VIEW_CONTROLLER_PRIVATE_H_
 
-#import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
-
 #import "base/ios/block_types.h"
+#import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
 
 // This is a private category that is intended to only be imported in
 // browser_coordinator.mm.

@@ -4137,6 +4137,11 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
       params.is_pdf, is_embedder_initiated_fenced_frame_navigation,
       is_container_initiated, params.has_rel_opener, storage_access_api_status,
       embedder_shared_storage_context);
+
+  if (!navigation_request) {
+    return nullptr;
+  }
+
   navigation_request->set_from_download_cross_origin_redirect(
       params.from_download_cross_origin_redirect);
   navigation_request->set_force_new_browsing_instance(

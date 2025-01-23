@@ -1763,11 +1763,6 @@ BASE_FEATURE(kMacAddressRandomization,
              "MacAddressRandomization",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the new Magic Boost Consent Flow.
-BASE_FEATURE(kMagicBoostRevamp,
-             "MagicBoostRevamp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables Mahi on PDF contents in the Media App.
 BASE_FEATURE(kMediaAppPdfMahi,
              "MediaAppPdfMahi",
@@ -2539,11 +2534,6 @@ BASE_FEATURE(kSeaPenDemoMode,
 BASE_FEATURE(kSeaPenUseExptTemplate,
              "SeaPenUseExptTemplate",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables sea pen features for enterprise users controlled by the policy.
-BASE_FEATURE(kSeaPenEnterprise,
-             "SeaPenEnterprise",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables automated control of the refresh rate for the internal display.
 BASE_FEATURE(kSeamlessRefreshRateSwitching,
@@ -3919,10 +3909,6 @@ bool IsLockScreenHideSensitiveNotificationsSupported() {
       kLockScreenHideSensitiveNotificationsSupport);
 }
 
-bool IsMagicBoostRevampEnabled() {
-  return base::FeatureList::IsEnabled(kMagicBoostRevamp);
-}
-
 bool IsGameDashboardGamepadSupportEnabled() {
   return base::FeatureList::IsEnabled(kGameDashboardGamepadSupport);
 }
@@ -4339,10 +4325,6 @@ bool IsSeaPenTextInputEnabled() {
 bool IsSeaPenUseExptTemplateEnabled() {
   return IsSeaPenEnabled() &&
          base::FeatureList::IsEnabled(kSeaPenUseExptTemplate);
-}
-
-bool IsSeaPenEnterpriseEnabled() {
-  return IsSeaPenEnabled() && base::FeatureList::IsEnabled(kSeaPenEnterprise);
 }
 
 bool IsSeparateNetworkIconsEnabled() {

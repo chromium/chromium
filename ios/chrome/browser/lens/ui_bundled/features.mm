@@ -51,3 +51,7 @@ BASE_FEATURE(kLensClearcutLoggerFastQosEnabled,
 BASE_FEATURE(kLensSingleTapTextSelectionDisabled,
              "LensSingleTapTextSelectionDisabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensInkMultiSampleModeDisabled,
+             "LensInkMultiSampleModeDisabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);

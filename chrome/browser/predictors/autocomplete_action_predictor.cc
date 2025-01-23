@@ -199,8 +199,7 @@ void AutocompleteActionPredictor::ClearTransitionalMatches() {
 
 void AutocompleteActionPredictor::StartPrerendering(
     const GURL& url,
-    content::WebContents& web_contents,
-    const gfx::Size& size) {
+    content::WebContents& web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Helpers to create content::PreloadingAttempt.

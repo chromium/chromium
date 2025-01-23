@@ -171,35 +171,35 @@ TEST_F(PageLiveStateDecoratorHelperTest, IsConnectedToBluetoothDevice) {
 
 TEST_F(PageLiveStateDecoratorHelperTest, IsConnectedToUsbDevice) {
   EXPECT_FALSE(web_contents()->IsCapabilityActive(
-      content::WebContents::CapabilityType::kUSB));
+      content::WebContentsCapabilityType::kUSB));
   testing::TestPageNodePropertyOnPMSequence(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsConnectedToUSBDevice, false);
   content::WebContentsTester::For(web_contents())
       ->TestIncrementUsbActiveFrameCount();
   EXPECT_TRUE(web_contents()->IsCapabilityActive(
-      content::WebContents::CapabilityType::kUSB));
+      content::WebContentsCapabilityType::kUSB));
   testing::TestPageNodePropertyOnPMSequence(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsConnectedToUSBDevice, true);
   content::WebContentsTester::For(web_contents())
       ->TestIncrementUsbActiveFrameCount();
   EXPECT_TRUE(web_contents()->IsCapabilityActive(
-      content::WebContents::CapabilityType::kUSB));
+      content::WebContentsCapabilityType::kUSB));
   testing::TestPageNodePropertyOnPMSequence(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsConnectedToUSBDevice, true);
   content::WebContentsTester::For(web_contents())
       ->TestDecrementUsbActiveFrameCount();
   EXPECT_TRUE(web_contents()->IsCapabilityActive(
-      content::WebContents::CapabilityType::kUSB));
+      content::WebContentsCapabilityType::kUSB));
   testing::TestPageNodePropertyOnPMSequence(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsConnectedToUSBDevice, true);
   content::WebContentsTester::For(web_contents())
       ->TestDecrementUsbActiveFrameCount();
   EXPECT_FALSE(web_contents()->IsCapabilityActive(
-      content::WebContents::CapabilityType::kUSB));
+      content::WebContentsCapabilityType::kUSB));
   testing::TestPageNodePropertyOnPMSequence(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsConnectedToUSBDevice, false);

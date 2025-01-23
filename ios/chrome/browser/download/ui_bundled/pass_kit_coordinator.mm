@@ -27,13 +27,15 @@ namespace {
 // controller.
 PresentAddPassesDialogResult GetUmaResult(
     UIViewController* base_view_controller) {
-  if (!base_view_controller.presentedViewController)
+  if (!base_view_controller.presentedViewController) {
     return PresentAddPassesDialogResult::kSuccessful;
+  }
 
   if ([base_view_controller.presentedViewController
-          isKindOfClass:[PKAddPassesViewController class]])
+          isKindOfClass:[PKAddPassesViewController class]]) {
     return PresentAddPassesDialogResult::
         kAnotherAddPassesViewControllerIsPresented;
+  }
 
   return PresentAddPassesDialogResult::kAnotherViewControllerIsPresented;
 }
@@ -74,8 +76,9 @@ PresentAddPassesDialogResult GetUmaResult(
   base::UmaHistogramEnumeration(kUmaPresentAddPassesDialogResult,
                                 GetUmaResult(self.baseViewController),
                                 PresentAddPassesDialogResult::kCount);
-  if (_viewController)
+  if (_viewController) {
     return;
+  }
 
   _viewController =
       [[PKAddPassesViewController alloc] initWithPasses:self.passes];

@@ -11,8 +11,8 @@
 
 namespace {
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForFileOperationTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 NSUserDefaults* TestUserDefaults() {
   return [NSUserDefaults standardUserDefaults];
@@ -141,4 +141,4 @@ TEST_F(UserDefaultsCredentialStoreTest, persist) {
       [credential isEqual:freshCredentialStore.credentials.firstObject]);
 }
 
-}
+}  // namespace

@@ -195,8 +195,8 @@ base::Value::List DisableReasonsToList(int disable_reasons) {
     disable_reasons_value.Append("DISABLE_NOT_ALLOWLISTED");
   }
   if (disable_reasons &
-      extensions::disable_reason::DISABLE_NOT_ASH_KEEPLISTED) {
-    disable_reasons_value.Append("DISABLE_NOT_ASH_KEEPLISTED");
+      extensions::disable_reason::DEPRECATED_DISABLE_NOT_ASH_KEEPLISTED) {
+    disable_reasons_value.Append("DEPRECATED_DISABLE_NOT_ASH_KEEPLISTED");
   }
   if (disable_reasons & extensions::disable_reason::
                             DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY) {

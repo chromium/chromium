@@ -266,24 +266,6 @@ class ExtensionRegistrarTest : public ExtensionsTest {
     EXPECT_FALSE(IsExtensionReady());
   }
 
-  void TryDisablingNotAshKeeplistedExtension(bool expect_extension_disabled) {
-    if (expect_extension_disabled) {
-      EXPECT_CALL(delegate_, PostDeactivateExtension(extension_));
-    }
-
-    // Disable extension because it is not in the ash keep list.
-    registrar_->DisableExtension(extension_->id(),
-                                 disable_reason::DISABLE_NOT_ASH_KEEPLISTED);
-
-    ExtensionRegistry::IncludeFlag include_flag =
-        expect_extension_disabled ? ExtensionRegistry::DISABLED
-                                  : ExtensionRegistry::ENABLED;
-    ExpectInSet(include_flag);
-    EXPECT_NE(IsExtensionReady(), expect_extension_disabled);
-
-    VerifyMock();
-  }
-
   void TerminateExtension() {
     SCOPED_TRACE("TerminateExtension");
     EXPECT_CALL(delegate_, PostDeactivateExtension(extension_));
@@ -543,16 +525,6 @@ TEST_F(ExtensionRegistrarTest, ReloadTerminatedExtension) {
   // enabled once re-added to the registrar, since ExtensionPrefs shouldn't say
   // it's disabled.
   AddEnabledExtension();
-}
-
-// Test that an extension which is not controlled (e.g. by policy) and which is
-// not on the ash keep-list can be disabled.
-TEST_F(ExtensionRegistrarTest, DisableNotAshKeeplistedExtension) {
-  ON_CALL(*delegate(), CanDisableExtension(extension().get()))
-      .WillByDefault(Return(true));
-  AddEnabledExtension();
-
-  TryDisablingNotAshKeeplistedExtension(/* expect_extension_disabled= */ true);
 }
 
 }  // namespace extensions

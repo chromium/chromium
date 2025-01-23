@@ -23,12 +23,14 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
@@ -172,7 +174,10 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             ActionConfirmationManager actionConfirmationManager,
             ModalDialogManager modalDialogManager,
             DataSharingTabManager dataSharingTabManager) {
-        return (menuId, tabId, collaborationId) -> {
+        return (menuId, tabGroupId, collaborationId) -> {
+            int tabId = tabGroupModelFilter.getGroupLastShownTabId(tabGroupId);
+            if (tabId == Tab.INVALID_TAB_ID) return;
+
             if (menuId == org.chromium.chrome.R.id.ungroup_tab) {
                 TabUiUtils.ungroupTabGroup(tabGroupModelFilter, tabId);
                 recordUserAction("Ungroup");
@@ -213,7 +218,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         tabGroupDisplayName);
                 recordUserAction("ShareGroup");
             } else if (menuId == R.id.manage_sharing) {
-                dataSharingTabManager.showManageSharing(activity, collaborationId);
+                dataSharingTabManager.showManageSharing(
+                        activity, collaborationId, /* finishRunnable= */ null);
                 recordUserAction("ManageSharing");
             } else if (menuId == R.id.recent_activity) {
                 dataSharingTabManager.showRecentActivity(activity, collaborationId);
@@ -247,9 +253,10 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
      */
     protected void showMenu(RectProvider anchorViewRectProvider, int rootId) {
         mGroupRootId = rootId;
+        Token tabGroupId = mTabGroupModelFilter.getStableIdFromRootId(rootId);
         createAndShowMenu(
                 anchorViewRectProvider,
-                rootId,
+                tabGroupId,
                 /* horizontalOverlapAnchor= */ true,
                 /* verticalOverlapAnchor= */ false,
                 /* animStyle= */ ResourcesCompat.ID_NULL,

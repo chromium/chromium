@@ -38,8 +38,9 @@ class FakeOAuthTokenGetter : public OAuthTokenGetter {
   // OAuthTokenGetter overrides.
   void CallWithToken(TokenCallback on_access_token) override;
   void InvalidateCache() override;
+  base::WeakPtr<OAuthTokenGetter> GetWeakPtr() override;
 
-  base::WeakPtr<FakeOAuthTokenGetter> GetWeakPtr();
+  base::WeakPtr<FakeOAuthTokenGetter> GetFakeOAuthTokenGetterWeakPtr();
 
  private:
   TokenCallback on_access_token_;
@@ -83,7 +84,12 @@ void FakeOAuthTokenGetter::InvalidateCache() {
   invalidate_cache_expected_ = false;
 }
 
-base::WeakPtr<FakeOAuthTokenGetter> FakeOAuthTokenGetter::GetWeakPtr() {
+base::WeakPtr<OAuthTokenGetter> FakeOAuthTokenGetter::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+base::WeakPtr<FakeOAuthTokenGetter>
+FakeOAuthTokenGetter::GetFakeOAuthTokenGetterWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
@@ -172,8 +178,9 @@ void OAuthTokenGetterProxyTest::TestCallWithTokenOnMainThread(
 void OAuthTokenGetterProxyTest::ExpectInvalidateCache() {
   ASSERT_NE(nullptr, token_getter_.get());
   runner_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&FakeOAuthTokenGetter::ExpectInvalidateCache,
-                                token_getter_->GetWeakPtr()));
+      FROM_HERE,
+      base::BindOnce(&FakeOAuthTokenGetter::ExpectInvalidateCache,
+                     token_getter_->GetFakeOAuthTokenGetterWeakPtr()));
 }
 
 void OAuthTokenGetterProxyTest::InvalidateTokenGetter() {
@@ -194,9 +201,9 @@ void OAuthTokenGetterProxyTest::TestCallWithTokenImpl(
   proxy_->CallWithToken(base::BindOnce(
       &OAuthTokenGetterProxyTest::OnTokenReceived, base::Unretained(this)));
   runner_thread_.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&FakeOAuthTokenGetter::ResolveCallback,
-                     token_getter_->GetWeakPtr(), status, token_info));
+      FROM_HERE, base::BindOnce(&FakeOAuthTokenGetter::ResolveCallback,
+                                token_getter_->GetFakeOAuthTokenGetterWeakPtr(),
+                                status, token_info));
 }
 
 void OAuthTokenGetterProxyTest::OnTokenReceived(

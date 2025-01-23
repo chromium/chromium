@@ -5,7 +5,6 @@
 package org.chromium.components.feature_engagement.internal;
 
 import androidx.annotation.CheckResult;
-import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -13,6 +12,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.components.feature_engagement.TriggerState;
@@ -23,6 +24,7 @@ import org.chromium.ui.UiSwitches;
  * and C++. All method calls are delegated to the native C++ class.
  */
 @JNINamespace("feature_engagement")
+@NullMarked
 public class TrackerImpl implements Tracker {
     /**
      * A JNI-wrapper for the native DisplayLockHandle.
@@ -128,8 +130,7 @@ public class TrackerImpl implements Tracker {
 
     @Override
     @CheckResult
-    @Nullable
-    public DisplayLockHandle acquireDisplayLock() {
+    public @Nullable DisplayLockHandle acquireDisplayLock() {
         assert mNativePtr != 0;
         return TrackerImplJni.get().acquireDisplayLock(mNativePtr, TrackerImpl.this);
     }
@@ -140,8 +141,7 @@ public class TrackerImpl implements Tracker {
     }
 
     @Override
-    @Nullable
-    public String getPendingPriorityNotification() {
+    public @Nullable String getPendingPriorityNotification() {
         return TrackerImplJni.get().getPendingPriorityNotification(mNativePtr, TrackerImpl.this);
     }
 

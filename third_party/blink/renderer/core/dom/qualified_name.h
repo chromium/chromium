@@ -82,22 +82,34 @@ class CORE_EXPORT QualifiedName {
 
     unsigned ComputeHash() const;
 
+    bool IsStatic() const {
+      return is_static_and_html_attribute_triggers_index_ != kNotStatic;
+    }
+
     void AddRef() {
-      if (is_static_)
+      if (IsStatic()) {
         return;
+      }
       RefCounted<QualifiedNameImpl>::AddRef();
     }
 
     void Release() {
-      if (is_static_)
+      if (IsStatic()) {
         return;
+      }
       RefCounted<QualifiedNameImpl>::Release();
     }
+
+    enum StaticAndAttributeTriggersConstants {
+      kLargestAllowedIndex = 253,
+      kNotStatic = 254,
+      kStaticWithNoIndex = 255
+    };
 
     // We rely on HashComponents() clearing out the top 8 bits when
     // doing hashing and use one of the bits for the is_static_ value.
     mutable unsigned existing_hash_ : 24;
-    unsigned is_static_ : 1;
+    mutable unsigned is_static_and_html_attribute_triggers_index_ : 8;
     const AtomicString prefix_;
     const AtomicString local_name_;
     const AtomicString namespace_;
@@ -109,7 +121,8 @@ class CORE_EXPORT QualifiedName {
                       StringImpl* namespace_uri,
                       bool is_static)
         : existing_hash_(0),
-          is_static_(is_static),
+          is_static_and_html_attribute_triggers_index_(
+              is_static ? kStaticWithNoIndex : kNotStatic),
           prefix_(prefix),
           local_name_(local_name),
           namespace_(namespace_uri)
@@ -165,9 +178,27 @@ class CORE_EXPORT QualifiedName {
 
   const AtomicString& LocalNameUpperSlow() const;
 
+  void RegisterHTMLAttributeTriggersIndex(unsigned index) const {
+    using enum QualifiedNameImpl::StaticAndAttributeTriggersConstants;
+    CHECK_EQ(impl_->is_static_and_html_attribute_triggers_index_,
+             kStaticWithNoIndex);
+    CHECK_LE(index, kLargestAllowedIndex);
+    impl_->is_static_and_html_attribute_triggers_index_ = index;
+    CHECK_EQ(*HTMLAttributeTriggersIndex(), index);
+  }
+
+  std::optional<unsigned> HTMLAttributeTriggersIndex() const {
+    using enum QualifiedNameImpl::StaticAndAttributeTriggersConstants;
+    if (impl_->is_static_and_html_attribute_triggers_index_ >
+        kLargestAllowedIndex) {
+      return std::nullopt;
+    }
+    return unsigned{impl_->is_static_and_html_attribute_triggers_index_};
+  }
+
   // Returns true if this is a built-in name. That is, one of the names defined
   // at build time (such as <img>).
-  bool IsDefinedName() const { return impl_ && impl_->is_static_; }
+  bool IsDefinedName() const { return impl_ && impl_->IsStatic(); }
 
   String ToString() const;
 

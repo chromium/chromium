@@ -5,8 +5,10 @@
 package org.chromium.components.plus_addresses;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 /** This class provides helpers to record metrics related to the plus addresses. */
+@NullMarked
 public class PlusAddressesMetricsRecorder {
     public static final String UMA_PLUS_ADDRESSES_OPEN_ACCOUNT_SETTINGS =
             "PlusAddresses.AccountSettings.Launch.Success";

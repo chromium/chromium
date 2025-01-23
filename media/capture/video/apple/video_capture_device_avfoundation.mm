@@ -267,8 +267,10 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
   // For testing.
   base::RepeatingCallback<void()> _onPhotoOutputStopped;
-  std::optional<bool> _isPortraitEffectSupportedForTesting;
-  std::optional<bool> _isPortraitEffectActiveForTesting;
+  std::optional<bool> _isPortraitEffectSupportedForTesting
+      GUARDED_BY(_metadataLock);
+  std::optional<bool> _isPortraitEffectActiveForTesting
+      GUARDED_BY(_metadataLock);
 
   scoped_refptr<base::SingleThreadTaskRunner> _mainThreadTaskRunner;
 }
@@ -1250,12 +1252,14 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
 - (void)setIsPortraitEffectActiveForTesting:
     (bool)isPortraitEffectActiveForTesting {
-  base::AutoLock lock(_metadataLock);
-  if (_isPortraitEffectActiveForTesting.has_value() &&
-      _isPortraitEffectActiveForTesting == isPortraitEffectActiveForTesting) {
-    return;
+  {
+    base::AutoLock lock(_metadataLock);
+    if (_isPortraitEffectActiveForTesting.has_value() &&
+        _isPortraitEffectActiveForTesting == isPortraitEffectActiveForTesting) {
+      return;
+    }
+    _isPortraitEffectActiveForTesting = isPortraitEffectActiveForTesting;
   }
-  _isPortraitEffectActiveForTesting = isPortraitEffectActiveForTesting;
   [self captureConfigurationChanged];
 }
 

@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_observer.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_observer_factory.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/api/toast_registry.h"
 #include "chrome/browser/ui/toasts/api/toast_specification.h"
@@ -32,6 +34,7 @@
 #include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/menus/simple_menu_model.h"
@@ -187,6 +190,62 @@ void ToastService::RegisterToasts(
                     },
                     base::Unretained(browser_window_interface)))
             .AddCloseButton()
+            .Build());
+  }
+
+  if (tab_groups::IsTabGroupsSaveV2Enabled()) {
+    // Current tab has been removed from the group.
+    toast_registry_->RegisterToast(
+        ToastId::kTabGroupSyncTabRemoved,
+        ToastSpecification::Builder(kAccountCircleChromeRefreshIcon,
+                                    IDS_DATA_SHARING_TOAST_TAB_REMOVED)
+            .AddCloseButton()
+            .AddActionButton(
+                IDS_DATA_SHARING_TOAST_TAB_REMOVED_ACTION,
+                base::BindRepeating(
+                    [](BrowserWindowInterface* window) {
+                      Profile* profile = window->GetProfile();
+                      auto* collaboration_messaging_observer =
+                          tab_groups::CollaborationMessagingObserverFactory::
+                              GetForProfile(profile);
+                      if (collaboration_messaging_observer) {
+                        collaboration_messaging_observer
+                            ->ReopenTabForCurrentInstantMessage();
+                      }
+                    },
+                    base::Unretained(browser_window_interface)))
+            .AddGlobalScoped()
+            .Build());
+
+    // Another user has joined an open group (global)
+    toast_registry_->RegisterToast(
+        ToastId::kTabGroupSyncUserJoined,
+        ToastSpecification::Builder(kAccountCircleChromeRefreshIcon,
+                                    IDS_DATA_SHARING_TOAST_NEW_MEMBER)
+            .AddCloseButton()
+            .AddActionButton(
+                IDS_DATA_SHARING_TOAST_NEW_MEMBER_ACTION,
+                base::BindRepeating(
+                    [](BrowserWindowInterface* window) {
+                      Profile* profile = window->GetProfile();
+                      auto* collaboration_messaging_observer =
+                          tab_groups::CollaborationMessagingObserverFactory::
+                              GetForProfile(profile);
+                      if (collaboration_messaging_observer) {
+                        collaboration_messaging_observer
+                            ->ManageSharingForCurrentInstantMessage();
+                      }
+                    },
+                    base::Unretained(browser_window_interface)))
+            .AddGlobalScoped()
+            .Build());
+
+    // Profile has been removed from open group (global)
+    toast_registry_->RegisterToast(
+        ToastId::kTabGroupSyncRemovedFromGroup,
+        ToastSpecification::Builder(kTabGroupSharingIcon,
+                                    IDS_DATA_SHARING_TOAST_BLOCK_LEAVE)
+            .AddGlobalScoped()
             .Build());
   }
 }

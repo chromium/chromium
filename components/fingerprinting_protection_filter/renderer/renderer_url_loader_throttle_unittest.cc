@@ -31,7 +31,7 @@ class MockThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
   ~MockThrottleDelegate() override = default;
 
   void CancelWithError(int error_code, std::string_view message) override {
-    if (error_code == net::ERR_BLOCKED_BY_CLIENT &&
+    if (error_code == net::ERR_BLOCKED_BY_FINGERPRINTING_PROTECTION &&
         message == "FingerprintingProtection") {
       // Only accept calls with the expected error code and message.
       cancel_called_ = true;

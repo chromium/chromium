@@ -42,14 +42,14 @@ class SampleCountPickleIterator : public SampleCountIterator {
   void Next() override;
   void Get(HistogramBase::Sample32* min,
            int64_t* max,
-           HistogramBase::Count* count) override;
+           HistogramBase::Count32* count) override;
 
  private:
   const raw_ptr<PickleIterator> iter_;
 
   HistogramBase::Sample32 min_;
   int64_t max_;
-  HistogramBase::Count count_;
+  HistogramBase::Count32 count_;
   bool is_done_ = false;
 };
 
@@ -72,7 +72,7 @@ void SampleCountPickleIterator::Next() {
 
 void SampleCountPickleIterator::Get(HistogramBase::Sample32* min,
                                     int64_t* max,
-                                    HistogramBase::Count* count) {
+                                    HistogramBase::Count32* count) {
   DCHECK(!Done());
   *min = min_;
   *max = max_;
@@ -144,7 +144,7 @@ HistogramSamples::AtomicSingleSample::ExtractAndDisable() {
 
 bool HistogramSamples::AtomicSingleSample::Accumulate(
     size_t bucket,
-    HistogramBase::Count count) {
+    HistogramBase::Count32 count) {
   if (count == 0) {
     return true;
   }
@@ -251,7 +251,7 @@ bool HistogramSamples::Add(const HistogramSamples& other) {
 
 bool HistogramSamples::AddFromPickle(PickleIterator* iter) {
   int64_t sum;
-  HistogramBase::Count redundant_count;
+  HistogramBase::Count32 redundant_count;
 
   if (!iter->ReadInt64(&sum) || !iter->ReadInt(&redundant_count)) {
     return false;
@@ -312,7 +312,7 @@ void HistogramSamples::Serialize(Pickle* pickle) const {
 
   HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
   for (std::unique_ptr<SampleCountIterator> it = Iterator(); !it->Done();
        it->Next()) {
     it->Get(&min, &max, &count);
@@ -323,7 +323,7 @@ void HistogramSamples::Serialize(Pickle* pickle) const {
 }
 
 bool HistogramSamples::AccumulateSingleSample(HistogramBase::Sample32 value,
-                                              HistogramBase::Count count,
+                                              HistogramBase::Count32 count,
                                               size_t bucket) {
   if (single_sample().Accumulate(bucket, count)) {
     // Success. Update the (separate) sum and redundant-count.
@@ -334,7 +334,7 @@ bool HistogramSamples::AccumulateSingleSample(HistogramBase::Sample32 value,
 }
 
 void HistogramSamples::IncreaseSumAndCount(int64_t sum,
-                                           HistogramBase::Count count) {
+                                           HistogramBase::Count32 count) {
 #ifdef ARCH_CPU_64_BITS
   subtle::NoBarrier_AtomicIncrement(&meta_->sum, sum);
 #else
@@ -344,7 +344,7 @@ void HistogramSamples::IncreaseSumAndCount(int64_t sum,
 }
 
 void HistogramSamples::RecordNegativeSample(NegativeSampleReason reason,
-                                            HistogramBase::Count increment) {
+                                            HistogramBase::Count32 increment) {
   UMA_HISTOGRAM_ENUMERATION("UMA.NegativeSamples.Reason", reason,
                             MAX_NEGATIVE_SAMPLE_REASONS);
   UMA_HISTOGRAM_CUSTOM_COUNTS("UMA.NegativeSamples.Increment", increment, 1,
@@ -374,20 +374,20 @@ std::string HistogramSamples::GetAsciiHeader(std::string_view histogram_name,
 }
 
 std::string HistogramSamples::GetAsciiBody() const {
-  HistogramBase::Count total_count = TotalCount();
+  HistogramBase::Count32 total_count = TotalCount();
   double scaled_total_count = total_count / 100.0;
 
   // Determine how wide the largest bucket range is (how many digits to print),
   // so that we'll be able to right-align starts for the graphical bars.
   // Determine which bucket has the largest sample count so that we can
   // normalize the graphical bar-width relative to that sample count.
-  HistogramBase::Count largest_count = 0;
+  HistogramBase::Count32 largest_count = 0;
   HistogramBase::Sample32 largest_sample = 0;
   std::unique_ptr<SampleCountIterator> it = Iterator();
   while (!it->Done()) {
     HistogramBase::Sample32 min;
     int64_t max;
-    HistogramBase::Count count;
+    HistogramBase::Count32 count;
     it->Get(&min, &max, &count);
     if (min > largest_sample) {
       largest_sample = min;
@@ -412,7 +412,7 @@ std::string HistogramSamples::GetAsciiBody() const {
   while (!it->Done()) {
     HistogramBase::Sample32 min;
     int64_t max;
-    HistogramBase::Count count;
+    HistogramBase::Count32 count;
     it->Get(&min, &max, &count);
 
     // value is min, so display it
@@ -421,7 +421,7 @@ std::string HistogramSamples::GetAsciiBody() const {
     if (const auto range_size = range.size(); print_width >= range_size) {
       output.append(print_width + 1 - range_size, ' ');
     }
-    HistogramBase::Count current_size = round(count * scaling_factor);
+    HistogramBase::Count32 current_size = round(count * scaling_factor);
     WriteAsciiBucketGraph(current_size, kLineLength, &output);
     WriteAsciiBucketValue(count, scaled_total_count, &output);
     output.append(1, '\n');
@@ -444,7 +444,7 @@ void HistogramSamples::WriteAsciiBucketGraph(double x_count,
   }
 }
 
-void HistogramSamples::WriteAsciiBucketValue(HistogramBase::Count current,
+void HistogramSamples::WriteAsciiBucketValue(HistogramBase::Count32 current,
                                              double scaled_sum,
                                              std::string* output) const {
   StringAppendF(output, " (%d = %3.1f%%)", current, current / scaled_sum);
@@ -464,7 +464,7 @@ bool SampleCountIterator::GetBucketIndex(size_t* index) const {
 
 SingleSampleIterator::SingleSampleIterator(HistogramBase::Sample32 min,
                                            int64_t max,
-                                           HistogramBase::Count count,
+                                           HistogramBase::Count32 count,
                                            size_t bucket_index,
                                            bool value_was_extracted)
     : min_(min),
@@ -492,7 +492,7 @@ void SingleSampleIterator::Next() {
 
 void SingleSampleIterator::Get(HistogramBase::Sample32* min,
                                int64_t* max,
-                               HistogramBase::Count* count) {
+                               HistogramBase::Count32* count) {
   DCHECK(!Done());
   *min = min_;
   *max = max_;

@@ -68,8 +68,8 @@ NSNumber* GetDefaultMaxLength() {
   return @524288;
 }
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 // Text fixture to test AutofillJavaScriptFeature.
 class AutofillJavaScriptFeatureTest : public PlatformTest {

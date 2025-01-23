@@ -108,7 +108,7 @@ TEST_F(QualityMetricsTest, QualityMetrics) {
 
   // Auxiliary function for GetAllSamples() expectations.
   auto b = [](FieldType field_type, FieldTypeQualityMetric metric,
-              base::HistogramBase::Count count) {
+              base::HistogramBase::Count32 count) {
     return Bucket(GetFieldTypeGroupPredictionQualityMetric(field_type, metric),
                   count);
   };
@@ -397,7 +397,7 @@ TEST_F(QualityMetricsTest, LoggedCorrectlyForOnlyFillWhenFocusedField) {
 
   // Auxiliary function for GetAllSamples() expectations.
   auto b = [](FieldType field_type, FieldTypeQualityMetric metric,
-              base::HistogramBase::Count count) {
+              base::HistogramBase::Count32 count) {
     return Bucket(GetFieldTypeGroupPredictionQualityMetric(field_type, metric),
                   count);
   };

@@ -181,13 +181,8 @@ void ReadWriteCardsUiController::Relayout() {
   ReorderChildViews();
 
   gfx::Rect bounds(widget_origin, widget_size);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // For Ash, convert the position relative to the screen.
-  // For Lacros, `bounds` is already relative to the toplevel window and the
-  // position will be calculated on server side.
+  // Convert the position relative to the screen.
   wm::ConvertRectFromScreen(widget_->GetNativeWindow()->parent(), &bounds);
-#endif
-
   widget_->SetBounds(bounds);
 }
 

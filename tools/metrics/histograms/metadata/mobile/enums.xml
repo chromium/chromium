@@ -547,6 +547,8 @@ chromium-metrics-reviews@google.com.
   <int value="31" label="Undo provisional unsubscribe button."/>
   <int value="32" label="Commit provisional unsubscribe explicitly."/>
   <int value="33" label="Commit provisional unsubscribe implicitly."/>
+  <int value="34" label="Show original notification button."/>
+  <int value="35" label="Always allow notification button."/>
 </enum>
 
 <enum name="SystemNotificationType">

@@ -9,7 +9,8 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.JsonWriter;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -28,6 +29,7 @@ import java.util.List;
  *         href="https://web.dev/android-payment-apps-overview/#parameters">“Is
  *         ready to pay” parameters</a>
  */
+@NullMarked
 public final class WebPaymentIntentHelperType {
     private static final String EMPTY_JSON_DATA = "{}";
 
@@ -61,7 +63,7 @@ public final class WebPaymentIntentHelperType {
          * Serializes this object
          * @return The serialized payment currency amount.
          */
-        public String serialize() {
+        public @Nullable String serialize() {
             StringWriter stringWriter = new StringWriter();
             JsonWriter json = new JsonWriter(stringWriter);
             try {
@@ -234,7 +236,7 @@ public final class WebPaymentIntentHelperType {
         public final boolean requestPayerEmail;
         public final boolean requestPayerPhone;
         public final boolean requestShipping;
-        public final String shippingType;
+        public final @Nullable String shippingType;
 
         public PaymentOptions(
                 boolean requestPayerName,
@@ -284,11 +286,11 @@ public final class WebPaymentIntentHelperType {
                 "stringifiedPaymentMethodErrors";
         public static final String EXTRA_ADDRESS_ERRORS = "addressErrors";
 
-        @Nullable public final PaymentCurrencyAmount total;
-        @Nullable public final List<PaymentShippingOption> shippingOptions;
-        @Nullable public final String error;
-        @Nullable public final String stringifiedPaymentMethodErrors;
-        @Nullable public final Bundle bundledShippingAddressErrors;
+        public final @Nullable PaymentCurrencyAmount total;
+        public final @Nullable List<PaymentShippingOption> shippingOptions;
+        public final @Nullable String error;
+        public final @Nullable String stringifiedPaymentMethodErrors;
+        public final @Nullable Bundle bundledShippingAddressErrors;
 
         public PaymentRequestDetailsUpdate(
                 @Nullable PaymentCurrencyAmount total,

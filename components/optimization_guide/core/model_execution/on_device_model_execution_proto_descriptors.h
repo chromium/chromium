@@ -88,6 +88,25 @@ std::optional<proto::Any> SetProtoValue(const std::string& proto_name,
                                         const proto::ProtoField& proto_field,
                                         const std::string& value);
 
+// Get mutable value for a singular message field.
+// Analogous to google::protobuf::Reflection::MutableMessage.
+google::protobuf::MessageLite* GetProtoMutableMessage(
+    google::protobuf::MessageLite* msg,
+    int32_t tag_number);
+
+// Appends a new empty message to a repeated message field.
+// Returns the number of elements in the field after adding it (or zero if
+// the field or message is not supported)
+int AddProtoMessage(google::protobuf::MessageLite* msg, int32_t tag_number);
+
+// Gets a mutable message for one value from a repeated message field.
+// 'tag_number' identifies the field, and 'offset' is which value.
+// Analogous to google::protobuf::Reflection::MutableRepeatedMessage.
+google::protobuf::MessageLite* GetProtoMutableRepeatedMessage(
+    google::protobuf::MessageLite* parent,
+    int32_t tag_number,
+    int offset);
+
 // Set the field of 'msg' with the given 'tag' to have provided 'value'.
 ProtoStatus SetProtoField(google::protobuf::MessageLite* msg,
                           int32_t tag,

@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.model_execution;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Optional;
@@ -15,6 +18,7 @@ import java.util.Optional;
  * Represents a result from a model execution. The result may be complete, partial or contain an
  * error code.
  */
+@NullMarked
 public class ExecutionResult {
 
     /** Possible failure modes of model execution. */
@@ -55,7 +59,7 @@ public class ExecutionResult {
      * @param isCompleteResult Whether {@code response} is a complete result or part of a stream.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public ExecutionResult(String response, boolean isCompleteResult) {
+    public ExecutionResult(@Nullable String response, boolean isCompleteResult) {
         mIsCompleteResult = isCompleteResult;
         mResponse = response;
         mErrorCode = Optional.empty();
@@ -69,7 +73,7 @@ public class ExecutionResult {
      *
      * @return A string representing a full or partial execution result.
      */
-    public String getResponse() {
+    public @Nullable String getResponse() {
         return mResponse;
     }
 
@@ -88,7 +92,7 @@ public class ExecutionResult {
         return mIsCompleteResult;
     }
 
-    private final String mResponse;
+    private final @Nullable String mResponse;
 
     @ExecutionError private final Optional<Integer> mErrorCode;
     private final boolean mIsCompleteResult;

@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -267,15 +268,10 @@ BadgeManager::FrameBindingContext::GetAppIdsAndUrlsForBadging() const {
     return std::vector<std::tuple<webapps::AppId, GURL>>{};
 
   const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
-  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   const std::optional<webapps::AppId> app_id =
       registrar.FindBestAppWithUrlInScope(
           frame->GetLastCommittedURL(),
-          {
-              web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-              web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-          });
+          web_app::WebAppFilter::DisplaysBadgeOnOs());
   if (!app_id)
     return std::vector<std::tuple<webapps::AppId, GURL>>{};
   return std::vector<std::tuple<webapps::AppId, GURL>>{std::make_tuple(

@@ -31,13 +31,18 @@ enum class SynchronyMode {
 // level navigations. This is a UI thread class.
 class InterceptNavigationThrottle : public content::NavigationThrottle {
  public:
-  typedef base::RepeatingCallback<bool(
-      content::NavigationHandle* /* navigation_handle */)>
+  typedef base::OnceCallback<void(bool)> ResultCallback;
+  typedef base::RepeatingCallback<void(
+      content::NavigationHandle* /* navigation_handle */,
+      bool should_run_async,
+      ResultCallback)>
       CheckCallback;
 
-  InterceptNavigationThrottle(content::NavigationHandle* navigation_handle,
-                              CheckCallback should_ignore_callback,
-                              SynchronyMode async_mode);
+  InterceptNavigationThrottle(
+      content::NavigationHandle* navigation_handle,
+      CheckCallback should_ignore_callback,
+      SynchronyMode async_mode,
+      std::optional<base::RepeatingClosure> finish_async_work_callback);
 
   InterceptNavigationThrottle(const InterceptNavigationThrottle&) = delete;
   InterceptNavigationThrottle& operator=(const InterceptNavigationThrottle&) =
@@ -53,7 +58,8 @@ class InterceptNavigationThrottle : public content::NavigationThrottle {
 
  private:
   ThrottleCheckResult CheckIfShouldIgnoreNavigation();
-  void RunCheckAsync();
+  void OnCheckComplete(bool should_ignore);
+  void FinishPendingCheck();
 
   bool ShouldCheckAsynchronously() const;
 
@@ -62,24 +68,21 @@ class InterceptNavigationThrottle : public content::NavigationThrottle {
   // Note: the callback can delete |this|.
   CheckCallback should_ignore_callback_;
 
+  // This callback will be called if a redirect comes in before the previous
+  // should_ignore_callback_ completes, and requires that the outstanding
+  // should_ignore_callback_ completes before returning.
+  std::optional<base::RepeatingClosure> finish_async_work_callback_;
+
   // Note that the CheckCallback currently has thread affinity on the Java side.
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
   const SynchronyMode mode_ = SynchronyMode::kSync;
 
-  // The remaining members are only set for asynchronous checking.
-  //
-  // How many outbound pending checks are running. Normally this will be either
-  // 0 or 1, but making this a bool makes too many assumptions about the nature
-  // of Chrome's task queues (e.g. we could be scheduled after the task which
-  // redirects the navigation).
-  int pending_checks_ = 0;
-
   // Whether the navigation should be ignored. Updated at every redirect.
   bool should_ignore_ = false;
 
-  // Whether the navigation is currently deferred.
-  bool deferring_ = false;
+  // Whether a should ignore check is in progress.
+  bool pending_check_ = false;
 
   base::WeakPtrFactory<InterceptNavigationThrottle> weak_factory_{this};
 };

@@ -330,11 +330,8 @@ TEST_F(HttpStreamPoolGroupTest, IPAddressChangeCleanupIdleSocket) {
   ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
 
   NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
-  RunUntilIdle();
-
-  group.CleanupTimedoutIdleStreamSocketsForTesting();
-  ASSERT_EQ(group.ActiveStreamSocketCount(), 0u);
-  ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+  FastForwardUntilNoTasksRemain();
+  ASSERT_FALSE(GetTestGroup());
 }
 
 TEST_F(HttpStreamPoolGroupTest, IPAddressChangeReleaseStreamSocket) {

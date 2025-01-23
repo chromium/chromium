@@ -41,6 +41,7 @@ import org.chromium.chrome.test.util.BookmarkTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -70,6 +71,7 @@ public class AccountBookmarkTest {
 
     @Test
     @SmallTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testAccountFoldersDisplay() {
         CriteriaHelper.pollUiThread(() -> mBookmarkModel.getAccountMobileFolderId() != null);
         RecyclerViewTestUtils.waitForStableMvcRecyclerView(
@@ -105,6 +107,7 @@ public class AccountBookmarkTest {
 
     @Test
     @SmallTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testDefaultFolders() {
         CriteriaHelper.pollUiThread(() -> mBookmarkModel.getAccountMobileFolderId() != null);
         runOnUiThreadBlocking(

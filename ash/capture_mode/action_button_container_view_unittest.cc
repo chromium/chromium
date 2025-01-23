@@ -124,5 +124,22 @@ TEST_F(ActionButtonContainerViewTest, SmartActionsButtonTransition) {
   EXPECT_TRUE(IsActionButtonCollapsed(search_button));
 }
 
+TEST_F(ActionButtonContainerViewTest, ShowsErrorView) {
+  ActionButtonContainerView action_button_container;
+  const ActionButtonContainerView::ErrorView* error_view =
+      action_button_container.error_view_for_testing();
+
+  EXPECT_FALSE(error_view->GetVisible());
+
+  action_button_container.ShowErrorView(u"Error message");
+
+  EXPECT_TRUE(error_view->GetVisible());
+  EXPECT_EQ(error_view->GetErrorMessageForTesting(), u"Error message");
+
+  action_button_container.HideErrorView();
+
+  EXPECT_FALSE(error_view->GetVisible());
+}
+
 }  // namespace
 }  // namespace ash

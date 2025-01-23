@@ -163,4 +163,17 @@ bool IsProductSpecificationsSettingVisible(AccountChecker* account_checker) {
                                            /*skip_enterprise_check=*/true);
 }
 
+bool IsDiscountInfoApiEnabled(AccountChecker* account_checker) {
+  return account_checker &&
+         commerce::IsRegionLockedFeatureEnabled(
+             kEnableDiscountInfoApi, kEnableDiscountInfoApiRegionLaunched,
+             account_checker->GetCountry(), account_checker->GetLocale());
+}
+
+bool IsDiscountEligibleToShowOnNavigation(AccountChecker* account_checker) {
+  return IsDiscountInfoApiEnabled(account_checker) &&
+         account_checker->IsSignedIn() &&
+         account_checker->IsAnonymizedUrlDataCollectionEnabled();
+}
+
 }  // namespace commerce

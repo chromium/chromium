@@ -29,6 +29,7 @@
 namespace ip_protection {
 
 namespace {
+using ::network::mojom::IpProtectionProxyBypassPolicy;
 
 constexpr char kEmptyTokenCacheHistogram[] =
     "NetworkService.IpProtection.EmptyTokenCache";
@@ -201,8 +202,8 @@ class IpProtectionCoreImplTest : public testing::Test {
 
 // Verify that RequestShouldBeProxied measures the time taken to call Matches().
 TEST_F(IpProtectionCoreImplTest, RequestShouldBeProxiedMeasured) {
-  auto masked_domain_list_manager = MaskedDomainListManager::CreateForTesting(
-      /*first_party_map=*/{});
+  auto masked_domain_list_manager =
+      MaskedDomainListManager(IpProtectionProxyBypassPolicy::kNone);
   auto ip_protection_core = MakeCore(&masked_domain_list_manager);
   ip_protection_core->RequestShouldBeProxied(GURL(),
                                              net::NetworkAnonymizationKey());

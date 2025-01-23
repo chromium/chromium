@@ -451,10 +451,10 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.GridTemplateRows() == b.GridTemplateRows();
     case CSSPropertyID::kHeight:
       return a.Height() == b.Height();
-    case CSSPropertyID::kPopoverShowDelay:
-      return a.PopoverShowDelay() == b.PopoverShowDelay();
-    case CSSPropertyID::kPopoverHideDelay:
-      return a.PopoverHideDelay() == b.PopoverHideDelay();
+    case CSSPropertyID::kInterestTargetShowDelay:
+      return a.InterestTargetShowDelay() == b.InterestTargetShowDelay();
+    case CSSPropertyID::kInterestTargetHideDelay:
+      return a.InterestTargetHideDelay() == b.InterestTargetHideDelay();
     case CSSPropertyID::kHyphenateCharacter:
       return a.HyphenationString() == b.HyphenationString();
     case CSSPropertyID::kHyphenateLimitChars:
@@ -1283,6 +1283,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kAnimationRange:
     case CSSPropertyID::kAnimationRangeEnd:
     case CSSPropertyID::kAnimationRangeStart:
+    case CSSPropertyID::kAnimationTriggerRange:
+    case CSSPropertyID::kAnimationTriggerExitRange:
     case CSSPropertyID::kAnimationTriggerRangeStart:
     case CSSPropertyID::kAnimationTriggerRangeEnd:
     case CSSPropertyID::kAnimationTriggerExitRangeStart:

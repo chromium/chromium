@@ -297,6 +297,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     // This allows clients to directly override the color values to support
     // element-specific web platform CSS.
     std::optional<SkColor> thumb_color;
+    std::optional<SkColor> track_color;
     bool is_thumb_minimal_mode = false;
     bool is_web_test = false;
   };

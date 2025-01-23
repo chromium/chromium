@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "remoting/base/mock_oauth_token_getter.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/protobuf_http_status.h"
 #include "remoting/proto/ftl/v1/ftl_messages.pb.h"
@@ -70,12 +71,6 @@ std::unique_ptr<jingle_xmpp::XmlElement> CreateXmlStanza(
   }
   return stanza;
 }
-
-class MockOAuthTokenGetter : public OAuthTokenGetter {
- public:
-  MOCK_METHOD1(CallWithToken, void(TokenCallback));
-  MOCK_METHOD0(InvalidateCache, void());
-};
 
 class FakeMessagingClient : public MessagingClient {
  public:

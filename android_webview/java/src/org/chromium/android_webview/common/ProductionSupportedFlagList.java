@@ -439,9 +439,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.CHECK_HTML_PARSER_BUDGET_LESS_OFTEN,
                 "If enabled, avoids calling the clock for every token in the HTML parser."),
-        Flag.baseFeature(
-                BlinkFeatures.DETAILS_STYLING,
-                "Enables support for improved styling of HTML details element."),
         Flag.baseFeature(BaseFeatures.ALIGN_WAKE_UPS, "Align delayed wake ups at 125 Hz"),
         Flag.baseFeature(
                 BlinkFeatures.THREADED_SCROLL_PREVENT_RENDERING_STARVATION,

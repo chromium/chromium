@@ -7,10 +7,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "remoting/protocol/authenticator.h"
+#include "remoting/protocol/host_authentication_config.h"
 #include "remoting/protocol/validating_authenticator.h"
 
 namespace remoting {
@@ -24,9 +26,8 @@ namespace protocol {
 class It2MeHostAuthenticatorFactory : public AuthenticatorFactory {
  public:
   It2MeHostAuthenticatorFactory(
-      const std::string& local_cert,
+      std::string_view local_cert,
       scoped_refptr<RsaKeyPair> key_pair,
-      const std::string& access_code,
       const ValidatingAuthenticator::ValidationCallback& callback);
 
   It2MeHostAuthenticatorFactory(const It2MeHostAuthenticatorFactory&) = delete;
@@ -35,15 +36,19 @@ class It2MeHostAuthenticatorFactory : public AuthenticatorFactory {
 
   ~It2MeHostAuthenticatorFactory() override;
 
+  void AddSharedSecretAuth(std::string_view access_code_hash);
+  void AddSessionAuthzAuth(
+      scoped_refptr<SessionAuthzServiceClientFactory> factory);
+
   // AuthenticatorFactory interface.
   std::unique_ptr<Authenticator> CreateAuthenticator(
       const std::string& local_jid,
       const std::string& remote_jid) override;
 
  private:
+  HostAuthenticationConfig auth_config_;
   std::string local_cert_;
   scoped_refptr<RsaKeyPair> key_pair_;
-  std::string access_code_hash_;
   ValidatingAuthenticator::ValidationCallback validation_callback_;
 };
 

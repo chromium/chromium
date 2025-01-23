@@ -383,7 +383,7 @@ class BundledIsolatedWebApp {
       Profile* profile,
       base::FunctionRef<IsolatedWebAppInstallSource(IwaSourceDevModeWithFileOp)>
           install_source_provider,
-      IwaSourceBundleDevFileOp file_op = kDefaultBundleDevFileOp,
+      IwaSourceBundleDevFileOp file_op = IwaSourceBundleDevFileOp::kCopy,
       InstallationTraits&&... traits);
 
   WITH_TRAITS(InstallationTraits)
@@ -394,10 +394,6 @@ class BundledIsolatedWebApp {
       IwaSourceBundleModeAndFileOp file_op =
           IwaSourceBundleModeAndFileOp::kProdModeCopy,
       InstallationTraits&&... traits);
-
-  // TODO(crbug.com/390443309): Delete this
-  base::expected<IsolatedWebAppUrlInfo, std::string> TrustBundleAndInstall(
-      Profile* profile);
 
  private:
   WITH_TRAITS(InstallationTraits)

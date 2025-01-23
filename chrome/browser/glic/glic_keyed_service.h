@@ -8,10 +8,12 @@
 #include <optional>
 
 #include "base/callback_list.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_cookie_synchronizer.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
+#include "chrome/browser/glic/glic_page_handler.h"
 #include "chrome/browser/glic/glic_profile_configuration.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -54,6 +56,15 @@ class GlicKeyedService : public KeyedService {
 
   GlicWindowController& window_controller() { return window_controller_; }
 
+  // Called when a webview guest is created within a chrome://glic WebUI.
+  void GuestAdded(content::WebContents* guest_contents);
+
+  // Called when a `GlicPageHandler` is created.
+  void PageHandlerAdded(GlicPageHandler* page_handler);
+
+  // Called when a `GlicPageHandler` is about to be destroyed.
+  void PageHandlerRemoved(GlicPageHandler* page_handler);
+
   // Private API for the glic WebUI.
   void CreateTab(const ::GURL& url,
                  bool open_in_background,
@@ -63,7 +74,9 @@ class GlicKeyedService : public KeyedService {
   virtual void ClosePanel();
   void AttachPanel();
   void DetachPanel();
-  std::optional<gfx::Size> ResizePanel(const gfx::Size& size);
+  void ResizePanel(const gfx::Size& size,
+                   base::TimeDelta duration,
+                   base::OnceClosure callback);
   void SetPanelDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
   void SetContextAccessIndicator(bool show);
 
@@ -123,6 +136,7 @@ class GlicKeyedService : public KeyedService {
   base::WeakPtr<GlicKeyedService> GetWeakPtr();
 
  private:
+  GlicPageHandler* GetPageHandler(const content::WebContents* webui_contents);
   void OnFocusedTabChanged(const content::WebContents* focused_tab);
 
   // List of callbacks to be notified when the client requests a change to the
@@ -141,6 +155,8 @@ class GlicKeyedService : public KeyedService {
   // Unowned
   raw_ptr<GlicProfileManager> profile_manager_;
   base::OnceCallbackList<void()> web_client_created_callbacks_;
+  // The set of live `GlicPageHandler`s.
+  base::flat_set<raw_ptr<GlicPageHandler>> page_handlers_;
 
   base::WeakPtrFactory<GlicKeyedService> weak_ptr_factory_{this};
 };

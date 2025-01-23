@@ -6457,6 +6457,72 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   EXPECT_EQ(post_net_error, net::OK);
 }
 
+// This test checks that, if a network-revoked fenced frame attempts a top-level
+// navigation and the associated RenderFrameHost goes away before the network
+// revocation checks, the navigation is still properly stopped. In this case,
+// the NavigationStateKeepAlive is consulted to get the untrusted network
+// status.
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
+                       NavigateUnfencedTopAfterNetworkCutoffWithDeletedFrame) {
+  // Set up the main page.
+  GURL main_url(https_server()->GetURL("a.test", "/fenced_frames/title0.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Set up the fenced frame.
+  const GURL fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
+  RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_test_helper().CreateFencedFrame(
+          primary_main_frame_host(), fenced_frame_url, net::OK,
+          blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds);
+  EXPECT_TRUE(
+      ExecJs(fenced_frame_rfh, "window.fence.disableUntrustedNetwork();"));
+
+  // For this test, we need the navigation to have been passed from the fenced
+  // frame to the top-level frame via NavigateFromFrameProxy(). This is because
+  // of the special way that _unfencedTop navigations are handled. We then
+  // delete the fenced frame after that point but before the call to
+  // NavigationRequest::Create(). This is done to ensure that the network
+  // revocation checks in NavigationRequest::Create() look at the information
+  // stored in the NavigationStateKeepAlive, rather than looking at the fenced
+  // frame's RenderFrameHost directly.
+  base::RepeatingClosure before_callback = base::BindLambdaForTesting([&]() {
+    // Expect at this point that a NavigationStateKeepAlive has been created
+    // for the _unfencedTop navigation.
+    NavigationStateKeepAlive* keep_alive =
+        primary_main_frame_host()
+            ->GetStoragePartition()
+            ->GetNavigationStateKeepAlive(fenced_frame_rfh->GetFrameToken());
+    ASSERT_TRUE(keep_alive);
+    RenderFrameDeletedObserver observer(fenced_frame_rfh);
+    ASSERT_TRUE(ExecJs(primary_main_frame_host(),
+                       "document.querySelector('fencedframe').remove();"));
+    ASSERT_TRUE(observer.WaitUntilDeleted());
+  });
+  primary_main_frame_host()
+      ->frame_tree_node()
+      ->navigator()
+      .SetWillNavigateFromFrameProxyCallbackForTesting(before_callback);
+
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(
+      "Navigations cannot be initiated from a fenced frame after its network "
+      "has been disabled.");
+
+  // Perform the navigation.
+  const GURL navigation_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title2.html");
+  ExecuteScriptAsync(
+      fenced_frame_rfh,
+      JsReplace("window.open($1, '_unfencedTop');", navigation_url));
+
+  // The top-level navigation should be stopped.
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_FALSE(console_observer.messages().empty());
+  EXPECT_EQ(console_observer.messages().size(), 1u);
+  EXPECT_EQ(main_url, web_contents()->GetLastCommittedURL());
+}
+
 class FencedFrameReportEventBrowserTest
     : public FencedFrameParameterizedBrowserTest {
  public:

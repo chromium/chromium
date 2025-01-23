@@ -215,6 +215,15 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   bool SnapForEndAndDirection(const ScrollOffset& delta);
   void SnapAfterLayout();
 
+  // Tries to find a target snap position. If found, returns the target
+  // position. This *does not* update the target snap area element id and should
+  // only be used when querying what the snap position would be. When scrolling
+  // to the snap position GetSnapPositionAndSetTarget should be used instead.
+  virtual std::optional<cc::SnapPositionData> GetSnapPosition(
+      const cc::SnapSelectionStrategy& strategy) const {
+    return std::nullopt;
+  }
+
   // Tries to find a target snap position. If found, returns the target position
   // and updates the last target snap area element id for the snap container's
   // data. If not found, then clears the last target snap area element id.
@@ -642,9 +651,9 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   void ShowNonMacOverlayScrollbars();
 
   // Called when scrollbar hides/shows for overlay scrollbars. This callback
-  // shouldn't do any significant work as it can be called unexpectadly often
+  // shouldn't do any significant work as it can be called unexpectedly often
   // on Mac. This happens because painting code has to set alpha to 1, paint,
-  // then reset to alpha, causing spurrious "visibilityChanged" calls.
+  // then reset to alpha, causing spurious "visibilityChanged" calls.
   virtual void ScrollbarVisibilityChanged() {}
 
   bool HasBeenDisposed() const { return has_been_disposed_; }

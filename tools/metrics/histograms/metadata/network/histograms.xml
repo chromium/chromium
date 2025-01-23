@@ -518,7 +518,6 @@ chromium-metrics-reviews@google.com.
     name="Network.Ash.Cellular.ESim.SmdsScanDuration2.{SmdsType}.{DurationType}"
     units="ms" expires_after="2026-01-14">
   <owner>chadduffin@google.com</owner>
-  <owner>tjohnsonkanu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Tracks the time taken to perform a single SM-DS scan of a single SM-DS

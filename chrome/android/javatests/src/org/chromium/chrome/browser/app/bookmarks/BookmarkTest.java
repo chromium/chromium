@@ -132,6 +132,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -438,6 +439,7 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testEmptySearch() throws InterruptedException {
         openBookmarkManager();
         BookmarkTestUtil.openMobileBookmarks(mItemsContainer, mDelegate, mBookmarkModel);
@@ -695,6 +697,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testStopSpinnerOnEmptyFolder() throws Exception {
         // Cannot have a promo if we're going to have 0 elements in RecyclerView.
         BookmarkPromoHeader.forcePromoVisibilityForTesting(false);

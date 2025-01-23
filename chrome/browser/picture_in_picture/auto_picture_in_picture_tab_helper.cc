@@ -185,7 +185,8 @@ void AutoPictureInPictureTabHelper::MediaSessionActionsChanged(
 }
 
 void AutoPictureInPictureTabHelper::MaybeEnterAutoPictureInPicture() {
-  if (!IsEligibleForAutoPictureInPicture()) {
+  if (!IsEligibleForAutoPictureInPicture(
+          /*should_record_blocking_metrics=*/true)) {
     return;
   }
   auto_picture_in_picture_activation_time_ =
@@ -207,7 +208,8 @@ void AutoPictureInPictureTabHelper::MaybeScheduleAsyncTasks() {
   // picture requests will succeed anyways.
   if (is_in_picture_in_picture_ ||
       !(content::MediaSession::GetIfExists(web_contents())) ||
-      IsEligibleForAutoPictureInPicture()) {
+      IsEligibleForAutoPictureInPicture(
+          /*should_record_blocking_metrics=*/false)) {
     return;
   }
 
@@ -246,7 +248,8 @@ void AutoPictureInPictureTabHelper::MaybeStartOrStopObservingTabStrip() {
   }
 }
 
-bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture() {
+bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
+    bool should_record_blocking_metrics) {
   // Don't try to autopip if picture-in-picture is currently disabled.
   if (PictureInPictureWindowManager::GetInstance()
           ->IsPictureInPictureDisabled()) {
@@ -288,14 +291,20 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture() {
   // why autopip has been blocked.
   ContentSetting setting = GetCurrentContentSetting();
   if (setting == CONTENT_SETTING_BLOCK) {
-    EnsureAutoPipSettingHelper();
-    auto_pip_setting_helper_->OnAutoPipBlockedByPermission();
+    if (should_record_blocking_metrics) {
+      EnsureAutoPipSettingHelper();
+      auto_pip_setting_helper_->OnAutoPipBlockedByPermission(
+          GetHistogramNameForReason());
+    }
     return false;
   } else if (setting == CONTENT_SETTING_ASK &&
              Profile::FromBrowserContext(web_contents()->GetBrowserContext())
                  ->IsIncognitoProfile()) {
-    EnsureAutoPipSettingHelper();
-    auto_pip_setting_helper_->OnAutoPipBlockedByIncognito();
+    if (should_record_blocking_metrics) {
+      EnsureAutoPipSettingHelper();
+      auto_pip_setting_helper_->OnAutoPipBlockedByIncognito(
+          GetHistogramNameForReason());
+    }
     return false;
   }
 
@@ -423,15 +432,15 @@ AutoPictureInPictureTabHelper::GetPrimaryMainRoutedFrame() const {
 std::string AutoPictureInPictureTabHelper::GetHistogramNameForReason() const {
   if (IsUsingCameraOrMicrophone()) {
     return "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
-           "VideoConferencing";
+           "VideoConferencing.PromptResultV2";
   }
 
   if (MeetsVideoPlaybackConditions()) {
     return "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
-           "MediaPlayback";
+           "MediaPlayback.PromptResultV2";
   }
 
-  return "";
+  return std::string();
 }
 
 bool AutoPictureInPictureTabHelper::IsInAutoPictureInPicture() const {
@@ -475,7 +484,7 @@ void AutoPictureInPictureTabHelper::OnUserClosedWindow() {
   }
 
   // There might be the auto-pip setting UI shown, so forward this.
-  auto_pip_setting_helper_->OnUserClosedWindow();
+  auto_pip_setting_helper_->OnUserClosedWindow(GetHistogramNameForReason());
 }
 
 void AutoPictureInPictureTabHelper::OnTabBecameActive() {

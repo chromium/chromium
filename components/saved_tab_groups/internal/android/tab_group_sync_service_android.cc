@@ -179,7 +179,10 @@ void TabGroupSyncServiceAndroid::MakeTabGroupShared(
       TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_group_id);
   std::string collaboration_id =
       ConvertJavaStringToUTF8(env, j_collaboration_id);
-  tab_group_sync_service_->MakeTabGroupShared(tab_group_id, collaboration_id);
+  // TODO(crbug.com/382557489): implement the callback.
+  tab_group_sync_service_->MakeTabGroupShared(
+      tab_group_id, collaboration_id,
+      TabGroupSyncService::TabGroupSharingCallback());
 }
 
 void TabGroupSyncServiceAndroid::AboutToUnShareTabGroup(

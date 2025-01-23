@@ -779,6 +779,7 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
   Read(&ref.scalar_uniforms_);
   Read(&ref.float2_uniforms_);
   Read(&ref.float4_uniforms_);
+  Read(&ref.int_uniforms_);
 
   // We don't write the cached shader, so don't attempt to read it either.
 
@@ -976,6 +977,10 @@ void PaintOpReader::Read(std::vector<PaintShader::Float2Uniform>* uniforms) {
 
 void PaintOpReader::Read(std::vector<PaintShader::Float4Uniform>* uniforms) {
   ReadSimpleValueUniformsHelper<SkV4>(*this, uniforms);
+}
+
+void PaintOpReader::Read(std::vector<PaintShader::IntUniform>* uniforms) {
+  ReadSimpleValueUniformsHelper<int>(*this, uniforms);
 }
 
 void PaintOpReader::AlignMemory(size_t alignment) {

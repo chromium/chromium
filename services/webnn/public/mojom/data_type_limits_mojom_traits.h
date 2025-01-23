@@ -398,7 +398,7 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.softsign_input;
   }
-  static webnn::SupportedDataTypes split_input(
+  static webnn::SupportedTensors split_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.split_input;
   }
@@ -418,11 +418,11 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.triangular_input;
   }
-  static webnn::SupportedDataTypes where_condition(
+  static webnn::SupportedTensors where_condition(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.where_condition;
   }
-  static webnn::SupportedDataTypes where_value(
+  static webnn::SupportedTensors where_value(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.where_value;
   }

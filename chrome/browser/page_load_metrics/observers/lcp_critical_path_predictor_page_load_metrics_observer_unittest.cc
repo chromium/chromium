@@ -129,7 +129,7 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
             /*initiator_origin=*/std::nullopt, url);
     EXPECT_EQ(learn_lcpp, lcpp_stat.has_value()) << location.ToString();
 
-    base::Histogram::Count expected_count = record_uma ? 1 : 0;
+    base::Histogram::Count32 expected_count = record_uma ? 1 : 0;
     tester()->histogram_tester().ExpectTotalCount(
         internal::kHistogramLCPPFirstContentfulPaint, expected_count, location);
     tester()->histogram_tester().ExpectTotalCount(

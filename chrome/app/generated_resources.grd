@@ -14050,10 +14050,10 @@ This can include information about installed software, files, your browser, and 
           go to settings
         </message>
 
-        <message name="IDS_SYNC_PASSPHRASE_DIALOG_FOOTER" desc="">
-          If you forgot your passphrase or want to change this setting, <ph name="SETTINGS_LINK">$1<ex>clear the data in your account</ex></ph>.
+        <message name="IDS_SYNC_PASSPHRASE_DIALOG_FOOTER_LINK" desc="Highlighted link in the dialog footer of the passphrase dialog.">
+          clear
         </message>
-        <message name="IDS_SYNC_PASSPHRASE_DIALOG_TITLE" desc="">
+        <message name="IDS_SYNC_PASSPHRASE_DIALOG_TITLE" desc="Title of the sync passphrase dialog">
           Enter your passphrase
         </message>
 
@@ -18713,6 +18713,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_GLIC_OS_WIDGET_KEYBOARD_SHORTCUT_HELP_BUBBLE" translateable="false" desc="Help bubble message above the keyboard shortcut editor that allows customizing it.">
         Customize the keyboard shortcut here
+      </message>
+      <message name="IDS_GLIC_OFFLINE_NOTICE_HEADER" translateable="false" desc="This is the headline on the glic offline notice informing the user that there is no network connection.">
+        Your connection is interrupted
+      </message>
+      <message name="IDS_GLIC_OFFLINE_NOTICE" translateable="false" desc="This is the description of the issue on the glic offline notice.">
+        Glic isn't available right now.
+      </message>
+      <message name="IDS_GLIC_OFFLINE_NOTICE_ACTION" translateable="false" desc="This is the suggested user action for the glic offline notice.">
+        Check your internet connection and try again.
+      </message>
+      <message name="IDS_GLIC_OFFLINE_NOTICE_ACTION_BUTTON" translateable="false" desc="This is the button label text for the glic offline notice.">
+        Retry connection
       </message>
     </if>
 

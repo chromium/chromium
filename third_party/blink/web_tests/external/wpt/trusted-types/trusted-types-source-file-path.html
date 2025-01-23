@@ -6,8 +6,10 @@
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/common/get-host-info.sub.js"></script>
+  <script src="./support/csp-violations.js"></script>
   <meta http-equiv="Content-Security-Policy"
         content="require-trusted-types-for 'script'; trusted-types id">
+  <meta http-equiv="Content-Security-Policy" content="object-src 'none'">
   </head>
 <body>
 
@@ -21,12 +23,6 @@ let id_policy = trustedTypes.createPolicy("id", {
   createScript: x => x,
 });
 
-function futureViolation() {
-  return new Promise(r => addEventListener("securitypolicyviolation", r), {
-    once: true
-  });
-}
-
 function futureScript(url) {
   return new Promise(r => {
     let script = document.createElement("script");
@@ -37,11 +33,9 @@ function futureScript(url) {
 }
 
 promise_test(async t => {
-  let future_violation = futureViolation();
-  assert_throws_js(TypeError, _ => {
-    document.getElementById("to-be-modified").innerHTML = "'test'";
-  });
-  let violation = await future_violation;
+  let violation = await trusted_type_violation_for(TypeError, _ =>
+    document.getElementById("to-be-modified").innerHTML = "'test'"
+  );
   assert_equals(violation.sourceFile, location.href)
 }, "same-document script")
 
@@ -50,9 +44,9 @@ promise_test(async t => {
   let script_src = script_origin +
     "/trusted-types/support/set-inner-html.js";
   let script = await futureScript(script_src);
-  let future_violation = futureViolation();
-  assert_throws_js(TypeError, () => setInnerHtml(toBeModified, "'test'"));
-  let violation = await future_violation;
+  let violation = await trusted_type_violation_for(TypeError, _ =>
+    setInnerHtml(toBeModified, "'test'")
+  );
   assert_equals(violation.sourceFile, script_src);
 }, "same-origin script")
 
@@ -61,9 +55,9 @@ promise_test(async t => {
   let script_src = script_origin +
     "/trusted-types/support/set-inner-html.js";
   let script = await futureScript(script_src);
-  let future_violation = futureViolation();
-  assert_throws_js(TypeError, () => setInnerHtml(toBeModified, "'test'"));
-  let violation = await future_violation;
+  let violation = await trusted_type_violation_for(TypeError, _ =>
+    setInnerHtml(toBeModified, "'test'")
+  );
   assert_equals(violation.sourceFile, script_src);
 }, "cross-origin script")
 

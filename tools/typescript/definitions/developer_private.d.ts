@@ -242,6 +242,7 @@ declare global {
         id: string;
         incognitoAccess: AccessModifier;
         installWarnings: string[];
+        isCommandRegistrationHandledExternally: boolean;
         launchUrl?: string;
         location: Location;
         locationText?: string;

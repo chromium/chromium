@@ -111,6 +111,7 @@ class GraphBuilderCoreml {
   CreateAndBuild(
       const mojom::GraphInfo& graph_info,
       ContextProperties context_properties,
+      mojom::CreateContextOptions::Device,
       const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
           constant_operands,
       const base::FilePath& working_directory);
@@ -193,6 +194,7 @@ class GraphBuilderCoreml {
   GraphBuilderCoreml(
       const mojom::GraphInfo& graph_info,
       ContextProperties context_properties,
+      mojom::CreateContextOptions::Device device,
       const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
           constant_operands,
       base::FilePath ml_package_dir,
@@ -596,6 +598,7 @@ class GraphBuilderCoreml {
       constant_operands_;
 
   const ContextProperties context_properties_;
+  const mojom::CreateContextOptions::Device device_;
 
   // Points to offset in weight file or identifier in coreml model file.
   base::flat_map<uint64_t, std::variant<uint64_t, std::string_view>>

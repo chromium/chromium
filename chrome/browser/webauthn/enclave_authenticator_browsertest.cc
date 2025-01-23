@@ -1101,6 +1101,8 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       fake_uv_provider_;
   logging::ScopedVmoduleSwitches scoped_vmodule_;
   bool sync_feature_enabled_ = true;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnNoAccountTimeout};
 };
 
 class EnclaveAuthenticatorWithPinBrowserTest
@@ -1117,6 +1119,18 @@ class EnclaveAuthenticatorWithPinBrowserTest
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class EnclaveAuthenticatorWithTimeout
+    : public EnclaveAuthenticatorWithPinBrowserTest {
+ public:
+  EnclaveAuthenticatorWithTimeout() {
+    scoped_feature_list_.InitAndDisableFeature(
+        device::kWebAuthnNoAccountTimeout);
+  }
+
+ private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -2189,7 +2203,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
 // Tests tapping a passkey from autofill after the trusted vault service times
 // out. Regression test for crbug.com/343669719.
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithTimeout,
                        SelectPasskeyAfterTimeout) {
   SetVaultConnectionToTimeout();
 
@@ -2217,7 +2231,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
 // Tests a trusted vault service timeout after tapping a passkey from autofill.
 // Regression test for crbug.com/343669719.
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithTimeout,
                        SelectPasskeyThenTimeout) {
   SetVaultConnectionToTimeout();
 
@@ -2382,7 +2396,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithTimeout,
                        SecurityDomainCheckTimesOut) {
   EnableUVKeySupport();
 
@@ -2436,7 +2450,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
 // Tests that receiving partial data from the security domain server resets the
 // timeout timer.
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithTimeout,
                        SecurityDomainKeepAlive) {
   // Set up a trusted vault connection that lets us control the time it
   // resolves.
@@ -2501,7 +2515,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
 // Verifies that if the enclave activation takes a while and transport
 // enumeration completes, the request is still successful.
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithTimeout,
                        DelayedEnclaveActivation) {
   // Set up a trusted vault connection that lets us control the time it
   // resolves, so enclave manager initialization can be delayed.
@@ -2644,22 +2658,17 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
   delegate_observer()->WaitForUI();
 
-  EXPECT_TRUE(
-      base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
-        return absl::holds_alternative<
-            AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
-      }));
-  EXPECT_FALSE(
-      request_delegate()->enclave_controller_for_testing()->is_active());
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMError);
 }
 
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_NotAvailableForEmptyAccounts DISABLED_NotAvailableForEmptyAccounts
+#define MAYBE_GpmErrorForEmptyAccounts DISABLED_GpmErrorForEmptyAccounts
 #else
-#define MAYBE_NotAvailableForEmptyAccounts NotAvailableForEmptyAccounts
+#define MAYBE_GpmErrorForEmptyAccounts GpmErrorForEmptyAccounts
 #endif
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
-                       MAYBE_NotAvailableForEmptyAccounts) {
+                       MAYBE_GpmErrorForEmptyAccounts) {
   EnableUVKeySupport();
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
       registration_state_result;
@@ -2673,24 +2682,20 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
   delegate_observer()->WaitForUI();
 
-  EXPECT_TRUE(
-      base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
-        return absl::holds_alternative<
-            AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
-      }));
-  EXPECT_FALSE(
-      request_delegate()->enclave_controller_for_testing()->is_active());
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMError);
 }
 
+// Tests that if a device cannot be enrolled, GPM passkeys are still presented
+// on the UI. Tapping a GPM passkey will result in an error.
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_NoGpmCredentialsIfDeviceCannotBeEnrolled \
-  DISABLED_NoGpmCredentialsIfDeviceCannotBeEnrolled
+#define MAYBE_GpmErrorIfDeviceCannotBeEnrolled \
+  DISABLED_GpmErrorIfDeviceCannotBeEnrolled
 #else
-#define MAYBE_NoGpmCredentialsIfDeviceCannotBeEnrolled \
-  NoGpmCredentialsIfDeviceCannotBeEnrolled
+#define MAYBE_GpmErrorIfDeviceCannotBeEnrolled GpmErrorIfDeviceCannotBeEnrolled
 #endif
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
-                       MAYBE_NoGpmCredentialsIfDeviceCannotBeEnrolled) {
+                       MAYBE_GpmErrorIfDeviceCannotBeEnrolled) {
   AddTestPasskeyToModel();
 
   content::WebContents* web_contents =
@@ -2699,13 +2704,18 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   content::ExecuteScriptAsync(web_contents, kGetAssertionUvDiscouraged);
   delegate_observer()->WaitForUI();
 
-  EXPECT_TRUE(
-      base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
-        return absl::holds_alternative<
-            AuthenticatorRequestDialogModel::Mechanism::Credential>(m.type);
-      }));
-  EXPECT_FALSE(
-      request_delegate()->enclave_controller_for_testing()->is_active());
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
+  EXPECT_EQ(absl::get<AuthenticatorRequestDialogModel::Mechanism::Credential>(
+                dialog_model()
+                    ->mechanisms[*dialog_model()->priority_mechanism_index]
+                    .type)
+                ->source,
+            device::AuthenticatorType::kEnclave);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMError);
+  dialog_model()->OnUserConfirmedPriorityMechanism();
+  model_observer()->WaitForStep();
 }
 
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
@@ -2729,13 +2739,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
   delegate_observer()->WaitForUI();
 
-  EXPECT_TRUE(
-      base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
-        return absl::holds_alternative<
-            AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
-      }));
-  EXPECT_FALSE(
-      request_delegate()->enclave_controller_for_testing()->is_active());
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMError);
 }
 
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)

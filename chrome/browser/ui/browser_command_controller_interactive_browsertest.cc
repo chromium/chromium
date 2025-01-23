@@ -150,8 +150,10 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerInteractiveTest,
 // the page to exit fullscreen mode. So we need to maintain a list of exiting /
 // non-exiting commands, which is not the goal of this test.
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// This test is flaky on ChromeOS, see http://crbug.com/754878.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+// This test is flaky on ChromeOS and Linux, see http://crbug.com/754878 and
+// http://crbug.com/759704 respectively.
+// TODO(zijiehe): Find out the root cause.
 #define MAYBE_ShortcutsShouldTakeEffectInJsFullscreen \
   DISABLED_ShortcutsShouldTakeEffectInJsFullscreen
 #else
@@ -160,11 +162,6 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerInteractiveTest,
 #endif
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerInteractiveTest,
                        MAYBE_ShortcutsShouldTakeEffectInJsFullscreen) {
-// This test is flaky. See http://crbug.com/759704.
-// TODO(zijiehe): Find out the root cause.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  return;
-#endif
   ASSERT_NO_FATAL_FAILURE(SendShortcutsAndExpectNotPrevented(true));
 }
 

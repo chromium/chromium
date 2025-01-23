@@ -66,7 +66,7 @@ class PersonalizationAppUtilsTest : public testing::Test {
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
     scoped_feature_list_.InitWithFeatures(
         {features::kSeaPen, features::kSeaPenDemoMode,
-         features::kSeaPenEnterprise, features::kFeatureManagementSeaPen},
+         features::kFeatureManagementSeaPen},
         {});
   }
 
@@ -129,7 +129,6 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenGoogler) {
   AddAndLoginUser(AccountId::FromUserEmail(email),
                   user_manager::UserType::kRegular);
   ASSERT_TRUE(IsAllowedToInstallSeaPen(googler_profile));
-  ASSERT_TRUE(IsEligibleForSeaPen(googler_profile));
 }
 
 TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenManaged) {
@@ -263,8 +262,6 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenPublicAccountDemoMode) {
   ASSERT_TRUE(::ash::DemoSession::Get());
 
   ASSERT_TRUE(IsAllowedToInstallSeaPen(managed_profile));
-  ASSERT_TRUE(IsEligibleForSeaPen(managed_profile))
-      << "Demo mode should force enable SeaPen for managed profile";
 }
 
 TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInput_UnknownAge) {

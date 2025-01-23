@@ -23,9 +23,9 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/live_caption/caption_util.h"
+#include "components/live_caption/live_caption_bubble_settings.h"
 #include "components/live_caption/pref_names.h"
 #include "components/live_caption/views/caption_bubble.h"
-#include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
@@ -70,10 +70,19 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   CaptionBubbleControllerViewsTest& operator=(
       const CaptionBubbleControllerViewsTest&) = delete;
 
+  // InProcessBrowserTest:
+  void TearDownOnMainThread() override {
+    controller_.reset();
+    caption_bubble_settings_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
   CaptionBubbleControllerViews* GetController() {
     if (!controller_) {
+      caption_bubble_settings_ = std::make_unique<LiveCaptionBubbleSettings>(
+          browser()->profile()->GetPrefs());
       controller_ = std::make_unique<CaptionBubbleControllerViews>(
-          browser()->profile()->GetPrefs(), "en-US" /* application_locale */);
+          caption_bubble_settings_.get(), "en-US" /* application_locale */);
     }
     return controller_.get();
   }
@@ -345,6 +354,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<LiveCaptionBubbleSettings> caption_bubble_settings_;
   std::unique_ptr<CaptionBubbleControllerViews> controller_;
   std::unique_ptr<CaptionBubbleContext> caption_bubble_context_;
 };
@@ -544,7 +554,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_FALSE(IsWidgetVisible());
 }
 
-// TODO(crbug.com/40119836): Renable this test once it is passing. Tab
+// TODO(crbug.com/40119836): Re-enable this test once it is passing. Tab
 // traversal works in app but doesn't work in tests right now.
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        DISABLED_FocusableInTabOrder) {

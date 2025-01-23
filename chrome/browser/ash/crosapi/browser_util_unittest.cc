@@ -45,22 +45,6 @@ class BrowserUtilTest : public testing::Test {
     fake_user_manager_.Reset();
   }
 
-  const user_manager::User* AddRegularUser(const std::string& email,
-                                           bool login = true) {
-    AccountId account_id = AccountId::FromUserEmail(email);
-    const User* user = fake_user_manager_->AddUser(account_id);
-    user_manager::KnownUser(fake_user_manager_->GetLocalState())
-        .SaveKnownUser(account_id);
-    if (login) {
-      fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                       /*browser_restart=*/false,
-                                       /*is_child=*/false);
-    }
-    return user;
-  }
-
-  TestingPrefServiceSimple* local_state() { return local_state_.Get(); }
-
   content::BrowserTaskEnvironment task_environment_;
   // Set up local_state of BrowserProcess before initializing
   // FakeChromeUserManager, since its ctor injects local_state to the instance.
@@ -78,11 +62,6 @@ TEST_F(BrowserUtilTest, BlockedForChildUser) {
                                    /*browser_restart=*/false,
                                    /*is_child=*/true);
   EXPECT_FALSE(browser_util::IsLacrosEnabled());
-}
-
-TEST_F(BrowserUtilTest, IsAshWebBrowserDisabled) {
-  AddRegularUser("user@managedchrome.com");
-  EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
 }
 
 TEST_F(BrowserUtilTest, GetRootfsLacrosVersionMayBlock) {

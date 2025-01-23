@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo.OwnedState;
 import org.chromium.chrome.browser.signin.AppRestrictionSupplier;
 import org.chromium.chrome.browser.signin.PolicyLoadListener;
-import org.chromium.chrome.browser.signin.PolicyLoadListenerUnitTest;
 import org.chromium.components.policy.PolicyService;
 
 /**

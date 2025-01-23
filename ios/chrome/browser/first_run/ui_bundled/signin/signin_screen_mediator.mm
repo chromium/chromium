@@ -183,18 +183,19 @@ enum class SigninScreenState {
   [self.consumer setUIEnabled:NO];
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock startSignInCompletion = ^() {
-    [authenticationFlow startSignInWithCompletion:^(
-                            SigninCoordinatorResult result) {
-      [weakSelf.consumer setUIEnabled:YES];
-      if (result != SigninCoordinatorResultSuccess) {
-        return;
-      }
-      [weakSelf.logger
-          logSigninCompletedWithResult:SigninCoordinatorResultSuccess
-                          addedAccount:weakSelf.addedAccount];
-      if (completion)
-        completion();
-    }];
+    [authenticationFlow
+        startSignInWithCompletion:^(SigninCoordinatorResult result) {
+          [weakSelf.consumer setUIEnabled:YES];
+          if (result != SigninCoordinatorResultSuccess) {
+            return;
+          }
+          [weakSelf.logger
+              logSigninCompletedWithResult:SigninCoordinatorResultSuccess
+                              addedAccount:weakSelf.addedAccount];
+          if (completion) {
+            completion();
+          }
+        }];
   };
   startSignInCompletion();
 }

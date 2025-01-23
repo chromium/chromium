@@ -5255,7 +5255,6 @@ void EmitDidChangeHoverElement(Document& document, Element* new_hover_element) {
 }
 
 void Document::SetHoverElement(Element* new_hover_element) {
-  HTMLElement::HoveredElementChanged(hover_element_, new_hover_element);
   EmitDidChangeHoverElement(*this, new_hover_element);
 
   hover_element_ = new_hover_element;
@@ -8066,6 +8065,11 @@ HTMLElement* Document::TopmostPopoverOrHint() const {
 void Document::SetPopoverPointerdownTarget(const HTMLElement* popover) {
   DCHECK(!popover || popover->HasPopoverAttribute());
   popover_pointerdown_target_ = popover;
+}
+
+void Document::SetCustomizableSelectMousedownLocation(
+    std::optional<gfx::PointF> point) {
+  customizable_select_mousedown_location_ = point;
 }
 
 const HTMLDialogElement* Document::DialogPointerdownTarget() const {

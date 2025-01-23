@@ -22,7 +22,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
@@ -60,7 +60,7 @@ const uint32_t kIncludeBrowsersScheduledForDeletion = 1 << 6;
 bool DoesBrowserMatchProfile(Browser& browser,
                              Profile* profile,
                              uint32_t match_types) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Get the profile on which the window is currently shown.
   // MultiUserWindowManagerHelper might be NULL under test scenario.
   ash::MultiUserWindowManager* const multi_user_window_manager =
@@ -82,7 +82,7 @@ bool DoesBrowserMatchProfile(Browser& browser,
         profile->GetOriginalProfile()) {
       return false;
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (shown_profile &&
         shown_profile->GetOriginalProfile() != profile->GetOriginalProfile()) {
       return false;
@@ -92,7 +92,7 @@ bool DoesBrowserMatchProfile(Browser& browser,
     if (browser.profile() != profile) {
       return false;
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (shown_profile && shown_profile != profile) {
       return false;
     }
@@ -135,7 +135,7 @@ bool BrowserMatches(Browser* browser,
       (!browser->window() || !browser->window()->IsOnCurrentWorkspace())) {
     return false;
   }
-#endif  // BUILDFLAG(IS_WIN)
+#endif
 
   if (match_types & kMatchDisplayId &&
       display::Screen::GetScreen()

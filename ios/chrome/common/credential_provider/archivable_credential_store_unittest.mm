@@ -11,8 +11,8 @@
 
 namespace {
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForFileOperationTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 NSURL* testStorageFileURL() {
   NSURL* temporaryDirectory = [NSURL fileURLWithPath:NSTemporaryDirectory()];
@@ -155,4 +155,4 @@ TEST_F(ArchivableCredentialStoreTest, createFolder) {
   [deepFolderURL checkResourceIsReachableAndReturnError:&error];
   EXPECT_FALSE(error);
 }
-}
+}  // namespace

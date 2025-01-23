@@ -9,6 +9,7 @@ import "skia/public/mojom/bitmap.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/time.mojom";
 
 // Factory for PageHandler used in chrome://glic.
 interface PageHandlerFactory {
@@ -27,6 +28,13 @@ interface PageHandler {
 
   // Called whenever the webview mainframe commits.
   WebviewCommitted(url.mojom.Url url);
+
+  // Closes the Glic panel.
+  ClosePanel();
+
+  // Resize the widget hosting the WebUI to the given size.
+  // If `duration` is 0 or less, instantly resize, otherwise run an animation.
+  ResizeWidget(gfx.mojom.Size size, mojo_base.mojom.TimeDelta duration) => ();
 };
 
 // Reason why getting tab context failed.
@@ -121,8 +129,11 @@ interface WebClientHandler {
   GetContextFromFocusedTab(GetTabContextOptions options)
       => (GetContextResult result);
 
-  // Set the bounds of the widget hosting the WebUI to the given size.
-  ResizeWidget(gfx.mojom.Size size) => (gfx.mojom.Size? actual_size);
+  // Resize the widget hosting the WebUI to the given size.
+  // If `duration` is 0 or less, instantly resize, otherwise run an animation.
+  // If the widget doesn't exist yet, `size` will be used as its initial size
+  // when it's created later.
+  ResizeWidget(gfx.mojom.Size size, mojo_base.mojom.TimeDelta duration) => ();
 
   // Requests that audio ducking be enabled or disabled.
   // If enabled, audio from other sources will be attenuated.

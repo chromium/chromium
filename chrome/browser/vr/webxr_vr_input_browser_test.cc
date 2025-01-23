@@ -63,12 +63,11 @@ void VerifyInputCounts(WebXrVrBrowserTestBase* t,
                                  base::NumberToString(expected_gamepads));
 }
 
-// TODO(https://crbug.com/381000093): Fix tests on Android
-#if !BUILDFLAG(IS_ANDROID)
 // Test that focus is locked to the presenting display for the purposes of VR/XR
 // input.
 void TestPresentationLocksFocusImpl(WebXrVrBrowserTestBase* t,
                                     std::string filename) {
+  MockXRDeviceHookBase mock;
   t->LoadFileAndAwaitInitialization(filename);
   t->EnterSessionWithUserGestureOrFail();
   t->ExecuteStepAndWait("stepSetupFocusLoss()");
@@ -78,7 +77,6 @@ void TestPresentationLocksFocusImpl(WebXrVrBrowserTestBase* t,
 WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestPresentationLocksFocus) {
   TestPresentationLocksFocusImpl(t, "webxr_test_presentation_locks_focus");
 }
-#endif  // if !BUILDFLAG(IS_ANDROID)
 
 class WebXrControllerInputMock : public MockXRDeviceHookBase {
  public:

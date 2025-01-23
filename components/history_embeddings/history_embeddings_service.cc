@@ -423,8 +423,7 @@ void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
           << (query_passages.empty() ? "(NONE)" : query_passages[0]) << "'";
 
   if (!succeeded) {
-    // Query embedding failed. Just return no search results.
-    std::move(callback).Run({});
+    std::move(callback).Run(std::move(result));
     return;
   }
 

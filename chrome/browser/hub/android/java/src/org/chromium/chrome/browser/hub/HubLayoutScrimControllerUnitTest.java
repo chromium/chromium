@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
@@ -48,8 +47,6 @@ public class HubLayoutScrimControllerUnitTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
-
-    @Mock private ScrimCoordinator.SystemUiScrimDelegate mScrimDelegate;
 
     @Captor private ArgumentCaptor<PropertyModel> mPropertyModelArgumentCaptor;
 
@@ -72,7 +69,7 @@ public class HubLayoutScrimControllerUnitTest {
         mAnchorView = new View(mActivity);
         rootView.addView(mAnchorView);
 
-        mScrimCoordinator = spy(new ScrimCoordinator(mActivity, mScrimDelegate, rootView));
+        mScrimCoordinator = spy(new ScrimCoordinator(mActivity, rootView));
 
         mIsIncognitoSupplier = new ObservableSupplierImpl<>(false);
 

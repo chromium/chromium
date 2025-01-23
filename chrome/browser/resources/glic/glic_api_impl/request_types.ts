@@ -45,7 +45,7 @@ export declare interface HostRequestTypes {
     response: void,
   };
 
-  // The messages that fullfill the GlicBrowserHost public API follow below.
+  // The messages that fulfil the GlicBrowserHost public API follow below.
 
   glicBrowserCreateTab: {
     request: {
@@ -79,14 +79,15 @@ export declare interface HostRequestTypes {
   };
   glicBrowserResizeWindow: {
     request: {
-      width: number,
-      height: number,
+      size: {
+        width: number,
+        height: number,
+      },
+      options?: {
+        durationMs?: number,
+      },
     },
-    response: {
-      // Not set on error.
-      actualWidth?: number,
-      actualHeight?: number,
-    },
+    response: void,
   };
   glicBrowserSetWindowDraggableAreas: {
     request: {
@@ -136,6 +137,12 @@ export declare interface HostRequestTypes {
   };
   glicBrowserDetachPanel: {
     request: {},
+    response: void,
+  };
+  glicBrowserSetAudioDucking: {
+    request: {
+      enabled: boolean,
+    },
     response: void,
   };
 }

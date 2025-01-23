@@ -855,6 +855,8 @@ static_library("browser") {
     "page_info/about_this_site_service_factory.h",
     "page_info/about_this_site_tab_helper.cc",
     "page_info/about_this_site_tab_helper.h",
+    "page_info/merchant_trust_service_delegate.cc",
+    "page_info/merchant_trust_service_delegate.h",
     "page_info/merchant_trust_service_factory.cc",
     "page_info/merchant_trust_service_factory.h",
     "page_info/page_info_features.cc",
@@ -1777,7 +1779,7 @@ static_library("browser") {
     "//chrome/browser/ui/login:impl",
 
     # TODO(crbug.com/): This is needed because tab_contents code
-    # includes c/b/enterprise/connectors/analyzis/content_analysis_delegate.h
+    # includes c/b/enterprise/connectors/analysis/content_analysis_delegate.h
     # and c/b/translate/chrome_translate_client.h.
     "//chrome/browser/ui/tab_contents:impl",
   ]
@@ -4522,6 +4524,10 @@ static_library("browser") {
       } else {
         sources += [ "first_run/first_run_internal_posix.cc" ]
       }
+    }
+
+    if (enable_dice_support) {
+      deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation" ]
     }
 
     if (use_minikin_hyphenation) {

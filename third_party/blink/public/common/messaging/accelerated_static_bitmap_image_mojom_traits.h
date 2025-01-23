@@ -40,15 +40,6 @@ struct BLINK_COMMON_EXPORT
     return input.image_info;
   }
 
-  static bool supports_display_compositing(
-      const blink::AcceleratedImageInfo& input) {
-    return input.supports_display_compositing;
-  }
-
-  static bool is_overlay_candidate(const blink::AcceleratedImageInfo& input) {
-    return input.is_overlay_candidate;
-  }
-
   static mojo::PendingRemote<blink::mojom::ImageReleaseCallback>
   release_callback(blink::AcceleratedImageInfo& input);
 

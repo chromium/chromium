@@ -514,6 +514,7 @@ template("test") {
         "keystore_name",
         "keystore_password",
         "keystore_path",
+        "library_always_compress",
         "loadable_module_deps",
         "loadable_modules",
         "min_sdk_version",

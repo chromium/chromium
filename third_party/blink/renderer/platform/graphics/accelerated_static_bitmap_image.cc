@@ -69,14 +69,12 @@ AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
     base::PlatformThreadRef context_thread_ref,
     scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
     viz::ReleaseCallback release_callback,
-    bool supports_display_compositing,
-    bool is_overlay_candidate) {
+    bool supports_display_compositing) {
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
       std::move(shared_image), sync_token, shared_image_texture_id,
-      sk_image_info, supports_display_compositing, is_overlay_candidate,
-      ImageOrientationEnum::kDefault, std::move(context_provider_wrapper),
-      context_thread_ref, std::move(context_task_runner),
-      std::move(release_callback)));
+      sk_image_info, ImageOrientationEnum::kDefault,
+      std::move(context_provider_wrapper), context_thread_ref,
+      std::move(context_task_runner), std::move(release_callback)));
 }
 
 // static
@@ -85,8 +83,6 @@ AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
     const gpu::ExportedSharedImage& exported_shared_image,
     const gpu::SyncToken& sync_token,
     const SkImageInfo& sk_image_info,
-    bool supports_display_compositing,
-    bool is_overlay_candidate,
     base::OnceCallback<void(const gpu::SyncToken&)> external_callback) {
   auto shared_gpu_context = blink::SharedGpuContext::ContextProviderWrapper();
   if (!shared_gpu_context) {
@@ -117,7 +113,6 @@ AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
 
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
       std::move(shared_image), sync_token, 0u, sk_image_info,
-      supports_display_compositing, is_overlay_candidate,
       ImageOrientationEnum::kDefault, shared_gpu_context,
       base::PlatformThreadRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
@@ -129,8 +124,6 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
     const gpu::SyncToken& sync_token,
     GLuint shared_image_texture_id,
     const SkImageInfo& sk_image_info,
-    bool supports_display_compositing,
-    bool is_overlay_candidate,
     const ImageOrientation& orientation,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::PlatformThreadRef context_thread_ref,
@@ -139,8 +132,6 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
     : StaticBitmapImage(orientation),
       shared_image_(std::move(shared_image)),
       sk_image_info_(sk_image_info),
-      supports_display_compositing_(supports_display_compositing),
-      is_overlay_candidate_(is_overlay_candidate),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       mailbox_ref_(
           base::MakeRefCounted<MailboxRef>(sync_token,

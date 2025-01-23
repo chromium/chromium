@@ -4,9 +4,12 @@
 
 package org.chromium.components.segmentation_platform;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
 
 /** Java counterpart of native SegmentSelectionResult. Contains the result of segment selection. */
+@NullMarked
 public class SegmentSelectionResult {
     /** Whether the backend is ready and has enough signals to compute the segment selection.*/
     public final boolean isReady;
@@ -21,10 +24,11 @@ public class SegmentSelectionResult {
      * the value will be the mapped score based on the mapping. May be null if selection was made in
      * versions older than M107.
      */
-    public final Float rank;
+    public final @Nullable Float rank;
 
     /** Constructor */
-    public SegmentSelectionResult(boolean isReady, SegmentId selectedSegment, Float rank) {
+    public SegmentSelectionResult(
+            boolean isReady, SegmentId selectedSegment, @Nullable Float rank) {
         this.isReady = isReady;
         this.selectedSegment = selectedSegment;
         this.rank = rank;

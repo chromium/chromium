@@ -12,10 +12,13 @@ import org.chromium.base.FeatureMap;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** A boolean-type {@link CachedFeatureParam}. */
+@NullMarked
 public class BooleanCachedFeatureParam extends CachedFeatureParam<Boolean> {
-    private Supplier<Boolean> mValueSupplier;
+    private @Nullable Supplier<Boolean> mValueSupplier;
 
     public BooleanCachedFeatureParam(
             FeatureMap featureMap, String featureName, String variationName, boolean defaultValue) {

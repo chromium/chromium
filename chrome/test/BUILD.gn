@@ -1766,14 +1766,13 @@ if (is_android) {
         "//third_party/openxr",
       ]
 
-      data_deps += [ "//device/vr:openxr_mock" ]
-
       extra_args += [ "--deploy-mock-openxr-runtime" ]
 
-      data += [
-        "$root_out_dir/mock_vr_clients/bin/openxr/openxr.json",
-        "$root_out_dir/libmock_vr_clients/bin/openxr/libopenxrruntime.so",
-      ]
+      loadable_module_deps = [ "//device/vr:openxr_mock" ]
+      loadable_modules =
+          [ "$root_out_dir/libmock_vr_clients/bin/openxr/libopenxrruntime.so" ]
+      library_always_compress =
+          [ "libmock_vr_clients/bin/openxr/libopenxrruntime.so" ]
     }
 
     if (dfmify_dev_ui) {
@@ -1808,6 +1807,7 @@ if (is_android) {
         "../browser/extensions/desktop_android/desktop_android_extensions_browsertest.cc",
         "../browser/extensions/extension_incognito_apitest.cc",
         "../browser/extensions/extension_platform_browsertest_browsertest.cc",
+        "../browser/extensions/shared_module_apitest.cc",
         "../browser/extensions/system_cpu_apitest.cc",
         "../browser/extensions/system_memory_apitest.cc",
         "../browser/extensions/test_resources_browsertest.cc",
@@ -2520,6 +2520,7 @@ if (!is_android) {
       "//ui/accessibility:test_support",
       "//ui/base:ozone_buildflags",
       "//ui/base:test_support",
+      "//ui/base/accelerators/global_accelerator_listener:global_accelerator_listener",
       "//ui/base/clipboard:clipboard_test_support",
       "//ui/base/dragdrop/mojom",
       "//ui/base/mojom:ui_base_types",
@@ -2536,14 +2537,6 @@ if (!is_android) {
       "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
       "//v8",
     ]
-
-    if (enable_glic) {
-      deps += [
-        "//chrome/browser/glic:browser_tests",
-        "//chrome/browser/glic:glic",
-        "//chrome/browser/glic/launcher:browser_tests",
-      ]
-    }
 
     allow_circular_includes_from =
         [ "//chrome/browser/optimization_guide:browser_tests" ]
@@ -3436,6 +3429,17 @@ if (!is_android) {
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/test/supervised_user:live_tests",
     ]
+
+    if (enable_glic) {
+      sources += [ "../browser/ui/webui/settings/glic_handler_browsertest.cc" ]
+
+      deps += [
+        "//chrome/browser/glic:browser_tests",
+        "//chrome/browser/glic:glic",
+        "//chrome/browser/glic/launcher:browser_tests",
+        "//chrome/browser/glic/launcher:launcher",
+      ]
+    }
 
     if (is_android) {
       sources += [ "../browser/dom_distiller/tab_utils_browsertest.cc" ]
@@ -6198,6 +6202,7 @@ test("unit_tests") {
       # Android. We should enable this test when Android becomes supported.
       "../browser/content_extraction/inner_text_unittest.cc",
       "../browser/metrics/power/battery_discharge_reporter_unittest.cc",
+      "../browser/page_info/merchant_trust_service_delegate_unittest.cc",
       "../browser/page_load_metrics/observers/non_tab_webui_page_load_metrics_observer_unittest.cc",
       "../browser/performance_manager/metrics/metrics_provider_desktop_unittest.cc",
       "../browser/policy/messaging_layer/util/reporting_server_connector_unittest.cc",
@@ -9990,7 +9995,7 @@ test("unit_tests") {
       "../browser/ui/window_name_prompt/window_name_prompt_unittest.cc",
     ]
     if (!is_chrome_for_testing) {
-      sources += [ "../browser/ui/views/user_education/impl/browser_feature_promo_controller_20_unittest.cc" ]
+      sources += [ "../browser/ui/views/user_education/impl/browser_feature_promo_controller_2x_unittest.cc" ]
     }
     if (is_linux) {
       sources += [
@@ -11119,6 +11124,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/tabs/tab_hover_card_controller_interactive_uitest.cc",
         "../browser/ui/views/test/view_event_test_base.cc",
         "../browser/ui/views/test/view_event_test_base.h",
+        "../browser/ui/views/toolbar/app_menu_interactive_uitest.cc",
         "../browser/ui/views/toolbar/browser_app_menu_button_interactive_uitest.cc",
         "../browser/ui/views/toolbar/reload_button_browsertest.cc",
         "../browser/ui/views/toolbar/toolbar_action_hover_card_bubble_view_interactive_uitest.cc",
@@ -11135,7 +11141,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/user_education/help_bubble_factory_webui_interactive_uitest.cc",
         "../browser/ui/views/user_education/help_bubble_handler_interactive_uitest.cc",
         "../browser/ui/views/user_education/help_bubble_view_interactive_uitest.cc",
-        "../browser/ui/views/user_education/impl/browser_feature_promo_controller_20_interactive_uitest.cc",
+        "../browser/ui/views/user_education/impl/browser_feature_promo_controller_2x_interactive_uitest.cc",
         "../browser/ui/views/user_education/impl/browser_feature_promo_preconditions_interactive_uitest.cc",
         "../browser/ui/views/user_education/product_messaging_controller_interactive_uitest.cc",
         "../browser/ui/views/user_education/tutorial_interactive_uitest.cc",

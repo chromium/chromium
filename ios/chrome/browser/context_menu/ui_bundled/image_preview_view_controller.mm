@@ -20,7 +20,7 @@
 namespace {
 // Default time interval to wait before showing a spinner.
 constexpr base::TimeDelta kShowSpinnerDelay = base::Seconds(1);
-}
+}  // namespace
 
 @interface ImagePreviewViewController ()
 @end

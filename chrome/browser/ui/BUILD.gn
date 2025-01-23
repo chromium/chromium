@@ -667,6 +667,7 @@ static_library("ui") {
     "//ui/accessibility",
     "//ui/base",
     "//ui/base:data_exchange",
+    "//ui/base/accelerators/global_accelerator_listener:global_accelerator_listener",
     "//ui/base/clipboard",
     "//ui/base/ime",
     "//ui/compositor",
@@ -1947,6 +1948,11 @@ static_library("ui") {
 
     if (is_linux) {
       deps += [ "//ui/base/ime/linux" ]
+    }
+
+    if (enable_dice_support) {
+      deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation_impl" ]
+      allow_circular_includes_from += [ "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation_impl" ]
     }
 
     if (enable_extensions) {
@@ -5626,10 +5632,15 @@ static_library("ui") {
   }
 
   if (enable_glic) {
+    sources += [
+      "webui/settings/glic_handler.cc",
+      "webui/settings/glic_handler.h",
+    ]
     deps += [
       "//chrome/browser/glic",
       "//chrome/browser/glic:enabling",
       "//chrome/browser/glic:impl",
+      "//chrome/browser/glic/launcher:launcher",
     ]
     allow_circular_includes_from += [ "//chrome/browser/glic:impl" ]
   }

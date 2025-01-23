@@ -402,6 +402,7 @@ chromium-metrics-reviews@google.com.
 
     The metric is only recorded for extractions scheduled using an idle task.
   </summary>
+  <token key="FrameType" variants="FrameType"/>
 </histogram>
 
 <histogram name="OptimizationGuide.AIPageContent.RendererLatency.{FrameType}"
@@ -413,6 +414,7 @@ chromium-metrics-reviews@google.com.
     in the renderer. Recorded once for each extraction in the renderer process.
     The metric is split for main frames vs remote subframes.
   </summary>
+  <token key="FrameType" variants="FrameType"/>
 </histogram>
 
 <histogram name="OptimizationGuide.AIPageContent.TotalLatency" units="ms"

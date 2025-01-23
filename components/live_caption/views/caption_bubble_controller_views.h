@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/live_caption/caption_bubble_controller.h"
 #include "components/live_caption/views/caption_bubble.h"
-#include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 
@@ -26,6 +25,7 @@ namespace captions {
 
 class CaptionBubble;
 class CaptionBubbleModel;
+class CaptionBubbleSettings;
 class CaptionBubbleSessionObserver;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -36,7 +36,7 @@ class CaptionBubbleSessionObserver;
 class CaptionBubbleControllerViews : public CaptionBubbleController,
                                      public speech::SodaInstaller::Observer {
  public:
-  CaptionBubbleControllerViews(PrefService* profile_prefs,
+  CaptionBubbleControllerViews(CaptionBubbleSettings* caption_bubble_settings,
                                const std::string& application_locale);
   ~CaptionBubbleControllerViews() override;
   CaptionBubbleControllerViews(const CaptionBubbleControllerViews&) = delete;

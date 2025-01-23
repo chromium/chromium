@@ -25,6 +25,7 @@
 #include "cc/trees/compositor_mode.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_host_impl.h"
+#include "cc/trees/property_tree_delegate.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/command_buffer/client/test_gpu_memory_buffer_manager.h"
@@ -127,6 +128,10 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   AnimationHost* animation_host() const { return animation_host_.get(); }
 
   void SetUseLayerLists() { settings_.use_layer_lists = true; }
+
+  void SetPropertyTreeDelegate(PropertyTreeDelegate* delegate) {
+    property_tree_delegate_ = delegate;
+  }
 
  protected:
   explicit LayerTreeTest(
@@ -274,6 +279,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   std::unique_ptr<LayerTreeHostClientForTesting> client_;
   std::unique_ptr<LayerTreeHost> layer_tree_host_;
   std::unique_ptr<AnimationHost> animation_host_;
+  raw_ptr<PropertyTreeDelegate> property_tree_delegate_ = nullptr;
 
   bool beginning_ = false;
   bool end_when_begin_returns_ = false;

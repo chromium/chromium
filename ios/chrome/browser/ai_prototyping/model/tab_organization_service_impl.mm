@@ -11,12 +11,9 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
-
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 #import "components/optimization_guide/proto/features/tab_organization.pb.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
-#endif
 
 namespace ai {
 
@@ -26,11 +23,9 @@ TabOrganizationServiceImpl::TabOrganizationServiceImpl(
     bool start_on_device)
     : receiver_(this, std::move(receiver)) {
   web_state_list_ = web_state_list;
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   service_ = OptimizationGuideServiceFactory::GetForProfile(
       ProfileIOS::FromBrowserState(
           web_state_list->GetActiveWebState()->GetBrowserState()));
-#endif
 }
 
 TabOrganizationServiceImpl::~TabOrganizationServiceImpl() = default;
@@ -38,7 +33,6 @@ TabOrganizationServiceImpl::~TabOrganizationServiceImpl() = default;
 void TabOrganizationServiceImpl::ExecuteGroupTabs(
     ::mojo_base::ProtoWrapper request,
     ExecuteGroupTabsCallback callback) {
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   optimization_guide::proto::TabOrganizationRequest proto_request =
       request.As<optimization_guide::proto::TabOrganizationRequest>().value();
 
@@ -58,10 +52,8 @@ void TabOrganizationServiceImpl::ExecuteGroupTabs(
       optimization_guide::ModelBasedCapabilityKey::kTabOrganization,
       proto_request,
       /*execution_timeout*/ std::nullopt, std::move(result_callback));
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 }
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 std::string TabOrganizationServiceImpl::OnGroupTabsResponse(
     optimization_guide::OptimizationGuideModelExecutionResult result) {
   std::string response = "";
@@ -106,6 +98,5 @@ std::string TabOrganizationServiceImpl::OnGroupTabsResponse(
 
   return response;
 }
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 }  // namespace ai

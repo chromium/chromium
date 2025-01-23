@@ -314,6 +314,8 @@ static_library("test_support") {
     "fake_oauth_token_getter.h",
     "mock_oauth_client.cc",
     "mock_oauth_client.h",
+    "mock_oauth_token_getter.cc",
+    "mock_oauth_token_getter.h",
     "mock_session_authz_service_client.cc",
     "mock_session_authz_service_client.h",
     "protobuf_http_test_responder.cc",

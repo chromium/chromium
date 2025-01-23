@@ -1718,7 +1718,7 @@ CreateUserEducationResources(BrowserView* browser_view) {
   LowUsageHelpController::MaybeCreateForProfile(browser_view->GetProfile());
 
   if (user_education::features::IsUserEducationV25()) {
-    return std::make_unique<BrowserFeaturePromoController25>(
+    auto result = std::make_unique<BrowserFeaturePromoController25>(
         browser_view,
         feature_engagement::TrackerFactory::GetForBrowserContext(profile),
         &user_education_service->feature_promo_registry(),
@@ -1727,6 +1727,8 @@ CreateUserEducationResources(BrowserView* browser_view) {
         &user_education_service->feature_promo_session_policy(),
         &user_education_service->tutorial_service(),
         &user_education_service->product_messaging_controller());
+    result->Init();
+    return result;
   } else {
     return std::make_unique<BrowserFeaturePromoController20>(
         browser_view,

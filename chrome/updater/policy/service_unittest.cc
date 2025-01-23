@@ -890,11 +890,11 @@ TEST_F(PolicyManagersTest, MachineUnmanaged) {
   PolicyService::PolicyManagers managers(CreateExternalConstants());
 
   ASSERT_EQ(managers.managers().size(),
-            size_t{2 + kPlatformPolicyManagerDefined});
+            size_t{1 + kPlatformPolicyManagerDefined});
   EXPECT_EQ(managers.managers()[0]->source(), "Default");
-  EXPECT_EQ(managers.managers()[1]->source(), "DictValuePolicy");
   if (kPlatformPolicyManagerDefined) {
-    EXPECT_EQ(managers.managers()[2]->source(), kSourcePlatformPolicyManager);
+    EXPECT_EQ(managers.managers()[0 + kPlatformPolicyManagerDefined]->source(),
+              kSourcePlatformPolicyManager);
   }
 }
 
@@ -908,12 +908,12 @@ TEST_F(PolicyManagersTest, ValidDeviceManagementManager) {
   managers.ResetDeviceManagementManager(dm_policy);
 
   ASSERT_EQ(managers.managers().size(),
-            size_t{3 + kPlatformPolicyManagerDefined});
+            size_t{2 + kPlatformPolicyManagerDefined});
   EXPECT_EQ(managers.managers()[0]->source(), "Device Management");
   EXPECT_EQ(managers.managers()[1]->source(), "Default");
-  EXPECT_EQ(managers.managers()[2]->source(), "DictValuePolicy");
   if (kPlatformPolicyManagerDefined) {
-    EXPECT_EQ(managers.managers()[3]->source(), kSourcePlatformPolicyManager);
+    EXPECT_EQ(managers.managers()[1 + kPlatformPolicyManagerDefined]->source(),
+              kSourcePlatformPolicyManager);
   }
 }
 
@@ -940,7 +940,8 @@ TEST_F(PolicyManagersTest, ValidDictPlatformPolicies) {
             size_t{2 + kPlatformPolicyManagerDefined});
   EXPECT_EQ(managers.managers()[0]->source(), "DictValuePolicy");
   if (kPlatformPolicyManagerDefined) {
-    EXPECT_EQ(managers.managers()[1]->source(), kSourcePlatformPolicyManager);
+    EXPECT_EQ(managers.managers()[0 + kPlatformPolicyManagerDefined]->source(),
+              kSourcePlatformPolicyManager);
   }
   EXPECT_EQ(managers.managers()[1 + kPlatformPolicyManagerDefined]->source(),
             "Default");
@@ -962,7 +963,7 @@ TEST_F(PolicyManagersTest, ValidDeviceManagementPlatformPolicyNoCloudOverride) {
   PolicyService::PolicyManagers managers(CreateExternalConstants());
   managers.ResetDeviceManagementManager(dm_policy);
   ASSERT_EQ(managers.managers().size(),
-            size_t{3 + kPlatformPolicyManagerDefined});
+            size_t{2 + kPlatformPolicyManagerDefined});
   if (kPlatformPolicyManagerDefined) {
     EXPECT_EQ(managers.managers()[0]->source(),
               kCloudPolicyOverridesPlatformPolicyDefaultValue
@@ -978,8 +979,6 @@ TEST_F(PolicyManagersTest, ValidDeviceManagementPlatformPolicyNoCloudOverride) {
 
   EXPECT_EQ(managers.managers()[1 + kPlatformPolicyManagerDefined]->source(),
             "Default");
-  EXPECT_EQ(managers.managers()[2 + kPlatformPolicyManagerDefined]->source(),
-            "DictValuePolicy");
 }
 
 TEST_F(PolicyManagersTest, ValidDeviceManagementPlatformPolicyCloudOverride) {
@@ -999,15 +998,14 @@ TEST_F(PolicyManagersTest, ValidDeviceManagementPlatformPolicyCloudOverride) {
   managers.ResetDeviceManagementManager(dm_policy);
 
   ASSERT_EQ(managers.managers().size(),
-            size_t{3 + kPlatformPolicyManagerDefined});
+            size_t{2 + kPlatformPolicyManagerDefined});
   EXPECT_EQ(managers.managers()[0]->source(), "Device Management");
   if (kPlatformPolicyManagerDefined) {
-    EXPECT_EQ(managers.managers()[1]->source(), kSourcePlatformPolicyManager);
+    EXPECT_EQ(managers.managers()[0 + kPlatformPolicyManagerDefined]->source(),
+              kSourcePlatformPolicyManager);
   }
   EXPECT_EQ(managers.managers()[1 + kPlatformPolicyManagerDefined]->source(),
             "Default");
-  EXPECT_EQ(managers.managers()[2 + kPlatformPolicyManagerDefined]->source(),
-            "DictValuePolicy");
 }
 
 TEST_F(PolicyManagersTest,
@@ -1037,7 +1035,8 @@ TEST_F(PolicyManagersTest,
   EXPECT_EQ(managers.managers()[0]->source(), "DictValuePolicy");
   EXPECT_EQ(managers.managers()[1]->source(), "Device Management");
   if (kPlatformPolicyManagerDefined) {
-    EXPECT_EQ(managers.managers()[2]->source(), kSourcePlatformPolicyManager);
+    EXPECT_EQ(managers.managers()[1 + kPlatformPolicyManagerDefined]->source(),
+              kSourcePlatformPolicyManager);
   }
 
   EXPECT_EQ(managers.managers()[2 + kPlatformPolicyManagerDefined]->source(),

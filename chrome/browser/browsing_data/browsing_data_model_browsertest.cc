@@ -993,7 +993,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app1 =
       web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()).BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo iwa_url_info1,
-                       app1->TrustBundleAndInstall(profile));
+                       app1->Install(profile));
   auto* iwa_frame1 =
       web_app::OpenIsolatedWebApp(profile, iwa_url_info1.app_id());
   AddLocalStorageUsage(iwa_frame1, 100);
@@ -1001,7 +1001,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app2 =
       web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()).BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo iwa_url_info2,
-                       app2->TrustBundleAndInstall(profile));
+                       app2->Install(profile));
   auto* iwa_frame2 =
       web_app::OpenIsolatedWebApp(profile, iwa_url_info2.app_id());
   AddLocalStorageUsage(iwa_frame2, 500);

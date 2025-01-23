@@ -4,6 +4,8 @@
 
 package org.chromium.components.spellcheck;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.text.style.SuggestionSpan;
 import android.view.textservice.SentenceSuggestionsInfo;
@@ -17,13 +19,16 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 
 /** JNI interface for native SpellCheckerSessionBridge to use Android's spellchecker. */
+@NullMarked
 public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
     private long mNativeSpellCheckerSessionBridge;
-    private final SpellCheckerSession mSpellCheckerSession;
+    private final @Nullable SpellCheckerSession mSpellCheckerSession;
 
     /**
      * Constructs a SpellCheckerSessionBridge object as well as its SpellCheckerSession object.
@@ -52,7 +57,8 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
      * @param nativeSpellCheckerSessionBridge Pointer to the native SpellCheckerSessionBridge.
      */
     @CalledByNative
-    private static SpellCheckerSessionBridge create(long nativeSpellCheckerSessionBridge) {
+    private static @Nullable SpellCheckerSessionBridge create(
+            long nativeSpellCheckerSessionBridge) {
         SpellCheckerSessionBridge bridge =
                 new SpellCheckerSessionBridge(nativeSpellCheckerSessionBridge);
         if (bridge.mSpellCheckerSession == null) {
@@ -65,6 +71,7 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
     @CalledByNative
     private void disconnect() {
         mNativeSpellCheckerSessionBridge = 0;
+        assumeNonNull(mSpellCheckerSession);
         mSpellCheckerSession.cancel();
         mSpellCheckerSession.close();
     }
@@ -82,8 +89,9 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
         if (text.endsWith(".")) {
             text = text.substring(0, text.length() - 1);
         }
-        mSpellCheckerSession.getSentenceSuggestions(
-                new TextInfo[] {new TextInfo(text)}, SuggestionSpan.SUGGESTIONS_MAX_SIZE);
+        assumeNonNull(mSpellCheckerSession)
+                .getSentenceSuggestions(
+                        new TextInfo[] {new TextInfo(text)}, SuggestionSpan.SUGGESTIONS_MAX_SIZE);
     }
 
     /**

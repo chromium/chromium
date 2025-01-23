@@ -106,6 +106,9 @@ EXTERN_C const IID IID_ITestService;
         virtual HRESULT STDMETHODCALLTYPE GetProcessHandle( 
             /* [out] */ unsigned long *handle) = 0;
         
+        virtual HRESULT STDMETHODCALLTYPE IsRunningUnattended( 
+            /* [out] */ VARIANT_BOOL *is_running_unattended) = 0;
+        
     };
     
     
@@ -135,6 +138,11 @@ EXTERN_C const IID IID_ITestService;
             ITestService * This,
             /* [out] */ unsigned long *handle);
         
+        DECLSPEC_XFGVIRT(ITestService, IsRunningUnattended)
+        HRESULT ( STDMETHODCALLTYPE *IsRunningUnattended )( 
+            ITestService * This,
+            /* [out] */ VARIANT_BOOL *is_running_unattended);
+        
         END_INTERFACE
     } ITestServiceVtbl;
 
@@ -160,6 +168,9 @@ EXTERN_C const IID IID_ITestService;
 
 #define ITestService_GetProcessHandle(This,handle)	\
     ( (This)->lpVtbl -> GetProcessHandle(This,handle) ) 
+
+#define ITestService_IsRunningUnattended(This,is_running_unattended)	\
+    ( (This)->lpVtbl -> IsRunningUnattended(This,is_running_unattended) ) 
 
 #endif /* COBJMACROS */
 

@@ -10,6 +10,8 @@ import android.content.Context;
 import androidx.annotation.AnyThread;
 import androidx.annotation.MainThread;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Entry point for callbacks from {@link BackgroundTaskScheduler}. Any classes implementing
  * this interface must have a public constructor which takes no arguments.
@@ -17,6 +19,7 @@ import androidx.annotation.MainThread;
  * offloaded to another {@link Thread}, {@link android.os.Handler} or {@link
  * org.chromium.base.task.AsyncTask}.
  */
+@NullMarked
 public interface BackgroundTask {
     /**
      * Callback to the {@link BackgroundTaskScheduler} mainly used to

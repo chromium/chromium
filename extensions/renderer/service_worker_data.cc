@@ -32,16 +32,20 @@ ServiceWorkerData::ServiceWorkerData(
       context_(context),
       v8_schema_registry_(new V8SchemaRegistry),
       bindings_system_(std::move(bindings_system)) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(bindings_system_);
   proxy_->GetAssociatedInterfaceRegistry().AddInterface<mojom::ServiceWorker>(
       base::BindRepeating(&ServiceWorkerData::OnServiceWorkerRequest,
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
-ServiceWorkerData::~ServiceWorkerData() = default;
+ServiceWorkerData::~ServiceWorkerData() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+}
 
 void ServiceWorkerData::OnServiceWorkerRequest(
     mojo::PendingAssociatedReceiver<mojom::ServiceWorker> receiver) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(bindings_system_);
   receiver_.reset();
   receiver_.Bind(std::move(receiver));
@@ -49,6 +53,7 @@ void ServiceWorkerData::OnServiceWorkerRequest(
 
 void ServiceWorkerData::UpdatePermissions(PermissionSet active_permissions,
                                           PermissionSet withheld_permissions) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(worker_thread_util::IsWorkerThread());
   CHECK(bindings_system_);
 
@@ -67,6 +72,7 @@ void ServiceWorkerData::UpdatePermissions(PermissionSet active_permissions,
 }
 
 mojom::ServiceWorkerHost* ServiceWorkerData::GetServiceWorkerHost() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(bindings_system_);
   if (!service_worker_host_.is_bound()) {
     proxy_->GetRemoteAssociatedInterface(
@@ -76,6 +82,7 @@ mojom::ServiceWorkerHost* ServiceWorkerData::GetServiceWorkerHost() {
 }
 
 mojom::EventRouter* ServiceWorkerData::GetEventRouter() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(bindings_system_);
   if (!event_router_remote_.is_bound()) {
     proxy_->GetRemoteAssociatedInterface(
@@ -85,6 +92,7 @@ mojom::EventRouter* ServiceWorkerData::GetEventRouter() {
 }
 
 mojom::RendererAutomationRegistry* ServiceWorkerData::GetAutomationRegistry() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(bindings_system_);
   if (!renderer_automation_registry_remote_.is_bound()) {
     proxy_->GetRemoteAssociatedInterface(
@@ -94,6 +102,7 @@ mojom::RendererAutomationRegistry* ServiceWorkerData::GetAutomationRegistry() {
 }
 
 mojom::RendererHost* ServiceWorkerData::GetRendererHost() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // We allow access to mojom::RendererHost without a `bindings_system_`.
   if (!renderer_host_.is_bound()) {
     proxy_->GetRemoteAssociatedInterface(
@@ -103,10 +112,8 @@ mojom::RendererHost* ServiceWorkerData::GetRendererHost() {
 }
 
 void ServiceWorkerData::Init() {
-  // If we do not have bindings there is no additional init necessary
-  if (!bindings_system_) {
-    return;
-  }
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  CHECK(bindings_system_);
   const int thread_id = content::WorkerThread::GetCurrentId();
   GetServiceWorkerHost()->DidInitializeServiceWorkerContext(
       context_->GetExtensionID(), service_worker_version_id_, thread_id,
@@ -117,6 +124,7 @@ void ServiceWorkerData::Init() {
 void ServiceWorkerData::DispatchEvent(mojom::DispatchEventParamsPtr params,
                                       base::Value::List event_args,
                                       DispatchEventCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   ScriptContext* script_context = context();
   // Note |scoped_extension_interaction| requires a HandleScope.
   v8::Isolate* isolate = script_context->isolate();
@@ -146,6 +154,7 @@ void ServiceWorkerData::DispatchOnConnect(
     mojo::PendingAssociatedReceiver<extensions::mojom::MessagePort> port,
     mojo::PendingAssociatedRemote<extensions::mojom::MessagePortHost> port_host,
     DispatchOnConnectCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   WorkerThreadDispatcher::GetBindingsSystem()
       ->messaging_service()
       ->DispatchOnConnect(Dispatcher::GetWorkerScriptContextSet(), port_id,

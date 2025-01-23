@@ -1378,7 +1378,7 @@ ci.builder(
             ),
             "blink_wpt_tests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 18,
+                    shards = 6,
                 ),
             ),
             "browser_tests": targets.mixin(
@@ -2254,6 +2254,7 @@ fyi_ios_builder(
             "all",
         ],
     ),
+    os = os.MAC_BETA,
     cpu = cpu.ARM64,
     console_view_entry = [
         consoles.console_view_entry(
@@ -2307,6 +2308,7 @@ fyi_ios_builder(
             "xctest",
         ],
     ),
+    os = os.MAC_BETA,
     cpu = cpu.ARM64,
     console_view_entry = [
         consoles.console_view_entry(
@@ -2421,6 +2423,7 @@ fyi_ios_builder(
             "xctest",
         ],
     ),
+    os = os.MAC_BETA,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "iOS|iOS18",

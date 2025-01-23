@@ -485,7 +485,7 @@ RenderWidgetHostImpl::~RenderWidgetHostImpl() {
   CHECK(!self_owned_);
   render_frame_metadata_provider_.RemoveObserver(this);
 
-  if (was_ever_shown_ && is_topmost_widget_with_view_) {
+  if (was_ever_shown_ && is_topmost_frame_widget_with_view_) {
     // Log UMA related to possible suppression of input events until the
     // renderer has pushed content to viz (https://crbug.com/40057499).
     base::UmaHistogramBoolean("Renderer.ContentProduction.SignalReceived",
@@ -574,7 +574,8 @@ void RenderWidgetHostImpl::SetView(RenderWidgetHostViewBase* view) {
     view_ = view->GetWeakPtr();
     view_->SetIsFrameSinkIdOwner(view_is_frame_sink_id_owner_);
     MaybeDispatchBufferedFrameSinkRequest();
-    is_topmost_widget_with_view_ = !view->IsRenderWidgetHostViewChildFrame();
+    is_topmost_frame_widget_with_view_ =
+        !view->IsRenderWidgetHostViewChildFrame() && !self_owned_;
 
     // SendScreenRects() and SynchronizeVisualProperties() delay until a view
     // is set, however we come here with a newly created `view` that is not
@@ -1056,6 +1057,10 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   visual_properties.new_size_device_px =
       view_->GetRequestedRendererSizeDevicePx();
 
+  // This widget is for either the main frame of the outermost frame tree or a
+  // non-frame widget.
+  const bool is_topmost_widget = !view_->IsRenderWidgetHostViewChildFrame();
+
   // This widget is for a frame, but not the main frame of its frame tree.
   const bool is_child_frame_widget =
       view_->IsRenderWidgetHostViewChildFrame() && !owner_delegate_;
@@ -1082,7 +1087,7 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   // 9. Renderer B: child  RenderWidget
 
   // This property comes from the top-level main frame.
-  if (is_topmost_widget_with_view_) {
+  if (is_topmost_widget) {
     visual_properties.compositor_viewport_pixel_rect =
         gfx::Rect(view_->GetCompositorViewportPixelSize());
     visual_properties.window_controls_overlay_rect =
@@ -1138,7 +1143,7 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
 
   // The root widget's viewport segments are computed here - child frames just
   // use the value provided from the parent.
-  if (is_topmost_widget_with_view_) {
+  if (is_topmost_widget) {
     std::optional<DisplayFeature> display_feature = view_->GetDisplayFeature();
     if (display_feature) {
       int top_controls_height =

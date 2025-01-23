@@ -103,8 +103,8 @@ void GetBundlePathFromCommandLine(
             }
 
             return IsolatedWebAppInstallSource::FromDevCommandLine(
-                IwaSourceBundleDevModeWithFileOp(absolute_path,
-                                                 kDefaultBundleDevFileOp));
+                IwaSourceBundleDevModeWithFileOp(
+                    absolute_path, IwaSourceBundleDevFileOp::kCopy));
           },
           std::move(switch_value)),
       std::move(callback));
@@ -318,7 +318,7 @@ IsolatedWebAppInstallationManager::CreateInstallSource(
           base::Overloaded{
               [](base::FilePath path) -> IwaSourceDevModeWithFileOp {
                 return IwaSourceBundleDevModeWithFileOp(
-                    std::move(path), kDefaultBundleDevFileOp);
+                    std::move(path), IwaSourceBundleDevFileOp::kCopy);
               },
               [](const base::ScopedTempFile* temp_file)
                   -> IwaSourceDevModeWithFileOp {

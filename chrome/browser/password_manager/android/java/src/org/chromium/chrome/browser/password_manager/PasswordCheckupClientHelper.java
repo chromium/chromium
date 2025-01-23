@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.password_manager;
 import android.app.PendingIntent;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 
 import java.util.Optional;
 
 /** Interface for the helper responsible for Password Checkup operations. */
+@NullMarked
 public interface PasswordCheckupClientHelper {
     /** Serves as a general exception for failed requests to the password checkup backend. */
     class PasswordCheckBackendException extends Exception {

@@ -38,8 +38,8 @@ void AddPendingLog(NSData* log, AppGroupApplications application) {
                        static_cast<long>([[NSDate date] timeIntervalSince1970]),
                        ApplicationName(application),
                        app_group::kPendingLogFileSuffix];
-  NSURL* ready_log_url =
-      [log_dir_url URLByAppendingPathComponent:file_name isDirectory:NO];
+  NSURL* ready_log_url = [log_dir_url URLByAppendingPathComponent:file_name
+                                                      isDirectory:NO];
 
   [file_manager createFileAtPath:[ready_log_url path]
                         contents:log
@@ -57,25 +57,25 @@ void CleanOldPendingLogs() {
   NSArray* pending_logs =
       [file_manager contentsOfDirectoryAtPath:[log_dir_url path] error:nil];
 
-  if (kMaxFileNumber >= [pending_logs count])
+  if (kMaxFileNumber >= [pending_logs count]) {
     return;
+  }
   // sort by creation date
   NSMutableArray* files_and_properties =
       [NSMutableArray arrayWithCapacity:[pending_logs count]];
   for (NSString* file : pending_logs) {
-    if (![file hasSuffix:app_group::kPendingLogFileSuffix])
+    if (![file hasSuffix:app_group::kPendingLogFileSuffix]) {
       continue;
-    NSURL* file_url =
-        [log_dir_url URLByAppendingPathComponent:file isDirectory:NO];
+    }
+    NSURL* file_url = [log_dir_url URLByAppendingPathComponent:file
+                                                   isDirectory:NO];
 
     NSDictionary* properties =
         [file_manager attributesOfItemAtPath:[file_url path] error:nil];
     NSDate* mod_date = [properties objectForKey:NSFileModificationDate];
 
-    [files_and_properties addObject:@{
-      @"path" : file,
-      @"lastModDate" : mod_date
-    }];
+    [files_and_properties
+        addObject:@{@"path" : file, @"lastModDate" : mod_date}];
   }
 
   // Sort files by modification date. Older files will be first.
@@ -84,15 +84,16 @@ void CleanOldPendingLogs() {
         return [[path1 objectForKey:@"lastModDate"]
             compare:[path2 objectForKey:@"lastModDate"]];
       }];
-  if (kMaxFileNumber >= [sorted_files count])
+  if (kMaxFileNumber >= [sorted_files count]) {
     return;
+  }
   NSUInteger first_file_to_keep = [sorted_files count] - kMaxFileNumber;
   for (NSUInteger file_index = 0; file_index < first_file_to_keep;
        file_index++) {
     NSString* path =
         [[sorted_files objectAtIndex:file_index] objectForKey:@"path"];
-    NSURL* file_url =
-        [log_dir_url URLByAppendingPathComponent:path isDirectory:NO];
+    NSURL* file_url = [log_dir_url URLByAppendingPathComponent:path
+                                                   isDirectory:NO];
     [file_manager removeItemAtURL:file_url error:nil];
   }
 }

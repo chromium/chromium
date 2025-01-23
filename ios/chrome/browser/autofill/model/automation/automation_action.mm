@@ -181,7 +181,6 @@
 // A shared flow across many actions, this waits for the target element to be
 // visible, scrolls it into view, then taps on it.
 - (void)tapOnTarget:(ElementSelector*)selector {
-
   // Wait for the element to be visible on the page.
   [ChromeEarlGrey waitForWebStateContainingElement:selector];
 

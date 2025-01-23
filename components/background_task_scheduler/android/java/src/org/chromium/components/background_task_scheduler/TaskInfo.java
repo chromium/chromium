@@ -8,7 +8,9 @@ import android.content.Context;
 import android.os.PersistableBundle;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -17,6 +19,7 @@ import java.lang.annotation.RetentionPolicy;
  * TaskInfo represents a request to run a specific {@link BackgroundTask} given the required
  * parameters, such as whether a special type of network is available.
  */
+@NullMarked
 public class TaskInfo {
     public static final String SERIALIZED_TASK_EXTRAS = "serialized_task_extras";
 
@@ -345,7 +348,7 @@ public class TaskInfo {
     private final int mTaskId;
 
     /** The extras to provide to the {@link BackgroundTask} when it is run. */
-    @NonNull private final PersistableBundle mExtras;
+    private final PersistableBundle mExtras;
 
     /** The type of network the task requires to run. */
     @NetworkType private final int mRequiredNetworkType;
@@ -363,7 +366,7 @@ public class TaskInfo {
     private final boolean mUpdateCurrent;
 
     /** Task information regarding a type of task. */
-    private final TimingInfo mTimingInfo;
+    private final @Nullable TimingInfo mTimingInfo;
 
     private TaskInfo(Builder builder) {
         mTaskId = builder.mTaskId;
@@ -388,7 +391,6 @@ public class TaskInfo {
     }
 
     /** @return the extras that will be provided to the {@link BackgroundTask}. */
-    @NonNull
     public PersistableBundle getExtras() {
         return mExtras;
     }
@@ -431,7 +433,7 @@ public class TaskInfo {
      * @return the specific data if it is a one-off tasks and null otherwise.
      */
     @Deprecated
-    public OneOffInfo getOneOffInfo() {
+    public @Nullable OneOffInfo getOneOffInfo() {
         if (mTimingInfo instanceof OneOffInfo) return (OneOffInfo) mTimingInfo;
         return null;
     }
@@ -442,13 +444,13 @@ public class TaskInfo {
      * @return the specific data that if it is a periodic tasks and null otherwise.
      */
     @Deprecated
-    public PeriodicInfo getPeriodicInfo() {
+    public @Nullable PeriodicInfo getPeriodicInfo() {
         if (mTimingInfo instanceof PeriodicInfo) return (PeriodicInfo) mTimingInfo;
         return null;
     }
 
     /** @return the specific data based on the type of task. */
-    public TimingInfo getTimingInfo() {
+    public @Nullable TimingInfo getTimingInfo() {
         return mTimingInfo;
     }
 
@@ -567,13 +569,13 @@ public class TaskInfo {
     public static final class Builder {
         private final int mTaskId;
 
-        private PersistableBundle mExtras;
+        private @Nullable PersistableBundle mExtras;
         @NetworkType private int mRequiredNetworkType;
         private boolean mRequiresCharging;
         private boolean mUserInitiated;
         private boolean mIsPersisted;
         private boolean mUpdateCurrent;
-        private TimingInfo mTimingInfo;
+        private @Nullable TimingInfo mTimingInfo;
 
         Builder(int taskId) {
             mTaskId = taskId;

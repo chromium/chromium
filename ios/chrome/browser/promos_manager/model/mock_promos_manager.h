@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_PROMOS_MANAGER_MODEL_MOCK_PROMOS_MANAGER_H_
 #define IOS_CHROME_BROWSER_PROMOS_MANAGER_MODEL_MOCK_PROMOS_MANAGER_H_
 
-#import "ios/chrome/browser/promos_manager/model/promos_manager.h"
-
 #import <Foundation/Foundation.h>
 
 #import <map>
@@ -18,6 +16,7 @@
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/impression_limit.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
+#import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "testing/gmock/include/gmock/gmock.h"
 
 // Mock version of PromosManager.

@@ -147,7 +147,8 @@ TEST_F(BrowserDownloadServiceTest, PkPassMimeType) {
   ASSERT_TRUE(download_manager_tab_helper()->tasks().empty());
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadMimeType",
-      static_cast<base::HistogramBase::Sample32>(DownloadMimeTypeResult::PkPass),
+      static_cast<base::HistogramBase::Sample32>(
+          DownloadMimeTypeResult::PkPass),
       1);
 }
 
@@ -274,10 +275,11 @@ TEST_F(BrowserDownloadServiceTest, ZipArchiveMimeType) {
   ASSERT_TRUE(pass_kit_tab_helper()->tasks().empty());
   ASSERT_EQ(1U, download_manager_tab_helper()->tasks().size());
   EXPECT_EQ(task_ptr, download_manager_tab_helper()->tasks()[0].get());
-  histogram_tester_.ExpectUniqueSample("Download.IOSDownloadMimeType",
-                                       static_cast<base::HistogramBase::Sample32>(
-                                           DownloadMimeTypeResult::ZipArchive),
-                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      "Download.IOSDownloadMimeType",
+      static_cast<base::HistogramBase::Sample32>(
+          DownloadMimeTypeResult::ZipArchive),
+      1);
 }
 
 // Tests that BrowserDownloadService uses DownloadManagerTabHelper for .exe Mime

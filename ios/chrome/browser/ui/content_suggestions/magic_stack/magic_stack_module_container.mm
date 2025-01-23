@@ -6,7 +6,11 @@
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
@@ -14,6 +18,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_context_menu_interaction_handler.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_content_view_delegate.h"
@@ -72,6 +77,7 @@ const CGFloat kSeparatorHeight = 0.5;
   NSLayoutConstraint* _contentStackViewBottomMarginAnchor;
   ContentSuggestionsModuleType _type;
   BOOL _reducedBottomMargin;
+  MagicStackContextMenuInteractionHandler* _contextMenuInteractionHandler;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -214,6 +220,13 @@ const CGFloat kSeparatorHeight = 0.5;
   [self resetView];
 }
 
+#pragma mark - Setters
+
+- (void)setDelegate:(id<MagicStackModuleContainerDelegate>)delegate {
+  _delegate = delegate;
+  [self contextMenuInteractionHandler].delegate = delegate;
+}
+
 // Creates a button with the specified `title` positioned in the module's
 // top-right corner.
 //
@@ -287,6 +300,7 @@ const CGFloat kSeparatorHeight = 0.5;
     return;
   }
   _type = config.type;
+  [[self contextMenuInteractionHandler] configureWithType:_type];
 
   _title.text = [MagicStackModuleContainer titleStringForModule:_type
                                                    inMagicStack:inMagicStack];
@@ -360,6 +374,15 @@ const CGFloat kSeparatorHeight = 0.5;
     [_contentView removeFromSuperview];
     _contentView = nil;
   }
+}
+
+- (MagicStackContextMenuInteractionHandler*)contextMenuInteractionHandler {
+  if (!_contextMenuInteractionHandler) {
+    _contextMenuInteractionHandler =
+        [[MagicStackContextMenuInteractionHandler alloc] init];
+    _contextMenuInteractionHandler.delegate = self.delegate;
+  }
+  return _contextMenuInteractionHandler;
 }
 
 // Returns the module's title, if any, given the Magic Stack module `type`.

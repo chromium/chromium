@@ -8,6 +8,8 @@ import android.content.Context;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 
@@ -15,8 +17,9 @@ import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.
  * This factory returns an implementation for the helper. The factory itself is also implemented
  * downstream.
  */
+@NullMarked
 public abstract class PasswordCheckupClientHelperFactory {
-    private static PasswordCheckupClientHelperFactory sInstance;
+    private static @Nullable PasswordCheckupClientHelperFactory sInstance;
 
     /**
      * Return an instance of PasswordCheckupClientHelperFactory. If no factory was used yet, it is
@@ -38,7 +41,8 @@ public abstract class PasswordCheckupClientHelperFactory {
      * @return An implementation of the {@link PasswordCheckupClientHelper} if one exists.
      *     <p>TODO(crbug.com/40854052): Check if backend could be instantiated and throw error
      */
-    public PasswordCheckupClientHelper createHelper() throws PasswordCheckBackendException {
+    public @Nullable PasswordCheckupClientHelper createHelper()
+            throws PasswordCheckBackendException {
         return null;
     }
 

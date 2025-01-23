@@ -1038,8 +1038,8 @@ public class NotificationPlatformBridgeTest {
 
     /**
      * Verifies that when `SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS` is enabled, suspicious
-     * notifications are replaced by a warning and tapping the "Unsubscribe" button performs the
-     * unsubscribe behaviour.
+     * notifications are replaced by warning notifications. Then dismiss one notification and
+     * tapping the "Unsubscribe" button on another notification to perform both expected behaviors.
      */
     @Test
     @LargeTest
@@ -1049,16 +1049,22 @@ public class NotificationPlatformBridgeTest {
         ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS
     })
     @MinAndroidSdkLevel(Build.VERSION_CODES.P)
-    public void testNotificationShowWarningNotificationThenUnsubscribe() throws Exception {
+    public void testNotificationShowWarningNotificationsThenDismissAndUnsubscribe()
+            throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
         Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes(
+                                SUSPICIOUS_NOTIFICATION_WARNING_INTERACTIONS_HISTOGRAM_NAME,
+                                SuspiciousNotificationWarningInteractions.WARNING_SHOWN,
+                                2)
                         .expectIntRecords(
                                 SUSPICIOUS_NOTIFICATION_WARNING_INTERACTIONS_HISTOGRAM_NAME,
-                                SuspiciousNotificationWarningInteractions.WARNING_SHOWN)
+                                SuspiciousNotificationWarningInteractions.UNSUBSCRIBE,
+                                SuspiciousNotificationWarningInteractions.DISMISS)
                         .build();
 
         NotificationPlatformBridge notificationBridge =
@@ -1066,44 +1072,58 @@ public class NotificationPlatformBridgeTest {
         Assert.assertNotNull(notificationBridge);
         notificationBridge.setIsSuspiciousParameterForTesting(true);
 
-        Notification notification1 =
-                showAndGetNotification(
-                        "MyNotification",
-                        "{ actions: [{action: 'myAction', title: 'reply', type: 'text'}] }");
-        mNotificationTestRule.waitForNotificationCount(1);
-        notificationBridge.setIsSuspiciousParameterForTesting(false);
-        showNotification("Notification2", "{}");
+        // Display 2 suspicious notifications that will be replaced by warnings.
+        showNotification("Notification0", "{body: 'Hello'}");
+        showNotification("Notification1", "{}");
         mNotificationTestRule.waitForNotificationCount(2);
 
-        // Check notification contents were replaced by a warning.
-        Notification warningNotification =
-                mNotificationTestRule.getNotificationEntries().get(0).getNotification();
+        // Display 1 non-suspicious notification.
+        notificationBridge.setIsSuspiciousParameterForTesting(false);
+        showNotification("Notification2", "{}");
+        mNotificationTestRule.waitForNotificationCount(3);
+
+        // Check 2 notification contents were replaced by warnings.
+        List<NotificationEntry> notifications = mNotificationTestRule.getNotificationEntries();
         String expectedOrigin =
                 UrlFormatter.formatUrlForSecurityDisplay(
                         mPermissionTestRule.getOrigin(), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
-        // Validate the contents of the notification.
+        for (int i = 0; i < 2; i++) {
+            // Validate the warning notification contents.
+            Notification warningNotification = notifications.get(i).getNotification();
+            Assert.assertEquals(
+                    "Possible spam", NotificationTestUtil.getExtraTitle(warningNotification));
+            Assert.assertTrue(
+                    NotificationTestUtil.getExtraText(warningNotification)
+                            .contains("Chrome detected possible spam from " + expectedOrigin));
+            Assert.assertEquals(
+                    expectedOrigin, NotificationTestUtil.getExtraSubText(warningNotification));
+
+            // Validate the warning notification buttons.
+            Assert.assertEquals(2, warningNotification.actions.length);
+            PendingIntent unsubscribeIntent = warningNotification.actions[0].actionIntent;
+            PendingIntent showNotificationIntent = warningNotification.actions[1].actionIntent;
+            Assert.assertNotNull(unsubscribeIntent);
+            Assert.assertNotNull(showNotificationIntent);
+        }
+
+        // Verify that the two suspicious notification interactions will be logged.
         Assert.assertEquals(
-                "Possible spam", NotificationTestUtil.getExtraTitle(warningNotification));
-        Assert.assertTrue(
-                NotificationTestUtil.getExtraText(warningNotification)
-                        .contains("Chrome detected possible spam from " + expectedOrigin));
-        Assert.assertEquals(
-                expectedOrigin, NotificationTestUtil.getExtraSubText(warningNotification));
+                2,
+                NotificationPlatformBridge.sSuspiciousNotificationsMap
+                        .get(mPermissionTestRule.getOrigin())
+                        .size());
 
-        // Validate histogram is logged after showing warning.
-        histogramWatcher.assertExpected();
+        // Dismiss the warning notification1.
+        Notification warningNotification1 = notifications.get(1).getNotification();
+        warningNotification1.deleteIntent.send();
+        mNotificationTestRule.waitForNotificationManagerMutation();
 
-        // Check expected buttons.
-        Assert.assertEquals(2, notification1.actions.length);
-        PendingIntent unsubscribeIntent = notification1.actions[0].actionIntent;
-        PendingIntent showNotificationIntent = notification1.actions[1].actionIntent;
-        Assert.assertNotNull(unsubscribeIntent);
-        Assert.assertNotNull(showNotificationIntent);
-
-        // Click the "Unsubscribe" button.
+        // Click the "Unsubscribe" button on warning notification0.
+        Notification warningNotification0 = notifications.get(0).getNotification();
+        PendingIntent unsubscribeIntent = warningNotification0.actions[0].actionIntent;
         unsubscribeIntent.send();
 
-        // Wait for the provisionally unsubscribe button to replace the warning notification.
+        // Wait for the provisionally unsubscribe notification to appear.
         mNotificationTestRule.waitForNotificationCount(1);
         Notification provisionallyUnsubscribedNotification =
                 mNotificationTestRule.getNotificationEntries().get(0).getNotification();
@@ -1115,13 +1135,35 @@ public class NotificationPlatformBridgeTest {
                 NotificationTestUtil.getExtraText(provisionallyUnsubscribedNotification)
                         .contains("You'll no longer receive notifications from " + expectedOrigin));
         Assert.assertEquals(
-                expectedOrigin, NotificationTestUtil.getExtraSubText(warningNotification));
+                expectedOrigin, NotificationTestUtil.getExtraSubText(warningNotification1));
+
+        // Verify that warning notification1 will no longer be logged.
+        Assert.assertEquals(
+                1,
+                NotificationPlatformBridge.sSuspiciousNotificationsMap
+                        .get(mPermissionTestRule.getOrigin())
+                        .size());
+
+        // Click the "Okay" button to commit. This is the second button.
+        PendingIntent commitIntent = provisionallyUnsubscribedNotification.actions[1].actionIntent;
+        Assert.assertNotNull(commitIntent);
+        commitIntent.send();
+
+        // Wait for the `provisionally unsubscribed` notification to disappear.
+        mNotificationTestRule.waitForNotificationCount(0);
+
+        // Validate histogram is logged correctly.
+        histogramWatcher.assertExpected();
+
+        // Verify interactions will no longer be logged.
+        Assert.assertTrue(NotificationPlatformBridge.sSuspiciousNotificationsMap.isEmpty());
     }
 
     /**
      * Verifies that when `SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS` is enabled, suspicious
      * notifications are replaced by a warning and tapping the "Show Notification" button performs
-     * the show notification behaviour.
+     * the show notification behaviour. Then, tapping the "Always allow" button displays the
+     * original backups of the warning notifications from the same origin.
      */
     @Test
     @LargeTest
@@ -1131,18 +1173,26 @@ public class NotificationPlatformBridgeTest {
         ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS
     })
     @MinAndroidSdkLevel(Build.VERSION_CODES.P)
-    public void testNotificationShowWarningNotificationThenShowNotification() throws Exception {
+    public void testNotificationShowWarningNotificationThenShowNotificationThenAlwaysAllow()
+            throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
         Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecords(
+                        .expectIntRecordTimes(
                                 SUSPICIOUS_NOTIFICATION_WARNING_INTERACTIONS_HISTOGRAM_NAME,
                                 SuspiciousNotificationWarningInteractions.WARNING_SHOWN,
+                                3)
+                        .expectIntRecordTimes(
+                                SUSPICIOUS_NOTIFICATION_WARNING_INTERACTIONS_HISTOGRAM_NAME,
                                 SuspiciousNotificationWarningInteractions
-                                        .SHOW_ORIGINAL_NOTIFICATION)
+                                        .SHOW_ORIGINAL_NOTIFICATION,
+                                2)
+                        .expectIntRecords(
+                                SUSPICIOUS_NOTIFICATION_WARNING_INTERACTIONS_HISTOGRAM_NAME,
+                                SuspiciousNotificationWarningInteractions.ALWAYS_ALLOW)
                         .build();
 
         NotificationPlatformBridge notificationBridge =
@@ -1150,40 +1200,79 @@ public class NotificationPlatformBridgeTest {
         Assert.assertNotNull(notificationBridge);
         notificationBridge.setIsSuspiciousParameterForTesting(true);
 
-        showAndGetNotification("MyNotification", "{body: 'Hello'}");
+        // Display 1 notification.
+        showAndGetNotification("MyNotification1", "{body: 'Hello'}");
         mNotificationTestRule.waitForNotificationCount(1);
 
-        // Check notification contents were replaced by a warning.
-        Notification warningNotification =
-                mNotificationTestRule.getNotificationEntries().get(0).getNotification();
-        Assert.assertEquals(
-                "Possible spam", NotificationTestUtil.getExtraTitle(warningNotification));
-
         // Click the "Show Notification" button.
+        List<NotificationEntry> notifications = mNotificationTestRule.getNotificationEntries();
+        Notification warningNotification = notifications.get(0).getNotification();
         Assert.assertEquals(2, warningNotification.actions.length);
         PendingIntent showNotificationIntent = warningNotification.actions[1].actionIntent;
         Assert.assertNotNull(showNotificationIntent);
         showNotificationIntent.send();
 
-        // Wait for the original notification.
-        Notification restoredNotification =
+        // Check the original notification is restored silently.
+        Notification restoredNotificationFromWarning =
                 mNotificationTestRule.waitForNotification().notification;
-
         Assert.assertEquals(
-                "MyNotification", NotificationTestUtil.getExtraTitle(restoredNotification));
-        Assert.assertEquals("Hello", NotificationTestUtil.getExtraText(restoredNotification));
+                Notification.GROUP_ALERT_SUMMARY,
+                restoredNotificationFromWarning.getGroupAlertBehavior());
 
-        // Validate histogram is logged after tapping to show original notification.
+        // Display 2 notifications that will be replaced by warnings.
+        showNotification("MyNotification2", "{}");
+        showNotification("MyNotification3", "{}");
+        mNotificationTestRule.waitForNotificationCount(3);
+
+        // Tap the "Show notification" button on a 2nd notification.
+        notifications = mNotificationTestRule.getNotificationEntries();
+        Notification notification2 = notifications.get(1).getNotification();
+        PendingIntent showNotificationIntent2 = notification2.actions[1].actionIntent;
+        Assert.assertNotNull(showNotificationIntent2);
+        showNotificationIntent2.send();
+        mNotificationTestRule.waitForNotificationManagerMutation();
+
+        // Set to false so the "Always allow" confirmation notification will not be marked as
+        // suspicious.
+        notificationBridge.setIsSuspiciousParameterForTesting(false);
+
+        // Click the "Always allow" button on the restored original notification.
+        Assert.assertEquals(2, restoredNotificationFromWarning.actions.length);
+        PendingIntent alwaysAllowIntent = restoredNotificationFromWarning.actions[1].actionIntent;
+        Assert.assertNotNull(alwaysAllowIntent);
+        alwaysAllowIntent.send();
+        mNotificationTestRule.waitForNotificationCount(4);
+
+        // Verify 3 notifications have their original titles and only have one button
+        // (Unsubscribe).
+        notifications = mNotificationTestRule.getNotificationEntries();
+        for (int i = 0; i < 3; i++) {
+            Notification restoredNotification = notifications.get(i).getNotification();
+            Assert.assertEquals(
+                    "MyNotification" + (i + 1),
+                    NotificationTestUtil.getExtraTitle(restoredNotification));
+            Assert.assertEquals(1, restoredNotification.actions.length);
+        }
+
+        // Verify the confirmation notification.
+        Notification confirmationNotification = notifications.get(3).getNotification();
+        Assert.assertEquals(
+                "Chrome will stop flagging notifications from "
+                        + mPermissionTestRule.getOrigin()
+                        + " as spam",
+                NotificationTestUtil.getExtraTitle(confirmationNotification));
+        Assert.assertNull(confirmationNotification.actions);
+
+        // Validate histogram is logged.
         histogramWatcher.assertExpected();
 
-        // Verify that the notification is silent once restored.
-        Assert.assertEquals(
-                Notification.GROUP_ALERT_SUMMARY, restoredNotification.getGroupAlertBehavior());
+        // Verify interactions will no longer be logged.
+        Assert.assertTrue(NotificationPlatformBridge.sSuspiciousNotificationsMap.isEmpty());
     }
 
     /**
      * Verifies that when `SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS` is enabled, non-suspicious
-     * notifications stay the same and are not replaced by the warning.
+     * notifications behave the same and are not replaced by warnings.
      */
     @Test
     @LargeTest
@@ -1197,37 +1286,57 @@ public class NotificationPlatformBridgeTest {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
         Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                SUSPICIOUS_NOTIFICATION_WARNING_INTERACTIONS_HISTOGRAM_NAME)
+                        .build();
 
         NotificationPlatformBridge notificationBridge =
                 NotificationPlatformBridge.getInstanceForTests();
         Assert.assertNotNull(notificationBridge);
         notificationBridge.setIsSuspiciousParameterForTesting(false);
 
-        showAndGetNotification(
-                "MyNotification",
-                "{ "
-                        + " body: 'Hello' ,"
-                        + " actions: [{action: 'myAction', title: 'reply', type: 'text'}]}");
-        showNotification("Notification2", "{}");
-        mNotificationTestRule.waitForNotificationCount(2);
+        showNotification("Notification0", "{body: 'Hello'}");
+        showNotification("Notification1", "{body: 'Hello'}");
+        showNotification("Notification2", "{body: 'Hello'}");
+        mNotificationTestRule.waitForNotificationCount(3);
 
         // Check notification contents were not replaced by a warning.
-        Notification sentNotification =
-                mNotificationTestRule.getNotificationEntries().get(0).getNotification();
+        List<NotificationEntry> notifications = mNotificationTestRule.getNotificationEntries();
+        Notification notification0 = notifications.get(0).getNotification();
         String expectedOrigin =
                 UrlFormatter.formatUrlForSecurityDisplay(
                         mPermissionTestRule.getOrigin(), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
         // Validate the contents of the notification.
-        Assert.assertEquals("MyNotification", NotificationTestUtil.getExtraTitle(sentNotification));
-        Assert.assertEquals("Hello", NotificationTestUtil.getExtraText(sentNotification));
-        Assert.assertEquals(expectedOrigin, NotificationTestUtil.getExtraSubText(sentNotification));
+        Assert.assertEquals("Notification0", NotificationTestUtil.getExtraTitle(notification0));
+        Assert.assertEquals("Hello", NotificationTestUtil.getExtraText(notification0));
+        Assert.assertEquals(expectedOrigin, NotificationTestUtil.getExtraSubText(notification0));
 
-        // The specified action should also be present.
-        Assert.assertEquals(2, sentNotification.actions.length);
-        Notification.Action action = sentNotification.actions[0];
-        Assert.assertEquals("reply", action.title);
-        Assert.assertNotNull(sentNotification.actions[0].getRemoteInputs());
-        Assert.assertEquals(1, action.getRemoteInputs().length);
+        // Dismiss notification1.
+        Notification notification1 = notifications.get(1).getNotification();
+        notification1.deleteIntent.send();
+        mNotificationTestRule.waitForNotificationManagerMutation();
+
+        // Click the "Unsubscribe" button on warning notification0.
+        PendingIntent unsubscribeIntent = notification0.actions[0].actionIntent;
+        unsubscribeIntent.send();
+
+        // Wait for the provisionally unsubscribe notification to appear and click the "Okay" button
+        // to commit.
+        mNotificationTestRule.waitForNotificationCount(1);
+        Notification provisionallyUnsubscribedNotification =
+                mNotificationTestRule.getNotificationEntries().get(0).getNotification();
+        PendingIntent commitIntent = provisionallyUnsubscribedNotification.actions[1].actionIntent;
+        Assert.assertNotNull(commitIntent);
+        commitIntent.send();
+
+        // Wait for the `provisionally unsubscribed` notification to disappear.
+        mNotificationTestRule.waitForNotificationCount(0);
+
+        // Validate nothing is logged.
+        Assert.assertTrue(NotificationPlatformBridge.sSuspiciousNotificationsMap.isEmpty());
+        histogramWatcher.assertExpected();
     }
 
     /**

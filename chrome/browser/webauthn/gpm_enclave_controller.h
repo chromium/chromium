@@ -188,9 +188,9 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   // Called when the enclave enrollment is complete.
   void OnEnclaveAccountSetUpComplete();
 
-  // Called when the EnclaveManager is ready. Sets `account_state_` to the
-  // correct value for the level of user verification required.
-  void SetAccountStateReady();
+  // Called when the EnclaveManager has finished loading. Sets `account_state_`
+  // and progresses the flow if waiting.
+  void SetAccountState(AccountState account_state);
 
   // Called when the user selects Google Password Manager from the list of
   // mechanisms. (Or when it's the priority mechanism.)

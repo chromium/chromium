@@ -64,8 +64,8 @@ class IsolatedWebAppInstallPrepareApplyUpdateCommandBrowserTest
       const base::FilePath& bundle_path) const {
     return is_dev_mode_
                ? IsolatedWebAppInstallSource::FromDevUi(
-                     IwaSourceBundleDevModeWithFileOp(bundle_path,
-                                                      kDefaultBundleDevFileOp))
+                     IwaSourceBundleDevModeWithFileOp(
+                         bundle_path, IwaSourceBundleDevFileOp::kCopy))
                : IsolatedWebAppInstallSource::FromGraphicalInstaller(
                      IwaSourceBundleProdModeWithFileOp(
                          bundle_path, IwaSourceBundleProdFileOp::kCopy));

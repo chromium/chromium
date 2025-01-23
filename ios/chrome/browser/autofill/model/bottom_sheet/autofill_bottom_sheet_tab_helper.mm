@@ -15,9 +15,9 @@
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
-#import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
@@ -212,6 +212,7 @@ void AutofillBottomSheetTabHelper::MaybeShowPaymentsBottomSheet(
     // Use the status quo logic for triggering the payments bottom sheet if
     // V3 isn't enabled.
     ShowPaymentsBottomSheet(params);
+    return;
   }
 
   // In V3, First try to retrieve credit card suggestions before considering

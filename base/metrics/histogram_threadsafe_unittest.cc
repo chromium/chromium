@@ -128,13 +128,13 @@ class SnapshotDeltaThread : public SimpleThread {
   // Store a |snapshot| that was taken of a histogram. This is done to compare
   // what was actually emitted (see StoreActualSample()).
   void StoreSnapshot(std::unique_ptr<HistogramSamples> snapshot) {
-    HistogramBase::Count snapshot_samples_count = snapshot->TotalCount();
+    HistogramBase::Count32 snapshot_samples_count = snapshot->TotalCount();
     subtle::NoBarrier_AtomicIncrement(snapshots_total_samples_count_,
                                       snapshot_samples_count);
     for (auto it = snapshot->Iterator(); !it->Done(); it->Next()) {
       HistogramBase::Sample32 min;
       int64_t max;
-      HistogramBase::Count count;
+      HistogramBase::Count32 count;
       it->Get(&min, &max, &count);
       // Verify that the snapshot contains only positive bucket counts.
       // This is to ensure SnapshotDelta() is fully thread-safe, not just
@@ -422,8 +422,8 @@ TEST_F(HistogramThreadsafeTest, SnapshotDeltaThreadsafe) {
     // Also verify that no more unlogged samples remain, and that the internal
     // logged samples of the histograms match what we emitted.
 
-    HistogramBase::Count logged_total_samples_count = 0;
-    std::vector<HistogramBase::Count> logged_bucket_counts(
+    HistogramBase::Count32 logged_total_samples_count = 0;
+    std::vector<HistogramBase::Count32> logged_bucket_counts(
         /*value=*/kHistogramMax, 0);
     // We ignore the last four histograms since they are the same as the first
     // two (they are simulations of histogram instances from a subprocess that
@@ -450,7 +450,7 @@ TEST_F(HistogramThreadsafeTest, SnapshotDeltaThreadsafe) {
       for (auto it = logged_samples->Iterator(); !it->Done(); it->Next()) {
         HistogramBase::Sample32 min;
         int64_t max;
-        HistogramBase::Count count;
+        HistogramBase::Count32 count;
         it->Get(&min, &max, &count);
         ASSERT_GE(count, 0);
         logged_total_samples_count += count;

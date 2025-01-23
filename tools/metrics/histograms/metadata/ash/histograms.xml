@@ -9705,7 +9705,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.VideoConferenceTray.BackgroundImageButton.Click"
     enum="BooleanOpened" expires_after="2025-06-22">
-  <owner>charleszhao@google.com</owner>
+  <owner>amoylan@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Recorded when the background image button in video conference tray is
@@ -9715,7 +9715,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.VideoConferenceTray.CreateWithAiButton.Click"
     enum="BooleanOpened" expires_after="2025-06-22">
-  <owner>charleszhao@google.com</owner>
+  <owner>amoylan@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Recorded when the &quot;Create with AI&quot; button in video conference tray

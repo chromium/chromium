@@ -182,6 +182,11 @@ bool UrlData::ValidateDataOrigin(const KURL& origin) {
     return true;
   }
   if (cors_mode_ == UrlData::CORS_UNSPECIFIED) {
+    // If both origins are null return true, otherwise
+    // SecurityOrigin::AreSameOrigin will create a unique nonce for each.
+    if (data_origin_.IsNull() && origin.IsNull()) {
+      return true;
+    }
     return SecurityOrigin::SecurityOrigin::AreSameOrigin(data_origin_, origin);
   }
   // The actual cors checks is done in the net layer.

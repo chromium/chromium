@@ -24,10 +24,12 @@
 namespace {
 
 int GetFaviconResourceIdForNativeURL(const GURL& url) {
-  if (url.host_piece() == kChromeUICrashesHost)
+  if (url.host_piece() == kChromeUICrashesHost) {
     return IDR_CRASH_SAD_FAVICON;
-  if (url.host_piece() == kChromeUIFlagsHost)
+  }
+  if (url.host_piece() == kChromeUIFlagsHost) {
     return IDR_FLAGS_FAVICON;
+  }
   return -1;
 }
 
@@ -36,8 +38,9 @@ void GetFaviconBitmapForNativeURL(
     const std::vector<int>& desired_sizes_in_pixel,
     std::vector<favicon_base::FaviconRawBitmapResult>* favicon_bitmap_results) {
   const int resource_id = GetFaviconResourceIdForNativeURL(url);
-  if (resource_id == -1)
+  if (resource_id == -1) {
     return;
+  }
 
   // Use ui::GetSupportedResourceScaleFactors() because native URL favicon comes
   // from resources.
@@ -64,8 +67,9 @@ void GetFaviconBitmapForNativeURL(
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
             resource_id, scale_factor);
 
-    if (!favicon_bitmap.is_valid())
+    if (!favicon_bitmap.is_valid()) {
       continue;
+    }
 
     favicon_bitmap_results->push_back(favicon_bitmap);
   }

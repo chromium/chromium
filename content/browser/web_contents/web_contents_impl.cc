@@ -2651,19 +2651,20 @@ bool WebContentsImpl::IsCurrentlyAudible() {
   return is_currently_audible_;
 }
 
-bool WebContentsImpl::IsCapabilityActive(CapabilityType capability_type) {
+bool WebContentsImpl::IsCapabilityActive(
+    WebContentsCapabilityType capability_type) {
   switch (capability_type) {
-    case CapabilityType::kBluetoothConnected:
+    case WebContentsCapabilityType::kBluetoothConnected:
       return bluetooth_connected_device_count_ > 0;
-    case CapabilityType::kBluetoothScanning:
+    case WebContentsCapabilityType::kBluetoothScanning:
       return bluetooth_scanning_sessions_count_ > 0;
-    case CapabilityType::kSerial:
+    case WebContentsCapabilityType::kSerial:
       return serial_active_frame_count_ > 0;
-    case CapabilityType::kHID:
+    case WebContentsCapabilityType::kHID:
       return hid_active_frame_count_ > 0;
-    case CapabilityType::kUSB:
+    case WebContentsCapabilityType::kUSB:
       return usb_active_frame_count_ > 0;
-    case CapabilityType::kGeolocation:
+    case WebContentsCapabilityType::kGeolocation:
       return geolocation_active_frame_count_ > 0;
   }
 }
@@ -10433,7 +10434,7 @@ void WebContentsImpl::IncrementBluetoothConnectedDeviceCount() {
   // Notify for UI updates if the state changes.
   bluetooth_connected_device_count_++;
   if (bluetooth_connected_device_count_ == 1) {
-    OnCapabilityTypesChanged(CapabilityType::kBluetoothConnected,
+    OnCapabilityTypesChanged(WebContentsCapabilityType::kBluetoothConnected,
                              /*used=*/true);
   }
 }
@@ -10450,7 +10451,7 @@ void WebContentsImpl::DecrementBluetoothConnectedDeviceCount() {
   DCHECK_NE(bluetooth_connected_device_count_, 0u);
   bluetooth_connected_device_count_--;
   if (bluetooth_connected_device_count_ == 0) {
-    OnCapabilityTypesChanged(CapabilityType::kBluetoothConnected,
+    OnCapabilityTypesChanged(WebContentsCapabilityType::kBluetoothConnected,
                              /*used=*/false);
   }
 }
@@ -10499,7 +10500,7 @@ void WebContentsImpl::IncrementSerialActiveFrameCount() {
   // Notify for UI updates if the state changes.
   serial_active_frame_count_++;
   if (serial_active_frame_count_ == 1) {
-    OnCapabilityTypesChanged(CapabilityType::kSerial, /*used=*/true);
+    OnCapabilityTypesChanged(WebContentsCapabilityType::kSerial, /*used=*/true);
   }
 }
 
@@ -10516,7 +10517,8 @@ void WebContentsImpl::DecrementSerialActiveFrameCount() {
   DCHECK_NE(0u, serial_active_frame_count_);
   serial_active_frame_count_--;
   if (serial_active_frame_count_ == 0) {
-    OnCapabilityTypesChanged(CapabilityType::kSerial, /*used=*/false);
+    OnCapabilityTypesChanged(WebContentsCapabilityType::kSerial,
+                             /*used=*/false);
   }
 }
 
@@ -10533,7 +10535,7 @@ void WebContentsImpl::IncrementHidActiveFrameCount() {
   // non-zero.
   hid_active_frame_count_++;
   if (hid_active_frame_count_ == 1) {
-    OnCapabilityTypesChanged(CapabilityType::kHID, /*used=*/true);
+    OnCapabilityTypesChanged(WebContentsCapabilityType::kHID, /*used=*/true);
   }
 }
 
@@ -10551,7 +10553,7 @@ void WebContentsImpl::DecrementHidActiveFrameCount() {
   DCHECK_NE(0u, hid_active_frame_count_);
   hid_active_frame_count_--;
   if (hid_active_frame_count_ == 0) {
-    OnCapabilityTypesChanged(CapabilityType::kHID, /*used=*/false);
+    OnCapabilityTypesChanged(WebContentsCapabilityType::kHID, /*used=*/false);
   }
 }
 
@@ -10568,7 +10570,8 @@ void WebContentsImpl::IncrementGeolocationActiveFrameCount() {
   // non-zero.
   geolocation_active_frame_count_++;
   if (geolocation_active_frame_count_ == 1) {
-    OnCapabilityTypesChanged(CapabilityType::kGeolocation, /*used=*/true);
+    OnCapabilityTypesChanged(WebContentsCapabilityType::kGeolocation,
+                             /*used=*/true);
   }
 }
 
@@ -10586,13 +10589,14 @@ void WebContentsImpl::DecrementGeolocationActiveFrameCount() {
   DCHECK_NE(0u, geolocation_active_frame_count_);
   geolocation_active_frame_count_--;
   if (geolocation_active_frame_count_ == 0) {
-    OnCapabilityTypesChanged(CapabilityType::kGeolocation,
+    OnCapabilityTypesChanged(WebContentsCapabilityType::kGeolocation,
                              /*used=*/false);
   }
 }
 
-void WebContentsImpl::OnCapabilityTypesChanged(CapabilityType capability_type,
-                                               bool used) {
+void WebContentsImpl::OnCapabilityTypesChanged(
+    WebContentsCapabilityType capability_type,
+    bool used) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::OnCapabilityTypesChanged");
   NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
   observers_.NotifyObservers(&WebContentsObserver::OnCapabilityTypesChanged,
@@ -10612,7 +10616,7 @@ void WebContentsImpl::IncrementUsbActiveFrameCount() {
   // non-zero.
   usb_active_frame_count_++;
   if (usb_active_frame_count_ == 1) {
-    OnCapabilityTypesChanged(CapabilityType::kUSB, /*used=*/true);
+    OnCapabilityTypesChanged(WebContentsCapabilityType::kUSB, /*used=*/true);
   }
 }
 
@@ -10630,7 +10634,7 @@ void WebContentsImpl::DecrementUsbActiveFrameCount() {
   DCHECK_NE(0u, usb_active_frame_count_);
   usb_active_frame_count_--;
   if (usb_active_frame_count_ == 0) {
-    OnCapabilityTypesChanged(CapabilityType::kUSB, /*used=*/false);
+    OnCapabilityTypesChanged(WebContentsCapabilityType::kUSB, /*used=*/false);
   }
 }
 

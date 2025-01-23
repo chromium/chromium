@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "remoting/base/mock_oauth_token_getter.h"
 #include "remoting/base/protobuf_http_client_messages.pb.h"
 #include "remoting/base/protobuf_http_client_test_messages.pb.h"
 #include "remoting/base/protobuf_http_request.h"
@@ -76,12 +77,6 @@ MATCHER_P(IsResponseText, response_text, "") {
 MATCHER(IsNullResponse, "") {
   return arg.get() == nullptr;
 }
-
-class MockOAuthTokenGetter : public OAuthTokenGetter {
- public:
-  MOCK_METHOD1(CallWithToken, void(TokenCallback));
-  MOCK_METHOD0(InvalidateCache, void());
-};
 
 EchoResponseCallback DoNothingResponse() {
   return base::DoNothing();

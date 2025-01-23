@@ -17,6 +17,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.view.ContextThemeWrapper;
 
+import androidx.annotation.ColorInt;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -47,6 +48,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.NavigationBarColorProvider;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.util.ColorUtils;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
@@ -268,11 +270,13 @@ public class TabbedNavigationBarColorControllerUnitTest {
         runColorUpdateAnimation();
         verify(mEdgeToEdgeSystemBarColorHelper).setNavigationBarColor(eq(Color.LTGRAY));
 
-        mNavColorController.setNavigationBarScrimFraction(1.0f);
-        // Light gray + the default scrim color overlay.
-        verify(mEdgeToEdgeSystemBarColorHelper).setNavigationBarColor(eq(0xFF474747));
+        @ColorInt int fullScrimColor = ColorUtils.applyAlphaFloat(Color.RED, .5f);
+        mNavColorController.setNavigationBarScrimColor(fullScrimColor);
+        @ColorInt
+        int expectedColorWithScrim = ColorUtils.overlayColor(Color.LTGRAY, fullScrimColor);
+        verify(mEdgeToEdgeSystemBarColorHelper).setNavigationBarColor(eq(expectedColorWithScrim));
 
-        mNavColorController.setNavigationBarScrimFraction(0.0f);
+        mNavColorController.setNavigationBarScrimColor(Color.TRANSPARENT);
         verify(mEdgeToEdgeSystemBarColorHelper, times(2)).setNavigationBarColor(eq(Color.LTGRAY));
     }
 

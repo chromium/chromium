@@ -2523,11 +2523,10 @@ CSSValue* ComputedStyleUtils::ValueForAnimationPlayStateList(
       &ValueForAnimationPlayState);
 }
 
-namespace {
-
-CSSValue* ValueForAnimationRange(const std::optional<TimelineOffset>& offset,
-                                 const ComputedStyle& style,
-                                 const Length& default_offset) {
+CSSValue* ComputedStyleUtils::ValueForAnimationRange(
+    const std::optional<TimelineOffset>& offset,
+    const ComputedStyle& style,
+    const Length& default_offset) {
   if (!offset.has_value()) {
     return MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kNormal);
   }
@@ -2542,8 +2541,6 @@ CSSValue* ValueForAnimationRange(const std::optional<TimelineOffset>& offset,
   return list;
 }
 
-}  // namespace
-
 CSSValue* ComputedStyleUtils::ValueForAnimationRangeList(
     const Vector<std::optional<TimelineOffset>>& range_list,
     const CSSAnimationData* animation_data,
@@ -2551,12 +2548,6 @@ CSSValue* ComputedStyleUtils::ValueForAnimationRangeList(
     const Length& default_offset) {
   return CreateAnimationValueList(range_list, &ValueForAnimationRange, style,
                                   default_offset);
-}
-
-CSSValue* ComputedStyleUtils::ValueForAnimationRangeStart(
-    const std::optional<TimelineOffset>& offset,
-    const ComputedStyle& style) {
-  return ValueForAnimationRange(offset, style, Length::Percent(0.0));
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationRangeStartList(
@@ -2568,12 +2559,6 @@ CSSValue* ComputedStyleUtils::ValueForAnimationRangeStartList(
           : Vector<std::optional<TimelineOffset>>{CSSAnimationData::
                                                       InitialRangeStart()},
       animation_data, style, Length::Percent(0.0));
-}
-
-CSSValue* ComputedStyleUtils::ValueForAnimationRangeEnd(
-    const std::optional<TimelineOffset>& offset,
-    const ComputedStyle& style) {
-  return ValueForAnimationRange(offset, style, Length::Percent(100.0));
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationRangeEndList(

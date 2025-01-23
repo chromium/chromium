@@ -596,15 +596,9 @@ class ComputedStyle final : public ComputedStyleBase {
       DCHECK(RuntimeEnabledFeatures::CSSLineClampEnabled());
       return StandardLineClamp();
     }
-    if (RuntimeEnabledFeatures::CSSLineClampWebkitBoxBlockificationEnabled()) {
-      if (IsSpecifiedDisplayWebkitBox()) {
-        DCHECK_EQ(BoxOrient(), EBoxOrient::kVertical);
-        return WebkitLineClamp();
-      }
-    } else {
-      if (IsDeprecatedWebkitBox() && BoxOrient() == EBoxOrient::kVertical) {
-        return WebkitLineClamp();
-      }
+    if (IsSpecifiedDisplayWebkitBox()) {
+      DCHECK_EQ(BoxOrient(), EBoxOrient::kVertical);
+      return WebkitLineClamp();
     }
     return 0;
   }
@@ -936,22 +930,9 @@ class ComputedStyle final : public ComputedStyleBase {
                                   other.CounterDirectivesInternal().get());
   }
 
-  bool IsDeprecatedWebkitBox() const {
+  bool IsDeprecatedFlexbox() const {
     return Display() == EDisplay::kWebkitBox ||
            Display() == EDisplay::kWebkitInlineBox;
-  }
-  bool IsDeprecatedFlexboxUsingFlexLayout() const {
-    if (RuntimeEnabledFeatures::CSSLineClampWebkitBoxBlockificationEnabled()) {
-      return IsDeprecatedWebkitBox();
-    }
-    return IsDeprecatedWebkitBox() &&
-           !IsDeprecatedWebkitBoxWithVerticalLineClamp();
-  }
-  bool IsDeprecatedWebkitBoxWithVerticalLineClamp() const {
-    DCHECK(
-        !RuntimeEnabledFeatures::CSSLineClampWebkitBoxBlockificationEnabled());
-    return IsDeprecatedWebkitBox() && BoxOrient() == EBoxOrient::kVertical &&
-           HasLineClamp();
   }
 
   // Variables.
@@ -1001,21 +982,21 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // Flex utility functions.
   bool ResolvedIsColumnFlexDirection() const {
-    if (IsDeprecatedWebkitBox()) {
+    if (IsDeprecatedFlexbox()) {
       return BoxOrient() == EBoxOrient::kVertical;
     }
     return FlexDirection() == EFlexDirection::kColumn ||
            FlexDirection() == EFlexDirection::kColumnReverse;
   }
   bool ResolvedIsRowReverseFlexDirection() const {
-    if (IsDeprecatedWebkitBox()) {
+    if (IsDeprecatedFlexbox()) {
       return BoxOrient() == EBoxOrient::kHorizontal &&
              BoxDirection() == EBoxDirection::kReverse;
     }
     return FlexDirection() == EFlexDirection::kRowReverse;
   }
   bool ResolvedIsReverseFlexDirection() const {
-    if (IsDeprecatedWebkitBox()) {
+    if (IsDeprecatedFlexbox()) {
       return BoxDirection() == EBoxDirection::kReverse;
     }
     return FlexDirection() == EFlexDirection::kRowReverse ||
@@ -1023,13 +1004,13 @@ class ComputedStyle final : public ComputedStyleBase {
   }
   bool HasBoxReflect() const { return BoxReflect(); }
   float ResolvedFlexGrow(const ComputedStyle& box_style) const {
-    if (box_style.IsDeprecatedWebkitBox()) {
+    if (box_style.IsDeprecatedFlexbox()) {
       return BoxFlex() > 0 ? BoxFlex() : 0.0f;
     }
     return FlexGrow();
   }
   float ResolvedFlexShrink(const ComputedStyle& box_style) const {
-    if (box_style.IsDeprecatedWebkitBox()) {
+    if (box_style.IsDeprecatedFlexbox()) {
       return BoxFlex() > 0 ? BoxFlex() : 0.0f;
     }
     return FlexShrink();
@@ -1084,6 +1065,17 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   // Grid axis utility functions, usable in Grid and Masonry.
+  const NGGridTrackList& AutoTracks(
+      GridTrackSizingDirection track_direction) const {
+    if (IsDisplayMasonryBox(Display())) {
+      DCHECK_EQ(track_direction, MasonryTrackSizingDirection())
+          << "Masonry containers have a single grid axis, we shouldn't try to "
+             "get the auto tracks of its stacking axis.";
+      return MasonryAutoTracks();
+    }
+    return (track_direction == kForColumns) ? GridAutoColumns()
+                                            : GridAutoRows();
+  }
   const ComputedGridTrackList& TemplateTracks(
       GridTrackSizingDirection track_direction) const {
     if (IsDisplayMasonryBox(Display())) {

@@ -5,6 +5,8 @@
 #include "chrome/browser/glic/guest_util.h"
 
 #include "base/command_line.h"
+#include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
@@ -58,6 +60,12 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
   if (!top || top->GetLastCommittedURL() != chrome::kChromeUIGlicURL) {
     return false;
   }
+  GlicKeyedService* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(top->GetBrowserContext());
+  if (!service) {
+    return false;
+  }
+  service->GuestAdded(guest_contents);
 
   // TODO(crbug.com/382322927): This could instead be done by having all guest
   // WebContents inherit background color from their embedders.

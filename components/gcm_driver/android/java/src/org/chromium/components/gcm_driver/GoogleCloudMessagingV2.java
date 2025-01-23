@@ -4,6 +4,8 @@
 
 package org.chromium.components.gcm_driver;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,11 +14,11 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
@@ -28,6 +30,7 @@ import java.util.concurrent.TimeUnit;
  * Subtypes are experimental and may change without notice!
  * TODO(johnme): Remove this file, once we switch to the GMS client library.
  */
+@NullMarked
 public class GoogleCloudMessagingV2 implements GoogleCloudMessagingSubscriber {
     private static final String GOOGLE_PLAY_SERVICES_PACKAGE = "com.google.android.gms";
     private static final long REGISTER_TIMEOUT = 5000;
@@ -43,20 +46,20 @@ public class GoogleCloudMessagingV2 implements GoogleCloudMessagingSubscriber {
     private static final String EXTRA_SUBTYPE = "subtype";
     private static final String EXTRA_SUBSCRIPTION = "subscription";
 
-    private PendingIntent mAppPendingIntent;
+    private @Nullable PendingIntent mAppPendingIntent;
     private final Object mAppPendingIntentLock = new Object();
 
     public GoogleCloudMessagingV2() {}
 
     @Override
-    public String subscribe(String source, String subtype, @Nullable Bundle data)
+    public @Nullable String subscribe(String source, String subtype, @Nullable Bundle data)
             throws IOException {
         if (data == null) {
             data = new Bundle();
         }
         data.putString(EXTRA_SUBTYPE, subtype);
         Bundle result = subscribe(source, data);
-        return result.getString(EXTRA_REGISTRATION_ID);
+        return assumeNonNull(result).getString(EXTRA_REGISTRATION_ID);
     }
 
     @Override
@@ -90,7 +93,7 @@ public class GoogleCloudMessagingV2 implements GoogleCloudMessagingSubscriber {
      * @return Bundle containing subscription information including {@link #REGISTRATION_ID}
      * @throws IOException if the request fails.
      */
-    public Bundle subscribe(String source, Bundle data) throws IOException {
+    public @Nullable Bundle subscribe(String source, Bundle data) throws IOException {
         if (data == null) {
             data = new Bundle();
         }

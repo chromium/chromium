@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_card_context.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_strings.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/text_and_image_mode.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -111,7 +111,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(EditorMenuCardContextTextAndImageModeTest, TextAndImageModeIsCorrect) {
   base::test::ScopedFeatureList feature_list;
 
-  feature_list.InitWithFeatureState(ash::features::kMagicBoostRevamp,
+  feature_list.InitWithFeatureState(chromeos::features::kMagicBoostRevamp,
                                     GetParam().magic_boost_revamp_enabled);
 
   EditorMenuCardContext context =
@@ -266,7 +266,8 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(EditorMenuCardContextPresetQueriesTest, PresetQueriesAreCorrect) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureState(
-      ash::features::kMagicBoostRevamp, GetParam().magic_boost_revamp_enabled);
+      chromeos::features::kMagicBoostRevamp,
+      GetParam().magic_boost_revamp_enabled);
 
   EditorMenuCardContext context =
       EditorMenuCardContext()
@@ -288,8 +289,8 @@ class EditorMenuCardContextWithLobsterChipWithoutMagicBoostRevampTest
     : public testing::Test {
  public:
   EditorMenuCardContextWithLobsterChipWithoutMagicBoostRevampTest() {
-    scoped_feature_list_.InitWithFeatureState(ash::features::kMagicBoostRevamp,
-                                              false);
+    scoped_feature_list_.InitWithFeatureState(
+        chromeos::features::kMagicBoostRevamp, false);
   }
 
  private:
@@ -362,7 +363,8 @@ class EditorMenuCardContextWithLobsterChipWithMagicBoostRevampTest
     : public testing::Test {
  public:
   EditorMenuCardContextWithLobsterChipWithMagicBoostRevampTest() {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kMagicBoostRevamp);
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::features::kMagicBoostRevamp);
   }
 
  private:

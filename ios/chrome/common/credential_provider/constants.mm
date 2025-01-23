@@ -90,8 +90,9 @@ NSURL* CredentialProviderSharedArchivableStoreURL() {
     NSBundle* bundle = base::apple::FrameworkBundle();
     NSNumber* isEarlGreyTest =
         [bundle objectForInfoDictionaryKey:@"CRIsEarlGreyTest"];
-    if ([isEarlGreyTest boolValue])
+    if ([isEarlGreyTest boolValue]) {
       groupURL = [NSURL fileURLWithPath:NSTemporaryDirectory()];
+    }
   }
 
   // Outside of Earl Grey tests,

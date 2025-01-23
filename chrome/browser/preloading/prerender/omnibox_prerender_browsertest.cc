@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
   auto* predictor = GetAutocompleteActionPredictor();
   ASSERT_TRUE(predictor);
   GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
-  predictor->StartPrerendering(prerender_url, *web_contents, gfx::Size(50, 50));
+  predictor->StartPrerendering(prerender_url, *web_contents);
 
   // Since preload setting is disabled, prerender shouldn't be triggered.
   base::RunLoop().RunUntilIdle();
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
 
   content::test::PrerenderHostRegistryObserver registry_observer(*web_contents);
   // Attempt to trigger prerendering again.
-  predictor->StartPrerendering(prerender_url, *web_contents, gfx::Size(50, 50));
+  predictor->StartPrerendering(prerender_url, *web_contents);
 
   // Since preload setting is enabled, prerender should be triggered
   // successfully.

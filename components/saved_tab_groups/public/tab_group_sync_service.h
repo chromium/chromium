@@ -108,6 +108,14 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
     virtual void OnTabGroupsReordered(TriggerSource source) {}
   };
 
+  enum class TabGroupSharingResult {
+    kSuccess,
+    kTimedOut,
+  };
+
+  using TabGroupSharingCallback =
+      base::OnceCallback<void(TabGroupSharingResult)>;
+
 #if BUILDFLAG(IS_ANDROID)
   // Returns a Java object of the type TabGroupSyncService for the given
   // TabGroupSyncService.
@@ -194,9 +202,11 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // Mutator methods for shared tab groups.
   // Converts the saved tab group to shared tab group and associates it with the
   // given `collaboration_id` (this is the same as data_sharing::GroupId). The
-  // tab group must not be shared.
+  // tab group must not be shared. `callback` will be called with the result if
+  // provided.
   virtual void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
-                                  std::string_view collaboration_id) = 0;
+                                  std::string_view collaboration_id,
+                                  TabGroupSharingCallback callback) = 0;
 
   // Mutator methods for shared tab groups.
   // Starts the process of converting a shared tab group to saved tab group. Due

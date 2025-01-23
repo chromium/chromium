@@ -11,7 +11,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "net/base/url_util.h"
-#include "url/url_features.h"
 
 namespace {
 
@@ -23,28 +22,7 @@ const char kCancelURLParameterName[] = "x-cancel";
 }  // namespace
 
 bool IsXCallbackURL(const GURL& url) {
-  if (!url.is_valid())
-    return false;
-
-  if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
-    return url.host_piece() == kXCallbackURLHost;
-  }
-
-  // The following is a workaround when non-special URLs are not properly
-  // supported. We have to parse `url` manually for non-special URL.
-  if (url.IsStandard()) {
-    return url.host_piece() == kXCallbackURLHost;
-  }
-  std::string_view path_piece = url.path_piece();
-  if (base::StartsWith(path_piece, "//"))
-    path_piece = path_piece.substr(2, std::string_view::npos);
-
-  size_t pos = path_piece.find('/', 0);
-  if (pos != std::string_view::npos) {
-    path_piece = path_piece.substr(0, pos);
-  }
-
-  return path_piece == kXCallbackURLHost;
+  return url.is_valid() && url.host_piece() == kXCallbackURLHost;
 }
 
 GURL CreateXCallbackURL(std::string_view scheme, std::string_view action) {

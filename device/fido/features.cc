@@ -182,4 +182,9 @@ BASE_FEATURE(kWebAuthnNewBfCacheHandling,
              "WebAuthenticationNewBfCacheHandling",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Not yet enabled by default.
+BASE_FEATURE(kWebAuthnNoAccountTimeout,
+             "WebAuthenticationNoAccountTimeout",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace device

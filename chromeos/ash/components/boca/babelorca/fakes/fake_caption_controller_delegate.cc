@@ -12,6 +12,7 @@
 #include "chromeos/ash/components/boca/babelorca/caption_controller.h"
 #include "components/live_caption/caption_bubble_context.h"
 #include "components/live_caption/caption_bubble_controller.h"
+#include "components/live_caption/caption_bubble_settings.h"
 #include "components/live_caption/views/caption_bubble_model.h"
 #include "components/prefs/pref_service.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
@@ -68,7 +69,7 @@ FakeCaptionControllerDelegate::~FakeCaptionControllerDelegate() = default;
 
 std::unique_ptr<captions::CaptionBubbleController>
 FakeCaptionControllerDelegate::CreateCaptionBubbleController(
-    PrefService*,
+    captions::CaptionBubbleSettings*,
     const std::string&) {
   caption_bubble_alive_ = true;
   ++create_bubble_controller_count_;

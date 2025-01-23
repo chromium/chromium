@@ -158,7 +158,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram name="Privacy.3PCD.AdsHeuristicAddedToOverrides"
     enum="AdsHeuristicCookieOverride" expires_after="2025-07-13">
-  <owner>johnidel@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
   <owner>src/chrome/browser/tpcd/OWNERS</owner>
   <summary>
     Records what overrides were added to cookie setting overrides by the ads
@@ -1961,7 +1961,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 <!-- expires-never: critical system health metric for monitoring -->
 
   <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>sauski@chromium.org</owner>
   <summary>
     Whether or not the {ApiType} operation was allowed by Privacy Sandbox

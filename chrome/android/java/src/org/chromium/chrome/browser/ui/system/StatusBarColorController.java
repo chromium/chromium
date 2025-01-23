@@ -97,7 +97,6 @@ public class StatusBarColorController
     private boolean mAreSuggestionsScrolled;
 
     private @ColorInt int mScrimColor = ScrimProperties.INVALID_COLOR;
-    private float mStatusBarScrimFraction;
 
     private boolean mShouldUpdateStatusBarColorForNtp;
     private @ColorInt int mStatusIndicatorColor;
@@ -320,10 +319,12 @@ public class StatusBarColorController
 
     /**
      * Update the scrim color on the status bar.
+     *
      * @param scrimColor The scrim color int.
      */
     public void setScrimColor(@ColorInt int scrimColor) {
         mScrimColor = scrimColor;
+        updateStatusBarColor();
     }
 
     /**
@@ -331,15 +332,6 @@ public class StatusBarColorController
      */
     public @ColorInt int getScrimColorForTesting() {
         return mScrimColor;
-    }
-
-    /**
-     * Update the scrim amount on the status bar.
-     * @param fraction The scrim fraction in range [0, 1].
-     */
-    public void setStatusBarScrimFraction(float fraction) {
-        mStatusBarScrimFraction = fraction;
-        updateStatusBarColor();
     }
 
     /**
@@ -491,17 +483,12 @@ public class StatusBarColorController
 
     /**
      * Get the scrim applied color if the scrim is showing. Otherwise, return the original color.
+     *
      * @param color Color to maybe apply scrim to.
      * @return The resulting color.
      */
     private @ColorInt int applyCurrentScrimToColor(@ColorInt int color) {
-        if (mScrimColor == ScrimProperties.INVALID_COLOR) {
-            final View root = mWindow.getDecorView().getRootView();
-            final Context context = root.getContext();
-            mScrimColor = context.getColor(R.color.default_scrim_color);
-        }
-        // Apply a color overlay if the scrim is showing.
-        return ColorUtils.overlayColor(color, mScrimColor, mStatusBarScrimFraction);
+        return ColorUtils.overlayColor(color, mScrimColor);
     }
 
     /**

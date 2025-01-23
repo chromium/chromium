@@ -156,14 +156,14 @@ dictionary MLScatterSupportLimits {
 };
 
 dictionary MLSplitSupportLimits {
-  MLDataTypeLimits input;
+  MLTensorLimits input;
   MLDataTypeLimits outputs;
 };
 
 dictionary MLWhereSupportLimits {
-  MLDataTypeLimits condition;
-  MLDataTypeLimits trueValue;
-  MLDataTypeLimits falseValue;
+  MLTensorLimits condition;
+  MLTensorLimits trueValue;
+  MLTensorLimits falseValue;
   MLDataTypeLimits output;
 };
 

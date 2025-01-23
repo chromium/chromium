@@ -14,7 +14,7 @@ namespace i18n {
 namespace addressinput {
 class Storage;
 }
-}
+}  // namespace i18n
 
 class JsonPrefStore;
 

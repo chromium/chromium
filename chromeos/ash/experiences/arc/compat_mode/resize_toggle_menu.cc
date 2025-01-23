@@ -166,7 +166,7 @@ void ResizeToggleMenu::MenuButtonView::UpdateColors() {
   const auto icon_color =
       is_selected_ ? color_provider->GetColor(cros_tokens::kCrosSysOnPrimary)
                    : color_provider->GetColor(cros_tokens::kCrosSysOnSurface);
-  icon_view_->SetImage(gfx::CreateVectorIcon(*icon_, icon_color));
+  icon_view_->SetImage(ui::ImageModel::FromVectorIcon(*icon_, icon_color));
 
   const auto text_color =
       is_selected_ ? color_provider->GetColor(cros_tokens::kCrosSysOnPrimary)

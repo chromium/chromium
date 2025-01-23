@@ -341,8 +341,6 @@ TEST_F(IsolatedWebAppPolicyManagerTest,
       IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
           .BuildBundle(test::GetDefaultEd25519KeyPair());
 
-  bundle->FakeInstallPageState(profile());
-  bundle->TrustSigningKey();
   ASSERT_OK_AND_ASSIGN(const IsolatedWebAppUrlInfo url_info,
                        bundle->InstallWithSource(
                            profile(), &IsolatedWebAppInstallSource::FromDevUi));

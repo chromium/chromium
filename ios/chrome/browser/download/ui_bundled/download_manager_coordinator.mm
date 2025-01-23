@@ -130,13 +130,11 @@
     [_viewController setFullscreenController:fullscreenController];
   }
 
-    _mediator.SetIsIncognito(isIncognito);
-    ProfileIOS* profile = self.browser->GetProfile();
-    _mediator.SetIdentityManager(
-        IdentityManagerFactory::GetForProfile(profile));
-    _mediator.SetDriveService(
-        drive::DriveServiceFactory::GetForProfile(profile));
-    _mediator.SetPrefService(profile->GetPrefs());
+  _mediator.SetIsIncognito(isIncognito);
+  ProfileIOS* profile = self.browser->GetProfile();
+  _mediator.SetIdentityManager(IdentityManagerFactory::GetForProfile(profile));
+  _mediator.SetDriveService(drive::DriveServiceFactory::GetForProfile(profile));
+  _mediator.SetPrefService(profile->GetPrefs());
 
   _mediator.SetDownloadTask(_downloadTask);
   _mediator.SetConsumer(_viewController);
@@ -179,8 +177,9 @@
   _shouldObserveFullscreen = NO;
   _downloadTask = nullptr;
 
-  if (self.browser)
+  if (self.browser) {
     (self.browser->GetWebStateList())->RemoveObserver(&_unopenedDownloads);
+  }
 
   [self stopStoreKitCoordinator];
 

@@ -26,6 +26,10 @@ class CORE_EXPORT ContainerQueryParser {
   const MediaQueryExpNode* ParseCondition(String);
   const MediaQueryExpNode* ParseCondition(CSSParserTokenStream&);
 
+  // Used for inline if() function. Supports only style() queries for now.
+  // https://drafts.csswg.org/css-values-5/#if-notation
+  const MediaQueryExpNode* ConsumeIfTest(CSSParserTokenStream&);
+
  private:
   friend class ContainerQueryParserTest;
 

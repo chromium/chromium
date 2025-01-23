@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Trusted Type violation report-only: assign string to script url
+  assert_equals: a single violation reported expected 1 but got 2
+[FAIL] Trusted Type violation report-only: assign string to html
+  assert_equals: a single violation reported expected 1 but got 2
+[FAIL] Trusted Type violation report-only: assign string to script.src
+  assert_equals: a single violation reported expected 1 but got 2
+[FAIL] Trusted Type violation report-only: assign string to script content
+  assert_equals: a single violation reported expected 1 but got 2
+[FAIL] Trusted Type violation report: check report contents
+  assert_equals: a single violation reported expected 1 but got 2
+Harness: the test ran to completion.
+

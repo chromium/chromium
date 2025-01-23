@@ -8059,26 +8059,6 @@
             ]
         }
     ],
-    "DetailsStyling": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DetailsStyling"
-                    ]
-                }
-            ]
-        }
-    ],
     "DeviceIdValidation": [
         {
             "platforms": [
@@ -13211,25 +13191,6 @@
             ]
         }
     ],
-    "KillSpareRenderOnMemoryPressure": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "KillSpareRenderOnMemoryPressure"
-                    ]
-                }
-            ]
-        }
-    ],
     "KioskHeartbeatsViaERP": [
         {
             "platforms": [
@@ -14593,6 +14554,7 @@
                         "count": "2"
                     },
                     "enable_features": [
+                        "KillSpareRenderOnMemoryPressure",
                         "MultipleSpareRPHs"
                     ]
                 },
@@ -14602,6 +14564,7 @@
                         "count": "5"
                     },
                     "enable_features": [
+                        "KillSpareRenderOnMemoryPressure",
                         "MultipleSpareRPHs"
                     ]
                 }
@@ -19247,11 +19210,11 @@
             ],
             "experiments": [
                 {
-                    "name": "RedInterstitial_20250108",
+                    "name": "RedInterstitial_20241212",
                     "params": {
                         "RedWarningSurveyDidProceedFilter": "TRUE,FALSE",
-                        "RedWarningSurveyTriggerId": "tk2kQP2nR0ugnJ3q1cK0RSntPR9W",
-                        "probability": "0.5"
+                        "RedWarningSurveyTriggerId": "ZdMdCoDc50ugnJ3q1cK0VwqVnKb6",
+                        "probability": "1.0"
                     },
                     "enable_features": [
                         "RedWarningSurvey"

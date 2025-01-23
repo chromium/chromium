@@ -12,6 +12,8 @@
     </div>
     <cr-shortcut-input id="shortcutInput"
         input-aria-label="$i18n{glicKeyboardShortcut}"
+        shortcut="[[registeredShortcut_]]"
+        on-input-capture-change="onInputCaptureChange_"
         on-shortcut-updated="onShortcutUpdated_">
     </cr-shortcut-input>
   </div>

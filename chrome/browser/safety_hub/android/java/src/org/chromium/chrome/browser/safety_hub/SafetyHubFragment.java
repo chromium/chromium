@@ -4,14 +4,14 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import static org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleViewBinder.getModuleState;
+import static org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleViewBinder.isBrowserStateSafe;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.getDashboardModuleTypeForModuleOption;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.maybeRecordAbusiveNotificationRevokedInteraction;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordDashboardInteractions;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordModuleState;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordNotificationsInteraction;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordRevokedPermissionsInteraction;
-import static org.chromium.chrome.browser.safety_hub.SafetyHubModuleViewBinder.getModuleState;
-import static org.chromium.chrome.browser.safety_hub.SafetyHubModuleViewBinder.isBrowserStateSafe;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -34,13 +34,13 @@ import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
+import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleOption;
+import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleState;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardInteractions;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardModuleType;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.LifecycleEvent;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.NotificationsModuleInteractions;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.PermissionsModuleInteractions;
-import org.chromium.chrome.browser.safety_hub.SafetyHubModuleProperties.ModuleOption;
-import org.chromium.chrome.browser.safety_hub.SafetyHubModuleProperties.ModuleState;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -179,34 +179,43 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 mNotificationPermissionReviewBridge.getNotificationPermissions().size();
 
         mBrowserStateModule =
-                new PropertyModel.Builder(SafetyHubModuleProperties.BROWSER_STATE_MODULE_KEYS)
-                        .with(SafetyHubModuleProperties.UPDATE_STATUS, mDelegate.getUpdateStatus())
+                new PropertyModel.Builder(
+                                DeprecatedSafetyHubModuleProperties.BROWSER_STATE_MODULE_KEYS)
                         .with(
-                                SafetyHubModuleProperties.IS_SIGNED_IN,
+                                DeprecatedSafetyHubModuleProperties.UPDATE_STATUS,
+                                mDelegate.getUpdateStatus())
+                        .with(
+                                DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN,
                                 SafetyHubUtils.isSignedIn(getProfile()))
                         .with(
-                                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
+                                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
                                 compromisedPasswordsCount)
-                        .with(SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount)
                         .with(
-                                SafetyHubModuleProperties.REUSED_PASSWORDS_COUNT,
+                                DeprecatedSafetyHubModuleProperties.WEAK_PASSWORDS_COUNT,
+                                weakPasswordsCount)
+                        .with(
+                                DeprecatedSafetyHubModuleProperties.REUSED_PASSWORDS_COUNT,
                                 reusedPasswordsCount)
-                        .with(SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount)
                         .with(
-                                SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
+                                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT,
+                                totalPasswordsCount)
+                        .with(
+                                DeprecatedSafetyHubModuleProperties
+                                        .NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
                                 notificationPermissionsForReviewCount)
                         .with(
-                                SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
+                                DeprecatedSafetyHubModuleProperties
+                                        .SITES_WITH_UNUSED_PERMISSIONS_COUNT,
                                 sitesWithUnusedPermissionsCount)
                         .with(
-                                SafetyHubModuleProperties.SAFE_BROWSING_STATE,
+                                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE,
                                 SafetyHubUtils.getSafeBrowsingState(getProfile()))
                         .build();
 
         PropertyModelChangeProcessor.create(
                 mBrowserStateModule,
                 browserStatePreference,
-                SafetyHubModuleViewBinder::bindBrowserStateProperties);
+                DeprecatedSafetyHubModuleViewBinder::bindBrowserStateProperties);
     }
 
     private void setUpAccountPasswordCheckModule() {
@@ -217,18 +226,19 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
         mPasswordCheckPropertyModel =
                 new PropertyModel.Builder(
-                                SafetyHubModuleProperties.PASSWORD_CHECK_SAFETY_HUB_MODULE_KEYS)
-                        .with(SafetyHubModuleProperties.IS_VISIBLE, true)
-                        .with(SafetyHubModuleProperties.IS_SIGNED_IN, isSignedIn)
+                                DeprecatedSafetyHubModuleProperties
+                                        .PASSWORD_CHECK_SAFETY_HUB_MODULE_KEYS)
+                        .with(DeprecatedSafetyHubModuleProperties.IS_VISIBLE, true)
+                        .with(DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN, isSignedIn)
                         .with(
-                                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
+                                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
                                 compromisedPasswordsCount)
                         .build();
 
         PropertyModelChangeProcessor.create(
                 mPasswordCheckPropertyModel,
                 passwordCheckPreference,
-                SafetyHubModuleViewBinder::bindPasswordCheckProperties);
+                DeprecatedSafetyHubModuleViewBinder::bindPasswordCheckProperties);
         mSafetyHubFetchService.addObserver(this);
         mSigninManager.addSignInStateObserver(this);
         if (SafetyHubUtils.isSignedIn(getProfile())) {
@@ -242,17 +252,18 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
         mUpdateCheckPropertyModel =
                 new PropertyModel.Builder(
-                                SafetyHubModuleProperties.UPDATE_CHECK_SAFETY_HUB_MODULE_KEYS)
-                        .with(SafetyHubModuleProperties.IS_VISIBLE, true)
+                                DeprecatedSafetyHubModuleProperties
+                                        .UPDATE_CHECK_SAFETY_HUB_MODULE_KEYS)
+                        .with(DeprecatedSafetyHubModuleProperties.IS_VISIBLE, true)
                         .with(
-                                SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
+                                DeprecatedSafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
                                 v -> {
                                     mDelegate.openGooglePlayStore(getContext());
                                     recordDashboardInteractions(
                                             DashboardInteractions.OPEN_PLAY_STORE);
                                 })
                         .with(
-                                SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
+                                DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
                                 v -> {
                                     mDelegate.openGooglePlayStore(getContext());
                                     recordDashboardInteractions(
@@ -263,7 +274,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         PropertyModelChangeProcessor.create(
                 mUpdateCheckPropertyModel,
                 updateCheckPreference,
-                SafetyHubModuleViewBinder::bindUpdateCheckProperties);
+                DeprecatedSafetyHubModuleViewBinder::bindUpdateCheckProperties);
     }
 
     private void setUpPermissionsRevocationModule() {
@@ -271,10 +282,11 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 findPreference(PREF_UNUSED_PERMISSIONS);
 
         mPermissionsModel =
-                new PropertyModel.Builder(SafetyHubModuleProperties.PERMISSIONS_MODULE_KEYS)
-                        .with(SafetyHubModuleProperties.IS_VISIBLE, true)
+                new PropertyModel.Builder(
+                                DeprecatedSafetyHubModuleProperties.PERMISSIONS_MODULE_KEYS)
+                        .with(DeprecatedSafetyHubModuleProperties.IS_VISIBLE, true)
                         .with(
-                                SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
+                                DeprecatedSafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
                                 v -> {
                                     PermissionsData[] permissionsDataList =
                                             mUnusedSitePermissionsBridge.getRevokedPermissions();
@@ -311,14 +323,14 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                                             PermissionsModuleInteractions.ACKNOWLEDGE_ALL);
                                 })
                         .with(
-                                SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER,
+                                DeprecatedSafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER,
                                 v -> {
                                     startSettings(SafetyHubPermissionsFragment.class);
                                     recordRevokedPermissionsInteraction(
                                             PermissionsModuleInteractions.OPEN_REVIEW_UI);
                                 })
                         .with(
-                                SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
+                                DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
                                 v -> {
                                     startSettings(SiteSettings.class);
                                     recordRevokedPermissionsInteraction(
@@ -329,7 +341,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         PropertyModelChangeProcessor.create(
                 mPermissionsModel,
                 permissionsPreference,
-                SafetyHubModuleViewBinder::bindPermissionsProperties);
+                DeprecatedSafetyHubModuleViewBinder::bindPermissionsProperties);
 
         mUnusedSitePermissionsBridge.addObserver(this);
     }
@@ -340,10 +352,11 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
         mNotificationsModel =
                 new PropertyModel.Builder(
-                                SafetyHubModuleProperties.NOTIFICATIONS_REVIEW_MODULE_KEYS)
-                        .with(SafetyHubModuleProperties.IS_VISIBLE, true)
+                                DeprecatedSafetyHubModuleProperties
+                                        .NOTIFICATIONS_REVIEW_MODULE_KEYS)
+                        .with(DeprecatedSafetyHubModuleProperties.IS_VISIBLE, true)
                         .with(
-                                SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
+                                DeprecatedSafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
                                 v -> {
                                     List<NotificationPermissions> notificationPermissionsList =
                                             mNotificationPermissionReviewBridge
@@ -375,14 +388,14 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                                             NotificationsModuleInteractions.BLOCK_ALL);
                                 })
                         .with(
-                                SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER,
+                                DeprecatedSafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER,
                                 v -> {
                                     startSettings(SafetyHubNotificationsFragment.class);
                                     recordNotificationsInteraction(
                                             NotificationsModuleInteractions.OPEN_UI_REVIEW);
                                 })
                         .with(
-                                SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
+                                DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
                                 v -> {
                                     launchSiteSettingsActivity(
                                             SiteSettingsCategory.Type.NOTIFICATIONS);
@@ -394,7 +407,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         PropertyModelChangeProcessor.create(
                 mNotificationsModel,
                 notificationsPreference,
-                SafetyHubModuleViewBinder::bindNotificationsReviewProperties);
+                DeprecatedSafetyHubModuleViewBinder::bindNotificationsReviewProperties);
 
         mNotificationPermissionReviewBridge.addObserver(this);
     }
@@ -403,17 +416,18 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         SafetyHubExpandablePreference safeBrowsingPreference = findPreference(PREF_SAFE_BROWSING);
 
         mSafeBrowsingPropertyModel =
-                new PropertyModel.Builder(SafetyHubModuleProperties.SAFE_BROWSING_MODULE_KEYS)
-                        .with(SafetyHubModuleProperties.IS_VISIBLE, true)
+                new PropertyModel.Builder(
+                                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_MODULE_KEYS)
+                        .with(DeprecatedSafetyHubModuleProperties.IS_VISIBLE, true)
                         .with(
-                                SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
+                                DeprecatedSafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
                                 v -> {
                                     startSettings(SafeBrowsingSettingsFragment.class);
                                     recordDashboardInteractions(
                                             DashboardInteractions.GO_TO_SAFE_BROWSING_SETTINGS);
                                 })
                         .with(
-                                SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
+                                DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
                                 v -> {
                                     startSettings(SafeBrowsingSettingsFragment.class);
                                     recordDashboardInteractions(
@@ -424,7 +438,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         PropertyModelChangeProcessor.create(
                 mSafeBrowsingPropertyModel,
                 safeBrowsingPreference,
-                SafetyHubModuleViewBinder::bindSafeBrowsingProperties);
+                DeprecatedSafetyHubModuleViewBinder::bindSafeBrowsingProperties);
     }
 
     private void setUpSafetyTipsModule() {
@@ -576,7 +590,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         for (@ModuleOption int i = ModuleOption.OPTION_FIRST; i < ModuleOption.NUM_ENTRIES; i++) {
             PropertyModel propertyModel = getModulePropertyModel(i);
             @ModuleState int moduleState = getModuleState(propertyModel, i);
-            boolean managed = propertyModel.get(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
+            boolean managed =
+                    propertyModel.get(DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
 
             if (moduleState == ModuleState.WARNING && !managed) {
                 return true;
@@ -589,21 +604,23 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
             @ModuleOption int option, boolean hasNonManagedWarningState) {
         PropertyModel propertyModel = getModulePropertyModel(option);
         @ModuleState int moduleState = getModuleState(propertyModel, option);
-        boolean managed = propertyModel.get(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
+        boolean managed =
+                propertyModel.get(DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
 
         switch (moduleState) {
             case ModuleState.WARNING:
                 propertyModel.set(
-                        SafetyHubModuleProperties.IS_EXPANDED,
+                        DeprecatedSafetyHubModuleProperties.IS_EXPANDED,
                         !managed || !hasNonManagedWarningState);
                 break;
             case ModuleState.UNAVAILABLE:
             case ModuleState.INFO:
                 propertyModel.set(
-                        SafetyHubModuleProperties.IS_EXPANDED, !hasNonManagedWarningState);
+                        DeprecatedSafetyHubModuleProperties.IS_EXPANDED,
+                        !hasNonManagedWarningState);
                 break;
             case ModuleState.SAFE:
-                propertyModel.set(SafetyHubModuleProperties.IS_EXPANDED, false);
+                propertyModel.set(DeprecatedSafetyHubModuleProperties.IS_EXPANDED, false);
                 break;
             default:
                 throw new IllegalArgumentException();
@@ -618,10 +635,10 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         int sitesWithUnusedPermissionsCount =
                 mUnusedSitePermissionsBridge.getRevokedPermissions().length;
         mPermissionsModel.set(
-                SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
+                DeprecatedSafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
                 sitesWithUnusedPermissionsCount);
         mBrowserStateModule.set(
-                SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
+                DeprecatedSafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
                 sitesWithUnusedPermissionsCount);
 
         updateAllModulesExpandState();
@@ -631,10 +648,10 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         int notificationPermissionsForReviewCount =
                 mNotificationPermissionReviewBridge.getNotificationPermissions().size();
         mNotificationsModel.set(
-                SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
+                DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
                 notificationPermissionsForReviewCount);
         mBrowserStateModule.set(
-                SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
+                DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
                 notificationPermissionsForReviewCount);
 
         updateAllModulesExpandState();
@@ -643,10 +660,11 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private void updateSafeBrowsingPreference() {
         @SafeBrowsingState int state = SafetyHubUtils.getSafeBrowsingState(getProfile());
         mSafeBrowsingPropertyModel.set(
-                SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY,
+                DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY,
                 SafetyHubUtils.isSafeBrowsingManaged(getProfile()));
-        mSafeBrowsingPropertyModel.set(SafetyHubModuleProperties.SAFE_BROWSING_STATE, state);
-        mBrowserStateModule.set(SafetyHubModuleProperties.SAFE_BROWSING_STATE, state);
+        mSafeBrowsingPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE, state);
+        mBrowserStateModule.set(DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE, state);
 
         updateAllModulesExpandState();
     }
@@ -666,36 +684,38 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         && !isPasswordSavingEnabled;
 
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
+                compromisedPasswordsCount);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.REUSED_PASSWORDS_COUNT, reusedPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.REUSED_PASSWORDS_COUNT, reusedPasswordsCount);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, disabledByPolicy);
+                DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, disabledByPolicy);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.IS_SIGNED_IN, SafetyHubUtils.isSignedIn(getProfile()));
+                DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN,
+                SafetyHubUtils.isSignedIn(getProfile()));
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.ACCOUNT_EMAIL,
+                DeprecatedSafetyHubModuleProperties.ACCOUNT_EMAIL,
                 SafetyHubUtils.getAccountEmail(getProfile()));
         if (SafetyHubUtils.isSignedIn(getProfile())) {
             mPasswordCheckPropertyModel.set(
-                    SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
+                    DeprecatedSafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
                     v -> {
                         mDelegate.showPasswordCheckUi(getContext());
                         recordDashboardInteractions(DashboardInteractions.OPEN_PASSWORD_MANAGER);
                     });
             mPasswordCheckPropertyModel.set(
-                    SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
+                    DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
                     v -> {
                         mDelegate.showPasswordCheckUi(getContext());
                         recordDashboardInteractions(DashboardInteractions.OPEN_PASSWORD_MANAGER);
                     });
         } else {
             mPasswordCheckPropertyModel.set(
-                    SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
+                    DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
                     v -> {
                         mDelegate.launchSigninPromo(getContext());
                         recordDashboardInteractions(DashboardInteractions.SHOW_SIGN_IN_PROMO);
@@ -703,19 +723,22 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         }
 
         mBrowserStateModule.set(
-                SafetyHubModuleProperties.IS_SIGNED_IN, SafetyHubUtils.isSignedIn(getProfile()));
+                DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN,
+                SafetyHubUtils.isSignedIn(getProfile()));
         mBrowserStateModule.set(
-                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
+                compromisedPasswordsCount);
         mBrowserStateModule.set(
-                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
 
         updateAllModulesExpandState();
     }
 
     private void updateUpdateCheckPreference() {
         UpdateStatusProvider.UpdateStatus updateStatus = mDelegate.getUpdateStatus();
-        mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
-        mBrowserStateModule.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
+        mUpdateCheckPropertyModel.set(
+                DeprecatedSafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
+        mBrowserStateModule.set(DeprecatedSafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
 
         updateAllModulesExpandState();
     }

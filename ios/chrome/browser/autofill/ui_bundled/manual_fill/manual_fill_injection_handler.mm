@@ -68,7 +68,7 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
 
 }  // namespace
 
-@interface ManualFillInjectionHandler ()<FormActivityObserver>
+@interface ManualFillInjectionHandler () <FormActivityObserver>
 
 // The object in charge of listening to form events and reporting back.
 @property(nonatomic, strong) FormObserverHelper* formHelper;

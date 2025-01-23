@@ -6,6 +6,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
@@ -27,7 +28,7 @@ enum ShortcutError {
 export interface CrShortcutInputElement {
   $: {
     input: CrInputElement,
-    edit: HTMLElement,
+    edit: CrIconButtonElement,
   };
 }
 
@@ -51,6 +52,7 @@ export class CrShortcutInputElement extends CrShortcutInputElementBase {
       shortcut: {type: String},
       inputAriaLabel: {type: String},
       editButtonAriaLabel: {type: String},
+      inputDisabled: {type: Boolean},
       error_: {type: Number},
 
       readonly_: {
@@ -63,6 +65,7 @@ export class CrShortcutInputElement extends CrShortcutInputElementBase {
   shortcut: string = '';
   inputAriaLabel: string = '';
   editButtonAriaLabel: string = '';
+  inputDisabled: boolean = false;
   protected readonly_: boolean = true;
   private capturing_: boolean = false;
   private error_: ShortcutError = ShortcutError.NO_ERROR;
@@ -229,6 +232,9 @@ export class CrShortcutInputElement extends CrShortcutInputElementBase {
    * @return The text to be displayed in the shortcut field.
    */
   protected computeText_(): string {
+    if (this.inputDisabled) {
+      return this.i18n('setShortcutInSystemSettings');
+    }
     return formatShortcutText(this.shortcut);
   }
 

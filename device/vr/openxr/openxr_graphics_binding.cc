@@ -41,11 +41,6 @@ void SwapChainInfo::Clear() {
 #endif
 }
 
-gpu::MailboxHolder SwapChainInfo::GetMailboxHolder() const {
-  CHECK(shared_image);
-  return gpu::MailboxHolder(shared_image->mailbox(), sync_token, GL_TEXTURE_2D);
-}
-
 void OpenXrGraphicsBinding::PrepareViewConfigForRender(
     const XrSwapchain& color_swapchain,
     OpenXrViewConfiguration& view_config) {

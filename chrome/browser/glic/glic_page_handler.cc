@@ -15,11 +15,13 @@
 #include "chrome/browser/glic/glic_tab_data.h"
 #include "chrome/browser/glic/glic_web_client_access.h"
 #include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/media/audio_ducker.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"
 #include "ui/gfx/geometry/size.h"
@@ -30,9 +32,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                              public GlicWebClientAccess {
  public:
   explicit GlicWebClientHandler(
+      GlicPageHandler* page_handler,
       content::BrowserContext* browser_context,
       mojo::PendingReceiver<glic::mojom::WebClientHandler> receiver)
       : profile_(Profile::FromBrowserContext(browser_context)),
+        page_handler_(page_handler),
         glic_service_(
             GlicKeyedServiceFactory::GetGlicKeyedService(browser_context)),
         pref_service_(profile_->GetPrefs()),
@@ -117,13 +121,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void DetachPanel() override { glic_service_->DetachPanel(); }
 
   void ResizeWidget(const gfx::Size& size,
+                    base::TimeDelta duration,
                     ResizeWidgetCallback callback) override {
-    std::optional<gfx::Size> actual_size = glic_service_->ResizePanel(size);
-    if (!actual_size) {
-      std::move(callback).Run(std::nullopt);
-      return;
-    }
-    std::move(callback).Run(actual_size);
+    glic_service_->ResizePanel(size, duration, std::move(callback));
   }
 
   void GetContextFromFocusedTab(
@@ -134,8 +134,15 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void SetAudioDucking(bool enabled,
                        SetAudioDuckingCallback callback) override {
-    bool result = glic_service_->window_controller().SetAudioDucking(enabled);
-    std::move(callback).Run(result);
+    content::WebContents* web_contents = page_handler_->guest_contents();
+    if (!web_contents || web_contents->IsBeingDestroyed()) {
+      std::move(callback).Run(false);
+      return;
+    }
+    AudioDucker* audio_ducker =
+        AudioDucker::GetOrCreateForPage(web_contents->GetPrimaryPage());
+    std::move(callback).Run(enabled ? audio_ducker->StartDuckingOtherAudio()
+                                    : audio_ducker->StopDuckingOtherAudio());
   }
 
   void SetPanelDraggableAreas(
@@ -222,6 +229,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
  private:
   void Uninstall() {
+    SetAudioDucking(false, base::DoNothing());
     if (glic_service_->window_controller().web_client() == this) {
       glic_service_->window_controller().SetWebClient(nullptr);
     }
@@ -252,6 +260,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<Profile> profile_;
+  raw_ptr<GlicPageHandler> page_handler_;
   raw_ptr<GlicKeyedService> glic_service_;
   raw_ptr<PrefService> pref_service_;
   base::CallbackListSubscription focus_changed_subscription_;
@@ -260,21 +269,33 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 };
 
 GlicPageHandler::GlicPageHandler(
-    content::BrowserContext* browser_context,
+    content::WebContents* webui_contents,
     mojo::PendingReceiver<glic::mojom::PageHandler> receiver)
-    : browser_context_(browser_context), receiver_(this, std::move(receiver)) {}
+    : webui_contents_(webui_contents),
+      browser_context_(webui_contents->GetBrowserContext()),
+      receiver_(this, std::move(receiver)) {
+  GetGlicService()->PageHandlerAdded(this);
+}
 
-GlicPageHandler::~GlicPageHandler() = default;
+GlicPageHandler::~GlicPageHandler() {
+  // `GlicWebClientHandler` holds a pointer back to us, so delete it first.
+  web_client_handler_.reset();
+  GetGlicService()->PageHandlerRemoved(this);
+}
+
+GlicKeyedService* GlicPageHandler::GetGlicService() {
+  return GlicKeyedServiceFactory::GetGlicKeyedService(browser_context_);
+}
 
 void GlicPageHandler::CreateWebClient(
     ::mojo::PendingReceiver<glic::mojom::WebClientHandler>
         web_client_receiver) {
   web_client_handler_ = std::make_unique<GlicWebClientHandler>(
-      browser_context_, std::move(web_client_receiver));
+      this, browser_context_, std::move(web_client_receiver));
 }
+
 void GlicPageHandler::SyncWebviewCookies(SyncWebviewCookiesCallback callback) {
-  GlicKeyedServiceFactory::GetGlicKeyedService(browser_context_)
-      ->SyncWebviewCookies(std::move(callback));
+  GetGlicService()->SyncWebviewCookies(std::move(callback));
 }
 
 void GlicPageHandler::WebviewCommitted(const GURL& url) {
@@ -282,10 +303,22 @@ void GlicPageHandler::WebviewCommitted(const GURL& url) {
   // out.
   if (url.DomainIs("login.corp.google.com") ||
       url.DomainIs("accounts.google.com")) {
-    GlicKeyedServiceFactory::GetGlicKeyedService(browser_context_)
-        ->window_controller()
-        .LoginPageCommitted();
+    GetGlicService()->window_controller().LoginPageCommitted();
   }
+}
+
+void GlicPageHandler::GuestAdded(content::WebContents* guest_contents) {
+  guest_contents_ = guest_contents->GetWeakPtr();
+}
+
+void GlicPageHandler::ClosePanel() {
+  GetGlicService()->ClosePanel();
+}
+
+void GlicPageHandler::ResizeWidget(const gfx::Size& size,
+                                   base::TimeDelta duration,
+                                   ResizeWidgetCallback callback) {
+  GetGlicService()->ResizePanel(size, duration, std::move(callback));
 }
 
 }  // namespace glic

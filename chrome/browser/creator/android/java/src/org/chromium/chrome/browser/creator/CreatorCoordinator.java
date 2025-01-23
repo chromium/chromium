@@ -394,9 +394,7 @@ public class CreatorCoordinator
 
     /** Set up the bottom sheet for this activity. */
     private void initBottomSheet() {
-        mScrim =
-                new ScrimCoordinator(
-                        mActivity, /* systemUiScrimDelegate= */ null, mCreatorViewGroup);
+        mScrim = new ScrimCoordinator(mActivity, mCreatorViewGroup);
 
         mBottomSheetContainer = new FrameLayout(mActivity);
         mBottomSheetContainer.setId(R.id.creator_content_preview_bottom_sheet);

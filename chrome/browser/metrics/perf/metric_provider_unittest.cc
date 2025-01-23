@@ -74,7 +74,7 @@ PerfDataProto GetExamplePerfDataProto() {
 // Converts a protobuf to serialized format as a byte vector.
 std::vector<uint8_t> SerializeMessageToVector(
     const google::protobuf::MessageLite& message) {
-  std::vector<uint8_t> result(message.ByteSize());
+  std::vector<uint8_t> result(message.ByteSizeLong());
   message.SerializeToArray(result.data(), result.size());
   return result;
 }

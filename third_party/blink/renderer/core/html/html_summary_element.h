@@ -35,7 +35,6 @@ class HTMLSummaryElement final : public HTMLElement {
   bool WillRespondToMouseClickEvents() override;
 
  private:
-  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   void DefaultEventHandler(Event&) override;
   bool HasActivationBehavior() const override;
   HTMLDetailsElement* DetailsElement() const;

@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/functional/callback_forward.h"
 #include "base/values.h"
 #include "ui/base/accelerators/accelerator.h"
 
@@ -27,12 +28,26 @@ enum class AcceleratorParseError {
 
 class COMPONENT_EXPORT(UI_BASE) Command {
  public:
+  using AcceleratorParseErrorCallback =
+      base::OnceCallback<void(ui::AcceleratorParseError)>;
+
   Command() = default;
   Command(std::string_view command_name,
           std::u16string_view description,
           bool global);
   Command(const Command& other) = default;
   virtual ~Command() = default;
+
+  // The platform value for the Command.
+  static std::string CommandPlatform();
+
+  // Parse a string as an accelerator. If the accelerator is unparsable then
+  // a generic ui::Accelerator object will be returns (with key_code Unknown).
+  static ui::Accelerator StringToAccelerator(std::string_view accelerator);
+
+  // Returns the string representation of an accelerator without localizing the
+  // shortcut text (like accelerator::GetShortcutText() does).
+  static std::string AcceleratorToString(const ui::Accelerator& accelerator);
 
   // Accessors:
   const std::string& command_name() const { return command_name_; }
@@ -51,6 +66,21 @@ class COMPONENT_EXPORT(UI_BASE) Command {
     description_ = description;
   }
   void set_global(bool global) { global_ = global; }
+
+ protected:
+  // Parse an |accelerator| for a given platform (specified by |platform_key|)
+  // and return the result as a ui::Accelerator if successful, or VKEY_UNKNOWN
+  // if not. |should_parse_media_keys| specifies whether media keys are to be
+  // considered for parsing. |error_callback| is called when there is an issue
+  // with parsing |accelerator| and the reason why parsing failed is passed in.
+  // Note: If the parsing rules here are changed, make sure to update the
+  // corresponding shortcut_input.ts validation, which validates the user input
+  // for the CrShortcutInput WebUI component.
+  static ui::Accelerator ParseImpl(
+      std::string_view accelerator,
+      std::string_view platform_key,
+      bool should_parse_media_keys,
+      AcceleratorParseErrorCallback error_callback);
 
  private:
   std::string command_name_;

@@ -56,6 +56,7 @@ extern const char kUseElevatedHost[];
 extern const char kUseSignalingProxy[];
 extern const char kIceConfig[];
 extern const char kAuthorizedHelper[];
+extern const char kUseCorpSessionAuthz[];
 // Response sent back to the client after the Connect message has been handled.
 extern const char kConnectResponse[];
 

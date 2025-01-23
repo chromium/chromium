@@ -59,43 +59,43 @@ TEST_F(PermissionIndicatorsTabDataTest, GeolocationUsageRecord) {
   // The data will be recorded only when a new record coming in or the instance
   // is being destroyed.
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, true);
+      content::WebContentsCapabilityType::kGeolocation, true);
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, false);
+      content::WebContentsCapabilityType::kGeolocation, false);
   task_environment()->AdvanceClock(base::Seconds(5));
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, true);
+      content::WebContentsCapabilityType::kGeolocation, true);
   // UMA won't be recorded if used = false.
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, false);
+      content::WebContentsCapabilityType::kGeolocation, false);
   task_environment()->AdvanceClock(base::Seconds(11));
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, true);
+      content::WebContentsCapabilityType::kGeolocation, true);
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, false);
+      content::WebContentsCapabilityType::kGeolocation, false);
   task_environment()->AdvanceClock(base::Minutes(2));
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, true);
+      content::WebContentsCapabilityType::kGeolocation, true);
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, false);
+      content::WebContentsCapabilityType::kGeolocation, false);
   task_environment()->AdvanceClock(base::Minutes(6));
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, true);
+      content::WebContentsCapabilityType::kGeolocation, true);
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, false);
+      content::WebContentsCapabilityType::kGeolocation, false);
   task_environment()->AdvanceClock(base::Minutes(11));
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, true);
+      content::WebContentsCapabilityType::kGeolocation, true);
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, false);
+      content::WebContentsCapabilityType::kGeolocation, false);
   task_environment()->AdvanceClock(base::Hours(2));
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, true);
+      content::WebContentsCapabilityType::kGeolocation, true);
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, false);
+      content::WebContentsCapabilityType::kGeolocation, false);
   task_environment()->AdvanceClock(base::Hours(17));
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, true);
+      content::WebContentsCapabilityType::kGeolocation, true);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url2);
   histogram_tester().ExpectTotalCount(
@@ -135,22 +135,22 @@ TEST_F(PermissionIndicatorsTabDataTest, GeolocationWatchUsageRecord) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url1);
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, true);
+      content::WebContentsCapabilityType::kGeolocation, true);
   task_environment()->AdvanceClock(base::Minutes(10));
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, false);
+      content::WebContentsCapabilityType::kGeolocation, false);
   task_environment()->AdvanceClock(base::Seconds(5));
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, true);
+      content::WebContentsCapabilityType::kGeolocation, true);
   task_environment()->AdvanceClock(base::Minutes(5));
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, false);
+      content::WebContentsCapabilityType::kGeolocation, false);
   task_environment()->AdvanceClock(base::Seconds(5));
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, true);
+      content::WebContentsCapabilityType::kGeolocation, true);
   task_environment()->AdvanceClock(base::Minutes(10));
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, false);
+      content::WebContentsCapabilityType::kGeolocation, false);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url2);
   histogram_tester().ExpectTotalCount(
@@ -167,23 +167,23 @@ TEST_F(PermissionIndicatorsTabDataTest, GeolocationUsageRecordAfterNavigation) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url1);
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, true);
+      content::WebContentsCapabilityType::kGeolocation, true);
   task_environment()->AdvanceClock(base::Seconds(11));
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, true);
+      content::WebContentsCapabilityType::kGeolocation, true);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url2);
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, true);
+      content::WebContentsCapabilityType::kGeolocation, true);
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, false);
+      content::WebContentsCapabilityType::kGeolocation, false);
   task_environment()->AdvanceClock(base::Seconds(5));
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, true);
+      content::WebContentsCapabilityType::kGeolocation, true);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url1);
   tab_data().OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType::kGeolocation, true);
+      content::WebContentsCapabilityType::kGeolocation, true);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url2);
   histogram_tester().ExpectTotalCount(

@@ -1742,7 +1742,8 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         // sure that the Android Media Picker is the one handling the request and not something
         // random.
         String packageNameForGetContent = resolvePackageNameFromIntent(intent);
-        if (!"com.google.android.providers.media.module".equals(packageNameForGetContent)) {
+        if (!"com.google.android.providers.media.module".equals(packageNameForGetContent)
+                && !"com.google.android.photopicker".equals(packageNameForGetContent)) {
             return showAndroidMediaPickerDirect(
                     windowAndroid, intentCallback, allowMultiple, mimeTypes);
         }

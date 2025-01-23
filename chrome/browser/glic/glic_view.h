@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_VIEW_H_
 #define CHROME_BROWSER_GLIC_GLIC_VIEW_H_
 
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -23,20 +25,15 @@ class Profile;
 namespace glic {
 
 class GlicView : public views::View {
+  METADATA_HEADER(GlicView, views::View)
+
  public:
   GlicView(Profile* profile, const gfx::Size& initial_size);
   GlicView(const GlicView&) = delete;
   GlicView& operator=(const GlicView&) = delete;
   ~GlicView() override;
 
-  // Creates a menu widget that contains a `GlicView`, configured with the
-  // given `initial_bounds`.
-  static std::unique_ptr<views::Widget> CreateWidget(
-      Profile* profile,
-      const gfx::Rect& initial_bounds);
-  // Returns the `GlicView` from the widget returned by
-  // `GlicView::CreateWidget()`.
-  static GlicView* FromWidget(views::Widget& widget);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kWebViewElementIdForTesting);
 
   void SetDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
 

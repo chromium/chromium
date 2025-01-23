@@ -124,7 +124,7 @@ FeedSurfaceRendererBridge::GetReliabilityLoggingBridge() {
 void FeedSurfaceRendererBridge::StreamUpdate(
     const feedui::StreamUpdate& stream_update) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  int32_t data_size = stream_update.ByteSize();
+  int32_t data_size = stream_update.ByteSizeLong();
 
   std::vector<uint8_t> data(data_size);
   stream_update.SerializeToArray(data.data(), data_size);

@@ -303,7 +303,7 @@ bool HttpStreamPool::Group::CloseOneIdleStreamSocket() {
                             kExceededSocketLimits);
   idle_stream_sockets_.pop_front();
   pool_->DecrementTotalIdleStreamCount();
-  // Use MaybeCompeleteLater since MaybeComplete() may delete `this`, and this
+  // Use MaybeCompleteLater since MaybeComplete() may delete `this`, and this
   // method could be called while iterating all groups.
   MaybeCompleteLater();
   return true;
@@ -337,13 +337,8 @@ void HttpStreamPool::Group::FlushWithError(
     int error,
     StreamSocketCloseReason attempt_cancel_reason,
     std::string_view net_log_close_reason_utf8) {
-  // Refresh() may delete this. Get a weak pointer to this and call CancelJobs()
-  // only when this is still alive.
-  base::WeakPtr<Group> weak_this = weak_ptr_factory_.GetWeakPtr();
   Refresh(net_log_close_reason_utf8, attempt_cancel_reason);
-  if (weak_this) {
-    CancelJobs(error);
-  }
+  CancelJobs(error);
 }
 
 void HttpStreamPool::Group::Refresh(std::string_view net_log_close_reason_utf8,
@@ -351,18 +346,15 @@ void HttpStreamPool::Group::Refresh(std::string_view net_log_close_reason_utf8,
   // TODO(crbug.com/381742472): Should we do anything for paused
   // jobs/preconnects?
   ++generation_;
-  CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
   if (attempt_manager_) {
     attempt_manager_->CancelInFlightAttempts(cancel_reason);
   }
+  CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
 }
 
 void HttpStreamPool::Group::CloseIdleStreams(
     std::string_view net_log_close_reason_utf8) {
   CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
-  // Use MaybeCompleteLater since MaybeComplete() may delete `this`, and this
-  // method could be called while iterating all groups.
-  MaybeCompleteLater();
 }
 
 void HttpStreamPool::Group::CancelJobs(int error) {
@@ -514,6 +506,9 @@ void HttpStreamPool::Group::CleanupIdleStreamSockets(
       ++it;
     }
   }
+  // Use MaybeCompleteLater since MaybeComplete() may delete `this`, and this
+  // method could be called while iterating all groups.
+  MaybeCompleteLater();
 }
 
 void HttpStreamPool::Group::EnsureAttemptManager() {

@@ -4,15 +4,16 @@
 
 package org.chromium.components.segmentation_platform;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /**
  * Represents a single value to be used as an input to a segmentation model. Its native equivalent
  * is found here: components/segmentation_platform/public/types/processed_value.h.
  */
+@NullMarked
 public class ProcessedValue {
     static final String TAG = "ProcessedValue";
 
@@ -21,10 +22,10 @@ public class ProcessedValue {
     public int intValue;
     public float floatValue;
     public double doubleValue;
-    public String stringValue;
+    public @Nullable String stringValue;
     public long timeValue;
     public long int64Value;
-    public GURL urlValue;
+    public @Nullable GURL urlValue;
 
     private ProcessedValue() {}
 
@@ -56,7 +57,7 @@ public class ProcessedValue {
         return processedValue;
     }
 
-    public static ProcessedValue fromString(@NonNull String stringValue) {
+    public static ProcessedValue fromString(@Nullable String stringValue) {
         ProcessedValue processedValue = new ProcessedValue();
         processedValue.type = ProcessedValueType.STRING;
         if (stringValue == null) {
@@ -89,7 +90,7 @@ public class ProcessedValue {
         return processedValue;
     }
 
-    public static ProcessedValue fromGURL(@NonNull GURL urlValue) {
+    public static ProcessedValue fromGURL(@Nullable GURL urlValue) {
         ProcessedValue processedValue = new ProcessedValue();
         processedValue.type = ProcessedValueType.URL;
         if (urlValue == null) {

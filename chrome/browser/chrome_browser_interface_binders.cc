@@ -488,6 +488,8 @@
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/webui/signin/batch_upload/batch_upload.mojom.h"
 #include "chrome/browser/ui/webui/signin/batch_upload_ui.h"
+#include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation.mojom.h"
+#include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_ui.h"
 #include "components/signin/public/base/signin_switches.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -1708,6 +1710,10 @@ void PopulateChromeWebUIFrameBinders(
     RegisterWebUIControllerInterfaceBinder<
         batch_upload::mojom::PageHandlerFactory, BatchUploadUI>(map);
   }
+
+  RegisterWebUIControllerInterfaceBinder<
+      signout_confirmation::mojom::PageHandlerFactory, SignoutConfirmationUI>(
+      map);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

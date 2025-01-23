@@ -111,8 +111,9 @@ void PutCommandInNSUserDefault(NSDictionary* command) {
   NSString* scheme =
       base::apple::ObjCCast<NSString>([base::apple::FrameworkBundle()
           objectForInfoDictionaryKey:@"KSChannelChromeScheme"]);
-  if (!scheme)
+  if (!scheme) {
     return;
+  }
 
   NSURLComponents* urlComponents = [[NSURLComponents alloc] init];
   urlComponents.scheme = scheme;

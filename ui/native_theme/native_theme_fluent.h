@@ -70,6 +70,7 @@ class NATIVE_THEME_EXPORT NativeThemeFluent : public NativeThemeBase {
                         State state,
                         const ExtraParams& extra) const override;
   int GetPaintedScrollbarTrackInset() const override;
+  float GetContrastRatioForState(State state, Part part) const override;
 
  private:
   friend class NativeThemeFluentTest;

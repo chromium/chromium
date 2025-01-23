@@ -921,6 +921,49 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignAppVersionTargeting) {
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
+TEST_F(CampaignsManagerTest, GetDemoModeCampaignWithInvalidAppVersion) {
+  const base::Version empty_version;
+  MockDemoMode(
+      /*in_demo_mode=*/true,
+      /*cloud_gaming_device=*/true,
+      /*feature_aware_device=*/true,
+      /*store_id=*/"2",
+      /*retailer_id=*/"bby",
+      /*country=*/"US",
+      /*app_version=*/empty_version);
+
+  LoadComponentAndVerifyLoadComplete(
+      base::StringPrintf(kValidCampaignsFileTemplate, R"(
+    "demoMode": {
+      "appVersion": {
+        "min": "1.0.0.0",
+        "max": "1.0.0.1"
+      }
+    }
+  )"));
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest,
+       GetDemoModeCampaignWithInvalidAppVersionAndNoTargeting) {
+  const base::Version empty_version;
+  MockDemoMode(
+      /*in_demo_mode=*/true,
+      /*cloud_gaming_device=*/true,
+      /*feature_aware_device=*/true,
+      /*store_id=*/"2",
+      /*retailer_id=*/"bby",
+      /*country=*/"US",
+      /*app_version=*/empty_version);
+
+  LoadComponentAndVerifyLoadComplete(
+      base::StringPrintf(kValidCampaignsFileTemplate, R"("demoMode": {})"));
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
 TEST_F(CampaignsManagerTest, GetDemoModeCampaignAppVersionMinMismatch) {
   LoadComponentAndVerifyLoadComplete(
       base::StringPrintf(kValidCampaignsFileTemplate, R"(

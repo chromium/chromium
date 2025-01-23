@@ -238,7 +238,8 @@ public class LocationBarCoordinator
                         omniboxUma,
                         isToolbarMicEnabledSupplier,
                         mOmniboxDropdownEmbedderImpl,
-                        tabModelSelectorSupplier);
+                        tabModelSelectorSupplier,
+                        browserControlsStateProvider);
         if (backPressManager != null) {
             backPressManager.addHandler(mLocationBarMediator, BackPressHandler.Type.LOCATION_BAR);
         }

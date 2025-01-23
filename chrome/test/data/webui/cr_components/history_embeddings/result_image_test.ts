@@ -63,7 +63,7 @@ suite('cr-history-embeddings-result-image', () => {
     await element.updateComplete;
     const requestArgs = await imageServiceHandler.whenCalled('getPageImageUrl');
     assertEquals(1, imageServiceHandler.getCallCount('getPageImageUrl'));
-    assertEquals(PageImageServiceClientId.Journeys, requestArgs[0]);
+    assertEquals(PageImageServiceClientId.HistoryEmbeddings, requestArgs[0]);
     assertDeepEquals({url: 'http://google.com'}, requestArgs[1]);
     assertDeepEquals(
         {suggestImages: true, optimizationGuideImages: true}, requestArgs[2]);

@@ -288,6 +288,9 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     }
 
     private void maybeAddCollaborateFirstPartyOption() {
+        if (BuildConfig.IS_DESKTOP_ANDROID) {
+            return;
+        }
         FirstPartyOption option = createCollaborateFirstPartyOption();
         if (option != null) {
             mOrderedFirstPartyOptions.add(option);

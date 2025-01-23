@@ -2570,6 +2570,16 @@ inline constexpr char kBirchUseCoral[] = "ash.birch.use_coral";
 inline constexpr char kClassManagementToolsAvailabilitySetting[] =
     "ash.class_management_tools.availability_setting";
 
+// A dict pref indicating user's recent selection for web page navigation rule
+// in class management tools.
+inline constexpr char kClassManagementToolsNavRuleSetting[] =
+    "ash.class_management_tools.nav_rule_setting";
+
+// A boolean pref indicating user's default caption enablement setting in class
+// management tools.
+inline constexpr char kClassManagementToolsCaptionEnablementSetting[] =
+    "ash.class_management_tools.caption_enablement_setting";
+
 // A boolean pref that holds whether the user dismissed the extended updates
 // notification.
 inline constexpr char kExtendedUpdatesNotificationDismissed[] =

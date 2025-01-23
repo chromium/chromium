@@ -76,7 +76,6 @@ enum class PopoverTriggerAction {
   kToggle,
   kShow,
   kHide,
-  kHover,
 };
 
 enum class HidePopoverFocusBehavior {
@@ -296,10 +295,6 @@ class CORE_EXPORT HTMLElement : public Element {
                                    Document&,
                                    HidePopoverFocusBehavior,
                                    HidePopoverTransitionBehavior);
-  // Popover hover triggering behavior.
-  bool IsNodePopoverDescendant(const Node& node) const;
-  void MaybeQueuePopoverHideEvent();
-  static void HoveredElementChanged(Element* old_element, Element* new_element);
 
   void SetImplicitAnchor(Element* element);
   Element* implicitAnchor() const;

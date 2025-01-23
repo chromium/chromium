@@ -1345,11 +1345,13 @@ void HTMLPermissionElement::UpdateText() {
 }
 
 void HTMLPermissionElement::AddConsoleError(String error) {
+  LOG(ERROR) << error;
   AddConsoleMessage(mojom::blink::ConsoleMessageSource::kRendering,
                     mojom::blink::ConsoleMessageLevel::kError, error);
 }
 
 void HTMLPermissionElement::AddConsoleWarning(String warning) {
+  LOG(WARNING) << warning;
   AddConsoleMessage(mojom::blink::ConsoleMessageSource::kRendering,
                     mojom::blink::ConsoleMessageLevel::kWarning, warning);
 }

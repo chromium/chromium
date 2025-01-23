@@ -492,20 +492,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #define CHROME_PLATFORM_SPECIFIC_ACTION_IDS \
   E(kToggleMultitaskMenu, IDC_TOGGLE_MULTITASK_MENU)
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-#define CHROME_PLATFORM_SPECIFIC_ACTION_IDS \
-  /* Move window to other user commands */ \
-  E(kActionVisitDesktopOfLruUser2, IDC_VISIT_DESKTOP_OF_LRU_USER_2) \
-  E(kActionVisitDesktopOfLruUser3, IDC_VISIT_DESKTOP_OF_LRU_USER_3) \
-  E(kActionVisitDesktopOfLruUser4, IDC_VISIT_DESKTOP_OF_LRU_USER_4) \
-  E(kActionVisitDesktopOfLruUser5, IDC_VISIT_DESKTOP_OF_LRU_USER_5) \
-  E(kActionVisitDesktopOfLruUserNext, IDC_VISIT_DESKTOP_OF_LRU_USER_NEXT) \
-  E(kActionVisitDesktopOfLruUserLast, IDC_VISIT_DESKTOP_OF_LRU_USER_LAST) \
-  /* Quick Answers context menu items. */ \
-  E(kActionContentContextQuickAnswersInlineAnswer, \
-    IDC_CONTENT_CONTEXT_QUICK_ANSWERS_INLINE_ANSWER) \
-  E(kActionContentContextQuickAnswersInlineQuery, \
-    IDC_CONTENT_CONTEXT_QUICK_ANSWERS_INLINE_QUERY)
 #elif BUILDFLAG(IS_LINUX)
 #define CHROME_PLATFORM_SPECIFIC_ACTION_IDS \
   E(kUseSystemTitleBar, IDC_USE_SYSTEM_TITLE_BAR) \

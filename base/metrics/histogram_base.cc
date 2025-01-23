@@ -70,7 +70,7 @@ HistogramBase* DeserializeHistogramInfo(PickleIterator* iter) {
   }
 }
 
-HistogramBase::CountAndBucketData::CountAndBucketData(Count count,
+HistogramBase::CountAndBucketData::CountAndBucketData(Count32 count,
                                                       int64_t sum,
                                                       Value::List buckets)
     : count(count), sum(sum), buckets(std::move(buckets)) {}
@@ -201,7 +201,7 @@ void HistogramBase::FindAndRunCallbacks(HistogramBase::Sample32 sample) const {
 
 HistogramBase::CountAndBucketData HistogramBase::GetCountAndBucketData() const {
   std::unique_ptr<HistogramSamples> snapshot = SnapshotSamples();
-  Count count = snapshot->TotalCount();
+  Count32 count = snapshot->TotalCount();
   int64_t sum = snapshot->sum();
   std::unique_ptr<SampleCountIterator> it = snapshot->Iterator();
 
@@ -209,7 +209,7 @@ HistogramBase::CountAndBucketData HistogramBase::GetCountAndBucketData() const {
   while (!it->Done()) {
     Sample32 bucket_min;
     int64_t bucket_max;
-    Count bucket_count;
+    Count32 bucket_count;
     it->Get(&bucket_min, &bucket_max, &bucket_count);
 
     Value::Dict bucket_value;
@@ -244,7 +244,7 @@ const std::string HistogramBase::GetSimpleAsciiBucketRange(
   return StringPrintf("%d", sample);
 }
 
-void HistogramBase::WriteAsciiBucketValue(Count current,
+void HistogramBase::WriteAsciiBucketValue(Count32 current,
                                           double scaled_sum,
                                           std::string* output) const {
   StringAppendF(output, " (%d = %3.1f%%)", current, current / scaled_sum);

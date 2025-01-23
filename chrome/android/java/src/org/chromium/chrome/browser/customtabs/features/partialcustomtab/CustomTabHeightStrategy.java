@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 import android.app.Activity;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsCallback;
 
@@ -107,10 +108,11 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
     }
 
     /**
-     * Set the scrim value to apply to partial CCT UI.
-     * @param scrimFraction Scrim fraction.
+     * Set the scrim color to apply to partial CCT UI.
+     *
+     * @param scrimColor The color (including transparency) that's effecting the CCT UI.
      */
-    public void setScrimFraction(float scrimFraction) {}
+    public void setScrimColor(@ColorInt int scrimColor) {}
 
     // FindToolbarObserver implementation.
 

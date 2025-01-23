@@ -55,7 +55,7 @@ public class ContentShellActivity extends Activity {
             }
         }
 
-        DeviceUtils.addDeviceSpecificUserAgentSwitch();
+        DeviceUtils.updateDeviceSpecificUserAgentSwitch(this);
 
         LibraryLoader.getInstance().ensureInitialized();
 

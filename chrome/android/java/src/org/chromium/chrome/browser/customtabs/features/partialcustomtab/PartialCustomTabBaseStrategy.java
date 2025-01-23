@@ -73,7 +73,7 @@ public abstract class PartialCustomTabBaseStrategy extends CustomTabHeightStrate
     @Nullable protected Runnable mFinishRunnable;
 
     protected @Px int mNavbarHeight;
-    protected @Px int mStatusbarHeight;
+    protected @Px int mStatusBarHeight;
 
     // The current height/width used to trigger onResizedCallback when it is resized.
     protected int mHeight;
@@ -419,7 +419,7 @@ public abstract class PartialCustomTabBaseStrategy extends CustomTabHeightStrate
         }
 
         mNavbarHeight = mVersionCompat.getNavbarHeight();
-        mStatusbarHeight = mVersionCompat.getStatusbarHeight();
+        mStatusBarHeight = mVersionCompat.getStatusBarHeight();
     }
 
     protected void initializeSize() {}

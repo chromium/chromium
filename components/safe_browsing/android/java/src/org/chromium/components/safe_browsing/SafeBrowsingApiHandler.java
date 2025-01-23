@@ -6,6 +6,8 @@ package org.chromium.components.safe_browsing;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -13,6 +15,7 @@ import java.lang.annotation.RetentionPolicy;
  * Java interface that a SafeBrowsingApiHandler must implement when used with
  * {@code SafeBrowsingApiBridge}.
  */
+@NullMarked
 public interface SafeBrowsingApiHandler {
     /** Observer to be notified when the SafeBrowsingApiHandler determines the verdict for a url. */
     interface Observer {

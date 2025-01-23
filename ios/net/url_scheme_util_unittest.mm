@@ -13,11 +13,8 @@
 namespace net {
 
 const char* kSchemeTestData[] = {
-    "http://foo.com",
-    "https://foo.com",
-    "data:text/html;charset=utf-8,Hello",
-    "about:blank",
-    "chrome://settings",
+    "http://foo.com", "https://foo.com",   "data:text/html;charset=utf-8,Hello",
+    "about:blank",    "chrome://settings",
 };
 
 using URLSchemeUtilTest = PlatformTest;

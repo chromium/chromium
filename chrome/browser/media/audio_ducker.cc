@@ -6,6 +6,7 @@
 
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
+#include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
 
 AudioDucker::AudioDucker(content::Page& page)

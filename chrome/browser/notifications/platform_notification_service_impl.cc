@@ -762,10 +762,6 @@ void PlatformNotificationServiceImpl::LogPersistentNotificationShownMetrics(
     const GURL& notification_origin) {
   NotificationMetricsLoggerFactory::GetForBrowserContext(profile_)
       ->LogPersistentNotificationShown();
-  if (safe_browsing::IsEnhancedProtectionEnabled(*profile_->GetPrefs())) {
-    NotificationMetricsLoggerFactory::GetForBrowserContext(profile_)
-        ->LogPersistentNotificationSize(profile_, notification_data, origin);
-  }
 
   auto* service =
       NotificationsEngagementServiceFactory::GetForProfile(profile_);

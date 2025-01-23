@@ -18,6 +18,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -28,10 +30,11 @@ import java.util.Map;
  * Policy loading is async on Android and caching policy values makes them
  * available during launch stage even before native library is ready.
  */
+@NullMarked
 public class PolicyCache {
     @VisibleForTesting static final String POLICY_PREF = "Components.Policy";
 
-    private static PolicyCache sInstance;
+    private static @Nullable PolicyCache sInstance;
 
     public enum Type {
         Integer,
@@ -43,7 +46,7 @@ public class PolicyCache {
 
     private boolean mReadable = true;
 
-    private SharedPreferences mSharedPreferences;
+    private @Nullable SharedPreferences mSharedPreferences;
 
     private ThreadUtils.ThreadChecker mThreadChecker = new ThreadUtils.ThreadChecker();
 
@@ -54,7 +57,7 @@ public class PolicyCache {
      * @return The SharedPreferences instance that is used for policy caching. Returns null if
      *         application context is not available.
      */
-    private SharedPreferences getSharedPreferences() {
+    private @Nullable SharedPreferences getSharedPreferences() {
         assert mReadable;
         mThreadChecker.assertOnValidThread();
         if (mSharedPreferences == null) {
@@ -93,7 +96,7 @@ public class PolicyCache {
      * @return The value of cached integer policy, null if there is no valid
      * cached policy.
      */
-    public Integer getIntValue(String policy) {
+    public @Nullable Integer getIntValue(String policy) {
         SharedPreferences sharedPreferences = getSharedPreferences();
         if (sharedPreferences == null) return null;
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
@@ -107,7 +110,7 @@ public class PolicyCache {
      * @return The value of cached boolean policy, null if there is no valid
      * cached policy.
      */
-    public Boolean getBooleanValue(String policy) {
+    public @Nullable Boolean getBooleanValue(String policy) {
         SharedPreferences sharedPreferences = getSharedPreferences();
         if (sharedPreferences == null) return null;
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
@@ -121,7 +124,7 @@ public class PolicyCache {
      * @return The value of cached string policy, null if there is no valid
      * cached policy.
      */
-    public String getStringValue(String policy) {
+    public @Nullable String getStringValue(String policy) {
         SharedPreferences sharedPreferences = getSharedPreferences();
         if (sharedPreferences == null) return null;
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
@@ -135,7 +138,7 @@ public class PolicyCache {
      * @return The value of cached list policy, null if there is no valid
      * cached policy.
      */
-    public JSONArray getListValue(String policy) {
+    public @Nullable JSONArray getListValue(String policy) {
         SharedPreferences sharedPreferences = getSharedPreferences();
         if (sharedPreferences == null) return null;
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
@@ -153,7 +156,7 @@ public class PolicyCache {
      * @return The value of cached dictionary policy, null if there is no valid
      * cached policy.
      */
-    public JSONObject getDictValue(String policy) {
+    public @Nullable JSONObject getDictValue(String policy) {
         SharedPreferences sharedPreferences = getSharedPreferences();
         if (sharedPreferences == null) return null;
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
@@ -167,7 +170,7 @@ public class PolicyCache {
     }
 
     /** @return All cached policies. */
-    public Map<String, ?> getAllPolicies() {
+    public @Nullable Map<String, ?> getAllPolicies() {
         SharedPreferences sharedPreferences = getSharedPreferences();
         if (sharedPreferences == null) return null;
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {

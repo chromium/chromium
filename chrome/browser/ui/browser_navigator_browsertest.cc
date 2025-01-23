@@ -64,10 +64,10 @@
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
 #include "ui/display/test/display_manager_test_api.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using content::WebContents;
 
@@ -1483,7 +1483,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 }
 
 // TODO(crbug.com/40107334): Timing out on linux-chromeos-dbg.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_NavigateFromBlankToOptionsInSameTab \
   DISABLED_NavigateFromBlankToOptionsInSameTab
 #else
@@ -1508,7 +1508,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 }
 
 // TODO(crbug.com/40107334): Timing out on linux-chromeos-dbg.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_NavigateFromNTPToOptionsInSameTab \
   DISABLED_NavigateFromNTPToOptionsInSameTab
 #else
@@ -1583,7 +1583,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 
 // TODO(crbug.com/40166082): This is disabled for Mac OS due to flakiness.
 // TODO(crbug.com/40107334): Timing out on linux-chromeos-dbg.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_NavigateFromNTPToOptionsPageInSameTab \
   DISABLED_NavigateFromNTPToOptionsPageInSameTab
 #else
@@ -1707,7 +1707,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 }
 
 // TODO(crbug.com/40107334): Timing out on linux-chromeos-dbg.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CloseSingletonTab DISABLED_CloseSingletonTab
 #else
 #define MAYBE_CloseSingletonTab CloseSingletonTab
@@ -2671,7 +2671,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
             "site_a=cookie");
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // This class extends the basic logic in display::ScreenBase to allow us to mock
 // the call to `GetDisplayNearestWindow`. This provides a way to ensure that the
 // opener window is on a specific display, since the display::ScreenBase
@@ -2700,7 +2700,7 @@ class MockScreen : public display::ScreenBase {
  private:
   std::optional<display::Display> display_nearest_window_;
 };
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Windows has assumptions that the screen is a ScreenWin, which causes a crash
 // when we inject the MockScreen.
@@ -2714,7 +2714,7 @@ class MockScreen : public display::ScreenBase {
 class MAYBE_BrowserNavigatorTestWithMockScreen : public BrowserNavigatorTest {
  public:
   void SetScreenInstance() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Use the default. See `SetUpOnMainThread`.
     BrowserNavigatorTest::SetScreenInstance();
 #else
@@ -2725,26 +2725,26 @@ class MAYBE_BrowserNavigatorTestWithMockScreen : public BrowserNavigatorTest {
         {2, gfx::Rect(800, 0, 800, 700)},
         display::DisplayList::Type::NOT_PRIMARY);
     ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void SetUpOnMainThread() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // This has to happen later than `SetScreenInstance` as the Ash shell does
     // not exist yet.
     display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
         .UpdateDisplay("0+0-800x700,800+0-800x700");
     ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
  protected:
   MockScreen& mock_screen() { return mock_screen_; }
 
  private:
   MockScreen mock_screen_;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 };
 
 IN_PROC_BROWSER_TEST_F(MAYBE_BrowserNavigatorTestWithMockScreen,
@@ -2762,13 +2762,13 @@ IN_PROC_BROWSER_TEST_F(MAYBE_BrowserNavigatorTestWithMockScreen,
   auto display2 = display::Screen::GetScreen()->GetAllDisplays()[1];
 
   {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Put the opener on display 1.
     browser()->window()->SetBounds(display1.work_area());
 #else
     // Make the MockScreen report the opener as being on display 1.
     mock_screen().set_display_nearest_window(display1);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     // Ensure that the opener is on display 1.
     const auto opener_display =
@@ -2797,13 +2797,13 @@ IN_PROC_BROWSER_TEST_F(MAYBE_BrowserNavigatorTestWithMockScreen,
   }
 
   {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Put the opener on display 2.
     browser()->window()->SetBounds(display2.work_area());
 #else
     // Make the MockScreen report the opener as being on display 2.
     mock_screen().set_display_nearest_window(display2);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     // Ensure that the opener is on display 2.
     const auto opener_display =

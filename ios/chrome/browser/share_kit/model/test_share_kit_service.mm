@@ -238,7 +238,10 @@ void TestShareKitService::SetTabGroupCollabIdFromGroupId(
     if (saved_group && !saved_group->is_shared_tab_group()) {
       chrome_test_util::AddColloaborationGroupToFakeServer(collaboration_id);
       chrome_test_util::TriggerSyncCycle(syncer::COLLABORATION_GROUP);
-      sync_service_->MakeTabGroupShared(tab_group_id, collaboration_id);
+      // TODO(crbug.com/382557489): implement the callback.
+      sync_service_->MakeTabGroupShared(
+          tab_group_id, collaboration_id,
+          tab_groups::TabGroupSyncService::TabGroupSharingCallback());
     }
   }
 }

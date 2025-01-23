@@ -246,7 +246,7 @@ above, just like you would for Linux.
 
 For Chromebook hardware, add `is_asan = true` to your args.gn and build.
 `deploy_chrome` with `--mount` and `--nostrip`. ASan logs can be found in
-`/var/log/asan/`.
+`/tmp/asan/`.
 
 To catch crashes in gdb:
 

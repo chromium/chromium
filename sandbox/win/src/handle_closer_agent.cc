@@ -44,7 +44,6 @@ static BOOL CALLBACK EnumLocalesProcEx(LPWSTR lpLocaleString,
 
 // Additional warmup done just when CSRSS is being disconnected.
 bool CsrssDisconnectWarmup() {
-  std::ignore = ::GetUserDefaultLCID();
   return ::EnumSystemLocalesEx(EnumLocalesProcEx, LOCALE_WINDOWS, 0, 0);
 }
 

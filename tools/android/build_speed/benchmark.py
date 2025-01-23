@@ -27,6 +27,7 @@ import dataclasses
 import functools
 import logging
 import pathlib
+import random
 import statistics
 import subprocess
 import sys
@@ -150,63 +151,63 @@ class Benchmark:
 _BENCHMARKS = [
     Benchmark(
         name='chrome_java_nosig',
-        from_string='super.onCreate();',
-        to_string='super.onCreate();super.onCreate();',
+        from_string='IntentHandler";',
+        to_string='Different<sub>UniqueString";',
         change_file=
-        'chrome/android/java/src/org/chromium/chrome/browser/ChromeApplicationImpl.java',  # pylint: disable=line-too-long
+        'chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java',  # pylint: disable=line-too-long
     ),
     Benchmark(
         name='chrome_java_sig',
         from_string='public ChromeApplicationImpl() {}',
         to_string=
-        'public ChromeApplicationImpl() {};public void NewInterfaceMethod(){}',  # pylint: disable=line-too-long
+        'public ChromeApplicationImpl() {};public void NewInterface<sub>Method(){}',  # pylint: disable=line-too-long
         change_file=
         'chrome/android/java/src/org/chromium/chrome/browser/ChromeApplicationImpl.java',  # pylint: disable=line-too-long
     ),
     Benchmark(
         name='module_java_public_sig',
         from_string='INVALID_WINDOW_INDEX = -1',
-        to_string='INVALID_WINDOW_INDEX = -2',
+        to_string='INVALID_WINDOW_INDEX = -<sub>',
         change_file=
         'chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManager.java',  # pylint: disable=line-too-long
     ),
     Benchmark(
         name='module_java_internal_nosig',
         from_string='"TabModelSelector',
-        to_string='"DifferentUniqueString',
+        to_string='"DifferentUnique<sub>String',
         change_file=
         'chrome/browser/tabmodel/internal/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerImpl.java',  # pylint: disable=line-too-long
     ),
     Benchmark(
         name='base_java_nosig',
         from_string='"PathUtil',
-        to_string='"PathUtil1',
+        to_string='"PathUtil<sub>1',
         change_file='base/android/java/src/org/chromium/base/PathUtils.java',
     ),
     Benchmark(
         name='base_java_sig',
         from_string='PathUtils";',
-        to_string='PathUtils";public void NewInterfaceMethod(){}',
+        to_string='PathUtils";public void NewInterface<sub>Method(){}',
         change_file='base/android/java/src/org/chromium/base/PathUtils.java',
     ),
     Benchmark(
         name='turbine_headers',
         from_string='# found in the LICENSE file.',
-        to_string='#temporary_edit_for_benchmark.py',
+        to_string='#temporary_edit_for_benchmark<sub>.py',
         change_file='build/android/gyp/turbine.py',
         can_install=False,
     ),
     Benchmark(
         name='compile_java',
         from_string='# found in the LICENSE file.',
-        to_string='#temporary_edit_for_benchmark.py',
+        to_string='#temporary_edit_for_benchmark<sub>.py',
         change_file='build/android/gyp/compile_java.py',
         can_install=False,
     ),
     Benchmark(
         name='write_build_config',
         from_string='# found in the LICENSE file.',
-        to_string='#temporary_edit_for_benchmark.py',
+        to_string='#temporary_edit_for_benchmark<sub>.py',
         change_file='build/android/gyp/write_build_config.py',
         can_install=False,
     ),
@@ -317,10 +318,8 @@ def _run_gn_gen(out_dir: pathlib.Path) -> float:
     return _run_and_time_cmd([str(_GN_PATH), 'gen', '-C', str(out_dir)])
 
 
-def _compile(out_dir: pathlib.Path, target: str, skip_re_cache: bool) -> float:
+def _compile(out_dir: pathlib.Path, target: str) -> float:
     cmd = gn_helpers.CreateBuildCommand(str(out_dir))
-    if skip_re_cache:
-        cmd += ['-re_cache_enable_read=false']
     return _run_and_time_cmd(cmd + [target])
 
 
@@ -339,11 +338,10 @@ def _run_install(out_dir: pathlib.Path, target: str,
     return _run_and_time_cmd(cmd)
 
 
-def _run_and_maybe_install(out_dir: pathlib.Path,
-                           target: str,
-                           emulator: Optional[device_utils.DeviceUtils],
-                           skip_re_cache: bool = False) -> float:
-    total_time = _compile(out_dir, target, skip_re_cache)
+def _run_and_maybe_install(
+        out_dir: pathlib.Path, target: str,
+        emulator: Optional[device_utils.DeviceUtils]) -> float:
+    total_time = _compile(out_dir, target)
     if emulator:
         total_time += _run_install(out_dir, target, emulator.serial)
     return total_time
@@ -363,18 +361,18 @@ def _run_benchmark(benchmark: Benchmark, out_dir: pathlib.Path, target: str,
         with open(change_file_path, 'r') as f:
             content = f.read()
         with open(change_file_path, 'w') as f:
-            new_content = content.replace(benchmark.from_string,
-                                          benchmark.to_string)
+            # 2 billion is less than 2^31-1, which is the maximum positive int
+            # in java and less than the maximum negative int, which is -2^31.
+            replacement = benchmark.to_string.replace(
+                '<sub>', str(random.randint(1, 2_000_000_000)))
+            logging.info(
+                f'Replacing {benchmark.from_string} with {replacement}')
+            new_content = content.replace(benchmark.from_string, replacement)
             assert content != new_content, (
                 f'Need to update {benchmark.from_string} in '
                 f'{benchmark.change_file}')
             f.write(new_content)
-        # The actual benchmark run needs to be more deterministic, and RBE cache
-        # hits make the timing non-deterministic: https://crbug.com/391348954
-        return _run_and_maybe_install(out_dir,
-                                      target,
-                                      emulator,
-                                      skip_re_cache=True)
+        return _run_and_maybe_install(out_dir, target, emulator)
 
 
 def _format_result(time_taken: List[float]) -> str:

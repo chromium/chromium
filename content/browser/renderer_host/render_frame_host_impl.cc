@@ -1096,23 +1096,6 @@ bool ValidateUnfencedTopNavigation(
     return false;
   }
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
-    const std::optional<FencedFrameProperties>&
-        initiator_fenced_frame_properties =
-            render_frame_host->frame_tree_node()->GetFencedFrameProperties(
-                FencedFramePropertiesNodeSource::kFrameTreeRoot);
-    if (initiator_fenced_frame_properties.has_value() &&
-        initiator_fenced_frame_properties
-            ->HasDisabledNetworkForCurrentFrameTree()) {
-      render_frame_host->AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kError,
-          "_unfencedTop navigations are not allowed after the fenced frame's "
-          "network has been disabled.");
-      return false;
-    }
-  }
-
   return true;
 }
 
@@ -2045,6 +2028,45 @@ SiteInstanceImpl* RenderFrameHostImpl::GetSourceSiteInstanceFromFrameToken(
 
   // There is no source SiteInstance for the given `frame_token`.
   return nullptr;
+}
+
+// static
+std::optional<bool> RenderFrameHostImpl::GetIsUntrustedNetworkDisabled(
+    const blink::LocalFrameToken* frame_token,
+    int initiator_process_id,
+    StoragePartitionImpl* storage_partition) {
+  CHECK(storage_partition);
+
+  if (!frame_token) {
+    return std::nullopt;
+  }
+
+  // Get the value directly from the RenderFrameHost if it's still alive.
+  RenderFrameHostImpl* initiator_rfh =
+      RenderFrameHostImpl::FromFrameToken(initiator_process_id, *frame_token);
+  if (initiator_rfh) {
+    return initiator_rfh->IsUntrustedNetworkDisabled();
+  }
+
+  // Otherwise get it from the NavigationStateKeepAlive stored in
+  // `storage_partition`.
+  NavigationStateKeepAlive* navigation_state =
+      storage_partition->GetNavigationStateKeepAlive(*frame_token);
+  if (navigation_state) {
+    // We're not aware of specific cases inside fenced frames where a navigation
+    // can occur that results in a NavigationStateKeepAlive outliving the
+    // associated RFH. For iframes, a top-level navigation from a form submit is
+    // what is typically used to test this case. However, in fenced frames,
+    // top-level (_unfencedTop) form submits are explicitly disallowed (target
+    // _blank is still allowed, but will not result in this code path being
+    // exercised). If we hit this point, log it so that we can learn more about
+    // cases that result in this code path being executed.
+    base::debug::DumpWithoutCrashing();
+    return navigation_state->is_untrusted_network_disabled();
+  }
+
+  // There is no untrusted network status for the given `frame_token`.
+  return std::nullopt;
 }
 
 RenderFrameHostImpl::RenderFrameHostImpl(
@@ -10368,7 +10390,8 @@ void RenderFrameHostImpl::IssueKeepAliveHandle(
   GetStoragePartition()->RegisterKeepAliveHandle(
       std::move(receiver),
       base::WrapUnique(new NavigationStateKeepAlive(
-          GetFrameToken(), policy_container_host(), GetSiteInstance())));
+          GetFrameToken(), policy_container_host(), GetSiteInstance(),
+          IsUntrustedNetworkDisabled())));
 }
 
 void RenderFrameHostImpl::NotifyStorageAccessed(

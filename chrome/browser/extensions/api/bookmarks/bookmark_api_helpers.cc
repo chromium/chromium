@@ -119,7 +119,7 @@ void PopulateBookmarkTreeNode(
     for (const auto& child : node->children()) {
       if (child->IsVisible() && (!only_folders || child->is_folder())) {
         children.push_back(GetBookmarkTreeNode(model, managed, child.get(),
-                                               true, only_folders));
+                                               /*recurse=*/true, only_folders));
       }
     }
     out_bookmark_tree_node->children = std::move(children);

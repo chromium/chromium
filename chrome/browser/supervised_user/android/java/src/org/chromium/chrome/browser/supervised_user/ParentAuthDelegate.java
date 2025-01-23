@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.supervised_user;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -12,6 +13,7 @@ import org.chromium.url.GURL;
  * The correct version of {@link ParentAuthDelegateImpl} will be determined at runtime via {@link
  * ServiceLoaderUtils}.
  */
+@NullMarked
 public interface ParentAuthDelegate {
     /**
      * @see {@link WebsiteParentApproval#isLocalApprovalSupported()}

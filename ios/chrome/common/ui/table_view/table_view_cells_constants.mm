@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+
 #import "ios/chrome/common/ui/util/device_util.h"
 
 const CGFloat kTableViewHeaderFooterViewHeight = 48.0;
@@ -41,7 +42,8 @@ NSString* const kTableViewActivityIndicatorHeaderFooterViewId =
     @"TableViewActivityIndicatorHeaderFooterViewId";
 
 CGFloat HorizontalPadding() {
-  if (!IsSmallDevice())
+  if (!IsSmallDevice()) {
     return 0;
+  }
   return kTableViewHorizontalSpacing;
 }

@@ -4,9 +4,12 @@
 
 package org.chromium.components.offline_items_collection.bridges;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemFilter;
@@ -25,6 +28,7 @@ import java.util.ArrayList;
  * instances.
  */
 @JNINamespace("offline_items_collection::android")
+@NullMarked
 public final class OfflineItemBridge {
     private OfflineItemBridge() {}
 
@@ -86,7 +90,7 @@ public final class OfflineItemBridge {
             boolean ignoreVisuals,
             double contentQualityScore) {
         OfflineItem item = new OfflineItem();
-        item.id.namespace = nameSpace;
+        assumeNonNull(item.id).namespace = nameSpace;
         item.id.id = id;
         item.title = title;
         item.description = description;

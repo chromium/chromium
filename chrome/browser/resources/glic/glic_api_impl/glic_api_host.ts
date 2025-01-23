@@ -20,6 +20,7 @@ import type {PanelState as PanelStateMojo, TabData as TabDataMojo, WebClientHand
 import {GetTabContextErrorReason as MojoGetTabContextErrorReason, WebClientHandlerRemote, WebClientReceiver} from '../glic.mojom-webui.js';
 import type {DraggableArea, PanelState, Screenshot, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
 import {DEFAULT_PDF_SIZE_LIMIT, GetTabContextErrorReason} from '../glic_api/glic_api.js';
+import type {GlicAppController} from '../glic_app_controller.js';
 
 import type {PostMessageRequestHandler} from './post_message_transport.js';
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
@@ -110,7 +111,8 @@ class HostMessageHandler implements HostMessageHandlerInterface {
 
   constructor(
       private handler: WebClientHandlerInterface,
-      private sender: PostMessageRequestSender) {}
+      private sender: PostMessageRequestSender,
+      private appController: GlicAppController) {}
 
   destroy() {
     if (this.receiver) {
@@ -274,15 +276,15 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     };
   }
 
-  async glicBrowserResizeWindow(request: {width: number, height: number}) {
-    const response = await this.handler.resizeWidget(request);
-    if (!response.actualSize) {
-      return {};
-    }
-    return {
-      actualWidth: response.actualSize.width,
-      actualHeight: response.actualSize.height,
-    };
+  async glicBrowserResizeWindow(request: {
+    size: {width: number, height: number},
+    options?: {durationMs?: number},
+  }) {
+    this.appController.onGuestResizeRequest(request.size);
+    const durationMs = request.options?.durationMs || 0;
+    return await this.handler.resizeWidget(request.size, {
+      microseconds: BigInt(Math.floor(durationMs * 1000)),
+    });
   }
 
   glicBrowserSetWindowDraggableAreas(request: {areas: DraggableArea[]}) {
@@ -325,6 +327,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   glicBrowserSetContextAccessIndicator(request: {show: boolean}) {
     this.handler.setContextAccessIndicator(request.show);
   }
+
+  glicBrowserSetAudioDucking(request: {enabled: boolean}) {
+    this.handler.setAudioDucking(request.enabled);
+  }
 }
 
 export class GlicApiHost implements PostMessageRequestHandler {
@@ -336,14 +342,15 @@ export class GlicApiHost implements PostMessageRequestHandler {
 
   constructor(
       private browserProxy: BrowserProxy, private windowProxy: WindowProxy,
-      private embeddedOrigin: string) {
+      private embeddedOrigin: string, appController: GlicAppController) {
     this.postMessageReceiver =
         new PostMessageRequestReceiver(embeddedOrigin, windowProxy, this);
     this.sender = new PostMessageRequestSender(windowProxy, embeddedOrigin);
     this.handler = new WebClientHandlerRemote();
     this.browserProxy.handler.createWebClient(
         this.handler.$.bindNewPipeAndPassReceiver());
-    this.messageHandler = new HostMessageHandler(this.handler, this.sender);
+    this.messageHandler =
+        new HostMessageHandler(this.handler, this.sender, appController);
 
     this.bootstrapPingIntervalId =
         window.setInterval(this.bootstrapPing.bind(this), 50);

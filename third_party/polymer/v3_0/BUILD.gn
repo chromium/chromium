@@ -12,7 +12,6 @@ assert(!is_android && !is_ios)
 
 js_files = [
   "iron-a11y-keys-behavior/iron-a11y-keys-behavior.js",
-  "iron-a11y-keys/iron-a11y-keys.js",
   "iron-list/iron-list.js",
   "iron-resizable-behavior/iron-resizable-behavior.js",
   "iron-scroll-target-behavior/iron-scroll-target-behavior.js",
@@ -21,6 +20,7 @@ js_files = [
 if (is_chromeos_ash) {
   js_files += [
     "iron-a11y-announcer/iron-a11y-announcer.js",
+    "iron-a11y-keys/iron-a11y-keys.js",
     "iron-behaviors/iron-control-state.js",
     "iron-collapse/iron-collapse.js",
     "iron-dropdown/iron-dropdown.js",
@@ -178,7 +178,6 @@ ts_library("library") {
   composite = true
   definitions = [
     "components-chromium/iron-a11y-keys-behavior/iron-a11y-keys-behavior.d.ts",
-    "components-chromium/iron-a11y-keys/iron-a11y-keys.d.ts",
     "components-chromium/iron-behaviors/iron-control-state.d.ts",
     "components-chromium/iron-list/iron-list.d.ts",
     "components-chromium/iron-resizable-behavior/iron-resizable-behavior.d.ts",
@@ -244,6 +243,7 @@ ts_library("library") {
   if (is_chromeos_ash) {
     definitions += [
       "components-chromium/iron-a11y-announcer/iron-a11y-announcer.d.ts",
+      "components-chromium/iron-a11y-keys/iron-a11y-keys.d.ts",
       "components-chromium/iron-collapse/iron-collapse.d.ts",
       "components-chromium/iron-dropdown/iron-dropdown.d.ts",
       "components-chromium/iron-dropdown/iron-dropdown-scroll-manager.d.ts",

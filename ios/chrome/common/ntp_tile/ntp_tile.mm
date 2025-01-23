@@ -14,7 +14,7 @@ NSString* kFallbackIsDefaultColorKey = @"fallbackIsDefaultColor";
 NSString* kFallbackMonogram = @"fallbackMonogram";
 NSString* kFaviconFetched = @"faviconFetched";
 NSString* kPosition = @"position";
-}
+}  // namespace
 
 @implementation NTPTile
 

@@ -91,5 +91,4 @@ enum class IPHDismissalReasonType {
   kMaxValue = kSwipedAsInstructedByGestureIPH,
 };
 
-
 #endif  // IOS_CHROME_BROWSER_BUBBLE_UI_BUNDLED_BUBBLE_CONSTANTS_H_
