@@ -46,7 +46,7 @@ NSString* GetPromoLabelString(
       // Sign-in shouldn't be offered if the feature doesn't work.
       CHECK(!sync_transport_disabled_by_policy);
       return l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_LABEL);
-    case signin_metrics::AccessPoint::kNTPFeedCardMenuPromo:
+    case signin_metrics::AccessPoint::kNtpFeedCardMenuPromo:
       // Configuring feed interests is independent of sync.
       return l10n_util::GetNSString(IDS_IOS_FEED_CARD_SIGN_IN_ONLY_PROMO_LABEL);
     case signin_metrics::AccessPoint::kWebSignin:
@@ -58,7 +58,7 @@ NSString* GetPromoLabelString(
                        IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL)
                  : l10n_util::GetNSString(
                        IDS_IOS_SIGNIN_SHEET_LABEL_FOR_WEB_SIGNIN);
-    case signin_metrics::AccessPoint::kNTPSignedOutIcon:
+    case signin_metrics::AccessPoint::kNtpSignedOutIcon:
       // This could check `sync_types_disabled_by_policy` only for the types
       // mentioned in the regular string, but don't bother.
       return sync_transport_disabled_by_policy ||
@@ -73,8 +73,8 @@ NSString* GetPromoLabelString(
       CHECK(!sync_transport_disabled_by_policy &&
             sync_types_disabled_by_policy.empty());
       return l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
-    case signin_metrics::AccessPoint::kNTPFeedTopPromo:
-    case signin_metrics::AccessPoint::kNTPFeedBottomPromo:
+    case signin_metrics::AccessPoint::kNtpFeedTopPromo:
+    case signin_metrics::AccessPoint::kNtpFeedBottomPromo:
       // Feed personalization is independent of sync.
       return l10n_util::GetNSString(IDS_IOS_SIGNIN_SHEET_LABEL_FOR_FEED_PROMO);
     case signin_metrics::AccessPoint::kRecentTabs:
@@ -90,7 +90,7 @@ NSString* GetPromoLabelString(
       // No text.
       return nil;
     case signin_metrics::AccessPoint::kStartPage:
-    case signin_metrics::AccessPoint::kNTPLink:
+    case signin_metrics::AccessPoint::kNtpLink:
     case signin_metrics::AccessPoint::kMenu:
     case signin_metrics::AccessPoint::kSupervisedUser:
     case signin_metrics::AccessPoint::kExtensionInstallBubble:
@@ -119,15 +119,15 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::kPostDeviceRestoreSigninPromo:
     case signin_metrics::AccessPoint::kPostDeviceRestoreBackgroundSignin:
     case signin_metrics::AccessPoint::kDesktopSigninManager:
-    case signin_metrics::AccessPoint::kForYouFRE:
+    case signin_metrics::AccessPoint::kForYouFre:
     case signin_metrics::AccessPoint::kCreatorFeedFollow:
     case signin_metrics::AccessPoint::kReadingList:
     case signin_metrics::AccessPoint::kReauthInfoBar:
     case signin_metrics::AccessPoint::kAccountConsistencyService:
     case signin_metrics::AccessPoint::kSearchCompanion:
     case signin_metrics::AccessPoint::kPasswordMigrationWarningAndroid:
-    case signin_metrics::AccessPoint::kSaveToDriveIOS:
-    case signin_metrics::AccessPoint::kSaveToPhotosIOS:
+    case signin_metrics::AccessPoint::kSaveToDriveIos:
+    case signin_metrics::AccessPoint::kSaveToPhotosIos:
     case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
     case signin_metrics::AccessPoint::kRestorePrimaryAccountOnProfileLoad:
     case signin_metrics::AccessPoint::kTabOrganization:
@@ -135,16 +135,16 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::kSigninChoiceRemembered:
     case signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt:
     case signin_metrics::AccessPoint::kSettingsSignoutConfirmationPrompt:
-    case signin_metrics::AccessPoint::kNTPIdentityDisc:
-    case signin_metrics::AccessPoint::kOIDCRedirectionInterception:
+    case signin_metrics::AccessPoint::kNtpIdentityDisc:
+    case signin_metrics::AccessPoint::kOidcRedirectionInterception:
     case signin_metrics::AccessPoint::kWebauthnModalDialog:
     case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
     case signin_metrics::AccessPoint::kProductSpecifications:
     case signin_metrics::AccessPoint::kAccountMenu:
     case signin_metrics::AccessPoint::kAccountMenuFailedSwitch:
     case signin_metrics::AccessPoint::kAddressBubble:
-    case signin_metrics::AccessPoint::kCCTAccountMismatchNotification:
-    case signin_metrics::AccessPoint::kDriveFilePickerIOS:
+    case signin_metrics::AccessPoint::kCctAccountMismatchNotification:
+    case signin_metrics::AccessPoint::kDriveFilePickerIos:
     case signin_metrics::AccessPoint::kCollaborationTabGroup:
       // Nothing prevents instantiating ConsistencyDefaultAccountViewController
       // with an arbitrary entry point, API-wise. In doubt, no label is a good,

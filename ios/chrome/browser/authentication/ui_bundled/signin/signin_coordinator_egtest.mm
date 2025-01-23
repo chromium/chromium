@@ -903,7 +903,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
-      initWithAccessPoint:signin_metrics::AccessPoint::kNTPSignedOutIcon];
+      initWithAccessPoint:signin_metrics::AccessPoint::kNtpSignedOutIcon];
   expecteds.signinSignInStarted = 1;
   [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }

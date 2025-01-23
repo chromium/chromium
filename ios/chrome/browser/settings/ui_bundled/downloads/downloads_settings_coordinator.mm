@@ -139,7 +139,7 @@
   ShowSigninCommand* addAccountCommand = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kAddAccount
                identity:nil
-            accessPoint:signin_metrics::AccessPoint::kSaveToPhotosIOS
+            accessPoint:signin_metrics::AccessPoint::kSaveToPhotosIos
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:^(SigninCoordinatorResult result,

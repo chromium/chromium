@@ -216,7 +216,7 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
 
 - (SigninPromoView*)createSigninPromoView {
   signin_metrics::LogSignInOffered(
-      signin_metrics::AccessPoint::kNTPFeedTopPromo,
+      signin_metrics::AccessPoint::kNtpFeedTopPromo,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
   SigninPromoView* promoView =
       [[SigninPromoView alloc] initWithFrame:CGRectZero];

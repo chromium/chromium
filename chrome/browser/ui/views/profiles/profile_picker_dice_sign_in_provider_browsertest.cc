@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDiceSignInProviderBrowserTest,
 
   {
     ProfilePickerDiceSignInProvider provider{
-        host(), signin_metrics::AccessPoint::kForYouFRE,
+        host(), signin_metrics::AccessPoint::kForYouFre,
         browser()->profile()->GetPath()};
 
     EXPECT_CALL(*host(), ShowScreen(_, _, _))

@@ -61,7 +61,7 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
   switch (access_point) {
     case signin_metrics::AccessPoint::kBookmarkManager:
     case signin_metrics::AccessPoint::kRecentTabs:
-    case signin_metrics::AccessPoint::kNTPFeedTopPromo:
+    case signin_metrics::AccessPoint::kNtpFeedTopPromo:
     case signin_metrics::AccessPoint::kReadingList:
       return true;
     case signin_metrics::AccessPoint::kSettings:
@@ -69,10 +69,10 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     // tabs in the tab switcher promo.
     case signin_metrics::AccessPoint::kTabSwitcher:
     case signin_metrics::AccessPoint::kPostDeviceRestoreSigninPromo:
-    case signin_metrics::AccessPoint::kNTPFeedCardMenuPromo:
-    case signin_metrics::AccessPoint::kNTPFeedBottomPromo:
+    case signin_metrics::AccessPoint::kNtpFeedCardMenuPromo:
+    case signin_metrics::AccessPoint::kNtpFeedBottomPromo:
     case signin_metrics::AccessPoint::kStartPage:
-    case signin_metrics::AccessPoint::kNTPLink:
+    case signin_metrics::AccessPoint::kNtpLink:
     case signin_metrics::AccessPoint::kMenu:
     case signin_metrics::AccessPoint::kSupervisedUser:
     case signin_metrics::AccessPoint::kExtensionInstallBubble:
@@ -99,17 +99,17 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::kSendTabToSelfPromo:
     case signin_metrics::AccessPoint::kSettingsSyncOffRow:
     case signin_metrics::AccessPoint::kPostDeviceRestoreBackgroundSignin:
-    case signin_metrics::AccessPoint::kNTPSignedOutIcon:
+    case signin_metrics::AccessPoint::kNtpSignedOutIcon:
     case signin_metrics::AccessPoint::kDesktopSigninManager:
-    case signin_metrics::AccessPoint::kForYouFRE:
+    case signin_metrics::AccessPoint::kForYouFre:
     case signin_metrics::AccessPoint::kCreatorFeedFollow:
     case signin_metrics::AccessPoint::kReauthInfoBar:
     case signin_metrics::AccessPoint::kAccountConsistencyService:
     case signin_metrics::AccessPoint::kSearchCompanion:
     case signin_metrics::AccessPoint::kSetUpList:
     case signin_metrics::AccessPoint::kPasswordMigrationWarningAndroid:
-    case signin_metrics::AccessPoint::kSaveToDriveIOS:
-    case signin_metrics::AccessPoint::kSaveToPhotosIOS:
+    case signin_metrics::AccessPoint::kSaveToDriveIos:
+    case signin_metrics::AccessPoint::kSaveToPhotosIos:
     case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
     case signin_metrics::AccessPoint::kRestorePrimaryAccountOnProfileLoad:
     case signin_metrics::AccessPoint::kTabOrganization:
@@ -118,16 +118,16 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::kSigninChoiceRemembered:
     case signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt:
     case signin_metrics::AccessPoint::kSettingsSignoutConfirmationPrompt:
-    case signin_metrics::AccessPoint::kNTPIdentityDisc:
-    case signin_metrics::AccessPoint::kOIDCRedirectionInterception:
+    case signin_metrics::AccessPoint::kNtpIdentityDisc:
+    case signin_metrics::AccessPoint::kOidcRedirectionInterception:
     case signin_metrics::AccessPoint::kWebauthnModalDialog:
     case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
     case signin_metrics::AccessPoint::kAccountMenu:
     case signin_metrics::AccessPoint::kAccountMenuFailedSwitch:
     case signin_metrics::AccessPoint::kProductSpecifications:
     case signin_metrics::AccessPoint::kAddressBubble:
-    case signin_metrics::AccessPoint::kCCTAccountMismatchNotification:
-    case signin_metrics::AccessPoint::kDriveFilePickerIOS:
+    case signin_metrics::AccessPoint::kCctAccountMismatchNotification:
+    case signin_metrics::AccessPoint::kDriveFilePickerIos:
     case signin_metrics::AccessPoint::kCollaborationTabGroup:
 
       return false;
@@ -145,7 +145,7 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
           "MobileSignInPromo.BookmarkManager.ImpressionsTilSigninButtons",
           displayed_count);
       break;
-    case signin_metrics::AccessPoint::kNTPFeedTopPromo:
+    case signin_metrics::AccessPoint::kNtpFeedTopPromo:
       base::UmaHistogramCounts100(
           "MobileSignInPromo.NTPFeedTop.ImpressionsTilSigninButtons",
           displayed_count);
@@ -160,7 +160,7 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kRecentTabs:
     case signin_metrics::AccessPoint::kTabSwitcher:
     case signin_metrics::AccessPoint::kStartPage:
-    case signin_metrics::AccessPoint::kNTPLink:
+    case signin_metrics::AccessPoint::kNtpLink:
     case signin_metrics::AccessPoint::kMenu:
     case signin_metrics::AccessPoint::kSupervisedUser:
     case signin_metrics::AccessPoint::kExtensionInstallBubble:
@@ -187,19 +187,19 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kSettingsSyncOffRow:
     case signin_metrics::AccessPoint::kPostDeviceRestoreSigninPromo:
     case signin_metrics::AccessPoint::kPostDeviceRestoreBackgroundSignin:
-    case signin_metrics::AccessPoint::kNTPSignedOutIcon:
-    case signin_metrics::AccessPoint::kNTPFeedCardMenuPromo:
-    case signin_metrics::AccessPoint::kNTPFeedBottomPromo:
+    case signin_metrics::AccessPoint::kNtpSignedOutIcon:
+    case signin_metrics::AccessPoint::kNtpFeedCardMenuPromo:
+    case signin_metrics::AccessPoint::kNtpFeedBottomPromo:
     case signin_metrics::AccessPoint::kDesktopSigninManager:
-    case signin_metrics::AccessPoint::kForYouFRE:
+    case signin_metrics::AccessPoint::kForYouFre:
     case signin_metrics::AccessPoint::kCreatorFeedFollow:
     case signin_metrics::AccessPoint::kReauthInfoBar:
     case signin_metrics::AccessPoint::kAccountConsistencyService:
     case signin_metrics::AccessPoint::kSearchCompanion:
     case signin_metrics::AccessPoint::kSetUpList:
     case signin_metrics::AccessPoint::kPasswordMigrationWarningAndroid:
-    case signin_metrics::AccessPoint::kSaveToDriveIOS:
-    case signin_metrics::AccessPoint::kSaveToPhotosIOS:
+    case signin_metrics::AccessPoint::kSaveToDriveIos:
+    case signin_metrics::AccessPoint::kSaveToPhotosIos:
     case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
     case signin_metrics::AccessPoint::kRestorePrimaryAccountOnProfileLoad:
     case signin_metrics::AccessPoint::kTabOrganization:
@@ -208,16 +208,16 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kSigninChoiceRemembered:
     case signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt:
     case signin_metrics::AccessPoint::kSettingsSignoutConfirmationPrompt:
-    case signin_metrics::AccessPoint::kNTPIdentityDisc:
-    case signin_metrics::AccessPoint::kOIDCRedirectionInterception:
+    case signin_metrics::AccessPoint::kNtpIdentityDisc:
+    case signin_metrics::AccessPoint::kOidcRedirectionInterception:
     case signin_metrics::AccessPoint::kWebauthnModalDialog:
     case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
     case signin_metrics::AccessPoint::kAccountMenu:
     case signin_metrics::AccessPoint::kAccountMenuFailedSwitch:
     case signin_metrics::AccessPoint::kProductSpecifications:
     case signin_metrics::AccessPoint::kAddressBubble:
-    case signin_metrics::AccessPoint::kCCTAccountMismatchNotification:
-    case signin_metrics::AccessPoint::kDriveFilePickerIOS:
+    case signin_metrics::AccessPoint::kCctAccountMismatchNotification:
+    case signin_metrics::AccessPoint::kDriveFilePickerIos:
     case signin_metrics::AccessPoint::kCollaborationTabGroup:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
@@ -235,7 +235,7 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
           "MobileSignInPromo.BookmarkManager.ImpressionsTilXButton",
           displayed_count);
       break;
-    case signin_metrics::AccessPoint::kNTPFeedTopPromo:
+    case signin_metrics::AccessPoint::kNtpFeedTopPromo:
       base::UmaHistogramCounts100(
           "MobileSignInPromo.NTPFeedTop.ImpressionsTilXButton",
           displayed_count);
@@ -250,7 +250,7 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kRecentTabs:
     case signin_metrics::AccessPoint::kTabSwitcher:
     case signin_metrics::AccessPoint::kStartPage:
-    case signin_metrics::AccessPoint::kNTPLink:
+    case signin_metrics::AccessPoint::kNtpLink:
     case signin_metrics::AccessPoint::kMenu:
     case signin_metrics::AccessPoint::kSupervisedUser:
     case signin_metrics::AccessPoint::kExtensionInstallBubble:
@@ -277,19 +277,19 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kSettingsSyncOffRow:
     case signin_metrics::AccessPoint::kPostDeviceRestoreSigninPromo:
     case signin_metrics::AccessPoint::kPostDeviceRestoreBackgroundSignin:
-    case signin_metrics::AccessPoint::kNTPSignedOutIcon:
-    case signin_metrics::AccessPoint::kNTPFeedCardMenuPromo:
-    case signin_metrics::AccessPoint::kNTPFeedBottomPromo:
+    case signin_metrics::AccessPoint::kNtpSignedOutIcon:
+    case signin_metrics::AccessPoint::kNtpFeedCardMenuPromo:
+    case signin_metrics::AccessPoint::kNtpFeedBottomPromo:
     case signin_metrics::AccessPoint::kDesktopSigninManager:
-    case signin_metrics::AccessPoint::kForYouFRE:
+    case signin_metrics::AccessPoint::kForYouFre:
     case signin_metrics::AccessPoint::kCreatorFeedFollow:
     case signin_metrics::AccessPoint::kReauthInfoBar:
     case signin_metrics::AccessPoint::kAccountConsistencyService:
     case signin_metrics::AccessPoint::kSearchCompanion:
     case signin_metrics::AccessPoint::kSetUpList:
     case signin_metrics::AccessPoint::kPasswordMigrationWarningAndroid:
-    case signin_metrics::AccessPoint::kSaveToDriveIOS:
-    case signin_metrics::AccessPoint::kSaveToPhotosIOS:
+    case signin_metrics::AccessPoint::kSaveToDriveIos:
+    case signin_metrics::AccessPoint::kSaveToPhotosIos:
     case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
     case signin_metrics::AccessPoint::kRestorePrimaryAccountOnProfileLoad:
     case signin_metrics::AccessPoint::kTabOrganization:
@@ -298,16 +298,16 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kSigninChoiceRemembered:
     case signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt:
     case signin_metrics::AccessPoint::kSettingsSignoutConfirmationPrompt:
-    case signin_metrics::AccessPoint::kNTPIdentityDisc:
-    case signin_metrics::AccessPoint::kOIDCRedirectionInterception:
+    case signin_metrics::AccessPoint::kNtpIdentityDisc:
+    case signin_metrics::AccessPoint::kOidcRedirectionInterception:
     case signin_metrics::AccessPoint::kWebauthnModalDialog:
     case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
     case signin_metrics::AccessPoint::kAccountMenu:
     case signin_metrics::AccessPoint::kAccountMenuFailedSwitch:
     case signin_metrics::AccessPoint::kProductSpecifications:
     case signin_metrics::AccessPoint::kAddressBubble:
-    case signin_metrics::AccessPoint::kCCTAccountMismatchNotification:
-    case signin_metrics::AccessPoint::kDriveFilePickerIOS:
+    case signin_metrics::AccessPoint::kCctAccountMismatchNotification:
+    case signin_metrics::AccessPoint::kDriveFilePickerIos:
     case signin_metrics::AccessPoint::kCollaborationTabGroup:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
@@ -320,7 +320,7 @@ const char* DisplayedCountPreferenceKey(
   switch (access_point) {
     case signin_metrics::AccessPoint::kBookmarkManager:
       return prefs::kIosBookmarkSigninPromoDisplayedCount;
-    case signin_metrics::AccessPoint::kNTPFeedTopPromo:
+    case signin_metrics::AccessPoint::kNtpFeedTopPromo:
       return prefs::kIosNtpFeedTopSigninPromoDisplayedCount;
     case signin_metrics::AccessPoint::kReadingList:
       return prefs::kIosReadingListSigninPromoDisplayedCount;
@@ -328,7 +328,7 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::kRecentTabs:
     case signin_metrics::AccessPoint::kTabSwitcher:
     case signin_metrics::AccessPoint::kStartPage:
-    case signin_metrics::AccessPoint::kNTPLink:
+    case signin_metrics::AccessPoint::kNtpLink:
     case signin_metrics::AccessPoint::kMenu:
     case signin_metrics::AccessPoint::kSupervisedUser:
     case signin_metrics::AccessPoint::kExtensionInstallBubble:
@@ -356,19 +356,19 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::kSettingsSyncOffRow:
     case signin_metrics::AccessPoint::kPostDeviceRestoreSigninPromo:
     case signin_metrics::AccessPoint::kPostDeviceRestoreBackgroundSignin:
-    case signin_metrics::AccessPoint::kNTPSignedOutIcon:
-    case signin_metrics::AccessPoint::kNTPFeedCardMenuPromo:
-    case signin_metrics::AccessPoint::kNTPFeedBottomPromo:
+    case signin_metrics::AccessPoint::kNtpSignedOutIcon:
+    case signin_metrics::AccessPoint::kNtpFeedCardMenuPromo:
+    case signin_metrics::AccessPoint::kNtpFeedBottomPromo:
     case signin_metrics::AccessPoint::kDesktopSigninManager:
-    case signin_metrics::AccessPoint::kForYouFRE:
+    case signin_metrics::AccessPoint::kForYouFre:
     case signin_metrics::AccessPoint::kCreatorFeedFollow:
     case signin_metrics::AccessPoint::kReauthInfoBar:
     case signin_metrics::AccessPoint::kAccountConsistencyService:
     case signin_metrics::AccessPoint::kSearchCompanion:
     case signin_metrics::AccessPoint::kSetUpList:
     case signin_metrics::AccessPoint::kPasswordMigrationWarningAndroid:
-    case signin_metrics::AccessPoint::kSaveToDriveIOS:
-    case signin_metrics::AccessPoint::kSaveToPhotosIOS:
+    case signin_metrics::AccessPoint::kSaveToDriveIos:
+    case signin_metrics::AccessPoint::kSaveToPhotosIos:
     case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
     case signin_metrics::AccessPoint::kRestorePrimaryAccountOnProfileLoad:
     case signin_metrics::AccessPoint::kTabOrganization:
@@ -377,16 +377,16 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::kSigninChoiceRemembered:
     case signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt:
     case signin_metrics::AccessPoint::kSettingsSignoutConfirmationPrompt:
-    case signin_metrics::AccessPoint::kNTPIdentityDisc:
-    case signin_metrics::AccessPoint::kOIDCRedirectionInterception:
+    case signin_metrics::AccessPoint::kNtpIdentityDisc:
+    case signin_metrics::AccessPoint::kOidcRedirectionInterception:
     case signin_metrics::AccessPoint::kWebauthnModalDialog:
     case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
     case signin_metrics::AccessPoint::kAccountMenu:
     case signin_metrics::AccessPoint::kAccountMenuFailedSwitch:
     case signin_metrics::AccessPoint::kProductSpecifications:
     case signin_metrics::AccessPoint::kAddressBubble:
-    case signin_metrics::AccessPoint::kCCTAccountMismatchNotification:
-    case signin_metrics::AccessPoint::kDriveFilePickerIOS:
+    case signin_metrics::AccessPoint::kCctAccountMismatchNotification:
+    case signin_metrics::AccessPoint::kDriveFilePickerIos:
     case signin_metrics::AccessPoint::kCollaborationTabGroup:
       return nullptr;
   }
@@ -398,7 +398,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
   switch (access_point) {
     case signin_metrics::AccessPoint::kBookmarkManager:
       return prefs::kIosBookmarkPromoAlreadySeen;
-    case signin_metrics::AccessPoint::kNTPFeedTopPromo:
+    case signin_metrics::AccessPoint::kNtpFeedTopPromo:
       return prefs::kIosNtpFeedTopPromoAlreadySeen;
     case signin_metrics::AccessPoint::kReadingList:
       return prefs::kIosReadingListPromoAlreadySeen;
@@ -406,7 +406,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::kRecentTabs:
     case signin_metrics::AccessPoint::kTabSwitcher:
     case signin_metrics::AccessPoint::kStartPage:
-    case signin_metrics::AccessPoint::kNTPLink:
+    case signin_metrics::AccessPoint::kNtpLink:
     case signin_metrics::AccessPoint::kMenu:
     case signin_metrics::AccessPoint::kSupervisedUser:
     case signin_metrics::AccessPoint::kExtensionInstallBubble:
@@ -434,19 +434,19 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::kSettingsSyncOffRow:
     case signin_metrics::AccessPoint::kPostDeviceRestoreSigninPromo:
     case signin_metrics::AccessPoint::kPostDeviceRestoreBackgroundSignin:
-    case signin_metrics::AccessPoint::kNTPSignedOutIcon:
-    case signin_metrics::AccessPoint::kNTPFeedCardMenuPromo:
-    case signin_metrics::AccessPoint::kNTPFeedBottomPromo:
+    case signin_metrics::AccessPoint::kNtpSignedOutIcon:
+    case signin_metrics::AccessPoint::kNtpFeedCardMenuPromo:
+    case signin_metrics::AccessPoint::kNtpFeedBottomPromo:
     case signin_metrics::AccessPoint::kDesktopSigninManager:
-    case signin_metrics::AccessPoint::kForYouFRE:
+    case signin_metrics::AccessPoint::kForYouFre:
     case signin_metrics::AccessPoint::kCreatorFeedFollow:
     case signin_metrics::AccessPoint::kReauthInfoBar:
     case signin_metrics::AccessPoint::kAccountConsistencyService:
     case signin_metrics::AccessPoint::kSearchCompanion:
     case signin_metrics::AccessPoint::kSetUpList:
     case signin_metrics::AccessPoint::kPasswordMigrationWarningAndroid:
-    case signin_metrics::AccessPoint::kSaveToDriveIOS:
-    case signin_metrics::AccessPoint::kSaveToPhotosIOS:
+    case signin_metrics::AccessPoint::kSaveToDriveIos:
+    case signin_metrics::AccessPoint::kSaveToPhotosIos:
     case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
     case signin_metrics::AccessPoint::kRestorePrimaryAccountOnProfileLoad:
     case signin_metrics::AccessPoint::kTabOrganization:
@@ -455,16 +455,16 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::kSigninChoiceRemembered:
     case signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt:
     case signin_metrics::AccessPoint::kSettingsSignoutConfirmationPrompt:
-    case signin_metrics::AccessPoint::kNTPIdentityDisc:
-    case signin_metrics::AccessPoint::kOIDCRedirectionInterception:
+    case signin_metrics::AccessPoint::kNtpIdentityDisc:
+    case signin_metrics::AccessPoint::kOidcRedirectionInterception:
     case signin_metrics::AccessPoint::kWebauthnModalDialog:
     case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
     case signin_metrics::AccessPoint::kAccountMenu:
     case signin_metrics::AccessPoint::kAccountMenuFailedSwitch:
     case signin_metrics::AccessPoint::kProductSpecifications:
     case signin_metrics::AccessPoint::kAddressBubble:
-    case signin_metrics::AccessPoint::kCCTAccountMismatchNotification:
-    case signin_metrics::AccessPoint::kDriveFilePickerIOS:
+    case signin_metrics::AccessPoint::kCctAccountMismatchNotification:
+    case signin_metrics::AccessPoint::kDriveFilePickerIos:
     case signin_metrics::AccessPoint::kCollaborationTabGroup:
       return nullptr;
   }
@@ -610,7 +610,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   }
 
   // Always show the feed signin promo if the experimental setting is enabled.
-  if (accessPoint == signin_metrics::AccessPoint::kNTPFeedTopPromo &&
+  if (accessPoint == signin_metrics::AccessPoint::kNtpFeedTopPromo &&
       experimental_flags::ShouldForceFeedSigninPromo()) {
     return YES;
   }
@@ -618,7 +618,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   if (signinPromoAction != SigninPromoAction::kReviewAccountSettings) {
     // Checks if the user has exceeded the max impression count.
     const int maxDisplayedCount =
-        accessPoint == signin_metrics::AccessPoint::kNTPFeedTopPromo
+        accessPoint == signin_metrics::AccessPoint::kNtpFeedTopPromo
             ? kFeedSyncPromoAutodismissCount
             : kAutomaticSigninPromoViewDismissCount;
     const char* displayedCountPreferenceKey =
@@ -632,7 +632,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   }
 
   // For the top-of-feed promo, the user must have engaged with a feed first.
-  if (accessPoint == signin_metrics::AccessPoint::kNTPFeedTopPromo &&
+  if (accessPoint == signin_metrics::AccessPoint::kNtpFeedTopPromo &&
       (![[NSUserDefaults standardUserDefaults]
           boolForKey:kEngagedWithFeedKey])) {
     return NO;
@@ -807,7 +807,7 @@ id<SystemIdentity> GetDisplayedIdentity(
 
   // For the top-of-feed promo, we only record 1 impression per session. For all
   // other promos, we record 1 impression per view.
-  if (self.accessPoint == signin_metrics::AccessPoint::kNTPFeedTopPromo) {
+  if (self.accessPoint == signin_metrics::AccessPoint::kNtpFeedTopPromo) {
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
     NSDate* lastImpressionIncrementedDate =
         [defaults objectForKey:kLastSigninImpressionTopOfFeedKey];
@@ -1079,7 +1079,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   // The promo on top of the feed is only logged as visible when most of it can
   // be seen, so it can be used without `self.signinPromoViewVisible`.
   DCHECK(self.signinPromoViewVisible ||
-         self.accessPoint == signin_metrics::AccessPoint::kNTPFeedTopPromo)
+         self.accessPoint == signin_metrics::AccessPoint::kNtpFeedTopPromo)
       << base::SysNSStringToUTF8([self description]);
   DCHECK(!self.invalidClosedOrNeverVisible)
       << base::SysNSStringToUTF8([self description]);
@@ -1181,7 +1181,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   // The promo on top of the feed is only logged as visible when most of it can
   // be seen, so it can be dismissed without `self.signinPromoViewVisible`.
   DCHECK(self.signinPromoViewVisible ||
-         self.accessPoint == signin_metrics::AccessPoint::kNTPFeedTopPromo)
+         self.accessPoint == signin_metrics::AccessPoint::kNtpFeedTopPromo)
       << base::SysNSStringToUTF8([self description]);
   base::RecordAction(base::UserMetricsAction("Signin_Promo_Close"));
   self.signinPromoViewState = SigninPromoViewState::kClosed;

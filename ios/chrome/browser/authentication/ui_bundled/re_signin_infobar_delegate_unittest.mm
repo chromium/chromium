@@ -211,7 +211,7 @@ TEST_F(ReSignInInfoBarDelegateTest, TestInfoBarDismissedBySignin) {
           GetApplicationContext()->GetSystemIdentityManager());
   system_identity_manager->AddIdentity(chrome_identity);
   authentication_service()->SignIn(
-      chrome_identity, signin_metrics::AccessPoint::kNTPSignedOutIcon);
+      chrome_identity, signin_metrics::AccessPoint::kNtpSignedOutIcon);
   // Test that the info bar has been removed.
   EXPECT_EQ(InfoBarManagerImpl::FromWebState(web_state())->infobars().size(),
             0u);

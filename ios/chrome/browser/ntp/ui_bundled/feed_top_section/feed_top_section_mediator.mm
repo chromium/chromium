@@ -289,7 +289,7 @@ using base::UserMetricsAction;
   BOOL isAccountEligibleForSignInPromo = NO;
   if ([SigninPromoViewMediator
           shouldDisplaySigninPromoViewWithAccessPoint:
-              signin_metrics::AccessPoint::kNTPFeedTopPromo
+              signin_metrics::AccessPoint::kNtpFeedTopPromo
                                     signinPromoAction:SigninPromoAction::
                                                           kInstantSignin
                                 authenticationService:self.authenticationService

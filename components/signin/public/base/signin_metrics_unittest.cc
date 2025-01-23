@@ -15,7 +15,7 @@ namespace {
 
 const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::kStartPage,
-    AccessPoint::kNTPLink,
+    AccessPoint::kNtpLink,
     AccessPoint::kMenu,
     AccessPoint::kSettings,
     AccessPoint::kSupervisedUser,
@@ -35,10 +35,10 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::kTabSwitcher,
     AccessPoint::kMachineLogon,
     AccessPoint::kGoogleServicesSettings,
-    AccessPoint::kNTPFeedTopPromo,
+    AccessPoint::kNtpFeedTopPromo,
     AccessPoint::kPostDeviceRestoreSigninPromo,
-    AccessPoint::kNTPFeedCardMenuPromo,
-    AccessPoint::kNTPFeedBottomPromo,
+    AccessPoint::kNtpFeedCardMenuPromo,
+    AccessPoint::kNtpFeedBottomPromo,
     AccessPoint::kCreatorFeedFollow,
     AccessPoint::kReadingList,
     AccessPoint::kSetUpList,
@@ -52,7 +52,7 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
 
 const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::kStartPage,
-    AccessPoint::kNTPLink,
+    AccessPoint::kNtpLink,
     AccessPoint::kMenu,
     AccessPoint::kSettings,
     AccessPoint::kExtensionInstallBubble,
@@ -66,10 +66,10 @@ const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::kAutofillDropdown,
     AccessPoint::kResigninInfobar,
     AccessPoint::kTabSwitcher,
-    AccessPoint::kNTPFeedTopPromo,
+    AccessPoint::kNtpFeedTopPromo,
     AccessPoint::kPostDeviceRestoreSigninPromo,
-    AccessPoint::kNTPFeedCardMenuPromo,
-    AccessPoint::kNTPFeedBottomPromo,
+    AccessPoint::kNtpFeedCardMenuPromo,
+    AccessPoint::kNtpFeedBottomPromo,
     AccessPoint::kCreatorFeedFollow,
     AccessPoint::kReadingList,
     AccessPoint::kSetUpList,
@@ -84,7 +84,7 @@ class SigninMetricsTest : public ::testing::Test {
     switch (access_point) {
       case AccessPoint::kStartPage:
         return "StartPage";
-      case AccessPoint::kNTPLink:
+      case AccessPoint::kNtpLink:
         return "NTP";
       case AccessPoint::kMenu:
         return "Menu";
@@ -142,7 +142,7 @@ class SigninMetricsTest : public ::testing::Test {
         return "SigninInterceptFirstRunExperience";
       case AccessPoint::kSendTabToSelfPromo:
         return "SendTabToSelfPromo";
-      case AccessPoint::kNTPFeedTopPromo:
+      case AccessPoint::kNtpFeedTopPromo:
         return "NTPFeedTopPromo";
       case AccessPoint::kSettingsSyncOffRow:
         return "SettingsSyncOffRow";
@@ -150,15 +150,15 @@ class SigninMetricsTest : public ::testing::Test {
         return "PostDeviceRestoreSigninPromo";
       case AccessPoint::kPostDeviceRestoreBackgroundSignin:
         return "PostDeviceRestoreBackgroundSignin";
-      case AccessPoint::kNTPSignedOutIcon:
+      case AccessPoint::kNtpSignedOutIcon:
         return "NTPSignedOutIcon";
-      case AccessPoint::kNTPFeedCardMenuPromo:
+      case AccessPoint::kNtpFeedCardMenuPromo:
         return "NTPFeedCardMenuSigninPromo";
-      case AccessPoint::kNTPFeedBottomPromo:
+      case AccessPoint::kNtpFeedBottomPromo:
         return "NTPFeedBottomSigninPromo";
       case AccessPoint::kDesktopSigninManager:
         return "DesktopSigninManager";
-      case AccessPoint::kForYouFRE:
+      case AccessPoint::kForYouFre:
         return "ForYouFre";
       case AccessPoint::kCreatorFeedFollow:
         return "CreatorFeedFollow";
@@ -174,9 +174,9 @@ class SigninMetricsTest : public ::testing::Test {
         return "SetUpList";
       case AccessPoint::kPasswordMigrationWarningAndroid:
         return "PasswordMigrationWarning";
-      case AccessPoint::kSaveToDriveIOS:
+      case AccessPoint::kSaveToDriveIos:
         return "SaveToDrive";
-      case AccessPoint::kSaveToPhotosIOS:
+      case AccessPoint::kSaveToPhotosIos:
         return "SaveToPhotos";
       case AccessPoint::kChromeSigninInterceptBubble:
         return "ChromeSigninInterceptBubble";
@@ -194,9 +194,9 @@ class SigninMetricsTest : public ::testing::Test {
         return "ProfileMenuSignoutConfirmationPrompt";
       case AccessPoint::kSettingsSignoutConfirmationPrompt:
         return "SettingsSignoutConfirmationPrompt";
-      case AccessPoint::kNTPIdentityDisc:
+      case AccessPoint::kNtpIdentityDisc:
         return "NtpIdentityDisc";
-      case AccessPoint::kOIDCRedirectionInterception:
+      case AccessPoint::kOidcRedirectionInterception:
         return "OidcRedirectionInterception";
       case AccessPoint::kWebauthnModalDialog:
         return "WebAuthnModalDialog";
@@ -210,9 +210,9 @@ class SigninMetricsTest : public ::testing::Test {
         return "ProductSpecifications";
       case AccessPoint::kAddressBubble:
         return "AddressBubble";
-      case AccessPoint::kCCTAccountMismatchNotification:
+      case AccessPoint::kCctAccountMismatchNotification:
         return "CctAccountMismatchNotification";
-      case AccessPoint::kDriveFilePickerIOS:
+      case AccessPoint::kDriveFilePickerIos:
         return "DriveFilePickerIOS";
       case AccessPoint::kCollaborationTabGroup:
         return "ShareGroupCollaboration";
