@@ -9695,6 +9695,21 @@
             ]
         }
     ],
+    "FastPairKeyboards": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FastPairKeyboards"
+                    ]
+                }
+            ]
+        }
+    ],
     "FasterSplitScreenSetup": [
         {
             "platforms": [
