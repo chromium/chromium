@@ -1141,8 +1141,7 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
           syncer::kSyncEnableBookmarksInTransportMode)) {
     allowed_types.Put(syncer::BOOKMARKS);
   }
-  if (base::FeatureList::IsEnabled(
-          syncer::kReadingListEnableSyncTransportModeUponSignIn)) {
+  if (syncer::IsReadingListAccountStorageEnabled()) {
     allowed_types.Put(syncer::READING_LIST);
   }
   if (base::FeatureList::IsEnabled(

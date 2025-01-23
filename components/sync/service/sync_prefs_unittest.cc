@@ -460,9 +460,9 @@ TEST_F(SyncPrefsTest,
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{kSyncEnableBookmarksInTransportMode,
-#if !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                             kEnablePreferencesAccountStorage,
                             kSyncEnableExtensionsInTransportMode},
       /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
@@ -493,9 +493,9 @@ TEST_F(SyncPrefsTest,
   features.InitWithFeatures(
       /*enabled_features=*/{kSyncEnableBookmarksInTransportMode,
                             kReplaceSyncPromosWithSignInPromos,
-#if !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                             kEnablePreferencesAccountStorage,
                             kSyncEnableExtensionsInTransportMode},
       /*disabled_features=*/{});
@@ -856,12 +856,10 @@ class SyncPrefsMigrationTest : public testing::Test {
     // in transport mode.
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{kSyncEnableBookmarksInTransportMode,
-#if !BUILDFLAG(IS_IOS)
-                              kReadingListEnableSyncTransportModeUponSignIn,
-#endif  // !BUILDFLAG(IS_IOS)
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+                              kReadingListEnableSyncTransportModeUponSignIn,
                               switches::kExplicitBrowserSigninUIOnDesktop,
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                               kEnablePreferencesAccountStorage},
         /*disabled_features=*/{});
 

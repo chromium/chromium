@@ -25,7 +25,6 @@
 #include "base/android/jni_string.h"
 #include "base/containers/adapters.h"
 #include "base/containers/stack.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/string_compare.h"
 #include "base/logging.h"
@@ -57,7 +56,6 @@
 #include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/features.h"
 #include "components/undo/bookmark_undo_service.h"
 #include "components/undo/undo_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -237,11 +235,6 @@ void BookmarkBridge::Destroy(JNIEnv* env) {
 }
 
 jboolean BookmarkBridge::AreAccountBookmarkFoldersActive(JNIEnv* env) {
-  if (!base::FeatureList::IsEnabled(
-          syncer::kSyncEnableBookmarksInTransportMode)) {
-    return false;
-  }
-
   return bookmark_model_->account_mobile_node() != nullptr;
 }
 
@@ -1738,11 +1731,6 @@ void BookmarkBridge::ReadingListModelCompletedBatchUpdates(
 
 void BookmarkBridge::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  if (!base::FeatureList::IsEnabled(
-          syncer::kSyncEnableBookmarksInTransportMode)) {
-    return;
-  }
-
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_BookmarkBridge_clearLastUsedParent(env);
 }

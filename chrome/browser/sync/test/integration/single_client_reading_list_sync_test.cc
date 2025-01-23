@@ -173,10 +173,12 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateTestReadingListEntity(
 class SingleClientReadingListSyncTest : public SyncTest {
  public:
   SingleClientReadingListSyncTest() : SyncTest(SINGLE_CLIENT) {
+#if !BUILDFLAG(IS_ANDROID)
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {syncer::kReadingListEnableSyncTransportModeUponSignIn},
         /*disabled_features=*/{});
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   SingleClientReadingListSyncTest(const SingleClientReadingListSyncTest&) =
