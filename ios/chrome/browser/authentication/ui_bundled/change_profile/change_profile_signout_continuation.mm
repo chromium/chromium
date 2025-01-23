@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -58,9 +59,12 @@ void ChangeProfileSignoutContinuation(
           .Then(std::move(signout_completion))
           .Then(std::move(closure));
 
+  // TODO(crbug.com/391863244): Long-term fix, the code that create the
+  // continuation should ensure that the method is not called with an incognito
+  // Browser.
   AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
-
+      AuthenticationServiceFactory::GetForProfile(
+          browser->GetProfile()->GetOriginalProfile());
   authentication_service->SignOut(signout_source_metric, force_clear_data,
                                   base::CallbackToBlock(std::move(completion)));
 
