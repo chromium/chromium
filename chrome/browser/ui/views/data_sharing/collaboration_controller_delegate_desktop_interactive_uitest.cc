@@ -132,8 +132,9 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
                        ShowShareDialog) {
   TestCollaborationControllerDelegateDesktop delegate(browser());
   tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
-  base::MockCallback<
-      collaboration::CollaborationControllerDelegate::ResultCallback>
+  base::MockCallback<base::OnceCallback<void(
+      collaboration::CollaborationControllerDelegate::Outcome,
+      std::optional<data_sharing::GroupToken>)>>
       callback;
   RunTestSequence(
       Do([&]() { delegate.ShowShareDialog(group_id, callback.Get()); }),

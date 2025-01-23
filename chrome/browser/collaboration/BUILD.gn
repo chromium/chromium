@@ -30,6 +30,7 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_java",
+      "//url:url_java",
     ]
   }
 

@@ -19,6 +19,7 @@
 #include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/test_support/mock_data_sharing_service.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/sync/test/mock_sync_service.h"
@@ -105,7 +106,7 @@ class CollaborationControllerTest : public testing::Test {
   base::WeakPtrFactory<CollaborationControllerTest> weak_ptr_factory_{this};
 };
 
-TEST_F(CollaborationControllerTest, FullFlowAllStates) {
+TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
   base::HistogramTester histogram_tester;
 
   RunLoop run_loop;
@@ -461,7 +462,7 @@ TEST_F(CollaborationControllerTest, AuthenticationSuccessObserved) {
             StateId::kCheckingFlowRequirements);
 }
 
-TEST_F(CollaborationControllerTest, CheckingFlowRequirementsShareFlow) {
+TEST_F(CollaborationControllerTest, FullShareFlowAllStates) {
   // Start Share flow.
   tab_groups::LocalTabGroupID local_id =
       tab_groups::test::GenerateRandomTabGroupID();
@@ -476,12 +477,60 @@ TEST_F(CollaborationControllerTest, CheckingFlowRequirementsShareFlow) {
   tab_group.SetLocalGroupId(local_id);
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(either_id))
       .WillOnce(Return(tab_group));
-  EXPECT_CALL(*delegate_, ShowShareDialog(either_id, IsNotNullCallback()));
+  CollaborationControllerDelegate::ResultWithGroupTokenCallback
+      share_dialog_callback;
+  EXPECT_CALL(*delegate_, ShowShareDialog(either_id, IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&share_dialog_callback));
 
   controller_->SetStateForTesting(StateId::kCheckingFlowRequirements);
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kShowingShareScreen);
 
+  //   Simulate creating the collaboration group.
+  EXPECT_CALL(*tab_group_sync_service_, GetGroup(either_id))
+      .WillOnce(Return(tab_group));
+  tab_groups::TabGroupSyncService::TabGroupSharingCallback
+      tab_group_sharing_callback;
+  EXPECT_CALL(*tab_group_sync_service_,
+              MakeTabGroupShared(local_id, kGroupId, IsNotNullCallback()))
+      .WillOnce(MoveArg<2>(&tab_group_sharing_callback));
+  base::OnceCallback<void(
+      const data_sharing::DataSharingService::GroupDataOrFailureOutcome&)>
+      group_data_callback;
+  data_sharing::GroupId group_id(kGroupId);
+  EXPECT_CALL(*data_sharing_service_,
+              ReadGroupDeprecated(group_id, IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&group_data_callback));
+  data_sharing::GroupToken token(group_id, kAccessToken);
+  std::move(share_dialog_callback).Run(Outcome::kSuccess, token);
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kMakingTabGroupShared);
+
+  // Simulate successfully making the tab group shared.
+  std::string url = "test_url";
+  EXPECT_CALL(*data_sharing_service_, GetDataSharingUrl(_))
+      .WillOnce(Return(std::make_unique<GURL>(url)));
+  EXPECT_CALL(*delegate_,
+              OnUrlReadyToShare(group_id, GURL(url), IsNotNullCallback()));
+  GroupData group_data = GroupData(group_id, /*display_name=*/"",
+                                   /*members=*/{}, kAccessToken);
+  std::move(group_data_callback).Run(group_data);
+  std::move(tab_group_sharing_callback)
+      .Run(tab_groups::TabGroupSyncService::TabGroupSharingResult::kSuccess);
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kSharingTabGroupUrl);
+}
+
+TEST_F(CollaborationControllerTest, CheckingFlowRequirementsManageFlow) {
+  // Start Share flow.
+  tab_groups::LocalTabGroupID local_id =
+      tab_groups::test::GenerateRandomTabGroupID();
+  InitializeController(base::DoNothing(),
+                       Flow(FlowType::kShareOrManage, local_id));
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kPending);
+
   // Simulate that the tab group exist locally and is a shared tab group.
+  tab_groups::EitherGroupID either_id = local_id;
+  SavedTabGroup tab_group(std::u16string(u"title"),
+                          tab_groups::TabGroupColorId::kGrey, {});
+  tab_group.SetLocalGroupId(local_id);
   tab_group.SetCollaborationId(
       tab_groups::CollaborationId(std::string(kGroupId)));
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(either_id))

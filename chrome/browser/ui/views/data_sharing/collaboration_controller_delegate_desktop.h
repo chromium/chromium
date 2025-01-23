@@ -39,7 +39,10 @@ class CollaborationControllerDelegateDesktop
                       const data_sharing::SharedDataPreview& preview_data,
                       ResultCallback result) override;
   void ShowShareDialog(const tab_groups::EitherGroupID& either_id,
-                       ResultCallback result) override;
+                       ResultWithGroupTokenCallback result) override;
+  void OnUrlReadyToShare(const data_sharing::GroupId& group_id,
+                         const GURL& url,
+                         ResultCallback result) override;
   void ShowManageDialog(const tab_groups::EitherGroupID& either_id,
                         ResultCallback result) override;
   void PromoteTabGroup(const data_sharing::GroupId& group_id,

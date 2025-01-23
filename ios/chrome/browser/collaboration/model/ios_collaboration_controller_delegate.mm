@@ -177,13 +177,13 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
 
 void IOSCollaborationControllerDelegate::ShowShareDialog(
     const tab_groups::EitherGroupID& either_id,
-    ResultCallback result) {
-
+    ResultWithGroupTokenCallback result) {
   tab_groups::TabGroupSyncService* tab_group_sync_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser_->GetProfile());
   if (!tab_group_sync_service) {
-    std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
+    std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure,
+                          data_sharing::GroupToken());
     return;
   }
 
@@ -191,7 +191,8 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
       tab_group_sync_service->GetGroup(either_id);
 
   if (!saved_group.has_value()) {
-    std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
+    std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure,
+                          data_sharing::GroupToken());
     return;
   }
 
@@ -204,7 +205,8 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
   }
 
   if (!tab_group) {
-    std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
+    std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure,
+                          data_sharing::GroupToken());
     return;
   }
 
@@ -216,11 +218,16 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
   auto completion_block = base::CallbackToBlock(std::move(result));
   config.completion = ^(ShareKitFlowOutcome outcome) {
-    completion_block(ConvertOutcome(outcome));
+    completion_block(ConvertOutcome(outcome), data_sharing::GroupToken());
   };
 
   session_id_ = share_kit_service_->ShareTabGroup(config);
 }
+
+void IOSCollaborationControllerDelegate::OnUrlReadyToShare(
+    const data_sharing::GroupId& group_id,
+    const GURL& url,
+    ResultCallback result) {}
 
 void IOSCollaborationControllerDelegate::ShowManageDialog(
     const tab_groups::EitherGroupID& either_id,
