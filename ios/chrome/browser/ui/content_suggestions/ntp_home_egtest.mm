@@ -131,7 +131,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   int margin_of_error = 1;
   return abs(num1 - num2) < margin_of_error;
 }
-}
+}  // namespace
 
 // Test case for the NTP home UI. More precisely, this tests the positions of
 // the elements after interacting with the device.

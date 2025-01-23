@@ -34,32 +34,32 @@
                      tileType:ContentSuggestionsTileType::kMostVisited
                  inMagicStack:inMagicStack];
   if (self) {
-      self.imageContainerView.backgroundColor =
-          [UIColor colorNamed:kGrey100Color];
-      self.imageContainerView.layer.cornerRadius =
-          kMagicStackImageContainerWidth / 2;
-      self.imageContainerView.layer.masksToBounds = NO;
-      self.imageContainerView.clipsToBounds = YES;
+    self.imageContainerView.backgroundColor =
+        [UIColor colorNamed:kGrey100Color];
+    self.imageContainerView.layer.cornerRadius =
+        kMagicStackImageContainerWidth / 2;
+    self.imageContainerView.layer.masksToBounds = NO;
+    self.imageContainerView.clipsToBounds = YES;
 
-      UIStackView* stackView = [[UIStackView alloc] init];
-      stackView.translatesAutoresizingMaskIntoConstraints = NO;
-      stackView.axis = UILayoutConstraintAxisVertical;
-      stackView.spacing = 10;
-      stackView.alignment = UIStackViewAlignmentCenter;
-      stackView.distribution = UIStackViewDistributionFill;
+    UIStackView* stackView = [[UIStackView alloc] init];
+    stackView.translatesAutoresizingMaskIntoConstraints = NO;
+    stackView.axis = UILayoutConstraintAxisVertical;
+    stackView.spacing = 10;
+    stackView.alignment = UIStackViewAlignmentCenter;
+    stackView.distribution = UIStackViewDistributionFill;
 
-      [stackView addArrangedSubview:self.imageContainerView];
-      [stackView addArrangedSubview:self.titleLabel];
+    [stackView addArrangedSubview:self.imageContainerView];
+    [stackView addArrangedSubview:self.titleLabel];
 
-      [NSLayoutConstraint activateConstraints:@[
-        [self.imageContainerView.widthAnchor
-            constraintEqualToConstant:kMagicStackImageContainerWidth],
-        [self.imageContainerView.heightAnchor
-            constraintEqualToAnchor:self.imageContainerView.widthAnchor],
-      ]];
+    [NSLayoutConstraint activateConstraints:@[
+      [self.imageContainerView.widthAnchor
+          constraintEqualToConstant:kMagicStackImageContainerWidth],
+      [self.imageContainerView.heightAnchor
+          constraintEqualToAnchor:self.imageContainerView.widthAnchor],
+    ]];
 
-      [self addSubview:stackView];
-      AddSameConstraints(stackView, self);
+    [self addSubview:stackView];
+    AddSameConstraints(stackView, self);
 
     _faviconView = [[FaviconView alloc] init];
     _faviconView.font = [UIFont systemFontOfSize:22];

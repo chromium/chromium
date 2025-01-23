@@ -84,7 +84,8 @@ const CGFloat kSeparatorHeight = 0.5;
   self = [super initWithFrame:frame];
   if (self) {
     self.maximumContentSizeCategory = UIContentSizeCategoryAccessibilityMedium;
-    _magicStackModuleContentsFactory = [[MagicStackModuleContentsFactory alloc] init];
+    _magicStackModuleContentsFactory =
+        [[MagicStackModuleContentsFactory alloc] init];
 
     _titleStackView = [[UIStackView alloc] init];
     _titleStackView.alignment = UIStackViewAlignmentTop;

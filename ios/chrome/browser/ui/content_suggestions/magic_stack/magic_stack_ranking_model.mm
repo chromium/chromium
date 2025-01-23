@@ -892,7 +892,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 // Returns NO if client is expecting the order from Segmentation and it has not
 // returned yet.
 - (BOOL)isMagicStackOrderReady {
-    return _magicStackOrderFromSegmentationReceived;
+  return _magicStackOrderFromSegmentationReceived;
 }
 
 // Shows the tab resumption tile with the given `item` configuration.

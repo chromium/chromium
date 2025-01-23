@@ -9,9 +9,8 @@
 
 #include <memory>
 
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
-
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_commands.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
 
 namespace favicon {
 class LargeIconService;

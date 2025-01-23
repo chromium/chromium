@@ -110,7 +110,7 @@ void SetUpButtonWithNewFeatureBadge(UIButton* button) {
                        constant:-kNewBadgeOffsetFromButtonCenter],
   ]];
 }
-}
+}  // namespace
 
 namespace content_suggestions {
 
@@ -139,8 +139,9 @@ CGFloat DoodleHeight(BOOL logo_is_showing,
 
 CGFloat DoodleTopMargin(CGFloat top_inset,
                         UITraitCollection* trait_collection) {
-  if (IsRegularXRegularSizeClass(trait_collection))
+  if (IsRegularXRegularSizeClass(trait_collection)) {
     return kDoodleTopMarginRegularXRegular;
+  }
   CGFloat top_margin =
       top_inset +
       AlignValueToPixel(kDoodleScaledTopMarginOther *
@@ -160,8 +161,9 @@ CGFloat SearchFieldTopMargin() {
 }
 
 CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection) {
-  if (!IsCompactWidth(trait_collection) && !IsCompactHeight(trait_collection))
+  if (!IsCompactWidth(trait_collection) && !IsCompactHeight(trait_collection)) {
     return kSearchFieldLarge;
+  }
 
   // Special case for narrow sizes.
   return std::max(

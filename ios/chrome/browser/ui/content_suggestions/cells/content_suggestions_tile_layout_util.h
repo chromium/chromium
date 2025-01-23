@@ -24,7 +24,8 @@ extern const CGSize kContentSuggestionsTileViewSizeExtraLarge;
 
 // Returns the vertical spacing between columns of tiles under
 // `trait_collection`.
-CGFloat ContentSuggestionsTilesHorizontalSpacing(UITraitCollection* trait_collection);
+CGFloat ContentSuggestionsTilesHorizontalSpacing(
+    UITraitCollection* trait_collection);
 
 // Returns the size of most visited cell based on `category`.
 CGSize MostVisitedCellSize(UIContentSizeCategory category);

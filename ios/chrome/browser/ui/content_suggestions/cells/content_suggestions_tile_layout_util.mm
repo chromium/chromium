@@ -14,16 +14,20 @@ const int kContentSuggestionsTilesHorizontalSpacingCompact = 5;
 
 const CGSize kContentSuggestionsTileViewSizeSmall = {/*width=*/73,
                                                      /*height=*/100};
-const CGSize kContentSuggestionsTileViewSizeMedium = {/*width=*/73, /*height=*/112};
-const CGSize kContentSuggestionsTileViewSizeLarge = {/*width=*/110, /*height=*/140};
-const CGSize kContentSuggestionsTileViewSizeExtraLarge = {/*width=*/146, /*height=*/150};
+const CGSize kContentSuggestionsTileViewSizeMedium = {/*width=*/73,
+                                                      /*height=*/112};
+const CGSize kContentSuggestionsTileViewSizeLarge = {/*width=*/110,
+                                                     /*height=*/140};
+const CGSize kContentSuggestionsTileViewSizeExtraLarge = {/*width=*/146,
+                                                          /*height=*/150};
 
 namespace {
 // Display at most 4 tiles per row.
 const int kMaxNumberOfTilesPerRow = 4;
-}
+}  // namespace
 
-CGFloat ContentSuggestionsTilesHorizontalSpacing(UITraitCollection* trait_collection) {
+CGFloat ContentSuggestionsTilesHorizontalSpacing(
+    UITraitCollection* trait_collection) {
   return (trait_collection.horizontalSizeClass !=
               UIUserInterfaceSizeClassCompact &&
           trait_collection.verticalSizeClass != UIUserInterfaceSizeClassCompact)
@@ -50,7 +54,8 @@ CGSize MostVisitedCellSize(UIContentSizeCategory category) {
 
 CGFloat CenteredTilesMarginForWidth(UITraitCollection* trait_collection,
                                     CGFloat width) {
-  CGFloat horizontalSpace = ContentSuggestionsTilesHorizontalSpacing(trait_collection);
+  CGFloat horizontalSpace =
+      ContentSuggestionsTilesHorizontalSpacing(trait_collection);
   CGSize cellSize =
       MostVisitedCellSize(trait_collection.preferredContentSizeCategory);
   for (int columns = kMaxNumberOfTilesPerRow; columns > 0; --columns) {
