@@ -407,11 +407,11 @@ struct GetDetailsForCreateBnplPaymentInstrumentRequestDetails {
   ~GetDetailsForCreateBnplPaymentInstrumentRequestDetails();
 
   // `app_locale` is the Chrome locale.
-  std::string_view app_locale;
+  std::string app_locale;
   // The billing customer number for the account this request is sent to.
   int64_t billing_customer_number;
   // The ID of the BNPL partner to be linked. i.e. Affirm
-  std::string_view issuer_id;
+  std::string issuer_id;
 };
 
 // A collection of information required to create a payment instrument request
@@ -429,11 +429,11 @@ struct CreateBnplPaymentInstrumentRequestDetails {
   ~CreateBnplPaymentInstrumentRequestDetails();
 
   // `app_locale` is the Chrome locale.
-  std::string_view app_locale;
+  std::string app_locale;
   // The billing customer number for the account this request is sent to.
   int64_t billing_customer_number;
   // The ID of the BNPL partner to be linked. i.e. Affirm
-  std::string_view issuer_id;
+  std::string issuer_id;
   // An opaque token used to chain consecutive payments requests together.
   std::u16string context_token;
   // Client encoded risk data.
@@ -456,12 +456,12 @@ struct GetBnplPaymentInstrumentForFetchingVcnRequestDetails {
   // The number for the Google Payments account this request is sent to.
   int64_t billing_customer_number;
   // The instrument ID is used by the server to identify a specific BNPL issuer.
-  std::string_view instrument_id;
+  std::string instrument_id;
   // The fingerprint data for the user and the device.
-  std::string_view risk_data;
+  std::string risk_data;
   // An opaque token used to chain consecutive payments requests together.
   // Client should not update or modify this token.
-  std::string_view context_token;
+  std::string context_token;
   // The URL the partner redirected the user to after finishing the BNPL flow on
   // the partner website.
   GURL redirect_url;
