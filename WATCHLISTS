@@ -165,11 +165,6 @@
                   '|chrome/browser/apps/'\
                   '|chrome/browser/ash/apps/'
     },
-    'apps_intent_helper': {
-      'filepath': 'chrome/browser/apps/intent_helper/|'\
-                  'chrome/browser/ash/apps/intent_helper/|'\
-                  'components/arc/intent_helper/'
-    },
     'arc': {
       'filepath': 'arc/',
     },
@@ -1215,10 +1210,6 @@
     'fuchsia': {
       'filepath': 'fuchsia',
     },
-    'full_restore': {
-      'filepath': 'chrome/browser/ash/app_restore/|' \
-                  'components/app_restore/'
-    },
     'fuzzing': {
       'filepath': 'fuzz|Fuzz',
     },
@@ -2051,10 +2042,6 @@
     'siso_config': {
       'filepath': 'build/config/siso/',
     },
-    'site_engagement': {
-      'filepath': 'chrome/browser/engagement/|'\
-                  'chrome/browser/ui/webui/engagement/',
-    },
     'site_instance': {
       'filepath': 'content/browser/site_instance|'\
         'content/browser/browsing_instance',
@@ -2478,8 +2465,7 @@
                               'trewin+watch@google.com'],
     'accessibility_service': ['hirokisato+watch@chromium.org',
                               'katie+watch@chromium.org'],
-    'add_to_homescreen': ['dominickn+watch-a2hs@chromium.org',
-                          'pkotwicz+watch@chromium.org',
+    'add_to_homescreen': ['pkotwicz+watch@chromium.org',
                           'webapks-watchlist@chromium.org'],
     'agent_scheduling_group': ['blink-isolation-reviews@chromium.org',
                                'chikamune+watch@chromium.org'],
@@ -2504,30 +2490,21 @@
     'android_toolbar_deps': ['jinsukkim+watch@chromium.org'],
     'android_uma_settings': ['asvitkine+watch@chromium.org',
                              'gayane+watch@chromium.org'],
-    'android_webapk': ['dominickn+watch-webapk@chromium.org',
-                       'mxcai+watch-webapk@chromium.org',
-                       'webapks-watchlist@chromium.org'],
+    'android_webapk': ['webapks-watchlist@chromium.org'],
     'android_webview': ['android-webview-reviews@chromium.org'],
     'android_webview_network_service': [],
     'android_webview_webexposed': ['ashleynewson+watch-webexposed@chromium.org',
                                    'peter+watch-webexposed@chromium.org'],
-    'app_service': ['dominickn+watch-app_service@chromium.org',
-                    'nancylingwang@chromium.org',
-                    'tsergeant+watch@chromium.org',
-                    'mxcai+watch-app_service@chromium.org'],
+    'app_service': ['tsergeant+watch@chromium.org'],
     'app_service_protos': ['cros-reporting-team+watch@google.com',
                            'vshenvi+watch@google.com'],
-    'app_shortcuts': ['dominickn+watch-app_shortcuts@chromium.org',
-                      'loyso+watch@chromium.org',
+    'app_shortcuts': ['loyso+watch@chromium.org',
                       'mgiuca+watch@chromium.org',
                       'dmurph+watching-app_shortcuts@chromium.org',
                       'webappwatch@microsoft.com'],
     'apps': ['chromium-apps-reviews@chromium.org',
-             'dominickn+watch-apps@chromium.org',
              'dmurph+watching-apps@chromium.org',
              'webappwatch@microsoft.com'],
-    'apps_intent_helper': ['dominickn+watch-intent_helper@chromium.org',
-                           'mxcai+watch-intent-helper@chromium.org'],
     'arc': ['hidehiko+watch@chromium.org',
             'yhanada+watcharc@chromium.org',
             'arc-reviews+chromium@google.com'],
@@ -2575,8 +2552,7 @@
                         'nator+watch@chromium.org',
                         'peter@chromium.org',
                         'rayankans+watch@chromium.org'],
-    'banners': ['dominickn+watch-banners@chromium.org',
-                'pkotwicz+watch@chromium.org'],
+    'banners': ['pkotwicz+watch@chromium.org'],
     'base_allocator': ['wfh+watch@chromium.org',
                        'lizeb+watch@chromium.org',
                        'bartekn+watch@chromium.org'],
@@ -2942,7 +2918,6 @@
     'fsp': ['mtomasz+watch@chromium.org'],
     'fuchsia': ['fuchsia-reviews@chromium.org',
                 'zijiehe@google.com'],
-    'full_restore': ['nancylingwang@chromium.org'],
     'fuzzing': ['fuzzing+watch@chromium.org'],
     'gamepad': ['mattreynolds+watch@chromium.org'],
     'gcm': ['peter@chromium.org'],
@@ -2979,8 +2954,7 @@
                               'wangdanny+watch-input-device-settings@google.com',
                               'yyhyyh+watch-input-device-settings@google.com'],
     'input_devices': ['spang+watch@chromium.org'],
-    'installable': ['dominickn+watch-installable@chromium.org',
-                    'dmurph+watching-installable@chromium.org',
+    'installable': ['dmurph+watching-installable@chromium.org',
                     'webappwatch@microsoft.com'],
     'installer_linux': ['kubo@igalia.com',
                         'mmoss@chromium.org'],
@@ -3034,8 +3008,7 @@
                           'rsesek+watch@chromium.org'],
     'lookalikes': ['jdeblasio+watch@chromium.org'],
     'mac' : ['mac-reviews@chromium.org'],
-    'manifest': ['dominickn+watch-manifest@chromium.org',
-                 'dmurph+watching-manifest@chromium.org',
+    'manifest': ['dmurph+watching-manifest@chromium.org',
                  'webappwatch@microsoft.com'],
     'media': ['feature-media-reviews@chromium.org'],
     'media_capture_from_element': ['emircan+watch+capturefromdom@chromium.org'],
@@ -3157,8 +3130,7 @@
                    'bradnelson+warch@chromium.org',
                    'ihf+watch@chromium.org',
                    'teravest+watch@chromium.org'],
-    'permissions': ['dominickn+watch-permissions@chromium.org',
-                    'permissions-reviews@chromium.org'],
+    'permissions': ['permissions-reviews@chromium.org'],
     'permissions_policy': ['loonybear@chromium.org',
                            'iclelland+watch@chromium.org',
                            'jmedley+watch@chromium.org'],
@@ -3238,7 +3210,6 @@
          'cambickel+watch-shortcut-customization-ui@google.com',
          'longbowei+watch-shortcut-customization-ui@google.com'],
     'siso_config': ['chrome-build-team@google.com'],
-    'site_engagement': ['dominickn+watch-engagement@chromium.org'],
     'site_instance': ['ajwong+watch@chromium.org',
                       'alexmos+watch@chromium.org',
                       'creis+watch@chromium.org'],
@@ -3355,8 +3326,6 @@
                 'nickdiego+watch-chromium@igalia.com'],
     'web_applications': ['dibyapal+watch-webapps@chromium.org',
                          'dmurph+watching-webapps@chromium.org',
-                         'dominickn+watch-web_applications@chromium.org',
-                         'ericwilligers+watch-bmo@chromium.org',
                          'kuragin+web-applications-cls@chromium.org',
                          'loyso+watch@chromium.org',
                          'mgiuca+watch@chromium.org',
