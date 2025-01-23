@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AccountAdditionOptions} from 'chrome://chrome-signin/arc_account_picker/arc_util.js';
-import {AuthCompletedCredentials, AuthMode, AuthParams} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
-import {InlineLoginBrowserProxy} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
+import type {AccountAdditionOptions} from 'chrome://chrome-signin/arc_account_picker/arc_util.js';
+import type {AuthCompletedCredentials, AuthMode, AuthParams} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
+import type {InlineLoginBrowserProxy} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export function getFakeAccountsList(): string[] {

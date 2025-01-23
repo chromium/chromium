@@ -4,13 +4,14 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, GooglePhotosPhotosByAlbumIdElement, PersonalizationActionName, SetErrorAction, WallpaperGridItemElement, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import type {GooglePhotosAlbum, GooglePhotosPhoto, SetErrorAction, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, GooglePhotosEnablementState, GooglePhotosPhotosByAlbumIdElement, PersonalizationActionName, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, createSvgDataUrl, initElement, teardownElement} from './personalization_app_test_utils.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
   let googlePhotosPhotosByAlbumIdElement: GooglePhotosPhotosByAlbumIdElement|

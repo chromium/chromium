@@ -5,10 +5,10 @@
 import 'chrome://os-feedback/help_content.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import type {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {fakeHelpContentList, fakePopularHelpContentList} from 'chrome://os-feedback/fake_data.js';
-import {HelpContentList} from 'chrome://os-feedback/feedback_types.js';
-import {HelpContentElement} from 'chrome://os-feedback/help_content.js';
+import type {HelpContentList} from 'chrome://os-feedback/feedback_types.js';
+import type {HelpContentElement} from 'chrome://os-feedback/help_content.js';
 import {HelpContentType} from 'chrome://os-feedback/os_feedback_ui.mojom-webui.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';

@@ -6,9 +6,10 @@ import 'chrome://os-print/js/destination_dropdown.js';
 
 import {PDF_DESTINATION} from 'chrome://os-print/js/data/destination_constants.js';
 import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DESTINATION_MANAGER_DESTINATIONS_CHANGED, DESTINATION_MANAGER_SESSION_INITIALIZED, DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
-import {DestinationProviderComposite} from 'chrome://os-print/js/data/destination_provider_composite.js';
+import type {DestinationProviderComposite} from 'chrome://os-print/js/data/destination_provider_composite.js';
 import {DestinationDropdownElement} from 'chrome://os-print/js/destination_dropdown.js';
-import {DESTINATION_DROPDOWN_DROPDOWN_DISABLED_CHANGED, DESTINATION_DROPDOWN_UPDATE_DESTINATIONS, DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION, DestinationDropdownController} from 'chrome://os-print/js/destination_dropdown_controller.js';
+import type {DestinationDropdownController} from 'chrome://os-print/js/destination_dropdown_controller.js';
+import {DESTINATION_DROPDOWN_DROPDOWN_DISABLED_CHANGED, DESTINATION_DROPDOWN_UPDATE_DESTINATIONS, DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION} from 'chrome://os-print/js/destination_dropdown_controller.js';
 import {DestinationRowElement} from 'chrome://os-print/js/destination_row.js';
 import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {createCustomEvent} from 'chrome://os-print/js/utils/event_utils.js';

@@ -10,8 +10,8 @@ import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/ch
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestUserProvider} from './test_user_interface_provider.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestUserProvider} from './test_user_interface_provider.js';
 
 suite('AvatarListElementTest', function() {
   let avatarListElement: AvatarListElement|null;

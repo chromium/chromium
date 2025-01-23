@@ -7,8 +7,10 @@
  * SWA.
  */
 
-import {emptyState, getSeaPenStore, PersonalizationState, SeaPenStoreAdapter, setAmbientProviderForTesting, setKeyboardBacklightProviderForTesting, setSeaPenProviderForTesting, setThemeProviderForTesting, setUserProviderForTesting, setWallpaperProviderForTesting} from 'chrome://personalization/js/personalization_app.js';
-import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PersonalizationState} from 'chrome://personalization/js/personalization_app.js';
+import {emptyState, getSeaPenStore, SeaPenStoreAdapter, setAmbientProviderForTesting, setKeyboardBacklightProviderForTesting, setSeaPenProviderForTesting, setThemeProviderForTesting, setUserProviderForTesting, setWallpaperProviderForTesting} from 'chrome://personalization/js/personalization_app.js';
+import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestAmbientProvider} from './test_ambient_interface_provider.js';

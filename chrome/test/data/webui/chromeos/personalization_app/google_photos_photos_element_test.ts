@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 import 'chrome://personalization/strings.m.js';
 
-import {fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, getNumberOfGridItemsPerRow, GooglePhotosPhoto, GooglePhotosPhotosElement, GooglePhotosPhotosSection, PersonalizationActionName, SetErrorAction, WallpaperGridItemElement, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import type {GooglePhotosPhoto, GooglePhotosPhotosSection, SetErrorAction, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, getNumberOfGridItemsPerRow, GooglePhotosPhotosElement, PersonalizationActionName, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {mojoString16ToString, stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, createSvgDataUrl, dispatchKeydown, getActiveElement, initElement, teardownElement, waitForActiveElement} from './personalization_app_test_utils.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 suite('GooglePhotosPhotosElementTest', function() {
   let googlePhotosPhotosElement: GooglePhotosPhotosElement|null;

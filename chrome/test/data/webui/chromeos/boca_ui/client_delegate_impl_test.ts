@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import {ClientDelegateFactory, getNetworkInfoMojomToUI, getSessionConfigMojomToUI, getStudentActivityMojomToUI} from 'chrome-untrusted://boca-app/app/client_delegate.js';
-import {CaptionConfig, Config, Course, Identity, OnTaskConfig, PageHandlerRemote, RemoveStudentError, SessionResult, SubmitAccessCodeError, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
-import {Url} from 'chrome-untrusted://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {CaptionConfig, Config, Course, Identity, OnTaskConfig, RemoveStudentError, SessionResult, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import {PageHandlerRemote, SubmitAccessCodeError} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import type {Url} from 'chrome-untrusted://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 class MockRemoteHandler extends PageHandlerRemote {
@@ -35,8 +36,8 @@ class MockRemoteHandler extends PageHandlerRemote {
     return Promise.resolve({
       courses: [
         {id: '1', name: 'course1', section: 'period1'},
-        {id: '2', name: 'course2', section: ''}
-      ]
+        {id: '2', name: 'course2', section: ''},
+      ],
     });
   }
   override listStudents(id: string): Promise<{students: Identity[]}> {
@@ -169,9 +170,9 @@ class MockRemoteHandler extends PageHandlerRemote {
               sessionTranslationEnabled: true,
             },
           },
-          activities: []
-        }
-      }
+          activities: [],
+        },
+      },
     });
   }
 
@@ -369,7 +370,12 @@ suite('ClientDelegateTest', function() {
               {id: '2', name: 'dog', email: 'dog@gmail.com', photoUrl: 'cdn2'},
             ],
             studentsJoinViaCode: [
-              {id: '3', name: 'cat1', email: 'cat1@gmail.com', photoUrl: 'cdn3'}
+              {
+                id: '3',
+                name: 'cat1',
+                email: 'cat1@gmail.com',
+                photoUrl: 'cdn3'
+              },
             ],
             accessCode: 'testCode',
             onTaskConfig: {
@@ -515,8 +521,8 @@ suite('ClientDelegateTest', function() {
               isCaptionEnabled: false,
               isHandRaised: false,
               joinMethod: 0,
-              viewScreenSessionCode: 'abcd'
-            }
+              viewScreenSessionCode: 'abcd',
+            },
           },
           {
             id: '2',
@@ -526,9 +532,9 @@ suite('ClientDelegateTest', function() {
               isCaptionEnabled: false,
               isHandRaised: false,
               joinMethod: 1,
-              viewScreenSessionCode: null
-            }
-          }
+              viewScreenSessionCode: null,
+            },
+          },
         ];
         const result = getStudentActivityMojomToUI(activities);
         assertDeepEquals(
@@ -541,8 +547,8 @@ suite('ClientDelegateTest', function() {
                   isCaptionEnabled: false,
                   isHandRaised: false,
                   joinMethod: 0,
-                  viewScreenSessionCode: 'abcd'
-                }
+                  viewScreenSessionCode: 'abcd',
+                },
               },
               {
                 id: '2',
@@ -552,9 +558,9 @@ suite('ClientDelegateTest', function() {
                   isCaptionEnabled: false,
                   isHandRaised: false,
                   joinMethod: 1,
-                  viewScreenSessionCode: undefined
-                }
-              }
+                  viewScreenSessionCode: undefined,
+                },
+              },
             ],
             result);
       });
@@ -583,7 +589,7 @@ suite('ClientDelegateTest', function() {
   test('client delegate should translate data for network info', async () => {
     const networks = [
       {state: 0, type: 0, name: 'network1', signalStrength: 50},
-      {state: 1, type: 1, name: 'network2', signalStrength: 75}
+      {state: 1, type: 1, name: 'network2', signalStrength: 75},
     ];
     const result = getNetworkInfoMojomToUI(networks);
     assertDeepEquals(
@@ -592,14 +598,14 @@ suite('ClientDelegateTest', function() {
             networkState: 0,
             networkType: 0,
             name: 'network1',
-            signalStrength: 50
+            signalStrength: 50,
           },
           {
             networkState: 1,
             networkType: 1,
             name: 'network2',
-            signalStrength: 75
-          }
+            signalStrength: 75,
+          },
         ],
         result);
   });

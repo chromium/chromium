@@ -4,18 +4,19 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {AlbumsSubpageElement, AmbientActionName, AmbientModeAlbum, AmbientObserver, AmbientSubpageElement, AmbientTheme, AmbientThemeItemElement, AmbientUiVisibility, emptyState, Paths, PersonalizationRouterElement, QueryParams, ScrollableTarget, SetAlbumsAction, SetAmbientModeEnabledAction, SetAmbientThemeAction, SetGeolocationPermissionEnabledActionForAmbient, SetScreenSaverDurationAction, SetTemperatureUnitAction, SetTopicSourceAction, TemperatureUnit, TopicSource, TopicSourceItemElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
-import {CrRadioButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
+import type {AmbientModeAlbum, AmbientThemeItemElement, QueryParams, SetAlbumsAction, SetAmbientModeEnabledAction, SetAmbientThemeAction, SetGeolocationPermissionEnabledActionForAmbient, SetScreenSaverDurationAction, SetTemperatureUnitAction, SetTopicSourceAction, TopicSourceItemElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {AlbumsSubpageElement, AmbientActionName, AmbientObserver, AmbientSubpageElement, AmbientTheme, AmbientUiVisibility, emptyState, Paths, PersonalizationRouterElement, ScrollableTarget, TemperatureUnit, TopicSource} from 'chrome://personalization/js/personalization_app.js';
+import type {CrRadioButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
-import {TestAmbientProvider} from './test_ambient_interface_provider.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestAmbientProvider} from './test_ambient_interface_provider.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
 
 
 export function getSelectedAlbums(

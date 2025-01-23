@@ -6,8 +6,8 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {SeaPenOptionsElement, SeaPenRouterElement, SeaPenTemplateQueryElement, setTransitionsEnabled} from 'chrome://personalization/js/personalization_app.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import {SeaPenQuery} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {SeaPenQuery} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -15,8 +15,8 @@ import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestSeaPenProvider} from './test_sea_pen_interface_provider.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestSeaPenProvider} from './test_sea_pen_interface_provider.js';
 
 suite('SeaPenTemplateQueryElementTest', function() {
   let seaPenTemplateQueryElement: SeaPenTemplateQueryElement|null;

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-import type {BluetoothDeviceProperties, BluetoothDeviceStatusObserverInterface, BluetoothDiscoveryDelegateInterface, BluetoothSystemProperties, DiscoverySessionStatusObserverInterface, PairedBluetoothDeviceProperties, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
-import {AudioOutputCapability, BluetoothModificationState, BluetoothSystemState, CrosBluetoothConfigInterface, DeviceConnectionState, DevicePairingHandlerReceiver, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import type {BluetoothDeviceProperties, BluetoothDeviceStatusObserverInterface, BluetoothDiscoveryDelegateInterface, BluetoothSystemProperties, CrosBluetoothConfigInterface, DiscoverySessionStatusObserverInterface, PairedBluetoothDeviceProperties, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import {AudioOutputCapability, BluetoothModificationState, BluetoothSystemState, DeviceConnectionState, DevicePairingHandlerReceiver, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 import {assertFalse, assertNotReached, assertTrue} from '../chai_assert.js';
 

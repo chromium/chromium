@@ -4,7 +4,8 @@
 
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {RouteObserver, Router} from 'chrome://shortcut-customization/js/router.js';
+import type {RouteObserver} from 'chrome://shortcut-customization/js/router.js';
+import {Router} from 'chrome://shortcut-customization/js/router.js';
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('RouterTest', function() {

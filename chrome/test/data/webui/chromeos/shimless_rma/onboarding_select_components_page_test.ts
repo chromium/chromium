@@ -14,7 +14,8 @@ import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interf
 import {OnboardingSelectComponentsPageElement} from 'chrome://shimless-rma/onboarding_select_components_page.js';
 import {RepairComponentChip} from 'chrome://shimless-rma/repair_component_chip.js';
 import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
-import {Component, ComponentRepairStatus, StateResult} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
+import type {Component, StateResult} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
+import {ComponentRepairStatus} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 

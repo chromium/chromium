@@ -7,7 +7,8 @@
  */
 
 import {EnterpriseReportingBrowserProxy} from 'chrome://enterprise-reporting/browser_proxy.js';
-import {ErpHistoryData, ErpHistoryEvent, ErpHistoryEventParameter, PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://enterprise-reporting/enterprise_reporting.mojom-webui.js';
+import type {ErpHistoryData, ErpHistoryEvent, ErpHistoryEventParameter, PageRemote} from 'chrome://enterprise-reporting/enterprise_reporting.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerRemote} from 'chrome://enterprise-reporting/enterprise_reporting.mojom-webui.js';
 import {ReportingHistoryElement} from 'chrome://enterprise-reporting/reporting_history.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

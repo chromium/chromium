@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Accelerator, AcceleratorKeyState, AcceleratorState, AcceleratorType, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import type {Accelerator, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorKeyState, AcceleratorState, AcceleratorType} from 'chrome://shortcut-customization/js/shortcut_types.js';
 
 
 export function createStandardAcceleratorInfo(

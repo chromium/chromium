@@ -7,10 +7,10 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {convertKibToGibDecimalString, getNetworkCardTitle, getRoutineGroups, getSignalStrength, getSubnetMaskFromRoutingPrefix, setDisplayStateInTitleForTesting} from 'chrome://diagnostics/diagnostics_utils.js';
 import {NetworkType} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
+import type {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {RoutineType} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
-import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 
 suite('diagnosticsUtilsTestSuite', function() {
   test('ProperlyConvertsKibToGib', () => {

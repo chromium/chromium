@@ -6,15 +6,15 @@ import 'chrome://diagnostics/diagnostics_app.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {DiagnosticsAppElement} from 'chrome://diagnostics/diagnostics_app.js';
+import type {DiagnosticsAppElement} from 'chrome://diagnostics/diagnostics_app.js';
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
 import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCpuUsage, fakeKeyboards, fakeMemoryUsage, fakeSystemInfo, fakeTouchDevices} from 'chrome://diagnostics/fake_data.js';
 import {FakeInputDataProvider} from 'chrome://diagnostics/fake_input_data_provider.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
-import {KeyboardInfo} from 'chrome://diagnostics/input.mojom-webui.js';
+import type {KeyboardInfo} from 'chrome://diagnostics/input.mojom-webui.js';
 import {setInputDataProviderForTesting, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {SelectorItem} from 'chrome://resources/ash/common/navigation_selector.js';
+import type {SelectorItem} from 'chrome://resources/ash/common/navigation_selector.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

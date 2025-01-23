@@ -6,10 +6,10 @@ import 'chrome://cloud-upload/cloud_upload_dialog.js';
 
 import {UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
-import {CloudUploadElement} from 'chrome://cloud-upload/cloud_upload_dialog.js';
+import type {CloudUploadElement} from 'chrome://cloud-upload/cloud_upload_dialog.js';
 import {OfficePwaInstallPageElement} from 'chrome://cloud-upload/office_pwa_install_page.js';
 import {OfficeSetupCompletePageElement} from 'chrome://cloud-upload/office_setup_complete_page.js';
-import {SetupCancelDialogElement} from 'chrome://cloud-upload/setup_cancel_dialog.js';
+import type {SetupCancelDialogElement} from 'chrome://cloud-upload/setup_cancel_dialog.js';
 import {SignInPageElement} from 'chrome://cloud-upload/sign_in_page.js';
 import {WelcomePageElement} from 'chrome://cloud-upload/welcome_page.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -17,7 +17,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {whenCheck} from 'chrome://webui-test/test_util.js';
 
-import {CloudUploadTestBrowserProxy, ProxyOptions} from './cloud_upload_test_browser_proxy.js';
+import type {ProxyOptions} from './cloud_upload_test_browser_proxy.js';
+import {CloudUploadTestBrowserProxy} from './cloud_upload_test_browser_proxy.js';
 
 suite('<cloud-upload>', () => {
   /* Holds the <cloud-upload> app. */

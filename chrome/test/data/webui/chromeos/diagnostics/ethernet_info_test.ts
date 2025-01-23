@@ -5,13 +5,15 @@
 import 'chrome://diagnostics/ethernet_info.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {EthernetNetwork} from 'chrome://diagnostics/diagnostics_types.js';
-import {EthernetInfoElement} from 'chrome://diagnostics/ethernet_info.js';
+import type {EthernetNetwork} from 'chrome://diagnostics/diagnostics_types.js';
+import type {EthernetInfoElement} from 'chrome://diagnostics/ethernet_info.js';
 import {fakeEthernetNetwork} from 'chrome://diagnostics/fake_data.js';
-import {AuthenticationType, EthernetStateProperties, Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
+import type {EthernetStateProperties, Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
+import {AuthenticationType} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertFalse} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
 import {assertDataPointHasExpectedHeaderAndValue} from './diagnostics_test_utils.js';
 
 suite('ethernetInfoTestSuite', function() {

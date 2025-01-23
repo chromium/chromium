@@ -4,12 +4,13 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {DismissErrorAction, PersonalizationActionName, PersonalizationToastElement} from 'chrome://personalization/js/personalization_app.js';
+import type {DismissErrorAction} from 'chrome://personalization/js/personalization_app.js';
+import {PersonalizationActionName, PersonalizationToastElement} from 'chrome://personalization/js/personalization_app.js';
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
 
 suite('PersonalizationToastTest', function() {
   let personalizationToastElement: PersonalizationToastElement;

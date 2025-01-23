@@ -5,7 +5,8 @@
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
-import {RoutineResultInfo, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
+import type {RoutineResultInfo} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
+import {RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';

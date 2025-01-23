@@ -4,20 +4,21 @@
 import 'chrome://shortcut-customization/js/search/search_box.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
+import {CrToolbarSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
-import {CrToolbarSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {IronDropdownElement} from 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import type {IronDropdownElement} from 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {CycleTabsTextSearchResult, fakeAcceleratorConfig, fakeLayoutInfo, fakeSearchResults, TakeScreenshotSearchResult} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutSearchHandler} from 'chrome://shortcut-customization/js/search/fake_shortcut_search_handler.js';
-import {SearchBoxElement} from 'chrome://shortcut-customization/js/search/search_box.js';
+import type {SearchBoxElement} from 'chrome://shortcut-customization/js/search/search_box.js';
 import {SearchResultRowElement} from 'chrome://shortcut-customization/js/search/search_result_row.js';
 import {setShortcutSearchHandlerForTesting} from 'chrome://shortcut-customization/js/search/shortcut_search_handler.js';
-import {AcceleratorState, MojoSearchResult} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import type {MojoSearchResult} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorState} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';

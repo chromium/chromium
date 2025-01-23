@@ -197,13 +197,13 @@ suite('FirmwareUpdateAppTest', () => {
     assert(page);
 
     // Open dialog for first firmware update card.
-    let whenFired = eventToPromise('cr-dialog-open', page);
-    let button = strictQuery(
+    const whenFired = eventToPromise('cr-dialog-open', page);
+    const button = strictQuery(
         `#updateButton`, getUpdateCards()[0]!.shadowRoot, CrButtonElement);
     button.click();
     await flushTasks();
     await whenFired;
-    let fwConfirmDialog = strictQuery(
+    const fwConfirmDialog = strictQuery(
         'firmware-confirmation-dialog', page.shadowRoot, HTMLElement);
 
     // The disclaimer should be displayed.
