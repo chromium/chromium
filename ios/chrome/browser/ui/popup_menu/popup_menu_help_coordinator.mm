@@ -391,10 +391,9 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 
   // Present the bubble after the delay.
   self.popupMenuBubblePresenter = bubblePresenter;
-  [self.popupMenuBubblePresenter
-      presentInViewController:self.baseViewController
-                  anchorPoint:anchorPoint
-              anchorViewFrame:anchorFrame];
+  [self.popupMenuBubblePresenter presentInViewController:self.baseViewController
+                                             anchorPoint:anchorPoint
+                                         anchorViewFrame:anchorFrame];
   [self.UIUpdater updateUIForOverflowMenuIPHDisplayed];
 }
 

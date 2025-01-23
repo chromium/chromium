@@ -371,13 +371,15 @@ class OverflowMenuMediatorTest : public PlatformTest {
 
   bool HasItem(NSString* accessibility_identifier, BOOL enabled) {
     for (OverflowMenuDestination* destination in mediator_.model.destinations) {
-      if (destination.accessibilityIdentifier == accessibility_identifier)
+      if (destination.accessibilityIdentifier == accessibility_identifier) {
         return YES;
+      }
     }
     for (OverflowMenuActionGroup* group in mediator_.model.actionGroups) {
       for (OverflowMenuAction* action in group.actions) {
-        if (action.accessibilityIdentifier == accessibility_identifier)
+        if (action.accessibilityIdentifier == accessibility_identifier) {
           return action.enabled == enabled;
+        }
       }
     }
     return NO;
@@ -385,8 +387,9 @@ class OverflowMenuMediatorTest : public PlatformTest {
 
   bool HasEnterpriseInfoItem() {
     for (OverflowMenuActionGroup* group in mediator_.model.actionGroups) {
-      if (group.footer.accessibilityIdentifier == kTextMenuEnterpriseInfo)
+      if (group.footer.accessibilityIdentifier == kTextMenuEnterpriseInfo) {
         return YES;
+      }
     }
     return NO;
   }

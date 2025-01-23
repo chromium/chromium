@@ -48,8 +48,9 @@ const CGFloat kDamping = 0.85;
 
 - (void)prepareForPresentation {
   DCHECK(self.baseViewController);
-  if (self.popupViewController)
+  if (self.popupViewController) {
     return;
+  }
 
   self.popupViewController = [[PopupMenuViewController alloc] init];
   self.popupViewController.delegate = self;

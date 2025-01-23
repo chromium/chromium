@@ -139,8 +139,9 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
 }
 
 - (void)testNewWindowFromToolsMenu {
-  if (![ChromeEarlGrey areMultipleWindowsSupported])
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
 
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGreyUI
