@@ -36,7 +36,7 @@ BUILD_DIR = os.path.join(CHROME_DIR, "out", "sysroot-build", RELEASE)
 # gpg keyring file generated using generate_keyring.sh
 KEYRING_FILE = os.path.join(SCRIPT_DIR, "keyring.gpg")
 
-ARCHIVE_TIMESTAMP = "20230611T210420Z"
+ARCHIVE_TIMESTAMP = "20250122T204604Z"
 
 ARCHIVE_URL = f"https://snapshot.debian.org/archive/debian/{ARCHIVE_TIMESTAMP}/"
 APT_SOURCES_LIST = [
