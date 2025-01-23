@@ -24,6 +24,8 @@ source_set("regional_capabilities") {
   ]
 
   if (is_android) {
+    sources += [ "android/regional_capabilities_service_factory_android.cc" ]
+
     deps += [ "//chrome/browser/regional_capabilities/android:jni_headers" ]
   }
 }

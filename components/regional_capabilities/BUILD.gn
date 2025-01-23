@@ -2,6 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+}
+
 static_library("regional_capabilities") {
   sources = [
     "eea_countries_ids.h",
@@ -19,6 +24,10 @@ static_library("regional_capabilities") {
     "//components/keyed_service/core",
     "//components/prefs",
   ]
+
+  if (is_android) {
+    deps += [ "//components/regional_capabilities/android:jni_headers" ]
+  }
 }
 
 static_library("test_support") {

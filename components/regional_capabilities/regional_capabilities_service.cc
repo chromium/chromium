@@ -14,6 +14,13 @@
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/regional_capabilities/android/jni_headers/RegionalCapabilitiesService_jni.h"
+#endif
+
 namespace regional_capabilities {
 namespace {
 
@@ -39,7 +46,11 @@ RegionalCapabilitiesService::RegionalCapabilitiesService(
   CHECK(client_);
 }
 
-RegionalCapabilitiesService::~RegionalCapabilitiesService() = default;
+RegionalCapabilitiesService::~RegionalCapabilitiesService() {
+#if BUILDFLAG(IS_ANDROID)
+  DestroyJavaObject();
+#endif
+}
 
 int RegionalCapabilitiesService::GetCountryId() {
   std::optional<SearchEngineCountryOverride> country_override =
@@ -118,5 +129,28 @@ void RegionalCapabilitiesService::ClearCountryIdCacheForTesting() {
   CHECK_IS_TEST();
   country_id_cache_.reset();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+base::android::ScopedJavaLocalRef<jobject>
+RegionalCapabilitiesService::GetJavaObject() {
+  if (!java_ref_) {
+    java_ref_.Reset(Java_RegionalCapabilitiesService_Constructor(
+        jni_zero::AttachCurrentThread(), reinterpret_cast<intptr_t>(this)));
+  }
+  return base::android::ScopedJavaLocalRef<jobject>(java_ref_);
+}
+
+void RegionalCapabilitiesService::DestroyJavaObject() {
+  if (java_ref_) {
+    Java_RegionalCapabilitiesService_destroy(jni_zero::AttachCurrentThread(),
+                                             java_ref_);
+    java_ref_.Reset();
+  }
+}
+
+jboolean RegionalCapabilitiesService::IsInEeaCountry(JNIEnv* env) {
+  return IsInEeaCountry();
+}
+#endif
 
 }  // namespace regional_capabilities
