@@ -46,6 +46,7 @@
 #include "ui/compositor/compositor_lock.h"
 #include "ui/compositor/compositor_metrics_tracker_host.h"
 #include "ui/compositor/compositor_observer.h"
+#include "ui/compositor/compositor_property_tree_delegate.h"
 #include "ui/compositor/host_begin_frame_observer.h"
 #include "ui/compositor/layer_animator_collection.h"
 #include "ui/display/types/display_constants.h"
@@ -100,6 +101,7 @@ class Layer;
 class ScopedAnimationDurationScaleMode;
 class ScrollInputHandler;
 class CompositorMetricsTracker;
+class CompositorPropertyTreeDelegate;
 struct PendingBeginFrameArgs;
 
 constexpr int kCompositorLockTimeoutMs = 67;
@@ -538,6 +540,10 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   ScopedKeepSurfaceAliveCallback TakeScopedKeepSurfaceAliveCallback(
       const viz::SurfaceId& surface_id);
 
+  CompositorPropertyTreeDelegate* property_tree_delegate() {
+    return property_tree_delegate_.get();
+  }
+
  private:
   friend class base::RefCounted<Compositor>;
   friend class TotalAnimationThroughputReporter;
@@ -683,6 +689,14 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   };
   using CompositorMetricsTrackerMap = base::flat_map<TrackerId, TrackerState>;
   CompositorMetricsTrackerMap compositor_metrics_tracker_map_;
+
+  // TODO(crbug.com/389771428): This holds a transitional object that
+  // will be used to migrate from using layer trees to property trees and
+  // layer lists. We can remove this once the code has been
+  // fully converted to using property trees and layer lists and then
+  // go back to using the cc::Compositor's default logic for that mode.
+  bool uses_layer_lists_ = false;
+  std::unique_ptr<CompositorPropertyTreeDelegate> property_tree_delegate_;
 
   base::WeakPtrFactory<Compositor> context_creation_weak_ptr_factory_{this};
   base::WeakPtrFactory<Compositor> weak_ptr_factory_{this};

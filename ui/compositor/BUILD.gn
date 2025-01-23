@@ -28,6 +28,8 @@ component("compositor") {
     "compositor_metrics_tracker.h",
     "compositor_metrics_tracker_host.h",
     "compositor_observer.h",
+    "compositor_property_tree_delegate.cc",
+    "compositor_property_tree_delegate.h",
     "compositor_switches.cc",
     "compositor_switches.h",
     "debug_utils.cc",

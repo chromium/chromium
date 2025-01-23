@@ -591,4 +591,47 @@ TEST_F(CompositorTestWithMessageLoop, CompositorVisibilityChanges) {
   compositor()->RemoveObserver(&observer);
 }
 
+class CompositorPropertyTreeDelegateTest
+    : public CompositorTestWithMessageLoop {
+ public:
+  class Observer : public CompositorPropertyTreeDelegate::Observer {
+   public:
+    bool called_ = false;
+
+    void OnUpdateCalled(cc::LayerTreeHost* host) override { called_ = true; }
+  };
+
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(features::kUiCompositorUsesLayerLists);
+    observer_ = std::make_unique<Observer>();
+    CompositorTestWithMessageLoop::SetUp();
+    compositor()->property_tree_delegate()->SetObserverForTesting(observer());
+  }
+
+  Observer* observer() { return observer_.get(); }
+
+ private:
+  std::unique_ptr<Observer> observer_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(CompositorPropertyTreeDelegateTest, Draw) {
+  raw_ptr<CompositorPropertyTreeDelegate> delegate =
+      compositor()->property_tree_delegate();
+
+  auto root_layer = std::make_unique<Layer>(ui::LAYER_SOLID_COLOR);
+  viz::ParentLocalSurfaceIdAllocator allocator;
+  allocator.GenerateId();
+  root_layer->SetBounds(gfx::Rect(10, 10));
+  compositor()->SetRootLayer(root_layer.get());
+  compositor()->SetScaleAndSize(1.0f, gfx::Size(10, 10),
+                                allocator.GetCurrentLocalSurfaceId());
+  EXPECT_TRUE(compositor()->IsVisible());
+  compositor()->ScheduleDraw();
+
+  EXPECT_NE(delegate, nullptr);
+  DrawWaiterForTest::WaitForCompositingEnded(compositor());
+  EXPECT_TRUE(observer()->called_);
+}
+
 }  // namespace ui
