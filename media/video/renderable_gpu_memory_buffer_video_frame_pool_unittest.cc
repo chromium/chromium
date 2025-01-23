@@ -50,20 +50,6 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
   ~FakeContext() override = default;
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      gfx::GpuMemoryBuffer* gpu_memory_buffer,
-      const viz::SharedImageFormat& si_format,
-      const gfx::ColorSpace& color_space,
-      gpu::SharedImageUsageSet usage,
-      gpu::SyncToken& sync_token) override {
-    DoCreateSharedImage(si_format, gpu_memory_buffer->GetSize(), color_space,
-                        usage, gpu_memory_buffer->CloneHandle());
-    return context_provider_->SharedImageInterface()->CreateSharedImage(
-        {si_format, gpu_memory_buffer->GetSize(), color_space, usage,
-         "RenderableGpuMemoryBufferVideoFramePoolTest"},
-        gpu_memory_buffer->CloneHandle());
-  }
-
-  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       const gfx::Size& size,
       gfx::BufferUsage buffer_usage,
       const viz::SharedImageFormat& si_format,
@@ -84,14 +70,6 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
     return context_provider_->SharedImageInterface()->GetCapabilities();
   }
 
-  MOCK_METHOD2(DoCreateGpuMemoryBuffer,
-               void(const gfx::Size& size, gfx::BufferFormat format));
-  MOCK_METHOD5(DoCreateSharedImage,
-               void(viz::SharedImageFormat format,
-                    const gfx::Size& size,
-                    const gfx::ColorSpace& color_space,
-                    gpu::SharedImageUsageSet usage,
-                    gfx::GpuMemoryBufferHandle buffer_handle));
   MOCK_METHOD6(DoCreateMappableSharedImage,
                void(const gfx::Size& size,
                     gfx::BufferUsage buffer_usage,

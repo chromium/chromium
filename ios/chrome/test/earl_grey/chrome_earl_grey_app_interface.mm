@@ -182,8 +182,9 @@ NSString* SerializedValue(const base::Value* value) {
 + (NSInteger)navigationBackListItemsCount {
   web::WebState* webState = chrome_test_util::GetCurrentWebState();
 
-  if (!webState)
+  if (!webState) {
     return -1;
+  }
 
   return webState->GetNavigationManager()->GetBackwardItems().size();
 }
@@ -555,8 +556,9 @@ NSString* SerializedValue(const base::Value* value) {
 }
 
 + (void)closeAllExtraWindows {
-  if (!base::ios::IsMultipleScenesSupported())
+  if (!base::ios::IsMultipleScenesSupported()) {
     return;
+  }
   SceneState* foreground_scene_state =
       chrome_test_util::GetMainController().appState.foregroundActiveScene;
   // New windows get an accessibilityIdentifier equal to the number of windows
@@ -565,8 +567,9 @@ NSString* SerializedValue(const base::Value* value) {
   foreground_scene_state.window.accessibilityIdentifier = @"0";
   NSSet<UISceneSession*>* sessions =
       UIApplication.sharedApplication.openSessions;
-  if (sessions.count <= 1)
+  if (sessions.count <= 1) {
     return;
+  }
   for (UISceneSession* session in sessions) {
     if (foreground_scene_state.scene == session.scene) {
       continue;
@@ -1483,8 +1486,9 @@ int watchRunNumber = 0;
       dispatch_time(DISPATCH_TIME_NOW, kWatcherCycleDelay.InNanoseconds()),
       background_queue, ^{
         dispatch_async(dispatch_get_main_queue(), ^{
-          if (!watchingButtons.count || runNumber != watchRunNumber)
+          if (!watchingButtons.count || runNumber != watchRunNumber) {
             return;
+          }
 
           NSMutableArray<UIWindow*>* windows = [[NSMutableArray alloc] init];
           for (UIScene* scene in UIApplication.sharedApplication
@@ -1510,8 +1514,9 @@ int watchRunNumber = 0;
 // Looks for a button (based on traits) with the given `label`,
 // recursively in the given `views`.
 + (void)findButtonsWithLabelsInViews:(NSArray<UIView*>*)views {
-  if (!watchingButtons.count)
+  if (!watchingButtons.count) {
     return;
+  }
 
   for (UIView* view in views) {
     [self buttonsWithLabelsMatchView:view];
@@ -1522,10 +1527,12 @@ int watchRunNumber = 0;
 // Checks if the given `view` is a button (based on traits) with the
 // given accessibility label.
 + (void)buttonsWithLabelsMatchView:(UIView*)view {
-  if (![view respondsToSelector:@selector(accessibilityLabel)])
+  if (![view respondsToSelector:@selector(accessibilityLabel)]) {
     return;
-  if (([view accessibilityTraits] & UIAccessibilityTraitButton) == 0)
+  }
+  if (([view accessibilityTraits] & UIAccessibilityTraitButton) == 0) {
     return;
+  }
   if ([watchingButtons containsObject:view.accessibilityLabel]) {
     [watchedButtons addObject:view.accessibilityLabel];
     [watchingButtons removeObject:view.accessibilityLabel];

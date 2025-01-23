@@ -15,7 +15,7 @@ namespace net {
 namespace test_server {
 class EmbeddedTestServer;
 }
-}
+}  // namespace net
 
 // Base class for all Chrome Earl Grey tests.
 @interface ChromeTestCase : BaseEarlGreyTestCase

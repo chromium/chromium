@@ -1123,11 +1123,8 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
     // CanvasResourceProvider.
     bool has_hibernation_handler = GetHibernationHandler() != nullptr;
     scoped_refptr<StaticBitmapImage> snapshot =
-        has_hibernation_handler
-            ? context_->GetImage(FlushReason::kPaint)
-            : (ResourceProvider()
-                   ? ResourceProvider()->Snapshot(FlushReason::kPaint)
-                   : nullptr);
+        has_hibernation_handler ? context_->GetImage(FlushReason::kPaint)
+                                : provider->Snapshot(FlushReason::kPaint);
     if (snapshot) {
       // GraphicsContext cannot handle gpu resource serialization.
       snapshot = snapshot->MakeUnaccelerated();

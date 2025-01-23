@@ -761,12 +761,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   NSString* errorString = [NSString
       stringWithFormat:@"Failed waiting for web state not containing %@", text];
 
-  GREYCondition* waitForText = [GREYCondition
-      conditionWithName:errorString
-                  block:^{
-                    return !
-                        [ChromeEarlGreyAppInterface webStateContainsText:text];
-                  }];
+  GREYCondition* waitForText =
+      [GREYCondition conditionWithName:errorString
+                                 block:^{
+                                   return ![ChromeEarlGreyAppInterface
+                                       webStateContainsText:text];
+                                 }];
   bool containsText =
       [waitForText waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(containsText, errorString);

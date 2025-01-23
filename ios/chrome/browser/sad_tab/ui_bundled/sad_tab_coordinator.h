@@ -11,7 +11,7 @@
 @protocol OverscrollActionsControllerDelegate;
 
 // Coordinator that displays a SadTab view.
-@interface SadTabCoordinator : ChromeCoordinator<SadTabTabHelperDelegate>
+@interface SadTabCoordinator : ChromeCoordinator <SadTabTabHelperDelegate>
 
 // Required to support Overscroll Actions UI, which is displayed when Sad Tab is
 // pulled down.

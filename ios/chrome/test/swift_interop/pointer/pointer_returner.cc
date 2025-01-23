@@ -7,8 +7,9 @@
 PointerReturner::PointerReturner() : integer_(17), child_(nullptr) {}
 
 PointerReturner::~PointerReturner() {
-  if (child_)
+  if (child_) {
     delete child_;
+  }
 }
 
 bool PointerReturner::Valid() {

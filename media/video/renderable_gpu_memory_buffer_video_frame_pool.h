@@ -46,17 +46,9 @@ class MEDIA_EXPORT RenderableGpuMemoryBufferVideoFramePool {
   // chosen for testing.
   class Context {
    public:
-    // Create a SharedImage representation with format `si_format` of a
-    // GpuMemoryBuffer allocated by this interface.
+    // Create a Mappable SharedImage with format `si_format` and `buffer_usage`
+    // provided to this interface.
     // Return a ClientSharedImage pointer. Populate `sync_token`.
-    virtual scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-        gfx::GpuMemoryBuffer* gpu_memory_buffer,
-        const viz::SharedImageFormat& si_format,
-        const gfx::ColorSpace& color_space,
-        gpu::SharedImageUsageSet usage,
-        gpu::SyncToken& sync_token) = 0;
-
-    // Used to create a Mappable shared image.
     virtual scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
         const gfx::Size& size,
         gfx::BufferUsage buffer_usage,

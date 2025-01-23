@@ -153,8 +153,9 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
   for (UIView* view in parent_view.subviews) {
     UIView* result_view =
         SubviewWithAccessibilityIdentifier(accessibility_id, view);
-    if (result_view)
+    if (result_view) {
       return result_view;
+    }
   }
   return nil;
 }
@@ -1366,8 +1367,9 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)cellCanBeSwipedToDismissed {
   GREYMatchesBlock matches = ^BOOL(id element) {
-    if (![element isKindOfClass:UITableViewCell.class])
+    if (![element isKindOfClass:UITableViewCell.class]) {
       return NO;
+    }
 
     UITableViewCell* cell =
         base::apple::ObjCCastStrict<UITableViewCell>(element);
@@ -1379,8 +1381,9 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       potential_table_view = potential_table_view.superview;
     }
 
-    if (![potential_table_view isKindOfClass:UITableView.class])
+    if (![potential_table_view isKindOfClass:UITableView.class]) {
       return NO;
+    }
 
     UITableView* table_view =
         base::apple::ObjCCastStrict<UITableView>(potential_table_view);

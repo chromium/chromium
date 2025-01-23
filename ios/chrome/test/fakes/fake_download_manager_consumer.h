@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/download/ui_bundled/download_manager_consumer.h"
 
 // Consumer for the download manager mediator to be used in tests.
-@interface FakeDownloadManagerConsumer : NSObject<DownloadManagerConsumer>
+@interface FakeDownloadManagerConsumer : NSObject <DownloadManagerConsumer>
 
 // Name of the file being downloaded.
 @property(nonatomic, copy) NSString* fileName;

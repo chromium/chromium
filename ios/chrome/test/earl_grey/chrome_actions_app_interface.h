@@ -6,7 +6,6 @@
 #define IOS_CHROME_TEST_EARL_GREY_CHROME_ACTIONS_APP_INTERFACE_H_
 
 #import <Foundation/Foundation.h>
-
 #import <UIKit/UIKit.h>
 
 @class ElementSelector;

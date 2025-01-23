@@ -104,7 +104,6 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     }
 
    private:
-    GC_PLUGIN_IGNORE("Why is std::unique_ptr failing? http://crbug.com/1395024")
     T data_;
   };
 
