@@ -33,4 +33,13 @@ UpdatedFRESequenceVariationType GetUpdatedFRESequenceVariation(
                                              kUpdatedFirstRunSequenceParam, 1));
 }
 
+BASE_FEATURE(kAnimatedDefaultBrowserPromoInFRE,
+             "AnimatedDefaultBrowserPromoInFRE",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAnimatedDefaultBrowserPromoInFREEnabled() {
+  return base::FeatureList::IsEnabled(kAnimatedDefaultBrowserPromoInFRE) &&
+         !base::FeatureList::IsEnabled(first_run::kUpdatedFirstRunSequence);
+}
+
 }  // namespace first_run

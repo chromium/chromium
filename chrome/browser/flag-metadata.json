@@ -239,6 +239,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "animated-default-browser-promo-in-fre",
+    "owners": [ "bmcclure@google.com", "bling-get-set-up@google.com"],
+    "expiry_milestone": 137
+  },
+  {
     "name": "animated-image-drag-shadow",
     "owners": [ "shuyng@google.com", "wenyufu@chromium.org", "clank-app-team@google.com" ],
     "expiry_milestone": 135

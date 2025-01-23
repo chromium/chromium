@@ -413,6 +413,11 @@ extern const char kFeedBackgroundRefreshDescription[];
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 
+// Title and description for the flag to determine if the FRE Default Browser
+// promo should be animated.
+extern const char kAnimatedDefaultBrowserPromoInFREName[];
+extern const char kAnimatedDefaultBrowserPromoInFREDescription[];
+
 // Title and description for the flag to trigger improvement for fullscreen
 // feature.
 extern const char kFullscreenImprovementName[];

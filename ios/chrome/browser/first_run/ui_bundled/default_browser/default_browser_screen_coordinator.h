@@ -10,7 +10,7 @@
 
 @protocol FirstRunScreenDelegate;
 
-// Coordinator to present the default browser screen.
+// Coordinator to present the Default Browser Promo.
 @interface DefaultBrowserScreenCoordinator
     : ChromeCoordinator <PromoStyleViewControllerDelegate>
 

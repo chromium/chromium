@@ -32,6 +32,13 @@ extern const char kUpdatedFirstRunSequenceParam[];
 UpdatedFRESequenceVariationType GetUpdatedFRESequenceVariation(
     ProfileIOS* profile);
 
+// Flag to enable the FRE Default Browser Experiment.
+BASE_DECLARE_FEATURE(kAnimatedDefaultBrowserPromoInFRE);
+
+// Whether the Default Browser Experiment in the FRE is enabled. This feature is
+// disabled when kUpdatedFirstRunSequence is enabled.
+bool IsAnimatedDefaultBrowserPromoInFREEnabled();
+
 }  // namespace first_run
 
 #endif  // IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_FEATURES_H_
