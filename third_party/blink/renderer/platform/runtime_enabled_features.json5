@@ -2528,6 +2528,10 @@
       status: "stable",
     },
     {
+      name: "IsSecurePaymentConfirmationAvailableAPI",
+      status: "experimental",
+    },
+    {
       name: "JavaScriptCompileHintsMagicAlwaysRuntime",
       status: "experimental",
       origin_trial_feature_name: "JavaScriptCompileHintsMagicAlways",

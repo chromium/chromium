@@ -1157,6 +1157,13 @@ const char kImprovedSettingsUIOnDesktopDescription[] =
     "Enables redesign of signin settings and better signin errors in "
     "chrome://settings.";
 
+const char kIsSecurePaymentConfirmationAvailableAPIName[] =
+    "isSecurePaymentConfirmationAvailable API";
+const char kIsSecurePaymentConfirmationAvailableAPIDescription[] =
+    "Enables the PaymentRequest.isSecurePaymentConfirmationAvailable web API, "
+    "which allows for more ergonomic feature detection of Secure Payment "
+    "Confirmation";
+
 const char kEnableAutofillAddressSavePromptName[] =
     "Autofill Address Save Prompts";
 const char kEnableAutofillAddressSavePromptDescription[] =

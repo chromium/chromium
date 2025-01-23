@@ -5462,6 +5462,11 @@
       "expiry_milestone": 140
   },
   {
+      "name": "is-secure-payment-confirmation-available-api",
+      "owners": [ "smcgruer@chromium.org", "chrome-payments-team@google.com" ],
+      "expiry_milestone": 140
+  },
+  {
     "name": "isolate-origins",
     "owners": [ "site-isolation-dev@chromium.org", "alexmos@chromium.org", "creis@chromium.org", "lukasza@chromium.org" ],
     // This is useful for isolating additional origins beyond the normal site
