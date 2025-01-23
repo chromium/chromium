@@ -594,7 +594,10 @@ enum class HSTSRedirectUpgradeReason {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:HSTSRedirectUpgradeReason)
 
 void RecordHSTSPreconnectUpgradeReason(HSTSRedirectUpgradeReason reason) {
-  base::UmaHistogramEnumeration("Net.PreconnectHSTSUpgradesUrl", reason);
+  if (!base::FeatureList::IsEnabled(
+          net::features::kHstsTopLevelNavigationsOnly)) {
+    base::UmaHistogramEnumeration("Net.PreconnectHSTSUpgradesUrl", reason);
+  }
 }
 
 }  // namespace
@@ -2094,7 +2097,8 @@ void NetworkContext::IsHSTSActiveForHost(const std::string& host,
     return;
   }
 
-  std::move(callback).Run(security_state->ShouldUpgradeToSSL(host));
+  // TODO(crbug.com/40725781): propagate `is_top_level_nav`.
+  std::move(callback).Run(security_state->ShouldUpgradeToSSL(host, true));
 }
 
 void NetworkContext::GetHSTSState(const std::string& domain,
@@ -3072,8 +3076,17 @@ GURL NetworkContext::GetHSTSRedirectForPreconnect(const GURL& original_url) {
     return original_url;
   }
 
+  // TODO(crbug.com/40725781); This currently doesn't allow for preconnect
+  // upgrades when kHstsTopLevelNavigationsOnly is enabled. Revisit this
+  // decision after analyzing Net.PreconnectHSTSUpgradesUrl metric.
+  //
+  // When kHstsTopLevelNavigationsOnly is enabled only top-level navigations
+  // will be eligable for HSTS upgrades (not sub-resource requests).
+  // Unfortunately we don't know at this point if this request is for a
+  // top-level navigation so we need to disallow HSTS upgrades for every
+  // preconnect.
   if (!url_request_context_->transport_security_state()->ShouldUpgradeToSSL(
-          original_url.host())) {
+          original_url.host(), /*is_top_level_nav=*/false)) {
     RecordHSTSPreconnectUpgradeReason(
         HSTSRedirectUpgradeReason::kNotUpgradedNoHSTSPin);
     return original_url;

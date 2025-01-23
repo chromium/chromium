@@ -410,8 +410,10 @@ TEST_F(CertVerifyProcBuiltinTest, ShouldBypassHSTS) {
     context()->transport_security_state()->AddHSTS(
         test_server.base_url().host(), base::Time::Now() + base::Seconds(30),
         /*include_subdomains=*/true);
+    // Setting `is_top_level_nav` true prevents the upgrade from being blocked
+    // by kHstsTopLevelNavigationsOnly.
     ASSERT_TRUE(context()->transport_security_state()->ShouldUpgradeToSSL(
-        test_server.base_url().host()));
+        test_server.base_url().host(), /*is_top_level_nav=*/true));
     Verify(chain.get(), "www.example.com",
            CertVerifyProc::VERIFY_REV_CHECKING_ENABLED,
            &verify_result, &verify_net_log_source, verify_callback.callback());
