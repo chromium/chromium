@@ -150,9 +150,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         std::make_unique<metrics::DwaWebContentsObserver>(
             tab.GetContents());
 
-    tab_groups::TabGroupSyncService* tab_group_sync_service =
-        tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
-    if (tab_group_sync_service) {
+    if (tab_groups::TabGroupSyncService* tab_group_sync_service =
+            tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile)) {
       saved_tab_group_web_contents_listener_ =
           std::make_unique<tab_groups::SavedTabGroupWebContentsListener>(
               tab_group_sync_service, &tab);
@@ -174,7 +173,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           std::make_unique<glic::GlicTabIndicatorHelper>(&tab);
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
-  }
+  }     // IsInNormalWindow() end.
 
   const auto* pinned_actions_model = PinnedToolbarActionsModel::Get(profile);
   CHECK(pinned_actions_model);
