@@ -226,12 +226,12 @@ UIImageView* BrandingImageView() {
 
 - (void)didReservePlusAddress:(NSString*)plusAddress {
   [self enablePrimaryActionButton:YES];
-    _isGenerating = NO;
-    if (!_refreshCount) {
-      plus_addresses::metrics::RecordModalEvent(
-          plus_addresses::metrics::PlusAddressModalEvent::kModalShown,
-          [_delegate shouldShowNotice]);
-    }
+  _isGenerating = NO;
+  if (!_refreshCount) {
+    plus_addresses::metrics::RecordModalEvent(
+        plus_addresses::metrics::PlusAddressModalEvent::kModalShown,
+        [_delegate shouldShowNotice]);
+  }
   _reservedPlusAddress = plusAddress;
   _bottomSheetModalCompletionErrorStatus.reset();
   _bottomSheetCreationErrorType.reset();
@@ -338,16 +338,17 @@ UIImageView* BrandingImageView() {
     [cell showActivityIndicator];
   } else {
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  [cell setLeadingIconImage:CustomSymbolTemplateWithPointSize(
-                                kGooglePlusAddressSymbol,
-                                kPlusAddressSheetCellImageSize)
-              withTintColor:[UIColor colorNamed:kTextSecondaryColor]];
+    [cell setLeadingIconImage:CustomSymbolTemplateWithPointSize(
+                                  kGooglePlusAddressSymbol,
+                                  kPlusAddressSheetCellImageSize)
+                withTintColor:[UIColor colorNamed:kTextSecondaryColor]];
 #else
-  [cell setLeadingIconImage:DefaultSymbolTemplateWithPointSize(
+    [cell
+        setLeadingIconImage:DefaultSymbolTemplateWithPointSize(
                                 kMailFillSymbol, kPlusAddressSheetCellImageSize)
               withTintColor:[UIColor colorNamed:kTextSecondaryColor]];
 #endif
-  [cell hideActivityIndicator];
+    [cell hideActivityIndicator];
   }
 
   if (shouldShowRefresh) {
