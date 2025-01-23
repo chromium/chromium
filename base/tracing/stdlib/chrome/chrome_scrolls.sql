@@ -318,6 +318,7 @@ CREATE PERFETTO TABLE _scroll_update_frame_timestamps_and_metadata
 AS
 SELECT
   refs.scroll_update_latency_id AS id,
+  refs.display_trace_id,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   chrome_event_latency.vsync_interval_ms AS vsync_interval_ms,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -450,6 +451,8 @@ WHERE refs.scroll_update_latency_id = refs.presentation_latency_id;
 CREATE PERFETTO TABLE chrome_scroll_update_frame_info(
   -- Id of the `LatencyInfo.Flow` slices corresponding to this scroll event.
   id LONG,
+  -- Id of the aggregated frame this scroll update was presented in.
+  display_trace_id LONG,
   -- Vsync interval (in milliseconds).
   vsync_interval_ms DOUBLE,
   -- Slice id for the `STEP_RESAMPLE_SCROLL_EVENTS` slice.
@@ -528,6 +531,7 @@ WITH
 processed_timestamps_and_metadata AS (
   SELECT
     id,
+    display_trace_id,
     vsync_interval_ms,
     -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
     -- Ids
@@ -594,6 +598,7 @@ processed_timestamps_and_metadata AS (
 )
 SELECT
   id,
+  display_trace_id,
   -- TODO(b:381062412): This is sometimes unexpectedly 0; check/fix this.
   vsync_interval_ms,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -758,6 +763,9 @@ GROUP BY sa.scroll_id;
 CREATE PERFETTO TABLE chrome_scroll_update_info(
   -- Id of the `LatencyInfo.Flow` slices corresponding to this scroll event.
   id LONG,
+  -- Id (`display_trace_id`) of the aggregated frame which this scroll update
+  -- was presented in.
+  frame_display_id LONG,
   -- Vsync interval (in milliseconds).
   vsync_interval_ms DOUBLE,
   -- Whether this input event was presented.
@@ -888,6 +896,7 @@ CREATE PERFETTO TABLE chrome_scroll_update_info(
 AS
 SELECT
   input.id,
+  frame.display_trace_id AS frame_display_id,
   -- TODO(b:381062412): This is sometimes unexpectedly 0; check/fix this.
   frame.vsync_interval_ms,
   input.is_presented,
@@ -1005,6 +1014,198 @@ SELECT
 FROM chrome_scroll_update_input_info AS input
 LEFT JOIN chrome_scroll_update_frame_info AS frame
 ON input.presented_in_frame_id = frame.id;
+
+
+-- Helper macro to compute the stage delta.
+-- Should be used only as a part of `chrome_scroll_frame_info`.
+CREATE PERFETTO MACRO _chrome_scroll_frame_stage_delta(name ColumnName)
+RETURNS Expr AS
+IIF(info.is_first_scroll_update_in_scroll,
+  NULL,
+  $name - LAG($name) OVER (ORDER BY generation_ts)
+);
+
+-- A list of all presented Chrome frames which contain scroll updates and associated
+-- metadata.
+CREATE PERFETTO TABLE chrome_scroll_frame_info(
+  -- Id (frame's display_trace_id) for the given frame.
+  id LONG,
+  -- Vsync interval (in milliseconds).
+  vsync_interval_ms DOUBLE,
+  -- Whether the corresponding frame is janky. This comes directly from
+  -- `perfetto.protos.EventLatency`.
+  is_janky BOOL,
+  -- Whether the corresponding scroll is inertial (fling).
+  is_inertial BOOL,
+  -- Input generation timestamp (from the Android system) for the first input.
+  first_input_generation_ts TIMESTAMP,
+  -- Presentation timestamp for the frame.
+  presentation_ts TIMESTAMP,
+  -- Utid for the browser main thread.
+  browser_utid JOINID(thread.id),
+  -- Duration from input generation to when the browser received the first input
+  -- in this frame.
+  first_input_generation_to_browser_main_dur DURATION,
+  -- Difference between `first_input_generation_to_browser_main_dur` for this
+  -- frame and the previous frame in the same scroll.
+  first_input_generation_to_browser_main_delta_dur DURATION,
+  -- Duration for processing  a `TouchMove` event for the first input in this
+  -- frame.
+  first_input_touch_move_processing_dur DURATION,
+  -- Difference between `first_input_touch_move_processing_dur` for this
+  -- frame and the previous frame in the same scroll.
+  first_input_touch_move_processing_delta_dur DURATION,
+  -- Utid for the renderer compositor thread.
+  compositor_utid JOINID(thread.id),
+  -- Duration between the browser and compositor dispatch for the first input
+  -- in this frame.
+  first_input_browser_to_compositor_delay_dur DURATION,
+  -- Difference between `first_input_browser_to_compositor_delay_dur` for this
+  -- frame and the previous frame in the same scroll.
+  first_input_browser_to_compositor_delay_delta_dur DURATION,
+  -- Duration for the compositor dispatch for the first input in this frame.
+  first_input_compositor_dispatch_dur DURATION,
+  -- Difference between `first_input_compositor_dispatch_dur` for this frame and
+  -- the previous frame in the same scroll.
+  first_input_compositor_dispatch_delta_dur DURATION,
+  -- Duration between the compositor dispatch and the "OnBeginFrame" work for the
+  -- first input in this frame.
+  first_input_compositor_dispatch_to_on_begin_frame_delay_dur DURATION,
+  -- Difference between `first_input_compositor_dispatch_to_on_begin_frame_delay_dur`
+  -- for this frame and the previous frame in the same scroll.
+  first_input_compositor_dispatch_to_on_begin_frame_delay_delta_dur DURATION,
+  -- Duration of the "OnBeginFrame" work for this frame.
+  compositor_on_begin_frame_dur DURATION,
+  -- Difference between `compositor_on_begin_frame_dur` for this frame and the
+  -- previous frame in the same scroll.
+  compositor_on_begin_frame_delta_dur DURATION,
+  -- Duration between the "OnBeginFrame" work and the generation of this frame.
+  compositor_on_begin_frame_to_generation_delay_dur DURATION,
+  -- Difference between `compositor_on_begin_frame_to_generation_delay_dur` for
+  -- this frame and the previous frame in the same scroll.
+  compositor_on_begin_frame_to_generation_delay_delta_dur DURATION,
+  -- Duration between the generation and submission of this frame.
+  compositor_generate_frame_to_submit_frame_dur DURATION,
+  -- Difference between `compositor_generate_frame_to_submit_frame_dur` for this
+  -- frame and the previous frame in the same scroll.
+  compositor_generate_frame_to_submit_frame_delta_dur DURATION,
+  -- Duration for submitting this frame.
+  compositor_submit_frame_dur DURATION,
+  -- Difference between `compositor_submit_frame_dur` for this frame and the
+  -- previous frame in the same scroll.
+  compositor_submit_frame_delta_dur DURATION,
+  -- Utid for the viz compositor thread.
+  viz_compositor_utid JOINID(thread.id),
+  -- Delay when a compositor frame is sent from the renderer to viz.
+  compositor_to_viz_delay_dur DURATION,
+  -- Difference between `compositor_to_viz_delay_dur` for this frame and the
+  -- previous frame in the same scroll.
+  compositor_to_viz_delay_delta_dur DURATION,
+  -- Duration of the viz work done on receiving the compositor frame.
+  viz_receive_compositor_frame_dur DURATION,
+  -- Difference between `viz_receive_compositor_frame_dur` for this frame and the
+  -- previous frame in the same scroll.
+  viz_receive_compositor_frame_delta_dur DURATION,
+  -- Duration between viz receiving the compositor frame to frame draw.
+  viz_wait_for_draw_dur DURATION,
+  -- Difference between `viz_wait_for_draw_dur` for this frame and the previous
+  -- frame in the same scroll.
+  viz_wait_for_draw_delta_dur DURATION,
+  -- Duration of the viz drawing/swapping work for this frame.
+  viz_draw_and_swap_dur DURATION,
+  -- Difference between `viz_draw_and_swap_dur` for this frame and the previous
+  -- frame in the same scroll.
+  viz_draw_and_swap_delta_dur DURATION,
+  -- Utid for the viz `CompositorGpuThread`.
+  viz_gpu_thread_utid JOINID(thread.id),
+  -- Delay between viz work on compositor thread and `CompositorGpuThread`.
+  viz_to_gpu_delay_dur DURATION,
+  -- Difference between `viz_to_gpu_delay_dur` for this frame and the previous
+  -- frame in the same scroll.
+  viz_to_gpu_delay_delta_dur DURATION,
+  -- Duration of frame buffer swapping work on viz.
+  viz_swap_buffers_dur DURATION,
+  -- Difference between `viz_swap_buffers_dur` for this frame and the previous
+  -- frame in the same scroll.
+  viz_swap_buffers_delta_dur DURATION,
+  -- Time between buffers ready until Choreographer's latch.
+  viz_swap_buffers_to_latch_dur DURATION,
+  -- Difference between `viz_swap_buffers_to_latch_dur` for this frame and the
+  -- previous frame in the same scroll.
+  viz_swap_buffers_to_latch_delta_dur DURATION,
+  -- Duration between Choreographer's latch and presentation.
+  viz_latch_to_presentation_dur DURATION,
+  -- Difference between `viz_latch_to_presentation_dur` for this frame and the
+  -- previous frame in the same scroll.
+  viz_latch_to_presentation_delta_dur DURATION
+) AS
+SELECT
+  frame_display_id AS id,
+  vsync_interval_ms,
+  is_janky,
+  is_inertial,
+  info.generation_ts AS first_input_generation_ts,
+  info.browser_utid,
+  info.generation_to_browser_main_dur AS first_input_generation_to_browser_main_dur,
+  presentation_timestamp AS presentation_ts,
+  _chrome_scroll_frame_stage_delta!(generation_to_browser_main_dur)
+    AS first_input_generation_to_browser_main_delta_dur,
+  info.touch_move_processing_dur AS first_input_touch_move_processing_dur,
+  _chrome_scroll_frame_stage_delta!(touch_move_processing_dur)
+    AS first_input_touch_move_processing_delta_dur,
+  info.compositor_utid,
+  info.browser_to_compositor_delay_dur
+    AS first_input_browser_to_compositor_delay_dur,
+  _chrome_scroll_frame_stage_delta!(browser_to_compositor_delay_dur)
+    AS first_input_browser_to_compositor_delay_delta_dur,
+  info.compositor_dispatch_dur AS first_input_compositor_dispatch_dur,
+  _chrome_scroll_frame_stage_delta!(compositor_dispatch_dur)
+    AS first_input_compositor_dispatch_delta_dur,
+  info.compositor_dispatch_to_on_begin_frame_delay_dur
+    AS first_input_compositor_dispatch_to_on_begin_frame_delay_dur,
+  _chrome_scroll_frame_stage_delta!(compositor_dispatch_to_on_begin_frame_delay_dur)
+    AS first_input_compositor_dispatch_to_on_begin_frame_delay_delta_dur,
+  info.compositor_on_begin_frame_dur,
+  _chrome_scroll_frame_stage_delta!(compositor_on_begin_frame_dur)
+    AS compositor_on_begin_frame_delta_dur,
+  info.compositor_on_begin_frame_to_generation_delay_dur,
+  _chrome_scroll_frame_stage_delta!(compositor_on_begin_frame_to_generation_delay_dur)
+    AS compositor_on_begin_frame_to_generation_delay_delta_dur,
+  info.compositor_generate_frame_to_submit_frame_dur,
+  _chrome_scroll_frame_stage_delta!(compositor_generate_frame_to_submit_frame_dur)
+    AS compositor_generate_frame_to_submit_frame_delta_dur,
+  info.compositor_submit_frame_dur,
+  _chrome_scroll_frame_stage_delta!(compositor_submit_frame_dur)
+    AS compositor_submit_frame_delta_dur,
+  viz_compositor_utid,
+  info.compositor_to_viz_delay_dur,
+  _chrome_scroll_frame_stage_delta!(compositor_to_viz_delay_dur)
+    AS compositor_to_viz_delay_delta_dur,
+  info.viz_receive_compositor_frame_dur,
+  _chrome_scroll_frame_stage_delta!(viz_receive_compositor_frame_dur)
+    AS viz_receive_compositor_frame_delta_dur,
+  info.viz_wait_for_draw_dur,
+  _chrome_scroll_frame_stage_delta!(viz_wait_for_draw_dur)
+    AS viz_wait_for_draw_delta_dur,
+  info.viz_draw_and_swap_dur,
+  _chrome_scroll_frame_stage_delta!(viz_draw_and_swap_dur)
+    AS viz_draw_and_swap_delta_dur,
+  viz_gpu_thread_utid,
+  info.viz_to_gpu_delay_dur,
+  _chrome_scroll_frame_stage_delta!(viz_to_gpu_delay_dur)
+    AS viz_to_gpu_delay_delta_dur,
+  info.viz_swap_buffers_dur,
+  _chrome_scroll_frame_stage_delta!(viz_swap_buffers_dur)
+    AS viz_swap_buffers_delta_dur,
+  info.viz_swap_buffers_to_latch_dur,
+  _chrome_scroll_frame_stage_delta!(viz_swap_buffers_to_latch_dur)
+    AS viz_swap_buffers_to_latch_delta_dur,
+  info.viz_latch_to_presentation_dur,
+  _chrome_scroll_frame_stage_delta!(viz_latch_to_presentation_dur)
+    AS viz_latch_to_presentation_delta_dur
+FROM chrome_scroll_update_info info
+WHERE is_first_scroll_update_in_frame;
+
 
 -- Source of truth for the definition of the stages of a scroll. Mainly intended
 -- for visualization purposes (e.g. in Chrome Scroll Jank plugin).
