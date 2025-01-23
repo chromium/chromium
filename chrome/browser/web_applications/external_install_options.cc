@@ -68,7 +68,7 @@ bool ExternalInstallOptions::operator==(
         options.disable_if_tablet_form_factor,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
         options.require_manifest,
-        options.install_as_shortcut,
+        options.install_as_diy,
         options.is_preferred_app_for_supported_links,
         options.force_reinstall,
         options.force_reinstall_for_milestone,
@@ -149,7 +149,7 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
   root.Set("override_previous_user_uninstall",
            override_previous_user_uninstall);
   root.Set("require_manifest", require_manifest);
-  root.Set("install_as_shortcut", install_as_shortcut);
+  root.Set("install_as_diy", install_as_diy);
   root.Set("service_worker_registration_url",
            service_worker_registration_url
                ? base::Value(service_worker_registration_url->spec())
@@ -197,7 +197,7 @@ WebAppInstallParams ConvertExternalInstallOptionsToParams(
   params.handles_file_open_intents = install_options.handles_file_open_intents;
 
   params.require_manifest = install_options.require_manifest;
-  params.install_as_shortcut = install_options.install_as_shortcut;
+  params.install_as_diy = install_options.install_as_diy;
 
   params.additional_search_terms = install_options.additional_search_terms;
 

@@ -487,8 +487,7 @@ WebAppPolicyManager::ParseInstallPolicyEntry(const base::Value::Dict& entry) {
   const std::string* fallback_app_name = entry.FindString(kFallbackAppNameKey);
   const base::Value::List* uninstall_and_replace =
       entry.FindList(kUninstallAndReplaceKey);
-  const std::optional<bool> install_as_shortcut =
-      entry.FindBool(kInstallAsShortcut);
+  const std::optional<bool> install_as_diy = entry.FindBool(kInstallAsShortcut);
 
   DCHECK(!default_launch_container ||
          (*default_launch_container == kDefaultLaunchContainerWindowValue) ||
@@ -536,7 +535,9 @@ WebAppPolicyManager::ParseInstallPolicyEntry(const base::Value::Dict& entry) {
     }
   }
 
-  install_options.install_as_shortcut = install_as_shortcut.value_or(false);
+  // Shortcut apps no longer exist in the web applications system and are
+  // treated as DIY apps now.
+  install_options.install_as_diy = install_as_diy.value_or(false);
 
   const std::string* custom_name = entry.FindString(kCustomNameKey);
   if (custom_name) {

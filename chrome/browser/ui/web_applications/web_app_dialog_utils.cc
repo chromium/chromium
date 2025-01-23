@@ -95,20 +95,19 @@ void OnWebAppInstallShowInstallDialog(
             iph_state);
         return;
       }
-    case WebAppInstallFlow::kCreateShortcut:
 #if BUILDFLAG(IS_CHROMEOS)
-    {
+    case WebAppInstallFlow::kCreateShortcut: {
       webapps::AppId app_id =
           web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id());
       metrics::structured::StructuredMetricsClient::Record(
           cros_events::AppDiscovery_Browser_CreateShortcut().SetAppId(app_id));
     }
-#endif
 
       ShowCreateShortcutDialog(initiator_web_contents, std::move(web_app_info),
                                std::move(install_tracker),
                                std::move(web_app_acceptance_callback));
       return;
+#endif
     case WebAppInstallFlow::kUnknown:
       NOTREACHED();
   }
@@ -191,9 +190,13 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
 
   webapps::WebappInstallSource install_source =
       webapps::InstallableMetrics::GetInstallSource(
-          web_contents, flow == WebAppInstallFlow::kCreateShortcut
-                            ? webapps::InstallTrigger::CREATE_SHORTCUT
-                            : webapps::InstallTrigger::MENU);
+          web_contents,
+#if BUILDFLAG(IS_CHROMEOS)
+          flow == WebAppInstallFlow::kCreateShortcut
+              ? webapps::InstallTrigger::CREATE_SHORTCUT
+              :
+#endif
+              webapps::InstallTrigger::MENU);
 
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
       promoter->RegisterCurrentInstallForWebContents(install_source);
@@ -203,9 +206,12 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
   // Appropriately set the fallback behavior to distinguish installation of DIY
   // apps with the create shortcut flow.
   FallbackBehavior fallback_behavior =
+#if BUILDFLAG(IS_CHROMEOS)
       flow == WebAppInstallFlow::kCreateShortcut
           ? FallbackBehavior::kAllowFallbackDataAlways
-          : FallbackBehavior::kUseFallbackInfoWhenNotInstallable;
+          :
+#endif
+          FallbackBehavior::kUseFallbackInfoWhenNotInstallable;
 
   provider->scheduler().FetchManifestAndInstall(
       install_source, web_contents->GetWeakPtr(),
