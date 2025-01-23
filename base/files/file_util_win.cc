@@ -920,15 +920,24 @@ bool GetFileInfo(const FilePath& file_path, File::Info* results) {
     return false;
   }
 
-  ULARGE_INTEGER size;
-  size.HighPart = attr.nFileSizeHigh;
-  size.LowPart = attr.nFileSizeLow;
-  // TODO(crbug.com/40227936): Change Info::size to uint64_t and eliminate this
-  // cast.
-  results->size = checked_cast<int64_t>(size.QuadPart);
-
   results->is_directory =
       (attr.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+
+  // According to
+  // https://learn.microsoft.com/en-us/windows/win32/api/fileapi/ns-fileapi-win32_file_attribute_data
+  // both attr.nFileSizeHigh and attr.nFileSizeLow are meaningless if the file
+  // is a directory.
+  if (results->is_directory) {
+    results->size = 0;
+  } else {
+    ULARGE_INTEGER size;
+    size.HighPart = attr.nFileSizeHigh;
+    size.LowPart = attr.nFileSizeLow;
+    // TODO(crbug.com/40227936): Change Info::size to uint64_t and eliminate
+    // this cast.
+    results->size = checked_cast<int64_t>(size.QuadPart);
+  }
+
   results->last_modified = Time::FromFileTime(attr.ftLastWriteTime);
   results->last_accessed = Time::FromFileTime(attr.ftLastAccessTime);
   results->creation_time = Time::FromFileTime(attr.ftCreationTime);
