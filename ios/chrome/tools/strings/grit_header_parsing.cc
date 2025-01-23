@@ -31,8 +31,9 @@ bool FillResourcesFromGritHeader(const base::FilePath& header,
       content, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 
   for (std::string_view line : lines) {
-    if (!base::StartsWith(line, "#define "))
+    if (!base::StartsWith(line, "#define ")) {
       continue;
+    }
 
     std::vector<std::string_view> items = base::SplitStringPiece(
         line, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
