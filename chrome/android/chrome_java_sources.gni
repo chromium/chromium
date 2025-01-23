@@ -9,6 +9,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/ActivityTabProvider.java",
   "java/src/org/chromium/chrome/browser/ActivityUtils.java",
   "java/src/org/chromium/chrome/browser/AppHooks.java",
+  "java/src/org/chromium/chrome/browser/AutofillOptionsLauncher.java",
   "java/src/org/chromium/chrome/browser/BrowserRestartActivity.java",
   "java/src/org/chromium/chrome/browser/ChromeActionModeHandler.java",
   "java/src/org/chromium/chrome/browser/ChromeActivitySessionTracker.java",

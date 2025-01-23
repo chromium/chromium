@@ -537,6 +537,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser") {
 
   sources = [
     "src/org/chromium/chrome/browser/ActivityTabProviderTest.java",
+    "src/org/chromium/chrome/browser/AutofillOptionsLauncherTest.java",
     "src/org/chromium/chrome/browser/ChromeActionModeHandlerTest.java",
     "src/org/chromium/chrome/browser/ChromeTabbedActivityTest.java",
     "src/org/chromium/chrome/browser/ContentViewFocusTest.java",

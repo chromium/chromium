@@ -30,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
                 .setOnClickListener(
                         v -> {
                             Intent sendIntent = new Intent(Intent.ACTION_APPLICATION_PREFERENCES);
-                            sendIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
                             sendIntent.addCategory(Intent.CATEGORY_DEFAULT);
                             sendIntent.addCategory(Intent.CATEGORY_APP_BROWSER);
                             sendIntent.addCategory(Intent.CATEGORY_PREFERENCE);
