@@ -780,9 +780,10 @@ TEST_F(LeakDetectionDelegateTest, StartCheckTriggersChangePwdUrlPrefetch) {
       mock_affiliation_service;
   EXPECT_CALL(client(), GetAffiliationService)
       .WillOnce(Return(&mock_affiliation_service));
-  EXPECT_CALL(mock_affiliation_service,
-              PrefetchChangePasswordURLs(testing::ElementsAre(GetTestUrl()),
-                                         testing::_))
+  const PasswordForm form = CreateTestForm();
+  EXPECT_CALL(
+      mock_affiliation_service,
+      PrefetchChangePasswordURLs(testing::ElementsAre(form.url), testing::_))
       .WillOnce(base::test::RunOnceClosure<1>());
 
   auto check_instance = std::make_unique<MockLeakDetectionCheck>();
@@ -790,8 +791,8 @@ TEST_F(LeakDetectionDelegateTest, StartCheckTriggersChangePwdUrlPrefetch) {
   EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _, _))
       .WillOnce(Return(ByMove(std::move(check_instance))));
 
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck,
-                            CreateTestForm(), GetTestUrl());
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
 
   EXPECT_TRUE(delegate().leak_check());
 }
