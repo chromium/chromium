@@ -128,11 +128,13 @@ void RLZTrackerDelegateImpl::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   // it did previously.  The RLZ folks want RLZ's "first search" detection
   // to remain as unaffected as possible by this change.  This test is
   // there to keep the old behavior.
-  if (!log->is_popup_open)
+  if (!log->is_popup_open) {
     return;
+  }
 
   on_omnibox_url_opened_subscription_ = {};
 
-  if (!on_omnibox_search_callback_.is_null())
+  if (!on_omnibox_search_callback_.is_null()) {
     std::move(on_omnibox_search_callback_).Run();
+  }
 }
