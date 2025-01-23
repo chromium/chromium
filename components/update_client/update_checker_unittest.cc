@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/update_client/update_checker.h"
 
 #include <initializer_list>
@@ -198,7 +193,7 @@ std::unique_ptr<Component> UpdateCheckerTest::MakeComponent(
   crx_component.brand = brand;
   crx_component.install_data_index = install_data_index;
   crx_component.name = "test_jebg";
-  crx_component.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+  crx_component.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
   crx_component.installer = nullptr;
   crx_component.version = base::Version("0.9");
   crx_component.fingerprint = "fp1";

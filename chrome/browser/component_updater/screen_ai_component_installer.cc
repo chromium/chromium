@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/component_updater/screen_ai_component_installer.h"
 
 #include "base/files/file_path.h"
@@ -34,8 +29,7 @@ constexpr uint8_t kScreenAIPublicKeySHA256[32] = {
     0x77, 0xab, 0x55, 0x0d, 0x0e, 0x5a, 0xed, 0x04, 0x7b, 0x1e, 0x16,
     0x86, 0x7c, 0xf0, 0x42, 0x71, 0x85, 0xe4, 0x31, 0x2d, 0xc5};
 
-static_assert(std::size(kScreenAIPublicKeySHA256) == crypto::kSHA256Length,
-              "Wrong hash length");
+static_assert(std::size(kScreenAIPublicKeySHA256) == crypto::kSHA256Length);
 
 constexpr char kScreenAIManifestName[] = "ScreenAI Library";
 
@@ -105,8 +99,8 @@ std::string ScreenAIComponentInstallerPolicy::GetOmahaId() {
 
 void ScreenAIComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
-  hash->assign(kScreenAIPublicKeySHA256,
-               kScreenAIPublicKeySHA256 + std::size(kScreenAIPublicKeySHA256));
+  hash->assign(std::begin(kScreenAIPublicKeySHA256),
+               std::end(kScreenAIPublicKeySHA256));
 }
 
 std::string ScreenAIComponentInstallerPolicy::GetName() const {
