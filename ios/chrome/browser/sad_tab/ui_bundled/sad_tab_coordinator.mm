@@ -46,8 +46,9 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  if (_viewController)
+  if (_viewController) {
     return;
+  }
 
   if (self.repeatedFailure) {
     UMA_HISTOGRAM_ENUMERATION(ui_metrics::kSadTabFeedbackHistogramKey,
@@ -78,8 +79,9 @@
 }
 
 - (void)stop {
-  if (!_viewController)
+  if (!_viewController) {
     return;
+  }
 
   [self didStopFullscreenDisablingUI];
 
@@ -133,8 +135,9 @@
 - (void)sadTabTabHelper:(SadTabTabHelper*)tabHelper
     presentSadTabForWebState:(web::WebState*)webState
              repeatedFailure:(BOOL)repeatedFailure {
-  if (!webState->IsVisible())
+  if (!webState->IsVisible()) {
     return;
+  }
 
   self.repeatedFailure = repeatedFailure;
   [self start];
