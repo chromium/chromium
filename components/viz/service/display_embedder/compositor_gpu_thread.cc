@@ -76,6 +76,7 @@ std::unique_ptr<CompositorGpuThread> CompositorGpuThread::MaybeCreate(
     compositor_thread_device_queue->InitializeForCompositorGpuThread(
         device_queue->GetVulkanPhysicalDevice(),
         device_queue->GetVulkanDevice(), device_queue->GetVulkanQueue(),
+        device_queue->GetVulkanQueueLockContext(),
         device_queue->GetVulkanQueueIndex(), device_queue->enabled_extensions(),
         device_queue->enabled_device_features_2(),
         device_queue->vma_allocator());

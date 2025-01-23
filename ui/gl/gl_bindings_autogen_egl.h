@@ -222,6 +222,7 @@ typedef EGLint(GL_BINDING_CALL* eglLabelObjectKHRProc)(EGLDisplay display,
                                                        EGLenum objectType,
                                                        EGLObjectKHR object,
                                                        EGLLabelKHR label);
+typedef void(GL_BINDING_CALL* eglLockVulkanQueueANGLEProc)(EGLDisplay dpy);
 typedef EGLBoolean(GL_BINDING_CALL* eglMakeCurrentProc)(EGLDisplay dpy,
                                                         EGLSurface draw,
                                                         EGLSurface read,
@@ -347,6 +348,7 @@ typedef EGLBoolean(GL_BINDING_CALL* eglSwapBuffersWithDamageKHRProc)(
 typedef EGLBoolean(GL_BINDING_CALL* eglSwapIntervalProc)(EGLDisplay dpy,
                                                          EGLint interval);
 typedef EGLBoolean(GL_BINDING_CALL* eglTerminateProc)(EGLDisplay dpy);
+typedef void(GL_BINDING_CALL* eglUnlockVulkanQueueANGLEProc)(EGLDisplay dpy);
 typedef EGLBoolean(GL_BINDING_CALL* eglWaitClientProc)(void);
 typedef EGLBoolean(GL_BINDING_CALL* eglWaitGLProc)(void);
 typedef EGLBoolean(GL_BINDING_CALL* eglWaitNativeProc)(EGLint engine);
@@ -397,6 +399,7 @@ struct GL_EXPORT DisplayExtensionsEGL {
   bool b_EGL_ANGLE_create_context_client_arrays;
   bool b_EGL_ANGLE_create_context_webgl_compatibility;
   bool b_EGL_ANGLE_d3d_share_handle_client_buffer;
+  bool b_EGL_ANGLE_device_vulkan;
   bool b_EGL_ANGLE_display_semaphore_share_group;
   bool b_EGL_ANGLE_display_texture_share_group;
   bool b_EGL_ANGLE_external_context_and_surface;
@@ -512,6 +515,7 @@ struct ProcsEGL {
   eglImageFlushExternalEXTProc eglImageFlushExternalEXTFn;
   eglInitializeProc eglInitializeFn;
   eglLabelObjectKHRProc eglLabelObjectKHRFn;
+  eglLockVulkanQueueANGLEProc eglLockVulkanQueueANGLEFn;
   eglMakeCurrentProc eglMakeCurrentFn;
   eglPostSubBufferNVProc eglPostSubBufferNVFn;
   eglQueryAPIProc eglQueryAPIFn;
@@ -550,6 +554,7 @@ struct ProcsEGL {
   eglSwapBuffersWithDamageKHRProc eglSwapBuffersWithDamageKHRFn;
   eglSwapIntervalProc eglSwapIntervalFn;
   eglTerminateProc eglTerminateFn;
+  eglUnlockVulkanQueueANGLEProc eglUnlockVulkanQueueANGLEFn;
   eglWaitClientProc eglWaitClientFn;
   eglWaitGLProc eglWaitGLFn;
   eglWaitNativeProc eglWaitNativeFn;
@@ -744,6 +749,7 @@ class GL_EXPORT EGLApi {
                                      EGLenum objectType,
                                      EGLObjectKHR object,
                                      EGLLabelKHR label) = 0;
+  virtual void eglLockVulkanQueueANGLEFn(EGLDisplay dpy) = 0;
   virtual EGLBoolean eglMakeCurrentFn(EGLDisplay dpy,
                                       EGLSurface draw,
                                       EGLSurface read,
@@ -848,6 +854,7 @@ class GL_EXPORT EGLApi {
                                                    EGLint n_rects) = 0;
   virtual EGLBoolean eglSwapIntervalFn(EGLDisplay dpy, EGLint interval) = 0;
   virtual EGLBoolean eglTerminateFn(EGLDisplay dpy) = 0;
+  virtual void eglUnlockVulkanQueueANGLEFn(EGLDisplay dpy) = 0;
   virtual EGLBoolean eglWaitClientFn(void) = 0;
   virtual EGLBoolean eglWaitGLFn(void) = 0;
   virtual EGLBoolean eglWaitNativeFn(EGLint engine) = 0;
@@ -940,6 +947,8 @@ class GL_EXPORT EGLApi {
   ::gl::g_current_egl_context->eglImageFlushExternalEXTFn
 #define eglInitialize ::gl::g_current_egl_context->eglInitializeFn
 #define eglLabelObjectKHR ::gl::g_current_egl_context->eglLabelObjectKHRFn
+#define eglLockVulkanQueueANGLE \
+  ::gl::g_current_egl_context->eglLockVulkanQueueANGLEFn
 #define eglMakeCurrent ::gl::g_current_egl_context->eglMakeCurrentFn
 #define eglPostSubBufferNV ::gl::g_current_egl_context->eglPostSubBufferNVFn
 #define eglQueryAPI ::gl::g_current_egl_context->eglQueryAPIFn
@@ -994,6 +1003,8 @@ class GL_EXPORT EGLApi {
   ::gl::g_current_egl_context->eglSwapBuffersWithDamageKHRFn
 #define eglSwapInterval ::gl::g_current_egl_context->eglSwapIntervalFn
 #define eglTerminate ::gl::g_current_egl_context->eglTerminateFn
+#define eglUnlockVulkanQueueANGLE \
+  ::gl::g_current_egl_context->eglUnlockVulkanQueueANGLEFn
 #define eglWaitClient ::gl::g_current_egl_context->eglWaitClientFn
 #define eglWaitGL ::gl::g_current_egl_context->eglWaitGLFn
 #define eglWaitNative ::gl::g_current_egl_context->eglWaitNativeFn

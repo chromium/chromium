@@ -108,6 +108,7 @@ bool VulkanDeviceQueue::Initialize(
   DCHECK_EQ(static_cast<VkQueue>(VK_NULL_HANDLE), vk_queue_);
   DCHECK_EQ(static_cast<VmaAllocator>(VK_NULL_HANDLE), owned_vma_allocator_);
   DCHECK_EQ(static_cast<VmaAllocator>(VK_NULL_HANDLE), vma_allocator_);
+  DCHECK_EQ(nullptr, angle_display_);
 
   if (VK_NULL_HANDLE == vk_instance_)
     return false;
@@ -474,6 +475,7 @@ bool VulkanDeviceQueue::InitializeFromANGLE() {
   if (!enabled_device_features_2_from_angle_)
     return false;
 
+  angle_display_ = gl::QueryDisplayFromANGLE();
   return InitCommon(vk_physical_device, vk_device, vk_queue, vk_queue_index,
                     enabled_extensions);
 }
@@ -492,6 +494,7 @@ bool VulkanDeviceQueue::InitializeForCompositorGpuThread(
     VkPhysicalDevice vk_physical_device,
     VkDevice vk_device,
     VkQueue vk_queue,
+    void* vk_queue_lock_context,
     uint32_t vk_queue_index,
     gfx::ExtensionSet enabled_extensions,
     const VkPhysicalDeviceFeatures2& vk_physical_device_features2,
@@ -508,8 +511,10 @@ bool VulkanDeviceQueue::InitializeForCompositorGpuThread(
   // during GpuServiceImpl init. At this point none of the gpu threads would be
   // doing read access until GpuServiceImpl init completed. Hence its safe to
   // access map here.
+  // If the Vulkan queue is queried from ANGLE, ANGLE's internal locking needs
+  // to be used.
   GetVulkanFunctionPointers()->per_queue_lock_map[vk_queue] =
-      std::make_unique<base::Lock>();
+      std::make_unique<gpu::VulkanQueueLock>(vk_queue_lock_context);
   enabled_device_features_2_ = vk_physical_device_features2;
 
   // Note that CompositorGpuThread uses same vma allocator as gpu main thread.

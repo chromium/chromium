@@ -180,6 +180,7 @@ EGLint eglLabelObjectKHRFn(EGLDisplay display,
                            EGLenum objectType,
                            EGLObjectKHR object,
                            EGLLabelKHR label) override;
+void eglLockVulkanQueueANGLEFn(EGLDisplay dpy) override;
 EGLBoolean eglMakeCurrentFn(EGLDisplay dpy,
                             EGLSurface draw,
                             EGLSurface read,
@@ -282,6 +283,7 @@ EGLBoolean eglSwapBuffersWithDamageKHRFn(EGLDisplay dpy,
                                          EGLint n_rects) override;
 EGLBoolean eglSwapIntervalFn(EGLDisplay dpy, EGLint interval) override;
 EGLBoolean eglTerminateFn(EGLDisplay dpy) override;
+void eglUnlockVulkanQueueANGLEFn(EGLDisplay dpy) override;
 EGLBoolean eglWaitClientFn(void) override;
 EGLBoolean eglWaitGLFn(void) override;
 EGLBoolean eglWaitNativeFn(EGLint engine) override;
