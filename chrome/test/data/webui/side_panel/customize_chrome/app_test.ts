@@ -324,8 +324,8 @@ suite('AppTest', () => {
               !!customizeChromeApp.shadowRoot!.querySelector('#toolbarButton'));
 
           // Send event for toolbar button being clicked.
-          customizeChromeApp.shadowRoot!.querySelector('#toolbarButton')!
-              .dispatchEvent(new Event('click'));
+          customizeChromeApp.shadowRoot!
+              .querySelector<HTMLElement>('#toolbarButton')!.click();
           await microtasksFinished();
           // Current page should now be toolbar.
           assertTrue(

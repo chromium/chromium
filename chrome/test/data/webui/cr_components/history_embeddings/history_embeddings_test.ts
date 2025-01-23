@@ -47,6 +47,13 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
       },
     ];
 
+    function simulateClick(element: HTMLElement) {
+      // Prevent a navigation from happening during the test, when simulating a
+      // click event on a result or answer node.
+      element.addEventListener('click', e => e.preventDefault(), {once: true});
+      element.click();
+    }
+
     setup(async () => {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       loadTimeData.overrideValues({
@@ -277,7 +284,7 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
       const resultsElements = getResultElements();
       const resultClickEventPromise = eventToPromise('result-click', element);
       // Prevent clicking from actually open in new tabs for native anchor tags.
-      resultsElements[0]!.addEventListener('click', (e) => e.preventDefault());
+      resultsElements[0]!.addEventListener('click', e => e.preventDefault());
       resultsElements[0]!.dispatchEvent(new MouseEvent('click', {
         button: 1,
         altKey: true,
@@ -333,7 +340,7 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
 
       const answerLink = element.shadowRoot!.querySelector('.answer-link');
       assertTrue(!!answerLink);
-      answerLink.addEventListener('click', (e) => e.preventDefault());
+      answerLink.addEventListener('click', e => e.preventDefault());
       const answerClickEventPromise = eventToPromise('answer-click', element);
       answerLink.dispatchEvent(new MouseEvent('click', {
         button: 1,
@@ -365,7 +372,7 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
     test('FiresClickOnMoreActions', async () => {
       const moreActionsIconButtons = getResultElements().map(
           result => result.querySelector('cr-icon-button'));
-      moreActionsIconButtons[0]!.dispatchEvent(new Event('click'));
+      moreActionsIconButtons[0]!.click();
       await microtasksFinished();
 
       // Clicking on the more actions button for the first item should load
@@ -384,20 +391,20 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
           eventToPromise('more-from-site-click', element);
       const moreFromSiteItem =
           moreActionsMenu.querySelector<HTMLElement>('#moreFromSiteOption')!;
-      moreFromSiteItem.dispatchEvent(new Event('click'));
+      moreFromSiteItem.click();
       const moreFromSiteEvent = await moreFromSiteEventPromise;
       assertEquals(mockResults[0], moreFromSiteEvent.detail);
       assertFalse(moreActionsMenu.open);
 
       // Clicking on the second button should fire the 'remove-item-click' event
       // with the second item's model, and then close the menu.
-      moreActionsIconButtons[1]!.dispatchEvent(new Event('click'));
+      moreActionsIconButtons[1]!.click();
       assertTrue(moreActionsMenu.open);
       const removeItemEventPromise =
           eventToPromise('remove-item-click', element);
       const removeItemItem = moreActionsMenu.querySelector<HTMLElement>(
           '#removeFromHistoryOption')!;
-      removeItemItem.dispatchEvent(new Event('click'));
+      removeItemItem.click();
       await microtasksFinished();
       const removeItemEvent = await removeItemEventPromise;
       assertEquals(mockResults[1], removeItemEvent.detail);
@@ -409,10 +416,9 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
           result => result.querySelector('cr-icon-button'));
 
       // Open the 'more actions' menu for the first result and remove it.
-      moreActionsIconButtons[0]!.dispatchEvent(new Event('click'));
+      moreActionsIconButtons[0]!.click();
       element.shadowRoot!
-          .querySelector<HTMLElement>(
-              '#removeFromHistoryOption')!.dispatchEvent(new Event('click'));
+          .querySelector<HTMLElement>('#removeFromHistoryOption')!.click();
       await microtasksFinished();
 
       // There is still 1 result left so it should still be visible.
@@ -421,10 +427,9 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
       assertEquals(1, getResultElements().length);
 
       // Open the 'more actions' menu for the last result and remove it.
-      moreActionsIconButtons[0]!.dispatchEvent(new Event('click'));
+      moreActionsIconButtons[0]!.click();
       element.shadowRoot!
-          .querySelector<HTMLElement>(
-              '#removeFromHistoryOption')!.dispatchEvent(new Event('click'));
+          .querySelector<HTMLElement>('#removeFromHistoryOption')!.click();
       await microtasksFinished();
 
       // No results left.
@@ -486,7 +491,8 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
     test('SendsQualityLog', async () => {
       // Click on the second result.
       const resultsElements = getResultElements();
-      resultsElements[1]!.dispatchEvent(new Event('click'));
+      assertEquals(2, resultsElements.length);
+      simulateClick(resultsElements[1]!);
 
       // Perform a new search, which should log the previous result.
       element.searchQuery = 'some new query';
@@ -586,8 +592,9 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
     test('SendsQualityLogOnlyOnce', async () => {
       // Click on a couple of the results.
       const resultsElements = getResultElements();
-      resultsElements[0]!.dispatchEvent(new Event('click'));
-      resultsElements[1]!.dispatchEvent(new Event('click'));
+      assertEquals(2, resultsElements.length);
+      simulateClick(resultsElements[0]!);
+      simulateClick(resultsElements[1]!);
 
       // Multiple events that can cause logs.
       element.searchQuery = 'some newer query';
@@ -605,7 +612,7 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
     test('ForceSupressesLogging', async () => {
       element.forceSuppressLogging = true;
       const resultsElements = getResultElements();
-      resultsElements[0]!.dispatchEvent(new Event('click'));
+      simulateClick(resultsElements[0]!);
       window.dispatchEvent(new Event('beforeunload'));
       assertEquals(0, handler.getCallCount('sendQualityLog'));
     });
@@ -613,7 +620,7 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
     test('RecordsMetrics', async () => {
       // Clicking on a result sends metrics for the click.
       const resultsElements = getResultElements();
-      resultsElements[0]!.dispatchEvent(new Event('click'));
+      simulateClick(resultsElements[0]!);
       assertDeepEquals(
           [
             /* nonEmptyResults= */ true,
@@ -712,8 +719,7 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
       const answerLink =
           element.shadowRoot!.querySelector<HTMLAnchorElement>('.answer-link');
       assertTrue(!!answerLink);
-      answerLink.addEventListener('click', (e) => e.preventDefault());
-      answerLink.click();
+      simulateClick(answerLink);
       window.dispatchEvent(new Event('beforeunload'));  // Flush metrics.
       assertDeepEquals(
           [

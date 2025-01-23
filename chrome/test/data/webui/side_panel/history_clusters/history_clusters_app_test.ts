@@ -9,7 +9,7 @@ import {BrowserProxyImpl, HistoryEmbeddingsBrowserProxyImpl, HistoryEmbeddingsPa
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('HistoryClustersAppWithEmbeddingsTest', () => {
   let app: HistoryClustersAppElement;
@@ -74,8 +74,9 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
     assertTrue(!!disclaimerLink);
     assertTrue(isVisible(disclaimerLink));
 
-    const clickEvent = new Event('click', {cancelable: true});
-    disclaimerLink.dispatchEvent(clickEvent);
+    const whenClick = eventToPromise('click', disclaimerLink);
+    disclaimerLink.click();
+    const clickEvent = await whenClick;
     await embeddingsHandler.whenCalled('openSettingsPage');
     assertTrue(clickEvent.defaultPrevented);
     assertEquals(1, embeddingsHandler.getCallCount('openSettingsPage'));

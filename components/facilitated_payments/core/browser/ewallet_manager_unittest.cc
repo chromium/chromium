@@ -48,6 +48,12 @@ CoreAccountInfo CreateLoggedInAccountInfo() {
   return account;
 }
 
+SecurePayload CreateSecurePayload() {
+  SecurePayload secure_payload;
+  secure_payload.action_token = {'A', 'c', 't', 'i', 'o', 'n'};
+  return secure_payload;
+}
+
 }  // namespace
 
 class EwalletManagerTest : public testing::Test {
@@ -615,8 +621,7 @@ TEST_F(EwalletManagerTest,
 
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
-  response_details->secure_payload_.action_token =
-      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+  response_details->secure_payload_ = CreateSecurePayload();
   test_api(*ewallet_manager_)
       .OnInitiatePaymentResponseReceived(
           base::TimeTicks::Now() - base::Seconds(2),
@@ -694,8 +699,7 @@ TEST_F(EwalletManagerTest,
 
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
-  response_details->secure_payload_.action_token =
-      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+  response_details->secure_payload_ = CreateSecurePayload();
   test_api(*ewallet_manager_)
       .OnInitiatePaymentResponseReceived(
           base::TimeTicks::Now() - base::Seconds(2),
@@ -734,8 +738,7 @@ TEST_F(EwalletManagerTest,
 
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
-  response_details->secure_payload_.action_token =
-      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+  response_details->secure_payload_ = CreateSecurePayload();
   test_api(*ewallet_manager_)
       .OnInitiatePaymentResponseReceived(
           base::TimeTicks::Now() - base::Seconds(2),
@@ -763,8 +766,7 @@ TEST_F(EwalletManagerTest,
 
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
-  response_details->secure_payload_.action_token =
-      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+  response_details->secure_payload_ = CreateSecurePayload();
   test_api(*ewallet_manager_)
       .OnInitiatePaymentResponseReceived(
           base::TimeTicks::Now() - base::Seconds(2),
@@ -1358,8 +1360,7 @@ TEST_F(EwalletManagerTest,
 
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
-  response_details->secure_payload_.action_token =
-      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+  response_details->secure_payload_ = CreateSecurePayload();
   test_api(*ewallet_manager_)
       .OnInitiatePaymentResponseReceived(
           base::TimeTicks::Now() - base::Seconds(2),
@@ -1386,8 +1387,7 @@ TEST_F(EwalletManagerTest,
 
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
-  response_details->secure_payload_.action_token =
-      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+  response_details->secure_payload_ = CreateSecurePayload();
   test_api(*ewallet_manager_)
       .OnInitiatePaymentResponseReceived(
           base::TimeTicks::Now() - base::Seconds(2),

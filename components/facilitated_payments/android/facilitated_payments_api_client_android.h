@@ -46,7 +46,7 @@ class FacilitatedPaymentsApiClientAndroid
       base::OnceCallback<void(std::vector<uint8_t>)> callback) override;
   void InvokePurchaseAction(
       CoreAccountInfo primary_account,
-      base::span<const uint8_t> action_token,
+      const SecurePayload& secure_payload,
       base::OnceCallback<void(PurchaseActionResult)> callback) override;
 
   void OnIsAvailable(JNIEnv* env, jboolean is_available);
