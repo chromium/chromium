@@ -139,9 +139,9 @@ const CGFloat kIpadTabSwipeDistance = 100;
 @synthesize toolbarInteractionHandler = _toolbarInteractionHandler;
 @synthesize tabStripDelegate = _tabStripDelegate;
 
-- (instancetype)
-    initWithFullscreenController:(FullscreenController*)fullscreenController
-                    webStateList:(WebStateList*)webStateList {
+- (instancetype)initWithFullscreenController:
+                    (FullscreenController*)fullscreenController
+                                webStateList:(WebStateList*)webStateList {
   self = [super init];
   if (self) {
     _webStateList = webStateList;

@@ -14,29 +14,34 @@
 #import "url/gurl.h"
 
 BOOL IsSwipingBack(UISwipeGestureRecognizerDirection direction) {
-  if (UseRTLLayout())
+  if (UseRTLLayout()) {
     return direction == UISwipeGestureRecognizerDirectionLeft;
-  else
+  } else {
     return direction == UISwipeGestureRecognizerDirectionRight;
+  }
 }
 
 BOOL IsSwipingForward(UISwipeGestureRecognizerDirection direction) {
-  if (UseRTLLayout())
+  if (UseRTLLayout()) {
     return direction == UISwipeGestureRecognizerDirectionRight;
-  else
+  } else {
     return direction == UISwipeGestureRecognizerDirectionLeft;
+  }
 }
 
 BOOL UseNativeSwipe(web::NavigationItem* item) {
-  if (!item)
+  if (!item) {
     return NO;
+  }
 
-  if (IsURLNewTabPage(item->GetVirtualURL()))
+  if (IsURLNewTabPage(item->GetVirtualURL())) {
     return YES;
+  }
 
   GURL url(item->GetURL());
-  if (UrlHasChromeScheme(url) && url.host_piece() == kChromeUICrashHost)
+  if (UrlHasChromeScheme(url) && url.host_piece() == kChromeUICrashHost) {
     return YES;
+  }
 
   return NO;
 }

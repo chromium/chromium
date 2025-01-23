@@ -94,12 +94,12 @@ const CGFloat kResizeFactor = 4;
 
     background.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
 
-    _rightCard =
-        [[SwipeView alloc] initWithFrame:CGRectZero topMargin:topMargin];
+    _rightCard = [[SwipeView alloc] initWithFrame:CGRectZero
+                                        topMargin:topMargin];
     _rightCard.layer.cornerRadius = kCardCornerRadius;
     _rightCard.layer.masksToBounds = YES;
-    _leftCard =
-        [[SwipeView alloc] initWithFrame:CGRectZero topMargin:topMargin];
+    _leftCard = [[SwipeView alloc] initWithFrame:CGRectZero
+                                       topMargin:topMargin];
     _leftCard.layer.cornerRadius = kCardCornerRadius;
     _leftCard.layer.masksToBounds = YES;
     [_rightCard setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -341,8 +341,9 @@ const CGFloat kResizeFactor = 4;
   int currentIndex = _webStateList->active_index();
   // Something happened and now there is not active WebState.  End card side let
   // swipe and BVC show no tabs UI.
-  if (currentIndex == WebStateList::kInvalidIndex)
+  if (currentIndex == WebStateList::kInvalidIndex) {
     return [self.delegate sideSwipeViewDismissAnimationDidEnd:self];
+  }
 
   CGFloat width = [self cardWidth];
   CGAffineTransform rightTransform, leftTransform;
