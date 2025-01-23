@@ -31,7 +31,8 @@ enum class SharedTabGroupManageTypeDesktop {
   kManageGroup = 1,
   kDeleteGroup = 2,
   kRecentActivity = 3,
-  kMaxValue = kRecentActivity
+  kManageGroupFromUserJoinNotification = 4,
+  kMaxValue = kManageGroupFromUserJoinNotification
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:SharedTabGroupManageTypeDesktop)
 

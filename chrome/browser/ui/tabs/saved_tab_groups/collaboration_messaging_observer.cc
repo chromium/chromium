@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -296,6 +297,9 @@ void CollaborationMessagingObserver::ManageSharingForCurrentInstantMessage() {
   if (Browser* browser =
           tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(
               group_id.value())) {
+    saved_tab_groups::metrics::RecordSharedTabGroupManageType(
+        saved_tab_groups::metrics::SharedTabGroupManageTypeDesktop::
+            kManageGroupFromUserJoinNotification);
     DataSharingBubbleController::GetOrCreateForBrowser(browser)->Show(
         group_id.value());
   }
