@@ -132,7 +132,6 @@ OnDeviceExecution::OnDeviceExecution(
       ->mutable_on_device_model_execution_info()
       ->add_execution_infos();
   start_ = base::TimeTicks::Now();
-  SetExecutionRequest(feature_, log_, *last_message_);
   *(log_.mutable_model_execution_info()
         ->mutable_on_device_model_execution_info()
         ->mutable_model_versions()) = opts_.model_versions;
@@ -594,7 +593,6 @@ void OnDeviceExecution::SendSuccessCompletionCallback(
   // Complete the log entry and promise it to the ModelQualityUploaderService.
   std::unique_ptr<ModelQualityLogEntry> log_entry;
   std::unique_ptr<proto::ModelExecutionInfo> model_execution_info;
-  SetExecutionResponse(feature_, log_, success_response_metadata);
   MutableLoggedResponse()->set_status(
       proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_SUCCESS);
   log_entry = std::make_unique<ModelQualityLogEntry>(opts_.log_uploader);

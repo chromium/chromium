@@ -28,7 +28,6 @@
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/webui/webui_utils.h"
 #include "components/feature_engagement/public/tracker.h"
-#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/proto/features/product_specifications.pb.h"
 #include "components/payments/core/currency_formatter.h"
@@ -717,8 +716,7 @@ void ShoppingServiceHandler::SetProductSpecificationsUserFeedback(
     return;
   }
   optimization_guide::proto::ProductSpecificationsQuality* quality_proto =
-      optimization_guide::ProductSpecificationsFeatureTypeMap::GetLoggingData(
-          *request)
+          request->mutable_product_specifications()
           ->mutable_quality();
   quality_proto->set_user_feedback(user_feedback);
 }
@@ -772,8 +770,7 @@ void ShoppingServiceHandler::OnGetProductSpecificationsForUrls(
       return;
     }
     RecordQualityEntry(
-        optimization_guide::ProductSpecificationsFeatureTypeMap::GetLoggingData(
-            *request)
+            request->mutable_product_specifications()
             ->mutable_quality(),
         std::move(input_urls), std::move(specs.value()));
   }

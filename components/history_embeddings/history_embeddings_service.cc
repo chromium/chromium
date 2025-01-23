@@ -31,7 +31,6 @@
 #include "components/history_embeddings/scheduling_embedder.h"
 #include "components/history_embeddings/sql_database.h"
 #include "components/history_embeddings/vector_database.h"
-#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
@@ -477,8 +476,7 @@ void HistoryEmbeddingsService::SendQualityLog(
     }));
 
     optimization_guide::proto::HistoryQueryQuality* query_quality =
-        optimization_guide::HistoryQueryFeatureTypeMap::GetLoggingData(*request)
-            ->mutable_quality();
+        request->mutable_history_query()->mutable_quality();
     if (!query_quality) {
       return;
     }
@@ -548,8 +546,9 @@ void HistoryEmbeddingsService::SendQualityLog(
   if (GetFeatureParameters().send_quality_log_v2) {
     if (result.answerer_result.log_entry) {
       optimization_guide::proto::HistoryAnswerQuality* answer_quality =
-          result.answerer_result.log_entry
-              ->quality_data<optimization_guide::HistoryAnswerFeatureTypeMap>();
+          result.answerer_result.log_entry->log_ai_data_request()
+              ->mutable_history_answer()
+              ->mutable_quality();
       if (answer_quality) {
         answer_quality->set_session_id(result.session_id);
         answer_quality->set_url(result.answerer_result.url);

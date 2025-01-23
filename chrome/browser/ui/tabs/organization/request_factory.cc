@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
-#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
@@ -53,8 +52,9 @@ void OnLogResults(
       session->request()->response()->organizations.size() > 0 &&
       session->tab_organizations().size() > 0) {
     optimization_guide::proto::TabOrganizationQuality* quality =
-        log_entry
-            ->quality_data<optimization_guide::TabOrganizationFeatureTypeMap>();
+        log_entry->log_ai_data_request()
+            ->mutable_tab_organization()
+            ->mutable_quality();
 
     AddSessionDetailsToQuality(quality, session);
   }

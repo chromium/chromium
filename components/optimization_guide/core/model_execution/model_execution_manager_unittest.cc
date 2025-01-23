@@ -256,14 +256,6 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
   EXPECT_TRUE(response_holder.GetFinalStatus());
   EXPECT_EQ("foo response", response_holder.value());
   EXPECT_NE(response_holder.log_entry(), nullptr);
-  EXPECT_TRUE(response_holder.log_entry()
-                  ->log_ai_data_request()
-                  ->mutable_compose()
-                  ->has_request());
-  EXPECT_TRUE(response_holder.log_entry()
-                  ->log_ai_data_request()
-                  ->mutable_compose()
-                  ->has_response());
   EXPECT_EQ(response_holder.log_entry()
                 ->log_ai_data_request()
                 ->model_execution_info()
@@ -383,14 +375,6 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelExecutionModeSetToServerOnly) {
   EXPECT_TRUE(response_holder.GetFinalStatus());
   EXPECT_EQ("foo response", response_holder.value());
   EXPECT_NE(response_holder.log_entry(), nullptr);
-  EXPECT_TRUE(response_holder.log_entry()
-                  ->log_ai_data_request()
-                  ->mutable_compose()
-                  ->has_request());
-  EXPECT_TRUE(response_holder.log_entry()
-                  ->log_ai_data_request()
-                  ->mutable_compose()
-                  ->has_response());
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.SessionUsedRemoteExecution.Compose",
@@ -424,14 +408,6 @@ TEST_F(ModelExecutionManagerTest,
   EXPECT_TRUE(response_holder.GetFinalStatus());
   EXPECT_EQ("foo response", response_holder.value());
   EXPECT_NE(response_holder.log_entry(), nullptr);
-  EXPECT_TRUE(response_holder.log_entry()
-                  ->log_ai_data_request()
-                  ->mutable_compose()
-                  ->has_request());
-  EXPECT_TRUE(response_holder.log_entry()
-                  ->log_ai_data_request()
-                  ->mutable_compose()
-                  ->has_response());
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.SessionUsedRemoteExecution.Compose",
@@ -462,14 +438,6 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithPassthroughSession) {
   EXPECT_TRUE(response_holder.GetFinalStatus());
   EXPECT_EQ("foo response", response_holder.value());
   EXPECT_NE(response_holder.log_entry(), nullptr);
-  EXPECT_TRUE(response_holder.log_entry()
-                  ->log_ai_data_request()
-                  ->mutable_compose()
-                  ->has_request());
-  EXPECT_TRUE(response_holder.log_entry()
-                  ->log_ai_data_request()
-                  ->mutable_compose()
-                  ->has_response());
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.SessionUsedRemoteExecution.Compose",
@@ -596,14 +564,6 @@ TEST_F(ModelExecutionManagerTest, TestMultipleParallelRequests) {
   EXPECT_TRUE(response_holder2.GetFinalStatus());
   EXPECT_EQ("foo response", response_holder2.value());
   EXPECT_NE(response_holder2.log_entry(), nullptr);
-  EXPECT_TRUE(response_holder2.log_entry()
-                  ->log_ai_data_request()
-                  ->mutable_compose()
-                  ->has_request());
-  EXPECT_TRUE(response_holder2.log_entry()
-                  ->log_ai_data_request()
-                  ->mutable_compose()
-                  ->has_response());
   EXPECT_EQ(response_holder2.log_entry()
                 ->log_ai_data_request()
                 ->model_execution_info()
