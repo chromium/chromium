@@ -311,7 +311,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="GPU.ANGLE.D3D11CreateDeviceError" enum="Hresult"
     expires_after="2025-02-10">
-  <owner>jonahr@google.com</owner>
+  <owner>geofflang@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
     An extended Windows error code returned from D3D11CreateDevice on error when
@@ -323,7 +323,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="GPU.ANGLE.D3D11FeatureLevel" enum="D3DFeatureLevel"
     expires_after="2025-06-22">
-  <owner>jonahr@google.com</owner>
+  <owner>geofflang@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
     The maxmium supported (or currently requested) Direct3D feature level in
@@ -337,7 +337,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="GPU.ANGLE.D3D11InitializeResult" enum="D3D11InitializeResult"
     expires_after="2025-02-10">
-  <owner>jonahr@google.com</owner>
+  <owner>geofflang@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
     The result from initializing a D3D11 device in ANGLE. Can be success, or one
@@ -348,7 +348,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="GPU.ANGLE.D3D9InitializeResult" enum="D3D9InitializeResult"
     expires_after="2025-02-10">
-  <owner>jonahr@google.com</owner>
+  <owner>geofflang@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
     The result from initializing a D3D9 device in ANGLE. Can be success, or one
@@ -374,27 +374,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.ANGLE.MetalShader.CacheHitCount" units="count"
-    expires_after="2024-09-01">
-  <owner>sky@chromium.org</owner>
-  <owner>angle-team@google.com</owner>
-  <summary>
-    An integer that is logged shortly after the gpu process starts up. The value
-    is the number of shaders that were needed and were available in the shader
-    cache.
-  </summary>
-</histogram>
-
-<histogram name="GPU.ANGLE.MetalShader.CacheMissCount" units="count"
-    expires_after="2024-09-01">
-  <owner>sky@chromium.org</owner>
-  <owner>angle-team@google.com</owner>
-  <summary>
-    An integer that is logged shortly after the gpu process starts up. The value
-    is the number of shaders that were needed and were not in the shader cache.
-  </summary>
-</histogram>
-
 <histogram name="GPU.ANGLE.MetalShaderCompilationTimeUs" units="microseconds"
     expires_after="2025-07-13">
   <owner>geofflang@chromium.org</owner>
@@ -403,29 +382,6 @@ chromium-metrics-reviews@google.com.
     The time it takes for the Metal driver to compile a shader with the
     newLibraryFromSource function. Recorded for all clients regardless of
     support for high resolution timers.
-  </summary>
-</histogram>
-
-<histogram name="GPU.ANGLE.MetalShaderInBlobCache" enum="Boolean"
-    expires_after="2024-09-01">
-  <owner>sky@chromium.org</owner>
-  <owner>angle-team@google.com</owner>
-  <summary>
-    A boolean that is logged for each shader program. A value of true means the
-    metallib for the shader existed in blob-cache. A value of false means the
-    metallib for the shader did not exist in blob-cache.
-  </summary>
-</histogram>
-
-<histogram name="GPU.ANGLE.SupportsDXGI1_2" enum="BooleanSupported"
-    expires_after="2023-09-17">
-  <owner>jonahr@google.com</owner>
-  <owner>angle-team@google.com</owner>
-  <summary>
-    Windows computers running Windows 8+, or running Windows 7 with a platform
-    update, support the newer version of DXGI. This update also indicates the
-    computer is capable of running Direct3D 11.1 if the hardware supports it.
-    Recorded on D3D11 device initialization when ANGLE's D3D backend is in use.
   </summary>
 </histogram>
 
@@ -578,7 +534,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="GPU.D3DShaderModel" enum="ShaderModel"
     expires_after="2024-05-26">
-  <owner>jonahr@google.com</owner>
+  <owner>geofflang@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
     ANGLE's currently active D3D shader model version. Logged once every startup
@@ -918,15 +874,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.GpuCount" units="gpus" expires_after="2023-12-24">
-  <owner>zmo@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    The number of GPUs a device has, excluding software renderers. Recorded when
-    GPU process launches and sends GPUInfo to browser process.
-  </summary>
-</histogram>
-
 <histogram name="GPU.GPUInitializationTime.V4" units="ms"
     expires_after="2025-07-13">
   <owner>magchen@chromium.org</owner>
@@ -1110,16 +1057,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.InitializeOneOffMediumTime" units="ms"
-    expires_after="2023-09-17">
-  <owner>jonahr@google.com</owner>
-  <owner>angle-team@google.com</owner>
-  <summary>
-    The time that the GPU process spends in initializing the GL surface, and
-    collecting graphics information. Records times up to three minutes.
-  </summary>
-</histogram>
-
 <histogram name="GPU.IntelGpuGeneration" enum="IntelGpuGeneration"
     expires_after="2025-06-22">
   <owner>zmo@chromium.org</owner>
@@ -1184,36 +1121,6 @@ chromium-metrics-reviews@google.com.
     was found on the system. Meaning that if only one of the GPUs support
     read-write textures, a non-zero tier will be reported. The histogram is
     recorded at GPU process startup time.
-  </summary>
-</histogram>
-
-<histogram name="Gpu.MetalShaderCache.LoadTime" units="microseconds"
-    expires_after="2023-12-17">
-  <owner>sky@chromium.org</owner>
-  <owner>angle-team@google.com</owner>
-  <summary>
-    The amount of time (in microseconds) the gpu process takes to load the metal
-    shader lib cache. Logged after loading completes on a background thread.
-  </summary>
-</histogram>
-
-<histogram name="Gpu.MetalShaderCache.NumEntriesInCache" units="count"
-    expires_after="2024-09-01">
-  <owner>sky@chromium.org</owner>
-  <owner>angle-team@google.com</owner>
-  <summary>
-    The number of shader programs in the metal shader lib cache. Logged after
-    loading of the metal shader lib cache completes.
-  </summary>
-</histogram>
-
-<histogram name="Gpu.MetalShaderCache.WaitTime" units="microseconds"
-    expires_after="2025-07-13">
-  <owner>sky@chromium.org</owner>
-  <owner>angle-team@google.com</owner>
-  <summary>
-    The amount of time (in microseconds) the gpu process main thread is blocked
-    waiting for the metal shader lib cache to load.
   </summary>
 </histogram>
 
@@ -1284,18 +1191,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.PassthroughDoLinkProgramTime" units="ms"
-    expires_after="2023-11-19">
-  <owner>jonahr@google.com</owner>
-  <owner>angle-team@google.com</owner>
-  <summary>
-    The time we spend in GLES2DecoderPassthroughImpl::DoLinkProgram. Related to
-    how much time we spend compiling shaders during startup. Expired in June
-    2022, and revived in M106. Data may be incomplete for the period during
-    which the histogram was expired.
-  </summary>
-</histogram>
-
 <histogram name="Gpu.PassthroughProgramCacheLoadHitInCache"
     enum="BooleanSuccess" expires_after="2025-07-20">
   <owner>geofflang@google.com</owner>
@@ -1343,20 +1238,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.ProgramCache.CacheHit" enum="BooleanSuccess"
-    expires_after="2023-09-17">
-  <owner>jonahr@google.com</owner>
-  <owner>angle-team@google.com</owner>
-  <summary>
-    If a successfully linked program was found in the GPU program cache during a
-    program link call. Expired in June 2022, and revived in M106. Data may be
-    incomplete for the period during which the histogram was expired.
-  </summary>
-</histogram>
-
 <histogram name="GPU.RasterDecoder.TimeToFlush" units="microseconds"
     expires_after="2024-04-28">
-  <owner>sky@chromium.org</owner>
+  <owner>sunnyps@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Time it takes for RasterDecoderImpl::FlushSurfaces() to complete. Recorded
@@ -1545,16 +1429,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Types of EGL displays used to back WebGL contexts. Recorded at context
     creation time in the GPU process.
-  </summary>
-</histogram>
-
-<histogram name="GPU.WebGLDisplayTypeLarge" enum="EGLDisplayType"
-    expires_after="2023-08-27">
-  <owner>geofflang@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Types of EGL displays used to back large (area &gt;= 128*128) WebGL
-    contexts. Recorded at context creation time in the GPU process.
   </summary>
 </histogram>
 
@@ -1804,19 +1678,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Precompile" summary="Synchronous Pre-compilations"/>
     <variant name="Synchronous" summary="Synchronous Normal compilations"/>
   </token>
-</histogram>
-
-<histogram name="Skia.SubmitRenderPasses" units="renderpasses"
-    expires_after="2023-07-16">
-  <owner>egdaniel@google.com</owner>
-  <owner>bsalomon@google.com</owner>
-  <summary>
-    The number of Skia render passes sent to the GPU during a GrContext::submit
-    call. The max value that is sent here is 100 so anything in the 100 bucket
-    actually includes render pass counts of 100+. Though we don't expect to be
-    reaching 100 render passes often. This is collected each time we submit to
-    the GPU in Skia.
-  </summary>
 </histogram>
 
 <histogram name="Skia.VulkanMemoryAllocator.AmountAllocated" units="KB"
