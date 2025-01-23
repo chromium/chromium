@@ -2672,6 +2672,27 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_LENS_ALERT_TITLE" desc="The title for the alert informing the user that something when wrong with Lens because of the network connection [iOS only].">
         Something went wrong
       </message>
+      <message name="IDS_IOS_LENS_OVERLAY_ONBOARDING_BUTTON_CANCEL" desc="The label for the cancel action button in the lens overlay onboarding consent dialog that cancels the current search. [iOS only].">
+        Cancel
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_ONBOARDING_BUTTON_SEARCH" desc="The label for the screen action button in the lens overlay onboarding consent dialog. [iOS only].">
+        Search screen
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_ONBOARDING_DESCRIPTION" desc="The description for the lens overlay onboarding consent dialog. [iOS only].">
+        When you use Google Lens, a screenshot of the page is sent to Google.
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_ONBOARDING_LEARN_MORE_ACTION" desc="The inline label for the 'learn more' action leading to an explanatory URL [iOS only].">
+        Learn more
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_ONBOARDING_TITLE" desc="The title for the lens overlay onboarding consent dialog. [iOS only].">
+        Search anything on your screen with Google Lens
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_SPEEDBUMP_MENU_CAMERA" desc="The label displayed in the speedbump menu that leads to the camera search option.">
+        Search with camera
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_SPEEDBUMP_MENU_SCREEN" desc="The label displayed in the speedbump menu that leads to the visual screen search option.">
+        Search your screen
+      </message>
       <message name="IDS_IOS_LENS_PROMO_INSTRUCTIONS_STEP1" desc="The text for step 1 in the Lens Promo instructions view.">
         Go to your homepage or keyboard
       </message>
