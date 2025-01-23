@@ -20,6 +20,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/user_login_permission_tracker.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
@@ -464,7 +465,7 @@ bool FakeChromeUserManager::IsGuestSessionAllowed() const {
 bool FakeChromeUserManager::IsGaiaUserAllowed(
     const user_manager::User& user) const {
   DCHECK(user.HasGaiaAccount());
-  return CrosSettings::Get()->IsUserAllowlisted(
+  return UserLoginPermissionTracker::Get()->IsUserAllowlisted(
       user.GetAccountId().GetUserEmail(), nullptr, user.GetType());
 }
 

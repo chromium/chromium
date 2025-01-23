@@ -188,6 +188,9 @@ class DemoLoginControllerTest : public testing::Test {
           loop.Quit();
         }));
     loop.Run();
+
+    EXPECT_TRUE(CrosSettings::Get()->IsUserAllowlisted(
+        kTestEmail, nullptr, std::optional<user_manager::UserType>()));
   }
 
   void ExpectGetExistingController() {

@@ -24,11 +24,13 @@
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/settings/user_login_permission_tracker.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/url_util.h"
@@ -171,8 +173,6 @@ void LoginDemoAccount(const std::string& email,
                       const GaiaId& gaia_id,
                       const std::string& auth_code,
                       const std::string& sign_in_scoped_device_id) {
-  // TODO(crbug.com/364195755): Allow list this user in CrosSetting when the
-  // request is success.
   const AccountId account_id =
       AccountId::FromNonCanonicalEmail(email, gaia_id, AccountType::GOOGLE);
   // The user type is known to be regular. The unicorn flow transitions to the
@@ -385,6 +385,9 @@ void DemoLoginController::HandleSetupDemoAcountResponse(
     OnSetupDemoAccountError(ResultCode::kInvalidCreds);
     return;
   }
+
+  UserLoginPermissionTracker::Get()->SetDemoUser(
+      gaia::CanonicalizeEmail(*email));
 
   auto* local_state = g_browser_process->local_state();
   local_state->SetString(prefs::kDemoAccountGaiaId, *gaia_id);
