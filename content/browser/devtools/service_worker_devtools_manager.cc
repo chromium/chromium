@@ -96,6 +96,7 @@ void ServiceWorkerDevToolsManager::WorkerMainScriptFetchingStarting(
           /*is_installed_version=*/false,
           /*client_security_state=*/nullptr,
           /*coep_reporter=*/mojo::NullRemote(),
+          /*dip_reporter=*/mojo::NullRemote(),
           base::UnguessableToken::Create());
 
   ServiceWorkerDevToolsAgentHost* host_ptr = host.get();
@@ -149,6 +150,8 @@ void ServiceWorkerDevToolsManager::WorkerStarting(
     network::mojom::ClientSecurityStatePtr client_security_state,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
+    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+        dip_reporter,
     base::UnguessableToken* devtools_worker_token,
     bool* pause_on_start) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -175,7 +178,8 @@ void ServiceWorkerDevToolsManager::WorkerStarting(
 
     if (client_security_state) {
       agent_host->UpdateClientSecurityState(std::move(client_security_state),
-                                            std::move(coep_reporter));
+                                            std::move(coep_reporter),
+                                            std::move(dip_reporter));
     }
 
     return;
@@ -186,7 +190,7 @@ void ServiceWorkerDevToolsManager::WorkerStarting(
       worker_process_id, worker_route_id, std::move(context_wrapper),
       version_id, url, scope, is_installed_version,
       std::move(client_security_state), std::move(coep_reporter),
-      *devtools_worker_token);
+      std::move(dip_reporter), *devtools_worker_token);
   live_hosts_[worker_id] = host;
   *pause_on_start = debug_service_worker_on_start_;
   for (auto& observer : observer_list_) {

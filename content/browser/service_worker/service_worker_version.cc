@@ -1249,8 +1249,7 @@ void ServiceWorkerVersion::InitializeGlobalScope() {
           std::move(registration)),
       worker_host_->container_host()->version_object_manager().CreateInfoToSend(
           this),
-      fetch_handler_existence(), std::move(reporting_observer_receiver_),
-      ancestor_frame_type_, key_);
+      fetch_handler_existence(), ancestor_frame_type_, key_);
 
   is_endpoint_ready_ = true;
   associated_registry_ = std::make_unique<blink::AssociatedInterfaceRegistry>();

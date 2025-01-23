@@ -1681,11 +1681,14 @@ void ServiceWorkerGlobalScope::Clone(
     mojo::PendingReceiver<mojom::blink::ControllerServiceWorker> receiver,
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojo::PendingRemote<
-        network::mojom::blink::CrossOriginEmbedderPolicyReporter>
-        coep_reporter) {
+        network::mojom::blink::CrossOriginEmbedderPolicyReporter> coep_reporter,
+    const network::DocumentIsolationPolicy& document_isolation_policy,
+    mojo::PendingRemote<network::mojom::blink::DocumentIsolationPolicyReporter>
+        dip_reporter) {
   DCHECK(IsContextThread());
   auto checker = std::make_unique<CrossOriginResourcePolicyChecker>(
-      cross_origin_embedder_policy, std::move(coep_reporter));
+      cross_origin_embedder_policy, std::move(coep_reporter),
+      document_isolation_policy, std::move(dip_reporter));
 
   controller_receivers_.Add(
       std::move(receiver), std::move(checker),
@@ -1702,8 +1705,6 @@ void ServiceWorkerGlobalScope::InitializeGlobalScope(
     mojom::blink::ServiceWorkerRegistrationObjectInfoPtr registration_info,
     mojom::blink::ServiceWorkerObjectInfoPtr service_worker_info,
     mojom::blink::FetchHandlerExistence fetch_hander_existence,
-    mojo::PendingReceiver<mojom::blink::ReportingObserver>
-        reporting_observer_receiver,
     mojom::blink::AncestorFrameType ancestor_frame_type,
     const blink::BlinkStorageKey& storage_key) {
   DCHECK(IsContextThread());
@@ -1740,10 +1741,6 @@ void ServiceWorkerGlobalScope::InitializeGlobalScope(
   SetFetchHandlerExistence(fetch_hander_existence);
 
   ancestor_frame_type_ = ancestor_frame_type;
-
-  if (reporting_observer_receiver) {
-    ReportingContext::From(this)->Bind(std::move(reporting_observer_receiver));
-  }
 
   global_scope_initialized_ = true;
   if (!pause_evaluation_)

@@ -1143,18 +1143,22 @@ class ServiceWorkerContainerHostTestByClientType
     switch (GetParam()) {
       case ClientType::kWindow: {
         mojo::PendingReceiver<network::mojom::CrossOriginEmbedderPolicyReporter>
-            reporter;
+            coep_reporter;
+        mojo::PendingReceiver<network::mojom::DocumentIsolationPolicyReporter>
+            dip_reporter;
         return std::get<0>(service_worker_client.CommitResponseAndRelease(
             GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                                     /*route_id=*/1),
-            PolicyContainerPolicies(), reporter.InitWithNewPipeAndPassRemote(),
+            PolicyContainerPolicies(),
+            coep_reporter.InitWithNewPipeAndPassRemote(),
+            dip_reporter.InitWithNewPipeAndPassRemote(),
             ukm::kInvalidSourceId));
       }
       case ClientType::kDedicatedWorker:
       case ClientType::kSharedWorker:
         return std::get<0>(service_worker_client.CommitResponseAndRelease(
             /*rfh_id=*/std::nullopt, PolicyContainerPolicies(),
-            /*coep_reporter=*/{}, ukm::kInvalidSourceId));
+            /*coep_reporter=*/{}, /*dip_reporter=*/{}, ukm::kInvalidSourceId));
     }
   }
 

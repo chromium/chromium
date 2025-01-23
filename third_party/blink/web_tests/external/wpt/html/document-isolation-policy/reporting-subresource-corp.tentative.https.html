@@ -98,6 +98,20 @@ const ENVIRONMENTS = [{
   run: async (test, url, expected_count) => {
     return await fetchInFrame(test, FRAME_URL, url, expected_count);
   },
+}, {
+  tag: 'between service worker and page',
+  contextUrl: REPORTING_FRAME_URL,
+  run: async (test, url, expected_count) => {
+    // Here we use a Service Worker without COEP.
+    const WORKER_URL = `${ORIGIN}${BASE}/sw.js`;
+    const reg = await service_worker_unregister_and_register(
+      test, WORKER_URL, REPORTING_FRAME_URL);
+    test.add_cleanup(() => reg.unregister());
+    const worker = reg.installing || reg.waiting || reg.active;
+    worker.addEventListener('error', test.unreached_func('Worker.onerror'));
+    return await fetchInFrame(
+      test, REPORTING_FRAME_URL, url, expected_count);
+  },
 }];
 
 const CASES = [{

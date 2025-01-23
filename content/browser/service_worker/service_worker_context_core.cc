@@ -1417,6 +1417,8 @@ ScopedServiceWorkerClient::CommitResponseAndRelease(
     const PolicyContainerPolicies& policy_container_policies,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
+    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+        dip_reporter,
     ukm::SourceId ukm_source_id) {
   if (!service_worker_client_) {
     return {};
@@ -1426,7 +1428,7 @@ ScopedServiceWorkerClient::CommitResponseAndRelease(
       service_worker_client_->CommitResponse(
           base::PassKey<ScopedServiceWorkerClient>(), std::move(rfh_id),
           policy_container_policies, std::move(coep_reporter),
-          std::move(ukm_source_id));
+          std::move(dip_reporter), std::move(ukm_source_id));
 
   blink::mojom::ControllerServiceWorkerInfoPtr controller;
   if (service_worker_client_->controller()) {

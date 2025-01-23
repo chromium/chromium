@@ -78,13 +78,16 @@ ServiceWorkerContainerHostForClient::ServiceWorkerContainerHostForClient(
     const PolicyContainerPolicies& policy_container_policies,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
+    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+        dip_reporter,
     ukm::SourceId ukm_source_id)
     : service_worker_client_(std::move(service_worker_client)),
       container_(
           container_info->client_receiver.InitWithNewEndpointAndPassRemote()),
       ukm_source_id_(std::move(ukm_source_id)),
       policy_container_policies_(policy_container_policies.Clone()),
-      coep_reporter_(std::move(coep_reporter)) {
+      coep_reporter_(std::move(coep_reporter)),
+      dip_reporter_(std::move(dip_reporter)) {
   CHECK(container_.is_bound());
   CHECK(service_worker_client_);
   CHECK(!service_worker_client_->is_response_committed());
@@ -692,6 +695,8 @@ void ServiceWorkerContainerHostForClient::CloneControllerServiceWorker(
     mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver) {
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter_to_be_passed;
+  mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+      dip_reporter_to_be_passed;
   if (coep_reporter_) {
     DCHECK(service_worker_client().IsContainerForWindowClient());
     coep_reporter_->Clone(
@@ -702,10 +707,22 @@ void ServiceWorkerContainerHostForClient::CloneControllerServiceWorker(
     DCHECK(service_worker_client().IsContainerForWorkerClient());
   }
 
+  if (dip_reporter_) {
+    DCHECK(service_worker_client().IsContainerForWindowClient());
+    dip_reporter_->Clone(
+        dip_reporter_to_be_passed.InitWithNewPipeAndPassReceiver());
+  } else {
+    // TODO(crbug.com/41478971): Implement DedicatedWorker and
+    // SharedWorker cases.
+    DCHECK(service_worker_client().IsContainerForWorkerClient());
+  }
+
   controller()->controller()->Clone(
       std::move(receiver),
       policy_container_policies_.cross_origin_embedder_policy,
-      std::move(coep_reporter_to_be_passed));
+      std::move(coep_reporter_to_be_passed),
+      policy_container_policies_.document_isolation_policy,
+      std::move(dip_reporter_to_be_passed));
 }
 
 bool ServiceWorkerContainerHostForClient::AllowServiceWorker(

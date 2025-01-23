@@ -438,6 +438,8 @@ ServiceWorkerClient::CommitResponse(
     const PolicyContainerPolicies& policy_container_policies,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
+    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+        dip_reporter,
     ukm::SourceId ukm_source_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(client_phase_, ClientPhase::kInitial);
@@ -467,7 +469,7 @@ ServiceWorkerClient::CommitResponse(
   container_host_ = std::make_unique<ServiceWorkerContainerHostForClient>(
       base::PassKey<ServiceWorkerClient>(), AsWeakPtr(), container_info,
       policy_container_policies, std::move(coep_reporter),
-      std::move(ukm_source_id));
+      std::move(dip_reporter), std::move(ukm_source_id));
 
   TransitionToClientPhase(ClientPhase::kResponseCommitted);
 

@@ -6283,16 +6283,22 @@ void NavigationRequest::CommitNavigation() {
   if (service_worker_handle_ &&
       service_worker_handle_->service_worker_client()) {
     DCHECK(coep_reporter());
+    DCHECK(dip_reporter());
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-        reporter_remote;
-    coep_reporter()->Clone(reporter_remote.InitWithNewPipeAndPassReceiver());
+        coep_reporter_remote;
+    coep_reporter()->Clone(
+        coep_reporter_remote.InitWithNewPipeAndPassReceiver());
+
+    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+        dip_reporter_remote;
+    dip_reporter()->Clone(dip_reporter_remote.InitWithNewPipeAndPassReceiver());
 
     std::tie(service_worker_container_info, controller) =
         service_worker_handle_->scoped_service_worker_client()
             ->CommitResponseAndRelease(
                 GetRenderFrameHost()->GetGlobalId(),
                 policy_container_builder_->FinalPolicies(),
-                std::move(reporter_remote),
+                std::move(coep_reporter_remote), std::move(dip_reporter_remote),
                 commit_params_->document_ukm_source_id);
   }
 

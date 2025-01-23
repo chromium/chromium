@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/document_isolation_policy.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
@@ -249,6 +250,8 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
       const PolicyContainerPolicies& policy_container_policies,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
+      mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+          dip_reporter,
       ukm::SourceId ukm_source_id);
 
   ~ServiceWorkerContainerHostForClient() override;
@@ -435,6 +438,10 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
   // passed to the service worker. Bound on response commit.
   mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter_;
+
+  // An endpoint connected to the DocumentIsolationPolicy reporter. A clone of
+  // this connection is passed to the service worker. Bound on response commit.
+  mojo::Remote<network::mojom::DocumentIsolationPolicyReporter> dip_reporter_;
 
   base::WeakPtrFactory<ServiceWorkerContainerHostForClient> weak_ptr_factory_{
       this};

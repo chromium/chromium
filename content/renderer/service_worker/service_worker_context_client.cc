@@ -203,14 +203,19 @@ void ServiceWorkerContextClient::StartWorkerContextOnInitiatorThread(
         content_settings,
     mojo::PendingRemote<blink::mojom::CacheStorage> cache_storage,
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
-        browser_interface_broker) {
+        browser_interface_broker,
+    mojo::PendingReceiver<blink::mojom::ReportingObserver>
+        coep_reporting_observer,
+    mojo::PendingReceiver<blink::mojom::ReportingObserver>
+        dip_reporting_observer) {
   DCHECK(initiator_thread_task_runner_->RunsTasksInCurrentSequence());
   worker_ = std::move(worker);
   worker_->StartWorkerContext(
       std::move(start_data), std::move(installed_scripts_manager_params),
       std::move(content_settings), std::move(cache_storage),
       std::move(browser_interface_broker), blink_interface_registry_.get(),
-      initiator_thread_task_runner_);
+      initiator_thread_task_runner_, std::move(coep_reporting_observer),
+      std::move(dip_reporting_observer));
 }
 
 blink::WebEmbeddedWorker& ServiceWorkerContextClient::worker() {
