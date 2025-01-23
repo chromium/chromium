@@ -168,14 +168,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   // Same AppID should be in the registrar using start_url from the manifest.
   EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
             registrar().GetInstallState(app_id.value()));
-  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   std::optional<webapps::AppId> opt_app_id =
       registrar().FindBestAppWithUrlInScope(
-          start_url, {
-                         proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                         proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                     });
+          start_url,
+          web_app::WebAppFilter::InstalledInOperatingSystemForTesting());
   EXPECT_TRUE(opt_app_id.has_value());
   EXPECT_EQ(*opt_app_id, app_id);
 }
@@ -198,9 +194,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
             registrar().GetAppShortName(app_id.value()));
   std::optional<webapps::AppId> opt_app_id =
       registrar().FindBestAppWithUrlInScope(
-          final_url, {
-                         proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                     });
+          final_url,
+          web_app::WebAppFilter::InstalledInOperatingSystemForTesting());
+  ASSERT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+            registrar().GetInstallState(*opt_app_id));
   ASSERT_TRUE(opt_app_id.has_value());
   EXPECT_EQ(*opt_app_id, app_id);
   EXPECT_EQ(registrar().GetAppStartUrl(*opt_app_id), final_url);
@@ -543,13 +540,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest, ForceReinstall) {
     install_options.force_reinstall = true;
     InstallApp(std::move(install_options));
 
-    // TODO(crbug.com/379827962): Evaluate call sites of
-    // FindBestAppWithUrlInScope for correctness.
     app_id = registrar().FindBestAppWithUrlInScope(
-        url, {
-                 proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                 proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-             });
+        url, web_app::WebAppFilter::InstalledInOperatingSystemForTesting());
     EXPECT_TRUE(app_id.has_value());
     EXPECT_EQ("Manifest", registrar().GetAppShortName(app_id.value()));
   }
@@ -560,14 +552,9 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest, ForceReinstall) {
     install_options.force_reinstall = true;
     InstallApp(std::move(install_options));
 
-    // TODO(crbug.com/379827962): Evaluate call sites of
-    // FindBestAppWithUrlInScope for correctness.
     std::optional<webapps::AppId> new_app_id =
         registrar().FindBestAppWithUrlInScope(
-            url, {
-                     proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                     proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                 });
+            url, web_app::WebAppFilter::InstalledInOperatingSystemForTesting());
     EXPECT_TRUE(new_app_id.has_value());
     EXPECT_EQ(new_app_id, app_id);
     EXPECT_EQ("Manifest test app",
@@ -619,15 +606,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
 
   // The installer falls back to installing a web app of the original URL.
   EXPECT_EQ(url, registrar().GetAppStartUrl(app_id.value()));
-  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   EXPECT_NE(app_id,
             registrar().FindBestAppWithUrlInScope(
                 GURL("chrome://settings"),
-                {
-                    proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                    proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                }));
+                web_app::WebAppFilter::InstalledInOperatingSystemForTesting()));
 }
 
 // Test that adding a web app without a manifest while using the
@@ -786,13 +768,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
           }));
   run_loop.Run();
 
-  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   std::optional<webapps::AppId> app_id = registrar().FindBestAppWithUrlInScope(
-      app_url, {
-                   proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               });
+      app_url, web_app::WebAppFilter::InstalledInOperatingSystemForTesting());
   DCHECK(app_id.has_value());
   EXPECT_EQ(registrar().GetAppDisplayMode(*app_id), DisplayMode::kBrowser);
   EXPECT_EQ(registrar().GetAppUserDisplayMode(*app_id),

@@ -185,13 +185,11 @@ std::optional<webapps::AppId> FindInstalledAppWithUrlInScope(Profile* profile,
 
 bool IsNonLocallyInstalledAppWithUrlInScope(Profile* profile, const GURL& url) {
   auto* provider = WebAppProvider::GetForWebApps(profile);
-  return provider
-             ? provider->registrar_unsafe()
-                   .FindBestAppWithUrlInScope(
-                       url,
-                       {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE})
-                   .has_value()
-             : false;
+  return provider ? provider->registrar_unsafe()
+                        .FindBestAppWithUrlInScope(
+                            url, web_app::WebAppFilter::IsSuggestedApp())
+                        .has_value()
+                  : false;
 }
 
 bool LooksLikePlaceholder(const WebApp& app) {

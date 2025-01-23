@@ -149,13 +149,8 @@ Browser* WebAppBrowserTestBase::NavigateInNewWindowAndAwaitInstallabilityCheck(
 
 std::optional<webapps::AppId> WebAppBrowserTestBase::FindAppWithUrlInScope(
     const GURL& url) {
-  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   return provider().registrar_unsafe().FindBestAppWithUrlInScope(
-      url, {
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           });
+      url, web_app::WebAppFilter::InstalledInChrome());
 }
 
 Browser* WebAppBrowserTestBase::OpenPopupAndWait(Browser* browser,

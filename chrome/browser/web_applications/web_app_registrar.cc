@@ -766,9 +766,12 @@ bool WebAppRegistrar::IsInstallState(
 bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
                                  const WebAppFilter& filter) const {
   std::optional<proto::InstallState> install_state = GetInstallState(app_id);
-  if (install_state == std::nullopt ||
-      install_state == proto::SUGGESTED_FROM_ANOTHER_DEVICE) {
+  if (install_state == std::nullopt) {
     return false;
+  }
+
+  if (install_state == proto::SUGGESTED_FROM_ANOTHER_DEVICE) {
+    return filter.is_suggested_app_;
   }
 
   if (filter.opens_in_browser_tab_) {
@@ -800,6 +803,10 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
            install_state == proto::INSTALLED_WITHOUT_OS_INTEGRATION;
   }
 
+  if (filter.installed_in_os_) {
+    return install_state == proto::INSTALLED_WITH_OS_INTEGRATION;
+  }
+
   return false;
 }
 
@@ -821,7 +828,8 @@ std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
       continue;
     }
 
-    if (GetInstallState(app_id) == proto::SUGGESTED_FROM_ANOTHER_DEVICE) {
+    if (GetInstallState(app_id) == proto::SUGGESTED_FROM_ANOTHER_DEVICE &&
+        !filter.is_suggested_app_) {
       continue;
     }
 
@@ -839,13 +847,6 @@ std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
   }
 
   return std::nullopt;
-}
-
-// DEPRECATED:
-std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
-    const GURL& url,
-    std::initializer_list<proto::InstallState> states) const {
-  return FindBestAppWithUrlInScope(url, states, AppFilterOptions());
 }
 
 // DEPRECATED:

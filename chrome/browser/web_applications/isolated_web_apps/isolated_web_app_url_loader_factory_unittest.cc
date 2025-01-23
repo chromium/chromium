@@ -329,16 +329,9 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
   RegisterWebApp(CreateWebApp(kDevAppStartUrl));
 
   // Verify that a PWA is installed at kAppStartUrl's origin.
-  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   std::optional<webapps::AppId> installed_app =
       fake_provider().registrar_unsafe().FindBestAppWithUrlInScope(
-          kDevAppStartUrl,
-          {
-              web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-              web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-          },
-          {});
+          kDevAppStartUrl, web_app::WebAppFilter::InstalledInChrome());
   EXPECT_THAT(installed_app.has_value(), IsTrue());
 
   CreateFactoryForFrame();
@@ -363,8 +356,7 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
   // suggested.
   std::optional<webapps::AppId> installed_app =
       fake_provider().registrar_unsafe().FindBestAppWithUrlInScope(
-          kDevAppStartUrl,
-          {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE});
+          kDevAppStartUrl, web_app::WebAppFilter::IsSuggestedApp());
   EXPECT_THAT(installed_app.has_value(), IsTrue());
 
   CreateFactoryForFrame();

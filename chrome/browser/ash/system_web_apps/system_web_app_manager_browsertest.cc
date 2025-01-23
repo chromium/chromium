@@ -135,16 +135,10 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTestBasicInstall, Install) {
   EXPECT_EQ(SkColorSetRGB(0, 0xFF, 0), registrar.GetAppThemeColor(app_id));
   EXPECT_TRUE(registrar.HasExternalAppWithInstallSource(
       app_id, web_app::ExternalInstallSource::kSystemInstalled));
-  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
-  EXPECT_EQ(
-      registrar.FindBestAppWithUrlInScope(
-          content::GetWebUIURL("test-system-app/"),
-          {
-              web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-              web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-          }),
-      app_id);
+  EXPECT_EQ(registrar.FindBestAppWithUrlInScope(
+                content::GetWebUIURL("test-system-app/"),
+                web_app::WebAppFilter::InstalledInOperatingSystemForTesting()),
+            app_id);
 
   GetAppServiceProxy(browser()->profile())
       ->AppRegistryCache()
@@ -1238,16 +1232,10 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerChromeUntrustedTest, Install) {
   EXPECT_EQ(SkColorSetRGB(0xFF, 0, 0), registrar.GetAppThemeColor(app_id));
   EXPECT_TRUE(registrar.HasExternalAppWithInstallSource(
       app_id, web_app::ExternalInstallSource::kSystemInstalled));
-  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
-  EXPECT_EQ(
-      registrar.FindBestAppWithUrlInScope(
-          GURL("chrome-untrusted://test-system-app/"),
-          {
-              web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-              web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-          }),
-      app_id);
+  EXPECT_EQ(registrar.FindBestAppWithUrlInScope(
+                GURL("chrome-untrusted://test-system-app/"),
+                web_app::WebAppFilter::InstalledInOperatingSystemForTesting()),
+            app_id);
 }
 
 class SystemWebAppManagerOriginTrialsBrowserTest
