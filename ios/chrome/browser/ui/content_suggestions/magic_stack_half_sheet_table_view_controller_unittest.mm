@@ -19,8 +19,8 @@
 class MagicStackHalfSheetTableViewControllerUnittest : public PlatformTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {kTabResumption}, {kIOSDisableParcelTracking});
+    scoped_feature_list_.InitWithFeatures({kTabResumption},
+                                          {kIOSDisableParcelTracking});
 
     view_controller_ = [[MagicStackHalfSheetTableViewController alloc] init];
   }

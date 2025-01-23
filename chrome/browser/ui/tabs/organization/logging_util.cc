@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/proto/features/tab_organization.pb.h"
 
 void AddOrganizationDetailsToQualityOrganization(

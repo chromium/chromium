@@ -1,6 +1,6 @@
 include_rules = [
-  "+ash/components/arc/mojom",
   "+chrome/common/profiler",
+  "+chromeos/ash/experiences/arc/mojom",
   "+chromeos/ash/experiences/arc/video_accelerator",
   "+chromeos/components/cdm_factory_daemon",
   "+components/heap_profiling/in_process/heap_profiler_controller.h",

@@ -705,10 +705,6 @@ BASE_FEATURE(kIncompatibleApplicationsWarning,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kInternalOnlyUisPref,
-             "InternalOnlyUisPref",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables Isolated Web App Developer Mode, which allows developers to
 // install untrusted Isolated Web Apps.
 BASE_FEATURE(kIsolatedWebAppDevMode,

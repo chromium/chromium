@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/ash/arc_power_control/arc_power_control_handler.h"
 
-#include "ash/components/arc/mojom/power.mojom.h"
 #include "base/functional/bind.h"
 #include "base/linux_util.h"
 #include "base/process/launch.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ash/arc/tracing/present_frames_tracer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/experiences/arc/mojom/power.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 

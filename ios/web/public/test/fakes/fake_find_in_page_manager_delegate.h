@@ -5,12 +5,11 @@
 #ifndef IOS_WEB_PUBLIC_TEST_FAKES_FAKE_FIND_IN_PAGE_MANAGER_DELEGATE_H_
 #define IOS_WEB_PUBLIC_TEST_FAKES_FAKE_FIND_IN_PAGE_MANAGER_DELEGATE_H_
 
-#import "ios/web/public/find_in_page/find_in_page_manager_delegate.h"
-
 #include <memory>
 #include <string>
 
 #import "base/memory/raw_ptr.h"
+#import "ios/web/public/find_in_page/find_in_page_manager_delegate.h"
 
 namespace web {
 

@@ -6,8 +6,8 @@
  * @fileoverview Fake implementation of SettingsSearchHandler for testing.
  */
 
-import {searchMojom} from 'chrome://os-settings/os_settings.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import type {searchMojom} from 'chrome://os-settings/os_settings.js';
+import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
 type SearchResult = searchMojom.SearchResult;
 type SearchHandlerInterface = searchMojom.SearchHandlerInterface;

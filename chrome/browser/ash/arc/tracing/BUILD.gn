@@ -47,12 +47,12 @@ static_library("tracing") {
   deps = [
     "//ash",
     "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync:factories",
+    "//chromeos/ash/experiences/arc/mojom",
     "//components/app_restore",
     "//components/exo",
     "//components/keyed_service/core",

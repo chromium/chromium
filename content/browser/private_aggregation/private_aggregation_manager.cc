@@ -25,10 +25,12 @@ PrivateAggregationManager* PrivateAggregationManager::GetManager(
 
 bool PrivateAggregationManager::ShouldSendReportDeterministically(
     const std::optional<std::string>& context_id,
-    base::StrictNumeric<size_t> filtering_id_max_bytes) {
+    base::StrictNumeric<size_t> filtering_id_max_bytes,
+    std::optional<size_t> max_contributions) {
   return context_id.has_value() ||
          filtering_id_max_bytes !=
-             PrivateAggregationHost::kDefaultFilteringIdMaxBytes;
+             PrivateAggregationHost::kDefaultFilteringIdMaxBytes ||
+         max_contributions.has_value();
 }
 
 }  // namespace content

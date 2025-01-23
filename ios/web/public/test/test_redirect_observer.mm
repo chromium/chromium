@@ -27,8 +27,9 @@ void TestRedirectObserver::BeginObservingRedirectsForUrl(const GURL& url) {
 GURL TestRedirectObserver::GetFinalUrlForUrl(const GURL& url) {
   for (auto redirect_chain_for_item : redirect_chains_) {
     RedirectChain redirect_chain = redirect_chain_for_item.second;
-    if (redirect_chain.original_url == url)
+    if (redirect_chain.original_url == url) {
       return redirect_chain.final_url;
+    }
   }
   // If load for `url` did not occur after BeginObservingRedirectsForUrl() is
   // called, there will be no final redirected URL.

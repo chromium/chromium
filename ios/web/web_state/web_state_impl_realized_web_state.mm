@@ -216,12 +216,15 @@ void WebStateImpl::RealizedWebState::TearDown() {
   // implementations depends on accessing web state during destruction.
   ClearWebUI();
 
-  for (auto& observer : observers())
+  for (auto& observer : observers()) {
     observer.WebStateDestroyed(owner_);
-  for (auto& observer : policy_deciders())
+  }
+  for (auto& observer : policy_deciders()) {
     observer.WebStateDestroyed();
-  for (auto& observer : policy_deciders())
+  }
+  for (auto& observer : policy_deciders()) {
     observer.ResetWebState();
+  }
   SetDelegate(nullptr);
 }
 
@@ -294,8 +297,9 @@ void WebStateImpl::RealizedWebState::OnNavigationStarted(
 
 void WebStateImpl::RealizedWebState::OnNavigationRedirected(
     NavigationContextImpl* context) {
-  for (auto& observer : observers())
+  for (auto& observer : observers()) {
     observer.DidRedirectNavigation(owner_, context);
+  }
 }
 
 void WebStateImpl::RealizedWebState::OnNavigationFinished(
@@ -306,8 +310,9 @@ void WebStateImpl::RealizedWebState::OnNavigationFinished(
     return;
   }
 
-  for (auto& observer : observers())
+  for (auto& observer : observers()) {
     observer.DidFinishNavigation(owner_, context);
+  }
 
   // Update cached_favicon_urls_.
   if (!context->IsSameDocument()) {
@@ -324,32 +329,38 @@ void WebStateImpl::RealizedWebState::OnNavigationFinished(
 }
 
 void WebStateImpl::RealizedWebState::OnBackForwardStateChanged() {
-  for (auto& observer : observers())
+  for (auto& observer : observers()) {
     observer.DidChangeBackForwardState(owner_);
+  }
 }
 
 void WebStateImpl::RealizedWebState::OnTitleChanged() {
-  for (auto& observer : observers())
+  for (auto& observer : observers()) {
     observer.TitleWasSet(owner_);
+  }
 }
 
 void WebStateImpl::RealizedWebState::OnRenderProcessGone() {
-  for (auto& observer : observers())
+  for (auto& observer : observers()) {
     observer.RenderProcessGone(owner_);
+  }
 }
 
 void WebStateImpl::RealizedWebState::SetIsLoading(bool is_loading) {
-  if (is_loading == is_loading_)
+  if (is_loading == is_loading_) {
     return;
+  }
 
   is_loading_ = is_loading;
 
   if (is_loading) {
-    for (auto& observer : observers())
+    for (auto& observer : observers()) {
       observer.DidStartLoading(owner_);
+    }
   } else {
-    for (auto& observer : observers())
+    for (auto& observer : observers()) {
       observer.DidStopLoading(owner_);
+    }
   }
 }
 
@@ -358,15 +369,17 @@ void WebStateImpl::RealizedWebState::OnPageLoaded(const GURL& url,
   PageLoadCompletionStatus load_completion_status =
       load_success ? PageLoadCompletionStatus::SUCCESS
                    : PageLoadCompletionStatus::FAILURE;
-  for (auto& observer : observers())
+  for (auto& observer : observers()) {
     observer.PageLoaded(owner_, load_completion_status);
+  }
 }
 
 void WebStateImpl::RealizedWebState::OnFaviconUrlUpdated(
     const std::vector<FaviconURL>& candidates) {
   cached_favicon_urls_ = candidates;
-  for (auto& observer : observers())
+  for (auto& observer : observers()) {
     observer.FaviconUrlUpdated(owner_, candidates);
+  }
 }
 
 void WebStateImpl::RealizedWebState::CreateWebUI(const GURL& url) {
@@ -419,8 +432,9 @@ void WebStateImpl::RealizedWebState::ShouldAllowRequest(
     policy_decider.ShouldAllowRequest(request, request_info,
                                       policy_decider_callback);
     num_decisions_requested++;
-    if (request_state_tracker_ptr->DeterminedFinalResult())
+    if (request_state_tracker_ptr->DeterminedFinalResult()) {
       break;
+    }
   }
 
   request_state_tracker_ptr->FinishedRequestingDecisions(
@@ -443,8 +457,9 @@ void WebStateImpl::RealizedWebState::ShouldAllowResponse(
     policy_decider.ShouldAllowResponse(response, response_info,
                                        policy_decider_callback);
     num_decisions_requested++;
-    if (response_state_tracker_ptr->DeterminedFinalResult())
+    if (response_state_tracker_ptr->DeterminedFinalResult()) {
       break;
+    }
   }
 
   response_state_tracker_ptr->FinishedRequestingDecisions(
@@ -472,8 +487,9 @@ WebStateImpl::RealizedWebState::GetUserAgentForSessionRestoration() const {
 }
 
 void WebStateImpl::RealizedWebState::SendChangeLoadProgress(double progress) {
-  for (auto& observer : observers())
+  for (auto& observer : observers()) {
     observer.LoadProgressChanged(owner_, progress);
+  }
 }
 
 void WebStateImpl::RealizedWebState::ShowRepostFormWarningDialog(
@@ -581,10 +597,12 @@ WebStateDelegate* WebStateImpl::RealizedWebState::GetDelegate() {
 }
 
 void WebStateImpl::RealizedWebState::SetDelegate(WebStateDelegate* delegate) {
-  if (delegate == delegate_)
+  if (delegate == delegate_) {
     return;
-  if (delegate_)
+  }
+  if (delegate_) {
     delegate_->Detach(owner_);
+  }
   delegate_ = delegate;
   if (delegate_) {
     delegate_->Attach(owner_);
@@ -622,24 +640,28 @@ base::Time WebStateImpl::RealizedWebState::GetCreationTime() const {
 }
 
 void WebStateImpl::RealizedWebState::WasShown() {
-  if (IsVisible())
+  if (IsVisible()) {
     return;
+  }
 
   // Update last active time when the WebState transition to visible.
   last_active_time_ = base::Time::Now();
 
   [web_controller_ wasShown];
-  for (auto& observer : observers())
+  for (auto& observer : observers()) {
     observer.WasShown(owner_);
+  }
 }
 
 void WebStateImpl::RealizedWebState::WasHidden() {
-  if (!IsVisible())
+  if (!IsVisible()) {
     return;
+  }
 
   [web_controller_ wasHidden];
-  for (auto& observer : observers())
+  for (auto& observer : observers()) {
     observer.WasHidden(owner_);
+  }
 }
 
 void WebStateImpl::RealizedWebState::SetKeepRenderProcessAlive(
@@ -662,8 +684,9 @@ WebStateID WebStateImpl::RealizedWebState::GetUniqueIdentifier() const {
 void WebStateImpl::RealizedWebState::OpenURL(
     const WebState::OpenURLParams& params) {
   DCHECK(Configured());
-  if (delegate_)
+  if (delegate_) {
     delegate_->OpenURLFromWebState(owner_, params);
+  }
 }
 
 void WebStateImpl::RealizedWebState::Stop() {
@@ -785,8 +808,9 @@ id<CRWWebViewProxy> WebStateImpl::RealizedWebState::GetWebViewProxy() const {
 }
 
 void WebStateImpl::RealizedWebState::DidChangeVisibleSecurityState() {
-  for (auto& observer : observers())
+  for (auto& observer : observers()) {
     observer.DidChangeVisibleSecurityState(owner_);
+  }
 }
 
 WebState::InterfaceBinder*
@@ -838,8 +862,9 @@ void WebStateImpl::RealizedWebState::CloseWebState() {
 
 bool WebStateImpl::RealizedWebState::SetSessionStateData(NSData* data) {
   bool state_set = [web_controller_ setSessionStateData:data];
-  if (!state_set)
+  if (!state_set) {
     return false;
+  }
 
   // If this fails (e.g., see crbug.com/1019672 for a previous failure), this
   // may be a bug in WebKit session restoration, or a bug in generating the
@@ -1009,12 +1034,14 @@ std::unique_ptr<WebUIIOS> WebStateImpl::RealizedWebState::CreateWebUIIOS(
     const GURL& url) {
   WebUIIOSControllerFactory* factory =
       WebUIIOSControllerFactoryRegistry::GetInstance();
-  if (!factory)
+  if (!factory) {
     return nullptr;
+  }
   std::unique_ptr<WebUIIOS> web_ui = std::make_unique<WebUIIOSImpl>(owner_);
   auto controller = factory->CreateWebUIIOSControllerForURL(web_ui.get(), url);
-  if (!controller)
+  if (!controller) {
     return nullptr;
+  }
 
   web_ui->SetController(std::move(controller));
   return web_ui;

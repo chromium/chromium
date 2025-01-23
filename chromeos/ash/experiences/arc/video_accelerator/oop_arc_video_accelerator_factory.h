@@ -5,11 +5,11 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_VIDEO_ACCELERATOR_OOP_ARC_VIDEO_ACCELERATOR_FACTORY_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_VIDEO_ACCELERATOR_OOP_ARC_VIDEO_ACCELERATOR_FACTORY_H_
 
-#include "ash/components/arc/mojom/video.mojom.h"
-#include "ash/components/arc/mojom/video_decode_accelerator.mojom.h"
-#include "ash/components/arc/mojom/video_decoder.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "chromeos/ash/experiences/arc/mojom/video.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/video_decode_accelerator.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/video_decoder.mojom.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/browser_cdm_factory.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 

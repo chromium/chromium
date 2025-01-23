@@ -7,6 +7,7 @@
 #include <Cocoa/Cocoa.h>
 
 #include "base/check.h"
+#include "base/strings/sys_string_conversions.h"
 
 namespace remoting {
 
@@ -40,11 +41,14 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderMac::GetCurrentDisplayInfo() {
         static_cast<CGDirectDisplayID>([device[@"NSScreenNumber"] intValue]);
 
     NSRect bounds = screen.frame;
-    int x = bounds.origin.x;
-    int y = bounds.origin.y;
-    int height = bounds.size.height;
-
+    int32_t x = bounds.origin.x;
+    int32_t y = bounds.origin.y;
+    uint32_t width = bounds.size.width;
+    uint32_t height = bounds.size.height;
+    uint32_t dpi = kDefaultScreenDpi * screen.backingScaleFactor;
     bool is_default = false;
+    std::string display_name = base::SysNSStringToUTF8(screen.localizedName);
+
     if (i == 0) {
       DCHECK(x == 0);
       DCHECK(y == 0);
@@ -52,17 +56,11 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderMac::GetCurrentDisplayInfo() {
       main_display_height = height;
     }
 
-    DisplayGeometry info;
-    info.id = id;
-    info.x = x;
     // Convert origin from lower left to upper left (based on main display).
-    info.y = main_display_height - y - height;
-    info.width = bounds.size.width;
-    info.height = height;
-    info.dpi = (int)(kDefaultScreenDpi * screen.backingScaleFactor);
-    info.bpp = 24;
-    info.is_default = is_default;
-    result.AddDisplay(info);
+    y = main_display_height - y - height;
+
+    result.AddDisplay({id, x, y, width, height, dpi,
+                       /*bpp=*/ 24, is_default, display_name});
   }
   return result;
 }

@@ -33,7 +33,6 @@ static_library("status_collector") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc/mojom",
     "//ash/constants",
     "//base",
     "//chrome/browser:browser_process",
@@ -72,6 +71,7 @@ static_library("status_collector") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/experiences/arc/session",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",

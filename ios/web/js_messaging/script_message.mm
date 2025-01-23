@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/web/public/js_messaging/script_message.h"
+
 #import <memory>
 
-#import "ios/web/public/js_messaging/script_message.h"
 #import "base/memory/ptr_util.h"
 #import "base/values.h"
 

@@ -29,8 +29,8 @@
     imageDataSource;
 
 // Most Visited Tiles model.
-@property(nonatomic, weak)
-    id<MostVisitedTilesStackViewConsumerSource> consumerSource;
+@property(nonatomic, weak) id<MostVisitedTilesStackViewConsumerSource>
+    consumerSource;
 
 // Command handler for user actions.
 @property(nonatomic, weak) id<MostVisitedTilesCommands> commandHandler;

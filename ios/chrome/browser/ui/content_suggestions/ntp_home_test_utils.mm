@@ -26,13 +26,15 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibilityID,
   if (parentView.accessibilityIdentifier == accessibilityID) {
     return parentView;
   }
-  if (parentView.subviews.count == 0)
+  if (parentView.subviews.count == 0) {
     return nil;
+  }
   for (UIView* view in parentView.subviews) {
     UIView* resultView =
         SubviewWithAccessibilityIdentifier(accessibilityID, view);
-    if (resultView)
+    if (resultView) {
       return resultView;
+    }
   }
   return nil;
 }

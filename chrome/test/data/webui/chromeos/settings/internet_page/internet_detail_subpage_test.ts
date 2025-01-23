@@ -4,21 +4,23 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CellularRoamingToggleButtonElement, NetworkProxySectionElement, PasspointRemoveDialogElement, SettingsInternetDetailPageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrDialogElement, CrLinkRowElement, InternetPageBrowserProxyImpl, LocalizedLinkElement, Router, routes, settingMojom, SettingsToggleButtonElement, setUserActionRecorderForTesting, userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
+import type {CellularRoamingToggleButtonElement, NetworkProxySectionElement, PasspointRemoveDialogElement, SettingsInternetDetailPageElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrDialogElement, CrLinkRowElement, LocalizedLinkElement, SettingsToggleButtonElement, userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
+import {InternetPageBrowserProxyImpl, Router, routes, settingMojom, setUserActionRecorderForTesting} from 'chrome://os-settings/os_settings.js';
 import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
-import {PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
+import type {PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
-import {NetworkApnListElement} from 'chrome://resources/ash/common/network/network_apnlist.js';
-import {NetworkChooseMobileElement} from 'chrome://resources/ash/common/network/network_choose_mobile.js';
-import {NetworkConfigToggleElement} from 'chrome://resources/ash/common/network/network_config_toggle.js';
-import {NetworkIpConfigElement} from 'chrome://resources/ash/common/network/network_ip_config.js';
-import {NetworkNameserversElement} from 'chrome://resources/ash/common/network/network_nameservers.js';
-import {NetworkPropertyListMojoElement} from 'chrome://resources/ash/common/network/network_property_list_mojo.js';
+import type {NetworkApnListElement} from 'chrome://resources/ash/common/network/network_apnlist.js';
+import type {NetworkChooseMobileElement} from 'chrome://resources/ash/common/network/network_choose_mobile.js';
+import type {NetworkConfigToggleElement} from 'chrome://resources/ash/common/network/network_config_toggle.js';
+import type {NetworkIpConfigElement} from 'chrome://resources/ash/common/network/network_ip_config.js';
+import type {NetworkNameserversElement} from 'chrome://resources/ash/common/network/network_nameservers.js';
+import type {NetworkPropertyListMojoElement} from 'chrome://resources/ash/common/network/network_property_list_mojo.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {ActivationStateType, ApnAuthenticationType, ApnIpType, ApnSource, ApnState, DeviceStateProperties, GlobalPolicy, InhibitReason, ManagedOpenVPNProperties, ManagedProperties, MatchType, NetworkStateProperties, ProxyMode, SuppressionType, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {DeviceStateProperties, GlobalPolicy, ManagedOpenVPNProperties, ManagedProperties, NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ActivationStateType, ApnAuthenticationType, ApnIpType, ApnSource, ApnState, InhibitReason, MatchType, ProxyMode, SuppressionType, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';

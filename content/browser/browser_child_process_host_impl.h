@@ -245,6 +245,12 @@ class BrowserChildProcessHostImpl
   scoped_refptr<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>
       tracing_config_memory_region_;
 
+  // The tracing output memory region to transmit traces. Ownership of the
+  // memory region object is shared with the child process launcher/helper which
+  // runs, and is destroyed, asynchronously.
+  scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+      tracing_output_memory_region_;
+
   // Indicates if the main browser process is used instead of a dedicated child
   // process.
   bool in_process_ = false;

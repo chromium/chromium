@@ -4,8 +4,10 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {ConfirmationDialogType, SettingsGoogleDriveSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrButtonElement, CrSettingsPrefs, GoogleDriveBrowserProxy, GoogleDrivePageCallbackRouter, GoogleDrivePageHandlerRemote, GoogleDrivePageRemote, PaperTooltipElement, SettingsPrefsElement, SettingsToggleButtonElement, Stage} from 'chrome://os-settings/os_settings.js';
+import type {SettingsGoogleDriveSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import {ConfirmationDialogType} from 'chrome://os-settings/lazy_load.js';
+import type {CrButtonElement, GoogleDrivePageRemote, PaperTooltipElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, GoogleDriveBrowserProxy, GoogleDrivePageCallbackRouter, GoogleDrivePageHandlerRemote, Stage} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

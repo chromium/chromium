@@ -127,11 +127,12 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   params->history_service = ios::HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::IMPLICIT_ACCESS);
   base::TaskPriority priority = base::TaskPriority::BEST_EFFORT;
-  if (base::FeatureList::IsEnabled(features::kSegmentationPlatformUserVisibleTaskRunner)) {
+  if (base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformUserVisibleTaskRunner)) {
     priority = base::TaskPriority::USER_VISIBLE;
   }
-  params->task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), priority});
+  params->task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock(), priority});
   params->storage_dir =
       profile_path.Append(kSegmentationPlatformStorageDirName);
   params->db_provider = protodb_provider;

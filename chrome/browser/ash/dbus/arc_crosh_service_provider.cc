@@ -8,11 +8,11 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/mojom/crosh.mojom.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromeos/ash/components/dbus/arc/arc.pb.h"
+#include "chromeos/ash/experiences/arc/mojom/crosh.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/user_manager/user_manager.h"

@@ -8,8 +8,8 @@
 #include <map>
 #include <string>
 
-#include "ash/components/arc/mojom/volume_mounter.mojom.h"
 #include "base/containers/queue.h"
+#include "chromeos/ash/experiences/arc/mojom/volume_mounter.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/cros_system_api/dbus/cros-disks/dbus-constants.h"

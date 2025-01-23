@@ -18,7 +18,7 @@
   if (!_magicStackLayout) {
     UICollectionViewCompositionalLayoutConfiguration* config =
         [[UICollectionViewCompositionalLayoutConfiguration alloc] init];
-      config.contentInsetsReference = UIContentInsetsReferenceNone;
+    config.contentInsetsReference = UIContentInsetsReferenceNone;
     [config setScrollDirection:UICollectionViewScrollDirectionHorizontal];
     __weak MagicStackLayoutConfigurator* weakSelf = self;
     _magicStackLayout = [[UICollectionViewCompositionalLayout alloc]

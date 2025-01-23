@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/feed_management/feed_management_view_controller.h"
 
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_management/feed_management_navigation_delegate.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 

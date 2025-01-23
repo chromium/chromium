@@ -74,8 +74,7 @@ class MockPasswordGenerationPopupView : public PasswordGenerationPopupView {
   MOCK_METHOD(void, UpdateState, (), (override));
   MOCK_METHOD(void, UpdateGeneratedPasswordValue, (), (override));
   MOCK_METHOD(bool, UpdateBoundsAndRedrawPopup, (), (override));
-  MOCK_METHOD(void, PasswordSelectionUpdated, (), (override));
-  MOCK_METHOD(void, NudgePasswordSelectionUpdated, (), (override));
+  MOCK_METHOD(void, ButtonSelectionUpdated, (), (override));
 };
 
 class PasswordGenerationPopupControllerImplTest
@@ -240,40 +239,6 @@ TEST_F(PasswordGenerationPopupControllerImplTest, GetElementTextDirection) {
   ASSERT_TRUE(controller);
   EXPECT_EQ(controller->GetElementTextDirection(),
             base::i18n::TextDirection::RIGHT_TO_LEFT);
-}
-
-TEST_F(PasswordGenerationPopupControllerImplTest,
-       PreviewIsTriggeredDuringGeneration) {
-  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
-      PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
-          /*observer=*/nullptr, web_contents(), main_rfh());
-  controller->SetViewForTesting(popup_view());
-
-  // In the offer generation state, suggestions are previewed on selection.
-  controller->GeneratePasswordValue(PasswordGenerationType::kAutomatic);
-  controller->Show(
-      PasswordGenerationPopupController::GenerationUIState::kOfferGeneration);
-  EXPECT_CALL(driver(), PreviewGenerationSuggestion);
-  static_cast<PasswordGenerationPopupController*>(controller.get())
-      ->SetSelected();
-}
-
-TEST_F(PasswordGenerationPopupControllerImplTest,
-       PreviewIsTriggeredOnlyDuringOfferGeneration) {
-  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
-      PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
-          /*observer=*/nullptr, web_contents(), main_rfh());
-  controller->SetViewForTesting(popup_view());
-
-  // In the edit generated password state, no preview calls happen.
-  controller->GeneratePasswordValue(PasswordGenerationType::kAutomatic);
-  controller->Show(PasswordGenerationPopupController::GenerationUIState::
-                       kEditGeneratedPassword);
-  EXPECT_CALL(driver(), PreviewGenerationSuggestion).Times(0);
-  static_cast<PasswordGenerationPopupController*>(controller.get())
-      ->SetSelected();
 }
 
 TEST_F(PasswordGenerationPopupControllerImplTest, ClearsFormPreviewOnHide) {

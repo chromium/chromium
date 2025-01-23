@@ -20,12 +20,15 @@ TEST_F(ContentSuggestionsTileLayoutUtilTest, MostVisitedCellSize) {
   EXPECT_TRUE(
       CGSizeEqualToSize(kContentSuggestionsTileViewSizeSmall,
                         MostVisitedCellSize(UIContentSizeCategoryExtraSmall)));
-  EXPECT_TRUE(CGSizeEqualToSize(
-      kContentSuggestionsTileViewSizeSmall, MostVisitedCellSize(UIContentSizeCategorySmall)));
-  EXPECT_TRUE(CGSizeEqualToSize(
-      kContentSuggestionsTileViewSizeSmall, MostVisitedCellSize(UIContentSizeCategoryMedium)));
-  EXPECT_TRUE(CGSizeEqualToSize(
-      kContentSuggestionsTileViewSizeSmall, MostVisitedCellSize(UIContentSizeCategoryLarge)));
+  EXPECT_TRUE(
+      CGSizeEqualToSize(kContentSuggestionsTileViewSizeSmall,
+                        MostVisitedCellSize(UIContentSizeCategorySmall)));
+  EXPECT_TRUE(
+      CGSizeEqualToSize(kContentSuggestionsTileViewSizeSmall,
+                        MostVisitedCellSize(UIContentSizeCategoryMedium)));
+  EXPECT_TRUE(
+      CGSizeEqualToSize(kContentSuggestionsTileViewSizeSmall,
+                        MostVisitedCellSize(UIContentSizeCategoryLarge)));
   EXPECT_TRUE(
       CGSizeEqualToSize(kContentSuggestionsTileViewSizeMedium,
                         MostVisitedCellSize(UIContentSizeCategoryExtraLarge)));
@@ -68,27 +71,32 @@ TEST_F(ContentSuggestionsTileLayoutUtilTest, CenteredTilesMarginForWidth) {
   EXPECT_EQ(200, CenteredTilesMarginForWidth(
                      trait_collection,
                      kContentSuggestionsTileViewSizeSmall.width * 4 +
-                         kContentSuggestionsTilesHorizontalSpacingRegular * 3 + 200 * 2));
+                         kContentSuggestionsTilesHorizontalSpacingRegular * 3 +
+                         200 * 2));
   // Display 4 columns on normal screen.
   EXPECT_EQ(20, CenteredTilesMarginForWidth(
                     trait_collection,
                     kContentSuggestionsTileViewSizeSmall.width * 4 +
-                        kContentSuggestionsTilesHorizontalSpacingRegular * 3 + 20 * 2));
+                        kContentSuggestionsTilesHorizontalSpacingRegular * 3 +
+                        20 * 2));
   // Display 3 columns.
   EXPECT_EQ(20, CenteredTilesMarginForWidth(
                     trait_collection,
                     kContentSuggestionsTileViewSizeSmall.width * 3 +
-                        kContentSuggestionsTilesHorizontalSpacingRegular * 2 + 20 * 2));
+                        kContentSuggestionsTilesHorizontalSpacingRegular * 2 +
+                        20 * 2));
   // Display 2 columns.
   EXPECT_EQ(20, CenteredTilesMarginForWidth(
                     trait_collection,
                     kContentSuggestionsTileViewSizeSmall.width * 2 +
-                        kContentSuggestionsTilesHorizontalSpacingRegular * 1 + 20 * 2));
+                        kContentSuggestionsTilesHorizontalSpacingRegular * 1 +
+                        20 * 2));
   // Display 1 columns.
   EXPECT_EQ(20, CenteredTilesMarginForWidth(
                     trait_collection,
                     kContentSuggestionsTileViewSizeSmall.width * 1 +
-                        kContentSuggestionsTilesHorizontalSpacingRegular * 0 + 20 * 2));
+                        kContentSuggestionsTilesHorizontalSpacingRegular * 0 +
+                        20 * 2));
 
   // Set up Compact size class and Accessibility Large font size.
   trait_collection =
@@ -103,20 +111,24 @@ TEST_F(ContentSuggestionsTileLayoutUtilTest, CenteredTilesMarginForWidth) {
   EXPECT_EQ(20, CenteredTilesMarginForWidth(
                     trait_collection,
                     kContentSuggestionsTileViewSizeExtraLarge.width * 4 +
-                        kContentSuggestionsTilesHorizontalSpacingCompact * 3 + 20 * 2));
+                        kContentSuggestionsTilesHorizontalSpacingCompact * 3 +
+                        20 * 2));
   // Display 3 columns.
   EXPECT_EQ(20, CenteredTilesMarginForWidth(
                     trait_collection,
                     kContentSuggestionsTileViewSizeExtraLarge.width * 3 +
-                        kContentSuggestionsTilesHorizontalSpacingCompact * 2 + 20 * 2));
+                        kContentSuggestionsTilesHorizontalSpacingCompact * 2 +
+                        20 * 2));
   // Display 2 columns.
   EXPECT_EQ(20, CenteredTilesMarginForWidth(
                     trait_collection,
                     kContentSuggestionsTileViewSizeExtraLarge.width * 2 +
-                        kContentSuggestionsTilesHorizontalSpacingCompact * 1 + 20 * 2));
+                        kContentSuggestionsTilesHorizontalSpacingCompact * 1 +
+                        20 * 2));
   // Display 1 columns.
   EXPECT_EQ(20, CenteredTilesMarginForWidth(
                     trait_collection,
                     kContentSuggestionsTileViewSizeExtraLarge.width * 1 +
-                        kContentSuggestionsTilesHorizontalSpacingCompact * 0 + 20 * 2));
+                        kContentSuggestionsTilesHorizontalSpacingCompact * 0 +
+                        20 * 2));
 }

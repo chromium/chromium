@@ -279,7 +279,7 @@ BOOL isInProgressState(ParcelState state) {
 - (UIImage*)iconImageForParcelType:(ParcelType)parcelType {
 #if !BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   _useCarrierLogo = NO;
-    return DefaultSymbolWithPointSize(kBoxTruckFillSymbol, kIconSize);
+  return DefaultSymbolWithPointSize(kBoxTruckFillSymbol, kIconSize);
 #else
   switch (parcelType) {
     case ParcelType::kUPS:
@@ -290,7 +290,7 @@ BOOL isInProgressState(ParcelState state) {
       return [UIImage imageNamed:kFedexCarrierImage];
     default:
       _useCarrierLogo = NO;
-        return DefaultSymbolWithPointSize(kBoxTruckFillSymbol, kIconSize);
+      return DefaultSymbolWithPointSize(kBoxTruckFillSymbol, kIconSize);
   }
 #endif
 }

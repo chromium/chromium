@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_APP_HOST_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_APP_HOST_H_
 
-#include "ash/components/arc/mojom/app.mojom.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "chromeos/ash/experiences/arc/session/connection_holder.h"
 
 namespace arc {

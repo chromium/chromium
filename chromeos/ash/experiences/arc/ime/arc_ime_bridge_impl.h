@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "ash/components/arc/mojom/ime.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/experiences/arc/ime/arc_ime_bridge.h"
+#include "chromeos/ash/experiences/arc/mojom/ime.mojom.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/geometry/rect.h"
 

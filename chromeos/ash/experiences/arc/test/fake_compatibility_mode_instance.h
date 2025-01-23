@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_COMPATIBILITY_MODE_INSTANCE_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_COMPATIBILITY_MODE_INSTANCE_H_
 
-#include "ash/components/arc/mojom/compatibility_mode.mojom.h"
 #include "base/containers/flat_set.h"
+#include "chromeos/ash/experiences/arc/mojom/compatibility_mode.mojom.h"
 
 namespace arc {
 

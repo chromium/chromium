@@ -6,7 +6,6 @@
 #define IOS_WEB_PUBLIC_DOWNLOAD_DOWNLOAD_TASK_H_
 
 #import <Foundation/Foundation.h>
-
 #include <stdint.h>
 
 #include <memory>

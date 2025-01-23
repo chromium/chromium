@@ -4,9 +4,11 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {appPermissionHandlerMojom, CrIconButtonElement, CrToggleElement, PrivacyHubSensorSubpageUserAction, setAppPermissionProviderForTesting, SettingsPrivacyHubAppPermissionRow} from 'chrome://os-settings/os_settings.js';
-import {AppType, Permission, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
+import type {appPermissionHandlerMojom, CrIconButtonElement, CrToggleElement, SettingsPrivacyHubAppPermissionRow} from 'chrome://os-settings/os_settings.js';
+import {PrivacyHubSensorSubpageUserAction, setAppPermissionProviderForTesting} from 'chrome://os-settings/os_settings.js';
+import type {Permission} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppType, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {createTriStatePermission, isTriStateValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -14,7 +16,7 @@ import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {FakeMetricsPrivate} from '../fake_metrics_private.js';
+import type {FakeMetricsPrivate} from '../fake_metrics_private.js';
 
 import {FakeAppPermissionHandler} from './fake_app_permission_handler.js';
 import {createFakeMetricsPrivate} from './privacy_hub_app_permission_test_util.js';

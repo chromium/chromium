@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
   GURL initial_page_url = https_server->GetURL("d.test", "/hello.html");
   ASSERT_TRUE(NavigateToURL(web_contents(), initial_page_url));
 
-  base::HistogramBase::Count no_cookie_requests = 0;
+  base::HistogramBase::Count32 no_cookie_requests = 0;
   content::FetchHistogramsFromChildProcesses();
   histograms.ExpectBucketCount(kSecCookieDeprecationHeaderStatus, kNoCookie,
                                ++no_cookie_requests);
@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
   response_a_b->WaitForRequest();
   ASSERT_TRUE(base::Contains(response_a_b->http_request()->headers,
                              "Sec-Cookie-Deprecation"));
-  base::HistogramBase::Count header_set_requests = 0;
+  base::HistogramBase::Count32 header_set_requests = 0;
   content::FetchHistogramsFromChildProcesses();
   histograms.ExpectBucketCount(kSecCookieDeprecationHeaderStatus, kHeaderSet,
                                ++header_set_requests);

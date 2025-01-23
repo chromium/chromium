@@ -18,7 +18,7 @@
 // TODO(crbug.com/41340619): Remove this class, after LoadImage() is removed.
 // A helper delegate class that allows downloading responses with invalid
 // SSL certs.
-@interface TestURLSessionDelegateDeprecated : NSObject<NSURLSessionDelegate>
+@interface TestURLSessionDelegateDeprecated : NSObject <NSURLSessionDelegate>
 @end
 
 @implementation TestURLSessionDelegateDeprecated

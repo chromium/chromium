@@ -33,10 +33,12 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
+import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.TestActivity;
@@ -56,6 +58,7 @@ public class SearchEngineAdapterTest {
 
     private @Mock Profile mProfile;
     private @Mock TemplateUrlService mTemplateUrlService;
+    private @Mock RegionalCapabilitiesService mRegionalCapabilities;
     private @Mock LargeIconBridge.Natives mLargeIconBridgeNativeMock;
     private Context mContext;
 
@@ -226,8 +229,10 @@ public class SearchEngineAdapterTest {
         doReturn(true).when(mTemplateUrlService).isLoaded();
         doReturn(new ArrayList<>(List.of(p1, p2, c1))).when(mTemplateUrlService).getTemplateUrls();
         doReturn(p2).when(mTemplateUrlService).getDefaultSearchEngineTemplateUrl();
-        doReturn(false).when(mTemplateUrlService).isEeaChoiceCountry();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+
+        doReturn(false).when(mRegionalCapabilities).isInEeaCountry();
+        RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
 
         var adapter = new SearchEngineAdapter(mContext, mProfile);
         adapter.start();

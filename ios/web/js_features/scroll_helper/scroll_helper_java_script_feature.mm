@@ -29,8 +29,9 @@ void ScrollHelperJavaScriptFeature::SetWebViewScrollViewIsDragging(
     WebState* web_state,
     bool dragging) {
   WebFrame* main_frame = GetWebFramesManager(web_state)->GetMainWebFrame();
-  if (!main_frame)
+  if (!main_frame) {
     return;
+  }
   auto parameters = base::Value::List().Append(dragging);
   CallJavaScriptFunction(main_frame, "setWebViewScrollViewIsDragging",
                          parameters);

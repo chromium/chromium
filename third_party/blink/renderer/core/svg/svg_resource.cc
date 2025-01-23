@@ -115,9 +115,7 @@ void SVGResource::InvalidateCycleCache() {
 void SVGResource::NotifyContentChanged() {
   InvalidateCycleCache();
 
-  HeapVector<Member<SVGResourceClient>> clients;
-  CopyKeysToVector(clients_, clients);
-
+  HeapVector<Member<SVGResourceClient>> clients(clients_.Keys());
   for (SVGResourceClient* client : clients)
     client->ResourceContentChanged(this);
 }
@@ -202,9 +200,7 @@ void LocalSVGResource::Unregister() {
 void LocalSVGResource::NotifyFilterPrimitiveChanged(
     SVGFilterPrimitiveStandardAttributes& primitive,
     const QualifiedName& attribute) {
-  HeapVector<Member<SVGResourceClient>> clients;
-  CopyKeysToVector(clients_, clients);
-
+  HeapVector<Member<SVGResourceClient>> clients(clients_.Keys());
   for (SVGResourceClient* client : clients)
     client->FilterPrimitiveChanged(this, primitive, attribute);
 }

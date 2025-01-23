@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {OsSettingsPersonalizationOptionsElement} from 'chrome://os-settings/lazy_load.js';
+import type {OsSettingsPersonalizationOptionsElement} from 'chrome://os-settings/lazy_load.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';

@@ -5,10 +5,10 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_NET_ARC_WIFI_HOST_IMPL_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_NET_ARC_WIFI_HOST_IMPL_H_
 
-#include "ash/components/arc/mojom/arc_wifi.mojom.h"
 #include "base/files/scoped_file.h"
 #include "base/threading/thread_checker.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "chromeos/ash/experiences/arc/mojom/arc_wifi.mojom.h"
 #include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 

@@ -5,12 +5,15 @@
 #include "chromeos/ash/components/boca/spotlight/spotlight_service.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
+#include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/spotlight/register_screen_request.h"
+#include "chromeos/ash/components/boca/spotlight/update_view_screen_state_request.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/common/auth_service.h"
 #include "google_apis/common/request_sender.h"
@@ -59,29 +62,19 @@ void SpotlightService::ViewScreen(std::string student_gaia_id,
         base::unexpected(google_apis::ApiErrorCode::CANCELLED));
     return;
   }
-  if (!current_session->student_statuses().contains(student_gaia_id)) {
+  auto student_device_id =
+      ValidateStudentAndGetDeviceId(current_session, student_gaia_id);
+  if (!student_device_id.has_value()) {
     std::move(callback).Run(
         base::unexpected(google_apis::ApiErrorCode::CANCELLED));
     return;
   }
-  auto student_devices =
-      current_session->student_statuses().at(student_gaia_id).devices();
-  if (student_devices.empty()) {
-    std::move(callback).Run(
-        base::unexpected(google_apis::ApiErrorCode::CANCELLED));
 
-    return;
-  }
-  auto student_device_id = current_session->student_statuses()
-                               .at(student_gaia_id)
-                               .devices()
-                               .begin()
-                               ->first;
-  // TODO(crbug.com/386420367): Support multiple devices. Currently only view
+  // TODO: crbug.com/386420367 - Support multiple devices. Currently only view
   // screen from first device in student device,
   ViewScreenParam view_screen_param{
       current_session->teacher().gaia_id(), BocaAppClient::Get()->GetDeviceId(),
-      std::move(student_gaia_id), std::move(student_device_id)};
+      std::move(student_gaia_id), std::move(student_device_id.value())};
   auto view_screen_request = std::make_unique<ViewScreenRequest>(
       sender_.get(), current_session->session_id(),
       std::move(view_screen_param), std::move(url_base), std::move(callback));
@@ -112,5 +105,53 @@ void SpotlightService::RegisterScreen(const std::string& connection_code,
       std::move(register_screen_param), std::move(url_base),
       std::move(callback));
   sender_->StartRequestWithAuthRetry(std::move(register_screen_request));
+}
+
+void SpotlightService::UpdateViewScreenState(
+    std::string student_gaia_id,
+    ::boca::ViewScreenConfig::ViewScreenState view_screen_state,
+    std::string url_base,
+    UpdateViewScreenStateRequestCallback callback) {
+  auto* const current_session =
+      BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
+  if (!current_session) {
+    std::move(callback).Run(
+        base::unexpected(google_apis::ApiErrorCode::CANCELLED));
+    return;
+  }
+  auto student_device_id =
+      ValidateStudentAndGetDeviceId(current_session, student_gaia_id);
+  if (!student_device_id.has_value()) {
+    std::move(callback).Run(
+        base::unexpected(google_apis::ApiErrorCode::CANCELLED));
+    return;
+  }
+
+  // TODO: crbug.com/386420367 - Support multiple devices. Currently only view
+  // screen from first device in student device,
+  UpdateViewScreenStateParam update_view_screen_param{
+      current_session->teacher().gaia_id(), BocaAppClient::Get()->GetDeviceId(),
+      std::move(student_gaia_id), std::move(student_device_id.value()),
+      std::move(view_screen_state)};
+  auto update_view_screen_request =
+      std::make_unique<UpdateViewScreenStateRequest>(
+          sender_.get(), current_session->session_id(),
+          std::move(update_view_screen_param), std::move(url_base),
+          std::move(callback));
+  sender_->StartRequestWithAuthRetry(std::move(update_view_screen_request));
+}
+
+std::optional<std::string> SpotlightService::ValidateStudentAndGetDeviceId(
+    ::boca::Session* current_session,
+    const std::string& student_gaia_id) {
+  if (!current_session->student_statuses().contains(student_gaia_id)) {
+    return std::nullopt;
+  }
+  auto student_devices =
+      current_session->student_statuses().at(student_gaia_id).devices();
+  if (student_devices.empty()) {
+    return std::nullopt;
+  }
+  return student_devices.begin()->first;
 }
 }  // namespace ash::boca

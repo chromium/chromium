@@ -1167,10 +1167,12 @@ TEST_F(URLRequestHttpJobTest, HSTSInternalRedirectTest) {
   // Setup HSTS state.
   context_->transport_security_state()->AddHSTS(
       "upgrade.test", base::Time::Now() + base::Seconds(10), true);
-  ASSERT_TRUE(
-      context_->transport_security_state()->ShouldUpgradeToSSL("upgrade.test"));
+  // Setting `is_top_level_nav` true prevents the upgrade from being blocked by
+  // kHstsTopLevelNavigationsOnly.
+  ASSERT_TRUE(context_->transport_security_state()->ShouldUpgradeToSSL(
+      "upgrade.test", /*is_top_level_nav=*/true));
   ASSERT_FALSE(context_->transport_security_state()->ShouldUpgradeToSSL(
-      "no-upgrade.test"));
+      "no-upgrade.test", /*is_top_level_nav=*/true));
 
   struct TestCase {
     const char* url;
@@ -1268,8 +1270,10 @@ TEST_F(URLRequestHttpJobTest, ShouldBypassHSTS) {
   // Setup HSTS state.
   context_->transport_security_state()->AddHSTS(
       "upgrade.test", base::Time::Now() + base::Seconds(30), true);
-  ASSERT_TRUE(
-      context_->transport_security_state()->ShouldUpgradeToSSL("upgrade.test"));
+  // Setting `is_top_level_nav` true prevents the upgrade from being blocked by
+  // kHstsTopLevelNavigationsOnly.
+  ASSERT_TRUE(context_->transport_security_state()->ShouldUpgradeToSSL(
+      "upgrade.test", /*is_top_level_nav=*/true));
 
   struct TestCase {
     const char* url;
@@ -1558,8 +1562,10 @@ TEST_F(URLRequestHttpJobTest, ShouldBypassHSTSResponseAndConnectionNotReused) {
   // The host of all EmbeddedTestServer URLs is 127.0.0.1.
   context->transport_security_state()->AddHSTS(
       "127.0.0.1", base::Time::Now() + base::Seconds(30), true);
-  ASSERT_TRUE(
-      context->transport_security_state()->ShouldUpgradeToSSL("127.0.0.1"));
+  // Setting `is_top_level_nav` true prevents the upgrade from being blocked by
+  // kHstsTopLevelNavigationsOnly.
+  ASSERT_TRUE(context->transport_security_state()->ShouldUpgradeToSSL(
+      "127.0.0.1", /*is_top_level_nav=*/true));
 
   GURL::Replacements replace_scheme;
   replace_scheme.SetSchemeStr("https");
@@ -1649,8 +1655,10 @@ TEST_F(URLRequestHttpJobTest, HSTSInternalRedirectCallback) {
   auto context = CreateTestURLRequestContextBuilder()->Build();
   context->transport_security_state()->AddHSTS(
       "127.0.0.1", base::Time::Now() + base::Seconds(10), true);
-  ASSERT_TRUE(
-      context->transport_security_state()->ShouldUpgradeToSSL("127.0.0.1"));
+  // Setting `is_top_level_nav` true prevents the upgrade from being blocked by
+  // kHstsTopLevelNavigationsOnly.
+  ASSERT_TRUE(context->transport_security_state()->ShouldUpgradeToSSL(
+      "127.0.0.1", /*is_top_level_nav=*/true));
 
   GURL::Replacements replace_scheme;
   replace_scheme.SetSchemeStr("http");

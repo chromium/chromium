@@ -220,6 +220,9 @@ public abstract class CommandLine {
         String[] args = prev == null ? new String[0] : prev.getCommandLineArguments();
         CommandLineJni.get().init(args);
         sCommandLine.set(new NativeCommandLine());
+        if (prev != null) {
+            prev.disable();
+        }
         Log.v(TAG, "Switched to native command-line");
     }
 
@@ -258,6 +261,11 @@ public abstract class CommandLine {
         // The arguments begin at index 1, since index 0 contains the executable name.
         private int mArgsBegin = 1;
 
+        // Once the native command line has been enabled
+        // appending switches to this commandline will no
+        // longer do anything.
+        private boolean mIsEnabled = true;
+
         JavaCommandLine(String @Nullable [] args) {
             if (args == null || args.length == 0 || args[0] == null) {
                 mArgs.add("");
@@ -269,17 +277,30 @@ public abstract class CommandLine {
             assert mArgs.size() > 0;
         }
 
+        void disable() {
+            mIsEnabled = false;
+        }
+
         String[] getCommandLineArguments() {
+            assert mIsEnabled
+                    : "The java command line cannot be used after the native command line is in"
+                            + " use.";
             return mArgs.toArray(new String[mArgs.size()]);
         }
 
         @Override
         public boolean hasSwitch(String switchString) {
+            assert mIsEnabled
+                    : "The java command line cannot be used after the native command line is in"
+                            + " use.";
             return mSwitches.containsKey(switchString);
         }
 
         @Override
         public @Nullable String getSwitchValue(String switchString) {
+            assert mIsEnabled
+                    : "The java command line cannot be used after the native command line is in"
+                            + " use.";
             // This is slightly round about, but needed for consistency with the NativeCommandLine
             // version which does not distinguish empty values from key not present.
             String value = mSwitches.get(switchString);
@@ -288,6 +309,9 @@ public abstract class CommandLine {
 
         @Override
         public Map<String, String> getSwitches() {
+            assert mIsEnabled
+                    : "The java command line cannot be used after the native command line is in"
+                            + " use.";
             return new HashMap<>(mSwitches);
         }
 
@@ -304,6 +328,9 @@ public abstract class CommandLine {
          */
         @Override
         public void appendSwitchWithValue(String switchString, @Nullable String value) {
+            assert mIsEnabled
+                    : "The java command line cannot be used after the native command line is in"
+                            + " use.";
             mSwitches.put(switchString, value == null ? "" : value);
 
             // Append the switch and update the switches/arguments divider mArgsBegin.
@@ -322,6 +349,9 @@ public abstract class CommandLine {
 
         // Add the specified arguments, but skipping the first |skipCount| elements.
         private void appendSwitchesInternal(String[] array, int skipCount) {
+            assert mIsEnabled
+                    : "The java command line cannot be used after the native command line is in"
+                            + " use.";
             boolean parseSwitches = true;
             for (String arg : array) {
                 if (skipCount > 0) {
@@ -345,6 +375,9 @@ public abstract class CommandLine {
 
         @Override
         public void removeSwitch(String switchString) {
+            assert mIsEnabled
+                    : "The java command line cannot be used after the native command line is in"
+                            + " use.";
             mSwitches.remove(switchString);
             String combinedSwitchString = SWITCH_PREFIX + switchString;
 

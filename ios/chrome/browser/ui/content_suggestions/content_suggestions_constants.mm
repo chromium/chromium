@@ -36,7 +36,6 @@ const CGFloat kMostVisitedBottomMargin = 13;
 
 const CGFloat kMagicStackFaviconWidth = 28;
 
-
 ContentSuggestionsModuleType SetUpListModuleTypeForSetUpListType(
     SetUpListItemType type) {
   switch (type) {

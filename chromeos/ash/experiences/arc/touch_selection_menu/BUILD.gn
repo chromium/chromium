@@ -15,8 +15,8 @@ static_library("touch_selection_menu") {
   ]
 
   public_deps = [
-    "//ash/components/arc/mojom",
     "//base",
+    "//chromeos/ash/experiences/arc/mojom",
     "//ui/aura",
     "//ui/views",
   ]

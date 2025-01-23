@@ -25,19 +25,12 @@ class PasswordGenerationPopupController
   // Called by the view when the password was rejected.
   virtual void PasswordRejected() = 0;
 
-  // Called by the view when the password was selected.
-  virtual void SetSelected() = 0;
-
-  // Called by the view when the password was cleared.
-  virtual void SelectionCleared() = 0;
-
   // Returns the email of current primary account. Returns empty string if no
   // account is signed in.
   virtual std::u16string GetPrimaryAccountEmail() = 0;
 
   // Accessors
   virtual GenerationUIState state() const = 0;
-  virtual bool password_selected() const = 0;
   virtual bool accept_button_selected() const = 0;
   virtual bool cancel_button_selected() const = 0;
   virtual const std::u16string& password() const = 0;

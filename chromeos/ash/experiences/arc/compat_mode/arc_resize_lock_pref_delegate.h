@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "ash/components/arc/mojom/compatibility_mode.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/compatibility_mode.mojom.h"
 
 namespace arc {
 

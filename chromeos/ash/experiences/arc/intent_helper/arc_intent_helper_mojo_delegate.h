@@ -26,7 +26,7 @@ class ArcIntentHelperMojoDelegate {
   // internal::ActivityIconLoader::ActivityName.
   using ActivityName = internal::ActivityIconLoader::ActivityName;
 
-  // Following structs basically refer to //ash/components/arc/mojom.
+  // Following structs basically refer to //chromeos/ash/experiences/arc/mojom.
   // Convert arc::mojom into general structs.
   //
   // Some unnecessary parameters are dropped here.
@@ -36,7 +36,8 @@ class ArcIntentHelperMojoDelegate {
   // refactory.
 
   // Describes an intent.
-  // See //ash/components/arc/mojom/intent_helper.mojom for more details.
+  // See //chromeos/ash/experiences/arc/mojom/intent_helper.mojom for more
+  // details.
   struct IntentInfo {
     IntentInfo(std::string action,
                std::optional<std::vector<std::string>> categories,
@@ -58,7 +59,8 @@ class ArcIntentHelperMojoDelegate {
 
   // Describes an action given by the android text selection delegate (e.g. open
   // maps).
-  // See //ash/components/arc/mojom/intent_helper.mojom for more details.
+  // See //chromeos/ash/experiences/arc/mojom/intent_helper.mojom for more
+  // details.
   struct TextSelectionAction {
     TextSelectionAction(std::string app_id,
                         gfx::ImageSkia icon,
@@ -85,7 +87,8 @@ class ArcIntentHelperMojoDelegate {
   };
 
   // Describes a package that can handle an intent.
-  // See //ash/components/arc/mojom/intent_helper.mojom for more details.
+  // See //chromeos/ash/experiences/arc/mojom/intent_helper.mojom for more
+  // details.
   struct IntentHandlerInfo {
     IntentHandlerInfo(std::string name,
                       std::string package_name,

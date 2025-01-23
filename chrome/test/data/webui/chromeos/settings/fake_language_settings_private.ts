@@ -7,7 +7,7 @@
  * for testing.
  */
 
-import {SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';

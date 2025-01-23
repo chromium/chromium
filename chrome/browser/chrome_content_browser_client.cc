@@ -331,6 +331,8 @@
 #include "components/variations/variations_switches.h"
 #include "components/version_info/version_info.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webui/chrome_urls/features.h"
+#include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_child_process_host.h"
@@ -8836,14 +8838,14 @@ void ChromeContentBrowserClient::OnTracingServiceStopped() {
 std::unique_ptr<content::WebUIController>
 ChromeContentBrowserClient::OverrideForInternalWebUI(content::WebUI* web_ui,
                                                      const GURL& url) {
-  if (!base::FeatureList::IsEnabled(features::kInternalOnlyUisPref)) {
+  if (!base::FeatureList::IsEnabled(chrome_urls::kInternalOnlyUisPref)) {
     return nullptr;
   }
 
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
-  DCHECK(local_state->FindPreference(prefs::kInternalOnlyUisEnabled));
-  if (local_state->GetBoolean(prefs::kInternalOnlyUisEnabled)) {
+  DCHECK(local_state->FindPreference(chrome_urls::kInternalOnlyUisEnabled));
+  if (local_state->GetBoolean(chrome_urls::kInternalOnlyUisEnabled)) {
     return nullptr;
   }
 

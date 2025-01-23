@@ -43,19 +43,22 @@ int GetSafeItemRange(int last_committed_item_index,
 }
 
 bool URLNeedsUserAgentType(const GURL& url) {
-  if (web::GetWebClient()->IsAppSpecificURL(url))
+  if (web::GetWebClient()->IsAppSpecificURL(url)) {
     return false;
+  }
 
-  if (url.SchemeIs(url::kAboutScheme))
+  if (url.SchemeIs(url::kAboutScheme)) {
     return false;
+  }
 
   if (url.SchemeIs(url::kFileScheme) &&
       [CRWErrorPageHelper isErrorPageFileURL:url]) {
     return true;
   }
 
-  if (url.SchemeIs(url::kFileScheme))
+  if (url.SchemeIs(url::kFileScheme)) {
     return false;
+  }
 
   return true;
 }

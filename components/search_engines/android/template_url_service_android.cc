@@ -520,7 +520,3 @@ TemplateUrlServiceAndroid::GetImageUrlAndPostContent(
   output.push_back(post_content.first);
   return base::android::ToJavaArrayOfStrings(env, output);
 }
-
-jboolean TemplateUrlServiceAndroid::IsEeaChoiceCountry(JNIEnv* env) {
-  return template_url_service_->IsEeaChoiceCountry();
-}

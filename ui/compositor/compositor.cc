@@ -55,6 +55,7 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/compositor/compositor_observer.h"
+#include "ui/compositor/compositor_property_tree_delegate.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator_collection.h"
@@ -241,6 +242,15 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   params.settings = &settings;
   params.main_task_runner = task_runner_;
   params.mutator_host = animation_host_.get();
+
+  uses_layer_lists_ =
+      base::FeatureList::IsEnabled(features::kUiCompositorUsesLayerLists);
+  if (uses_layer_lists_) {
+    property_tree_delegate_ =
+        std::make_unique<ui::CompositorPropertyTreeDelegate>();
+    params.property_tree_delegate = property_tree_delegate_.get();
+  }
+
   host_ = cc::LayerTreeHost::CreateSingleThreaded(this, std::move(params));
 
   const base::WeakPtr<cc::CompositorDelegateForInput>& compositor_delegate =

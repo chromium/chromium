@@ -301,6 +301,7 @@ class NET_EXPORT TransportSecurityState {
   // when is_issued_by_known_root is false.
   bool ShouldSSLErrorsBeFatal(std::string_view host);
   bool ShouldUpgradeToSSL(std::string_view host,
+                          bool is_top_level_nav,
                           const NetLogWithSource& net_log = NetLogWithSource());
   PKPStatus CheckPublicKeyPins(std::string_view host,
                                bool is_issued_by_known_root,

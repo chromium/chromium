@@ -263,6 +263,13 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   // the list returned by |GetAccounts|.
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const;
 
+#if BUILDFLAG(IS_IOS)
+  // Returns true if a refresh token exists for |account_id|.
+  // Note: This will return |true| if and only if |account_id| is contained in
+  // the list returned by |GetAccountsOnDevice|.
+  bool RefreshTokenIsAvailableOnDevice(const CoreAccountId& account_id) const;
+#endif  // BUILDFLAG(IS_IOS)
+
   // Returns true if a refresh token exists for |account_id| and it is in a
   // persistent error state.
   bool RefreshTokenHasError(const CoreAccountId& account_id) const;

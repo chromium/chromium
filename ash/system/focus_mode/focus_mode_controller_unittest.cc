@@ -136,8 +136,8 @@ class FocusModeControllerMultiUserTest : public NoSessionAshTestBase {
   }
   ~FocusModeControllerMultiUserTest() override = default;
 
-  TestingPrefServiceSimple* user_1_prefs() { return user_1_prefs_; }
-  TestingPrefServiceSimple* user_2_prefs() { return user_2_prefs_; }
+  PrefService* user_1_prefs() { return user_1_prefs_; }
+  PrefService* user_2_prefs() { return user_2_prefs_; }
 
   // NoSessionAshTestBase:
   void SetUp() override {
@@ -148,26 +148,15 @@ class FocusModeControllerMultiUserTest : public NoSessionAshTestBase {
         GetSessionControllerClient();
     session_controller->Reset();
 
-    // Inject our own PrefServices for each user which enables us to setup the
-    // Focus Mode restore data before the user signs in.
-    auto user_1_prefs = std::make_unique<TestingPrefServiceSimple>();
-    user_1_prefs_ = user_1_prefs.get();
-    RegisterUserProfilePrefs(user_1_prefs_->registry(), /*country=*/"",
-                             /*for_test=*/true);
-    auto user_2_prefs = std::make_unique<TestingPrefServiceSimple>();
-    user_2_prefs_ = user_2_prefs.get();
-    RegisterUserProfilePrefs(user_2_prefs_->registry(), /*country=*/"",
-                             /*for_test=*/true);
     session_controller->AddUserSession(kUser1Email,
-                                       user_manager::UserType::kRegular,
-                                       /*provide_pref_service=*/false);
-    session_controller->SetUserPrefService(GetUser1AccountId(),
-                                           std::move(user_1_prefs));
+                                       user_manager::UserType::kRegular);
     session_controller->AddUserSession(kUser2Email,
-                                       user_manager::UserType::kRegular,
-                                       /*provide_pref_service=*/false);
-    session_controller->SetUserPrefService(GetUser2AccountId(),
-                                           std::move(user_2_prefs));
+                                       user_manager::UserType::kRegular);
+
+    user_1_prefs_ = session_controller->GetUserPrefService(GetUser1AccountId());
+    user_2_prefs_ = session_controller->GetUserPrefService(GetUser2AccountId());
+    CHECK(user_1_prefs_);
+    CHECK(user_2_prefs_);
   }
 
   void TearDown() override {
@@ -203,8 +192,8 @@ class FocusModeControllerMultiUserTest : public NoSessionAshTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_;
-  raw_ptr<TestingPrefServiceSimple> user_1_prefs_ = nullptr;
-  raw_ptr<TestingPrefServiceSimple> user_2_prefs_ = nullptr;
+  raw_ptr<PrefService> user_1_prefs_ = nullptr;
+  raw_ptr<PrefService> user_2_prefs_ = nullptr;
 
   // Calling the factory constructor is enough to set it up.
   std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_ =

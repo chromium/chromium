@@ -4,7 +4,8 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {ContainerInfo, ContainerSelectElement, CrostiniBrowserProxyImpl, CrostiniPortSetting, GuestOsBrowserProxyImpl, SettingsCrostiniExportImportElement} from 'chrome://os-settings/lazy_load.js';
+import type {ContainerInfo, ContainerSelectElement, CrostiniPortSetting, SettingsCrostiniExportImportElement} from 'chrome://os-settings/lazy_load.js';
+import {CrostiniBrowserProxyImpl, GuestOsBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
 import {Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

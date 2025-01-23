@@ -195,9 +195,9 @@ class AggregationServiceImplTest : public testing::Test {
   //                histogram.
   void VerifyScheduledHistograms(
       std::vector<base::Bucket> statuses = {},
-      base::HistogramBase::Count num_successful_sends = 0,
-      base::HistogramBase::Count num_assemblies = 0,
-      base::HistogramBase::Count num_attempted_sends = 0) {
+      base::HistogramBase::Count32 num_successful_sends = 0,
+      base::HistogramBase::Count32 num_assemblies = 0,
+      base::HistogramBase::Count32 num_attempted_sends = 0) {
     EXPECT_THAT(
         histogram_tester_.GetAllSamples(
             "PrivacySandbox.AggregationService.ScheduledRequests.Status"),
@@ -233,8 +233,8 @@ class AggregationServiceImplTest : public testing::Test {
   //                histogram.
   void VerifyUnscheduledHistograms(
       std::vector<base::Bucket> statuses = {},
-      base::HistogramBase::Count num_assemblies = 0,
-      base::HistogramBase::Count num_attempted_sends = 0) {
+      base::HistogramBase::Count32 num_assemblies = 0,
+      base::HistogramBase::Count32 num_attempted_sends = 0) {
     EXPECT_THAT(
         histogram_tester_.GetAllSamples(
             "PrivacySandbox.AggregationService.UnscheduledRequests.Status"),

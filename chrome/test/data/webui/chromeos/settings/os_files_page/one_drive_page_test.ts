@@ -4,14 +4,17 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {OneDriveConnectionState, SettingsOneDriveSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrButtonElement, OneDriveBrowserProxy} from 'chrome://os-settings/os_settings.js';
+import type {SettingsOneDriveSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import {OneDriveConnectionState} from 'chrome://os-settings/lazy_load.js';
+import type {CrButtonElement} from 'chrome://os-settings/os_settings.js';
+import {OneDriveBrowserProxy} from 'chrome://os-settings/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {assertAsync} from '../utils.js';
 
-import {OneDriveTestBrowserProxy, ProxyOptions} from './one_drive_test_browser_proxy.js';
+import type {ProxyOptions} from './one_drive_test_browser_proxy.js';
+import {OneDriveTestBrowserProxy} from './one_drive_test_browser_proxy.js';
 
 suite('<one-drive-subpage>', function() {
   /* The <one-drive-subpage> page. */

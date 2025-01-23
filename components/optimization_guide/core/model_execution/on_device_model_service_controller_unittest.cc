@@ -1813,19 +1813,6 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
       ("Context: ctx:foo off:0 max:4096\n"
        "Input: execute:foobaz\n");
   EXPECT_EQ(*response_.value(), expected_response);
-  EXPECT_EQ(response_.log_entry()
-                ->log_ai_data_request()
-                ->compose()
-                .request()
-                .page_metadata()
-                .page_url(),
-            "baz");
-  EXPECT_EQ(response_.log_entry()
-                ->log_ai_data_request()
-                ->compose()
-                .response()
-                .output(),
-            expected_response);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
@@ -1864,19 +1851,6 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextMultipleSessions) {
       ("Context: ctx:bar off:0 max:4096\n"
        "Input: execute:bar2\n");
   EXPECT_EQ(*response_.value(), expected_response1);
-  EXPECT_EQ(response_.log_entry()
-                ->log_ai_data_request()
-                ->compose()
-                .request()
-                .page_metadata()
-                .page_url(),
-            "2");
-  EXPECT_EQ(response_.log_entry()
-                ->log_ai_data_request()
-                ->compose()
-                .response()
-                .output(),
-            expected_response1);
 
   ResponseHolder response2;
   session1->ExecuteModel(PageUrlRequest("1"), response2.GetStreamingCallback());
@@ -1885,19 +1859,6 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextMultipleSessions) {
       ("Context: ctx:foo off:0 max:4096\n"
        "Input: execute:foo1\n");
   EXPECT_EQ(*response2.value(), expected_response2);
-  EXPECT_EQ(response2.log_entry()
-                ->log_ai_data_request()
-                ->compose()
-                .request()
-                .page_metadata()
-                .page_url(),
-            "1");
-  EXPECT_EQ(response2.log_entry()
-                ->log_ai_data_request()
-                ->compose()
-                .response()
-                .output(),
-            expected_response2);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
@@ -2008,12 +1969,6 @@ TEST_F(OnDeviceModelServiceControllerTest,
       ExecuteModelResult::kDisconnectAndMaybeFallback, 1);
   EXPECT_TRUE(remote_execute_called_);
   ASSERT_TRUE(log_ai_data_request_passed_to_remote_);
-  EXPECT_EQ(log_ai_data_request_passed_to_remote_->compose()
-                .request()
-                .page_metadata()
-                .page_url(),
-            "foo");
-  EXPECT_FALSE(log_ai_data_request_passed_to_remote_->compose().has_response());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -3794,24 +3749,6 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_FALSE(fake_launcher_.is_service_running());
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, LoggingModeDefault) {
-  TestModelQualityLogsUploaderService test_uploader(&pref_service_);
-  Initialize(standard_assets_);
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(),
-      test_uploader.GetWeakPtr(),
-      SessionConfigParams{.logging_mode =
-                              SessionConfigParams::LoggingMode::kDefault});
-  ASSERT_TRUE(session);
-  ResponseHolder response_holder;
-  session->ExecuteModel(UserInputRequest("input"),
-                        response_holder.GetStreamingCallback());
-  EXPECT_TRUE(response_holder.GetFinalStatus());
-  EXPECT_TRUE(response_holder.log_entry());
-  EXPECT_TRUE(response_holder.model_execution_info());
-  response_holder.ClearLogEntry();
-  EXPECT_EQ(1u, test_uploader.uploaded_logs().size());
-}
 
 TEST_F(OnDeviceModelServiceControllerTest, LoggingModeAlwaysDisable) {
   TestModelQualityLogsUploaderService test_uploader(&pref_service_);

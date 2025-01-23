@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "ash/components/arc/mojom/net.mojom.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ash/experiences/arc/mojom/net.mojom.h"
 #include "chromeos/ash/experiences/arc/net/browser_url_opener.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"

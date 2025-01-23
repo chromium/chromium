@@ -276,7 +276,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': '40ea66c0c770893f0da2a7bb4c2a54d58ef04b33',
+  'src_internal_revision': '20a5d3539c4a8fca77b66b8215b9856e6d424718',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
@@ -284,7 +284,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '9503f9676bf0653406972a16624cf8e9dd4957f4',
+  'v8_revision': '2c0df627ff9d28a6d94b02407dc759f74501a60a',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -300,7 +300,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
-  'boringssl_revision': '485c7253196a77d419a8535f117d0b0beaf7f4cc',
+  'boringssl_revision': '7d07002aaee8df5aea2313c51546afa4b76eb6de',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Fuchsia sdk
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '1a5787907030697a47d45a53be5e65df8d9704e1',
+  'devtools_frontend_revision': '02ab38d1d19c3faf1ac2e17fed42b48ef9e8f42f',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1439,7 +1439,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'b96dda9dacecbd7e7be38a294aa144aec94c79dc',
+    'a93ca1f5788654dca17609642beef3fa1abe0f42',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1453,7 +1453,7 @@ deps = {
   },
 
   'src/ios/third_party/edo/src': {
-      'url': Var('chromium_git') + '/external/github.com/google/eDistantObject.git' + '@' + '49b4209a24329b7bbc440af7636328662a6bce87',
+      'url': Var('chromium_git') + '/external/github.com/google/eDistantObject.git' + '@' + '840deebc126940afa5fb4c93f42be7a9fe077ca5',
       'condition': 'checkout_ios',
   },
 
@@ -1904,7 +1904,7 @@ deps = {
   # Tools used when building Chrome for Chrome OS. This affects both the Simple
   # Chrome workflow, as well as the chromeos-chrome ebuild.
   'src/third_party/chromite': {
-      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + '9892051e62bed93a969bfb38c48208a90bfac0b3',
+      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + '970c859887dc09b9a47db8fc5fd7adbc640446b1',
       'condition': 'checkout_chromeos',
   },
 
@@ -2436,7 +2436,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + '5cf56ed9d52ebc939f294b595bfe00c3750465bb',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + '19dda8d3a175b46e54a23007e52238824b005c10',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',
@@ -2957,7 +2957,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': '-zdhTOOdS8G8o2TlZOgEyuZuCBIBQRN19W9i6MMkgNsC',
+        'version': 'eb1YFvycrq9cwDSoYwkYiv-GQfX3TlPgwID4FmEiEG0C',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4282,7 +4282,7 @@ deps = {
 
   'src/chrome/app/theme/google_chrome': {
       'url': Var('chrome_git') + '/chrome/theme/google_chrome.git' + '@' +
-        '1d807d1b5ffc29e13e3c05260ce8a44401e3582d',
+        '6c4eccc5bfc245e7bcbab67214c705e401a00789',
       'condition': 'checkout_src_internal',
   },
 

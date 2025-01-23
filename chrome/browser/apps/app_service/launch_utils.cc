@@ -42,11 +42,11 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/public/cpp/new_window_delegate.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom-shared.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
-#include "ash/components/arc/mojom/app.mojom.h"
-#include "ash/public/cpp/new_window_delegate.h"
 
 namespace {
 // Use manual mapping for launch container and window open disposition because

@@ -18,7 +18,6 @@ static_library("crostini_installer") {
   ]
 
   deps = [
-    "//ash/components/arc/mojom",
     "//ash/public/cpp",
     "//chrome/app:generated_resources",
     "//chrome/app/theme:chrome_unscaled_resources",
@@ -29,6 +28,7 @@ static_library("crostini_installer") {
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/common",
     "//chromeos/ash/components/dbus/spaced",
+    "//chromeos/ash/experiences/arc/mojom",
     "//components/strings:components_strings",
     "//content/public/browser",
     "//content/public/common",

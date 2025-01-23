@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "ash/components/arc/mojom/wallpaper.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/wallpaper.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

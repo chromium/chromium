@@ -5,10 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_CONTENT_SUGGESTIONS_MOST_VISITED_ITEM_H_
 #define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_CONTENT_SUGGESTIONS_MOST_VISITED_ITEM_H_
 
+#import <UIKit/UIKit.h>
+
 #include "components/ntp_tiles/tile_source.h"
 #include "components/ntp_tiles/tile_title_source.h"
-
-#import <UIKit/UIKit.h>
 
 @protocol ContentSuggestionsMenuElementsProvider;
 @class FaviconAttributes;

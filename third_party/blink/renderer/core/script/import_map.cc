@@ -828,7 +828,7 @@ void ImportMap::InitializeScopesVector() {
   // <spec label="sort-and-normalize-scopes" step="3">Return the result of
   // sorting normalized, with an entry a being less than an entry b if b’s key
   // is code unit less than a’s key.</spec>
-  WTF::CopyKeysToVector(scopes_map_, scopes_vector_);
+  scopes_vector_.assign(scopes_map_.Keys());
   std::sort(scopes_vector_.begin(), scopes_vector_.end(),
             [](const String& a, const String& b) {
               return CodeUnitCompareLessThan(b, a);

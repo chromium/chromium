@@ -30,4 +30,3 @@ NSString* const kMagicStackEditButtonContainerAccessibilityIdentifier =
 
 NSString* const kMagicStackEditButtonAccessibilityIdentifier =
     @"MagicStackEditButtonAccessibilityIdentifier";
-

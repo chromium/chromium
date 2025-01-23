@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "ash/components/arc/mojom/crash_collector.mojom.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ash/experiences/arc/mojom/crash_collector.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/mojom/base/time.mojom.h"
 

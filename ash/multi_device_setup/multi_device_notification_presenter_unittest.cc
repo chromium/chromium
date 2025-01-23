@@ -138,7 +138,7 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
         GetSessionControllerClient();
     test_session_client->AddUserSession(
         kTestUserEmail, user_manager::UserType::kRegular,
-        true /* provide_pref_service */, false /* is_new_profile */);
+        /*provide_pref_service=*/true, false /* is_new_profile */);
     test_session_client->SetSessionState(session_manager::SessionState::ACTIVE);
     test_session_client->SwitchActiveUser(
         AccountId::FromUserEmail(kTestUserEmail));

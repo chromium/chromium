@@ -7,7 +7,7 @@
  */
 
 import {nearbyShareMojom} from 'chrome://os-settings/os_settings.js';
-import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 type ReceiveObserverInterface = nearbyShareMojom.ReceiveObserverInterface;

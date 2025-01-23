@@ -9,8 +9,8 @@
 #include <queue>
 #include <string>
 
-#include "ash/components/arc/mojom/screen_capture.mojom.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ash/experiences/arc/mojom/screen_capture.mojom.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

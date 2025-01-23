@@ -6,10 +6,10 @@
 
 #include <utility>
 
-#include "ash/components/arc/mojom/process.mojom.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/strings/string_util.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/mojom/process.mojom.h"
 
 namespace arc {
 

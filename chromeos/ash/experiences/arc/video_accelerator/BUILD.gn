@@ -29,7 +29,7 @@ if (use_v4l2_codec || use_vaapi) {
     deps = [
       ":common",
       "//ash/components/arc:arc_features",
-      "//ash/components/arc/mojom:media",
+      "//chromeos/ash/experiences/arc/mojom:media",
       "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu",
       "//gpu/ipc/common:common",
       "//media",
@@ -69,7 +69,7 @@ source_set("protected_native_pixmap_query_client") {
   ]
 
   deps = [
-    "//ash/components/arc/mojom:media",
+    "//chromeos/ash/experiences/arc/mojom:media",
     "//components/exo",
     "//content/public/browser:browser",
   ]

@@ -73,8 +73,9 @@ void URLToRequestPath(const GURL& url, std::string* path) {
   // + 1 to skip the slash at the beginning of the path.
   int offset = parsed.CountCharactersBefore(url::Parsed::PATH, false) + 1;
 
-  if (offset < static_cast<int>(spec.size()))
+  if (offset < static_cast<int>(spec.size())) {
     path->assign(spec.substr(offset));
+  }
 }
 
 // Checks for webui resources path inside the given `url` and return a
@@ -245,8 +246,9 @@ void URLRequestChromeJob::Start() {
                                     TRACE_ID_LOCAL(this), "URL",
                                     request_->url().possibly_invalid_spec());
 
-  if (!request_)
+  if (!request_) {
     return;
+  }
   DCHECK(browser_state_);
 
   // Obtain the URLDataManagerIOSBackend instance that is associated with
@@ -263,8 +265,9 @@ void URLRequestChromeJob::Start() {
 
 void URLRequestChromeJob::Kill() {
   weak_factory_.InvalidateWeakPtrs();
-  if (backend_)
+  if (backend_) {
     backend_->RemoveRequest(this);
+  }
   URLRequestJob::Kill();
 }
 
@@ -291,14 +294,17 @@ void URLRequestChromeJob::GetResponseInfo(net::HttpResponseInfo* info) {
     info->headers->AddHeader(kContentSecurityPolicy, base);
   }
 
-  if (deny_xframe_options_)
+  if (deny_xframe_options_) {
     info->headers->AddHeader(kXFrameOptions, kChromeURLXFrameOptionsHeader);
+  }
 
-  if (!allow_caching_)
+  if (!allow_caching_) {
     info->headers->AddHeader("Cache-Control", "no-cache");
+  }
 
-  if (send_content_type_header_ && !mime_type_.empty())
+  if (send_content_type_header_ && !mime_type_.empty()) {
     info->headers->AddHeader(net::HttpRequestHeaders::kContentType, mime_type_);
+  }
 }
 
 std::unique_ptr<net::SourceStream> URLRequestChromeJob::SetUpSourceStream() {
@@ -309,8 +315,9 @@ std::unique_ptr<net::SourceStream> URLRequestChromeJob::SetUpSourceStream() {
   // same parent URLRequest, thus it is safe to pass the replacements via a raw
   // pointer.
   const ui::TemplateReplacements* replacements = nullptr;
-  if (source_)
+  if (source_) {
     replacements = source_->GetReplacements();
+  }
   if (replacements) {
     // It is safe to pass the raw replacements directly to the source stream, as
     // both this URLRequestChromeJob and the I18nSourceStream are owned by the
@@ -373,8 +380,9 @@ int URLRequestChromeJob::CompleteRead(net::IOBuffer* buf, int buf_size) {
   base::debug::Alias(url_buf);
 
   int remaining = data_->size() - data_offset_;
-  if (buf_size > remaining)
+  if (buf_size > remaining) {
     buf_size = remaining;
+  }
   if (buf_size > 0) {
     memcpy(buf->data(), data_->front() + data_offset_, buf_size);
     data_offset_ += buf_size;
@@ -466,8 +474,9 @@ void URLDataManagerIOSBackend::AddDataSource(URLDataSourceIOSImpl* source) {
   DCHECK_CURRENTLY_ON(WebThread::IO);
   DataSourceMap::iterator i = data_sources_.find(source->source_name());
   if (i != data_sources_.end()) {
-    if (!source->source()->ShouldReplaceExistingSource())
+    if (!source->source()->ShouldReplaceExistingSource()) {
       return;
+    }
     i->second->backend_ = nullptr;
   }
   data_sources_[source->source_name()] = source;
@@ -477,25 +486,29 @@ void URLDataManagerIOSBackend::AddDataSource(URLDataSourceIOSImpl* source) {
 bool URLDataManagerIOSBackend::HasPendingJob(URLRequestChromeJob* job) const {
   for (PendingRequestMap::const_iterator i = pending_requests_.begin();
        i != pending_requests_.end(); ++i) {
-    if (i->second == job)
+    if (i->second == job) {
       return true;
+    }
   }
   return false;
 }
 
 bool URLDataManagerIOSBackend::StartRequest(const net::URLRequest* request,
                                             URLRequestChromeJob* job) {
-  if (!CheckURLIsValid(request->url()))
+  if (!CheckURLIsValid(request->url())) {
     return false;
+  }
 
   GURL url = RedirectWebUIResources(request->url());
 
   URLDataSourceIOSImpl* source = GetDataSourceFromURL(url);
-  if (!source)
+  if (!source) {
     return false;
+  }
 
-  if (!source->source()->ShouldServiceRequest(url))
+  if (!source->source()->ShouldServiceRequest(url)) {
     return false;
+  }
 
   std::string path;
   URLToRequestPath(url, &path);
@@ -535,14 +548,16 @@ URLDataSourceIOSImpl* URLDataManagerIOSBackend::GetDataSourceFromURL(
   // The input usually looks like: chrome://source_name/extra_bits?foo
   // so do a lookup using the host of the URL.
   DataSourceMap::iterator i = data_sources_.find(url.host());
-  if (i != data_sources_.end())
+  if (i != data_sources_.end()) {
     return i->second.get();
+  }
 
   // No match using the host of the URL, so do a lookup using the scheme for
   // URLs on the form source_name://extra_bits/foo .
   i = data_sources_.find(url.scheme() + "://");
-  if (i != data_sources_.end())
+  if (i != data_sources_.end()) {
     return i->second.get();
+  }
 
   // No matches found, so give up.
   return NULL;

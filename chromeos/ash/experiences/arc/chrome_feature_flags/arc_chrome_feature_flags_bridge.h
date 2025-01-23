@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_CHROME_FEATURE_FLAGS_ARC_CHROME_FEATURE_FLAGS_BRIDGE_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_CHROME_FEATURE_FLAGS_ARC_CHROME_FEATURE_FLAGS_BRIDGE_H_
 
-#include "ash/components/arc/mojom/chrome_feature_flags.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "chromeos/ash/experiences/arc/mojom/chrome_feature_flags.mojom.h"
 #include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 

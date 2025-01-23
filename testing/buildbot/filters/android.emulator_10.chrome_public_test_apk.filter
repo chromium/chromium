@@ -6,7 +6,10 @@
 -org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testMediaSuspension
 
 # crbug.com/1225754
--org.chromium.chrome.browser.offlinepages.OfflinePageBridgeTest.testGetLoadUrlParamsForOpeningMhtmlFileUrl
+-org.chromium.chrome.browser.offlinepages.OfflinePageBridgeTest.testGetLoadUrlParamsForOpeningMhtmlFileUrl_File
 
 # crbug.com/391703255
 -org.chromium.chrome.browser.permissions.RuntimePermissionTest.testDenyRuntimeDownload
+
+# crbug.com/391749002
+-org.chromium.chrome.browser.incognito.IncognitoDownloadLeakageTest.testIncognitoDowloadEntriesNotVisibleInAnotherIncognito__INCOGNITO_TAB_INCOGNITO_CCT

@@ -5,10 +5,10 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_METRICS_ARC_METRICS_ANR_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_METRICS_ARC_METRICS_ANR_H_
 
-#include "ash/components/arc/mojom/anr.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/experiences/arc/mojom/anr.mojom.h"
 
 class PrefService;
 

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/arc/mojom/app.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/scoped_observation.h"
 #include "base/test/test_future.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "content/public/test/browser_task_environment.h"

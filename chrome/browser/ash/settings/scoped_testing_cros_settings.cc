@@ -8,6 +8,7 @@
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/system_settings_provider.h"
+#include "chromeos/ash/components/settings/user_login_permission_tracker.h"
 
 namespace ash {
 
@@ -27,9 +28,12 @@ ScopedTestingCrosSettings::ScopedTestingCrosSettings()
 
   CHECK(!CrosSettings::IsInitialized());
   CrosSettings::SetInstance(test_instance_.get());
+  user_login_permission_tracker_ =
+      std::make_unique<UserLoginPermissionTracker>(test_instance_.get());
 }
 
 ScopedTestingCrosSettings::~ScopedTestingCrosSettings() {
+  user_login_permission_tracker_.reset();
   CHECK_EQ(CrosSettings::Get(), test_instance_.get());
   CrosSettings::SetInstance(nullptr);
   OwnerSettingsServiceAshFactory::SetStubCrosSettingsProviderForTesting(

@@ -21,6 +21,7 @@ namespace content {
 class BrowserContext;
 enum class FedCmDisconnectStatus;
 enum class FedCmIdpSigninStatusMode;
+enum class FedCmRequesterFrameType;
 class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
 enum class IdpSigninStatus;
@@ -109,6 +110,11 @@ FederatedAuthRequestPageData* GetPageData(Page& page);
 // Returns a new session ID. Used to record UKM metrics corresponding to a new
 // API invocation, like get() or disconnect().
 int GetNewSessionID();
+
+// Returns the frame type of the requester.
+FedCmRequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,
+                                                  const url::Origin& requester,
+                                                  const url::Origin& embedder);
 }  // namespace webid
 
 }  // namespace content

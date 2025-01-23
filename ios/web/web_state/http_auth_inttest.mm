@@ -110,4 +110,4 @@ TEST_F(HttpAuthTest, UnsucessfulBasicAuth) {
   }));
 }
 
-}  // web
+}  // namespace web

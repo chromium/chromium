@@ -14,13 +14,15 @@ NavigationItemImpl* GetItemWithUniqueID(
     NavigationManagerImpl* navigation_manager,
     NavigationContextImpl* context) {
   DCHECK(context);
-  if (context->GetItem())
+  if (context->GetItem()) {
     return context->GetItem();
+  }
 
   int unique_id = context->GetNavigationItemUniqueID();
   NavigationItemImpl* pending_item = navigation_manager->GetPendingItemImpl();
-  if (pending_item && pending_item->GetUniqueID() == unique_id)
+  if (pending_item && pending_item->GetUniqueID() == unique_id) {
     return pending_item;
+  }
 
   return GetCommittedItemWithUniqueID(navigation_manager, unique_id);
 }

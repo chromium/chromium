@@ -4,12 +4,13 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppManagementMainViewElement} from 'chrome://os-settings/lazy_load.js';
-import {AppManagementActions, AppManagementPageState, Router} from 'chrome://os-settings/os_settings.js';
+import type {AppManagementMainViewElement} from 'chrome://os-settings/lazy_load.js';
+import type {AppManagementActions, AppManagementPageState} from 'chrome://os-settings/os_settings.js';
+import {Router} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestStore} from 'chrome://webui-test/test_store.js';
+import type {TestStore} from 'chrome://webui-test/test_store.js';
 
-import {FakePageHandler} from '../../app_management/fake_page_handler.js';
+import type {FakePageHandler} from '../../app_management/fake_page_handler.js';
 import {replaceBody, replaceStore, setupFakeHandler} from '../../app_management/test_util.js';
 
 suite('<app-management-main-view>', () => {

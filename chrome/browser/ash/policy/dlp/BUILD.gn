@@ -77,10 +77,10 @@ static_library("dlp") {
     # TODO(b/354095042): Use targets having headers directly included from
     # chrome/browser/ash/policy/dlp/files_policy_notification_manager.cc
     # instead after fixing cyclic dependency.
-    "//ash/components/arc/mojom:mojom",
     "//chrome/app/vector_icons:vector_icons",
     "//chromeos/ash/components/dbus:vm_applications_apps_proto",
     "//chromeos/ash/components/drivefs",
+    "//chromeos/ash/experiences/arc/mojom:mojom",
     "//components/paint_preview/buildflags",
 
     # TODO(b/354095042): Use targets having headers directly included from

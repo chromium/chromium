@@ -148,26 +148,22 @@ void AshTestBase::SetUp(std::unique_ptr<TestShellDelegate> delegate) {
 
   setup_called_ = true;
 
-  AshTestHelper::InitParams params;
-  params.start_session = start_session_;
-  params.create_global_cras_audio_handler = create_global_cras_audio_handler_;
-  params.create_quick_pair_mediator = create_quick_pair_mediator_;
-  params.delegate = std::move(delegate);
-  params.local_state = local_state();
+  init_params_.delegate = std::move(delegate);
+  init_params_.local_state = local_state();
 
   // Prepare for a pixel test if having pixel init params.
   std::optional<pixel_test::InitParams> pixel_test_init_params =
       CreatePixelTestInitParams();
   if (pixel_test_init_params) {
     PrepareForPixelDiffTest();
-    params.pixel_test_init_params = std::move(pixel_test_init_params);
+    init_params_.pixel_test_init_params = std::move(pixel_test_init_params);
   }
 
   test_context_factories_ =
       std::make_unique<ui::TestContextFactories>(/*enable_pixel_output=*/false);
   ash_test_helper_ = std::make_unique<AshTestHelper>(
       test_context_factories_->GetContextFactory());
-  ash_test_helper_->SetUp(std::move(params));
+  ash_test_helper_->SetUp(std::move(init_params_));
 
   // Creates a dummy `SensorDisabledNotificationDelegate` to avoid a crash due
   // to it missing in tests.

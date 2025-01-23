@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/mojom/digital_goods.mojom.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ash/experiences/arc/mojom/digital_goods.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

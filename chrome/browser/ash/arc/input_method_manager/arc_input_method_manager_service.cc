@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/mojom/ime_mojom_traits.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/keyboard/arc/arc_input_method_bounds_tracker.h"
@@ -25,6 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "chromeos/ash/experiences/arc/mojom/ime_mojom_traits.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"

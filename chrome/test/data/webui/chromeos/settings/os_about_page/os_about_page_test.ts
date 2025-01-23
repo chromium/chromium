@@ -5,7 +5,8 @@
 import 'chrome://os-settings/os_settings.js';
 import 'chrome://os-settings/lazy_load.js';
 
-import {AboutPageBrowserProxyImpl, BrowserChannel, IronIconElement, LifetimeBrowserProxyImpl, OsAboutPageElement, Router, routes, settingMojom, setUserActionRecorderForTesting, UpdateStatus, userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
+import type {IronIconElement, OsAboutPageElement, userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
+import {AboutPageBrowserProxyImpl, BrowserChannel, LifetimeBrowserProxyImpl, Router, routes, settingMojom, setUserActionRecorderForTesting, UpdateStatus} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

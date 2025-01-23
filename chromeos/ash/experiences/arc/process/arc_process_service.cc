@@ -17,7 +17,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/mojom/process.mojom.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
@@ -33,6 +32,7 @@
 #include "chromeos/ash/components/process_snapshot/process_snapshot_server.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/mojom/process.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_thread.h"
 

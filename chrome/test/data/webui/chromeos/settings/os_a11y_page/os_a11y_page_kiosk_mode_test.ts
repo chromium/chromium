@@ -4,7 +4,8 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {OsSettingsA11yPageElement, Router, routes} from 'chrome://os-settings/os_settings.js';
+import type {OsSettingsA11yPageElement} from 'chrome://os-settings/os_settings.js';
+import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
@@ -101,7 +102,7 @@ suite('OsSettingsA11yPageKioskModeTest', () => {
       () => {
         loadTimeData.overrideValues({
           isKioskOldA11ySettingsRedirectionEnabled: false,
-          isKioskModeActive: true
+          isKioskModeActive: true,
         });
         Router.getInstance().navigateTo(routes.OS_ACCESSIBILITY);
         initPage();

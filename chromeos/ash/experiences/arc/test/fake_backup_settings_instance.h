@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_BACKUP_SETTINGS_INSTANCE_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_BACKUP_SETTINGS_INSTANCE_H_
 
-#include "ash/components/arc/mojom/backup_settings.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/backup_settings.mojom.h"
 
 namespace arc {
 

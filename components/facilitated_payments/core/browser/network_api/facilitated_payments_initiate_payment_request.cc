@@ -18,7 +18,7 @@ namespace payments::facilitated {
 
 namespace {
 const char kInitiatePaymentRequestPath[] =
-    "payments/apis/chromepaymentsservice/initiatepayment";
+    "payments/apis-secure/chromepaymentsservice/initiatepayment";
 }  // namespace
 
 FacilitatedPaymentsInitiatePaymentRequest::

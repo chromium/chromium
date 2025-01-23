@@ -4,8 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsStylusElement} from 'chrome://os-settings/lazy_load.js';
-import {CrLinkRowElement, DevicePageBrowserProxyImpl, NoteAppInfo, Route, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
+import type {SettingsStylusElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrLinkRowElement, NoteAppInfo, Route} from 'chrome://os-settings/os_settings.js';
+import {DevicePageBrowserProxyImpl, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';

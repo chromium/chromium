@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,8 +24,54 @@
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/view_utils.h"
 
+// Observes a widget to track when a drag is complete.
+class DragWaiter : public views::WidgetObserver {
+ public:
+  explicit DragWaiter(views::Widget* widget) : widget_(widget) {
+    widget_->AddObserver(this);
+  }
+  ~DragWaiter() override {
+    if (widget_) {
+      widget_->RemoveObserver(this);
+    }
+  }
+  DragWaiter(const DragWaiter&) = delete;
+  void operator=(const DragWaiter&) = delete;
+
+  void OnWidgetDestroying(views::Widget* widget) override {
+    if (drag_loop_ && drag_loop_->running()) {
+      drag_loop_->Quit();
+    }
+    widget_->RemoveObserver(this);
+    widget_ = nullptr;
+  }
+
+  void OnWidgetDragComplete(views::Widget* widget) override {
+    drag_complete_ = true;
+    if (drag_loop_ && drag_loop_->running()) {
+      drag_loop_->Quit();
+    }
+  }
+
+  void Wait() {
+    if (!drag_complete_) {
+      drag_loop_ = std::make_unique<base::RunLoop>(
+          base::RunLoop::Type::kNestableTasksAllowed);
+      drag_loop_->Run();
+    }
+  }
+
+ private:
+  raw_ptr<views::Widget> widget_ = nullptr;
+  bool drag_complete_ = false;
+  std::unique_ptr<base::RunLoop> drag_loop_;
+};
+
 class AppMenuDragAndDropInteractiveTest : public InteractiveBrowserTest {
  public:
+  using DragObserver =
+      views::test::PollingViewObserver<bool, views::MenuItemView>;
+
   AppMenuDragAndDropInteractiveTest() = default;
   ~AppMenuDragAndDropInteractiveTest() override = default;
   AppMenuDragAndDropInteractiveTest(const AppMenuDragAndDropInteractiveTest&) =
@@ -53,21 +100,78 @@ class AppMenuDragAndDropInteractiveTest : public InteractiveBrowserTest {
   // a view. The value is slightly adjusted to prevent rounding errors on
   // scaled devices.
   auto TopCenter() {
-    return base::BindLambdaForTesting([](ui::TrackedElement* el) {
-      return el->GetScreenBounds().top_center() + gfx::Vector2d(0, 2);
+    return base::BindLambdaForTesting([](views::View* el) {
+      return el->GetBoundsInScreen().top_center() + gfx::Vector2d(0, 2);
     });
   }
+  auto CenterPoint() {
+    return base::BindLambdaForTesting([](views::View* view) {
+      return view->GetBoundsInScreen().CenterPoint();
+    });
+  }
+
+  auto RegisterDragWaiter(ElementSpecifier target_view) {
+    return WithView(target_view, [&](views::View* view) {
+      auto* menu = static_cast<views::MenuItemView*>(view);
+      drag_waiter_ = std::make_unique<DragWaiter>(menu->GetWidget());
+    });
+  }
+
+  auto RemoveDragWaiter() {
+    return Do([&]() { drag_waiter_.reset(); });
+  }
+
+  // The original "DragMouseTo" method has issues on various platforms. This
+  // method uses custom logic to perform the drag.
+  auto DragMouseTo(ElementSpecifier dragged_view,
+                   ElementSpecifier target_view,
+                   base::RepeatingCallback<gfx::Point(views::View*)> pos) {
+    return Steps(
+        RegisterDragWaiter(dragged_view),
+        WithView(target_view,
+                 [this, pos = std::move(pos)](views::View* view) {
+                   base::RunLoop press_loop(
+                       base::RunLoop::Type::kNestableTasksAllowed);
+                   EXPECT_TRUE(ui_controls::SendMouseEventsNotifyWhenDone(
+                       ui_controls::MouseButton::LEFT,
+                       ui_controls::MouseButtonState::DOWN,
+                       press_loop.QuitClosure()));
+                   press_loop.Run();
+
+                   gfx::Rect bounds = view->GetBoundsInScreen();
+                   gfx::Point start_location(bounds.width() / 2,
+                                             bounds.height() / 2);
+                   gfx::Point target_location =
+                       start_location + gfx::Vector2d(10, 10);
+
+                   // Send an initial mouse movement to start the drag.
+                   EXPECT_TRUE(ui_controls::SendMouseMove(target_location.x(),
+                                                          target_location.y()));
+
+                   // Send another mouse movement to the target desitnation.
+                   target_location = std::move(pos).Run(view);
+                   EXPECT_TRUE(ui_controls::SendMouseMove(target_location.x(),
+                                                          target_location.y()));
+
+                   // Release the mouse movement.
+                   EXPECT_TRUE(ui_controls::SendMouseEvents(
+                       ui_controls::MouseButton::LEFT,
+                       ui_controls::MouseButtonState::UP));
+                   // Await drag completion.
+                   drag_waiter_->Wait();
+                 }),
+        RemoveDragWaiter());
+  }
+
+ private:
+  std::unique_ptr<DragWaiter> drag_waiter_;
 };
 
 // TODO(crbug.com/375959961): For X11, the menu is always closed on drag
 // completion because the native widget's state is not properly updated.
 // TODO(crbug.com/388531778): DND tests are flaky on Windows. This should be
 // re-enabled once de-flaked.
-// TODO(crbug.com/388531778): On Mac-ARM64, the "drop" portion of the drag is
-// never invoked because the platform is registering the drag as "exited"
-// from the view bounds.
-#if BUILDFLAG(IS_OZONE_X11) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_OZONE_WAYLAND) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_OZONE_X11) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_OZONE_WAYLAND)
 #define MAYBE_DISABLED(test_name) DISABLED_##test_name
 #else
 #define MAYBE_DISABLED(test_name) test_name
@@ -96,7 +200,8 @@ IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
       NameSubmenuChild(AppMenuModel::kBookmarksMenuItem, kBNodeMenuId, 9u),
       CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"),
       // Drag bookmark "b" above bookmark "a".
-      MoveMouseTo(kBNodeMenuId), DragMouseTo(kANodeMenuId, TopCenter()),
+      MoveMouseTo(kBNodeMenuId),
+      DragMouseTo(kBNodeMenuId, kANodeMenuId, TopCenter()),
       // The order of the bookmarks should now be swapped.
       NameSubmenuChild(AppMenuModel::kBookmarksMenuItem, kANodeMenuId, 9u),
       CheckViewProperty(kANodeMenuId, &views::MenuItemView::title, u"a"),
@@ -127,13 +232,14 @@ IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
       NameSubmenuChild(AppMenuModel::kBookmarksMenuItem, kBNodeMenuId, 9u),
       CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"),
       // Drag bookmark "a" onto bookmark folder "b".
-      MoveMouseTo(kANodeMenuId), DragMouseTo(kBNodeMenuId, CenterPoint()),
+      MoveMouseTo(kBNodeMenuId),
+      DragMouseTo(kBNodeMenuId, kANodeMenuId, CenterPoint()),
       // Bookmark folder "b" should now be the 9th menu item, and bookmark "a"
       // should be in its submenu.
-      NameSubmenuChild(AppMenuModel::kBookmarksMenuItem, kBNodeMenuId, 8u),
-      CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"),
-      NameSubmenuChild(kBNodeMenuId, kANodeMenuId, 0u),
-      CheckViewProperty(kANodeMenuId, &views::MenuItemView::title, u"a"));
+      NameSubmenuChild(AppMenuModel::kBookmarksMenuItem, kANodeMenuId, 8u),
+      CheckViewProperty(kANodeMenuId, &views::MenuItemView::title, u"a"),
+      NameSubmenuChild(kANodeMenuId, kBNodeMenuId, 0u),
+      CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"), );
 }
 
 IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
@@ -161,7 +267,8 @@ IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
       NameSubmenuChild(kANodeMenuId, kBNodeMenuId, 0u),
       CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"),
       // Drag bookmark "b" out of bookmark folder "a".
-      MoveMouseTo(kBNodeMenuId), DragMouseTo(kANodeMenuId, TopCenter()),
+      MoveMouseTo(kBNodeMenuId),
+      DragMouseTo(kBNodeMenuId, kANodeMenuId, TopCenter()),
       // Bookmark "b" should now be the 9th menu item and bookmark folder "a"
       // should be the 10th.
       NameSubmenuChild(AppMenuModel::kBookmarksMenuItem, kBNodeMenuId, 8u),

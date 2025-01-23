@@ -243,7 +243,7 @@ public class DataSharingTabManager {
 
     /** Returns whether the current session supports creating collaborations. */
     public boolean isCreationEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING);
+        return mCollaborationService.getServiceStatus().isAllowedToCreate();
     }
 
     /**

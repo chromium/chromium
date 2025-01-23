@@ -45,7 +45,8 @@ bool CacheHasMatchingAutofillSuggestion(
     const autofill::FormData& form,
     const std::string& autofill_profile_guid,
     autofill::FieldType field_type) {
-  autofill::FormStructure* form_structure = client.GetCachedFormStructure(form);
+  autofill::FormStructure* form_structure =
+      client.GetCachedFormStructure(form.global_id());
   if (!form_structure) {
     return false;
   }

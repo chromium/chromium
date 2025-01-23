@@ -9,7 +9,6 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.graphics.Color;
 import android.view.View;
@@ -49,6 +48,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
     @Before
     public void setup() {
         doReturn(mDecorView).when(mWindow).getDecorView();
+        doReturn(true).when(mDelegateColorHelper).canSetStatusBarColor();
     }
 
     @Test
@@ -147,9 +147,23 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         mShouldContentFitsWindowInsetsSupplier.set(true);
         verify(mWindow).setNavigationBarColor(Color.RED);
         verify(mWindow).setStatusBarColor(Color.RED);
-        verifyNoMoreInteractions(mDelegateColorHelper);
+        verify(mDelegateColorHelper, times(0)).setNavigationBarColor(anyInt());
         verify(mWindow).setNavigationBarContrastEnforced(true);
         verify(mWindow).setStatusBarContrastEnforced(true);
+    }
+
+    // A test case for #canSetStatusBarColor, and should be remove when all the method override
+    // is removed.
+    @Test
+    public void delegateDoNotColorStatusBar() {
+        doReturn(false).when(mDelegateColorHelper).canSetStatusBarColor();
+        mShouldContentFitsWindowInsetsSupplier.set(false);
+        mDelegateHelperSupplier.set(mDelegateColorHelper);
+        initEdgeToEdgeColorHelper();
+
+        mEdgeToEdgeColorHelper.setStatusBarColor(Color.RED);
+        verify(mDelegateColorHelper, times(0)).setStatusBarColor(anyInt());
+        verify(mWindow).setStatusBarColor(Color.RED);
     }
 
     private void initEdgeToEdgeColorHelper() {

@@ -4,8 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsPerDevicePointingStickSubsectionElement} from 'chrome://os-settings/lazy_load.js';
-import {FakeInputDeviceSettingsProvider, fakePointingSticks, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsPerDevicePointingStickSubsectionElement} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {FakeInputDeviceSettingsProvider, fakePointingSticks, Router, routes, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';

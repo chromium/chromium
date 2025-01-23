@@ -48,14 +48,16 @@ TEST_F(MediaEffectsManagerBinderTest, BindVideoEffectsManager) {
   // Allow queued device registration to complete.
   base::RunLoop().RunUntilIdle();
 
+  base::WeakPtr<VideoEffectsManagerImpl> video_effects_manager_impl =
+      media_effects::GetOrCreateVideoEffectsManager(kDeviceId,
+                                                    &browser_context_);
+  ASSERT_TRUE(video_effects_manager_impl);
+
   const float kPaddingRatio = 0.383;
-  base::test::TestFuture<media::mojom::SetConfigurationResult> result_future;
-  video_effects_manager->SetConfiguration(
+  video_effects_manager_impl->SetConfiguration(
       media::mojom::VideoEffectsConfiguration::New(
           nullptr, nullptr,
-          media::mojom::Framing::New(gfx::InsetsF{kPaddingRatio})),
-      result_future.GetCallback());
-  EXPECT_EQ(media::mojom::SetConfigurationResult::kOk, result_future.Get());
+          media::mojom::Framing::New(gfx::InsetsF{kPaddingRatio})));
 
   EXPECT_EQ(kPaddingRatio, GetConfigurationSync(video_effects_manager)
                                ->framing->padding_ratios.top());

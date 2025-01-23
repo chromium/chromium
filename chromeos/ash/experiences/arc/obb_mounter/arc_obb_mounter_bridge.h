@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "ash/components/arc/mojom/obb_mounter.mojom.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ash/experiences/arc/mojom/obb_mounter.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

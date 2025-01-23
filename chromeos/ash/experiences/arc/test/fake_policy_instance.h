@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "ash/components/arc/mojom/policy.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/policy.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

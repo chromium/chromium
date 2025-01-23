@@ -250,6 +250,80 @@ TEST_F(SpotlightServiceTest, TestRegisterScreenWithEmptySession) {
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(google_apis::ApiErrorCode::CANCELLED, result.error());
 }
+
+TEST_F(SpotlightServiceTest, TestUpdateViewScreenStateSucceed) {
+  auto session = GetCommonTestSession();
+  EXPECT_CALL(*boca_session_manager_, GetCurrentSession())
+      .WillOnce(Return(&session));
+  base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
+      future;
+
+  net::test_server::HttpRequest http_request;
+  EXPECT_CALL(request_handler_, HandleRequest(_))
+      .WillOnce(DoAll(SaveArg<0>(&http_request),
+                      Return(MockRequestHandler::CreateSuccessfulResponse())));
+  spotlight_service_.UpdateViewScreenState(
+      kStudentId, ::boca::ViewScreenConfig::INACTIVE,
+      test_server_.base_url().spec(), future.GetCallback());
+  auto result = future.Get();
+  EXPECT_EQ(net::test_server::METHOD_POST, http_request.method);
+
+  EXPECT_EQ("/v1/sessions/session_id/viewScreen:updateState",
+            http_request.relative_url);
+  EXPECT_EQ("application/json", http_request.headers["Content-Type"]);
+  auto* contentData =
+      "{\"hostDevice\":{\"deviceInfo\":{\"deviceId\":\"device1\"},\"user\":{"
+      "\"gaiaId\":\"student\"}},\"teacherClientDevice\":{\"deviceInfo\":{"
+      "\"deviceId\":\"device0\"},\"user\":{\"gaiaId\":\"123\"}},"
+      "\"viewScreenState\":4}";
+  ASSERT_TRUE(http_request.has_content);
+  EXPECT_EQ(contentData, http_request.content);
+  EXPECT_TRUE(result.value());
+}
+
+TEST_F(SpotlightServiceTest, TestUpdateViewScreenStateWithEmptySession) {
+  EXPECT_CALL(*boca_session_manager_, GetCurrentSession())
+      .WillOnce(Return(nullptr));
+  base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
+      future;
+
+  spotlight_service_.UpdateViewScreenState(
+      kStudentId, ::boca::ViewScreenConfig::INACTIVE,
+      test_server_.base_url().spec(), future.GetCallback());
+  auto result = future.Get();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(google_apis::ApiErrorCode::CANCELLED, result.error());
+}
+
+TEST_F(SpotlightServiceTest, TestUpdateViewScreenStateWithInvalidStudent) {
+  auto session = GetCommonTestSession();
+  EXPECT_CALL(*boca_session_manager_, GetCurrentSession())
+      .WillOnce(Return(&session));
+  base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
+      future;
+
+  spotlight_service_.UpdateViewScreenState(
+      "differentStudent", ::boca::ViewScreenConfig::INACTIVE,
+      test_server_.base_url().spec(), future.GetCallback());
+  auto result = future.Get();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(google_apis::ApiErrorCode::CANCELLED, result.error());
+}
+
+TEST_F(SpotlightServiceTest, TestUpdateViewScreenStateWithEmptyDeviceList) {
+  auto session = GetCommonTestSession();
+  (*session.mutable_student_statuses())[kStudentId] = ::boca::StudentStatus();
+  EXPECT_CALL(*boca_session_manager_, GetCurrentSession())
+      .WillOnce(Return(&session));
+  base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
+      future;
+  spotlight_service_.UpdateViewScreenState(
+      kStudentId, ::boca::ViewScreenConfig::INACTIVE,
+      test_server_.base_url().spec(), future.GetCallback());
+  auto result = future.Get();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(google_apis::ApiErrorCode::CANCELLED, result.error());
+}
 }  // namespace
 
 }  // namespace ash::boca

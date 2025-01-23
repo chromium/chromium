@@ -6,6 +6,7 @@
 #define IOS_WEB_PUBLIC_TEST_FAKES_FAKE_WEB_STATE_OBSERVER_UTIL_H_
 
 #include <Foundation/Foundation.h>
+
 #include <memory>
 
 #import "base/memory/raw_ptr.h"

@@ -50,7 +50,8 @@ class MicrosoftFilesPageHandlerTest : public testing::Test {
   }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfile> profile_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   base::test::ScopedFeatureList feature_list_;
@@ -226,4 +227,23 @@ TEST_F(MicrosoftFilesPageHandlerTest, NoTrendingFilesOnResponseMissingData) {
       future.Get();
 
   EXPECT_EQ(suggestions.size(), 0u);
+}
+
+// Verifies that prefs are accurately set on dismissal and restoring of module.
+TEST_F(MicrosoftFilesPageHandlerTest, DismissAndRestoreModule) {
+  std::unique_ptr<MicrosoftFilesPageHandler> handler = CreateHandler();
+
+  EXPECT_EQ(profile_->GetPrefs()->GetTime(
+                prefs::kNtpMicrosoftFilesModuleLastDismissedTime),
+            base::Time());
+
+  handler->DismissModule();
+  EXPECT_EQ(profile_->GetPrefs()->GetTime(
+                prefs::kNtpMicrosoftFilesModuleLastDismissedTime),
+            base::Time::Now());
+
+  handler->RestoreModule();
+  EXPECT_EQ(profile_->GetPrefs()->GetTime(
+                prefs::kNtpMicrosoftFilesModuleLastDismissedTime),
+            base::Time());
 }

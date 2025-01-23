@@ -13,11 +13,11 @@ import androidx.fragment.app.ListFragment;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.search_engines.R;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
-import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 
 /**
  * A preference fragment for selecting a default search engine. ATTENTION: User can't change search
@@ -64,8 +64,9 @@ public class SearchEngineSettings extends ListFragment
         listView.setDivider(null);
         listView.setItemsCanFocus(true);
 
-        TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(mProfile);
-        if (templateUrlService.isEeaChoiceCountry()) {
+        RegionalCapabilitiesService regionalCapabilities =
+                RegionalCapabilitiesServiceFactory.getForProfile(mProfile);
+        if (regionalCapabilities.isInEeaCountry()) {
             View headerView =
                     getLayoutInflater()
                             .inflate(R.layout.search_engine_choice_header, listView, false);

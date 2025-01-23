@@ -158,9 +158,9 @@ const char kSuccess[] = "success";
 std::string MaybePromiseFunction(bool use_promise) {
   if (use_promise) {
     return R"(
-      function maybePromise(val) {
+      function maybePromise(val, delay = 1) {
         return new Promise((resolve, reject) => {
-            setTimeout(() => { resolve(val); }, 1);
+            setTimeout(() => { resolve(val); }, delay);
         });
       }
     )";
@@ -15041,16 +15041,8 @@ class InterestGroupComponentWorkletValidationBrowserTest
 
 // Use bidder and seller worklet files that validate their arguments all have
 // the expected values, in the case of an auction with one component auction.
-// TODO(crbug.com/391463457): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ComponentAuctionValidateWorkletParameters \
-  DISABLED_ComponentAuctionValidateWorkletParameters
-#else
-#define MAYBE_ComponentAuctionValidateWorkletParameters \
-  ComponentAuctionValidateWorkletParameters
-#endif
 IN_PROC_BROWSER_TEST_P(InterestGroupComponentWorkletValidationBrowserTest,
-                       MAYBE_ComponentAuctionValidateWorkletParameters) {
+                       ComponentAuctionValidateWorkletParameters) {
   // Use different hostnames for each participant.
   //
   // Match assignments in above test as closely as possible, to make scripts
@@ -15249,8 +15241,11 @@ IN_PROC_BROWSER_TEST_P(InterestGroupComponentWorkletValidationBrowserTest,
   $4: maybePromise($5),
   sellerTimeout: 30000,
   reportingTimeout: 3000,
+  // Note the 100ms delay for this promise. It's just to make sure that the time
+  // from inputs resolving -> auction resolved winds up in a different histogram
+  // bucket than the time from auction start -> auction resolved.
   perBuyerSignals: maybePromise(
-      {[componentBuyer]: ["top-level buyer signals"]}),
+      {[componentBuyer]: ["top-level buyer signals"]}, 100),
   perBuyerTimeouts: maybePromise({[componentBuyer]: 11000, '*': 15000}),
   perBuyerCumulativeTimeouts: maybePromise(
       {[componentBuyer]: 11100, '*': 15100}),
@@ -15348,15 +15343,16 @@ IN_PROC_BROWSER_TEST_P(InterestGroupComponentWorkletValidationBrowserTest,
                       "Ads.InterestGroup.Auction."
                       "TimeFromInputsResolvedToAuctionResolved"));
 
-    // It's possible that both fell into the same bucket (flake), in which case
-    // add some delay after the input promises have resolved. Otherwise, this is
-    // a sign that something is wrong wih
-    // TimeFromInputsResolvedToAuctionResolved.
-    EXPECT_GT(
-        histogram_tester.GetTotalSum("Ads.InterestGroup.Auction.TimeToResolve"),
-        histogram_tester.GetTotalSum(
-            "Ads.InterestGroup.Auction."
-            "TimeFromInputsResolvedToAuctionResolved"));
+    if (use_promise) {
+      // Since the promise inputs have a delay associated with them,
+      // TimeToResolve should be greater than
+      // TimeFromInputsResolvedToAuctionResolved.
+      EXPECT_GT(histogram_tester.GetTotalSum(
+                    "Ads.InterestGroup.Auction.TimeToResolve"),
+                histogram_tester.GetTotalSum(
+                    "Ads.InterestGroup.Auction."
+                    "TimeFromInputsResolvedToAuctionResolved"));
+    }
   }
 }
 

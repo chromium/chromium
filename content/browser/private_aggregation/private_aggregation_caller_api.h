@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_CALLER_API_H_
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_CALLER_API_H_
 
+#include <ostream>
 #include <string_view>
 
 #include "base/notreached.h"
@@ -22,6 +23,11 @@ constexpr std::string_view PrivateAggregationCallerApiToString(
       return "kSharedStorage";
   }
   NOTREACHED();
+}
+
+// Printer for gtest.
+inline void PrintTo(PrivateAggregationCallerApi api, std::ostream* os) {
+  *os << PrivateAggregationCallerApiToString(api);
 }
 }
 

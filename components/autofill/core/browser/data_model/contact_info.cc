@@ -163,10 +163,10 @@ std::u16string NameInfo::GetInfo(const AutofillType& type,
   return GetRawInfo(type.GetStorableType());
 }
 
-bool NameInfo::SetInfoWithVerificationStatusImpl(const AutofillType& type,
-                                                 const std::u16string& value,
-                                                 const std::string& app_locale,
-                                                 VerificationStatus status) {
+bool NameInfo::SetInfoWithVerificationStatus(const AutofillType& type,
+                                             const std::u16string& value,
+                                             const std::string& app_locale,
+                                             VerificationStatus status) {
   if (type.GetStorableType() == NAME_FULL ||
       (type.GetStorableType() == ALTERNATIVE_FULL_NAME &&
        base::FeatureList::IsEnabled(
@@ -185,11 +185,11 @@ bool NameInfo::SetInfoWithVerificationStatusImpl(const AutofillType& type,
                                                     value, status);
     return true;
   }
-  return FormGroup::SetInfoWithVerificationStatusImpl(type, value, app_locale,
-                                                      status);
+  SetRawInfoWithVerificationStatus(type.GetStorableType(), value, status);
+  return true;
 }
 
-VerificationStatus NameInfo::GetVerificationStatusImpl(FieldType type) const {
+VerificationStatus NameInfo::GetVerificationStatus(FieldType type) const {
   return GetNodeForType(type)->GetVerificationStatusForType(type);
 }
 
@@ -254,6 +254,18 @@ void EmailInfo::SetRawInfoWithVerificationStatus(FieldType type,
   email_ = value;
 }
 
+bool EmailInfo::SetInfoWithVerificationStatus(const AutofillType& type,
+                                              const std::u16string& value,
+                                              const std::string& app_locale,
+                                              const VerificationStatus status) {
+  SetRawInfoWithVerificationStatus(type.GetStorableType(), value, status);
+  return true;
+}
+
+VerificationStatus EmailInfo::GetVerificationStatus(FieldType type) const {
+  return VerificationStatus::kNoStatus;
+}
+
 CompanyInfo::CompanyInfo() = default;
 
 CompanyInfo::CompanyInfo(const CompanyInfo& info) = default;
@@ -301,6 +313,19 @@ void CompanyInfo::SetRawInfoWithVerificationStatus(FieldType type,
                                                    VerificationStatus status) {
   DCHECK_EQ(COMPANY_NAME, type);
   company_name_ = value;
+}
+
+bool CompanyInfo::SetInfoWithVerificationStatus(
+    const AutofillType& type,
+    const std::u16string& value,
+    const std::string& app_locale,
+    const VerificationStatus status) {
+  SetRawInfoWithVerificationStatus(type.GetStorableType(), value, status);
+  return true;
+}
+
+VerificationStatus CompanyInfo::GetVerificationStatus(FieldType type) const {
+  return VerificationStatus::kNoStatus;
 }
 
 bool CompanyInfo::IsValid() const {

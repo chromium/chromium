@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/arc/mojom/crosh.mojom-forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
+#include "chromeos/ash/experiences/arc/mojom/crosh.mojom-forward.h"
 #include "dbus/exported_object.h"
 #include "dbus/message.h"
 

@@ -5,7 +5,6 @@
 #import "ios/web/shell/view_controller.h"
 
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
-
 #import <stdint.h>
 
 #import <memory>
@@ -30,10 +29,10 @@ NSString* const kWebShellAddressFieldAccessibilityLabel = @"Address field";
 
 using web::NavigationManager;
 
-@interface ViewController ()<CRWWebStateDelegate,
-                             CRWWebStateObserver,
-                             UITextFieldDelegate,
-                             UIToolbarDelegate> {
+@interface ViewController () <CRWWebStateDelegate,
+                              CRWWebStateObserver,
+                              UITextFieldDelegate,
+                              UIToolbarDelegate> {
   raw_ptr<web::BrowserState> _browserState;
   std::unique_ptr<web::WebState> _webState;
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
@@ -64,8 +63,10 @@ using web::NavigationManager;
 
   // Set up the toolbar.
   _toolbarView = [[UIToolbar alloc] init];
-  _toolbarView.barTintColor =
-      [UIColor colorWithRed:0.337 green:0.467 blue:0.988 alpha:1.0];
+  _toolbarView.barTintColor = [UIColor colorWithRed:0.337
+                                              green:0.467
+                                               blue:0.988
+                                              alpha:1.0];
   _toolbarView.frame = CGRectMake(0, 20, CGRectGetWidth(bounds), 44);
   _toolbarView.autoresizingMask =
       UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;

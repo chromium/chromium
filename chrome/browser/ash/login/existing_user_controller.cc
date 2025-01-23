@@ -99,6 +99,7 @@
 #include "chromeos/ash/components/osauth/public/auth_hub.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/user_login_permission_tracker.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -613,8 +614,8 @@ bool ExistingUserController::IsUserAllowlisted(
                                                user_type);
   }
 
-  return cros_settings_->IsUserAllowlisted(account_id.GetUserEmail(),
-                                           &wildcard_match, user_type);
+  return UserLoginPermissionTracker::Get()->IsUserAllowlisted(
+      account_id.GetUserEmail(), &wildcard_match, user_type);
 }
 
 bool ExistingUserController::IsSigninInProgress() const {

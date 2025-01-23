@@ -66,8 +66,9 @@ void TestWebThread::RegisterAsWebThread() {
 }
 
 void TestWebThread::Stop() {
-  if (real_thread_)
+  if (real_thread_) {
     real_thread_->Stop();
+  }
 }
 
 }  // namespace web

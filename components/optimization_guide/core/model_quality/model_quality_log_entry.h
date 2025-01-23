@@ -34,12 +34,6 @@ class ModelQualityLogEntry {
   // Useful, for example, if the content of the log entry is stale.
   static void Drop(std::unique_ptr<ModelQualityLogEntry> entry);
 
-  template <typename FeatureType>
-  FeatureType::Quality* quality_data() {
-    return FeatureType::GetLoggingData(*log_ai_data_request_)
-        ->mutable_quality();
-  }
-
   void set_model_execution_id(const std::string& execution_id) {
     log_ai_data_request_->mutable_model_execution_info()->set_execution_id(
         execution_id);

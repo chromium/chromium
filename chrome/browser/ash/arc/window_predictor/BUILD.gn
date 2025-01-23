@@ -19,9 +19,9 @@ static_library("window_predictor") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc/mojom",
     "//base",
     "//chrome/browser/ash/app_list/arc",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ui/base",
     "//components/app_restore",
     "//ui/display",

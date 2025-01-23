@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {File} from 'chrome://new-tab-page/file_suggestion.mojom-webui.js';
-import type {DisableModuleEvent, MicrosoftFilesModuleElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {DisableModuleEvent, DismissModuleInstanceEvent, MicrosoftFilesModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {microsoftFilesModuleDescriptor, MicrosoftFilesProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {MicrosoftFilesPageHandlerRemote} from 'chrome://new-tab-page/microsoft_files.mojom-webui.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
@@ -112,5 +112,35 @@ suite('MicrosoftFilesModule', () => {
         MicrosoftFilesModuleElement;
 
     assertEquals(microsoftFilesModule, null);
+  });
+
+  test('dismiss and restore module', async () => {
+    // Set up module.
+    handler.setResultFor('getFiles', Promise.resolve({files: createFiles(3)}));
+    const microsoftFilesModule =
+        await microsoftFilesModuleDescriptor.initialize(0) as
+        MicrosoftFilesModuleElement;
+    assertTrue(!!microsoftFilesModule);
+    document.body.append(microsoftFilesModule);
+    await microtasksFinished();
+
+    // Dismiss module.
+    const whenFired =
+        eventToPromise('dismiss-module-instance', microsoftFilesModule);
+    const dismissButton =
+        microsoftFilesModule.$.moduleHeaderElementV2.shadowRoot!
+            .querySelector<HTMLElement>('#dismiss');
+    assertTrue(!!dismissButton);
+    dismissButton.click();
+
+    const event: DismissModuleInstanceEvent = await whenFired;
+    // TODO(crbug.com/372724129): Update dismiss message.
+    assertEquals('Outlook Calendar hidden', event.detail.message);
+    assertTrue(!!event.detail.restoreCallback);
+    assertEquals(1, handler.getCallCount('dismissModule'));
+
+    // Restore module.
+    event.detail.restoreCallback!();
+    assertEquals(1, handler.getCallCount('restoreModule'));
   });
 });

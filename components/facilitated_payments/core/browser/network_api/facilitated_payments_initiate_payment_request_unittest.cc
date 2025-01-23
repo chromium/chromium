@@ -37,7 +37,7 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
       /*app_locale=*/"US", /*full_sync_enabled=*/true);
 
   EXPECT_EQ(request->GetRequestUrlPath(),
-            "payments/apis/chromepaymentsservice/initiatepayment");
+            "payments/apis-secure/chromepaymentsservice/initiatepayment");
   EXPECT_EQ(request->GetRequestContentType(), "application/json");
   // Verify that all the data is added to the request content.
   EXPECT_EQ(
@@ -73,7 +73,7 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
       /*app_locale=*/"US", /*full_sync_enabled=*/true);
 
   EXPECT_EQ(request->GetRequestUrlPath(),
-            "payments/apis/chromepaymentsservice/initiatepayment");
+            "payments/apis-secure/chromepaymentsservice/initiatepayment");
   EXPECT_EQ(request->GetRequestContentType(), "application/json");
   // Verify that all the data is added to the request content.
   EXPECT_EQ(

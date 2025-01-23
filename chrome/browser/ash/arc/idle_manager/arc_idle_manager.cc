@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/arc/idle_manager/arc_idle_manager.h"
 
-#include "ash/components/arc/mojom/power.mojom.h"
 #include "ash/shell.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -17,6 +16,7 @@
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/mojom/power.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 
 namespace arc {

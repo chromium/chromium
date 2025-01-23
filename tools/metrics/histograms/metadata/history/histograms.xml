@@ -1977,6 +1977,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.Embedder.CpuUsage2.NotRunning"
+    units="1/100 %" expires_after="2025-07-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    History.Embeddings.Embedder.CpuUsage2, sliced by embedder running state.
+    This histogram is recorded only if the embedder is not running at both the
+    beginning and end of the sample period.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.Embedder.CpuUsage2.Running" units="1/100 %"
+    expires_after="2025-07-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    History.Embeddings.Embedder.CpuUsage2, sliced by embedder running state.
+    This histogram is recorded only if the embedder is running at both the
+    beginning and the end of the sample period.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.Embedder.CpuUsage2.RunningPartial"
+    units="1/100 %" expires_after="2025-07-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    History.Embeddings.Embedder.CpuUsage2, sliced by embedder running state.
+    This histogram is recorded only if the embedder is running at either the
+    beginning or the end of the sample period, but not both.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.Embedder.EmbeddingsGenerationSucceeded"
     enum="Boolean" expires_after="2025-07-31">
   <owner>sophiechang@chromium.org</owner>

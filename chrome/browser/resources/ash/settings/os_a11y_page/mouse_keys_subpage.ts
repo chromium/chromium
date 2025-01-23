@@ -9,7 +9,12 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
+import {MetaKey, Modifier} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
+import type {ShortcutLabelProperties} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
+import {AcceleratorKeyState} from 'chrome://resources/mojo/ui/base/accelerators/mojom/accelerator.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
@@ -283,6 +288,23 @@ export class SettingsMouseKeysSubpageElement extends
     return dominantHand === DominantHand.RIGHT ?
         this.primaryKeyboardRightHandPreviewOptions_ :
         this.primaryKeyboardLeftHandPreviewOptions_;
+  }
+
+  private getShortcutLabelProperties_(): ShortcutLabelProperties[] {
+    return [{
+      keyDisplay: stringToMojoString16('4'),
+      accelerator: {
+        modifiers: Modifier.ALT + Modifier.COMMAND,
+        keyCode: VKey.kNum4,
+        keyState: AcceleratorKeyState.RELEASED,
+        timeStamp: {
+          internalValue: 0n,
+        },
+      },
+      originalAccelerator: null,
+      shortcutLabelText: this.i18nAdvanced('mouseKeysShortcut'),
+      metaKey: MetaKey.kLauncher,
+    }];
   }
 }
 

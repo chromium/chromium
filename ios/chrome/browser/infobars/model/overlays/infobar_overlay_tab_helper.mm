@@ -45,8 +45,9 @@ void InfobarOverlayTabHelper::OverlayRequestScheduler::OnInfoBarAdded(
   InfoBarIOS* ios_infobar = static_cast<InfoBarIOS*>(infobar);
   // Skip showing banner if it was requested. Badge and modals will keep
   // showing.
-  if (ios_infobar->skip_banner())
+  if (ios_infobar->skip_banner()) {
     return;
+  }
   InsertParams params(ios_infobar);
   params.overlay_type = InfobarOverlayType::kBanner;
   // If the Infobar high priority, then insert it into the front of the banner

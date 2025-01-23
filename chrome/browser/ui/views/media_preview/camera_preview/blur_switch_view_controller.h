@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/media_effects/video_effects_manager_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "media/capture/mojom/video_effects_manager.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -42,7 +43,7 @@ class BlurSwitchViewController
   base::WeakPtr<content::BrowserContext> browser_context_;
   raw_ptr<views::ToggleButton> blur_switch_;
 
-  mojo::Remote<media::mojom::VideoEffectsManager> video_effects_manager_;
+  base::WeakPtr<VideoEffectsManagerImpl> video_effects_manager_;
   mojo::Receiver<media::mojom::VideoEffectsConfigurationObserver>
       video_effects_configuration_observer_{this};
 

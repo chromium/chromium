@@ -432,10 +432,6 @@
     "META": {"sizes": {"includes": [5]}},
     "includes": [4085],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/internal_debug_pages_disabled/resources.grd": {
-    "META": {"sizes": {"includes": [10]}},
-    "includes": [4090],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/invalidations/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [4100],
@@ -1004,10 +1000,6 @@
     "messages": [7280],
   },
 
-  "<(SHARED_INTERMEDIATE_DIR)/components/chrome_urls_ui/resources/resources.grd": {
-    "META": {"sizes": {"includes": [10]}},
-    "includes": [7290],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/components/commerce/core/internals/resources/resources.grd": {
     "META": {"sizes": {"includes": [30]}},
     "includes": [7300],
@@ -1079,6 +1071,14 @@
   "<(SHARED_INTERMEDIATE_DIR)/components/version_ui/resources/resources.grd": {
     "META": {"sizes": {"includes": [5]}},
     "includes": [7460],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/components/webui/chrome_urls/resources/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [7465],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/components/webui/internal_debug_pages_disabled/resources/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [7470],
   },
   "<(SHARED_INTERMEDIATE_DIR)/components/sync/service/resources/resources.grd": {
    "META": {"sizes": {"includes": [30],}},

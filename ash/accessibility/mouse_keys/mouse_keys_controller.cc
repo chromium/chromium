@@ -263,6 +263,8 @@ bool MouseKeysController::CheckFlagsAndMaybeSendEvent(
 }
 
 void MouseKeysController::PressKey(MouseKey key) {
+  int drag_resource = left_handed_ ? IDS_ASH_MOUSE_KEYS_C_KEY_RELEASE
+                                  : IDS_ASH_MOUSE_KEYS_PERIOD_RELEASE;
   pressed_keys_[key] = true;
   switch (key) {
     case kKeyUpLeft:
@@ -285,7 +287,7 @@ void MouseKeysController::PressKey(MouseKey key) {
       dragging_ = true;
       if (key == kKeyDragStart) {
         UpdateMouseKeysBubble(true, MouseKeysBubbleIconType::kMouseDrag,
-                              IDS_ASH_MOUSE_KEYS_PERIOD_RELEASE);
+                              drag_resource);
       }
       break;
     case kKeyDragStop:
@@ -294,7 +296,7 @@ void MouseKeysController::PressKey(MouseKey key) {
                                  last_mouse_position_dips_);
         dragging_ = false;
         UpdateMouseKeysBubble(false, MouseKeysBubbleIconType::kMouseDrag,
-                              IDS_ASH_MOUSE_KEYS_PERIOD_RELEASE);
+                              drag_resource);
       }
       break;
     case kKeyDoubleClick:

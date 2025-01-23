@@ -27,8 +27,6 @@
 class TabCollectionBaseTest : public ::testing::Test {
  public:
   TabCollectionBaseTest() {
-    scoped_feature_list_.InitWithFeatures({tabs::kTabStripCollectionStorage},
-                                          {});
     testing_profile_ = std::make_unique<TestingProfile>();
     tab_strip_model_delegate_ = std::make_unique<TestTabStripModelDelegate>();
     tab_strip_model_ = std::make_unique<TabStripModel>(
@@ -99,7 +97,6 @@ class TabCollectionBaseTest : public ::testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::RenderViewHostTestEnabler test_enabler_;
   std::unique_ptr<Profile> testing_profile_;
   std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;

@@ -43,6 +43,11 @@ class FakeProfileOAuth2TokenServiceDelegate
   // Overriden to make sure it works on Android.
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const override;
 
+#if BUILDFLAG(IS_IOS)
+  bool RefreshTokenIsAvailableOnDevice(
+      const CoreAccountId& account_id) const override;
+#endif  // BUILDFLAG(IS_IOS)
+
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   bool IsRefreshTokenBound(const CoreAccountId& account_id) const override;
   std::vector<uint8_t> GetWrappedBindingKey(

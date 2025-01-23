@@ -215,10 +215,10 @@ std::u16string Address::GetInfo(const AutofillType& type,
   return GetRawInfo(storable_type);
 }
 
-bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
-                                                const std::u16string& value,
-                                                const std::string& locale,
-                                                VerificationStatus status) {
+bool Address::SetInfoWithVerificationStatus(const AutofillType& type,
+                                            const std::u16string& value,
+                                            const std::string& locale,
+                                            VerificationStatus status) {
   if (type.html_type() == HtmlFieldType::kCountryCode) {
     std::string country_code =
         base::IsStringASCII(value)
@@ -267,7 +267,7 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
   return true;
 }
 
-VerificationStatus Address::GetVerificationStatusImpl(FieldType type) const {
+VerificationStatus Address::GetVerificationStatus(FieldType type) const {
   return GetRoot().GetVerificationStatusForType(type);
 }
 

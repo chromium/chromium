@@ -36,7 +36,9 @@ class LockScreenSessionControllerClient : public TestSessionControllerClient {
  public:
   LockScreenSessionControllerClient(SessionControllerImpl* controller,
                                     TestPrefServiceProvider* prefs_provider)
-      : TestSessionControllerClient(controller, prefs_provider) {
+      : TestSessionControllerClient(controller,
+                                    prefs_provider,
+                                    /*create_signin_pref_service=*/true) {
     InitializeAndSetClient();
 
     Reset();

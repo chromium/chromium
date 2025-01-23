@@ -277,7 +277,8 @@ protocol::Response InspectorEmulationAgent::setEmulatedMedia(
   emulated_media_.Set(media_value);
   GetWebViewImpl()->GetPage()->GetSettings().SetMediaTypeOverride(media_value);
 
-  auto const old_emulated_media_features_keys = emulated_media_features_.Keys();
+  auto const old_emulated_media_features_keys =
+      WTF::ToVector(emulated_media_features_.Keys());
   emulated_media_features_.Clear();
 
   if (features) {

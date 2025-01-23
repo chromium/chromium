@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/mojom/bluetooth.mojom.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
@@ -18,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/arc/bluetooth/arc_bluez_bridge.h"
 #include "chromeos/ash/experiences/arc/bluetooth/bluetooth_type_converters.h"
+#include "chromeos/ash/experiences/arc/mojom/bluetooth.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
 #include "chromeos/ash/experiences/arc/test/fake_bluetooth_instance.h"

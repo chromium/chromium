@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/mojom/net.mojom.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -23,6 +22,7 @@
 #include "chromeos/ash/components/network/network_connection_observer.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "chromeos/ash/experiences/arc/mojom/net.mojom.h"
 #include "chromeos/ash/experiences/arc/net/arc_app_metadata_provider.h"
 #include "chromeos/ash/experiences/arc/net/cert_manager.h"
 #include "chromeos/ash/experiences/arc/session/connection_observer.h"

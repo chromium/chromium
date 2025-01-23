@@ -31,8 +31,8 @@ using startup_metric_utils::FirstRunSentinelCreationResult;
 class MagicStackHalfSheetMediatorTest : public PlatformTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {kTabResumption, kNewFeedPositioning}, {kIOSDisableParcelTracking});
+    scoped_feature_list_.InitWithFeatures({kTabResumption, kNewFeedPositioning},
+                                          {kIOSDisableParcelTracking});
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
 
     // Necessary set up for kIOSSetUpList.

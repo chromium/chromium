@@ -8,11 +8,18 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
+namespace {
+
+const char kExceptionMessageTranslatorDestroyed[] =
+    "The translator has been destroyed.";
+
+}  // namespace
 
 AITranslator::AITranslator(
     mojo::PendingRemote<mojom::blink::Translator> pending_remote,
@@ -43,14 +50,13 @@ ScriptPromise<IDLString> AITranslator::translate(
     ExceptionState& exception_state) {
   // TODO(crbug.com/322229993): Take `options` into account.
   if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The execution context is not valid.");
+    ThrowInvalidContextException(exception_state);
     return EmptyPromise();
   }
 
   if (!translator_remote_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The translator has been destroyed.");
+                                      kExceptionMessageTranslatorDestroyed);
     return EmptyPromise();
   }
 

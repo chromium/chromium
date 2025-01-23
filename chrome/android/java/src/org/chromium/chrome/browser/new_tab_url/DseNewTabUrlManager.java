@@ -13,8 +13,10 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
@@ -28,6 +30,7 @@ import org.chromium.url.GURL;
 public class DseNewTabUrlManager {
     private ObservableSupplier<Profile> mProfileSupplier;
     private Callback<Profile> mProfileCallback;
+    private RegionalCapabilitiesService mRegionalCapabilities;
     private TemplateUrlService mTemplateUrlService;
     private TemplateUrlServiceObserver mTemplateUrlServiceObserver;
 
@@ -55,6 +58,7 @@ public class DseNewTabUrlManager {
     }
 
     public void destroy() {
+        mRegionalCapabilities = null;
         if (mProfileSupplier != null && mProfileCallback != null) {
             mProfileSupplier.removeObserver(mProfileCallback);
             mProfileCallback = null;
@@ -141,6 +145,7 @@ public class DseNewTabUrlManager {
 
     @VisibleForTesting
     void onProfileAvailable(Profile profile) {
+        mRegionalCapabilities = RegionalCapabilitiesServiceFactory.getForProfile(profile);
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
         if (mTemplateUrlServiceObserver == null) {
             mTemplateUrlServiceObserver = this::onTemplateURLServiceChanged;
@@ -158,7 +163,7 @@ public class DseNewTabUrlManager {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(
                         ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY,
-                        mTemplateUrlService.isEeaChoiceCountry());
+                        mRegionalCapabilities.isInEeaCountry());
         if (isDSEGoogle) {
             ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.DSE_NEW_TAB_URL);
         } else {

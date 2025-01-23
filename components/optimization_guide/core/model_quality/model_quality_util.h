@@ -7,20 +7,11 @@
 
 #include "base/time/time.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 
 class PrefService;
 namespace optimization_guide {
-
-// Helper method to get the quality_data from `log_ai_data_request` for
-// different features.
-template <typename FeatureType>
-FeatureType::Quality* GetModelQualityData(
-    proto::LogAiDataRequest* log_ai_data_request) {
-  return FeatureType::GetLoggingData(*log_ai_data_request)->mutable_quality();
-}
 
 // Returns the hashed client id with the feature and day.
 int64_t GetHashedModelQualityClientId(

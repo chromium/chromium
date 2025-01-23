@@ -5,9 +5,18 @@
 """Code generator for proto descriptors used for on-device model execution.
 
 This script generates a C++ source file containing the proto descriptors.
+
+To check the type annotations in this file, install mypy then:
+
+autoninja -C $OUT_DIR protoc
+$OUT_DIR/protoc -I=../../../third_party/protobuf/src \
+    --pyi_out=. \
+    ../../../third_party/protobuf/src/google/protobuf/descriptor.proto
+mypy gen_on_device_proto_descriptors.py
 """
 from __future__ import annotations
 
+from collections.abc import Iterator
 import dataclasses
 import functools
 from io import StringIO
@@ -16,6 +25,7 @@ import os
 import collections
 import re
 import sys
+from typing import IO
 
 _HERE_PATH = os.path.dirname(__file__)
 _SRC_PATH = os.path.normpath(os.path.join(_HERE_PATH, '..', '..', '..'))
@@ -114,7 +124,7 @@ class Message:
         return '_' + self.type_name.replace('.', '_')
 
     @functools.cached_property
-    def fields(self):
+    def fields(self) -> tuple[Field, ...]:
         return tuple(Field(fdesc) for fdesc in self.desc.field)
 
 
@@ -131,7 +141,7 @@ class Field:
         return self.desc.name
 
     @property
-    def type(self):
+    def type(self) -> int:
         return self.desc.type
 
     @property
@@ -183,7 +193,7 @@ class KnownMessages:
             seen.update(field_types)
         return self.GetMessages(seen)
 
-    def _GetRegistryMsg(self):
+    def _GetRegistryMsg(self) -> Message:
         return self._known[
             '.optimization_guide.proto.registry.OnDeviceFeatureProtoRegistry']
 
@@ -194,7 +204,7 @@ class KnownMessages:
                 if field.name == role:
                     yield field.desc.type_name
 
-    def GetIncludes(self):
+    def GetIncludes(self) -> Iterator[str]:
         """Returns the set of includes that cover all known messages types."""
         pattern = re.compile(
             r'.*(components/optimization_guide/proto/.*)\.proto')
@@ -203,7 +213,7 @@ class KnownMessages:
                 yield m.group(1) + '.pb.h'
 
 
-def GenerateProtoDescriptors(out, messages: KnownMessages):
+def GenerateProtoDescriptors(out: IO[str], messages: KnownMessages):
     """Generate the on_device_model_execution_proto_descriptors.cc content."""
 
     requests = set(messages.YieldMessagesWithRole('request'))
@@ -265,7 +275,7 @@ class _GetProtoValue:
     """Namespace class for GetProtoValue method builders."""
 
     @classmethod
-    def GenPublic(cls, out):
+    def GenPublic(cls, out: IO[str]):
         out.write("""
           std::optional<proto::Value> GetProtoValue(
               const google::protobuf::MessageLite& msg,
@@ -275,7 +285,7 @@ class _GetProtoValue:
         """)
 
     @classmethod
-    def GenPrivate(cls, out, messages: list[Message]):
+    def GenPrivate(cls, out: IO[str], messages: list[Message]):
         out.write("""
           std::optional<proto::Value> GetProtoValue(
               const google::protobuf::MessageLite& msg,
@@ -293,7 +303,7 @@ class _GetProtoValue:
         out.write('}\n\n')  # End function
 
     @classmethod
-    def _IfMsg(cls, out, msg: Message):
+    def _IfMsg(cls, out: IO[str], msg: Message):
         if all(field.is_repeated for field in msg.fields):
             # Omit the empty case to avoid unused variable warnings.
             return
@@ -309,7 +319,7 @@ class _GetProtoValue:
         out.write('}\n\n')  # End if statement
 
     @classmethod
-    def _FieldCase(cls, out, field: Field):
+    def _FieldCase(cls, out: IO[str], field: Field):
         out.write(f'case {field.tag_number}: {{\n')
         name = f'casted_msg.{field.name}()'
         if field.type == Type.MESSAGE:
@@ -339,7 +349,7 @@ class _GetProtoFromAny:
     """Namespace class for GetProtoFromAny method builders."""
 
     @classmethod
-    def GenPublic(cls, out, messages: list[Message]):
+    def GenPublic(cls, out: IO[str], messages: list[Message]):
         out.write("""
           std::unique_ptr<google::protobuf::MessageLite> GetProtoFromAny(
               const proto::Any& msg) {
@@ -351,7 +361,7 @@ class _GetProtoFromAny:
         out.write('}\n\n')  # End function
 
     @classmethod
-    def _IfMsg(cls, out, msg: Message):
+    def _IfMsg(cls, out: IO[str], msg: Message):
         out.write(f"""if (msg.type_url() ==
                     "type.googleapis.com/{msg.type_name}") {{
             """)
@@ -370,7 +380,7 @@ class _NestedMessageIteratorGet:
     """Namespace class for NestedMessageIterator::Get method builders."""
 
     @classmethod
-    def GenPublic(cls, out, messages: list[Message]):
+    def GenPublic(cls, out: IO[str], messages: list[Message]):
         out.write('const google::protobuf::MessageLite* '
                   'NestedMessageIterator::Get() const {\n')
         for msg in messages:
@@ -379,7 +389,7 @@ class _NestedMessageIteratorGet:
         out.write('}\n')
 
     @classmethod
-    def _IfMsg(cls, out, msg: Message):
+    def _IfMsg(cls, out: IO[str], msg: Message):
         out.write(f'if (parent_->GetTypeName() == "{msg.type_name}") {{\n')
         out.write('switch (tag_number_) {\n')
         for field in msg.fields:
@@ -389,7 +399,7 @@ class _NestedMessageIteratorGet:
         out.write('}\n\n')  # End if statement
 
     @classmethod
-    def _FieldCase(cls, out, msg: Message, field: Field):
+    def _FieldCase(cls, out: IO[str], msg: Message, field: Field):
         cast_msg = f'static_cast<const {msg.cpp_name}*>(parent_)'
         out.write(f'case {field.tag_number}: {{\n')
         out.write(f'return &{cast_msg}->{field.name}(offset_);\n')
@@ -400,7 +410,7 @@ class _GetProtoRepeated:
     """Namespace class for GetProtoRepeated method builders."""
 
     @classmethod
-    def GenPublic(cls, out):
+    def GenPublic(cls, out: IO[str]):
         out.write("""
           std::optional<NestedMessageIterator> GetProtoRepeated(
               const google::protobuf::MessageLite* msg,
@@ -410,7 +420,7 @@ class _GetProtoRepeated:
           """)
 
     @classmethod
-    def GenPrivate(cls, out, messages: list[Message]):
+    def GenPrivate(cls, out: IO[str], messages: list[Message]):
         out.write("""\
           std::optional<NestedMessageIterator> GetProtoRepeated(
               const google::protobuf::MessageLite* msg,
@@ -429,7 +439,7 @@ class _GetProtoRepeated:
         out.write('}\n\n')  # End function
 
     @classmethod
-    def _IfMsg(cls, out, msg: Message):
+    def _IfMsg(cls, out: IO[str], msg: Message):
         out.write(f'if (msg->GetTypeName() == "{msg.type_name}") {{\n')
         out.write('switch (tag_number) {\n')
         for field in msg.fields:
@@ -439,7 +449,7 @@ class _GetProtoRepeated:
         out.write('}\n\n')  # End if statement
 
     @classmethod
-    def _FieldCase(cls, out, msg: Message, field: Field):
+    def _FieldCase(cls, out: IO[str], msg: Message, field: Field):
         field_expr = f'static_cast<const {msg.cpp_name}*>(msg)->{field.name}()'
         out.write(f'case {field.tag_number}: {{\n')
         if field.is_repeated:
@@ -457,7 +467,7 @@ class _GetProtoMutableMessage:
     def __init__(self, supported_messages: list[Message]):
         self._supported_messages = supported_messages
 
-    def GenPublic(self, out):
+    def GenPublic(self, out: IO[str]):
         out.write("""
           google::protobuf::MessageLite* GetProtoMutableMessage(
               google::protobuf::MessageLite* msg,
@@ -495,7 +505,7 @@ class _AddProtoMessage:
     def __init__(self, supported_messages: list[Message]):
         self._supported_messages = supported_messages
 
-    def GenPublic(self, out):
+    def GenPublic(self, out: IO[str]):
         out.write("""
           int AddProtoMessage(
               google::protobuf::MessageLite* msg,
@@ -534,7 +544,7 @@ class _GetProtoMutableRepeatedMessage:
     def __init__(self, supported_messages: list[Message]):
         self._supported_messages = supported_messages
 
-    def GenPublic(self, out):
+    def GenPublic(self, out: IO[str]):
         out.write("""
           google::protobuf::MessageLite* GetProtoMutableRepeatedMessage(
               google::protobuf::MessageLite* parent,
@@ -575,7 +585,7 @@ class _SetProtoFieldString:
     def __init__(self, supported_messages: list[Message]):
         self._supported_messages = supported_messages
 
-    def GenPublic(self, out):
+    def GenPublic(self, out: IO[str]):
         out.write("""
           ProtoStatus SetProtoField(
               google::protobuf::MessageLite* msg,
@@ -613,7 +623,7 @@ class _SetProtoValue:
     """Namespace class for SetProtoValue method builders."""
 
     @classmethod
-    def GenPublic(cls, out):
+    def GenPublic(cls, out: IO[str]):
         out.write("""
       std::optional<proto::Any> SetProtoValue(
           const std::string& proto_name,
@@ -624,7 +634,7 @@ class _SetProtoValue:
     """)
 
     @classmethod
-    def GenPrivate(cls, out, messages: list[Message]):
+    def GenPrivate(cls, out: IO[str], messages: list[Message]):
         out.write("""
       std::optional<proto::Any> SetProtoValue(
           const std::string& proto_name,
@@ -643,7 +653,7 @@ class _SetProtoValue:
     """)
 
     @classmethod
-    def _IfMsg(cls, out, msg: Message):
+    def _IfMsg(cls, out: IO[str], msg: Message):
         out.write(f'if (proto_name == "{msg.type_name}") {{\n')
         out.write(
             'switch(proto_field.proto_descriptors(index).tag_number()) {\n')
@@ -657,7 +667,7 @@ class _SetProtoValue:
         out.write('}\n')  # End if statement
 
     @classmethod
-    def _FieldCase(cls, out, msg: Message, field: Field):
+    def _FieldCase(cls, out: IO[str], msg: Message, field: Field):
         if field.type == Type.STRING and not field.is_repeated:
             out.write(f'case {field.tag_number}: {{\n')
             out.write('proto::Any any;\n')
@@ -674,7 +684,7 @@ class _ConvertValue:
     """Namespace class for base::Value->Message method builders."""
 
     @classmethod
-    def GenPublic(cls, out, messages: list[Message]):
+    def GenPublic(cls, out: IO[str], messages: list[Message]):
         out.write(f"""
           std::optional<proto::Any> ConvertToAnyWrappedProto(
               const base::Value& object, const std::string& type_name) {{
@@ -698,7 +708,7 @@ class _ConvertValue:
         """)
 
     @classmethod
-    def GenPrivate(cls, out, messages: list[Message]):
+    def GenPrivate(cls, out: IO[str], messages: list[Message]):
         for msg in messages:
             out.write(f"""
             bool Convert{msg.iname}(
@@ -708,7 +718,7 @@ class _ConvertValue:
             cls._DefineConvert(out, msg)
 
     @classmethod
-    def _DefineConvert(cls, out, msg: Message):
+    def _DefineConvert(cls, out: IO[str], msg: Message):
         out.write(f"""
           bool Convert{msg.iname}(
               const base::Value& object, {msg.cpp_name}& proto) {{
@@ -732,7 +742,7 @@ class _ConvertValue:
         """)
 
     @classmethod
-    def _FieldCase(cls, out, msg: Message, field: Field):
+    def _FieldCase(cls, out: IO[str], msg: Message, field: Field):
         if field.is_repeated:
             out.write(f"""
               const auto* lst = field_value->GetIfList();

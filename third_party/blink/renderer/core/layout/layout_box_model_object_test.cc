@@ -351,14 +351,14 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionVerticalRLInlineConstraints) {
   EXPECT_EQ(10.f, constraints->top_inset->ToFloat());
 
   // The coordinates of the constraint rects should all be with respect to the
-  // unscrolled scroller.
-  EXPECT_EQ(gfx::Rect(2000, 100, 200, 400),
+  // unscrolled scroller, and not corrected for scroll origin.
+  EXPECT_EQ(gfx::Rect(-100, 100, 200, 400),
             ToEnclosingRect(
                 constraints->scroll_container_relative_containing_block_rect));
   EXPECT_EQ(
-      gfx::Rect(2190, 100, 10, 10),
+      gfx::Rect(90, 100, 10, 10),
       ToEnclosingRect(constraints->scroll_container_relative_sticky_box_rect));
-  EXPECT_EQ(gfx::Rect(0, 0, 100, 100),
+  EXPECT_EQ(gfx::Rect(-2100, 0, 100, 100),
             ToEnclosingRect(constraints->constraining_rect));
 }
 

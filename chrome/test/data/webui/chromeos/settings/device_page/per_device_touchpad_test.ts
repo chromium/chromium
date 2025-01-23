@@ -4,7 +4,8 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {PerDeviceSubsectionHeaderElement, SettingsPerDeviceTouchpadElement} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsPerDeviceTouchpadElement} from 'chrome://os-settings/lazy_load.js';
+import {PerDeviceSubsectionHeaderElement} from 'chrome://os-settings/lazy_load.js';
 import {fakeTouchpads, fakeTouchpads2} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

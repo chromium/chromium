@@ -94,6 +94,7 @@ class SystemTokenCertDBInitializer;
 class VideoConferenceAppServiceClient;
 class VideoConferenceAshFeatureClient;
 class DozeModePowerStatusScheduler;
+class UserLoginPermissionTracker;
 
 namespace carrier_lock {
 class CarrierLockManager;
@@ -192,6 +193,9 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       system_token_certdb_initializer_;
 
   std::unique_ptr<ShutdownPolicyForwarder> shutdown_policy_forwarder_;
+
+  std::unique_ptr<ash::UserLoginPermissionTracker>
+      user_login_permission_tracker_;
 
   std::unique_ptr<EventRewriterDelegateImpl> event_rewriter_delegate_;
 

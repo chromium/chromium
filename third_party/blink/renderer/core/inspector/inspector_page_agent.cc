@@ -583,15 +583,17 @@ protocol::Response InspectorPageAgent::addScriptToEvaluateOnNewDocument(
     std::optional<bool> include_command_line_api,
     std::optional<bool> runImmediately,
     String* identifier) {
-  Vector<WTF::String> keys = scripts_to_evaluate_on_load_.Keys();
-  auto result = std::max_element(
-      keys.begin(), keys.end(), [](const WTF::String& a, const WTF::String& b) {
-        return Decimal::FromString(a) < Decimal::FromString(b);
-      });
-  if (result == keys.end()) {
-    *identifier = String::Number(1);
-  } else {
-    *identifier = String::Number(Decimal::FromString(*result).ToDouble() + 1);
+  {
+    const auto& keys = scripts_to_evaluate_on_load_.Keys();
+    auto result = std::max_element(
+        keys.begin(), keys.end(), [](const String& a, const String& b) {
+          return Decimal::FromString(a) < Decimal::FromString(b);
+        });
+    if (result == keys.end()) {
+      *identifier = String::Number(1);
+    } else {
+      *identifier = String::Number(Decimal::FromString(*result).ToDouble() + 1);
+    }
   }
 
   scripts_to_evaluate_on_load_.Set(*identifier, source);
@@ -1031,13 +1033,12 @@ void InspectorPageAgent::DidCreateMainWorldContext(LocalFrame* frame) {
                             request.grant_universal_access,
                             std::move(request.callback));
   }
-  Vector<WTF::String> keys = scripts_to_evaluate_on_load_.Keys();
-  std::sort(keys.begin(), keys.end(),
-            [](const WTF::String& a, const WTF::String& b) {
-              return Decimal::FromString(a) < Decimal::FromString(b);
-            });
+  Vector<String> keys(scripts_to_evaluate_on_load_.Keys());
+  std::sort(keys.begin(), keys.end(), [](const String& a, const String& b) {
+    return Decimal::FromString(a) < Decimal::FromString(b);
+  });
 
-  for (const WTF::String& key : keys) {
+  for (const String& key : keys) {
     EvaluateScriptOnNewDocument(*frame, key);
   }
 

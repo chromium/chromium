@@ -7,9 +7,9 @@
 
 #include <optional>
 
-#include "ash/components/arc/mojom/iio_sensor.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/experiences/arc/mojom/iio_sensor.mojom.h"
 #include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/keyed_service/core/keyed_service.h"

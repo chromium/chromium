@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_INTEREST_GROUP_TEST_INTEREST_GROUP_PRIVATE_AGGREGATION_MANAGER_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <map>
 #include <optional>
@@ -48,6 +49,7 @@ class TestInterestGroupPrivateAggregationManager
       std::optional<base::TimeDelta> timeout,
       std::optional<url::Origin> aggregation_coordinator_origin,
       size_t filtering_id_max_bytes,
+      std::optional<size_t> max_contributions,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
           pending_receiver) override;
   void ClearBudgetData(base::Time delete_begin,

@@ -121,8 +121,9 @@ void InfobarBadgeTabHelper::UnregisterInfobar(infobars::InfoBar* infobar) {
   // Handling the case where an infobar is removed during prerendering.
   if (!delegate_) {
     auto pos = base::ranges::find(infobars_added_when_prerendering_, infobar);
-    if (pos != infobars_added_when_prerendering_.end())
+    if (pos != infobars_added_when_prerendering_.end()) {
       infobars_added_when_prerendering_.erase(pos);
+    }
     return;
   }
   // All other cases.

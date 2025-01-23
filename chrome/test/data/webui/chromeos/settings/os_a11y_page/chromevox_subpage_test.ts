@@ -8,8 +8,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsChromeVoxSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {ChromeVoxSubpageBrowserProxyImpl, CrSettingsPrefs, SettingsDropdownMenuElement, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsChromeVoxSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsDropdownMenuElement, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
+import {ChromeVoxSubpageBrowserProxyImpl, CrSettingsPrefs} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

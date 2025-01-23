@@ -9,9 +9,9 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_constants.h"
 
 const char kMagicStackTopModuleImpressionHistogram[] =
     "IOS.MagicStack.Module.TopImpression";

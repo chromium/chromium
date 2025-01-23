@@ -128,7 +128,6 @@ component("features") {
     "model_execution/feature_keys.h",
     "model_execution/model_execution_prefs.cc",
     "model_execution/model_execution_prefs.h",
-    "model_quality/feature_type_map.h",
     "optimization_guide_constants.cc",
     "optimization_guide_constants.h",
     "optimization_guide_enums.h",

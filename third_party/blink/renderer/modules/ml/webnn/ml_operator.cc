@@ -325,7 +325,7 @@ void MLOperator::Connect(HeapVector<Member<MLOperand>> inputs,
     input->AddDependentOperator(this);
   }
 
-  inputs_.assign(inputs);
+  inputs_ = std::move(inputs);
   outputs_ = std::move(outputs);
 }
 

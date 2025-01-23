@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_NEARBY_SHARE_INSTANCE_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_NEARBY_SHARE_INSTANCE_H_
 
-#include "ash/components/arc/mojom/nearby_share.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/nearby_share.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace arc {

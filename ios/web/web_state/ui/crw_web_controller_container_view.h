@@ -14,12 +14,12 @@
 @class CRWWebViewContentView;
 @class CRWWebViewProxyImpl;
 
-@protocol CRWWebControllerContainerViewDelegate<NSObject>
+@protocol CRWWebControllerContainerViewDelegate <NSObject>
 
 // Returns the proxy object that's backed by the CRWContentView displayed by
 // `containerView`.
 - (CRWWebViewProxyImpl*)contentViewProxyForContainerView:
-        (CRWWebControllerContainerView*)containerView;
+    (CRWWebControllerContainerView*)containerView;
 
 // Returns `YES` if the delegate wants to keep the render process alive.
 - (BOOL)shouldKeepRenderProcessAliveForContainerView:
@@ -49,7 +49,7 @@
 // Designated initializer.  `proxy`'s content view will be updated as different
 // content is added to the container.
 - (instancetype)initWithDelegate:
-        (id<CRWWebControllerContainerViewDelegate>)delegate
+    (id<CRWWebControllerContainerViewDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;
 
 // CRWWebControllerContainerView should be initialized via

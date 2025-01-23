@@ -3371,12 +3371,6 @@ const char kScrollableTabStripName[] = "Tab Scrolling";
 const char kScrollableTabStripDescription[] =
     "Enables tab strip to scroll left and right when full.";
 
-const char kTabStripCollectionStorageFlagId[] = "tabstrip-collection-storage";
-const char kTabStripCollectionStorageName[] =
-    "TabStripModel Collection Based Storage";
-const char kTabStripCollectionStorageDescription[] =
-    "Enables the collection based storage of tabstrip model.";
-
 const char kTabstripComboButtonFlagId[] = "tabstrip-combo-button";
 const char kTabstripComboButtonName[] = "Tabstrip Combo Button";
 const char kTabstripComboButtonDescription[] =

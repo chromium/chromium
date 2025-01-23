@@ -25,7 +25,6 @@ static_library("internet") {
   ]
 
   deps = [
-    "//ash/components/arc/mojom",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/webui/network_ui:network_health_resource_provider",
@@ -45,6 +44,7 @@ static_library("internet") {
     "//chrome/common:chrome_features",
     "//chromeos/ash/components/dbus/hermes",
     "//chromeos/ash/components/network",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/experiences/arc/session",
     "//chromeos/strings",
     "//components/onc",

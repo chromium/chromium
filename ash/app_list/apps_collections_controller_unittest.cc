@@ -371,15 +371,10 @@ class AppsCollectionsControllerPrefTest
 
     const AccountId& account_id = AccountId::FromUserEmail("primary@test");
 
-    auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
-    RegisterUserProfilePrefs(user_prefs->registry(), /*country=*/"",
-                             /*for_test=*/true);
     session_controller->AddUserSession("primary@test",
                                        user_manager::UserType::kRegular,
-                                       /*provide_pref_service=*/false,
+                                       /*provide_pref_service=*/true,
                                        /*is_new_profile=*/true);
-    GetSessionControllerClient()->SetUserPrefService(account_id,
-                                                     std::move(user_prefs));
     session_controller->SwitchActiveUser(account_id);
     session_controller->SetSessionState(session_manager::SessionState::ACTIVE);
   }

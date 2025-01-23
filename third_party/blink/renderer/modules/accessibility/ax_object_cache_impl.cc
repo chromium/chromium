@@ -3654,7 +3654,8 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForAXID(
   base::AutoReset<ax::mojom::blink::Action> event_from_action_resetter(
       &active_event_from_action_, tree_update->event_from_action);
   ScopedBlinkAXEventIntent defered_event_intents(
-      tree_update->event_intents.AsVector(), ax_object->GetDocument());
+      WTF::ToVector(tree_update->event_intents.Values()),
+      ax_object->GetDocument());
 
   // Kept here for convenient debugging:
   // LOG(ERROR) << tree_update->ToString() << " on " << ax_object;
@@ -3719,7 +3720,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
   base::AutoReset<ax::mojom::blink::Action> event_from_action_resetter(
       &active_event_from_action_, tree_update->event_from_action);
   ScopedBlinkAXEventIntent defered_event_intents(
-      tree_update->event_intents.AsVector(), &node->GetDocument());
+      WTF::ToVector(tree_update->event_intents.Values()), &node->GetDocument());
 
   // Kept here for convenient debugging:
   // LOG(ERROR) << tree_update->ToString() << " on " << ax_object;
@@ -5126,8 +5127,7 @@ void AXObjectCacheImpl::MarkDocumentDirtyWithCleanLayout() {
   // Don't keep previous parent-child relationships.
   // This loop operates on a copy of values in the objects_ map, because some
   // entries may be removed from objects_ while iterating.
-  HeapVector<Member<AXObject>> objects;
-  CopyValuesToVector(objects_, objects);
+  HeapVector<Member<AXObject>> objects(objects_.Values());
   for (auto& object : objects) {
     if (!object->IsDetached()) {
       object->SetNeedsToUpdateChildren();

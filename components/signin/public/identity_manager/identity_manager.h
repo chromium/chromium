@@ -206,7 +206,9 @@ class IdentityManager : public KeyedService,
                                      const std::string& oauth_consumer_name,
                                      const ScopeSet& scopes,
                                      AccessTokenFetcher::TokenCallback callback,
-                                     AccessTokenFetcher::Mode mode);
+                                     AccessTokenFetcher::Mode mode,
+                                     AccessTokenFetcher::Source token_source =
+                                         AccessTokenFetcher::Source::kProfile);
 
   // Creates an AccessTokenFetcher given the passed-in information, allowing
   // to specify a custom |url_loader_factory| as well.
@@ -244,6 +246,11 @@ class IdentityManager : public KeyedService,
 
   // Returns true if a refresh token exists for |account_id|.
   bool HasAccountWithRefreshToken(const CoreAccountId& account_id) const;
+
+#if BUILDFLAG(IS_IOS)
+  bool HasAccountWithRefreshTokenOnDevice(
+      const CoreAccountId& account_id) const;
+#endif
 
   // Returns true if all refresh tokens have been loaded from disk.
   bool AreRefreshTokensLoaded() const;

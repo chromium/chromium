@@ -125,10 +125,10 @@ class PasswordGenerationPopupControllerImpl
   PasswordGenerationPopupView* view() const { return view_; }
   void SetViewForTesting(PasswordGenerationPopupView* view) { view_ = view; }
   void SelectAcceptButtonForTesting() {
-    SelectElement(PasswordGenerationPopupElement::kNudgePasswordAcceptButton);
+    SelectElement(PasswordGenerationPopupElement::kAcceptButton);
   }
   void SelectCancelButtonForTesting() {
-    SelectElement(PasswordGenerationPopupElement::kNudgePasswordCancelButton);
+    SelectElement(PasswordGenerationPopupElement::kCancelButton);
   }
 #endif
 
@@ -147,9 +147,8 @@ class PasswordGenerationPopupControllerImpl
   // Defines different elements of the popup that can be selected.
   enum class PasswordGenerationPopupElement {
     kNone = 0,
-    kUseStrongPassword = 1,
-    kNudgePasswordAcceptButton = 2,
-    kNudgePasswordCancelButton = 3,
+    kAcceptButton = 1,
+    kCancelButton = 2,
   };
 
   // AutofillPopupViewDelegate implementation:
@@ -164,11 +163,8 @@ class PasswordGenerationPopupControllerImpl
   // PasswordGenerationPopupController implementation:
   void PasswordAccepted() override;
   void PasswordRejected() override;
-  void SetSelected() override;
-  void SelectionCleared() override;
   std::u16string GetPrimaryAccountEmail() override;
   GenerationUIState state() const override;
-  bool password_selected() const override;
   bool accept_button_selected() const override;
   bool cancel_button_selected() const override;
   const std::u16string& password() const override;

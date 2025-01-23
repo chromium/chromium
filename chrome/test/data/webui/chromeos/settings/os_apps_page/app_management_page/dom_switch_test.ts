@@ -4,8 +4,8 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppManagementDomSwitchElement} from 'chrome://os-settings/lazy_load.js';
-import {DomBind} from 'chrome://resources/polymer/v3_0/polymer/lib/elements/dom-bind.js';
+import type {AppManagementDomSwitchElement} from 'chrome://os-settings/lazy_load.js';
+import type {DomBind} from 'chrome://resources/polymer/v3_0/polymer/lib/elements/dom-bind.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

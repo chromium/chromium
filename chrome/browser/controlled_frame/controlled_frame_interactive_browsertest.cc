@@ -136,6 +136,10 @@ IN_PROC_BROWSER_TEST_F(ControlledFramePointerLockInteractiveUiTest,
           /*controlled_frame_host_name=*/std::nullopt, "/index.html");
   AllowOnlyPointerLockPermission(app_frame);
 
+  // Make sure the app frame is focused so it receives the escape key below.
+  ASSERT_TRUE(content::ExecJs(
+      app_frame, "document.querySelector('controlledframe').focus()"));
+
   ASSERT_TRUE(content::ExecJs(controlled_frame, R"(
     new Promise((resolve, reject) => {
       window.changeListener = document.addEventListener(

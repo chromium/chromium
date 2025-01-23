@@ -12,12 +12,6 @@ struct AccessToken {
   mojo_base.mojom.Time expiration;
 };
 
-enum AuthState {
-  kNone, // No valid access token but no error.
-  kError,
-  kSuccess,
-};
-
 // Factory interface to create parent/child communication interfaces.
 interface MicrosoftAuthUntrustedDocumentInterfacesFactory {
   // Passes the chrome-untrusted:// frame's remote to the embedding

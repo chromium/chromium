@@ -51,7 +51,7 @@ void AnnotationsJavaScriptFeature::ExtractText(WebState* web_state,
   }
 
   base::Value::List parameters;
-    CallJavaScriptFunction(frame, "annotations.start", parameters);
+  CallJavaScriptFunction(frame, "annotations.start", parameters);
 }
 
 void AnnotationsJavaScriptFeature::DecorateAnnotations(WebState* web_state,

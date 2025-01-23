@@ -15,11 +15,13 @@ namespace web {
 void RegisterWebSchemes() {
   web::WebClient::Schemes schemes;
   GetWebClient()->AddAdditionalSchemes(&schemes);
-  for (const auto& scheme : schemes.standard_schemes)
+  for (const auto& scheme : schemes.standard_schemes) {
     url::AddStandardScheme(scheme.c_str(), url::SCHEME_WITH_HOST);
+  }
 
-  for (const auto& scheme : schemes.secure_schemes)
+  for (const auto& scheme : schemes.secure_schemes) {
     url::AddSecureScheme(scheme.c_str());
+  }
 
   // Prevent future modification of the schemes lists. This is to prevent
   // accidental creation of data races in the program. Add*Scheme aren't

@@ -2116,6 +2116,12 @@ Use Ctrl + Alt + Brightness down to zoom out.
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_RIGHT_HAND" desc="Drop down entries for mouse keys specifying your right hand as your dominant hand.">
     Right side
   </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_KEYBOARD_SHORTCUT" desc="The body of the shortcut reminder for toggling mouse keys.">
+    Press <ph name="ALT">&lt;kbd&gt;</ph> + <ph name="LAUNCHER">&lt;kbd&gt;</ph> + <ph name="NUM_4">&lt;kbd&gt;</ph> to pause and resume mouse keys
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_KEYBOARD_SHORTCUT_TITLE" desc="The title of the mouse keys keyboard shortcut.">
+    Keyboard shortcut to pause
+  </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_LEFT_HAND" desc="Drop down entries for mouse keys specifying your left hand as your dominant hand.">
     Left side
   </message>

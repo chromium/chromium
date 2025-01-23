@@ -4,8 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AddSmbShareDialogElement, SettingsSmbSharesPageElement, SmbBrowserProxy, SmbBrowserProxyImpl, SmbMountResult} from 'chrome://os-settings/lazy_load.js';
-import {CrButtonElement, CrInputElement} from 'chrome://os-settings/os_settings.js';
+import type {AddSmbShareDialogElement, SettingsSmbSharesPageElement, SmbBrowserProxy} from 'chrome://os-settings/lazy_load.js';
+import {SmbBrowserProxyImpl, SmbMountResult} from 'chrome://os-settings/lazy_load.js';
+import type {CrButtonElement, CrInputElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

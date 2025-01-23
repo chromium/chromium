@@ -4,8 +4,8 @@
 
 #include "chromeos/ash/experiences/arc/test/fake_memory_instance.h"
 
-#include "ash/components/arc/mojom/memory.mojom-forward.h"
-#include "ash/components/arc/mojom/memory.mojom-shared.h"
+#include "chromeos/ash/experiences/arc/mojom/memory.mojom-forward.h"
+#include "chromeos/ash/experiences/arc/mojom/memory.mojom-shared.h"
 
 namespace arc {
 

@@ -8,11 +8,11 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
-#include "ash/components/arc/mojom/process.mojom-forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom-forward.h"
+#include "chromeos/ash/experiences/arc/mojom/process.mojom-forward.h"
 #include "chromeos/ash/experiences/arc/process/arc_process.h"
 #include "chromeos/ash/experiences/arc/session/connection_observer.h"
 

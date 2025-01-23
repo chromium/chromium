@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "ash/components/arc/mojom/app.mojom-shared.h"
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -30,6 +29,7 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom-shared.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"

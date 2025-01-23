@@ -8,11 +8,11 @@
 #include <optional>
 #include <vector>
 
-#include "ash/components/arc/mojom/video_frame_pool.mojom.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/ash/experiences/arc/mojom/video_frame_pool.mojom.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/video_frame_plane.h"
 #include "media/base/status.h"
 #include "media/base/video_frame.h"

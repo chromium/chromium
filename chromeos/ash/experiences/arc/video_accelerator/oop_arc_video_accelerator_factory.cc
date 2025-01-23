@@ -6,9 +6,9 @@
 
 #include <utility>
 
-#include "ash/components/arc/mojom/protected_buffer_manager.mojom.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/task/bind_post_task.h"
+#include "chromeos/ash/experiences/arc/mojom/protected_buffer_manager.mojom.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_decode_accelerator.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_decoder.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager.h"

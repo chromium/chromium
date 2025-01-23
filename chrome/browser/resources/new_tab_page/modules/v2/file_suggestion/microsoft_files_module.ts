@@ -107,7 +107,16 @@ export class MicrosoftFilesModuleElement extends
   }
 
   protected onDismissButtonClick_() {
-    // TODO(crbug.com/372729916): Handle dismiss button click.
+    // TODO(crbug.com/372724129): Update dismiss message.
+    this.handler_.dismissModule();
+    this.dispatchEvent(new CustomEvent('dismiss-module-instance', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        message: this.i18n('modulesOutlookCalendarDismissToastMessage'),
+        restoreCallback: () => this.handler_.restoreModule(),
+      },
+    }));
   }
 
   protected onInfoButtonClick_() {

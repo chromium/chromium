@@ -108,6 +108,7 @@ include_rules = [
   "+components/component_updater/installer_policies",
   "+components/compose",
   "+components/autofill_ai",
+  "+components/webui/chrome_urls",
   "+components/consent_auditor",
   "+components/constrained_window",
   "+components/content_capture/browser",

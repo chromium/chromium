@@ -55,17 +55,17 @@ std::unique_ptr<SourceLocation> CapturePartialSourceLocationFromStack(
   if (!isolate->InContext()) {
     return std::make_unique<SourceLocation>(String(), -1);
   }
-  v8::Local<v8::String> script_name =
-      v8::StackTrace::CurrentScriptNameOrSourceURL(isolate);
-  String script_url = ToCoreStringWithNullCheck(isolate, script_name);
 
   v8::Local<v8::StackTrace> stack_trace =
       v8::StackTrace::CurrentStackTrace(isolate, /*frame_limit=*/1);
 
   int script_position = -1;
+  String script_url;
   if (stack_trace->GetFrameCount() > 0) {
-    v8::Local<v8::StackFrame> frame = stack_trace->GetFrame(isolate, 0);
-    script_position = frame->GetSourcePosition();
+    v8::Local<v8::StackFrame> stack_frame = stack_trace->GetFrame(isolate, 0);
+    script_position = stack_frame->GetSourcePosition();
+    v8::Local<v8::String> script_name = stack_frame->GetScriptNameOrSourceURL();
+    script_url = ToCoreStringWithNullCheck(isolate, script_name);
   }
   return std::make_unique<SourceLocation>(script_url, script_position);
 }

@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_ARC_KEYMASTER_ARC_KEYMASTER_BRIDGE_H_
 #define CHROME_BROWSER_ASH_ARC_KEYMASTER_ARC_KEYMASTER_BRIDGE_H_
 
-#include "ash/components/arc/mojom/keymaster.mojom.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/keymaster/cert_store_bridge.h"
+#include "chromeos/ash/experiences/arc/mojom/keymaster.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

@@ -32,6 +32,7 @@ import android.webkit.WebViewFactory;
 import android.webkit.WebViewFactoryProvider;
 import android.webkit.WebViewProvider;
 
+import androidx.annotation.GuardedBy;
 import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 
@@ -177,12 +178,15 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     protected boolean mShouldDisableThreadChecking;
 
-    // Initialization guarded by mAwInit.getLock()
+    private final Object mLazyInitLock = new Object();
+
+    @GuardedBy("mLazyInitLock")
     private Statics mStaticsAdapter;
 
-    private boolean mIsSafeModeEnabled;
-
+    @GuardedBy("mLazyInitLock")
     private ServiceWorkerController mServiceWorkerController;
+
+    private boolean mIsSafeModeEnabled;
 
     public static class InitInfo {
         // Timestamp of init start and duration, used in the
@@ -196,10 +200,10 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         public long mTotalFactoryInitStartTime;
         public long mTotalFactoryInitDuration;
     }
-    ;
 
     private InitInfo mInitInfo = new InitInfo();
 
+    @GuardedBy("mLazyInitLock")
     @RequiresApi(Build.VERSION_CODES.P)
     private ObjectHolderForP mObjectHolderForP =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ? new ObjectHolderForP() : null;
@@ -516,13 +520,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 deleteContentsOnPackageDowngrade(packageInfo);
             }
 
-            boolean partitionedCookies =
-                    androidXConfig.getPartitionedCookiesEnabled() == null
-                            ? shouldEnableChips()
-                            : androidXConfig.getPartitionedCookiesEnabled();
-            if (!partitionedCookies) {
-                cl.appendSwitch("disable-partitioned-cookies");
-            }
+            // TODO (crbug.com/389121692): Add a check here to configure partitioned cookies based
+            // on what we get back from AndroidX.
 
             // Now safe to use WebView data directory.
 
@@ -663,9 +662,9 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @Override
     public Statics getStatics() {
-        synchronized (mAwInit.getLock()) {
-            SharedStatics sharedStatics = mAwInit.getStatics();
+        synchronized (mLazyInitLock) {
             if (mStaticsAdapter == null) {
+                SharedStatics sharedStatics = mAwInit.getStatics();
                 mStaticsAdapter =
                         new WebViewChromiumFactoryProvider.Statics() {
                             @Override
@@ -731,8 +730,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                             }
                         };
             }
+            return mStaticsAdapter;
         }
-        return mStaticsAdapter;
     }
 
     @Override
@@ -813,14 +812,14 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @Override
     public ServiceWorkerController getServiceWorkerController() {
-        synchronized (mAwInit.getLock()) {
+        synchronized (mLazyInitLock) {
             if (mServiceWorkerController == null) {
                 mServiceWorkerController =
                         new ServiceWorkerControllerAdapter(
                                 mAwInit.getDefaultServiceWorkerController());
             }
+            return mServiceWorkerController;
         }
-        return mServiceWorkerController;
     }
 
     @Override
@@ -879,18 +878,15 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     @RequiresApi(Build.VERSION_CODES.P)
     @Override
     public TracingController getTracingController() {
-        synchronized (mAwInit.mLock) {
-            mAwInit.ensureChromiumStartedLocked(
-                    true, WebViewChromiumAwInit.CallSite.GET_TRACING_CONTROLLER);
-            // ensureChromiumStartedLocked() can release the lock on first call while
-            // waiting for startup. Hence check the mTracingController here to ensure
-            // the singleton property.
+        synchronized (mLazyInitLock) {
             if (mObjectHolderForP.mTracingController == null) {
+                mAwInit.ensureChromiumStartedLocked(
+                        true, WebViewChromiumAwInit.CallSite.GET_TRACING_CONTROLLER);
                 mObjectHolderForP.mTracingController =
                         GlueApiHelperForP.createTracingControllerAdapter(this, mAwInit);
             }
+            return mObjectHolderForP.mTracingController;
         }
-        return mObjectHolderForP.mTracingController;
     }
 
     private static class FilteredClassLoader extends ClassLoader {

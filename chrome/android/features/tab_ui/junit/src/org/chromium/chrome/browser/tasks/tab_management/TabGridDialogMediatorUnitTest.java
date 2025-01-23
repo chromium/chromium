@@ -223,6 +223,7 @@ public class TabGridDialogMediatorUnitTest {
         when(mDataSharingService.getUiDelegate()).thenReturn(mDataSharingUiDelegate);
         CollaborationServiceFactory.setForTesting(mCollaborationService);
         when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
+        when(mServiceStatus.isAllowedToCreate()).thenReturn(true);
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
         mockPersistentMessages(/* added= */ 1, /* navigated= */ 2, /* removed= */ 3);
@@ -1651,7 +1652,22 @@ public class TabGridDialogMediatorUnitTest {
                 .onGroupMembersChanged(COLLABORATION_ID1, List.of(GROUP_MEMBER1, GROUP_MEMBER2));
         verify(mDialogController, never()).addMessageCardItem(/* position= */ eq(0), any());
 
-        // Reset with null first as re-using the same TabGroupId does not reset the observer.
+        // Reset with null first as reusing the same TabGroupId does not reset the observer.
+        when(mServiceStatus.isAllowedToCreate()).thenReturn(false);
+        mMediator.onReset(null);
+        when(mDialogController.messageCardExists(MessageType.COLLABORATION_ACTIVITY))
+                .thenReturn(false);
+        resetForDataSharing(/* isShared= */ false);
+        verify(mDialogController).removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
+        verify(mSharedImageTilesCoordinator).onGroupMembersChanged(null, null);
+        assertFalse(mModel.get(TabGridDialogProperties.SHOW_SHARE_BUTTON));
+        assertEquals(
+                R.string.tab_grid_share_button_text,
+                mModel.get(TabGridDialogProperties.SHARE_BUTTON_STRING_RES));
+        assertFalse(mModel.get(TabGridDialogProperties.SHOW_IMAGE_TILES));
+        when(mServiceStatus.isAllowedToCreate()).thenReturn(true);
+
+        // Reset with null first as reusing the same TabGroupId does not reset the observer.
         mMediator.onReset(null);
         when(mDialogController.messageCardExists(MessageType.COLLABORATION_ACTIVITY))
                 .thenReturn(false);
@@ -1664,7 +1680,7 @@ public class TabGridDialogMediatorUnitTest {
                 mModel.get(TabGridDialogProperties.SHARE_BUTTON_STRING_RES));
         assertFalse(mModel.get(TabGridDialogProperties.SHOW_IMAGE_TILES));
 
-        // Reset with null first as re-using the same TabGroupId does not reset the observer.
+        // Reset with null first as reusing the same TabGroupId does not reset the observer.
         mMediator.onReset(null);
         when(mDialogController.messageCardExists(MessageType.COLLABORATION_ACTIVITY))
                 .thenReturn(false);

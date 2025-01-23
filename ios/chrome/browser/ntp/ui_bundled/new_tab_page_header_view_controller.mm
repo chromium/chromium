@@ -473,17 +473,17 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   self.identityDiscButton.pointerStyleProvider =
       ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
                        UIPointerShape* proposedShape) {
-    // The identity disc button is oversized to the avatar image to meet the
-    // minimum touch target dimensions. The hover pointer effect should
-    // match the avatar image dimensions, not the button dimensions.
-    CGFloat singleInset =
-        (button.frame.size.width - ntp_home::kIdentityAvatarDimension) / 2;
-    CGRect rect = CGRectInset(button.frame, singleInset, singleInset);
-    UIPointerShape* shape =
-        [UIPointerShape shapeWithRoundedRect:rect
-                                cornerRadius:rect.size.width / 2];
-    return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
-  };
+        // The identity disc button is oversized to the avatar image to meet the
+        // minimum touch target dimensions. The hover pointer effect should
+        // match the avatar image dimensions, not the button dimensions.
+        CGFloat singleInset =
+            (button.frame.size.width - ntp_home::kIdentityAvatarDimension) / 2;
+        CGRect rect = CGRectInset(button.frame, singleInset, singleInset);
+        UIPointerShape* shape =
+            [UIPointerShape shapeWithRoundedRect:rect
+                                    cornerRadius:rect.size.width / 2];
+        return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
+      };
 
   // `self.identityDiscButton` should not be updated if `self.identityDiscImage`
   // is not available yet.
@@ -910,9 +910,9 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   }
   if (previousTraitCollection.userInterfaceStyle !=
       self.traitCollection.userInterfaceStyle) {
-      [self.headerView
-          updateButtonsForUserInterfaceStyle:self.traitCollection
-                                                 .userInterfaceStyle];
+    [self.headerView
+        updateButtonsForUserInterfaceStyle:self.traitCollection
+                                               .userInterfaceStyle];
   }
 }
 

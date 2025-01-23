@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_NET_INSTANCE_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_NET_INSTANCE_H_
 
-#include "ash/components/arc/mojom/net.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/net.mojom.h"
 
 namespace arc {
 

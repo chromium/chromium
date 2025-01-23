@@ -8,10 +8,10 @@
 #include <optional>
 #include <vector>
 
-#include "ash/components/arc/mojom/disk_space.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
+#include "chromeos/ash/experiences/arc/mojom/disk_space.mojom.h"
 #include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 

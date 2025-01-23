@@ -46,9 +46,11 @@ void TapText(NSString* text) {
 // Taps "Allow" on notification permissions popup or Camera popup, if
 // either appears.
 void MaybeTapAllowOnPopup() {
+  [ChromeEarlGreyUI waitForAppToIdle];
   XCUIApplication* springboardApplication = [[XCUIApplication alloc]
       initWithBundleIdentifier:@"com.apple.springboard"];
-  auto button = springboardApplication.buttons[@"Allow"];
+  // Wait for allow or ok button to appear.
+  auto button = [springboardApplication.buttons elementBoundByIndex:1];
   if ([button waitForExistenceWithTimeout:1]) {
     // Wait for the magic stack to settle behind the alert.
     // Otherwise the test flakes when a snackbar is presented right after the
@@ -91,28 +93,12 @@ void MaybeDismissNotification() {
 
 @implementation TipsNotificationsTestCase
 
-// TODO(crbug.com/391796821): Fails on simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testReactivation FLAKY_testReactivation
-#else
-#define MAYBE_testReactivation testReactivation
-#endif
-
-// TODO(crbug.com/391796821): Fails on simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testToggleTipsNotificationsMenuItem \
-  FLAKY_testToggleTipsNotificationsMenuItem
-#else
-#define MAYBE_testToggleTipsNotificationsMenuItem \
-  testToggleTipsNotificationsMenuItem
-#endif
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
   std::string triggerTime = "3s";
 
-  if ([self
-          isRunningTest:@selector(MAYBE_testToggleTipsNotificationsMenuItem)]) {
+  if ([self isRunningTest:@selector(testToggleTipsNotificationsMenuItem)]) {
     triggerTime = "72h";
   }
 
@@ -123,7 +109,7 @@ void MaybeDismissNotification() {
       kIOSTipsNotificationsLessEngagedTriggerTimeParam, triggerTime.c_str(),
       kIOSTipsNotificationsActiveSeekerTriggerTimeParam, triggerTime.c_str());
 
-  if ([self isRunningTest:@selector(MAYBE_testReactivation)]) {
+  if ([self isRunningTest:@selector(testReactivation)]) {
     std::string enableReactivation =
         base::StringPrintf(",%s", kIOSReactivationNotifications.name);
     enableFeatures.append(enableReactivation);
@@ -209,19 +195,13 @@ void MaybeDismissNotification() {
 #pragma mark - Tests
 
 // Tests the SetUpList long press menu item to toggle Tips Notifications.
-- (void)MAYBE_testToggleTipsNotificationsMenuItem {
+- (void)testToggleTipsNotificationsMenuItem {
   [self optInToTipsNotifications:{}];
   [self turnOffTipsNotifications];
 }
 
 // Tests triggering and interacting with each of the Tips notifications.
-// TODO(crbug.com/391796821): Fails on simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testTriggerNotifications FLAKY_testTriggerNotifications
-#else
-#define MAYBE_testTriggerNotifications testTriggerNotifications
-#endif
-- (void)MAYBE_testTriggerNotifications {
+- (void)testTriggerNotifications {
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -310,13 +290,7 @@ void MaybeDismissNotification() {
 }
 
 // Tests that the Lens Promo appears when tapping on the Lens notification.
-// TODO(crbug.com/391797467): Fails on simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testLensNotification FLAKY_testLensNotification
-#else
-#define MAYBE_testLensNotification testLensNotification
-#endif
-- (void)MAYBE_testLensNotification {
+- (void)testLensNotification {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
   }
@@ -404,7 +378,7 @@ void MaybeDismissNotification() {
 }
 
 // Tests that the app adds a Reactivation notification request.
-- (void)MAYBE_testReactivation {
+- (void)testReactivation {
   ScopedNotificationAuthSwizzler auth(YES);
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kPushNotificationAuthorizationStatus];

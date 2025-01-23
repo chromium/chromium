@@ -4,8 +4,8 @@
 #ifndef CHROME_BROWSER_ASH_ARC_BLUETOOTH_ARC_FLOSS_BRIDGE_H_
 #define CHROME_BROWSER_ASH_ARC_BLUETOOTH_ARC_FLOSS_BRIDGE_H_
 
-#include "ash/components/arc/mojom/bluetooth.mojom.h"
 #include "chrome/browser/ash/arc/bluetooth/arc_bluetooth_bridge.h"
+#include "chromeos/ash/experiences/arc/mojom/bluetooth.mojom.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
 #include "device/bluetooth/floss/bluetooth_adapter_floss.h"

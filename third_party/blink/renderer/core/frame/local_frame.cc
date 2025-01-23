@@ -4156,13 +4156,11 @@ void LocalFrame::OnStorageAccessCallback(
 
 void LocalFrame::NotifyFrameVisibilityChanged(
     mojom::blink::FrameVisibility visibility) {
-  HeapVector<Member<FrameVisibilityObserver>>
-      frame_visibility_observers_as_vector;
   // Iterate on a copy of the vector to avoid invalidating the iterator if
   // `FrameVisibilityChanged` happens to remove the observer from
   // `frame_visibility_observers_`.
-  CopyToVector(frame_visibility_observers_,
-               frame_visibility_observers_as_vector);
+  HeapVector<Member<FrameVisibilityObserver>>
+      frame_visibility_observers_as_vector(frame_visibility_observers_);
   for (auto observer : frame_visibility_observers_as_vector) {
     observer->FrameVisibilityChanged(visibility);
   }

@@ -11,7 +11,6 @@
 #include <ostream>
 #include <vector>
 
-#include "ash/components/arc/mojom/disk_space.mojom.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -20,6 +19,7 @@
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/experiences/arc/disk_space/arc_disk_space_bridge.h"
+#include "chromeos/ash/experiences/arc/mojom/disk_space.mojom.h"
 #include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/user_manager/user.h"
 

@@ -47,12 +47,15 @@ FakeWebState::FakeWebState(WebStateID unique_identifier)
 }
 
 FakeWebState::~FakeWebState() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.WebStateDestroyed(this);
-  for (auto& observer : policy_deciders_)
+  }
+  for (auto& observer : policy_deciders_) {
     observer.WebStateDestroyed();
-  for (auto& observer : policy_deciders_)
+  }
+  for (auto& observer : policy_deciders_) {
     observer.ResetWebState();
+  }
 }
 
 void FakeWebState::SerializeToProto(proto::WebStateStorage& storage) const {}
@@ -77,8 +80,9 @@ bool FakeWebState::IsRealized() const {
 WebState* FakeWebState::ForceRealized() {
   if (!is_realized_) {
     is_realized_ = true;
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.WebStateRealized(this);
+    }
   }
   return this;
 }
@@ -117,8 +121,9 @@ bool FakeWebState::IsWebUsageEnabled() const {
 
 void FakeWebState::SetWebUsageEnabled(bool enabled) {
   web_usage_enabled_ = enabled;
-  if (!web_usage_enabled_)
+  if (!web_usage_enabled_) {
     SetIsEvicted(true);
+  }
 }
 
 UIView* FakeWebState::GetView() {
@@ -138,18 +143,21 @@ base::Time FakeWebState::GetCreationTime() const {
 }
 
 void FakeWebState::WasShown() {
-  if (!is_visible_)
+  if (!is_visible_) {
     last_active_time_ = base::Time::Now();
+  }
 
   is_visible_ = true;
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.WasShown(this);
+  }
 }
 
 void FakeWebState::WasHidden() {
   is_visible_ = false;
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.WasHidden(this);
+  }
 }
 
 void FakeWebState::SetKeepRenderProcessAlive(bool keep_alive) {}
@@ -215,8 +223,9 @@ void FakeWebState::SetView(UIView* view) {
 
 void FakeWebState::SetIsCrashed(bool value) {
   is_crashed_ = value;
-  if (is_crashed_)
+  if (is_crashed_) {
     SetIsEvicted(true);
+  }
 }
 
 void FakeWebState::SetIsEvicted(bool value) {
@@ -346,45 +355,53 @@ void FakeWebState::SetFaviconStatus(const FaviconStatus& favicon_status) {
 }
 
 void FakeWebState::SetLoading(bool is_loading) {
-  if (is_loading == is_loading_)
+  if (is_loading == is_loading_) {
     return;
+  }
 
   is_loading_ = is_loading;
 
   if (is_loading) {
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.DidStartLoading(this);
+    }
   } else {
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.DidStopLoading(this);
+    }
   }
 }
 
 void FakeWebState::OnPageLoaded(
     PageLoadCompletionStatus load_completion_status) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.PageLoaded(this, load_completion_status);
+  }
 }
 
 void FakeWebState::OnNavigationStarted(NavigationContext* navigation_context) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.DidStartNavigation(this, navigation_context);
+  }
 }
 
 void FakeWebState::OnNavigationRedirected(
     NavigationContext* navigation_context) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.DidRedirectNavigation(this, navigation_context);
+  }
 }
 
 void FakeWebState::OnNavigationFinished(NavigationContext* navigation_context) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.DidFinishNavigation(this, navigation_context);
+  }
 }
 
 void FakeWebState::OnRenderProcessGone() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.RenderProcessGone(this);
+  }
 }
 
 void FakeWebState::OnBackForwardStateChanged() {
@@ -423,8 +440,9 @@ void FakeWebState::ShouldAllowRequest(
     policy_decider.ShouldAllowRequest(request, request_info,
                                       policy_decider_callback);
     num_decisions_requested++;
-    if (request_state_tracker_ptr->DeterminedFinalResult())
+    if (request_state_tracker_ptr->DeterminedFinalResult()) {
       break;
+    }
   }
 
   request_state_tracker_ptr->FinishedRequestingDecisions(
@@ -447,8 +465,9 @@ void FakeWebState::ShouldAllowResponse(
     policy_decider.ShouldAllowResponse(response, response_info,
                                        policy_decider_callback);
     num_decisions_requested++;
-    if (response_state_tracker_ptr->DeterminedFinalResult())
+    if (response_state_tracker_ptr->DeterminedFinalResult()) {
       break;
+    }
   }
 
   response_state_tracker_ptr->FinishedRequestingDecisions(

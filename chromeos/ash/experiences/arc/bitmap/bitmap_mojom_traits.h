@@ -10,8 +10,8 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_BITMAP_BITMAP_MOJOM_TRAITS_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_BITMAP_BITMAP_MOJOM_TRAITS_H_
 
-#include "ash/components/arc/mojom/bitmap.mojom-shared.h"
 #include "base/containers/span.h"
+#include "chromeos/ash/experiences/arc/mojom/bitmap.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace mojo {

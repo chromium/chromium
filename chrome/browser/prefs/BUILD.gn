@@ -124,6 +124,7 @@ source_set("impl") {
     "//components/ukm",
     "//components/update_client",
     "//components/variations/service",
+    "//components/webui/chrome_urls",
     "//services/preferences/public/cpp/tracked",
     "//services/preferences/public/mojom",
     "//services/preferences/tracked",

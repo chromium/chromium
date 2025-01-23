@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_WORKING_SET_TRIMMER_CHROMEOS_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_WORKING_SET_TRIMMER_CHROMEOS_H_
 
-#include "ash/components/arc/mojom/memory.mojom-forward.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -14,6 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/performance_manager/mechanisms/working_set_trimmer.h"
+#include "chromeos/ash/experiences/arc/mojom/memory.mojom-forward.h"
 
 namespace content {
 class BrowserContext;

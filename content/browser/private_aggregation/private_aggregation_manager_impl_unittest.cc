@@ -845,55 +845,48 @@ TEST_F(PrivateAggregationManagerImplTest,
   const url::Origin example_coordinator_origin =
       url::Origin::Create(GURL(kExampleCoordinatorUrl));
 
-  EXPECT_CALL(*host_, BindNewReceiver(
-                          example_origin, example_main_frame_origin,
-                          PrivateAggregationCallerApi::kProtectedAudience,
-                          testing::Eq(std::nullopt), testing::Eq(std::nullopt),
-                          testing::Eq(std::nullopt), 1, _))
-      .WillOnce(Return(true));
-  EXPECT_TRUE(manager_.BindNewReceiver(
-      example_origin, example_main_frame_origin,
-      PrivateAggregationCallerApi::kProtectedAudience,
-      /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
-      /*aggregation_coordinator_origin=*/std::nullopt,
-      /*filtering_id_max_bytes=*/1,
-      mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
+  for (auto api : {PrivateAggregationCallerApi::kProtectedAudience,
+                   PrivateAggregationCallerApi::kSharedStorage}) {
+    // Vary the api parameter.
+    EXPECT_CALL(*host_,
+                BindNewReceiver(
+                    example_origin, example_main_frame_origin, api,
+                    testing::Eq(std::nullopt), testing::Eq(std::nullopt),
+                    testing::Eq(std::nullopt), 1, testing::Eq(std::nullopt), _))
+        .WillOnce(Return(true));
+    EXPECT_TRUE(manager_.BindNewReceiver(
+        example_origin, example_main_frame_origin, api,
+        /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
+        /*aggregation_coordinator_origin=*/std::nullopt,
+        /*filtering_id_max_bytes=*/1,
+        /*max_contributions=*/std::nullopt,
+        mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 
-  EXPECT_CALL(*host_, BindNewReceiver(
-                          example_origin, example_main_frame_origin,
-                          PrivateAggregationCallerApi::kSharedStorage,
-                          testing::Eq(std::nullopt), testing::Eq(std::nullopt),
-                          testing::Eq(std::nullopt), 1, _))
-      .WillOnce(Return(false));
-  EXPECT_FALSE(manager_.BindNewReceiver(
-      example_origin, example_main_frame_origin,
-      PrivateAggregationCallerApi::kSharedStorage,
-      /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
-      /*aggregation_coordinator_origin=*/std::nullopt,
-      /*filtering_id_max_bytes=*/1,
-      mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
+    // Vary the api paired with a context ID.
+    EXPECT_CALL(
+        *host_,
+        BindNewReceiver(example_origin, example_main_frame_origin, api,
+                        testing::Eq("example_context_id"),
+                        testing::Eq(std::nullopt), testing::Eq(std::nullopt), 1,
+                        testing::Eq(std::nullopt), _))
+        .WillOnce(Return(true));
+    EXPECT_TRUE(manager_.BindNewReceiver(
+        example_origin, example_main_frame_origin, api, "example_context_id",
+        /*timeout=*/std::nullopt,
+        /*aggregation_coordinator_origin=*/std::nullopt,
+        /*filtering_id_max_bytes=*/1,
+        /*max_contributions=*/std::nullopt,
+        mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
+  }
 
-  EXPECT_CALL(*host_,
-              BindNewReceiver(example_origin, example_main_frame_origin,
-                              PrivateAggregationCallerApi::kProtectedAudience,
-                              testing::Eq("example_context_id"),
-                              testing::Eq(std::nullopt),
-                              testing::Eq(std::nullopt), 1, _))
-      .WillOnce(Return(true));
-  EXPECT_TRUE(manager_.BindNewReceiver(
-      example_origin, example_main_frame_origin,
-      PrivateAggregationCallerApi::kProtectedAudience, "example_context_id",
-      /*timeout=*/std::nullopt,
-      /*aggregation_coordinator_origin=*/std::nullopt,
-      /*filtering_id_max_bytes=*/1,
-      mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
-
-  EXPECT_CALL(*host_,
-              BindNewReceiver(example_origin, example_main_frame_origin,
-                              PrivateAggregationCallerApi::kSharedStorage,
-                              testing::Eq("example_context_id"),
-                              testing::Eq(base::Seconds(5)),
-                              testing::Eq(std::nullopt), 1, _))
+  // Specify a context ID and a timeout.
+  EXPECT_CALL(
+      *host_,
+      BindNewReceiver(example_origin, example_main_frame_origin,
+                      PrivateAggregationCallerApi::kSharedStorage,
+                      testing::Eq("example_context_id"),
+                      testing::Eq(base::Seconds(5)), testing::Eq(std::nullopt),
+                      1, testing::Eq(std::nullopt), _))
       .WillOnce(Return(true));
   EXPECT_TRUE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
@@ -901,26 +894,32 @@ TEST_F(PrivateAggregationManagerImplTest,
       /*timeout=*/base::Seconds(5),
       /*aggregation_coordinator_origin=*/std::nullopt,
       /*filtering_id_max_bytes=*/1,
+      /*max_contributions=*/std::nullopt,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 
+  // Specify a coordinator origin.
   EXPECT_CALL(*host_, BindNewReceiver(
                           example_origin, example_main_frame_origin,
                           PrivateAggregationCallerApi::kProtectedAudience,
                           testing::Eq(std::nullopt), testing::Eq(std::nullopt),
-                          testing::Eq(example_coordinator_origin), 1, _))
+                          testing::Eq(example_coordinator_origin), 1,
+                          testing::Eq(std::nullopt), _))
       .WillOnce(Return(true));
   EXPECT_TRUE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
       PrivateAggregationCallerApi::kProtectedAudience,
       /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
       example_coordinator_origin, /*filtering_id_max_bytes=*/1,
+      /*max_contributions=*/std::nullopt,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 
-  EXPECT_CALL(*host_, BindNewReceiver(
-                          example_origin, example_main_frame_origin,
-                          PrivateAggregationCallerApi::kProtectedAudience,
-                          testing::Eq(std::nullopt), testing::Eq(std::nullopt),
-                          testing::Eq(std::nullopt), 8, _))
+  // Specify a non-default `filtering_id_max_bytes`.
+  EXPECT_CALL(*host_,
+              BindNewReceiver(
+                  example_origin, example_main_frame_origin,
+                  PrivateAggregationCallerApi::kProtectedAudience,
+                  testing::Eq(std::nullopt), testing::Eq(std::nullopt),
+                  testing::Eq(std::nullopt), 8, testing::Eq(std::nullopt), _))
       .WillOnce(Return(true));
   EXPECT_TRUE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
@@ -928,6 +927,24 @@ TEST_F(PrivateAggregationManagerImplTest,
       /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
       /*aggregation_coordinator_origin=*/std::nullopt,
       /*filtering_id_max_bytes=*/8,
+      /*max_contributions=*/std::nullopt,
+      mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
+
+  // Specify `max_contributions`.
+  EXPECT_CALL(
+      *host_,
+      BindNewReceiver(example_origin, example_main_frame_origin,
+                      PrivateAggregationCallerApi::kSharedStorage,
+                      testing::Eq(std::nullopt), testing::Eq(std::nullopt),
+                      testing::Eq(std::nullopt), 1, testing::Optional(42), _))
+      .WillOnce(Return(true));
+  EXPECT_TRUE(manager_.BindNewReceiver(
+      example_origin, example_main_frame_origin,
+      PrivateAggregationCallerApi::kSharedStorage,
+      /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
+      /*aggregation_coordinator_origin=*/std::nullopt,
+      /*filtering_id_max_bytes=*/1,
+      /*max_contributions=*/42,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 }
 

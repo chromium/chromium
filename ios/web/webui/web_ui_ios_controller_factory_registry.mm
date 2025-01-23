@@ -32,8 +32,9 @@ void WebUIIOSControllerFactory::DeregisterFactory(
     WebUIIOSControllerFactory* factory) {
   std::vector<WebUIIOSControllerFactory*>& factories = GetGlobalFactories();
   auto position = base::ranges::find(factories, factory);
-  if (position != factories.end())
+  if (position != factories.end()) {
     factories.erase(position);
+  }
 }
 
 WebUIIOSControllerFactoryRegistry*
@@ -47,8 +48,9 @@ NSInteger WebUIIOSControllerFactoryRegistry::GetErrorCodeForWebUIURL(
   NSInteger error_code = NSURLErrorUnsupportedURL;
   for (WebUIIOSControllerFactory* factory : GetGlobalFactories()) {
     error_code = factory->GetErrorCodeForWebUIURL(url);
-    if (error_code == 0)
+    if (error_code == 0) {
       return 0;
+    }
   }
   return error_code;
 }
@@ -59,8 +61,9 @@ WebUIIOSControllerFactoryRegistry::CreateWebUIIOSControllerForURL(
     const GURL& url) const {
   for (WebUIIOSControllerFactory* factory : GetGlobalFactories()) {
     auto controller = factory->CreateWebUIIOSControllerForURL(web_ui, url);
-    if (controller)
+    if (controller) {
       return controller;
+    }
   }
   return nullptr;
 }

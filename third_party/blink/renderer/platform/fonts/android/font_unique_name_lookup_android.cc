@@ -256,8 +256,7 @@ void FontUniqueNameLookupAndroid::FontsPrefetched(
     // the AndroidFontLookup service. We can directly set |queryable_fonts_|
     // here from the map keys since |queryable_fonts_| is used to check which
     // fonts can be fetched from the AndroidFontLookup service.
-    queryable_fonts_ = Vector<String>();
-    CopyKeysToVector(prefetched_font_map_, *queryable_fonts_);
+    queryable_fonts_.emplace(prefetched_font_map_.Keys());
   }
 }
 

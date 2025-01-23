@@ -6833,7 +6833,7 @@
   {
     "name": "pdf-use-skia-renderer",
     "owners": [ "thestig@chromium.org", "//pdf/OWNERS" ],
-    "expiry_milestone": 133
+    "expiry_milestone": 140
   },
   {
     "name": "pdf-xfa-forms",
@@ -8533,11 +8533,6 @@
     "name": "tab-switcher-full-new-tab-button",
     "owners": [ "ckitagawa@chromium.org", "skym@chromium.org", "clank-tab-dev@google.com" ],
     "expiry_milestone": 140
-  },
-  {
-    "name" : "tabstrip-collection-storage",
-    "owners": [ "shibalik@chromium.org", "chrome-desktop-ui-sea@chromium.org" ],
-    "expiry_milestone" : 135
   },
   {
     "name": "tabstrip-combo-button",

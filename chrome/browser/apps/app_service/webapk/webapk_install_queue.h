@@ -8,10 +8,10 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/arc/mojom/webapk.mojom-forward.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/experiences/arc/mojom/webapk.mojom-forward.h"
 #include "chromeos/ash/experiences/arc/session/connection_observer.h"
 
 class Profile;

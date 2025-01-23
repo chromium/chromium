@@ -1007,7 +1007,6 @@ source_set("web_applications_unit_tests") {
     deps += [
       "//ash/components/arc",
       "//ash/components/arc:arc_test_support",
-      "//ash/components/arc/mojom",
       "//ash/constants",
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/arc:test_support",
@@ -1017,6 +1016,7 @@ source_set("web_applications_unit_tests") {
       "//chrome/common/chromeos/extensions",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/system",
+      "//chromeos/ash/experiences/arc/mojom",
       "//chromeos/ash/experiences/system_web_apps/types",
       "//chromeos/components/kiosk:test_support",
     ]

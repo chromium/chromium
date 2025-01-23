@@ -8,7 +8,7 @@
 #include <optional>
 #include <string>
 
-#include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom-forward.h"
 
 namespace arc {
 

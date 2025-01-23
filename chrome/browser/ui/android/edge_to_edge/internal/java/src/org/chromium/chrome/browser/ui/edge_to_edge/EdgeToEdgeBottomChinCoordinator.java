@@ -109,6 +109,11 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable, SystemBarCo
     // SystemBarColorHelper
 
     @Override
+    public boolean canSetStatusBarColor() {
+        return false;
+    }
+
+    @Override
     public void setStatusBarColor(int color) {}
 
     @Override

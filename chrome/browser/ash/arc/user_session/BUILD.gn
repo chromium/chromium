@@ -14,10 +14,10 @@ static_library("user_session") {
 
   deps = [
     "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//base",
     "//chromeos/ash/experiences/arc/intent_helper",
     "//chromeos/ash/experiences/arc/intent_helper:arc_intent_helper_constants",
+    "//chromeos/ash/experiences/arc/mojom",
     "//components/keyed_service/core",
     "//components/session_manager/core",
   ]

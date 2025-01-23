@@ -13,10 +13,10 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/mojom/file_system.mojom.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "chromeos/ash/experiences/arc/mojom/file_system.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/file_system/watcher_manager.h"

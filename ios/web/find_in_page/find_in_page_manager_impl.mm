@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/web/find_in_page/find_in_page_manager_impl.h"
+
 #import <UIKit/UIKit.h>
 
-#import "ios/web/find_in_page/find_in_page_manager_impl.h"
 #import "ios/web/find_in_page/find_in_page_metrics.h"
 #import "ios/web/public/find_in_page/crw_find_interaction.h"
 #import "ios/web/public/find_in_page/crw_find_session.h"
@@ -84,20 +85,20 @@ void FindInPageManagerImpl::StartSearch(NSString* query)
   // Stop polling Find session in case search is already ongoing.
   StopPollingActiveFindSession();
 
-    id<CRWFindInteraction> find_interaction = GetOrCreateFindInteraction();
-    // If a Find interaction should be used, prepopulate the Find navigator and
-    // present it. If it is already presented, only present it again if the
-    // query is different.
-    if (!find_interaction.isFindNavigatorVisible ||
-        ![query isEqualToString:current_query_]) {
-      // For some reason, in some cases, presenting the Find navigator
-      // synchronously results in inability to type in the Find navigator input
-      // field. Presenting asynchronously instead solves this issue.
-      dispatch_async(dispatch_get_main_queue(), ^{
-        find_interaction.searchText = query;
-        [find_interaction presentFindNavigatorShowingReplace:NO];
-      });
-    }
+  id<CRWFindInteraction> find_interaction = GetOrCreateFindInteraction();
+  // If a Find interaction should be used, prepopulate the Find navigator and
+  // present it. If it is already presented, only present it again if the
+  // query is different.
+  if (!find_interaction.isFindNavigatorVisible ||
+      ![query isEqualToString:current_query_]) {
+    // For some reason, in some cases, presenting the Find navigator
+    // synchronously results in inability to type in the Find navigator input
+    // field. Presenting asynchronously instead solves this issue.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      find_interaction.searchText = query;
+      [find_interaction presentFindNavigatorShowingReplace:NO];
+    });
+  }
 
   // Reset latest reported Find session data.
   current_query_ = [query copy];
@@ -123,18 +124,18 @@ void FindInPageManagerImpl::StopSearch() API_AVAILABLE(ios(16)) {
   id<CRWFindSession> find_session = GetActiveFindSession();
   [find_session invalidateFoundResults];
 
-    id<CRWFindInteraction> find_interaction = web_state_->GetFindInteraction();
-    // If there is a Find interaction, dismiss the Find navigator. This will
-    // also stop and free the active Find session stored within the Find
-    // interaction.
-    [find_interaction dismissFindNavigator];
+  id<CRWFindInteraction> find_interaction = web_state_->GetFindInteraction();
+  // If there is a Find interaction, dismiss the Find navigator. This will
+  // also stop and free the active Find session stored within the Find
+  // interaction.
+  [find_interaction dismissFindNavigator];
 
-    if (delegate_) {
-      // Calling `DidHighlightMatches` with zero matches and no query to respond
-      // to `StopFinding`.
-      delegate_->DidHighlightMatches(this, web_state_, /*match_count=*/0,
-                                     /*query=*/nil);
-    }
+  if (delegate_) {
+    // Calling `DidHighlightMatches` with zero matches and no query to respond
+    // to `StopFinding`.
+    delegate_->DidHighlightMatches(this, web_state_, /*match_count=*/0,
+                                   /*query=*/nil);
+  }
 }
 
 void FindInPageManagerImpl::StopFinding() {

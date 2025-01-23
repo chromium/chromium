@@ -5,8 +5,9 @@
 import 'chrome://os-settings/os_settings.js';
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsAudioElement, SettingsPerDeviceKeyboardElement} from 'chrome://os-settings/lazy_load.js';
-import {ControlledRadioButtonElement, CrIconButtonElement, crosAudioConfigMojom, CrSliderElement, CrToggleElement, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, Route, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, SettingsDevicePageElement, SettingsRadioGroupElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsAudioElement, SettingsPerDeviceKeyboardElement} from 'chrome://os-settings/lazy_load.js';
+import type {ControlledRadioButtonElement, CrIconButtonElement, CrSliderElement, CrToggleElement, Route, SettingsDevicePageElement, SettingsRadioGroupElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {crosAudioConfigMojom, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -988,7 +989,7 @@ suite('<settings-device-page>', () => {
       let voiceIsolationToggleSection: SettingsToggleButtonElement;
 
       setup(async () => {
-        let toggleSection =
+        const toggleSection =
             audioPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
                 '#audioInputVoiceIsolationToggleSection');
         assertTrue(!!toggleSection);
@@ -1119,7 +1120,7 @@ suite('<settings-device-page>', () => {
             effectModeOptionsAudioSystemProperties);
         await flushTasks();
         await voiceIsolationToggleSection.click();
-        let effectModeSection = getEffectModeSection();
+        const effectModeSection = getEffectModeSection();
         assertTrue(!!effectModeSection);
         assertTrue(isVisible(effectModeSection));
 
@@ -1139,7 +1140,7 @@ suite('<settings-device-page>', () => {
             String(crosAudioConfigMojom.AudioEffectType.kStyleTransfer));
 
         // Click Beamforming radio button.
-        let beamformingRadioButton =
+        const beamformingRadioButton =
             getEffectModeRadioButton('#voiceIsolationEffectModeBeamforming');
         await beamformingRadioButton.click();
         assertEquals(
@@ -1147,7 +1148,7 @@ suite('<settings-device-page>', () => {
                 .value,
             crosAudioConfigMojom.AudioEffectType.kBeamforming);
         // Click Style Transfer radio button.
-        let styleTransferRadioButton =
+        const styleTransferRadioButton =
             getEffectModeRadioButton('#voiceIsolationEffectModeStyleTransfer');
         await styleTransferRadioButton.click();
         assertEquals(

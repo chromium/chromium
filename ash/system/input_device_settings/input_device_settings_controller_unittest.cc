@@ -679,24 +679,11 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
         GetSessionControllerClient();
     session_controller->Reset();
 
-    auto user_1_prefs = std::make_unique<TestingPrefServiceSimple>();
-    RegisterUserProfilePrefs(user_1_prefs->registry(), /*country=*/"",
-                             /*for_test=*/true);
-    auto user_2_prefs = std::make_unique<TestingPrefServiceSimple>();
-    RegisterUserProfilePrefs(user_2_prefs->registry(), /*country=*/"",
-                             /*for_test=*/true);
-
     if (should_sign_in_) {
       session_controller->AddUserSession(kUserEmail1,
-                                         user_manager::UserType::kRegular,
-                                         /*provide_pref_service=*/false);
-      session_controller->SetUserPrefService(kAccountId1,
-                                             std::move(user_1_prefs));
+                                         user_manager::UserType::kRegular);
       session_controller->AddUserSession(kUserEmail2,
-                                         user_manager::UserType::kRegular,
-                                         /*provide_pref_service=*/false);
-      session_controller->SetUserPrefService(kAccountId2,
-                                             std::move(user_2_prefs));
+                                         user_manager::UserType::kRegular);
       session_controller->AddUserSession(kUserEmail3,
                                          user_manager::UserType::kRegular,
                                          /*provide_pref_service=*/false);
@@ -836,11 +823,8 @@ TEST_F(InputDeviceSettingsControllerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kInputDeviceSettingsSplit);
 
-  std::unique_ptr<TestingPrefServiceSimple> pref_service =
-      std::make_unique<TestingPrefServiceSimple>();
-  ash::RegisterUserProfilePrefs(pref_service->registry(), /*country=*/"",
-                                /*for_test=*/true);
-
+  auto* pref_service =
+      GetSessionControllerClient()->ProvidePrefServiceForUser(kAccountId3);
   base::Value::Dict test_pref_value;
   test_pref_value.Set("Fake Key", base::Value::Dict());
   pref_service->SetDict(prefs::kKeyboardDeviceSettingsDictPref,
@@ -851,8 +835,6 @@ TEST_F(InputDeviceSettingsControllerTest,
                         test_pref_value.Clone());
   pref_service->SetDict(prefs::kTouchpadDeviceSettingsDictPref,
                         test_pref_value.Clone());
-  GetSessionControllerClient()->SetUserPrefService(kAccountId3,
-                                                   std::move(pref_service));
 
   SetActiveUser(kAccountId3);
 
@@ -874,10 +856,8 @@ TEST_F(InputDeviceSettingsControllerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kPeripheralCustomization);
 
-  std::unique_ptr<TestingPrefServiceSimple> pref_service =
-      std::make_unique<TestingPrefServiceSimple>();
-  ash::RegisterUserProfilePrefs(pref_service->registry(), /*country=*/"",
-                                /*for_test=*/true);
+  auto* pref_service =
+      GetSessionControllerClient()->ProvidePrefServiceForUser(kAccountId3);
 
   base::Value::Dict test_pref_value;
   test_pref_value.Set("Fake Key", base::Value::Dict());
@@ -887,8 +867,6 @@ TEST_F(InputDeviceSettingsControllerTest,
                         test_pref_value.Clone());
   pref_service->SetDict(prefs::kMouseButtonRemappingsDictPref,
                         test_pref_value.Clone());
-  GetSessionControllerClient()->SetUserPrefService(kAccountId3,
-                                                   std::move(pref_service));
 
   SetActiveUser(kAccountId3);
 
@@ -909,9 +887,8 @@ TEST_F(InputDeviceSettingsControllerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kAltClickAndSixPackCustomization);
-  auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
-  RegisterUserProfilePrefs(user_prefs->registry(), /*country=*/"",
-                           /*for_test=*/true);
+  auto* user_prefs =
+      GetSessionControllerClient()->ProvidePrefServiceForUser(kAccountId3);
 
   base::Value::Dict test_pref_value;
   base::Value::Dict six_pack_remappings_dict;
@@ -921,8 +898,6 @@ TEST_F(InputDeviceSettingsControllerTest,
   test_pref_value.Set("key", std::move(six_pack_remappings_dict));
   user_prefs->SetDict(prefs::kTouchpadDeviceSettingsDictPref,
                       test_pref_value.Clone());
-  GetSessionControllerClient()->SetUserPrefService(kAccountId3,
-                                                   std::move(user_prefs));
 
   SetActiveUser(kAccountId3);
   PrefService* active_pref_service =
@@ -939,9 +914,6 @@ TEST_F(InputDeviceSettingsControllerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kAltClickAndSixPackCustomization);
-  auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
-  RegisterUserProfilePrefs(user_prefs->registry(), /*country=*/"",
-                           /*for_test=*/true);
 
   base::Value::Dict test_pref_value;
   base::Value::Dict six_pack_remappings_dict;
@@ -954,11 +926,12 @@ TEST_F(InputDeviceSettingsControllerTest,
   settings_dict.Set(prefs::kKeyboardSettingSixPackKeyRemappings,
                     std::move(six_pack_remappings_dict));
 
+  auto* user_prefs =
+      GetSessionControllerClient()->ProvidePrefServiceForUser(kAccountId3);
+
   test_pref_value.Set("key", std::move(settings_dict));
   user_prefs->SetDict(prefs::kKeyboardDeviceSettingsDictPref,
                       test_pref_value.Clone());
-  GetSessionControllerClient()->SetUserPrefService(kAccountId3,
-                                                   std::move(user_prefs));
 
   SetActiveUser(kAccountId3);
   PrefService* active_pref_service =

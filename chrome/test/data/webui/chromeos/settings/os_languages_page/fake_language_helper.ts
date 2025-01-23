@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {LanguageHelper, LanguageState} from 'chrome://os-settings/lazy_load.js';
+import type {LanguageHelper, LanguageState} from 'chrome://os-settings/lazy_load.js';
 
 export const FIRST_PARTY_INPUT_METHOD_ID_PREFIX =
     '_comp_ime_jkghodnilhceideoidjikpgommlajknk';

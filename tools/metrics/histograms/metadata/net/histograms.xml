@@ -2906,8 +2906,9 @@ chromium-metrics-reviews@google.com.
   <owner>net-dev@chromium.org</owner>
   <summary>
     Records whether or not a url was upgraded by HSTS during an attempt to
-    preconnect to the url and, if it was not upgraded, why. Recorded everytime
-    GetHSTSRedirectForPreconnect() is called.
+    preconnect to the url and, if it was not upgraded, why. Recorded whenever
+    GetHSTSRedirectForPreconnect() is called and kHstsTopLevelNavigationsOnly is
+    disabled.
   </summary>
 </histogram>
 

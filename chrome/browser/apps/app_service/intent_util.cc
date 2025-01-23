@@ -48,16 +48,16 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/files/file_path.h"
-#include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
-#include "chromeos/crosapi/mojom/app_service_types.mojom.h"
-#include "extensions/common/manifest_handlers/action_handlers_handler.h"
-#include "ash/components/arc/mojom/intent_helper.mojom-shared.h"
-#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "chrome/browser/ash/app_list/arc/intent.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
+#include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "chromeos/ash/experiences/arc/intent_helper/intent_constants.h"
 #include "chromeos/ash/experiences/arc/intent_helper/intent_filter.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom-shared.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
+#include "chromeos/crosapi/mojom/app_service_types.mojom.h"
+#include "extensions/common/manifest_handlers/action_handlers_handler.h"
 #include "net/base/filename_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)

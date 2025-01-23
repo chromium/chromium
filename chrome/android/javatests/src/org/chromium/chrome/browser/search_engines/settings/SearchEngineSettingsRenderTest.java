@@ -28,6 +28,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -35,6 +36,7 @@ import org.chromium.components.favicon.GoogleFaviconServerRequestStatus;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
+import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -62,6 +64,7 @@ public class SearchEngineSettingsRenderTest {
 
     public final @Rule MockitoRule mMocks = MockitoJUnit.rule();
 
+    private @Mock RegionalCapabilitiesService mMockRegionalCapabilities;
     private @Mock TemplateUrlService mMockTemplateUrlService;
     private @Mock Profile mProfile;
     private @Mock LargeIconBridge.Natives mLargeIconBridgeNativeMock;
@@ -76,9 +79,11 @@ public class SearchEngineSettingsRenderTest {
         GURL engine2Gurl = new GURL("https://gurl2.example.com");
         List<TemplateUrl> templateUrls = List.of(engine1, engine2);
 
+        doReturn(true).when(mMockRegionalCapabilities).isInEeaCountry();
+        RegionalCapabilitiesServiceFactory.setInstanceForTesting(mMockRegionalCapabilities);
+
         doReturn(new ArrayList<>(templateUrls)).when(mMockTemplateUrlService).getTemplateUrls();
         doReturn(engine1).when(mMockTemplateUrlService).getDefaultSearchEngineTemplateUrl();
-        doReturn(true).when(mMockTemplateUrlService).isEeaChoiceCountry();
         doReturn(true).when(mMockTemplateUrlService).isLoaded();
         String engine1Keyword = engine1.getKeyword();
         doReturn(engine1Gurl.getSpec())

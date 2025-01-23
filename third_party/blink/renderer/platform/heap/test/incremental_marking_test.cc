@@ -1063,7 +1063,7 @@ TEST_F(IncrementalMarkingTest, HeapHashMapCopyKeysToVectorMember) {
   driver.StartGC();
   // Only key should have its write barrier fired. A write barrier call for
   // value hints to an inefficient implementation.
-  CopyKeysToVector(*map, *vec);
+  vec->assign(map->Keys());
   driver.FinishGC();
   EXPECT_TRUE(obj1);
   EXPECT_FALSE(obj2);
@@ -1082,7 +1082,7 @@ TEST_F(IncrementalMarkingTest, HeapHashMapCopyValuesToVectorMember) {
   driver.StartGC();
   // Only value should have its write barrier fired. A write barrier call for
   // key hints to an inefficient implementation.
-  CopyValuesToVector(*map, *vec);
+  vec->assign(map->Values());
   driver.FinishGC();
   EXPECT_FALSE(obj1);
   EXPECT_TRUE(obj2);

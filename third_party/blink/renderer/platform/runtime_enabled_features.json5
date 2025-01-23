@@ -3390,6 +3390,13 @@
       status: "stable"
     },
     {
+      // Controls whether Private Aggregation's "maxContributions" field is
+      // enabled. Equivalent fields are specified by Shared Storage and
+      // Protected Audience. If disabled, the field will be ignored.
+      name: "PrivateAggregationApiMaxContributions",
+      status: "experimental",
+    },
+    {
       name: "PrivateNetworkAccessNonSecureContextsAllowed",
       origin_trial_feature_name: "PrivateNetworkAccessNonSecureContextsAllowed",
       origin_trial_type: "deprecation",

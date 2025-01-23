@@ -23,6 +23,7 @@ class BackgroundStartupTracingTest;
 
 namespace tracing {
 class TraceStartupConfigTest;
+class TraceStartupSharedMemoryTest;
 
 // TraceStartupConfig is a singleton that contains the configurations of startup
 // tracing. One can use --trace-startup flag or, for more complicated
@@ -146,6 +147,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceStartupConfig {
   friend class content::CommandlineStartupTracingTest;
   friend class content::BackgroundStartupTracingTest;
   friend class ::tracing::TraceStartupConfigTest;
+  friend class ::tracing::TraceStartupSharedMemoryTest;
 
   constexpr static int kDefaultStartupDurationInSeconds = 5;
 

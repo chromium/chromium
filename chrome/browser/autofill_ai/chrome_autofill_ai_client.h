@@ -48,7 +48,7 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
   void OpenAutofillAiSettings() override;
   bool IsUserEligible() override;
   autofill::FormStructure* GetCachedFormStructure(
-      const autofill::FormData& form_data) override;
+      const autofill::FormGlobalId& form_id) override;
   std::u16string GetAutofillNameFillingValue(
       const std::string& autofill_profile_guid,
       autofill::FieldType field_type,

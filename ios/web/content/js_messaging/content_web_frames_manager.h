@@ -5,13 +5,12 @@
 #ifndef IOS_WEB_CONTENT_JS_MESSAGING_CONTENT_WEB_FRAMES_MANAGER_H_
 #define IOS_WEB_CONTENT_JS_MESSAGING_CONTENT_WEB_FRAMES_MANAGER_H_
 
-#import "ios/web/public/js_messaging/web_frames_manager.h"
-
 #import "base/memory/weak_ptr.h"
 #import "base/observer_list.h"
 #import "build/blink_buildflags.h"
 #import "content/public/browser/global_routing_id.h"
 #import "content/public/browser/web_contents_observer.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 
 #if !BUILDFLAG(USE_BLINK)
 #error File can only be included when USE_BLINK is true

@@ -5,8 +5,8 @@
 /** @fileoverview Test suite for AppManagementFileHandlingItem. */
 import 'chrome://os-settings/os_settings.js';
 
-import {AppManagementFileHandlingItemElement} from 'chrome://os-settings/os_settings.js';
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {AppManagementFileHandlingItemElement} from 'chrome://os-settings/os_settings.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

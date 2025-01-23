@@ -10,11 +10,11 @@
 #include <optional>
 #include <queue>
 
-#include "ash/components/arc/mojom/video_decoder.mojom.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/ash/experiences/arc/mojom/video_decoder.mojom.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/chromeos/vda_video_frame_pool.h"

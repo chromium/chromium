@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_AUDIO_ARC_AUDIO_BRIDGE_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_AUDIO_ARC_AUDIO_BRIDGE_H_
 
-#include "ash/components/arc/mojom/audio.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/experiences/arc/mojom/audio.mojom.h"
 #include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 

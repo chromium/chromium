@@ -142,8 +142,9 @@ DownloadTaskImpl::DownloadTaskImpl(
 DownloadTaskImpl::~DownloadTaskImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [NSNotificationCenter.defaultCenter removeObserver:observer_];
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnDownloadDestroyed(this);
+  }
 
   // Delete the downloaded file if it was a temporary file or if the download
   // failed (it is not an error to delete a non-existent file).
@@ -340,8 +341,9 @@ void DownloadTaskImpl::OnDownloadFinished(DownloadResult download_result) {
 
 void DownloadTaskImpl::OnDownloadUpdated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnDownloadUpdated(this);
+  }
 }
 
 }  // namespace web

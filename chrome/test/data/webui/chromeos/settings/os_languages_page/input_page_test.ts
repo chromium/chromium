@@ -4,9 +4,11 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrCheckboxWithPolicyElement, InputsShortcutReminderState, LanguageHelper, LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl, LanguagesPageInteraction, OsSettingsAddItemsDialogElement, OsSettingsInputPageElement, SettingsLanguagesElement} from 'chrome://os-settings/lazy_load.js';
-import {AcceleratorAction, CrCheckboxElement, CrSettingsPrefs, IronListElement, Router, routes, settingMojom, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
-import {StandardAcceleratorProperties} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_info.mojom-webui.js';
+import type {CrCheckboxWithPolicyElement, LanguageHelper, OsSettingsAddItemsDialogElement, OsSettingsInputPageElement, SettingsLanguagesElement} from 'chrome://os-settings/lazy_load.js';
+import {InputsShortcutReminderState, LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from 'chrome://os-settings/lazy_load.js';
+import type {CrCheckboxElement, IronListElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {AcceleratorAction, CrSettingsPrefs, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
+import type {StandardAcceleratorProperties} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_info.mojom-webui.js';
 import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
 import {FakeAcceleratorFetcher} from 'chrome://resources/ash/common/shortcut_input_ui/fake_accelerator_fetcher.js';
 import {Modifier} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
@@ -21,7 +23,8 @@ import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js'
 import {fakeDataBind, flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {FakeLanguageSettingsPrivate, getFakeLanguagePrefs} from '../fake_language_settings_private.js';
+import type {FakeLanguageSettingsPrivate} from '../fake_language_settings_private.js';
+import {getFakeLanguagePrefs} from '../fake_language_settings_private.js';
 import {clearBody} from '../utils.js';
 
 import {TestLanguagesBrowserProxy} from './test_os_languages_browser_proxy.js';

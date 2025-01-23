@@ -147,8 +147,9 @@ const CGFloat kCornerRadius = 8.0;
                        styleForRegion:(UIPointerRegion*)region {
   // The preview APIs require the view to be in a window. Ensure they are before
   // proceeding.
-  if (!self.window)
+  if (!self.window) {
     return nil;
+  }
 
   UITargetedPreview* preview =
       [[UITargetedPreview alloc] initWithView:_imageContainerView];

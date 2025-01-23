@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/components/arc/mojom/file_system.mojom-forward.h"
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
+#include "chromeos/ash/experiences/arc/mojom/file_system.mojom-forward.h"
 #include "chromeos/ash/experiences/arc/session/connection_holder.h"
 #include "chromeos/ash/experiences/arc/session/connection_observer.h"
 

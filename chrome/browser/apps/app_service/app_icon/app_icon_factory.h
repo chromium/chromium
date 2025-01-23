@@ -18,9 +18,9 @@
 #include "ui/gfx/image/image_skia.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/experiences/arc/mojom/app.mojom-forward.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom-forward.h"
 #include "ui/base/resource/resource_scale_factor.h"
-#include "ash/components/arc/mojom/app.mojom-forward.h"
-#include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace gfx {

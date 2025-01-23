@@ -30,6 +30,8 @@ component("settings") {
     "timezone_settings.h",
     "timezone_settings_helper.cc",
     "timezone_settings_helper.h",
+    "user_login_permission_tracker.cc",
+    "user_login_permission_tracker.h",
   ]
 }
 

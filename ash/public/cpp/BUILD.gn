@@ -492,7 +492,6 @@ component("cpp") {
   ]
 
   public_deps = [
-    "//ash/components/arc/mojom:notifications",
     "//ash/public/mojom",
     "//ash/webui/common/mojom:sea_pen",
     "//ash/webui/personalization_app/mojom:mojom_shared_cpp_sources",
@@ -500,6 +499,7 @@ component("cpp") {
     "//base",
     "//chromeos/ash/components/audio/public/mojom",
     "//chromeos/ash/components/login/auth",
+    "//chromeos/ash/experiences/arc/mojom:notifications",
     "//chromeos/ash/services/assistant/public/mojom",
     "//chromeos/ash/services/bluetooth_config/public/mojom",
     "//chromeos/ash/services/cellular_setup/public/mojom",

@@ -542,6 +542,11 @@
       <message name="IDS_UNZIP_SERVICE_DISPLAY_NAME" desc="The display name (in the system task manager, etc) of the service process used for unzipping files.">
         Unzip Service
       </message>
+
+      <!-- Internal debug pages disabled interstitial. -->
+      <message name="IDS_INTERNAL_DEBUG_PAGES_DISABLED_HEADING" desc="This is the heading for the page that appears when a user attempts to load an internal developer debugging page when such pages are disabled by a pref.">
+        Internal debugging pages are currently disabled.
+      </message>
     </messages>
   </release>
 </grit>

@@ -20,7 +20,6 @@ static_library("autotest_private") {
   deps = [
     "//ash",
     "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -63,6 +62,7 @@ static_library("autotest_private") {
     "//chromeos/ash/components/default_pinned_apps",
     "//chromeos/ash/components/metrics",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/services/assistant:lib",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/components/quick_answers/public/cpp",

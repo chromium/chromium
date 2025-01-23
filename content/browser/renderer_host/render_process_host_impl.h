@@ -1472,6 +1472,13 @@ class CONTENT_EXPORT RenderProcessHostImpl
   scoped_refptr<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>
       tracing_config_memory_region_;
 
+  // The tracing output memory region.  Ownership of the memory region is
+  // allocated by the process host (this object) but ownership is shared with
+  // the child process launcher/helper which runs, and is destroyed,
+  // asynchronously.
+  scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+      tracing_output_memory_region_;
+
   bool channel_connected_ = false;
   bool sent_render_process_ready_ = false;
   bool sent_process_created_ = false;

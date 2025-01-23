@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/mojom/process.mojom-forward.h"
 #include "base/process/process_handle.h"
+#include "chromeos/ash/experiences/arc/mojom/process.mojom-forward.h"
 
 namespace arc {
 

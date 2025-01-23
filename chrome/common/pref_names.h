@@ -2388,6 +2388,9 @@ inline constexpr char kNtpCustomizeChromeButtonOpenCount[] =
     "NewTabPage.CustomizeChromeButtonOpenCount";
 // List keeping track of disabled NTP modules.
 inline constexpr char kNtpDisabledModules[] = "NewTabPage.DisabledModules";
+// Time the Microsoft files module was last dismissed.
+inline constexpr char kNtpMicrosoftFilesModuleLastDismissedTime[] =
+    "NewTabPage.MicrosoftFilesModuleLastDismissedTime";
 // List keeping track of NTP modules order.
 inline constexpr char kNtpModulesOrder[] = "NewTabPage.ModulesOrder";
 // Whether NTP modules are visible.
@@ -3268,8 +3271,6 @@ inline constexpr char kOsUpdateHandlerEnabled[] = "os_update_handler_enabled";
 inline constexpr char kFeatureNotificationsEnabled[] =
     "feature_notifications_enabled";
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-inline constexpr char kInternalOnlyUisEnabled[] = "internal_only_uis_enabled";
 
 // An enum that controls what level of toasts we show to the user.
 inline constexpr char kToastAlertLevel[] = "settings.toast.alert_level";

@@ -7,8 +7,8 @@
 #include <map>
 #include <vector>
 
-#include "ash/components/arc/mojom/process.mojom.h"  // For ProcessState.
-#include "base/process/process_handle.h"             // For ProcessId.
+#include "base/process/process_handle.h"                       // For ProcessId.
+#include "chromeos/ash/experiences/arc/mojom/process.mojom.h"  // For ProcessState.
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"  // For TEST.
 

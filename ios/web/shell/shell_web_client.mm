@@ -43,8 +43,7 @@ class WebUsageController : public mojom::WebUsageController {
 
 ShellWebClient::ShellWebClient() : web_main_parts_(nullptr) {}
 
-ShellWebClient::~ShellWebClient() {
-}
+ShellWebClient::~ShellWebClient() {}
 
 std::unique_ptr<web::WebMainParts> ShellWebClient::CreateWebMainParts() {
   auto web_main_parts = std::make_unique<ShellWebMainParts>();

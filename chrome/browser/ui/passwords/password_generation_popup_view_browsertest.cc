@@ -87,20 +87,6 @@ class PasswordGenerationPopupViewTest : public PasswordManagerBrowserTestBase {
       PasswordGenerationPopupViewViews* popup_view) {
     return popup_view->GetPasswordViewViewAccessibilityForTest();
   }
-
-  void SetPasswordSelected(
-      base::WeakPtr<PasswordGenerationPopupControllerImpl> controller) {
-    controller->Show(PasswordGenerationPopupController::kOfferGeneration);
-    static_cast<PasswordGenerationPopupController*>(controller.get())
-        ->SetSelected();
-  }
-
-  void ClearSelection(
-      base::WeakPtr<PasswordGenerationPopupControllerImpl> controller) {
-    controller->Show(PasswordGenerationPopupController::kOfferGeneration);
-    static_cast<PasswordGenerationPopupController*>(controller.get())
-        ->SelectionCleared();
-  }
 };
 
 // Regression test for crbug.com/400543. Verifying that moving the mouse in the

@@ -45,15 +45,11 @@ enum SetConfigurationResult {
   kError,
 };
 
-// The interface for controlling the effects that are applied to live video
-// streams.
+// The interface for reading / observing the effects that are applied to live
+// video streams.
 interface VideoEffectsManager {
   // Returns the current configuration.
   GetConfiguration() => (VideoEffectsConfiguration configuration);
-
-  // Sets the configuration value.
-  SetConfiguration(VideoEffectsConfiguration configuration)
-    => (SetConfigurationResult result);
 
   // Registers an observer to receive configuration change callbacks.
   AddObserver(

@@ -1637,7 +1637,8 @@ SharedStorageWorkletHost::MaybeConstructPrivateAggregationOperationDetails(
   std::optional<base::TimeDelta> timeout;
   if (PrivateAggregationManager::ShouldSendReportDeterministically(
           private_aggregation_config->context_id,
-          private_aggregation_config->filtering_id_max_bytes)) {
+          private_aggregation_config->filtering_id_max_bytes,
+          /*max_contributions=*/std::nullopt)) {
     timeout = base::Seconds(5);
   }
 
@@ -1647,6 +1648,7 @@ SharedStorageWorkletHost::MaybeConstructPrivateAggregationOperationDetails(
       private_aggregation_config->context_id, std::move(timeout),
       private_aggregation_config->aggregation_coordinator_origin,
       private_aggregation_config->filtering_id_max_bytes,
+      /*max_contributions=*/std::nullopt,
       pa_operation_details->pa_host.InitWithNewPipeAndPassReceiver());
   CHECK(success);
 

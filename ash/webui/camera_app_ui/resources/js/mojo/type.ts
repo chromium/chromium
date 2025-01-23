@@ -14,7 +14,7 @@ export type {
 } from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 export {
   CameraIntentAction,
-} from '../../mojom/ash/components/arc/mojom/camera_intent.mojom-webui.js';
+} from '../../mojom/chromeos/ash/experiences/arc/mojom/camera_intent.mojom-webui.js';
 export {
   AspectRatio,
   CameraAppHelper,

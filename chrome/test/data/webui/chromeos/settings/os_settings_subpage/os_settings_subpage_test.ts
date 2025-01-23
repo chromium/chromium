@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import 'chrome://os-settings/os_settings.js';
 
-import {OsSettingsSubpageElement, SettingsCardElement} from 'chrome://os-settings/os_settings.js';
+import type {OsSettingsSubpageElement, SettingsCardElement} from 'chrome://os-settings/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -31,7 +31,7 @@ suite('<os-settings-subpage>', () => {
     test('if false, subpage will populate the html with a card', () => {
       init();
 
-      const subpageCard = getCard()
+      const subpageCard = getCard();
       assertTrue(!!subpageCard);
     });
 

@@ -319,7 +319,7 @@ void ImageResourceContent::NotifyObservers(
     {
       ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(
           this);
-      CopyToVector(finished_observers_, finished_observers_as_vector);
+      finished_observers_as_vector.assign(finished_observers_.Values());
     }
 
     for (ImageResourceObserver* observer : finished_observers_as_vector) {
@@ -332,7 +332,7 @@ void ImageResourceContent::NotifyObservers(
     {
       ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(
           this);
-      CopyToVector(observers_, observers_as_vector);
+      observers_as_vector.assign(observers_.Values());
     }
 
     for (ImageResourceObserver* observer : observers_as_vector) {

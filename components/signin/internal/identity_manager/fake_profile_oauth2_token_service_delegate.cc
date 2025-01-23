@@ -43,6 +43,13 @@ bool FakeProfileOAuth2TokenServiceDelegate::RefreshTokenIsAvailable(
   return !GetRefreshToken(account_id).empty();
 }
 
+#if BUILDFLAG(IS_IOS)
+bool FakeProfileOAuth2TokenServiceDelegate::RefreshTokenIsAvailableOnDevice(
+    const CoreAccountId& account_id) const {
+  return RefreshTokenIsAvailable(account_id);
+}
+#endif  //  BUILDFLAG(IS_IOS)
+
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 bool FakeProfileOAuth2TokenServiceDelegate::IsRefreshTokenBound(
     const CoreAccountId& account_id) const {

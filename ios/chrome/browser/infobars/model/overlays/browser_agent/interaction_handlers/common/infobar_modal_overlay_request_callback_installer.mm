@@ -33,8 +33,9 @@ void InfobarModalOverlayRequestCallbackInstaller::MainActionCallback(
     OverlayRequest* request,
     OverlayResponse* response) {
   InfoBarIOS* infobar = GetOverlayRequestInfobar(request);
-  if (!infobar)
+  if (!infobar) {
     return;
+  }
   interaction_handler_->PerformMainAction(infobar);
 }
 

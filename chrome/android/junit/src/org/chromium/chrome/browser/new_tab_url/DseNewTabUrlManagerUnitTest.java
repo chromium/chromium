@@ -29,7 +29,9 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
@@ -43,6 +45,7 @@ public class DseNewTabUrlManagerUnitTest {
     private static final String NEW_TAB_URL = JUnitTestGURLs.NTP_URL.getSpec();
     @Mock private Profile mProfile;
     private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
+    @Mock private RegionalCapabilitiesService mRegionalCapabilities;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private TemplateUrl mTemplateUrl;
 
@@ -63,6 +66,8 @@ public class DseNewTabUrlManagerUnitTest {
         doReturn(false).when(mProfile).isOffTheRecord();
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+
+        RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
 
         mDseNewTabUrlManager = new DseNewTabUrlManager(mProfileSupplier);
     }
@@ -161,7 +166,7 @@ public class DseNewTabUrlManagerUnitTest {
 
         // Sets the DSE is Google.
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-        doReturn(true).when(mTemplateUrlService).isEeaChoiceCountry();
+        doReturn(true).when(mRegionalCapabilities).isInEeaCountry();
         mProfileSupplier.set(mProfile);
 
         // Verifies that the SharedPreference is updated once the TemplateUrlService is ready.
@@ -189,7 +194,7 @@ public class DseNewTabUrlManagerUnitTest {
 
         // Verifies that the SharedPreference is updated when the DSE is changed.
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-        doReturn(true).when(mTemplateUrlService).isEeaChoiceCountry();
+        doReturn(true).when(mRegionalCapabilities).isInEeaCountry();
         mTemplateUrlServiceObserverCaptor.getValue().onTemplateURLServiceChanged();
         assertTrue(mSharedPreferenceManager.readBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, false));
         assertTrue(

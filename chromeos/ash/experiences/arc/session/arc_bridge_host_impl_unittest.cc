@@ -7,10 +7,10 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/arc/mojom/arc_bridge.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/experiences/arc/mojom/arc_bridge.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

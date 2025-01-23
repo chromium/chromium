@@ -16,10 +16,10 @@ static_library("wallpaper") {
 
   deps = [
     "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/image_decoder",
+    "//chromeos/ash/experiences/arc/mojom",
     "//components/account_id",
     "//components/keyed_service/core",
     "//components/user_manager",

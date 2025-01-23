@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {AppManagementToggleRowElement} from 'chrome://os-settings/os_settings.js';
+import type {AppManagementToggleRowElement} from 'chrome://os-settings/os_settings.js';
 import {assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 

@@ -121,6 +121,7 @@ template("chrome_extra_paks") {
       "$root_gen_dir/components/crashes_resources.pak",
       "$root_gen_dir/components/flags_ui_resources.pak",
       "$root_gen_dir/components/gcm_internals_resources.pak",
+      "$root_gen_dir/components/internal_debug_pages_disabled_resources.pak",
       "$root_gen_dir/components/metrics/metrics_server_urls.pak",
       "$root_gen_dir/components/net_export_resources.pak",
       "$root_gen_dir/components/safe_browsing_resources.pak",

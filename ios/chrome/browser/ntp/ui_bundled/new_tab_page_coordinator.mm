@@ -1390,8 +1390,9 @@
 
   // Return an empty list if the BrowserAgent is null (which can happen
   // if e.g. the Browser is off-the-record).
-  if (!followBrowserAgent)
+  if (!followBrowserAgent) {
     return @[];
+  }
 
   return followBrowserAgent->GetFollowedWebSites();
 }

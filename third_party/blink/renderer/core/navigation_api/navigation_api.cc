@@ -910,8 +910,8 @@ void NavigationApi::InformAboutCanceledNavigation(
   // upcoming_traverse_api_method_trackers_.
   if (!upcoming_traverse_api_method_trackers_.empty() && window_->GetFrame() &&
       !window_->GetFrame()->IsAttached()) {
-    HeapVector<Member<NavigationApiMethodTracker>> traversals;
-    CopyValuesToVector(upcoming_traverse_api_method_trackers_, traversals);
+    HeapVector<Member<NavigationApiMethodTracker>> traversals(
+        upcoming_traverse_api_method_trackers_.Values());
     for (auto& traversal : traversals) {
       TraverseCancelled(
           traversal->GetKey(),

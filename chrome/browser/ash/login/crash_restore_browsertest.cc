@@ -34,6 +34,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -269,9 +270,9 @@ IN_PROC_BROWSER_TEST_F(CrashRestoreComplexTest, RestoreSessionForThreeUsers) {
   EXPECT_EQ(session_manager::SessionState::ACTIVE,
             session_manager->session_state());
   EXPECT_EQ(3u, session_manager->sessions().size());
-  EXPECT_EQ(session_manager->sessions()[0].user_account_id, account_id1_);
-  EXPECT_EQ(session_manager->sessions()[1].user_account_id, account_id2_);
-  EXPECT_EQ(session_manager->sessions()[2].user_account_id, account_id3_);
+  EXPECT_EQ(session_manager->sessions()[0]->account_id(), account_id1_);
+  EXPECT_EQ(session_manager->sessions()[1]->account_id(), account_id2_);
+  EXPECT_EQ(session_manager->sessions()[2]->account_id(), account_id3_);
 }
 
 // Tests crash restore flow for child user.

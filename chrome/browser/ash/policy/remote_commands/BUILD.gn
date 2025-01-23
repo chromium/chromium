@@ -52,7 +52,6 @@ static_library("remote_commands") {
 
   deps = [
     "//ash",
-    "//ash/components/arc/mojom",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/strings",
@@ -75,6 +74,7 @@ static_library("remote_commands") {
     "//chromeos/ash/components/login/session",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/components/kiosk",

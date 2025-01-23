@@ -1032,7 +1032,7 @@ void AutofillProfile::LogVerificationStatuses() {
   AutofillMetrics::LogVerificationStatusOfAddressTokensOnProfileUsage(*this);
 }
 
-VerificationStatus AutofillProfile::GetVerificationStatusImpl(
+VerificationStatus AutofillProfile::GetVerificationStatus(
     const FieldType type) const {
   const FormGroup* form_group = FormGroupForType(type);
   if (!form_group)
@@ -1055,7 +1055,7 @@ std::u16string AutofillProfile::GetInfo(const AutofillType& type,
   return form_group->GetInfo(type, app_locale);
 }
 
-bool AutofillProfile::SetInfoWithVerificationStatusImpl(
+bool AutofillProfile::SetInfoWithVerificationStatus(
     const AutofillType& type,
     const std::u16string& value,
     const std::string& app_locale,
@@ -1067,8 +1067,17 @@ bool AutofillProfile::SetInfoWithVerificationStatusImpl(
   std::u16string trimmed_value;
   base::TrimWhitespace(value, base::TRIM_ALL, &trimmed_value);
 
-  return form_group->SetInfoWithVerificationStatusImpl(type, trimmed_value,
-                                                       app_locale, status);
+  return form_group->SetInfoWithVerificationStatus(type, trimmed_value,
+                                                   app_locale, status);
+}
+
+bool AutofillProfile::SetInfoWithVerificationStatus(
+    FieldType type,
+    const std::u16string& value,
+    const std::string& app_locale,
+    VerificationStatus status) {
+  return SetInfoWithVerificationStatus(AutofillType(type), value, app_locale,
+                                       status);
 }
 
 // static

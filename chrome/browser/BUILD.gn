@@ -2373,6 +2373,7 @@ static_library("browser") {
     "//components/webrtc",
     "//components/webrtc_logging/browser",
     "//components/webrtc_logging/common",
+    "//components/webui/chrome_urls",
     "//components/zoom",
     "//content/public/browser",
     "//content/public/common",
@@ -3787,6 +3788,7 @@ static_library("browser") {
       "new_tab_page/microsoft_auth/microsoft_auth_service.h",
       "new_tab_page/microsoft_auth/microsoft_auth_service_factory.cc",
       "new_tab_page/microsoft_auth/microsoft_auth_service_factory.h",
+      "new_tab_page/microsoft_auth/microsoft_auth_service_observer.h",
       "new_tab_page/modules/file_suggestion/drive_service.cc",
       "new_tab_page/modules/file_suggestion/drive_service.h",
       "new_tab_page/modules/file_suggestion/drive_service_factory.cc",
@@ -4936,7 +4938,6 @@ static_library("browser") {
       "//ash/components/arc",
       "//ash/components/arc:arc_base",
       "//ash/components/arc:arc_base_utils",
-      "//ash/components/arc/mojom",
       "//ash/constants",
       "//ash/public/cpp/external_arc",
       "//ash/webui/annotator",
@@ -5435,6 +5436,7 @@ static_library("browser") {
       "//chromeos/ash/components/tpm",
       "//chromeos/ash/experiences/arc/intent_helper",
       "//chromeos/ash/experiences/arc/intent_helper:arc_intent_helper_constants",
+      "//chromeos/ash/experiences/arc/mojom",
       "//chromeos/ash/experiences/arc/process",
       "//chromeos/ash/experiences/system_web_apps/types",
       "//chromeos/ash/services/assistant/public/cpp",
@@ -8306,7 +8308,6 @@ static_library("browser_public_dependencies") {
   }
   if (is_chromeos) {
     public_deps += [
-      "//ash/components/arc/mojom",
       "//ash/webui/os_feedback_ui/mojom",
       "//chrome/common/extensions/api",
       "//chrome/services/printing/public/mojom",
@@ -8323,6 +8324,7 @@ static_library("browser_public_dependencies") {
       "//chromeos/ash/components/nearby/common/connections_manager",
       "//chromeos/ash/components/nearby/presence",
       "//chromeos/ash/components/trash_service/public/mojom",
+      "//chromeos/ash/experiences/arc/mojom",
       "//chromeos/ash/services/auth_factor_config/public/mojom",
       "//chromeos/ash/services/nearby/public/mojom",
       "//chromeos/components/sharesheet:constants",

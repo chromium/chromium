@@ -20,8 +20,8 @@ mojom_component("mojom") {
   ]
   if (is_chromeos_ash) {
     public_deps += [
-      "//ash/components/arc/mojom:oemcrypto",
-      "//ash/components/arc/mojom:protected_buffer_manager",
+      "//chromeos/ash/experiences/arc/mojom:oemcrypto",
+      "//chromeos/ash/experiences/arc/mojom:protected_buffer_manager",
     ]
   }
 

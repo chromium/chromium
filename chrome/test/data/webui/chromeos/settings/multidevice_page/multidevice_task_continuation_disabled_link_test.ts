@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsMultideviceTaskContinuationDisabledLinkElement} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsMultideviceTaskContinuationDisabledLinkElement} from 'chrome://os-settings/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

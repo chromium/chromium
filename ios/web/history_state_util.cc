@@ -23,12 +23,14 @@ bool IsHistoryStateChangeValid(const GURL& current_url, const GURL& to_url) {
 GURL GetHistoryStateChangeUrl(const GURL& current_url,
                               const GURL& base_url,
                               const std::string& destination) {
-  if (!base_url.is_valid())
+  if (!base_url.is_valid()) {
     return GURL();
+  }
   GURL to_url = base_url.Resolve(destination);
 
-  if (!to_url.is_valid() || !IsHistoryStateChangeValid(current_url, to_url))
+  if (!to_url.is_valid() || !IsHistoryStateChangeValid(current_url, to_url)) {
     return GURL();
+  }
 
   return to_url;
 }

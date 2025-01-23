@@ -47,6 +47,9 @@ inline constexpr char kViewScreenUrlTemplate[] =
 inline constexpr char kRegisterScreenUrlTemplate[] =
     "v1/sessions/$1/viewScreen:register";
 
+inline constexpr char kUpdateViewScreenStateUrlTemplate[] =
+    "v1/sessions/$1/viewScreen:updateState";
+
 inline constexpr char kSessionId[] = "sessionId";
 inline constexpr char kTeacher[] = "teacher";
 inline constexpr char kRoster[] = "roster";

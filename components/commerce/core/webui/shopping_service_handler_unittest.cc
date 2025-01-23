@@ -29,7 +29,6 @@
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/feature_engagement/test/mock_tracker.h"
-#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/proto/features/product_specifications.pb.h"
@@ -433,22 +432,14 @@ TEST_F(ShoppingServiceHandlerTest,
 
   optimization_guide::proto::LogAiDataRequest* request =
       handler_->current_log_quality_entry_for_testing()->log_ai_data_request();
-  ASSERT_EQ(
-      optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP,
-      optimization_guide::ProductSpecificationsFeatureTypeMap::GetLoggingData(
-          *request)
-          ->quality()
-          .user_feedback());
+  ASSERT_EQ(optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP,
+            request->product_specifications().quality().user_feedback());
 
   handler_->SetProductSpecificationsUserFeedback(
       shopping_service::mojom::UserFeedback::kUnspecified);
 
-  ASSERT_EQ(
-      optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED,
-      optimization_guide::ProductSpecificationsFeatureTypeMap::GetLoggingData(
-          *request)
-          ->quality()
-          .user_feedback());
+  ASSERT_EQ(optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED,
+            request->product_specifications().quality().user_feedback());
 }
 
 TEST_F(ShoppingServiceHandlerTest,
@@ -469,12 +460,8 @@ TEST_F(ShoppingServiceHandlerTest,
 
   optimization_guide::proto::LogAiDataRequest* request =
       handler_->current_log_quality_entry_for_testing()->log_ai_data_request();
-  ASSERT_EQ(
-      optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN,
-      optimization_guide::ProductSpecificationsFeatureTypeMap::GetLoggingData(
-          *request)
-          ->quality()
-          .user_feedback());
+  ASSERT_EQ(optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN,
+            request->product_specifications().quality().user_feedback());
 }
 
 TEST_F(ShoppingServiceHandlerTest, TestIsShoppingListEligible) {
@@ -638,10 +625,7 @@ TEST_F(ShoppingServiceHandlerTest,
                 handler->current_log_quality_entry_for_testing()
                     ->log_ai_data_request();
             CHECK(request);
-            auto quality_proto =
-                optimization_guide::ProductSpecificationsFeatureTypeMap::
-                    GetLoggingData(*request)
-                        ->quality();
+            auto quality_proto = request->product_specifications().quality();
             ASSERT_EQ(2, quality_proto.product_identifiers_size());
 
             auto product_specification_data_proto =

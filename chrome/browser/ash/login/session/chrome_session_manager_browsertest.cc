@@ -25,6 +25,8 @@
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "rlz/buildflags/buildflags.h"
@@ -180,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSessionManagerExistingUsersTest,
   // Verify that session manager has the correct user session info.
   ASSERT_EQ(users.size(), manager->sessions().size());
   for (size_t i = 0; i < users.size(); ++i) {
-    EXPECT_EQ(users[i].account_id, manager->sessions()[i].user_account_id);
+    EXPECT_EQ(users[i].account_id, manager->sessions()[i]->account_id());
   }
 }
 

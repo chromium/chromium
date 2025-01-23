@@ -29,7 +29,6 @@ static_library("arc") {
 
   deps = [
     "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//ash/public/cpp",
     "//ash/public/cpp/app_list/vector_icons",
     "//base",
@@ -44,6 +43,7 @@ static_library("arc") {
     "//chrome/browser/ash/extensions",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/string_matching",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/experiences/arc/session",
     "//components/crx_file",
     "//content/public/browser",

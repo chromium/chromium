@@ -280,9 +280,6 @@ void ModelExecutionManager::ExecuteModel(
     log_ai_data_request = std::make_unique<proto::LogAiDataRequest>();
   }
 
-  // Set execution request in corresponding `log_ai_data_request`.
-  SetExecutionRequest(feature, *log_ai_data_request.get(), request_metadata);
-
   auto fetcher_it = active_model_execution_fetchers_.emplace(
       std::piecewise_construct, std::forward_as_tuple(feature),
       std::forward_as_tuple(url_loader_factory_, model_execution_service_url_,
@@ -454,10 +451,6 @@ void ModelExecutionManager::OnModelExecuteResponse(
       }
     }
   }
-
-  // Set execution response in corresponding `log_ai_data_request`.
-  SetExecutionResponse(feature, *(log_entry.get()->log_ai_data_request()),
-                       execute_response->response_metadata());
 
   RecordModelExecutionResultHistogram(feature, true);
   std::move(callback).Run(OptimizationGuideModelExecutionResult(

@@ -584,9 +584,8 @@ void RemotePlayback::AvailabilityChanged(
 
   // Copy the callbacks to a temporary vector to prevent iterator invalidations,
   // in case the JS callbacks invoke watchAvailability().
-  HeapVector<Member<AvailabilityCallbackWrapper>> callbacks;
-  CopyValuesToVector(availability_callbacks_, callbacks);
-
+  HeapVector<Member<AvailabilityCallbackWrapper>> callbacks(
+      availability_callbacks_.Values());
   for (auto& callback : callbacks)
     callback->Run(this, new_availability);
 }

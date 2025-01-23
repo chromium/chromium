@@ -146,6 +146,8 @@ const char kFakeTrendingData[] =
       }
   ]})";
 
+constexpr base::TimeDelta kModuleDismissalDuration = base::Hours(12);
+
 std::string GetFileExtension(std::string mime_type) {
   base::FilePath::StringType extension;
   net::GetPreferredExtensionForMimeType(mime_type, &extension);
@@ -170,16 +172,32 @@ GURL GetFileIconUrl(std::string extension) {
 
 }  // namespace
 
+// static
+void MicrosoftFilesPageHandler::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterTimePref(prefs::kNtpMicrosoftFilesModuleLastDismissedTime,
+                             base::Time());
+}
+
 MicrosoftFilesPageHandler::MicrosoftFilesPageHandler(
     mojo::PendingReceiver<file_suggestion::mojom::MicrosoftFilesPageHandler>
         handler,
     Profile* profile)
     : handler_(this, std::move(handler)),
+      pref_service_(profile->GetPrefs()),
       url_loader_factory_(profile->GetURLLoaderFactory()) {}
 
 MicrosoftFilesPageHandler::~MicrosoftFilesPageHandler() = default;
 
 void MicrosoftFilesPageHandler::GetFiles(GetFilesCallback callback) {
+  // Return empty list of files if the module was recently dismissed.
+  base::Time last_dismissed_time =
+      pref_service_->GetTime(prefs::kNtpMicrosoftFilesModuleLastDismissedTime);
+  if (last_dismissed_time != base::Time() &&
+      base::Time::Now() - last_dismissed_time < kModuleDismissalDuration) {
+    std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
+    return;
+  }
   // Parse data immediately when displaying fake data.
   if (ntp_features::kNtpSharepointModuleDataParam.Get() ==
       ntp_features::NtpSharepointModuleDataType::kTrendingInsightsFakeData) {
@@ -194,6 +212,16 @@ void MicrosoftFilesPageHandler::GetFiles(GetFilesCallback callback) {
     // TODO(376515309) Request recently used/shared files.
     std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
   }
+}
+
+void MicrosoftFilesPageHandler::DismissModule() {
+  pref_service_->SetTime(prefs::kNtpMicrosoftFilesModuleLastDismissedTime,
+                         base::Time::Now());
+}
+
+void MicrosoftFilesPageHandler::RestoreModule() {
+  pref_service_->SetTime(prefs::kNtpMicrosoftFilesModuleLastDismissedTime,
+                         base::Time());
 }
 
 void MicrosoftFilesPageHandler::GetTrendingFiles(GetFilesCallback callback) {

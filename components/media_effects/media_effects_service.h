@@ -44,13 +44,7 @@ class MediaEffectsService : public KeyedService,
   //
   // Note that this API only allows interacting with the manager via mojo in
   // order to support communication with the VideoCaptureService in a different
-  // process. The usages in Browser UI could potentially directly interact with
-  // a manager instance in order to avoid the mojo overhead, interactions
-  // are expected to be very low frequency and this approach is worth that
-  // tradeoff given the benefits:
-  //   * A consistent interaction mechanism for both in-process and
-  //     out-of-process clients
-  //   * Automatic cleanup when all remotes are disconnected
+  // process.
   void BindVideoEffectsManager(
       const std::string& device_id,
       mojo::PendingReceiver<media::mojom::VideoEffectsManager>
@@ -84,10 +78,10 @@ class MediaEffectsService : public KeyedService,
   void OnBackgroundSegmentationModelUpdated(
       base::optional_ref<const base::FilePath> path) override;
 
- private:
   VideoEffectsManagerImpl& GetOrCreateVideoEffectsManager(
       const std::string& device_id);
 
+ private:
   void OnLastReceiverDisconnected(const std::string& device_id);
 
   // Invoked when the background segmentation model file has been opened.

@@ -7,8 +7,10 @@ import 'chrome://os-settings/os_settings.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {DEFAULT_CHECKED_VALUE, DEFAULT_UNCHECKED_VALUE, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type { SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {DEFAULT_CHECKED_VALUE, DEFAULT_UNCHECKED_VALUE} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {clearBody} from '../utils.js';
 // clang-format on
 

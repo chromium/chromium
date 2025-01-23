@@ -246,18 +246,15 @@ bool NoExtendedTextEncodingNameUsed() {
 }
 
 Vector<String> TextEncodingAliasesForTesting() {
-  Vector<String> results;
-  {
-    base::AutoLock lock(EncodingRegistryLock());
-    if (!g_text_encoding_name_map)
-      BuildBaseTextCodecMaps();
-    if (!AtomicDidExtendTextCodecMaps()) {
-      ExtendTextCodecMaps();
-      AtomicSetDidExtendTextCodecMaps();
-    }
-    CopyKeysToVector(*g_text_encoding_name_map, results);
+  base::AutoLock lock(EncodingRegistryLock());
+  if (!g_text_encoding_name_map) {
+    BuildBaseTextCodecMaps();
   }
-  return results;
+  if (!AtomicDidExtendTextCodecMaps()) {
+    ExtendTextCodecMaps();
+    AtomicSetDidExtendTextCodecMaps();
+  }
+  return Vector<String>(g_text_encoding_name_map->Keys());
 }
 
 #ifndef NDEBUG

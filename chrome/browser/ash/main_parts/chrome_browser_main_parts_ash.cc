@@ -231,7 +231,9 @@
 #include "chromeos/ash/components/power/dark_resume_controller.h"
 #include "chromeos/ash/components/report/device_metrics/use_case/real_psm_client_manager.h"
 #include "chromeos/ash/components/report/device_metrics/use_case/use_case.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/user_login_permission_tracker.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/components/tpm/tpm_token_loader.h"
 #include "chromeos/ash/components/wifi_p2p/wifi_p2p_controller.h"
@@ -1019,6 +1021,10 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
     g_browser_process->platform_part()->RegisterKeepAlive();
   }
 
+  user_login_permission_tracker_ =
+      std::make_unique<ash::UserLoginPermissionTracker>(
+          ash::CrosSettings::Get());
+
   // NOTE: Calls ChromeBrowserMainParts::PreProfileInit() which calls
   // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which initializes
   // `Shell`.
@@ -1727,6 +1733,8 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   arc_service_launcher_.reset();
   // |arc_service_launcher_| uses SchedulerConfigurationManager.
   g_browser_process->platform_part()->ShutdownSchedulerConfigurationManager();
+
+  user_login_permission_tracker_.reset();
 
   if (pre_profile_init_called_) {
     AccessibilityManager::Shutdown();

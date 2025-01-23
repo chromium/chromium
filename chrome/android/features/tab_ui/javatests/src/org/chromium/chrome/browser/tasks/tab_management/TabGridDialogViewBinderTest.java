@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.validateMockitoUsage;
 import static org.mockito.Mockito.verify;
 import static org.mockito.hamcrest.MockitoHamcrest.intThat;
 
@@ -50,6 +51,7 @@ import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -68,6 +70,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -197,6 +200,14 @@ public class TabGridDialogViewBinderTest {
                                     mToolbarView, mContentView, mTabGridDialogView),
                             TabGridDialogViewBinder::bind);
                 });
+    }
+
+    @After
+    public void tearDown() {
+        // The verification that a mock is broken or misused is by default on the next verify which
+        // might escape the current testcase causing other tests in the suite to fail. By putting
+        // this here any flakes should be contained to the testcase in which they are caused.
+        validateMockitoUsage();
     }
 
     @Test
@@ -572,6 +583,9 @@ public class TabGridDialogViewBinderTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @RequiresRestart(
+            "Changing the layout size must remain scoped to this testcase otherwise "
+                    + "other tests in the suite may break. See https://crbug.com/363298801.")
     public void testSetInitialScrollIndex() {
         mContentView.layout(0, 0, 100, 500);
 
@@ -631,6 +645,9 @@ public class TabGridDialogViewBinderTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @RequiresRestart(
+            "Changing the LayoutManager and size must remain scoped to this testcase otherwise "
+                    + "other tests in the suite may break. See https://crbug.com/363298801.")
     public void testSetInitialScrollIndex_Linear() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

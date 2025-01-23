@@ -8071,6 +8071,9 @@ Otherwise the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS"
       <message name="IDS_ASH_MOUSE_KEYS_PERIOD_RELEASE" desc="Label to show how to release mouse button after a drag.">
         Press "." to release
       </message>
+      <message name="IDS_ASH_MOUSE_KEYS_C_KEY_RELEASE" desc="Label to show how to release mouse button after a drag.">
+        Press "c" to release
+      </message>
       <message name="IDS_ASH_MOUSE_KEYS_PAUSED" desc="Label to show the mouse keys paused state.">
         Mouse keys paused
       </message>

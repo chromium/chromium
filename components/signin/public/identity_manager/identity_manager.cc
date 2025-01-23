@@ -157,11 +157,12 @@ IdentityManager::CreateAccessTokenFetcherForAccount(
     const std::string& oauth_consumer_name,
     const ScopeSet& scopes,
     AccessTokenFetcher::TokenCallback callback,
-    AccessTokenFetcher::Mode mode) {
+    AccessTokenFetcher::Mode mode,
+    AccessTokenFetcher::Source token_source) {
   return std::make_unique<AccessTokenFetcher>(
       account_id, oauth_consumer_name, token_service_.get(),
       primary_account_manager_.get(), scopes, std::move(callback), mode,
-      require_sync_consent_for_scope_verification_);
+      require_sync_consent_for_scope_verification_, token_source);
 }
 
 std::unique_ptr<AccessTokenFetcher>
@@ -224,6 +225,13 @@ bool IdentityManager::HasAccountWithRefreshToken(
     const CoreAccountId& account_id) const {
   return token_service_->RefreshTokenIsAvailable(account_id);
 }
+
+#if BUILDFLAG(IS_IOS)
+bool IdentityManager::HasAccountWithRefreshTokenOnDevice(
+    const CoreAccountId& account_id) const {
+  return token_service_->RefreshTokenIsAvailableOnDevice(account_id);
+}
+#endif
 
 bool IdentityManager::AreRefreshTokensLoaded() const {
   return token_service_->AreAllCredentialsLoaded();

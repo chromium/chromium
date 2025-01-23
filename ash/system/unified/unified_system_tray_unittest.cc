@@ -1128,16 +1128,8 @@ class UnifiedSystemTrayAccessibilityTest : public AshTestBase {
   void RegisterUserWithUserPrefs(const AccountId& account_id,
                                  user_manager::UserType user_type) {
     // Create a fake user prefs map.
-    auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
-    RegisterUserProfilePrefs(user_prefs->registry(), /*country=*/"",
-                             /*for_test=*/true);
-
     GetSessionControllerClient()->Reset();
-    GetSessionControllerClient()->AddUserSession(
-        user_email, user_type,
-        /*provide_pref_service=*/false);
-    GetSessionControllerClient()->SetUserPrefService(account_id,
-                                                     std::move(user_prefs));
+    GetSessionControllerClient()->AddUserSession(user_email, user_type);
     GetSessionControllerClient()->SwitchActiveUser(account_id);
     GetSessionControllerClient()->SetSessionState(
         session_manager::SessionState::ACTIVE);

@@ -6,8 +6,9 @@ import 'chrome://os-settings/lazy_load.js';
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
 import {KeyCombinationInputDialogElement} from 'chrome://os-settings/lazy_load.js';
-import {fakeMice, KeyEvent, Vkey} from 'chrome://os-settings/os_settings.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {KeyEvent} from 'chrome://os-settings/os_settings.js';
+import {fakeMice, Vkey} from 'chrome://os-settings/os_settings.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

@@ -16,9 +16,9 @@ static_library("cros_safety") {
   deps = [
     ":cloud_safety_session",
     "//ash/components/arc:arc_base_utils",
-    "//ash/components/arc/mojom",
     "//base",
     "//chromeos/ash/components/mojo_service_manager",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/experiences/arc/session",
     "//chromeos/ash/services/cros_safety/public/mojom",
     "//components/manta:manta",

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/arc/input_overlay/test/game_controls_test_base.h"
 
-#include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/window_properties.h"
@@ -15,6 +14,7 @@
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "ui/lottie/resource.h"
 

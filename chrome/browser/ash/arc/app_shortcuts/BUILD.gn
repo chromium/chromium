@@ -18,7 +18,6 @@ static_library("app_shortcuts") {
 
   deps = [
     "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//base",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/ash/app_list",
@@ -26,6 +25,7 @@ static_library("app_shortcuts") {
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/ranking",
     "//chrome/browser/profiles:profile",
+    "//chromeos/ash/experiences/arc/mojom",
     "//ui/base",
   ]
 }

@@ -5,6 +5,7 @@
 #include "content/browser/interest_group/test_interest_group_private_aggregation_manager.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <map>
 #include <optional>
@@ -49,6 +50,7 @@ bool TestInterestGroupPrivateAggregationManager::BindNewReceiver(
     std::optional<base::TimeDelta> timeout,
     std::optional<url::Origin> aggregation_coordinator_origin,
     size_t filtering_id_max_bytes,
+    std::optional<size_t> max_contributions,
     mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
         pending_receiver) {
   EXPECT_EQ(expected_top_frame_origin_, top_frame_origin);
@@ -56,6 +58,7 @@ bool TestInterestGroupPrivateAggregationManager::BindNewReceiver(
   EXPECT_FALSE(context_id.has_value());
   EXPECT_FALSE(timeout.has_value());
   EXPECT_EQ(filtering_id_max_bytes, 1u);
+  EXPECT_FALSE(max_contributions.has_value());
 
   // TODO(alexmt): Change once selecting the origin is possible.
   EXPECT_FALSE(aggregation_coordinator_origin.has_value());

@@ -36,6 +36,7 @@
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/user_login_permission_tracker.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -1197,8 +1198,8 @@ bool UserManagerImpl::IsGuestSessionAllowed() const {
 
 bool UserManagerImpl::IsGaiaUserAllowed(const User& user) const {
   DCHECK(user.HasGaiaAccount());
-  return cros_settings()->IsUserAllowlisted(user.GetAccountId().GetUserEmail(),
-                                            nullptr, user.GetType());
+  return ash::UserLoginPermissionTracker::Get()->IsUserAllowlisted(
+      user.GetAccountId().GetUserEmail(), nullptr, user.GetType());
 }
 
 bool UserManagerImpl::IsUserAllowed(const User& user) const {

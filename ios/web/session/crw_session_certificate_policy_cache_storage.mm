@@ -174,15 +174,17 @@ size_t GetCertPolicyBytesEncoded() {
                       certStatus:(NSNumber*)certStatus {
   scoped_refptr<net::X509Certificate> cert = NSDataToCertificate(certData);
   std::string host = base::SysNSStringToUTF8(hostName);
-  if (!cert || !host.length() || !certStatus)
+  if (!cert || !host.length() || !certStatus) {
     return nil;
+  }
   net::CertStatus status = certStatus.unsignedIntegerValue;
   return [self initWithCertificate:cert host:host status:status];
 }
 
 - (instancetype)initWithDeprecatedSerialization:(NSArray*)serialization {
-  if (serialization.count != DeprecatedSerializationIndexCount)
+  if (serialization.count != DeprecatedSerializationIndexCount) {
     return nil;
+  }
   return [self initWithCertData:serialization[CertificateDataIndex]
                        hostName:serialization[HostStringIndex]
                      certStatus:serialization[StatusIndex]];
@@ -258,8 +260,9 @@ size_t GetCertPolicyBytesEncoded() {
         CRWSessionCertificateStorage* certificatePolicyStorage =
             [[CRWSessionCertificateStorage alloc]
                 initWithDeprecatedSerialization:serialiazation];
-        if (certificatePolicyStorage)
+        if (certificatePolicyStorage) {
           [certificateStorages addObject:certificatePolicyStorage];
+        }
       }
       _certificateStorages = certificateStorages;
     }

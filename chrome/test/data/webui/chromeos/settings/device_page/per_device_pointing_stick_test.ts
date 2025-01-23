@@ -4,7 +4,8 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {PerDeviceSubsectionHeaderElement, SettingsPerDevicePointingStickElement} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsPerDevicePointingStickElement} from 'chrome://os-settings/lazy_load.js';
+import {PerDeviceSubsectionHeaderElement} from 'chrome://os-settings/lazy_load.js';
 import {fakePointingSticks, fakePointingSticks2} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';

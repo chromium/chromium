@@ -10,7 +10,6 @@
 #include "base/auto_reset.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -57,7 +56,6 @@ constexpr char kStartTime[] = "21 Jan 2022 10:00:00 GMT";
 class ProjectorNavigationThrottleTest : public InProcessBrowserTest {
  public:
   ProjectorNavigationThrottleTest() = default;
-
   ~ProjectorNavigationThrottleTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -97,9 +95,8 @@ class ProjectorNavigationThrottleTestParameterized
 // https://screencast.apps.chrome/xyz?resourceKey=abc redirects to
 // chrome://projector/app/xyz?timestamp=[timestamp]&resourceKey=abc and launches
 // the SWA.
-// TODO(crbug.com/327056386): Re-enable.
 IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
-                       DISABLED_PwaNavigationRedirects) {
+                       PwaNavigationRedirects) {
   base::HistogramTester histogram_tester;
 
   std::string url = kChromeUIUntrustedProjectorPwaUrl;
@@ -130,6 +127,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
         browser(), gurl, WindowOpenDisposition::CURRENT_TAB,
         ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_BROWSER);
   }
+
   removed_observer.Wait();
   added_observer.Wait();
 

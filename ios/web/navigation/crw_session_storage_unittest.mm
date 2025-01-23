@@ -94,7 +94,7 @@ CRWSessionStorage* DecodeSessionStorage(NSData* data) {
       [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey]);
 }
 
-}
+}  // namespace
 
 // Tests that unarchiving CRWSessionStorage data results in an equivalent
 // storage.

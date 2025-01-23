@@ -954,11 +954,11 @@ const CGFloat kFeedContainerExtraHeight = 500;
       // wait for it to finish to focus the omnibox.
       __weak __typeof(self) weakSelf = self;
       [UIView animateWithDuration:kMaterialDuration6
-          animations:^{
-            weakSelf.collectionView.contentOffset =
-                CGPoint(0, pinnedOffsetBeforeAnimation);
-            [weakSelf resetFakeOmniboxConstraints];
-          }];
+                       animations:^{
+                         weakSelf.collectionView.contentOffset =
+                             CGPoint(0, pinnedOffsetBeforeAnimation);
+                         [weakSelf resetFakeOmniboxConstraints];
+                       }];
     }
     [self.headerViewController
         completeHeaderFakeOmniboxFocusAnimationWithFinalPosition:

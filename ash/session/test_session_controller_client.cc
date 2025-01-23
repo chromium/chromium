@@ -28,8 +28,6 @@ namespace ash {
 
 namespace {
 
-bool g_provide_signin_pref_service = true;
-
 // Returns the "canonicalized" email from a given |email| address. Note
 // production code should use gaia::CanonicalizeEmail. This is used in tests
 // without introducing dependency on google_api.
@@ -41,17 +39,17 @@ std::string GetUserIdFromEmail(const std::string& email) {
 
 }  // namespace
 
-// static
-void TestSessionControllerClient::DisableAutomaticallyProvideSigninPref() {
-  g_provide_signin_pref_service = false;
-}
-
 TestSessionControllerClient::TestSessionControllerClient(
     SessionControllerImpl* controller,
-    TestPrefServiceProvider* prefs_provider)
+    TestPrefServiceProvider* prefs_provider,
+    bool create_signin_pref_service)
     : controller_(controller), prefs_provider_(prefs_provider) {
   CHECK(controller_);
   Reset();
+
+  if (create_signin_pref_service && prefs_provider_) {
+    prefs_provider_->CreateSigninPrefsIfNeeded();
+  }
 }
 
 TestSessionControllerClient::~TestSessionControllerClient() = default;
@@ -64,8 +62,7 @@ void TestSessionControllerClient::InitializeAndSetClient() {
   session_info_.state = controller_->GetSessionState();
 
   controller_->SetClient(this);
-  if (g_provide_signin_pref_service && prefs_provider_)
-    controller_->EnsureSigninScreenPrefService();
+  controller_->EnsureSigninScreenPrefService();
 }
 
 void TestSessionControllerClient::Reset() {
@@ -77,9 +74,6 @@ void TestSessionControllerClient::Reset() {
 
   controller_->ClearUserSessionsForTest();
   controller_->SetSessionInfo(session_info_);
-
-  if (g_provide_signin_pref_service && prefs_provider_)
-    prefs_provider_->CreateSigninPrefsIfNeeded();
 }
 
 void TestSessionControllerClient::SetCanLockScreen(bool can_lock) {
@@ -120,22 +114,23 @@ void TestSessionControllerClient::SetIsDemoSession() {
 void TestSessionControllerClient::AddUserSession(
     const std::string& display_email,
     user_manager::UserType user_type,
-    std::optional<bool> provide_pref_service,
+    std::variant<bool, std::unique_ptr<PrefService>> provide_or_pref_service,
     bool is_new_profile,
     const std::string& given_name,
     bool is_account_managed) {
   auto account_id = AccountId::FromUserEmail(
       use_lower_case_user_id_ ? GetUserIdFromEmail(display_email)
                               : display_email);
-  AddUserSession(account_id, display_email, user_type, provide_pref_service,
-                 is_new_profile, given_name, is_account_managed);
+  AddUserSession(account_id, display_email, user_type,
+                 std::move(provide_or_pref_service), is_new_profile, given_name,
+                 is_account_managed);
 }
 
 void TestSessionControllerClient::AddUserSession(
     const AccountId& account_id,
     const std::string& display_email,
     user_manager::UserType user_type,
-    std::optional<bool> provide_pref_service,
+    std::variant<bool, std::unique_ptr<PrefService>> provide_or_pref_service,
     bool is_new_profile,
     const std::string& given_name,
     bool is_account_managed) {
@@ -158,21 +153,34 @@ void TestSessionControllerClient::AddUserSession(
       !account_id.GetGaiaId().empty();
   session.user_info.is_managed = is_account_managed;
   controller_->UpdateUserSession(std::move(session));
+  if (std::holds_alternative<bool>(provide_or_pref_service)) {
+    bool provide = std::get<bool>(provide_or_pref_service);
+    if (provide && prefs_provider_ && default_provide_pref_service_ &&
+        !controller_->GetUserPrefServiceForUser(account_id)) {
+      ProvidePrefServiceForUser(account_id);
+    }
+  } else {
+    CHECK(std::holds_alternative<std::unique_ptr<PrefService>>(
+        provide_or_pref_service));
+    auto& pref_service =
+        std::get<std::unique_ptr<PrefService>>(provide_or_pref_service);
+    CHECK(pref_service);
+    CHECK(!controller_->GetUserPrefServiceForUser(account_id));
 
-  if (provide_pref_service.value_or(default_provide_pref_service_) &&
-      prefs_provider_ && !controller_->GetUserPrefServiceForUser(account_id)) {
-    ProvidePrefServiceForUser(account_id);
+    prefs_provider_->SetUserPrefs(account_id, std::move(pref_service));
+    MaybeNotifyUserPrefServiceInitialized(account_id);
   }
 
   MaybeNotifyFirstSessionReady();
 }
 
-void TestSessionControllerClient::ProvidePrefServiceForUser(
+PrefService* TestSessionControllerClient::ProvidePrefServiceForUser(
     const AccountId& account_id) {
   CHECK(!controller_->GetUserPrefServiceForUser(account_id));
 
   prefs_provider_->CreateUserPrefs(account_id);
   MaybeNotifyUserPrefServiceInitialized(account_id);
+  return GetUserPrefService(account_id);
 }
 
 void TestSessionControllerClient::LockScreen() {
@@ -193,15 +201,6 @@ void TestSessionControllerClient::SetSigninScreenPrefService(
   prefs_provider_->SetSigninPrefs(std::move(pref_service));
   controller_->OnSigninScreenPrefServiceInitialized(
       prefs_provider_->GetSigninPrefs());
-}
-
-void TestSessionControllerClient::SetUserPrefService(
-    const AccountId& account_id,
-    std::unique_ptr<PrefService> pref_service) {
-  CHECK(!controller_->GetUserPrefServiceForUser(account_id));
-
-  prefs_provider_->SetUserPrefs(account_id, std::move(pref_service));
-  MaybeNotifyUserPrefServiceInitialized(account_id);
 }
 
 void TestSessionControllerClient::SetUnownedUserPrefService(

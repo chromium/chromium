@@ -30,6 +30,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -222,13 +223,14 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
   // Executes the model for the feature, waits until the response is received,
   // and returns the response.
   void ExecuteModel(UserVisibleFeatureKey feature,
-                    const google::protobuf::MessageLite& request_metadata,
+                    const proto::ComposeRequest& request_metadata,
                     Profile* profile = nullptr) {
     if (!profile) {
       profile = browser()->profile();
     }
     base::RunLoop run_loop;
-    GetOptimizationGuideKeyedService(profile)->ExecuteModel(
+    ExecuteModelWithLogging(
+        GetOptimizationGuideKeyedService(profile),
         ToModelBasedCapabilityKey(feature), request_metadata,
         /*execution_timeout=*/std::nullopt,
         base::BindOnce(&ModelExecutionBrowserTestBase::OnModelExecutionResponse,
@@ -260,7 +262,7 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     while (num_logs_requests_ < expected_num_logs_requests) {
       base::RunLoop run_loop;
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
+          FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
       run_loop.Run();
     }
     EXPECT_EQ(num_logs_requests_, expected_num_logs_requests);
@@ -270,7 +272,17 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
   void OnModelExecutionResponse(
       base::OnceClosure on_model_execution_closure,
       OptimizationGuideModelExecutionResult result,
-      std::unique_ptr<ModelQualityLogEntry> log_entry) {
+      std::unique_ptr<proto::ComposeLoggingData> logging_data) {
+    ModelQualityLogsUploaderService* logs_uploader =
+        GetOptimizationGuideKeyedService()
+            ->GetModelQualityLogsUploaderService();
+    base::WeakPtr<ModelQualityLogsUploaderService> logs_uploader_weak_ptr;
+    if (logs_uploader) {
+      logs_uploader_weak_ptr = logs_uploader->GetWeakPtr();
+    }
+    auto log_entry =
+        std::make_unique<ModelQualityLogEntry>(logs_uploader_weak_ptr);
+    *log_entry->log_ai_data_request()->mutable_compose() = *logging_data;
     if (result.response.has_value() ||
         result.response.error().error() ==
             OptimizationGuideModelExecutionError::ModelExecutionError::
@@ -278,21 +290,11 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
         result.response.error().error() ==
             OptimizationGuideModelExecutionError::ModelExecutionError::
                 kUnsupportedLanguage) {
-      EXPECT_TRUE(log_entry);
-      proto::LogAiDataRequest* log_ai_data_request =
-          log_entry.get()->log_ai_data_request();
-      EXPECT_NE(log_ai_data_request, nullptr);
-      EXPECT_EQ(log_ai_data_request->feature_case(),
-                proto::LogAiDataRequest::FeatureCase::kCompose);
-      EXPECT_TRUE(log_ai_data_request->has_compose());
-      EXPECT_TRUE(log_ai_data_request->mutable_compose()->has_request());
+      EXPECT_TRUE(logging_data->has_request());
     }
 
     if (result.response.has_value()) {
-      EXPECT_TRUE(log_entry.get()
-                      ->log_ai_data_request()
-                      ->mutable_compose()
-                      ->has_response());
+      EXPECT_TRUE(logging_data->has_response());
     }
     model_execution_result_.emplace(std::move(result));
     ModelQualityLogEntry::Upload(std::move(log_entry));
@@ -356,7 +358,7 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
 
     // Access token should not be set.
     EXPECT_FALSE(base::Contains(request.headers,
-                               net::HttpRequestHeaders::kAuthorization));
+                                net::HttpRequestHeaders::kAuthorization));
 
     std::string serialized_response;
     response->set_code(net::HTTP_OK);

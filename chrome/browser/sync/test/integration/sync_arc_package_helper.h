@@ -10,9 +10,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom-forward.h"
 
 class Profile;
 class SyncTest;

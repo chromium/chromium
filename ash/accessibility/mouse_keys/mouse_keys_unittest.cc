@@ -538,7 +538,6 @@ TEST_F(MouseKeysTest, SelectButtonLeftHand) {
   ClearEvents();
   PressAndReleaseKey(ui::VKEY_W);
   EXPECT_EQ(0u, CheckForKeyEvents().size());
-  LOG(ERROR) << "[LKupo] this is the first click event";
   ExpectClick(CheckForMouseEvents(), ui::EF_LEFT_MOUSE_BUTTON,
               kDefaultPosition);
 
@@ -1100,6 +1099,21 @@ TEST_F(MouseKeysTest, Dragging) {
   EXPECT_EQ(ui::EventType::kMouseReleased, mouse_events[0].type());
   EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[0].flags());
   EXPECT_EQ(mouse_events[0].location(), position);
+}
+
+TEST_F(MouseKeysTest, LeftHandDraggingBubble) {
+  SetEnabled(true);
+  SetLeftHanded(true);
+  ClearEvents();
+
+  // Start Drag.
+  PressAndReleaseKey(ui::VKEY_Z);
+
+  // Bubble view with the correct message and icon should be displayed.
+  EXPECT_TRUE(IsBubbleVisible());
+  EXPECT_EQ(GetBubbleText(), u"Press \"c\" to release");
+  EXPECT_TRUE(IsMouseDraggedIconVisible());
+  EXPECT_FALSE(IsButtonChangeIconVisible());
 }
 
 TEST_F(MouseKeysTest, DragWithClick) {

@@ -5,7 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_EXTERNAL_ARC_MESSAGE_CENTER_METRICS_UTILS_H_
 #define ASH_PUBLIC_CPP_EXTERNAL_ARC_MESSAGE_CENTER_METRICS_UTILS_H_
 
-#include "ash/components/arc/mojom/notifications.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/notifications.mojom.h"
 
 namespace ash::metrics_utils {
 

@@ -4,7 +4,8 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {NearbyShareHighVisibilityPageElement, nearbyShareMojom} from 'chrome://os-settings/os_settings.js';
+import type {NearbyShareHighVisibilityPageElement} from 'chrome://os-settings/os_settings.js';
+import {nearbyShareMojom} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

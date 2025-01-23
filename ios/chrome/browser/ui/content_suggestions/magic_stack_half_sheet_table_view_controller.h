@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_HALF_SHEET_TABLE_VIEW_CONTROLLER_H_
 
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
-
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_consumer.h"
 
 @protocol MagicStackHalfSheetModelDelegate;
@@ -22,7 +21,7 @@ class PrefService;
 
 // Presents a module disable customization page for the Magic Stack.
 @interface MagicStackHalfSheetTableViewController
-    : LegacyChromeTableViewController<MagicStackHalfSheetConsumer>
+    : LegacyChromeTableViewController <MagicStackHalfSheetConsumer>
 
 // Initializer for this class.
 - (instancetype)init;

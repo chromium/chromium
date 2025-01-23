@@ -1409,7 +1409,7 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
                 features::kUseFreedesktopSecretKeyProviderForEncryption),
             l10n_util::GetStringUTF8(IDS_PRODUCT_NAME), nullptr));
     providers.emplace_back(
-        /*precedence=*/15u,
+        /*precedence=*/5u,
         std::make_unique<os_crypt_async::FallbackLinuxKeyProvider>(
             base::FeatureList::IsEnabled(
                 features::kUseFreedesktopSecretKeyProviderForEncryption)));

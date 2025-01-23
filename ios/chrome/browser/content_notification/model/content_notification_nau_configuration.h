@@ -29,8 +29,8 @@ typedef void (^CompletionBlock)(BOOL success);
 // The Notification content object.
 @property(nonatomic, strong) UNNotificationContent* content;
 
-// The settings action that happened on the notification. If it has a value, only a settings
-// action is sent.
+// The settings action that happened on the notification. If it has a value,
+// only a settings action is sent.
 // TODO(324442228): Refactor settingsAction outside of this configuration.
 @property(nonatomic, strong) ContentNotificationSettingsAction* settingsAction;
 
