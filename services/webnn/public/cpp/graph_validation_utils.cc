@@ -2718,29 +2718,27 @@ base::expected<OperandDescriptor, std::string> ValidateWhereAndInferOutput(
     const OperandDescriptor& false_value,
     std::string_view label) {
   static constexpr char kConditionParam[] = "condition";
-  if (!context_properties.data_type_limits.where_condition.Has(
-          condition.data_type())) {
+  if (!context_properties.data_type_limits.where_condition.Supports(
+          condition)) {
     return base::unexpected(ErrorWithLabel(
-        label, NotSupportedArgumentTypeError(
-                   kConditionParam, condition.data_type(),
+        label, NotSupportedArgumentError(
+                   kConditionParam, condition,
                    context_properties.data_type_limits.where_condition)));
   }
 
   static constexpr char kTrueValueParam[] = "trueValue";
-  if (!context_properties.data_type_limits.where_value.Has(
-          true_value.data_type())) {
+  if (!context_properties.data_type_limits.where_value.Supports(true_value)) {
     return base::unexpected(ErrorWithLabel(
-        label, NotSupportedArgumentTypeError(
-                   kTrueValueParam, true_value.data_type(),
+        label, NotSupportedArgumentError(
+                   kTrueValueParam, true_value,
                    context_properties.data_type_limits.where_value)));
   }
 
   static constexpr char kFalseValueParam[] = "falseValue";
-  if (!context_properties.data_type_limits.where_value.Has(
-          false_value.data_type())) {
+  if (!context_properties.data_type_limits.where_value.Supports(false_value)) {
     return base::unexpected(ErrorWithLabel(
-        label, NotSupportedArgumentTypeError(
-                   kFalseValueParam, false_value.data_type(),
+        label, NotSupportedArgumentError(
+                   kFalseValueParam, false_value,
                    context_properties.data_type_limits.where_value)));
   }
 

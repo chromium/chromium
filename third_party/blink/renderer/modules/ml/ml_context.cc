@@ -956,13 +956,13 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
 
   MLWhereSupportLimits* where = MLWhereSupportLimits::Create();
   where->setCondition(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.where_condition));
+      SupportedTensorLimitsToTensorLimits(data_type_limits.where_condition));
   where->setTrueValue(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.where_value));
+      SupportedTensorLimitsToTensorLimits(data_type_limits.where_value));
   where->setFalseValue(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.where_value));
-  where->setOutput(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.where_value));
+      SupportedTensorLimitsToTensorLimits(data_type_limits.where_value));
+  where->setOutput(SupportedDataTypesToDataTypeLimits(
+      data_type_limits.where_value.data_types));
   op_support_limits->setWhere(where);
 
   return op_support_limits;

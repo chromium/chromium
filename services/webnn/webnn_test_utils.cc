@@ -573,6 +573,7 @@ mojom::GraphInfoPtr CloneGraphInfoForTesting(
 }
 
 ContextProperties GetContextPropertiesForTesting() {
+  static constexpr SupportedRanks kMaxRank = SupportedRanks::UpTo(8);
   return WebNNContextImpl::IntersectWithBaseProperties(ContextProperties(
       InputOperandLayout::kNchw, Resample2DAxes::kAny,
       /*tensor_byte_length_limit=*/INT_MAX,
@@ -584,36 +585,28 @@ ContextProperties GetContextPropertiesForTesting() {
        /*batch_normalization_input=*/SupportedDataTypes::All(),
        /*cast_input=*/SupportedDataTypes::All(),
        /*clamp_input=*/SupportedDataTypes::All(),
-       /*concat_inputs=*/
-       SupportedDataTypes::All(),
+       /*concat_inputs=*/SupportedDataTypes::All(),
        /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
-       /*conv_transpose2d_input=*/
-       DataTypeConstraint::kFloat16To32,
+       /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
        /*cumulative_sum_input=*/DataTypeConstraint::kFloat16To32,
        /*dequantize_linear_input=*/SupportedDataTypes::All(),
        /*dequantize_linear_scale=*/SupportedDataTypes::All(),
-       /*add_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
-       /*sub_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
-       /*mul_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
-       /*div_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
-       /*max_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
-       /*min_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
-       /*pow_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
-       /*equal_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
-       /*greater_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
-       /*greater_or_equal_input=*/
-       {SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
-       /*lesser_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
-       /*lesser_or_equal_input=*/
-       {SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
-       /*not_equal_input=*/
-       {SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
-       /*logical_and_input=*/
-       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(8)},
-       /*logical_or_input=*/
-       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(8)},
-       /*logical_xor_input=*/
-       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(8)},
+       /*add_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*sub_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*mul_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*div_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*max_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*min_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*pow_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*equal_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*greater_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*greater_or_equal_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*lesser_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*lesser_or_equal_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*not_equal_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*logical_and_input=*/{DataTypeConstraint::kUint8, kMaxRank},
+       /*logical_or_input=*/{DataTypeConstraint::kUint8, kMaxRank},
+       /*logical_xor_input=*/{DataTypeConstraint::kUint8, kMaxRank},
        /*logical_not_input=*/SupportedDataTypes::All(),
        /*logical_output=*/SupportedDataTypes::All(),
        /*abs_input=*/SupportedDataTypes::All(),
@@ -633,14 +626,11 @@ ContextProperties GetContextPropertiesForTesting() {
        /*elu_input=*/SupportedDataTypes::All(),
        /*expand_input=*/SupportedDataTypes::All(),
        /*gather_input=*/SupportedDataTypes::All(),
-       /*gather_indices=*/
-       SupportedDataTypes::All(),
+       /*gather_indices=*/SupportedDataTypes::All(),
        /*gather_elements_input=*/SupportedDataTypes::All(),
-       /*gather_elements_indices=*/
-       SupportedDataTypes::All(),
+       /*gather_elements_indices=*/SupportedDataTypes::All(),
        /*gather_nd_input=*/SupportedDataTypes::All(),
-       /*gather_nd_indices=*/
-       SupportedDataTypes::All(),
+       /*gather_nd_indices=*/SupportedDataTypes::All(),
        /*gelu_input=*/SupportedDataTypes::All(),
        /*gemm_input=*/SupportedDataTypes::All(),
        /*gru_input=*/SupportedDataTypes::All(),
@@ -653,7 +643,7 @@ ContextProperties GetContextPropertiesForTesting() {
        /*linear_input=*/SupportedDataTypes::All(),
        /*lstm_input=*/SupportedDataTypes::All(),
        /*lstm_cell_input=*/SupportedDataTypes::All(),
-       /*matmul_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*matmul_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*pad_input=*/SupportedDataTypes::All(),
        /*average_pool2d_input=*/SupportedDataTypes::All(),
        /*l2_pool2d_input=*/SupportedDataTypes::All(),
@@ -689,8 +679,8 @@ ContextProperties GetContextPropertiesForTesting() {
        /*tile_input=*/SupportedDataTypes::All(),
        /*transpose_input=*/SupportedDataTypes::All(),
        /*triangular_input=*/SupportedDataTypes::All(),
-       /*where_condition=*/SupportedDataTypes::All(),
-       /*where_value=*/SupportedDataTypes::All()}));
+       /*where_condition=*/{SupportedDataTypes::All(), kMaxRank},
+       /*where_value=*/{SupportedDataTypes::All(), kMaxRank}}));
 }
 
 }  // namespace webnn

@@ -161,9 +161,9 @@ dictionary MLSplitSupportLimits {
 };
 
 dictionary MLWhereSupportLimits {
-  MLDataTypeLimits condition;
-  MLDataTypeLimits trueValue;
-  MLDataTypeLimits falseValue;
+  MLTensorLimits condition;
+  MLTensorLimits trueValue;
+  MLTensorLimits falseValue;
   MLDataTypeLimits output;
 };
 

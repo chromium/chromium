@@ -186,8 +186,8 @@ struct DataTypeLimits {
   SupportedDataTypes triangular_input;
 
   // Where.
-  SupportedDataTypes where_condition;
-  SupportedDataTypes where_value;
+  SupportedTensors where_condition;
+  SupportedTensors where_value;
 };
 
 // Represents properties of the `WebNNContext` implementation that has been

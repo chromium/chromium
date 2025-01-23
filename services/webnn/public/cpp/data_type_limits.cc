@@ -109,8 +109,8 @@ DataTypeLimits::DataTypeLimits(SupportedDataTypes input,
                                SupportedDataTypes tile_input,
                                SupportedDataTypes transpose_input,
                                SupportedDataTypes triangular_input,
-                               SupportedDataTypes where_condition,
-                               SupportedDataTypes where_value)
+                               SupportedTensors where_condition,
+                               SupportedTensors where_value)
     : input(input),
       constant(constant),
       arg_min_max_input(arg_min_max_input),

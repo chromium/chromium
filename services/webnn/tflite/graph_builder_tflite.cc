@@ -568,8 +568,12 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*tile_input=*/kFloat16To32AndInt32To64AndUint8,
        /*transpose_input=*/kFloat16To32AndInt8To64AndUint8,
        /*triangular_input=*/kFloat16To32AndInt32To64AndUint32,
-       /*where_condition=*/DataTypeConstraint::kUint8,
-       /*where_value=*/kFloat16To32AndInt8To64AndUint32});
+       // Limited to 5D when broadcasting is required:
+       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/select.h
+       /*where_condition=*/
+       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(5)},
+       /*where_value=*/
+       {kFloat16To32AndInt8To64AndUint32, SupportedRanks::UpTo(5)}});
 }
 
 GraphBuilderTflite::GraphBuilderTflite(
@@ -5437,12 +5441,12 @@ auto GraphBuilderTflite::SerializeTranspose(const mojom::Transpose& transpose)
 
 auto GraphBuilderTflite::SerializeWhere(const mojom::Where& where)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.where_condition.Has(
-      GetOperand(where.condition_operand_id).descriptor.data_type()));
-  CHECK(context_properties_.data_type_limits.where_value.Has(
-      GetOperand(where.true_value_operand_id).descriptor.data_type()));
-  CHECK(context_properties_.data_type_limits.where_value.Has(
-      GetOperand(where.false_value_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.where_condition.Supports(
+      GetOperand(where.condition_operand_id).descriptor));
+  CHECK(context_properties_.data_type_limits.where_value.Supports(
+      GetOperand(where.true_value_operand_id).descriptor));
+  CHECK(context_properties_.data_type_limits.where_value.Supports(
+      GetOperand(where.false_value_operand_id).descriptor));
   ASSIGN_OR_RETURN(const TensorInfo& condition_tensor_info,
                    SerializeInputTensorInfo(where.condition_operand_id));
   // The data type of WebNN condition operand is uint8, but TFLite requires the

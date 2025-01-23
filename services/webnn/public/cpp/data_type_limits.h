@@ -115,8 +115,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes tile_input,
                  SupportedDataTypes transpose_input,
                  SupportedDataTypes triangular_input,
-                 SupportedDataTypes where_condition,
-                 SupportedDataTypes where_value);
+                 SupportedTensors where_condition,
+                 SupportedTensors where_value);
 
   // Copyable and movable.
   DataTypeLimits(const DataTypeLimits&);
@@ -229,8 +229,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes tile_input;
   SupportedDataTypes transpose_input;
   SupportedDataTypes triangular_input;
-  SupportedDataTypes where_condition;
-  SupportedDataTypes where_value;
+  SupportedTensors where_condition;
+  SupportedTensors where_value;
 };
 
 // clang-format off

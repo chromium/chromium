@@ -985,6 +985,9 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
   static constexpr uint64_t kTensorByteLengthLimit =
       std::numeric_limits<int32_t>::max();
 
+  // In general Core ML supports up to 5D tensors.
+  static constexpr SupportedRanks kMaxRank = SupportedRanks::UpTo(5);
+
   // TODO: crbug.com/345271830 - specify data types for all parameters.
   return ContextProperties(
       InputOperandLayout::kNchw, Resample2DAxes::kChannelsFirst,
@@ -1009,25 +1012,25 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // DequantizeLinear is not implemented.
        /*dequantize_linear_input=*/{},
        /*dequantize_linear_scale=*/{},
-       /*add_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*sub_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*mul_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*div_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*max_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*min_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*pow_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*equal_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*greater_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*greater_or_equal_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*not_equal_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*lesser_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
-       /*lesser_or_equal_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
+       /*add_input=*/{kFloatsAndInt32, kMaxRank},
+       /*sub_input=*/{kFloatsAndInt32, kMaxRank},
+       /*mul_input=*/{kFloatsAndInt32, kMaxRank},
+       /*div_input=*/{kFloatsAndInt32, kMaxRank},
+       /*max_input=*/{kFloatsAndInt32, kMaxRank},
+       /*min_input=*/{kFloatsAndInt32, kMaxRank},
+       /*pow_input=*/{kFloatsAndInt32, kMaxRank},
+       /*equal_input=*/{kFloatsAndInt32, kMaxRank},
+       /*greater_input=*/{kFloatsAndInt32, kMaxRank},
+       /*greater_or_equal_input=*/{kFloatsAndInt32, kMaxRank},
+       /*not_equal_input=*/{kFloatsAndInt32, kMaxRank},
+       /*lesser_input=*/{kFloatsAndInt32, kMaxRank},
+       /*lesser_or_equal_input=*/{kFloatsAndInt32, kMaxRank},
        /*logical_and_input=*/
-       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(5)},
+       {DataTypeConstraint::kUint8, kMaxRank},
        /*logical_or_input=*/
-       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(5)},
+       {DataTypeConstraint::kUint8, kMaxRank},
        /*logical_xor_input=*/
-       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(5)},
+       {DataTypeConstraint::kUint8, kMaxRank},
        /*logical_not_input=*/DataTypeConstraint::kUint8,
        /*logical_output=*/DataTypeConstraint::kUint8,
        /*abs_input=*/kFloatsAndInt32,
@@ -1075,7 +1078,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // LstmCell is implemented with lstm, they should have the same
        // constraints.
        /*lstm_cell_input=*/DataTypeConstraint::kFloat16To32,
-       /*matmul_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
+       /*matmul_input=*/{kFloatsAndInt32, kMaxRank},
        /*pad_input=*/DataTypeConstraint::kFloat16To32,
        /*average_pool2d_input=*/DataTypeConstraint::kFloat16To32,
        /*l2_pool2d_input=*/DataTypeConstraint::kFloat16To32,
@@ -1133,11 +1136,11 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // corresponding BOOL type. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.band_part
        /*triangular_input=*/kFloatsAndInt32,
-       /*where_condition=*/DataTypeConstraint::kUint8,
+       /*where_condition=*/{DataTypeConstraint::kUint8, kMaxRank},
        // Note that BOOL is also supported by CoreML, but WebNN does not have a
        // corresponding BOOL type. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.transpose
-       /*where_value=*/kFloatsAndInt32});
+       /*where_value=*/{kFloatsAndInt32, kMaxRank}});
 }
 
 GraphBuilderCoreml::GraphBuilderCoreml(
@@ -4451,11 +4454,11 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForWhere(
       GetOperandInfo(operation.false_value_operand_id);
   const OperandInfo& condition_operand_info =
       GetOperandInfo(operation.condition_operand_id);
-  CHECK(context_properties_.data_type_limits.where_value.Has(
+  CHECK(context_properties_.data_type_limits.where_value.data_types.Has(
       MILDataTypeToOperandType(true_operand_info.mil_data_type)));
-  CHECK(context_properties_.data_type_limits.where_value.Has(
+  CHECK(context_properties_.data_type_limits.where_value.data_types.Has(
       MILDataTypeToOperandType(false_operand_info.mil_data_type)));
-  CHECK(context_properties_.data_type_limits.where_condition.Has(
+  CHECK(context_properties_.data_type_limits.where_condition.data_types.Has(
       MILDataTypeToOperandType(condition_operand_info.mil_data_type)));
 
   ASSIGN_OR_RETURN(uint64_t bool_condition_operand_id,
