@@ -41,9 +41,8 @@ namespace glic {
 DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
 
 namespace {
-// Default value for how close the top-right corner of the glic window must be
-// to a browser's glic button to attach to said browser.
-constexpr static int kAttachmentDistanceThreshold = 50;
+// Default value for adding a buffer to the attachment zone.
+constexpr static int kAttachmentBuffer = 20;
 
 constexpr static int kWidgetDefaultWidth = 400;
 constexpr static int kWidgetTopBarHeight = 80;
@@ -660,6 +659,8 @@ void GlicWindowController::HandleAttachmentToBrowserWindows(
           Profile::FromBrowserContext(glic_browser_context))) {
     return;
   }
+
+  gfx::Point glic_top_right = widget->GetWindowBoundsInScreen().top_right();
   // Loops through all browsers in activation order with the latest accessed
   // browser first.
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
@@ -673,16 +674,19 @@ void GlicWindowController::HandleAttachmentToBrowserWindows(
     CHECK(tab_strip_region_view);
     CHECK(tab_strip_region_view->GetGlicButton());
 
-    gfx::Rect glic_button_rect =
-        tab_strip_region_view->GetGlicButton()->GetBoundsInScreen();
+    // Define attachment zone as the right of the tab strip. It either is the
+    // width of the widget or 1/3 of the tab strip, whichever is smaller.
+    gfx::Rect attachment_zone = tab_strip_region_view->GetBoundsInScreen();
+    int width = std::min(attachment_zone.width() / 3, kWidgetDefaultWidth);
+    attachment_zone.SetByBounds(attachment_zone.right() - width,
+                                attachment_zone.y() - kAttachmentBuffer,
+                                attachment_zone.right() + kAttachmentBuffer,
+                                attachment_zone.bottom());
 
-    float corner_distance = (glic_button_rect.CenterPoint() -
-                             widget->GetWindowBoundsInScreen().top_right())
-                                .Length();
     // If there is no active drag (i.e. the previous drag has ended)
     // then determine whether the glic window should be attached or detached
     // from the browser window.
-    if (corner_distance < kAttachmentDistanceThreshold) {
+    if (attachment_zone.Contains(glic_top_right)) {
       AttachToBrowser(browser);
       return;
     }
