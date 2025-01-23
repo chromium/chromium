@@ -267,17 +267,20 @@
       <message name="IDS_IOS_AI_PROTOTYPING_HEADER" translateable="false" desc="Header for AI prototyping menu [Length: unlimited].">
         AI Prototyping
       </message>
-      <message name="IDS_IOS_AI_PROTOTYPING_NAME_PLACEHOLDER" translateable="false" desc="Name placeholder text for AI prototyping menu [Length: unlimited].">
-        Insert your name... (Optional)
-      </message>
       <message name="IDS_IOS_AI_PROTOTYPING_ON_DEVICE_SUBMIT" translateable="false" desc="On device submit button text for AI prototyping menu [Length: unlimited].">
         On Device Submit
+      </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_PAGE_CONTEXT_SWITCH" translateable="false" desc="Switch indicating whether the page context should be included in the AI prototyping menu query [Length: unlimited].">
+        Include page context (title, URL, innerText, screenshot, etc.)
       </message>
       <message name="IDS_IOS_AI_PROTOTYPING_QUERY_PLACEHOLDER" translateable="false" desc="Query placeholder text for AI prototyping menu [Length: unlimited].">
         Insert your query...
       </message>
       <message name="IDS_IOS_AI_PROTOTYPING_SERVER_SIDE_SUBMIT" translateable="false" desc="Server side submit button text for AI prototyping menu [Length: unlimited].">
         Server Side Submit
+      </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_SYSTEM_INSTRUCTIONS_PLACEHOLDER" translateable="false" desc="System instructions placeholder text for AI prototyping menu [Length: unlimited].">
+        Insert system instructions... (Optional)
       </message>
       <message name="IDS_IOS_AI_PROTOTYPING_TAB_ORGANIZATION_GROUPING_STRATEGY_DOMAIN" translateable="false" desc="Label for the Domain Based grouping strategy of Tab Organization [Length: unlimited].">
         Domain based
