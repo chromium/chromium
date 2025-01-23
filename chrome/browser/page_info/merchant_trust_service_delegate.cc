@@ -6,6 +6,7 @@
 
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
@@ -34,4 +35,13 @@ void MerchantTrustServiceDelegate::ShowEvaluationSurvey() {
     hats_service->LaunchSurvey(
         kHatsSurveyTriggerMerchantTrustEvaluationControlSurvey);
   }
+}
+
+double MerchantTrustServiceDelegate::GetSiteEngagementScore(const GURL url) {
+  auto* site_engagement_service =
+      site_engagement::SiteEngagementServiceFactory::GetForProfile(profile_);
+  if (!site_engagement_service) {
+    return 0.0;
+  }
+  return site_engagement_service->GetScore(url);
 }

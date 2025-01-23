@@ -5,9 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_ACCOUNT_PICKER_UI_BUNDLED_ACCOUNT_PICKER_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_ACCOUNT_PICKER_UI_BUNDLED_ACCOUNT_PICKER_COORDINATOR_H_
 
-#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_consumer.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @class AccountPickerConfiguration;
 @protocol AccountPickerCoordinatorDelegate;

@@ -1640,6 +1640,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(prefs::kWebAudioOutputBufferingEnabled, false);
   registry->RegisterBooleanPref(prefs::kSharedWorkerBlobURLFixEnabled, true);
+  registry->RegisterBooleanPref(
+      prefs::kServiceWorkerToControlSrcdocIframeEnabled, true);
 }
 
 // static
@@ -3210,6 +3212,14 @@ bool ChromeContentBrowserClient::AllowCompressionDictionaryTransport(
   Profile* profile = Profile::FromBrowserContext(browser_context);
   return profile->GetPrefs()->GetBoolean(
       prefs::kCompressionDictionaryTransportEnabled);
+}
+
+bool ChromeContentBrowserClient::AllowServiceWorkerToControlSrcdocIframe(
+    content::BrowserContext* browser_context) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return profile->GetPrefs()->GetBoolean(
+      prefs::kServiceWorkerToControlSrcdocIframeEnabled);
 }
 
 bool ChromeContentBrowserClient::AllowSharedWorkerBlobURLFix(

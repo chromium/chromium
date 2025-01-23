@@ -111,9 +111,10 @@ class BookmarkFaviconFetcher : public base::SupportsUserData::Data {
   typedef std::map<std::string, scoped_refptr<base::RefCountedMemory>>
       URLFaviconMap;
 
-  BookmarkFaviconFetcher(Profile* profile,
-                         const base::FilePath& path,
-                         BookmarksExportObserver* observer);
+  BookmarkFaviconFetcher(
+      Profile* profile,
+      const base::FilePath& path,
+      bookmark_html_writer::BookmarksExportCallback callback);
 
   BookmarkFaviconFetcher(const BookmarkFaviconFetcher&) = delete;
   BookmarkFaviconFetcher& operator=(const BookmarkFaviconFetcher&) = delete;
@@ -151,22 +152,21 @@ class BookmarkFaviconFetcher : public base::SupportsUserData::Data {
   base::CancelableTaskTracker cancelable_task_tracker_;
 
   // Map that stores favicon per URL.
-  std::unique_ptr<URLFaviconMap> favicons_map_;
+  URLFaviconMap favicons_map_;
 
   // Path where html output is stored.
   base::FilePath path_;
 
-  raw_ptr<BookmarksExportObserver> observer_;
+  bookmark_html_writer::BookmarksExportCallback callback_;
 };
 
-// Class responsible for the actual writing. Takes ownership of favicons_map.
+// Class responsible for the actual writing.
 class Writer : public base::RefCountedThreadSafe<Writer> {
  public:
   Writer(const bookmarks::BookmarkModel* model,
          const base::FilePath& path,
-         BookmarkFaviconFetcher::URLFaviconMap* favicons_map,
-         BookmarksExportObserver* observer)
-      : path_(path), favicons_map_(favicons_map), observer_(observer) {
+         BookmarkFaviconFetcher::URLFaviconMap favicons_map)
+      : path_(path), favicons_map_(std::move(favicons_map)) {
     // BookmarkModel isn't thread safe (nor would we want to lock it down
     // for the duration of the write), as such we make a copy of the
     // BookmarkModel using BookmarkCodec then write from that.
@@ -191,15 +191,13 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
   Writer& operator=(const Writer&) = delete;
 
   // Writing bookmarks and favicons data to file.
-  void DoWrite() {
+  bookmark_html_writer::Result DoWrite() {
     if (!OpenFile()) {
-      NotifyOnFinish(BookmarksExportObserver::Result::kCouldNotCreateFile);
-      return;
+      return bookmark_html_writer::Result::kCouldNotCreateFile;
     }
 
     if (!Write(kHeader)) {
-      NotifyOnFinish(BookmarksExportObserver::Result::kCouldNotWriteHeader);
-      return;
+      return bookmark_html_writer::Result::kCouldNotWriteHeader;
     }
 
     base::Value::Dict* local_permanent_folders =
@@ -259,56 +257,48 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
                                         BookmarkCodec::kDateModifiedKey),
                           BookmarkNode::BOOKMARK_BAR) ||
         !WriteDescendants(*bookmark_bar_folder_value)) {
-      NotifyOnFinish(BookmarksExportObserver::Result::kCouldNotWriteNodes);
-      return;
+      return bookmark_html_writer::Result::kCouldNotWriteNodes;
     }
 
     // Add account bookmark bar descendants if they exist.
     if (account_bookmark_bar_folder_value &&
         !WriteDescendants(*account_bookmark_bar_folder_value)) {
-      NotifyOnFinish(BookmarksExportObserver::Result::kCouldNotWriteNodes);
-      return;
+      return bookmark_html_writer::Result::kCouldNotWriteNodes;
     }
 
     // Close the bookmark bar folder.
     if (!WriteFolderEnd()) {
-      NotifyOnFinish(BookmarksExportObserver::Result::kCouldNotWriteNodes);
-      return;
+      return bookmark_html_writer::Result::kCouldNotWriteNodes;
     }
 
     // Add the other bookmarks descendants: local, then account if they exist.
     if (!WriteDescendants(*other_folder_value)) {
-      NotifyOnFinish(BookmarksExportObserver::Result::kCouldNotWriteNodes);
-      return;
+      return bookmark_html_writer::Result::kCouldNotWriteNodes;
     }
     if (account_other_folder_value &&
         !WriteDescendants(*account_other_folder_value)) {
-      NotifyOnFinish(BookmarksExportObserver::Result::kCouldNotWriteNodes);
-      return;
+      return bookmark_html_writer::Result::kCouldNotWriteNodes;
     }
 
     // Add the mobile bookmarks descendants: local, then account if they exist.
     if (!WriteDescendants(*mobile_folder_value)) {
-      NotifyOnFinish(BookmarksExportObserver::Result::kCouldNotWriteNodes);
-      return;
+      return bookmark_html_writer::Result::kCouldNotWriteNodes;
     }
     if (account_mobile_folder_value &&
         !WriteDescendants(*account_mobile_folder_value)) {
-      NotifyOnFinish(BookmarksExportObserver::Result::kCouldNotWriteNodes);
-      return;
+      return bookmark_html_writer::Result::kCouldNotWriteNodes;
     }
 
     DecrementIndent();
 
     if (!Write(kFolderChildrenEnd) || !Write(kNewline)) {
-      NotifyOnFinish(BookmarksExportObserver::Result::kCouldNotWriteNodes);
-      return;
+      return bookmark_html_writer::Result::kCouldNotWriteNodes;
     }
 
     // File close is forced so that unit test could read it.
     file_.reset();
 
-    NotifyOnFinish(BookmarksExportObserver::Result::kSuccess);
+    return bookmark_html_writer::Result::kSuccess;
   }
 
  private:
@@ -365,13 +355,6 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
   void DecrementIndent() {
     CHECK(!indent_.empty());
     indent_.resize(indent_.size() - kIndentSize, ' ');
-  }
-
-  // Called at the end of the export process.
-  void NotifyOnFinish(BookmarksExportObserver::Result result) {
-    if (observer_ != nullptr) {
-      observer_->OnExportFinished(result);
-    }
   }
 
   // Writes raw text out returning true on success. This does not escape
@@ -507,8 +490,8 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
       CHECK(url_string);
 
       std::string favicon_string;
-      auto itr = favicons_map_->find(*url_string);
-      if (itr != favicons_map_->end()) {
+      auto itr = favicons_map_.find(*url_string);
+      if (itr != favicons_map_.end()) {
         scoped_refptr<base::RefCountedMemory> data = itr->second;
         std::string favicon_base64_encoded = base::Base64Encode(*data);
         GURL favicon_url("data:image/png;base64," + favicon_base64_encoded);
@@ -554,10 +537,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
   base::FilePath path_;
 
   // Map that stores favicon per URL.
-  std::unique_ptr<BookmarkFaviconFetcher::URLFaviconMap> favicons_map_;
-
-  // Observer to be notified on finish.
-  raw_ptr<BookmarksExportObserver> observer_;
+  BookmarkFaviconFetcher::URLFaviconMap favicons_map_;
 
   // File we're writing to.
   std::unique_ptr<base::File> file_;
@@ -572,10 +552,9 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
 BookmarkFaviconFetcher::BookmarkFaviconFetcher(
     Profile* profile,
     const base::FilePath& path,
-    BookmarksExportObserver* observer)
-    : profile_(profile), path_(path), observer_(observer) {
+    bookmark_html_writer::BookmarksExportCallback callback)
+    : profile_(profile), path_(path), callback_(std::move(callback)) {
   DCHECK(!profile->IsOffTheRecord());
-  favicons_map_ = std::make_unique<URLFaviconMap>();
 }
 
 void BookmarkFaviconFetcher::ExportBookmarks() {
@@ -599,7 +578,7 @@ void BookmarkFaviconFetcher::ExportBookmarks() {
   if (!bookmark_urls_.empty()) {
     // There are bookmarks for which to fetch favicons, and the favicon map is
     // empty (since it was just created). There is therefore async work to do.
-    CHECK(favicons_map_->empty());
+    CHECK(favicons_map_.empty());
     CHECK(FetchNextFavicon());
   } else {
     ExecuteWriter();
@@ -621,12 +600,13 @@ void BookmarkFaviconFetcher::ExtractUrls(const BookmarkNode* node) {
 }
 
 void BookmarkFaviconFetcher::ExecuteWriter() {
-  base::ThreadPool::PostTask(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&Writer::DoWrite,
                      base::MakeRefCounted<Writer>(
                          BookmarkModelFactory::GetForBrowserContext(profile_),
-                         path_, favicons_map_.release(), observer_)));
+                         path_, std::move(favicons_map_))),
+      std::move(callback_));
   profile_->RemoveUserData(kBookmarkFaviconFetcherKey);
   // |this| is deleted!
 }
@@ -638,8 +618,8 @@ bool BookmarkFaviconFetcher::FetchNextFavicon() {
   do {
     std::string url = bookmark_urls_.front();
     // Filter out urls that we've already got favicon for.
-    URLFaviconMap::const_iterator iter = favicons_map_->find(url);
-    if (favicons_map_->end() == iter) {
+    URLFaviconMap::const_iterator iter = favicons_map_.find(url);
+    if (favicons_map_.end() == iter) {
       favicon::FaviconService* favicon_service =
           FaviconServiceFactory::GetForProfile(
               profile_, ServiceAccessType::EXPLICIT_ACCESS);
@@ -665,7 +645,7 @@ void BookmarkFaviconFetcher::OnFaviconDataAvailable(
     bookmark_urls_.pop_front();
   }
   if (bitmap_result.is_valid() && !url.is_empty()) {
-    favicons_map_->insert(make_pair(url.spec(), bitmap_result.bitmap_data));
+    favicons_map_.insert(make_pair(url.spec(), bitmap_result.bitmap_data));
   }
 
   if (FetchNextFavicon()) {
@@ -678,14 +658,14 @@ namespace bookmark_html_writer {
 
 void WriteBookmarks(Profile* profile,
                     const base::FilePath& path,
-                    BookmarksExportObserver* observer) {
+                    BookmarksExportCallback callback) {
   // We allow only one concurrent bookmark export operation per profile.
   if (profile->GetUserData(kBookmarkFaviconFetcherKey)) {
     return;
   }
 
-  auto fetcher =
-      std::make_unique<BookmarkFaviconFetcher>(profile, path, observer);
+  auto fetcher = std::make_unique<BookmarkFaviconFetcher>(profile, path,
+                                                          std::move(callback));
   auto* fetcher_ptr = fetcher.get();
   profile->SetUserData(kBookmarkFaviconFetcherKey, std::move(fetcher));
   fetcher_ptr->ExportBookmarks();

@@ -33,8 +33,7 @@ namespace tab_groups {
 TabGroupLocalUpdateObserver::TabGroupLocalUpdateObserver(
     BrowserList* browser_list,
     TabGroupSyncService* sync_service)
-    : sync_service_(sync_service),
-      browser_list_(browser_list) {
+    : sync_service_(sync_service), browser_list_(browser_list) {
   browser_list_observation_.Observe(browser_list);
   CHECK(browser_list_->BrowsersOfType(BrowserList::BrowserType::kRegular)
             .empty());

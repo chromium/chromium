@@ -63,6 +63,7 @@ OptimizationMetadata BuildMerchantTrustResponse() {
 class MockMerchantTrustServiceDelegate : public MerchantTrustService::Delegate {
  public:
   MOCK_METHOD(void, ShowEvaluationSurvey, (), (override));
+  MOCK_METHOD(double, GetSiteEngagementScore, (const GURL url), (override));
 };
 
 class MockMerchantTrustService : public MerchantTrustService {
@@ -276,6 +277,29 @@ TEST_F(MerchantTrustServiceTest, ExperimentSurveyDisabled) {
   feature_list.InitWithFeatureState(kMerchantTrustEvaluationExperimentSurvey,
                                     false);
   service()->MaybeShowEvaluationSurvey();
+}
+
+TEST_F(MerchantTrustServiceTest, RecordMerchantTrustInteractionFamiliarSite) {
+  base::HistogramTester t;
+  EXPECT_CALL(*delegate(), GetSiteEngagementScore(_))
+      .WillOnce(Return(kMerchantFamiliarityThreshold));
+  service()->RecordMerchantTrustInteraction(
+      GURL("https://foo.com"), MerchantTrustInteraction::kPageInfoRowShown);
+  t.ExpectUniqueSample(
+      "Security.PageInfo.MerchantTrustInteraction.FamiliarSite",
+      MerchantTrustInteraction::kPageInfoRowShown, 1);
+}
+
+TEST_F(MerchantTrustServiceTest, RecordMerchantTrustInteractionUnfamiliarSite) {
+  base::HistogramTester t;
+  EXPECT_CALL(*delegate(), GetSiteEngagementScore(_))
+      .WillOnce(Return(kMerchantFamiliarityThreshold - 0.1));
+  service()->RecordMerchantTrustInteraction(
+      GURL("https://foo.com"),
+      MerchantTrustInteraction::kBubbleOpenedFromPageInfo);
+  t.ExpectUniqueSample(
+      "Security.PageInfo.MerchantTrustInteraction.UnfamiliarSite",
+      MerchantTrustInteraction::kBubbleOpenedFromPageInfo, 1);
 }
 
 }  // namespace page_info

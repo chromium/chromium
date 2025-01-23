@@ -63,7 +63,6 @@ struct PresentedFrame {
 class ACCELERATED_WIDGET_MAC_EXPORT CALayerTreeCoordinator {
  public:
   CALayerTreeCoordinator(bool allow_av_sample_buffer_display_layer,
-                         bool new_presentation_feedback_timestamps,
                          BufferPresentedCallback buffer_preseneted_callback);
 
   CALayerTreeCoordinator(const CALayerTreeCoordinator&) = delete;
@@ -101,7 +100,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT CALayerTreeCoordinator {
 
   const bool allow_remote_layers_ = true;
   const bool allow_av_sample_buffer_display_layer_ = true;
-  const bool new_presentation_feedback_timestamps_;
   gfx::Size pixel_size_;
   float scale_factor_ = 1;
   gfx::CALayerResult ca_layer_error_code_ = gfx::kCALayerSuccess;

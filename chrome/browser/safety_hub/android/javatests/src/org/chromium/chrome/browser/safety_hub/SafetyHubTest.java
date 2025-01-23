@@ -337,9 +337,8 @@ public final class SafetyHubTest {
         scrollToPreference(withText(permissionsTitle));
         onView(withText(permissionsTitle)).check(matches(isDisplayed()));
 
-        // Module should be collapsed initially since it's in an info state.
-        verifyButtonsNextToTextVisibility(permissionsTitle, false);
-        expandPreferenceWithText(permissionsTitle);
+        // Module should be expanded initially since it's in an info state.
+        verifyButtonsNextToTextVisibility(permissionsTitle, true);
 
         // Open the permissions subpage.
         scrollToExpandedPreference(permissionsTitle);
@@ -666,6 +665,11 @@ public final class SafetyHubTest {
         expandPreferenceWithText(safeBrowsingTitle);
         verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
         verifySummaryNextToTextVisibility(safeBrowsingTitle, true);
+
+        // TODO(https://crbug.com/388788381): Reset all states, including the safe browsing state
+        // between tests in the tear down method.
+        // Reset Safe Browsing state so it doesn't leak to other tests.
+        setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
     }
 
     @Test

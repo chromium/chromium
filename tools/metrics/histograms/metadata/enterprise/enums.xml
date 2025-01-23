@@ -2194,6 +2194,7 @@ chromium-metrics-reviews@google.com.
   <int value="1330" label="ControlledFrameBlockedForUrls"/>
   <int value="1331" label="ExternalStorageAllowlist"/>
   <int value="1332" label="WebAuthenticationRemoteDesktopAllowedOrigins"/>
+  <int value="1333" label="ServiceWorkerToControlSrcdocIframeEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

@@ -448,7 +448,6 @@ const FeatureEntry::FeatureVariation kTabResumptionVariations[] = {
      kTabResumptionAllTabsOneDayThreshold,
      std::size(kTabResumptionAllTabsOneDayThreshold), nullptr}};
 
-
 const FeatureEntry::FeatureParam kBottomOmniboxDefaultSettingTop[] = {
     {kBottomOmniboxDefaultSettingParam, kBottomOmniboxDefaultSettingParamTop}};
 const FeatureEntry::FeatureParam kBottomOmniboxDefaultSettingBottom[] = {

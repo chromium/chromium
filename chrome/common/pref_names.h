@@ -4283,6 +4283,10 @@ inline constexpr char kExtensibleEnterpriseSSOEnabled[] =
 inline constexpr char kWebAudioOutputBufferingEnabled[] =
     "web_audio_output_buffering_enabled";
 
+// Boolean that specifies whether a ServiceWorker can control srcdoc iframe.
+inline constexpr char kServiceWorkerToControlSrcdocIframeEnabled[] =
+    "worker.service_worker_to_control_srcdoc_iframe_enabled";
+
 // Boolean that specifies whether a controller inherits if a blob URL
 // is set as a SharedWorker script URL.
 inline constexpr char kSharedWorkerBlobURLFixEnabled[] =

@@ -5924,9 +5924,12 @@ void NavigationRequest::InheritServiceWorkerControllerFromParentIfNeeded() {
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(
       frame_tree_node_->current_frame_host(),
       blink::mojom::WebFeature::kAboutSrcdocToBeControlledByServiceWorker);
-  if (!base::FeatureList::IsEnabled(features::kServiceWorkerSrcdocSupport)) {
+  if (!base::FeatureList::IsEnabled(features::kServiceWorkerSrcdocSupport) ||
+      !GetContentClient()->browser()->AllowServiceWorkerToControlSrcdocIframe(
+          frame_tree_node_->navigator().controller().GetBrowserContext())) {
     return;
   }
+
   StoragePartition* partition = GetStoragePartitionWithCurrentSiteInfo();
   auto* service_worker_context = static_cast<ServiceWorkerContextWrapper*>(
       partition->GetServiceWorkerContext());

@@ -147,6 +147,13 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
     quoted ^= _mm_slli_si128(quoted, 8);
     const __m128i mixed_quote =
         _mm_cmpeq_epi8(quoted, _mm_set1_epi8('\'' ^ '"'));
+    const __m128i is_quoted = _mm_cmpgt_epi8(quoted, _mm_setzero_si128());
+
+    // Unescaped newlines within quotes are not allowed; they terminate
+    // the string. We don't want to complicate our handling beyond
+    // detecting it, so we treat it as an error and abort.
+    const __m128i eq_newline = _mm_cmpeq_epi8(x, _mm_set1_epi8('\n'));
+    const __m128i quoted_newline = is_quoted & eq_newline;
 
     // Now we have a mask of bytes that are inside quotes
     // (which happens to include the first quote, though
@@ -159,7 +166,7 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
     // We can use this to simply ignore things inside strings.
     // (We don't need to mask next_x as it's only used for comments;
     // masking x will be sufficient.)
-    x = _mm_andnot_si128(_mm_cmpgt_epi8(quoted, _mm_setzero_si128()), x);
+    x = _mm_andnot_si128(is_quoted, x);
 
     // Look for start of comments; successive / and * characters.
     // We don't support them, as they are fairly rare and we'd need to
@@ -232,8 +239,9 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
     // We generally combine all of the end-parsing situations together
     // and figure out afterwards what the first one was, to determine
     // the return value.
-    const __m128i must_end = eq_backslash | mixed_quote | opening_block |
-                             comment_start | eq_rightbrace | parens;
+    const __m128i must_end = eq_backslash | mixed_quote | quoted_newline |
+                             opening_block | comment_start | eq_rightbrace |
+                             parens;
     if (_mm_movemask_epi8(must_end) != 0) {
       unsigned idx = __builtin_ctz(_mm_movemask_epi8(must_end));
       ptr += idx;
@@ -377,6 +385,9 @@ FindLengthOfDeclarationListAVX2(const CharType* begin, const CharType* end) {
     // parens within quotes.
     __m256i quoted_mask = MaskToAVX2(prefix_single_quote | prefix_double_quote);
 
+    const __m256i eq_newline = _mm256_cmpeq_epi8(x, _mm256_set1_epi8('\n'));
+    const __m256i quoted_newline = quoted_mask & eq_newline;
+
     const __m256i comment_start =
         _mm256_cmpeq_epi8(x, _mm256_set1_epi8('/')) &
         _mm256_cmpeq_epi8(next_x, _mm256_set1_epi8('*'));
@@ -402,7 +413,8 @@ FindLengthOfDeclarationListAVX2(const CharType* begin, const CharType* end) {
     uint64_t must_end =
         (_mm256_movemask_epi8(opening_block | comment_start | eq_rightbrace) &
          ~quoted_bitmask) |
-        mixed_quote | _mm256_movemask_epi8(parens | eq_backslash);
+        mixed_quote |
+        _mm256_movemask_epi8(parens | eq_backslash | quoted_newline);
     if (must_end != 0) {
       unsigned idx = __builtin_ctzll(must_end);
       ptr += idx;
@@ -510,7 +522,11 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
     quoted ^= prev_quoted;
     const uint8x16_t mixed_quote = quoted == static_cast<char>('\'' ^ '"');
 
-    x &= ~(quoted > vdupq_n_u8(0));
+    const uint8x16_t is_quoted = quoted > vdupq_n_u8(0);
+    const uint8x16_t eq_newline = x == '\n';
+    const uint8x16_t quoted_newline = is_quoted & eq_newline;
+
+    x &= ~is_quoted;
 
     const uint8x16_t comment_start = (x == '/') & (next_x == '*');
     const uint8x16_t opening_paren = x == '(';
@@ -541,8 +557,9 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
 
     const uint8x16_t opening_block = (x | vdupq_n_u8(0x20)) == '{';
     const uint8x16_t eq_rightbrace = x == '}';
-    uint8x16_t must_end = eq_backslash | mixed_quote | opening_block |
-                          comment_start | eq_rightbrace | parens_overflow;
+    uint8x16_t must_end = eq_backslash | mixed_quote | quoted_newline |
+                          opening_block | comment_start | eq_rightbrace |
+                          parens_overflow;
 
     // https://community.arm.com/arm-community-blogs/b/infrastructure-solutions-blog/posts/porting-x86-vector-bitmask-optimizations-to-arm-neon
     uint64_t must_end_narrowed = vget_lane_u64(

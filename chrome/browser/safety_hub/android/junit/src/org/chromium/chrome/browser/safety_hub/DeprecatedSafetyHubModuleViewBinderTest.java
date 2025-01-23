@@ -50,8 +50,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
     private SafetyHubExpandablePreference mPasswordCheckPreference;
     private PropertyModel mUpdateCheckPropertyModel;
     private SafetyHubExpandablePreference mUpdateCheckPreference;
-    private PropertyModel mPermissionsPropertyModel;
-    private SafetyHubExpandablePreference mPermissionsPreference;
     private PropertyModel mNotificationsReviewPropertyModel;
     private SafetyHubExpandablePreference mNotificationsReviewPreference;
     private PropertyModel mSafeBrowsingPropertyModel;
@@ -88,17 +86,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
                 mUpdateCheckPropertyModel,
                 mUpdateCheckPreference,
                 DeprecatedSafetyHubModuleViewBinder::bindUpdateCheckProperties);
-
-        // Set up permissions preference.
-        mPermissionsPreference = new SafetyHubExpandablePreference(mActivity, null);
-        mPermissionsPropertyModel =
-                new PropertyModel.Builder(
-                                DeprecatedSafetyHubModuleProperties.PERMISSIONS_MODULE_KEYS)
-                        .build();
-        PropertyModelChangeProcessor.create(
-                mPermissionsPropertyModel,
-                mPermissionsPreference,
-                DeprecatedSafetyHubModuleViewBinder::bindPermissionsProperties);
 
         // Set up notifications review preference.
         mNotificationsReviewPreference = new SafetyHubExpandablePreference(mActivity, null);
@@ -622,49 +609,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
     }
 
     @Test
-    public void testPermissionsModule_NoSitesWithUnusedPermissions() {
-        mPermissionsPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT, 0);
-
-        String expectedTitle = mActivity.getString(R.string.safety_hub_permissions_ok_title);
-        String expectedSummary = mActivity.getString(R.string.safety_hub_permissions_ok_summary);
-        String expectedSecondaryButtonText =
-                mActivity.getString(R.string.safety_hub_go_to_site_settings_button);
-
-        assertEquals(expectedTitle, mPermissionsPreference.getTitle().toString());
-        assertEquals(expectedSummary, mPermissionsPreference.getSummary().toString());
-        assertEquals(SAFE_ICON, shadowOf(mPermissionsPreference.getIcon()).getCreatedFromResId());
-        assertNull(mPermissionsPreference.getPrimaryButtonText());
-        assertEquals(expectedSecondaryButtonText, mPermissionsPreference.getSecondaryButtonText());
-    }
-
-    @Test
-    public void testPermissionsModule_WithSitesWithUnusedPermissions() {
-        int sitesWithUnusedPermissionsCount = 3;
-        mPermissionsPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
-                sitesWithUnusedPermissionsCount);
-        String expectedTitle =
-                mActivity
-                        .getResources()
-                        .getQuantityString(
-                                R.plurals.safety_hub_permissions_warning_title,
-                                sitesWithUnusedPermissionsCount,
-                                sitesWithUnusedPermissionsCount);
-        String expectedSummary =
-                mActivity.getString(R.string.safety_hub_permissions_warning_summary);
-        String expectedPrimaryButtonText = mActivity.getString(R.string.got_it);
-        String expectedSecondaryButtonText =
-                mActivity.getString(R.string.safety_hub_view_sites_button);
-
-        assertEquals(expectedTitle, mPermissionsPreference.getTitle().toString());
-        assertEquals(expectedSummary, mPermissionsPreference.getSummary().toString());
-        assertEquals(INFO_ICON, shadowOf(mPermissionsPreference.getIcon()).getCreatedFromResId());
-        assertEquals(expectedPrimaryButtonText, mPermissionsPreference.getPrimaryButtonText());
-        assertEquals(expectedSecondaryButtonText, mPermissionsPreference.getSecondaryButtonText());
-    }
-
-    @Test
     public void testNotificationsReviewModule_NoNotificationPermissions() {
         mNotificationsReviewPropertyModel.set(
                 DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT, 0);
@@ -931,7 +875,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
         updateStatus.latestVersion = "1.1.1.1";
         int totalPasswordsCount = 1;
         int compromisedPasswordsCount = 0;
-        int sitesWithUnusedPermissionsCount = 0;
         int notificationPermissionsForReviewCount = 0;
 
         mPasswordCheckPropertyModel.set(DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN, true);
@@ -944,9 +887,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
                 compromisedPasswordsCount);
         mPasswordCheckPropertyModel.set(
                 DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
-        mPermissionsPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
-                sitesWithUnusedPermissionsCount);
         mNotificationsReviewPropertyModel.set(
                 DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
                 notificationPermissionsForReviewCount);
@@ -956,7 +896,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
                         mUpdateCheckPreference.getOrder(),
                         mPasswordCheckPreference.getOrder(),
                         mSafeBrowsingPreference.getOrder(),
-                        mPermissionsPreference.getOrder(),
                         mNotificationsReviewPreference.getOrder());
         Collections.sort(actualOrder);
 
@@ -969,7 +908,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
                         mUpdateCheckPreference.getOrder(),
                         mPasswordCheckPreference.getOrder(),
                         mSafeBrowsingPreference.getOrder(),
-                        mPermissionsPreference.getOrder(),
                         mNotificationsReviewPreference.getOrder()));
     }
 
@@ -978,7 +916,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
         @SafeBrowsingState int safeBrowsingState = SafeBrowsingState.NO_SAFE_BROWSING;
         int totalPasswordsCount = 10;
         int compromisedPasswordsCount = 6;
-        int sitesWithUnusedPermissionsCount = 0;
         int notificationPermissionsForReviewCount = 5;
 
         // Unmanaged warning state should rank first.
@@ -1003,17 +940,11 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
                 DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
                 notificationPermissionsForReviewCount);
 
-        // Safe state should rank last.
-        mPermissionsPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
-                sitesWithUnusedPermissionsCount);
-
         List<Integer> actualOrder =
                 Arrays.asList(
                         mUpdateCheckPreference.getOrder(),
                         mPasswordCheckPreference.getOrder(),
                         mSafeBrowsingPreference.getOrder(),
-                        mPermissionsPreference.getOrder(),
                         mNotificationsReviewPreference.getOrder());
         Collections.sort(actualOrder);
 
@@ -1026,7 +957,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
                         mPasswordCheckPreference.getOrder(),
                         mUpdateCheckPreference.getOrder(),
                         mSafeBrowsingPreference.getOrder(),
-                        mNotificationsReviewPreference.getOrder(),
-                        mPermissionsPreference.getOrder()));
+                        mNotificationsReviewPreference.getOrder()));
     }
 }

@@ -56,6 +56,11 @@ final class SigninPromoViewBinder {
                             ? View.GONE
                             : View.VISIBLE;
             view.getSecondaryButton().setVisibility(visibility);
+            int lastViewId =
+                    visibility == View.GONE
+                            ? view.getPrimaryButton().getId()
+                            : view.getSecondaryButton().getId();
+            view.getDismissButton().setAccessibilityTraversalAfter(lastViewId);
         } else if (key == SigninPromoProperties.SHOULD_HIDE_DISMISS_BUTTON) {
             view.getDismissButton()
                     .setVisibility(

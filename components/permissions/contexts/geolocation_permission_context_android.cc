@@ -104,7 +104,12 @@ void GeolocationPermissionContextAndroid::RequestPermission(
   request_data.embedding_origin = PermissionUtil::GetLastCommittedOriginAsURL(
       render_frame_host->GetMainFrame());
 
-  if (!IsLocationAccessPossible(web_contents, request_data.requesting_origin,
+  // Relax the location access check if the request comes from a permission
+  // element and still keep the whole permission process going. We'll check the
+  // status later when we show a prompt and help the user fix it if they haven't
+  // given us location access yet.
+  if (!request_data.embedded_permission_element_initiated &&
+      !IsLocationAccessPossible(web_contents, request_data.requesting_origin,
                                 request_data.user_gesture)) {
     NotifyPermissionSet(request_data.id, request_data.requesting_origin,
                         request_data.embedding_origin, std::move(callback),

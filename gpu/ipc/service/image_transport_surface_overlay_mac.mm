@@ -47,11 +47,6 @@ BASE_FEATURE(kAVFoundationOverlays,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
-// Use CVDisplayLink timing for PresentationFeedback timestamps.
-BASE_FEATURE(kNewPresentationFeedbackTimeStamps,
-             "NewPresentationFeedbackTimeStamps",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPresentationDelayForInteractiveFrames,
              "PresentationDelayForInteractiveFrames",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -81,14 +76,9 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
   auto buffer_presented_callback =
       base::BindRepeating(&ImageTransportSurfaceOverlayMacEGL::BufferPresented,
                           weak_ptr_factory_.GetWeakPtr());
-  bool use_new_presentation_timestamps = false;
-#if BUILDFLAG(IS_MAC)
-  use_new_presentation_timestamps =
-      base::FeatureList::IsEnabled(kNewPresentationFeedbackTimeStamps);
-#endif
+
   ca_layer_tree_coordinator_ = std::make_unique<ui::CALayerTreeCoordinator>(
-      !av_disabled_at_command_line, use_new_presentation_timestamps,
-      std::move(buffer_presented_callback));
+      !av_disabled_at_command_line, std::move(buffer_presented_callback));
 }
 
 ImageTransportSurfaceOverlayMacEGL::~ImageTransportSurfaceOverlayMacEGL() {
@@ -280,11 +270,6 @@ void ImageTransportSurfaceOverlayMacEGL::SetMaxPendingSwaps(
 
 #if BUILDFLAG(IS_MAC)
 void ImageTransportSurfaceOverlayMacEGL::SetVSyncDisplayID(int64_t display_id) {
-  if (!features::IsVSyncAlignedPresentEnabled() &&
-      !base::FeatureList::IsEnabled(kNewPresentationFeedbackTimeStamps)) {
-    return;
-  }
-
   if ((!display_link_mac_ || display_id != display_id_) &&
       display_id != display::kInvalidDisplayId) {
     vsync_callback_mac_ = nullptr;

@@ -24,6 +24,8 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -69,32 +71,6 @@ SkBitmap MakeTestSkBitmap(int w, int h) {
 }
 
 }  // namespace
-
-// Class that will notify message loop when file is written.
-class BookmarksObserver : public BookmarksExportObserver {
- public:
-  BookmarksObserver() = default;
-
-  BookmarksObserver(const BookmarksObserver&) = delete;
-  BookmarksObserver& operator=(const BookmarksObserver&) = delete;
-
-  void OnExportFinished(Result result) override {
-    result_ = result;
-    loop_.Quit();
-  }
-
-  // Returns the result of the export - must only be called after the loop has
-  // been run.
-  Result WaitForResult() {
-    loop_.Run();
-    CHECK(result_.has_value());
-    return result_.value();
-  }
-
- private:
-  base::RunLoop loop_;
-  std::optional<Result> result_;
-};
 
 class BookmarkHTMLWriterTest : public testing::Test {
  protected:
@@ -180,11 +156,12 @@ class BookmarkHTMLWriterTest : public testing::Test {
                           MakeTestSkBitmap(kIconWidth, kIconHeight)));
   }
 
-  BookmarksExportObserver::Result WriteBookmarksAndWait() {
-    // Write to a temp file.
-    BookmarksObserver observer;
-    bookmark_html_writer::WriteBookmarks(profile(), path_, &observer);
-    return observer.WaitForResult();
+  bookmark_html_writer::Result WriteBookmarksAndWait() {
+    // Write to a temp file and return the async result.
+    base::test::TestFuture<bookmark_html_writer::Result> future;
+    bookmark_html_writer::WriteBookmarks(profile(), path_,
+                                         future.GetCallback());
+    return future.Get();
   }
 
   // Converts an ImportedBookmarkEntry to a string suitable for assertion
@@ -279,7 +256,7 @@ TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenNoBookmarks) {
   // No bookmarks in the model.
 
   // Export.
-  ASSERT_EQ(WriteBookmarksAndWait(), BookmarksExportObserver::Result::kSuccess);
+  ASSERT_EQ(WriteBookmarksAndWait(), bookmark_html_writer::Result::kSuccess);
 
   // Check against the golden file.
   EXPECT_TRUE(base::TextContentsEqual(
@@ -294,7 +271,7 @@ TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenNoBookmarksWithAccount) {
   model()->CreateAccountPermanentFolders();
 
   // Export.
-  ASSERT_EQ(WriteBookmarksAndWait(), BookmarksExportObserver::Result::kSuccess);
+  ASSERT_EQ(WriteBookmarksAndWait(), bookmark_html_writer::Result::kSuccess);
 
   // Check against the golden file.
   EXPECT_TRUE(base::TextContentsEqual(
@@ -313,7 +290,7 @@ TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenBookmarksInLocalBookmarkBar) {
   PopulateBookmarks(model()->bookmark_bar_node());
 
   // Export.
-  ASSERT_EQ(WriteBookmarksAndWait(), BookmarksExportObserver::Result::kSuccess);
+  ASSERT_EQ(WriteBookmarksAndWait(), bookmark_html_writer::Result::kSuccess);
 
   // Check against the golden file.
   EXPECT_TRUE(base::TextContentsEqual(
@@ -336,7 +313,7 @@ TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenBookmarksInAccountBookmarkBar) {
   PopulateBookmarks(model()->account_bookmark_bar_node());
 
   // Export.
-  ASSERT_EQ(WriteBookmarksAndWait(), BookmarksExportObserver::Result::kSuccess);
+  ASSERT_EQ(WriteBookmarksAndWait(), bookmark_html_writer::Result::kSuccess);
 
   // Check against the golden file.
   EXPECT_TRUE(base::TextContentsEqual(
@@ -355,7 +332,7 @@ TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenBookmarksInLocalOther) {
   PopulateBookmarks(model()->other_node());
 
   // Export.
-  ASSERT_EQ(WriteBookmarksAndWait(), BookmarksExportObserver::Result::kSuccess);
+  ASSERT_EQ(WriteBookmarksAndWait(), bookmark_html_writer::Result::kSuccess);
 
   // Check against the golden file.
   EXPECT_TRUE(base::TextContentsEqual(
@@ -378,7 +355,7 @@ TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenBookmarksInAccountOther) {
   PopulateBookmarks(model()->account_other_node());
 
   // Export.
-  ASSERT_EQ(WriteBookmarksAndWait(), BookmarksExportObserver::Result::kSuccess);
+  ASSERT_EQ(WriteBookmarksAndWait(), bookmark_html_writer::Result::kSuccess);
 
   // Check against the golden file.
   EXPECT_TRUE(base::TextContentsEqual(
@@ -457,7 +434,7 @@ TEST_F(BookmarkHTMLWriterTest, ExportThenImport) {
                   unnamed_bookmark_url, nullptr, t2);
 
   // Export.
-  ASSERT_EQ(WriteBookmarksAndWait(), BookmarksExportObserver::Result::kSuccess);
+  ASSERT_EQ(WriteBookmarksAndWait(), bookmark_html_writer::Result::kSuccess);
 
   // Clear favicon so that it would be read from file.
   FaviconServiceFactory::GetForProfile(profile(),

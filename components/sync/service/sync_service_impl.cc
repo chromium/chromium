@@ -1620,6 +1620,9 @@ void SyncServiceImpl::ConfigureDataTypeManager(ConfigureReason reason) {
       .sync_mode = SyncMode::kFull,
       .reason = reason,
       .configuration_start_time = base::Time::Now()};
+  base::UmaHistogramBoolean("Sync.ConfigureDataTypeManager.IsGaiaAccountId",
+                            GetAccountInfo().account_id.ToString() ==
+                                GetAccountInfo().gaia.ToString());
 
   DCHECK(!configure_context.cache_guid.empty());
 
