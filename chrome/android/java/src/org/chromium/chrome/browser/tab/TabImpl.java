@@ -1447,6 +1447,7 @@ class TabImpl implements Tab {
                     // Navigating back to native pages.
                     mNativePageSmoothTransitionDelegate.start(
                             () -> {
+                                if (isDestroyed()) return;
                                 getWebContents().onContentForNavigationEntryShown();
                                 notifyContentChanged();
                             });
