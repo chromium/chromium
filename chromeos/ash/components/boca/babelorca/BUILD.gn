@@ -20,6 +20,8 @@ static_library("babelorca") {
     "babel_orca_producer.h",
     "babel_orca_speech_recognizer.h",
     "babel_orca_translation_dispatcher.h",
+    "babel_orca_translation_dispatcher_impl.cc",
+    "babel_orca_translation_dispatcher_impl.h",
     "caption_controller.cc",
     "caption_controller.h",
     "live_caption_controller_wrapper.h",
