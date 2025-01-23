@@ -11,6 +11,7 @@ source_set("unit_tests") {
   }
 
   sources = [
+    "btm_page_visit_observer_unittest.cc",
     "cookie_access_filter_unittest.cc",
     "dips_bounce_detector_unittest.cc",
     "dips_database_migrator_unittest.cc",
