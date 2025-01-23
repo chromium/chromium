@@ -467,4 +467,17 @@ int GetNewSessionID() {
   return base::RandInt(1, 1 << 30);
 }
 
+FedCmRequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,
+                                                  const url::Origin& requester,
+                                                  const url::Origin& embedder) {
+  // Since FedCM methods are not supported in FencedFrames, we can know whether
+  // this is a main frame by calling GetParent().
+  if (!rfh.GetParent()) {
+    return FedCmRequesterFrameType::kMainFrame;
+  }
+  return IsSameSite(requester, embedder)
+             ? FedCmRequesterFrameType::kSameSiteIframe
+             : FedCmRequesterFrameType::kCrossSiteIframe;
+}
+
 }  // namespace content::webid

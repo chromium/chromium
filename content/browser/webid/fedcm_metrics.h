@@ -385,7 +385,8 @@ class CONTENT_EXPORT FedCmMetrics {
       const RpMode& rp_mode,
       std::optional<FedCmUseOtherAccountResult> use_other_account_result,
       std::optional<FedCmVerifyingDialogResult> verifying_dialog_result,
-      FedCmThirdPartyCookiesStatus tpc_status);
+      FedCmThirdPartyCookiesStatus tpc_status,
+      const FedCmRequesterFrameType& requester_frame_type);
 
   // Records whether user sign-in states between IDP and browser match.
   void RecordSignInStateMatchStatus(const GURL& provider,
@@ -450,13 +451,12 @@ class CONTENT_EXPORT FedCmMetrics {
   // disconnect fetch request was not sent, in which case we do not log the
   // metric. Because this is a separate API from a token request, a different
   // session ID is passed to this metric.
-  void RecordDisconnectMetrics(FedCmDisconnectStatus status,
-                               std::optional<base::TimeDelta> duration,
-                               const RenderFrameHost& rfh,
-                               const url::Origin& requester,
-                               const url::Origin& embedder,
-                               const GURL& provider_url,
-                               int disconnect_session_id);
+  void RecordDisconnectMetrics(
+      FedCmDisconnectStatus status,
+      std::optional<base::TimeDelta> duration,
+      const FedCmRequesterFrameType& requester_frame_type,
+      const GURL& provider_url,
+      int disconnect_session_id);
 
   // Records the status of opening the continue_on dialog.
   void RecordContinueOnPopupStatus(FedCmContinueOnPopupStatus status);
@@ -520,9 +520,9 @@ class CONTENT_EXPORT FedCmMetrics {
 // The following metric is recorded for UMA and UKM, but does not require an
 // existing FedCM call. Records metrics associated with a preventSilentAccess()
 // call from the given RenderFrameHost.
-void RecordPreventSilentAccess(RenderFrameHost& rfh,
-                               const url::Origin& requester,
-                               const url::Origin& embedder);
+void RecordPreventSilentAccess(
+    const FedCmRequesterFrameType& requester_frame_type,
+    int session_id);
 
 // The following are UMA-only recordings, hence do not need to be in the
 // FedCmMetrics class.

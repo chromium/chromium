@@ -3756,8 +3756,8 @@ be describing additional metrics about the same event.
     <summary>
       Records the type of frame that invokes disconnect(). Records once for each
       disconnect() call. Possible values are: main frame, same-site iframe, and
-      cross-site iframe, where the site of the iframe is compared with the site
-      of the main frame.
+      cross-site iframe, where the site of the caller frame is compared with the
+      site of the main frame.
     </summary>
   </metric>
   <metric name="DomainHint.NumMatchingAccounts" enum="FedCmNumAccounts">
@@ -3789,6 +3789,15 @@ be describing additional metrics about the same event.
       Records the session ID associated to the FedCM call for which this event
       is recording metrics. Each FedCM call gets a random integer session id,
       which helps group UKM events by the session id.
+    </summary>
+  </metric>
+  <metric name="FrameType" enum="FedCmRequesterFrameType">
+    <summary>
+      Records the type of frame that invokes the FedCM API. Records once per API
+      call. Possible values are: main frame, same-site iframe, and cross-site
+      iframe, where the site of the caller frame is compared with the site of
+      the main frame. Same-origin iframes are recorded under the same-site
+      category.
     </summary>
   </metric>
   <metric name="LoginHint.NumMatchingAccounts" enum="FedCmNumAccounts">
@@ -3846,7 +3855,8 @@ be describing additional metrics about the same event.
       when there is an existing FedCM sharing permission on the main frame, and
       some frame in the page invokes the preventSilentAccess() JavaScript call.
       Possible values are: main frame, same-site iframe, and cross-site iframe,
-      where the site of the iframe is compared with the site of the main frame.
+      where the site of the caller frame is compared with the site of the main
+      frame.
     </summary>
   </metric>
   <metric name="RpMode" enum="FedCmRpMode">
@@ -4027,8 +4037,8 @@ be describing additional metrics about the same event.
     <summary>
       Records the type of frame that invokes disconnect(). Records once for each
       disconnect() call. Possible values are: main frame, same-site iframe, and
-      cross-site iframe, where the site of the iframe is compared with the site
-      of the main frame.
+      cross-site iframe, where the site of the caller frame is compared with the
+      site of the main frame.
     </summary>
   </metric>
   <metric name="Error.ErrorDialogResult" enum="FedCmErrorDialogResult">
@@ -4061,6 +4071,15 @@ be describing additional metrics about the same event.
       Records the session ID associated to the FedCM call for which this event
       is recording metrics. Each FedCM call gets a random integer session id,
       which helps group UKM events by the session id.
+    </summary>
+  </metric>
+  <metric name="FrameType" enum="FedCmRequesterFrameType">
+    <summary>
+      Records the type of frame that invokes the FedCM API. Records once per API
+      call. Possible values are: main frame, same-site iframe, and cross-site
+      iframe, where the site of the caller frame is compared with the site of
+      the main frame. Same-origin iframes are recorded under the same-site
+      category.
     </summary>
   </metric>
   <metric name="MismatchDialogShown" enum="BooleanHit">

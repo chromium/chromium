@@ -3010,6 +3010,9 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.VerifyingDialogResult",
       static_cast<int>(FedCmVerifyingDialogResult::kSuccessExplicit), 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.FrameType",
+      static_cast<int>(FedCmRequesterFrameType::kMainFrame), 1);
 
   ExpectUKMPresence("Timing.ShowAccountsDialog");
   ExpectUKMPresenceInternal(
@@ -3030,6 +3033,8 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   ExpectUkmValue(
       "VerifyingDialogResult",
       static_cast<int>(FedCmVerifyingDialogResult::kSuccessExplicit));
+  ExpectUkmValue("FrameType",
+                 static_cast<int>(FedCmRequesterFrameType::kMainFrame));
 
   ExpectStatusMetrics(TokenStatus::kSuccessUsingTokenInHttpResponse);
   CheckAllFedCmSessionIDs();

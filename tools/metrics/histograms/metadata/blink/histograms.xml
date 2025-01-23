@@ -1495,8 +1495,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the type of frame that invokes disconnect(). Records once for each
     disconnect() call. Possible values are: main frame, same-site iframe, and
-    cross-site iframe, where the site of the iframe is compared with the site of
-    the main frame.
+    cross-site iframe, where the site of the caller frame is compared with the
+    site of the main frame.
   </summary>
 </histogram>
 
@@ -1547,6 +1547,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the type of token response received. Recorded at most once per API
     call when a token response received.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.FrameType" enum="FedCmRequesterFrameType"
+    expires_after="2025-08-12">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the type of frame that invokes the FedCM API call. Records once per
+    API call. Possible values are: main frame, same-site iframe, and cross-site
+    iframe, where the site of the caller frame is compared with the site of the
+    main frame. Same-origin iframes are recorded under the same-site category.
   </summary>
 </histogram>
 
@@ -1768,7 +1780,8 @@ chromium-metrics-reviews@google.com.
     when there is an existing FedCM sharing permission on the main frame, and
     some frame in the page invokes the preventSilentAccess() JavaScript call.
     Possible values are: main frame, same-site iframe, and cross-site iframe,
-    where the site of the iframe is compared with the site of the main frame.
+    where the site of the caller frame is compared with the site of the main
+    frame.
   </summary>
 </histogram>
 

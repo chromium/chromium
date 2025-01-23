@@ -770,7 +770,9 @@ void FederatedAuthRequestImpl::RequestToken(
           /*verifying_dialog_result=*/std::nullopt,
           api_permission_delegate_->AreThirdPartyCookiesEnabledInSettings()
               ? FedCmThirdPartyCookiesStatus::kEnabledInSettings
-              : FedCmThirdPartyCookiesStatus::kDisabledInSettings);
+              : FedCmThirdPartyCookiesStatus::kDisabledInSettings,
+          webid::ComputeRequesterFrameType(render_frame_host(), origin(),
+                                           GetEmbeddingOrigin()));
 
       AddDevToolsIssue(
           blink::mojom::FederatedAuthRequestResult::kTooManyRequests);
@@ -2917,7 +2919,9 @@ void FederatedAuthRequestImpl::CompleteRequest(
         verifying_dialog_result_,
         api_permission_delegate_->AreThirdPartyCookiesEnabledInSettings()
             ? FedCmThirdPartyCookiesStatus::kEnabledInSettings
-            : FedCmThirdPartyCookiesStatus::kDisabledInSettings);
+            : FedCmThirdPartyCookiesStatus::kDisabledInSettings,
+        webid::ComputeRequesterFrameType(render_frame_host(), origin(),
+                                         GetEmbeddingOrigin()));
   }
 
   if (result == FederatedAuthRequestResult::kSuccess) {
@@ -3528,8 +3532,16 @@ void FederatedAuthRequestImpl::PreventSilentAccess(
     PreventSilentAccessCallback callback) {
   SetRequiresUserMediation(true, std::move(callback));
   if (permission_delegate_->HasSharingPermission(GetEmbeddingOrigin())) {
-    RecordPreventSilentAccess(render_frame_host(), origin(),
-                              GetEmbeddingOrigin());
+    // Ensure the lifecycle state as GetPageUkmSourceId doesn't support the
+    // prerendering page. As FederatedAuthRequest runs behind the
+    // BrowserInterfaceBinders, the service doesn't receive any request while
+    // prerendering, and the CHECK should always meet the condition.
+    CHECK(!render_frame_host().IsInLifecycleState(
+        RenderFrameHost::LifecycleState::kPrerendering));
+    RecordPreventSilentAccess(
+        webid::ComputeRequesterFrameType(render_frame_host(), origin(),
+                                         GetEmbeddingOrigin()),
+        render_frame_host().GetPageUkmSourceId());
   }
 }
 
@@ -3548,7 +3560,8 @@ void FederatedAuthRequestImpl::Disconnect(
             FedCmDisconnectStatus::kTooManyRequests));
     fedcm_metrics_->RecordDisconnectMetrics(
         FedCmDisconnectStatus::kTooManyRequests, std::nullopt,
-        render_frame_host(), origin(), GetEmbeddingOrigin(),
+        webid::ComputeRequesterFrameType(render_frame_host(), origin(),
+                                         GetEmbeddingOrigin()),
         options->config->config_url, webid::GetNewSessionID());
     std::move(callback).Run(DisconnectStatus::kErrorTooManyRequests);
     return;
