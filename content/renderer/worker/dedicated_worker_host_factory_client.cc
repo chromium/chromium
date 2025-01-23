@@ -168,7 +168,11 @@ void DedicatedWorkerHostFactoryClient::OnScriptLoadStarted(
         subresource_loader_updater,
     blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
     mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>
-        back_forward_cache_controller_host) {
+        back_forward_cache_controller_host,
+    mojo::PendingReceiver<blink::mojom::ReportingObserver>
+        coep_reporting_observer,
+    mojo::PendingReceiver<blink::mojom::ReportingObserver>
+        dip_reporting_observer) {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
   DCHECK(main_script_load_params);
   DCHECK(pending_subresource_loader_factory_bundle);
@@ -210,7 +214,9 @@ void DedicatedWorkerHostFactoryClient::OnScriptLoadStarted(
   worker_main_script_load_params->url_loader_client_endpoints =
       std::move(main_script_load_params->url_loader_client_endpoints);
   worker_->OnScriptLoadStarted(std::move(worker_main_script_load_params),
-                               std::move(back_forward_cache_controller_host));
+                               std::move(back_forward_cache_controller_host),
+                               std::move(coep_reporting_observer),
+                               std::move(dip_reporting_observer));
 }
 
 void DedicatedWorkerHostFactoryClient::OnScriptLoadStartFailed() {

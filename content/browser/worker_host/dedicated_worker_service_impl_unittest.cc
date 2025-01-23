@@ -101,7 +101,11 @@ class MockDedicatedWorker
           subresource_loader_updater,
       blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
       mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>
-          back_forward_cache_controller_host) override {}
+          back_forward_cache_controller_host,
+      mojo::PendingReceiver<blink::mojom::ReportingObserver>
+          coep_reporting_observer,
+      mojo::PendingReceiver<blink::mojom::ReportingObserver>
+          dip_reporting_observer) override {}
   void OnScriptLoadStartFailed() override {}
 
  private:
