@@ -44,7 +44,6 @@ NSString* const kLastSignificantUserEventMadeForIOS =
 NSString* const kLastSignificantUserEventAllTabs =
     @"lastSignificantUserEventAllTabs";
 
-
 // Key in storage containing an int indicating the number of times the
 // user has interacted with a non-modal promo.
 NSString* const kUserInteractedWithNonModalPromoCount =
