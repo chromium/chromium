@@ -1725,7 +1725,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     @Override
-    protected boolean shouldContentFitWindowInsets() {
+    protected boolean wrapContentWithEdgeToEdgeLayout() {
         return EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()
                 && !EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()
                 && !EdgeToEdgeUtils.isEdgeToEdgeWebOptInEnabled();

@@ -361,11 +361,12 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     }
 
     /**
-     * Returns true if the content hosted by this activity should fit within the window insets, or
-     * false if the content can extend beyond the insets and draw edge-to-edge.
+     * Returns true if this activity should wrap its content within an edge-to-edge layout, allowing
+     * it to draw edge-to-edge while still automatically fitting its content within the system
+     * window insets.
      */
-    protected boolean shouldContentFitWindowInsets() {
-        return supportsEdgeToEdge();
+    protected boolean wrapContentWithEdgeToEdgeLayout() {
+        return EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled();
     }
 
     /**
@@ -529,7 +530,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             ViewStub stub = findViewById(R.id.original_layout);
             stub.setLayoutResource(layoutResID);
             stub.inflate();
-        } else if (shouldContentFitWindowInsets()) {
+        } else if (wrapContentWithEdgeToEdgeLayout()) {
             FrameLayout baseLayout = new FrameLayout(this);
             super.setContentView(ensureEdgeToEdgeLayoutCoordinator().wrapContentView(baseLayout));
             getLayoutInflater().inflate(layoutResID, baseLayout, /* attachToRoot= */ true);
@@ -547,7 +548,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             setAutomotiveToolbarBackButtonAction();
             LinearLayout linearLayout = findViewById(R.id.automotive_base_linear_layout);
             linearLayout.addView(view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        } else if (shouldContentFitWindowInsets()) {
+        } else if (wrapContentWithEdgeToEdgeLayout()) {
             super.setContentView(ensureEdgeToEdgeLayoutCoordinator().wrapContentView(view));
         } else {
             super.setContentView(view);
@@ -564,7 +565,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             LinearLayout linearLayout = findViewById(R.id.automotive_base_linear_layout);
             linearLayout.setLayoutParams(params);
             linearLayout.addView(view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        } else if (shouldContentFitWindowInsets()) {
+        } else if (wrapContentWithEdgeToEdgeLayout()) {
             super.setContentView(ensureEdgeToEdgeLayoutCoordinator().wrapContentView(view, params));
         } else {
             super.setContentView(view, params);
@@ -587,7 +588,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                     automotiveLayout, new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
             setAutomotiveToolbarBackButtonAction();
             automotiveLayout.addView(view, params);
-        } else if (shouldContentFitWindowInsets()) {
+        } else if (wrapContentWithEdgeToEdgeLayout()) {
             super.setContentView(ensureEdgeToEdgeLayoutCoordinator().wrapContentView(view, params));
         } else {
             super.addContentView(view, params);
