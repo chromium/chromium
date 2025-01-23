@@ -4594,6 +4594,14 @@
     Comparison tables are saved in your Google Account
   </message>
 
+    <!-- Experimental settings - Password Change -->
+  <message name="IDS_SETTINGS_PASSWORD_CHANGE_LABEL" translateable="false" desc="Primary label for password change entry in settings.">
+    Password Change
+  </message>
+  <message name="IDS_SETTINGS_PASSWORD_CHANGE_SUBLABEL" desc="Sublabel for password change entry in settings.">
+    When Chrome finds one of your passwords in a data breach, it can offer to change your password for you when you sign in
+  </message>
+
   <!-- Experimental Glic settings -->
   <message name="IDS_SETTINGS_GLIC_PAGE_TITLE" translateable="false" desc="Name of the Glic settings page.">
     Glic

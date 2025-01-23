@@ -39,6 +39,7 @@ export interface SettingsRoutes {
   MANAGE_PROFILE: Route;
   OFFER_WRITING_HELP: Route;
   ON_STARTUP: Route;
+  PASSWORD_CHANGE: Route;
   PASSKEYS: Route;
   PAYMENTS: Route;
   PEOPLE: Route;

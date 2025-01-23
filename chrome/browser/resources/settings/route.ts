@@ -219,6 +219,9 @@ function createRoutes(): SettingsRoutes {
       if (loadTimeData.getBoolean('showCompareControl')) {
         r.COMPARE = r.AI.createChild('/ai/compareProducts');
       }
+      if (loadTimeData.getBoolean('showPasswordChangeControl')) {
+        r.PASSWORD_CHANGE = r.AI.createChild('/ai/passwordChange');
+      }
     }
   }
 

@@ -75,6 +75,11 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         value: () => loadTimeData.getBoolean('showWallpaperSearchControl'),
       },
 
+      showPasswordChangeControl_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showPasswordChangeControl'),
+      },
+
       focusConfig_: {
         type: Object,
         value() {
@@ -98,6 +103,10 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
 
           if (routes.AUTOFILL_AI) {
             map.set(routes.AUTOFILL_AI.path, '#autofillAiRowV2');
+          }
+
+          if (routes.PASSWORD_CHANGE) {
+            map.set(routes.PASSWORD_CHANGE.path, '#passwordChangeRowV2');
           }
 
           return map;
@@ -222,6 +231,11 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
 
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().AI_TAB_ORGANIZATION);
+  }
+
+  private onPasswordChangeRowClick_() {
+    const router = Router.getInstance();
+    router.navigateTo(router.getRoutes().PASSWORD_CHANGE);
   }
 
   private onWallpaperSearchRowClick_() {
