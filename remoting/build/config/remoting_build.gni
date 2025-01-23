@@ -32,5 +32,6 @@ declare_args() {
   }
 
   # Set to true to enable using Crashpad instead of Breakpad.
+  # Currently, this is only implemented for linux.
   enable_chromoting_crashpad = false
 }
