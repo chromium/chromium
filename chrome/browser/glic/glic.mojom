@@ -144,6 +144,9 @@ interface WebClientHandler {
   // Set the areas of the Glic panel from which it should be draggable. If
   // `draggable_areas` is empty, the panel will use the top bar area by default.
   // Returns when the browser has updated the draggable area.
+  // Any web elements that are in the draggable area must set "draggable=false"
+  // to avoid conflicting with dragging the Glic panel. This includes text
+  // elements like <h1> and <h2>.
   SetPanelDraggableAreas(array<gfx.mojom.Rect> draggable_areas) => ();
 
   // Set the state of the Microphone permission pref:
