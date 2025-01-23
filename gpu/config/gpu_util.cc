@@ -693,11 +693,17 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
 
 void SetKeysForCrashLogging(const GPUInfo& gpu_info) {
   const GPUInfo::GPUDevice& active_gpu = gpu_info.active_gpu();
+  // Don't record vendor/device ids on Android when running with GL.
+  constexpr bool record_zero_ids = !BUILDFLAG(IS_ANDROID);
+  if (record_zero_ids || active_gpu.vendor_id) {
+    crash_keys::gpu_vendor_id.Set(
+        base::StringPrintf("0x%04x", active_gpu.vendor_id));
+  }
+  if (record_zero_ids || active_gpu.device_id) {
+    crash_keys::gpu_device_id.Set(
+        base::StringPrintf("0x%04x", active_gpu.device_id));
+  }
 #if !BUILDFLAG(IS_ANDROID)
-  crash_keys::gpu_vendor_id.Set(
-      base::StringPrintf("0x%04x", active_gpu.vendor_id));
-  crash_keys::gpu_device_id.Set(
-      base::StringPrintf("0x%04x", active_gpu.device_id));
   crash_keys::gpu_count.Set(base::StringPrintf("%d", gpu_info.GpuCount()));
 #endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)
