@@ -538,8 +538,9 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
   const PhysicalOffset scroll_container_border_offset(
       scroll_container->BorderLeft(), scroll_container->BorderTop());
 
-  MapCoordinatesFlags flags =
-      kIgnoreTransforms | kIgnoreScrollOffset | kIgnoreStickyOffset;
+  MapCoordinatesFlags flags = kIgnoreTransforms | kIgnoreScrollOffset |
+                              kIgnoreStickyOffset |
+                              kIgnoreScrollOriginAndOffset;
 
   // Compute the sticky-container rect.
   {
