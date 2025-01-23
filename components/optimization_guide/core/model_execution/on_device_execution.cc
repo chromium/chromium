@@ -385,12 +385,6 @@ void OnDeviceExecution::OnRawOutputSafetyResult(
 }
 
 void OnDeviceExecution::MaybeParseResponse(ResponseCompleteness completeness) {
-  if (completeness == ResponseCompleteness::kPartial &&
-      features::ShouldUseTextSafetyRemoteFallbackForEligibleFeatures()) {
-    // We don't send streaming responses in this mode.
-    return;
-  }
-
   if (!opts_.adapter->ShouldParseResponse(completeness)) {
     return;
   }
@@ -465,72 +459,7 @@ void OnDeviceExecution::OnResponseSafetyResult(
     return;
   }
 
-  if (features::ShouldUseTextSafetyRemoteFallbackForEligibleFeatures()) {
-    RunTextSafetyRemoteFallback(std::move(output));
-    return;
-  }
-
   SendSuccessCompletionCallback(output);
-}
-
-void OnDeviceExecution::RunTextSafetyRemoteFallback(
-    proto::Any success_response_metadata) {
-  auto ts_request = opts_.adapter->ConstructTextSafetyRequest(
-      *last_message_, current_response_);
-  if (!ts_request) {
-    CancelPendingResponse(Result::kFailedConstructingRemoteTextSafetyRequest,
-                          ModelExecutionError::kGenericFailure);
-    return;
-  }
-
-  proto::InternalOnDeviceModelExecutionInfo remote_ts_model_execution_info;
-  auto* ts_request_log = remote_ts_model_execution_info.mutable_request()
-                             ->mutable_text_safety_model_request();
-  ts_request_log->set_text(ts_request->text());
-  ts_request_log->set_url(ts_request->url());
-
-  execute_remote_fn_.Run(
-      ModelBasedCapabilityKey::kTextSafety, *ts_request, std::nullopt,
-      /*log_ai_data_request=*/nullptr,
-      base::BindOnce(&OnDeviceExecution::OnTextSafetyRemoteResponse,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(remote_ts_model_execution_info),
-                     std::move(success_response_metadata)));
-}
-
-void OnDeviceExecution::OnTextSafetyRemoteResponse(
-    proto::InternalOnDeviceModelExecutionInfo remote_ts_model_execution_info,
-    proto::Any success_response_metadata,
-    OptimizationGuideModelExecutionResult result,
-    std::unique_ptr<ModelQualityLogEntry> remote_log_entry) {
-  bool is_unsafe =
-      !result.response.has_value() &&
-      result.response.error().error() ==
-          OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered;
-  if (remote_log_entry) {
-    auto* ts_response_log = remote_ts_model_execution_info.mutable_response()
-                                ->mutable_text_safety_model_response();
-    ts_response_log->set_server_execution_id(
-        remote_log_entry->model_execution_id());
-    ts_response_log->set_is_unsafe(is_unsafe);
-  }
-  *(log_.mutable_model_execution_info()
-        ->mutable_on_device_model_execution_info()
-        ->add_execution_infos()) = remote_ts_model_execution_info;
-
-  if (is_unsafe) {
-    CancelPendingResponse(Result::kUsedOnDeviceOutputUnsafe,
-                          ModelExecutionError::kFiltered);
-    return;
-  }
-
-  if (!result.response.has_value()) {
-    CancelPendingResponse(Result::kTextSafetyRemoteRequestFailed,
-                          ModelExecutionError::kGenericFailure);
-    return;
-  }
-
-  SendSuccessCompletionCallback(success_response_metadata);
 }
 
 void OnDeviceExecution::FallbackToRemote(Result result) {

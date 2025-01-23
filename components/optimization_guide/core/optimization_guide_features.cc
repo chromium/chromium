@@ -165,11 +165,6 @@ BASE_FEATURE(kTextSafetyScanLanguageDetection,
              "TextSafetyScanLanguageDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Whether the text safety remote fallback should be used.
-BASE_FEATURE(kTextSafetyRemoteFallback,
-             "TextSafetyRemoteFallback",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Whether the on-device model validation checks are enabled.
 BASE_FEATURE(kOnDeviceModelValidation,
              "OnDeviceModelValidation",
@@ -788,10 +783,6 @@ double GetOnDeviceModelLanguageDetectionMinimumReliability() {
           &kTextSafetyClassifier,
           "on_device_language_detection_minimum_reliability", 0.8};
   return kOnDeviceModelLanguageDetectionMinimumReliability.Get();
-}
-
-bool ShouldUseTextSafetyRemoteFallbackForEligibleFeatures() {
-  return base::FeatureList::IsEnabled(kTextSafetyRemoteFallback);
 }
 
 int GetOnDeviceModelNumRepeats() {
