@@ -609,6 +609,16 @@ class CampaignsManagerInteractiveUiNotificationTest
     });
   }
 
+  // Reload campaigns, which can simulate a situation that locks and unlocks
+  // device.
+  auto ReloadCampaigns() {
+    return Do([]() {
+      auto* campaigns_manager = growth::CampaignsManager::Get();
+      auto empty_campaigns = base::Value::Dict();
+      campaigns_manager->SetCampaignsForTesting(&empty_campaigns);
+    });
+  }
+
   bool ShouldUseTabletMode() { return GetParam(); }
 };
 
@@ -679,4 +689,17 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
               "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 101, 1),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 101,
                                0))));
+}
+
+IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
+                       ClickPrimaryButtonOnNotificationAfterCampaignsReload) {
+  aura::Env* env = aura::Env::GetInstance();
+  ASSERT_TRUE(env);
+
+  RunTestSequence(
+      SetTabletMode(ShouldUseTabletMode()),
+      WaitForShow(ShowNotificationActionPerformer::kBubbleIdForTesting),
+      ReloadCampaigns(), Click(/*button_index=*/0),
+      WaitForHide(ShowNotificationActionPerformer::kBubbleIdForTesting),
+      WaitForWindowWithTitle(env, u"www.google.com"));
 }

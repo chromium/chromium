@@ -139,6 +139,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
     return queued_events_record_and_trigger_;
   }
 
+  void SetCampaignsForTesting(const base::Value::Dict* campaigns) {
+    campaigns_ = campaigns->Clone();
+  }
+
  private:
   // Record queued events before `campaigns_loaded_` is set to true. Trigger
   // campaigns if needed.
