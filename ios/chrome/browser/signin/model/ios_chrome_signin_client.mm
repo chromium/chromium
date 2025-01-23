@@ -27,8 +27,7 @@ IOSChromeSigninClient::IOSChromeSigninClient(
       profile_(profile),
       host_content_settings_map_(host_content_settings_map) {}
 
-IOSChromeSigninClient::~IOSChromeSigninClient() {
-}
+IOSChromeSigninClient::~IOSChromeSigninClient() {}
 
 void IOSChromeSigninClient::Shutdown() {
   network_callback_helper_.reset();

@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_FAKE_SYSTEM_IDENTITY_H_
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_FAKE_SYSTEM_IDENTITY_H_
 
-#include "ios/chrome/browser/signin/model/system_identity.h"
-
 #include <string>
+
+#include "ios/chrome/browser/signin/model/system_identity.h"
 
 // A fake SystemIdentity used for testing.
 @interface FakeSystemIdentity : NSObject <SystemIdentity, NSSecureCoding>

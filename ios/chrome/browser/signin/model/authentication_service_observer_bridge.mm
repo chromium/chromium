@@ -16,6 +16,7 @@ AuthenticationServiceObserverBridge::~AuthenticationServiceObserverBridge() =
     default;
 
 void AuthenticationServiceObserverBridge::OnServiceStatusChanged() {
-  if ([observer_ respondsToSelector:@selector(onServiceStatusChanged)])
+  if ([observer_ respondsToSelector:@selector(onServiceStatusChanged)]) {
     [observer_ onServiceStatusChanged];
+  }
 }

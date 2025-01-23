@@ -30,7 +30,7 @@ class MockObserver : public DeviceAccountsProvider::Observer {
 };
 
 const char* const kClientID = "ClientID";
-}
+}  // namespace
 
 class DeviceAccountsProviderImplTest : public PlatformTest {
  public:
