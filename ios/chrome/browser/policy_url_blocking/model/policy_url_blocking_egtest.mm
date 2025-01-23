@@ -31,7 +31,7 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
   // TODO(crbug.com/361151875): Fix this long delay and revert this timeout back
   // to base::test::ios::kWaitForActionTimeout
   GREYAssertTrue(base::test::ios::WaitUntilConditionOrTimeout(
-                    base::Seconds(25),
+                     base::Seconds(25),
                      ^{
                        return
                            [PolicyAppInterface isURLBlocked:nsurl] == blocked;
