@@ -22,6 +22,11 @@ class CSSShapeInterpolationType : public CSSInterpolationType {
                  const InterpolationValue&,
                  double interpolation_fraction) const final;
 
+  static CORE_EXPORT scoped_refptr<BasicShape> CreateShape(
+      const InterpolableValue&,
+      const NonInterpolableValue*,
+      const CSSToLengthConversionData&);
+
  protected:
   InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,
                                          ConversionCheckers&) const final;

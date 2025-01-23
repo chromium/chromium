@@ -1293,6 +1293,11 @@
       status: "experimental",
     },
     {
+      name: "CSSShapeFunctionCompositeAnimation",
+      status: "experimental",
+      depends_on: ["CSSShapeFunction", "CompositeClipPathAnimation"]
+    },
+    {
       // sibling-index() and sibling-count()
       name: "CSSSiblingFunctions",
       status: "experimental",

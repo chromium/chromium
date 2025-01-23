@@ -425,7 +425,44 @@ class ShapeInterpolationReader {
   LengthPoint origin_;
 };
 
-scoped_refptr<StyleShape> CreateStyleShape(
+// Returns the property's shape() value.
+// If the property's value is not a shape(), returns nullptr.
+const BasicShape* GetShapeOrPath(const CSSProperty& property,
+                                 const ComputedStyle& style) {
+  // TODO(crbug.com/389713717) support also offset-path
+  CHECK_EQ(property.PropertyID(), CSSPropertyID::kClipPath);
+  auto* shape = DynamicTo<ShapeClipPathOperation>(style.ClipPath());
+  if (!shape) {
+    return nullptr;
+  }
+  if (IsA<StylePath>(shape->GetBasicShape()) ||
+      IsA<StyleShape>(shape->GetBasicShape())) {
+    return shape->GetBasicShape();
+  }
+  return nullptr;
+}
+
+class InheritedShapeChecker
+    : public CSSInterpolationType::CSSConversionChecker {
+ public:
+  InheritedShapeChecker(const CSSProperty& property,
+                        scoped_refptr<const BasicShape> shape)
+      : property_(property), shape_(std::move(shape)) {}
+
+ private:
+  bool IsValid(const StyleResolverState& state,
+               const InterpolationValue& underlying) const final {
+    return GetShapeOrPath(property_, *state.ParentStyle()) == shape_.get();
+  }
+
+  const CSSProperty& property_;
+  const scoped_refptr<const BasicShape> shape_;
+};
+
+}  // namespace
+
+// static
+scoped_refptr<BasicShape> CSSShapeInterpolationType::CreateShape(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,
     const CSSToLengthConversionData& conversion_data) {
@@ -500,42 +537,6 @@ scoped_refptr<StyleShape> CreateStyleShape(
                             reader.Origin(), std::move(segments));
 }
 
-// Returns the property's shape() value.
-// If the property's value is not a shape(), returns nullptr.
-const BasicShape* GetShapeOrPath(const CSSProperty& property,
-                                 const ComputedStyle& style) {
-  // TODO(crbug.com/389713717) support also offset-path
-  CHECK_EQ(property.PropertyID(), CSSPropertyID::kClipPath);
-  auto* shape = DynamicTo<ShapeClipPathOperation>(style.ClipPath());
-  if (!shape) {
-    return nullptr;
-  }
-  if (IsA<StylePath>(shape->GetBasicShape()) ||
-      IsA<StyleShape>(shape->GetBasicShape())) {
-    return shape->GetBasicShape();
-  }
-  return nullptr;
-}
-
-class InheritedShapeChecker
-    : public CSSInterpolationType::CSSConversionChecker {
- public:
-  InheritedShapeChecker(const CSSProperty& property,
-                        scoped_refptr<const BasicShape> shape)
-      : property_(property), shape_(std::move(shape)) {}
-
- private:
-  bool IsValid(const StyleResolverState& state,
-               const InterpolationValue& underlying) const final {
-    return GetShapeOrPath(property_, *state.ParentStyle()) == shape_.get();
-  }
-
-  const CSSProperty& property_;
-  const scoped_refptr<const BasicShape> shape_;
-};
-
-}  // namespace
-
 DEFINE_NON_INTERPOLABLE_VALUE_TYPE(ShapeNonInterpolableValue);
 template <>
 struct DowncastTraits<ShapeNonInterpolableValue> {
@@ -553,8 +554,8 @@ void CSSShapeInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   // TODO(crbug.com/389713717) support also offset-path
   CHECK_EQ(CssProperty().PropertyID(), CSSPropertyID::kClipPath);
-  auto shape = CreateStyleShape(interpolable_value, non_interpolable_value,
-                                state.CssToLengthConversionData());
+  auto shape = CreateShape(interpolable_value, non_interpolable_value,
+                           state.CssToLengthConversionData());
 
   // TODO(nrosenthal): Handle geometry box.
   state.StyleBuilder().SetClipPath(
