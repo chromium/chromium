@@ -204,7 +204,14 @@ const std::string CampaignsManagerClientImpl::GetCountryCode() const {
 
 const base::Version& CampaignsManagerClientImpl::GetDemoModeAppVersion() const {
   auto* demo_session = ash::DemoSession::Get();
-  CHECK(demo_session);
+  if (!demo_session) {
+    // When campaigns are loaded and fetched in `DemoLoginController`,
+    // `DemoSession` is not available yet. In this case, we will return empty
+    // version so campaigns that are targeting a specific app version won't be
+    // matched.
+    static const base::NoDestructor<base::Version> empty_version;
+    return *empty_version;
+  }
 
   const auto& version = demo_session->components()->app_component_version();
   if (!version.has_value()) {
