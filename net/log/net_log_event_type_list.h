@@ -4384,7 +4384,7 @@ EVENT_TYPE(COOKIE_SET_BLOCKED_BY_NETWORK_DELEGATE)
 //    "domain": <Domain of the cookie>,
 //    "path": <Path of the cookie>,
 //    "partition_key": <partition key of the cookie, if any>
-//    "operation": <Operation, either "send" or "store">
+//    "operation": <Operation: "send", "store", or "expire">
 //  }
 EVENT_TYPE(COOKIE_INCLUSION_STATUS)
 
