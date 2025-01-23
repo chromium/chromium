@@ -28,11 +28,9 @@ dictionary AdAuctionDataConfig {
   record<USVString, AdAuctionDataBuyerConfig> perBuyerConfig;
 };
 
-// TODO(qingxinwu): make this a union that only one of `request` and `error` can
-// be set.
 dictionary AdAuctionPerSellerData {
   required USVString seller;
-  // Only one of `request` and `error` can be set.
+  // Exactly one of `request` and `error` will be set, but not both.
   Uint8Array request;
   DOMString error;
 };
