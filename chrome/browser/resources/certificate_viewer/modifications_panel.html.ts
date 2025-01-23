@@ -11,7 +11,9 @@ export function getHtml(this: ModificationsPanelElement) {
   <div class="vertical-box">
     <h3 role="heading">$i18n{trust}</h3>
     <div class="horizontal-row">
-      <label class="modifications-row-label">$i18n{trustState}</label>
+      <label for="trustStateSelect" class="modifications-row-label">
+        $i18n{trustState}
+      </label>
       <div class="input-with-error">
         <select id="trustStateSelect" class="md-select"
             .value="${this.trustStateValue}"
@@ -55,6 +57,7 @@ export function getHtml(this: ModificationsPanelElement) {
       <div class="modifications-row-label">$i18n{addConstraints}</div>
       <cr-input
           id="addConstraintInput"
+          aria-label="$i18n{addConstraints}"
           placeholder="$i18n{addConstraintsPlaceholder}"
           ?invalid="${this.addConstraintErrorMessage.length !== 0}"
           error-message="${this.addConstraintErrorMessage}"
