@@ -25,6 +25,10 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   // registered. Need to revisit if this is the best place for this pref to be
   // set.
   registry->RegisterBooleanPref("remote_admin_was_present", false);
+  registry->RegisterDictionaryPref(
+      ash::prefs::kClassManagementToolsNavRuleSetting);
+  registry->RegisterBooleanPref(
+      ash::prefs::kClassManagementToolsCaptionEnablementSetting, false);
 }
 
 bool IsEnabled(const user_manager::User* user) {
