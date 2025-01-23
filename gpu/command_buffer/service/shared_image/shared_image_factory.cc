@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
@@ -556,6 +557,10 @@ bool SharedImageFactory::CreateSharedImage(
     // Check if CompoundImageBacking can hold shared memory buffer plus
     // another GPU backing type to satisfy requirements.
     if (CompoundImageBacking::IsValidSharedMemoryBufferFormat(size, format)) {
+      // Set debug_label crash key for the CompoundSharedImage with NV12 format
+      // which can have large sizes.
+      SCOPED_CRASH_KEY_STRING32("shared image factory", "debug label",
+                                debug_label);
       factory =
           GetFactoryByUsage(CompoundImageBacking::GetGpuSharedImageUsage(
                                 SharedImageUsageSet(usage)),
