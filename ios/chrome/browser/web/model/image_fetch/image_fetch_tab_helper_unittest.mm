@@ -37,7 +37,7 @@ constexpr base::TimeDelta kWaitForGetImageDataTimeout = base::Seconds(1);
 
 const char kImageUrl[] = "http://www.chrooooooooooome.com/";
 const char kImageData[] = "abc";
-}
+}  // namespace
 
 // Test fixture for ImageFetchTabHelper class.
 class ImageFetchTabHelperTest : public PlatformTest {

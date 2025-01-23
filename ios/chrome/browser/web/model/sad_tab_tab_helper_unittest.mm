@@ -25,7 +25,7 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 // Delegate for testing.
-@interface SadTabTabHelperTestDelegate : NSObject<SadTabTabHelperDelegate>
+@interface SadTabTabHelperTestDelegate : NSObject <SadTabTabHelperDelegate>
 // `repeatedFailure` could be used by the delegate to display different types of
 // SadTabs.
 @property(nonatomic, assign) BOOL repeatedFailure;

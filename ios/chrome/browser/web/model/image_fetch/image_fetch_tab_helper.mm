@@ -55,7 +55,7 @@ class ImageFetcher : public image_fetcher::ImageDataFetcher,
         browser_state->GetUserData(&kImageFetcherKeyName));
   }
 };
-}
+}  // namespace
 
 ImageFetchTabHelper::ImageFetchTabHelper(web::WebState* web_state)
     : web_state_(web_state), weak_ptr_factory_(this) {
@@ -70,14 +70,16 @@ void ImageFetchTabHelper::DidStartNavigation(
   if (navigation_context->IsSameDocument()) {
     return;
   }
-  for (auto&& pair : js_callbacks_)
+  for (auto&& pair : js_callbacks_) {
     std::move(pair.second).Run(nullptr);
+  }
   js_callbacks_.clear();
 }
 
 void ImageFetchTabHelper::WebStateDestroyed(web::WebState* web_state) {
-  for (auto&& pair : js_callbacks_)
+  for (auto&& pair : js_callbacks_) {
     std::move(pair.second).Run(nullptr);
+  }
   web_state->RemoveObserver(this);
   web_state_ = nullptr;
 }

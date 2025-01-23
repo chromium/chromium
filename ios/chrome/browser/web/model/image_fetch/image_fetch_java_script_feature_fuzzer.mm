@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/web/model/image_fetch/image_fetch_java_script_feature.h"
+
 #import "base/base64.h"
 #import "base/rand_util.h"
-#import "ios/chrome/browser/web/model/image_fetch/image_fetch_java_script_feature.h"
 #import "ios/web/public/js_messaging/fuzzer_support/fuzzer_env_with_java_script_feature.h"
 #import "ios/web/public/js_messaging/fuzzer_support/fuzzer_util.h"
 #import "ios/web/public/js_messaging/fuzzer_support/js_message.pb.h"

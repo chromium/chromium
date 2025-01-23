@@ -41,8 +41,9 @@ bool WillHandleWebBrowserAboutURL(GURL* url, web::BrowserState* browser_state) {
          (url->path() == url::kAboutBlankPath));
 
   // url_formatter::FixupURL translates about:foo into chrome://foo/.
-  if (!url->SchemeIs(kChromeUIScheme))
+  if (!url->SchemeIs(kChromeUIScheme)) {
     return false;
+  }
 
   // Translate chrome://newtab back into about://newtab/ so the WebState shows a
   // blank page under the NTP.
@@ -55,8 +56,9 @@ bool WillHandleWebBrowserAboutURL(GURL* url, web::BrowserState* browser_state) {
 
   std::string host(url->host());
   for (size_t i = 0; i < std::size(kHostReplacements); ++i) {
-    if (host != kHostReplacements[i].old_host_name)
+    if (host != kHostReplacements[i].old_host_name) {
       continue;
+    }
 
     host.assign(kHostReplacements[i].new_host_name);
     break;

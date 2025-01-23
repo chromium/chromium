@@ -26,8 +26,8 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
-using chrome_test_util::OmniboxText;
 using chrome_test_util::OmniboxContainingText;
+using chrome_test_util::OmniboxText;
 
 namespace {
 
@@ -318,8 +318,9 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 - (void)DISABLED_testBrowsingUserJavaScriptNavigation {
   // TODO(crbug.com/40511873): Keyboard entry inside the omnibox fails only on
   // iPad.
-  if ([ChromeEarlGrey isIPadIdiom])
+  if ([ChromeEarlGrey isIPadIdiom]) {
     return;
+  }
 
   // Create map of canned responses and set up the test HTML server.
   std::map<GURL, std::string> responses;
@@ -358,8 +359,9 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 - (void)DISABLED_testBrowsingUserJavaScriptWithoutNavigation {
   // TODO(crbug.com/40511873): Keyboard entry inside the omnibox fails only on
   // iPad.
-  if ([ChromeEarlGrey isIPadIdiom])
+  if ([ChromeEarlGrey isIPadIdiom]) {
     return;
+  }
 
   // Create map of canned responses and set up the test HTML server.
   std::map<GURL, std::string> responses;
