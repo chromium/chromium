@@ -4,6 +4,8 @@
 
 component("core") {
   sources = [
+    "session.cc",
+    "session.h",
     "session_manager.cc",
     "session_manager.h",
     "session_manager_observer.h",

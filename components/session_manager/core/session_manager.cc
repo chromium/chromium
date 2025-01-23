@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
 
@@ -82,7 +83,9 @@ void SessionManager::SessionStarted() {
 
 bool SessionManager::HasSessionForAccountId(
     const AccountId& user_account_id) const {
-  return base::Contains(sessions_, user_account_id, &Session::user_account_id);
+  return base::Contains(sessions_, user_account_id, [](const auto& session) {
+    return session->account_id();
+  });
 }
 
 bool SessionManager::IsInSecondaryLoginScreen() const {
@@ -152,7 +155,7 @@ void SessionManager::CreateSessionInternal(const AccountId& user_account_id,
                                            bool browser_restart,
                                            bool is_child) {
   DCHECK(!HasSessionForAccountId(user_account_id));
-  sessions_.push_back({next_id_++, user_account_id});
+  sessions_.push_back(std::make_unique<Session>(next_id_++, user_account_id));
   NotifyUserLoggedIn(user_account_id, user_id_hash, browser_restart, is_child);
 }
 

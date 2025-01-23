@@ -16,6 +16,7 @@ class AccountId;
 
 namespace session_manager {
 
+class Session;
 class SessionManagerObserver;
 
 class SESSION_EXPORT SessionManager {
@@ -77,7 +78,9 @@ class SESSION_EXPORT SessionManager {
   void NotifyUnlockAttempt(const bool success, const UnlockType unlock_type);
 
   SessionState session_state() const { return session_state_; }
-  const std::vector<Session>& sessions() const { return sessions_; }
+  const std::vector<std::unique_ptr<Session>>& sessions() const {
+    return sessions_;
+  }
 
   bool login_or_lock_screen_shown_for_test() const {
     return login_or_lock_screen_shown_for_test_;
@@ -120,13 +123,13 @@ class SESSION_EXPORT SessionManager {
   bool login_or_lock_screen_shown_for_test_ = false;
 
   // Id of the primary session, i.e. the first user session.
-  static const SessionId kPrimarySessionId = 1;
+  static constexpr SessionId kPrimarySessionId = 1;
 
   // ID assigned to the next session.
   SessionId next_id_ = kPrimarySessionId;
 
   // Keeps track of user sessions.
-  std::vector<Session> sessions_;
+  std::vector<std::unique_ptr<Session>> sessions_;
 
   base::ObserverList<SessionManagerObserver> observers_;
 };
