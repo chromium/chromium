@@ -27,11 +27,6 @@ base::FilePath GetUserDataDir();
 // Returns true if the Lacros feature is enabled for the primary user.
 bool IsLacrosEnabled();
 
-// Returns true if Ash browser is enabled. Returns false iff Lacros is
-// enabled and is the only browser.
-// DEPRECATED. Please use !IsLacrosEnabled().
-bool IsAshWebBrowserEnabled();
-
 // Gets the version of the rootfs lacros-chrome. By reading the metadata json
 // file in the correct format.
 base::Version GetRootfsLacrosVersionMayBlock(
