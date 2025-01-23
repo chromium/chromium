@@ -233,7 +233,6 @@ namespace content {
 enum class SiteIsolationMode;
 enum class SmsFetchFailureType;
 class AnchorElementPreconnectDelegate;
-class AuthenticatorRequestClientDelegate;
 class BluetoothDelegate;
 class BrowserChildProcessHost;
 class BrowserContext;
@@ -275,7 +274,6 @@ class UsbDelegate;
 class VideoOverlayWindow;
 class VideoPictureInPictureWindowController;
 class VpnServiceProxy;
-class WebAuthenticationDelegate;
 class WebContents;
 class WebContentsViewDelegate;
 class WebUIBrowserInterfaceBrokerRegistry;
@@ -290,7 +288,10 @@ struct SocketPermissionRequest;
 
 #if BUILDFLAG(IS_ANDROID)
 class TtsEnvironmentAndroid;
-#endif
+#else
+class AuthenticatorRequestClientDelegate;
+class WebAuthenticationDelegate;
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 class SmartCardDelegate;

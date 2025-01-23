@@ -15,6 +15,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
+#include "content/public/browser/web_authentication_delegate.h"
 #include "content/public/browser/web_authentication_request_proxy.h"
 
 // ChromeWebAuthenticationDelegate is the //chrome layer implementation of
