@@ -67,7 +67,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -571,7 +571,7 @@ bool IsHostAllowedInIncognito(const GURL& url) {
   // chrome://settings.
   return host != chrome::kChromeUIAppLauncherPageHost &&
          host != chrome::kChromeUISettingsHost &&
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
          host != chrome::kChromeUIOSSettingsHost &&
 #endif
          host != chrome::kChromeUIHelpHost &&
@@ -624,11 +624,11 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   if (source_browser) {
     bool should_block_navigation =
         platform_util::IsBrowserLockedFullscreen(source_browser);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (source_browser->IsLockedForOnTask()) {
       should_block_navigation = false;
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     if (should_block_navigation) {
       return nullptr;
     }
@@ -637,7 +637,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   // Open System Apps in their standalone window if necessary.
   // TODO(crbug.com/40136163): Remove this code after we integrate with intent
   // handling.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const std::optional<ash::SystemWebAppType> capturing_system_app_type =
       ash::GetCapturingSystemAppForURL(params->initiating_profile, params->url);
   if (capturing_system_app_type &&
@@ -659,7 +659,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     // the navigation should appear to be cancelled.
     return nullptr;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
   // Force isolated PWAs to open in an app window.
@@ -778,7 +778,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   if (params->force_open_pwa_window) {
     CHECK(web_app::AppBrowserController::IsWebApp(params->browser));
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (source_browser && source_browser != params->browser) {
     // When the newly created browser was spawned by a browser which visits
     // another user's desktop, it should be shown on the same desktop as the

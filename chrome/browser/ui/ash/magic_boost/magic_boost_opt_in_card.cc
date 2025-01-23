@@ -280,11 +280,9 @@ void MagicBoostOptInCard::OnPrimaryButtonPressed() {
                                         GetWidget()->GetNativeWindow())
                                     .id());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* magic_boost_state = chromeos::MagicBoostState::Get();
   magic_boost_state->AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus::kPendingDisclaimer);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void MagicBoostOptInCard::OnSecondaryButtonPressed() {
@@ -294,7 +292,6 @@ void MagicBoostOptInCard::OnSecondaryButtonPressed() {
 
   controller_->CloseOptInUi();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* magic_boost_state = chromeos::MagicBoostState::Get();
   if (controller_->GetOptInFeatures() == OptInFeatures::kOrcaAndHmr) {
     magic_boost_state->DisableOrcaFeature();
@@ -302,7 +299,6 @@ void MagicBoostOptInCard::OnSecondaryButtonPressed() {
   magic_boost_state->AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus::kDeclined);
   magic_boost_state->AsyncWriteHMREnabled(/*enabled=*/false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 BEGIN_METADATA(MagicBoostOptInCard)

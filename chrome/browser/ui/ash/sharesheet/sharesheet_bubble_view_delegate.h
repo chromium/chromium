@@ -38,12 +38,10 @@ class SharesheetBubbleViewDelegate : public ::sharesheet::SharesheetUiDelegate {
                   ::sharesheet::DeliveredCallback delivered_callback,
                   ::sharesheet::CloseCallback close_callback) override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void ShowNearbyShareBubbleForArc(
       apps::IntentPtr intent,
       ::sharesheet::DeliveredCallback delivered_callback,
       ::sharesheet::CloseCallback close_callback) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void OnActionLaunched(bool has_action_view) override;
 

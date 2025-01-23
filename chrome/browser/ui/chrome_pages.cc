@@ -69,12 +69,9 @@
 #include "url/url_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/webui/settings/public/constants/routes_util.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/webui/connectivity_diagnostics/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "ash/webui/settings/public/constants/routes_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #else
@@ -121,7 +118,7 @@ void OpenBookmarkManagerForNode(Browser* browser, int64_t node_id) {
   ShowSingletonTabIgnorePathOverwriteNTP(browser, url);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void LaunchReleaseNotesImpl(Profile* profile, apps::LaunchSource source) {
   base::RecordAction(UserMetricsAction("ReleaseNotes.ShowReleaseNotes"));
   ash::SystemAppLaunchParams params;
@@ -142,7 +139,7 @@ void LaunchReleaseNotesImpl(Profile* profile, apps::LaunchSource source) {
 // is created.
 void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
   base::RecordAction(UserMetricsAction("ShowHelpTab"));
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   auto app_launch_source = apps::LaunchSource::kUnknown;
   switch (source) {
     case HELP_SOURCE_KEYBOARD:
@@ -174,7 +171,7 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
     case HELP_SOURCE_WEBHID:
       url = GURL(kChooserHidOverviewUrl);
       break;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case HELP_SOURCE_WEBUI:
       url = GURL(kChromeHelpViaWebUIURL);
       break;
@@ -185,7 +182,7 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
     case HELP_SOURCE_WEBUI:
       url = GURL(kChromeHelpViaWebUIURL);
       break;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     case HELP_SOURCE_WEBUSB:
       url = GURL(kChooserUsbOverviewURL);
       break;
@@ -197,7 +194,7 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
   } else {
     ShowSingletonTab(profile, url);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
@@ -287,7 +284,7 @@ void ShowSiteSettingsFileSystemImpl(Browser* browser,
   Navigate(&params);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ShowSystemAppInternal(Profile* profile,
                            const ash::SystemWebAppType type,
                            const ash::SystemAppLaunchParams& params) {
@@ -298,7 +295,7 @@ void ShowSystemAppInternal(Profile* profile, const ash::SystemWebAppType type) {
   params.launch_source = apps::LaunchSource::kUnknown;
   ash::LaunchSystemWebAppAsync(profile, type, params);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 Browser* GetOrCreateBrowserForProfile(Profile* profile) {
   Browser* browser = chrome::FindTabbedBrowser(profile, false);
@@ -390,7 +387,7 @@ void ShowChromeWhatsNew(Browser* browser) {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 void LaunchReleaseNotes(Profile* profile, apps::LaunchSource source) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   LaunchReleaseNotesImpl(profile, source);
 #endif
 }
@@ -400,7 +397,7 @@ void ShowBetaForum(Browser* browser) {
 }
 
 void ShowSlow(Browser* browser) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ShowSingletonTab(browser, GURL(kChromeUISlowURL));
 #endif
 }
@@ -639,7 +636,7 @@ void ShowEnterpriseManagementPageInTabbedBrowser(Browser* browser) {
   ShowSingletonTabIgnorePathOverwriteNTP(browser, GURL(kChromeUIManagementURL));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ShowAppManagementPage(Profile* profile,
                            const std::string& app_id,
                            ash::settings::AppManagementEntryPoint entry_point) {
@@ -661,9 +658,7 @@ void ShowGraduationApp(Profile* profile) {
   params.launch_source = apps::LaunchSource::kFromOtherApp;
   ShowSystemAppInternal(profile, ash::SystemWebAppType::GRADUATION, params);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
 GURL GetOSSettingsUrl(std::string_view sub_page) {
   DCHECK(sub_page.empty() || chromeos::settings::IsOSSettingsSubPage(sub_page))
       << sub_page;

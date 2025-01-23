@@ -1744,9 +1744,7 @@ void Print(Browser* browser) {
   if (base::FeatureList::IsEnabled(::features::kPrintPreviewCrosPrimary)) {
     chromeos::printing::StartPrint(
         web_contents,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
         /*print_renderer=*/mojo::NullAssociatedRemote(),
-#endif
         browser->profile()->GetPrefs()->GetBoolean(
             prefs::kPrintPreviewDisabled),
         /*has_selection=*/false);
@@ -1756,12 +1754,12 @@ void Print(Browser* browser) {
 
   printing::StartPrint(
       web_contents,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       /*print_renderer=*/mojo::NullAssociatedRemote(),
 #endif
       browser->profile()->GetPrefs()->GetBoolean(prefs::kPrintPreviewDisabled),
       /*has_selection=*/false);
-#endif
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 }
 
 bool CanPrint(Browser* browser) {
@@ -2111,7 +2109,7 @@ bool CanCopyUrl(const Browser* browser) {
 
 bool IsWebAppOrCustomTab(const Browser* browser) {
   return
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       browser->is_type_custom_tab() ||
 #endif
       web_app::AppBrowserController::IsWebApp(browser);

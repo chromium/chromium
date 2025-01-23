@@ -8,8 +8,11 @@
 #include <memory>
 #include <vector>
 
+#include "ash/system/mahi/test/mock_mahi_media_app_events_proxy.h"
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_card_context.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_controller_impl.h"
@@ -17,26 +20,20 @@
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_manager.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_controller.h"
+#include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "content/public/browser/context_menu_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/system/mahi/test/mock_mahi_media_app_events_proxy.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/idle_service_ash.h"
-#include "chrome/common/chrome_constants.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/login/login_state/login_state.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace chromeos {
 
@@ -91,7 +88,6 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
 
     ChromeAshTestBase::SetUp();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Creates test Crosapi manger, which depends on `ProfileManger` and
     // `LoginState`. Otherwise there will be a null pointer issue, since
     // `crosapi::CrosapiManager::Get()->crosapi_ash()` is null.
@@ -104,7 +100,6 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
       ash::LoginState::Initialize();
     }
     crosapi_manager_ = std::make_unique<crosapi::CrosapiManager>();
-#endif
 
     // `ReadWriteCardsManagerImpl` will initialize `QuickAnswersState`
     // indirectly. `QuickAnswersState` depends on `MagicBoostState`.
@@ -115,11 +110,9 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
   bool IsMahiEnabled() { return GetParam(); }
 
   void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     crosapi_manager_.reset();
     testing_profile_ = nullptr;
     profile_manager_.DeleteTestingProfile(chrome::kInitialProfile);
-#endif
     magic_boost_state_.reset();
     manager_.reset();
     ChromeAshTestBase::TearDown();
@@ -176,7 +169,6 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
   std::unique_ptr<ash::MagicBoostStateAsh> magic_boost_state_;
   std::unique_ptr<ReadWriteCardsManagerImpl> manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Providing a mock MahiMediaAppEvnetsProxy to satisfy MahiMenuController.
   testing::NiceMock<::ash::MockMahiMediaAppEventsProxy>
       mock_mahi_media_app_events_proxy_;
@@ -187,7 +179,6 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
   std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
   raw_ptr<TestingProfile> testing_profile_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
-#endif
 };
 
 INSTANTIATE_TEST_SUITE_P(, ReadWriteCardsManagerImplTest, testing::Bool());

@@ -97,14 +97,9 @@ class ProjectorNavigationThrottleTestParameterized
 // https://screencast.apps.chrome/xyz?resourceKey=abc redirects to
 // chrome://projector/app/xyz?timestamp=[timestamp]&resourceKey=abc and launches
 // the SWA.
-// TODO(crbug.com/327056386): Re-enable on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_PwaNavigationRedirects DISABLED_PwaNavigationRedirects
-#else
-#define MAYBE_PwaNavigationRedirects PwaNavigationRedirects
-#endif
+// TODO(crbug.com/327056386): Re-enable.
 IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
-                       MAYBE_PwaNavigationRedirects) {
+                       DISABLED_PwaNavigationRedirects) {
   base::HistogramTester histogram_tester;
 
   std::string url = kChromeUIUntrustedProjectorPwaUrl;
