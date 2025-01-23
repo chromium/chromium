@@ -28,6 +28,7 @@
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/event_monitor.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget_observer.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -36,6 +37,8 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace glic {
+
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
 
 namespace {
 // Default value for how close the top-right corner of the glic window must be
@@ -253,11 +256,24 @@ void GlicWindowController::OnWidgetBoundsChanged(views::Widget* widget,
 }
 
 void GlicWindowController::Show(views::View* glic_button_view) {
-  // TODO(crbug.com/379943498): If a glic window already exists, handle showing
-  // by bringing to front or activating.
-  if (state_ != State::kClosed) {
+  // Set the browser to attach to if the tab strip button was pressed.
+  attached_browser_ =
+      (glic_button_view) ? chrome::FindBrowserWithWindow(
+                               glic_button_view->GetWidget()->GetNativeWindow())
+                         : nullptr;
+
+  if (state_ == State::kOpen) {
+    if (attached_browser_) {
+      AttachToBrowser(attached_browser_);
+    } else {
+      // TODO(crbug.com/379943498): Handle os entry point when already open.
+    }
+    return;
+  } else if (state_ != State::kClosed) {
+    // Currently in the process of showing the widget, allow that to finish.
     return;
   }
+
   state_ = State::kOpenAnimation;
 
   if (!contents_) {
@@ -290,8 +306,6 @@ void GlicWindowController::Show(views::View* glic_button_view) {
     top_right_point =
         GetTopRightPositionForAttachedGlicWindow(glic_button_view);
     // TODO(crbug.com/391416274): Pass in Browser* explicitly.
-    attached_browser_ = chrome::FindBrowserWithWindow(
-        glic_button_view->GetWidget()->GetNativeWindow());
     glic_window_widget_initial_rect = glic_button_view->GetBoundsInScreen();
   }
 
@@ -483,6 +497,10 @@ void GlicWindowController::AttachToBrowser(Browser* browser) {
   attached_browser_widget_observation_.Observe(browser_widget);
   views::Widget::ReparentNativeView(glic_attached_widget_->GetNativeView(),
                                     browser_widget->GetNativeView());
+  if (!IsActive()) {
+    GetGlicWidget()->Activate();
+  }
+
   NotifyIfPanelStateChanged();
 
   // When attached to a browser window, the glic widget mustn't float and when
@@ -495,6 +513,13 @@ void GlicWindowController::AttachToBrowser(Browser* browser) {
   browser_close_subscription_ = browser->RegisterBrowserDidClose(
       base::BindRepeating(&GlicWindowController::AttachedBrowserDidClose,
                           base::Unretained(this)));
+
+  // Trigger custom event for testing.
+  views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+      kGlicWidgetAttached, browser->window()
+                               ->AsBrowserView()
+                               ->tab_strip_region_view()
+                               ->GetGlicButton());
 }
 
 void GlicWindowController::Resize(const gfx::Size& size,
@@ -781,6 +806,10 @@ bool GlicWindowController::IsActive() {
 
 bool GlicWindowController::IsShowing() const {
   return state_ != State::kClosed;
+}
+
+bool GlicWindowController::IsAttached() {
+  return attached_browser_ != nullptr;
 }
 
 base::CallbackListSubscription

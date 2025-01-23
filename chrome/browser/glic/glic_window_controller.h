@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 class Browser;
@@ -25,6 +26,8 @@ class Point;
 }  // namespace gfx
 
 namespace glic {
+
+DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
 
 class GlicView;
 class GlicWindowResizeAnimation;
@@ -110,6 +113,9 @@ class GlicWindowController : public views::WidgetObserver {
   // Returns true if the state is anything other than kClosed.
   bool IsShowing() const;
 
+  // Returns whether or not the glic window is currently attached to a browser.
+  bool IsAttached();
+
   using WindowActivationChangedCallback =
       base::RepeatingCallback<void(bool active)>;
 
@@ -144,11 +150,11 @@ class GlicWindowController : public views::WidgetObserver {
 
   GlicView* GetGlicView();
 
-  // Called when the programmatic resize has finished; public for use by
+  // Called when the programmatic resize has finished. Public for use by
   // GlicWindowResizeAnimation.
   void ResizeFinished();
 
-  // Returns the widget that backs the glic window. public for testing.
+  // Returns the widget that backs the glic window. Public for testing.
   views::Widget* GetGlicWidget();
 
  private:

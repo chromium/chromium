@@ -42,18 +42,26 @@ class GlicWindowControllerTest : public test::InteractiveGlicTest {
         [this]() { return window_controller().GetGlicWidget() != nullptr; },
         expect_widget, "CheckControllerHasWidget");
   }
+
+  auto CheckControllerWidgetMode(GlicWindowMode mode) {
+    bool check_mode = mode == GlicWindowMode::kAttached;
+    return CheckResult([this]() { return window_controller().IsAttached(); },
+                       check_mode, "CheckControllerWidgetMode");
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, ShowAndCloseAttachedWidget) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached),
-                  CheckControllerHasWidget(true), CloseGlicWindow(),
-                  CheckControllerHasWidget(false));
+                  CheckControllerHasWidget(true),
+                  CheckControllerWidgetMode(GlicWindowMode::kAttached),
+                  CloseGlicWindow(), CheckControllerHasWidget(false));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, ShowAndCloseDetachedWidget) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
-                  CheckControllerHasWidget(true), CloseGlicWindow(),
-                  CheckControllerHasWidget(false));
+                  CheckControllerHasWidget(true),
+                  CheckControllerWidgetMode(GlicWindowMode::kDetached),
+                  CloseGlicWindow(), CheckControllerHasWidget(false));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, DoNotCrashOnBrowserClose) {
@@ -65,6 +73,17 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, DoNotCrashOnBrowserClose) {
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, DoNotCrashWhenReopening) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached), CloseGlicWindow(),
                   OpenGlicWindow(GlicWindowMode::kAttached));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest,
+                       OpenDetachedAndThenAttachWithButton) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
+                  CheckControllerHasWidget(true),
+                  CheckControllerWidgetMode(GlicWindowMode::kDetached),
+                  PressButton(kGlicButtonElementId),
+                  WaitForEvent(kGlicButtonElementId, kGlicWidgetAttached),
+                  CheckControllerHasWidget(true),
+                  CheckControllerWidgetMode(GlicWindowMode::kAttached));
 }
 
 class GlicWindowControllerWithMemoryPressureTest
