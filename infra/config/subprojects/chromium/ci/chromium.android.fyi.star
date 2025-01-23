@@ -523,6 +523,7 @@ ci.builder(
             "android_browsertests": targets.mixin(
                 args = [
                     "--emulator-debug-tags=all",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.android_browsertests.filter",
                 ],
                 swarming = targets.swarming(
                     shards = 9,
