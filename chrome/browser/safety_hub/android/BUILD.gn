@@ -54,6 +54,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPermissionsFragment.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPermissionsPreference.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPermissionsRevocationModuleMediator.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubSafeBrowsingModuleMediator.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubSubpageFragment.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubUtils.java",
     "java/src/org/chromium/chrome/browser/safety_hub/UnusedSitePermissionsBridge.java",
@@ -125,6 +126,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleDelegateTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubPermissionsRevocationModuleMediatorTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubSafeBrowsingModuleMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubTestRule.java",
   ]
   deps = [

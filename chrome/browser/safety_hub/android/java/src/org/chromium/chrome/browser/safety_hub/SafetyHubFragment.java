@@ -31,8 +31,6 @@ import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
-import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleOption;
 import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleState;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardInteractions;
@@ -92,7 +90,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private SafetyHubFetchService mSafetyHubFetchService;
     private PropertyModel mUpdateCheckPropertyModel;
     private PropertyModel mPasswordCheckPropertyModel;
-    private PropertyModel mSafeBrowsingPropertyModel;
     private PropertyModel mNotificationsModel;
     private PropertyModel mBrowserStateModule;
     private PasswordStoreBridge mPasswordStoreBridge;
@@ -103,6 +100,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     // TODO(https://crbug.com/388788381): When this fragment no longer updates the
     // `mBrowserStateModule` directly, then use a List of the SafetyHubModuleMediators instead.
     private SafetyHubPermissionsRevocationModuleMediator mPermissionsRevocationModuleMediator;
+    private SafetyHubSafeBrowsingModuleMediator mSafeBrowsingModuleMediator;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -127,12 +125,15 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         findPreference(PREF_UNUSED_PERMISSIONS),
                         this,
                         UnusedSitePermissionsBridge.getForProfile(getProfile()));
+        mSafeBrowsingModuleMediator =
+                new SafetyHubSafeBrowsingModuleMediator(
+                        findPreference(PREF_SAFE_BROWSING), this, getProfile());
 
         setUpAccountPasswordCheckModule();
         setUpUpdateCheckModule();
         mPermissionsRevocationModuleMediator.setUpModule();
         setUpNotificationsReviewModule();
-        setUpSafeBrowsingModule();
+        mSafeBrowsingModuleMediator.setUpModule();
         setUpSafetyTipsModule();
         setUpBrowserStateModule();
         updateAllModules();
@@ -151,11 +152,10 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 return mUpdateCheckPropertyModel;
             case ModuleOption.ACCOUNT_PASSWORDS:
                 return mPasswordCheckPropertyModel;
-            case ModuleOption.SAFE_BROWSING:
-                return mSafeBrowsingPropertyModel;
             case ModuleOption.NOTIFICATION_REVIEW:
                 return mNotificationsModel;
             case ModuleOption.UNUSED_PERMISSIONS:
+            case ModuleOption.SAFE_BROWSING:
             default:
                 throw new IllegalArgumentException();
         }
@@ -225,7 +225,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                                 sitesWithUnusedPermissionsCount)
                         .with(
                                 DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE,
-                                SafetyHubUtils.getSafeBrowsingState(getProfile()))
+                                mSafeBrowsingModuleMediator.getSafeBrowsingState())
                         .build();
 
         PropertyModelChangeProcessor.create(
@@ -359,35 +359,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mNotificationPermissionReviewBridge.addObserver(this);
     }
 
-    private void setUpSafeBrowsingModule() {
-        SafetyHubExpandablePreference safeBrowsingPreference = findPreference(PREF_SAFE_BROWSING);
-
-        mSafeBrowsingPropertyModel =
-                new PropertyModel.Builder(
-                                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_MODULE_KEYS)
-                        .with(DeprecatedSafetyHubModuleProperties.IS_VISIBLE, true)
-                        .with(
-                                DeprecatedSafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
-                                v -> {
-                                    startSettings(SafeBrowsingSettingsFragment.class);
-                                    recordDashboardInteractions(
-                                            DashboardInteractions.GO_TO_SAFE_BROWSING_SETTINGS);
-                                })
-                        .with(
-                                DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
-                                v -> {
-                                    startSettings(SafeBrowsingSettingsFragment.class);
-                                    recordDashboardInteractions(
-                                            DashboardInteractions.GO_TO_SAFE_BROWSING_SETTINGS);
-                                })
-                        .build();
-
-        PropertyModelChangeProcessor.create(
-                mSafeBrowsingPropertyModel,
-                safeBrowsingPreference,
-                DeprecatedSafetyHubModuleViewBinder::bindSafeBrowsingProperties);
-    }
-
     private void setUpSafetyTipsModule() {
         ExpandablePreferenceGroup safetyTipsPreference = findPreference(PREF_SAFETY_TIPS);
         safetyTipsPreference.setExpanded(false);
@@ -470,6 +441,10 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
             mPermissionsRevocationModuleMediator.destroy();
             mPermissionsRevocationModuleMediator = null;
         }
+        if (mSafeBrowsingModuleMediator != null) {
+            mSafeBrowsingModuleMediator.destroy();
+            mSafeBrowsingModuleMediator = null;
+        }
     }
 
     @Override
@@ -516,7 +491,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private void updateAllModules() {
         updateUpdateCheckPreference();
         updatePasswordCheckPreference();
-        updateSafeBrowsingPreference();
+        mSafeBrowsingModuleMediator.updateModule();
         mPermissionsRevocationModuleMediator.updateModule();
         updateNotificationsReviewPreference();
 
@@ -538,6 +513,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
             if (i == ModuleOption.UNUSED_PERMISSIONS) {
                 mPermissionsRevocationModuleMediator.setModuleExpandState(
                         hasNonManagedWarningState);
+            } else if (i == ModuleOption.SAFE_BROWSING) {
+                mSafeBrowsingModuleMediator.setModuleExpandState(hasNonManagedWarningState);
             } else {
                 updateModuleExpandState(i, hasNonManagedWarningState);
             }
@@ -553,6 +530,9 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
             if (i == ModuleOption.UNUSED_PERMISSIONS) {
                 moduleState = mPermissionsRevocationModuleMediator.getModuleState();
                 managed = mPermissionsRevocationModuleMediator.isManaged();
+            } else if (i == ModuleOption.SAFE_BROWSING) {
+                moduleState = mSafeBrowsingModuleMediator.getModuleState();
+                managed = mSafeBrowsingModuleMediator.isManaged();
             } else {
                 PropertyModel propertyModel = getModulePropertyModel(i);
                 moduleState = getModuleState(propertyModel, i);
@@ -572,6 +552,9 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mBrowserStateModule.set(
                 DeprecatedSafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
                 mPermissionsRevocationModuleMediator.getRevokedPermissionsCount());
+        mBrowserStateModule.set(
+                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE,
+                mSafeBrowsingModuleMediator.getSafeBrowsingState());
     }
 
     private void updateModuleExpandState(
@@ -614,18 +597,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mBrowserStateModule.set(
                 DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
                 notificationPermissionsForReviewCount);
-
-        onUpdateNeeded();
-    }
-
-    private void updateSafeBrowsingPreference() {
-        @SafeBrowsingState int state = SafetyHubUtils.getSafeBrowsingState(getProfile());
-        mSafeBrowsingPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY,
-                SafetyHubUtils.isSafeBrowsingManaged(getProfile()));
-        mSafeBrowsingPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE, state);
-        mBrowserStateModule.set(DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE, state);
 
         onUpdateNeeded();
     }
@@ -711,6 +682,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
             // managed state from their mediators.
             if (i == ModuleOption.UNUSED_PERMISSIONS) {
                 moduleState = mPermissionsRevocationModuleMediator.getModuleState();
+            } else if (i == ModuleOption.SAFE_BROWSING) {
+                moduleState = mSafeBrowsingModuleMediator.getModuleState();
             } else {
                 moduleState = getModuleState(getModulePropertyModel(i), i);
             }
