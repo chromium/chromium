@@ -746,6 +746,7 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
     // Widget name is specified for debug purposes.
     params.name = "HolderWindow";
     params.bounds = glic_attached_widget_->GetWindowBoundsInScreen();
+    params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     holder_widget_->Init(std::move(params));
     holder_widget_->ShowInactive();
   }
