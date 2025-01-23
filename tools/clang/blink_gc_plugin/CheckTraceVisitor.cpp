@@ -23,7 +23,7 @@ bool CheckTraceVisitor::VisitMemberExpr(MemberExpr* member) {
   // processed weak fields.
   if (IsWeakCallback()) {
     if (FieldDecl* field = dyn_cast<FieldDecl>(member->getMemberDecl()))
-      FoundField(field);
+      FoundField(field, false);
   }
   return true;
 }
@@ -170,7 +170,7 @@ void CheckTraceVisitor::CheckDependentScopeDeclRefExpr(
     FindFieldVisitor finder;
     finder.TraverseStmt(call->getArg(1));
     if (finder.field())
-      FoundField(finder.field());
+      FoundField(finder.field(), true);
   }
 }
 
@@ -299,7 +299,7 @@ bool CheckTraceVisitor::CheckTraceFieldCall(
   FindFieldVisitor finder;
   finder.TraverseStmt(arg);
   if (finder.field())
-    FoundField(finder.field());
+    FoundField(finder.field(), false);
 
   return true;
 }
@@ -340,6 +340,14 @@ void CheckTraceVisitor::MarkTraced(RecordInfo::Fields::iterator it) {
   it->second.MarkTraced();
 }
 
+void CheckTraceVisitor::MarkTracedIfNeeded(RecordInfo::Fields::iterator it) {
+  // In a weak callback we can't mark strong fields as traced.
+  if (IsWeakCallback() && !it->second.edge()->IsWeakMember()) {
+    return;
+  }
+  it->second.MarkTracedIfNeeded();
+}
+
 namespace {
 RecordInfo::Fields::iterator FindField(RecordInfo* info, FieldDecl* field) {
   if (Config::IsTemplateInstantiation(info->record())) {
@@ -360,10 +368,14 @@ RecordInfo::Fields::iterator FindField(RecordInfo* info, FieldDecl* field) {
 }
 }  // namespace
 
-void CheckTraceVisitor::FoundField(FieldDecl* field) {
+void CheckTraceVisitor::FoundField(FieldDecl* field, bool is_trace_if_needed) {
   RecordInfo::Fields::iterator it = FindField(info_, field);
   if (it != info_->GetFields().end()) {
-    MarkTraced(it);
+    if (is_trace_if_needed) {
+      MarkTracedIfNeeded(it);
+    } else {
+      MarkTraced(it);
+    }
   }
 }
 
@@ -396,7 +408,7 @@ bool CheckTraceVisitor::CheckImplicitCastExpr(CallExpr* call,
     FindFieldVisitor finder;
     finder.TraverseStmt(call->getArg(1));
     if (finder.field())
-      FoundField(finder.field());
+      FoundField(finder.field(), true);
     return true;
   }
   return false;
