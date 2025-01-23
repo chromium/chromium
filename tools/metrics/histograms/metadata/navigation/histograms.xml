@@ -1467,7 +1467,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Navigation.MainFrameProfileType2" enum="BrowserProfileType"
     expires_after="2025-06-15">
-  <owner>rhalavati@chromium.org</owner>
+  <owner>dullweber@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>
     The browser profile type for each main-frame navigation, recorded after
