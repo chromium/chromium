@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_elements_provider.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -109,6 +110,19 @@
   NSArray<UIMenuElement*>* elements =
       [self.menuElementsProvider defaultContextMenuElementsForItem:self.config
                                                           fromView:self];
+
+  if (self.inMagicStack) {
+    // Add the menu items for the most visited tile as well.
+    CHECK(self.magicStackModuleDelegate);
+    UIMenu* subMenu = [UIMenu menuWithTitle:@""
+                                      image:nil
+                                 identifier:nil
+                                    options:UIMenuOptionsDisplayInline
+                                   children:elements];
+    elements = [@[ subMenu ] arrayByAddingObjectsFromArray:
+                                 [self.magicStackModuleDelegate
+                                         contextMenuElementsForCurrentModule]];
+  }
   UIContextMenuActionProvider actionProvider =
       ^(NSArray<UIMenuElement*>* suggestedActions) {
         return [UIMenu menuWithTitle:@"" children:elements];
@@ -133,6 +147,15 @@
       [UIBezierPath bezierPathWithRoundedRect:previewPath cornerRadius:12];
   return [[UITargetedPreview alloc] initWithView:self
                                       parameters:previewParameters];
+}
+
+- (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction
+       willEndForConfiguration:(UIContextMenuConfiguration*)configuration
+                      animator:(id<UIContextMenuInteractionAnimating>)animator {
+  if (configuration) {
+    [self.magicStackModuleDelegate
+        notifyContextMenuInteractionEndWithAnimator:animator];
+  }
 }
 
 #pragma mark - AccessibilityCustomAction

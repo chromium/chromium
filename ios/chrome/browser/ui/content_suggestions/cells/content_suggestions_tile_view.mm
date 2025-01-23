@@ -32,8 +32,9 @@ const CGFloat kCornerRadius = 8.0;
 
 @implementation ContentSuggestionsTileView {
   ContentSuggestionsTileType _type;
-  BOOL _inMagicStack;
 }
+
+@synthesize inMagicStack = _inMagicStack;
 
 - (instancetype)initWithFrame:(CGRect)frame
                      tileType:(ContentSuggestionsTileType)type
@@ -165,7 +166,7 @@ const CGFloat kCornerRadius = 8.0;
 // size if it is in the Magic Stack since the Magic Stack has a fixed height,
 // limiting the space available for multiple lines of text.
 - (void)updateTitleLabelNumberOfLines {
-  if (!_inMagicStack) {
+  if (!self.inMagicStack) {
     return;
   }
 

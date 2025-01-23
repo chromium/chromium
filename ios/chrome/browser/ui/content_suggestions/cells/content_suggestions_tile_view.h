@@ -34,6 +34,9 @@ enum class ContentSuggestionsTileType {
 // The view displaying the background image (squircle) for the tile image.
 @property(nonatomic, strong, readonly) UIImageView* imageBackgroundView;
 
+// Whether the view is a part of the magic stack. Used in subclasses.
+@property(nonatomic, assign, readonly) BOOL inMagicStack;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_CONTENT_SUGGESTIONS_TILE_VIEW_H_

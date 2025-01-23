@@ -20,6 +20,8 @@
 @interface SafetyCheckView : UIView <SafetyCheckMagicStackConsumer>
 
 // Initializes the SafetyCheckView with `state` and `contentViewDelegate`.
+// TODO(crbug.com/391617946): Refactor content view delegate and methods that
+// use it out of the initializer.
 - (instancetype)initWithState:(SafetyCheckState*)state
           contentViewDelegate:
               (id<MagicStackModuleContentViewDelegate>)contentViewDelegate;

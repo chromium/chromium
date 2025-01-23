@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_stack_view_consumer_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_utils.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
@@ -20,15 +21,19 @@
 @implementation MostVisitedTilesStackView {
   NSLayoutConstraint* _heightConstraint;
   BOOL _inMagicStack;
+  id<MagicStackModuleContentViewDelegate> _contentViewDelegate;
 }
 
 - (instancetype)initWithConfig:(MostVisitedTilesConfig*)config
+           contentViewDelegate:
+               (id<MagicStackModuleContentViewDelegate>)contentViewDelegate
                        spacing:(CGFloat)spacing {
   if ((self = [super init])) {
     if (config.inMagicStack) {
       _inMagicStack = YES;
       [config.consumerSource addConsumer:self];
 
+      _contentViewDelegate = contentViewDelegate;
       _heightConstraint = [self.heightAnchor
           constraintLessThanOrEqualToConstant:GetMagicStackHeight(self) - 10];
       _heightConstraint.active = YES;
@@ -85,6 +90,7 @@
              initInMagicStack:config.inMagicStack
             withConfiguration:item];
     view.menuElementsProvider = item.menuElementsProvider;
+    view.magicStackModuleDelegate = _contentViewDelegate;
     view.accessibilityIdentifier = [NSString
         stringWithFormat:
             @"%@%li",

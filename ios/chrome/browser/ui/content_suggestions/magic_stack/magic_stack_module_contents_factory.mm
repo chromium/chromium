@@ -49,9 +49,10 @@
       MostVisitedTilesConfig* mvtConfig =
           static_cast<MostVisitedTilesConfig*>(config);
       return [[MostVisitedTilesStackView alloc]
-          initWithConfig:mvtConfig
-                 spacing:ContentSuggestionsTilesHorizontalSpacing(
-                             traitCollection)];
+               initWithConfig:mvtConfig
+          contentViewDelegate:contentViewDelegate
+                      spacing:ContentSuggestionsTilesHorizontalSpacing(
+                                  traitCollection)];
     }
     case ContentSuggestionsModuleType::kShortcuts: {
       ShortcutsConfig* shortcutsConfig = static_cast<ShortcutsConfig*>(config);
