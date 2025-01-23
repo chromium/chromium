@@ -5,9 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_UI_UTIL_URL_WITH_TITLE_H_
 #define IOS_CHROME_BROWSER_SHARED_UI_UTIL_URL_WITH_TITLE_H_
 
-#include <url/gurl.h>
-
 #import <Foundation/Foundation.h>
+#include <url/gurl.h>
 
 // Data object used to represent a URL and an associated page title for sharing.
 @interface URLWithTitle : NSObject
