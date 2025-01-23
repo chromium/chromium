@@ -112,13 +112,26 @@ public interface BrowserPaymentRequest {
 
     /**
      * Notifies the payment UI service of the payment apps pending to be handled
+     *
      * @param pendingApps The payment apps that are pending to be handled.
      */
     void notifyPaymentUiOfPendingApps(List<PaymentApp> pendingApps);
 
     /**
-     * Called when these conditions are satisfied: (1) show() has been called, (2) payment apps
-     * are all queried, and (3) PaymentDetails is finalized.
+     * Called when the merchant requested Secure Payment Confirmation (SPC), but no credentials have
+     * been found.
+     *
+     * @return Returns true if SPC is supported and enabled (e.g., in Chrome). Returns false if SPC
+     *     is not supported or disabled (e.g., in WebView).
+     */
+    default boolean showNoMatchingPaymentCredential() {
+        return false;
+    }
+
+    /**
+     * Called when these conditions are satisfied: (1) show() has been called, (2) payment apps are
+     * all queried, and (3) PaymentDetails is finalized.
+     *
      * @return The error if it fails; null otherwise.
      */
     @Nullable

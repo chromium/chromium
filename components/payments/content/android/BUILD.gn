@@ -211,10 +211,6 @@ android_library("full_java") {
     "//components/browser_ui/widget/android:java_resources",
     "//components/embedder_support/android:util_java",
     "//components/page_info/android:java",
-
-    # TODO(crbug.com/383334934): Core PaymentRequest code should not depend on
-    # Secure Payment Confirmation (SPC) code.
-    "//components/payments/content/android/spc:java",
     "//components/payments/mojom:mojom_java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java",

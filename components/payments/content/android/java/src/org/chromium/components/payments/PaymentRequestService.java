@@ -19,7 +19,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.page_info.CertificateChainHelper;
-import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationNoMatchingCredController;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -126,9 +125,6 @@ public class PaymentRequestService
 
     /** The helper to create and fill the response to send to the merchant. */
     @Nullable private PaymentResponseHelperInterface mPaymentResponseHelper;
-
-    // mNoMatchingController is null when it is closed and before it is shown.
-    @Nullable private SecurePaymentConfirmationNoMatchingCredController mNoMatchingController;
 
     /** A mapping of the payment method names to the corresponding payment method specific data. */
     private HashMap<String, PaymentMethodData> mQueryForQuota;
@@ -949,36 +945,19 @@ public class PaymentRequestService
                 // Another exception is if the show() request is being denied for lack of a user
                 // gesture.
                 && !mRejectShowForUserActivation) {
-            mJourneyLogger.setNoMatchingCredentialsShown();
-            mNoMatchingController =
-                    SecurePaymentConfirmationNoMatchingCredController.create(mWebContents);
-            Runnable continueCallback =
-                    () -> {
-                        mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-                        disconnectFromClientWithDebugMessage(
-                                ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
-                                PaymentErrorReason.NOT_ALLOWED_ERROR);
-                    };
-            Runnable optOutCallback =
-                    () -> {
-                        mJourneyLogger.setAborted(AbortReason.USER_OPTED_OUT);
-                        disconnectFromClientWithDebugMessage(
-                                ErrorStrings.SPC_USER_OPTED_OUT, PaymentErrorReason.USER_OPT_OUT);
-                    };
-            PaymentMethodData spcMethodData =
-                    mSpec.getMethodData().get(MethodStrings.SECURE_PAYMENT_CONFIRMATION);
-            assert spcMethodData != null;
-            mNoMatchingController.show(
-                    continueCallback,
-                    optOutCallback,
-                    spcMethodData.securePaymentConfirmation.showOptOut,
-                    spcMethodData.securePaymentConfirmation.rpId);
-            if (sNativeObserverForTest != null) sNativeObserverForTest.onErrorDisplayed();
-            return null;
+            // Show the 'No Matching Payment Credential' dialog to preserve user privacy.
+            if (mBrowserPaymentRequest.showNoMatchingPaymentCredential()) {
+                if (sNativeObserverForTest != null) {
+                    sNativeObserverForTest.onErrorDisplayed();
+                }
+                return null;
+            }
+            // Fall-through to the logic below, which will return NotSupportedError.
         }
 
         PaymentNotShownError ensureError = ensureHasSupportedPaymentMethods();
         if (ensureError != null) return ensureError;
+
         // Send AppListReady signal when all apps are created and request.show() is called.
         if (sNativeObserverForTest != null) {
             sNativeObserverForTest.onShippingSectionVisibilityChange(
@@ -1596,11 +1575,6 @@ public class PaymentRequestService
 
         sShowingPaymentRequest = null;
 
-        if (mNoMatchingController != null) {
-            mNoMatchingController.close();
-            mNoMatchingController = null;
-        }
-
         if (mBrowserPaymentRequest != null) {
             mBrowserPaymentRequest.close();
             mBrowserPaymentRequest = null;
@@ -1900,12 +1874,6 @@ public class PaymentRequestService
         } else {
             mBrowserPaymentRequest.showAppSelectorAfterPaymentAppInvokeFailed();
         }
-    }
-
-    @Nullable
-    public static SecurePaymentConfirmationNoMatchingCredController
-            getSecurePaymentConfirmationNoMatchingCredUiForTesting() {
-        return sShowingPaymentRequest == null ? null : sShowingPaymentRequest.mNoMatchingController;
     }
 
     /**
