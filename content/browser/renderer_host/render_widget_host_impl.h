@@ -1331,10 +1331,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   base::TimeTicks first_content_metadata_time_;
 
   // True if both of the following conditions are met:
-  // - This widget is for either a frame that is the main frame of the outermost
-  //   frame tree, or a non-frame widget (e.g. for a <select> menu).
+  // - This widget is for the main frame of the outermost frame tree.
   // - A RenderWidgetHostView has been attached to this widget using `SetView`.
-  bool is_topmost_widget_with_view_ = false;
+  bool is_topmost_frame_widget_with_view_ = false;
 
   // For a widget that does not have an associated RenderFrame/View, assume it
   // is depth 1, ie just below the root widget.
