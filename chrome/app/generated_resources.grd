@@ -18678,11 +18678,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Choose an audio output device
     </message>
 
-    <!-- Internal debug pages disabled interstitial. -->
-    <message name="IDS_INTERNAL_DEBUG_PAGES_DISABLED_HEADING" desc="This is the heading for the page that appears when a user attempts to load an internal developer debugging page when such pages are disabled by a pref.">
-      Internal debugging pages are currently disabled.
-    </message>
-
     <!-- Glic status tray icon strings -->
     <if expr="enable_glic">
       <!-- TODO(https://crbug.com/382287104): Replace with finalized strings -->

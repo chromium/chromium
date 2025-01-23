@@ -2373,6 +2373,7 @@ static_library("browser") {
     "//components/webrtc",
     "//components/webrtc_logging/browser",
     "//components/webrtc_logging/common",
+    "//components/webui/chrome_urls",
     "//components/zoom",
     "//content/public/browser",
     "//content/public/common",

@@ -24,9 +24,7 @@ build_webui("build") {
   webui_context_type = "trusted"
 
   mojo_files_deps =
-      [ "//components/chrome_urls_ui/mojom:mojo_bindings_ts__generator" ]
-  mojo_files = [
-    "$root_gen_dir/components/chrome_urls_ui/mojom/chrome_urls.mojom-webui.ts",
-  ]
+      [ "//components/webui/chrome_urls/mojom:mojo_bindings_ts__generator" ]
+  mojo_files = [ "$root_gen_dir/components/webui/chrome_urls/mojom/chrome_urls.mojom-webui.ts" ]
   grit_output_dir = "$root_gen_dir/components"
 }

@@ -31,7 +31,6 @@ group("resources") {
     ":components_resources",
     ":components_scaled_resources",
     ":dev_ui_components_resources",
-    "../chrome_urls_ui/resources:resources",
     "../crash/core/browser/resources:resources",
     "../flags_ui/resources:resources",
     "../gcm_driver/resources:resources",
@@ -41,6 +40,7 @@ group("resources") {
     "../translate/translate_internals:resources",
     "../user_actions_ui/resources:resources",
     "../version_ui/resources:resources",
+    "../webui:resources",
   ]
 
   if (is_ios) {

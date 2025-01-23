@@ -12,11 +12,12 @@ build_webui_tests("build") {
 
   ts_path_mappings =
       [ "chrome://chrome-urls/*|" +
-        rebase_path("$root_gen_dir/components/chrome_urls_ui/resources/tsc/*",
-                    target_gen_dir) ]
+        rebase_path(
+            "$root_gen_dir/components/webui/chrome_urls/resources/tsc/*",
+            target_gen_dir) ]
 
   ts_deps = [
-    "//components/chrome_urls_ui/resources:build_ts",
+    "//components/webui/chrome_urls/resources:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
 }

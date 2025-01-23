@@ -50,6 +50,7 @@
 #include "components/grit/components_resources.h"
 #include "components/strings/grit/components_locale_settings.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/webui/chrome_urls/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -528,7 +529,7 @@ ChromeURLsUIConfig::ChromeURLsUIConfig()
 std::unique_ptr<content::WebUIController>
 ChromeURLsUIConfig::CreateWebUIController(content::WebUI* web_ui,
                                           const GURL& url) {
-  if (base::FeatureList::IsEnabled(features::kInternalOnlyUisPref)) {
+  if (base::FeatureList::IsEnabled(chrome_urls::kInternalOnlyUisPref)) {
     return std::make_unique<chrome_urls::ChromeUrlsUI>(web_ui);
   }
   return std::make_unique<AboutUI>(web_ui, url);

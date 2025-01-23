@@ -218,6 +218,7 @@ source_set("browser_tests") {
     "//components/spellcheck/browser:browser",
     "//components/user_education/common",
     "//components/user_notes:features",
+    "//components/webui/chrome_urls/",
     "//net:test_support",
   ]
 

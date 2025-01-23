@@ -62,6 +62,8 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/version_info/version_info.h"
+#include "components/webui/chrome_urls/features.h"
+#include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/navigation_controller.h"
@@ -1740,7 +1742,7 @@ class ChromeContentBrowserClientOverrideForInternalWebUITest
       public testing::WithParamInterface<bool> {
  protected:
   ChromeContentBrowserClientOverrideForInternalWebUITest() {
-    testing_local_state_.Get()->SetBoolean(prefs::kInternalOnlyUisEnabled,
+    testing_local_state_.Get()->SetBoolean(chrome_urls::kInternalOnlyUisEnabled,
                                            GetParam());
   }
 
@@ -1756,7 +1758,7 @@ class ChromeContentBrowserClientOverrideForInternalWebUITest
 
 TEST_P(ChromeContentBrowserClientOverrideForInternalWebUITest, FeatureOff) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kInternalOnlyUisPref);
+  scoped_feature_list.InitAndDisableFeature(chrome_urls::kInternalOnlyUisPref);
 
   // When the feature flag is off, OverrideForInternalWebUI should return
   // null regardless of the state of the pref.
@@ -1773,7 +1775,7 @@ TEST_P(ChromeContentBrowserClientOverrideForInternalWebUITest, FeatureOff) {
 
 TEST_P(ChromeContentBrowserClientOverrideForInternalWebUITest, FeatureOn) {
   base::test::ScopedFeatureList scoped_feature_list(
-      features::kInternalOnlyUisPref);
+      chrome_urls::kInternalOnlyUisPref);
 
   // When the feature flag is on, OverrideForInternalWebUI should return
   // non-null if kInternalOnlyUisEnabled pref is turned off, and null
