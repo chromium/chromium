@@ -72,6 +72,10 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogCancelled =
 constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
     "Mobile.PasswordsSettings.BulkSavePasswordsToAccountDialog.Accepted";
 
+// The user action for when the delete all saved data button is clicked.
+constexpr const char* kDeleteAllSavedDataButtonClicked =
+    "IOS.PasswordManager.Settings.DeleteAllSavedData.Clicked";
+
 // Represents the code of an error returned when the user dismisses the update
 // GPM Pin flow by clicking the "Cancel" button. This should not be treated as
 // an actual error.
@@ -125,7 +129,6 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
     ExportActivityViewControllerDelegate,
     BulkMoveLocalPasswordsToAccountHandler,
     PasswordExportHandler,
-    PasswordSettingsPresentationDelegate,
     PasswordsInOtherAppsCoordinatorDelegate,
     PopoverLabelViewControllerDelegate,
     ReauthenticationCoordinatorDelegate,
@@ -280,44 +283,8 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
 
 #pragma mark - PasswordSettingsPresentationDelegate
 
-- (void)startExportFlow {
-  UIAlertController* exportConfirmation = [UIAlertController
-      alertControllerWithTitle:nil
-                       message:l10n_util::GetNSString(
-                                   IDS_IOS_EXPORT_PASSWORDS_ALERT_MESSAGE)
-                preferredStyle:UIAlertControllerStyleActionSheet];
-  exportConfirmation.view.accessibilityIdentifier =
-      kPasswordSettingsExportConfirmViewId;
-
-  UIAlertAction* cancelAction =
-      [UIAlertAction actionWithTitle:l10n_util::GetNSString(
-                                         IDS_IOS_EXPORT_PASSWORDS_CANCEL_BUTTON)
-                               style:UIAlertActionStyleCancel
-                             handler:^(UIAlertAction* action){
-                             }];
-  [exportConfirmation addAction:cancelAction];
-
-  __weak __typeof(self) weakSelf = self;
-  UIAlertAction* exportAction = [UIAlertAction
-      actionWithTitle:l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS)
-                style:UIAlertActionStyleDefault
-              handler:^(UIAlertAction* action) {
-                [weakSelf onStartExportFlowConfirmed];
-              }];
-
-  [exportConfirmation addAction:exportAction];
-
-  exportConfirmation.popoverPresentationController.sourceView =
-      [_passwordSettingsViewController sourceViewForAlerts];
-  exportConfirmation.popoverPresentationController.sourceRect =
-      [_passwordSettingsViewController sourceRectForPasswordExportAlerts];
-
-  [_passwordSettingsViewController presentViewController:exportConfirmation
-                                                animated:YES
-                                              completion:nil];
-}
-
 - (void)startDeletionFlow {
+  base::RecordAction(base::UserMetricsAction(kDeleteAllSavedDataButtonClicked));
   CredentialCounts counts = [_mediator passwordAndPasskeyCounts];
 
   NSString* alertDescription = base::SysUTF16ToNSString(
@@ -366,6 +333,43 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
       [_passwordSettingsViewController sourceRectForCredentialDeletionAlerts];
 
   [_passwordSettingsViewController presentViewController:deletionConfirmation
+                                                animated:YES
+                                              completion:nil];
+}
+
+- (void)startExportFlow {
+  UIAlertController* exportConfirmation = [UIAlertController
+      alertControllerWithTitle:nil
+                       message:l10n_util::GetNSString(
+                                   IDS_IOS_EXPORT_PASSWORDS_ALERT_MESSAGE)
+                preferredStyle:UIAlertControllerStyleActionSheet];
+  exportConfirmation.view.accessibilityIdentifier =
+      kPasswordSettingsExportConfirmViewId;
+
+  UIAlertAction* cancelAction =
+      [UIAlertAction actionWithTitle:l10n_util::GetNSString(
+                                         IDS_IOS_EXPORT_PASSWORDS_CANCEL_BUTTON)
+                               style:UIAlertActionStyleCancel
+                             handler:^(UIAlertAction* action){
+                             }];
+  [exportConfirmation addAction:cancelAction];
+
+  __weak __typeof(self) weakSelf = self;
+  UIAlertAction* exportAction = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS)
+                style:UIAlertActionStyleDefault
+              handler:^(UIAlertAction* action) {
+                [weakSelf onStartExportFlowConfirmed];
+              }];
+
+  [exportConfirmation addAction:exportAction];
+
+  exportConfirmation.popoverPresentationController.sourceView =
+      [_passwordSettingsViewController sourceViewForAlerts];
+  exportConfirmation.popoverPresentationController.sourceRect =
+      [_passwordSettingsViewController sourceRectForPasswordExportAlerts];
+
+  [_passwordSettingsViewController presentViewController:exportConfirmation
                                                 animated:YES
                                               completion:nil];
 }

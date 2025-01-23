@@ -14815,6 +14815,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.PasswordManager.Settings.DeleteAllSavedData.Clicked">
+  <owner>mxlg@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Reported when the user clicks on the delete all data button in the password
+    settings.
+  </description>
+</action>
+
 <action name="IOS.Permission.Toggled">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
