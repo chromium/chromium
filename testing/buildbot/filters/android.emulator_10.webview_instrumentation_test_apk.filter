@@ -1,0 +1,9 @@
+# crbug.com/391715753
+-org.chromium.android_webview.test.ContextMenuTest.testCopy*
+-org.chromium.android_webview.test.ContextMenuTest.testDismiss*
+-org.chromium.android_webview.test.ContextMenuTest.testOpenInBrowser
+
+# crbug.com/391716082
+-org.chromium.android_webview.test.devui.CrashesListFragmentTest.testConsentErrorMessage_shown_onlyInCrashFragment
+-org.chromium.android_webview.test.devui.CrashesListFragmentTest.testShowingSingleCrashReport_pending
+-org.chromium.android_webview.test.devui.FlagsFragmentTest.testTogglingFlagShowsBlueDot_baseFeature

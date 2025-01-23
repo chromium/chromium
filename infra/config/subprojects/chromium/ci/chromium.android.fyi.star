@@ -603,6 +603,11 @@ ci.builder(
                     "--browser=android-chromium",
                 ],
             ),
+            "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.webview_instrumentation_test_apk.filter",
+                ],
+            ),
         },
     ),
     targets_settings = targets.settings(
