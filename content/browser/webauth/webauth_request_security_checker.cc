@@ -12,6 +12,7 @@
 #include "content/browser/bad_message.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_authentication_delegate.h"
 #include "content/public/browser/webauthn_security_utils.h"
 #include "content/public/common/content_client.h"
 #include "device/fido/fido_transport_protocol.h"

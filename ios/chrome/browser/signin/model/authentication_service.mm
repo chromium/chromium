@@ -499,9 +499,10 @@ void AuthenticationService::SignOut(
     bool force_clear_browsing_data,
     ProceduralBlock completion) {
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    if (completion)
+    if (completion) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(completion));
+    }
     return;
   }
 

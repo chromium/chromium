@@ -45,8 +45,10 @@ specific_include_rules = {
   "authenticator_request_client_delegate\.*": [
     "+device/fido",
   ],
-
   "digital_credentials_cross_device\.h": [
+    "+device/fido",
+  ],
+  "web_authentication_delegate\.*": [
     "+device/fido",
   ],
 

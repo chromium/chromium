@@ -723,6 +723,8 @@ source_set("browser_sources") {
       # Android provides its own native implementation of that API.
       "authenticator_request_client_delegate.cc",
       "authenticator_request_client_delegate.h",
+      "web_authentication_delegate.cc",
+      "web_authentication_delegate.h",
       "web_authentication_request_proxy.h",
     ]
   }

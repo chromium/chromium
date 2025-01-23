@@ -5,10 +5,16 @@
 #ifndef CHROME_BROWSER_WEBAUTHN_LOCAL_CREDENTIAL_MANAGEMENT_MAC_H_
 #define CHROME_BROWSER_WEBAUTHN_LOCAL_CREDENTIAL_MANAGEMENT_MAC_H_
 
+#include <cstdint>
+#include <optional>
+#include <string>
 #include <vector>
 
-#include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
+#include "base/containers/span.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/webauthn/local_credential_management.h"
+#include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/mac/authenticator_config.h"
 
 class Profile;
 

@@ -26,14 +26,16 @@ bool Pattern::Match(std::string_view string) const {
   // The first chunk should match the string head.
   const std::string& first_chunk = chunks_.front();
   if (string.size() < first_chunk.size() ||
-      string.substr(0, first_chunk.size()) != first_chunk)
+      string.substr(0, first_chunk.size()) != first_chunk) {
     return false;
+  }
 
   // The last chunk should match the string tail.
   const std::string& last_chunk = chunks_.back();
   if (string.size() < last_chunk.size() ||
-      string.substr(string.size() - last_chunk.size()) != last_chunk)
+      string.substr(string.size() - last_chunk.size()) != last_chunk) {
     return false;
+  }
 
   // Greedy match all the rest of the chunks_, excluding the head and the
   // tail.
@@ -41,12 +43,14 @@ bool Pattern::Match(std::string_view string) const {
   for (const std::string& chunk : chunks_) {
     // Skip first & last chunk as they have been checked before
     // already.
-    if (&chunk == &first_chunk || &chunk == &last_chunk)
+    if (&chunk == &first_chunk || &chunk == &last_chunk) {
       continue;
+    }
 
     int offset = string.find(chunk, string_offset);
-    if (offset == -1)
+    if (offset == -1) {
       return false;
+    }
 
     string_offset = offset + chunk.size();
   }
@@ -66,26 +70,31 @@ PatternAccountRestriction& PatternAccountRestriction::operator=(
 
 bool PatternAccountRestriction::IsAccountRestricted(
     std::string_view email) const {
-  if (patterns_.empty())
+  if (patterns_.empty()) {
     return false;
+  }
   for (const auto& pattern : patterns_) {
-    if (pattern.Match(email))
+    if (pattern.Match(email)) {
       return false;
+    }
   }
   return true;
 }
 
 bool ArePatternsValid(const base::Value* value) {
   // TODO(crbug.com/40205573): Check if we can use regex instead.
-  if (!value->is_list())
+  if (!value->is_list()) {
     return false;
+  }
 
   for (const base::Value& item : value->GetList()) {
-    if (!item.is_string())
+    if (!item.is_string()) {
       return false;
+    }
     auto maybe_pattern = PatternFromString(item.GetString());
-    if (!maybe_pattern)
+    if (!maybe_pattern) {
       return false;
+    }
   }
   return true;
 }
@@ -95,11 +104,13 @@ PatternAccountRestriction PatternAccountRestrictionFromValue(
   std::vector<Pattern> patterns;
   patterns.reserve(list.size());
   for (const base::Value& item : list) {
-    if (!item.is_string())
+    if (!item.is_string()) {
       continue;
+    }
     auto maybe_pattern = PatternFromString(item.GetString());
-    if (!maybe_pattern)
+    if (!maybe_pattern) {
       continue;
+    }
     patterns.push_back(*std::move(maybe_pattern));
   }
   return PatternAccountRestriction(std::move(patterns));
@@ -128,8 +139,9 @@ std::optional<Pattern> PatternFromString(std::string_view chunk) {
     current_chunk.push_back(c);
     escape = false;
   }
-  if (escape)
+  if (escape) {
     return std::nullopt;
+  }
   chunks.push_back(current_chunk);
   return Pattern(std::move(chunks));
 }
