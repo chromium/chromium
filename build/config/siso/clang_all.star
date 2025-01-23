@@ -35,8 +35,7 @@ def __filegroups(ctx):
                 "*.h",
                 "bin/clang",
                 "bin/clang++",
-                "bin/clang-cl",
-                "bin/clang-cl.exe",
+                "bin/clang-*",  # clang-cl, clang-<ver>
                 "*_ignorelist.txt",
                 # https://crbug.com/335997052
                 "clang_rt.profile*.lib",

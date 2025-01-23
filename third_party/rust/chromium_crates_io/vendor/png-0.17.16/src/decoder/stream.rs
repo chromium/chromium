@@ -988,6 +988,7 @@ impl StreamingDecoder {
             chunk::cICP => Ok(self.parse_cicp()),
             chunk::mDCV => Ok(self.parse_mdcv()),
             chunk::cLLI => Ok(self.parse_clli()),
+            chunk::eXIf => Ok(self.parse_exif()),
             chunk::bKGD => Ok(self.parse_bkgd()),
             chunk::iCCP if !self.decode_options.ignore_iccp_chunk => self.parse_iccp(),
             chunk::tEXt if !self.decode_options.ignore_text_chunk => self.parse_text(),
@@ -1493,6 +1494,16 @@ impl StreamingDecoder {
         let info = self.info.as_mut().unwrap();
         if info.content_light_level.is_none() {
             info.content_light_level = parse(&self.current_chunk.raw_bytes[..]).ok();
+        }
+
+        Decoded::Nothing
+    }
+
+    fn parse_exif(&mut self) -> Decoded {
+        // We ignore a second, duplicated eXIf chunk (if any).
+        let info = self.info.as_mut().unwrap();
+        if info.exif_metadata.is_none() {
+            info.exif_metadata = Some(self.current_chunk.raw_bytes.clone().into());
         }
 
         Decoded::Nothing
@@ -2136,7 +2147,7 @@ mod tests {
         assert!(decoder.read_info().is_ok());
     }
 
-    /// Test handling of `mDCV` and `cLLI` chunks.`
+    /// Test handling of `mDCV` and `cLLI` chunks.
     #[test]
     fn test_mdcv_and_clli_chunks() {
         let decoder = crate::Decoder::new(File::open("tests/bugfixes/cicp_pq.png").unwrap());
@@ -2164,6 +2175,17 @@ mod tests {
         let clli = info.content_light_level.unwrap();
         assert_relative_eq!(clli.max_content_light_level as f32 / 10_000.0, 4000.0);
         assert_relative_eq!(clli.max_frame_average_light_level as f32 / 10_000.0, 2627.0);
+    }
+
+    /// Test handling of `eXIf` chunk.
+    #[test]
+    fn test_exif_chunk() {
+        let decoder =
+            crate::Decoder::new(File::open("tests/bugfixes/F-exif-chunk-early.png").unwrap());
+        let reader = decoder.read_info().unwrap();
+        let info = reader.info();
+        let exif = info.exif_metadata.as_ref().unwrap().as_ref();
+        assert_eq!(exif.len(), 90);
     }
 
     /// Tests what happens then [`Reader.finish`] is called twice.

@@ -1003,6 +1003,12 @@ who = "Dustin J. Mitchell <djmitche@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.135 -> 1.0.136"
 
+[[audits.cxxbridge-cmd]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.136 -> 1.0.137"
+notes = "The delta just removes some clippy opt-outs."
+
 [[audits.cxxbridge-flags]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -1067,6 +1073,12 @@ notes = "No code changes in the delta"
 who = "Dustin J. Mitchell <djmitche@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.135 -> 1.0.136"
+
+[[audits.cxxbridge-flags]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.136 -> 1.0.137"
+notes = "The delta just removes `#![allow(clippy::let_and_return)]` from `lib.rs`."
 
 [[audits.cxxbridge-macro]]
 who = "danakj <danakj@chromium.org>"
