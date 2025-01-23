@@ -117,18 +117,24 @@ class AutofillProfile : public FormGroup {
       const std::string& app_locale,
       FieldTypeSet* matching_types,
       PossibleProfileValueSources* profile_value_sources) const override;
-
   std::u16string GetInfo(FieldType type,
                          const std::string& app_locale) const override;
   std::u16string GetInfo(const AutofillType& type,
                          const std::string& app_locale) const override;
-
   std::u16string GetRawInfo(FieldType type) const override;
-
   void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status) override;
-
+  // TODO(crbug.com/40264633): Change `AutofillType` into `FieldType`.
+  bool SetInfoWithVerificationStatus(const AutofillType& type,
+                                     const std::u16string& value,
+                                     const std::string& app_locale,
+                                     VerificationStatus status) override;
+  bool SetInfoWithVerificationStatus(FieldType type,
+                                     const std::u16string& value,
+                                     const std::string& app_locale,
+                                     VerificationStatus status);
+  VerificationStatus GetVerificationStatus(const FieldType type) const override;
   void GetSupportedTypes(FieldTypeSet* supported_types) const override;
 
   // Calculates the ranking score used for ranking the profile suggestion. If
@@ -343,15 +349,6 @@ class AutofillProfile : public FormGroup {
 
  private:
   friend class AutofillProfileTestApi;
-
-  // FormGroup:
-  VerificationStatus GetVerificationStatusImpl(
-      const FieldType type) const override;
-
-  bool SetInfoWithVerificationStatusImpl(const AutofillType& type,
-                                         const std::u16string& value,
-                                         const std::string& app_locale,
-                                         VerificationStatus status) override;
 
   // Creates inferred labels for |profiles| at indices corresponding to
   // |indices|, and stores the results to the corresponding elements of

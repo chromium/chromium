@@ -1153,14 +1153,9 @@ TEST_F(AutofillProfileTest, SetAndGetRawInfoWithValidationStatus) {
   // Set a value with verification status and verify the results.
   profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"full name",
                                            VerificationStatus::kFormatted);
-  EXPECT_EQ(profile.GetVerificationStatusInt(NAME_FULL), 2);
   EXPECT_EQ(profile.GetVerificationStatus(NAME_FULL),
             VerificationStatus::kFormatted);
   EXPECT_EQ(profile.GetRawInfo(NAME_FULL), u"full name");
-
-  // Test the working of the wrapper to pass the value by int.
-  profile.SetRawInfoWithVerificationStatusInt(NAME_FULL, u"full name", 2);
-  EXPECT_EQ(profile.GetVerificationStatusInt(NAME_FULL), 2);
 }
 
 TEST_F(AutofillProfileTest, SetAndGetInfoWithValidationStatus) {

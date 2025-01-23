@@ -1142,11 +1142,10 @@ std::u16string CreditCard::GetInfo(const AutofillType& type,
   return GetInfo(type.GetStorableType(), app_locale);
 }
 
-bool CreditCard::SetInfoWithVerificationStatusImpl(
-    const AutofillType& type,
-    const std::u16string& value,
-    const std::string& app_locale,
-    VerificationStatus status) {
+bool CreditCard::SetInfoWithVerificationStatus(const AutofillType& type,
+                                               const std::u16string& value,
+                                               const std::string& app_locale,
+                                               VerificationStatus status) {
   FieldType storable_type = type.GetStorableType();
   if (storable_type == CREDIT_CARD_EXP_MONTH)
     return SetExpirationMonthFromString(value, app_locale);
@@ -1158,6 +1157,10 @@ bool CreditCard::SetInfoWithVerificationStatusImpl(
     SetRawInfoWithVerificationStatus(storable_type, value, status);
   }
   return true;
+}
+
+VerificationStatus CreditCard::GetVerificationStatus(FieldType type) const {
+  return VerificationStatus::kNoStatus;
 }
 
 std::u16string CreditCard::NetworkForFill() const {

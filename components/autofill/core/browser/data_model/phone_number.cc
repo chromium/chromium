@@ -274,11 +274,10 @@ std::u16string PhoneNumber::GetInfo(const AutofillType& type,
   return GetInfo(type.GetStorableType(), app_locale);
 }
 
-bool PhoneNumber::SetInfoWithVerificationStatusImpl(
-    const AutofillType& type,
-    const std::u16string& value,
-    const std::string& app_locale,
-    VerificationStatus status) {
+bool PhoneNumber::SetInfoWithVerificationStatus(const AutofillType& type,
+                                                const std::u16string& value,
+                                                const std::string& app_locale,
+                                                VerificationStatus status) {
   SetRawInfoWithVerificationStatus(type.GetStorableType(), value, status);
 
   if (number_.empty())
@@ -296,6 +295,10 @@ bool PhoneNumber::SetInfoWithVerificationStatusImpl(
   }
   number_ = cached_parsed_phone_.GetFormattedNumber();
   return true;
+}
+
+VerificationStatus PhoneNumber::GetVerificationStatus(FieldType type) const {
+  return VerificationStatus::kNoStatus;
 }
 
 void PhoneNumber::UpdateCacheIfNeeded(const std::string& app_locale) const {

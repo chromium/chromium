@@ -66,6 +66,11 @@ class PhoneNumber : public FormGroup {
   void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status) override;
+  bool SetInfoWithVerificationStatus(const AutofillType& type,
+                                     const std::u16string& value,
+                                     const std::string& app_locale,
+                                     const VerificationStatus status) override;
+  VerificationStatus GetVerificationStatus(FieldType type) const override;
 
   // The class used to combine home phone parts into a whole number.
   class PhoneCombineHelper {
@@ -106,10 +111,6 @@ class PhoneNumber : public FormGroup {
  private:
   // FormGroup:
   void GetSupportedTypes(FieldTypeSet* supported_types) const override;
-  bool SetInfoWithVerificationStatusImpl(const AutofillType& type,
-                                         const std::u16string& value,
-                                         const std::string& app_locale,
-                                         VerificationStatus status) override;
 
   // Updates the cached parsed number if the profile's region has changed
   // since the last time the cache was updated.
