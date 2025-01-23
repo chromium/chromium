@@ -1807,6 +1807,7 @@ if (is_android) {
         "../browser/extensions/desktop_android/desktop_android_extensions_browsertest.cc",
         "../browser/extensions/extension_incognito_apitest.cc",
         "../browser/extensions/extension_platform_browsertest_browsertest.cc",
+        "../browser/extensions/shared_module_apitest.cc",
         "../browser/extensions/system_cpu_apitest.cc",
         "../browser/extensions/system_memory_apitest.cc",
         "../browser/extensions/test_resources_browsertest.cc",

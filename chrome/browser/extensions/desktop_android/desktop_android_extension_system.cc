@@ -141,6 +141,9 @@ class DesktopAndroidExtensionRegistrarDelegate
 DesktopAndroidExtensionSystem::DesktopAndroidExtensionSystem(
     BrowserContext* browser_context)
     : browser_context_(browser_context),
+      // TODO(crbug.com/356905053): Provide real sorting once the web app story
+      // on Android is finalized.
+      app_sorting_(std::make_unique<NullAppSorting>()),
       store_factory_(base::MakeRefCounted<value_store::ValueStoreFactoryImpl>(
           browser_context->GetPath())) {}
 
@@ -269,7 +272,7 @@ QuotaService* DesktopAndroidExtensionSystem::quota_service() {
 }
 
 AppSorting* DesktopAndroidExtensionSystem::app_sorting() {
-  return nullptr;
+  return app_sorting_.get();
 }
 
 const base::OneShotEvent& DesktopAndroidExtensionSystem::ready() const {
