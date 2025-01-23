@@ -5,9 +5,11 @@
 #include "chrome/browser/ash/login/demo_mode/demo_login_controller.h"
 
 #include <optional>
+#include <utility>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -15,12 +17,10 @@
 #include "base/logging.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
-#include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -286,28 +286,48 @@ void RemoveGaiaUsersOnDevice() {
   }
 }
 
+policy::DeviceCloudPolicyManagerAsh* GetDeviceCloudPolicyManager() {
+  auto* platform_part = g_browser_process->platform_part();
+  if (!platform_part) {
+    LOG(ERROR) << "platform_part is null.";
+    return nullptr;
+  }
+  auto* policy_connector_ash = platform_part->browser_policy_connector_ash();
+  if (!policy_connector_ash) {
+    LOG(ERROR) << "browser_policy_connector_ash is null.";
+    return nullptr;
+  }
+
+  return policy_connector_ash->GetDeviceCloudPolicyManager();
+}
+
 }  // namespace
 
 DemoLoginController::DemoLoginController(
-    LoginScreenClientImpl* login_screen_client) {
-  CHECK(login_screen_client);
-  scoped_observation_.Observe(login_screen_client);
+    base::RepeatingClosure configure_auto_login_callback)
+    : configure_auto_login_callback_(std::move(configure_auto_login_callback)) {
+  auto* cloud_policy_manager = GetDeviceCloudPolicyManager();
+  if (!cloud_policy_manager) {
+    CHECK_IS_TEST();
+    state_ = State::kReadyForLoginWithDemoAccount;
+    return;
+  }
+
+  if (cloud_policy_manager->IsConnected()) {
+    state_ = State::kReadyForLoginWithDemoAccount;
+  } else {
+    state_ = State::kLoadingAvailibility;
+    observation_.Observe(cloud_policy_manager);
+  }
 }
 
 DemoLoginController::~DemoLoginController() = default;
 
-void DemoLoginController::OnLoginScreenShown() {
-  // Stop observe login screen since it may get invoked in session. Demo account
-  // should be setup only once for each session. Follow up response will
-  // instruct retry or fall back to public account.
-  scoped_observation_.Reset();
-
-  if (!demo_mode::IsDeviceInDemoMode()) {
-    return;
-  }
+void DemoLoginController::TriggerDemoAccountLoginFlow() {
+  DCHECK_EQ(State::kReadyForLoginWithDemoAccount, state_);
   // Try demo account login first by disable auto-login to managed guest
   // session.
-  demo_mode::SetShouldFallBackMGS(false);
+  state_ = State::kSetupDemoAccountInProgress;
   // TODO(crbug.com/387572263): figure out whether should ignore the power idle
   // policy when fallback to MGS when sign in is enable.
   demo_mode::SetDoNothingWhenPowerIdle();
@@ -388,6 +408,8 @@ void DemoLoginController::HandleSetupDemoAcountResponse(
 
   UserLoginPermissionTracker::Get()->SetDemoUser(
       gaia::CanonicalizeEmail(*email));
+  DCHECK_EQ(State::kSetupDemoAccountInProgress, state_);
+  state_ = State::kLoginDemoAccount;
 
   auto* local_state = g_browser_process->local_state();
   local_state->SetString(prefs::kDemoAccountGaiaId, *gaia_id);
@@ -403,15 +425,30 @@ void DemoLoginController::OnSetupDemoAccountError(
     const DemoLoginController::ResultCode result_code) {
   // TODO(crbug.com/372333479): Instruct how to do retry on failed according to
   // the error code.
+
+  LOG(ERROR) << "Failed to set up demo account. Result code: "
+             << static_cast<int>(result_code);
+
+  DCHECK_EQ(State::kSetupDemoAccountInProgress, state_);
+
+  // Login public account session when set up failed.
+  state_ = State::kLoginToMGS;
+  configure_auto_login_callback_.Run();
+
   if (setup_failed_callback_for_testing_) {
     std::move(setup_failed_callback_for_testing_).Run(result_code);
   }
+}
 
-  // Login public account session when set up failed.
-  demo_mode::SetShouldFallBackMGS(true);
-  auto* existing_user_controller =
-      ash::ExistingUserController::current_controller();
-  existing_user_controller->ConfigureAutoLogin();
+void DemoLoginController::OnDeviceCloudPolicyManagerConnected() {
+  DCHECK_EQ(State::kLoadingAvailibility, state_);
+  state_ = State::kReadyForLoginWithDemoAccount;
+  observation_.Reset();
+  configure_auto_login_callback_.Run();
+}
+
+void DemoLoginController::OnDeviceCloudPolicyManagerGotRegistry() {
+  // Do nothing.
 }
 
 void DemoLoginController::MaybeCleanupPreviousDemoAccount() {
@@ -474,23 +511,13 @@ void DemoLoginController::OnCleanUpDemoAccountComplete(
 
 std::optional<base::Value::Dict> DemoLoginController::GetDeviceIdentifier(
     const std::string& login_scope_device_id) {
-  auto* platform_part = g_browser_process->platform_part();
-  if (!platform_part) {
-    LOG(ERROR) << "platform_part is null.";
-    return std::nullopt;
-  }
-  auto* policy_connector_ash = platform_part->browser_policy_connector_ash();
-  if (!policy_connector_ash) {
-    LOG(ERROR) << "browser_policy_connector_ash is null.";
-    return std::nullopt;
-  }
   // The class member `policy_manager_for_testing_` is set during testing.
   // If it's not set, it means we're not in the testing environment, so we
   // can get the real policy manager from `policy_connector_ash`.
   policy::CloudPolicyManager* policy_manager =
-      policy_manager_for_testing_
-          ? policy_manager_for_testing_
-          : policy_connector_ash->GetDeviceCloudPolicyManager();
+      policy_manager_for_testing_ ? policy_manager_for_testing_
+                                  : GetDeviceCloudPolicyManager();
+
   if (!policy_manager) {
     LOG(ERROR)
         << "device_cloud_policy_manager is null, or it's not set for testing.";

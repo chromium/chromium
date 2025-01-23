@@ -107,6 +107,8 @@ static_library("demo_mode_login") {
     "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/system/",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/login" ]
 }
 
 static_library("test_support") {
