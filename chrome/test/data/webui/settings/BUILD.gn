@@ -166,6 +166,7 @@ build_webui_tests("build") {
     files += [
       "glic_data_page_test.ts",
       "glic_page_test.ts",
+      "test_glic_browser_proxy.ts",
     ]
   }
 

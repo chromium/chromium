@@ -340,6 +340,10 @@ build_webui("build") {
     non_web_component_files += [ "autofill_page/passkeys_browser_proxy.ts" ]
   }
 
+  if (enable_glic) {
+    non_web_component_files += [ "glic_page/glic_browser_proxy.ts" ]
+  }
+
   # -----------------non_web_component_files end -------------------------------
 
   icons_html_files = [

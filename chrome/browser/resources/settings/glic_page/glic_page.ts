@@ -14,6 +14,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 
+import type {GlicBrowserProxy} from './glic_browser_proxy.js';
+import {GlicBrowserProxyImpl} from './glic_browser_proxy.js';
 import {getTemplate} from './glic_page.html.js';
 
 export enum SettingsGlicPageFeaturePrefName {
@@ -51,8 +53,15 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
         type: Object,
         notify: true,
       },
+      registeredShortcut_: {
+        type: String,
+        value: '',
+      },
     };
   }
+
+  private registeredShortcut_: string;
+  private browserProxy_: GlicBrowserProxy = GlicBrowserProxyImpl.getInstance();
 
   override ready() {
     super.ready();
@@ -60,16 +69,20 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
         OS_WIDGET_TOGGLE_ELEMENT_ID, this.$.launcherToggle.getBubbleAnchor());
   }
 
-  override connectedCallback() {
+  override async connectedCallback() {
     super.connectedCallback();
     this.registerHelpBubble(
         OS_WIDGET_KEYBOARD_SHORTCUT_ELEMENT_ID,
         this.$.shortcutInput.getBubbleAnchor());
+    this.registeredShortcut_ = await this.browserProxy_.getGlicShortcut();
   }
 
-  private onShortcutUpdated_(_: CustomEvent<string>) {
-    // TODO(crbug.com/378143781): Parse the event and save the shortcut to the
-    // glic prefs.
+  private onShortcutUpdated_(event: CustomEvent<string>) {
+    this.browserProxy_.setGlicShortcut(event.detail);
+  }
+
+  private onInputCaptureChange_(event: CustomEvent<boolean>) {
+    this.browserProxy_.setShortcutSuspensionState(event.detail);
   }
 }
 

@@ -667,6 +667,7 @@ static_library("ui") {
     "//ui/accessibility",
     "//ui/base",
     "//ui/base:data_exchange",
+    "//ui/base/accelerators/global_accelerator_listener:global_accelerator_listener",
     "//ui/base/clipboard",
     "//ui/base/ime",
     "//ui/compositor",
@@ -5631,10 +5632,15 @@ static_library("ui") {
   }
 
   if (enable_glic) {
+    sources += [
+      "webui/settings/glic_handler.cc",
+      "webui/settings/glic_handler.h",
+    ]
     deps += [
       "//chrome/browser/glic",
       "//chrome/browser/glic:enabling",
       "//chrome/browser/glic:impl",
+      "//chrome/browser/glic/launcher:launcher",
     ]
     allow_circular_includes_from += [ "//chrome/browser/glic:impl" ]
   }

@@ -1,0 +1,78 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/webui/settings/glic_handler.h"
+
+#include <string>
+
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/values.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
+#include "components/prefs/pref_service.h"
+#include "content/public/browser/web_ui.h"
+#include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
+
+namespace settings {
+
+GlicHandler::GlicHandler() = default;
+GlicHandler::~GlicHandler() = default;
+
+void GlicHandler::RegisterMessages() {
+  web_ui()->RegisterMessageCallback(
+      "getGlicShortcut",
+      base::BindRepeating(&GlicHandler::HandleGetGlicShortcut,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "setGlicShortcut",
+      base::BindRepeating(&GlicHandler::HandleSetGlicShortcut,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "setShortcutSuspensionState",
+      base::BindRepeating(&GlicHandler::HandleSetShortcutSuspensionState,
+                          base::Unretained(this)));
+}
+
+void GlicHandler::HandleGetGlicShortcut(const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+
+  AllowJavascript();
+  ResolveJavascriptCallback(
+      callback_id, ui::Command::AcceleratorToString(
+                       glic::GlicLauncherConfiguration::GetGlobalHotkey()));
+}
+
+void GlicHandler::HandleSetGlicShortcut(const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const std::string accelerator_string = args[0].GetString();
+  ui::Accelerator updated_hotkey =
+      ui::Command::StringToAccelerator(accelerator_string);
+
+  auto hotkey_dictionary =
+      base::Value::Dict()
+          .Set(glic::GlicLauncherConfiguration::kHotkeyKeyCode,
+               updated_hotkey.key_code())
+          .Set(glic::GlicLauncherConfiguration::kHotkeyModifiers,
+               updated_hotkey.modifiers());
+  g_browser_process->local_state()->SetDict(
+      glic::prefs::kGlicLauncherGlobalHotkey, std::move(hotkey_dictionary));
+}
+
+void GlicHandler::HandleSetShortcutSuspensionState(
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const bool should_suspend = args[0].GetBool();
+  auto* const global_accelerator_listener =
+      ui::GlobalAcceleratorListener::GetInstance();
+  // `global_accelerator_listener` may be null on Linux Wayland builds.
+  if (global_accelerator_listener) {
+    global_accelerator_listener->SetShortcutHandlingSuspended(should_suspend);
+  }
+}
+}  // namespace settings
