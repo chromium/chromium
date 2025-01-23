@@ -41,10 +41,11 @@ NSString* FormattedTitle(const std::u16string& title, const GURL& url) {
   // mark the title as LTR since URLs are always treated as left to right
   // strings.
   if (base::i18n::IsRTL()) {
-    if (using_url_as_the_title)
+    if (using_url_as_the_title) {
       base::i18n::WrapStringWithLTRFormatting(&formatted_title);
-    else
+    } else {
       base::i18n::AdjustStringForLocaleDirection(&formatted_title);
+    }
   }
   return base::SysUTF16ToNSString(formatted_title);
 }

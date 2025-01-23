@@ -85,8 +85,7 @@ void HistoryClientImpl::UpdateBookmarkLastUsedTime(int64_t bookmark_node_id,
                                       /*just_opened=*/true);
 }
 
-void HistoryClientImpl::BookmarkModelChanged() {
-}
+void HistoryClientImpl::BookmarkModelChanged() {}
 
 void HistoryClientImpl::BookmarkModelBeingDeleted() {
   StopObservingBookmarkModel();

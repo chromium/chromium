@@ -72,7 +72,7 @@ id<GREYMatcher> DeleteHistoryEntriesButton() {
 }
 // Matcher for the search button.
 id<GREYMatcher> SearchIconButton() {
-    return grey_accessibilityID(kHistorySearchControllerSearchBarIdentifier);
+  return grey_accessibilityID(kHistorySearchControllerSearchBarIdentifier);
 }
 // Matcher for the cancel button.
 id<GREYMatcher> CancelButton() {
@@ -310,10 +310,10 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
       performAction:grey_tap()];
 
-    // Verify that scrim is visible.
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kHistorySearchScrimIdentifier)]
-        assertWithMatcher:grey_notNil()];
+  // Verify that scrim is visible.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kHistorySearchScrimIdentifier)]
+      assertWithMatcher:grey_notNil()];
 
   NSString* searchString =
       [NSString stringWithFormat:@"%s", _URL1.path().c_str()];
@@ -369,11 +369,11 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
 
   // Add a typed URL and wait for it to show up on the server.
   [ChromeEarlGrey addHistoryServiceTypedURL:mockURL];
-    NSArray<NSURL*>* URLs = @[
-      net::NSURLWithGURL(mockURL),
-    ];
-    [ChromeEarlGrey waitForSyncServerHistoryURLs:URLs
-                                         timeout:kSyncOperationTimeout];
+  NSArray<NSURL*>* URLs = @[
+    net::NSURLWithGURL(mockURL),
+  ];
+  [ChromeEarlGrey waitForSyncServerHistoryURLs:URLs
+                                       timeout:kSyncOperationTimeout];
 
   [self loadTestURLs];
   [self openHistoryPanel];
@@ -661,8 +661,9 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
 // Tests display and selection of 'Open in New Window' in a context menu on a
 // history entry.
 - (void)testContextMenuOpenInNewWindow {
-  if (![ChromeEarlGrey areMultipleWindowsSupported])
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
 
   // At the beginning of the test, the Context Menu History Entry Actions metric
   // should be empty.
@@ -915,9 +916,9 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
                       grey_accessibilityID(kHistoryTableViewIdentifier)];
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
   // Close history.
-    id<GREYMatcher> exitMatcher =
-        grey_accessibilityID(kHistoryNavigationControllerDoneButtonIdentifier);
-    [[EarlGrey selectElementWithMatcher:exitMatcher] performAction:grey_tap()];
+  id<GREYMatcher> exitMatcher =
+      grey_accessibilityID(kHistoryNavigationControllerDoneButtonIdentifier);
+  [[EarlGrey selectElementWithMatcher:exitMatcher] performAction:grey_tap()];
 }
 
 // Tests that if only some of the history entries are deleted from Delete
@@ -1006,8 +1007,9 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
     EARL_GREY_TEST_DISABLED(@"This test is flaky on iPad devices.");
   }
 
-  if (![ChromeEarlGrey areMultipleWindowsSupported])
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
 
   // Create history in first window.
   [self loadTestURLs];
