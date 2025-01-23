@@ -162,27 +162,21 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
           GetApplicationContext()->GetSharedURLLoaderFactory());
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-
-  __weak __typeof(_delegate) weakDelegate = _delegate;
-
+  __weak __typeof(self) weakSelf = self;
+  base::OnceCallback<void(const policy::ProfileSeparationPolicies&)> callback =
+      base::BindOnce(
+          [](__typeof(self) strongSelf,
+             const policy::ProfileSeparationPolicies& policies) {
+            [strongSelf didFetchProfileSeparationPolicies:policies];
+          },
+          weakSelf);
   _accountLevelSigninRestrictionPolicyFetcher
       ->GetManagedAccountsSigninRestriction(
           identity_manager,
           identity_manager->PickAccountIdForAccount(
               GaiaId(identity.gaiaID),
               base::SysNSStringToUTF8(identity.userEmail)),
-          base::BindOnce(^(const policy::ProfileSeparationPolicies& policies) {
-            auto profile_separation_data_migration_settings =
-                policy::ProfileSeparationDataMigrationSettings::USER_OPT_IN;
-            if (policies.profile_separation_data_migration_settings()) {
-              profile_separation_data_migration_settings =
-                  static_cast<policy::ProfileSeparationDataMigrationSettings>(
-                      *policies.profile_separation_data_migration_settings());
-            }
-            [weakDelegate didFetchProfileSeparationPolicies:
-                              profile_separation_data_migration_settings];
-            self->_accountLevelSigninRestrictionPolicyFetcher.reset();
-          }));
+          std::move(callback));
 }
 
 - (void)signInIdentity:(id<SystemIdentity>)identity
@@ -466,6 +460,22 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
 }
 
 #pragma mark - Private
+
+// Called when separation policies have been fetched, and calls the delegate.
+- (void)didFetchProfileSeparationPolicies:
+    (const policy::ProfileSeparationPolicies&)policies {
+  CHECK(_accountLevelSigninRestrictionPolicyFetcher, );
+  _accountLevelSigninRestrictionPolicyFetcher.reset();
+  auto profile_separation_data_migration_settings =
+      policy::ProfileSeparationDataMigrationSettings::USER_OPT_IN;
+  if (policies.profile_separation_data_migration_settings()) {
+    profile_separation_data_migration_settings =
+        static_cast<policy::ProfileSeparationDataMigrationSettings>(
+            *policies.profile_separation_data_migration_settings());
+  }
+  [_delegate didFetchProfileSeparationPolicies:
+                 profile_separation_data_migration_settings];
+}
 
 - (void)updateUserPolicyNotificationStatusIfNeeded:(PrefService*)prefService {
   if (!policy::IsAnyUserPolicyFeatureEnabled()) {
