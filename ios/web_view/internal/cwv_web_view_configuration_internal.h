@@ -5,9 +5,9 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_CWV_WEB_VIEW_CONFIGURATION_INTERNAL_H_
 #define IOS_WEB_VIEW_INTERNAL_CWV_WEB_VIEW_CONFIGURATION_INTERNAL_H_
 
-#import "ios/web_view/public/cwv_web_view_configuration.h"
-
 #include <memory>
+
+#import "ios/web_view/public/cwv_web_view_configuration.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -12,7 +12,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
-import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleOption;
 import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleState;
 import org.chromium.components.browser_ui.settings.CardPreference;
@@ -70,17 +69,6 @@ public class DeprecatedSafetyHubModuleViewBinder {
         }
     }
 
-    public static void bindSafeBrowsingProperties(
-            PropertyModel model,
-            SafetyHubExpandablePreference preference,
-            PropertyKey propertyKey) {
-        bindCommonProperties(model, preference, propertyKey);
-        if (DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE == propertyKey
-                || DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY == propertyKey) {
-            updateSafeBrowsingModule(preference, model);
-        }
-    }
-
     public static void bindBrowserStateProperties(
             PropertyModel model, CardPreference preference, PropertyKey propertyKey) {
         if (DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE == propertyKey
@@ -95,90 +83,6 @@ public class DeprecatedSafetyHubModuleViewBinder {
                 || DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT == propertyKey) {
             updateBrowserStateModule(preference, model);
         }
-    }
-
-    private static void updateSafeBrowsingModule(
-            SafetyHubExpandablePreference preference, PropertyModel model) {
-        @ModuleOption int option = ModuleOption.SAFE_BROWSING;
-        @SafeBrowsingState
-        int safeBrowsingState = model.get(DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE);
-        boolean managed = model.get(DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
-        @ModuleState int state = getModuleState(model, option);
-        String title;
-        String summary;
-        String primaryButtonText = null;
-        String secondaryButtonText =
-                preference
-                        .getContext()
-                        .getString(R.string.safety_hub_go_to_security_settings_button);
-        View.OnClickListener primaryButtonListener = null;
-        View.OnClickListener secondaryButtonListener =
-                model.get(DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
-
-        switch (safeBrowsingState) {
-            case SafeBrowsingState.STANDARD_PROTECTION:
-                title =
-                        preference
-                                .getContext()
-                                .getString(R.string.safety_hub_safe_browsing_on_title);
-                summary =
-                        preference
-                                .getContext()
-                                .getString(
-                                        managed
-                                                ? R.string
-                                                        .safety_hub_safe_browsing_on_summary_managed
-                                                : R.string.safety_hub_safe_browsing_on_summary);
-                break;
-            case SafeBrowsingState.ENHANCED_PROTECTION:
-                title =
-                        preference
-                                .getContext()
-                                .getString(R.string.safety_hub_safe_browsing_enhanced_title);
-                summary =
-                        preference
-                                .getContext()
-                                .getString(
-                                        managed
-                                                ? R.string
-                                                        .safety_hub_safe_browsing_enhanced_summary_managed
-                                                : R.string
-                                                        .safety_hub_safe_browsing_enhanced_summary);
-                break;
-            default:
-                title =
-                        preference
-                                .getContext()
-                                .getString(R.string.prefs_safe_browsing_no_protection_summary);
-
-                summary =
-                        preference
-                                .getContext()
-                                .getString(
-                                        managed
-                                                ? R.string
-                                                        .safety_hub_safe_browsing_off_summary_managed
-                                                : R.string.safety_hub_safe_browsing_off_summary);
-
-                if (!managed) {
-                    secondaryButtonText = null;
-                    secondaryButtonListener = null;
-                    primaryButtonText =
-                            preference.getContext().getString(R.string.safety_hub_turn_on_button);
-                    primaryButtonListener =
-                            model.get(DeprecatedSafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
-                }
-        }
-
-        preference.setTitle(title);
-        preference.setSummary(summary);
-        preference.setPrimaryButtonText(primaryButtonText);
-        preference.setSecondaryButtonText(secondaryButtonText);
-        preference.setPrimaryButtonClickListener(primaryButtonListener);
-        preference.setSecondaryButtonClickListener(secondaryButtonListener);
-
-        preference.setIcon(getIconForModuleState(preference.getContext(), state, managed));
-        preference.setOrder(getOrderForModuleState(option, state, managed));
     }
 
     private static void updatePasswordCheckModule(

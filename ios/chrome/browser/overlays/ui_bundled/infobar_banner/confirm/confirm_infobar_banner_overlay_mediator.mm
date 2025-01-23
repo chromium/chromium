@@ -46,8 +46,9 @@ using confirm_infobar_overlays::ConfirmBannerRequestConfig;
 
 - (void)configureConsumer {
   ConfirmBannerRequestConfig* config = self.config;
-  if (!self.consumer || !config)
+  if (!self.consumer || !config) {
     return;
+  }
 
   [self.consumer
       setButtonText:base::SysUTF16ToNSString(config->button_label_text())];

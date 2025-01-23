@@ -1315,33 +1315,33 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
     [[UIPasteboard generalPasteboard] setItems:@[ item ]];
   };
 
-  UIContextMenuConfiguration* configuration = [UIContextMenuConfiguration
-      configurationWithIdentifier:nil
-      previewProvider:^{
-        UIViewController* controller = [[UIViewController alloc] init];
-        CGRect frame = CGRectMake(10, 200, 200, 21);
-        UILabel* label = [[UILabel alloc] initWithFrame:frame];
-        label.text = @"iOS13 Preview Page";
-        [controller.view addSubview:label];
-        return controller;
-      }
-      actionProvider:^(id _) {
-        NSArray* actions = @[
-          [UIAction actionWithTitle:@"Copy Link"
-                              image:nil
-                         identifier:nil
-                            handler:copyHandler],
-          [UIAction actionWithTitle:@"Cancel"
-                              image:nil
-                         identifier:nil
-                            handler:^(id ignore){
-                            }]
-        ];
-        NSString* menuTitle =
-            [NSString stringWithFormat:@"iOS13 Context Menu: %@",
-                                       element.hyperlink.absoluteString];
-        return [UIMenu menuWithTitle:menuTitle children:actions];
-      }];
+  UIContextMenuConfiguration* configuration =
+      [UIContextMenuConfiguration configurationWithIdentifier:nil
+          previewProvider:^{
+            UIViewController* controller = [[UIViewController alloc] init];
+            CGRect frame = CGRectMake(10, 200, 200, 21);
+            UILabel* label = [[UILabel alloc] initWithFrame:frame];
+            label.text = @"iOS13 Preview Page";
+            [controller.view addSubview:label];
+            return controller;
+          }
+          actionProvider:^(id _) {
+            NSArray* actions = @[
+              [UIAction actionWithTitle:@"Copy Link"
+                                  image:nil
+                             identifier:nil
+                                handler:copyHandler],
+              [UIAction actionWithTitle:@"Cancel"
+                                  image:nil
+                             identifier:nil
+                                handler:^(id ignore){
+                                }]
+            ];
+            NSString* menuTitle =
+                [NSString stringWithFormat:@"iOS13 Context Menu: %@",
+                                           element.hyperlink.absoluteString];
+            return [UIMenu menuWithTitle:menuTitle children:actions];
+          }];
 
   completionHandler(configuration);
 }

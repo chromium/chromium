@@ -1,0 +1,17 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "omnibox_autocomplete_controller.h",
+    "omnibox_autocomplete_controller.mm",
+    "omnibox_controller.h",
+    "omnibox_controller.mm",
+    "omnibox_popup_controller.h",
+    "omnibox_popup_controller.mm",
+    "omnibox_text_controller.h",
+    "omnibox_text_controller.mm",
+  ]
+  deps = [ "//base" ]
+}

@@ -37,14 +37,16 @@ std::unique_ptr<WebUIIOSController> NewWebUIIOS(WebUIIOS* web_ui,
 WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
   // This will get called a lot to check all URLs, so do a quick check of other
   // schemes to filter out most URLs.
-  if (!url.SchemeIs(kChromeUIScheme))
+  if (!url.SchemeIs(kChromeUIScheme)) {
     return nullptr;
+  }
 
   // Please keep this in alphabetical order. If #ifs or special logic is
   // required, add it below in the appropriate section.
   const std::string url_host = url.host();
-  if (url_host == kChromeUISyncInternalsHost)
+  if (url_host == kChromeUISyncInternalsHost) {
     return &NewWebUIIOS<WebViewSyncInternalsUI>;
+  }
 
   return nullptr;
 }
@@ -53,8 +55,9 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
 
 NSInteger WebViewWebUIIOSControllerFactory::GetErrorCodeForWebUIURL(
     const GURL& url) const {
-  if (GetWebUIIOSFactoryFunction(url))
+  if (GetWebUIIOSFactoryFunction(url)) {
     return 0;
+  }
   return NSURLErrorUnsupportedURL;
 }
 
@@ -63,8 +66,9 @@ WebViewWebUIIOSControllerFactory::CreateWebUIIOSControllerForURL(
     WebUIIOS* web_ui,
     const GURL& url) const {
   WebUIIOSFactoryFunction function = GetWebUIIOSFactoryFunction(url);
-  if (!function)
+  if (!function) {
     return nullptr;
+  }
 
   return (*function)(web_ui, url);
 }

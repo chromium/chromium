@@ -15,6 +15,7 @@
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/buckets/bucket_context.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
+#include "content/browser/security/dip/document_isolation_policy_reporter.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/dedicated_worker_creator.h"
 #include "content/public/browser/global_routing_id.h"
@@ -437,6 +438,10 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   // TODO(crbug.com/40093136): Remove `ancestor_coep_reporter_` once
   // PlzDedicatedWorker is enabled by default.
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter_;
+
+  // This is valid after DidStartScriptLoad() and remains non-null for the
+  // lifetime of `this`.
+  std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter_;
 
   // Will be set once the worker script started loading.
   std::optional<GURL> final_response_url_;

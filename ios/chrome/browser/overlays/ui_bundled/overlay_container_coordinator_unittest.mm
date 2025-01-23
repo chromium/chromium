@@ -20,8 +20,8 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 // Test fixture for OverlayContainerCoordinator.
 class OverlayContainerCoordinatorTest : public PlatformTest {

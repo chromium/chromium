@@ -52,8 +52,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
     private SafetyHubExpandablePreference mUpdateCheckPreference;
     private PropertyModel mNotificationsReviewPropertyModel;
     private SafetyHubExpandablePreference mNotificationsReviewPreference;
-    private PropertyModel mSafeBrowsingPropertyModel;
-    private SafetyHubExpandablePreference mSafeBrowsingPreference;
     private PropertyModel mBrowserStatePropertyModel;
     private CardPreference mBrowserStatePreference;
 
@@ -98,17 +96,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
                 mNotificationsReviewPropertyModel,
                 mNotificationsReviewPreference,
                 DeprecatedSafetyHubModuleViewBinder::bindNotificationsReviewProperties);
-
-        // Set up safe browsing preference.
-        mSafeBrowsingPreference = new SafetyHubExpandablePreference(mActivity, null);
-        mSafeBrowsingPropertyModel =
-                new PropertyModel.Builder(
-                                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_MODULE_KEYS)
-                        .build();
-        PropertyModelChangeProcessor.create(
-                mSafeBrowsingPropertyModel,
-                mSafeBrowsingPreference,
-                DeprecatedSafetyHubModuleViewBinder::bindSafeBrowsingProperties);
 
         // Set up browser state preference.
         mBrowserStatePreference = new CardPreference(mActivity, null);
@@ -664,100 +651,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
     }
 
     @Test
-    public void testSafeBrowsingModule_StandardSafeBrowsing() {
-        @SafeBrowsingState int safeBrowsingState = SafeBrowsingState.STANDARD_PROTECTION;
-
-        mSafeBrowsingPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
-        String expectedTitle = mActivity.getString(R.string.safety_hub_safe_browsing_on_title);
-        String expectedSummary = mActivity.getString(R.string.safety_hub_safe_browsing_on_summary);
-        String expectedSecondaryButtonText =
-                mActivity.getString(R.string.safety_hub_go_to_security_settings_button);
-
-        assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
-        assertEquals(expectedSummary, mSafeBrowsingPreference.getSummary().toString());
-        assertEquals(SAFE_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
-        assertNull(mSafeBrowsingPreference.getPrimaryButtonText());
-        assertEquals(expectedSecondaryButtonText, mSafeBrowsingPreference.getSecondaryButtonText());
-
-        // Verify the managed state.
-        mSafeBrowsingPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
-        String expectedManagedSummary =
-                mActivity.getString(R.string.safety_hub_safe_browsing_on_summary_managed);
-        assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
-        assertEquals(expectedManagedSummary, mSafeBrowsingPreference.getSummary().toString());
-        assertEquals(SAFE_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
-        assertNull(mSafeBrowsingPreference.getPrimaryButtonText());
-        assertEquals(expectedSecondaryButtonText, mSafeBrowsingPreference.getSecondaryButtonText());
-    }
-
-    @Test
-    public void testSafeBrowsingModule_EnhancedSafeBrowsing() {
-        @SafeBrowsingState int safeBrowsingState = SafeBrowsingState.ENHANCED_PROTECTION;
-
-        mSafeBrowsingPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
-        String expectedTitle =
-                mActivity.getString(R.string.safety_hub_safe_browsing_enhanced_title);
-        String expectedSummary =
-                mActivity.getString(R.string.safety_hub_safe_browsing_enhanced_summary);
-        String expectedSecondaryButtonText =
-                mActivity.getString(R.string.safety_hub_go_to_security_settings_button);
-
-        assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
-        assertEquals(expectedSummary, mSafeBrowsingPreference.getSummary().toString());
-        assertEquals(SAFE_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
-        assertNull(mSafeBrowsingPreference.getPrimaryButtonText());
-        assertEquals(expectedSecondaryButtonText, mSafeBrowsingPreference.getSecondaryButtonText());
-
-        // Verify the managed state.
-        mSafeBrowsingPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
-        String expectedManagedSummary =
-                mActivity.getString(R.string.safety_hub_safe_browsing_enhanced_summary_managed);
-        assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
-        assertEquals(expectedManagedSummary, mSafeBrowsingPreference.getSummary().toString());
-        assertEquals(SAFE_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
-        assertNull(mSafeBrowsingPreference.getPrimaryButtonText());
-        assertEquals(expectedSecondaryButtonText, mSafeBrowsingPreference.getSecondaryButtonText());
-    }
-
-    @Test
-    public void testSafeBrowsingModule_SafeBrowsingOff() {
-        @SafeBrowsingState int safeBrowsingState = SafeBrowsingState.NO_SAFE_BROWSING;
-
-        mSafeBrowsingPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
-        String expectedTitle =
-                mActivity.getString(R.string.prefs_safe_browsing_no_protection_summary);
-        String expectedSummary = mActivity.getString(R.string.safety_hub_safe_browsing_off_summary);
-        String expectedPrimaryButtonText = mActivity.getString(R.string.safety_hub_turn_on_button);
-
-        assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
-        assertEquals(expectedSummary, mSafeBrowsingPreference.getSummary().toString());
-        assertEquals(
-                WARNING_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
-        assertEquals(expectedPrimaryButtonText, mSafeBrowsingPreference.getPrimaryButtonText());
-        assertNull(mSafeBrowsingPreference.getSecondaryButtonText());
-
-        // Verify the managed state.
-        String expectedSecondaryButtonText =
-                mActivity.getString(R.string.safety_hub_go_to_security_settings_button);
-
-        mSafeBrowsingPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
-        String expectedManagedSummary =
-                mActivity.getString(R.string.safety_hub_safe_browsing_off_summary_managed);
-        assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
-        assertEquals(expectedManagedSummary, mSafeBrowsingPreference.getSummary().toString());
-        assertEquals(
-                MANAGED_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
-        assertNull(mSafeBrowsingPreference.getPrimaryButtonText());
-        assertEquals(expectedSecondaryButtonText, mSafeBrowsingPreference.getSecondaryButtonText());
-    }
-
-    @Test
     public void testBrowserStateModule_OneUnSafeState() {
         @SafeBrowsingState int safeBrowsingState = SafeBrowsingState.ENHANCED_PROTECTION;
         UpdateStatusProvider.UpdateStatus updateStatus = new UpdateStatusProvider.UpdateStatus();
@@ -869,7 +762,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
 
     @Test
     public void testModuleOrder_AllSafeStates() {
-        @SafeBrowsingState int safeBrowsingState = SafeBrowsingState.STANDARD_PROTECTION;
         UpdateStatusProvider.UpdateStatus updateStatus = new UpdateStatusProvider.UpdateStatus();
         updateStatus.updateState = UpdateStatusProvider.UpdateState.NONE;
         updateStatus.latestVersion = "1.1.1.1";
@@ -878,8 +770,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
         int notificationPermissionsForReviewCount = 0;
 
         mPasswordCheckPropertyModel.set(DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN, true);
-        mSafeBrowsingPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
         mUpdateCheckPropertyModel.set(
                 DeprecatedSafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
         mPasswordCheckPropertyModel.set(
@@ -895,7 +785,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
                 Arrays.asList(
                         mUpdateCheckPreference.getOrder(),
                         mPasswordCheckPreference.getOrder(),
-                        mSafeBrowsingPreference.getOrder(),
                         mNotificationsReviewPreference.getOrder());
         Collections.sort(actualOrder);
 
@@ -907,13 +796,11 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
                 contains(
                         mUpdateCheckPreference.getOrder(),
                         mPasswordCheckPreference.getOrder(),
-                        mSafeBrowsingPreference.getOrder(),
                         mNotificationsReviewPreference.getOrder()));
     }
 
     @Test
     public void testModuleOrder_MixedStates() {
-        @SafeBrowsingState int safeBrowsingState = SafeBrowsingState.NO_SAFE_BROWSING;
         int totalPasswordsCount = 10;
         int compromisedPasswordsCount = 6;
         int notificationPermissionsForReviewCount = 5;
@@ -929,12 +816,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
         // Unavailable state should rank after warning states.
         mUpdateCheckPropertyModel.set(DeprecatedSafetyHubModuleProperties.UPDATE_STATUS, null);
 
-        // Managed warning state should follow the same order as info state.
-        mSafeBrowsingPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
-        mSafeBrowsingPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
-
         // Info state should rank above safe.
         mNotificationsReviewPropertyModel.set(
                 DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
@@ -944,7 +825,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
                 Arrays.asList(
                         mUpdateCheckPreference.getOrder(),
                         mPasswordCheckPreference.getOrder(),
-                        mSafeBrowsingPreference.getOrder(),
                         mNotificationsReviewPreference.getOrder());
         Collections.sort(actualOrder);
 
@@ -956,7 +836,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
                 contains(
                         mPasswordCheckPreference.getOrder(),
                         mUpdateCheckPreference.getOrder(),
-                        mSafeBrowsingPreference.getOrder(),
                         mNotificationsReviewPreference.getOrder()));
     }
 }

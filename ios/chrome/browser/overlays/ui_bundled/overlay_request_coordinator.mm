@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator.h"
-#import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator+subclassing.h"
 
 #import <ostream>
 
 #import "base/check.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
+#import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator+subclassing.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator_delegate.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator.h"
 

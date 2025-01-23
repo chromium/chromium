@@ -109,8 +109,9 @@
 #pragma mark - OverlayRequestCoordinator
 
 - (void)startAnimated:(BOOL)animated {
-  if (self.started || !self.request)
+  if (self.started || !self.request) {
     return;
+  }
   // Create the mediator and use it aas the delegate for the banner view.
   InfobarOverlayRequestConfig* config =
       self.request->GetConfig<InfobarOverlayRequestConfig>();
@@ -153,8 +154,9 @@
 }
 
 - (void)stopAnimated:(BOOL)animated {
-  if (!self.started)
+  if (!self.started) {
     return;
+  }
   // Mark started as NO before calling dismissal callback to prevent dup
   // stopAnimated: executions.
   self.started = NO;

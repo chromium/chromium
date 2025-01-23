@@ -138,7 +138,7 @@ class GroupUtilsTest : public PlatformTest {
 
 TEST_F(GroupUtilsTest, TestDefaultColor) {
   std::vector<tab_groups::TabGroupColorId> colors =
-  TabGroup::AllPossibleTabGroupColors();
+      TabGroup::AllPossibleTabGroupColors();
 
   for (unsigned int i = 0; i < colors.size() * 3 + 1; i++) {
     AddWebState();

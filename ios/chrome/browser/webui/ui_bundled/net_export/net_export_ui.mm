@@ -75,8 +75,7 @@ class NetExportMessageHandler
   // Send NetLog data via email.
   void SendEmail(const base::FilePath& file_to_send);
 
-  void NotifyUIWithState(
-      const base::Value::Dict& file_writer_state);
+  void NotifyUIWithState(const base::Value::Dict& file_writer_state);
 
   // Cache of GetApplicationContext()->GetNetExportFileWriter().
   // This is owned by the ApplicationContext.
@@ -170,8 +169,9 @@ void NetExportMessageHandler::OnNewState(const base::Value::Dict& state) {
 }
 
 void NetExportMessageHandler::SendEmail(const base::FilePath& file_to_send) {
-  if (file_to_send.empty())
+  if (file_to_send.empty()) {
     return;
+  }
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
   NSString* subject = @"net_internals_log";

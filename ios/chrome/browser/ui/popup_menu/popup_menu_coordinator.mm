@@ -654,8 +654,9 @@ using base::UserMetricsAction;
 #pragma mark - ContainedPresenterDelegate
 
 - (void)containedPresenterDidPresent:(id<ContainedPresenter>)presenter {
-  if (presenter != self.presenter)
+  if (presenter != self.presenter) {
     return;
+  }
 }
 
 #pragma mark - PopupMenuPresenterDelegate

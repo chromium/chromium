@@ -34,8 +34,9 @@ OverlayResponseSupport::~OverlayResponseSupport() = default;
 bool OverlayResponseSupport::IsResponseSupported(
     OverlayResponse* response) const {
   for (const OverlayResponseSupport* support : aggregated_support_) {
-    if (support->IsResponseSupported(response))
+    if (support->IsResponseSupported(response)) {
       return true;
+    }
   }
   return false;
 }

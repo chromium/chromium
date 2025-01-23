@@ -245,8 +245,9 @@ CWV_EXPORT
 // occur when the web view is navigating or if the current page content does
 // not allow JavaScript execution (ex: JS disabled or PDF content).
 - (void)evaluateJavaScript:(NSString*)javaScriptString
-         completionHandler:(nullable void (^)(id result,
-                            NSError* __nullable error))completion;
+         completionHandler:
+             (nullable void (^)(id result,
+                                NSError* __nullable error))completion;
 
 // DEPRECATED: Use `evaluateJavaScript:completionHandler` instead. These
 // methods are the same, but `evaluateJavaScript:completionHandler` provides

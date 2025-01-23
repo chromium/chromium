@@ -9,7 +9,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 // Authorization service for ios_web_view_shell.
-@interface ShellAuthService : NSObject<CWVSyncControllerDataSource>
+@interface ShellAuthService : NSObject <CWVSyncControllerDataSource>
 
 // Returns available identities.
 - (NSArray<CWVIdentity*>*)identities;

@@ -456,8 +456,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 }
 
 - (void)setWebContentAreaShowingOverlay:(BOOL)webContentAreaShowingOverlay {
-  if (_webContentAreaShowingOverlay == webContentAreaShowingOverlay)
+  if (_webContentAreaShowingOverlay == webContentAreaShowingOverlay) {
     return;
+  }
   _webContentAreaShowingOverlay = webContentAreaShowingOverlay;
   [self updateModel];
 }
@@ -1730,8 +1731,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (preferenceName == bookmarks::prefs::kEditBookmarksEnabled)
+  if (preferenceName == bookmarks::prefs::kEditBookmarksEnabled) {
     [self updateModel];
+  }
 }
 
 #pragma mark - IOSLanguageDetectionTabHelperObserving
@@ -2054,8 +2056,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 - (void)followWebPage:(WebPageURLs*)webPage {
   // FollowBrowserAgent may be null after -disconnect has been called.
   FollowBrowserAgent* followBrowserAgent = self.followBrowserAgent;
-  if (followBrowserAgent)
+  if (followBrowserAgent) {
     followBrowserAgent->FollowWebSite(webPage, FollowSource::OverflowMenu);
+  }
   [self dismissMenu];
 }
 
@@ -2063,8 +2066,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 - (void)unfollowWebPage:(WebPageURLs*)webPage {
   // FollowBrowserAgent may be null after -disconnect has been called.
   FollowBrowserAgent* followBrowserAgent = self.followBrowserAgent;
-  if (followBrowserAgent)
+  if (followBrowserAgent) {
     followBrowserAgent->UnfollowWebSite(webPage, FollowSource::OverflowMenu);
+  }
   [self dismissMenu];
 }
 

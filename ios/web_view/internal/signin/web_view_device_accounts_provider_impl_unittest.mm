@@ -5,6 +5,7 @@
 #import "ios/web_view/internal/signin/web_view_device_accounts_provider_impl.h"
 
 #import <Foundation/Foundation.h>
+
 #import <map>
 #import <utility>
 
@@ -90,4 +91,4 @@ TEST_F(WebViewDeviceAccountsProviderImplTest, GetAllAccounts) {
 
   [data_source verify];
 }
-}
+}  // namespace ios_web_view

@@ -3,16 +3,16 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator.h"
-#import "ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator+initialization.h"
 
 #import <memory>
 
 #import "base/check_op.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator+initialization.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_container_view_controller.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_presentation_context_coordinator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_presentation_context_impl.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_presentation_context_impl_delegate.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 @interface OverlayContainerCoordinator () <
@@ -45,8 +45,9 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  if (self.started)
+  if (self.started) {
     return;
+  }
   self.started = YES;
   // Create the container view controller.
   OverlayContainerViewController* viewController =
@@ -74,8 +75,9 @@
 }
 
 - (void)stop {
-  if (!self.started)
+  if (!self.started) {
     return;
+  }
   self.presentationContext->SetDelegate(nil);
   // Clean up the presentation context coordinator.
   [self.presentationContextCoordinator stop];
@@ -119,8 +121,9 @@
     // The coordinator cannot be started if its base UIViewController doesn't
     // belong to a window.  The context will re-request the kPresented
     // capability when the view moves to a window.
-    if (self.viewController.view.window)
+    if (self.viewController.view.window) {
       [self.presentationContextCoordinator start];
+    }
   } else {
     [self.presentationContextCoordinator stop];
   }

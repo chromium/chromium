@@ -92,8 +92,10 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
   std::string command_line;
   typedef std::vector<std::string> ArgvList;
   const ArgvList& argv = base::CommandLine::ForCurrentProcess()->argv();
-  for (ArgvList::const_iterator iter = argv.begin(); iter != argv.end(); iter++)
+  for (ArgvList::const_iterator iter = argv.begin(); iter != argv.end();
+       iter++) {
     command_line += " " + *iter;
+  }
   // This assumes that `command_line` uses UTF-8 encoding.
   html_source->AddString(version_ui::kCommandLine, command_line);
 

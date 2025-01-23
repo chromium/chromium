@@ -5,9 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_MODEL_TEST_FAKE_OVERLAY_USER_DATA_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_MODEL_TEST_FAKE_OVERLAY_USER_DATA_H_
 
-#include "ios/chrome/browser/overlays/model/public/overlay_user_data.h"
-
 #import "base/memory/raw_ptr.h"
+#include "ios/chrome/browser/overlays/model/public/overlay_user_data.h"
 
 // Test OverlayUserData that can be used to store arbitrary pointers in
 // OverlayRequests and OverlayResponses.

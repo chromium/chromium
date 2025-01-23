@@ -1642,6 +1642,14 @@ void ExpectLegacyPolicyStatusSucceeds(UpdaterScope scope) {
   ASSERT_HRESULT_SUCCEEDED(policy_status2->refreshPolicies());
 }
 
+void LegacyInstallApp(UpdaterScope scope,
+                      const std::string& app_id,
+                      const base::Version& version) {
+  ASSERT_TRUE(SetRegistryKey(
+      UpdaterScopeToHKeyRoot(scope), GetAppClientsKey(base::UTF8ToWide(app_id)),
+      kRegValuePV, base::UTF8ToWide(version.GetString())));
+}
+
 void InvokeTestServiceFunction(const std::string& function_name,
                                const base::Value::Dict& arguments) {
   std::string arguments_json_string;

@@ -5,11 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_TEST_TEST_BROWSER_LIST_OBSERVER_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_TEST_TEST_BROWSER_LIST_OBSERVER_H_
 
-#import "ios/chrome/browser/shared/model/browser/browser_list_observer.h"
-
 #include <set>
 
 #import "base/memory/raw_ptr.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_observer.h"
 
 class Browser;
 class BrowserList;

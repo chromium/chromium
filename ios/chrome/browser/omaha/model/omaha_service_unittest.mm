@@ -109,10 +109,11 @@ class OmahaServiceTest : public PlatformTest {
                     const std::string& last_sent_version) {
     service->ClearInstallRetryRequestId();
     service->number_of_tries_ = 0;
-    if (last_sent_version.length() == 0)
+    if (last_sent_version.length() == 0) {
       service->last_sent_version_ = base::Version("0.0.0.0");
-    else
+    } else {
       service->last_sent_version_ = base::Version(last_sent_version);
+    }
     service->current_ping_time_ = base::Time();
     service->last_sent_time_ = base::Time();
     service->locale_lang_ = std::string();

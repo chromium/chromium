@@ -660,7 +660,8 @@ TEST_F(DedicatedWorkerTest, TopLevelFrameSecurityOrigin) {
       .SetSecurityOriginForTesting(security_origin);
   StartWorker(WorkerObject()->CreateGlobalScopeCreationParams(
       script_url, network::mojom::ReferrerPolicy::kDefault,
-      Vector<network::mojom::blink::ContentSecurityPolicyPtr>()));
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+      mojo::NullReceiver(), mojo::NullReceiver()));
   base::RunLoop run_loop;
 
   PostCrossThreadTask(
@@ -687,8 +688,8 @@ TEST_F(DedicatedWorkerTest, TopLevelFrameSecurityOrigin) {
               auto nested_worker_params =
                   nested_worker_object->CreateGlobalScopeCreationParams(
                       script_url, network::mojom::ReferrerPolicy::kDefault,
-                      Vector<
-                          network::mojom::blink::ContentSecurityPolicyPtr>());
+                      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+                      mojo::NullReceiver(), mojo::NullReceiver());
               ASSERT_TRUE(
                   nested_worker_params->top_level_frame_security_origin);
               EXPECT_TRUE(nested_worker_params->top_level_frame_security_origin

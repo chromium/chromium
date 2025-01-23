@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/cwv_download_task_internal.h"
-
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
@@ -13,6 +11,7 @@
 #import "ios/web/public/download/download_task.h"
 #import "ios/web/public/download/download_task_observer.h"
 #import "ios/web/public/download/download_task_observer_bridge.h"
+#import "ios/web_view/internal/cwv_download_task_internal.h"
 #import "ios/web_view/internal/cwv_web_view_internal.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/net_errors.h"
@@ -133,8 +132,8 @@ NSInteger const CWVDownloadErrorAborted = -101;
                    code:cwvErrorCode
                userInfo:@{NSLocalizedDescriptionKey : errorDescription}];
   }
-  if ([_delegate
-          respondsToSelector:@selector(downloadTask:didFinishWithError:)]) {
+  if ([_delegate respondsToSelector:@selector(downloadTask:
+                                        didFinishWithError:)]) {
     [_delegate downloadTask:self didFinishWithError:error];
   }
 }

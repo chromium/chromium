@@ -33,12 +33,14 @@ using alert_overlays::AlertResponse;
 #pragma mark - Accessors
 
 - (void)setConsumer:(id<AlertConsumer>)consumer {
-  if (_consumer == consumer)
+  if (_consumer == consumer) {
     return;
+  }
   _consumer = consumer;
 
-  if (!self.request)
+  if (!self.request) {
     return;
+  }
 
   AlertRequest* alertRequest = self.alertRequest;
   DCHECK(alertRequest);
@@ -59,8 +61,9 @@ using alert_overlays::AlertResponse;
 
 - (NSArray<NSArray<AlertAction*>*>*)alertActions {
   AlertRequest* alertRequest = self.alertRequest;
-  if (!alertRequest || !alertRequest->button_configs().size())
+  if (!alertRequest || !alertRequest->button_configs().size()) {
     return nil;
+  }
   const std::vector<std::vector<alert_overlays::ButtonConfig>>& buttonConfigs =
       alertRequest->button_configs();
   size_t rowCount = buttonConfigs.size();
@@ -89,8 +92,9 @@ using alert_overlays::AlertResponse;
 
 - (NSArray<NSString*>*)textFieldValues {
   AlertRequest* alertRequest = self.alertRequest;
-  if (!alertRequest || !alertRequest->text_field_configs().count)
+  if (!alertRequest || !alertRequest->text_field_configs().count) {
     return nil;
+  }
 
   NSUInteger textFieldCount = alertRequest->text_field_configs().count;
   NSMutableArray<NSString*>* textFieldValues =
@@ -116,8 +120,9 @@ using alert_overlays::AlertResponse;
 - (void)setCompletionResponseWithRow:(size_t)tappedButtonIndexRow
                               column:(size_t)tappedButtonIndexColumn {
   AlertRequest* alertRequest = self.alertRequest;
-  if (!alertRequest)
+  if (!alertRequest) {
     return;
+  }
   std::unique_ptr<OverlayResponse> alertResponse =
       OverlayResponse::CreateWithInfo<AlertResponse>(
           tappedButtonIndexRow, tappedButtonIndexColumn, self.textFieldValues);

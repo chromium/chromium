@@ -358,6 +358,10 @@ void AppTestHelper::FirstTaskRun() {
                                       &ExpectLegacyAppCommandWebSucceeds))))))},
           {"expect_legacy_policy_status_succeeds",
            WithSystemScope(Wrap(&ExpectLegacyPolicyStatusSucceeds))},
+          {"legacy_install_app",
+           WithSwitch(
+               "app_version",
+               WithSwitch("app_id", WithSystemScope(Wrap(&LegacyInstallApp))))},
           {"run_uninstall_cmd_line",
            WithSystemScope(Wrap(&RunUninstallCmdLine))},
           {"run_handoff",

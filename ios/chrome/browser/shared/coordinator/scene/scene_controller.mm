@@ -2589,10 +2589,10 @@ using UserFeedbackDataCallback =
 
   Browser* browser = self.mainInterface.browser;
 
-  self.settingsNavigationController = [SettingsNavigationController
-      safetyCheckControllerForBrowser:browser
-                             delegate:self
-                             referrer:referrer];
+  self.settingsNavigationController =
+      [SettingsNavigationController safetyCheckControllerForBrowser:browser
+                                                           delegate:self
+                                                           referrer:referrer];
 
   [baseViewController presentViewController:self.settingsNavigationController
                                    animated:YES
@@ -3051,46 +3051,46 @@ using UserFeedbackDataCallback =
                                      (const UrlLoadParams&)urlLoadParams
                                     dismissOmnibox:(BOOL)dismissOmnibox
                                         completion:(ProceduralBlock)completion {
-    PrefService* prefs = GetApplicationContext()->GetLocalState();
-    BOOL canShowIncognitoInterstitial =
-        prefs->GetBoolean(prefs::kIncognitoInterstitialEnabled);
+  PrefService* prefs = GetApplicationContext()->GetLocalState();
+  BOOL canShowIncognitoInterstitial =
+      prefs->GetBoolean(prefs::kIncognitoInterstitialEnabled);
 
-    if ([self isIncognitoForced]) {
-      targetMode = ApplicationModeForTabOpening::INCOGNITO;
-    } else if (!canShowIncognitoInterstitial &&
-               targetMode == ApplicationModeForTabOpening::UNDETERMINED) {
-      // Fallback to NORMAL mode if the Incognito interstitial is not
-      // available.
-      targetMode = ApplicationModeForTabOpening::NORMAL;
+  if ([self isIncognitoForced]) {
+    targetMode = ApplicationModeForTabOpening::INCOGNITO;
+  } else if (!canShowIncognitoInterstitial &&
+             targetMode == ApplicationModeForTabOpening::UNDETERMINED) {
+    // Fallback to NORMAL mode if the Incognito interstitial is not
+    // available.
+    targetMode = ApplicationModeForTabOpening::NORMAL;
+  }
+
+  UrlLoadParams copyOfUrlLoadParams = urlLoadParams;
+
+  __weak SceneController* weakSelf = self;
+  void (^dismissModalsCompletion)() = ^{
+    [weakSelf handleModalsDismissalWithMode:targetMode
+                              urlLoadParams:copyOfUrlLoadParams
+                                 completion:completion];
+  };
+
+  if (targetMode == ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO) {
+    targetMode = ApplicationModeForTabOpening::INCOGNITO;
+  }
+
+  // Wrap the post-dismiss-modals action with the incognito auth check.
+  if (targetMode == ApplicationModeForTabOpening::INCOGNITO) {
+    IncognitoReauthSceneAgent* reauthAgent =
+        [IncognitoReauthSceneAgent agentFromScene:self.sceneState];
+    if (reauthAgent.authenticationRequired) {
+      void (^wrappedDismissModalCompletion)() = dismissModalsCompletion;
+      dismissModalsCompletion = ^{
+        [weakSelf
+            handleModelsDismissalWithReauthAgent:reauthAgent
+                         dismissModalsCompletion:wrappedDismissModalCompletion
+                                      completion:completion];
+      };
     }
-
-    UrlLoadParams copyOfUrlLoadParams = urlLoadParams;
-
-    __weak SceneController* weakSelf = self;
-    void (^dismissModalsCompletion)() = ^{
-      [weakSelf handleModalsDismissalWithMode:targetMode
-                                urlLoadParams:copyOfUrlLoadParams
-                                   completion:completion];
-    };
-
-    if (targetMode == ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO) {
-      targetMode = ApplicationModeForTabOpening::INCOGNITO;
-    }
-
-    // Wrap the post-dismiss-modals action with the incognito auth check.
-    if (targetMode == ApplicationModeForTabOpening::INCOGNITO) {
-      IncognitoReauthSceneAgent* reauthAgent =
-          [IncognitoReauthSceneAgent agentFromScene:self.sceneState];
-      if (reauthAgent.authenticationRequired) {
-        void (^wrappedDismissModalCompletion)() = dismissModalsCompletion;
-        dismissModalsCompletion = ^{
-          [weakSelf
-              handleModelsDismissalWithReauthAgent:reauthAgent
-                           dismissModalsCompletion:wrappedDismissModalCompletion
-                                        completion:completion];
-        };
-      }
-    }
+  }
 
   [self dismissModalDialogsWithCompletion:dismissModalsCompletion
                            dismissOmnibox:dismissOmnibox];
@@ -3789,7 +3789,6 @@ using UserFeedbackDataCallback =
           // back `signinInProgress` to NO.
           weakSelf.sceneState.signinInProgress = NO;
         }
-
 
         if (IsSigninForcedByPolicy()) {
           // Handle intents after sign-in is done when the forced sign-in policy

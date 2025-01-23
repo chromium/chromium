@@ -51,8 +51,8 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-using autofill::FormRendererId;
 using autofill::FieldRendererId;
+using autofill::FormRendererId;
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
@@ -283,54 +283,54 @@ TEST_F(CWVAutofillControllerTest, AcceptSuggestion) {
 
 // Tests CWVAutofillController delegate focus callback is invoked.
 TEST_F(CWVAutofillControllerTest, FocusCallback) {
-    id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
-    autofill_controller_.delegate = delegate;
+  id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
+  autofill_controller_.delegate = delegate;
 
-    [[delegate expect] autofillController:autofill_controller_
-            didFocusOnFieldWithIdentifier:kTestFieldIdentifier
-                                fieldType:@""
-                                 formName:kTestFormName
-                                  frameID:frame_id_
-                                    value:kTestFieldValue
-                            userInitiated:YES];
+  [[delegate expect] autofillController:autofill_controller_
+          didFocusOnFieldWithIdentifier:kTestFieldIdentifier
+                              fieldType:@""
+                               formName:kTestFormName
+                                frameID:frame_id_
+                                  value:kTestFieldValue
+                          userInitiated:YES];
 
-    autofill::FormActivityParams params;
-    params.form_name = base::SysNSStringToUTF8(kTestFormName);
-    params.form_renderer_id = kTestFormRendererID;
-    params.field_identifier = base::SysNSStringToUTF8(kTestFieldIdentifier);
-    params.field_renderer_id = kTestFieldRendererID;
-    params.value = base::SysNSStringToUTF8(kTestFieldValue);
-    params.frame_id = web::kMainFakeFrameId;
-    params.has_user_gesture = true;
-    params.type = "focus";
-    auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
-    form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
-    [delegate verify];
+  autofill::FormActivityParams params;
+  params.form_name = base::SysNSStringToUTF8(kTestFormName);
+  params.form_renderer_id = kTestFormRendererID;
+  params.field_identifier = base::SysNSStringToUTF8(kTestFieldIdentifier);
+  params.field_renderer_id = kTestFieldRendererID;
+  params.value = base::SysNSStringToUTF8(kTestFieldValue);
+  params.frame_id = web::kMainFakeFrameId;
+  params.has_user_gesture = true;
+  params.type = "focus";
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
+  form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
+  [delegate verify];
 }
 
 // Tests CWVAutofillController delegate input callback is invoked.
 TEST_F(CWVAutofillControllerTest, InputCallback) {
-    id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
-    autofill_controller_.delegate = delegate;
+  id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
+  autofill_controller_.delegate = delegate;
 
-    [[delegate expect] autofillController:autofill_controller_
-            didInputInFieldWithIdentifier:kTestFieldIdentifier
-                                fieldType:@""
-                                 formName:kTestFormName
-                                  frameID:frame_id_
-                                    value:kTestFieldValue
-                            userInitiated:YES];
+  [[delegate expect] autofillController:autofill_controller_
+          didInputInFieldWithIdentifier:kTestFieldIdentifier
+                              fieldType:@""
+                               formName:kTestFormName
+                                frameID:frame_id_
+                                  value:kTestFieldValue
+                          userInitiated:YES];
 
-    autofill::FormActivityParams params;
-    params.form_name = base::SysNSStringToUTF8(kTestFormName);
-    params.field_identifier = base::SysNSStringToUTF8(kTestFieldIdentifier);
-    params.value = base::SysNSStringToUTF8(kTestFieldValue);
-    params.frame_id = web::kMainFakeFrameId;
-    params.type = "input";
-    params.has_user_gesture = true;
-    auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
-    form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
-    [delegate verify];
+  autofill::FormActivityParams params;
+  params.form_name = base::SysNSStringToUTF8(kTestFormName);
+  params.field_identifier = base::SysNSStringToUTF8(kTestFieldIdentifier);
+  params.value = base::SysNSStringToUTF8(kTestFieldValue);
+  params.frame_id = web::kMainFakeFrameId;
+  params.type = "input";
+  params.has_user_gesture = true;
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
+  form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
+  [delegate verify];
 }
 
 // Tests CWVAutofillController delegate input callback is invoked by keyup

@@ -698,23 +698,13 @@ void ServiceWorkerContainerHostForClient::CloneControllerServiceWorker(
   mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
       dip_reporter_to_be_passed;
   if (coep_reporter_) {
-    DCHECK(service_worker_client().IsContainerForWindowClient());
     coep_reporter_->Clone(
         coep_reporter_to_be_passed.InitWithNewPipeAndPassReceiver());
-  } else {
-    // TODO(crbug.com/41478971): Implement DedicatedWorker and
-    // SharedWorker cases.
-    DCHECK(service_worker_client().IsContainerForWorkerClient());
   }
 
   if (dip_reporter_) {
-    DCHECK(service_worker_client().IsContainerForWindowClient());
     dip_reporter_->Clone(
         dip_reporter_to_be_passed.InitWithNewPipeAndPassReceiver());
-  } else {
-    // TODO(crbug.com/41478971): Implement DedicatedWorker and
-    // SharedWorker cases.
-    DCHECK(service_worker_client().IsContainerForWorkerClient());
   }
 
   controller()->controller()->Clone(

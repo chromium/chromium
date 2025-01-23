@@ -64,8 +64,9 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
         BackgroundDownloadServiceFactory::GetForProfile(profile);
 
     // download_service_ will be null in incognito mode on iOS.
-    if (download_service_)
+    if (download_service_) {
       download_service_->GetLogger()->AddObserver(this);
+    }
   }
 
   // download::Logger::Observer implementation.
@@ -95,24 +96,27 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
   }
 
   void HandleGetServiceStatus(const base::Value::List& args) {
-    if (!download_service_)
+    if (!download_service_) {
       return;
+    }
 
     web_ui()->ResolveJavascriptCallback(
         args[0], download_service_->GetLogger()->GetServiceStatus());
   }
 
   void HandleGetServiceDownloads(const base::Value::List& args) {
-    if (!download_service_)
+    if (!download_service_) {
       return;
+    }
 
     web_ui()->ResolveJavascriptCallback(
         args[0], download_service_->GetLogger()->GetServiceDownloads());
   }
 
   void HandleStartDownload(const base::Value::List& args) {
-    if (!download_service_)
+    if (!download_service_) {
       return;
+    }
 
     CHECK_GT(args.size(), 1u) << "Missing argument download URL.";
     GURL url = GURL(args[1].GetString());

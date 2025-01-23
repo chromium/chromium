@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <memory>
-
 #import <ChromeWebView/ChromeWebView.h>
 #import <XCTest/XCTest.h>
-#import "ios/testing/earl_grey/earl_grey_test.h"
+
+#import <memory>
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web_view/shell/shell_view_controller.h"
 #import "ios/web_view/shell/test/earl_grey/web_view_shell_matchers.h"
 #import "ios/web_view/test/web_view_test_util.h"
@@ -18,8 +18,9 @@ namespace {
 
 // Returns current web view for root view controller.
 CWVWebView* GetCurrentWebView() {
-  ShellViewController* view_controller = static_cast<ShellViewController*>([[
-      [[UIApplication sharedApplication] delegate] window] rootViewController]);
+  ShellViewController* view_controller = static_cast<ShellViewController*>(
+      [[[[UIApplication sharedApplication] delegate] window]
+          rootViewController]);
   return view_controller.webView;
 }
 

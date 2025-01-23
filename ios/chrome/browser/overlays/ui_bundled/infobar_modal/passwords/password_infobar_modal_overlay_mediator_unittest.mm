@@ -32,7 +32,7 @@ NSString* const kUsername = @"username";
 NSString* const kPassword = @"password";
 NSString* const kMaskedPassword = @"••••••••";
 const char kAccount[] = "foobar@gmail.com";
-}
+}  // namespace
 
 // Test fixture for PasswordInfobarModalOverlayMediator.
 class PasswordInfobarModalOverlayMediatorTest : public PlatformTest {

@@ -369,6 +369,11 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectLegacyPolicyStatusSucceeds(updater_scope_);
   }
 
+  void LegacyInstallApp(const std::string& app_id,
+                        const base::Version& version) const override {
+    updater::test::LegacyInstallApp(updater_scope_, app_id, version);
+  }
+
   void RunUninstallCmdLine() const override {
     updater::test::RunUninstallCmdLine(updater_scope_);
   }

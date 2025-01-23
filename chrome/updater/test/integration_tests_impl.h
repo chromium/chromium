@@ -374,6 +374,10 @@ void ExpectPolicyStatusValues(
     VARIANT_BOOL expected_has_conflict);
 void ExpectLegacyPolicyStatusSucceeds(UpdaterScope scope);
 
+void LegacyInstallApp(UpdaterScope scope,
+                      const std::string& app_id,
+                      const base::Version& version);
+
 // Calls a function defined in test/service/win/rpc_client.py.
 // Entries of the `arguments` dictionary should be the function's parameter
 // name/value pairs.

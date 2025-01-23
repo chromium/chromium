@@ -67,7 +67,7 @@ namespace {
 __weak id<CWVTrustedVaultProvider> gTrustedVaultProvider;
 // Data source that can provide access tokens.
 __weak id<CWVSyncControllerDataSource> gSyncDataSource;
-}
+}  // namespace
 
 + (void)setTrustedVaultProvider:
     (id<CWVTrustedVaultProvider>)trustedVaultProvider {

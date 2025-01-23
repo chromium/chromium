@@ -870,6 +870,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // crbug.com/391655333
     public void testDialogSelectionEditor_BookmarkSingleTabView() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         SnackbarManager snackbarManager = cta.getSnackbarManager();
@@ -915,6 +916,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // crbug.com/391655333
     public void testDialogSelectionEditor_BookmarkTabsView() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         SnackbarManager snackbarManager = cta.getSnackbarManager();

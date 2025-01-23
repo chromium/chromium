@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/metrics/cwv_metrics_provider_internal.h"
-
 #import <memory>
 
 #import "base/metrics/histogram_macros.h"
 #import "components/metrics/library_support/histogram_manager.h"
+#import "ios/web_view/internal/metrics/cwv_metrics_provider_internal.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"

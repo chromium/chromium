@@ -174,8 +174,9 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForFooterInSection:(NSInteger)section {
-  if (section == self.tableViewModel.numberOfSections - 1)
+  if (section == self.tableViewModel.numberOfSections - 1) {
     return 0;
+  }
   return kFooterHeight;
 }
 
@@ -240,8 +241,9 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
                  repeat:(BOOL)repeat {
   NSIndexPath* indexPath = [self.tableViewModel indexPathForItem:item];
   [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-  if (!repeat)
+  if (!repeat) {
     return;
+  }
 
   dispatch_after(
       dispatch_time(DISPATCH_TIME_NOW,

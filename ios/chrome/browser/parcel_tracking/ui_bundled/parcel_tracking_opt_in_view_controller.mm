@@ -6,9 +6,9 @@
 
 #import "base/notreached.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_opt_in_status.h"
+#import "ios/chrome/browser/parcel_tracking/ui_bundled/parcel_tracking_opt_in_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
-#import "ios/chrome/browser/parcel_tracking/ui_bundled/parcel_tracking_opt_in_view_controller_delegate.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"

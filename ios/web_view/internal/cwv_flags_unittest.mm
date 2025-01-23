@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/cwv_flags_internal.h"
-
 #import <memory>
 #import <set>
 
@@ -14,6 +12,7 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/pref_service_factory.h"
+#import "ios/web_view/internal/cwv_flags_internal.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 

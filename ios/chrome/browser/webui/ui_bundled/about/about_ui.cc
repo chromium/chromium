@@ -93,9 +93,10 @@ std::string ChromeURLs() {
                                  kChromeHostURLs + kNumberOfChromeHostURLs);
   std::sort(hosts.begin(), hosts.end());
   for (std::vector<std::string>::const_iterator i = hosts.begin();
-       i != hosts.end(); ++i)
+       i != hosts.end(); ++i) {
     html += "<li><a href='chrome://" + *i + "/' id='" + *i + "'>chrome://" +
             *i + "</a></li>\n";
+  }
   html += "</ul>\n";
   AppendFooter(&html);
   return html;
@@ -123,10 +124,11 @@ void AboutUIHTMLSource::StartDataRequest(
     response = ChromeURLs();
   } else if (source_name_ == kChromeUICreditsHost) {
     int idr = IDR_ABOUT_UI_CREDITS_HTML;
-    if (path == kCreditsJsPath)
+    if (path == kCreditsJsPath) {
       idr = IDR_ABOUT_UI_CREDITS_JS;
-    else if (path == kCreditsCssPath)
+    } else if (path == kCreditsCssPath) {
       idr = IDR_ABOUT_UI_CREDITS_CSS;
+    }
     ui::ResourceBundle& resource_instance =
         ui::ResourceBundle::GetSharedInstance();
     response = resource_instance.LoadDataResourceString(idr);

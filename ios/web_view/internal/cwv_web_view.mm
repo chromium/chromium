@@ -584,13 +584,15 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (void)goBack {
-  if (_webState->GetNavigationManager())
+  if (_webState->GetNavigationManager()) {
     _webState->GetNavigationManager()->GoBack();
+  }
 }
 
 - (void)goForward {
-  if (_webState->GetNavigationManager())
+  if (_webState->GetNavigationManager()) {
     _webState->GetNavigationManager()->GoForward();
+  }
 }
 
 - (BOOL)goToBackForwardListItem:(CWVBackForwardListItem*)item {
@@ -798,8 +800,8 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
     createNewWebStateForURL:(const GURL&)URL
                   openerURL:(const GURL&)openerURL
             initiatedByUser:(BOOL)initiatedByUser {
-  SEL selector =
-      @selector(webView:createWebViewWithConfiguration:forNavigationAction:);
+  SEL selector = @selector(webView:
+      createWebViewWithConfiguration:forNavigationAction:);
   if (![_UIDelegate respondsToSelector:selector]) {
     return nullptr;
   }

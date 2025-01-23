@@ -89,9 +89,9 @@ enum class SwipeType { NONE, CHANGE_TAB, CHANGE_PAGE };
 @property(nonatomic, weak) id<HelpCommands> helpHandler;
 
 // Initializer.
-- (instancetype)
-    initWithFullscreenController:(FullscreenController*)fullscreenController
-                    webStateList:(WebStateList*)webStateList;
+- (instancetype)initWithFullscreenController:
+                    (FullscreenController*)fullscreenController
+                                webStateList:(WebStateList*)webStateList;
 
 // Disconnects the mediator.
 - (void)disconnect;

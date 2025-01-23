@@ -171,6 +171,8 @@ class IntegrationTestCommands
       const base::Value::List& parameters,
       int expected_exit_code) const = 0;
   virtual void ExpectLegacyPolicyStatusSucceeds() const = 0;
+  virtual void LegacyInstallApp(const std::string& app_id,
+                                const base::Version& version) const = 0;
   virtual void RunUninstallCmdLine() const = 0;
   virtual void RunHandoff(const std::string& app_id) const = 0;
 #endif  // BUILDFLAG(IS_WIN)

@@ -133,8 +133,8 @@ CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
   switch (step) {
     case translate::TRANSLATE_STEP_BEFORE_TRANSLATE: {
       if ([_delegate respondsToSelector:@selector
-                     (translationController:canOfferTranslationFromLanguage
-                                              :toLanguage:)]) {
+                     (translationController:
+                         canOfferTranslationFromLanguage:toLanguage:)]) {
         [_delegate translationController:self
             canOfferTranslationFromLanguage:source
                                  toLanguage:target];
@@ -142,9 +142,10 @@ CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
       break;
     }
     case translate::TRANSLATE_STEP_TRANSLATING:
-      if ([_delegate respondsToSelector:@selector
-                     (translationController:didStartTranslationFromLanguage
-                                              :toLanguage:userInitiated:)]) {
+      if ([_delegate
+              respondsToSelector:@selector
+              (translationController:
+                  didStartTranslationFromLanguage:toLanguage:userInitiated:)]) {
         [_delegate translationController:self
             didStartTranslationFromLanguage:source
                                  toLanguage:target
@@ -154,8 +155,8 @@ CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
     case translate::TRANSLATE_STEP_AFTER_TRANSLATE:
     case translate::TRANSLATE_STEP_TRANSLATE_ERROR:
       if ([_delegate respondsToSelector:@selector
-                     (translationController:didFinishTranslationFromLanguage
-                                              :toLanguage:error:)]) {
+                     (translationController:
+                         didFinishTranslationFromLanguage:toLanguage:error:)]) {
         [_delegate translationController:self
             didFinishTranslationFromLanguage:source
                                   toLanguage:target

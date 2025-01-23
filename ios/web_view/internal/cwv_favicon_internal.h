@@ -6,6 +6,7 @@
 #define IOS_WEB_VIEW_INTERNAL_CWV_FAVICON_INTERNAL_H_
 
 #include <vector>
+
 #include "ios/web/public/favicon/favicon_url.h"
 #import "ios/web_view/public/cwv_favicon.h"
 

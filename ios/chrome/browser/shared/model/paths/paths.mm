@@ -42,14 +42,16 @@ bool PathProvider(int key, base::FilePath* result) {
   base::FilePath cur;
   switch (key) {
     case DIR_USER_DATA:
-      if (!GetDefaultUserDataDirectory(&cur))
+      if (!GetDefaultUserDataDirectory(&cur)) {
         return false;
+      }
       create_dir = true;
       break;
 
     case DIR_CRASH_DUMPS:
-      if (!GetDefaultUserDataDirectory(&cur))
+      if (!GetDefaultUserDataDirectory(&cur)) {
         return false;
+      }
       cur = cur.Append(FILE_PATH_LITERAL("Crash Reports"));
       create_dir = true;
       break;
@@ -65,14 +67,16 @@ bool PathProvider(int key, base::FilePath* result) {
       break;
 
     case DIR_GLOBAL_GCM_STORE:
-      if (!base::PathService::Get(DIR_USER_DATA, &cur))
+      if (!base::PathService::Get(DIR_USER_DATA, &cur)) {
         return false;
+      }
       cur = cur.Append(gcm_driver::kGCMStoreDirname);
       break;
 
     case FILE_LOCAL_STATE:
-      if (!base::PathService::Get(DIR_USER_DATA, &cur))
+      if (!base::PathService::Get(DIR_USER_DATA, &cur)) {
         return false;
+      }
       cur = cur.Append(FILE_PATH_LITERAL("Local State"));
       break;
 
@@ -80,14 +84,16 @@ bool PathProvider(int key, base::FilePath* result) {
       // Catalyst builds are packaged like macOS, with the binary and resource
       // directories separate. On iOS they are all together in a single dir.
       // base::DIR_ASSETS does the right thing on each platform.
-      if (!base::PathService::Get(base::DIR_ASSETS, &cur))
+      if (!base::PathService::Get(base::DIR_ASSETS, &cur)) {
         return false;
+      }
       cur = cur.Append(FILE_PATH_LITERAL("resources.pak"));
       break;
 
     case DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS:
-      if (!base::PathService::Get(DIR_USER_DATA, &cur))
+      if (!base::PathService::Get(DIR_USER_DATA, &cur)) {
         return false;
+      }
       cur = cur.Append(FILE_PATH_LITERAL("OptimizationGuidePredictionModels"));
       create_dir = true;
       break;
@@ -96,8 +102,9 @@ bool PathProvider(int key, base::FilePath* result) {
       return false;
   }
 
-  if (create_dir && !base::PathExists(cur) && !base::CreateDirectory(cur))
+  if (create_dir && !base::PathExists(cur) && !base::CreateDirectory(cur)) {
     return false;
+  }
 
   *result = cur;
   return true;
@@ -118,11 +125,13 @@ void GetUserCacheDirectory(const base::FilePath& profile_dir,
   *result = profile_dir;
 
   base::FilePath app_data_dir;
-  if (!base::PathService::Get(base::DIR_APP_DATA, &app_data_dir))
+  if (!base::PathService::Get(base::DIR_APP_DATA, &app_data_dir)) {
     return;
+  }
   base::FilePath cache_dir;
-  if (!base::PathService::Get(base::DIR_CACHE, &cache_dir))
+  if (!base::PathService::Get(base::DIR_CACHE, &cache_dir)) {
     return;
+  }
   if (!app_data_dir.AppendRelativePath(profile_dir, &cache_dir)) {
     return;
   }

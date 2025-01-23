@@ -81,66 +81,90 @@ std::unique_ptr<WebUIIOSController> NewWebUIIOS<commerce::CommerceInternalsUI>(
 WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
   // This will get called a lot to check all URLs, so do a quick check of other
   // schemes to filter out most URLs.
-  if (!url.SchemeIs(kChromeUIScheme))
+  if (!url.SchemeIs(kChromeUIScheme)) {
     return nullptr;
+  }
 
   // Please keep this in alphabetical order. If #ifs or special logic is
   // required, add it below in the appropriate section.
   const std::string url_host = url.host();
-  if (url_host == kChromeUIAutofillInternalsHost)
+  if (url_host == kChromeUIAutofillInternalsHost) {
     return &NewWebUIIOS<AutofillInternalsUIIOS>;
+  }
   if (url_host == kChromeUIChromeURLsHost ||
-      url_host == kChromeUIHistogramHost || url_host == kChromeUICreditsHost)
+      url_host == kChromeUIHistogramHost || url_host == kChromeUICreditsHost) {
     return &NewWebUIIOS<AboutUI>;
+  }
   if (url_host == commerce::kChromeUICommerceInternalsHost) {
     return &NewWebUIIOS<commerce::CommerceInternalsUI>;
   }
-  if (url_host == kChromeUICrashesHost)
+  if (url_host == kChromeUICrashesHost) {
     return &NewWebUIIOS<CrashesUI>;
-  if (url_host == kChromeUIDownloadInternalsHost)
+  }
+  if (url_host == kChromeUIDownloadInternalsHost) {
     return &NewWebUIIOS<DownloadInternalsUI>;
-  if (url_host == kChromeUIFlagsHost)
+  }
+  if (url_host == kChromeUIFlagsHost) {
     return &NewWebUIIOS<FlagsUI>;
-  if (url_host == kChromeUIGCMInternalsHost)
+  }
+  if (url_host == kChromeUIGCMInternalsHost) {
     return &NewWebUIIOS<GCMInternalsUI>;
-  if (url_host == kChromeUIInspectHost)
+  }
+  if (url_host == kChromeUIInspectHost) {
     return &NewWebUIIOS<InspectUI>;
-  if (url_host == kChromeUIIntersitialsHost)
+  }
+  if (url_host == kChromeUIIntersitialsHost) {
     return &NewWebUIIOS<InterstitialUI>;
-  if (url_host == kChromeUILocalStateHost)
+  }
+  if (url_host == kChromeUILocalStateHost) {
     return &NewWebUIIOS<LocalStateUI>;
-  if (url_host == kChromeUIManagementHost)
+  }
+  if (url_host == kChromeUIManagementHost) {
     return &NewWebUIIOS<ManagementUI>;
-  if (url_host == kChromeUINetExportHost)
+  }
+  if (url_host == kChromeUINetExportHost) {
     return &NewWebUIIOS<NetExportUI>;
-  if (url_host == kChromeUINTPTilesInternalsHost)
+  }
+  if (url_host == kChromeUINTPTilesInternalsHost) {
     return &NewWebUIIOS<NTPTilesInternalsUI>;
-  if (url_host == kChromeUIOmahaHost)
+  }
+  if (url_host == kChromeUIOmahaHost) {
     return &NewWebUIIOS<OmahaUI>;
+  }
   if (url_host ==
       optimization_guide_internals::kChromeUIOptimizationGuideInternalsHost) {
     return &NewWebUIIOS<OptimizationGuideInternalsUI>;
   }
-  if (url_host == kChromeUIPasswordManagerInternalsHost)
+  if (url_host == kChromeUIPasswordManagerInternalsHost) {
     return &NewWebUIIOS<PasswordManagerInternalsUIIOS>;
-  if (url_host == kChromeUIPrefsInternalsHost)
+  }
+  if (url_host == kChromeUIPrefsInternalsHost) {
     return &NewWebUIIOS<PrefsInternalsUI>;
-  if (url_host == kChromeUISignInInternalsHost)
+  }
+  if (url_host == kChromeUISignInInternalsHost) {
     return &NewWebUIIOS<SignInInternalsUIIOS>;
-  if (url.host_piece() == kChromeUITranslateInternalsHost)
+  }
+  if (url.host_piece() == kChromeUITranslateInternalsHost) {
     return &NewWebUIIOS<TranslateInternalsUI>;
-  if (url_host == kChromeUIURLKeyedMetricsHost)
+  }
+  if (url_host == kChromeUIURLKeyedMetricsHost) {
     return &NewWebUIIOS<UkmInternalsUI>;
-  if (url_host == kChromeUIUserActionsHost)
+  }
+  if (url_host == kChromeUIUserActionsHost) {
     return &NewWebUIIOS<UserActionsUI>;
-  if (url_host == kChromeUISyncInternalsHost)
+  }
+  if (url_host == kChromeUISyncInternalsHost) {
     return &NewWebUIIOS<SyncInternalsUI>;
-  if (url_host == kChromeUITermsHost)
+  }
+  if (url_host == kChromeUITermsHost) {
     return &NewWebUIIOS<TermsUI>;
-  if (url_host == kChromeUIVersionHost)
+  }
+  if (url_host == kChromeUIVersionHost) {
     return &NewWebUIIOS<VersionUI>;
-  if (url_host == kChromeUIPolicyHost)
+  }
+  if (url_host == kChromeUIPolicyHost) {
     return &NewWebUIIOS<PolicyUI>;
+  }
   if (url_host == kChromeUIUserDefaultsInternalsHost &&
       GetChannel() != Channel::STABLE) {
     return &NewWebUIIOS<UserDefaultsInternalsUI>;
@@ -161,8 +185,9 @@ NSInteger ChromeWebUIIOSControllerFactory::GetErrorCodeForWebUIURL(
   if (url.host() == kChromeUIDinoHost) {
     return NSURLErrorNotConnectedToInternet;
   }
-  if (GetWebUIIOSFactoryFunction(url))
+  if (GetWebUIIOSFactoryFunction(url)) {
     return 0;
+  }
   return NSURLErrorUnsupportedURL;
 }
 
@@ -171,8 +196,9 @@ ChromeWebUIIOSControllerFactory::CreateWebUIIOSControllerForURL(
     WebUIIOS* web_ui,
     const GURL& url) const {
   WebUIIOSFactoryFunction function = GetWebUIIOSFactoryFunction(url);
-  if (!function)
+  if (!function) {
     return nullptr;
+  }
 
   return (*function)(web_ui, url);
 }

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/cwv_flags_internal.h"
-
 #import <memory>
 #import <optional>
 
@@ -23,6 +21,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/sync/base/command_line_switches.h"
 #import "ios/web_view/internal/app/application_context.h"
+#import "ios/web_view/internal/cwv_flags_internal.h"
 
 namespace ios_web_view {
 

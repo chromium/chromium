@@ -19,6 +19,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -248,6 +249,44 @@ constexpr char kCheckMicrophone[] = R"(
     })
     )";
 
+constexpr char kCheckClipboardRead[] = R"(
+    new Promise(async resolve => {
+      const PermissionStatus =
+        await navigator.permissions.query({name: 'clipboard-read'});
+      resolve(PermissionStatus.state === 'granted');
+    })
+    )";
+
+constexpr char kRequestClipboardRead[] = R"(
+    new Promise(async resolve => {
+      try {
+        const read_promise = await navigator.clipboard.readText();
+        resolve('granted');
+      } catch(error) {
+        resolve('denied');
+      }
+    })
+    )";
+
+constexpr char kCheckClipboardWrite[] = R"(
+    new Promise(async resolve => {
+      const PermissionStatus =
+        await navigator.permissions.query({name: 'clipboard-write'});
+      resolve(PermissionStatus.state === 'granted');
+    })
+    )";
+
+constexpr char kRequestClipboardWrite[] = R"(
+    new Promise(async resolve => {
+      try {
+        const write_promise = await navigator.clipboard.writeText("texts");
+        resolve('granted');
+      } catch(error) {
+        resolve('denied');
+      }
+    })
+    )";
+
 constexpr char kIframePolicy[] = "geolocation *; camera *";
 
 void VerifyPermissionsAllowed(content::RenderFrameHost* main_rfh,
@@ -335,11 +374,17 @@ void VerifyPermissionsDeniedForFencedFrame(
     content::WebContents* embedder_contents,
     content::RenderFrameHost* fenced_rfh,
     const std::string& request_permission_script,
-    const std::string& check_permission_script) {
+    const std::string& check_permission_script,
+    bool default_granted) {
+  // If granted by default, permission prompt factory will not receive requests.
+  int request_count = default_granted ? 0 : 1;
+
   content::RenderFrameHost* embedder_main_rfh =
       embedder_contents->GetPrimaryMainFrame();
-  ASSERT_FALSE(content::EvalJs(embedder_main_rfh, check_permission_script)
-                   .value.GetBool());
+
+  ASSERT_EQ(content::EvalJs(embedder_main_rfh, check_permission_script)
+                .value.GetBool(),
+            default_granted);
   ASSERT_FALSE(
       content::EvalJs(fenced_rfh, check_permission_script).value.GetBool());
 
@@ -359,7 +404,7 @@ void VerifyPermissionsDeniedForFencedFrame(
   // Request permission on the embedder contents.
   EXPECT_EQ("granted",
             content::EvalJs(embedder_main_rfh, request_permission_script));
-  EXPECT_EQ(1, bubble_factory->TotalRequestCount());
+  EXPECT_EQ(request_count, bubble_factory->TotalRequestCount());
 
   // Disable auto-accept of a permission request.
   bubble_factory->set_response_type(
@@ -382,7 +427,29 @@ void VerifyPermissionsDeniedForFencedFrame(
   EXPECT_EQ("denied", content::EvalJs(fenced_rfh, request_permission_script));
 
   // There should not be the 2nd prompt.
-  EXPECT_EQ(1, bubble_factory->TotalRequestCount());
+  EXPECT_EQ(request_count, bubble_factory->TotalRequestCount());
+}
+
+void VerifyPermissionsDeniedForFencedFrame(
+    content::WebContents* embedder_contents,
+    content::RenderFrameHost* fenced_rfh) {
+  const struct {
+    std::string check_permission;
+    std::string request_permission;
+    bool default_granted = false;
+  } kTests[] = {
+      {kCheckNotifications, kRequestNotifications},
+      {kCheckGeolocation, kRequestGeolocation},
+      {kCheckCamera, kRequestCamera},
+      {kCheckClipboardRead, kRequestClipboardRead},
+      {kCheckClipboardWrite, kRequestClipboardWrite, /*default_granted=*/true},
+  };
+
+  for (const auto& test : kTests) {
+    VerifyPermissionsDeniedForFencedFrame(
+        embedder_contents, fenced_rfh, test.request_permission,
+        test.check_permission, test.default_granted);
+  }
 }
 
 // getUserMedia requires focus. It should be verified only on a popup window.
@@ -431,25 +498,6 @@ void VerifyPermissionsAllowed(content::RenderFrameHost* rfh) {
   for (const auto& test : kTests) {
     VerifyPermissionsAllowed(rfh, test.request_permission,
                              test.check_permission);
-  }
-}
-
-void VerifyPermissionsDeniedForFencedFrame(
-    content::WebContents* embedder_contents,
-    content::RenderFrameHost* fenced_rfh) {
-  const struct {
-    std::string check_permission;
-    std::string request_permission;
-  } kTests[] = {
-      {kCheckNotifications, kRequestNotifications},
-      {kCheckGeolocation, kRequestGeolocation},
-      {kCheckCamera, kRequestCamera},
-  };
-
-  for (const auto& test : kTests) {
-    VerifyPermissionsDeniedForFencedFrame(embedder_contents, fenced_rfh,
-                                          test.request_permission,
-                                          test.check_permission);
   }
 }
 
@@ -510,7 +558,8 @@ void VerifyPermissionsForFile(content::RenderFrameHost* rfh,
 
 // Tests of permissions behavior for an inheritance and embedding of an
 // origin.
-class PermissionsSecurityModelInteractiveUITest : public InProcessBrowserTest {
+class PermissionsSecurityModelInteractiveUITest
+    : public InteractiveBrowserTest {
  public:
   PermissionsSecurityModelInteractiveUITest() {
     geolocation_overrider_ =

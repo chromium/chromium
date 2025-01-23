@@ -100,8 +100,9 @@ BOOL CGSizeAlmostEqualToSize(CGSize size1, CGSize size2) {
   // overlay is removed.
   [super dismissViewControllerAnimated:animated
                             completion:^{
-                              if (completion)
+                              if (completion) {
                                 completion();
+                              }
                               [self.view setNeedsLayout];
                             }];
 }

@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class CWVTranslationLanguageDetectionDetails;
 
 // Updates delegate on translation progress.
-@protocol CWVTranslationControllerDelegate<NSObject>
+@protocol CWVTranslationControllerDelegate <NSObject>
 
 @optional
 

@@ -18,13 +18,13 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 // Request config type used for testing.
 DEFINE_TEST_OVERLAY_REQUEST_CONFIG(ModalConfig);
-}
+}  // namespace
 
 // Mediator used by FakeInfobarModalOverlayCoordinators.
 @interface FakeModalMediator : InfobarModalOverlayMediator
