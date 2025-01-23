@@ -85,12 +85,14 @@ void WebMainLoop::CreateMainMessageLoop() {
 void WebMainLoop::CreateStartupTasks() {
   int result = 0;
   result = PreCreateThreads();
-  if (result > 0)
+  if (result > 0) {
     return;
+  }
 
   result = CreateThreads();
-  if (result > 0)
+  if (result > 0) {
     return;
+  }
 
   result = PostCreateThreads();
   if (result > 0) {
@@ -98,12 +100,14 @@ void WebMainLoop::CreateStartupTasks() {
   }
 
   result = WebThreadsStarted();
-  if (result > 0)
+  if (result > 0) {
     return;
+  }
 
   result = PreMainMessageLoopRun();
-  if (result > 0)
+  if (result > 0) {
     return;
+  }
 }
 
 int WebMainLoop::PreCreateThreads() {
@@ -134,8 +138,9 @@ int WebMainLoop::CreateThreads() {
   base::Thread::Options io_message_loop_options;
   io_message_loop_options.message_pump_type = base::MessagePumpType::IO;
   io_thread_ = std::make_unique<WebSubThread>(WebThread::IO);
-  if (!io_thread_->StartWithOptions(std::move(io_message_loop_options)))
+  if (!io_thread_->StartWithOptions(std::move(io_message_loop_options))) {
     LOG(FATAL) << "Failed to start WebThread::IO";
+  }
   io_thread_->RegisterAsWebThread();
 
   // Only start IO thread above as this is the only WebThread besides UI (which

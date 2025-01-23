@@ -63,7 +63,6 @@ class AnnotationJsTest : public JavascriptTest {
     }
     EXPECT_EQ(ok, result_array.count);
   }
-
 };
 
 TEST_F(AnnotationJsTest, All) {

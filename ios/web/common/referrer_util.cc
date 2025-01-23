@@ -24,29 +24,35 @@ std::string ReferrerHeaderValueForNavigation(const GURL& destination,
       return referrer.url.DeprecatedGetOriginAsURL().spec();
     case ReferrerPolicyDefault:
     case ReferrerPolicyNoReferrerWhenDowngrade:
-      if (is_downgrade)
+      if (is_downgrade) {
         return std::string();
+      }
       return referrer.url.GetAsReferrer().spec();
     case ReferrerPolicyOriginWhenCrossOrigin:
       if (referrer.url.DeprecatedGetOriginAsURL() !=
-          destination.DeprecatedGetOriginAsURL())
+          destination.DeprecatedGetOriginAsURL()) {
         return referrer.url.DeprecatedGetOriginAsURL().spec();
+      }
       return referrer.url.GetAsReferrer().spec();
     case ReferrerPolicySameOrigin:
       if (referrer.url.DeprecatedGetOriginAsURL() !=
-          destination.DeprecatedGetOriginAsURL())
+          destination.DeprecatedGetOriginAsURL()) {
         return std::string();
+      }
       return referrer.url.GetAsReferrer().spec();
     case ReferrerPolicyStrictOrigin:
-      if (is_downgrade)
+      if (is_downgrade) {
         return std::string();
+      }
       return referrer.url.DeprecatedGetOriginAsURL().spec();
     case ReferrerPolicyStrictOriginWhenCrossOrigin:
-      if (is_downgrade)
+      if (is_downgrade) {
         return std::string();
+      }
       if (referrer.url.DeprecatedGetOriginAsURL() !=
-          destination.DeprecatedGetOriginAsURL())
+          destination.DeprecatedGetOriginAsURL()) {
         return referrer.url.DeprecatedGetOriginAsURL().spec();
+      }
       return referrer.url.GetAsReferrer().spec();
   }
   NOTREACHED();
@@ -81,22 +87,30 @@ net::ReferrerPolicy PolicyForNavigation(const GURL& destination,
 
 ReferrerPolicy ReferrerPolicyFromString(const std::string& policy) {
   // https://w3c.github.io/webappsec-referrer-policy/#determine-policy-for-token
-  if (policy == "never" || policy == "no-referrer")
+  if (policy == "never" || policy == "no-referrer") {
     return ReferrerPolicyNever;
-  if (policy == "origin")
+  }
+  if (policy == "origin") {
     return ReferrerPolicyOrigin;
-  if (policy == "default" || policy == "no-referrer-when-downgrade")
+  }
+  if (policy == "default" || policy == "no-referrer-when-downgrade") {
     return ReferrerPolicyNoReferrerWhenDowngrade;
-  if (policy == "origin-when-cross-origin")
+  }
+  if (policy == "origin-when-cross-origin") {
     return ReferrerPolicyOriginWhenCrossOrigin;
-  if (policy == "always" || policy == "unsafe-url")
+  }
+  if (policy == "always" || policy == "unsafe-url") {
     return ReferrerPolicyAlways;
-  if (policy == "same-origin")
+  }
+  if (policy == "same-origin") {
     return ReferrerPolicySameOrigin;
-  if (policy == "strict-origin")
+  }
+  if (policy == "strict-origin") {
     return ReferrerPolicyStrictOrigin;
-  if (policy == "strict-origin-when-cross-origin")
+  }
+  if (policy == "strict-origin-when-cross-origin") {
     return ReferrerPolicyStrictOriginWhenCrossOrigin;
+  }
   return ReferrerPolicyDefault;
 }
 

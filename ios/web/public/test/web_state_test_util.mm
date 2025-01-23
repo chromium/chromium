@@ -22,9 +22,9 @@
 #import "ios/web/web_state/web_state_impl.h"
 #import "url/gurl.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace web {
 namespace test {

@@ -15,7 +15,7 @@
 namespace net {
 class SSLInfo;
 class X509Certificate;
-}
+}  // namespace net
 
 namespace web {
 

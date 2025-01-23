@@ -120,11 +120,13 @@
 }
 
 - (void)updateWebViewContentViewForContainerWindow:(UIWindow*)containerWindow {
-  if (!base::FeatureList::IsEnabled(web::features::kKeepsRenderProcessAlive))
+  if (!base::FeatureList::IsEnabled(web::features::kKeepsRenderProcessAlive)) {
     return;
+  }
 
-  if (!self.webViewContentView)
+  if (!self.webViewContentView) {
     return;
+  }
 
   // If there's a containerWindow or `webViewContentView` is inactive, put it
   // back where it belongs.

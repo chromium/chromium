@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/web_state/ui/crw_context_menu_element_fetcher.h"
-
 #import <WebKit/WebKit.h>
 
 #import "base/test/ios/wait_util.h"
@@ -12,6 +10,7 @@
 #import "ios/web/js_features/context_menu/context_menu_constants.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #import "ios/web/test/web_test_with_web_controller.h"
+#import "ios/web/web_state/ui/crw_context_menu_element_fetcher.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/web_state_impl.h"
 #import "testing/gtest/include/gtest/gtest.h"

@@ -21,8 +21,7 @@ ShellBrowserState::ShellBrowserState() : BrowserState() {
       GetStatePath(), this, web::GetIOThreadTaskRunner({}));
 }
 
-ShellBrowserState::~ShellBrowserState() {
-}
+ShellBrowserState::~ShellBrowserState() {}
 
 bool ShellBrowserState::IsOffTheRecord() const {
   return false;

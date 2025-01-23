@@ -87,7 +87,7 @@ TEST_F(NavigationItemTest, Clone) {
 
   // Check that changes occurred in `item_`, but not in `copy`.
   EXPECT_NSEQ([postData1 dataUsingEncoding:NSUTF8StringEncoding],
-              item_->GetPostData());
+              item_ -> GetPostData());
   EXPECT_NSEQ(state1, item_->GetSerializedStateObject());
   EXPECT_NSEQ([postData0 dataUsingEncoding:NSUTF8StringEncoding],
               clone -> GetPostData());

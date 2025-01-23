@@ -12,8 +12,7 @@
 
 namespace web {
 
-ShellWebMainParts::ShellWebMainParts() {
-}
+ShellWebMainParts::ShellWebMainParts() {}
 
 ShellWebMainParts::~ShellWebMainParts() {
 #if DCHECK_IS_ON()

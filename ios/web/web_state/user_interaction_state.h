@@ -6,6 +6,7 @@
 #define IOS_WEB_WEB_STATE_USER_INTERACTION_STATE_H_
 
 #import <WebKit/WebKit.h>
+
 #include <memory>
 
 #include "base/time/time.h"

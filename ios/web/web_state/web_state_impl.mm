@@ -41,8 +41,9 @@ constexpr base::TimeDelta kWindowSize = base::Seconds(1);
 size_t g_last_realized_count = 0;
 void CheckForOverRealization() {
   static bool g_has_reported_once = false;
-  if (g_has_reported_once)
+  if (g_has_reported_once) {
     return;
+  }
   static base::TimeTicks g_last_creation_time;
   base::TimeTicks now = base::TimeTicks::Now();
   if ((now - g_last_creation_time) < kWindowSize) {
@@ -569,8 +570,9 @@ WebState* WebStateImpl::ForceRealized() {
     saved.reset();
 
     // Notify all observers that the WebState has become realized.
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.WebStateRealized(this);
+    }
 
     CheckForOverRealization();
   }

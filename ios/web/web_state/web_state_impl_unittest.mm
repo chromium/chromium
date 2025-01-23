@@ -55,14 +55,14 @@
 #import "testing/gtest_mac.h"
 #import "url/gurl.h"
 
+using base::test::RunOnceCallback;
+using base::test::ios::kWaitForPageLoadTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 using testing::_;
 using testing::Assign;
 using testing::AtMost;
 using testing::DoAll;
 using testing::Return;
-using base::test::RunOnceCallback;
-using base::test::ios::WaitUntilConditionOrTimeout;
-using base::test::ios::kWaitForPageLoadTimeout;
 
 namespace web {
 namespace {

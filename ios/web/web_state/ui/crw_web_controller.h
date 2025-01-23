@@ -34,7 +34,7 @@ class NavigationItem;
 class NavigationItemImpl;
 class WebState;
 class WebStateImpl;
-}
+}  // namespace web
 
 // Manages a view that can be used either for rendering web content in a web
 // view. CRWWebController also transparently evicts and restores the internal

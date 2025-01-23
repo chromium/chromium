@@ -18,7 +18,7 @@ namespace web {
 NSString* const kNSErrorPeerCertificateChainKey =
     @"NSErrorPeerCertificateChainKey";
 NSString* const kNSErrorFailingURLKey = @"NSErrorFailingURLKey";
-}
+}  // namespace web
 
 namespace {
 
@@ -46,8 +46,9 @@ net::CertStatus GetCertStatusFromNSErrorCode(NSInteger code) {
 namespace web {
 
 scoped_refptr<net::X509Certificate> CreateCertFromChain(NSArray* certs) {
-  if (certs.count == 0)
+  if (certs.count == 0) {
     return nullptr;
+  }
   std::vector<base::apple::ScopedCFTypeRef<SecCertificateRef>> intermediates;
   for (NSUInteger i = 1; i < certs.count; i++) {
     base::apple::ScopedCFTypeRef<SecCertificateRef> cert(
@@ -61,8 +62,9 @@ scoped_refptr<net::X509Certificate> CreateCertFromChain(NSArray* certs) {
 }
 
 scoped_refptr<net::X509Certificate> CreateCertFromTrust(SecTrustRef trust) {
-  if (!trust)
+  if (!trust) {
     return nullptr;
+  }
 
   CFIndex cert_count = SecTrustGetCertificateCount(trust);
   if (cert_count == 0) {
@@ -92,8 +94,9 @@ base::apple::ScopedCFTypeRef<SecTrustRef> CreateServerTrustFromChain(
     NSArray* certs,
     NSString* host) {
   base::apple::ScopedCFTypeRef<SecTrustRef> scoped_result;
-  if (certs.count == 0)
+  if (certs.count == 0) {
     return scoped_result;
+  }
 
   base::apple::ScopedCFTypeRef<SecPolicyRef> policy(
       SecPolicyCreateSSL(TRUE, static_cast<CFStringRef>(host)));

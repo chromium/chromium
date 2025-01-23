@@ -125,8 +125,9 @@ using web::SecurityStyle;
                           certStatus:(CertStatus)certStatus {
   web::NavigationItem* item =
       web::GetCommittedItemWithUniqueID(_navigationManager, navigationItemID);
-  if (!item)
+  if (!item) {
     return;
+  }
 
   // NavigationItem's UniqueID is preserved even after redirects, so
   // checking that cert and URL match is necessary.

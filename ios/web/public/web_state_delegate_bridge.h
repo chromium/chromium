@@ -140,6 +140,6 @@ class WebStateDelegateBridge : public web::WebStateDelegate {
   __weak id<CRWWebStateDelegate> delegate_ = nil;
 };
 
-}  // web
+}  // namespace web
 
 #endif  // IOS_WEB_PUBLIC_WEB_STATE_DELEGATE_BRIDGE_H_

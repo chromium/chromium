@@ -14,7 +14,7 @@
 namespace web {
 class NavigationContext;
 enum Permission : NSUInteger;
-}
+}  // namespace web
 
 // Observes page lifecycle events from Objective-C. To use as a
 // web::WebStateObserver, wrap in a web::WebStateObserverBridge.

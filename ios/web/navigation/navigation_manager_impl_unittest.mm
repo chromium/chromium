@@ -162,8 +162,8 @@ class NavigationManagerTest : public PlatformTest {
   // Makes delegate to return navigation item, which is stored in navigation
   // context in the real app.
   void SimulateReturningPendingItemFromDelegate(web::NavigationItemImpl* item) {
-      ON_CALL(navigation_manager_delegate(), GetPendingItem())
-          .WillByDefault(testing::Return(item));
+    ON_CALL(navigation_manager_delegate(), GetPendingItem())
+        .WillByDefault(testing::Return(item));
   }
 
   CRWFakeBackForwardList* mock_wk_list_;

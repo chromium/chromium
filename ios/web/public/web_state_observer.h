@@ -6,7 +6,6 @@
 #define IOS_WEB_PUBLIC_WEB_STATE_OBSERVER_H_
 
 #include <Foundation/Foundation.h>
-
 #include <stddef.h>
 
 #include <string>

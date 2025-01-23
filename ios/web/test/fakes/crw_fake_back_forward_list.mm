@@ -50,12 +50,15 @@
 
 - (void)moveCurrentToIndex:(NSUInteger)index {
   NSMutableArray* logicalList = [[NSMutableArray alloc] init];
-  if (self.backList)
+  if (self.backList) {
     [logicalList addObjectsFromArray:self.backList];
-  if (self.currentItem)
+  }
+  if (self.currentItem) {
     [logicalList addObject:self.currentItem];
-  if (self.forwardList)
+  }
+  if (self.forwardList) {
     [logicalList addObjectsFromArray:self.forwardList];
+  }
 
   NSUInteger count = logicalList.count;
   CHECK(index < count);

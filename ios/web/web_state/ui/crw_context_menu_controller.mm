@@ -179,7 +179,8 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
     willPerformPreviewActionForMenuWithConfiguration:
         (UIContextMenuConfiguration*)configuration
                                             animator:
-        (id<UIContextMenuInteractionCommitAnimating>)animator {
+                                                (id<UIContextMenuInteractionCommitAnimating>)
+                                                    animator {
   if (self.webState && self.webState->GetDelegate()) {
     self.webState->GetDelegate()->ContextMenuWillCommitWithAnimator(
         self.webState, animator);

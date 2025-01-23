@@ -46,7 +46,7 @@ enum class BackForwardNavigationType {
   SLOW_FORWARD = 3,
   BACK_FORWARD_NAVIGATION_TYPE_COUNT
 };
-}
+}  // namespace
 
 @interface CRWWebRequestController ()
 
@@ -267,8 +267,8 @@ enum class BackForwardNavigationType {
             rendererInitiated:(BOOL)rendererInitiated {
   // Transfer time is registered so that further transitions within the time
   // envelope are not also registered as links.
-  [_delegate
-      userInteractionStateForWebViewHandler:self] -> ResetLastTransferTime();
+  [_delegate userInteractionStateForWebViewHandler:self]
+      ->ResetLastTransferTime();
 
   // Add or update pending item before any WebStateObserver callbacks.
   // See https://crbug.com/842151 for a scenario where this is important.
@@ -354,8 +354,9 @@ enum class BackForwardNavigationType {
   // placeholder URLs because this may be the only opportunity to update
   // `isLoading` for native view reload.
 
-  if (context && context->IsLoadingErrorPage())
+  if (context && context->IsLoadingErrorPage()) {
     return;
+  }
 
   if (!loadSuccess) {
     // WebStateObserver callbacks will be called for load failure after
@@ -402,10 +403,11 @@ enum class BackForwardNavigationType {
 
 // Returns the current transition type.
 - (ui::PageTransition)currentTransition {
-  if (self.currentNavItem)
+  if (self.currentNavItem) {
     return self.currentNavItem->GetTransitionType();
-  else
+  } else {
     return ui::PageTransitionFromInt(0);
+  }
 }
 
 // Returns the referrer for current navigation item. May be empty.

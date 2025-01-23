@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <Foundation/Foundation.h>
-
 #import "ios/web/public/test/fakes/fake_java_script_dialog_presenter.h"
+
+#import <Foundation/Foundation.h>
 
 namespace web {
 
@@ -78,8 +78,9 @@ void FakeJavaScriptDialogPresenter::RunJavaScriptPromptDialog(
 
   requested_prompt_dialogs_.push_back(std::move(dialog));
 
-  if (!callback_execution_paused())
+  if (!callback_execution_paused()) {
     ExecutePromptDialogCallback(requested_prompt_dialogs_.back().get());
+  }
 }
 
 void FakeJavaScriptDialogPresenter::CancelDialogs(WebState* web_state) {

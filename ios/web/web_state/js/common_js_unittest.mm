@@ -77,22 +77,14 @@ TEST_F(CommonJsTest, IsTestField) {
             "</body></html>");
 
   static const struct TextFieldTestElement testElements[] = {
-      {"firstname", 0, true},
-      {"lastname", 0, true},
-      {"email", 0, true},
-      {"phone", 0, true},
-      {"blog", 0, true},
-      {"expected number of clicks", 0, true},
-      {"pwd", 0, true},
-      {"vehicle", 0, false},
-      {"vehicle", 1, false},
-      {"vehicle", 2, false},
-      {"boolean", 0, false},
-      {"boolean", 1, false},
-      {"boolean", 2, false},
-      {"state", 0, false},
-      {"cars", 0, false},
-      {"submit", 0, false}};
+      {"firstname", 0, true}, {"lastname", 0, true},
+      {"email", 0, true},     {"phone", 0, true},
+      {"blog", 0, true},      {"expected number of clicks", 0, true},
+      {"pwd", 0, true},       {"vehicle", 0, false},
+      {"vehicle", 1, false},  {"vehicle", 2, false},
+      {"boolean", 0, false},  {"boolean", 1, false},
+      {"boolean", 2, false},  {"state", 0, false},
+      {"cars", 0, false},     {"submit", 0, false}};
   for (size_t i = 0; i < std::size(testElements); ++i) {
     TextFieldTestElement element = testElements[i];
     id result = web::test::ExecuteJavaScript(

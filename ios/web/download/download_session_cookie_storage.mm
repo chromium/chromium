@@ -70,8 +70,9 @@
     std::unique_ptr<net::CanonicalCookie> canonical_cookie =
         net::CanonicalCookieFromSystemCookie(cookie, base::Time());
     if (canonical_cookie->IncludeForRequestURL(gURL, options, params)
-            .status.IsInclude())
+            .status.IsInclude()) {
       [result addObject:cookie];
+    }
   }
   return [result copy];
 }
@@ -103,8 +104,9 @@
 - (void)getCookiesForTask:(NSURLSessionTask*)task
         completionHandler:(void (^)(NSArray<NSHTTPCookie*>* _Nullable cookies))
                               completionHandler {
-  if (completionHandler)
+  if (completionHandler) {
     completionHandler([self cookiesForURL:task.currentRequest.URL]);
+  }
 }
 
 #pragma mark - NSHTTPCookieStorage Properties

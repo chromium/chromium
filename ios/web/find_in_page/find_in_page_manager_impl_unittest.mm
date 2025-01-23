@@ -50,10 +50,10 @@ class FindInPageManagerImplTest : public WebTest {
       GetFindInPageManager()->poll_active_find_session_delay_ =
           base::Milliseconds(5);
 
-        // Enable and set up fake Find interaction in the fake web state.
-        fake_web_state_->SetFindInteractionEnabled(true);
-        fake_web_state_->SetFindInteraction(
-            [[CRWFakeFindInteraction alloc] init]);
+      // Enable and set up fake Find interaction in the fake web state.
+      fake_web_state_->SetFindInteractionEnabled(true);
+      fake_web_state_->SetFindInteraction(
+          [[CRWFakeFindInteraction alloc] init]);
     }
   }
 

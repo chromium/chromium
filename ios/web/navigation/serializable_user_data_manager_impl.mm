@@ -26,8 +26,9 @@ class SerializableUserDataManagerWrapper : public base::SupportsUserData::Data {
     SerializableUserDataManagerWrapper* wrapper =
         static_cast<SerializableUserDataManagerWrapper*>(
             web_state->GetUserData(kSerializableUserDataManagerKey));
-    if (wrapper)
+    if (wrapper) {
       return wrapper;
+    }
 
     web_state->SetUserData(
         kSerializableUserDataManagerKey,

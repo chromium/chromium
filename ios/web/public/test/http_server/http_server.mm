@@ -18,7 +18,6 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
-
 #import "url/gurl.h"
 
 namespace {
@@ -65,8 +64,9 @@ HttpServer& HttpServer::GetSharedInstanceWithResponseProviders(
   DCHECK([NSThread isMainThread]);
   HttpServer& server = HttpServer::GetSharedInstance();
   // Use non-const reference as the response_provider ownership is transferred.
-  for (std::unique_ptr<ResponseProvider>& provider : response_providers)
+  for (std::unique_ptr<ResponseProvider>& provider : response_providers) {
     server.AddResponseProvider(std::move(provider));
+  }
   return server;
 }
 

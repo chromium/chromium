@@ -186,12 +186,14 @@ NSString* JavaScriptFeature::FeatureScript::GetScriptString() const {
 
 NSString* JavaScriptFeature::FeatureScript::ReplacePlaceholders(
     NSString* script) const {
-  if (replacements_callback_.is_null())
+  if (replacements_callback_.is_null()) {
     return script;
+  }
 
   PlaceholderReplacements replacements = replacements_callback_.Run();
-  if (!replacements)
+  if (!replacements) {
     return script;
+  }
 
   for (NSString* key in replacements) {
     script = [script stringByReplacingOccurrencesOfString:key

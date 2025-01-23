@@ -15,7 +15,7 @@ namespace {
 // web::WKBackForwardListItemHolder::FromNavigationItem.
 const char kBackForwardListItemIdentifierKey[] =
     "BackForwardListItemIdentifierKey";
-}
+}  // namespace
 
 WKBackForwardListItemHolder::WKBackForwardListItemHolder()
     : navigation_type_(WKNavigationTypeOther) {}

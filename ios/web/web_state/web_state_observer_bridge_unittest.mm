@@ -15,10 +15,9 @@
 
 namespace web {
 namespace {
-const char kRawResponseHeaders[] =
-    "HTTP/1.1 200 OK\0"
-    "Content-Length: 450\0"
-    "Connection: keep-alive\0";
+const char kRawResponseHeaders[] = "HTTP/1.1 200 OK\0"
+                                   "Content-Length: 450\0"
+                                   "Connection: keep-alive\0";
 }  // namespace
 
 // Test fixture to test WebStateObserverBridge class.

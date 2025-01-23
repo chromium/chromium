@@ -70,8 +70,9 @@ class TestWebUIControllerFactory : public WebUIIOSControllerFactory {
   std::unique_ptr<WebUIIOSController> CreateWebUIIOSControllerForURL(
       WebUIIOS* web_ui,
       const GURL& url) const override {
-    if (!url.SchemeIs(kTestWebUIScheme))
+    if (!url.SchemeIs(kTestWebUIScheme)) {
       return nullptr;
+    }
     if (url.host() == kTestWebUIURLHost) {
       return std::make_unique<TestUI>(web_ui, url.host(), IDR_WEBUI_TEST_HTML);
     }
@@ -80,8 +81,9 @@ class TestWebUIControllerFactory : public WebUIIOSControllerFactory {
   }
 
   NSInteger GetErrorCodeForWebUIURL(const GURL& url) const override {
-    if (url.SchemeIs(kTestWebUIScheme))
+    if (url.SchemeIs(kTestWebUIScheme)) {
       return 0;
+    }
     return NSURLErrorUnsupportedURL;
   }
 };

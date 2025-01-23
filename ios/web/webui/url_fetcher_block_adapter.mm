@@ -20,8 +20,7 @@ URLFetcherBlockAdapter::URLFetcherBlockAdapter(
       url_loader_factory_(std::move(url_loader_factory)),
       completion_handler_(completion_handler) {}
 
-URLFetcherBlockAdapter::~URLFetcherBlockAdapter() {
-}
+URLFetcherBlockAdapter::~URLFetcherBlockAdapter() {}
 
 void URLFetcherBlockAdapter::Start() {
   auto resource_request = std::make_unique<network::ResourceRequest>();
@@ -47,8 +46,8 @@ void URLFetcherBlockAdapter::OnURLLoadComplete(
 
   url_loader_.reset();
 
-  NSData* data =
-      [NSData dataWithBytes:response.c_str() length:response.length()];
+  NSData* data = [NSData dataWithBytes:response.c_str()
+                                length:response.length()];
   completion_handler_(data, this);
 }
 

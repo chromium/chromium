@@ -100,8 +100,9 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
 }
 
 - (web::MojoFacade*)mojoFacade {
-  if (!_mojoFacade)
+  if (!_mojoFacade) {
     _mojoFacade = std::make_unique<web::MojoFacade>(self.webStateImpl);
+  }
   return _mojoFacade.get();
 }
 
@@ -171,8 +172,9 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
 
   web::WebState* childWebState = self.webStateImpl->CreateNewWebState(
       requestURL, openerURL, initiatedByUser);
-  if (!childWebState)
+  if (!childWebState) {
     return nil;
+  }
 
   // WKWebView requires WKUIDelegate to return a child view created with
   // exactly the same `configuration` object (exception is raised if config is

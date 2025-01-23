@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/web/public/find_in_page/find_in_page_manager.h"
+
 #import "ios/web/find_in_page/find_in_page_manager_impl.h"
 
 namespace web {

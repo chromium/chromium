@@ -56,8 +56,7 @@ std::unique_ptr<NavigationItem> NavigationItem::Create() {
 NavigationItemImpl::NavigationItemImpl()
     : unique_id_(GetUniqueIDInConstructor()) {}
 
-NavigationItemImpl::~NavigationItemImpl() {
-}
+NavigationItemImpl::~NavigationItemImpl() {}
 
 NavigationItemImpl::NavigationItemImpl(
     const proto::NavigationItemStorage& storage)
@@ -157,8 +156,9 @@ const GURL& NavigationItemImpl::GetVirtualURL() const {
 }
 
 void NavigationItemImpl::SetTitle(const std::u16string& title) {
-  if (title_ == title)
+  if (title_ == title) {
     return;
+  }
 
   if (title.size() > kMaxTitleLength) {
     title_ = gfx::TruncateString(title, kMaxTitleLength, gfx::CHARACTER_BREAK);
@@ -175,13 +175,15 @@ const std::u16string& NavigationItemImpl::GetTitle() const {
 const std::u16string& NavigationItemImpl::GetTitleForDisplay() const {
   // Most pages have real titles. Don't even bother caching anything if this is
   // the case.
-  if (!title_.empty())
+  if (!title_.empty()) {
     return title_;
+  }
 
   // More complicated cases will use the URLs as the title. This result we will
   // cache since it's more complicated to compute.
-  if (!cached_display_title_.empty())
+  if (!cached_display_title_.empty()) {
     return cached_display_title_;
+  }
 
   // File urls have different display rules, so use one if it is present.
   cached_display_title_ = NavigationItemImpl::GetDisplayTitleForURL(
@@ -247,13 +249,15 @@ HttpRequestHeaders* NavigationItemImpl::GetHttpRequestHeaders() const {
 
 void NavigationItemImpl::AddHttpRequestHeaders(
     HttpRequestHeaders* additional_headers) {
-  if (!additional_headers)
+  if (!additional_headers) {
     return;
+  }
 
-  if (http_request_headers_)
+  if (http_request_headers_) {
     [http_request_headers_ addEntriesFromDictionary:additional_headers];
-  else
+  } else {
     http_request_headers_ = [additional_headers mutableCopy];
+  }
 }
 
 void NavigationItemImpl::SetHttpsUpgradeType(
@@ -311,8 +315,9 @@ NSData* NavigationItemImpl::GetPostData() const {
 void NavigationItemImpl::RemoveHttpRequestHeaderForKey(NSString* key) {
   DCHECK(key);
   [http_request_headers_ removeObjectForKey:key];
-  if (![http_request_headers_ count])
+  if (![http_request_headers_ count]) {
     http_request_headers_ = nil;
+  }
 }
 
 void NavigationItemImpl::ResetHttpRequestHeaders() {
@@ -340,16 +345,18 @@ void NavigationItemImpl::RestoreStateFromItem(NavigationItem* other) {
 
 // static
 std::u16string NavigationItemImpl::GetDisplayTitleForURL(const GURL& url) {
-  if (url.is_empty())
+  if (url.is_empty()) {
     return std::u16string();
+  }
 
   std::u16string title = url_formatter::FormatUrl(url);
 
   // For file:// URLs use the filename as the title, not the full path.
   if (url.SchemeIsFile()) {
     std::u16string::size_type slashpos = title.rfind('/');
-    if (slashpos != std::u16string::npos && slashpos != (title.size() - 1))
+    if (slashpos != std::u16string::npos && slashpos != (title.size() - 1)) {
       title = title.substr(slashpos + 1);
+    }
   }
 
   const size_t kMaxTitleChars = 4 * 1024;

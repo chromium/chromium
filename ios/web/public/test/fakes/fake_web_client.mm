@@ -31,15 +31,17 @@ bool FakeWebClient::IsAppSpecificURL(const GURL& url) const {
 }
 
 std::string FakeWebClient::GetUserAgent(UserAgentType type) const {
-  if (type == UserAgentType::DESKTOP)
+  if (type == UserAgentType::DESKTOP) {
     return "Chromium/66.0.3333.0 CFNetwork/893.14 Darwin/16.7.0 Desktop";
+  }
   return "Chromium/66.0.3333.0 CFNetwork/893.14 Darwin/16.7.0 Mobile";
 }
 
 base::RefCountedMemory* FakeWebClient::GetDataResourceBytes(
     int resource_id) const {
-  if (!ui::ResourceBundle::HasSharedInstance())
+  if (!ui::ResourceBundle::HasSharedInstance()) {
     return nullptr;
+  }
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
       resource_id);
 }

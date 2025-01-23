@@ -5,9 +5,8 @@
 #ifndef IOS_WEB_TEST_FAKES_FAKE_NAVIGATION_MANAGER_DELEGATE_H_
 #define IOS_WEB_TEST_FAKES_FAKE_NAVIGATION_MANAGER_DELEGATE_H_
 
-#import "ios/web/navigation/navigation_manager_delegate.h"
-
 #import "base/memory/raw_ptr.h"
+#import "ios/web/navigation/navigation_manager_delegate.h"
 
 @protocol CRWWebViewNavigationProxy;
 

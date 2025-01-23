@@ -31,8 +31,9 @@ namespace {
 
 // Serializes the given `object` to JSON string.
 std::string GetJson(id object) {
-  NSData* json_as_data =
-      [NSJSONSerialization dataWithJSONObject:object options:0 error:nil];
+  NSData* json_as_data = [NSJSONSerialization dataWithJSONObject:object
+                                                         options:0
+                                                           error:nil];
   NSString* json_as_string =
       [[NSString alloc] initWithData:json_as_data
                             encoding:NSUTF8StringEncoding];
@@ -318,7 +319,8 @@ TEST_F(MojoFacadeTest, ReadWrite) {
 
   // Read the message from the pipe.
   NSDictionary* message = ReadMessage(handle0);
-  NSArray* expected_message = @[ @65, @66, @67, @68 ];  // ASCII values for A, B, C, D
+  NSArray* expected_message =
+      @[ @65, @66, @67, @68 ];  // ASCII values for A, B, C, D
   EXPECT_NSEQ(expected_message, message[@"buffer"]);
   EXPECT_FALSE([message[@"handles"] count]);
   EXPECT_EQ(MOJO_RESULT_OK, [message[@"result"] unsignedIntValue]);

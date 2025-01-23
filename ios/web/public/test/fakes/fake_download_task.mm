@@ -18,8 +18,9 @@ FakeDownloadTask::FakeDownloadTask(const GURL& original_url,
 
 FakeDownloadTask::~FakeDownloadTask() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnDownloadDestroyed(this);
+  }
 }
 
 WebState* FakeDownloadTask::GetWebState() {
@@ -227,8 +228,9 @@ void FakeDownloadTask::SetPerformedBackgroundDownload(bool flag) {
 
 void FakeDownloadTask::OnDownloadUpdated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnDownloadUpdated(this);
+  }
 }
 
 }  // namespace web
