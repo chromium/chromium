@@ -156,6 +156,9 @@ void WebContentsDelegateAndroid::LoadingStateChanged(
     bool should_show_loading_ui) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return;
+  }
   Java_WebContentsDelegateAndroid_loadingStateChanged(env, obj,
                                                       should_show_loading_ui);
 }
@@ -270,7 +273,7 @@ bool WebContentsDelegateAndroid::DidAddMessageToConsole(
       NOTREACHED();
   }
   return Java_WebContentsDelegateAndroid_addMessageToConsole(
-      env, GetJavaDelegate(env), jlevel, jmessage, line_no, jsource_id);
+      env, obj, jlevel, jmessage, line_no, jsource_id);
 }
 
 // This is either called from TabContents::DidNavigateMainFramePostCommit() with
@@ -520,13 +523,17 @@ void WebContentsDelegateAndroid::DidBackForwardTransitionAnimationChange() {
 content::BackForwardTransitionAnimationManager::FallbackUXConfig
 WebContentsDelegateAndroid::GetBackForwardTransitionFallbackUXConfig() {
   JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return {};
+  }
   // Java colors are already in 32bit ARBG, same as `SkColor`.
   jint favicon_background =
       Java_WebContentsDelegateAndroid_getBackForwardTransitionFallbackUXFaviconBackgroundColor(
-          env, GetJavaDelegate(env));
+          env, obj);
   jint page_background =
       Java_WebContentsDelegateAndroid_getBackForwardTransitionFallbackUXPageBackgroundColor(
-          env, GetJavaDelegate(env));
+          env, obj);
   return {
       .rounded_rectangle_color =
           SkColor4f::FromColor(static_cast<SkColor>(favicon_background)),
@@ -537,8 +544,11 @@ WebContentsDelegateAndroid::GetBackForwardTransitionFallbackUXConfig() {
 
 void WebContentsDelegateAndroid::ContentsZoomChange(bool zoom_in) {
   JNIEnv* env = AttachCurrentThread();
-  Java_WebContentsDelegateAndroid_contentsZoomChange(env, GetJavaDelegate(env),
-                                                     zoom_in);
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_WebContentsDelegateAndroid_contentsZoomChange(env, obj, zoom_in);
 }
 
 void JNI_WebContentsDelegateAndroid_MaybeCopyContentAreaAsBitmapOutcome(
