@@ -10300,65 +10300,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WebDatabase.AutofillAccountStorage"
-    enum="WebDatabaseAutofillAccountStorageResult" expires_after="2025-07-13">
-  <owner>mastiz@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <summary>
-    Recorded upon construction of WebDataService, usually during profile
-    startup, it logs whether the web database used for autofill account data is
-    stored in-memory only or on-disk. Rather than logging two possible values,
-    it also conveys the reason why a specific choice was made. Recorded on
-    desktop only, as on mobile the storage is always on disk.
-  </summary>
-</histogram>
-
-<histogram name="WebDatabase.AutofillWebDataBackendImpl.OperationResult"
-    enum="AutofillWebDataBackendImplOperationResult" expires_after="2025-06-22">
-  <owner>battre@chromium.org</owner>
-  <owner>asully@chromium.org</owner>
-  <summary>
-    Records the success or failure of various database operations in
-    autofill::AutofillWebDataBackendImpl.
-  </summary>
-</histogram>
-
-<histogram name="WebDatabase.DatabaseErrors" enum="SqliteLoggedResultCode"
-    expires_after="2025-06-22">
-  <owner>battre@chromium.org</owner>
-  <owner>asully@chromium.org</owner>
-  <summary>Records the errors reported by SQLite.</summary>
-</histogram>
-
-<histogram name="WebDatabase.FailedMigrationToVersion" units="version"
-    expires_after="2025-07-13">
-  <owner>battre@chromium.org</owner>
-  <owner>asully@chromium.org</owner>
-  <summary>
-    If a migration to a new WebDatabase schema fails, this histogram records the
-    target version to which the migration failed.
-  </summary>
-</histogram>
-
-<histogram name="WebDatabase.InitResult" enum="WebDatabaseInitResult"
-    expires_after="2025-07-13">
-  <owner>battre@chromium.org</owner>
-  <owner>asully@chromium.org</owner>
-  <summary>
-    Records whether WebDatabase::Init succeeds or otherwise a failure reason.
-  </summary>
-</histogram>
-
-<histogram name="WebDatabase.SucceededMigrationToVersion" units="version"
-    expires_after="2025-06-29">
-  <owner>battre@chromium.org</owner>
-  <owner>fleimgruber@google.com</owner>
-  <summary>
-    If a migration to a new WebDatabase schema succeeds, this histogram records
-    the target version to which the migration failed.
-  </summary>
-</histogram>
-
 <histogram name="WebFont.BlankTextShownTime" units="ms"
     expires_after="2025-07-13">
   <owner>kenjibaheux@chromium.org</owner>
