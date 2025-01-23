@@ -51,7 +51,10 @@ source_set("layout") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "consistency_promo_signin_mediator_unittest.mm" ]
+  sources = [
+    "consistency_promo_signin_coordinator_unittest.mm",
+    "consistency_promo_signin_mediator_unittest.mm",
+  ]
   deps = [
     ":consistency_promo_signin",
     "//base",
@@ -61,7 +64,10 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/authentication/ui_bundled",
     "//ios/chrome/browser/authentication/ui_bundled/authentication_flow",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_default_account",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model",
