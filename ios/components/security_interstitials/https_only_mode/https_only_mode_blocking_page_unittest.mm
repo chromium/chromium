@@ -22,11 +22,11 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
-using security_interstitials::IOSSecurityInterstitialPage;
-using security_interstitials::SecurityInterstitialCommand;
-using security_interstitials::MetricsHelper;
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kSpinDelaySeconds;
+using base::test::ios::WaitUntilConditionOrTimeout;
+using security_interstitials::IOSSecurityInterstitialPage;
+using security_interstitials::MetricsHelper;
+using security_interstitials::SecurityInterstitialCommand;
 
 namespace {
 

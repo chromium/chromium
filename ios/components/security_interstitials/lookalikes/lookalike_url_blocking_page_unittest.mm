@@ -23,11 +23,11 @@
 #import "services/metrics/public/cpp/ukm_source_id.h"
 #import "testing/platform_test.h"
 
-using security_interstitials::IOSSecurityInterstitialPage;
-using security_interstitials::SecurityInterstitialCommand;
-using security_interstitials::MetricsHelper;
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kSpinDelaySeconds;
+using base::test::ios::WaitUntilConditionOrTimeout;
+using security_interstitials::IOSSecurityInterstitialPage;
+using security_interstitials::MetricsHelper;
+using security_interstitials::SecurityInterstitialCommand;
 
 namespace {
 
