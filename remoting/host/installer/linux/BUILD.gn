@@ -106,6 +106,12 @@ action("remoting_me2me_host_deb_installer") {
     "-o",
     ".",
   ]
+  if (enable_chromoting_crashpad) {
+    args += [
+      "-O",
+      "enable_chromoting_crashpad",
+    ]
+  }
   inputs += [ "//remoting/host/installer/linux/chrome-remote-desktop@.service" ]
 
   deps = [
