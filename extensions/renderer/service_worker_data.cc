@@ -113,10 +113,7 @@ mojom::RendererHost* ServiceWorkerData::GetRendererHost() {
 
 void ServiceWorkerData::Init() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // If we do not have bindings there is no additional init necessary
-  if (!bindings_system_) {
-    return;
-  }
+  CHECK(bindings_system_);
   const int thread_id = content::WorkerThread::GetCurrentId();
   GetServiceWorkerHost()->DidInitializeServiceWorkerContext(
       context_->GetExtensionID(), service_worker_version_id_, thread_id,
