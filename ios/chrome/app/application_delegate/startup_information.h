@@ -12,7 +12,7 @@ class TimeTicks;
 }
 
 // Contains information about the startup.
-@protocol StartupInformation<NSObject>
+@protocol StartupInformation <NSObject>
 
 // Whether the app is starting in first run.
 @property(nonatomic, assign) BOOL isFirstRun;

@@ -12,7 +12,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-
 // A fake that allows overriding connectedScenes.
 @interface FakeAppState : AppState
 @property(nonatomic, strong) NSArray<SceneState*>* connectedScenes;

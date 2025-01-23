@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/app/startup/chrome_app_startup_parameters.h"
-
 #import "base/at_exit.h"
 #import "base/i18n/icu_util.h"
+#import "ios/chrome/app/startup/chrome_app_startup_parameters.h"
 
 struct Environment {
   Environment() { CHECK(base::i18n::InitializeICU()); }

@@ -571,11 +571,13 @@ void UnloadProfileMarkedForDeletion(MainController* controller,
 }
 
 - (PostCrashAction)postCrashAction {
-  if (self.appState.resumingFromSafeMode)
+  if (self.appState.resumingFromSafeMode) {
     return PostCrashAction::kShowSafeMode;
+  }
 
-  if (GetApplicationContext()->WasLastShutdownClean())
+  if (GetApplicationContext()->WasLastShutdownClean()) {
     return PostCrashAction::kRestoreTabsCleanShutdown;
+  }
 
   if (crash_util::GetFailedStartupAttemptCount() >= 2) {
     return PostCrashAction::kShowNTPWithReturnToTab;
@@ -1011,7 +1013,8 @@ void UnloadProfileMarkedForDeletion(MainController* controller,
   // Create the window accessibility agent only when multiple windows are
   // possible.
   if (base::ios::IsMultipleScenesSupported()) {
-    [appState addAgent:[[WindowAccessibilityChangeNotifierAppAgent alloc] init]];
+    [appState
+        addAgent:[[WindowAccessibilityChangeNotifierAppAgent alloc] init]];
   }
 }
 
@@ -1032,7 +1035,6 @@ void UnloadProfileMarkedForDeletion(MainController* controller,
 }
 
 #pragma mark - StartupInformation implementation.
-
 
 - (FirstUserActionRecorder*)firstUserActionRecorder {
   return _firstUserActionRecorder.get();
@@ -1412,11 +1414,10 @@ void UnloadProfileMarkedForDeletion(MainController* controller,
 - (void)expireFirstUserActionRecorder {
   // Clear out any scheduled calls to this method. For example, the app may have
   // been backgrounded before the `kFirstUserActionTimeout` expired.
-  [NSObject
-      cancelPreviousPerformRequestsWithTarget:self
-                                     selector:@selector(
-                                                  expireFirstUserActionRecorder)
-                                       object:nil];
+  [NSObject cancelPreviousPerformRequestsWithTarget:self
+                                           selector:@selector
+                                           (expireFirstUserActionRecorder)
+                                             object:nil];
 
   if (_firstUserActionRecorder) {
     _firstUserActionRecorder->Expire();

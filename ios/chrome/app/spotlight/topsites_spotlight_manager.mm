@@ -26,7 +26,7 @@
 class SpotlightTopSitesBridge;
 class SpotlightTopSitesCallbackBridge;
 
-@interface TopSitesSpotlightManager ()<SyncObserverModelBridge> {
+@interface TopSitesSpotlightManager () <SyncObserverModelBridge> {
   // Bridge to register for top sites changes. It's important that this instance
   // variable is released before the _topSite one.
   std::unique_ptr<SpotlightTopSitesBridge> _topSitesBridge;
@@ -161,8 +161,9 @@ class SpotlightTopSitesBridge : public history::TopSitesObserver {
 }
 
 - (void)addAllTopSitesSpotlightItems {
-  if (!_topSites)
+  if (!_topSites) {
     return;
+  }
 
   [self addAllLocalTopSitesItems];
 }

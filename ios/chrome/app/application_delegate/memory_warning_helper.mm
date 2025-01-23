@@ -16,7 +16,7 @@ namespace {
 // 3 seconds. It is set to 5 to ensure all out of memory crashes are identified,
 // even if this may lead to overcounting them.
 const CFTimeInterval kOutOfMemoryResetTimeInterval = 5;
-}
+}  // namespace
 
 @interface MemoryWarningHelper () {
   // The time at which to reset the OOM crash flag in the user defaults. This
@@ -54,8 +54,9 @@ const CFTimeInterval kOutOfMemoryResetTimeInterval = 5;
 }
 
 - (void)resetOutOfMemoryFlagIfNecessary {
-  if (CFAbsoluteTimeGetCurrent() < _outOfMemoryResetTime)
+  if (CFAbsoluteTimeGetCurrent() < _outOfMemoryResetTime) {
     return;
+  }
   _outOfMemoryResetTime = 0;
   [[PreviousSessionInfo sharedInstance] resetMemoryWarningFlag];
   crash_keys::SetMemoryWarningInProgress(false);

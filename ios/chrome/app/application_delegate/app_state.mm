@@ -384,8 +384,9 @@ BOOL ApplicationIsInBackground() {
   // Under some iOS 15 betas, Chrome gets scene connection events for some
   // system scene connections. To handle this, early return if the connecting
   // scene doesn't have a valid delegate. (See crbug.com/1217461)
-  if (!sceneDelegate)
+  if (!sceneDelegate) {
     return;
+  }
 
   SceneState* sceneState = sceneDelegate.sceneState;
   DCHECK(sceneState);
