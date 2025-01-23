@@ -596,6 +596,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                    shopping_service->GetAccountChecker())
              : commerce::CanFetchProductSpecificationsData(
                    shopping_service->GetAccountChecker())},
+        // TODO(crbug.com/391131625): Check the actual feature state.
+        {"showPasswordChangeControl", false},
     };
 
     bool show_ai_page = show_ai_settings_for_testing;
@@ -637,6 +639,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                             is_any_ai_feature_enabled);
     // Compare is only shown when Synpase ("AiSettingsPageRefresh") is enabled.
     html_source->AddBoolean("showCompareControl", false);
+    // Password change is only shown when Synpase ("AiSettingsPageRefresh") is
+    // enabled.
+    html_source->AddBoolean("showPasswordChangeControl", false);
   }
 
   html_source->AddBoolean("enableAiSettingsPageRefresh",

@@ -485,6 +485,10 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       {"wallpaperSearchSettingLabel",
        IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_LABEL},
       {"wallpaperSearchSettingSublabelV2", IDS_SETTINGS_AI_THEMES_SUB_LABEL},
+
+      // Password Change strings.
+      {"passwordChangeSettingLabel", IDS_SETTINGS_PASSWORD_CHANGE_LABEL},
+      {"passwordChangeSettingSubLabel", IDS_SETTINGS_PASSWORD_CHANGE_SUBLABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
