@@ -240,7 +240,7 @@ NSString* CreationText(base::Time creation_date) {
 
 - (TabGroupsPanelItemData*)dataForItem:(TabGroupsPanelItem*)item {
   std::optional<tab_groups::SavedTabGroup> group =
-  _tabGroupSyncService->GetGroup(item.savedTabGroupID);
+      _tabGroupSyncService->GetGroup(item.savedTabGroupID);
   if (!group) {
     return nil;
   }
@@ -275,7 +275,7 @@ NSString* CreationText(base::Time creation_date) {
   }
 
   std::optional<tab_groups::SavedTabGroup> group =
-_tabGroupSyncService->GetGroup(item.savedTabGroupID);
+      _tabGroupSyncService->GetGroup(item.savedTabGroupID);
   if (!group.has_value() || !group->collaboration_id().has_value()) {
     return nil;
   }
