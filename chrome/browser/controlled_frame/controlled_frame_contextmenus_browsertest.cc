@@ -6,7 +6,9 @@
 #include <string>
 
 #include "chrome/browser/controlled_frame/controlled_frame_test_base.h"
+#include "chrome/browser/extensions/context_menu_matcher.h"
 #include "chrome/browser/extensions/menu_manager.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -145,6 +147,20 @@ class ControlledFrameContextMenusTest : public ControlledFrameTestBase {
         blink::WebInputEvent::kNoModifiers,
         blink::WebMouseEvent::Button::kRight, click_pos);
     context_menu_interceptor->Wait();
+  }
+
+  void SimulateClickContextMenuItem(
+      content::RenderFrameHost* controlled_frame) {
+    CHECK(controlled_frame);
+    // Create and build our test context menu.
+    std::unique_ptr<TestRenderViewContextMenu> menu(
+        TestRenderViewContextMenu::Create(
+            controlled_frame, controlled_frame->GetLastCommittedURL()));
+    // Look for the extension item in the menu, and execute it.
+    int command_id =
+        extensions::ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0);
+    CHECK(menu->IsCommandIdEnabled(command_id));
+    menu->ExecuteCommand(command_id, /*event_flags=*/0);
   }
 };
 
@@ -326,9 +342,7 @@ document.onShowHandler = function() {
       web_view_guest->GetGuestMainFrame();
   ASSERT_TRUE(controlled_frame);
   SimulateOpenContextMenu(controlled_frame);
-  ASSERT_EQ(content::EvalJs(app_frame,
-                            "(function(){return document.onShowCount;})();"),
-            1);
+  ASSERT_EQ(content::EvalJs(app_frame, "document.onShowCount"), 1);
 
   auto remove_handler_script = content::JsReplace(
       R"(
@@ -365,8 +379,106 @@ document.onShowHandler = function() {
   ASSERT_EQ(content::EvalJs(app_frame, remove_handler_script), kEvalSuccessStr);
 
   SimulateOpenContextMenu(controlled_frame);
-  ASSERT_EQ(content::EvalJs(app_frame,
-                            "(function(){return document.onShowCount;})();"),
-            1);
+  ASSERT_EQ(content::EvalJs(app_frame, "document.onShowCount"), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFrameContextMenusTest, OnClicked) {
+  constexpr char test_menu_item_id[] = "107";
+
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL("/index.html")));
+  EXPECT_EQ(kEvalSuccessStr, CreateContextMenuItem(app_frame, test_menu_item_id,
+                                                   /*title=*/"Test1"));
+
+  auto add_handler_script = content::JsReplace(
+      R"(
+document.onClickedHandler = function(info) {
+  document.lastClickedMenuItemId = info.menuItemId;
+  document.onClickedCount = (document.onClickedCount ?? 0) + 1;
+};
+
+(function() {
+  const frame = document.getElementsByTagName('controlledframe')[0];
+  if (!frame || !frame.contextMenus) {
+    return ('FAIL: frame or frame.contextMenus is undefined');
+  }
+
+  if (frame.contextMenus.onClicked.hasListeners()) {
+    return 'FAIL: frame.contextMenus.onClicked.hasListeners() \
+    returns true before addListener().';
+  }
+
+  frame.contextMenus.onClicked.addListener(document.onClickedHandler);
+
+  if (!frame.contextMenus.onClicked.hasListeners()) {
+    return 'FAIL: frame.contextMenus.hasListeners() \
+    returns false after addListener().';
+  }
+
+  if (!frame.contextMenus.onClicked.hasListener(document.onClickedHandler)) {
+    return 'FAIL: frame.contextMenus.onClicked.hasListener() \
+    returns false after addListener().';
+  }
+
+  return $1;
+})();
+)",
+      kEvalSuccessStr);
+
+  // Add a listener for 'onClicked' then simulate clicking on menu item and
+  // expect the listener to be triggered.
+  ASSERT_EQ(content::EvalJs(app_frame, add_handler_script), kEvalSuccessStr);
+
+  extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_frame);
+  ASSERT_TRUE(web_view_guest);
+  content::RenderFrameHost* controlled_frame =
+      web_view_guest->GetGuestMainFrame();
+  ASSERT_TRUE(controlled_frame);
+  SimulateClickContextMenuItem(controlled_frame);
+
+  ASSERT_EQ(content::EvalJs(app_frame, "document.onClickedCount"), 1);
+  ASSERT_EQ(content::EvalJs(app_frame, "document.lastClickedMenuItemId"),
+            test_menu_item_id);
+
+  auto remove_handler_script = content::JsReplace(
+      R"(
+(function() {
+  const frame = document.getElementsByTagName('controlledframe')[0];
+  if (!frame || !frame.contextMenus) {
+    return ('FAIL: frame or frame.contextMenus is undefined');
+  }
+
+  if (!frame.contextMenus.onClicked.hasListeners()) {
+    return 'FAIL: frame.contextMenus.onClicked.hasListeners() \
+    returns false before removeListener().';
+  }
+
+  frame.contextMenus.onClicked.removeListener(document.onClickedHandler);
+
+  if (frame.contextMenus.onClicked.hasListeners()) {
+    return 'FAIL: frame.contextMenus.hasListeners() \
+    returns true after removeListener().';
+  }
+
+  if (frame.contextMenus.onClicked.hasListener(document.onClickedHandler)) {
+    return 'FAIL: frame.contextMenus.onClicked.hasListener() \
+    returns true after removeListener().';
+  }
+
+  return $1;
+})();
+)",
+      kEvalSuccessStr);
+
+  // Remove the listener for 'onClicked' then simulate clicking on menu item and
+  // expect the listener to not be triggered.
+  ASSERT_EQ(content::EvalJs(app_frame, remove_handler_script), kEvalSuccessStr);
+
+  SimulateClickContextMenuItem(controlled_frame);
+  ASSERT_EQ(content::EvalJs(app_frame, "document.onClickedCount"), 1);
 }
 }  // namespace controlled_frame
