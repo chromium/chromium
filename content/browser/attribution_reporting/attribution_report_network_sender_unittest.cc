@@ -677,7 +677,7 @@ TEST_F(AttributionReportNetworkSenderTest,
                                    std::string_view suffix,
                                    bool has_trigger_context_id,
                                    base::HistogramBase::Sample32 sample,
-                                   base::HistogramBase::Count count) {
+                                   base::HistogramBase::Count32 count) {
     histograms.ExpectUniqueSample(base::StrCat({"Conversions.", suffix}),
                                   sample, count);
     if (has_trigger_context_id) {
@@ -1076,7 +1076,7 @@ TEST_F(AttributionReportNetworkSenderTest,
                                    std::string_view suffix,
                                    bool has_trigger_context_id,
                                    base::HistogramBase::Sample32 sample,
-                                   base::HistogramBase::Count count) {
+                                   base::HistogramBase::Count32 count) {
     histograms.ExpectUniqueSample(base::StrCat({"Conversions.", suffix}),
                                   sample, count);
     if (has_trigger_context_id) {

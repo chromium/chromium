@@ -96,7 +96,7 @@ class BackForwardCacheMetricsTestMatcher {
   template <typename T>
   void ExpectBucketCount(std::string_view name,
                          T sample,
-                         base::HistogramBase::Count expected_count) {
+                         base::HistogramBase::Count32 expected_count) {
     histogram_tester().ExpectBucketCount(name, sample, expected_count);
   }
 

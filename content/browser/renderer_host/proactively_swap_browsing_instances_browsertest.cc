@@ -106,7 +106,7 @@ class ProactivelySwapBrowsingInstancesTest : public RenderFrameHostManagerTest {
   ~ProactivelySwapBrowsingInstancesTest() override = default;
 
   void ExpectTotalCount(std::string_view name,
-                        base::HistogramBase::Count count) {
+                        base::HistogramBase::Count32 count) {
     FetchHistogramsFromChildProcesses();
     histogram_tester_.ExpectTotalCount(name, count);
   }
@@ -114,7 +114,7 @@ class ProactivelySwapBrowsingInstancesTest : public RenderFrameHostManagerTest {
   template <typename T>
   void ExpectBucketCount(std::string_view name,
                          T sample,
-                         base::HistogramBase::Count expected_count) {
+                         base::HistogramBase::Count32 expected_count) {
     FetchHistogramsFromChildProcesses();
     histogram_tester_.ExpectBucketCount(name, sample, expected_count);
   }
