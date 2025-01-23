@@ -1,0 +1,16 @@
+Tests the generation of screenshot events
+Recording started
+Tracing complete
+Object: {
+	args: {
+		snapshot: string
+	}
+	cat: string
+	id: string
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+
