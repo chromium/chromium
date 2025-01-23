@@ -204,6 +204,11 @@ File globbing is supported using the
 [simple path expression](https://github.com/GerritCodeReview/plugins_code-owners/blob/master/resources/Documentation/path-expressions.md#simple-path-expressions)
 format.
 
+Owners annotated with `#{LAST_RESORT_SUGGESTION}` in their comment will be
+omitted when suggesting code owners, except if dropping these code owners would
+make the suggestion result empty or if these code owners are already reviewers
+of the change.
+
 ### Owners-Override
 
 Setting the `Owners-Override +1` label will bypass OWNERS enforcement. Active
