@@ -86,7 +86,10 @@ void ChromePassageEmbeddingsServiceController::InitializeCpuLogger() {
     const content::ChildProcessData& data = iter.GetData();
     if (data.name == u"Passage Embeddings Service") {
       cpu_logger_.StartLogging(
-          content::BrowserChildProcessHost::FromID(data.id));
+          content::BrowserChildProcessHost::FromID(data.id),
+          base::BindRepeating(
+              &PassageEmbeddingsServiceController::EmbedderRunning,
+              base::Unretained(this)));
       return;
     }
     ++iter;
