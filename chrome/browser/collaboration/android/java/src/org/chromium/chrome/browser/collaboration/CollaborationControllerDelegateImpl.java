@@ -33,6 +33,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.url.GURL;
 
 /** An interface to manage collaboration flow UI screens. */
 @JNINamespace("collaboration")
@@ -258,7 +259,22 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
      * @param resultCallback The callback to notify the outcome of the UI screen.
      */
     @CalledByNative
-    void showShareDialog(long resultCallback) {
+    void showShareDialog(long resultWithGroupTokenCallback) {
+        CollaborationControllerDelegateImplJni.get()
+                .runResultWithGroupTokenCallback(
+                        Outcome.FAILURE,
+                        /* groupId= */ null,
+                        /* accessToken= */ null,
+                        resultWithGroupTokenCallback);
+    }
+
+    /**
+     * Show the system share sheet.
+     *
+     * @param groupToken The associated group token.
+     */
+    @CalledByNative
+    void onUrlReadyToShare(String groupId, GURL url, long resultCallback) {
         CollaborationControllerDelegateImplJni.get()
                 .runResultCallback(Outcome.FAILURE, resultCallback);
     }
@@ -365,6 +381,12 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
         void runExitCallback(long exitCallback);
 
         void deleteExitCallback(long exitCallback);
+
+        void runResultWithGroupTokenCallback(
+                int joutcome,
+                String groupId,
+                String accessToken,
+                long resultWithGroupTokenCallback);
 
         long createNativeObject(CollaborationControllerDelegateImpl jdelegate);
     }

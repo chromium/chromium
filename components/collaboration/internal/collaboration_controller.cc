@@ -46,6 +46,10 @@ std::string GetStateIdString(StateId state) {
       return "OpeningLocalTabGroup";
     case StateId::kShowingShareScreen:
       return "ShowingShareScreen";
+    case StateId::kMakingTabGroupShared:
+      return "MakingTabGroupShared";
+    case StateId::kSharingTabGroupUrl:
+      return "SharingTabGroupUrl";
     case StateId::kShowingManageScreen:
       return "ShowingManageScreen";
     case StateId::kCancel:
@@ -432,21 +436,140 @@ class ShowingShareScreen : public ControllerState {
   void OnEnter(const ErrorInfo& error) override {
     CHECK_EQ(controller->flow().type, FlowType::kShareOrManage);
 
-    // TODO(crbug.com/382557489): Wait for sync to upload the group before
-    // showing the system share sheet.
     controller->delegate()->ShowShareDialog(
         controller->flow().either_id(),
-        base::BindOnce(&ShowingShareScreen::ProcessOutcome,
-                       weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&ShowingShareScreen::OnCollaborationIdCreated,
+                       local_weak_ptr_factory_.GetWeakPtr()));
   }
 
   void OnProcessingFinishedWithSuccess() override {
-    // TODO(crbug.com/383882763): Do a ReadGroup here so that the group is
-    // cached for the UI to pick up.
-    // TODO(crbug.com/383882763): Add support for getting collaboration_id from
-    // ShareKit and call MakeTabGroupShared here.
-    controller->Exit();
+    controller->TransitionTo(StateId::kMakingTabGroupShared);
   }
+
+ private:
+  void OnCollaborationIdCreated(
+      Outcome outcome,
+      std::optional<data_sharing::GroupToken> group_token) {
+    // TODO(haileywang): The following code imitate old behavior to not break
+    // tests. Follow new behavior once all platform adjust to new share
+    // behavior.
+    if (outcome == Outcome::kFailure) {
+      HandleError();
+      return;
+    }
+
+    if (!group_token.has_value() || !group_token.value().IsValid()) {
+      controller->Exit();
+      return;
+    }
+
+    controller->flow().set_share_token(group_token.value());
+    ProcessOutcome(outcome);
+  }
+
+  base::WeakPtrFactory<ShowingShareScreen> local_weak_ptr_factory_{this};
+};
+
+class MakingTabGroupShared : public ControllerState {
+ public:
+  MakingTabGroupShared(StateId id, CollaborationController* controller)
+      : ControllerState(id, controller) {}
+
+  void OnEnter(const ErrorInfo& error) override {
+    CHECK_EQ(controller->flow().type, FlowType::kShareOrManage);
+
+    std::optional<tab_groups::SavedTabGroup> group =
+        controller->tab_group_sync_service()->GetGroup(
+            controller->flow().either_id());
+    if (!group.has_value()) {
+      HandleError();
+      return;
+    }
+
+    const std::optional<tab_groups::LocalTabGroupID>& local_group_id =
+        group.value().local_group_id();
+    CHECK(local_group_id.has_value());
+
+    const data_sharing::GroupToken& group_token =
+        controller->flow().share_token();
+
+    controller->tab_group_sync_service()->MakeTabGroupShared(
+        local_group_id.value(), group_token.group_id.value(),
+        base::BindOnce(&MakingTabGroupShared::ProcessTabGroupSharingResult,
+                       local_weak_ptr_factory_.GetWeakPtr()));
+
+    controller->data_sharing_service()->ReadGroupDeprecated(
+        group_token.group_id,
+        base::BindOnce(&MakingTabGroupShared::ProcessGroupDataOrFailureOutcome,
+                       local_weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void OnProcessingFinishedWithSuccess() override {
+    controller->TransitionTo(StateId::kSharingTabGroupUrl);
+  }
+
+ private:
+  void ProcessTabGroupSharingResult(
+      tab_groups::TabGroupSyncService::TabGroupSharingResult result) {
+    if (result !=
+        tab_groups::TabGroupSyncService::TabGroupSharingResult::kSuccess) {
+      HandleError();
+      return;
+    }
+
+    is_make_group_shared_complete_ = true;
+    MaybeProceedFlow();
+  }
+
+  void ProcessGroupDataOrFailureOutcome(
+      const GroupDataOrFailureOutcome& group_outcome) {
+    if (!group_outcome.has_value()) {
+      HandleError();
+      return;
+    }
+
+    is_read_group_complete_ = true;
+    MaybeProceedFlow();
+  }
+
+  void MaybeProceedFlow() {
+    if (is_make_group_shared_complete_ && is_read_group_complete_) {
+      OnProcessingFinishedWithSuccess();
+    }
+  }
+
+  bool is_make_group_shared_complete_{false};
+  bool is_read_group_complete_{false};
+  base::WeakPtrFactory<MakingTabGroupShared> local_weak_ptr_factory_{this};
+};
+
+class SharingTabGroupUrl : public ControllerState {
+ public:
+  SharingTabGroupUrl(StateId id, CollaborationController* controller)
+      : ControllerState(id, controller) {}
+
+  void OnEnter(const ErrorInfo& error) override {
+    CHECK_EQ(controller->flow().type, FlowType::kShareOrManage);
+
+    const data_sharing::GroupToken& group_token =
+        controller->flow().share_token();
+    data_sharing::GroupData group_data = data_sharing::GroupData();
+    group_data.group_token = group_token;
+
+    auto url =
+        controller->data_sharing_service()->GetDataSharingUrl(group_data);
+    if (!url) {
+      HandleError();
+      return;
+    }
+
+    controller->delegate()->OnUrlReadyToShare(
+        group_token.group_id, *url,
+        base::BindOnce(&SharingTabGroupUrl::ProcessOutcome,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void OnProcessingFinishedWithSuccess() override { controller->Exit(); }
 };
 
 class ShowingManageScreen : public ControllerState {
@@ -480,6 +603,7 @@ class ErrorState : public ControllerState {
 
   void ProcessOutcome(Outcome outcome) override { controller->Exit(); }
 
+ private:
   base::WeakPtrFactory<ErrorState> local_weak_ptr_factory_{this};
 };
 
@@ -577,6 +701,10 @@ std::unique_ptr<ControllerState> CollaborationController::CreateStateObject(
       return std::make_unique<OpeningLocalTabGroupState>(state, this);
     case StateId::kShowingShareScreen:
       return std::make_unique<ShowingShareScreen>(state, this);
+    case StateId::kMakingTabGroupShared:
+      return std::make_unique<MakingTabGroupShared>(state, this);
+    case StateId::kSharingTabGroupUrl:
+      return std::make_unique<SharingTabGroupUrl>(state, this);
     case StateId::kShowingManageScreen:
       return std::make_unique<ShowingManageScreen>(state, this);
     case StateId::kCancel:

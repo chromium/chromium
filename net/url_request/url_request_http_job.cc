@@ -1119,7 +1119,8 @@ void URLRequestHttpJob::OnSetCookieResult(const CookieOptions& options,
         NetLogEventType::COOKIE_INCLUSION_STATUS,
         [&](NetLogCaptureMode capture_mode) {
           return CookieInclusionStatusNetLogParams(
-              "store", cookie ? cookie.value().Name() : "",
+              cookie && cookie->IsExpired(base::Time::Now()) ? "expire" : "store",
+              cookie ? cookie.value().Name() : "",
               cookie ? cookie.value().Domain() : "",
               cookie ? cookie.value().Path() : "",
               cookie ? cookie.value().PartitionKey() : std::nullopt,

@@ -178,11 +178,6 @@ class WebAppRegistrar {
   // - The length of the scope of the potential controlling app.
   std::optional<webapps::AppId> FindBestAppWithUrlInScope(
       const GURL& url,
-      std::initializer_list<proto::InstallState> allowed_states) const;
-  // DEPRECATED: Use `FindBestAppWithUrlInScope(GURL, WebAppFilter)` instead.
-  // Same as above but with more filtering options.
-  std::optional<webapps::AppId> FindBestAppWithUrlInScope(
-      const GURL& url,
       std::initializer_list<proto::InstallState> allowed_states,
       AppFilterOptions options) const;
 

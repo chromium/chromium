@@ -55,6 +55,9 @@ class CollaborationControllerDelegate {
   // Callback for informing the service whether a the UI was displayed
   // successfully.
   using ResultCallback = base::OnceCallback<void(Outcome)>;
+  using ResultWithGroupTokenCallback =
+      base::OnceCallback<void(CollaborationControllerDelegate::Outcome,
+                              std::optional<data_sharing::GroupToken>)>;
 
   // Request to initialize UI.
   virtual void PrepareFlowUI(base::OnceCallback<void()> exit_callback,
@@ -81,7 +84,13 @@ class CollaborationControllerDelegate {
 
   // Request to show the share dialog.
   virtual void ShowShareDialog(const tab_groups::EitherGroupID& either_id,
-                               ResultCallback result) = 0;
+                               ResultWithGroupTokenCallback result) = 0;
+
+  // Request to show the share sheet after the share dialog successfully creates
+  // the shared tab group.
+  virtual void OnUrlReadyToShare(const data_sharing::GroupId& group_id,
+                                 const GURL& url,
+                                 ResultCallback result) = 0;
 
   // Request to show the manage dialog.
   virtual void ShowManageDialog(const tab_groups::EitherGroupID& either_id,

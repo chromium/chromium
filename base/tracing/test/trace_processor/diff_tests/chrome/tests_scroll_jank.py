@@ -730,6 +730,32 @@ class ChromeScrollJankStdlib(TestSuite):
         -2143831735395280153,11.111000,10469,1292554075561210,10481,1292554076592210,334000,10488,1292554076926210,301000,1292554077227210,177423,6,10494,1292554077404633,138000,1292554077542633,280000,10506,1292554077822633,988000,10509,1292554078810633,1377498,7,10516,1292554080188131,494000,1292554080682131,11265139,1292554091947270,16096000,1292554108043270
         """))
 
+  def test_chrome_scroll_frame_info(self):
+        return DiffTestBlueprint(
+        trace=DataPath('scroll_m132.pftrace'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
+
+        WITH
+        -- Filter out last frames as the trace finished earlier then when they have been
+        -- presented.
+        frames AS (
+          SELECT * FROM chrome_scroll_frame_info
+          WHERE first_input_generation_ts <= 3030301718162132
+        )
+        SELECT
+          (SELECT COUNT(*) FROM frames) AS frame_count,
+          -- crbug.com/380286381: EventLatencies with slice ids 14862, 14937, 14987
+          -- are presented at the same time as EventLatency 14768, but it's not handled
+          -- correctly yet.
+          (SELECT COUNT(DISTINCT id) FROM frames) AS unique_frame_count
+        """,
+        out=Csv("""
+        "frame_count","unique_frame_count"
+        262,259
+        """))
+
+
   def test_chrome_scroll_update_info(self):
         return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),

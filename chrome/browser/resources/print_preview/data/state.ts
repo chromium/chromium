@@ -8,12 +8,13 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 export enum State {
   NOT_READY = 0,
   READY = 1,
-  HIDDEN = 2,
-  PRINTING = 3,
-  SYSTEM_DIALOG = 4,
-  ERROR = 5,
-  FATAL_ERROR = 6,
-  CLOSING = 7,
+  PRINT_PENDING = 2,
+  HIDDEN = 3,
+  PRINTING = 4,
+  SYSTEM_DIALOG = 5,
+  ERROR = 6,
+  FATAL_ERROR = 7,
+  CLOSING = 8,
 }
 
 /**
@@ -68,11 +69,16 @@ export class PrintPreviewStateElement extends PolymerElement {
             this.state === State.ERROR || this.state === State.NOT_READY ||
             this.state === State.PRINTING);
         break;
-      case (State.HIDDEN):
+      case (State.PRINT_PENDING):
         assert(this.state === State.READY);
         break;
+      case (State.HIDDEN):
+        assert(this.state === State.PRINT_PENDING);
+        break;
       case (State.PRINTING):
-        assert(this.state === State.READY || this.state === State.HIDDEN);
+        assert(
+            this.state === State.READY || this.state === State.HIDDEN ||
+            this.state === State.PRINT_PENDING);
         break;
       case (State.SYSTEM_DIALOG):
         assert(

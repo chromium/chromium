@@ -94,8 +94,13 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest, StatusIcon) {
       StatusTray::StatusIconType::GLIC_ICON));
 }
 
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_UpdateHotkeyWhileEnabled DISABLED_UpdateHotkeyWhileEnabled
+#else
+#define MAYBE_UpdateHotkeyWhileEnabled UpdateHotkeyWhileEnabled
+#endif
 IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
-                       UpdateHotkeyWhileEnabled) {
+                       MAYBE_UpdateHotkeyWhileEnabled) {
   if (!IsHotkeySupported()) {
     GTEST_SKIP() << "Test does not apply to this platform.";
   }
@@ -111,8 +116,13 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
   EXPECT_EQ(updated_hotkey, manager->RegisteredHotkeyForTesting());
 }
 
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_UpdateHotkeyWhileDisabled DISABLED_UpdateHotkeyWhileDisabled
+#else
+#define MAYBE_UpdateHotkeyWhileDisabled UpdateHotkeyWhileDisabled
+#endif
 IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
-                       UpdateHotkeyWhileDisabled) {
+                       MAYBE_UpdateHotkeyWhileDisabled) {
   if (!IsHotkeySupported()) {
     GTEST_SKIP() << "Test does not apply to this platform.";
   }

@@ -1008,7 +1008,7 @@ void PdfInkModule::RecordStrokePosition(const gfx::PointF& position,
   base::TimeDelta time_diff = timestamp - state.start_time.value();
   auto result = state.inputs.back().Append(
       CreateInkStrokeInput(tool_type, canonical_position, time_diff));
-  CHECK(result.ok());
+  CHECK(result.ok()) << result.message();
 }
 
 void PdfInkModule::ApplyUndoRedoCommands(

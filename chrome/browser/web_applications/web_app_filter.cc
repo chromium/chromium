@@ -4,7 +4,12 @@
 
 #include "chrome/browser/web_applications/web_app_filter.h"
 
+#include "base/check_is_test.h"
+
 namespace web_app {
+
+WebAppFilter::WebAppFilter() = default;
+WebAppFilter::WebAppFilter(const WebAppFilter&) = default;
 
 // static
 WebAppFilter WebAppFilter::OpensInBrowserTab() {
@@ -42,6 +47,13 @@ WebAppFilter WebAppFilter::IsCraftedApp() {
 }
 
 // static
+WebAppFilter WebAppFilter::IsSuggestedApp() {
+  WebAppFilter filter;
+  filter.is_suggested_app_ = true;
+  return filter;
+}
+
+// static
 WebAppFilter WebAppFilter::DisplaysBadgeOnOs() {
   WebAppFilter filter;
   filter.displays_badge_on_os_ = true;
@@ -59,6 +71,14 @@ WebAppFilter WebAppFilter::SupportsOsNotifications() {
 WebAppFilter WebAppFilter::InstalledInChrome() {
   WebAppFilter filter;
   filter.installed_in_chrome_ = true;
+  return filter;
+}
+
+// static
+WebAppFilter WebAppFilter::InstalledInOperatingSystemForTesting() {
+  CHECK_IS_TEST();
+  WebAppFilter filter;
+  filter.installed_in_os_ = true;
   return filter;
 }
 

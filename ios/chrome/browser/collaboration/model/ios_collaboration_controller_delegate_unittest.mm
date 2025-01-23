@@ -239,10 +239,12 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
 // Tests `ShowShareDialog` with a valid tabGroup.
 TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogValid) {
   InitDelegate();
-  base::MockCallback<CollaborationControllerDelegate::ResultCallback>
+  base::MockCallback<
+      CollaborationControllerDelegate::ResultWithGroupTokenCallback>
       mock_callback;
-  EXPECT_CALL(mock_callback,
-              Run(CollaborationControllerDelegate::Outcome::kSuccess));
+  EXPECT_CALL(
+      mock_callback,
+      Run(CollaborationControllerDelegate::Outcome::kSuccess, testing::_));
 
   delegate_->ShowShareDialog(tab_group_->tab_group_id(), mock_callback.Get());
 
@@ -262,10 +264,12 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogInvalid) {
   // Delete the tabGroup.
   web_state_list_->DeleteGroup(tab_group_);
 
-  base::MockCallback<CollaborationControllerDelegate::ResultCallback>
+  base::MockCallback<
+      CollaborationControllerDelegate::ResultWithGroupTokenCallback>
       mock_callback;
-  EXPECT_CALL(mock_callback,
-              Run(CollaborationControllerDelegate::Outcome::kFailure));
+  EXPECT_CALL(
+      mock_callback,
+      Run(CollaborationControllerDelegate::Outcome::kFailure, testing::_));
   delegate_->ShowShareDialog(tab_group_id, mock_callback.Get());
   EXPECT_FALSE(base_view_controller_.presentedViewController);
 }

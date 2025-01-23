@@ -1162,6 +1162,10 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPrintButtonTest, PDFPrintVisiblePreview) {
   RunTestCase("PDFPrintVisiblePreview");
 }
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrintButtonTest, PDFPrintCancelPreview) {
+  RunTestCase("PDFPrintCancelPreview");
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PrintPreviewPrintButtonTest,
                        SaveToDriveVisiblePreviewCros) {

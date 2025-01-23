@@ -223,14 +223,8 @@ void AppBannerManagerDesktop::OnWebAppInstalledWithOsHooks(
   if (!validated_url()) {
     return;
   }
-  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   std::optional<webapps::AppId> app_id = registrar().FindBestAppWithUrlInScope(
-      validated_url().value(),
-      {
-          web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-          web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-      });
+      validated_url().value(), web_app::WebAppFilter::InstalledInChrome());
   if (app_id.has_value() && *app_id == installed_app_id &&
       registrar().GetAppUserDisplayMode(*app_id) ==
           web_app::mojom::UserDisplayMode::kStandalone) {

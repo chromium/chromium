@@ -856,7 +856,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
 // Verifies that if the cache entry contains inconsistent extension version,
 // the crx installation fails and download of a new crx file is attempted.
 //
-// TODO(crbug.com/40236711): Fix this test. It doesn't alway pass.
+// TODO(crbug.com/40236711): Fix this test. It doesn't always pass.
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
                        DISABLED_CrxVersionInconsistencyInCache) {
   base::ScopedAllowBlockingForTesting allow_io;
@@ -2264,14 +2264,9 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyTest, StartUpInstallation) {
       web_app::WebAppProvider::GetForTest(browser()->profile())
           ->registrar_unsafe();
   web_app::WebAppTestInstallObserver install_observer(browser()->profile());
-  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
       policy_app_url_,
-      {
-          web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-          web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-      });
+      web_app::WebAppFilter::InstalledInOperatingSystemForTesting());
   if (!app_id) {
     app_id = install_observer.BeginListeningAndWait();
   }
@@ -2303,14 +2298,9 @@ IN_PROC_BROWSER_TEST_F(
       web_app::WebAppProvider::GetForTest(browser()->profile())
           ->registrar_unsafe();
   web_app::WebAppTestInstallObserver install_observer(browser()->profile());
-  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
       policy_app_url_,
-      {
-          web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-          web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-      });
+      web_app::WebAppFilter::InstalledInOperatingSystemForTesting());
   if (!app_id) {
     app_id = install_observer.BeginListeningAndWait();
   }
@@ -2342,14 +2332,9 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicySAATest,
       web_app::WebAppProvider::GetForTest(browser()->profile())
           ->registrar_unsafe();
   web_app::WebAppTestInstallObserver install_observer(browser()->profile());
-  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
       policy_app_url_,
-      {
-          web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-          web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-      });
+      web_app::WebAppFilter::InstalledInOperatingSystemForTesting());
   if (!app_id) {
     app_id = install_observer.BeginListeningAndWait();
   }
@@ -2378,14 +2363,9 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyWithAppFallbackNameSAATest,
       web_app::WebAppProvider::GetForTest(browser()->profile())
           ->registrar_unsafe();
   web_app::WebAppTestInstallObserver install_observer(browser()->profile());
-  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
       policy_app_url_,
-      {
-          web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-          web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-      });
+      web_app::WebAppFilter::InstalledInOperatingSystemForTesting());
   if (!app_id) {
     app_id = install_observer.BeginListeningAndWait();
   }
@@ -2419,14 +2399,9 @@ IN_PROC_BROWSER_TEST_F(
           ->registrar_unsafe();
   web_app::WebAppTestInstallWithOsHooksObserver install_observer(
       browser()->profile());
-  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
       policy_app_url_,
-      {
-          web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-          web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-      });
+      web_app::WebAppFilter::InstalledInOperatingSystemForTesting());
   if (!app_id) {
     app_id = install_observer.BeginListeningAndWait();
   }

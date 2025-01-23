@@ -16,7 +16,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
-#include "components/optimization_guide/proto/icon_view_metadata.pb.h"
+#include "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -28,6 +28,28 @@
 
 namespace contextual_cueing {
 
+namespace {
+
+// Returns whether the `config` matches all the current cueing condition.
+bool DidMatchCueingConditions(
+    const optimization_guide::proto::GlicCueingConfiguration& config) {
+  for (const auto& condition : config.conditions()) {
+    switch (condition.signal()) {
+      case optimization_guide::proto::
+          CONTEXTUAL_CUEING_CLIENT_SIGNAL_UNSPECIFIED:
+      case optimization_guide::proto::
+          CONTEXTUAL_CUEING_CLIENT_SIGNAL_PDF_PAGE_COUNT:
+      case optimization_guide::proto::
+          CONTEXTUAL_CUEING_CLIENT_SIGNAL_CONTENT_LENGTH_WORD_COUNT:
+        // TODO: crbug.com/389751174 - Implement checking the client signals.
+        return false;
+    }
+  }
+  return true;
+}
+
+}  // namespace
+
 ContextualCueingHelper::ContextualCueingHelper(
     content::WebContents* web_contents,
     OptimizationGuideKeyedService* ogks)
@@ -35,7 +57,7 @@ ContextualCueingHelper::ContextualCueingHelper(
       content::WebContentsUserData<ContextualCueingHelper>(*web_contents),
       optimization_guide_keyed_service_(ogks) {
   optimization_guide_keyed_service_->RegisterOptimizationTypes(
-      {optimization_guide::proto::OPTIMIZATION_GUIDE_ICON_VIEW});
+      {optimization_guide::proto::GLIC_CONTEXTUAL_CUEING});
 }
 
 ContextualCueingHelper::~ContextualCueingHelper() = default;
@@ -56,13 +78,19 @@ void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
   optimization_guide::OptimizationMetadata metadata;
   auto decision = optimization_guide_keyed_service_->CanApplyOptimization(
       web_contents()->GetLastCommittedURL(),
-      optimization_guide::proto::OPTIMIZATION_GUIDE_ICON_VIEW, &metadata);
+      optimization_guide::proto::GLIC_CONTEXTUAL_CUEING, &metadata);
   if (decision == optimization_guide::OptimizationGuideDecision::kTrue &&
       !metadata.empty()) {
     auto parsed = metadata.ParsedMetadata<
-        optimization_guide::proto::OptimizationGuideIconViewMetadata>();
-    if (parsed->has_cue_label()) {
-      last_navigation_cue_label_ = parsed->cue_label();
+        optimization_guide::proto::GlicContextualCueingMetadata>();
+
+    for (const auto& config : parsed->cueing_configurations()) {
+      if (!config.has_cue_label()) {
+        continue;
+      }
+      if (DidMatchCueingConditions(config)) {
+        last_navigation_cue_label_ = config.cue_label();
+      }
     }
   }
 

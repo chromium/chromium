@@ -417,10 +417,11 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
     } else if (this.state === State.CLOSING) {
       this.remove();
       this.nativeLayer_!.dialogClose(this.cancelled_);
-    } else if (this.state === State.HIDDEN) {
+    } else if (this.state === State.PRINT_PENDING) {
       if (this.destination_.type !== PrinterType.PDF_PRINTER) {
         // Only hide the preview for local, non PDF destinations.
         this.nativeLayer_!.hidePreview();
+        this.$.state.transitTo(State.HIDDEN);
       }
     } else if (this.state === State.PRINTING) {
       // <if expr="is_chromeos">
@@ -455,7 +456,8 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
     }
 
     this.$.state.transitTo(
-        this.$.previewArea.previewLoaded() ? State.PRINTING : State.HIDDEN);
+        this.$.previewArea.previewLoaded() ? State.PRINTING :
+                                             State.PRINT_PENDING);
   }
 
   private onCancelRequested_() {
@@ -555,7 +557,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
     switch (this.previewState_) {
       case PreviewAreaState.DISPLAY_PREVIEW:
       case PreviewAreaState.OPEN_IN_PREVIEW_LOADED:
-        if (this.state === State.HIDDEN) {
+        if (this.state === State.PRINT_PENDING || this.state === State.HIDDEN) {
           this.$.state.transitTo(State.PRINTING);
         }
         break;

@@ -173,15 +173,21 @@ void CollaborationControllerDelegateDesktop::ShowJoinDialog(
 
 void CollaborationControllerDelegateDesktop::ShowShareDialog(
     const tab_groups::EitherGroupID& either_id,
-    ResultCallback result) {
+    ResultWithGroupTokenCallback result) {
   if (!browser_) {
     return;
   }
   CHECK(std::holds_alternative<tab_groups::LocalTabGroupID>(either_id));
   DataSharingBubbleController::GetOrCreateForBrowser(browser_)->Show(
       std::get<tab_groups::LocalTabGroupID>(either_id));
-  std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
+  std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess,
+                        std::nullopt);
 }
+
+void CollaborationControllerDelegateDesktop::OnUrlReadyToShare(
+    const data_sharing::GroupId& group_id,
+    const GURL& url,
+    ResultCallback result) {}
 
 void CollaborationControllerDelegateDesktop::ShowManageDialog(
     const tab_groups::EitherGroupID& either_id,

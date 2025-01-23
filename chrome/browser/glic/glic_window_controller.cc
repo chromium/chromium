@@ -41,9 +41,8 @@ namespace glic {
 DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
 
 namespace {
-// Default value for how close the top-right corner of the glic window must be
-// to a browser's glic button to attach to said browser.
-constexpr static int kAttachmentDistanceThreshold = 50;
+// Default value for adding a buffer to the attachment zone.
+constexpr static int kAttachmentBuffer = 20;
 
 constexpr static int kWidgetDefaultWidth = 400;
 constexpr static int kWidgetTopBarHeight = 80;
@@ -256,15 +255,23 @@ void GlicWindowController::OnWidgetBoundsChanged(views::Widget* widget,
 }
 
 void GlicWindowController::Show(views::View* glic_button_view) {
-  // Set the browser to attach to if the tab strip button was pressed.
-  attached_browser_ =
-      (glic_button_view) ? chrome::FindBrowserWithWindow(
+  // TODO(crbug.com/391416274): Pass in Browser* explicitly.
+  Browser* browser = (glic_button_view)
+                         ? chrome::FindBrowserWithWindow(
                                glic_button_view->GetWidget()->GetNativeWindow())
                          : nullptr;
 
   if (state_ == State::kOpen) {
-    if (attached_browser_) {
-      AttachToBrowser(attached_browser_);
+    if (browser) {
+      if (attached_browser_ == browser) {
+        // glic is already showing and attached to the right browser. Nothing to
+        // do.
+        return;
+      }
+      // glic is already showing but either detached or not attached to the
+      // right browser.
+      AttachToBrowser(browser);
+      return;
     } else {
       // TODO(crbug.com/379943498): Handle os entry point when already open.
     }
@@ -274,6 +281,9 @@ void GlicWindowController::Show(views::View* glic_button_view) {
     return;
   }
 
+  // At this point State must be kClosed, and all glic window state must be
+  // unset.
+  CHECK(!attached_browser_);
   state_ = State::kOpenAnimation;
 
   if (!contents_) {
@@ -294,7 +304,6 @@ void GlicWindowController::Show(views::View* glic_button_view) {
     // show up in a detached state.
     top_right_point = GetTopRightPositionForDetachedGlicWindow();
     int padding = 50;
-    attached_browser_ = nullptr;
     final_widget_bounds_.set_x(top_right_point.x() -
                                final_widget_bounds_.width() - padding);
     final_widget_bounds_.set_y(top_right_point.y() + padding);
@@ -305,7 +314,6 @@ void GlicWindowController::Show(views::View* glic_button_view) {
     // window.
     top_right_point =
         GetTopRightPositionForAttachedGlicWindow(glic_button_view);
-    // TODO(crbug.com/391416274): Pass in Browser* explicitly.
     glic_window_widget_initial_rect = glic_button_view->GetBoundsInScreen();
   }
 
@@ -313,11 +321,9 @@ void GlicWindowController::Show(views::View* glic_button_view) {
       CreateAttachedWidget(profile_, glic_window_widget_initial_rect);
   glic_widget_observation_.Observe(glic_attached_widget_.get());
 
-  if (attached_browser_) {
+  if (browser) {
     GetGlicWidget()->Show();
-    // TODO(crbug.com/391402352): This is not quite correct as it does
-    // unnecessary work.
-    AttachToBrowser(attached_browser_);
+    AttachToBrowser(browser);
     // Set target bounds for animation and run the open attached animation.
     gfx::Rect target_bounds = GetGlicWidget()->GetWindowBoundsInScreen();
     int final_x = top_right_point.x() - final_widget_bounds_.width();
@@ -660,6 +666,8 @@ void GlicWindowController::HandleAttachmentToBrowserWindows(
           Profile::FromBrowserContext(glic_browser_context))) {
     return;
   }
+
+  gfx::Point glic_top_right = widget->GetWindowBoundsInScreen().top_right();
   // Loops through all browsers in activation order with the latest accessed
   // browser first.
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
@@ -673,16 +681,19 @@ void GlicWindowController::HandleAttachmentToBrowserWindows(
     CHECK(tab_strip_region_view);
     CHECK(tab_strip_region_view->GetGlicButton());
 
-    gfx::Rect glic_button_rect =
-        tab_strip_region_view->GetGlicButton()->GetBoundsInScreen();
+    // Define attachment zone as the right of the tab strip. It either is the
+    // width of the widget or 1/3 of the tab strip, whichever is smaller.
+    gfx::Rect attachment_zone = tab_strip_region_view->GetBoundsInScreen();
+    int width = std::min(attachment_zone.width() / 3, kWidgetDefaultWidth);
+    attachment_zone.SetByBounds(attachment_zone.right() - width,
+                                attachment_zone.y() - kAttachmentBuffer,
+                                attachment_zone.right() + kAttachmentBuffer,
+                                attachment_zone.bottom());
 
-    float corner_distance = (glic_button_rect.CenterPoint() -
-                             widget->GetWindowBoundsInScreen().top_right())
-                                .Length();
     // If there is no active drag (i.e. the previous drag has ended)
     // then determine whether the glic window should be attached or detached
     // from the browser window.
-    if (corner_distance < kAttachmentDistanceThreshold) {
+    if (attachment_zone.Contains(glic_top_right)) {
       AttachToBrowser(browser);
       return;
     }

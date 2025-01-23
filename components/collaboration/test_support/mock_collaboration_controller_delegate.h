@@ -33,9 +33,17 @@ class MockCollaborationControllerDelegate
                const data_sharing::SharedDataPreview& preview_data,
                ResultCallback result),
               (override));
+  MOCK_METHOD(
+      void,
+      ShowShareDialog,
+      (const tab_groups::EitherGroupID& either_id,
+       base::OnceCallback<
+           void(Outcome, std::optional<data_sharing::GroupToken>)> result),
+      (override));
   MOCK_METHOD(void,
-              ShowShareDialog,
-              (const tab_groups::EitherGroupID& either_id,
+              OnUrlReadyToShare,
+              (const data_sharing::GroupId& group_id,
+               const GURL& url,
                ResultCallback result),
               (override));
   MOCK_METHOD(void,
