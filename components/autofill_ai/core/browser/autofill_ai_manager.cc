@@ -120,7 +120,7 @@ base::flat_map<autofill::FieldGlobalId, bool>
 AutofillAiManager::GetFieldFillingEligibilityMap(
     const autofill::FormData& form_data) {
   autofill::FormStructure* form_structure =
-      client_->GetCachedFormStructure(form_data);
+      client_->GetCachedFormStructure(form_data.global_id());
 
   if (!form_structure) {
     return base::flat_map<autofill::FieldGlobalId, bool>();
@@ -137,7 +137,7 @@ base::flat_map<autofill::FieldGlobalId, bool>
 AutofillAiManager::GetFieldValueSensitivityMap(
     const autofill::FormData& form_data) {
   autofill::FormStructure* form_structure =
-      client_->GetCachedFormStructure(form_data);
+      client_->GetCachedFormStructure(form_data.global_id());
 
   if (!form_structure) {
     return base::flat_map<autofill::FieldGlobalId, bool>();

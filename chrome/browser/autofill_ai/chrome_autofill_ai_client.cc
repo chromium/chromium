@@ -224,14 +224,14 @@ bool ChromeAutofillAiClient::IsUserEligible() {
 }
 
 autofill::FormStructure* ChromeAutofillAiClient::GetCachedFormStructure(
-    const autofill::FormData& form_data) {
+    const autofill::FormGlobalId& form_id) {
   autofill::ContentAutofillDriver* driver =
       autofill::ContentAutofillDriver::GetForRenderFrameHost(
           web_contents_->GetPrimaryMainFrame());
   if (!driver) {
     return nullptr;
   }
-  return driver->GetAutofillManager().FindCachedFormById(form_data.global_id());
+  return driver->GetAutofillManager().FindCachedFormById(form_id);
 }
 
 std::u16string ChromeAutofillAiClient::GetAutofillNameFillingValue(

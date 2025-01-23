@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/data_manager/entities/entity_data_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/user_annotations/user_annotations_types.h"
 
 class GURL;
@@ -96,11 +97,11 @@ class AutofillAiClient {
   // Returns whether the current user is eligible for Autofill AI.
   virtual bool IsUserEligible() = 0;
 
-  // Returns a pointer to a FormStructure for the corresponding `form_data`
+  // Returns a pointer to a `FormStructure` for the corresponding `form_id`
   // from the Autofill cache. Can be a `nullptr` when the structure was not
   // found or if the driver is not available.
   virtual autofill::FormStructure* GetCachedFormStructure(
-      const autofill::FormData& form_data) = 0;
+      const autofill::FormGlobalId& form_id) = 0;
 
   // Returns the Autofill filling value for `field` of type `field_type` for the
   // Autofill profile identified by `autofill_profile_guid`, if any. Only
