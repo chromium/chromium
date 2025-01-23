@@ -12,7 +12,7 @@
 namespace {
 // Minimum amount of time for a normal/incognito transition to be considered.
 constexpr base::TimeDelta kMinimumDelay = base::Seconds(10);
-}
+}  // namespace
 
 @interface IncognitoUsageAppStateAgent ()
 

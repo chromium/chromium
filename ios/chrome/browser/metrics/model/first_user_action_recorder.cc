@@ -185,8 +185,9 @@ void FirstUserActionRecorder::RecordAction(
 bool FirstUserActionRecorder::ShouldProcessAction(
     const std::string& action_name,
     base::TimeTicks action_time) {
-  if (recorded_action_)
+  if (recorded_action_) {
     return false;
+  }
 
   if (!action_pending_ &&
       ArrayContainsString(kRethrownActions, std::size(kRethrownActions),
@@ -216,8 +217,9 @@ bool FirstUserActionRecorder::ArrayContainsString(const char* to_search[],
                                                   const size_t to_search_size,
                                                   const char* to_find) {
   for (size_t i = 0; i < to_search_size; ++i) {
-    if (strcmp(to_find, to_search[i]) == 0)
+    if (strcmp(to_find, to_search[i]) == 0) {
       return true;
+    }
   }
   return false;
 }

@@ -20,7 +20,7 @@ const char kPageNavigationUkmEvent[] = "MainFrameNavigation";
 const char kPageNavigationUkmMetric[] = "DidCommit";
 const char kPageForegroundSessionUkmSearchMatchesEvent[] =
     "PageForegroundSession";
-}
+}  // namespace
 
 class PageloadForegroundDurationTabHelperTest : public PlatformTest {
  protected:

@@ -16,8 +16,7 @@ GoogleGroupsManager* GoogleGroupsManagerFactory::GetForProfile(
 }
 
 // static
-GoogleGroupsManagerFactory*
-GoogleGroupsManagerFactory::GetInstance() {
+GoogleGroupsManagerFactory* GoogleGroupsManagerFactory::GetInstance() {
   static base::NoDestructor<GoogleGroupsManagerFactory> instance;
   return instance.get();
 }

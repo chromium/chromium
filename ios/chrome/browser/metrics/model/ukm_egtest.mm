@@ -316,7 +316,6 @@ using chrome_test_util::SettingsDoneButton;
 }
 // LINT.ThenChange(/chrome/browser/metrics/ukm_browsertest.cc:ClientIdResetWhenConsentRemoved)
 
-
 // Make sure that UKM is disabled when the user is signed out.
 // LINT.IfChange(SingleSignoutCheck)
 - (void)testSingleSyncSignoutCheck {
