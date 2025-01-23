@@ -5,9 +5,12 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BOCA_SPOTLIGHT_SPOTLIGHT_SERVICE_H_
 #define CHROMEOS_ASH_COMPONENTS_BOCA_SPOTLIGHT_SPOTLIGHT_SERVICE_H_
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
+#include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/spotlight/register_screen_request.h"
+#include "chromeos/ash/components/boca/spotlight/update_view_screen_state_request.h"
 #include "chromeos/ash/components/boca/spotlight/view_screen_request.h"
 
 namespace google_apis {
@@ -36,9 +39,19 @@ class SpotlightService {
                               std::string url_base,
                               RegisterScreenRequestCallback callback);
 
+  virtual void UpdateViewScreenState(
+      std::string student_gaia_id,
+      ::boca::ViewScreenConfig::ViewScreenState view_screen_state,
+      std::string url_base,
+      UpdateViewScreenStateRequestCallback callback);
+
   google_apis::RequestSender* sender() { return sender_.get(); }
 
  private:
+  std::optional<std::string> ValidateStudentAndGetDeviceId(
+      ::boca::Session* current_session,
+      const std::string& student_gaia_id);
+
   std::unique_ptr<google_apis::RequestSender> sender_;
 };
 }  // namespace ash::boca
