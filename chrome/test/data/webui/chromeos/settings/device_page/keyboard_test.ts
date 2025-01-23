@@ -4,8 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsKeyboardElement} from 'chrome://os-settings/lazy_load.js';
-import {CrLinkRowElement, DevicePageBrowserProxyImpl, Route, Router, routes, settingMojom, SettingsSliderElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsKeyboardElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrLinkRowElement, Route, SettingsSliderElement} from 'chrome://os-settings/os_settings.js';
+import {DevicePageBrowserProxyImpl, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';

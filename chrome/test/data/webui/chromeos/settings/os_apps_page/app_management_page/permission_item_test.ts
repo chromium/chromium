@@ -5,11 +5,14 @@
 /** @fileoverview Test suite for app-manageemnt-permission-item. */
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppManagementPermissionItemElement, MediaDevicesProxy} from 'chrome://os-settings/lazy_load.js';
-import {AppManagementStore, AppManagementToggleRowElement, CrButtonElement, GeolocationAccessLevel, LocalizedLinkElement, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
-import {App, Permission, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {AppManagementPermissionItemElement} from 'chrome://os-settings/lazy_load.js';
+import {MediaDevicesProxy} from 'chrome://os-settings/lazy_load.js';
+import type {AppManagementToggleRowElement, CrButtonElement, LocalizedLinkElement} from 'chrome://os-settings/os_settings.js';
+import {AppManagementStore, GeolocationAccessLevel, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
+import type {App, Permission} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
-import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
+import type {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {createTriStatePermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
@@ -18,7 +21,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {FakePageHandler} from '../../app_management/fake_page_handler.js';
+import type {FakePageHandler} from '../../app_management/fake_page_handler.js';
 import {addFakeSensor, fakeComponentBrowserProxy, replaceStore, setupFakeHandler} from '../../app_management/test_util.js';
 import {FakeMediaDevices} from '../../fake_media_devices.js';
 import {clearBody} from '../../utils.js';

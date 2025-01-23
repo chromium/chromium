@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AboutPageBrowserProxy, BrowserChannel, ChannelInfo, EndOfLifeInfo, RegulatoryInfo, TpmFirmwareUpdateStatusChangedEvent, UpdateStatus, VersionInfo} from 'chrome://os-settings/os_settings.js';
+import type {AboutPageBrowserProxy, ChannelInfo, EndOfLifeInfo, RegulatoryInfo, TpmFirmwareUpdateStatusChangedEvent, VersionInfo} from 'chrome://os-settings/os_settings.js';
+import {BrowserChannel, UpdateStatus} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import type {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestAboutPageBrowserProxy extends TestBrowserProxy implements

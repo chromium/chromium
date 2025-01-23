@@ -4,9 +4,10 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppNotificationRowElement} from 'chrome://os-settings/lazy_load.js';
-import {appNotificationHandlerMojom, CrToggleElement, setAppNotificationProviderForTesting} from 'chrome://os-settings/os_settings.js';
-import {Permission} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {AppNotificationRowElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrToggleElement} from 'chrome://os-settings/os_settings.js';
+import {appNotificationHandlerMojom, setAppNotificationProviderForTesting} from 'chrome://os-settings/os_settings.js';
+import type {Permission} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {createBoolPermission, getBoolPermissionValue, isBoolValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

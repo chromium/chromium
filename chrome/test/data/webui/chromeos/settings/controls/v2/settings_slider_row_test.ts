@@ -4,7 +4,8 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {SettingsRowElement, SettingsSliderRowElement, SettingsSliderV2Element} from 'chrome://os-settings/os_settings.js';
+import type {SettingsRowElement, SettingsSliderV2Element} from 'chrome://os-settings/os_settings.js';
+import {SettingsSliderRowElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

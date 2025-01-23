@@ -5,8 +5,9 @@
 import 'chrome://os-settings/lazy_load.js';
 import 'chrome://os-settings/os_settings.js';
 
-import {SettingsMultideviceSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {MultiDeviceBrowserProxyImpl, MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubFeatureAccessStatus, Router, routes, setContactManagerForTesting, setNearbyShareSettingsForTesting, settingMojom, SettingsMultidevicePageElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsMultideviceSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import type {MultiDevicePageContentData, SettingsMultidevicePageElement} from 'chrome://os-settings/os_settings.js';
+import {MultiDeviceBrowserProxyImpl, MultiDeviceFeature, MultiDeviceFeatureState, MultiDeviceSettingsMode, PhoneHubFeatureAccessStatus, Router, routes, setContactManagerForTesting, setNearbyShareSettingsForTesting, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';

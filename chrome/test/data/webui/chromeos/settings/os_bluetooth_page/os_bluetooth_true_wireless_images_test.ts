@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsBluetoothTrueWirelessImagesElement} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsBluetoothTrueWirelessImagesElement} from 'chrome://os-settings/lazy_load.js';
 import {BatteryType} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
 import {DeviceConnectionState} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

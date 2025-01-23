@@ -4,8 +4,10 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {DisableTouchpadMode, SettingsCursorAndTouchpadPageElement} from 'chrome://os-settings/lazy_load.js';
-import {createRouterForTesting, CrLinkRowElement, CrSettingsPrefs, DevicePageBrowserProxyImpl, Router, routes, settingMojom, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsCursorAndTouchpadPageElement} from 'chrome://os-settings/lazy_load.js';
+import {DisableTouchpadMode} from 'chrome://os-settings/lazy_load.js';
+import type {CrLinkRowElement, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {createRouterForTesting, CrSettingsPrefs, DevicePageBrowserProxyImpl, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import type {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

@@ -4,8 +4,10 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {MediaDevicesProxy, PrivacyHubBrowserProxyImpl, SettingsPrivacyHubSubpage} from 'chrome://os-settings/lazy_load.js';
-import {CrLinkRowElement, CrToggleElement, GeolocationAccessLevel, MetricsConsentBrowserProxyImpl, OsSettingsPrivacyPageElement, PaperTooltipElement, PrivacyHubSensorSubpageUserAction, Router, routes, SecureDnsMode, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsPrivacyHubSubpage} from 'chrome://os-settings/lazy_load.js';
+import {MediaDevicesProxy, PrivacyHubBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import type {CrLinkRowElement, CrToggleElement, OsSettingsPrivacyPageElement, PaperTooltipElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {GeolocationAccessLevel, MetricsConsentBrowserProxyImpl, PrivacyHubSensorSubpageUserAction, Router, routes, SecureDnsMode, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -15,7 +17,7 @@ import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {FakeMediaDevices} from '../fake_media_devices.js';
-import {FakeMetricsPrivate} from '../fake_metrics_private.js';
+import type {FakeMetricsPrivate} from '../fake_metrics_private.js';
 import {clearBody} from '../utils.js';
 
 import {createFakeMetricsPrivate} from './privacy_hub_app_permission_test_util.js';

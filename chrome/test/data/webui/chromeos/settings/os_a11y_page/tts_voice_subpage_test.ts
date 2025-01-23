@@ -4,8 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsTtsVoiceSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {Router, routes, TtsVoiceSubpageBrowserProxy, TtsVoiceSubpageBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
+import type {SettingsTtsVoiceSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import type {TtsVoiceSubpageBrowserProxy} from 'chrome://os-settings/os_settings.js';
+import {Router, routes, TtsVoiceSubpageBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

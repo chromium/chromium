@@ -4,16 +4,18 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppManagementPinToShelfItemElement, AppManagementPwaDetailViewElement, AppManagementSubAppsItemElement} from 'chrome://os-settings/lazy_load.js';
-import {AppManagementStore, AppManagementToggleRowElement, CrToggleElement, Router, updateSelectedAppId, updateSubAppToParentAppId} from 'chrome://os-settings/os_settings.js';
-import {App, InstallReason} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
+import type {AppManagementPinToShelfItemElement, AppManagementPwaDetailViewElement, AppManagementSubAppsItemElement} from 'chrome://os-settings/lazy_load.js';
+import type {AppManagementToggleRowElement, CrToggleElement} from 'chrome://os-settings/os_settings.js';
+import {AppManagementStore, Router, updateSelectedAppId, updateSubAppToParentAppId} from 'chrome://os-settings/os_settings.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {InstallReason} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {FakePageHandler} from '../../app_management/fake_page_handler.js';
+import type {FakePageHandler} from '../../app_management/fake_page_handler.js';
 import {getPermissionCrToggleByType, getPermissionToggleByType, replaceBody, replaceStore, setupFakeHandler} from '../../app_management/test_util.js';
 
 suite('<app-management-pwa-detail-view>', () => {

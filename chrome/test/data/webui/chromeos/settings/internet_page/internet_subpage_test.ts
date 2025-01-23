@@ -4,15 +4,17 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CellularNetworksListElement, NetworkAlwaysOnVpnElement, NetworkListElement, SettingsInternetSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {Router, routes, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type {CellularNetworksListElement, NetworkAlwaysOnVpnElement, NetworkListElement, SettingsInternetSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {ESimManagerRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
-import {AlwaysOnVpnMode, InhibitReason, NetworkStateProperties, NetworkTypeStateProperties, ProxyMode, SIMInfo, SuppressionType, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {ESimManagerRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import type {NetworkStateProperties, NetworkTypeStateProperties, SIMInfo} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {AlwaysOnVpnMode, InhibitReason, ProxyMode, SuppressionType, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeESimManagerRemote} from 'chrome://webui-test/chromeos/cellular_setup/fake_esim_manager_remote.js';

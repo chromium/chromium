@@ -4,10 +4,12 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {KeyboardShortcutBanner, sanitizeInnerHtml} from 'chrome://os-settings/lazy_load.js';
+import type {KeyboardShortcutBanner} from 'chrome://os-settings/lazy_load.js';
+import {sanitizeInnerHtml} from 'chrome://os-settings/lazy_load.js';
 import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
-import {ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
-import {MetaKey, Modifier, ShortcutLabelProperties} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
+import type {ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
+import type {ShortcutLabelProperties} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
+import {MetaKey, Modifier} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';

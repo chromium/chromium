@@ -5,8 +5,9 @@
 import 'chrome://os-settings/lazy_load.js';
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {SettingsPerDeviceKeyboardSubsectionElement} from 'chrome://os-settings/lazy_load.js';
-import {CrLinkRowElement, FakeInputDeviceSettingsProvider, fakeKeyboards, Keyboard, MetaKey, PolicyStatus, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsPerDeviceKeyboardSubsectionElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrLinkRowElement, Keyboard, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {FakeInputDeviceSettingsProvider, fakeKeyboards, MetaKey, PolicyStatus, Router, routes, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

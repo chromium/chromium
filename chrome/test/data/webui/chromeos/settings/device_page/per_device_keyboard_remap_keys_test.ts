@@ -4,8 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {FkeyRowElement, KeyboardRemapModifierKeyRowElement, KeyboardSixPackKeyRowElement, SettingsPerDeviceKeyboardRemapKeysElement} from 'chrome://os-settings/lazy_load.js';
-import {FakeInputDeviceSettingsProvider, fakeKeyboards, Keyboard, MetaKey, ModifierKey, Router, routes, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
+import type {FkeyRowElement, KeyboardRemapModifierKeyRowElement, KeyboardSixPackKeyRowElement, SettingsPerDeviceKeyboardRemapKeysElement} from 'chrome://os-settings/lazy_load.js';
+import type {Keyboard} from 'chrome://os-settings/os_settings.js';
+import {FakeInputDeviceSettingsProvider, fakeKeyboards, MetaKey, ModifierKey, Router, routes, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

@@ -7,7 +7,8 @@
  * Suite of browser tests for the Search and Assistant settings card element.
  */
 
-import {IronCollapseElement, OsSettingsRoutes, Router, routes, SearchAndAssistantSettingsCardElement, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type {IronCollapseElement, OsSettingsRoutes, SearchAndAssistantSettingsCardElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -189,70 +190,71 @@ suite('<search-and-assistant-settings-card>', () => {
       }
     });
 
-    suite(
-        'Lobster setting toggle',
-        () => {
-            [{
-              isMagicBoostFeatureEnabled: false,
-              isLobsterSettingsToggleVisible: false,
-              expectedVisibility: false
-            },
-             {
-               isMagicBoostFeatureEnabled: false,
-               isLobsterSettingsToggleVisible: true,
-               expectedVisibility: false
-             },
-             {
-               isMagicBoostFeatureEnabled: true,
-               isLobsterSettingsToggleVisible: false,
-               expectedVisibility: false
-             },
-             {
-               isMagicBoostFeatureEnabled: true,
-               isLobsterSettingsToggleVisible: true,
-               expectedVisibility: true
-             },
-    ].forEach(({
+    suite('Lobster setting toggle', () => {
+      [{
+        isMagicBoostFeatureEnabled: false,
+        isLobsterSettingsToggleVisible: false,
+        expectedVisibility: false,
+      },
+       {
+         isMagicBoostFeatureEnabled: false,
+         isLobsterSettingsToggleVisible: true,
+         expectedVisibility: false,
+       },
+       {
+         isMagicBoostFeatureEnabled: true,
+         isLobsterSettingsToggleVisible: false,
+         expectedVisibility: false,
+       },
+       {
+         isMagicBoostFeatureEnabled: true,
+         isLobsterSettingsToggleVisible: true,
+         expectedVisibility: true,
+       },
+      ].forEach(({
+                  isMagicBoostFeatureEnabled,
+                  isLobsterSettingsToggleVisible,
+                  expectedVisibility,
+                }) => {
+        test(
+            `should ${
+                expectedVisibility ?
+                    '' :
+                    'not'} show if isMagicBoostFeatureEnabled is ${
+                isMagicBoostFeatureEnabled ?
+                    'true' :
+                    'false'} and isLobsterSettingsToggleVisible is ${
+                isLobsterSettingsToggleVisible ? 'true' : 'false'}`,
+            () => {
+              loadTimeData.overrideValues({
                 isMagicBoostFeatureEnabled,
                 isLobsterSettingsToggleVisible,
-                expectedVisibility
-              }) => {
-                  test(
-                      `should ${
-                          expectedVisibility ?
-                              '' :
-                              'not'} show if isMagicBoostFeatureEnabled is ${
-                          isMagicBoostFeatureEnabled ?
-                              'true' :
-                              'false'} and isLobsterSettingsToggleVisible is ${
-                          isLobsterSettingsToggleVisible ? 'true' : 'false'}`,
-                      () => {
-                        loadTimeData.overrideValues({
-                          isMagicBoostFeatureEnabled,
-                          isLobsterSettingsToggleVisible,
-                        });
-                        createSearchAndAssistantCard();
-                        const fakePrefs = {
-                          settings: {
-                            magic_boost_enabled: {
-                              value: true,
-                            },
-                          },
-                        };
-                        searchAndAssistantSettingsCard.prefs = fakePrefs;
-                        flush();
-                        // <if expr="_google_chrome" >
-                        assertEquals(
-                            isVisible(searchAndAssistantSettingsCard.shadowRoot!
-                                          .querySelector('#lobsterToggle')),
-                            expectedVisibility);
-                        // </if>
-                        // <if expr="not _google_chrome" >
-                        assertFalse(
-                            isVisible(searchAndAssistantSettingsCard.shadowRoot!
-                                          .querySelector('#lobsterToggle')));
-                        // </if>
-                      })})});
+              });
+              createSearchAndAssistantCard();
+              const fakePrefs = {
+                settings: {
+                  magic_boost_enabled: {
+                    value: true,
+                  },
+                },
+              };
+              searchAndAssistantSettingsCard.prefs = fakePrefs;
+              flush();
+              // <if expr="_google_chrome" >
+              assertEquals(
+                  isVisible(
+                      searchAndAssistantSettingsCard.shadowRoot!.querySelector(
+                          '#lobsterToggle')),
+                  expectedVisibility);
+              // </if>
+              // <if expr="not _google_chrome" >
+              assertFalse(isVisible(
+                  searchAndAssistantSettingsCard.shadowRoot!.querySelector(
+                      '#lobsterToggle')));
+              // </if>
+            });
+      });
+    });
   });
 
   test(
@@ -298,7 +300,7 @@ suite('<search-and-assistant-settings-card>', () => {
                   value: true,
                 },
               },
-            }
+            },
           };
           flush();
 

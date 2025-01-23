@@ -4,10 +4,12 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppManagementArcDetailViewElement, MediaDevicesProxy} from 'chrome://os-settings/lazy_load.js';
-import {AppManagementReadOnlyPermissionItemElement, AppManagementStore, CrButtonElement, CrToggleElement, GeolocationAccessLevel, LocalizedLinkElement, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
+import type {AppManagementArcDetailViewElement} from 'chrome://os-settings/lazy_load.js';
+import {MediaDevicesProxy} from 'chrome://os-settings/lazy_load.js';
+import type {AppManagementReadOnlyPermissionItemElement, CrButtonElement, CrToggleElement, LocalizedLinkElement} from 'chrome://os-settings/os_settings.js';
+import {AppManagementStore, GeolocationAccessLevel, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
 import {AppType, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
+import type {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {createBoolPermission, createTriStatePermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';

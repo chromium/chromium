@@ -4,16 +4,19 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppLanguageSelectionDialogElement, AppLanguageSelectionItemElement} from 'chrome://os-settings/lazy_load.js';
-import {AppLanguageSelectionDialogEntryPoint, AppManagementStore, CrButtonElement, CrSearchFieldElement, IronListElement} from 'chrome://os-settings/os_settings.js';
-import {App, AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {AppLanguageSelectionDialogElement, AppLanguageSelectionItemElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrButtonElement, CrSearchFieldElement, IronListElement} from 'chrome://os-settings/os_settings.js';
+import {AppLanguageSelectionDialogEntryPoint, AppManagementStore} from 'chrome://os-settings/os_settings.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {FakePageHandler} from '../../app_management/fake_page_handler.js';
+import type {FakePageHandler} from '../../app_management/fake_page_handler.js';
 import {isHidden, setupFakeHandler} from '../../app_management/test_util.js';
 
 type AppConfig = Partial<App>;

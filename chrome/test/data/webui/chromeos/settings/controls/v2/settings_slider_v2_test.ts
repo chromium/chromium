@@ -4,7 +4,8 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {CrSliderElement, SettingsSliderV2Element} from 'chrome://os-settings/os_settings.js';
+import type {CrSliderElement} from 'chrome://os-settings/os_settings.js';
+import {SettingsSliderV2Element} from 'chrome://os-settings/os_settings.js';
 import {keyDownOn, keyUpOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNull, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';

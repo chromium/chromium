@@ -4,10 +4,11 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppManagementPwaDetailViewElement} from 'chrome://os-settings/lazy_load.js';
+import type {AppManagementPwaDetailViewElement} from 'chrome://os-settings/lazy_load.js';
 import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
-import {AppType, InstallReason, Permission, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
+import type {Permission} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppType, InstallReason, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {createTriStatePermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

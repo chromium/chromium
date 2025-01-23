@@ -5,8 +5,10 @@
 import 'chrome://os-settings/lazy_load.js';
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {CustomizeButtonRowElement, CustomizeButtonSelectElement} from 'chrome://os-settings/lazy_load.js';
-import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeMice, fakeMouseButtonActions, getInputDeviceSettingsProvider, setupFakeInputDeviceSettingsProvider} from 'chrome://os-settings/os_settings.js';
+import type {CustomizeButtonSelectElement} from 'chrome://os-settings/lazy_load.js';
+import {CustomizeButtonRowElement} from 'chrome://os-settings/lazy_load.js';
+import type {FakeInputDeviceSettingsProvider} from 'chrome://os-settings/os_settings.js';
+import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, fakeMice, fakeMouseButtonActions, getInputDeviceSettingsProvider, setupFakeInputDeviceSettingsProvider} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertDeepEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

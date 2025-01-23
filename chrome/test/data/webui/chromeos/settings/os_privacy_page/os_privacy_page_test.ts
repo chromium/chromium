@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {PrivacyHubBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {CrDialogElement, createRouterForTesting, CrRadioGroupElement, GeolocationAccessLevel, OsSettingsPrivacyPageElement, PageStatus, PeripheralDataAccessBrowserProxyImpl, Router, routes, SecureDnsMode, settingMojom, SettingsToggleButtonElement, SyncBrowserProxy, SyncBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
+import type {CrDialogElement, CrRadioGroupElement, OsSettingsPrivacyPageElement, SettingsToggleButtonElement, SyncBrowserProxy} from 'chrome://os-settings/os_settings.js';
+import {createRouterForTesting, GeolocationAccessLevel, PageStatus, PeripheralDataAccessBrowserProxyImpl, Router, routes, SecureDnsMode, settingMojom, SyncBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

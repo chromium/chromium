@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsMultideviceTaskContinuationItemElement} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsMultideviceTaskContinuationItemElement} from 'chrome://os-settings/lazy_load.js';
 import {SyncBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

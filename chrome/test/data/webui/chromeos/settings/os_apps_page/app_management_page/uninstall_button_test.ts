@@ -6,12 +6,13 @@
 import 'chrome://os-settings/os_settings.js';
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppManagementUninstallButtonElement} from 'chrome://os-settings/lazy_load.js';
-import {App, InstallReason} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {AppManagementUninstallButtonElement} from 'chrome://os-settings/lazy_load.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {InstallReason} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {FakePageHandler} from '../../app_management/fake_page_handler.js';
+import type {FakePageHandler} from '../../app_management/fake_page_handler.js';
 import {createApp, setupFakeHandler} from '../../app_management/test_util.js';
 import {clearBody} from '../../utils.js';
 

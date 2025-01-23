@@ -4,8 +4,10 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {DisableTouchpadMode, SettingsPerDeviceTouchpadSubsectionElement} from 'chrome://os-settings/lazy_load.js'
-import {CrSettingsPrefs, CrToggleElement, FakeInputDeviceSettingsProvider, fakeMice, fakeTouchpads, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsSliderElement, SettingsToggleButtonElement, SimulateRightClickModifier} from 'chrome://os-settings/os_settings.js';
+import type {SettingsPerDeviceTouchpadSubsectionElement} from 'chrome://os-settings/lazy_load.js';
+import {DisableTouchpadMode} from 'chrome://os-settings/lazy_load.js';
+import type {CrToggleElement, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, FakeInputDeviceSettingsProvider, fakeMice, fakeTouchpads, Router, routes, setInputDeviceSettingsProviderForTesting, SimulateRightClickModifier} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';

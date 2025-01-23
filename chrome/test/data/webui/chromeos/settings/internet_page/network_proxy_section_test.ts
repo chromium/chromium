@@ -4,9 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {NetworkProxySectionElement} from 'chrome://os-settings/lazy_load.js';
-import {NetworkProxyElement} from 'chrome://resources/ash/common/network/network_proxy.js';
-import {ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {NetworkProxySectionElement} from 'chrome://os-settings/lazy_load.js';
+import type {NetworkProxyElement} from 'chrome://resources/ash/common/network/network_proxy.js';
+import type {ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
