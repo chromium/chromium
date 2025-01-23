@@ -726,6 +726,7 @@ void Dispatcher::DidStartServiceWorkerContextOnWorkerThread(
   const int thread_id = content::WorkerThread::GetCurrentId();
   CHECK_NE(thread_id, kMainThreadId);
   auto* service_worker_data = WorkerThreadDispatcher::GetServiceWorkerData();
+  CHECK(service_worker_data);
   service_worker_data->GetServiceWorkerHost()->DidStartServiceWorkerContext(
       service_worker_data->context()->GetExtensionID(),
       *service_worker_data->activation_sequence(), service_worker_scope,
