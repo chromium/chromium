@@ -119,9 +119,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTab) {
 
 #if !BUILDFLAG(IS_ANDROID)
 // Check having multiple extensions with the same override.
-// TODO(crbug.com/390020193): Port to desktop Android when our test framework
-// supports reloading/unloading extensions. Right now this requires
-// ExtensionService, which is unsupported on Android.
+// TODO(crbug.com/391920604,crbug.com/391920206): Port to desktop Android when
+// our test framework supports reloading/unloading extensions. Right now this
+// requires ExtensionService, which is unsupported on Android.
 IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTabMultiple) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -221,9 +221,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTabMultiple) {
 
 // Test that unloading an extension overriding the page reloads the page with
 // the proper url.
-// TODO(crbug.com/390020193): Port to desktop Android when our test framework
-// supports reloading/unloading extensions. Right now this requires
-// ExtensionService, which is unsupported on Android.
+// TODO(crbug.com/391920604,crbug.com/391920206): Port to desktop Android when
+// our test framework supports reloading/unloading extensions. Right now this
+// requires ExtensionService, which is unsupported on Android.
 IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest,
                        OverridingExtensionUnloadedWithPageOpen) {
   // Prefer IDs because loading/unloading invalidates the extension ptrs.

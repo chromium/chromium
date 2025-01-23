@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesApiTest,
 #if !BUILDFLAG(IS_ANDROID)
 // Test loading of subresources using an initiator coming from a file:// scheme,
 // and, notably, from within a content script context.
-// TODO(crbug.com/390687767): Port to desktop Android when the chrome.scripting
+// TODO(crbug.com/391921606): Port to desktop Android when the chrome.scripting
 // API is ported.
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesApiTest,
                        FileSchemeInitiators_ContentScript) {
@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesDynamicUrlScriptingApiTest,
 
 #if !BUILDFLAG(IS_ANDROID)
 // Load dynamic web accessible resources via chrome.scripting.executeScript().
-// TODO(crbug.com/390687767): Port to desktop Android when the chrome.scripting
+// TODO(crbug.com/391921606): Port to desktop Android when the chrome.scripting
 // API is ported.
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesDynamicUrlScriptingApiTest,
                        ExecuteScript) {

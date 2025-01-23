@@ -406,7 +406,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTestWithStoragePartitioning,
   EXPECT_FALSE(UsageInfosHasStorageKey(usage_infos, key8));
 }
 
-// TODO(crbug.com/371426261): Enable this test on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 using BrowsingDataApiTest = extensions::ExtensionApiTest;
 #else

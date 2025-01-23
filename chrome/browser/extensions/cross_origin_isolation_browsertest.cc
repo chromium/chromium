@@ -565,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
 
 // Tests extension messaging between cross origin isolated and
 // non-cross-origin-isolated frames of an extension.
-// TODO(https://crbug.com/388110291): Port to desktop Android when
+// TODO(https://crbug.com/383366125): Port to desktop Android when
 // chrome.runtime.sendMessage() works there.
 IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ExtensionMessaging_Frames) {
   RestrictProcessCount();
@@ -656,7 +656,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ExtensionMessaging_Frames) {
 // Tests extension messaging between a cross origin isolated extension frame and
 // the extension service worker which is not cross origin isolated (and hence in
 // a different process).
-// TODO(https://crbug.com/388110291): Port to desktop Android when
+// TODO(https://crbug.com/383366125): Port to desktop Android when
 // chrome.runtime.sendMessage() works there.
 IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
                        ExtensionMessaging_ServiceWorker) {
@@ -735,7 +735,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
 
 // Verify extension resource access if it's in an iframe. Regression test for
 // crbug.com/1343610.
-// TODO(https://crbug.com/388110291): Port to desktop Android when we have a
+// TODO(https://crbug.com/391922825): Port to desktop Android when we have a
 // cross-platform replacement for NavigateParams.
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionResourceInIframe) {
   EXPECT_TRUE(embedded_test_server()->Start());
