@@ -180,7 +180,7 @@ FlexLayoutAlgorithm::FlexLayoutAlgorithm(
     const LayoutAlgorithmParams& params,
     const HashMap<wtf_size_t, LayoutUnit>* cross_size_adjustments)
     : LayoutAlgorithm(params),
-      is_webkit_box_(Style().IsDeprecatedWebkitBox()),
+      is_webkit_box_(Style().IsDeprecatedFlexbox()),
       is_column_(Style().ResolvedIsColumnFlexDirection()),
       is_wrap_reverse_(Style().FlexWrap() == EFlexWrap::kWrapReverse),
       is_reverse_direction_(Style().ResolvedIsReverseFlexDirection()),
