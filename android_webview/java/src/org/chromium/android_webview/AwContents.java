@@ -76,6 +76,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
+import org.chromium.base.RequiredCallback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
@@ -720,11 +721,13 @@ public class AwContents implements SmartClipProvider {
     //
     private class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate {
         @Override
-        public boolean shouldIgnoreNavigation(
+        public void shouldIgnoreNavigation(
                 NavigationHandle navigationHandle,
                 GURL escapedUrl,
                 boolean hiddenCrossFrame,
-                boolean isSandboxedFrame) {
+                boolean isSandboxedFrame,
+                boolean shouldRunAsync,
+                RequiredCallback<Boolean> resultCallback) {
             // The shouldOverrideUrlLoading call might have resulted in posting messages to the
             // UI thread. Using sendMessage here (instead of calling onPageStarted directly)
             // will allow those to run in order.
@@ -736,7 +739,7 @@ public class AwContents implements SmartClipProvider {
                                 : navigationHandle.getBaseUrlForDataUrl();
                 mContentsClient.getCallbackHelper().postOnPageStarted(url.getPossiblyInvalidSpec());
             }
-            return false;
+            resultCallback.onResult(false);
         }
     }
 
