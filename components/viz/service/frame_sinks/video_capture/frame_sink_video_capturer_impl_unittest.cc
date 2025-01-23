@@ -763,18 +763,6 @@ class TestGmbVideoFramePoolContext
   ~TestGmbVideoFramePoolContext() override = default;
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      gfx::GpuMemoryBuffer* gpu_memory_buffer,
-      const SharedImageFormat& si_format,
-      const gfx::ColorSpace& color_space,
-      gpu::SharedImageUsageSet usage,
-      gpu::SyncToken& sync_token) override {
-    return context_provider_->SharedImageInterface()->CreateSharedImage(
-        {si_format, gpu_memory_buffer->GetSize(), color_space, usage,
-         "FrameSinkVideoCapturerImplUnittest"},
-        gpu_memory_buffer->CloneHandle());
-  }
-
-  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       const gfx::Size& size,
       gfx::BufferUsage buffer_usage,
       const SharedImageFormat& si_format,
