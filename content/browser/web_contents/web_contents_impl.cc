@@ -3867,7 +3867,7 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
 
   RedirectChainDetector::CreateForWebContents(this);
   BtmWebContentsObserver::MaybeCreateForWebContents(this);
-  DipsNavigationFlowDetector::CreateForWebContents(this);
+  BtmNavigationFlowDetector::CreateForWebContents(this);
   RedirectHeuristicTabHelper::CreateForWebContents(this);
   OpenerHeuristicTabHelper::CreateForWebContents(this);
 
