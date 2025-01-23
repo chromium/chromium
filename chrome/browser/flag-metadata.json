@@ -376,17 +376,17 @@
   },
   {
     "name": "arc-switch-to-keymint-daemon",
-    "owners": [ "yaohuali@chromium.org" ],
+    "owners": [ "yaohuali@google.com" ],
     "expiry_milestone": 123
   },
   {
     "name": "arc-switch-to-keymint-on-t",
-    "owners": [ "yaohuali@chromium.org" ],
+    "owners": [ "yaohuali@google.com" ],
     "expiry_milestone": 123
   },
   {
     "name": "arc-switch-to-keymint-on-t-override",
-    "owners": [ "yaohuali@chromium.org" ],
+    "owners": [ "yaohuali@google.com" ],
     "expiry_milestone": 123
   },
   {
