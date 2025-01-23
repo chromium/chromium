@@ -20,10 +20,10 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
-using web::test::TapWebViewElementWithId;
+using base::test::ios::WaitUntilConditionOrTimeout;
 using web::test::SelectWebViewElementWithId;
+using web::test::TapWebViewElementWithId;
 
 namespace {
 // This is for cases where no message should be sent back from Js.
@@ -49,7 +49,7 @@ NSString* kSearchableForm =
     @"  </form>"
     @"  <input type='hidden' form='f' name='outside form' value='i3'>"
     @"</html>";
-}
+}  // namespace
 
 // Test fixture for search_engine.js testing.
 class SearchEngineJsTest : public PlatformTest,

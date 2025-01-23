@@ -20,8 +20,9 @@ TemplateURLServiceClientImpl::TemplateURLServiceClientImpl(
   // db, which will mean we no longer need this notification and the history
   // backend can handle automatically adding the search terms as the user
   // navigates.
-  if (history_service_)
+  if (history_service_) {
     history_service_observation_.Observe(history_service_.get());
+  }
 }
 
 TemplateURLServiceClientImpl::~TemplateURLServiceClientImpl() {}
@@ -48,16 +49,18 @@ void TemplateURLServiceClientImpl::SetOwner(TemplateURLService* owner) {
 
 void TemplateURLServiceClientImpl::DeleteAllSearchTermsForKeyword(
     history::KeywordID keyword_id) {
-  if (history_service_)
+  if (history_service_) {
     history_service_->DeleteAllSearchTermsForKeyword(keyword_id);
+  }
 }
 
 void TemplateURLServiceClientImpl::SetKeywordSearchTermsForURL(
     const GURL& url,
     TemplateURLID id,
     const std::u16string& term) {
-  if (history_service_)
+  if (history_service_) {
     history_service_->SetKeywordSearchTermsForURL(url, id, term);
+  }
 }
 
 void TemplateURLServiceClientImpl::AddKeywordGeneratedVisit(const GURL& url) {
@@ -75,8 +78,9 @@ void TemplateURLServiceClientImpl::OnURLVisited(
     const history::URLRow& url_row,
     const history::VisitRow& new_visit) {
   DCHECK_EQ(history_service, history_service_);
-  if (!owner_)
+  if (!owner_) {
     return;
+  }
 
   TemplateURLService::URLVisitedDetails details = {
       url_row.url(),

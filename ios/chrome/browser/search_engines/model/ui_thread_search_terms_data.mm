@@ -37,8 +37,9 @@ UIThreadSearchTermsData::~UIThreadSearchTermsData() {}
 std::string UIThreadSearchTermsData::GoogleBaseURLValue() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   GURL google_base_url = google_util::CommandLineGoogleBaseURL();
-  if (google_base_url.is_valid())
+  if (google_base_url.is_valid()) {
     return google_base_url.spec();
+  }
 
   return SearchTermsData::GoogleBaseURLValue();
 }
