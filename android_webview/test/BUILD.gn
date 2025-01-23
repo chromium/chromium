@@ -125,16 +125,8 @@ script_test("system_webview_wpt") {
            "@WrappedPath(apks/SystemWebViewShell.apk)",
          ]
   data = [
-    # TODO(crbug.com/391427630): Put the common expectation files behind a
-    # shared target
-    "//third_party/blink/web_tests/LeakExpectations",
-    "//third_party/blink/web_tests/MobileTestExpectations",
-    "//third_party/blink/web_tests/NeverFixTests",
-    "//third_party/blink/web_tests/SlowTests",
-    "//third_party/blink/web_tests/StaleTestExpectations",
-    "//third_party/blink/web_tests/TestExpectations",
-
     "//third_party/blink/web_tests/platform/webview/",
+    "//third_party/blink/web_tests/MobileTestExpectations",
   ]
   data_deps = [
     "//android_webview:system_webview_apk",
@@ -163,16 +155,8 @@ script_test("trichrome_webview_wpt") {
            "@WrappedPath(apks/TrichromeLibrary.apk)",
          ]
   data = [
-    # TODO(crbug.com/391427630): Put the common expectation files behind a
-    # shared target
-    "//third_party/blink/web_tests/LeakExpectations",
-    "//third_party/blink/web_tests/MobileTestExpectations",
-    "//third_party/blink/web_tests/NeverFixTests",
-    "//third_party/blink/web_tests/SlowTests",
-    "//third_party/blink/web_tests/StaleTestExpectations",
-    "//third_party/blink/web_tests/TestExpectations",
-
     "//third_party/blink/web_tests/platform/webview/",
+    "//third_party/blink/web_tests/MobileTestExpectations",
   ]
   data_deps = [
     "//android_webview:trichrome_webview_apk",
@@ -202,16 +186,8 @@ if (android_64bit_target_cpu) {
              "@WrappedPath(apks/TrichromeLibrary64.apk)",
            ]
     data = [
-      # TODO(crbug.com/391427630): Put the common expectation files behind a
-      # shared target
-      "//third_party/blink/web_tests/LeakExpectations",
-      "//third_party/blink/web_tests/MobileTestExpectations",
-      "//third_party/blink/web_tests/NeverFixTests",
-      "//third_party/blink/web_tests/SlowTests",
-      "//third_party/blink/web_tests/StaleTestExpectations",
-      "//third_party/blink/web_tests/TestExpectations",
-
       "//third_party/blink/web_tests/platform/webview/",
+      "//third_party/blink/web_tests/MobileTestExpectations",
     ]
     data_deps = [
       "//android_webview:trichrome_webview_64_apk",

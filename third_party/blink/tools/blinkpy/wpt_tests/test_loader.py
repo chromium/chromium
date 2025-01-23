@@ -56,12 +56,10 @@ class TestLoader(testloader.TestLoader):
                  *args,
                  expectations: Optional[TestExpectations] = None,
                  include: Optional[Collection[str]] = None,
-                 tests_to_skip: Optional[Collection[str]] = None,
                  **kwargs):
         self._port = port
         self._expectations = expectations or TestExpectations(port)
         self._include = include
-        self._tests_to_skip = tests_to_skip or []
         # Invoking the superclass constructor will immediately load tests, so
         # set `_port` and `_expectations` first.
         super().__init__(*args, **kwargs)
@@ -81,7 +79,7 @@ class TestLoader(testloader.TestLoader):
             self.tests[subsuite_name] = collections.defaultdict(list)
             self.disabled_tests[subsuite_name] = collections.defaultdict(list)
 
-            test_urls = subsuite.include or self._include
+            test_urls = subsuite.include or self._include or []
             for test_url in test_urls:
                 if not test_url.startswith('/'):
                     test_url = f'/{test_url}'
@@ -96,6 +94,8 @@ class TestLoader(testloader.TestLoader):
                     item.path)
                 test = self.get_test(manifest, item, inherit_metadata,
                                      test_metadata)
+                # `WebTestFinder` should have already filtered out skipped
+                # tests, but add to `disabled_tests` anyway just in case.
                 tests = self.disabled_tests if test.disabled() else self.tests
                 tests[subsuite_name][item.item_type].append(test)
 
@@ -143,10 +143,11 @@ class TestLoader(testloader.TestLoader):
             else:
                 testharness_lines = []
 
-            test_ast = self._build_test_ast(item.item_type, exp_line,
-                                            testharness_lines)
-            if test_ast:
-                test_file_ast.append(test_ast)
+            if exp_line.results == {ResultType.Pass} and not testharness_lines:
+                continue
+            test_file_ast.append(
+                self._build_test_ast(item.item_type, exp_line,
+                                     testharness_lines))
 
         if not test_file_ast.children:
             # AST is empty. Fast path for all-pass expectations.
@@ -163,7 +164,7 @@ class TestLoader(testloader.TestLoader):
         test_type: TestType,
         exp_line: ExpectationType,
         testharness_lines: List[TestharnessLine],
-    ) -> Optional[wptnode.DataNode]:
+    ) -> wptnode.DataNode:
         test_statuses = chromium_to_wptrunner_statuses(
             exp_line.results - {ResultType.Skip}, test_type)
         harness_errors = {
@@ -171,8 +172,6 @@ class TestLoader(testloader.TestLoader):
             for line in testharness_lines
             if line.line_type is LineType.HARNESS_ERROR
         }
-        passing_status = chromium_to_wptrunner_statuses(
-            frozenset([ResultType.Pass]), test_type)
         if not can_have_subtests(test_type):
             # Temporarily expect PASS so that unexpected passes don't contribute
             # to retries or build failures.
@@ -180,7 +179,9 @@ class TestLoader(testloader.TestLoader):
         elif ResultType.Failure in exp_line.results or not harness_errors:
             # Add `OK` for `[ Failure ]` lines or no explicit harness error in
             # the baseline.
-            test_statuses.update(passing_status)
+            test_statuses.update(
+                chromium_to_wptrunner_statuses(frozenset([ResultType.Pass]),
+                                               test_type))
         elif len(harness_errors) > 1:
             raise ValueError(
                 f'testharness baseline for {exp_line.test!r} can only have up '
@@ -193,12 +194,6 @@ class TestLoader(testloader.TestLoader):
         assert test_statuses, exp_line.to_string()
         test_ast = _build_expectation_ast(_test_basename(exp_line.test),
                                           normalize_statuses(test_statuses))
-        if exp_line.test in self._tests_to_skip:
-            disabled = wptnode.KeyValueNode('disabled')
-            disabled.append(wptnode.AtomNode(True))
-            test_ast.append(disabled)
-        elif test_statuses == passing_status and not testharness_lines:
-            return None
         # If `[ Failure ]` is expected, the baseline is allowed to be anything.
         # To mimic this, skip creating any explicit subtests, and rely on
         # implicit subtest creation.
@@ -219,21 +214,12 @@ class TestLoader(testloader.TestLoader):
 
     @classmethod
     def install(cls, port: Port, expectations: TestExpectations,
-                include: Collection[str], tests_to_skip: Collection[str]):
-        """Patch overrides into the wptrunner API (may be unstable).
-
-        Arguments:
-            include: Base tests to run, formatted as wptrunner-style URLs
-                (i.e., leading `/`, and no `external/wpt` prefix).
-            tests_to_skip: A list of Blink-style test names (can be virtual).
-                This `TestLoader` will generate metadata with `disabled: @True`
-                for these tests.
-        """
+                include: List[str]):
+        """Patch overrides into the wptrunner API (may be unstable)."""
         testloader.TestLoader = functools.partial(cls,
                                                   port,
                                                   expectations=expectations,
-                                                  include=include,
-                                                  tests_to_skip=tests_to_skip)
+                                                  include=include)
 
         # Ideally, we would patch `executorchrome.*.convert_result`, but changes
         # to the executor classes here in the main process don't persist to
