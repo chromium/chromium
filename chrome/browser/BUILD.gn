@@ -3788,6 +3788,7 @@ static_library("browser") {
       "new_tab_page/microsoft_auth/microsoft_auth_service.h",
       "new_tab_page/microsoft_auth/microsoft_auth_service_factory.cc",
       "new_tab_page/microsoft_auth/microsoft_auth_service_factory.h",
+      "new_tab_page/microsoft_auth/microsoft_auth_service_observer.h",
       "new_tab_page/modules/file_suggestion/drive_service.cc",
       "new_tab_page/modules/file_suggestion/drive_service.h",
       "new_tab_page/modules/file_suggestion/drive_service_factory.cc",

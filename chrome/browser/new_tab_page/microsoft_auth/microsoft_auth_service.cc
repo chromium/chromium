@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/time/time.h"
+#include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_observer.h"
 #include "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_untrusted_ui.mojom.h"
 
 MicrosoftAuthService::MicrosoftAuthService() = default;
@@ -17,10 +18,12 @@ void MicrosoftAuthService::SetAccessToken(
     new_tab_page::mojom::AccessTokenPtr access_token) {
   access_token_ = std::move(access_token);
   state_ = new_tab_page::mojom::AuthState::kSuccess;
+  NotifyObservers();
 }
 
 void MicrosoftAuthService::SetAuthStateError() {
   state_ = new_tab_page::mojom::AuthState::kError;
+  NotifyObservers();
 }
 
 // TODO(crbug.com/386385415): Connect with Microsoft modules handlers to get
@@ -35,6 +38,15 @@ new_tab_page::mojom::AuthState MicrosoftAuthService::GetAuthState() {
   return state_;
 }
 
+void MicrosoftAuthService::AddObserver(MicrosoftAuthServiceObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void MicrosoftAuthService::RemoveObserver(
+    MicrosoftAuthServiceObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void MicrosoftAuthService::CheckAccessTokenExpiration() {
   // Treat access token as expired 30 seconds early to avoid race condition
   // with network calls.
@@ -43,5 +55,12 @@ void MicrosoftAuthService::CheckAccessTokenExpiration() {
     // Reset access_token_ and state_, if access_token_ is expired.
     access_token_ = new_tab_page::mojom::AccessToken::New();
     state_ = new_tab_page::mojom::AuthState::kNone;
+    NotifyObservers();
+  }
+}
+
+void MicrosoftAuthService::NotifyObservers() {
+  for (MicrosoftAuthServiceObserver& observer : observers_) {
+    observer.OnAuthStateUpdated();
   }
 }
