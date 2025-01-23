@@ -215,6 +215,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return this.sender.requestNoResponse('glicBrowserDetachPanel', {});
   }
 
+  showProfilePicker(): void {
+    this.sender.requestNoResponse('glicBrowserShowProfilePicker', {});
+  }
+
   async getContextFromFocusedTab(options: TabContextOptions):
       Promise<TabContextResult> {
     const context = await this.sender.requestWithResponse(

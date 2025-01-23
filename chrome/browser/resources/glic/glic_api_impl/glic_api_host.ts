@@ -189,6 +189,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     this.handler.detachPanel();
   }
 
+  glicBrowserShowProfilePicker() {
+    return this.handler.showProfilePicker();
+  }
+
   async glicBrowserGetContextFromFocusedTab(
       request: {options: TabContextOptions},
       transfer: Transferable[]): Promise<{
