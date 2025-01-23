@@ -12,9 +12,7 @@
 
 class DriveServiceFactoryTest : public PlatformTest {
  protected:
-  DriveServiceFactoryTest() {
-    profile_ = TestProfileIOS::Builder().Build();
-  }
+  DriveServiceFactoryTest() { profile_ = TestProfileIOS::Builder().Build(); }
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;

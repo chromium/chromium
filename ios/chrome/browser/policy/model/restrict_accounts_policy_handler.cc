@@ -34,8 +34,9 @@ bool RestrictAccountsPolicyHandler::CheckPolicySettings(
   // `GetValueUnsafe` is used to differentiate between the policy value being
   // unset vs being set with an incorrect type.
   const base::Value* value = policies.GetValueUnsafe(policy_name());
-  if (!value)
+  if (!value) {
     return true;
+  }
   if (!ArePatternsValid(value)) {
     errors->AddError(policy_name(),
                      IDS_POLICY_INVALID_ACCOUNT_PATTERN_FORMAT_ERROR);
@@ -54,8 +55,9 @@ void RestrictAccountsPolicyHandler::ApplyPolicySettings(
     PrefValueMap* prefs) {
   const base::Value* value =
       policies.GetValue(policy_name(), base::Value::Type::LIST);
-  if (value)
+  if (value) {
     prefs->SetValue(prefs::kRestrictAccountsToPatterns, value->Clone());
+  }
 }
 
 }  // namespace policy

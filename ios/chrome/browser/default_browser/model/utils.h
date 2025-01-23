@@ -16,7 +16,7 @@ class Tracker;
 namespace base {
 class Time;
 class TimeDelta;
-}
+}  // namespace base
 
 // Enum for the different types of default browser modal promo. These are stored
 // as values, if adding a new one, make sure to add it at the end.

@@ -137,8 +137,8 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
                       options:UIViewAnimationOptionBeginFromCurrentState
                    animations:^{
                      CGFloat alpha = highlighted ? 0.07 : 0;
-                     self.backgroundColor =
-                         [UIColor colorWithWhite:0 alpha:alpha];
+                     self.backgroundColor = [UIColor colorWithWhite:0
+                                                              alpha:alpha];
                    }
                    completion:nil];
 }

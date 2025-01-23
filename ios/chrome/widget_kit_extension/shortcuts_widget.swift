@@ -311,16 +311,7 @@ struct ShortcutsWidgetEntryView: View {
             .foregroundColor(Colors.widgetTextColor)
           Spacer()
           #if IOS_ENABLE_WIDGETS_FOR_MIM
-            // Only show the avatar if there is one.
-            if let avatar = entry.avatar {
-              avatar
-                .resizable()
-                .clipShape(Circle())
-                .unredacted()
-                .scaledToFill()
-                .frame(width: 35, height: 35)
-                .padding(.trailing, padding)
-            }
+            AvatarForShortcuts(entry: entry)
           #endif
         }
       }
@@ -561,5 +552,26 @@ struct WebsiteLabel: View {
     Text(verbatim: self.websiteTitle)
       .font(.system(size: fontSize))
       .opacity(0.59)
+  }
+}
+
+struct AvatarForShortcuts: View {
+  var entry: ConfigureShortcutsWidgetEntry
+  var body: some View {
+    if entry.isPreview {
+      Circle()
+        .foregroundColor(Color("widget_text_color"))
+        .opacity(0.2)
+        .frame(width: 35, height: 35)
+        .padding(.trailing, 8)
+    } else if let avatar = entry.avatar {
+      avatar
+        .resizable()
+        .clipShape(Circle())
+        .unredacted()
+        .scaledToFill()
+        .frame(width: 35, height: 35)
+        .padding(.trailing, 8)
+    }
   }
 }

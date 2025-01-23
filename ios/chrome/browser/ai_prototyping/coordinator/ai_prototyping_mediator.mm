@@ -10,21 +10,21 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
 #import "components/optimization_guide/optimization_guide_buildflags.h"
-#import "ios/chrome/browser/ai_prototyping/model/ai_prototyping_service_impl.h"
-#import "ios/chrome/browser/ai_prototyping/model/tab_organization_service_impl.h"
-#import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_consumer.h"
-#import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
-#import "ios/chrome/browser/intelligence/proto_wrappers/tab_organization_request_wrapper.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/web/public/web_state.h"
-
 #import "components/optimization_guide/proto/features/bling_prototyping.pb.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/optimization_guide/proto/features/tab_organization.pb.h"
 #import "components/optimization_guide/proto/string_value.pb.h"  // nogncheck
+#import "ios/chrome/browser/ai_prototyping/model/ai_prototyping_service_impl.h"
+#import "ios/chrome/browser/ai_prototyping/model/tab_organization_service_impl.h"
+#import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_consumer.h"
+#import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/tab_organization_request_wrapper.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/web/public/web_state.h"
 
 @implementation AIPrototypingMediator {
   raw_ptr<WebStateList> _webStateList;
@@ -46,6 +46,9 @@
 
   // The Tab Organization feature's request wrapper.
   TabOrganizationRequestWrapper* _tabOrganizationRequestWrapper;
+
+  // The freeform feature's PageContext wrapper.
+  PageContextWrapper* _pageContextWrapper;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList {
@@ -91,12 +94,68 @@
 
 #pragma mark - AIPrototypingMutator
 
-- (void)executeServerQuery:
-    (optimization_guide::proto::BlingPrototypingRequest)request {
+- (void)executeFreeformServerQuery:(NSString*)query
+                systemInstructions:(NSString*)systemInstructions
+                includePageContext:(BOOL)includePageContext {
+  optimization_guide::proto::BlingPrototypingRequest request;
+
+  // Set the whitespace-trimmer query on the request.
+  NSString* trimmedQuery = [query
+      stringByTrimmingCharactersInSet:[NSCharacterSet
+                                          whitespaceAndNewlineCharacterSet]];
+  request.set_query(base::SysNSStringToUTF8(trimmedQuery));
+
+  // Set the whitespace-trimmed system instructions if it isn't empty.
+  NSString* trimmedSystemInstructions = [systemInstructions
+      stringByTrimmingCharactersInSet:[NSCharacterSet
+                                          whitespaceAndNewlineCharacterSet]];
+  if (trimmedSystemInstructions.length) {
+    request.set_system_instructions(
+        base::SysNSStringToUTF8(trimmedSystemInstructions));
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  base::OnceCallback<void(const std::string&)> handle_response_callback =
+      base::BindOnce(^void(const std::string& response_string) {
+        [weakSelf.consumer
+            updateQueryResult:base::SysUTF8ToNSString(response_string)
+                   forFeature:AIPrototypingFeature::kFreeform];
+      });
+
+  // Execute the query immediately and early return if `includePageContext` is
+  // false.
+  if (!includePageContext) {
+    ::mojo_base::ProtoWrapper proto_wrapper = mojo_base::ProtoWrapper(request);
+    _ai_prototyping_service->ExecuteServerQuery(
+        std::move(proto_wrapper), std::move(handle_response_callback));
+    return;
+  }
+
+  base::OnceCallback<void(
+      std::unique_ptr<optimization_guide::proto::PageContext>)>
+      page_context_completion_callback = base::BindOnce(
+          ^void(std::unique_ptr<optimization_guide::proto::PageContext>
+                    page_context) {
+            [weakSelf executeServerQueryWithPageContext:std::move(page_context)
+                                        freeformRequest:request];
+          });
+
+  // Populate the PageContext proto and then execute the query.
+  _pageContextWrapper = [[PageContextWrapper alloc]
+        initWithWebState:_webStateList->GetActiveWebState()
+      completionCallback:std::move(page_context_completion_callback)];
+  [_pageContextWrapper setShouldGetInnerText:YES];
+  // TODO(crbug.com/387511338): Set this to YES when images are fixed on the
+  // config/MES side.
+  [_pageContextWrapper setShouldGetSnapshot:NO];
+  [_pageContextWrapper populatePageContextFieldsAsync];
+}
+
+- (void)executeFreeformOnDeviceQuery:
+    (optimization_guide::proto::StringValue)request {
   ::mojo_base::ProtoWrapper proto_wrapper = mojo_base::ProtoWrapper(request);
   __weak __typeof(self) weakSelf = self;
-
-  _ai_prototyping_service->ExecuteServerQuery(
+  _ai_prototyping_service->ExecuteOnDeviceQuery(
       std::move(proto_wrapper),
       base::BindOnce(^void(const std::string& response_string) {
         [weakSelf.consumer
@@ -156,6 +215,32 @@
                      groupingStrategy:strategy
                    completionCallback:std::move(completion_callback)];
   [_tabOrganizationRequestWrapper populateRequestFieldsAsync];
+}
+
+#pragma mark - Private
+
+// All async work from the PageContext wrapper has been completed.
+- (void)
+    executeServerQueryWithPageContext:
+        (std::unique_ptr<optimization_guide::proto::PageContext>)page_context
+                      freeformRequest:
+                          (optimization_guide::proto::BlingPrototypingRequest)
+                              freeform_request {
+  _pageContextWrapper = nil;
+  freeform_request.set_allocated_page_context(page_context.release());
+
+  __weak __typeof(self) weakSelf = self;
+  base::OnceCallback<void(const std::string&)> handle_response_callback =
+      base::BindOnce(^void(const std::string& response_string) {
+        [weakSelf.consumer
+            updateQueryResult:base::SysUTF8ToNSString(response_string)
+                   forFeature:AIPrototypingFeature::kFreeform];
+      });
+
+  ::mojo_base::ProtoWrapper proto_wrapper =
+      mojo_base::ProtoWrapper(freeform_request);
+  _ai_prototyping_service->ExecuteServerQuery(
+      std::move(proto_wrapper), std::move(handle_response_callback));
 }
 
 @end

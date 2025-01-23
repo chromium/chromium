@@ -114,7 +114,7 @@ BASE_DECLARE_FEATURE(kEnableBookmarksSelectedTypeOnSigninForTesting);
 
 // Feature flag used for enabling sync (transport mode) for signed-in users that
 // haven't turned on full sync.
-#if !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kReadingListEnableSyncTransportModeUponSignIn);
 // Returns whether reading list storage related UI can be enabled, by testing
 // `kReadingListEnableSyncTransportModeUponSignIn`.
@@ -123,7 +123,7 @@ bool IsReadingListAccountStorageEnabled();
 constexpr bool IsReadingListAccountStorageEnabled() {
   return true;
 }
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Flag to allow SHARED_TAB_GROUP_DATA to run in transport mode.
 BASE_DECLARE_FEATURE(kSyncSharedTabGroupDataInTransportMode);

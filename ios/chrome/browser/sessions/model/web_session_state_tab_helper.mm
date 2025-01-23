@@ -92,8 +92,9 @@ NSData* WebSessionStateTabHelper::FetchSessionFromCache() {
 }
 
 void WebSessionStateTabHelper::SaveSessionStateIfStale() {
-  if (!stale_)
+  if (!stale_) {
     return;
+  }
   SaveSessionState();
 }
 
@@ -141,8 +142,9 @@ void WebSessionStateTabHelper::DidFinishNavigation(
     web::NavigationContext* navigation_context) {
   // Don't record navigations that result in downloads, since these will be
   // discarded and there's no simple callback when discarded.
-  if (navigation_context->IsDownload())
+  if (navigation_context->IsDownload()) {
     return;
+  }
 
   MarkStale();
 }
@@ -150,8 +152,9 @@ void WebSessionStateTabHelper::DidFinishNavigation(
 void WebSessionStateTabHelper::WebFrameBecameAvailable(
     web::WebFramesManager* web_frames_manager,
     web::WebFrame* web_frame) {
-  if (web_frame->IsMainFrame())
+  if (web_frame->IsMainFrame()) {
     return;
+  }
 
   // -WebFrameBecameAvailable is called much more often than navigations, so
   // check if either `item_count_` or `last_committed_item_index_` has changed

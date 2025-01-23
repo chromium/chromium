@@ -252,9 +252,7 @@ void LensOmniboxClient::OnAutocompleteAccept(
 
 void LensOmniboxClient::OnThumbnailOnlyAccept() {
   // The destinationURL is not used for multimodal suggestions.
-  [delegate_ omniboxDidAcceptText:u""
-                   destinationURL:GURL()
-                    textClobbered:NO];
+  [delegate_ omniboxDidAcceptText:u"" destinationURL:GURL() textClobbered:NO];
 }
 
 base::WeakPtr<OmniboxClient> LensOmniboxClient::AsWeakPtr() {

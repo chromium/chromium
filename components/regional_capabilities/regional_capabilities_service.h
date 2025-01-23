@@ -12,6 +12,10 @@
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
+
 namespace search_engines {
 class SearchEngineChoiceService;
 }
@@ -69,6 +73,22 @@ class RegionalCapabilitiesService : public KeyedService {
   // in tests.
   void ClearCountryIdCacheForTesting();
 
+#if BUILDFLAG(IS_ANDROID)
+  // -- JNI Interface ---------------------------------------------------------
+
+  // Returns a reference to the Java-side `RegionalCapabilitiesService`, lazily
+  // creating it if needed.
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
+
+  // If the Java-side service has been created, commands it to destroy itself.
+  void DestroyJavaObject();
+
+  // See `IsInEeaCountry()`.
+  jboolean IsInEeaCountry(JNIEnv* env);
+
+  // -- JNI Interface End -----------------------------------------------------
+#endif
+
  private:
   // TODO(b:328040066): Investigate friend-ing methods instead whole classes
   // to tighten private access further.
@@ -90,6 +110,11 @@ class RegionalCapabilitiesService : public KeyedService {
   // Used to ensure that the value returned from `GetCountryId` never changes
   // in runtime (different runs can still return different values, though).
   std::optional<int> country_id_cache_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Corresponding Java object.
+  base::android::ScopedJavaGlobalRef<jobject> java_ref_;
+#endif
 
   base::WeakPtrFactory<RegionalCapabilitiesService> weak_ptr_factory_{this};
 };

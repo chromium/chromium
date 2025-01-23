@@ -276,8 +276,9 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_MAC)
-  expected_providers++;  // PowerMetricsProvider
-#endif                   // BUILDFLAG(IS_MAC)
+  // PowerMetricsProvider, GoogleUpdateMetricsProviderMac
+  expected_providers += 2;
+#endif  // BUILDFLAG(IS_MAC)
 
 // TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.

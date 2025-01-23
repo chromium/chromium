@@ -16,7 +16,7 @@ class PrefService;
 namespace metrics {
 class EnabledStateProvider;
 class MetricsStateManager;
-}
+}  // namespace metrics
 
 namespace variations {
 class SyntheticTrialRegistry;

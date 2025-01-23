@@ -6228,6 +6228,11 @@ test("unit_tests") {
     sources += [ "../browser/privacy_sandbox/privacy_sandbox_activity_types_service_unittest.cc" ]
   }
 
+  if (is_mac) {
+    sources +=
+        [ "../browser/metrics/google_update_metrics_provider_mac_unittest.cc" ]
+  }
+
   if (is_linux) {
     sources += [ "../browser/metrics/pressure/pressure_metrics_unittest.cc" ]
   }
@@ -6927,7 +6932,11 @@ test("unit_tests") {
   }
 
   if (is_win || is_mac) {
-    sources += [ "../browser/updater/browser_updater_client_unittest.cc" ]
+    sources += [
+      "../browser/updater/browser_updater_client_testutils.cc",
+      "../browser/updater/browser_updater_client_testutils.h",
+      "../browser/updater/browser_updater_client_unittest.cc",
+    ]
     deps += [
       "//chrome/browser/updater:browser_updater_client",
       "//chrome/updater:browser_sources",

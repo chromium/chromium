@@ -59,7 +59,6 @@ std::string FormatRefreshHistogramNameFor(
 
 class PlusAddressBottomSheetViewControllerTest : public PlatformTest {
  public:
-
   void SetUp() override {
     PlatformTest::SetUp();
     delegate_ = OCMProtocolMock(@protocol(PlusAddressBottomSheetDelegate));

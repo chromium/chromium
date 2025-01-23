@@ -539,6 +539,7 @@ crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/context/context-
 crbug.com/354627705 [ mac amd-0x7340 angle-metal ] conformance/extensions/webgl-polygon-mode.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]
 crbug.com/382090956 [ mac amd angle-metal ] deqp/data/gles2/shaders/conversions_vector_to_vector.html [ RetryOnFailure ]
+crbug.com/angleproject/389733590 [ mac amd angle-metal debug ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
 
 ## Mac Retina NVidia failures / flakes ##
 

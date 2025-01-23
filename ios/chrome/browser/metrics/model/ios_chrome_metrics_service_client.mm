@@ -490,10 +490,12 @@ IOSChromeMetricsServiceClient::FilterBrowserMetricsFiles(
   base::ProcessId pid;
   bool parse_success = base::GlobalHistogramAllocator::ParseFilePath(
       path, nullptr, nullptr, &pid);
-  if (!parse_success)
+  if (!parse_success) {
     return metrics::FileMetricsProvider::FILTER_PROCESS_FILE;
-  if (pid == base::GetCurrentProcId())
+  }
+  if (pid == base::GetCurrentProcId()) {
     return metrics::FileMetricsProvider::FILTER_ACTIVE_THIS_PID;
+  }
   // No need to test whether `pid` is a different active process. This isn't
   // applicable to iOS because there cannot be two copies of Chrome running.
   return metrics::FileMetricsProvider::FILTER_PROCESS_FILE;
@@ -506,8 +508,9 @@ IOSChromeMetricsServiceClient::GetMetricsReportingDefaultState() {
 }
 
 void IOSChromeMetricsServiceClient::OnHistoryDeleted() {
-  if (ukm_service_)
+  if (ukm_service_) {
     ukm_service_->Purge();
+  }
   if (dwa_service_) {
     dwa_service_->Purge();
   }
@@ -520,7 +523,8 @@ void IOSChromeMetricsServiceClient::OnUkmAllowedStateChanged(
   if (ukm_service_) {
     if (must_purge) {
       ukm_service_->Purge();
-      ukm_service_->ResetClientState(ukm::ResetReason::kOnUkmAllowedStateChanged);
+      ukm_service_->ResetClientState(
+          ukm::ResetReason::kOnUkmAllowedStateChanged);
     } else {
       // Purge recording if required consent has been revoked.
       if (!consent_state.Has(ukm::MSBB)) {

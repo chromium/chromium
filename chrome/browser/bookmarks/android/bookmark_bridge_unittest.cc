@@ -33,7 +33,6 @@
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/storage_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -181,11 +180,6 @@ class BookmarkBridgeTest : public testing::Test {
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_.get());
 
     if (enable_account_bookmarks) {
-      features_.InitWithFeatures(
-          /*enabled_features=*/
-          {syncer::kSyncEnableBookmarksInTransportMode,
-           syncer::kReadingListEnableSyncTransportModeUponSignIn},
-          /*disabled_features=*/{});
       bookmark_model_->CreateAccountPermanentFolders();
       if (load_reading_list_model) {
         // If the `account_reading_list_model` is not loaded, StartSyncing()
@@ -219,8 +213,6 @@ class BookmarkBridgeTest : public testing::Test {
         &clock_);
     return reading_list_model;
   }
-
-  base::test::ScopedFeatureList features_;
   base::SimpleTestClock clock_;
   content::BrowserTaskEnvironment task_environment_;
 

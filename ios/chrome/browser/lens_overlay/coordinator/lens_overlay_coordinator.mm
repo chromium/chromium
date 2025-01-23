@@ -457,6 +457,9 @@ const int kExpectedExitAnimationCount = 2;
     _associatedTabHelper->RecordSheetDimensionState(SheetDimensionStateHidden);
     _associatedTabHelper->ClearViewportSnapshot();
     _associatedTabHelper->UpdateSnapshot();
+    if (IsLensOverlaySameTabNavigationEnabled()) {
+      _associatedTabHelper->ClearInvokationNavigationId();
+    }
   }
 
   if (!animated) {

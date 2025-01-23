@@ -109,21 +109,17 @@ BASE_FEATURE(kEnableBookmarksSelectedTypeOnSigninForTesting,
              "EnableBookmarksSelectedTypeOnSigninForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kReadingListEnableSyncTransportModeUponSignIn,
              "ReadingListEnableSyncTransportModeUponSignIn",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
              base::FEATURE_DISABLED_BY_DEFAULT
-#endif
 );
 
 bool IsReadingListAccountStorageEnabled() {
   return base::FeatureList::IsEnabled(
       syncer::kReadingListEnableSyncTransportModeUponSignIn);
 }
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kSyncSharedTabGroupDataInTransportMode,
              "SyncSharedTabGroupDataInTransportMode",

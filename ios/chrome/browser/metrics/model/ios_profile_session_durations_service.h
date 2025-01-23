@@ -25,7 +25,7 @@ enum class SingleProfileSigninStatus;
 namespace syncer {
 class SyncService;
 class SyncSessionDurationsMetricsRecorder;
-}
+}  // namespace syncer
 
 namespace unified_consent {
 class MsbbSessionDurationsMetricsRecorder;

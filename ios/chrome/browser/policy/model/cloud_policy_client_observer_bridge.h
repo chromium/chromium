@@ -7,9 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/policy/core/common/cloud/cloud_policy_client.h"
-
 #include "base/scoped_observation.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 
 // Objective-C protocol mirroring
 // policy::CloudPolicyClient::Observer.

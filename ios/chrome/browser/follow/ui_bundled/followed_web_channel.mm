@@ -19,11 +19,13 @@
 }
 
 - (BOOL)isEqual:(id)object {
-  if (self == object)
+  if (self == object) {
     return YES;
+  }
 
-  if (![object isMemberOfClass:[FollowedWebChannel class]])
+  if (![object isMemberOfClass:[FollowedWebChannel class]]) {
     return NO;
+  }
 
   return [self isEqualToFollowedWebChannel:object];
 }

@@ -236,8 +236,6 @@ AccountProfileMapper::Assigner::Assigner(
 
   system_identity_manager_observation_.Observe(system_identity_manager_);
 
-  // TODO(crbug.com/355167413): Figure out how to keep pre-existing managed
-  // accounts in the personal profile.
   profile_to_gaia_ids_ = GetMappingFromProfileAttributes(
       system_identity_manager_, GetProfileAttributesStorage());
   // Ensure the mapping is populated and up-to-date.
@@ -480,36 +478,73 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
 
   const GaiaId gaia_id(identity.gaiaID);
 
-  // If the identity is already assigned to a profile, leave it there, even if
-  // it's the wrong type of profile (i.e. managed identity assigned to the
-  // personal profile). This can happen for pre-existing managed identities, and
-  // they should not be automatically migrated.
+  // Check whether the identity is already assigned to a profile.
   for (const auto& [profile_name, gaia_ids] : profile_to_gaia_ids_) {
-    if (gaia_ids.contains(gaia_id)) {
+    if (!gaia_ids.contains(gaia_id)) {
+      continue;
+    }
+    // Found the profile! Check if it's the right kind of profile.
+    bool is_personal_profile = (profile_name == GetPersonalProfileName());
+    if (is_personal_profile == !is_managed_account) {
+      // The account is already assigned to the right profile.
       return;
     }
+    // The account is assigned to the "wrong" profile (managed account in the
+    // personal profile, or vice versa). This can happen in two cases:
+    // 1. A managed account was already the primary account before
+    //    multi-profile was supported.
+    // 2. (Very rarely) The account's managed-ness status changed.
+    // In both cases, leave the account where it is iff it's currently the
+    // primary account in its profile.
+    // TODO(crbug.com/355167413): React to changes in the primary account -
+    // right now, any reassignment will likely only happen on the next browser
+    // restart.
+    bool is_primary_account = false;
+    if (profile_manager_) {
+      is_primary_account =
+          (gaia_id == GetProfileAttributesStorage()
+                          ->GetAttributesForProfileWithName(profile_name)
+                          .GetGaiaId());
+    } else {
+      CHECK_IS_TEST();
+    }
+    if (is_primary_account) {
+      // It's the primary account - leave the current assignment in place.
+      return;
+    }
+    // It's not the primary account, so allow re-assignment.
+    DetachGaiaIdFromProfile(GetProfileAttributesStorage(), profile_name,
+                            gaia_id);
   }
 
-  std::string new_profile_name;
+  // The account needs to be assigned (or re-assigned) to a profile.
+
+  std::string assigned_profile_name = GetPersonalProfileName();
   if (is_managed_account && profile_manager_) {
-    // Managed account, assign to a new dedicated profile.
-    new_profile_name = profile_manager_->ReserveNewProfileName();
-    DCHECK(!new_profile_name.empty());
-  } else {
-    // Consumer account, assign to the personal profile.
-    new_profile_name = GetPersonalProfileName();
+    // Managed account: Assign to a new dedicated profile, unless it's currently
+    // the primary account in the personal profile.
+    ProfileAttributesIOS attr =
+        GetProfileAttributesStorage()->GetAttributesForProfileWithName(
+            GetPersonalProfileName());
+    if (attr.GetGaiaId() != gaia_id) {
+      assigned_profile_name = profile_manager_->ReserveNewProfileName();
+      DCHECK(!assigned_profile_name.empty());
+    }
+    // Else: This managed account is the primary account in the personal
+    // profile. That can happen if it was signed in before multi-profile was
+    // supported. In that case, leave the account in the personal profile.
   }
-  AttachGaiaIdToProfile(GetProfileAttributesStorage(), new_profile_name,
+
+  AttachGaiaIdToProfile(GetProfileAttributesStorage(), assigned_profile_name,
                         gaia_id);
 }
 
 void AccountProfileMapper::Assigner::MaybeUpdateCachedMappingAndNotify() {
-  // Build the effective new mapping from the persisted mapping in profile
-  // attributes, plus the pending mappings.
+  // Get the new mapping as persisted in profile attributes.
   ProfileNameToGaiaIds new_mapping = GetMappingFromProfileAttributes(
       system_identity_manager_, GetProfileAttributesStorage());
 
-  // If the effective mapping has changed, update the cache and notify.
+  // If the mapping has changed, update the cache and notify.
   if (new_mapping != profile_to_gaia_ids_) {
     auto old_mapping = std::move(profile_to_gaia_ids_);
     profile_to_gaia_ids_ = std::move(new_mapping);

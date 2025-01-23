@@ -354,8 +354,9 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 }
 
 - (void)updateForFullscreenEnabled:(BOOL)enabled {
-  if (!enabled)
+  if (!enabled) {
     [self updateForFullscreenProgress:1.0];
+  }
 }
 
 - (void)animateFullscreenWithAnimator:(FullscreenAnimator*)animator {

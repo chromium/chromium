@@ -145,4 +145,7 @@ source_set("feedback_impl") {
       "//chromeos/version",
     ]
   }
+  if (is_win || is_mac) {
+    deps += [ "//chrome/browser/updater:browser_updater_client" ]
+  }
 }

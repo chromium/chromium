@@ -437,6 +437,14 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kV8AILanguageModel_PromptStreaming_Method,
           WebFeature::kV8AILanguageModelFactory_Create_Method,
           WebFeature::kMediaSessionEnterPictureInPicture,
+          WebFeature::kV8WasmMultiMemory,
+          WebFeature::kV8WasmMemory64,
+          WebFeature::kV8WasmGC,
+          WebFeature::kV8WebAssemblyJSStringBuiltins,
+          WebFeature::kV8WasmJavaScriptPromiseIntegration,
+          WebFeature::kV8WasmReturnCall,
+          WebFeature::kV8WasmExnRef,
+          WebFeature::kV8WasmExceptionHandling,
       }));
   return *opt_in_features;
 }

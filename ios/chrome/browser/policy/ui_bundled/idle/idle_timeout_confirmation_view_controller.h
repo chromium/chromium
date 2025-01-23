@@ -5,9 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_UI_BUNDLED_IDLE_IDLE_TIMEOUT_CONFIRMATION_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_POLICY_UI_BUNDLED_IDLE_IDLE_TIMEOUT_CONFIRMATION_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_confirmation_consumer.h"
-
 #import "base/timer/timer.h"
+#import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_confirmation_consumer.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 
 // View controller for the idle timeout confirmation dialog.

@@ -16,7 +16,6 @@
 // is not triggered again until the next version of What's New.
 // Note that we no longer write userDefault.
 bool WasWhatsNewUsed() {
-
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:kWhatsNewM116UsageEntryKey];
 }

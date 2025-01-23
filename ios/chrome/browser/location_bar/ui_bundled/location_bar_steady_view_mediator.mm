@@ -111,8 +111,9 @@
 }
 
 - (void)setWebContentAreaShowingOverlay:(BOOL)webContentAreaShowingOverlay {
-  if (_webContentAreaShowingOverlay == webContentAreaShowingOverlay)
+  if (_webContentAreaShowingOverlay == webContentAreaShowingOverlay) {
     return;
+  }
   _webContentAreaShowingOverlay = webContentAreaShowingOverlay;
   [self.consumer updateLocationShareable:[self isSharingEnabled]];
 }
@@ -130,13 +131,15 @@
 
 - (void)setWebContentAreaOverlayPresenter:
     (OverlayPresenter*)webContentAreaOverlayPresenter {
-  if (_webContentAreaOverlayPresenter)
+  if (_webContentAreaOverlayPresenter) {
     _webContentAreaOverlayPresenter->RemoveObserver(_overlayObserver.get());
+  }
 
   _webContentAreaOverlayPresenter = webContentAreaOverlayPresenter;
 
-  if (_webContentAreaOverlayPresenter)
+  if (_webContentAreaOverlayPresenter) {
     _webContentAreaOverlayPresenter->AddObserver(_overlayObserver.get());
+  }
 }
 
 #pragma mark - CRWWebStateObserver
@@ -249,8 +252,9 @@
 #pragma mark Location helpers
 
 - (NSString*)currentLocationString {
-  if (self.webContentAreaShowingHTTPAuthDialog)
+  if (self.webContentAreaShowingHTTPAuthDialog) {
     return l10n_util::GetNSString(IDS_IOS_LOCATION_BAR_SIGN_IN);
+  }
   std::u16string string = self.locationBarModel->GetURLForDisplay();
   return base::SysUTF16ToNSString(string);
 }
@@ -258,8 +262,9 @@
 // Data URLs (data://) should have their tail clipped when presented; while for
 // others (http://) it would be more appropriate to clip the head.
 - (BOOL)locationShouldClipTail {
-  if (self.webContentAreaShowingHTTPAuthDialog)
+  if (self.webContentAreaShowingHTTPAuthDialog) {
     return YES;
+  }
   GURL url = self.locationBarModel->GetURL();
   return url.SchemeIs(url::kDataScheme);
 }
@@ -287,8 +292,9 @@
 
 // The status text associated with the current location icon.
 - (NSString*)securityStatusText {
-  if (self.webContentAreaShowingHTTPAuthDialog)
+  if (self.webContentAreaShowingHTTPAuthDialog) {
     return nil;
+  }
   return base::SysUTF16ToNSString(
       self.locationBarModel->GetSecureAccessibilityText());
 }
@@ -298,8 +304,9 @@
 - (BOOL)isSharingEnabled {
   // Page sharing requires JavaScript execution, which is paused while overlays
   // are displayed over the web content area.
-  if (self.webContentAreaShowingOverlay)
+  if (self.webContentAreaShowingOverlay) {
     return NO;
+  }
 
   if (!self.currentWebState) {
     return NO;

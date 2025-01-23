@@ -138,7 +138,6 @@ struct SnapshotInfo {
                           base::BindRepeating(wrappedCompletion, weakSelf));
 }
 
-
 // Returns NO if WebState or the view is not ready for snapshot.
 - (BOOL)canTakeSnapshot {
   // This allows for easier unit testing of classes that use SnapshotGenerator.
@@ -182,17 +181,17 @@ struct SnapshotInfo {
   __block BOOL snapshotSuccess = YES;
   UIImage* image =
       [renderer imageWithActions:^(UIGraphicsImageRendererContext* UIContext) {
-          // Render the view's layer via `-renderInContext:`.
-          // To mitigate against crashes like crbug.com/1429512, ensure that
-          // the layer's position is valid. If not, mark the snapshotting as
-          // failed.
-          CALayer* layer = baseView.layer;
-          CGPoint pos = layer.position;
-          if (isnan(pos.x) || isnan(pos.y)) {
-            snapshotSuccess = NO;
-          } else {
-            [layer renderInContext:UIContext.CGContext];
-          }
+        // Render the view's layer via `-renderInContext:`.
+        // To mitigate against crashes like crbug.com/1429512, ensure that
+        // the layer's position is valid. If not, mark the snapshotting as
+        // failed.
+        CALayer* layer = baseView.layer;
+        CGPoint pos = layer.position;
+        if (isnan(pos.x) || isnan(pos.y)) {
+          snapshotSuccess = NO;
+        } else {
+          [layer renderInContext:UIContext.CGContext];
+        }
       }];
 
   if (!snapshotSuccess) {

@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_DEFAULT_PROMO_UI_BUNDLED_POST_DEFAULT_ABANDONMENT_FEATURES_H_
 
 #import "base/feature_list.h"
-
 #import "base/metrics/field_trial_params.h"
 
 // Feature flag that enables the post-default browser abandonment promo.

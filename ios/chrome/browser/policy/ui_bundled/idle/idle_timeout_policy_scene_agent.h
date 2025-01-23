@@ -5,9 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_UI_BUNDLED_IDLE_IDLE_TIMEOUT_POLICY_SCENE_AGENT_H_
 #define IOS_CHROME_BROWSER_POLICY_UI_BUNDLED_IDLE_IDLE_TIMEOUT_POLICY_SCENE_AGENT_H_
 
-#import "ios/chrome/browser/shared/coordinator/scene/observing_scene_state_agent.h"
-
 #import "ios/chrome/browser/enterprise/model/idle/idle_service.h"
+#import "ios/chrome/browser/shared/coordinator/scene/observing_scene_state_agent.h"
 
 @protocol ApplicationCommands;
 @protocol SceneUIProvider;

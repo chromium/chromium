@@ -28,6 +28,7 @@
 #import "testing/platform_test.h"
 
 using testing::_;
+using testing::UnorderedElementsAre;
 
 namespace {
 
@@ -784,12 +785,49 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
               GetIdentitiesForProfile(managed_profile_name));
 }
 
-// Tests that pre-existing identities which are already assigned to a profile
-// remain in that profile, even if they'd now be assigned to a different one.
-// This is important for managed accounts that pre-date the multi-profile
-// support, since those shouldn't be automatically moved into a new profile.
+// Tests that if a managed account was the primary account pre-multi-profile, it
+// remains the primary account in the personal profile (and does *not* get moved
+// to its own managed profile).
 TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
-       DoesNotReassignIdentities) {
+       AssignsPrimaryManagedAccountToPersonalProfile) {
+  // Separate profiles are only available in iOS 17+.
+  if (!@available(iOS 17, *)) {
+    return;
+  }
+  ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
+
+  // A managed identity exists on the device, and is set as the primary account
+  // in the personal profile. It is *not* assigned to the profile though (as in
+  // GetAttachedGaiaIds()), since the signin predates this mapping.
+  system_identity_manager_->AddIdentity(google_identity);
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS attr) {
+        attr.SetAuthenticationInfo(
+            GaiaId(google_identity.gaiaID),
+            base::SysNSStringToUTF8(google_identity.userFullName));
+        return attr;
+      }));
+
+  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+      system_identity_manager_, profile_manager_.get());
+
+  // The identity should have been attached to the personal profile (even though
+  // it's a managed identity), and no additional profile should've been
+  // registered.
+  EXPECT_THAT(profile_attributes_storage()
+                  ->GetAttributesForProfileWithName(kPersonalProfileName)
+                  .GetAttachedGaiaIds(),
+              UnorderedElementsAre(GaiaId(google_identity.gaiaID)));
+  EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
+}
+
+// Tests that a pre-existing identity which is the primary identity in a
+// profile remains assigned to that profile, even if it'd now be assigned to a
+// different one. This is important for managed accounts that pre-date the
+// multi-profile support, since those shouldn't be automatically moved into a
+// new profile.
+TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
+       DoesNotReassignPrimaryIdentity) {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
@@ -801,11 +839,14 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   system_identity_manager_->AddIdentity(gmail_identity1);
   system_identity_manager_->AddIdentity(google_identity);
 
-  // Both identities are already assigned to the personal profile. This is
-  // typically the case if the identities were added before multi-profile
-  // support was enabled.
+  // Both identities are already assigned to the personal profile, with the
+  // managed identity being the primary one. This can happen if the identities
+  // were added before multi-profile support was enabled.
   profile_attributes_storage()->UpdateAttributesForProfileWithName(
       kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS attr) {
+        attr.SetAuthenticationInfo(
+            GaiaId(google_identity.gaiaID),
+            base::SysNSStringToUTF8(google_identity.userFullName));
         attr.SetAttachedGaiaIds(
             {GaiaId(gmail_identity1.gaiaID), GaiaId(google_identity.gaiaID)});
         return attr;
@@ -816,14 +857,66 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
       system_identity_manager_, profile_manager_.get());
 
   // Both identities should still be attached to the personal profile.
-  EXPECT_EQ(profile_attributes_storage()
-                ->GetAttributesForProfileWithName(kPersonalProfileName)
-                .GetAttachedGaiaIds()
-                .size(),
-            2u);
+  EXPECT_THAT(profile_attributes_storage()
+                  ->GetAttributesForProfileWithName(kPersonalProfileName)
+                  .GetAttachedGaiaIds(),
+              UnorderedElementsAre(GaiaId(gmail_identity1.gaiaID),
+                                   GaiaId(google_identity.gaiaID)));
 
   // No additional profile should've been registered.
   EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
+}
+
+// Tests that if a managed account is assigned to the personal profile, but is
+// not the primary account of that profile, it gets reassigned into its own
+// dedicated profile.
+TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
+       ReassignsNonPrimaryIdentity) {
+  // Separate profiles are only available in iOS 17+.
+  if (!@available(iOS 17, *)) {
+    return;
+  }
+  ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
+
+  // A consumer identity and a managed identity already exist before the
+  // AccountProfileMapper is created.
+  system_identity_manager_->AddIdentity(gmail_identity1);
+  system_identity_manager_->AddIdentity(google_identity);
+
+  // Both identities are already assigned to the personal profile, but neither
+  // of them is the primary one. This can happen in the following scenario:
+  // * Pre-multi-profile, the managed account is the primary one.
+  // * Multi-profile gets enabled.
+  // * The managed account is signed out.
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS attr) {
+        // Note: No `attr.SetAuthenticationInfo(...)` call, so no primary
+        // account.
+        attr.SetAttachedGaiaIds(
+            {GaiaId(gmail_identity1.gaiaID), GaiaId(google_identity.gaiaID)});
+        return attr;
+      }));
+  ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
+
+  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+      system_identity_manager_, profile_manager_.get());
+
+  // The managed identity should have been reassigned to a new dedicated
+  // profile.
+  EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
+
+  const std::string managed_profile_name = FindCreatedProfileName(
+      /*known_profile_names=*/{kPersonalProfileName});
+
+  // Each identity should be attached to the appropriate profile.
+  EXPECT_THAT(profile_attributes_storage()
+                  ->GetAttributesForProfileWithName(kPersonalProfileName)
+                  .GetAttachedGaiaIds(),
+              UnorderedElementsAre(GaiaId(gmail_identity1.gaiaID)));
+  EXPECT_THAT(profile_attributes_storage()
+                  ->GetAttributesForProfileWithName(managed_profile_name)
+                  .GetAttachedGaiaIds(),
+              UnorderedElementsAre(GaiaId(google_identity.gaiaID)));
 }
 
 // Tests that the personal profile gets correctly converted into a managed

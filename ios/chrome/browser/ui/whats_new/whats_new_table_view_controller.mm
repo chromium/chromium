@@ -73,8 +73,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)reloadData {
   [self loadModel];
-  if (self.viewLoaded)
+  if (self.viewLoaded) {
     [self.tableView reloadData];
+  }
 }
 
 + (NSString*)accessibilityIdentifier {

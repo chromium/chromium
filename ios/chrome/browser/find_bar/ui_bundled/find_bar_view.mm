@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/find_bar/ui_bundled/find_bar_view.h"
 
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/find_bar/ui_bundled/find_bar_constants.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
@@ -56,8 +56,9 @@ const CGFloat kButtonLength = 44;
 - (void)didMoveToSuperview {
   [super didMoveToSuperview];
 
-  if (self.inputField.superview)
+  if (self.inputField.superview) {
     return;
+  }
 
   [self setupSubviews];
   [self setupConstraints];

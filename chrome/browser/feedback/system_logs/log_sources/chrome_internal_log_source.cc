@@ -5,6 +5,7 @@
 #include "chrome/browser/feedback/system_logs/log_sources/chrome_internal_log_source.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -16,6 +17,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
@@ -74,6 +76,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
+#include "chrome/browser/updater/browser_updater_client.h"
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -123,12 +126,16 @@ constexpr char kUsbKeyboardDetected[] = "usb_keyboard_detected";
 constexpr char kIsEnrolledToDomain[] = "enrolled_to_domain";
 constexpr char kInstallerBrandCode[] = "installer_brand_code";
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-constexpr char kUpdateErrorCode[] = "update_error_code";
-constexpr char kUpdateHresult[] = "update_hresult";
 constexpr char kInstallResultCode[] = "install_result_code";
 constexpr char kInstallLocation[] = "install_location";
 #endif
 #endif  // BUILDFLAG(IS_WIN)
+
+#if (BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)) || \
+    BUILDFLAG(IS_MAC)
+constexpr char kUpdateErrorCode[] = "update_error_code";
+constexpr char kUpdateHresult[] = "update_hresult";
+#endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 constexpr char kCpuArch[] = "cpu_arch";
@@ -436,6 +443,8 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
 #if BUILDFLAG(IS_WIN)
   PopulateEnrolledToDomain(response.get());
   PopulateInstallerBrandCode(response.get());
+#endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   PopulateLastUpdateState(response.get());
 #endif
 
@@ -676,5 +685,24 @@ void ChromeInternalLogSource::PopulateLastUpdateState(
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC)
+void ChromeInternalLogSource::PopulateLastUpdateState(
+    SystemLogsResponse* response) {
+  const std::optional<updater::UpdateService::UpdateState> update_state =
+      BrowserUpdaterClient::GetLastOnDemandUpdateState();
+  if (!update_state) {
+    return;  // There is nothing to include if no update check has completed.
+  }
+  response->emplace(
+      kUpdateErrorCode,
+      base::StrCat(
+          {base::NumberToString(static_cast<int>(update_state->error_category)),
+           "/", base::NumberToString(update_state->error_code)}));
+  // `extra_code1` is not an HRESULT on macOS, but has similar semantics.
+  response->emplace(kUpdateHresult,
+                    base::NumberToString(update_state->extra_code1));
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace system_logs

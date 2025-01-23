@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/metrics/model/mobile_session_shutdown_metrics_provider.h"
 
+#import <Foundation/Foundation.h>
+
 #import <memory>
 #import <string>
-
-#import <Foundation/Foundation.h>
 
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"

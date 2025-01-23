@@ -38,7 +38,6 @@ namespace {
 
 constexpr char kEmailFormUrl[] = "/email_signup_form.html";
 constexpr char kEmailFieldId[] = "email";
-constexpr char kFakeSuggestionLabel[] = "Lorem Ipsum";
 
 // Assert that a given plus address modal event of type `event_type` occurred
 // `count` times.
@@ -145,7 +144,8 @@ void ExpectModalTimeSample(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kEmailFieldId)];
 
-  NSString* suggestionLabel = base::SysUTF8ToNSString(kFakeSuggestionLabel);
+  NSString* suggestionLabel =
+      l10n_util::GetNSString(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT);
   id<GREYMatcher> userChip =
       [AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]
           ? grey_accessibilityLabel([NSString

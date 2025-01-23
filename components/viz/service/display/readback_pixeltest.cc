@@ -1022,17 +1022,16 @@ TEST_P(ReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
       SkYUVAPixmaps::FromExternalPixmaps(info, pixmaps.data());
   ri->WritePixelsYUV(shared_image->mailbox(), yuv_pixmap);
 
-  gpu::MailboxHolder mailbox_holder;
-  mailbox_holder.mailbox = shared_image->mailbox();
-
+  gpu::Mailbox mailbox = shared_image->mailbox();
+  gpu::SyncToken sync_token;
   // Create and wait on raster interface sync token for write pixels YUV.
-  ri->GenUnverifiedSyncTokenCHROMIUM(mailbox_holder.sync_token.GetData());
+  ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
 
   std::unique_ptr<CopyOutputResult> result = IssueCopyOutputRequestAndRender(
       RequestFormat(), RequestDestination(),
       base::BindLambdaForTesting([this, &result_selection,
-                                  &destination_subregion,
-                                  &mailbox_holder](CopyOutputRequest& request) {
+                                  &destination_subregion, &mailbox,
+                                  &sync_token](CopyOutputRequest& request) {
         // Build CopyOutputRequest based on test parameters.
         if (ScaleByHalf()) {
           request.SetUniformScaleRatio(2, 1);
@@ -1041,9 +1040,8 @@ TEST_P(ReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
         request.set_result_selection(result_selection);
 
         request.set_blit_request(BlitRequest(
-            destination_subregion.origin(), GetLetterboxingBehavior(),
-            mailbox_holder.mailbox, mailbox_holder.sync_token,
-            populates_gpu_memory_buffer()));
+            destination_subregion.origin(), GetLetterboxingBehavior(), mailbox,
+            sync_token, populates_gpu_memory_buffer()));
       }));
 
   // Check that a result was produced and is of the expected rect/size.
@@ -1068,7 +1066,7 @@ TEST_P(ReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
   ReadbackNV12Planes(gpu_service_holder_, *result, source_size, luma_plane,
                      chroma_planes);
 
-  sii->DestroySharedImage(mailbox_holder.sync_token, std::move(shared_image));
+  sii->DestroySharedImage(sync_token, std::move(shared_image));
 
   // Allocate new bitmap & populate it with Y & UV data.
   SkBitmap actual = GLScalerTestUtil::AllocateRGBABitmap(source_size);

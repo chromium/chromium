@@ -4,18 +4,20 @@
 
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_freeform_view_controller.h"
 
+#import <UIKit/UIKit.h>
+
 #import "base/logging.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/optimization_guide/optimization_guide_buildflags.h"
+#import "components/optimization_guide/proto/features/bling_prototyping.pb.h"
+#import "components/optimization_guide/proto/string_value.pb.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_mutator.h"
 #import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-#import "components/optimization_guide/proto/features/bling_prototyping.pb.h"
-#import "components/optimization_guide/proto/string_value.pb.h"
 
 namespace {
 
@@ -29,8 +31,9 @@ constexpr CGFloat kButtonStackViewSpacing = 10;
 
 @property(nonatomic, strong) UIButton* serverSideSubmitButton;
 @property(nonatomic, strong) UIButton* onDeviceSubmitButton;
+@property(nonatomic, strong) UITextField* systemInstructionsField;
 @property(nonatomic, strong) UITextField* queryField;
-@property(nonatomic, strong) UITextField* nameField;
+@property(nonatomic, strong) UISwitch* includePageContextSwitch;
 @property(nonatomic, strong) UITextView* responseContainer;
 
 @end
@@ -71,12 +74,30 @@ constexpr CGFloat kButtonStackViewSpacing = 10;
   UIView* queryFieldContainer = [self textFieldContainer];
   [queryFieldContainer addSubview:_queryField];
 
-  _nameField = [[UITextField alloc] init];
-  _nameField.translatesAutoresizingMaskIntoConstraints = NO;
-  _nameField.placeholder =
-      l10n_util::GetNSString(IDS_IOS_AI_PROTOTYPING_NAME_PLACEHOLDER);
-  UIView* nameFieldContainer = [self textFieldContainer];
-  [nameFieldContainer addSubview:_nameField];
+  _systemInstructionsField = [[UITextField alloc] init];
+  _systemInstructionsField.translatesAutoresizingMaskIntoConstraints = NO;
+  _systemInstructionsField.placeholder = l10n_util::GetNSString(
+      IDS_IOS_AI_PROTOTYPING_SYSTEM_INSTRUCTIONS_PLACEHOLDER);
+  UIView* systemInstructionsFieldContainer = [self textFieldContainer];
+  [systemInstructionsFieldContainer addSubview:_systemInstructionsField];
+
+  _includePageContextSwitch = [[UISwitch alloc] init];
+  _includePageContextSwitch.translatesAutoresizingMaskIntoConstraints = NO;
+  _includePageContextSwitch.on = YES;
+
+  UILabel* switchLabel = [[UILabel alloc] init];
+  switchLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  switchLabel.numberOfLines = 0;
+  switchLabel.text =
+      l10n_util::GetNSString(IDS_IOS_AI_PROTOTYPING_PAGE_CONTEXT_SWITCH);
+
+  UIStackView* switchContainer = [[UIStackView alloc] init];
+  switchContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  switchContainer.axis = UILayoutConstraintAxisHorizontal;
+  switchContainer.spacing = kButtonStackViewSpacing;
+  switchContainer.alignment = UIStackViewAlignmentCenter;
+  [switchContainer addArrangedSubview:_includePageContextSwitch];
+  [switchContainer addArrangedSubview:switchLabel];
 
   _serverSideSubmitButton = [UIButton buttonWithType:UIButtonTypeSystem];
   _serverSideSubmitButton.backgroundColor = [UIColor colorNamed:kBlueColor];
@@ -122,8 +143,8 @@ constexpr CGFloat kButtonStackViewSpacing = 10;
   _responseContainer.textContainer.lineBreakMode = NSLineBreakByWordWrapping;
 
   UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-    label, queryFieldContainer, nameFieldContainer, buttonStackView,
-    _responseContainer
+    label, systemInstructionsFieldContainer, queryFieldContainer,
+    switchContainer, buttonStackView, _responseContainer
   ]];
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.axis = UILayoutConstraintAxisVertical;
@@ -138,6 +159,17 @@ constexpr CGFloat kButtonStackViewSpacing = 10;
     [stackView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
                                              constant:-kHorizontalInset],
 
+    [systemInstructionsFieldContainer.heightAnchor
+        constraintEqualToAnchor:_systemInstructionsField.heightAnchor
+                       constant:kVerticalInset],
+    [systemInstructionsFieldContainer.widthAnchor
+        constraintEqualToAnchor:_systemInstructionsField.widthAnchor
+                       constant:kHorizontalInset],
+    [systemInstructionsFieldContainer.centerXAnchor
+        constraintEqualToAnchor:_systemInstructionsField.centerXAnchor],
+    [systemInstructionsFieldContainer.centerYAnchor
+        constraintEqualToAnchor:_systemInstructionsField.centerYAnchor],
+
     [queryFieldContainer.heightAnchor
         constraintEqualToAnchor:_queryField.heightAnchor
                        constant:kVerticalInset],
@@ -149,17 +181,6 @@ constexpr CGFloat kButtonStackViewSpacing = 10;
     [queryFieldContainer.centerYAnchor
         constraintEqualToAnchor:_queryField.centerYAnchor],
 
-    [nameFieldContainer.heightAnchor
-        constraintEqualToAnchor:_nameField.heightAnchor
-                       constant:kVerticalInset],
-    [nameFieldContainer.widthAnchor
-        constraintEqualToAnchor:_nameField.widthAnchor
-                       constant:kHorizontalInset],
-    [nameFieldContainer.centerXAnchor
-        constraintEqualToAnchor:_nameField.centerXAnchor],
-    [nameFieldContainer.centerYAnchor
-        constraintEqualToAnchor:_nameField.centerYAnchor],
-
     [_responseContainer.heightAnchor
         constraintGreaterThanOrEqualToAnchor:self.view.heightAnchor
                                   multiplier:
@@ -168,18 +189,19 @@ constexpr CGFloat kButtonStackViewSpacing = 10;
 }
 
 - (void)serverSideSubmitButtonPressed:(UIButton*)button {
-  optimization_guide::proto::BlingPrototypingRequest request;
-  request.set_query(base::SysNSStringToUTF8(_queryField.text));
-  request.set_name(base::SysNSStringToUTF8(_nameField.text));
-  [self.mutator executeServerQuery:request];
+  [self.mutator executeFreeformServerQuery:_queryField.text
+                        systemInstructions:_systemInstructionsField.text
+                        includePageContext:_includePageContextSwitch.isOn];
 }
 
 - (void)onDeviceSubmitButtonPressed:(UIButton*)button {
+  // TODO(crbug.com/387510419): Include stringified page context in prompt when
+  // on-device is better supported.
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   optimization_guide::proto::StringValue request;
   request.set_value(base::SysNSStringToUTF8(_queryField.text));
-  [self.mutator executeOnDeviceQuery:request];
-#endif
+  [self.mutator executeFreeformOnDeviceQuery:request];
+#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 }
 
 #pragma mark - AIPrototypingViewControllerProtocol

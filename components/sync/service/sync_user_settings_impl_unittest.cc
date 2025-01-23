@@ -166,10 +166,8 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{kSyncEnableBookmarksInTransportMode,
                             kReplaceSyncPromosWithSignInPromos,
-#if !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
                             kReadingListEnableSyncTransportModeUponSignIn,
-#endif  // !BUILDFLAG(IS_IOS)
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                             switches::kExplicitBrowserSigninUIOnDesktop,
 #endif
                             kEnablePreferencesAccountStorage},

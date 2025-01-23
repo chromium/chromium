@@ -701,7 +701,7 @@ class FindProvisioningProfileAction(Action):
     provisioning_profile_info = {}
     provisioning_profile = FindProvisioningProfile(args.mobileprovision_files,
                                                    args.bundle_id, False)
-    for key in ('team_identifier', 'name'):
+    for key in ('team_identifier', 'name', 'path'):
       if provisioning_profile:
         provisioning_profile_info[key] = getattr(provisioning_profile, key)
       else:

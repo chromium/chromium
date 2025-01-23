@@ -99,8 +99,9 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
     std::unique_ptr<em::ChromeUserProfileInfo> report =
         generator_.MaybeGenerate(path, name, ReportType::kFull);
 
-    if (!report)
+    if (!report) {
       return nullptr;
+    }
 
     EXPECT_EQ(name, report->name());
     EXPECT_EQ(path.AsUTF8Unsafe(), report->id());
