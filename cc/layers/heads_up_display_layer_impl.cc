@@ -160,6 +160,15 @@ class HudSoftwareBacking : public ResourcePool::SoftwareBacking {
   ~HudSoftwareBacking() override {
     DCHECK(shared_image);
     shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
+
+    shared_image.reset();
+    // |shared_image_interface| might be null when
+    // gpu::GpuChannel::~GpuChannel() during shutdown or when gpu is crashed.
+    // DestroySharedImage is a DeferredRequest, so it doesn't trigger IPC
+    // itself. Flush here to trigger IPC.
+    if (layer_tree_frame_sink->shared_image_interface()) {
+      layer_tree_frame_sink->shared_image_interface()->Flush();
+    }
   }
 
   raw_ptr<LayerTreeFrameSink> layer_tree_frame_sink;
