@@ -1342,8 +1342,6 @@ void URLRequestHttpJob::RestartTransaction() {
   override_response_headers_ = nullptr;  // See https://crbug.com/801237.
   receive_headers_end_ = base::TimeTicks();
 
-  ResetTimer();
-
   // Update the cookies, since the cookie store may have been updated from the
   // headers in the 401/407. Since cookies were already appended to
   // extra_headers, we need to strip them out before adding them again.
@@ -1371,6 +1369,7 @@ void URLRequestHttpJob::RestartTransactionForRefresh() {
 void URLRequestHttpJob::RestartTransactionWithAuth(
     const AuthCredentials& credentials) {
   auth_credentials_ = credentials;
+  ResetTimer();
   RestartTransaction();
 }
 
