@@ -412,6 +412,10 @@ void TaskManagerView::PerformFilter(DisplayCategory category) {
   // Model row count may differ, leading to off-screen row rendering. Recompute
   // scroll position.
   tab_table_->InvalidateLayout();
+
+  // Switch filters means deselecting all processes, so the end process button
+  // should also be disabled.
+  end_process_btn_->SetEnabled(false);
 }
 
 void TaskManagerView::TabSelectedAt(int index) {
