@@ -1236,27 +1236,19 @@ void DeleteSelectionCommand::DoApply(EditingState* editing_state) {
   const Node* downstream_container_node = downstream_end.ComputeContainerNode();
   const Element* downstream_container_root_element =
       RootEditableElement(*downstream_container_node);
-  bool root_will_stay_open_without_placeholder =
-      downstream_container_node == downstream_container_root_element;
 
   // Check to determine if the root will stay open without a placeholder.
   // This is done by checking if the downstream end is within a root editable
   // element that has an inline layout object, or if the downstream end's
   // container node is within a shadow host that is a text control.
-  if (RuntimeEnabledFeatures::
-          RootElementWithPlaceHolderAfterDeletingSelectionEnabled()) {
-    root_will_stay_open_without_placeholder |=
-        (downstream_container_root_element &&
-         downstream_container_root_element->GetLayoutObject() &&
-         downstream_container_root_element->GetLayoutObject()->IsInline()) ||
-        (downstream_container_node->OwnerShadowHost() &&
-         downstream_container_node->OwnerShadowHost()->IsTextControl());
-  } else {
-    root_will_stay_open_without_placeholder |=
-        (downstream_container_node->IsTextNode() &&
-         downstream_container_node->parentNode() ==
-             downstream_container_root_element);
-  }
+  bool root_will_stay_open_without_placeholder =
+      (downstream_container_node == downstream_container_root_element) ||
+      (downstream_container_root_element &&
+       downstream_container_root_element->GetLayoutObject() &&
+       downstream_container_root_element->GetLayoutObject()->IsInline()) ||
+      (downstream_container_node->OwnerShadowHost() &&
+       downstream_container_node->OwnerShadowHost()->IsTextControl());
+
   VisiblePosition visible_start = CreateVisiblePosition(
       selection_to_delete_.Start(),
       selection_to_delete_.IsRange() ? TextAffinity::kDownstream : affinity);
