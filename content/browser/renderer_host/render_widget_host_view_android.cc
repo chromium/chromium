@@ -1450,6 +1450,20 @@ bool RenderWidgetHostViewAndroid::OnTouchEvent(
     return true;
   }
 
+  // In case input transfer to Viz is supported, let `input_transfer_handler_`
+  // request the transfer on touch down, we are not expecting to receive the
+  // entire sequence until the touch cancel. Any events that might end up on
+  // Browser after transfer will be consumed by it.
+  // This should be called before FilteredGestureProvider::OnTouchEvent, since
+  // that results in events being queued to TouchDispositionGestureFilter. The
+  // transferred events living in TouchDispositionGestureFilter causes crash
+  // when a touch sequence is handled on Browser, as it will try to compare a
+  // lingering transferred event's touch id and touch id of acked event that the
+  // Browser is now handling.
+  if (input_transfer_handler_ && input_transfer_handler_->OnTouchEvent(event)) {
+    return true;
+  }
+
   ui::FilteredGestureProvider::TouchHandlingResult result =
       gesture_provider_.OnTouchEvent(event);
   if (!result.succeeded)
@@ -1460,14 +1474,6 @@ bool RenderWidgetHostViewAndroid::OnTouchEvent(
       false /* hovering */);
   if (web_event.GetType() == blink::WebInputEvent::Type::kUndefined)
     return false;
-
-  // In case input transfer to Viz is supported, let `input_transfer_handler_`
-  // request the transfer on touch down, we are not expecting to receive the
-  // entire sequence until the touch cancel. Any events that might end up on
-  // Browser after transfer will be consumed by it.
-  if (input_transfer_handler_ && input_transfer_handler_->OnTouchEvent(event)) {
-    return true;
-  }
 
   input_helper_->RouteOrForwardTouchEvent(web_event);
 

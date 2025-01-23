@@ -30,4 +30,11 @@ public class SurfaceInputTransferHandlerMap {
     public static Map<Integer, InputTransferHandler> getMap() {
         return LazyHolder.INSTANCE.mInputTransferHandlerMap;
     }
+
+    public static void remove(int surfaceId) {
+        InputTransferHandler handler = getMap().get(surfaceId);
+        assert handler != null;
+        handler.destroy();
+        getMap().remove(surfaceId);
+    }
 }
