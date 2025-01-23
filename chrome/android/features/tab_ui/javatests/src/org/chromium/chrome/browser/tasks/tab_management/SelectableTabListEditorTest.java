@@ -1143,6 +1143,7 @@ public class SelectableTabListEditorTest {
 
     @Test
     @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // crbug.com/391655333
     public void testToolbarMenuItem_BookmarkActionGroupsOnly() {
         prepareBlankTabGroup(2, false);
         List<Tab> tabs = getTabsInCurrentTabGroupModelFilter();
