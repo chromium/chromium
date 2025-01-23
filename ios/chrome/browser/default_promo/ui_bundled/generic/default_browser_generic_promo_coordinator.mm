@@ -50,9 +50,9 @@ using base::UserMetricsAction;
 
   ProfileIOS* profile = self.browser->GetProfile();
   _tracker = feature_engagement::TrackerFactory::GetForProfile(profile);
-    _mediator = [[DefaultBrowserGenericPromoMediator alloc] init];
+  _mediator = [[DefaultBrowserGenericPromoMediator alloc] init];
 
-    [self showPromo];
+  [self showPromo];
 }
 
 - (void)stop {

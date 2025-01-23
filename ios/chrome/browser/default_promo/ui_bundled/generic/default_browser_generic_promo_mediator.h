@@ -10,10 +10,8 @@
 // The mediator for the generic default browser promo.
 @interface DefaultBrowserGenericPromoMediator : NSObject
 
-
 // Handles user tap on primary action. Allows the user to open the iOS settings.
 - (void)didTapPrimaryActionButton;
-
 
 @end
 
