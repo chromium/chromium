@@ -1,16 +1,19 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.compositor.overlays.strip;
+package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
 import android.graphics.PointF;
 
 import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.ReorderType;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 
-interface ReorderStrategy {
+public interface ReorderStrategy {
     /**
      * Begin reordering the interacting view.
      *

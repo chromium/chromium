@@ -30,6 +30,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
+import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderStrategyBase;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
@@ -1037,7 +1038,7 @@ public class TabStripTest {
         Assert.assertFalse("|mFolioAttached| for tab1 should be false.", tab1.getFolioAttached());
         Assert.assertEquals(
                 "tab1 container bottom margin should match.",
-                ReorderDelegate.FOLIO_DETACHED_BOTTOM_MARGIN_DP,
+                ReorderStrategyBase.FOLIO_DETACHED_BOTTOM_MARGIN_DP,
                 tab1.getBottomMargin(),
                 0.f);
 
@@ -1054,7 +1055,7 @@ public class TabStripTest {
         Assert.assertTrue("|mFolioAttached| for tab1 should be true.", tab1.getFolioAttached());
         Assert.assertEquals(
                 "tab1 container bottom margin should match.",
-                ReorderDelegate.FOLIO_ATTACHED_BOTTOM_MARGIN_DP,
+                ReorderStrategyBase.FOLIO_ATTACHED_BOTTOM_MARGIN_DP,
                 tab1.getBottomMargin(),
                 0.f);
 

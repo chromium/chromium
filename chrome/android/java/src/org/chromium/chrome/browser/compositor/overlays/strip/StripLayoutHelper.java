@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
-import static org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.FOLIO_ATTACHED_BOTTOM_MARGIN_DP;
-import static org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.FOLIO_DETACHED_BOTTOM_MARGIN_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab.FOLIO_FOOT_LENGTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.INVALID_TIME;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MAX_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
+import static org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderStrategyBase.FOLIO_ATTACHED_BOTTOM_MARGIN_DP;
+import static org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderStrategyBase.FOLIO_DETACHED_BOTTOM_MARGIN_DP;
 
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
@@ -365,7 +365,7 @@ public class StripLayoutHelper
     private final ActionConfirmationManager mActionConfirmationManager;
     private final StripStacker mStripStacker = new ScrollingStripStacker();
     private final ScrollDelegate mScrollDelegate = new ScrollDelegate();
-    private final ReorderDelegate mReorderDelegate = new ReorderDelegate();
+    private ReorderDelegate mReorderDelegate = new ReorderDelegate();
     private final Callback<Boolean> mInReorderModeObserver = this::onInReorderModeChanged;
 
     // Common state used for animations on the strip triggered by independent actions including and
@@ -4157,6 +4157,10 @@ public class StripLayoutHelper
         mReorderDelegate.setInReorderModeForTesting(inReorderMode);
     }
 
+    void setReorderDelegateForTesting(ReorderDelegate delegate) {
+        mReorderDelegate = delegate;
+    }
+
     ReorderDelegate getReorderDelegateForTesting() {
         return mReorderDelegate;
     }
@@ -4319,13 +4323,5 @@ public class StripLayoutHelper
             @NonNull StripLayoutTab clickedTab, @NonNull PointF dragStartPointF) {
         startReorderMode(
                 dragStartPointF.x, dragStartPointF.y, clickedTab, ReorderType.START_DRAG_DROP);
-    }
-
-    void setLastOffsetXForTesting(float lastOffsetX) {
-        mReorderDelegate.setDragLastOffsetXForTesting(lastOffsetX); // IN-TEST
-    }
-
-    float getLastOffsetXForTesting() {
-        return mReorderDelegate.getDragLastOffsetXForTesting(); // IN-TEST
     }
 }
