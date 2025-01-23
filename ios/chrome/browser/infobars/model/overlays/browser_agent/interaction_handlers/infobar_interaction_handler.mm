@@ -41,6 +41,7 @@ void InfobarInteractionHandler::InfobarVisibilityChanged(
       handler = modal_handler_.get();
       break;
   }
-  if (handler)
+  if (handler) {
     handler->InfobarVisibilityChanged(infobar, visible);
+  }
 }

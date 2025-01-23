@@ -14,7 +14,7 @@ class InfoBarIOS;
 namespace autofill {
 class AutofillProfile;
 class AutofillSaveUpdateAddressProfileDelegateIOS;
-}
+}  // namespace autofill
 
 // Helper object that updates the model layer for interaction events with the
 // SaveAddressProfile infobar modal UI.

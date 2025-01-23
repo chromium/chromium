@@ -5,11 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_INFOBARS_MODEL_TEST_FAKE_INFOBAR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_INFOBARS_MODEL_TEST_FAKE_INFOBAR_DELEGATE_H_
 
-#include "components/infobars/core/confirm_infobar_delegate.h"
-
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
 #include "ui/base/models/image_model.h"
 
 // Fake version of InfoBarDelegate.
