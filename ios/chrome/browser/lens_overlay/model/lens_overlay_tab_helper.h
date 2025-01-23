@@ -75,6 +75,9 @@ class LensOverlayTabHelper : public LensOverlaySnapshotControllerDelegate,
   // Clears the in memory viewport snapshot.
   void ClearViewportSnapshot() { viewport_snapshot_ = nil; }
 
+  // Clears the recorded invocation navigation id.
+  void ClearInvokationNavigationId() { invokation_navigation_id_ = 0; }
+
   // Records a volatile snapshot of the viewport window.
   void RecordViewportSnaphot();
 
