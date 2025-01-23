@@ -24,7 +24,10 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#else
 // gn check doesn't understand this conditional, hence the nogncheck directives
 // below.
 #include "base/containers/fixed_flat_set.h"
@@ -1156,14 +1159,26 @@ void ExtensionTabUtil::CreateTab(
   if (browser_created && (browser != params.browser))
     browser->window()->Close();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // static
 void ExtensionTabUtil::ForEachTab(
     base::RepeatingCallback<void(WebContents*)> callback) {
+#if !BUILDFLAG(IS_ANDROID)
   for (auto* web_contents : AllTabContentses())
     callback.Run(web_contents);
+#else
+  // Android has its own notion of the tab strip and cannot use the code above.
+  for (TabModel* tab_model : TabModelList::models()) {
+    int tab_count = tab_model->GetTabCount();
+    for (int i = 0; i < tab_count; ++i) {
+      callback.Run(tab_model->GetWebContentsAt(i));
+    }
+  }
+#endif
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // static
 WindowController* ExtensionTabUtil::GetWindowControllerOfTab(
     const WebContents* web_contents) {
