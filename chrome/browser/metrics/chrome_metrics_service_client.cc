@@ -197,6 +197,10 @@
 #include "chrome/notification_helper/notification_helper_constants.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/metrics/google_update_metrics_provider_mac.h"
+#endif
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #include "components/metrics/motherboard_metrics_provider.h"
 #endif
@@ -870,6 +874,11 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<TPMMetricsProvider>());
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC)
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<GoogleUpdateMetricsProviderMac>());
+#endif
 
 // TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.

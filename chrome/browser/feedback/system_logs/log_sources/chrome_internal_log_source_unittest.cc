@@ -4,6 +4,9 @@
 
 #include "chrome/browser/feedback/system_logs/log_sources/chrome_internal_log_source.h"
 
+#include <memory>
+#include <vector>
+
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/branding_buildflags.h"
@@ -20,6 +23,12 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
+#include "chrome/browser/metrics/chrome_metrics_service_client.h"
+#include "chrome/browser/updater/browser_updater_client.h"
+#include "chrome/browser/updater/browser_updater_client_testutils.h"
+#include "chrome/updater/constants.h"       // nogncheck
+#include "chrome/updater/update_service.h"  // nogncheck
+#include "chrome/updater/updater_scope.h"   // nogncheck
 #endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
@@ -193,6 +202,24 @@ TEST_F(ChromeInternalLogSourceTest, RecordedAuthEventsPresent) {
             "login_offline,login_screen_exit_success,");
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(ChromeInternalLogSourceTest, UpdaterDataPresent) {
+  base::RunLoop loop;
+  BrowserUpdaterClient::Create(
+      updater::MakeFakeService(updater::UpdateService::Result::kSuccess, {}),
+      updater::UpdaterScope::kUser)
+      ->CheckForUpdate(base::BindLambdaForTesting(
+          [&](const updater::UpdateService::UpdateState& status) {
+            loop.QuitWhenIdle();
+          }));
+  loop.Run();
+
+  std::unique_ptr<SystemLogsResponse> response = GetChromeInternalLogs();
+  EXPECT_EQ(response->at("update_error_code"), "0/0");
+  EXPECT_EQ(response->at("update_hresult"), "0");
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
 }  // namespace system_logs
