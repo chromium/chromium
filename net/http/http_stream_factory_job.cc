@@ -517,6 +517,9 @@ void HttpStreamFactory::Job::RunLoop(int result) {
   // while doing anything other than waiting to establish a connection.
   spdy_session_request_.reset();
 
+  // Record histograms which are required for the end of session creation.
+  RecordCompletionHistograms(result);
+
   if ((job_type_ == PRECONNECT) || (job_type_ == PRECONNECT_DNS_ALPN_H3)) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -1279,21 +1282,57 @@ bool HttpStreamFactory::Job::ShouldThrottleConnectForSpdy() const {
 
 void HttpStreamFactory::Job::RecordPreconnectHistograms(int result) {
   CHECK(job_type_ == PRECONNECT || job_type_ == PRECONNECT_DNS_ALPN_H3);
+  constexpr std::string_view kHistogramBase =
+      "Net.SessionCreate.GoogleSearch.Preconnect";
   if (!IsGoogleHost(destination_.host())) {
     return;
   }
+  bool is_session_reuse = false;
   if (using_quic_) {
-    constexpr std::string_view kHistogramName =
-        "Net.SessionCreate.GoogleSearch.Preconnect.Quic.CompletionResult";
+    auto completion_result_histogram =
+        base::StrCat({kHistogramBase, ".Quic.CompletionResult"});
     // TODO(crbug.com/376304027): Expand this to non-Quic as well. Currently,
     // H1 and H2 does not return precise failure reason.
-    base::UmaHistogramSparse(kHistogramName, -result);
+    base::UmaHistogramSparse(completion_result_histogram, -result);
     base::UmaHistogramSparse(
-        base::StrCat({kHistogramName, job_type_ == PRECONNECT
-                                          ? ".PreconnectJob"
-                                          : ".PreconnectDnsAlpnH3Job"}),
+        base::StrCat({completion_result_histogram,
+                      job_type_ == PRECONNECT ? ".PreconnectJob"
+                                              : ".PreconnectDnsAlpnH3Job"}),
         -result);
+    is_session_reuse = using_existing_quic_session_;
+  } else {
+    is_session_reuse = existing_spdy_session_ != nullptr;
   }
+
+  base::UmaHistogramBoolean(
+      base::StrCat({kHistogramBase, using_quic_ ? ".Quic" : ".Spdy",
+                    ".IsSessionReused"}),
+      is_session_reuse);
+}
+
+void HttpStreamFactory::Job::RecordCompletionHistograms(int result) {
+  constexpr std::string_view kHistogramBase = "Net.SessionCreate";
+  bool is_session_reuse = using_quic_ ? using_existing_quic_session_
+                                      : existing_spdy_session_ != nullptr;
+  // We only record session creation which succeeded and the ones that we
+  // created a new session.
+  if (result != OK || is_session_reuse) {
+    return;
+  }
+  if (request_info_.traffic_annotation.is_valid()) {
+    base::UmaHistogramSparse(
+        base::StrCat(
+            {kHistogramBase, using_quic_ ? ".Quic" : ".Spdy",
+             ".TrafficAnnotation",
+             IsGoogleHostWithAlpnH3(destination_.host()) ? ".GoogleHost" : ""}),
+        request_info_.traffic_annotation.unique_id_hash_code);
+  }
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {kHistogramBase, using_quic_ ? ".Quic" : ".Spdy",
+           ".HasTrafficAnnotation",
+           IsGoogleHostWithAlpnH3(destination_.host()) ? ".GoogleHost" : ""}),
+      request_info_.traffic_annotation.is_valid());
 }
 
 }  // namespace net

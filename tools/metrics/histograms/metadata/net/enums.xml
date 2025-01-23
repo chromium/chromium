@@ -2737,6 +2737,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Both"/>
 </enum>
 
+<enum name="TrafficAnnotationUniqueIdHash">
+  <int value="29693511" label="loading_predictor_preconnect"/>
+  <int value="81815349" label="search_engine_preconnect"/>
+  <int value="131223974" label="network_hints_preconnect"/>
+</enum>
+
 <!-- LINT.IfChange(TrustTokenOperationStatus) -->
 
 <enum name="TrustTokenOperationStatus">

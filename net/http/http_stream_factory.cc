@@ -102,6 +102,7 @@ HttpStreamFactory::StreamRequestInfo::StreamRequestInfo(
     const HttpRequestInfo& http_request_info)
     : method(http_request_info.method),
       network_anonymization_key(http_request_info.network_anonymization_key),
+      traffic_annotation(http_request_info.traffic_annotation),
       is_http1_allowed(!http_request_info.upload_data_stream ||
                        http_request_info.upload_data_stream->AllowHTTP1()),
       load_flags(http_request_info.load_flags),
