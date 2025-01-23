@@ -20,6 +20,9 @@
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 
 namespace {
+// Max number of unscoped extension suggestions to send per extension.
+constexpr int kMaxSuggestionsPerExtension = 4;
+
 constexpr auto kReservedGroupIdMap =
     base::MakeFixedFlatMap<size_t, omnibox::GroupId>(
         {{0, omnibox::GROUP_UNSCOPED_EXTENSION_1},
@@ -75,8 +78,13 @@ void UnscopedExtensionProviderDelegateImpl::OnOmniboxSuggestionsReady(
     const std::string& extension_id) {
   CHECK(suggestions);
 
-  // Discard suggestions with a stale request ID.
-  if (suggestions->request_id != current_request_id_) {
+  // Discard suggestions
+  // 1) with a stale request ID's.
+  // 2) that come from an extension that has already returned suggestions.
+  // 3) if 2 extensions have already returned suggestions.
+  if (suggestions->request_id != current_request_id_ ||
+      base::Contains(extension_id_to_group_id_map_, extension_id) ||
+      next_available_group_index_ == kReservedGroupIdMap.size()) {
     return;
   }
 
@@ -84,33 +92,32 @@ void UnscopedExtensionProviderDelegateImpl::OnOmniboxSuggestionsReady(
   const TemplateURL* template_url = turl_service->FindTemplateURLForExtension(
       extension_id, TemplateURL::OMNIBOX_API_EXTENSION);
 
-  if (!base::Contains(extension_id_to_group_id_map_, extension_id)) {
-    if (next_available_group_index_ == kReservedGroupIdMap.size()) {
-      // Reached max number of groups that can be assigned to an extension.
-      // Discard suggestions from this extension.
-      return;
-    }
-    // This extension doesn't already have an associated groupId. Give it the
-    // next available groupId, and give the group the corresponding header for
-    // the extension. If the max number of extensions have been assigned a
-    // header, don't assign headers to further extensions.
-    const omnibox::GroupId current_group_id =
-        kReservedGroupIdMap.at(next_available_group_index_++);
-    extension_id_to_group_id_map_[extension_id] = current_group_id;
+  // This extension doesn't already have an associated groupId. Give it the
+  // next available groupId, and give the group the corresponding header for
+  // the extension. If the max number of extensions have been assigned a
+  // header, don't assign headers to further extensions.
+  const omnibox::GroupId current_group_id =
+      kReservedGroupIdMap.at(next_available_group_index_++);
+  extension_id_to_group_id_map_[extension_id] = current_group_id;
 
-    CHECK_LT(next_available_section_index_, kReservedSectionMap.size());
-    const omnibox::GroupSection current_section =
-        kReservedSectionMap.at(next_available_section_index_++);
+  CHECK_LT(next_available_section_index_, kReservedSectionMap.size());
+  const omnibox::GroupSection current_section =
+      kReservedSectionMap.at(next_available_section_index_++);
 
-    omnibox::GroupConfig group;
-    group.set_section(current_section);
-    group.set_render_type(omnibox::GroupConfig_RenderType_DEFAULT_VERTICAL);
-    group.set_header_text(base::UTF16ToUTF8(template_url->keyword()));
-    provider_->AddToSuggestionGroupsMap(current_group_id, std::move(group));
-  }
+  omnibox::GroupConfig group;
+  group.set_section(current_section);
+  group.set_render_type(omnibox::GroupConfig_RenderType_DEFAULT_VERTICAL);
+  group.set_header_text(base::UTF16ToUTF8(template_url->keyword()));
+  provider_->AddToSuggestionGroupsMap(current_group_id, std::move(group));
 
   int first_relevance = 10000000;
   int relevance_increment = 1;
+
+  // If the number of suggestions already sent from the extension is greater
+  // than the allowed limit, resize the extension suggestion results.
+  if (suggestions->suggest_results.size() > kMaxSuggestionsPerExtension) {
+    suggestions->suggest_results.resize(kMaxSuggestionsPerExtension);
+  }
 
   for (const auto& suggestion : suggestions->suggest_results) {
     // TODO(379141010): calculate relevance.

@@ -1207,6 +1207,74 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, UnscopedSuggestionGrouping) {
   }
 }
 
+// Tests that unscoped extensions are limited to sending four suggestions.
+IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, LimitSuggestions) {
+  constexpr char kManifest[] =
+      R"({
+           "name": "Basic Send Suggestions",
+           "manifest_version": 2,
+           "version": "0.1",
+           "omnibox": { "keyword": "alpha" },
+           "background": { "scripts": [ "background.js" ], "persistent": true },
+           "permissions" : [ "omnibox.directInput" ]
+         })";
+
+  constexpr char kBackground[] =
+      R"(
+         chrome.omnibox.onInputChanged.addListener((text, suggest) => {
+           suggest([
+             {content: 'first', description: 'description'},
+             {content: 'second', description: 'description'},
+             {content: 'third', description: 'description'},
+             {content: 'fourth', description: 'description'},
+             {content: 'fifth', description: 'description'},
+             {content: 'sixth', description: 'description'},
+           ]);
+         });)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  AutocompleteController* autocomplete_controller = GetAutocompleteController();
+  chrome::FocusLocationBar(browser());
+
+  // Prevent the stop timer from killing the hints fetch early, which might
+  // cause test flakiness due to timeout.
+  autocomplete_controller->SetStartStopTimerDurationForTesting(
+      base::Seconds(20));
+
+  // Test that our extension can send suggestions back to us.
+  AutocompleteInput input(u"input", metrics::OmniboxEventProto::NTP,
+                          ChromeAutocompleteSchemeClassifier(profile()));
+  autocomplete_controller->Start(input);
+  WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+
+  const AutocompleteResult& result = autocomplete_controller->result();
+  // Check if 4 suggestions are received (+1 for the default search entry).
+  ASSERT_EQ(5U, result.size()) << AutocompleteResultAsString(result);
+
+  // Second suggestion is given the first extension group and has a header of
+  // "alpha".
+  {
+    EXPECT_EQ(AutocompleteProvider::TYPE_UNSCOPED_EXTENSION,
+              result.match_at(1).provider->type());
+    EXPECT_EQ(u"alpha", result.GetHeaderForSuggestionGroup(
+                            *result.match_at(1).suggestion_group_id));
+    EXPECT_EQ(u"first", result.match_at(1).fill_into_edit);
+  }
+  {
+    EXPECT_EQ(AutocompleteProvider::TYPE_UNSCOPED_EXTENSION,
+              result.match_at(4).provider->type());
+    EXPECT_EQ(omnibox::GROUP_UNSCOPED_EXTENSION_1,
+              result.match_at(4).suggestion_group_id);
+    EXPECT_EQ(u"fourth", result.match_at(4).fill_into_edit);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          UnscopedOmniboxApiTest,
                          testing::Values(ContextType::kServiceWorker));
