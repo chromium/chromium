@@ -54,8 +54,9 @@ class OverlayPresenterImplTest : public PlatformTest {
     presenter().AddObserver(&observer_);
   }
   ~OverlayPresenterImplTest() override {
-    if (browser_)
+    if (browser_) {
       presenter().RemoveObserver(&observer_);
+    }
   }
   WebStateList* web_state_list() { return browser_->GetWebStateList(); }
   web::WebState* active_web_state() {
@@ -71,8 +72,9 @@ class OverlayPresenterImplTest : public PlatformTest {
   MockOverlayPresenterObserver& observer() { return observer_; }
 
   OverlayRequestQueueImpl* GetQueueForWebState(web::WebState* web_state) {
-    if (!web_state)
+    if (!web_state) {
       return nullptr;
+    }
     OverlayRequestQueueImpl::Container::CreateForWebState(web_state);
     return OverlayRequestQueueImpl::Container::FromWebState(web_state)
         ->QueueForModality(OverlayModality::kWebContentArea);
@@ -82,14 +84,16 @@ class OverlayPresenterImplTest : public PlatformTest {
                                 size_t index,
                                 bool expect_presentation = true) {
     OverlayRequestQueueImpl* queue = GetQueueForWebState(web_state);
-    if (!queue)
+    if (!queue) {
       return nullptr;
+    }
     std::unique_ptr<OverlayRequest> inserted_request =
         OverlayRequest::CreateWithConfig<FakeOverlayUserData>();
     OverlayRequest* request = inserted_request.get();
-    if (expect_presentation)
+    if (expect_presentation) {
       EXPECT_CALL(observer(), WillShowOverlay(&presenter(), request,
                                               /*initial_presentation=*/true));
+    }
     GetQueueForWebState(web_state)->InsertRequest(index,
                                                   std::move(inserted_request));
     return request;

@@ -73,8 +73,9 @@
 
 - (void)configureConsumer {
   DefaultInfobarOverlayRequestConfig* config = self.config;
-  if (!self.consumer || !config)
+  if (!self.consumer || !config) {
     return;
+  }
 
   autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
       self.saveCardDelegate;

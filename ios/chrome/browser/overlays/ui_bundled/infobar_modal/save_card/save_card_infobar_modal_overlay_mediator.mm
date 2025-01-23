@@ -98,13 +98,15 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
 }
 
 - (void)setConsumer:(id<InfobarSaveCardModalConsumer>)consumer {
-  if (_consumer == consumer)
+  if (_consumer == consumer) {
     return;
+  }
   _consumer = consumer;
 
   DefaultInfobarOverlayRequestConfig* config = self.config;
-  if (!_consumer || !config)
+  if (!_consumer || !config) {
     return;
+  }
 
   autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
       self.saveCardDelegate;

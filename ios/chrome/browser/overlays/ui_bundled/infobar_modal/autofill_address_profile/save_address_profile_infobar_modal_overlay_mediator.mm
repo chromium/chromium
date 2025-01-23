@@ -42,14 +42,16 @@ using save_address_profile_infobar_modal_responses::NoThanksViewAction;
 }
 
 - (void)setConsumer:(id<InfobarSaveAddressProfileModalConsumer>)consumer {
-  if (_consumer == consumer)
+  if (_consumer == consumer) {
     return;
+  }
 
   _consumer = consumer;
 
   SaveAddressProfileModalRequestConfig* config = self.config;
-  if (!_consumer || !config)
+  if (!_consumer || !config) {
     return;
+  }
 
   NSDictionary* prefs = @{
     kAddressPrefKey : base::SysUTF16ToNSString(config->address()),
@@ -75,14 +77,16 @@ using save_address_profile_infobar_modal_responses::NoThanksViewAction;
 
 - (void)setEditAddressConsumer:
     (id<InfobarEditAddressProfileModalConsumer>)editAddressConsumer {
-  if (_editAddressConsumer == editAddressConsumer)
+  if (_editAddressConsumer == editAddressConsumer) {
     return;
+  }
 
   _editAddressConsumer = editAddressConsumer;
 
   SaveAddressProfileModalRequestConfig* config = self.config;
-  if (!_editAddressConsumer || !config)
+  if (!_editAddressConsumer || !config) {
     return;
+  }
 
   [_editAddressConsumer setIsEditForUpdate:config->IsUpdateModal()];
 

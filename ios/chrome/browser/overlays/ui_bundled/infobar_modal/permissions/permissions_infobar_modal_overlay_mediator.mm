@@ -36,8 +36,9 @@
 #pragma mark - Public
 
 - (void)setConsumer:(id<PermissionsConsumer>)consumer {
-  if (_consumer == consumer)
+  if (_consumer == consumer) {
     return;
+  }
 
   _consumer = consumer;
 

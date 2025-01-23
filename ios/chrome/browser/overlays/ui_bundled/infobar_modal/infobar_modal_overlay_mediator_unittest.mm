@@ -20,7 +20,7 @@
 namespace {
 // Request ConfigType used for tests.
 DEFINE_TEST_OVERLAY_REQUEST_CONFIG(ModalConfig);
-}
+}  // namespace
 
 // Mediator used in tests.
 @interface FakeInfobarModalOverlayMediator : InfobarModalOverlayMediator

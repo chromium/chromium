@@ -8,16 +8,18 @@
 
 bool OverlayPresentationContextSupportsContainedUI(
     OverlayPresentationContext* context) {
-  if (!context)
+  if (!context) {
     return false;
+  }
   return context->GetPresentationCapabilities() &
          OverlayPresentationContext::UIPresentationCapabilities::kContained;
 }
 
 bool OverlayPresentationContextSupportsPresentedUI(
     OverlayPresentationContext* context) {
-  if (!context)
+  if (!context) {
     return false;
+  }
   return context->GetPresentationCapabilities() &
          OverlayPresentationContext::UIPresentationCapabilities::kPresented;
 }

@@ -7,10 +7,9 @@
 
 #include <vector>
 
-#import "ios/chrome/browser/overlays/model/public/overlay_request_queue_callback_installer.h"
-
 #include "base/scoped_observation.h"
 #import "ios/chrome/browser/overlays/model/overlay_request_queue_impl.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue_callback_installer.h"
 
 class OverlayRequestQueueCallbackInstallerImpl
     : public OverlayRequestQueueCallbackInstaller {

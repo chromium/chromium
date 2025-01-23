@@ -52,8 +52,9 @@ using autofill_address_profile_infobar_overlays::
 @implementation SaveAddressProfileInfobarBannerOverlayMediator (ConsumerSupport)
 
 - (void)configureConsumer {
-  if (!self.consumer || !self.config)
+  if (!self.consumer || !self.config) {
     return;
+  }
 
   [self.consumer
       setButtonText:base::SysUTF16ToNSString(self.config->button_label_text())];

@@ -27,8 +27,9 @@ using alert_overlays::AlertRequest;
 #pragma mark - Accessors
 
 - (void)setAlertMediator:(AlertOverlayMediator*)alertMediator {
-  if ([self.alertMediator isEqual:alertMediator])
+  if ([self.alertMediator isEqual:alertMediator]) {
     return;
+  }
   self.alertMediator.dataSource = nil;
   self.mediator = alertMediator;
   self.alertMediator.dataSource = self;
@@ -74,8 +75,9 @@ using alert_overlays::AlertRequest;
 }
 
 - (void)startAnimated:(BOOL)animated {
-  if (self.started)
+  if (self.started) {
     return;
+  }
   self.alertViewController = [[AlertViewController alloc] init];
   self.alertViewController.modalPresentationStyle =
       UIModalPresentationOverCurrentContext;
@@ -95,8 +97,9 @@ using alert_overlays::AlertRequest;
 }
 
 - (void)stopAnimated:(BOOL)animated {
-  if (!self.started)
+  if (!self.started) {
     return;
+  }
 
   self.started = NO;
   [self.presenter dismissAnimated:animated];
