@@ -19,6 +19,7 @@ namespace content {
 inline constexpr char kChromeDevToolsScheme[] = "devtools";
 inline constexpr char kChromeErrorScheme[] = "chrome-error";
 inline constexpr char kChromeUIScheme[] = "chrome";  // Used for WebUIs.
+inline constexpr char kChromeNativeScheme[] = "chrome-native";
 inline constexpr char kChromeUIUntrustedScheme[] = "chrome-untrusted";
 inline constexpr char kViewSourceScheme[] = "view-source";
 #if BUILDFLAG(IS_CHROMEOS)
