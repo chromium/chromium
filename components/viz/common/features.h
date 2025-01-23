@@ -90,7 +90,6 @@ VIZ_COMMON_EXPORT extern const base::FeatureParam<int>
 #endif
 
 #if BUILDFLAG(IS_MAC)
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kCVDisplayLinkBeginFrameSource);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kVSyncAlignedPresent);
 #endif
 
@@ -166,7 +165,6 @@ VIZ_COMMON_EXPORT bool ShouldOnBeginFrameThrottleVideo();
 VIZ_COMMON_EXPORT bool IsOnBeginFrameAcksEnabled();
 VIZ_COMMON_EXPORT bool ShouldDrawImmediatelyWhenInteractive();
 VIZ_COMMON_EXPORT std::optional<double> SnapshotEvictedRootSurfaceScale();
-VIZ_COMMON_EXPORT bool IsCVDisplayLinkBeginFrameSourceEnabled();
 VIZ_COMMON_EXPORT bool IsVSyncAlignedPresentEnabled();
 VIZ_COMMON_EXPORT bool ShouldLogFrameQuadInfo();
 VIZ_COMMON_EXPORT bool IsUsingFrameIntervalDecider();

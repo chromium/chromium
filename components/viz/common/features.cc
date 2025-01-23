@@ -252,15 +252,8 @@ const base::FeatureParam<int> kCALayerNewLimitManyVideos{&kCALayerNewLimit,
 #endif
 
 #if BUILDFLAG(IS_MAC)
-// Use the system CVDisplayLink callbacks for the BeginFrame source, so
-// BeginFrame is aligned with HW VSync.
-BASE_FEATURE(kCVDisplayLinkBeginFrameSource,
-             "CVDisplayLinkBeginFrameSource",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Whether the presentation should be delayed until the next CVDisplayLink
-// callback when kCVDisplayLinkBeginFrameSource is enabled. This flag has no
-// effect if kCVDisplayLinkBeginFrameSource is disabled.
+// callback.
 BASE_FEATURE(kVSyncAlignedPresent,
              "VSyncAlignedPresent",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -618,10 +611,6 @@ bool IsUsingFrameIntervalDecider() {
 }
 
 #if BUILDFLAG(IS_MAC)
-bool IsCVDisplayLinkBeginFrameSourceEnabled() {
-  return base::FeatureList::IsEnabled(features::kCVDisplayLinkBeginFrameSource);
-}
-
 bool IsVSyncAlignedPresentEnabled() {
   return base::FeatureList::IsEnabled(features::kVSyncAlignedPresent);
 }

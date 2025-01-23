@@ -184,19 +184,11 @@ RootCompositorFrameSinkImpl::Create(
                 restart_id, base::SingleThreadTaskRunner::GetCurrentDefault());
       }
 #elif BUILDFLAG(IS_MAC)
-      if (features::IsCVDisplayLinkBeginFrameSourceEnabled()) {
         external_begin_frame_source =
             std::make_unique<ExternalBeginFrameSourceMac>(
                 restart_id, params->renderer_settings.display_id,
                 output_surface.get());
         created_external_begin_frame_source_mac = true;
-      } else {
-        auto time_source = std::make_unique<DelayBasedTimeSource>(
-            base::SingleThreadTaskRunner::GetCurrentDefault().get());
-        synthetic_begin_frame_source =
-            std::make_unique<DelayBasedBeginFrameSourceMac>(
-                std::move(time_source), restart_id);
-      }
 #endif
       if (!external_begin_frame_source && !synthetic_begin_frame_source) {
         auto time_source = std::make_unique<DelayBasedTimeSource>(
