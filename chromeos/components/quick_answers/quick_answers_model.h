@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_QUICK_ANSWERS_QUICK_ANSWERS_MODEL_H_
 #define CHROMEOS_COMPONENTS_QUICK_ANSWERS_QUICK_ANSWERS_MODEL_H_
 
+#include <compare>
 #include <string>
 #include <vector>
 
@@ -306,6 +307,9 @@ class ConversionRule {
   const std::string& category() const { return category_; }
   const std::string& unit_name() const { return unit_name_; }
 
+  friend bool operator==(const ConversionRule&,
+                         const ConversionRule&) = default;
+
  private:
   ConversionRule(const std::string& category,
                  const std::string& unit_name,
@@ -344,7 +348,8 @@ class UnitConversion {
   static std::optional<UnitConversion> Create(const ConversionRule& source_rule,
                                               const ConversionRule& dest_rule);
 
-  // Used for sorting alternative unit conversions.
+  // Used for sorting alternative unit conversions. This must be at least a weak
+  // ordering.
   //
   // We have no direct way of comparing unit conversions with different
   // formulas. The best approximation is to limit comparisons to linear
@@ -354,7 +359,11 @@ class UnitConversion {
   //
   // Unit conversions involving non-linear formulas will be considered greater
   // by default for our purposes.
-  bool operator<(const UnitConversion& other) const;
+  friend std::weak_ordering operator<=>(const UnitConversion& a,
+                                        const UnitConversion& b);
+
+  friend bool operator==(const UnitConversion&,
+                         const UnitConversion&) = default;
 
   // Given a |source_amount| in the source unit, returns the equivalent amount
   // in the destination unit.
@@ -371,6 +380,8 @@ class UnitConversion {
  private:
   UnitConversion(const ConversionRule& source_rule,
                  const ConversionRule& dest_rule);
+
+  static double MaybeGetRatio(double value1, double value2);
 
   ConversionRule source_rule_;
   ConversionRule dest_rule_;
