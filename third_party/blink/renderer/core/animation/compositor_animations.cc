@@ -1140,15 +1140,39 @@ bool CompositorAnimations::CanStartScrollTimelineOnCompositor(Node* target) {
   if (!target) {
     return false;
   }
-  DCHECK_GE(target->GetDocument().Lifecycle().GetState(),
-            DocumentLifecycle::kPrePaintClean);
+
+  DocumentLifecycle::LifecycleState lifecycle_state =
+      target->GetDocument().Lifecycle().GetState();
+
+  DCHECK_GE(lifecycle_state, DocumentLifecycle::kLayoutClean);
+
   auto* layout_box = target->GetLayoutBox();
   if (!layout_box) {
     return false;
   }
-  if (auto* properties = layout_box->FirstFragment().PaintProperties()) {
-    return properties->Scroll() && properties->Scroll()->UserScrollable();
+
+  // Use cached paint properties when available.
+  if (lifecycle_state >= DocumentLifecycle::kPrePaintClean) {
+    if (auto* properties = layout_box->FirstFragment().PaintProperties()) {
+      return properties->Scroll() && properties->Scroll()->UserScrollable();
+    }
+    return false;
   }
+
+  // Slow-path used when called during PrePaint as we cannot guarantee we have
+  // up to date paint properties. This case is hit when determining if a
+  // clip-path animation is compositable. Maintaining a separate slow-path as
+  // UserInputScrollable is non-trivial.
+  PaintLayerScrollableArea* scrollable_area = layout_box->GetScrollableArea();
+  if (!scrollable_area) {
+    return false;
+  }
+
+  if (scrollable_area->UserInputScrollable(kVerticalScrollbar) ||
+      scrollable_area->UserInputScrollable(kHorizontalScrollbar)) {
+    return true;
+  }
+
   return false;
 }
 
