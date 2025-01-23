@@ -70,9 +70,6 @@ std::unique_ptr<VideoCaptureJpegDecoder> ReturnNullPtrAsJpecDecoder() {
 
 class FakeVideoEffectsManagerImpl : public media::mojom::VideoEffectsManager {
   void GetConfiguration(GetConfigurationCallback callback) override {}
-  void SetConfiguration(
-      media::mojom::VideoEffectsConfigurationPtr configuration,
-      SetConfigurationCallback callback) override {}
   void AddObserver(
       ::mojo::PendingRemote<media::mojom::VideoEffectsConfigurationObserver>
           observer) override {}

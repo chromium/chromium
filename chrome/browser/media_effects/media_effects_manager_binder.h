@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_EFFECTS_MEDIA_EFFECTS_MANAGER_BINDER_H_
 #define CHROME_BROWSER_MEDIA_EFFECTS_MEDIA_EFFECTS_MANAGER_BINDER_H_
 
+#include "components/media_effects/video_effects_manager_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "media/capture/mojom/video_effects_manager.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -21,6 +22,11 @@ void BindVideoEffectsManager(
     content::BrowserContext* browser_context,
     mojo::PendingReceiver<media::mojom::VideoEffectsManager>
         video_effects_manager);
+
+// Must be called on UI thread.
+base::WeakPtr<VideoEffectsManagerImpl> GetOrCreateVideoEffectsManager(
+    const std::string& device_id,
+    content::BrowserContext* browser_context);
 
 void BindVideoEffectsProcessor(
     const std::string& device_id,
