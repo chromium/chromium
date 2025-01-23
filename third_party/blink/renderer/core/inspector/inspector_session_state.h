@@ -174,13 +174,7 @@ class CORE_EXPORT InspectorAgentState {
 
     // Enumerates the keys for which values are stored in this field.
     // The order of the keys is undefined.
-    Vector<WTF::String> Keys() const {
-      // TODO(johannes): It'd be nice to avoid copying; unfortunately
-      // it didn't seem easy to return map_.Keys().
-      Vector<WTF::String> keys;
-      WTF::CopyKeysToVector(map_, keys);
-      return keys;
-    }
+    const auto& Keys() const { return map_.Keys(); }
 
     // O(1) shortcut for Keys().empty().
     bool IsEmpty() const { return map_.empty(); }

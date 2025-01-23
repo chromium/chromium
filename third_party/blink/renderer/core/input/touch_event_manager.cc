@@ -238,8 +238,7 @@ WebCoalescedInputEvent TouchEventManager::GenerateWebCoalescedInputEvent() {
                                                 first_touch_pointer_event);
   WebInputEvent::Type touch_event_type = WebInputEvent::Type::kTouchMove;
   Vector<WebPointerEvent> all_coalesced_events;
-  Vector<int> available_ids;
-  WTF::CopyKeysToVector(touch_attribute_map_, available_ids);
+  Vector<int> available_ids(touch_attribute_map_.Keys());
   std::sort(available_ids.begin(), available_ids.end());
   for (const int& touch_point_id : available_ids) {
     auto* const touch_point_attribute = touch_attribute_map_.at(touch_point_id);

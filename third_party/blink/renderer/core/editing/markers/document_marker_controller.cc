@@ -1202,7 +1202,7 @@ void DocumentMarkerController::RemoveMarkersOfTypes(
     if (!marker_map) {
       continue;
     }
-    CopyKeysToVector(*marker_map, nodes_with_markers);
+    nodes_with_markers.assign(marker_map->Keys());
     for (const auto& node : nodes_with_markers) {
       MarkerMap::iterator iterator = marker_map->find(node);
       if (iterator != marker_map->end()) {

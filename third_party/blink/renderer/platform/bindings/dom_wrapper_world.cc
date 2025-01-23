@@ -147,7 +147,7 @@ void DOMWrapperWorld::AllWorldsInIsolate(
     v8::Isolate* isolate,
     HeapVector<Member<DOMWrapperWorld>>& worlds) {
   DCHECK(worlds.empty());
-  WTF::CopyValuesToVector(GetWorldMap(), worlds);
+  worlds.assign(GetWorldMap().Values());
   if (IsMainThread()) {
     worlds.push_back(&MainWorld(isolate));
   }

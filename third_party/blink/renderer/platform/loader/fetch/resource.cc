@@ -764,8 +764,8 @@ void Resource::FinishPendingClients() {
   //
   // Handle case (1) by saving a list of clients to notify. A separate list also
   // ensure a client is either in cliens_ or clients_awaiting_callback_.
-  HeapVector<Member<ResourceClient>> clients_to_notify;
-  CopyToVector(clients_awaiting_callback_, clients_to_notify);
+  HeapVector<Member<ResourceClient>> clients_to_notify(
+      clients_awaiting_callback_.Values());
 
   for (const auto& client : clients_to_notify) {
     // Handle case (2) to skip removed clients.

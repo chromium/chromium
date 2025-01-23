@@ -2052,7 +2052,7 @@ TEST_F(HeapTest, HeapHashCountedSetToVector) {
   set.insert(MakeGarbageCollected<IntWrapper>(1));
   set.insert(MakeGarbageCollected<IntWrapper>(2));
 
-  CopyToVector(set, vector);
+  vector.assign(set.Values());
   EXPECT_EQ(3u, vector.size());
 
   Vector<int> int_vector;
@@ -2072,7 +2072,7 @@ TEST_F(HeapTest, WeakHeapHashCountedSetToVector) {
   set.insert(MakeGarbageCollected<IntWrapper>(1));
   set.insert(MakeGarbageCollected<IntWrapper>(2));
 
-  CopyToVector(set, vector);
+  vector.assign(set.Values());
   EXPECT_LE(3u, vector.size());
   for (const auto& i : vector)
     EXPECT_TRUE(i->Value() == 1 || i->Value() == 2);
@@ -2085,7 +2085,7 @@ TEST_F(HeapTest, HeapHashSetToVector) {
   set.insert(MakeGarbageCollected<IntWrapper>(1));
   set.insert(MakeGarbageCollected<IntWrapper>(2));
 
-  CopyToVector(set, vector);
+  vector.assign(set);
   EXPECT_EQ(3u, vector.size());
 
   Vector<int> int_vector;
@@ -2106,7 +2106,7 @@ TEST_F(HeapTest, WeakHeapHashSetToVector) {
   set.insert(MakeGarbageCollected<IntWrapper>(1));
   set.insert(MakeGarbageCollected<IntWrapper>(2));
 
-  CopyToVector(set, vector);
+  vector.assign(set);
   EXPECT_EQ(3u, vector.size());
   for (const auto& i : vector) {
     EXPECT_TRUE(i->Value() == 1 || i->Value() == 2);

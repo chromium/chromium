@@ -668,8 +668,7 @@ StringKeyframeVector ConvertObjectForm(Element* element,
 
   // 5.3 Sort processed keyframes by the computed keyframe offset of each
   // keyframe in increasing order.
-  Vector<double> keys;
-  WTF::CopyKeysToVector(keyframes, keys);
+  Vector<double> keys(keyframes.Keys());
   std::sort(keys.begin(), keys.end());
 
   // Steps 5.5 - 5.12 deal with assigning the user-specified offset, easing, and

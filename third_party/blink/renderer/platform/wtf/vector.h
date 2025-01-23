@@ -1221,8 +1221,8 @@ concept VectorCanAssignFromRange =
     std::ranges::input_range<Range> && std::ranges::sized_range<Range> &&
     std::indirectly_unary_invocable<Proj, base::ranges::iterator_t<Range>> &&
     // This prevents accidental fallback from the more efficient code paths.
-    (!std::is_same_v<Vector<T, InlineCapacity, Allocator>,
-                     std::decay_t<Range>> ||
+    (!std::is_base_of_v<Vector<T, InlineCapacity, Allocator>,
+                        std::decay_t<Range>> ||
      !std::is_same_v<Proj, std::identity>);
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
@@ -1625,14 +1625,6 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
 
   void Trace(auto visitor) const
     requires Allocator::kIsGarbageCollected;
-
-  class GCForbiddenScope {
-    STACK_ALLOCATED();
-
-   public:
-    GCForbiddenScope() { Allocator::EnterGCForbiddenScope(); }
-    ~GCForbiddenScope() { Allocator::LeaveGCForbiddenScope(); }
-  };
 
  protected:
   using Base::CheckUnusedSlots;
