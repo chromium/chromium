@@ -5635,6 +5635,11 @@
     "owners": ["cmyang@google.com", "ericappelbaum@google.com"],
     "expiry_milestone": 135
   },
+    {
+    "name": "lens-overlay-alternative-onboarding",
+    "owners": [ "stkhapugin@chromium.org", "christianxu@chromium.org", "lens-chrome@google.com" ],
+    "expiry_milestone": 135
+  },
   {
     "name": "lens-overlay-disable-price-insights",
     "owners": ["christianxu@google.com", "stkhapugin@chromium.org"],

@@ -680,6 +680,12 @@ const char kLensFiltersAblationModeEnabledName[] =
 const char kLensFiltersAblationModeEnabledDescription[] =
     "Enables the filters ablation mode.";
 
+extern const char kLensOverlayAlternativeOnboardingName[] =
+    "Lens Overlay Onboarding";
+extern const char kLensOverlayAlternativeOnboardingDescription[] =
+    "Selects which lens overlay onboarding/entrypoint treatment is active. "
+    "No-op if lens overlay is off.";
+
 extern const char kLensOverlayDisablePriceInsightsName[] =
     "Allow Lens overlay to disable price insights";
 extern const char kLensOverlayDisablePriceInsightsDescription[] =
