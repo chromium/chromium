@@ -566,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   // The widget must be active for the key presses to be handled.
   GetCaptionWidget()->Activate();
 
-#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
   // Check the native widget has focus.
   aura::client::FocusClient* focus_client =
       aura::client::GetFocusClient(GetCaptionWidget()->GetNativeView());
@@ -1485,7 +1485,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, TranslateSynonyms) {
                        prefs::kLiveTranslateTargetLanguageCode));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        DownloadProgressLabel) {
   speech::SodaInstaller::GetInstance()->NeverDownloadSodaForTesting();
@@ -1529,6 +1529,6 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   ASSERT_EQ(u"Downloading French language pack\x2026 12%",
             GetDownloadProgressLabel()->GetText());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace captions

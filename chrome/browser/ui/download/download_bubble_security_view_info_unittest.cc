@@ -371,7 +371,7 @@ TEST_F(DownloadBubbleSecurityViewInfoTest,
 }
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 class DownloadBubbleSecurityViewInfoTailoredWarningTest
     : public DownloadBubbleSecurityViewInfoTest {
  public:
@@ -475,4 +475,4 @@ TEST_F(DownloadBubbleSecurityViewInfoTailoredWarningTest,
   EXPECT_EQ(info().warning_summary(),
             u"This file can harm your personal and social network accounts");
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)

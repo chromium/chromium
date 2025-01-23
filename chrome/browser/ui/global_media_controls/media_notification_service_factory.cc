@@ -44,7 +44,7 @@ std::unique_ptr<KeyedService>
 MediaNotificationServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   bool show_from_all_profiles = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   show_from_all_profiles = true;
 #endif
   return std::make_unique<MediaNotificationService>(

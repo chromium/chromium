@@ -207,7 +207,7 @@ class HatsServiceSurveyFeatureControlledByGroup
     group_dict.Set(variations::kDogfoodGroupsSyncPrefGaiaIdKey, group);
     pref_groups_list.Append(std::move(group_dict));
     profile()->GetPrefs()->SetList(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         variations::kOsDogfoodGroupsSyncPrefName,
 #else
         variations::kDogfoodGroupsSyncPrefName,

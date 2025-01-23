@@ -21,7 +21,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/variations/variations_switches.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
@@ -40,7 +40,7 @@ bool IsFeatureSupportedOnPlatform(const flags_ui::FeatureEntry* entry) {
 }
 
 bool IsChromeLabsFeatureValid(const LabInfo& lab, Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   PrefService* prefs = profile->GetPrefs();
 #else
   PrefService* prefs = g_browser_process->local_state();
@@ -64,7 +64,7 @@ bool IsChromeLabsFeatureValid(const LabInfo& lab, Profile* profile) {
 
 void UpdateChromeLabsNewBadgePrefs(Profile* profile,
                                    const ChromeLabsModel* model) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ScopedDictPrefUpdate update(
       profile->GetPrefs(), chrome_labs_prefs::kChromeLabsNewBadgeDictAshChrome);
 #else
@@ -104,7 +104,7 @@ void UpdateChromeLabsNewBadgePrefs(Profile* profile,
 }
 
 bool ShouldShowChromeLabsUI(const ChromeLabsModel* model, Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kSafeMode) ||
       !ash::ProfileHelper::IsPrimaryProfile(profile)) {
@@ -120,7 +120,7 @@ bool ShouldShowChromeLabsUI(const ChromeLabsModel* model, Profile* profile) {
 
 bool AreNewChromeLabsExperimentsAvailable(const ChromeLabsModel* model,
                                           Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ScopedDictPrefUpdate update(
       profile->GetPrefs(), chrome_labs_prefs::kChromeLabsNewBadgeDictAshChrome);
 #else

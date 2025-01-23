@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
 // TODO(crbug.com/340343342): Reenable on Windows, Mac, Linux, and ChromeOS
 // (dbg) Tests.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || defined(MEMORY_SANITIZER) || \
-    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_EscapeKeyCloseWithResultsPanel \
   DISABLED_EscapeKeyCloseWithResultsPanel
 #else

@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, DISABLED_TopViewStatusChange) {
   // Test Normal state <--> Browser fullscreen mode <--> Tab fullscreen mode.
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
   EXPECT_TRUE(context->IsFullscreen());
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   bool should_show_top_ui = true;
 #else
   bool should_show_top_ui = false;
@@ -473,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, DISABLED_TopViewStatusChange) {
 
   EnterActiveTabFullscreen();
   EXPECT_TRUE(context->IsFullscreen());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(browser()->window()->IsToolbarVisible());
 #else
   EXPECT_FALSE(browser()->window()->IsToolbarVisible());

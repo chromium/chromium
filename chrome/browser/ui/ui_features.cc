@@ -368,7 +368,7 @@ BASE_FEATURE(kWebUITabStrip,
 // TODO(crbug.com/40796475): Enable this flag for all platforms after launch.
 BASE_FEATURE(kWebUITabStripContextMenuAfterTap,
              "WebUITabStripContextMenuAfterTap",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_DISABLED_BY_DEFAULT
 #else
              base::FEATURE_ENABLED_BY_DEFAULT

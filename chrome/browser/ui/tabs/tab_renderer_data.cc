@@ -36,10 +36,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/feature_list.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace {
 
 using collaboration::messaging::MessagingBackendService;
