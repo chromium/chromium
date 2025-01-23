@@ -6335,6 +6335,7 @@ targets.bundle(
     name = "trees_in_viz_fyi_gtests",
     targets = [
         "blink_unittests",
+        "blink_platform_unittests",
         "cc_unittests",
     ],
     mixins = [
