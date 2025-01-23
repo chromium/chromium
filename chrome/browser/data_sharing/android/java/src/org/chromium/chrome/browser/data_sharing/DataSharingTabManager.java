@@ -90,7 +90,7 @@ public class DataSharingTabManager {
             "https://support.google.com/chrome/?p=chrome_collaboration";
 
     // Separator for description and link in share sheet.
-    private static final String SHARED_TEXT_SEPARATOR = "\n";
+    private static final String SHARED_TEXT_SEPARATOR = "";
 
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final DataSharingTabGroupsDelegate mDataSharingTabGroupsDelegate;
