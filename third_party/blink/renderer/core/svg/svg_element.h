@@ -69,6 +69,7 @@ class CORE_EXPORT SVGElement : public Element {
   bool IsOutermostSVGSVGElement() const;
 
   bool HasTagName(const SVGQualifiedName& name) const {
+    DCHECK_EQ(name.NamespaceURI(), namespaceURI());
     return HasLocalName(name.LocalName());
   }
 
