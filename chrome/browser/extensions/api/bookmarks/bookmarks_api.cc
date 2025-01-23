@@ -104,7 +104,7 @@ void BookmarkEventRouter::BookmarkNodeAdded(const BookmarkNode* parent,
                                             bool added_by_user) {
   const BookmarkNode* node = parent->children()[index].get();
   BookmarkTreeNode tree_node = bookmark_api_helpers::GetBookmarkTreeNode(
-      model_, managed_, node, false, false);
+      model_, managed_, node, /*recurse=*/false, /*only_folders=*/false);
   DispatchEvent(events::BOOKMARKS_ON_CREATED,
                 api::bookmarks::OnCreated::kEventName,
                 api::bookmarks::OnCreated::Create(
@@ -418,7 +418,8 @@ ExtensionFunction::ResponseValue BookmarksCreateFunction::RunOnReady() {
     return Error(error);
 
   BookmarkTreeNode ret = bookmark_api_helpers::GetBookmarkTreeNode(
-      GetBookmarkModel(), GetManagedBookmarkService(), node, false, false);
+      GetBookmarkModel(), GetManagedBookmarkService(), node, /*recurse=*/false,
+      /*only_folders=*/false);
   return ArgumentList(api::bookmarks::Create::Results::Create(ret));
 }
 
@@ -543,7 +544,8 @@ ExtensionFunction::ResponseValue BookmarksMoveFunction::RunOnReady() {
   model->Move(node, parent, index);
 
   BookmarkTreeNode tree_node = bookmark_api_helpers::GetBookmarkTreeNode(
-      GetBookmarkModel(), GetManagedBookmarkService(), node, false, false);
+      GetBookmarkModel(), GetManagedBookmarkService(), node, /*recurse=*/false,
+      /*only_folders=*/false);
   return ArgumentList(api::bookmarks::Move::Results::Create(tree_node));
 }
 
@@ -593,7 +595,8 @@ ExtensionFunction::ResponseValue BookmarksUpdateFunction::RunOnReady() {
                   bookmarks::metrics::BookmarkEditSource::kExtension);
 
   BookmarkTreeNode tree_node = bookmark_api_helpers::GetBookmarkTreeNode(
-      GetBookmarkModel(), GetManagedBookmarkService(), node, false, false);
+      GetBookmarkModel(), GetManagedBookmarkService(), node, /*recurse=*/false,
+      /*only_folders=*/false);
   return ArgumentList(api::bookmarks::Update::Results::Create(tree_node));
 }
 
