@@ -116,6 +116,7 @@ constexpr base::TimeDelta kMaxPerBuyerTimeout = base::Milliseconds(500);
 // For group freshness metrics.
 constexpr base::TimeDelta kGroupFreshnessMin = base::Minutes(1);
 constexpr base::TimeDelta kGroupFreshnessMax = base::Days(30);
+constexpr base::TimeDelta kGroupFreshnessMax90d = base::Days(90);
 constexpr int kGroupFreshnessBuckets = 100;
 
 // For updateIfOlderThan metrics.
@@ -4836,11 +4837,21 @@ void InterestGroupAuction::OnInterestGroupRead(
           (base::Time::Now() - bidder->last_updated).InMinutes(),
           kGroupFreshnessMin.InMinutes(), kGroupFreshnessMax.InMinutes(),
           kGroupFreshnessBuckets);
+      UMA_HISTOGRAM_CUSTOM_COUNTS(
+          "Ads.InterestGroup.Auction.GroupFreshness90d.WithDailyUpdates",
+          (base::Time::Now() - bidder->last_updated).InMinutes(),
+          kGroupFreshnessMin.InMinutes(), kGroupFreshnessMax90d.InMinutes(),
+          kGroupFreshnessBuckets);
     } else {
       UMA_HISTOGRAM_CUSTOM_COUNTS(
           "Ads.InterestGroup.Auction.GroupFreshness.NoDailyUpdates",
           (base::Time::Now() - bidder->last_updated).InMinutes(),
           kGroupFreshnessMin.InMinutes(), kGroupFreshnessMax.InMinutes(),
+          kGroupFreshnessBuckets);
+      UMA_HISTOGRAM_CUSTOM_COUNTS(
+          "Ads.InterestGroup.Auction.GroupFreshness90d.NoDailyUpdates",
+          (base::Time::Now() - bidder->last_updated).InMinutes(),
+          kGroupFreshnessMin.InMinutes(), kGroupFreshnessMax90d.InMinutes(),
           kGroupFreshnessBuckets);
     }
   }

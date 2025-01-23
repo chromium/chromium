@@ -39,7 +39,6 @@ struct BiddingAndAuctionServerKey;
 // within the same sequence.
 class CONTENT_EXPORT InterestGroupStorage {
  public:
-  static constexpr base::TimeDelta kHistoryLength = base::Days(30);
   static constexpr base::TimeDelta kMaintenanceInterval = base::Hours(1);
   // Gets the default time the database waits idle before maintenance is
   // triggered.

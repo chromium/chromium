@@ -52,6 +52,7 @@
 #include "sql/statement.h"
 #include "sql/transaction.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
@@ -4460,7 +4461,7 @@ bool GetBidCount(sql::Database& db,
   bid_count.Reset(true);
   bid_count.BindString(0, Serialize(group_key.owner));
   bid_count.BindString(1, group_key.name);
-  bid_count.BindTime(2, now - InterestGroupStorage::kHistoryLength);
+  bid_count.BindTime(2, now - blink::MaxInterestGroupLifetimeForMetadata());
   while (bid_count.Step()) {
     output->bid_count = bid_count.ColumnInt64(0);
   }
@@ -4631,16 +4632,18 @@ bool DoGetStoredInterestGroup(sql::Database& db,
 
   db_interest_group.bidding_browser_signals =
       blink::mojom::BiddingBrowserSignals::New();
-  if (!GetJoinCount(db, group_key, now - InterestGroupStorage::kHistoryLength,
+  if (!GetJoinCount(db, group_key,
+                    now - blink::MaxInterestGroupLifetimeForMetadata(),
                     db_interest_group.bidding_browser_signals)) {
     return false;
   }
-  if (!GetBidCount(db, group_key, now - InterestGroupStorage::kHistoryLength,
+  if (!GetBidCount(db, group_key,
+                   now - blink::MaxInterestGroupLifetimeForMetadata(),
                    db_interest_group.bidding_browser_signals)) {
     return false;
   }
   return GetPreviousWins(db, group_key,
-                         now - InterestGroupStorage::kHistoryLength,
+                         now - blink::MaxInterestGroupLifetimeForMetadata(),
                          db_interest_group.bidding_browser_signals);
 }
 
@@ -4756,7 +4759,7 @@ std::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
     // clang-format on
 
     join_count.BindString(0, Serialize(owner));
-    join_count.BindTime(1, now - InterestGroupStorage::kHistoryLength);
+    join_count.BindTime(1, now - blink::MaxInterestGroupLifetimeForMetadata());
 
     while (join_count.Step()) {
       std::string name = join_count.ColumnString(0);
@@ -4790,7 +4793,7 @@ std::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
     // clang-format on
 
     bid_count.BindString(0, Serialize(owner));
-    bid_count.BindTime(1, now - InterestGroupStorage::kHistoryLength);
+    bid_count.BindTime(1, now - blink::MaxInterestGroupLifetimeForMetadata());
 
     while (bid_count.Step()) {
       std::string name = bid_count.ColumnString(0);
@@ -4824,7 +4827,7 @@ std::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
     // clang-format on
 
     prev_wins.BindString(0, Serialize(owner));
-    prev_wins.BindTime(1, now - InterestGroupStorage::kHistoryLength);
+    prev_wins.BindTime(1, now - blink::MaxInterestGroupLifetimeForMetadata());
 
     while (prev_wins.Step()) {
       std::string name = prev_wins.ColumnString(0);
@@ -5376,13 +5379,13 @@ bool DoPerformDatabaseMaintenance(sql::Database& db,
   if (!ClearExcessiveStorage(db, max_owner_storage_size)) {
     return false;
   }
-  if (!DeleteOldJoins(db, now - InterestGroupStorage::kHistoryLength)) {
+  if (!DeleteOldJoins(db, now - blink::MaxInterestGroupLifetimeForMetadata())) {
     return false;
   }
-  if (!DeleteOldBids(db, now - InterestGroupStorage::kHistoryLength)) {
+  if (!DeleteOldBids(db, now - blink::MaxInterestGroupLifetimeForMetadata())) {
     return false;
   }
-  if (!DeleteOldWins(db, now - InterestGroupStorage::kHistoryLength)) {
+  if (!DeleteOldWins(db, now - blink::MaxInterestGroupLifetimeForMetadata())) {
     return false;
   }
   if (!ClearExpiredKAnon(
@@ -5482,7 +5485,6 @@ void ReportUpgradeDBResult(bool upgrade_succeeded, int db_version) {
 
 }  // namespace
 
-constexpr base::TimeDelta InterestGroupStorage::kHistoryLength;
 constexpr base::TimeDelta InterestGroupStorage::kMaintenanceInterval;
 constexpr base::TimeDelta InterestGroupStorage::kDefaultIdlePeriod;
 constexpr base::TimeDelta InterestGroupStorage::kUpdateSucceededBackoffPeriod;

@@ -12,6 +12,7 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
@@ -22,7 +23,8 @@ namespace blink {
 
 TestInterestGroupBuilder::TestInterestGroupBuilder(url::Origin owner,
                                                    std::string name) {
-  interest_group_.expiry = base::Time::Now() + base::Days(30);
+  interest_group_.expiry =
+      base::Time::Now() + blink::MaxInterestGroupLifetime();
   interest_group_.owner = std::move(owner);
   interest_group_.name = std::move(name);
 }

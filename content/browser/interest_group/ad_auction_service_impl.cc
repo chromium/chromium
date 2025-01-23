@@ -72,6 +72,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
@@ -87,8 +88,6 @@
 namespace content {
 
 namespace {
-
-constexpr base::TimeDelta kMaxExpiry = base::Days(30);
 
 bool IsAdRequestValid(const blink::mojom::AdRequestConfig& config) {
   // The ad_request_url origin has to be HTTPS.
@@ -262,7 +261,7 @@ void AdAuctionServiceImpl::JoinInterestGroup(
   }
 
   blink::InterestGroup updated_group = group;
-  base::Time max_expiry = base::Time::Now() + kMaxExpiry;
+  base::Time max_expiry = base::Time::Now() + blink::MaxInterestGroupLifetime();
   if (updated_group.expiry > max_expiry) {
     updated_group.expiry = max_expiry;
   }

@@ -42,6 +42,13 @@ chromium-metrics-reviews@google.com.
       summary="the message introducing price chips"/>
 </variants>
 
+<variants name="GroupFreshnessType">
+  <variant name="NoDailyUpdates"
+      summary="interest groups that don't specify a dailyUpdateUrl"/>
+  <variant name="WithDailyUpdates"
+      summary="interest groups that specify a dailyUpdateUrl"/>
+</variants>
+
 <variants name="HighlightsDetailsPageName">
   <variant name="AdobePage" summary="Highlights app Adobe detail page"/>
   <variant name="AIBackgroundPage"
@@ -761,19 +768,35 @@ chromium-metrics-reviews@google.com.
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
     For every interest group that participates in an auction, the time duration
-    since the last join or update of that interest group.
+    since the last join or update of that interest group capped at 30 days.
+    Recorded each time an interest group is read from the database for an
+    on-device auction.
 
     This metric only measures {Type}.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
   </summary>
-  <token key="Type">
-    <variant name="NoDailyUpdates"
-        summary="interest groups that don't specify a dailyUpdateUrl"/>
-    <variant name="WithDailyUpdates"
-        summary="interest groups that specify a dailyUpdateUrl"/>
-  </token>
+  <token key="Type" variants="GroupFreshnessType"/>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.GroupFreshness90d.{Type}"
+    units="minutes" expires_after="2025-05-04">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    For every interest group that participates in an auction, the time duration
+    since the last join or update of that interest group capped at 90 days.
+    Recorded each time an interest group is read from the database for an
+    on-device auction.
+
+    This metric only measures {Type}.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+  <token key="Type" variants="GroupFreshnessType"/>
 </histogram>
 
 <histogram name="Ads.InterestGroup.Auction.HttpCachedTrustedBiddingSignalsAge2"

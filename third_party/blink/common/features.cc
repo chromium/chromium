@@ -925,6 +925,20 @@ BASE_FEATURE_PARAM(int,
                    "SelectableBuyerAndSellerReportingIdsHardLimit",
                    -1);
 
+BASE_FEATURE(kFledgeMaxGroupLifetimeFeature,
+             "FledgeMaxGroupLifetimeFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kFledgeMaxGroupLifetime,
+                   &kFledgeMaxGroupLifetimeFeature,
+                   "fledge_max_group_lifetime",
+                   base::Days(30));
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kFledgeMaxGroupLifetimeForMetadata,
+                   &kFledgeMaxGroupLifetimeFeature,
+                   "fledge_max_group_lifetime_for_metadata",
+                   base::Days(30));
+
 BASE_FEATURE(kFledgeSampleDebugReports,
              "FledgeSampleDebugReports",
              base::FEATURE_ENABLED_BY_DEFAULT);

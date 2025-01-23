@@ -21793,6 +21793,67 @@ IN_PROC_BROWSER_TEST_F(InterestGroupSellerNonceDisabledTest, FeatureDetection) {
   EXPECT_EQ(false, EvalJs(shell(), kQuerySellerNonce));
 }
 
+class InterestGroupMaxLifetimeMsDisabledBrowserTest
+    : public InterestGroupBrowserTest {
+ public:
+  InterestGroupMaxLifetimeMsDisabledBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        blink::features::kFledgeMaxGroupLifetimeFeature);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InterestGroupMaxLifetimeMsDisabledBrowserTest,
+                       FeatureDetection) {
+  constexpr double kDefaultMaxGroupLifetimeMs = base::Days(30).InMilliseconds();
+
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/simple_page.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  ASSERT_EQ(true, EvalJs(shell(), "'protectedAudience' in navigator"));
+
+  const char kQueryMaxGroupLifetimeMs[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'maxGroupLifetimeMs');
+  )";
+  EXPECT_EQ(kDefaultMaxGroupLifetimeMs,
+            EvalJs(shell(), kQueryMaxGroupLifetimeMs));
+}
+
+class InterestGroupChangeMaxLifetimeMsBrowserTest
+    : public InterestGroupBrowserTest {
+ public:
+  static constexpr double kDefaultMaxGroupLifetimeMs =
+      base::Days(90).InMilliseconds();
+
+  InterestGroupChangeMaxLifetimeMsBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFledgeMaxGroupLifetimeFeature,
+        {{"fledge_max_group_lifetime",
+          base::StringPrintf("%fms", kDefaultMaxGroupLifetimeMs)}});
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InterestGroupChangeMaxLifetimeMsBrowserTest,
+                       FeatureDetection) {
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/simple_page.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  ASSERT_EQ(true, EvalJs(shell(), "'protectedAudience' in navigator"));
+
+  const char kQueryMaxGroupLifetimeMs[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'maxGroupLifetimeMs');
+  )";
+  EXPECT_EQ(kDefaultMaxGroupLifetimeMs,
+            EvalJs(shell(), kQueryMaxGroupLifetimeMs));
+}
+
 class InterestGroupKAnonmityEnforcedBrowserTest
     : public InterestGroupBrowserTest {
  public:
@@ -24067,6 +24128,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DetachedFramePromiseResolve) {
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
+  constexpr double kDefaultMaxGroupLifetimeMs = base::Days(30).InMilliseconds();
+
   // Since kFledgeCustomMaxAuctionAdComponents is rolling out, feature
   // detection helper should be visible.
   GURL test_url =
@@ -24116,6 +24179,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
         'trustedSignalsKVv2');
   )";
 
+  const char kQueryMaxGroupLifetimeMs[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'maxGroupLifetimeMs');
+  )";
+
   const char kQueryAll[] = R"(
     navigator.protectedAudience.queryFeatureSupport('*');
   )";
@@ -24128,8 +24196,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
   EXPECT_EQ(true, EvalJs(shell(), kQueryCrossOriginTrustedSignals));
   EXPECT_EQ(false, EvalJs(shell(), kQueryRealTimeReporting));
   EXPECT_EQ(true, EvalJs(shell(), kQuerySellerNonce));
+  EXPECT_EQ(kDefaultMaxGroupLifetimeMs,
+            EvalJs(shell(), kQueryMaxGroupLifetimeMs));
   auto all_result = EvalJs(shell(), kQueryAll);
-  EXPECT_THAT(all_result.value, base::test::IsJson(R"({
+  EXPECT_THAT(all_result.value, base::test::IsJson(base::StringPrintf(
+                                    R"({
    "adComponentsLimit": 40,
    "deprecatedRenderURLReplacements": true,
    "permitCrossOriginTrustedSignals": true,
@@ -24137,8 +24208,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
    "reportingTimeout": true,
    "selectableReportingIds": true,
    "sellerNonce": true,
-   "trustedSignalsKVv2": true
-})")) << all_result.error;
+   "trustedSignalsKVv2": true,
+   "maxGroupLifetimeMs": %f
+})",
+                                    kDefaultMaxGroupLifetimeMs)))
+      << all_result.error;
 }
 
 // Worklet handling of zero seller timeout.
@@ -25332,6 +25406,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
                        FeatureDetection) {
+  constexpr double kDefaultMaxGroupLifetimeMs = base::Days(30).InMilliseconds();
+
   const char kTestExpression[] = R"(
     navigator.protectedAudience.queryFeatureSupport(
         'permitCrossOriginTrustedSignals');
@@ -25348,16 +25424,19 @@ IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
   EXPECT_EQ(true, EvalJs(shell(), kTestExpression));
 
   auto all_result = EvalJs(shell(), kQueryAll);
-  EXPECT_THAT(all_result.value, base::test::IsJson(R"({
-                "adComponentsLimit": 40,
-                "deprecatedRenderURLReplacements": true,
-                "permitCrossOriginTrustedSignals": true,
-                "realTimeReporting": false,
-                "reportingTimeout": true,
-                "selectableReportingIds": true,
-                "sellerNonce": true,
-                "trustedSignalsKVv2": true,
-              })"))
+  EXPECT_THAT(all_result.value, base::test::IsJson(base::StringPrintf(
+                                    R"({
+   "adComponentsLimit": 40,
+   "deprecatedRenderURLReplacements": true,
+   "permitCrossOriginTrustedSignals": true,
+   "realTimeReporting": false,
+   "reportingTimeout": true,
+   "selectableReportingIds": true,
+   "sellerNonce": true,
+   "trustedSignalsKVv2": true,
+   "maxGroupLifetimeMs": %f
+})",
+                                    kDefaultMaxGroupLifetimeMs)))
       << all_result.error;
 }
 
@@ -26755,6 +26834,8 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest,
 }
 
 IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest, FeatureDetection) {
+  constexpr double kDefaultMaxGroupLifetimeMs = base::Days(30).InMilliseconds();
+
   const char kQueryRealTimeReporting[] = R"(
     navigator.protectedAudience.queryFeatureSupport(
         'realTimeReporting');
@@ -26771,16 +26852,19 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest, FeatureDetection) {
   EXPECT_EQ(true, EvalJs(shell(), kQueryRealTimeReporting));
 
   auto all_result = EvalJs(shell(), kQueryAll);
-  EXPECT_THAT(all_result.value, base::test::IsJson(R"({
-                "adComponentsLimit": 40,
-                "deprecatedRenderURLReplacements": true,
-                "permitCrossOriginTrustedSignals": true,
-                "realTimeReporting": true,
-                "reportingTimeout": true,
-                "selectableReportingIds": true,
-                "sellerNonce": true,
-                "trustedSignalsKVv2": true,
-              })"))
+  EXPECT_THAT(all_result.value, base::test::IsJson(base::StringPrintf(
+                                    R"({
+   "adComponentsLimit": 40,
+   "deprecatedRenderURLReplacements": true,
+   "permitCrossOriginTrustedSignals": true,
+   "realTimeReporting": true,
+   "reportingTimeout": true,
+   "selectableReportingIds": true,
+   "sellerNonce": true,
+   "trustedSignalsKVv2": true,
+   "maxGroupLifetimeMs": %f
+})",
+                                    kDefaultMaxGroupLifetimeMs)))
       << all_result.error;
 }
 
