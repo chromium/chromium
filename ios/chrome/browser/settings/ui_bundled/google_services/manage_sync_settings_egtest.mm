@@ -1571,9 +1571,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // and cleared when account is removed from device.
 // TODO(crbug.com/384646508): This test is flaky on the iPad simulator.
 #if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testRememberCustomPassphraseAfterSignout FLAKY_testRememberCustomPassphraseAfterSignout
+#define MAYBE_testRememberCustomPassphraseAfterSignout \
+  FLAKY_testRememberCustomPassphraseAfterSignout
 #else
-#define MAYBE_testRememberCustomPassphraseAfterSignout testRememberCustomPassphraseAfterSignout
+#define MAYBE_testRememberCustomPassphraseAfterSignout \
+  testRememberCustomPassphraseAfterSignout
 #endif  // TARGET_IPHONE_SIMULATOR
 - (void)MAYBE_testRememberCustomPassphraseAfterSignout {
   // Enable custom passphrase.
