@@ -24,6 +24,8 @@ struct SecurePayload {
   std::vector<SecureData> secure_data;
 
   SecurePayload();
+  SecurePayload(const SecurePayload& other);
+  SecurePayload& operator=(const SecurePayload& other);
   ~SecurePayload();
 };
 

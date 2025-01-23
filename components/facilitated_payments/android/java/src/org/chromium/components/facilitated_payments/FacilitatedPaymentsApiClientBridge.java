@@ -63,16 +63,18 @@ public class FacilitatedPaymentsApiClientBridge implements FacilitatedPaymentsAp
     }
 
     /**
-     * Initiates the payment flow UI by invoking the payment manager with the action token. The
-     * result is received back in the onPurchaseActionResultEnum(PurchaseActionResult) method.
+     * Initiates the payment flow UI by invoking the purchase manager in Google play services with
+     * the secure payload. The result is received back in the
+     * onPurchaseActionResultEnum(PurchaseActionResult) method.
      *
      * @param primaryAccount User's signed in account.
-     * @param actionToken An opaque token used for invoking the purchase action.
+     * @param securePayload The secure payload received from Payments backend.
      */
     @CalledByNative
     public void invokePurchaseAction(
-            @JniType("CoreAccountInfo") CoreAccountInfo primaryAccount, byte[] actionToken) {
-        mApiClient.invokePurchaseAction(primaryAccount, actionToken);
+            @JniType("CoreAccountInfo") CoreAccountInfo primaryAccount,
+            SecurePayload securePayload) {
+        mApiClient.invokePurchaseAction(primaryAccount, securePayload);
     }
 
     // FacilitatedPaymentsApiClient.Delegate implementation:

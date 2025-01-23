@@ -289,7 +289,7 @@ void PixManager::OnInitiatePaymentResponseReceived(
   LogInitiatePurchaseActionAttempt(kPaymentsType);
   purchase_action_start_time_ = base::TimeTicks::Now();
   GetApiClient()->InvokePurchaseAction(
-      account_info.value(), response_details->secure_payload_.action_token,
+      account_info.value(), response_details->secure_payload_,
       base::BindOnce(&PixManager::OnPurchaseActionResult,
                      weak_ptr_factory_.GetWeakPtr()));
 

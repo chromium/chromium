@@ -283,7 +283,7 @@ void EwalletManager::OnInitiatePaymentResponseReceived(
 
   LogInitiatePurchaseActionAttempt(kPaymentsType, scheme_);
   GetApiClient()->InvokePurchaseAction(
-      account_info.value(), response_details->secure_payload_.action_token,
+      account_info.value(), response_details->secure_payload_,
       base::BindOnce(&EwalletManager::OnTransactionResult,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 

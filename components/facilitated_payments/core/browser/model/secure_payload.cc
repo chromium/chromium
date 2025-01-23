@@ -7,6 +7,8 @@
 namespace payments::facilitated {
 
 SecurePayload::SecurePayload() = default;
+SecurePayload::SecurePayload(const SecurePayload& other) = default;
+SecurePayload& SecurePayload::operator=(const SecurePayload& other) = default;
 SecurePayload::~SecurePayload() = default;
 
 }  // namespace payments::facilitated
