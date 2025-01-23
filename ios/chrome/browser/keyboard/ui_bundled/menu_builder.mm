@@ -18,8 +18,9 @@
 + (void)buildMainMenuWithBuilder:(id<UIMenuBuilder>)builder {
   // Only configure the builder for the main command system, not contextual
   // menus.
-  if (builder.system != UIMenuSystem.mainSystem)
+  if (builder.system != UIMenuSystem.mainSystem) {
     return;
+  }
 
   // File
   UIMenu* fileMenu = [UIMenu menuWithChildren:@[

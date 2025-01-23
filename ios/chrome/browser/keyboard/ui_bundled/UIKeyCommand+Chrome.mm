@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
-
 #import "ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h"
 
 namespace {
