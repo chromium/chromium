@@ -47,7 +47,13 @@ class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) ScopedTrace {
   // 'ScopedTrace' object, and stops 'this''s destruction from ending the
   // trace.
   std::optional<uint64_t> id_;
-  std::unique_ptr<ScopedTrace> step_;
+
+  // The step name.
+  //
+  // An `std::nullopt` means that either the trace has been transferred to
+  // another `ScopedTrace` object or there is no active sub-trace, and stops
+  // `this`'s destruction from ending the sub-trace.
+  std::optional<const char*> step_name_;
 };
 
 }  // namespace webnn
