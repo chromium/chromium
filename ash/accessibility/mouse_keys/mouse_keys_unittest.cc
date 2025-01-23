@@ -538,7 +538,6 @@ TEST_F(MouseKeysTest, SelectButtonLeftHand) {
   ClearEvents();
   PressAndReleaseKey(ui::VKEY_W);
   EXPECT_EQ(0u, CheckForKeyEvents().size());
-  LOG(ERROR) << "[LKupo] this is the first click event";
   ExpectClick(CheckForMouseEvents(), ui::EF_LEFT_MOUSE_BUTTON,
               kDefaultPosition);
 

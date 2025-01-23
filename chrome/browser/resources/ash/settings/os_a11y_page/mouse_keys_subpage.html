@@ -51,6 +51,11 @@
     </settings-toggle-button>
   </settings-card>
   <settings-card>
+    <keyboard-shortcut-banner header="$i18n{mouseKeysShortcutTitle}"
+        body="$i18n{mouseKeysShortcut}"
+        shortcut-label-properties="[[getShortcutLabelProperties_()]]"
+        hide-dismiss-button>
+    </keyboard-shortcut-banner>
     <div class="settings-box start-padding">
       <div class="flex start settings-box-text settings-box-hr"
           id="mouseKeysAcceleration"

@@ -15,8 +15,8 @@ import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {AcceleratorKeyState} from 'chrome://resources/mojo/ui/base/accelerators/mojom/accelerator.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {clearBody} from '../utils.js';
 
@@ -160,5 +160,19 @@ suite('<keyboard-shortcut-banner>', () => {
     const [modifierNode, keyNode] = text.children;
     assertEquals((modifierNode as ShortcutInputKeyElement).key, 'ctrl');
     assertEquals((keyNode as ShortcutInputKeyElement).key, 'm');
+  });
+
+  test('controls the visibility of the dismiss button', () => {
+    const dismissButton = banner.shadowRoot!.querySelector('cr-button');
+
+    // Assert the button is visible by default.
+    assertTrue(isVisible(dismissButton));
+
+    // Hide the dismiss button.
+    banner.hideDismissButton = true;
+    flush();
+
+    // Assert the button is now hidden.
+    assertFalse(isVisible(dismissButton));
   });
 });
