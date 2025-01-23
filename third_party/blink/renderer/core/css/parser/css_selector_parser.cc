@@ -1154,9 +1154,30 @@ bool IsUserActionPseudoClass(CSSSelector::PseudoType pseudo) {
   }
 }
 
+bool IsUserActionPseudoClassAllowedAfterPseudoElement(
+    CSSSelector::PseudoType pseudo_class,
+    CSSSelector::PseudoType compound_pseudo_element) {
+  if (!IsUserActionPseudoClass(pseudo_class)) {
+    return false;
+  }
+  switch (compound_pseudo_element) {
+    case CSSSelector::kPseudoScrollButton:
+    case CSSSelector::kPseudoScrollMarker:
+      return true;
+    default:
+      // TODO(crbug.com/40824273): User action pseudos should be allowed more
+      // generally after pseudo elements.
+      return false;
+  }
+}
+
 bool IsPseudoClassValidAfterPseudoElement(
     CSSSelector::PseudoType pseudo_class,
     CSSSelector::PseudoType compound_pseudo_element) {
+  if (IsUserActionPseudoClassAllowedAfterPseudoElement(
+          pseudo_class, compound_pseudo_element)) {
+    return true;
+  }
   // NOTE: pseudo-class rules for ::part() and element-backed pseudo-elements
   // do not need to be handled here; they should be handled in
   // CSSSelector::IsAllowedAfterPart() instead.
@@ -1183,15 +1204,9 @@ bool IsPseudoClassValidAfterPseudoElement(
     case CSSSelector::kPseudoSearchText:
       return pseudo_class == CSSSelector::kPseudoCurrent;
     case CSSSelector::kPseudoScrollMarker:
-      // TODO(crbug.com/40824273): User action pseudos should be allowed more
-      // generally after pseudo elements.
-      return pseudo_class == CSSSelector::kPseudoFocus ||
-             pseudo_class == CSSSelector::kPseudoTargetCurrent;
+      return pseudo_class == CSSSelector::kPseudoTargetCurrent;
     case CSSSelector::kPseudoScrollButton:
-      // TODO(crbug.com/40824273): User action pseudos should be allowed more
-      // generally after pseudo elements.
-      return pseudo_class == CSSSelector::kPseudoFocus ||
-             pseudo_class == CSSSelector::kPseudoDisabled ||
+      return pseudo_class == CSSSelector::kPseudoDisabled ||
              pseudo_class == CSSSelector::kPseudoEnabled;
     default:
       return false;
