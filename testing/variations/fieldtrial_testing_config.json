@@ -12244,6 +12244,21 @@
             ]
         }
     ],
+    "IOSStatelessFormSuggestionController": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "StatelessFormSuggestionController"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSTFLiteLanguageDetection": [
         {
             "platforms": [
