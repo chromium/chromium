@@ -145,7 +145,7 @@ class LocalResourceURLLoaderFactoryTest : public ::testing::Test {
         pending_remote.InitWithNewPipeAndPassReceiver());
     // Pass other end to |loader_factory_|.
     loader_factory_ = std::make_unique<content::LocalResourceURLLoaderFactory>(
-        config, std::move(pending_remote));
+        std::move(config), std::move(pending_remote));
   }
 
   std::unique_ptr<content::LocalResourceURLLoaderFactory> loader_factory_;

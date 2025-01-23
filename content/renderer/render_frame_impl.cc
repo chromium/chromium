@@ -6470,7 +6470,7 @@ RenderFrameImpl::MaybeSetUpLocalResourceLoader(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_BLOCKING, base::MayBlock(),
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
-      factory_bundle->local_resource_loader_config().Clone(),
+      std::move(factory_bundle->local_resource_loader_config()),
       std::move(factory_bundle->pending_default_factory()));
   // Create a pipe and pass the receiving end to the new in-process loader.
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
