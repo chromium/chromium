@@ -8547,46 +8547,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="Setup.Install.LzmaUnPackStatus" enum="UnPackStatus"
-    expires_after="2025-05-01">
-  <owner>zmin@chromium.org</owner>
-  <owner>grt@chromium.org</owner>
-  <summary>Record the status of unpacking the contents of a 7z file.</summary>
-</histogram>
-
-<histogram name="Setup.Install.PeakPagefileUsage" units="KB"
-    expires_after="never">
-<!-- expires-never: used to monitor memory usage of setup installer.  -->
-
-  <owner>huangs@chromium.org</owner>
-  <summary>
-    The peak page file usage by setup.exe in KB during install or uninstall
-    attempt.
-  </summary>
-</histogram>
-
-<histogram name="Setup.Install.PeakWorkingSetSize" units="KB"
-    expires_after="never">
-<!-- expires-never: used to monitor memory usage of setup installer.  -->
-
-  <owner>huangs@chromium.org</owner>
-  <summary>
-    The peak working set size of setup.exe in KB during install or uninstall
-    attempt.
-  </summary>
-</histogram>
-
-<histogram name="Setup.Install.Result" enum="SetupInstallResult"
-    expires_after="never">
-<!-- expires-never: Fundamental metric used to gague overall failure rates. -->
-
-  <owner>grt@chromium.org</owner>
-  <owner>ydago@chromium.org</owner>
-  <summary>
-    The final exit-result of the entire run of setup.exe on Windows.
-  </summary>
-</histogram>
-
 <histogram name="Shutdown.BrowserExit.Time2" units="ms"
     expires_after="2025-06-22">
   <owner>etienneb@chromium.org</owner>
