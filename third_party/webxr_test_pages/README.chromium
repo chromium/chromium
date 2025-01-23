@@ -25,6 +25,8 @@ Local Modifications:
 
 - Added missing license file and README.chromium for dat.gui
 
+- Rolled dat.gui to 0.7.9
+
 - Removed the version shim, the samples are intended to work specifically
   with the ToT Chrome version.
 
