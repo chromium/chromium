@@ -190,6 +190,12 @@ void MenuModelAdapter::ExecuteCommand(int id, int mouse_event_flags) {
 
 bool MenuModelAdapter::IsTriggerableEvent(MenuItemView* source,
                                           const ui::Event& e) {
+  // By default, a sub-menu is not triggerable.
+  // Subclass can override this behavior.
+  if (source->GetType() == MenuItemView::Type::kSubMenu) {
+    return false;
+  }
+
   return e.type() == ui::EventType::kGestureTap ||
          e.type() == ui::EventType::kGestureTapDown ||
          (e.IsMouseEvent() && (triggerable_event_flags_ & e.flags()));

@@ -376,9 +376,18 @@ std::u16string BookmarkMenuDelegate::GetTooltipText(
 
 bool BookmarkMenuDelegate::IsTriggerableEvent(views::MenuItemView* menu,
                                               const ui::Event& e) {
-  return e.type() == ui::EventType::kGestureTap ||
+  const bool is_click = e.type() == ui::EventType::kGestureTap ||
          e.type() == ui::EventType::kGestureTapDown ||
          event_utils::IsPossibleDispositionEvent(e);
+  const bool is_command_click =
+      is_click && (e.flags() & ui::EF_COMMAND_DOWN);
+
+  // Cmd+Click (or Win+Click) to open all bookmark pages in a submenu.
+  if (menu->GetType() == MenuItemView::Type::kSubMenu) {
+    return is_command_click;
+  }
+
+  return is_click;
 }
 
 void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
