@@ -100,7 +100,6 @@ ImageResourceContent* ImageResourceContent::CreateLoaded(
   ImageResourceContent* content =
       MakeGarbageCollected<ImageResourceContent>(std::move(image));
   content->content_status_ = ResourceStatus::kCached;
-  content->size_available_ = Image::kSizeAvailable;
   return content;
 }
 

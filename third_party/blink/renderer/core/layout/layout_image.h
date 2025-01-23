@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
-#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 
 namespace blink {
@@ -126,6 +125,15 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
   SVGImage* EmbeddedSVGImage() const;
   PhysicalNaturalSizingInfo GetNaturalDimensions() const override;
 
+  PhysicalSize NaturalSize() const {
+    NOT_DESTROYED();
+    return natural_size_;
+  }
+  void SetNaturalSize(const PhysicalSize& natural_size) {
+    NOT_DESTROYED();
+    natural_size_ = natural_size;
+  }
+
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
 
   void Paint(const PaintInfo&) const final;
@@ -169,11 +177,12 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
                    HitTestPhase) final;
 
   void InvalidatePaintAndMarkForLayoutIfNeeded(CanDeferInvalidation);
-  bool UpdateNaturalSizeIfNeeded();
+  void UpdateNaturalSizeIfNeeded(const PhysicalSize&);
   bool NeedsLayoutOnNaturalSizeChange() const;
 
-  // The natural dimensions for the image.
-  PhysicalNaturalSizingInfo natural_dimensions_;
+  // The natural size for the image.
+  // TODO: Store the full natural dimensions.
+  PhysicalSize natural_size_;
 
   // This member wraps the associated decoded image.
   //
