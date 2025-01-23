@@ -192,10 +192,41 @@ namespace autofill {{
   yield f"""
 }}  // namespace autofill"""
 
+# For brevity, the schema allows shorthands:
+# - Constraints in the JSON object can refer to each other, e.g.,
+#   { "import constraints":  [ ["foo", "bar"], ["qux"] ],
+#     "merge constraints":   "import constraints" }
+#   expands to
+#   { "import constraints":  [ ["foo", "bar"], ["qux"] ],
+#     "merge constraints":   [ ["foo", "bar"], ["qux"] ] }
+# - Constraints can use keywords:
+#   { "import constraints":  "any",
+#     "merge constraints":   "all" }
+#   expands to
+#   { "import constraints":  [ ["foo"], ["bar"], ["qux"] ],
+#     "merge constraints":   [ ["foo", "bar", "qux"] ] }
+def resolve_shorthands(schema):
+  constraints = ['import constraints', 'merge constraints']
+  for entity in schema:
+    # Constraints can be the shorthands 'all' (= all attributes) or 'any' (= at
+    # least one attribute):
+    for constraint in constraints:
+      if entity[constraint] == 'all':
+        entity[constraint] = [[attribute for attribute in entity['attributes']]]
+      if entity[constraint] == 'any':
+        entity[constraint] = [[attribute] for attribute in entity['attributes']]
+
+    # Constraints can refer to one another.
+    for (lhs, rhs) in ((lhs, rhs) for lhs in constraints for rhs in constraints):
+      if entity[lhs] == rhs and isinstance(entity[rhs], list):
+        entity[lhs] = entity[rhs]
+
 def parse_schema(input_file, output_files):
   schema = {}
   with io.open(input_file, 'r', encoding='utf-8') as input_handle:
     schema = json.load(input_handle)
+
+  resolve_shorthands(schema)
 
   def write_to_handle(generator, output_file):
     include_guard = re.sub(r'\W', '_', output_file.upper()) +'_'
