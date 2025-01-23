@@ -305,7 +305,9 @@ enum class ClientModeCombination {
   kBothNavigateExisting,
   kBothFocusExisting,
   kAppANavigateExistingAppBFocusExisting,
+#if !BUILDFLAG(IS_CHROMEOS)
   kNotSpecified,
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 };
 
 std::string ToParamString(ClientModeCombination client_mode_combo) {
@@ -320,8 +322,10 @@ std::string ToParamString(ClientModeCombination client_mode_combo) {
       return "NavigateExisting";
     case ClientModeCombination::kAppANavigateExistingAppBFocusExisting:
       return "AppANavigateExistingAppBFocusExisting";
+#if !BUILDFLAG(IS_CHROMEOS)
     case ClientModeCombination::kNotSpecified:
       return "NotSpecifiedInManifest";
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   }
 }
 
@@ -697,10 +701,6 @@ static const base::flat_set<std::string> disabled_flaky_tests = {
 #elif BUILDFLAG(IS_LINUX)
 #elif BUILDFLAG(IS_WIN)
 #elif BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/391402347): Connect logic for manifest client mode not
-    // specified to navigation capturing v2 on ChromeOS.
-    "NotSpecifiedInManifest_BothStandalone_CaptureForSpecifiedClientMode_Tab_"
-    "ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank"
 #endif
 };
 
@@ -1436,8 +1436,10 @@ class WebAppLinkCapturingParameterizedBrowserTest
         client_mode_b =
             blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting;
         break;
+#if !BUILDFLAG(IS_CHROMEOS)
       case ClientModeCombination::kNotSpecified:
         break;
+#endif  // !BUILDFLAG(IS_CHROMEOS)
     }
 
     const webapps::AppId app_a = InstallTestWebApp(
@@ -2122,6 +2124,7 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Values(NavigationTarget::kBlank)),
     LinkCaptureTestParamToString);
 
+#if !BUILDFLAG(IS_CHROMEOS)
 // kEnabledViaClientMode should not capture when no client mode is specified.
 INSTANTIATE_TEST_SUITE_P(
     ClientModeEnabledNoCapture,
@@ -2137,6 +2140,7 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Values(OpenerMode::kNoOpener),
                      testing::Values(NavigationTarget::kBlank)),
     LinkCaptureTestParamToString);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // kEnabledViaClientMode should capture when the client modes are specified
 // (including `auto`).
