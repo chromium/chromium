@@ -42,7 +42,7 @@ class ProfileSigninConfirmationHelperBrowserTest : public InProcessBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(ProfileSigninConfirmationHelperBrowserTest,
                        MAYBE_HasNotBeenShutdown) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(first_run::auto_import_state() & first_run::AUTO_IMPORT_CALLED);
 #endif
   EXPECT_FALSE(ui::HasBeenShutdown(browser()->profile()));

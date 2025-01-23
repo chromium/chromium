@@ -43,7 +43,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
@@ -160,19 +160,17 @@ std::optional<std::string> GetEnterpriseAccountDomain(const Profile& profile) {
 }
 
 bool ShouldDisplayManagedUi(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Don't show the UI in demo mode.
   if (ash::DemoSession::IsDeviceInDemoMode()) {
     return false;
   }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Don't show the UI for Family Link accounts.
   if (profile->IsChild()) {
     return false;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return enterprise_util::IsBrowserManaged(profile) ||
          ShouldDisplayManagedByParentUi(profile);
@@ -314,7 +312,7 @@ std::u16string GetManagedUiWebUILabel(Profile* profile) {
 }
 
 std::u16string GetDeviceManagedUiHelpLabel(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return ManagementUI::GetManagementPageSubtitle(profile);
 #else
   if (enterprise_util::IsBrowserManaged(profile)) {
@@ -334,11 +332,11 @@ std::u16string GetDeviceManagedUiHelpLabel(Profile* profile) {
   }
 
   return l10n_util::GetStringUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::u16string GetDeviceManagedUiWebUILabel() {
   int string_id = IDS_DEVICE_MANAGED_WITH_HYPERLINK;
   std::vector<std::u16string> replacements;
@@ -431,7 +429,7 @@ std::optional<std::string> GetDeviceManagerIdentity() {
     return std::nullopt;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->GetEnterpriseDomainManager();
@@ -456,7 +454,7 @@ std::optional<std::string> GetDeviceManagerIdentity() {
   return policy::GetManagedBy(g_browser_process->browser_policy_connector()
                                   ->machine_level_user_cloud_policy_manager())
       .value_or(std::string());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 std::optional<std::string> GetAccountManagerIdentity(Profile* profile) {

@@ -17,7 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
 #endif
 
@@ -202,7 +202,7 @@ std::string TestBrowserDialog::GetNonDialogName() {
 
 void TestBrowserDialog::UpdateWidgets() {
   widgets_.clear();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   for (aura::Window* root_window : ash::Shell::GetAllRootWindows()) {
     views::Widget::GetAllChildWidgets(root_window, &widgets_);
   }

@@ -202,7 +202,7 @@ void FullscreenKeyboardBrowserTestBase::SendFullscreenShortcutAndWait() {
   // On MACOSX, Command + Control + F is used.
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(GetActiveBrowser(), ui::VKEY_F,
                                               true, false, false, true));
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   // A dedicated fullscreen key is used on Chrome OS, so send a fullscreen
   // command directly instead, to avoid constructing the key press.
   ASSERT_TRUE(chrome::ExecuteCommand(GetActiveBrowser(), IDC_FULLSCREEN));

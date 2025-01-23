@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(
             unload_controller.GetBrowserClosingStatus());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Browser tests for verifying `UnloadController` behavior for apps when locked
 // (and not locked) for OnTask. Only relevant for non-web browser scenarios.

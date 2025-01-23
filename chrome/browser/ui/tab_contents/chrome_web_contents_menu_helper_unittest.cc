@@ -39,7 +39,7 @@ class ChromeWebContentsMenuHelperUnitTest : public BrowserWithTestWindowTest {
     auto* profile = profile_manager()->CreateTestingProfile(
         profile_name, std::move(prefs), std::u16string(), 0,
         TestingProfile::TestingFactories());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     OnUserProfileCreated(profile_name, profile);
 #endif
     return profile;

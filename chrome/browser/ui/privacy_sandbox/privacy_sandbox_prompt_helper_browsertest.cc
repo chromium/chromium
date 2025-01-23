@@ -30,7 +30,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/help_app_ui/url_constants.h"
 #endif
 
@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
         1}});
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
                        NoPromptNonDefaultNtp) {
   // Check that navigations to the generic chrome://newtab, when a non default

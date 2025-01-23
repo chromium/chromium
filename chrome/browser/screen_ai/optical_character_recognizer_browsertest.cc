@@ -370,6 +370,72 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Simple) {
   histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.Medium", 0);
   histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.Large", 0);
   histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.XLarge", 0);
+
+  // PDF Specific metrics should not be recorded as the client type is test.
+  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.LinesCount.PDF", 0);
+  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Time.PDF", 0);
+  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.ImageSize.PDF", 0);
+  histograms.ExpectTotalCount(
+      "Accessibility.ScreenAI.OCR.MostDetectedLanguage.PDF", 0);
+}
+
+IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_PdfMetrics) {
+  base::HistogramTester histograms;
+
+  // Init OCR.
+  base::test::TestFuture<bool> init_future;
+  scoped_refptr<OpticalCharacterRecognizer> ocr =
+      OpticalCharacterRecognizer::CreateWithStatusCallback(
+          browser()->profile(), mojom::OcrClientType::kPdfViewer,
+          init_future.GetCallback());
+  ASSERT_TRUE(init_future.Wait());
+  ASSERT_EQ(init_future.Get<bool>(), IsOcrAvailable());
+
+  // Perform OCR.
+  SkBitmap bitmap = LoadImageFromTestFile(
+      base::FilePath(FILE_PATH_LITERAL("ocr/just_one_letter.png")));
+  base::test::TestFuture<mojom::VisualAnnotationPtr> perform_future;
+  ocr->PerformOCR(bitmap, perform_future.GetCallback());
+  ASSERT_TRUE(perform_future.Wait());
+
+// Fake library always returns empty.
+#if BUILDFLAG(USE_FAKE_SCREEN_AI)
+  bool expected_call_success = false;
+#else
+  bool expected_call_success = true;
+#endif
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  unsigned expected_calls = IsOcrAvailable() ? 1 : 0;
+  unsigned expected_lines_count =
+      (expected_call_success && IsOcrAvailable()) ? 1 : 0;
+
+  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.LinesCount.PDF",
+                              expected_calls);
+  histograms.ExpectBucketCount("Accessibility.ScreenAI.OCR.LinesCount.PDF",
+                               expected_lines_count, expected_calls);
+
+  // Since the text in the image is just one letter, the detected language code
+  // is "und" (undefined).
+  constexpr uint64_t kHashCodeForUnd = 350748440;
+  unsigned expected_languages_count =
+      (expected_call_success && IsOcrAvailable()) ? 1 : 0;
+
+  histograms.ExpectTotalCount(
+      "Accessibility.ScreenAI.OCR.MostDetectedLanguage.PDF",
+      expected_languages_count);
+  histograms.ExpectBucketCount(
+      "Accessibility.ScreenAI.OCR.MostDetectedLanguage.PDF", kHashCodeForUnd,
+      expected_languages_count);
+
+  // Expect measured latency and image size, but we don't know how long it
+  // taskes to process and how large the image is.
+  // So we just check the total count of the expected bucket.
+  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Time.PDF",
+                              expected_calls);
+  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.ImageSize.PDF",
+                              expected_calls);
 }
 
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,

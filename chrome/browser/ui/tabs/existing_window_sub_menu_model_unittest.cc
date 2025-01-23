@@ -19,7 +19,7 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "ui/gfx/text_elider.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/autotest_desks_api.h"
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
@@ -33,7 +33,7 @@ class ExistingWindowSubMenuModelTest : public BrowserWithTestWindowTest {
 
  protected:
   std::unique_ptr<Browser> CreateTestBrowser(bool incognito, bool popup);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<Browser> CreateTestBrowserOnWorkspace(std::string desk_index);
 #endif
   void AddTabWithTitle(Browser* browser, std::string title);
@@ -60,7 +60,7 @@ std::unique_ptr<Browser> ExistingWindowSubMenuModelTest::CreateTestBrowser(
   return browser;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<Browser>
 ExistingWindowSubMenuModelTest::CreateTestBrowserOnWorkspace(
     std::string desk_index) {
@@ -294,7 +294,7 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuPopups) {
   chrome::CloseTab(popup_browser_2.get());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Ensure that when there are multiple desks the browsers are grouped by which
 // desk they belong to.
 TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuGroupedByDesks) {

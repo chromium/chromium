@@ -354,7 +354,6 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
     base::UmaHistogramCounts10M("Accessibility.ScreenAI.OCR.ImageSize.PDF",
                                 image.width() * image.height());
 
-    // TODO(crbug.com/391040508): Add test to cover this case.
     if (result.has_value()) {
       std::optional<uint64_t> most_detected_language =
           GetMostDetectedLanguageInOcrData(*result);

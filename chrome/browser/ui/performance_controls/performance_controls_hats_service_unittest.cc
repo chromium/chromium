@@ -23,7 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #endif
 
@@ -162,7 +162,7 @@ TEST_F(PerformanceControlsHatsServiceTest, LaunchesPerformanceSurvey) {
   SetMemorySaverEnabled(false);
 
 // Battery Saver is controlled by the OS on ChromeOS
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const bool cros_battery_saver = ash::features::IsBatterySaverAvailable();
 
   // Enable Chrome Battery Saver if CrOS Battery Saver isn't used.
@@ -187,7 +187,7 @@ TEST_F(PerformanceControlsHatsServiceTest, LaunchesPerformanceSurvey) {
 }
 
 // Battery Saver is controlled by the OS on ChromeOS
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(PerformanceControlsHatsServiceHasBatteryTest,
        LaunchesBatteryPerformanceSurvey) {
@@ -197,20 +197,6 @@ TEST_F(PerformanceControlsHatsServiceHasBatteryTest,
                    _, _, _));
   performance_controls_hats_service()->OpenedNewTabPage();
 }
-
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-TEST_F(PerformanceControlsHatsServiceMemorySaverOptOutTest,
-       LaunchesMemorySaverOptOutSurvey) {
-  EXPECT_CALL(
-      *mock_hats_service(),
-      LaunchDelayedSurvey(
-          kHatsSurveyTriggerPerformanceControlsMemorySaverOptOut, 10000, _, _));
-  SetMemorySaverEnabled(false);
-}
-
-// Battery Saver is controlled by the OS on ChromeOS
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(PerformanceControlsHatsServiceBatterySaverOptOutTest,
        LaunchesBatterySaverOptOutSurvey) {
@@ -222,7 +208,16 @@ TEST_F(PerformanceControlsHatsServiceBatterySaverOptOutTest,
                           BatterySaverModeState::kDisabled);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(PerformanceControlsHatsServiceMemorySaverOptOutTest,
+       LaunchesMemorySaverOptOutSurvey) {
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchDelayedSurvey(
+          kHatsSurveyTriggerPerformanceControlsMemorySaverOptOut, 10000, _, _));
+  SetMemorySaverEnabled(false);
+}
 
 class PerformanceControlsHatsServiceDestructorTest : public testing::Test {
  public:

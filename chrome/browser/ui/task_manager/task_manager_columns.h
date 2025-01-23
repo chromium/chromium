@@ -87,7 +87,7 @@ inline constexpr std::array kColumns = {
         .initial_sort_is_ascending = false,
         .default_visibility = true},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     TableColumnData{.id = IDS_TASK_MANAGER_SWAPPED_MEM_COLUMN,
                     .align = ui::TableColumn::RIGHT,
                     .width = -1,

@@ -48,10 +48,6 @@
 #include "ui/base/window_open_disposition_utils.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/grit/branded_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -82,6 +78,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/smart_card/smart_card_permission_context.h"
 #include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
+#include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
 #endif
 
 namespace {

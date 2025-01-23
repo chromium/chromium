@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_CHROME_LABS_PREFS_H_
 #define CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_CHROME_LABS_PREFS_H_
 
-#include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 
 class PrefRegistrySimple;
 namespace user_prefs {
@@ -16,7 +15,7 @@ class PrefRegistrySyncable;
 namespace chrome_labs_prefs {
 
 extern const char kBrowserLabsEnabledEnterprisePolicy[];
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 extern const char kChromeLabsNewBadgeDictAshChrome[];
 #else
 extern const char kChromeLabsNewBadgeDict[];

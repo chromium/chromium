@@ -43,7 +43,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/crosapi/test_crosapi_environment.h"
 #endif
 
@@ -78,7 +78,7 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     crosapi_environment_.SetUp();
 #endif
     media_router::ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
@@ -89,7 +89,7 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     SimulateCloseDialog();
     service_.reset();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     crosapi_environment_.TearDown();
 #endif
     ChromeRenderViewHostTestHarness::TearDown();
@@ -184,7 +184,7 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
 
  private:
   std::unique_ptr<MediaNotificationService> service_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   crosapi::TestCrosapiEnvironment crosapi_environment_;
 #endif
 };
@@ -320,7 +320,7 @@ class MediaNotificationServiceCastTest : public MediaNotificationServiceTest {
 
 // CastMediaNotificationProducer is owned by
 // CastMediaNotificationProducerKeyedService in Ash.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(MediaNotificationServiceCastTest,
        ShowCastSessionsForPresentationRequest) {
   NiceMock<global_media_controls::test::MockMediaDialogDelegate>

@@ -141,7 +141,7 @@
 #include "ui/gfx/text_elider.h"
 #include "ui/menus/simple_menu_model.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) || BUILDFLAG(IS_CHROMEOS)
 #include "base/feature_list.h"
 #endif
 
@@ -840,7 +840,7 @@ class HelpMenuModel : public ui::SimpleMenuModel {
 
  private:
   void Build(Browser* browser) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(OFFICIAL_BUILD)
+#if BUILDFLAG(IS_CHROMEOS) && defined(OFFICIAL_BUILD)
     int help_string_id = IDS_GET_HELP;
 #else
     int help_string_id = IDS_HELP_PAGE;
@@ -953,7 +953,7 @@ void ToolsMenuModel::Build(Browser* browser) {
     AddItemWithStringIdAndVectorIcon(this, IDC_TASK_MANAGER_APP_MENU,
                                      IDS_TASK_MANAGER, kTaskManagerIcon);
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   AddItemWithStringId(IDC_TAKE_SCREENSHOT, IDS_TAKE_SCREENSHOT);
 #endif
   AddSeparator(ui::NORMAL_SEPARATOR);
@@ -1547,7 +1547,7 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       break;
 
       // Profile submenu.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     case IDC_CUSTOMIZE_CHROME:
       if (!uma_action_recorded_) {
         base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.CustomizeChrome",
@@ -1825,7 +1825,7 @@ void AppMenuModel::Build() {
 
   AddSeparator(ui::NORMAL_SEPARATOR);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   sub_menus_.push_back(std::make_unique<ProfileSubMenuModel>(
       this, browser()->profile(), browser()->window()->GetColorProvider()));
   auto* const profile_submenu_model =
@@ -1968,7 +1968,7 @@ void AppMenuModel::Build() {
   AddSubMenuWithStringIdAndVectorIcon(this, IDC_HELP_MENU, IDS_HELP_MENU,
                                       sub_menus_.back().get(), kHelpMenuIcon);
 #else
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   AddItem(IDC_ABOUT, l10n_util::GetStringUTF16(IDS_ABOUT));
 #else
   AddItem(IDC_ABOUT, l10n_util::GetStringUTF16(IDS_ABOUT));
@@ -1984,7 +1984,7 @@ void AppMenuModel::Build() {
 
   // On Chrome OS, similar UI is displayed in the system tray menu, instead of
   // this menu.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   if (ShouldDisplayManagedUi(browser_->profile())) {
     AddSeparator(ui::NORMAL_SEPARATOR);
     AddItemWithIcon(
@@ -1996,7 +1996,7 @@ void AppMenuModel::Build() {
     SetAccessibleNameAt(GetIndexOfCommandId(IDC_SHOW_MANAGEMENT_PAGE).value(),
                         GetManagedUiMenuItemTooltip(browser_->profile()));
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   uma_action_recorded_ = false;
 }

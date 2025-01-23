@@ -453,7 +453,7 @@ class UnusedSitePermissionsServiceTest
         fake_database_manager_.get());
     TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(
         safe_browsing_factory_->CreateSafeBrowsingService());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Local state is needed to construct ProxyConfigService, which is a
     // dependency of PingManager on ChromeOS.
     TestingBrowserProcess::GetGlobal()->SetLocalState(profile()->GetPrefs());
@@ -462,7 +462,7 @@ class UnusedSitePermissionsServiceTest
 
   void TearDownSafeBrowsingService() {
     TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(nullptr);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 #endif
   }

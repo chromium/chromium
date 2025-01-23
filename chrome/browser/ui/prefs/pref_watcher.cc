@@ -32,7 +32,7 @@
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
 #include "ui/native_theme/native_theme.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_pref_names.h"
 #endif
 
@@ -77,7 +77,7 @@ const char* const kWebPrefsToObserve[] = {
     prefs::kWebkitTabsToLinks,
     prefs::kWebKitTextAreasAreResizable,
     prefs::kWebKitWebSecurityEnabled,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     ash::prefs::kAccessibilityFocusHighlightEnabled,
 #else
     prefs::kAccessibilityFocusHighlightEnabled,

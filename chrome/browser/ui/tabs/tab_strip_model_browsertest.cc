@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(TabStripModelPreventCloseTest,
 }
 
 // TODO(b/321593065): enable this flaky test.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable \
   DISABLED_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable
 #else

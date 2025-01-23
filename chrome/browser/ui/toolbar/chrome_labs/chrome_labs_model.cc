@@ -58,7 +58,7 @@ const std::vector<LabInfo>& GetData() {
 
     // Thumbnail Tab Strip for Windows.
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && \
-    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH))
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS))
     lab_info.emplace_back(
         flag_descriptions::kWebUITabStripFlagId,
         l10n_util::GetStringUTF16(IDS_THUMBNAIL_TAB_STRIP_EXPERIMENT_NAME),
