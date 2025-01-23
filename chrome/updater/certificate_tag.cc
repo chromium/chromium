@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/updater/certificate_tag.h"
 
 #include <cstdint>
@@ -18,6 +13,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/overloaded.h"
 #include "chrome/updater/certificate_tag_internal.h"
@@ -148,7 +144,8 @@ CBS CBSFromSpan(base::span<const uint8_t> span) {
 }
 
 base::span<const uint8_t> SpanFromCBS(const CBS* cbs) {
-  return base::span<const uint8_t>(CBS_data(cbs), CBS_len(cbs));
+  // SAFETY: this is how a span is made from `cbs`.
+  return UNSAFE_BUFFERS(base::span<const uint8_t>(CBS_data(cbs), CBS_len(cbs)));
 }
 
 PEBinary::PEBinary(const PEBinary&) = default;
@@ -473,10 +470,11 @@ std::optional<std::vector<uint8_t>> SetTagImpl(
   }
 
   // Copy the CBB result into a std::vector, padding to 8-byte alignment.
+  // SAFETY: the CBB data comes in from boringssl as a memory buffer.
   std::vector<uint8_t> ret;
   const size_t padding = (8 - cbb_len % 8) % 8;
   ret.reserve(cbb_len + padding);
-  ret.insert(ret.begin(), cbb_data, cbb_data + cbb_len);
+  UNSAFE_BUFFERS(ret.insert(ret.begin(), cbb_data, cbb_data + cbb_len));
   ret.insert(ret.end(), padding, 0);
   OPENSSL_free(cbb_data);
 
@@ -502,12 +500,18 @@ std::optional<std::vector<uint8_t>> PEBinary::SetTag(
 
   ret->insert(ret->begin(), win_certificate_header.begin(),
               win_certificate_header.end());
-  ret->insert(ret->begin(), binary_.data(), binary_.data() + attr_cert_offset_);
+
+  // SAFETY: test that `attr_cert_offset_` does not exceed the size of the
+  // `binary_` span.
+  CHECK_LE(attr_cert_offset_, binary_.size_bytes());
+  ret->insert(ret->begin(), binary_.data(),
+              UNSAFE_BUFFERS(binary_.data() + attr_cert_offset_));
 
   // Inject the updated length in the `IMAGE_DATA_DIRECTORY` structure that
   // delineates the `WIN_CERTIFICATE` structure.
-  memcpy(ret->data() + certs_size_offset_, &certs_size, sizeof(certs_size));
-
+  // SAFETY: byte manipulation of a C data structure.
+  memcpy(UNSAFE_BUFFERS(ret->data() + certs_size_offset_), &certs_size,
+         sizeof(certs_size));
   return ret;
 }
 
@@ -669,15 +673,17 @@ void MSIBinary::PopulateDifatEntries() {
   difat_sectors_ = difat_sectors;
 }
 
+// SAFETY: byte manipulation of a C data structure.
 SignedDataDir MSIBinary::SignedDataDirFromSector(uint64_t dir_sector) {
   MSIDirEntry sig_dir_entry;
   for (uint64_t i = 0; i < sector_format_.size / kNumDirEntryBytes; ++i) {
     const uint64_t offset =
         dir_sector * sector_format_.size + i * kNumDirEntryBytes;
     std::memcpy(&sig_dir_entry, &contents_[offset], sizeof(MSIDirEntry));
-    if (std::equal(sig_dir_entry.name,
-                   sig_dir_entry.name + sig_dir_entry.num_name_bytes,
-                   std::begin(kSignatureName))) {
+    if (std::equal(
+            sig_dir_entry.name,
+            UNSAFE_BUFFERS(sig_dir_entry.name + sig_dir_entry.num_name_bytes),
+            std::begin(kSignatureName))) {
       return {sig_dir_entry, offset, true};
     }
   }
