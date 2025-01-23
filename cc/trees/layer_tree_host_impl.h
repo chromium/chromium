@@ -267,8 +267,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
     bool opaque;
 
-    // Backing for software compositing.
-    viz::SharedBitmapId shared_bitmap_id;
     base::WritableSharedMemoryMapping shared_mapping;
     // Backing for gpu compositing.
     scoped_refptr<gpu::ClientSharedImage> shared_image;
@@ -1129,7 +1127,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   // The following scoped variables must not outlive the
   // |layer_tree_frame_sink_|.
-  // These should be transfered to viz::ContextCacheController's
+  // These should be transferred to viz::ContextCacheController's
   // ClientBecameNotVisible() before the output surface is destroyed.
   std::unique_ptr<viz::ContextCacheController::ScopedVisibility>
       compositor_context_visibility_;
@@ -1261,7 +1259,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   bool may_throttle_if_undrawn_frames_ = true;
 
-  // These completion states to be transfered to the main thread when we
+  // These completion states to be transferred to the main thread when we
   // begin main frame. The pair represents a request id and the completion (ie
   // success) state.
   std::vector<std::pair<int, bool>> completed_image_decode_requests_;
@@ -1368,7 +1366,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
       view_transition_content_rects_;
 
   // Last drawn frame's BeginFrameArgs, used to check whether the active tree
-  // was re-used.
+  // was reused.
   viz::BeginFrameArgs last_draw_active_tree_begin_frame_args_;
 
   // Must be the last member to ensure this is destroyed first in the

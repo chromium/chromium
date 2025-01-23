@@ -12,7 +12,6 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/resources/release_callback.h"
-#include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/client_shared_image.h"

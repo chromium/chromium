@@ -17,7 +17,6 @@
 #include "cc/metrics/frame_sorter.h"
 #include "cc/metrics/video_playback_roughness_reporter.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
-#include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/surfaces/child_local_surface_id_allocator.h"
 #include "gpu/ipc/client/gpu_channel_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"

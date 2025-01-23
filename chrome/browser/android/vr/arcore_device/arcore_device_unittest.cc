@@ -15,7 +15,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/android/vr/arcore_device/fake_arcore.h"
 #include "components/viz/common/quads/compositor_frame.h"
-#include "components/viz/common/resources/shared_bitmap.h"
 #include "components/webxr/mailbox_to_surface_bridge_impl.h"
 #include "device/vr/android/arcore/ar_image_transport.h"
 #include "device/vr/android/arcore/arcore_gl.h"
