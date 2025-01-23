@@ -33,6 +33,7 @@ void GlicNudgeController::UpdateNudgeLabel(content::WebContents* web_contents,
   if (tab_interface->GetContents() != web_contents) {
     return;
   }
+
   for (auto& observer : observers_) {
     observer.OnTriggerGlicNudgeUI(nudge_label);
   }

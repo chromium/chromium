@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/types/pass_key.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -41,6 +42,8 @@
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 namespace {
+
+const gfx::VectorIcon kEmptyIcon;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -270,7 +273,11 @@ TabStripActionContainer::CreateGlicNudgeButton(
       base::BindRepeating(&TabStripActionContainer::OnGlicNudgeButtonDismissed,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_GLIC_PROMO_TITLE),
-      kGlicNudgeButtonElementId, Edge::kNone);
+      kGlicNudgeButtonElementId, Edge::kNone, kGlicButtonIcon);
+
+  button->SetTooltipText(l10n_util::GetStringUTF16(IDS_GLIC_PROMO_TITLE));
+  button->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_GLIC_PROMO_TITLE));
 
   button->SetProperty(views::kCrossAxisAlignmentKey,
                       views::LayoutAlignment::kCenter);
@@ -290,7 +297,7 @@ TabStripActionContainer::CreateTabDeclutterButton(
       features::IsTabstripDedupeEnabled()
           ? l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER)
           : l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER_NO_DEDUPE),
-      kTabDeclutterButtonElementId, Edge::kNone);
+      kTabDeclutterButtonElementId, Edge::kNone, kEmptyIcon);
 
   button->SetTooltipText(
       features::IsTabstripDedupeEnabled()
@@ -317,7 +324,7 @@ TabStripActionContainer::CreateAutoTabGroupButton(
           &TabStripActionContainer::OnAutoTabGroupButtonDismissed,
           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE), kAutoTabGroupButtonElementId,
-      Edge::kNone);
+      Edge::kNone, kEmptyIcon);
   button->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ORGANIZE));
   button->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_ORGANIZE));
@@ -495,6 +502,14 @@ void TabStripActionContainer::ExecuteShowTabStripNudge(
     return;
   }
 
+  if (button == glic_nudge_button_) {
+#if BUILDFLAG(ENABLE_GLIC)
+    // Hide the glic button while the nudge is shown
+    // TODO (crbug.com/388849547) add animation for glic button
+    glic_button_->SetVisible(false);
+#endif  // BUILDFLAG(ENABLE_GLIC)
+  }
+
   scoped_tab_strip_modal_ui_ = tab_strip_controller_->ShowModalUI();
 
   animation_session_ = std::make_unique<TabStripNudgeAnimationSession>(
@@ -628,6 +643,14 @@ void TabStripActionContainer::OnAnimationSessionEnded() {
   if (animation_session_->session_type() ==
       TabStripNudgeAnimationSession::AnimationSessionType::HIDE) {
     scoped_tab_strip_modal_ui_.reset();
+
+#if BUILDFLAG(ENABLE_GLIC)
+
+    if (glic_button_ && !glic_button_->GetVisible()) {
+      // Show the glic button after the nudge is hidden
+      glic_button_->SetVisible(true);
+    }
+#endif  // BUILDFLAG(ENABLE_GLIC)
   }
 
   animation_session_.reset();
