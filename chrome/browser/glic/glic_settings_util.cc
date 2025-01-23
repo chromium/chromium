@@ -28,9 +28,8 @@ void OpenGlicOsToggleSetting(Profile* profile) {
   params.bubble_arrow = user_education::HelpBubbleArrow::kBottomRight;
   params.bubble_text =
       l10n_util::GetStringUTF16(IDS_GLIC_OS_WIDGET_TOGGLE_HELP_BUBBLE);
-  chrome::ShowPageWithPromoForProfile(
-      profile, chrome::GetSettingsUrl(chrome::kChromeUIGlicHost),
-      std::move(params));
+  params.target_url = chrome::GetSettingsUrl(chrome::kChromeUIGlicHost);
+  chrome::ShowPageWithPromoForProfile(profile, std::move(params));
 }
 
 void OpenGlicKeyboardShortcutSetting(Profile* profile) {
@@ -39,9 +38,8 @@ void OpenGlicKeyboardShortcutSetting(Profile* profile) {
   params.bubble_arrow = user_education::HelpBubbleArrow::kBottomRight;
   params.bubble_text = l10n_util::GetStringUTF16(
       IDS_GLIC_OS_WIDGET_KEYBOARD_SHORTCUT_HELP_BUBBLE);
-  chrome::ShowPageWithPromoForProfile(
-      profile, chrome::GetSettingsUrl(chrome::kChromeUIGlicHost),
-      std::move(params));
+  params.target_url = chrome::GetSettingsUrl(chrome::kChromeUIGlicHost);
+  chrome::ShowPageWithPromoForProfile(profile, std::move(params));
 }
 
 }  // namespace glic

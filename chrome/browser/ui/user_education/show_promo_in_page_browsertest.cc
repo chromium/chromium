@@ -88,6 +88,51 @@ IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, ShowPromoInNewPage) {
   ASSERT_FALSE(handle);
 }
 
+IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, ShowPromoInNewWindow) {
+  Profile* profile = browser()->profile();
+  CloseAllBrowsers();
+
+  base::MockCallback<ShowPromoInPage::Callback> bubble_shown;
+
+  auto params = GetDefaultParams();
+  params.target_url = GURL(chrome::kChromeUIUserEducationInternalsURL);
+  params.callback = bubble_shown.Get();
+
+  base::WeakPtr<ShowPromoInPage> handle;
+
+  base::RunLoop run_loop;
+  auto quit_closure = run_loop.QuitClosure();
+
+  EXPECT_CALL(bubble_shown, Run)
+      .WillOnce([&](ShowPromoInPage* source, bool success) {
+        EXPECT_EQ(handle.get(), source);
+        EXPECT_TRUE(success);
+        quit_closure.Run();
+      });
+
+  Browser* browser = Browser::Create(Browser::CreateParams(profile, true));
+  ASSERT_FALSE(browser->window()->IsActive());
+  handle = ShowPromoInPage::Start(browser, std::move(params));
+
+  ASSERT_NE(nullptr, handle);
+
+  run_loop.Run();
+
+  // The operation should have activated and opened a single tab in the browser.
+#if !BUILDFLAG(IS_LINUX)
+  // On Linux, programmatic activation may not be supported.
+  EXPECT_TRUE(browser->window()->IsActive());
+#endif
+  EXPECT_EQ(1, browser->tab_strip_model()->count());
+
+  ASSERT_NE(nullptr, handle->GetHelpBubbleForTesting());
+  ASSERT_TRUE(handle->GetHelpBubbleForTesting()->is_open());
+
+  // Closing the help bubble should destroy the object.
+  handle->GetHelpBubbleForTesting()->Close();
+  ASSERT_FALSE(handle);
+}
+
 IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, ShowPromoInSameTab) {
   base::MockCallback<ShowPromoInPage::Callback> bubble_shown;
 

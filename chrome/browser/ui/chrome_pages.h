@@ -106,7 +106,6 @@ void ShowSettings(Browser* browser);
 void ShowSettingsSubPage(Browser* browser, std::string_view sub_page);
 void ShowSettingsSubPageForProfile(Profile* profile, std::string_view sub_page);
 void ShowPageWithPromoForProfile(Profile* profile,
-                                 GURL url,
                                  ShowPromoInPage::Params promo_params);
 void ShowContentSettingsExceptions(Browser* browser,
                                    ContentSettingsType content_settings_type);

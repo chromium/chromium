@@ -458,10 +458,8 @@ void ShowSettingsSubPageInTabbedBrowser(Browser* browser,
 }
 
 void ShowPageWithPromoForProfile(Profile* profile,
-                                 GURL url,
                                  ShowPromoInPage::Params promo_params) {
   Browser* browser = GetOrCreateBrowserForProfile(profile);
-  promo_params.target_url = url;
   ShowPromoInPage::Start(browser, std::move(promo_params));
 }
 
