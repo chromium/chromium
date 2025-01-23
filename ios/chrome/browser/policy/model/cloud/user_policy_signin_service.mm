@@ -28,8 +28,9 @@ namespace {
 //
 // Gets the AccountId from the provided `account_info`.
 AccountId AccountIdFromAccountInfo(const CoreAccountInfo& account_info) {
-  if (account_info.email.empty() || account_info.gaia.empty())
+  if (account_info.email.empty() || account_info.gaia.empty()) {
     return EmptyAccountId();
+  }
 
   return AccountId::FromUserEmailGaiaId(
       gaia::CanonicalizeEmail(account_info.email), account_info.gaia);

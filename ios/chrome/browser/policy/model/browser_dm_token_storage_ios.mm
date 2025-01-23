@@ -32,13 +32,15 @@ const char kDmTokenBaseDir[] =
 bool GetDmTokenFilePath(base::FilePath* token_file_path,
                         const std::string& client_id,
                         bool create_dir) {
-  if (!base::PathService::Get(base::DIR_APP_DATA, token_file_path))
+  if (!base::PathService::Get(base::DIR_APP_DATA, token_file_path)) {
     return false;
+  }
 
   *token_file_path = token_file_path->Append(kDmTokenBaseDir);
 
-  if (create_dir && !base::CreateDirectory(*token_file_path))
+  if (create_dir && !base::CreateDirectory(*token_file_path)) {
     return false;
+  }
 
   std::string filename;
   base::Base64UrlEncode(base::SHA1HashString(client_id),

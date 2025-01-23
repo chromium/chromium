@@ -43,8 +43,9 @@ PolicyWatcherBrowserAgent::~PolicyWatcherBrowserAgent() = default;
 
 void PolicyWatcherBrowserAgent::SignInUIDismissed() {
   // Do nothing if the sign out is still in progress.
-  if (sign_out_in_progress_)
+  if (sign_out_in_progress_) {
     return;
+  }
 
   [handler_ showForceSignedOutPrompt];
 }

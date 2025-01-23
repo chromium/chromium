@@ -5,11 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_MODEL_REPORTING_BROWSER_REPORT_GENERATOR_IOS_H_
 #define IOS_CHROME_BROWSER_POLICY_MODEL_REPORTING_BROWSER_REPORT_GENERATOR_IOS_H_
 
-#include "components/enterprise/browser/reporting/browser_report_generator.h"
-
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "components/enterprise/browser/reporting/browser_report_generator.h"
 #include "components/version_info/channel.h"
 
 namespace enterprise_management {

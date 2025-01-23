@@ -22,7 +22,6 @@ namespace policy {
 class CloudPolicyManager;
 }
 
-
 namespace enterprise_reporting {
 
 /**

@@ -111,7 +111,6 @@ class ReportGeneratorIOSTest : public PlatformTest {
 
   policy::SchemaRegistry schema_registry_;
   policy::PolicyMap policy_map_;
-
 };
 
 TEST_F(ReportGeneratorIOSTest, GenerateBasicReport) {
