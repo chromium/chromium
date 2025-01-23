@@ -1899,7 +1899,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Viz.DisplayCompositor.OverlayNumProposedCandidates"
     units="units" expires_after="2025-06-22">
   <owner>petermcneeley@chromium.org</owner>
-  <owner>khaslett@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     A count of the number of proposed overlay candidates available for overlay
@@ -1908,20 +1907,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Viz.DisplayCompositor.OverlayQuadMaterial"
-    enum="OverlayQuadMaterial" expires_after="2023-06-09">
-  <owner>petermcneeley@chromium.org</owner>
-  <owner>khaslett@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Quad material for current promoted overlay, per frame. Recorded every time a
-    frame is rendered by the display compositor.
-  </summary>
-</histogram>
-
 <histogram name="Viz.DisplayCompositor.OverlayStrategy"
     enum="OverlayStrategies" expires_after="2025-07-13">
-  <owner>khaslett@chromium.org</owner>
   <owner>kylechar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -1934,7 +1921,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Viz.DisplayCompositor.OverlaySwitchInterval" units="ms"
     expires_after="2025-05-03">
   <owner>petermcneeley@chromium.org</owner>
-  <owner>khaslett@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     The time, in milliseconds, since the change in overlay selection. Recorded

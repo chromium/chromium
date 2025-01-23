@@ -827,11 +827,6 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
   bool has_required_overlay = false;
   bool attempted_scaling_required_overlays = false;
   for (auto&& candidate : proposed_candidates) {
-    // Underlays change the material so we save it here to record proper UMA.
-    DrawQuad::Material quad_material =
-        candidate.strategy->GetUMAEnum() != OverlayStrategy::kUnknown
-            ? candidate.quad_iter->material
-            : DrawQuad::Material::kInvalid;
     if (candidate.candidate.requires_overlay) {
       has_required_overlay = true;
     }
@@ -886,8 +881,6 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
       LogStrategyEnumUMA(candidate.strategy->GetUMAEnum());
       last_successful_strategy_ = candidate.strategy;
       OnOverlaySwitchUMA(OverlayProposedCandidate::ToProposeKey(candidate));
-      UMA_HISTOGRAM_ENUMERATION("Viz.DisplayCompositor.OverlayQuadMaterial",
-                                quad_material);
       if (candidate.candidate.requires_overlay) {
         // Track how much we can downscale successfully.
         float scale_factor = GetMinScaleFactor(candidate.candidate);

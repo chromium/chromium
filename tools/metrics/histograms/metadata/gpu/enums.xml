@@ -1199,21 +1199,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8593" label="0x2191, GeForce GTX 1660 Ti Mobile"/>
 </enum>
 
-<enum name="OverlayQuadMaterial">
-  <int value="0" label="Invalid"/>
-  <int value="1" label="DebugBorder"/>
-  <int value="2" label="PictureContent"/>
-  <int value="3" label="CompositorRenderPass"/>
-  <int value="4" label="AggregatedRenderPass"/>
-  <int value="5" label="SolidColor"/>
-  <int value="6" label="StreamVideoContent"/>
-  <int value="7" label="SurfaceContent"/>
-  <int value="8" label="TextureContent"/>
-  <int value="9" label="TiledContent"/>
-  <int value="10" label="YuvVideoContent"/>
-  <int value="11" label="VideoHole"/>
-</enum>
-
 <enum name="OverlayStrategies">
   <int value="0" label="Unknown"/>
   <int value="1" label="No overlay"/>
