@@ -158,14 +158,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
               tab_group_sync_service, &tab);
     }
 
-    const auto* pinned_actions_model = PinnedToolbarActionsModel::Get(profile);
-    CHECK(pinned_actions_model);
-    page_action_controller_ =
-        std::make_unique<page_actions::PageActionController>(
-            pinned_actions_model);
-    page_action_controller_->Initialize(std::vector<actions::ActionId>(
-        page_actions::kActionIds.begin(), page_actions::kActionIds.end()));
-
     if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
       collaboration_messaging_tab_data_ =
           std::make_unique<tab_groups::CollaborationMessagingTabData>(profile);
@@ -183,6 +175,14 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
   }
+
+  const auto* pinned_actions_model = PinnedToolbarActionsModel::Get(profile);
+  CHECK(pinned_actions_model);
+  page_action_controller_ =
+      std::make_unique<page_actions::PageActionController>(
+          pinned_actions_model);
+  page_action_controller_->Initialize(std::vector<actions::ActionId>(
+      page_actions::kActionIds.begin(), page_actions::kActionIds.end()));
 
   customize_chrome_side_panel_controller_ =
       std::make_unique<customize_chrome::SidePanelControllerViews>(tab);
