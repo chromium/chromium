@@ -98,16 +98,16 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."crc32fast:1.4.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxx:1.0.136"]
+[policy."cxx:1.0.137"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-cmd:1.0.136"]
+[policy."cxxbridge-cmd:1.0.137"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."cxxbridge-flags:1.0.136"]
+[policy."cxxbridge-flags:1.0.137"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-macro:1.0.136"]
+[policy."cxxbridge-macro:1.0.137"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."either:1.13.0"]
@@ -348,7 +348,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [[exemptions.cxx]]
-version = "1.0.136"
+version = "1.0.137"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -368,10 +368,11 @@ Exemption updated to 1.0.130 in November 2024.
 Exemption updated to 1.0.131 in December 2024.
 Exemption updated to 1.0.135 in December 2024.
 Exemption updated to 1.0.136 in January 2025.
+Exemption updated to 1.0.137 in January 2025.
 """
 
 [[exemptions.cxxbridge-macro]]
-version = "1.0.136"
+version = "1.0.137"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -391,6 +392,7 @@ Exemption updated to 1.0.130 in November 2024.
 Exemption updated to 1.0.131 in December 2024.
 Exemption updated to 1.0.135 in December 2024.
 Exemption updated to 1.0.136 in January 2025.
+Exemption updated to 1.0.137 in January 2025.
 """
 
 [[exemptions.memchr]]
