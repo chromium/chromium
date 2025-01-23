@@ -131,13 +131,9 @@ typedef enum {
 NSArray* Runtimes(NSDictionary* simctl_list) {
   NSMutableArray* runtimes = [simctl_list[@"runtimes"] mutableCopy];
   for (NSDictionary* runtime in simctl_list[@"runtimes"]) {
-    BOOL available =
-        [runtime[@"availability"] isEqualToString:@"(available)"] ||
-        runtime[@"isAvailable"];
-
     if (![runtime[@"identifier"]
             hasPrefix:@"com.apple.CoreSimulator.SimRuntime.iOS"] ||
-        !available) {
+        !runtime[@"isAvailable"]) {
       [runtimes removeObject:runtime];
     }
   }
@@ -210,7 +206,6 @@ NSString* GetDeviceBySDKAndName(NSDictionary* simctl_list,
                                 NSString* device_name,
                                 NSString* sdk_version) {
   NSString* sdk = nil;
-  NSString* name = nil;
   // Get runtime identifier based on version property to handle
   // cases when version and identifier are not the same,
   // e.g. below identifer is *13-2 but version is 13.2.2
@@ -223,7 +218,6 @@ NSString* GetDeviceBySDKAndName(NSDictionary* simctl_list,
   for (NSDictionary* runtime in Runtimes(simctl_list)) {
     if ([runtime[@"version"] isEqualToString:sdk_version]) {
       sdk = runtime[@"identifier"];
-      name = runtime[@"name"];
       break;
     }
   }
@@ -233,11 +227,6 @@ NSString* GetDeviceBySDKAndName(NSDictionary* simctl_list,
     exit(kExitInvalidArguments);
   }
   NSArray* devices = [simctl_list[@"devices"] objectForKey:sdk];
-  if (devices == nil || devices.count == 0) {
-    // Specific for XCode 10.1 and lower,
-    // where name from 'runtimes' uses as a key in 'devices'.
-    devices = [simctl_list[@"devices"] objectForKey:name];
-  }
   for (NSDictionary* device in devices) {
     if ([device[@"name"] isEqualToString:device_name]) {
       return device[@"udid"];
