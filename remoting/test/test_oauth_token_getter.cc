@@ -130,10 +130,9 @@ void TestOAuthTokenGetter::InvalidateCache() {
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(kSwitchNameAuthCode);
 }
 
-base::WeakPtr<TestOAuthTokenGetter> TestOAuthTokenGetter::GetWeakPtr() {
+base::WeakPtr<OAuthTokenGetter> TestOAuthTokenGetter::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
-
 
 std::unique_ptr<OAuthTokenGetter> TestOAuthTokenGetter::CreateWithRefreshToken(
     const std::string& refresh_token,

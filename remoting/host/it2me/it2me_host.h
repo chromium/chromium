@@ -12,6 +12,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -76,6 +77,9 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
     bool use_ftl_signaling = false;
     // Only set when FTL signaling is being used.
     std::string ftl_device_id;
+
+    // Use corp SessionAuthz auth instead of shared secret auth.
+    bool use_corp_session_authz = false;
   };
 
   using CreateDeferredConnectContext =
@@ -237,7 +241,10 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   std::optional<ReconnectParams> reconnect_params_;
 
   std::string support_id_;
+
+  // This is empty if shared secret auth is not supported.
   std::string host_secret_;
+
   std::string ftl_device_id_;
   scoped_refptr<RsaKeyPair> host_key_pair_;
   std::unique_ptr<RegisterSupportHostRequest> register_request_;
@@ -249,6 +256,8 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   std::unique_ptr<HostEventReporter> host_event_reporter_;
   HostEventReporterFactory host_event_reporter_factory_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  bool use_corp_session_authz_ = false;
 
   std::unique_ptr<ChromotingHost> host_;
   int failed_login_attempts_ = 0;

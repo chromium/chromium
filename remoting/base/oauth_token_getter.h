@@ -101,6 +101,9 @@ class OAuthTokenGetter {
   // Invalidates the cache, so the next CallWithToken() will get a fresh access
   // token.
   virtual void InvalidateCache() = 0;
+
+  // Returns a WeakPtr to this instance.
+  virtual base::WeakPtr<OAuthTokenGetter> GetWeakPtr() = 0;
 };
 
 }  // namespace remoting

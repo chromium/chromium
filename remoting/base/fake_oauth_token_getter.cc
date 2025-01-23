@@ -26,4 +26,8 @@ void FakeOAuthTokenGetter::InvalidateCache() {
   NOTIMPLEMENTED();
 }
 
+base::WeakPtr<OAuthTokenGetter> FakeOAuthTokenGetter::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace remoting

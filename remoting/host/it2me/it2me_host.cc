@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -272,18 +273,28 @@ void It2MeHost::ConnectOnNetworkThread(
     }
   }
 
+  if (connection_context->use_corp_session_authz) {
+    use_corp_session_authz_ = true;
+  }
+
   if (!reconnect_params_.has_value()) {
     // Generate a key pair for the Host to use.
     host_key_pair_ = RsaKeyPair::Generate();
 
-    // Generate a new host secret for this instance.
-    host_secret_ = GenerateSupportHostSecret();
+    // Shared secret auth is not supported when SessionAuthz is in use.
+    if (!use_corp_session_authz_) {
+      // Generate a new host secret for this instance.
+      host_secret_ = GenerateSupportHostSecret();
+    }
 
     // Register this host instance in the backend service.
     register_request_ = std::move(connection_context->register_request);
   } else {
     // Reconnections are only allowed for Chrome OS enterprise sessions.
     CHECK(SessionSupportsReconnections());
+
+    // Reconnections are not allowed when SessionAuthz is in use.
+    CHECK(!use_corp_session_authz_);
 
     // Regenerate the key pair from the private key.
     host_key_pair_ = RsaKeyPair::FromString(reconnect_params_->private_key);
@@ -670,8 +681,6 @@ void It2MeHost::OnReceivedSupportID(const std::string& support_id,
 
   support_id_ = support_id;
   std::string access_code = support_id_ + host_secret_;
-  std::string access_code_hash =
-      protocol::GetSharedSecretHash(support_id_, access_code);
 
   std::string local_certificate = host_key_pair_->GenerateCertificate();
   if (local_certificate.empty()) {
@@ -681,11 +690,21 @@ void It2MeHost::OnReceivedSupportID(const std::string& support_id,
     return;
   }
 
-  std::unique_ptr<protocol::AuthenticatorFactory> factory(
-      new protocol::It2MeHostAuthenticatorFactory(
-          local_certificate, host_key_pair_, access_code_hash,
-          base::BindRepeating(&It2MeHost::ValidateConnectionDetails,
-                              base::Unretained(this))));
+  auto factory = std::make_unique<protocol::It2MeHostAuthenticatorFactory>(
+      local_certificate, host_key_pair_,
+      base::BindRepeating(&It2MeHost::ValidateConnectionDetails,
+                          base::Unretained(this)));
+  if (use_corp_session_authz_) {
+    factory->AddSessionAuthzAuth(
+        base::MakeRefCounted<CorpSessionAuthzServiceClientFactory>(
+            host_context_->url_loader_factory(),
+            api_token_getter_->GetWeakPtr(), support_id_));
+  } else {
+    CHECK(!host_secret_.empty());
+    std::string access_code_hash =
+        protocol::GetSharedSecretHash(support_id_, access_code);
+    factory->AddSharedSecretAuth(access_code_hash);
+  }
   host_->SetAuthenticatorFactory(std::move(factory));
 
   // Pass the Access Code to the script object before changing state.
