@@ -20,6 +20,21 @@ chromium-metrics-reviews@google.com.
 
 <histogram-configuration>
 
-<histograms/>
+<histograms>
+
+<histogram name="Glic.PanelPresentationTime.{InputMode}" units="ms"
+    expires_after="2026-01-15">
+  <owner>dewittj@google.com</owner>
+  <owner>iwells@google.com</owner>
+  <summary>
+    After glic is triggered, measure how long it takes to show the glic panel
+    using the {InputMode} mode. Desktop Chrome only (Windows and Mac).
+  </summary>
+  <token key="InputMode">
+    <variant name="All"/>
+  </token>
+</histogram>
+
+</histograms>
 
 </histogram-configuration>

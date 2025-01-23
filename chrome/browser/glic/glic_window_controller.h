@@ -286,6 +286,9 @@ class GlicWindowController : public views::WidgetObserver {
 
   base::ObserverList<StateObserver> state_observers_;
 
+  // The timestamp when the glic window starts to be shown.
+  base::TimeTicks show_start_time_;
+
   base::WeakPtrFactory<GlicWindowController> weak_ptr_factory_{this};
 };
 

@@ -48,6 +48,9 @@ constexpr static int kWidgetDefaultWidth = 400;
 constexpr static int kWidgetTopBarHeight = 80;
 static constexpr int kEntryDurationMs = 300;
 
+constexpr char kHistogramGlicPanelPresentationTimeAllModes[] =
+    "Glic.PanelPresentationTime.All";
+
 mojom::PanelState CreatePanelState(bool widget_visible,
                                    Browser* attached_browser) {
   mojom::PanelState panel_state;
@@ -185,6 +188,7 @@ void GlicWindowController::WebClientInitializeFailed() {
     // now, show the UI anyway, which should be helpful in development.
     LOG(ERROR)
         << "Glic web client failed to initialize, it won't work properly.";
+    show_start_time_ = base::TimeTicks();
     ShowFinish();
   }
 }
@@ -196,6 +200,7 @@ void GlicWindowController::LoginPageCommitted() {
       !web_client_) {
     // TODO(crbug.com/388328847): Temporarily allow showing the UI when a login
     // page is reached.
+    show_start_time_ = base::TimeTicks();
     ShowFinish();
   }
 }
@@ -219,6 +224,7 @@ void GlicWindowController::SetWebClient(GlicWebClientAccess* web_client) {
       // WebClientInitializeFailed() call, for example, if the renderer crashes.
       // Determine the correct behavior in this case.
       LOG(ERROR) << "Glic web client disconnected before showing the window.";
+      show_start_time_ = base::TimeTicks();
       ShowFinish();
     }
   }
@@ -285,6 +291,8 @@ void GlicWindowController::Show(views::View* glic_button_view) {
   // unset.
   CHECK(!attached_browser_);
   state_ = State::kOpenAnimation;
+
+  show_start_time_ = base::TimeTicks::Now();
 
   if (!contents_) {
     contents_ = std::make_unique<ContentsAndProfileKeepAlive>(profile_, this);
@@ -407,6 +415,13 @@ void GlicWindowController::ShowFinish() {
 #else
     GetGlicWidget()->Show();
 #endif
+  }
+
+  if (web_client_ && !show_start_time_.is_null()) {
+    base::UmaHistogramCustomTimes(kHistogramGlicPanelPresentationTimeAllModes,
+                                  (base::TimeTicks::Now() - show_start_time_),
+                                  base::Milliseconds(1), base::Seconds(60), 50);
+    show_start_time_ = base::TimeTicks();
   }
 
   window_event_observer_ =
