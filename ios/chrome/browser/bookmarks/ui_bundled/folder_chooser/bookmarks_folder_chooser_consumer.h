@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_FOLDER_CHOOSER_BOOKMARKS_FOLDER_CHOOSER_CONSUMER_H_
 
 #import <Foundation/Foundation.h>
+
 #import <vector>
 
 namespace bookmarks {
