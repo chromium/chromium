@@ -151,8 +151,9 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   // If `self.didFinishLaunching` is NO, that indicates that the app was
   // terminated before startup could be run. In this situation, skip running
   // shutdown, since the app was never fully started.
-  if (!self.didFinishLaunching)
+  if (!self.didFinishLaunching) {
     return;
+  }
 
   if (_appState.initStage <= AppInitStage::kSafeMode) {
     return;
@@ -307,8 +308,9 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   // Under some iOS 15 betas, Chrome gets scene connection events for some
   // system scene connections. To handle this, early return if the connecting
   // scene doesn't have a valid delegate. (See crbug.com/1217461)
-  if (!sceneDelegate)
+  if (!sceneDelegate) {
     return;
+  }
 
   // TODO(crbug.com/40679152): This should be called later, or this flow should
   // be changed completely.

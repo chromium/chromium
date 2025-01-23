@@ -34,7 +34,7 @@ void UpdateMemoryValues() {
                                                 base::BlockingType::WILL_BLOCK);
   const int free_memory =
       static_cast<int>(base::SysInfo::AmountOfAvailablePhysicalMemory() / 1024);
-    crash_keys::SetCurrentFreeMemoryInKB(free_memory);
+  crash_keys::SetCurrentFreeMemoryInKB(free_memory);
 }
 
 // Invokes `UpdateMemoryValues` and schedules itself to be called after

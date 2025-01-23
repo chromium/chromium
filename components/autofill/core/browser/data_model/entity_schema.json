@@ -19,9 +19,7 @@
     "import constraints": [
       [ "Program", "Member ID" ]
     ],
-    "merge constraints": [
-      [ "Program", "Member ID" ]
-    ],
+    "merge constraints": "import constraints",
     "syncable": true
   }
 ]

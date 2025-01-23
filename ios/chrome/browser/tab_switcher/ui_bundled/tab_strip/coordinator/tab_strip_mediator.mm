@@ -1345,7 +1345,6 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   }
   DCHECK(_profile);
 
-
   // Simulating the insertion.
   NSMutableArray<TabStripItemIdentifier*>* items = CreateItemIdentifiers(
       _webStateList, /*including_hidden_tab_items=*/false);
