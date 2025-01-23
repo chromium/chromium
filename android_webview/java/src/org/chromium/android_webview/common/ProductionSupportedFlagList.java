@@ -1017,6 +1017,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "CSSReadingFlow",
                 "Enables new CSS reading-flow property for focus navigation in visual order."),
+        Flag.baseFeature(
+                BlinkFeatures.WEB_SQL_WEBVIEW_ACCESS,
+                "If false, prevents access to WebSQL on webview."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
