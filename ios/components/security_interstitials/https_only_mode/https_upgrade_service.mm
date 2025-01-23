@@ -52,8 +52,9 @@ GURL HttpsUpgradeService::GetUpgradedHttpsUrl(const GURL& http_url) const {
     replacements.SetPortStr(port_str);
 
     // Change the URL to help with debugging.
-    if (use_fake_https_for_testing_)
+    if (use_fake_https_for_testing_) {
       replacements.SetRefStr("fake-https");
+    }
   }
   if (!use_fake_https_for_testing_) {
     replacements.SetSchemeStr(url::kHttpsScheme);

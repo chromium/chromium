@@ -77,16 +77,6 @@ std::optional<EntityInstance> ValidateEntityInstance(
   EntityInstance entity =
       EntityInstance(EntityType(type_name), std::move(attributes),
                      std::move(guid), std::move(nickname), date_modified);
-
-  // Validate the "required attributes" constraint.
-  auto all_present = [&entity](DenseSet<AttributeType> as) {
-    return std::ranges::all_of(as, [&](const AttributeType& a) {
-      return entity.attribute(a).has_value();
-    });
-  };
-  if (std::ranges::none_of(entity.type().required_attributes(), all_present)) {
-    return std::nullopt;
-  }
   return std::move(entity);
 }
 

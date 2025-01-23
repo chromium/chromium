@@ -49,12 +49,15 @@ GURL GetCanonicalizedUrl(const GURL& url) {
                                                         &query);
 
   GURL::Replacements replacements;
-  if (hostname.length())
+  if (hostname.length()) {
     replacements.SetHostStr(hostname);
-  if (path.length())
+  }
+  if (path.length()) {
     replacements.SetPathStr(path);
-  if (query.length())
+  }
+  if (query.length()) {
     replacements.SetQueryStr(query);
+  }
   replacements.ClearRef();
 
   return url.ReplaceComponents(replacements);
@@ -803,8 +806,9 @@ void SafeBrowsingTabHelper::QueryObserver::SafeBrowsingQueryFinished(
     const SafeBrowsingQueryManager::Query& query,
     const SafeBrowsingQueryManager::Result& result,
     SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
-  if (policy_decider_->IsQueryStale(query))
+  if (policy_decider_->IsQueryStale(query)) {
     return;
+  }
 
   // Create a policy decision using the query result.
   web::WebStatePolicyDecider::PolicyDecision policy_decision =

@@ -45,8 +45,9 @@ IOSSecurityInterstitialPage* IOSBlockingPageTabHelper::GetCurrentBlockingPage()
 
 void IOSBlockingPageTabHelper::OnBlockingPageCommandReceived(
     SecurityInterstitialCommand command) {
-  if (!blocking_page_for_currently_committed_navigation_)
+  if (!blocking_page_for_currently_committed_navigation_) {
     return;
+  }
 
   blocking_page_for_currently_committed_navigation_->HandleCommand(command);
 }
@@ -95,8 +96,9 @@ void IOSBlockingPageTabHelper::CommittedNavigationIDListener::
 void IOSBlockingPageTabHelper::CommittedNavigationIDListener::
     DidFinishNavigation(web::WebState* web_state,
                         web::NavigationContext* navigation_context) {
-  if (navigation_context->IsSameDocument())
+  if (navigation_context->IsSameDocument()) {
     return;
+  }
 
   tab_helper_->UpdateForFinishedNavigation(
       navigation_context->GetNavigationId(),

@@ -154,4 +154,4 @@ TEST_F(PasswordUtilKeychainTest, UpdateAccountInfo) {
   EXPECT_NSEQ(LoadAccountInfoFromKeychain().email, kAccountInfoEmail2);
 }
 
-}  // credential_provider_extension
+}  // namespace credential_provider_extension

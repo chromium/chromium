@@ -17,7 +17,9 @@ from signing import commands, invoker, logger, model
 
 _LOG_FILE_URL = 'LogFileURL'
 
-_NOTARY_SERVICE_MAX_RETRIES = 3
+_NOTARY_SERVICE_DEFAULT_MAX_TRIES = 3
+_NOTARY_SERVICE_RETRY_DELAY = 30
+_NOTARY_SERVICE_MAX_RETRY_DELAY = 120
 
 
 class NotarizationError(Exception):
@@ -247,21 +249,26 @@ class Retry(object):
                 raise e
     """
 
-    def __init__(self, desc, sleep_before_retry=False):
+    def __init__(self,
+                 desc,
+                 sleep_before_retry=False,
+                 max_tries=_NOTARY_SERVICE_DEFAULT_MAX_TRIES):
         """Creates a retry state object.
 
         Args:
             desc: A short description of the operation to retry.
             sleep_before_retry: If True, will sleep before proceeding with
                 a retry.
+            max_tries: Max number of attempts.
         """
         self._attempt = 0
         self._desc = desc
         self._sleep_before_retry = sleep_before_retry
+        self._max_tries = max_tries
 
     def keep_going(self):
         """Used as the condition for a retry loop."""
-        if self._attempt < _NOTARY_SERVICE_MAX_RETRIES:
+        if self._attempt < self._max_tries:
             return True
         raise RuntimeError(
             'Loop should have terminated at failed_should_retry()')
@@ -278,13 +285,16 @@ class Retry(object):
             True if the retry loop should continue, and False if the loop
             should terminate with an error.
         """
-        self._attempt += 1
-        if self._attempt < _NOTARY_SERVICE_MAX_RETRIES:
-            retry_when_message = ('after 30 seconds' if self._sleep_before_retry
-                                  else 'immediately')
+        should_retry = self._attempt < self._max_tries - 1
+        if should_retry:
+            delay = min((2**(self._attempt)) * _NOTARY_SERVICE_RETRY_DELAY,
+                        _NOTARY_SERVICE_MAX_RETRY_DELAY)
+            retry_when_message = (
+                f'after {delay} second{"s" if delay != 1 else ""}'
+                if self._sleep_before_retry else 'immediately')
             logger.warning(f'Error during notarization command {self._desc}. ' +
                            f'Retrying {retry_when_message}. {msg}')
             if self._sleep_before_retry:
-                time.sleep(30)
-            return True
-        return False
+                time.sleep(delay)
+        self._attempt += 1
+        return should_retry

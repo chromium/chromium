@@ -468,7 +468,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'libcxxabi_revision':    '8205ccf0f23545ebcd8846363ea1d29e77917a22',
+  'libcxxabi_revision':    '7e0f3a8471cb7f6881d0d4ff17eacb0ab9d0b6b2',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1439,7 +1439,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '2a565805081ad20c79359d6590c7cc3272ea86b7',
+    '4ebd595387b8510f0028391a09932938ad4bb3e4',
     'condition': 'checkout_android and checkout_src_internal',
   },
 

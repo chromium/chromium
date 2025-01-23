@@ -5426,28 +5426,6 @@
             ]
         }
     ],
-    "ClayBlocking": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "dialog_timeout_millis": "60000",
-                        "enable_verbose_logging": "true",
-                        "escape_hatch_block_limit": "10",
-                        "max_retries": "2"
-                    },
-                    "enable_features": [
-                        "ClayBackendConnectionV2",
-                        "ClayBlocking"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClearDeviceDataOnSignOutForManagedUsers": [
         {
             "platforms": [
