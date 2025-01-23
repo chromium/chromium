@@ -11552,69 +11552,6 @@
             ]
         }
     ],
-    "IOSContentNotification": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Provisional",
-                    "params": {
-                        "ContentPushNotificationsExperimentType": "3"
-                    },
-                    "enable_features": [
-                        "ContentPushNotifications"
-                    ]
-                },
-                {
-                    "name": "Registered_Provisional",
-                    "params": {
-                        "ContentPushNotificationsExperimentType": "6"
-                    },
-                    "enable_features": [
-                        "ContentPushNotifications"
-                    ]
-                },
-                {
-                    "name": "Enabled_Promo",
-                    "params": {
-                        "ContentPushNotificationsExperimentType": "1"
-                    },
-                    "enable_features": [
-                        "ContentPushNotifications"
-                    ]
-                },
-                {
-                    "name": "Registered_Promo",
-                    "params": {
-                        "ContentPushNotificationsExperimentType": "5"
-                    },
-                    "enable_features": [
-                        "ContentPushNotifications"
-                    ]
-                },
-                {
-                    "name": "Enabled_Setuplist",
-                    "params": {
-                        "ContentPushNotificationsExperimentType": "2"
-                    },
-                    "enable_features": [
-                        "ContentPushNotifications"
-                    ]
-                },
-                {
-                    "name": "Registered_Setuplist",
-                    "params": {
-                        "ContentPushNotificationsExperimentType": "7"
-                    },
-                    "enable_features": [
-                        "ContentPushNotifications"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSCriteriaExperimentEnabled": [
         {
             "platforms": [
