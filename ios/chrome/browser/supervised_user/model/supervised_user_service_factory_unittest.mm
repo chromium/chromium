@@ -53,4 +53,3 @@ TEST_F(SupervisedUserServiceFactoryTest, ReturnsNullOnOffTheRecordProfile) {
       SupervisedUserServiceFactory::GetForProfile(otr_profile);
   EXPECT_FALSE(service);
 }
-
