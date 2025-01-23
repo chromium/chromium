@@ -35,6 +35,7 @@
 
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-shared.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-shared.h"
+#include "third_party/blink/public/mojom/frame/reporting_observer.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_installed_scripts_manager.mojom-shared.h"
 #include "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
@@ -91,8 +92,11 @@ class BLINK_EXPORT WebEmbeddedWorker {
       CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>
           browser_interface_broker,
       InterfaceRegistry* interface_registry,
-      scoped_refptr<base::SingleThreadTaskRunner>
-          initiator_thread_task_runner) = 0;
+      scoped_refptr<base::SingleThreadTaskRunner> initiator_thread_task_runner,
+      CrossVariantMojoReceiver<mojom::ReportingObserverInterfaceBase>
+          coep_reporting_observer,
+      CrossVariantMojoReceiver<mojom::ReportingObserverInterfaceBase>
+          dip_reporting_observer) = 0;
   virtual void TerminateWorkerContext() = 0;
 };
 

@@ -1460,10 +1460,13 @@ TEST_P(ServiceWorkerVersionTest,
       1,
       helper_->mock_render_process_host()->foreground_service_worker_count());
 
-  // Establish a dummy connection to allow sending messages without errors.
+  // Establish dummy connections to allow sending messages without errors.
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-      reporter;
-  auto dummy = reporter.InitWithNewPipeAndPassReceiver();
+      coep_reporter;
+  mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+      dip_reporter;
+  auto dummy_coep = coep_reporter.InitWithNewPipeAndPassReceiver();
+  auto dummy_dip = dip_reporter.InitWithNewPipeAndPassReceiver();
 
   // Now begin the navigation commit with the same process id used by the
   // worker. This should cause the worker to stop being considered foreground
@@ -1471,8 +1474,8 @@ TEST_P(ServiceWorkerVersionTest,
   auto container_info = service_worker_client.CommitResponseAndRelease(
       GlobalRenderFrameHostId(version_->embedded_worker()->process_id(),
                               /*frame_routing_id=*/1),
-      PolicyContainerPolicies(), std::move(reporter),
-      ukm::UkmRecorder::GetNewSourceID());
+      PolicyContainerPolicies(), std::move(coep_reporter),
+      std::move(dip_reporter), ukm::UkmRecorder::GetNewSourceID());
 
   // RenderProcessHost should be notified of foreground worker.
   base::RunLoop().RunUntilIdle();

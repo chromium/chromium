@@ -12,6 +12,7 @@ import "services/service_manager/public/mojom/interface_provider.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
 import "third_party/blink/public/mojom/frame/policy_container.mojom";
+import "third_party/blink/public/mojom/frame/reporting_observer.mojom";
 import "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/renderer_preference_watcher.mojom";
@@ -159,6 +160,14 @@ struct EmbeddedWorkerStartParams {
   // service worker thread could try to access cors_exempt_headers before its
   // set on the main thread, directly pass the list from the browser process.
   array<string> cors_exempt_header_list;
+
+  // Used by a CrossOriginEmbedderPolicyReporter to send reports to the
+  // ReportingObservers.
+  pending_receiver<ReportingObserver>? coep_reporting_observer;
+
+  // Used by a DpcumentIsolationPolicyReporter to send reports to the
+  // ReportingObservers.
+  pending_receiver<ReportingObserver>? dip_reporting_observer;
 };
 
 // Holds timing information about the start worker sequence for UMA.

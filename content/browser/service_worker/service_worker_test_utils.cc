@@ -245,18 +245,22 @@ CommittedServiceWorkerClient::CommittedServiceWorkerClient(
     ScopedServiceWorkerClient service_worker_client,
     const GlobalRenderFrameHostId& render_frame_host_id)
     : service_worker_client_(std::move(service_worker_client.AsWeakPtr())) {
-  // Establish a dummy connection to allow sending messages without errors.
+  // Establish dummy connections to allow sending messages without errors.
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-      reporter;
-  auto dummy = reporter.InitWithNewPipeAndPassReceiver();
+      coep_reporter;
+  auto coep_dummy = coep_reporter.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+      dip_reporter;
+  auto dip_dummy = dip_reporter.InitWithNewPipeAndPassReceiver();
 
   // In production code this is called from NavigationRequest in the browser
   // process right before navigation commit.
   auto [container_info, controller_info] =
       std::move(service_worker_client)
-          .CommitResponseAndRelease(render_frame_host_id,
-                                    PolicyContainerPolicies(),
-                                    std::move(reporter), ukm::kInvalidSourceId);
+          .CommitResponseAndRelease(
+              render_frame_host_id, PolicyContainerPolicies(),
+              std::move(coep_reporter), std::move(dip_reporter),
+              ukm::kInvalidSourceId);
 
   // We establish a message pipe for connecting |navigation_client_| to a fake
   // navigation client, then simulate sending the navigation commit IPC which
@@ -319,7 +323,7 @@ CommittedServiceWorkerClient::CommittedServiceWorkerClient(
       std::move(service_worker_client)
           .CommitResponseAndRelease(
               /*render_frame_host_id=*/std::nullopt, PolicyContainerPolicies(),
-              /*coep_reporter=*/{}, ukm::kInvalidSourceId);
+              /*coep_reporter=*/{}, /*dip_reporter=*/{}, ukm::kInvalidSourceId);
 
   service_worker_client_->SetContainerReady();
 

@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/font_matching_metrics.h"
+#include "third_party/blink/renderer/core/frame/reporting_context.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/console_message_storage.h"
@@ -696,6 +697,16 @@ WorkerGlobalScope::WorkerGlobalScope(
         ToCrossVariantMojoType(
             std::move(creation_params->browser_interface_broker)),
         GetTaskRunner(TaskType::kInternalDefault));
+  }
+
+  if (creation_params->coep_reporting_observer) {
+    ReportingContext::From(this)->Bind(
+        std::move(creation_params->coep_reporting_observer));
+  }
+
+  if (creation_params->dip_reporting_observer) {
+    ReportingContext::From(this)->Bind(
+        std::move(creation_params->dip_reporting_observer));
   }
 
   // A PermissionsPolicy is created by

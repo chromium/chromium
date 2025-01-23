@@ -104,6 +104,8 @@ class CONTENT_EXPORT ScopedServiceWorkerClient final {
       const PolicyContainerPolicies& policy_container_policies,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
+      mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+          dip_reporter,
       ukm::SourceId ukm_source_id);
 
   const base::WeakPtr<ServiceWorkerClient>& AsWeakPtr() const {

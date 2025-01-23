@@ -24,6 +24,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -2470,8 +2471,16 @@ TEST_P(BrowserFeaturePromoController2xPriorityTest,
                   Do([&notice]() { notice.Release(); }));
 }
 
+// TODO(crbug.com/391799252): Fix and re-enabled test on Mac ASAN.
+#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
+#define MAYBE_MultipleStartupPromosHighThenNoticeThenLow \
+  DISABLED_MultipleStartupPromosHighThenNoticeThenLow
+#else
+#define MAYBE_MultipleStartupPromosHighThenNoticeThenLow \
+  MultipleStartupPromosHighThenNoticeThenLow
+#endif
 TEST_P(BrowserFeaturePromoController2xPriorityTest,
-       MultipleStartupPromosHighThenNoticeThenLow) {
+       MAYBE_MultipleStartupPromosHighThenNoticeThenLow) {
   SetTrackerInitBehavior(true, TrackerCallbackBehavior::kPost);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          second_promo_callback);

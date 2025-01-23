@@ -172,7 +172,9 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
       std::move(worker), std::move(start_data),
       std::move(installed_scripts_manager_params),
       std::move(params->content_settings_proxy), std::move(cache_storage),
-      std::move(browser_interface_broker));
+      std::move(browser_interface_broker),
+      std::move(params->coep_reporting_observer),
+      std::move(params->dip_reporting_observer));
 }
 
 void EmbeddedWorkerInstanceClientImpl::StopWorker() {

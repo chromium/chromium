@@ -2153,6 +2153,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const url::Origin& origin,
       net::CookieSettingOverrides cookie_setting_overrides);
 
+  void BindReportingObserver(
+      mojo::PendingReceiver<blink::mojom::ReportingObserver>
+          reporting_observer_receiver);
+
   // Requires the following preconditions, reporting a bad message otherwise.
   //
   // 1. This frame's top-frame origin must be potentially trustworthy and
@@ -4089,10 +4093,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // outside of content.
   static RenderFrameHost::LifecycleState GetLifecycleStateFromImpl(
       LifecycleStateImpl state);
-
-  void BindReportingObserver(
-      mojo::PendingReceiver<blink::mojom::ReportingObserver>
-          reporting_observer_receiver);
 
   // Check the renderer provided sandbox flags matches with what the browser
   // process computed on its own. This triggers DCHECK and DumpWithoutCrashing()

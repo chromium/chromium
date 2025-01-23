@@ -449,7 +449,6 @@ class MockServiceWorkerContextClient final
             KURL("https://example.com"), std::move(service_worker_object_host),
             service_worker_object.InitWithNewEndpointAndPassReceiver()),
         mojom::blink::FetchHandlerExistence::EXISTS,
-        /*reporting_observer_receiver=*/mojo::NullReceiver(),
         /*ancestor_frame_type=*/mojom::blink::AncestorFrameType::kNormalFrame,
         blink::BlinkStorageKey());
 
@@ -467,7 +466,8 @@ class MockServiceWorkerContextClient final
         stub_controller_service_worker.BindNewPipeAndPassReceiver());
     stub_controller_service_worker->Clone(
         controller_service_worker_.BindNewPipeAndPassReceiver(),
-        network::CrossOriginEmbedderPolicy(), mojo::NullRemote());
+        network::CrossOriginEmbedderPolicy(), mojo::NullRemote(),
+        network::DocumentIsolationPolicy(), mojo::NullRemote());
 
     // To make the other side callable.
     host_receiver.EnableUnassociatedUsage();
@@ -639,7 +639,9 @@ TEST_F(WebEmbeddedWorkerImplTest, TerminateSoonAfterStart) {
       /*cache_storage_remote=*/mojo::NullRemote(),
       browser_interface_broker.BindNewPipeAndPassRemote(),
       InterfaceRegistry::GetEmptyInterfaceRegistry(),
-      scheduler::GetSingleThreadTaskRunnerForTesting());
+      scheduler::GetSingleThreadTaskRunnerForTesting(),
+      /*coep_reporting_observer=*/mojo::NullReceiver(),
+      /*dip_reporting_observer=*/mojo::NullReceiver());
   testing::Mock::VerifyAndClearExpectations(mock_client_.get());
 
   // Terminate the worker immediately after start.
@@ -659,7 +661,9 @@ TEST_F(WebEmbeddedWorkerImplTest, TerminateWhileWaitingForDebugger) {
       /*cache_storage_remote=*/mojo::NullRemote(),
       browser_interface_broker.BindNewPipeAndPassRemote(),
       InterfaceRegistry::GetEmptyInterfaceRegistry(),
-      scheduler::GetSingleThreadTaskRunnerForTesting());
+      scheduler::GetSingleThreadTaskRunnerForTesting(),
+      /*coep_reporting_observer=*/mojo::NullReceiver(),
+      /*dip_reporting_observer=*/mojo::NullReceiver());
   testing::Mock::VerifyAndClearExpectations(mock_client_.get());
 
   // Terminate the worker while waiting for the debugger.
@@ -682,7 +686,9 @@ TEST_F(WebEmbeddedWorkerImplTest, ScriptNotFound) {
       /*cache_storage_remote=*/mojo::NullRemote(),
       browser_interface_broker.BindNewPipeAndPassRemote(),
       InterfaceRegistry::GetEmptyInterfaceRegistry(),
-      scheduler::GetSingleThreadTaskRunnerForTesting());
+      scheduler::GetSingleThreadTaskRunnerForTesting(),
+      /*coep_reporting_observer=*/mojo::NullReceiver(),
+      /*dip_reporting_observer=*/mojo::NullReceiver());
   testing::Mock::VerifyAndClearExpectations(mock_client_.get());
 
   mock_client_->WaitUntilFailedToLoadClassicScript();
@@ -704,7 +710,9 @@ TEST_F(WebEmbeddedWorkerImplTest, GCOnWorkerThreadShouldNotCauseUploadFail) {
       /*cache_storage_remote=*/mojo::NullRemote(),
       browser_interface_broker.BindNewPipeAndPassRemote(),
       InterfaceRegistry::GetEmptyInterfaceRegistry(),
-      scheduler::GetSingleThreadTaskRunnerForTesting());
+      scheduler::GetSingleThreadTaskRunnerForTesting(),
+      /*coep_reporting_observer=*/mojo::NullReceiver(),
+      /*dip_reporting_observer=*/mojo::NullReceiver());
   mock_client_->WaitUntilScriptEvaluated();
 
   // We need to fulfill mojo pipe to let BytesUploader await it and

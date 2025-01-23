@@ -490,12 +490,14 @@ void DedicatedWorkerHost::DidStartScriptLoad(
     // TODO(crbug.com/41478971): Plumb the COEP reporter.
     // TODO(crbug.com/40153087): Propagate dedicated worker ukm::SourceId
     // here.
+    // TODO(crbug.com/333029815): Plumb the DIP reporter.
     std::tie(container_info, controller) =
         service_worker_handle_->scoped_service_worker_client()
             ->CommitResponseAndRelease(
                 /*rfh_id=*/std::nullopt,
                 std::move(result->policy_container_policies),
-                /*coep_reporter=*/{}, ukm::kInvalidSourceId);
+                /*coep_reporter=*/{}, /*dip_reporter=*/{},
+                ukm::kInvalidSourceId);
   }
 
   client_->OnScriptLoadStarted(

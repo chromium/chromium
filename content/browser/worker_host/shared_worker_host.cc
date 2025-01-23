@@ -345,12 +345,13 @@ void SharedWorkerHost::Start(
   blink::mojom::ControllerServiceWorkerInfoPtr controller;
   if (service_worker_handle_->service_worker_client()) {
     // TODO(crbug.com/41478971): Plumb the COEP reporter.
+    // TODO(crbug.com/333029815): Plumb the DIP reporter.
     std::tie(container_info, controller) =
         service_worker_handle_->scoped_service_worker_client()
             ->CommitResponseAndRelease(
                 /*rfh_id=*/std::nullopt,
                 std::move(result.policy_container_policies),
-                /*coep_reporter=*/{}, ukm_source_id());
+                /*coep_reporter=*/{}, /*dip_reporter=*/{}, ukm_source_id());
   }
 
   // Send the CreateSharedWorker message.
@@ -419,10 +420,11 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
   if (coep_reporter_) {
     coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
   }
+  // TODO(crbug.com/333029815): Pass a DIP reporter.
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForWorker(
           GetProcessHost(), origin, GetStorageKey().ToPartialNetIsolationInfo(),
-          std::move(coep_reporter),
+          std::move(coep_reporter), /*dip_reporter=*/mojo::NullRemote(),
           /*url_loader_network_observer=*/mojo::NullRemote(),
           /*devtools_observer=*/mojo::NullRemote(),
           mojo::Clone(worker_client_security_state_),

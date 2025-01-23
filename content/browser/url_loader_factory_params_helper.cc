@@ -254,6 +254,8 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
     const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
+    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+        dip_reporter,
     mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer,
     mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
@@ -267,10 +269,9 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
       false,              // is_trusted
       std::nullopt,       // top_frame_token
       isolation_info, std::move(client_security_state),
-      std::move(coep_reporter),
-      mojo::NullRemote(),  // dip_reporter
-      false,               // allow_universal_access_from_file_urls
-      false,               // is_for_isolated_world
+      std::move(coep_reporter), std::move(dip_reporter),
+      false,  // allow_universal_access_from_file_urls
+      false,  // is_for_isolated_world
       static_cast<StoragePartitionImpl*>(process->GetStoragePartition())
           ->CreateCookieAccessObserverForServiceWorker(),
       static_cast<StoragePartitionImpl*>(process->GetStoragePartition())

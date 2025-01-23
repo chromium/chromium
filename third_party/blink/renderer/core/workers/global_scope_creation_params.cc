@@ -54,7 +54,11 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
     const SecurityOrigin* top_level_frame_security_origin,
     net::StorageAccessApiStatus parent_storage_access_api_status,
     bool require_cross_site_request_for_cookies,
-    scoped_refptr<SecurityOrigin> origin_to_use)
+    scoped_refptr<SecurityOrigin> origin_to_use,
+    mojo::PendingReceiver<mojom::blink::ReportingObserver>
+        coep_reporting_observer,
+    mojo::PendingReceiver<mojom::blink::ReportingObserver>
+        dip_reporting_observer)
     : script_url(script_url),
       script_type(script_type),
       global_scope_name(global_scope_name),
@@ -107,7 +111,9 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
               : nullptr),
       parent_storage_access_api_status(parent_storage_access_api_status),
       require_cross_site_request_for_cookies(
-          require_cross_site_request_for_cookies) {
+          require_cross_site_request_for_cookies),
+      coep_reporting_observer(std::move(coep_reporting_observer)),
+      dip_reporting_observer(std::move(dip_reporting_observer)) {
   this->inherited_trial_features =
       std::make_unique<Vector<mojom::blink::OriginTrialFeature>>();
   if (inherited_trial_features) {

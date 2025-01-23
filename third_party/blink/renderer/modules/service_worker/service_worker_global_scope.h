@@ -450,7 +450,11 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojo::PendingRemote<
           network::mojom::blink::CrossOriginEmbedderPolicyReporter>
-          coep_reporter) override;
+          coep_reporter,
+      const network::DocumentIsolationPolicy& document_isolation_policy,
+      mojo::PendingRemote<
+          network::mojom::blink::DocumentIsolationPolicyReporter> dip_reporter)
+      override;
 
   // Implements mojom::blink::ServiceWorker.
   void InitializeGlobalScope(
@@ -463,7 +467,6 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       mojom::blink::ServiceWorkerRegistrationObjectInfoPtr registration_info,
       mojom::blink::ServiceWorkerObjectInfoPtr service_worker_info,
       mojom::blink::FetchHandlerExistence fetch_handler_existence,
-      mojo::PendingReceiver<mojom::blink::ReportingObserver>,
       mojom::blink::AncestorFrameType ancestor_frame_type,
       const blink::BlinkStorageKey& storage_key) override;
   void DispatchInstallEvent(DispatchInstallEventCallback callback) override;
