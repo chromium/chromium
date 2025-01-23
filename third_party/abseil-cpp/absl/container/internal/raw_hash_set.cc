@@ -24,6 +24,7 @@
 #include "absl/base/config.h"
 #include "absl/base/dynamic_annotations.h"
 #include "absl/base/internal/endian.h"
+#include "absl/base/internal/raw_logging.h"
 #include "absl/base/optimization.h"
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hashtablez_sampler.h"
@@ -659,6 +660,10 @@ size_t PrepareInsertNonSoo(CommonFields& common, size_t hash, FindInfo target,
   SetCtrl(common, target.offset, H2(hash), policy.slot_size);
   common.infoz().RecordInsert(hash, target.probe_length);
   return target.offset;
+}
+
+void HashTableSizeOverflow() {
+  ABSL_RAW_LOG(FATAL, "Hash table size overflow");
 }
 
 }  // namespace container_internal

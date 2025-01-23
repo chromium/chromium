@@ -3737,6 +3737,14 @@ TEST(Table, MovedFromCallsFail) {
   }
 }
 
+TEST(Table, MaxSizeOverflow) {
+  size_t overflow = (std::numeric_limits<size_t>::max)();
+  EXPECT_DEATH_IF_SUPPORTED(IntTable t(overflow), "Hash table size overflow");
+  IntTable t;
+  EXPECT_DEATH_IF_SUPPORTED(t.reserve(overflow), "Hash table size overflow");
+  EXPECT_DEATH_IF_SUPPORTED(t.rehash(overflow), "Hash table size overflow");
+}
+
 }  // namespace
 }  // namespace container_internal
 ABSL_NAMESPACE_END
