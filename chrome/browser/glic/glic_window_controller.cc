@@ -46,7 +46,24 @@ constexpr static int kWidgetDefaultWidth = 400;
 constexpr static int kWidgetTopBarHeight = 80;
 static constexpr int kEntryDurationMs = 300;
 
-class ContentsAndProfileKeepAlive : public content::WebContentsDelegate {
+mojom::PanelState CreatePanelState(bool widget_visible,
+                                   Browser* attached_browser) {
+  mojom::PanelState panel_state;
+  if (!widget_visible) {
+    panel_state.kind = mojom::PanelState_Kind::kHidden;
+  } else if (attached_browser) {
+    panel_state.kind = mojom::PanelState_Kind::kAttached;
+    panel_state.window_id = attached_browser->session_id().id();
+  } else {
+    panel_state.kind = mojom::PanelState_Kind::kDetached;
+  }
+  return panel_state;
+}
+
+}  // namespace
+
+class GlicWindowController::ContentsAndProfileKeepAlive
+    : public content::WebContentsDelegate {
  public:
   ContentsAndProfileKeepAlive(Profile* profile,
                               GlicWindowController* glic_window_controller)
@@ -98,11 +115,10 @@ class ContentsAndProfileKeepAlive : public content::WebContentsDelegate {
 };
 
 // Helper class for observing mouse and key events from native window.
-class WindowEventObserver : public ui::EventObserver {
+class GlicWindowController::WindowEventObserver : public ui::EventObserver {
  public:
-  explicit WindowEventObserver(
-      glic::GlicWindowController* glic_window_controller,
-      glic::GlicView* glic_view)
+  WindowEventObserver(glic::GlicWindowController* glic_window_controller,
+                      glic::GlicView* glic_view)
       : glic_window_controller_(glic_window_controller), glic_view_(glic_view) {
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
         this, glic_view->GetWidget()->GetNativeWindow(),
@@ -152,22 +168,6 @@ class WindowEventObserver : public ui::EventObserver {
   // area of the window.
   bool mouse_down_in_draggable_area_;
 };
-
-mojom::PanelState CreatePanelState(bool widget_visible,
-                                   Browser* attached_browser) {
-  mojom::PanelState panel_state;
-  if (!widget_visible) {
-    panel_state.kind = mojom::PanelState_Kind::kHidden;
-  } else if (attached_browser) {
-    panel_state.kind = mojom::PanelState_Kind::kAttached;
-    panel_state.window_id = attached_browser->session_id().id();
-  } else {
-    panel_state.kind = mojom::PanelState_Kind::kDetached;
-  }
-  return panel_state;
-}
-
-}  // namespace
 
 GlicWindowController::GlicWindowController(Profile* profile)
     : profile_(profile) {}

@@ -24,10 +24,6 @@ class Point;
 }  // namespace gfx
 
 namespace glic {
-namespace {
-class ContentsAndProfileKeepAlive;
-class WindowEventObserver;
-}  // namespace
 
 class GlicView;
 class GlicWindowResizeAnimation;
@@ -247,6 +243,7 @@ class GlicWindowController : public views::WidgetObserver {
   const raw_ptr<Profile> profile_;
   // Keep profile alive as long as the glic web contents. This object should be
   // destroyed when the profile needs to be destroyed.
+  class ContentsAndProfileKeepAlive;
   std::unique_ptr<ContentsAndProfileKeepAlive> contents_;
 
   // TODO(crbug.com/391402352): Create glic_detached_widget_. For now
@@ -262,6 +259,7 @@ class GlicWindowController : public views::WidgetObserver {
   gfx::Rect final_widget_bounds_;
 
   // Used to monitor key and mouse events from native window.
+  class WindowEventObserver;
   std::unique_ptr<WindowEventObserver> window_event_observer_;
 
   // True while RunMoveLoop() has been called on a widget.
