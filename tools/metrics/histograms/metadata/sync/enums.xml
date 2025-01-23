@@ -1093,6 +1093,18 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Unknown reason"/>
 </enum>
 
+<!-- LINT.IfChange(SyncMetadataConsistency) -->
+
+<enum name="SyncMetadataConsistency">
+  <int value="0" label="Metadata consistent"/>
+  <int value="1" label="Cache guid mismatch"/>
+  <int value="2" label="Data type id mismatch"/>
+  <int value="3" label="Empty persisted authenticated account id"/>
+  <int value="4" label="Authenticated account id mismatch"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/model/client_tag_based_data_type_processor.cc:SyncMetadataConsistency) -->
+
 <!-- LINT.IfChange(SyncPassphraseType) -->
 
 <enum name="SyncPassphraseType">

@@ -425,6 +425,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Sync.ConfigureDataTypeManager.IsGaiaAccountId" enum="Boolean"
+    expires_after="2025-07-22">
+  <owner>rushans@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    Whether the account ID used for configuring the data type manager is a Gaia
+    ID. Recorded when configuring the data type manager for any reason, normally
+    during startup / profile load.
+  </summary>
+</histogram>
+
 <histogram name="Sync.ConfigureDataTypeManagerOption"
     enum="SyncFeatureOrTransport" expires_after="2025-07-13">
   <owner>mastiz@chromium.org</owner>
@@ -772,6 +783,19 @@ chromium-metrics-reviews@google.com.
     Estimated memory usage by sync datatype in kilobytes. Recorded after sync
     configuration. This metric is used for monitoring general health of sync
     client-side code.
+  </summary>
+  <token key="SyncDataType" variants="SyncDataType"/>
+</histogram>
+
+<histogram name="Sync.DataTypeMetadataConsistency{SyncDataType}"
+    enum="SyncMetadataConsistency" expires_after="2025-07-22">
+  <owner>rushans@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    Records the state of persisted sync metadata consistency for each data type
+    when sync is starting up on profile open / startup. If there are several
+    buckets, only one bucket will be recorded for each data type depending on
+    their priority.
   </summary>
   <token key="SyncDataType" variants="SyncDataType"/>
 </histogram>
