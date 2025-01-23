@@ -1157,7 +1157,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Power.DimEvent{PowerSource}" enum="PowerDimEvent"
     expires_after="2025-03-01">
   <owner>mqg@chromium.org</owner>
-  <owner>charleszhao@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <summary>
     The dimming events inside power_manager.metrics.DimEvent, recorded when a
     quick-dim/standard-dim starts or ends. The device is on {PowerSource} when
@@ -1529,7 +1529,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Power.LockEvent{PowerSource}" enum="PowerLockEvent"
     expires_after="2025-03-01">
   <owner>mqg@chromium.org</owner>
-  <owner>charleszhao@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <summary>
     The lock events inside power_manager.metrics.LockEvent, recorded when a
     quick-lock/standard-lock starts. The device is on {PowerSource} when the
@@ -1844,7 +1844,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Power.{HpsEvent}.DurationSeconds" units="seconds"
     expires_after="2025-03-01">
   <owner>mqg@chromium.org</owner>
-  <owner>charleszhao@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <summary>
     The duration of a {HpsEvent}, recorded on undimming/deferring.
   </summary>
