@@ -24,7 +24,7 @@ using SharedModuleTest = ExtensionApiTest;
 // the public-keys in their manifests are used to generate the extension ID, so
 // it can be imported correctly.  We use InstallExtension otherwise so the loads
 // happen through the CRX installer which validates imports.
-// TODO(crbug.com/391683717): Port to desktop Android once InstallExtension() is
+// TODO(crbug.com/391921314): Port to desktop Android once InstallExtension() is
 // available. This depends on ExtensionService / ExtensionRegistrar decoupling.
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SharedModuleTest, SharedModule) {

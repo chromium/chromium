@@ -461,7 +461,7 @@
         Too many words to simplify
       </message>
       <message name="IDS_MAHI_MENU_INPUT_TEXTHOLDER" desc="The textholder for the input textfield inside the Mahi menu" translateable="false">
-        Ask question, e.g. "What is this page about?"
+        Ask a question
       </message>
       <message name="IDS_MAHI_PANEL_SUMMARY_SECTION_NAME" desc="The name for the summary section that lies within the Mahi panel">
         Summary

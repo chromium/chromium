@@ -42,6 +42,13 @@ chromium-metrics-reviews@google.com.
       summary="the message introducing price chips"/>
 </variants>
 
+<variants name="GroupFreshnessType">
+  <variant name="NoDailyUpdates"
+      summary="interest groups that don't specify a dailyUpdateUrl"/>
+  <variant name="WithDailyUpdates"
+      summary="interest groups that specify a dailyUpdateUrl"/>
+</variants>
+
 <variants name="HighlightsDetailsPageName">
   <variant name="AdobePage" summary="Highlights app Adobe detail page"/>
   <variant name="AIBackgroundPage"
@@ -452,60 +459,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ActivityTracker.Collect.InitStatus"
-    enum="ActivityTrackerCollectInitStatus" expires_after="M90">
-  <owner>siggi@chromium.org</owner>
-  <summary>
-    Status of the initialization to collect stability debug files. Logged once,
-    during the initialization of the stability debug file collection.
-  </summary>
-</histogram>
-
-<histogram name="ActivityTracker.Collect.StabilityFileCount" units="count"
-    expires_after="M90">
-  <owner>siggi@chromium.org</owner>
-  <summary>
-    Number of files found during stability file collection. Logged each time the
-    stability file collection proceeds (at most once per launch).
-  </summary>
-</histogram>
-
-<histogram name="ActivityTracker.Collect.Status"
-    enum="ActivityTrackerCollectStatus" expires_after="M90">
-  <owner>siggi@chromium.org</owner>
-  <summary>
-    Status for the collection of a stability debug file. Logged each time a
-    debug file collection attempt is made.
-  </summary>
-</histogram>
-
-<histogram name="ActivityTracker.Collect.SystemSessionAnalysisStatus"
-    enum="ActivityTrackerSystemSessionAnalysisStatus" expires_after="M90">
-  <owner>siggi@chromium.org</owner>
-  <summary>
-    Status for the analysis of the system session state. Logged each time a
-    debug file is collected.
-  </summary>
-</histogram>
-
-<histogram name="ActivityTracker.Collect.TotalTime" units="ms"
-    expires_after="M90">
-  <owner>siggi@chromium.org</owner>
-  <summary>
-    Time spent collecting stability debug information. Logged each time a
-    collection is performed.
-  </summary>
-</histogram>
-
-<histogram name="ActivityTracker.Collect.WriteDumpStatus"
-    enum="ActivityTrackerWriteDumpStatus" expires_after="M90">
-  <owner>siggi@chromium.org</owner>
-  <summary>
-    Status of the minidump writing. Logged each time a writing a minidump is
-    attempted.
-  </summary>
-</histogram>
-
 <histogram name="Ads.InterestGroup.AtAuctionTotalSize.{Type}" units="KB"
     expires_after="2025-06-08">
   <owner>caraitto@chromium.org</owner>
@@ -815,19 +768,35 @@ chromium-metrics-reviews@google.com.
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
     For every interest group that participates in an auction, the time duration
-    since the last join or update of that interest group.
+    since the last join or update of that interest group capped at 30 days.
+    Recorded each time an interest group is read from the database for an
+    on-device auction.
 
     This metric only measures {Type}.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
   </summary>
-  <token key="Type">
-    <variant name="NoDailyUpdates"
-        summary="interest groups that don't specify a dailyUpdateUrl"/>
-    <variant name="WithDailyUpdates"
-        summary="interest groups that specify a dailyUpdateUrl"/>
-  </token>
+  <token key="Type" variants="GroupFreshnessType"/>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.GroupFreshness90d.{Type}"
+    units="minutes" expires_after="2025-05-04">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    For every interest group that participates in an auction, the time duration
+    since the last join or update of that interest group capped at 90 days.
+    Recorded each time an interest group is read from the database for an
+    on-device auction.
+
+    This metric only measures {Type}.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+  <token key="Type" variants="GroupFreshnessType"/>
 </histogram>
 
 <histogram name="Ads.InterestGroup.Auction.HttpCachedTrustedBiddingSignalsAge2"
@@ -8601,46 +8570,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="Setup.Install.LzmaUnPackStatus" enum="UnPackStatus"
-    expires_after="2025-05-01">
-  <owner>zmin@chromium.org</owner>
-  <owner>grt@chromium.org</owner>
-  <summary>Record the status of unpacking the contents of a 7z file.</summary>
-</histogram>
-
-<histogram name="Setup.Install.PeakPagefileUsage" units="KB"
-    expires_after="never">
-<!-- expires-never: used to monitor memory usage of setup installer.  -->
-
-  <owner>huangs@chromium.org</owner>
-  <summary>
-    The peak page file usage by setup.exe in KB during install or uninstall
-    attempt.
-  </summary>
-</histogram>
-
-<histogram name="Setup.Install.PeakWorkingSetSize" units="KB"
-    expires_after="never">
-<!-- expires-never: used to monitor memory usage of setup installer.  -->
-
-  <owner>huangs@chromium.org</owner>
-  <summary>
-    The peak working set size of setup.exe in KB during install or uninstall
-    attempt.
-  </summary>
-</histogram>
-
-<histogram name="Setup.Install.Result" enum="SetupInstallResult"
-    expires_after="never">
-<!-- expires-never: Fundamental metric used to gague overall failure rates. -->
-
-  <owner>grt@chromium.org</owner>
-  <owner>ydago@chromium.org</owner>
-  <summary>
-    The final exit-result of the entire run of setup.exe on Windows.
-  </summary>
-</histogram>
-
 <histogram name="Shutdown.BrowserExit.Time2" units="ms"
     expires_after="2025-06-22">
   <owner>etienneb@chromium.org</owner>
@@ -10368,65 +10297,6 @@ regressions. -->
     CRWWKNavigationHandler has a cache of pending cert verification results to
     avoid extra verifications when presenting SSL interstitial. This metric
     helps to understand how often this cache miss happens.
-  </summary>
-</histogram>
-
-<histogram name="WebDatabase.AutofillAccountStorage"
-    enum="WebDatabaseAutofillAccountStorageResult" expires_after="2025-07-13">
-  <owner>mastiz@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <summary>
-    Recorded upon construction of WebDataService, usually during profile
-    startup, it logs whether the web database used for autofill account data is
-    stored in-memory only or on-disk. Rather than logging two possible values,
-    it also conveys the reason why a specific choice was made. Recorded on
-    desktop only, as on mobile the storage is always on disk.
-  </summary>
-</histogram>
-
-<histogram name="WebDatabase.AutofillWebDataBackendImpl.OperationResult"
-    enum="AutofillWebDataBackendImplOperationResult" expires_after="2025-06-22">
-  <owner>battre@chromium.org</owner>
-  <owner>asully@chromium.org</owner>
-  <summary>
-    Records the success or failure of various database operations in
-    autofill::AutofillWebDataBackendImpl.
-  </summary>
-</histogram>
-
-<histogram name="WebDatabase.DatabaseErrors" enum="SqliteLoggedResultCode"
-    expires_after="2025-06-22">
-  <owner>battre@chromium.org</owner>
-  <owner>asully@chromium.org</owner>
-  <summary>Records the errors reported by SQLite.</summary>
-</histogram>
-
-<histogram name="WebDatabase.FailedMigrationToVersion" units="version"
-    expires_after="2025-07-13">
-  <owner>battre@chromium.org</owner>
-  <owner>asully@chromium.org</owner>
-  <summary>
-    If a migration to a new WebDatabase schema fails, this histogram records the
-    target version to which the migration failed.
-  </summary>
-</histogram>
-
-<histogram name="WebDatabase.InitResult" enum="WebDatabaseInitResult"
-    expires_after="2025-07-13">
-  <owner>battre@chromium.org</owner>
-  <owner>asully@chromium.org</owner>
-  <summary>
-    Records whether WebDatabase::Init succeeds or otherwise a failure reason.
-  </summary>
-</histogram>
-
-<histogram name="WebDatabase.SucceededMigrationToVersion" units="version"
-    expires_after="2025-06-29">
-  <owner>battre@chromium.org</owner>
-  <owner>fleimgruber@google.com</owner>
-  <summary>
-    If a migration to a new WebDatabase schema succeeds, this histogram records
-    the target version to which the migration failed.
   </summary>
 </histogram>
 

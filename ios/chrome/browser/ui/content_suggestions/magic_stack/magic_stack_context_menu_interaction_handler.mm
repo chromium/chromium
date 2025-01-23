@@ -156,42 +156,8 @@ NSString* GetContextMenuHideDescriptionForType(
   self.shouldHide = NO;
 }
 
-#pragma mark - UIContextMenuInteractionDelegate
-
-- (UIContextMenuConfiguration*)contextMenuInteraction:
-                                   (UIContextMenuInteraction*)interaction
-                       configurationForMenuAtLocation:(CGPoint)location {
-  if (!AllowsLongPressForModuleType(self.type)) {
-    return nil;
-  }
-  __weak __typeof(self) weakSelf = self;
-  UIContextMenuActionProvider actionProvider =
-      ^(NSArray<UIMenuElement*>* suggestedActions) {
-        return [UIMenu menuWithTitle:GetContextMenuTitleForType(weakSelf.type)
-                            children:[weakSelf contextMenuActions]];
-      };
-  return
-      [UIContextMenuConfiguration configurationWithIdentifier:nil
-                                              previewProvider:nil
-                                               actionProvider:actionProvider];
-}
-
-- (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction
-       willEndForConfiguration:(UIContextMenuConfiguration*)configuration
-                      animator:(id<UIContextMenuInteractionAnimating>)animator {
-  if (configuration && self.shouldHide) {
-    __weak __typeof(self) weakSelf = self;
-
-    [animator addCompletion:^{
-      [weakSelf.delegate neverShowModuleType:weakSelf.type];
-    }];
-  }
-}
-
-#pragma mark - Helpers
-
 /// Returns the list of actions for the long-press/context menu.
-- (NSArray<UIAction*>*)contextMenuActions {
+- (NSArray<UIMenuElement*>*)menuElements {
   NSMutableArray<UIAction*>* actions = [[NSMutableArray alloc] init];
 
   BOOL canShowTipsNotificationsOptIn =
@@ -212,6 +178,46 @@ NSString* GetContextMenuHideDescriptionForType(
 
   return actions;
 }
+
+- (void)notifyContextMenuInteractionEndWithAnimator:
+    (id<UIContextMenuInteractionAnimating>)animator {
+  if (self.shouldHide) {
+    __weak __typeof(self) weakSelf = self;
+    [animator addCompletion:^{
+      [weakSelf.delegate neverShowModuleType:weakSelf.type];
+    }];
+  }
+}
+
+#pragma mark - UIContextMenuInteractionDelegate
+
+- (UIContextMenuConfiguration*)contextMenuInteraction:
+                                   (UIContextMenuInteraction*)interaction
+                       configurationForMenuAtLocation:(CGPoint)location {
+  if (!AllowsLongPressForModuleType(self.type)) {
+    return nil;
+  }
+  __weak __typeof(self) weakSelf = self;
+  UIContextMenuActionProvider actionProvider =
+      ^(NSArray<UIMenuElement*>* suggestedActions) {
+        return [UIMenu menuWithTitle:GetContextMenuTitleForType(weakSelf.type)
+                            children:[weakSelf menuElements]];
+      };
+  return
+      [UIContextMenuConfiguration configurationWithIdentifier:nil
+                                              previewProvider:nil
+                                               actionProvider:actionProvider];
+}
+
+- (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction
+       willEndForConfiguration:(UIContextMenuConfiguration*)configuration
+                      animator:(id<UIContextMenuInteractionAnimating>)animator {
+  if (configuration) {
+    [self notifyContextMenuInteractionEndWithAnimator:animator];
+  }
+}
+
+#pragma mark - Helpers
 
 /// Returns the menu action to hide this module type.
 - (UIAction*)hideAction {

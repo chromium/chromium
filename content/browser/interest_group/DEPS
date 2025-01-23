@@ -9,10 +9,22 @@ specific_include_rules = {
   "(.*_unittest\.cc|test_same_process_auction_process_manager.cc)": [
     "+content/services/auction_worklet",
   ],
+  "(.*_unittest\.cc|.*_browsertest\.cc)": [
+    # To disable some network service metrics in tests that were causing
+    # timeouts during FastForwardBy(). These metrics were firing very
+    # frequently (once every 30 seconds), so when doing a long FastForwardBy(),
+    # their callbacks get invoked many times, causing FastForwardBy() to take a
+    # long time and cause the test to time out.
+    "+services/network/network_service.h",
+  ],
   ".*_fuzzer.cc": [
     "+third_party/libprotobuf-mutator/src/src/libfuzzer",
     # Like unit tests, MojoLPM fuzzers directly instantiate an in-process
     # auction_worklet service.
     "+content/services/auction_worklet",
   ],
+  # Test utilities can use gtest.
+  ".*_test_util.(cc|h)": [
+    "+third_party/googletest/src/googletest/include/gtest/gtest.h",
+  ]
 }

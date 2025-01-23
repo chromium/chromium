@@ -4,7 +4,8 @@
 
 import 'chrome://chrome-signin/inline_login_app.js';
 
-import {InlineLoginAppElement, View} from 'chrome://chrome-signin/inline_login_app.js';
+import type {InlineLoginAppElement} from 'chrome://chrome-signin/inline_login_app.js';
+import {View} from 'chrome://chrome-signin/inline_login_app.js';
 import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

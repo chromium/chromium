@@ -393,4 +393,57 @@ TEST_F(ClipPathPaintDefinitionTest,
   EXPECT_TRUE(lo->FirstFragment().PaintProperties()->ClipPathMask());
 }
 
+// Test the case where there is a clip-path animation with two shape()
+// keyframes that will not fall back to main.
+TEST_F(ClipPathPaintDefinitionTest, ShapeClipPathAnimationNotFallback) {
+  SetBodyInnerHTML(R"HTML(
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Timing timing;
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
+
+  CSSPropertyID property_id = CSSPropertyID::kClipPath;
+  Persistent<StringKeyframe> start_keyframe =
+      MakeGarbageCollected<StringKeyframe>();
+  start_keyframe->SetCSSPropertyValue(
+      property_id, "shape(from 10px 10px, vline by 20px, hline by 20px)",
+      SecureContextMode::kInsecureContext, nullptr);
+  Persistent<StringKeyframe> end_keyframe =
+      MakeGarbageCollected<StringKeyframe>();
+  end_keyframe->SetCSSPropertyValue(
+      property_id, "shape(from 10px 10px, vline by 30px, hline by 30px)",
+      SecureContextMode::kInsecureContext, nullptr);
+
+  StringKeyframeVector keyframes;
+  keyframes.push_back(start_keyframe);
+  keyframes.push_back(end_keyframe);
+
+  auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+  model->SetComposite(EffectModel::kCompositeReplace);
+
+  Element* element = GetElementById("target");
+  LayoutObject* lo = element->GetLayoutObject();
+  NonThrowableExceptionState exception_state;
+  DocumentTimeline* timeline =
+      MakeGarbageCollected<DocumentTimeline>(&GetDocument());
+  Animation* animation = Animation::Create(
+      MakeGarbageCollected<KeyframeEffect>(element, model, timing), timeline,
+      exception_state);
+  animation->play();
+
+  UpdateAllLifecyclePhasesForTest();
+
+  // Ensure that the paint property was set correctly - composited animation
+  // uses a mask based clip.
+  EXPECT_TRUE(lo->FirstFragment().PaintProperties()->ClipPathMask());
+  EXPECT_TRUE(element->GetElementAnimations());
+  EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
+            CompositedPaintStatus::kComposited);
+  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
+  EXPECT_EQ(ClipPathPaintDefinition::GetAnimationIfCompositable(element),
+            animation);
+}
+
 }  // namespace blink

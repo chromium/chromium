@@ -11,6 +11,7 @@
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/first_run/ui_bundled/default_browser/default_browser_screen_mediator.h"
@@ -27,17 +28,25 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/tos_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 @interface DefaultBrowserScreenCoordinator () <TOSCommands,
-                                               UMACoordinatorDelegate>
+                                               UMACoordinatorDelegate,
+                                               ConfirmationAlertActionHandler>
 @end
 
 @implementation DefaultBrowserScreenCoordinator {
-  DefaultBrowserScreenViewController* _viewController;
+  // The Default Browser Promo can be displayed as either a Static promo or an
+  // Animated promo depending on the `kAnimatedDefaultBrowserPromoInFRE` flag.
+  // Seperate view controllers are used to create each view and set the
+  // necessary properties, but only one view is presented.
+  DefaultBrowserScreenViewController* _staticViewController;
+  DefaultBrowserInstructionsViewController* _animatedViewController;
   DefaultBrowserScreenMediator* _mediator;
   __weak id<FirstRunScreenDelegate> _delegate;
   TOSCoordinator* _TOSCoordinator;
   UMACoordinator* _UMACoordinator;
+  raw_ptr<ProfileIOS> _profile;
 }
 @synthesize baseNavigationController = _baseNavigationController;
 
@@ -59,46 +68,38 @@
 - (void)start {
   [super start];
 
-  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
+  _profile = self.browser->GetProfile()->GetOriginalProfile();
   base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                 first_run::kDefaultBrowserScreenStart);
   default_browser::NotifyDefaultBrowserFREPromoShown(
-      feature_engagement::TrackerFactory::GetForProfile(profile));
+      feature_engagement::TrackerFactory::GetForProfile(_profile));
 
-  _viewController = [[DefaultBrowserScreenViewController alloc] init];
-  _viewController.delegate = self;
-  _viewController.modalInPresentation = YES;
-
-  BOOL animated = self.baseNavigationController.topViewController != nil;
-  [self.baseNavigationController setViewControllers:@[ _viewController ]
-                                           animated:animated];
-
-  if (IsSegmentedDefaultBrowserPromoEnabled() ||
-      base::FeatureList::IsEnabled(first_run::kUpdatedFirstRunSequence)) {
-    segmentation_platform::SegmentationPlatformService* segmentationService =
-        segmentation_platform::SegmentationPlatformServiceFactory::
-            GetForProfile(profile);
-
-    segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher =
-        segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForProfile(profile);
-
-    _mediator = [[DefaultBrowserScreenMediator alloc]
-           initWithSegmentationService:segmentationService
-        deviceSwitcherResultDispatcher:dispatcher];
-    _mediator.consumer = _viewController;
+  if (first_run::IsAnimatedDefaultBrowserPromoInFREEnabled()) {
+    [self displayAnimatedPromo];
+  } else {
+    [self displayStaticPromo];
   }
 }
 
 - (void)stop {
-  _viewController.delegate = nil;
-  _viewController = nil;
+  _animatedViewController = nil;
+  _staticViewController.delegate = nil;
+  _staticViewController = nil;
   _delegate = nil;
   _mediator.consumer = nil;
   [_mediator disconnect];
   _mediator = nil;
 
   [super stop];
+}
+#pragma mark - ConfirmationAlertActionHandler
+
+- (void)confirmationAlertPrimaryAction {
+  [self didTapPrimaryActionButton];
+}
+
+- (void)confirmationAlertSecondaryAction {
+  [self didTapSecondaryActionButton];
 }
 
 #pragma mark - PromoStyleViewControllerDelegate
@@ -144,9 +145,10 @@
 
 - (void)showTOSPage {
   DCHECK(!_TOSCoordinator);
+  CHECK(_staticViewController);
   _mediator.TOSLinkWasTapped = YES;
   _TOSCoordinator =
-      [[TOSCoordinator alloc] initWithBaseViewController:_viewController
+      [[TOSCoordinator alloc] initWithBaseViewController:_staticViewController
                                                  browser:self.browser];
   [_TOSCoordinator start];
 }
@@ -170,6 +172,47 @@
 
 #pragma mark - Private
 
+- (void)displayStaticPromo {
+  _staticViewController = [[DefaultBrowserScreenViewController alloc] init];
+  _staticViewController.delegate = self;
+
+  if (IsSegmentedDefaultBrowserPromoEnabled() ||
+      base::FeatureList::IsEnabled(first_run::kUpdatedFirstRunSequence)) {
+    segmentation_platform::SegmentationPlatformService* segmentationService =
+        segmentation_platform::SegmentationPlatformServiceFactory::
+            GetForProfile(_profile);
+
+    segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher =
+        segmentation_platform::SegmentationPlatformServiceFactory::
+            GetDispatcherForProfile(_profile);
+
+    _mediator = [[DefaultBrowserScreenMediator alloc]
+           initWithSegmentationService:segmentationService
+        deviceSwitcherResultDispatcher:dispatcher];
+
+    _mediator.consumer = _staticViewController;
+  }
+  BOOL animated = self.baseNavigationController.topViewController != nil;
+  _staticViewController.delegate = self;
+  _staticViewController.modalInPresentation = YES;
+  [self.baseNavigationController setViewControllers:@[ _staticViewController ]
+                                           animated:animated];
+}
+
+- (void)displayAnimatedPromo {
+  _animatedViewController = [[DefaultBrowserInstructionsViewController alloc]
+      initWithDismissButton:YES
+           hasRemindMeLater:NO
+                   hasSteps:NO
+              actionHandler:self
+                  titleText:nil];
+
+  BOOL animated = self.baseNavigationController.topViewController != nil;
+  _animatedViewController.modalInPresentation = YES;
+  [self.baseNavigationController setViewControllers:@[ _animatedViewController ]
+                                           animated:animated];
+}
+
 - (void)finishPresenting {
   [_mediator finishPresenting];
   [_delegate screenWillFinishPresenting];
@@ -178,8 +221,9 @@
 // Shows the UMA dialog so the user can manage metric reporting.
 - (void)showUMADialog {
   DCHECK(!_UMACoordinator);
+  CHECK(_staticViewController);
   _UMACoordinator = [[UMACoordinator alloc]
-      initWithBaseViewController:_viewController
+      initWithBaseViewController:_staticViewController
                          browser:self.browser
                UMAReportingValue:_mediator.UMAReportingUserChoice];
   _UMACoordinator.delegate = self;

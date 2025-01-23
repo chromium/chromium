@@ -500,20 +500,23 @@ public class PageInfoController
         return !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
-    public View getPageInfoViewForTesting() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public View getPageInfoView() {
         return mContainer;
     }
 
-    public PageInfoCookiesController getCookiesControllerForTesting() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public PageInfoCookiesController getCookiesController() {
         return mCookiesController;
     }
 
-    public PageInfoTrackingProtectionLaunchController
-            getTrackingProtectionLaunchControllerForTesting() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public PageInfoTrackingProtectionLaunchController getTrackingProtectionLaunchController() {
         return mTrackingProtectionLaunchController;
     }
 
-    public boolean isDialogShowingForTesting() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public boolean isDialogShowing() {
         return mDialog != null;
     }
 
@@ -569,7 +572,8 @@ public class PageInfoController
                                 dialogPosition));
     }
 
-    public static PageInfoController getLastPageInfoControllerForTesting() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static PageInfoController getLastPageInfoController() {
         return sLastPageInfoControllerForTesting != null
                 ? sLastPageInfoControllerForTesting.get()
                 : null;
@@ -590,6 +594,11 @@ public class PageInfoController
     @Override
     public BrowserContextHandle getBrowserContext() {
         return mDelegate.getBrowserContext();
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public PageInfoControllerDelegate getPageInfoControllerDelegate() {
+        return mDelegate;
     }
 
     /** Launches a subpage for the specified controller. */

@@ -133,8 +133,11 @@ class PdfInkModule {
 
   bool enabled() const { return enabled_; }
 
-  // Draws `strokes_` and `inputs_` into `canvas`. Here, `canvas` covers the
-  // visible content area, so this only draws strokes for visible pages.
+  // Determines if there are any `drawing_stroke_state().inputs` to be drawn.
+  bool HasInputsToDraw() const;
+
+  // Draws `drawing_stroke_state().inputs` into `canvas`.  Must be in a drawing
+  // stroke state with non-empty `drawing_stroke_state().inputs`.
   void Draw(SkCanvas& canvas);
 
   // Draws `strokes_` for `page_index` into `canvas`. Here, `canvas` only covers

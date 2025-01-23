@@ -83,18 +83,4 @@ void BindVideoEffectsManager(
                      browser_context, std::move(video_effects_manager)));
 }
 
-base::WeakPtr<VideoEffectsManagerImpl> GetOrCreateVideoEffectsManager(
-    const std::string& device_id,
-    content::BrowserContext* browser_context) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  CHECK(browser_context);
-
-  auto* media_effects_service =
-      MediaEffectsServiceFactory::GetForBrowserContext(browser_context);
-  CHECK(media_effects_service);
-
-  return media_effects_service->GetOrCreateVideoEffectsManager(device_id)
-      .GetWeakPtr();
-}
-
 }  // namespace media_effects

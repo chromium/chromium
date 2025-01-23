@@ -16,13 +16,6 @@ namespace history_embeddings {
 
 class Embedding;
 
-using ComputePassagesEmbeddingsCallback = base::OnceCallback<void(
-    std::vector<std::string> passages,
-    std::vector<Embedding> embeddings,
-    passage_embeddings::ComputeEmbeddingsStatus status)>;
-using OnEmbedderReadyCallback =
-    base::OnceCallback<void(passage_embeddings::EmbedderMetadata metadata)>;
-
 // Base class that hides implementation details for how text is embedded.
 class Embedder {
  public:
@@ -33,13 +26,19 @@ class Embedder {
   // `passages` will match the number of entries in the embeddings vector and in
   // the same order. If unsuccessful, the callback will still return the
   // original passages but an empty embeddings vector.
+  using ComputePassagesEmbeddingsCallback = base::OnceCallback<void(
+      std::vector<std::string> passages,
+      std::vector<Embedding> embeddings,
+      passage_embeddings::ComputeEmbeddingsStatus status)>;
   virtual void ComputePassagesEmbeddings(
       passage_embeddings::PassagePriority priority,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) = 0;
 
-  // Set the callback to run when the embedder is ready to process requests.
+  // Sets the callback to run when the embedder is ready to process requests.
   // The callback is invoked immediately if the embedder is ready beforehand.
+  using OnEmbedderReadyCallback =
+      base::OnceCallback<void(passage_embeddings::EmbedderMetadata metadata)>;
   virtual void SetOnEmbedderReady(OnEmbedderReadyCallback callback) = 0;
 
  protected:

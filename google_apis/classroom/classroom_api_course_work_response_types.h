@@ -21,6 +21,33 @@ class Value;
 
 namespace google_apis::classroom {
 
+// https://developers.google.com/classroom/reference/rest/v1/Material
+class Material {
+ public:
+  // Material type.
+  enum class Type {
+    kSharedDriveFile,
+    kYoutubeVideo,
+    kLink,
+    kForm,
+    kUnknown,
+  };
+
+  Material();
+  Material(const Material&) = delete;
+  Material& operator=(const Material&) = delete;
+  ~Material();
+
+  static bool ConvertMaterial(const base::Value* input, Material* output);
+
+  const std::string& title() const { return title_; }
+  Type type() const { return type_; }
+
+ private:
+  std::string title_;
+  Type type_ = Type::kUnknown;
+};
+
 // https://developers.google.com/classroom/reference/rest/v1/courses.courseWork
 class CourseWorkItem {
  public:
@@ -29,6 +56,14 @@ class CourseWorkItem {
   // need "PUBLISHED" course work items.
   enum class State {
     kPublished,
+    kOther,
+  };
+
+  // Course work item type.
+  // There are more types can be returned by the API, but current users only
+  // need "ASSIGNMENT" course work type.
+  enum class Type {
+    kAssignment,
     kOther,
   };
 
@@ -67,12 +102,16 @@ class CourseWorkItem {
   const std::string& id() const { return id_; }
   const std::string& title() const { return title_; }
   State state() const { return state_; }
+  Type type() const { return type_; }
   const GURL& alternate_link() const { return alternate_link_; }
   const std::optional<DueDateTime>& due_date_time() const {
     return due_date_time_;
   }
   const base::Time& creation_time() const { return creation_time_; }
   const base::Time& last_update() const { return last_update_; }
+  const std::vector<std::unique_ptr<Material>>& materials() const {
+    return materials_;
+  }
 
  private:
   // Classroom-assigned identifier of this course work, unique per course.
@@ -83,6 +122,9 @@ class CourseWorkItem {
 
   // Status of this course work item.
   State state_ = State::kOther;
+
+  // Type of this course work item.
+  Type type_ = Type::kOther;
 
   // Absolute link to this course work in the Classroom web UI.
   GURL alternate_link_;
@@ -100,6 +142,9 @@ class CourseWorkItem {
 
   // The timestamp of the last course work item update.
   base::Time last_update_;
+
+  // The materials of a course work item.
+  std::vector<std::unique_ptr<Material>> materials_;
 };
 
 // Container for multiple `CourseWorkItem`s.

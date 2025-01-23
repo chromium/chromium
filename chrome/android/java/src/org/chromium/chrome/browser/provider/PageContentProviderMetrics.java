@@ -59,6 +59,12 @@ public class PageContentProviderMetrics {
                 pdfStructuredDataAttached);
     }
 
+    public static void recordEnterpriseInfoCacheStateForWebAssistContent(
+            boolean isEnterpriseInfoCached) {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.AssistContent.IsEnterpriseInfoCached", isEnterpriseInfoCached);
+    }
+
     public static void recordWebStructuredDataAttachedToAssistContent(
             boolean webStructuredDataAttached) {
         RecordHistogram.recordBooleanHistogram(

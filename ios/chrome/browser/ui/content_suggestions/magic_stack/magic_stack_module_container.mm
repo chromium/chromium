@@ -524,6 +524,16 @@ const CGFloat kSeparatorHeight = 0.5;
   _separator.hidden = isHidden;
 }
 
+- (NSArray<UIMenuElement*>*)contextMenuElementsForCurrentModule {
+  return [self.contextMenuInteractionHandler menuElements];
+}
+
+- (void)notifyContextMenuInteractionEndWithAnimator:
+    (id<UIContextMenuInteractionAnimating>)animator {
+  [self.contextMenuInteractionHandler
+      notifyContextMenuInteractionEndWithAnimator:animator];
+}
+
 #pragma mark - Helpers
 
 // Handles taps on the "See More" button.

@@ -93,6 +93,21 @@ void TapSecondaryActionButton() {
   [[EarlGrey selectElementWithMatcher:button] performAction:grey_tap()];
 }
 
+// Swipe all the way over to the end of the Magic Stack and tap the edit button,
+// which opens the customization menu at the Magic Stack page.
+void TapMagicStackEditButton() {
+  id<GREYMatcher> magicStackScrollView =
+      grey_accessibilityID(kMagicStackScrollViewAccessibilityIdentifier);
+  CGFloat moduleSwipeAmount = kMagicStackWideWidth * 0.6;
+  [[[EarlGrey selectElementWithMatcher:
+                  grey_allOf(grey_accessibilityID(
+                                 kMagicStackEditButtonAccessibilityIdentifier),
+                             grey_sufficientlyVisible(), nil)]
+         usingSearchAction:GREYScrollInDirectionWithStartPoint(
+                               kGREYDirectionRight, moduleSwipeAmount, 0.9, 0.5)
+      onElementWithMatcher:magicStackScrollView] performAction:grey_tap()];
+}
+
 }  // namespace
 
 #pragma mark - TestCase
@@ -552,17 +567,7 @@ void TapSecondaryActionButton() {
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   [self prepareToTestSetUpListInMagicStack];
-
-  // Swipe all the way over to the end of the Magic Stack and tap the edit
-  // button, which opens the customization menu at the Magic Stack page.
-  [[[EarlGrey selectElementWithMatcher:
-                  grey_allOf(grey_accessibilityID(
-                                 kMagicStackEditButtonAccessibilityIdentifier),
-                             grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_swipeFastInDirection(kGREYDirectionLeft)
-      onElementWithMatcher:grey_accessibilityID(
-                               kMagicStackScrollViewAccessibilityIdentifier)]
-      performAction:grey_tap()];
+  TapMagicStackEditButton();
 
   [[EarlGrey
       selectElementWithMatcher:
@@ -650,6 +655,71 @@ void TapSecondaryActionButton() {
           grey_allOf(
               chrome_test_util::StaticTextWithAccessibilityLabel(pageTitle),
               grey_sufficientlyVisible(), nil)] assertWithMatcher:grey_nil()];
+}
+
+- (void)testMVTInMagicStackToggleModule {
+  [self setupMostVisitedTileLongPress];
+  // Tap to hide module.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_text(l10n_util::GetNSString(
+              IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_HIDE_CARD))]
+      performAction:grey_tap()];
+  // Check the module is removed.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:
+                   grey_text(l10n_util::GetNSString(
+                       IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE))]
+        assertWithMatcher:grey_notVisible()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout, condition),
+             @"Most visited tile is not hidden.");
+
+  // Turn back on MVT.
+  TapMagicStackEditButton();
+  id<GREYMatcher> switchCell = grey_allOf(
+      grey_anyOf(grey_kindOfClassName(@"TableViewSwitchCell"),
+                 grey_kindOfClassName(@"HomeCustomizationToggleCell"), nil),
+      grey_descendant(grey_text(l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE))),
+      nil);
+  id<GREYMatcher> mvtSwitchElement = grey_allOf(
+      grey_kindOfClassName(@"UISwitch"), grey_ancestor(switchCell), nil);
+  // Make sure the toggle is off, and tap it.
+  [[EarlGrey selectElementWithMatcher:mvtSwitchElement]
+      assertWithMatcher:grey_switchWithOnState(NO)];
+  [[EarlGrey selectElementWithMatcher:mvtSwitchElement]
+      performAction:grey_turnSwitchOn(YES)];
+
+  // Dismiss the menu and verify MVT visibility.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_anyOf(
+              grey_accessibilityID(
+                  kMagicStackEditHalfSheetDoneButtonAccessibilityIdentifier),
+              grey_accessibilityID(kNavigationBarDismissButtonIdentifier), nil)]
+      performAction:grey_tap()];
+  // Swipe back to the first module, and check that it appears.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kMagicStackScrollViewAccessibilityIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionRight)];
+  condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:
+                   grey_text(l10n_util::GetNSString(
+                       IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE))]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout, condition),
+             @"Most visited tile is not displayed.");
 }
 
 #pragma mark - Test utils

@@ -6,15 +6,16 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {CrTooltipIconElement, emptyState, PersonalizationThemeElement, SetDarkModeEnabledAction, setGeolocationIsUserModifiableAction, SetGeolocationIsUserModifiableActionForTheme, setGeolocationPermissionEnabledAction, SetGeolocationPermissionEnabledActionForTheme, ThemeActionName, ThemeObserver} from 'chrome://personalization/js/personalization_app.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrTooltipIconElement, SetDarkModeEnabledAction, SetGeolocationIsUserModifiableActionForTheme, SetGeolocationPermissionEnabledActionForTheme} from 'chrome://personalization/js/personalization_app.js';
+import {emptyState, PersonalizationThemeElement, setGeolocationIsUserModifiableAction, setGeolocationPermissionEnabledAction, ThemeActionName, ThemeObserver} from 'chrome://personalization/js/personalization_app.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestThemeProvider} from './test_theme_interface_provider.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestThemeProvider} from './test_theme_interface_provider.js';
 
 const LIGHT_MODE_BUTTON_ID = 'lightMode';
 const DARK_MODE_BUTTON_ID = 'darkMode';

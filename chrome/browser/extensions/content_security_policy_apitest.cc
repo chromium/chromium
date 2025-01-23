@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(
 
 #if !BUILDFLAG(IS_ANDROID)
 // Tests that MV3 disallows localhost in packed extensions.
-// TODO(https://crbug.com/371434193): Enable on Android once packed extensions
+// TODO(https://crbug.com/391924202): Enable on Android once packed extensions
 // are supported.
 IN_PROC_BROWSER_TEST_F(ExtensionCspApiTest,
                        ManifestV3DisallowsLocalhostForPackedExtensions) {

@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -38,9 +39,8 @@ std::string GetVersionDirName(const uint32_t sequence_number,
 AwComponentInstallerPolicy::AwComponentInstallerPolicy() = default;
 
 void AwComponentInstallerPolicy::OnCustomUninstall() {
-  // TODO(crbug.com/391694564): Investigate why this is called and how to
-  // prevent it, since uninstallation isn't supported in WebView.
-  return;
+  // Uninstallation isn't supported in WebView.
+  NOTREACHED();
 }
 
 // Copy the components file from `install_dir` to the serving directory of the

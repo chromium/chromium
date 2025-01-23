@@ -833,6 +833,8 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
   //  the appropriate long-term solution. Please remove this condition once the
   //  final fix is implemented.
   if (controller_.GetBrowserContext()->ShutdownStarted()) {
+    request->set_navigation_discard_reason(
+        NavigationDiscardReason::kNeverStarted);
     return;
   }
 

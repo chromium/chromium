@@ -52,6 +52,9 @@ class MODULES_EXPORT PaymentRequest final
   USING_PRE_FINALIZER(PaymentRequest, ClearResolversAndCloseMojoConnection);
 
  public:
+  static ScriptPromise<IDLBoolean> isSecurePaymentConfirmationAvailable(
+      ScriptState* script_state);
+
   static PaymentRequest* Create(ExecutionContext*,
                                 const HeapVector<Member<PaymentMethodData>>&,
                                 const PaymentDetailsInit*,

@@ -6,7 +6,7 @@ import 'chrome://diagnostics/routine_result_list.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_list_executor.js';
-import {RoutineResultEntryElement} from 'chrome://diagnostics/routine_result_entry.js';
+import type {RoutineResultEntryElement} from 'chrome://diagnostics/routine_result_entry.js';
 import {RoutineResultListElement} from 'chrome://diagnostics/routine_result_list.js';
 import {RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';

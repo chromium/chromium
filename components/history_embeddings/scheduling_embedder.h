@@ -18,26 +18,47 @@
 
 namespace history_embeddings {
 
-// The SchedulingEmbedder wraps another primary embedder and adds scheduling
-// control with batching and priorities so that high priority queries can be
-// computed as soon as possible. Scheduling is also needed to avoid clogging the
-// pipes for a slow remote embedder. Even single pages can take a while, and
-// when the model changes, all existing passages need their embeddings
-// recomputed, which can take a very long time and should be done at lower
-// priority.
-class SchedulingEmbedder : public Embedder {
+// The SchedulingEmbedder wraps a primary embedder and adds scheduling control
+// with batching and priorities so that high priority queries can be computed as
+// soon as possible. Scheduling is also needed to avoid clogging the pipes for a
+// slow remote embedder. Even single pages can take a while, and when the model
+// changes, all existing passages need their embeddings recomputed, which can
+// take a very long time and should be done at lower priority.
+class SchedulingEmbedder {
  public:
+  using TaskId = uint64_t;
+  static constexpr TaskId kInvalidTaskId = 0;
+
   SchedulingEmbedder(std::unique_ptr<Embedder> embedder,
                      size_t scheduled_max);
-  ~SchedulingEmbedder() override;
+  ~SchedulingEmbedder();
 
-  // Embedder:
-  void ComputePassagesEmbeddings(
-      passage_embeddings::PassagePriority priority,
+  // Computes embeddings for each entry in `passages`. Will invoke callback on
+  // done. If successful, it is guaranteed that the number of passages in
+  // `passages` will match the number of entries in the embeddings vector and in
+  // the same order. If unsuccessful, the callback will still return the
+  // original passages but with an empty embeddings vector and an appropriate
+  // status.
+  using ComputePassagesEmbeddingsCallback = base::OnceCallback<void(
       std::vector<std::string> passages,
-      ComputePassagesEmbeddingsCallback callback) override;
+      std::vector<Embedding> embeddings,
+      TaskId task_id,
+      passage_embeddings::ComputeEmbeddingsStatus status)>;
+  TaskId ComputePassagesEmbeddings(passage_embeddings::PassagePriority priority,
+                                   std::vector<std::string> passages,
+                                   ComputePassagesEmbeddingsCallback callback);
 
-  void SetOnEmbedderReady(OnEmbedderReadyCallback callback) override;
+  // Sets the callback to run when the embedder is ready to process requests.
+  // The callback is invoked immediately if the embedder is ready beforehand.
+  using OnEmbedderReadyCallback =
+      base::OnceCallback<void(passage_embeddings::EmbedderMetadata metadata)>;
+  void SetOnEmbedderReady(OnEmbedderReadyCallback callback);
+
+  // Cancels computation of embeddings iff none of the passages given to
+  // `ComputePassagesEmbeddings()` has been submitted to the embedder yet.
+  // If successful, the callback for the canceled task will be invoked with
+  // `ComputeEmbeddingsStatus::kCanceled` status.
+  bool TryCancel(TaskId task_id);
 
  private:
   // A job consists of multiple passages, and each passage must have its
@@ -47,6 +68,7 @@ class SchedulingEmbedder : public Embedder {
   // down so that partial progress is made across multiple work submissions.
   struct Job {
     Job(passage_embeddings::PassagePriority priority,
+        TaskId task_id,
         std::vector<std::string> passages,
         ComputePassagesEmbeddingsCallback callback);
     ~Job();
@@ -57,6 +79,8 @@ class SchedulingEmbedder : public Embedder {
 
     // Data for the job is saved from calls to `ComputePassagesEmbeddings`.
     passage_embeddings::PassagePriority priority;
+    TaskId task_id = kInvalidTaskId;
+    bool in_progress = false;
     std::vector<std::string> passages;
     ComputePassagesEmbeddingsCallback callback;
 
@@ -90,6 +114,9 @@ class SchedulingEmbedder : public Embedder {
   // Not-yet-started jobs are ordered last. All jobs will be re-ordered by
   // priority before submitting the next batch to the embedder.
   std::deque<Job> jobs_;
+
+  // ID to assign to the next Job.
+  TaskId next_task_id_ = 1;
 
   // The primary embedder that does the actual embedding computations.
   // This may be slow, and we await results before sending the next request.

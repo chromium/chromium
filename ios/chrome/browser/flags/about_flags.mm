@@ -1198,13 +1198,11 @@ const FeatureEntry::FeatureVariation kUpdatedFirstRunSequenceVariations[] = {
     {" - DB promo first and remove sign in & sync",
      kUpdatedFirstRunSequenceArm3, std::size(kUpdatedFirstRunSequenceArm3),
      nullptr}};
-
 const FeatureEntry::FeatureParam
     kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitial[] = {
         {kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialParam,
          "true"},
 };
-
 const FeatureEntry::FeatureVariation kYoutubeIncognitoVariations[] = {
     {"Error handling without Incognito Interstitial",
      kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitial,
@@ -2295,6 +2293,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensInkMultiSampleModeDisabledName,
      flag_descriptions::kLensInkMultiSampleModeDisabledDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensInkMultiSampleModeDisabled)},
+    {"animated-default-browser-promo-in-fre",
+     flag_descriptions::kAnimatedDefaultBrowserPromoInFREName,
+     flag_descriptions::kAnimatedDefaultBrowserPromoInFREDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(first_run::kAnimatedDefaultBrowserPromoInFRE)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

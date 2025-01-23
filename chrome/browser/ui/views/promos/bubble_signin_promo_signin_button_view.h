@@ -52,19 +52,20 @@ class BubbleSignInPromoSignInButtonView : public views::View {
 
   std::optional<AccountInfo> account() const { return account_; }
 
+  View* GetSignInButton() const;
+
  private:
   // Calls `AddCallbackToSignInButton`, but adds a delay if it is for an
   // autofill sign in promo in order to avoid a direct action through
   // double click on the save button in the bubble before.
   void AddOrDelayCallbackForSignInButton(
-      views::MdTextButton* text_button,
       views::Button::PressedCallback& callback,
       bool is_autofill_promo);
 
-  void AddCallbackToSignInButton(views::MdTextButton* text_button,
-                                 views::Button::PressedCallback callback);
+  void AddCallbackToSignInButton(views::Button::PressedCallback callback);
 
   const std::optional<AccountInfo> account_;
+  raw_ptr<views::MdTextButton> text_button_ = nullptr;
 
   base::WeakPtrFactory<BubbleSignInPromoSignInButtonView> weak_ptr_factory_{
       this};

@@ -25,4 +25,7 @@
     attribute EventHandler onshippingaddresschange;
     attribute EventHandler onshippingoptionchange;
     [RuntimeEnabled=PaymentMethodChangeEvent] attribute EventHandler onpaymentmethodchange;
+
+    // https://w3c.github.io/secure-payment-confirmation/#sctn-secure-payment-confirmation-available-api
+    [RuntimeEnabled=IsSecurePaymentConfirmationAvailableAPI, CallWith=ScriptState] static Promise<boolean> isSecurePaymentConfirmationAvailable();
 };

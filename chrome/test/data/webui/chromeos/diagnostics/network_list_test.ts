@@ -5,9 +5,10 @@
 import 'chrome://diagnostics/network_list.js';
 
 import {ConnectivityCardElement} from 'chrome://diagnostics/connectivity_card.js';
-import {DataPointElement} from 'chrome://diagnostics/data_point.js';
+import type {DataPointElement} from 'chrome://diagnostics/data_point.js';
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
-import {NavigationView, NetworkGuidInfo} from 'chrome://diagnostics/diagnostics_types.js';
+import type {NetworkGuidInfo} from 'chrome://diagnostics/diagnostics_types.js';
+import {NavigationView} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
@@ -17,7 +18,7 @@ import {NetworkInfoElement} from 'chrome://diagnostics/network_info.js';
 import {NetworkListElement} from 'chrome://diagnostics/network_list.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';

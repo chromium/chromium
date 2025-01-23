@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_stack_view_consumer.h"
 
+@protocol MagicStackModuleContentViewDelegate;
 @class MostVisitedTilesConfig;
 
 // Implementation for the Most Visited Tiles so that its model can directly
@@ -16,8 +17,13 @@
 @interface MostVisitedTilesStackView
     : UIStackView <MostVisitedTilesStackViewConsumer>
 
-// Initializes it with `config` and `spacing` between each tile.
+// Initializes it with `config`, `contentViewDelegate` and `spacing` between
+// each tile.
+// TODO(crbug.com/391617946): Refactor content view delegate and methods that
+// use it out of the initializer.
 - (instancetype)initWithConfig:(MostVisitedTilesConfig*)config
+           contentViewDelegate:
+               (id<MagicStackModuleContentViewDelegate>)contentViewDelegate
                        spacing:(CGFloat)spacing;
 
 @end

@@ -38,8 +38,7 @@ namespace content {
 namespace {
 
 std::map<url::Origin, LocalResourceURLLoaderFactory::Source>
-ConvertConfigToSourcesMap(
-    const blink::mojom::LocalResourceLoaderConfigPtr& config) {
+ConvertConfigToSourcesMap(blink::mojom::LocalResourceLoaderConfigPtr config) {
   std::map<url::Origin, LocalResourceURLLoaderFactory::Source> sources;
   // TODO(https://crbug.com/384765582) This manual copy is only necessary
   // because ui::ReplaceTemplateExpressions uses an unconventional map type.
@@ -72,11 +71,11 @@ LocalResourceURLLoaderFactory::Source::operator=(Source&& other) = default;
 LocalResourceURLLoaderFactory::Source::~Source() = default;
 
 LocalResourceURLLoaderFactory::LocalResourceURLLoaderFactory(
-    const blink::mojom::LocalResourceLoaderConfigPtr& config,
+    blink::mojom::LocalResourceLoaderConfigPtr config,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> fallback)
     : sources_(base::MakeRefCounted<
                base::RefCountedData<std::map<url::Origin, Source>>>(
-          ConvertConfigToSourcesMap(config))),
+          ConvertConfigToSourcesMap(std::move(config)))),
       fallback_(std::move(fallback)) {}
 
 LocalResourceURLLoaderFactory::~LocalResourceURLLoaderFactory() = default;

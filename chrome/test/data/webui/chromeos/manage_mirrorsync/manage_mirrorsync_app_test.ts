@@ -6,7 +6,7 @@ import 'chrome://manage-mirrorsync/components/manage_mirrorsync.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {BrowserProxy} from 'chrome://manage-mirrorsync/browser_proxy.js';
-import {FolderSelector} from 'chrome://manage-mirrorsync/components/folder_selector.js';
+import type {FolderSelector} from 'chrome://manage-mirrorsync/components/folder_selector.js';
 import {PageHandlerRemote} from 'chrome://manage-mirrorsync/manage_mirrorsync.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertArrayEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

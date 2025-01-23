@@ -80,6 +80,10 @@ bool GlicProfileManager::ShouldPreloadForProfile(Profile* profile) const {
   return true;
 }
 
+bool GlicProfileManager::HasActiveGlicWindow() const {
+  return active_glic_ != nullptr;
+}
+
 // static
 void GlicProfileManager::ForceProfileForLaunchForTesting(Profile* profile) {
   g_forced_profile_for_launch_ = profile;

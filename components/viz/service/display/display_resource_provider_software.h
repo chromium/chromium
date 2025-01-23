@@ -73,9 +73,6 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
       DeleteStyle style,
       const std::vector<ResourceId>& unused) override;
 
-  void PopulateSkBitmapWithResource(SkBitmap* sk_bitmap,
-                                    const ChildResource* resource,
-                                    SkAlphaType alpha_type);
   void WaitSyncToken(gpu::SyncToken sync_token);
 
   const raw_ptr<gpu::SharedImageManager> shared_image_manager_;

@@ -206,7 +206,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowAddressSignInPromo(
   }
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
-  bubble->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
+  bubble->ShowForReason(LocationBarBubbleDelegateView::AUTOMATIC);
   return bubble;
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

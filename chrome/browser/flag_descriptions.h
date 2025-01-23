@@ -303,6 +303,9 @@ extern const char kImprovedSigninUIOnDesktopDescription[];
 extern const char kImprovedSettingsUIOnDesktopName[];
 extern const char kImprovedSettingsUIOnDesktopDescription[];
 
+extern const char kIsSecurePaymentConfirmationAvailableAPIName[];
+extern const char kIsSecurePaymentConfirmationAvailableAPIDescription[];
+
 #if BUILDFLAG(IS_ANDROID)
 extern const char kAutofillDeprecateAccessibilityApiName[];
 extern const char kAutofillDeprecateAccessibilityApiDescription[];

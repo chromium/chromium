@@ -4,13 +4,14 @@
 
 import 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 
-import {WallpaperGridItemElement} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
+import type {WallpaperGridItemElement} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 import {getSeaPenTemplates} from 'chrome://resources/ash/common/sea_pen/constants.js';
-import {SeaPenPaths, SeaPenRouterElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_router_element.js';
-import {SeaPenTemplateQueryElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_template_query_element.js';
+import type {SeaPenRouterElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_router_element.js';
+import {SeaPenPaths} from 'chrome://resources/ash/common/sea_pen/sea_pen_router_element.js';
+import type {SeaPenTemplateQueryElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_template_query_element.js';
 import {setTransitionsEnabled} from 'chrome://resources/ash/common/sea_pen/transition.js';
-import {VcBackgroundApp} from 'chrome://vc-background/js/vc_background_app.js';
-import {VcBackgroundBreadcrumbElement} from 'chrome://vc-background/js/vc_background_breadcrumb_element.js';
+import type {VcBackgroundApp} from 'chrome://vc-background/js/vc_background_app.js';
+import type {VcBackgroundBreadcrumbElement} from 'chrome://vc-background/js/vc_background_breadcrumb_element.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 

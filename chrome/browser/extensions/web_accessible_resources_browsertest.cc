@@ -308,7 +308,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // DNR, WAR, and use_dynamic_url with the extension feature. DNR does not
 // currently succeed when redirecting to a resource using use_dynamic_url with
 // query parameters.
-// TODO(crbug.com/390687767): Port to desktop Android once chrome.runtime is
+// TODO(crbug.com/383366125): Port to desktop Android once chrome.runtime is
 // fully ported. Right now the ExtensionTestMessageListener times out.
 IN_PROC_BROWSER_TEST_P(ParameterizedWebAccessibleResourcesBrowserTest,
                        DeclarativeNetRequest) {

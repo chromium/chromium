@@ -5,15 +5,16 @@
 import 'chrome://accessory-update/firmware_update_dialog.js';
 
 import {fakeFirmwareUpdate, fakeFirmwareUpdateWithReboot} from 'chrome://accessory-update/fake_data.js';
-import {DeviceRequest, DeviceRequestId, DeviceRequestKind, UpdateState} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
-import {FirmwareUpdateDialogElement} from 'chrome://accessory-update/firmware_update_dialog.js';
+import type {DeviceRequest} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
+import {DeviceRequestId, DeviceRequestKind, UpdateState} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
+import type {FirmwareUpdateDialogElement} from 'chrome://accessory-update/firmware_update_dialog.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {PaperProgressElement} from 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
+import type {PaperProgressElement} from 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';

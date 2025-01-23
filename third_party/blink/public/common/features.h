@@ -532,6 +532,30 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     int,
     kFledgeSelectableBuyerAndSellerReportingIdsHardLimit);
 
+// Controls the max interest group lifetime in milliseconds. If
+// kFledgeMaxGroupLifetimeFeature is enabled, then the max interest group
+// lifetime will be kFledgeMaxGroupLifetimeFeature; otherwise, it will be 30
+// days.
+//
+// *WARNING*: Some UMA histograms assume a particular max lifetime for the
+// purposes of choosing appropriate bucketing, such as
+// Ads.InterestGroup.Auction.GroupFreshness*. As bucketing should not be changed
+// for an existing metric, consider adding a new metric with new bucketing if
+// increasing this value.
+//
+// NOTE: This value is only enforced when interest groups are joined -- the
+// lifetimes of groups already in the database will not be affected.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeMaxGroupLifetimeFeature);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                                               kFledgeMaxGroupLifetime);
+// The join/bid/win metadata storage max history length is controlled by a
+// separate feature param. This is because metadata is included in B&A requests
+// sent to servers, so increasing the length of metadata history sent increases
+// the number of bytes sent over the network, necessitating special care.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kFledgeMaxGroupLifetimeForMetadata);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeSampleDebugReports);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,

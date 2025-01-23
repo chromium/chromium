@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SeaPenImageId} from 'chrome://resources/ash/common/sea_pen/constants.js';
-import {MantaStatusCode, RecentSeaPenImageInfo, RecentSeaPenThumbnailData, SeaPenFeedbackMetadata, SeaPenObserverInterface, SeaPenObserverRemote, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import type {SeaPenImageId} from 'chrome://resources/ash/common/sea_pen/constants.js';
+import type {RecentSeaPenImageInfo, RecentSeaPenThumbnailData, SeaPenFeedbackMetadata, SeaPenObserverInterface, SeaPenObserverRemote, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import {MantaStatusCode} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {isSeaPenImageId} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
@@ -191,7 +192,7 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
     this.methodCalled('shouldShowSeaPenFreeformIntroductionDialog');
     return Promise.resolve({
       shouldShowFreeformDialog:
-          this.shouldShowSeaPenFreeformIntroductionDialogResponse
+          this.shouldShowSeaPenFreeformIntroductionDialogResponse,
     });
   }
 

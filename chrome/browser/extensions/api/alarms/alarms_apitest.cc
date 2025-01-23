@@ -69,9 +69,6 @@ class AlarmsApiTest : public AlarmsApiTestBase {
 
 // Tests that an alarm created by an extension with incognito split mode is
 // only triggered in the browser context it was created in.
-// TODO(crbug.com/381140149): This test crashes waiting for the incognito
-// listener to be satisfied. Split incognito mode does not appear to work yet
-// on desktop android.
 IN_PROC_BROWSER_TEST_F(AlarmsApiTest, IncognitoSplit) {
   // We need 2 ResultCatchers because we'll be running the same test in both
   // regular and incognito mode.

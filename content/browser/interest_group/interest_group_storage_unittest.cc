@@ -29,13 +29,19 @@
 #include "content/browser/interest_group/for_debugging_only_report_util.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/network_service_instance.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_utils.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "crypto/sha2.h"
+#include "services/network/network_service.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/interest_group/test/interest_group_test_utils.h"
 #include "third_party/blink/public/common/interest_group/test_interest_group_builder.h"
@@ -101,7 +107,7 @@ class InterestGroupStorageTest : public testing::Test {
         FILE_PATH_LITERAL("InterestGroups"));
   }
 
-  base::test::SingleThreadTaskEnvironment& task_environment() {
+  content::BrowserTaskEnvironment& task_environment() {
     return task_environment_;
   }
 
@@ -111,7 +117,7 @@ class InterestGroupStorageTest : public testing::Test {
     result.name = name;
     result.bidding_url = owner.GetURL().Resolve("/bidding_script.js");
     result.update_url = owner.GetURL().Resolve("/update_script.js");
-    result.expiry = base::Time::Now() + base::Days(30);
+    result.expiry = base::Time::Now() + blink::MaxInterestGroupLifetime();
     result.execution_mode =
         blink::InterestGroup::ExecutionMode::kCompatibilityMode;
     return result;
@@ -127,7 +133,7 @@ class InterestGroupStorageTest : public testing::Test {
     result.owner = owner;
     result.name = name;
     result.additional_bid_key = kAdditionalBidKey;
-    result.expiry = base::Time::Now() + base::Days(30);
+    result.expiry = base::Time::Now() + blink::MaxInterestGroupLifetime();
     return result;
   }
 
@@ -298,7 +304,7 @@ class InterestGroupStorageTest : public testing::Test {
     // Set to a valid non-expired time, to match InterestGroupBuilder. Note that
     // Now() will change each run (time starts at the actual current time, even
     // with MOCK_TIME), so upgrade tests will need to ignore the expiry.
-    result.expiry = base::Time::Now() + base::Days(30);
+    result.expiry = base::Time::Now() + blink::MaxInterestGroupLifetime();
 
     return result;
   }
@@ -387,7 +393,7 @@ class InterestGroupStorageTest : public testing::Test {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::SingleThreadTaskEnvironment task_environment_{
+  content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
@@ -1634,19 +1640,19 @@ TEST_F(InterestGroupStorageTest,
   g1.ad_components.emplace();
   g1.ad_components->emplace_back(ad1_url, "component_metadata1");
   g1.ad_components->emplace_back(ad3_url, "component_metadata3");
-  g1.expiry = base::Time::Now() + InterestGroupStorage::kHistoryLength;
+  g1.expiry = base::Time::Now() + blink::MaxInterestGroupLifetimeForMetadata();
 
   InterestGroup g2 = g1;
   g2.ads->emplace_back(ad2_url, "metadata2");
   g2.name = "name 2";
-  g2.expiry =
-      base::Time::Now() + InterestGroupStorage::kHistoryLength + base::Hours(1);
+  g2.expiry = base::Time::Now() + blink::MaxInterestGroupLifetimeForMetadata() +
+              base::Hours(1);
 
   InterestGroup g3 = g1;
   g3.ad_components->clear();
   g3.name = "name 3";
-  g3.expiry =
-      base::Time::Now() + InterestGroupStorage::kHistoryLength + base::Hours(2);
+  g3.expiry = base::Time::Now() + blink::MaxInterestGroupLifetimeForMetadata() +
+              base::Hours(2);
 
   std::string k_anon_bid_key_1 =
       blink::HashedKAnonKeyForAdBid(g1, ad1_url.spec());
@@ -1803,8 +1809,8 @@ TEST_F(InterestGroupStorageTest,
   storage->UpdateKAnonymity(blink::InterestGroupKey(g3.owner, g3.name),
                             {k_anon_bid_key_1}, update_time3,
                             /*replace_existing_values*/ true);
-  task_environment().FastForwardBy(InterestGroupStorage::kHistoryLength -
-                                   base::Hours(1));
+  task_environment().FastForwardBy(
+      blink::MaxInterestGroupLifetimeForMetadata() - base::Hours(1));
 
   returned_groups = storage->GetInterestGroupsForOwner(g1.owner);
   {
@@ -2404,8 +2410,8 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
   histograms.ExpectTotalCount("Storage.InterestGroup.DBSize", 1);
   histograms.ExpectTotalCount("Storage.InterestGroup.DBMaintenanceTime", 1);
 
-  task_environment().FastForwardBy(InterestGroupStorage::kHistoryLength -
-                                   base::Days(1));
+  task_environment().FastForwardBy(
+      blink::MaxInterestGroupLifetimeForMetadata() - base::Days(1));
   // Verify that maintenance has not run. It's been long enough, but we haven't
   // made any calls.
   EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(),
@@ -2588,6 +2594,14 @@ class InterestGroupStorageWithNoIdleFastForwardTest
         {
             {"max_ops_before_maintenance", "1000000000"}  // 1 billion ops
         });
+
+    GetNetworkService();
+    // Wait for the Network Service to initialize on the IO thread.
+    RunAllPendingInMessageLoop(content::BrowserThread::IO);
+    // Disable metrics updater to avoid test timeouts when doing long
+    // fast-forwards.
+    network::NetworkService::GetNetworkServiceForTesting()
+        ->ResetMetricsUpdaterForTesting();
   }
 
   std::unique_ptr<InterestGroupStorage> CreateStorage() {
@@ -2654,8 +2668,8 @@ TEST_F(InterestGroupStorageWithNoIdleFastForwardTest,
   // need to ensure that the test starting time is several hours after midnight
   // UTC for this to be true, so go with noon tomorrow UTC.
   const base::TimeDelta kExpiryDeltas[] = {
-      InterestGroupStorage::kHistoryLength - base::Microseconds(1),
-      InterestGroupStorage::kHistoryLength};
+      blink::MaxInterestGroupLifetimeForMetadata() - base::Microseconds(1),
+      blink::MaxInterestGroupLifetimeForMetadata()};
 
   const base::Time noon_tomorrow_utc =
       base::Time::FromDeltaSinceWindowsEpoch(
@@ -2698,7 +2712,7 @@ TEST_F(InterestGroupStorageWithNoIdleFastForwardTest,
       // interest group. This is because these counts are kept on a per UTC day
       // basis. Win history isn't affected, only join and bid history.
       const base::Time join_bid_expiry = base::Time::FromDeltaSinceWindowsEpoch(
-          (start + InterestGroupStorage::kHistoryLength)
+          (start + blink::MaxInterestGroupLifetimeForMetadata())
               .ToDeltaSinceWindowsEpoch()
               .FloorToMultiple(base::Days(1)));
       // Make sure `expiry_delta` is big enough for the required fast forwards
@@ -3881,7 +3895,8 @@ TEST_F(InterestGroupStorageTest, OnlyDeletesExpiredKAnon) {
   // data unless it's been reported <1 day ago.
   storage->JoinInterestGroup(g, GURL("https://owner.example.com/join"));
 
-  task_environment().FastForwardBy(InterestGroupStorage::kHistoryLength);
+  task_environment().FastForwardBy(
+      blink::MaxInterestGroupLifetimeForMetadata());
   storage->UpdateLastKAnonymityReported(k_anon_key_1);
   EXPECT_EQ(1u, storage->GetAllInterestGroupsUnfilteredForTesting().size());
   task_environment().FastForwardBy(InterestGroupStorage::kDefaultIdlePeriod);

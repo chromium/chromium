@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_VIDEO_FRAME_COMPOSITOR_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_VIDEO_FRAME_COMPOSITOR_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_VIDEO_FRAME_COMPOSITOR_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_VIDEO_FRAME_COMPOSITOR_H_
 
 #include <utility>
 
@@ -20,9 +20,9 @@
 #include "cc/layers/surface_layer.h"
 #include "cc/layers/video_frame_provider.h"
 #include "media/base/video_renderer_sink.h"
-#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_video_frame_submitter.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace base {
 class WaitableEvent;
@@ -63,9 +63,8 @@ namespace blink {
 //
 // VideoFrameCompositor must live on the same thread as the compositor, though
 // it may be constructed on any thread.
-class BLINK_PLATFORM_EXPORT VideoFrameCompositor
-    : public media::VideoRendererSink,
-      public cc::VideoFrameProvider {
+class PLATFORM_EXPORT VideoFrameCompositor : public media::VideoRendererSink,
+                                             public cc::VideoFrameProvider {
  public:
   // Used to report back the time when the new frame has been processed.
   using OnNewProcessedFrameCB =
@@ -296,4 +295,4 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_VIDEO_FRAME_COMPOSITOR_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_VIDEO_FRAME_COMPOSITOR_H_

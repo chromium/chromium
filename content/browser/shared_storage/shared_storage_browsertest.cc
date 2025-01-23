@@ -7863,7 +7863,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.payload_contents().contributions[0].value, 2);
             EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
-            EXPECT_EQ(budget_key.api(),
+            EXPECT_EQ(budget_key.caller_api(),
                       PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_TRUE(request.additional_fields().empty());
             EXPECT_EQ(
@@ -7952,7 +7952,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.payload_contents().contributions[1].value, 4);
             EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
-            EXPECT_EQ(budget_key.api(),
+            EXPECT_EQ(budget_key.caller_api(),
                       PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_EQ(
                 null_report_behavior,
@@ -8002,7 +8002,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.payload_contents().contributions[0].value, 2);
             EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
-            EXPECT_EQ(budget_key.api(),
+            EXPECT_EQ(budget_key.caller_api(),
                       PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_EQ(
                 null_report_behavior,
@@ -8077,7 +8077,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.payload_contents().contributions[0].value, 2);
             EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
-            EXPECT_EQ(budget_key.api(),
+            EXPECT_EQ(budget_key.caller_api(),
                       PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_THAT(request.additional_fields(),
                         testing::ElementsAre(
@@ -8135,7 +8135,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.payload_contents().contributions[0].value, 2);
             EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
-            EXPECT_EQ(budget_key.api(),
+            EXPECT_EQ(budget_key.caller_api(),
                       PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_THAT(request.additional_fields(),
                         testing::ElementsAre(testing::Pair("context_id", "")));
@@ -8193,7 +8193,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.payload_contents().contributions[0].value, 2);
             EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
-            EXPECT_EQ(budget_key.api(),
+            EXPECT_EQ(budget_key.caller_api(),
                       PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_THAT(request.additional_fields(),
                         testing::ElementsAre(
@@ -9230,7 +9230,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             }
             EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
-            EXPECT_EQ(budget_key.api(),
+            EXPECT_EQ(budget_key.caller_api(),
                       PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_EQ(
                 null_report_behavior,

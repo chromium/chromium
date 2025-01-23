@@ -10,10 +10,11 @@
 
 import 'chrome://chrome-signin/inline_login_app.js';
 
-import {AccountAdditionOptions} from 'chrome://chrome-signin/arc_account_picker/arc_util.js';
-import {InlineLoginAppElement, View} from 'chrome://chrome-signin/inline_login_app.js';
+import type {AccountAdditionOptions} from 'chrome://chrome-signin/arc_account_picker/arc_util.js';
+import type {InlineLoginAppElement} from 'chrome://chrome-signin/inline_login_app.js';
+import {View} from 'chrome://chrome-signin/inline_login_app.js';
 import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
-import {SigninBlockedByPolicyPageElement} from 'chrome://chrome-signin/signin_blocked_by_policy_page.js';
+import type {SigninBlockedByPolicyPageElement} from 'chrome://chrome-signin/signin_blocked_by_policy_page.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

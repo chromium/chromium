@@ -11,10 +11,13 @@
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/metrics/user_action_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/scoped_password_settings_reauth_module_override.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_view_controller.h"
@@ -154,6 +157,7 @@ class PasswordSettingsCoordinatorTest : public PlatformTest {
   std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
       scoped_reauth_override_;
   base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester;
   PasswordSettingsCoordinator* coordinator_ = nil;
   ProtocolFake* fake_command_endpoint_ = nil;
 };
@@ -217,6 +221,24 @@ TEST_F(PasswordSettingsCoordinatorTest, PasswordSettingsVisitRecordedOnlyOnce) {
 
   // Validate no new visits were recorded.
   CheckPasswordSettingsVisitMetricsCount(1);
+}
+
+// Tests that the proper user action is recorded when the deletion flow is
+// triggered.
+TEST_F(PasswordSettingsCoordinatorTest,
+       PasswordSettingsDeleteAllDataRecordedOnce) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kIOSEnableDeleteAllSavedCredentials);
+  StartCoordinatorSkippingAuth(/*skip_auth_on_start=*/NO);
+
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "IOS.PasswordManager.Settings.DeleteAllSavedData.Clicked"),
+            0);
+  [coordinator_ startDeletionFlow];
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "IOS.PasswordManager.Settings.DeleteAllSavedData.Clicked"),
+            1);
 }
 
 }  // namespace password_manager

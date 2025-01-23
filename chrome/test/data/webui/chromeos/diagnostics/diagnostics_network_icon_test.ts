@@ -4,14 +4,15 @@
 
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {ConnectionStateType, CrosNetworkType, DiagnosticsNetworkIconElement, networkToNetworkStateAdapter} from 'chrome://diagnostics/diagnostics_network_icon.js';
+import type {DiagnosticsNetworkIconElement} from 'chrome://diagnostics/diagnostics_network_icon.js';
+import {ConnectionStateType, CrosNetworkType, networkToNetworkStateAdapter} from 'chrome://diagnostics/diagnostics_network_icon.js';
 import {fakeCellularDisabledNetwork, fakeCellularNetwork, fakeConnectingEthernetNetwork, fakeDisconnectedEthernetNetwork, fakeEthernetNetwork, fakePortalWifiNetwork, fakeWifiNetwork, fakeWifiNetworkDisabled} from 'chrome://diagnostics/fake_data.js';
-import {Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
+import type {Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
 import {NetworkIconElement} from 'chrome://resources/ash/common/network/network_icon.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import type {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import type {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';

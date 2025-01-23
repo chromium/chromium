@@ -4,14 +4,15 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {DefaultUserImage, Paths, UserImage, UserPreviewElement} from 'chrome://personalization/js/personalization_app.js';
+import type {DefaultUserImage, UserImage} from 'chrome://personalization/js/personalization_app.js';
+import {Paths, UserPreviewElement} from 'chrome://personalization/js/personalization_app.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestUserProvider} from './test_user_interface_provider.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestUserProvider} from './test_user_interface_provider.js';
 
 suite('UserPreviewElementTest', function() {
   let userPreviewElement: UserPreviewElement|null;

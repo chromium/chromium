@@ -276,7 +276,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': '20a5d3539c4a8fca77b66b8215b9856e6d424718',
+  'src_internal_revision': '329734bca901dd99e920881113a29b6a0bb2f0d7',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
@@ -300,7 +300,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
-  'boringssl_revision': '7d07002aaee8df5aea2313c51546afa4b76eb6de',
+  'boringssl_revision': 'f7febd26f8b6ddeb132a8c801e1f02c23eceb2f4',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Fuchsia sdk
   # and whatever else without interference from each other.
@@ -1934,7 +1934,7 @@ deps = {
 
 
   'src/third_party/depot_tools':
-    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + 'd3717ed04d7761c754b0d47257665e1e219c4ad5',
+    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '8c858fc98cfac56f34211a31988fd19c462c0c53',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
@@ -2292,7 +2292,7 @@ deps = {
     Var('chromium_git') + '/chromiumos/platform/libva-fake-driver.git' + '@' + 'a9bcab9cd6b15d4e3634ca44d5e5f7652c612194',
 
   'src/third_party/libvpx/source/libvpx':
-    Var('chromium_git') + '/webm/libvpx.git' + '@' +  '05fb2057b00d01cda1ac0d979eaf60ba87c8416e',
+    Var('chromium_git') + '/webm/libvpx.git' + '@' +  'ea8fdb780400dc42decc1e62d69db461e4a2f206',
 
   'src/third_party/libwebm/source':
     Var('chromium_git') + '/webm/libwebm.git' + '@' + '26d9f667170dc75e8d759a997bb61c64dec42dda',
@@ -2436,7 +2436,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + '19dda8d3a175b46e54a23007e52238824b005c10',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + '0f6a0b22c0e5c1849dcf2bf7e258a5bb6885f8ac',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',

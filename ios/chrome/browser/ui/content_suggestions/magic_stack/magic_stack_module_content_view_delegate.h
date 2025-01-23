@@ -5,6 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_MAGIC_STACK_MODULE_CONTENT_VIEW_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_MAGIC_STACK_MODULE_CONTENT_VIEW_DELEGATE_H_
 
+enum class ContentSuggestionsModuleType;
+@class UIAction;
+
 // Interface for listening to events occurring in MagicStackModuleContainer.
 @protocol MagicStackModuleContentViewDelegate
 
@@ -18,6 +21,13 @@
 // Updates the visibility of the separator line within the Magic Stack
 // Module Container based on `isHidden`.
 - (void)updateSeparatorVisibility:(BOOL)isHidden;
+
+// Notifies the delegate that the context menu interaction will end display.
+- (void)notifyContextMenuInteractionEndWithAnimator:
+    (id<UIContextMenuInteractionAnimating>)animator;
+
+// Returns the context menu elements for the current module.
+- (NSArray<UIMenuElement*>*)contextMenuElementsForCurrentModule;
 
 @end
 

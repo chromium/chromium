@@ -5,7 +5,8 @@
 import 'chrome://diagnostics/realtime_cpu_chart.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {ChartPadding, RealtimeCpuChartElement} from 'chrome://diagnostics/realtime_cpu_chart.js';
+import type {ChartPadding} from 'chrome://diagnostics/realtime_cpu_chart.js';
+import {RealtimeCpuChartElement} from 'chrome://diagnostics/realtime_cpu_chart.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertGT, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

@@ -7,10 +7,12 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {fakeEmptySearchResponse, fakeFeedbackContext, fakeInternalUserFeedbackContext, fakeLoginFlowFeedbackContext, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
-import {FeedbackFlowButtonClickEvent, FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
+import type {FeedbackFlowButtonClickEvent} from 'chrome://os-feedback/feedback_flow.js';
+import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {domainQuestions, questionnaireBegin} from 'chrome://os-feedback/questionnaire.js';
-import {OS_FEEDBACK_UNTRUSTED_ORIGIN, SearchPageElement} from 'chrome://os-feedback/search_page.js';
+import type {SearchPageElement} from 'chrome://os-feedback/search_page.js';
+import {OS_FEEDBACK_UNTRUSTED_ORIGIN} from 'chrome://os-feedback/search_page.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';

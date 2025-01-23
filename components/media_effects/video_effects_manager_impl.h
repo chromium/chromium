@@ -24,18 +24,14 @@ class VideoEffectsManagerImpl : public media::mojom::VideoEffectsManager {
 
   void Bind(mojo::PendingReceiver<media::mojom::VideoEffectsManager> receiver);
 
-  void SetConfiguration(
-      media::mojom::VideoEffectsConfigurationPtr configuration);
-
   // media::mojom::VideoEffectsManager overrides
   void GetConfiguration(GetConfigurationCallback callback) override;
+  void SetConfiguration(
+      media::mojom::VideoEffectsConfigurationPtr configuration,
+      SetConfigurationCallback callback) override;
   void AddObserver(
       mojo::PendingRemote<media::mojom::VideoEffectsConfigurationObserver>
           observer) override;
-
-  base::WeakPtr<VideoEffectsManagerImpl> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
 
  private:
   void OnReceiverDisconnected();
@@ -46,8 +42,6 @@ class VideoEffectsManagerImpl : public media::mojom::VideoEffectsManager {
 
   media::mojom::VideoEffectsConfigurationPtr configuration_;
   mojo::RemoteSet<media::mojom::VideoEffectsConfigurationObserver> observers_;
-
-  base::WeakPtrFactory<VideoEffectsManagerImpl> weak_ptr_factory_{this};
 };
 
 #endif  // COMPONENTS_MEDIA_EFFECTS_VIDEO_EFFECTS_MANAGER_IMPL_H_

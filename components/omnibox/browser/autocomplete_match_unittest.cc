@@ -1037,7 +1037,7 @@ TEST_F(AutocompleteMatchTest, BetterDuplicate) {
       AutocompleteMatch::BetterDuplicate(create_match(document_provider, 0),
                                          create_match(history_provider, 1000)));
 
-  // Prefer document provider matches over other providers, even if scored
+  // Prefer bookmark provider matches over other providers, even if scored
   // lower.
   EXPECT_TRUE(
       AutocompleteMatch::BetterDuplicate(create_match(bookmark_provider, 0),

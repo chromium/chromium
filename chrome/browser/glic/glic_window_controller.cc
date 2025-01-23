@@ -525,24 +525,26 @@ void GlicWindowController::AttachToBrowser(Browser* browser) {
 void GlicWindowController::Resize(const gfx::Size& size,
                                   base::TimeDelta duration,
                                   base::OnceClosure callback) {
-  int original_top_right =
-      final_widget_bounds_.x() + final_widget_bounds_.width();
   final_widget_bounds_.set_size(size);
 
-  // Keep top-right corner in place as the widget is resized.
-  final_widget_bounds_.set_x(original_top_right - final_widget_bounds_.width());
-
-  AnimateBounds(final_widget_bounds_, duration, std::move(callback));
-}
-
-void GlicWindowController::AnimateBounds(const gfx::Rect& target_bounds,
-                                         base::TimeDelta duration,
-                                         base::OnceClosure callback) {
   if (!GetGlicWidget()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback));
     return;
   }
+
+  gfx::Rect current_bounds = GetGlicWidget()->GetWindowBoundsInScreen();
+  int original_top_right = current_bounds.x() + current_bounds.width();
+  current_bounds.set_size(size);
+  current_bounds.set_x(original_top_right - final_widget_bounds_.width());
+
+  AnimateBounds(current_bounds, duration, std::move(callback));
+}
+
+void GlicWindowController::AnimateBounds(const gfx::Rect& target_bounds,
+                                         base::TimeDelta duration,
+                                         base::OnceClosure callback) {
+  CHECK(GetGlicWidget());
 
   // Stop the current animation if any.
   if (window_resize_animation_) {

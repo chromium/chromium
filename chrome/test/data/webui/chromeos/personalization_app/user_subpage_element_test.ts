@@ -9,7 +9,7 @@ import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
 
 suite('UserSubpageElementTest', function() {
   let userSubpageElement: UserSubpageElement|null;

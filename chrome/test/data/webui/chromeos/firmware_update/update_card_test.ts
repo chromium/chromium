@@ -5,8 +5,8 @@
 import 'chrome://accessory-update/update_card.js';
 
 import {fakeCriticalFirmwareUpdate, fakeFirmwareUpdate} from 'chrome://accessory-update/fake_data.js';
-import {FirmwareUpdate} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
-import {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
+import type {FirmwareUpdate} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
+import type {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';

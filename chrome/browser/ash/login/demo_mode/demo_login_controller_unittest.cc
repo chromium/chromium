@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/login/test_login_screen.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -81,12 +80,8 @@ class DemoLoginControllerTest : public testing::Test {
     return mock_login_display_host_;
   }
 
-  DemoLoginController* demo_login_controller() {
-    return demo_login_controller_.get();
-  }
-
-  LoginScreenClientImpl* login_screen_client() {
-    return login_screen_client_.get();
+  DemoLoginController* GetDemoLoginController() {
+    return existing_user_controller_->GetDemoLoginControllerForTest();
   }
 
   void SetUp() override {
@@ -113,15 +108,24 @@ class DemoLoginControllerTest : public testing::Test {
 
     auth_events_recorder_ = ash::AuthEventsRecorder::CreateForTesting();
 
-    login_screen_client_ = std::make_unique<LoginScreenClientImpl>();
-    demo_login_controller_ =
-        std::make_unique<DemoLoginController>(login_screen_client_.get());
+    existing_user_controller_ = std::make_unique<ExistingUserController>();
 
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());
     system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
     SetUpPolicyClient();
+
+    ExpectGetExistingController();
+  }
+
+  // This will trigger `ExistingUserController:ConfigureAutoLogin` since the
+  // `ExistingUserController` subscribe these settings.
+  void ConfigureAutoLoginSetting() {
+    settings_helper()->SetString(kAccountsPrefDeviceLocalAccountAutoLoginId,
+                                 kPublicAccountUserId);
+    settings_helper()->SetInteger(kAccountsPrefDeviceLocalAccountAutoLoginDelay,
+                                  0);
   }
 
   void SetUpPolicyClient() {
@@ -141,13 +145,12 @@ class DemoLoginControllerTest : public testing::Test {
     cloud_policy_manager_->core()->ConnectForTesting(
         std::move(service), std::move(cloud_policy_client));
 
-    demo_login_controller()->SetDeviceCloudPolicyManagerForTesting(
+    GetDemoLoginController()->SetDeviceCloudPolicyManagerForTesting(
         cloud_policy_manager_.get());
   }
 
   void TearDown() override {
-    demo_login_controller_.reset();
-    login_screen_client_.reset();
+    existing_user_controller_.reset();
     if (chromeos::PowerPolicyController::IsInitialized()) {
       chromeos::PowerPolicyController::Shutdown();
     }
@@ -195,12 +198,12 @@ class DemoLoginControllerTest : public testing::Test {
 
   void ExpectGetExistingController() {
     EXPECT_CALL(login_display_host(), GetExistingUserController())
-        .WillRepeatedly(testing::Return(&existing_user_controller_));
+        .WillRepeatedly(testing::Return(existing_user_controller_.get()));
   }
 
   ScopedCrosSettingsTestHelper* settings_helper() { return &settings_helper_; }
   ExistingUserController* existing_user_controller() {
-    return &existing_user_controller_;
+    return existing_user_controller_.get();
   }
 
   void AppendTestUserToUserList() {
@@ -245,13 +248,7 @@ class DemoLoginControllerTest : public testing::Test {
       AccountId::FromUserEmail(policy::GenerateDeviceLocalAccountUserId(
           kPublicAccountUserId,
           policy::DeviceLocalAccountType::kPublicSession));
-  ExistingUserController existing_user_controller_;
-
-  // Dependencies for `LoginScreenClientImpl`:
-  TestLoginScreen test_login_screen_;
-  std::unique_ptr<LoginScreenClientImpl> login_screen_client_;
-
-  std::unique_ptr<DemoLoginController> demo_login_controller_;
+  std::unique_ptr<ExistingUserController> existing_user_controller_;
 
   std::unique_ptr<policy::MockCloudPolicyManager> cloud_policy_manager_;
 };
@@ -278,7 +275,9 @@ TEST_F(DemoLoginControllerTest, OnSetupDemoAccountSuccessFirstTime) {
                   gaia_id);
         loop.Quit();
       }));
-  login_screen_client()->OnLoginScreenShown();
+
+  // Verify demo account login gets triggered by `ExistingUserController`.
+  ConfigureAutoLoginSetting();
   // For first time setup demo account, no clean up get triggered.
   ASSERT_FALSE(test_url_loader_factory_.IsPending(GetCleanUpUrl().spec()));
   loop.Run();
@@ -286,17 +285,18 @@ TEST_F(DemoLoginControllerTest, OnSetupDemoAccountSuccessFirstTime) {
 
 TEST_F(DemoLoginControllerTest, InValidGaia) {
   test_url_loader_factory_.AddResponse(GetSetupUrl().spec(), kInValidGaiaCreds);
-  ExpectGetExistingController();
   base::RunLoop loop;
   EXPECT_CALL(login_display_host(), CompleteLogin).Times(0);
-  demo_login_controller()->SetSetupFailedCallbackForTest(
+  GetDemoLoginController()->SetSetupFailedCallbackForTest(
       base::BindLambdaForTesting(
           [&](const DemoLoginController::ResultCode result_code) {
             EXPECT_EQ(result_code,
                       DemoLoginController::ResultCode::kInvalidCreds);
             loop.Quit();
           }));
-  login_screen_client()->OnLoginScreenShown();
+
+  // Verify demo account login gets triggered by `ExistingUserController`.
+  ConfigureAutoLoginSetting();
   loop.Run();
 }
 
@@ -306,11 +306,10 @@ TEST_F(DemoLoginControllerTest, CannotObtainDMTokenAndClientID) {
   // the fake one here so `DemoLoginController::GetDeviceIntegrity()` cannot
   // find any policy managers, and it will return failure (an empty
   // base::Value::Dict), causing the request to fail.
-  demo_login_controller()->SetDeviceCloudPolicyManagerForTesting(nullptr);
-  ExpectGetExistingController();
+  GetDemoLoginController()->SetDeviceCloudPolicyManagerForTesting(nullptr);
   base::RunLoop loop;
   EXPECT_CALL(login_display_host(), CompleteLogin).Times(0);
-  demo_login_controller()->SetSetupFailedCallbackForTest(
+  GetDemoLoginController()->SetSetupFailedCallbackForTest(
       base::BindLambdaForTesting([&](const DemoLoginController::ResultCode
                                          result_code) {
         EXPECT_EQ(
@@ -318,7 +317,9 @@ TEST_F(DemoLoginControllerTest, CannotObtainDMTokenAndClientID) {
             DemoLoginController::ResultCode::kCannotObtainDMTokenAndClientID);
         loop.Quit();
       }));
-  login_screen_client()->OnLoginScreenShown();
+
+  // Verify demo account login gets triggered by `ExistingUserController`.
+  ConfigureAutoLoginSetting();
   loop.Run();
 }
 
@@ -332,10 +333,11 @@ TEST_F(DemoLoginControllerTest, ServerCleanUpSuccess) {
       cleanup_failed_callback;
   // `cleanup_failed_callback` is not called means no failure for clean up.
   EXPECT_CALL(cleanup_failed_callback, Run(testing::_)).Times(0);
-  demo_login_controller()->SetCleanUpFailedCallbackForTest(
+  GetDemoLoginController()->SetCleanUpFailedCallbackForTest(
       cleanup_failed_callback.Get());
 
-  login_screen_client()->OnLoginScreenShown();
+  // Verify demo account login gets triggered by `ExistingUserController`.
+  ConfigureAutoLoginSetting();
 
   // Verify the request was sent.
   ASSERT_TRUE(test_url_loader_factory_.IsPending(GetCleanUpUrl().spec()));
@@ -358,7 +360,7 @@ TEST_F(DemoLoginControllerTest, ServerCleanUpFailed) {
   test_url_loader_factory_.AddResponse(GetCleanUpUrl().spec(), "{}",
                                        net::HTTP_UNAUTHORIZED);
   base::RunLoop loop;
-  demo_login_controller()->SetCleanUpFailedCallbackForTest(
+  GetDemoLoginController()->SetCleanUpFailedCallbackForTest(
       base::BindLambdaForTesting(
           [&](const DemoLoginController::ResultCode result_code) {
             EXPECT_EQ(result_code,
@@ -366,9 +368,8 @@ TEST_F(DemoLoginControllerTest, ServerCleanUpFailed) {
             loop.Quit();
           }));
 
-  // Verify login screen shown will trigger clean up and `loop` will quick on
-  // fail callback gets invoked.
-  login_screen_client()->OnLoginScreenShown();
+  // Verify demo account login gets triggered by `ExistingUserController`.
+  ConfigureAutoLoginSetting();
   loop.Run();
 
   // Verify login:
@@ -385,23 +386,18 @@ TEST_F(DemoLoginControllerTest, ServerCleanUpFailed) {
 TEST_F(DemoLoginControllerTest, FallbackToMGS) {
   // Mock setup failed by returning invalid credential.
   test_url_loader_factory_.AddResponse(GetSetupUrl().spec(), kInValidGaiaCreds);
-  ExpectGetExistingController();
-
-  // Configure auto login settings. This is done by policy in prod env.
-  settings_helper()->SetString(kAccountsPrefDeviceLocalAccountAutoLoginId,
-                               kPublicAccountUserId);
-  settings_helper()->SetInteger(kAccountsPrefDeviceLocalAccountAutoLoginDelay,
-                                0);
 
   base::RunLoop loop;
   EXPECT_CALL(login_display_host(), CompleteLogin).Times(0);
-  demo_login_controller()->SetSetupFailedCallbackForTest(
+  GetDemoLoginController()->SetSetupFailedCallbackForTest(
       base::BindLambdaForTesting(
           [&](const DemoLoginController::ResultCode result_code) {
             loop.Quit();
           }));
-  login_display_host().StartSignInScreen();
-  login_screen_client()->OnLoginScreenShown();
+
+  // Verify demo account login gets triggered by `ExistingUserController`.
+  ConfigureAutoLoginSetting();
+
   loop.Run();
 
   // Expect auto login managed guest session starts.

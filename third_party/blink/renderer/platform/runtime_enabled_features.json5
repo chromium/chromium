@@ -1293,6 +1293,11 @@
       status: "experimental",
     },
     {
+      name: "CSSShapeFunctionCompositeAnimation",
+      status: "experimental",
+      depends_on: ["CSSShapeFunction", "CompositeClipPathAnimation"]
+    },
+    {
       // sibling-index() and sibling-count()
       name: "CSSSiblingFunctions",
       status: "experimental",
@@ -2526,6 +2531,10 @@
     {
       name: "InvisibleSVGAnimationThrottling",
       status: "stable",
+    },
+    {
+      name: "IsSecurePaymentConfirmationAvailableAPI",
+      status: "experimental",
     },
     {
       name: "JavaScriptCompileHintsMagicAlwaysRuntime",

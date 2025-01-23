@@ -25,7 +25,6 @@
 #include "cc/cc_export.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/resource_sizes.h"
-#include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -91,8 +90,6 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     SoftwareBacking();
     virtual ~SoftwareBacking();
 
-    // Mailbox
-    viz::SharedBitmapId shared_bitmap_id;
 
     scoped_refptr<gpu::ClientSharedImage> shared_image;
     gpu::SyncToken mailbox_sync_token;
@@ -203,7 +200,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
       const std::string& debug_name = std::string());
 
   // Tries to acquire the resource with |previous_content_id| for us in partial
-  // raster. If successful, this function will retun the invalidated rect which
+  // raster. If successful, this function will return the invalidated rect which
   // must be re-rastered in |total_invalidated_rect|.
   InUsePoolResource TryAcquireResourceForPartialRaster(
       uint64_t new_content_id,
@@ -347,7 +344,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
       // to kBusy or kUnused depends on if the resource is exported.
       kInUse,
 
-      // The resource has been expored (sent) to viz process for compositing.
+      // The resource has been exported (sent) to viz process for compositing.
       // When the resource is returned from the viz, the state will be changed
       // to kUnused.
       kBusy,

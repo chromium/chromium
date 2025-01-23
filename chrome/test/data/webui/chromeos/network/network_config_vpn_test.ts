@@ -6,12 +6,13 @@ import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/ash/common/network/network_config.js';
 
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
-import {NetworkConfigElement} from 'chrome://resources/ash/common/network/network_config.js';
-import {NetworkConfigInputElement} from 'chrome://resources/ash/common/network/network_config_input.js';
-import {NetworkConfigSelectElement} from 'chrome://resources/ash/common/network/network_config_select.js';
-import {NetworkPasswordInputElement} from 'chrome://resources/ash/common/network/network_password_input.js';
+import type {NetworkConfigElement} from 'chrome://resources/ash/common/network/network_config.js';
+import type {NetworkConfigInputElement} from 'chrome://resources/ash/common/network/network_config_input.js';
+import type {NetworkConfigSelectElement} from 'chrome://resources/ash/common/network/network_config_select.js';
+import type {NetworkPasswordInputElement} from 'chrome://resources/ash/common/network/network_password_input.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {ManagedIPConfigProperties, ManagedIPSecProperties, ManagedL2TPProperties, ManagedString, ManagedWireGuardProperties, NetworkCertificate, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {ManagedIPConfigProperties, ManagedIPSecProperties, ManagedL2TPProperties, ManagedString, ManagedWireGuardProperties, NetworkCertificate} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType, PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -80,7 +81,7 @@ suite('network-config-vpn', function() {
         networkConfig.shadowRoot!.querySelector<NetworkConfigSelectElement>(
             '#vpnServerCa');
     assertTrue(!!serverCa);
-    assertTrue(typeof serverCa.value === 'string')
+    assertTrue(typeof serverCa.value === 'string');
     return serverCa.value;
   }
 
@@ -89,7 +90,7 @@ suite('network-config-vpn', function() {
         networkConfig.shadowRoot!.querySelector<NetworkConfigSelectElement>(
             '#vpnUserCert');
     assertTrue(!!userCert);
-    assertTrue(typeof userCert.value === 'string')
+    assertTrue(typeof userCert.value === 'string');
     return userCert.value;
   }
 
@@ -350,14 +351,14 @@ suite('network-config-vpn', function() {
         ipAddresses: {
           activeValue: ['10.10.0.1', 'fd00::1'],
           policySource: PolicySource.kNone,
-          policyValue: null
+          policyValue: null,
         },
         peers: peers,
         privateKey: null,
         publicKey: null,
       } as ManagedWireGuardProperties;
       const staticIpConfig = {
-        nameServers: {activeValue: ['8.8.8.8', '8.8.4.4']}
+        nameServers: {activeValue: ['8.8.8.8', '8.8.4.4']},
       };
       wg1.staticIpConfig = staticIpConfig as ManagedIPConfigProperties;
       networkConfig = createNetworkConfigWithProperties(mojoApi_, wg1);

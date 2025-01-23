@@ -52,6 +52,7 @@
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/auction_process_manager.h"
+#include "content/browser/interest_group/ba_test_util.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
 #include "content/browser/interest_group/interest_group_features.h"
@@ -68,10 +69,13 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/privacy_sandbox_invoking_api.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
@@ -85,9 +89,11 @@
 #include "net/base/isolation_info.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/network_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/interest_group/test/interest_group_test_utils.h"
 #include "third_party/blink/public/common/interest_group/test_interest_group_builder.h"
@@ -143,27 +149,10 @@ constexpr char kUpdateUrlPathC[] =
     "/interest_group/daily_update_partial_c.json";
 constexpr char kBAndAKeyPath[] = "/interest_group/b_and_a_keys.json";
 
-// These keys were randomly generated as follows:
-// EVP_HPKE_KEY keys;
-// EVP_HPKE_KEY_generate(&keys, EVP_hpke_x25519_hkdf_sha256());
-// and then EVP_HPKE_KEY_public_key and EVP_HPKE_KEY_private_key were used to
-// extract the keys.
-const auto kTestPrivateKey = std::to_array<uint8_t>({
-    0xff, 0x1f, 0x47, 0xb1, 0x68, 0xb6, 0xb9, 0xea, 0x65, 0xf7, 0x97,
-    0x4f, 0xf2, 0x2e, 0xf2, 0x36, 0x94, 0xe2, 0xf6, 0xb6, 0x8d, 0x66,
-    0xf3, 0xa7, 0x64, 0x14, 0x28, 0xd4, 0x45, 0x35, 0x01, 0x8f,
-});
-
-const uint8_t kTestPublicKey[] = {
-    0xa1, 0x5f, 0x40, 0x65, 0x86, 0xfa, 0xc4, 0x7b, 0x99, 0x59, 0x70,
-    0xf1, 0x85, 0xd9, 0xd8, 0x91, 0xc7, 0x4d, 0xcf, 0x1e, 0xb9, 0x1a,
-    0x7d, 0x50, 0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
-};
-
-// Returns kTestPublicKey as a JSON response to be returned by kBAndAKeyPath.
+// Returns kTestBaPublicKey as a JSON response to be returned by kBAndAKeyPath.
 std::string JSONSerializedKeys() {
   base::Value::Dict key;
-  key.Set("key", base::Base64Encode(kTestPublicKey));
+  key.Set("key", base::Base64Encode(kTestBaPublicKey));
   key.Set("id", "12345678-9abc-def0-1234-56789abcdef0");
   base::Value::List keys;
   keys.Append(std::move(key));
@@ -802,7 +791,7 @@ class MockPrivateAggregationHostForTest : public PrivateAggregationHost {
     ON_CALL(*this, BindNewReceiver)
         .WillByDefault(
             [this](url::Origin worklet_origin, url::Origin top_frame_origin,
-                   PrivateAggregationCallerApi api_for_budgeting,
+                   PrivateAggregationCallerApi caller_api,
                    std::optional<std::string> context_id,
                    std::optional<base::TimeDelta> timeout,
                    std::optional<url::Origin> aggregation_coordinator_origin,
@@ -814,7 +803,7 @@ class MockPrivateAggregationHostForTest : public PrivateAggregationHost {
                                      worklet_origin);
               return PrivateAggregationHost::BindNewReceiver(
                   std::move(worklet_origin), std::move(top_frame_origin),
-                  api_for_budgeting, std::move(context_id), timeout,
+                  caller_api, std::move(context_id), timeout,
                   std::move(aggregation_coordinator_origin),
                   filtering_id_max_bytes, std::move(max_contributions),
                   std::move(pending_receiver));
@@ -888,6 +877,14 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
             base::BindLambdaForTesting([&]() -> KAnonymityServiceDelegate* {
               return &k_anon_delegate_;
             })));
+
+    GetNetworkService();
+    // Wait for the Network Service to initialize on the IO thread.
+    RunAllPendingInMessageLoop(content::BrowserThread::IO);
+    // Disable metrics updater to avoid test timeouts when doing long
+    // fast-forwards.
+    network::NetworkService::GetNetworkServiceForTesting()
+        ->ResetMetricsUpdaterForTesting();
   }
 
   void TearDown() override {
@@ -1480,12 +1477,11 @@ TEST_F(AdAuctionServiceImplTest, LeaveClearInterestGroupFrameNotHttps) {
 }
 
 TEST_F(AdAuctionServiceImplTest, FixExpiryOnJoin) {
-  const base::TimeDelta kMaxExpiry = base::Days(30);
   blink::InterestGroup interest_group = CreateInterestGroup();
 
   // Join an interest group with an expiry that's exactly the maximum allowed.
   // The expiry should be stored without modification.
-  interest_group.expiry = base::Time::Now() + kMaxExpiry;
+  interest_group.expiry = base::Time::Now() + blink::MaxInterestGroupLifetime();
   JoinInterestGroupAndFlush(interest_group);
   {
     std::optional<SingleStorageInterestGroup> storage_interest_group(
@@ -1512,7 +1508,8 @@ TEST_F(AdAuctionServiceImplTest, FixExpiryOnJoin) {
   }
 
   // Rejoin the interest group with an expiry that exceeds the maximum allowed.
-  // The expiry should be set to kMaxExpiry days from now.
+  // The expiry should be set to blink::MaxInterestGroupLifetime() days from
+  // now.
   interest_group.expiry = base::Time::Now() + base::Days(300);
   JoinInterestGroupAndFlush(interest_group);
   {
@@ -1523,7 +1520,8 @@ TEST_F(AdAuctionServiceImplTest, FixExpiryOnJoin) {
         3, storage_interest_group.value()->bidding_browser_signals->join_count);
     base::Time actual_expiry =
         storage_interest_group.value()->interest_group.expiry;
-    EXPECT_EQ(base::Time::Now() + kMaxExpiry, actual_expiry);
+    EXPECT_EQ(base::Time::Now() + blink::MaxInterestGroupLifetime(),
+              actual_expiry);
     EXPECT_NE(interest_group.expiry, actual_expiry);
   }
 }
@@ -9924,7 +9922,7 @@ function scoreAd(
                         /*bucket=*/3, /*value=*/4,
                         /*filtering_id=*/std::nullopt)));
             EXPECT_EQ(request.shared_info().reporting_origin, kOriginA);
-            EXPECT_EQ(budget_key.api(),
+            EXPECT_EQ(budget_key.caller_api(),
                       PrivateAggregationCallerApi::kProtectedAudience);
             EXPECT_EQ(budget_key.origin(), kOriginA);
             EXPECT_EQ(
@@ -12356,8 +12354,8 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
                         .value();
   auto ohttp_gateway =
       quiche::ObliviousHttpGateway::Create(
-          std::string(reinterpret_cast<const char*>(&kTestPrivateKey[0]),
-                      sizeof(kTestPrivateKey)),
+          std::string(reinterpret_cast<const char*>(&kTestBaPrivateKey[0]),
+                      sizeof(kTestBaPrivateKey)),
           key_config)
           .value();
   EXPECT_EQ(0x00, result->request[0]);
@@ -12445,8 +12443,8 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayloadWithDebugReportLockout) {
                         .value();
   auto ohttp_gateway =
       quiche::ObliviousHttpGateway::Create(
-          std::string(reinterpret_cast<const char*>(&kTestPrivateKey[0]),
-                      sizeof(kTestPrivateKey)),
+          std::string(reinterpret_cast<const char*>(&kTestBaPrivateKey[0]),
+                      sizeof(kTestBaPrivateKey)),
           key_config)
           .value();
   EXPECT_EQ(0x00, result->request[0]);
@@ -12549,8 +12547,8 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayloadWithKAnon) {
                         .value();
   auto ohttp_gateway =
       quiche::ObliviousHttpGateway::Create(
-          std::string(reinterpret_cast<const char*>(&kTestPrivateKey[0]),
-                      sizeof(kTestPrivateKey)),
+          std::string(reinterpret_cast<const char*>(&kTestBaPrivateKey[0]),
+                      sizeof(kTestBaPrivateKey)),
           key_config)
           .value();
   EXPECT_EQ(0x00, result->request[0]);
@@ -12600,6 +12598,52 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayloadWithKAnon) {
   EXPECT_THAT(context->group_names,
               testing::UnorderedElementsAre(testing::Pair(
                   test_origin, testing::ElementsAre("boats", "cars"))));
+}
+
+// Using the maximum lifetime, record 2 joins, a bid, and a win. Make sure these
+// are still there near the expiration.
+//
+// (We can't go right up to the group's expiration since bid and join (but not
+// win) history expires at midnight UTC before the max lifetime expiration.
+TEST_F(AdAuctionServiceImplBAndATest, JoinBidWinHistoryNearExpiration) {
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
+  url::Origin pagg_coordinator =
+      url::Origin::Create(GURL("https://coordinator.test/"));
+  constexpr int kJoinCount = 2;
+  for (int i = 0; i < kJoinCount; i++) {
+    manager_->JoinInterestGroup(
+        blink::TestInterestGroupBuilder(test_origin, "cars")
+            .SetAds(
+                {{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt}}})
+            .SetAggregationCoordinatorOrigin(pagg_coordinator)
+            .Build(),
+        GURL("https://a.test/example.html"));
+  }
+  manager_->RecordInterestGroupWin(
+      {test_origin, "cars"},
+      R"({"renderURL": "https://c.test/ad.html", "adRenderId": "1234"})");
+  manager_->RecordInterestGroupBids(
+      {blink::InterestGroupKey(test_origin, "cars")});
+
+  task_environment()->FastForwardBy(blink::MaxInterestGroupLifetime() -
+                                    base::Days(1));
+
+  std::optional<AdAuctionDataAndId> result =
+      GetAdAuctionDataAndFlushForFrame(test_origin);
+  ASSERT_TRUE(result);
+  std::map<std::string, JoinBidWinHistoryForTest> histories =
+      ExtractJoinBidWinHistories(result->request, test_origin);
+  ASSERT_EQ(histories.size(), 1u);
+  auto it = histories.find("cars");
+  ASSERT_TRUE(it != histories.end());
+  EXPECT_EQ(it->second.join_count, 2);
+  EXPECT_EQ(it->second.bid_count, 1);
+  ASSERT_EQ(it->second.prev_wins.size(), 1u);
+  EXPECT_EQ(it->second.prev_wins[0].prev_win_time_seconds,
+            (blink::MaxInterestGroupLifetime() - base::Days(1)).InSeconds());
+  EXPECT_EQ(it->second.prev_wins[0].ad_render_id, "1234");
 }
 
 TEST_F(AdAuctionServiceImplBAndATest, OriginNotAllowed) {

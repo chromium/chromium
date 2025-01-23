@@ -313,12 +313,13 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
      *     URL.
      * @param activityTabProvider Provider used to ensure that {@code url} is still active on all
      *     calls to {@code query()}
+     * @param isManagedProfile Whether the current profile has an enterprise owner.
      * @return A JSON string containing a URI to be used with the {@code query()} method to extract
      *     the text of {@code url}.
      */
     @Nullable
     public static String getAssistContentStructuredDataForUrl(
-            String url, ActivityTabProvider activityTabProvider) {
+            String url, ActivityTabProvider activityTabProvider, boolean isManagedProfile) {
         String contentUri = getContentUriForUrl(url, activityTabProvider);
         if (contentUri == null) return null;
 
@@ -327,7 +328,11 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
         try {
             structuredData =
                     new JSONObject()
-                            .put("page_metadata", new JSONObject().put("content_uri", contentUri))
+                            .put(
+                                    "page_metadata",
+                                    new JSONObject()
+                                            .put("is_work_profile", isManagedProfile)
+                                            .put("content_uri", contentUri))
                             .toString();
         } catch (JSONException e) {
             return null;

@@ -5,14 +5,15 @@
 import 'chrome://shortcut-customization/js/accelerator_subsection.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
-import {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/js/accelerator_subsection.js';
+import type {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/js/accelerator_subsection.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
-import {AcceleratorCategory, AcceleratorSource, AcceleratorSubcategory, LayoutInfo, LayoutStyle, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import type {LayoutInfo} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorCategory, AcceleratorSource, AcceleratorSubcategory, LayoutStyle, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -208,9 +209,11 @@ suite('acceleratorSubsectionTest', function() {
 
   // Verifies logic for converting accelerator descriptions to IDs.
   test('DescriptionToId', async () => {
-    type DescToIdTestCase = {
-      description: string; expectedId: string; testCase: string;
-    };
+    interface DescToIdTestCase {
+      description: string;
+      expectedId: string;
+      testCase: string;
+    }
 
     await initAcceleratorSubsectionElement(
         AcceleratorCategory.kGeneral, AcceleratorSubcategory.kGeneralControls);

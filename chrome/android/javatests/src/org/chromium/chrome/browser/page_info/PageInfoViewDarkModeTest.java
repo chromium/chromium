@@ -99,9 +99,9 @@ public class PageInfoViewDarkModeTest {
     }
 
     private View getPageInfoView() {
-        PageInfoController controller = PageInfoController.getLastPageInfoControllerForTesting();
+        PageInfoController controller = PageInfoController.getLastPageInfoController();
         assertNotNull(controller);
-        View view = controller.getPageInfoViewForTesting();
+        View view = controller.getPageInfoView();
         assertNotNull(view);
         return view;
     }

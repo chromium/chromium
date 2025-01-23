@@ -5,10 +5,10 @@
 import 'chrome://diagnostics/cellular_info.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {CellularInfoElement} from 'chrome://diagnostics/cellular_info.js';
+import type {CellularInfoElement} from 'chrome://diagnostics/cellular_info.js';
 import {getLockType, getSignalStrength} from 'chrome://diagnostics/diagnostics_utils.js';
 import {fakeCellularNetwork} from 'chrome://diagnostics/fake_data.js';
-import {Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
+import type {Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertFalse} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

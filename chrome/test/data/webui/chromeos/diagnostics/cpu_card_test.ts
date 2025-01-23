@@ -5,13 +5,13 @@
 import 'chrome://diagnostics/cpu_card.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {CpuCardElement} from 'chrome://diagnostics/cpu_card.js';
+import type {CpuCardElement} from 'chrome://diagnostics/cpu_card.js';
 import {fakeCpuUsage, fakeMemoryUsage, fakeSystemInfo} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {RoutineSectionElement} from 'chrome://diagnostics/routine_section.js';
-import {CpuUsage, MemoryUsage, SystemInfo} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CpuUsage, MemoryUsage, SystemInfo} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';

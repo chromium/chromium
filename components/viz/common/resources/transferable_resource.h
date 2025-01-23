@@ -12,7 +12,6 @@
 
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_id.h"
-#include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/viz_common_export.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
@@ -193,7 +192,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   std::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
 
 #if BUILDFLAG(IS_ANDROID)
-  // Indicates whether this resource may not be overlayed on Android, since
+  // Indicates whether this resource may not be overlaid on Android, since
   // it's not backed by a SurfaceView.  This may be set in combination with
   // |is_overlay_candidate|, to find out if switching the resource to a
   // a SurfaceView would result in overlay promotion.  It's good to find this

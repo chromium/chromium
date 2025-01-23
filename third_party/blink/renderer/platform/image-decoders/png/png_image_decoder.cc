@@ -114,6 +114,7 @@ void PNGImageDecoder::Decode(wtf_size_t index) {
 
   UpdateAggressivePurging(index);
 
+  bool incomplete_parse = false;
   Vector<wtf_size_t> frames_to_decode = FindFramesToDecode(index);
   for (const auto& frame : base::Reversed(frames_to_decode)) {
     current_frame_ = frame;
@@ -124,15 +125,18 @@ void PNGImageDecoder::Decode(wtf_size_t index) {
 
     // If this returns false, we need more data to continue decoding.
     if (!PostDecodeProcessing(frame)) {
+      incomplete_parse = true;
       break;
     }
   }
 
   // It is also a fatal error if all data is received and we have decoded all
   // frames available but the file is truncated.
-  if (index >= frame_buffer_cache_.size() - 1 && IsAllDataReceived() &&
-      reader_ && !reader_->ParseCompleted()) {
-    SetFailed();
+  if (index >= frame_buffer_cache_.size() - 1 && IsAllDataReceived()) {
+    incomplete_parse |= (reader_ && !reader_->ParseCompleted());
+    if (incomplete_parse) {
+      SetFailed();
+    }
   }
 }
 

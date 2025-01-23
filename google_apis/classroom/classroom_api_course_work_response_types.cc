@@ -27,6 +27,8 @@ constexpr char kApiResponseCourseWorkItemDueDateKey[] = "dueDate";
 constexpr char kApiResponseCourseWorkItemDueTimeKey[] = "dueTime";
 constexpr char kApiResponseCourseWorkItemStateKey[] = "state";
 constexpr char kApiResponseCourseWorkItemTitleKey[] = "title";
+constexpr char kApiResponseCourseWorkItemMaterialsKey[] = "materials";
+constexpr char kApiResponseCourseWorkItemTypeKey[] = "workType";
 
 constexpr char kDueDateYearComponent[] = "year";
 constexpr char kDueDateMonthComponent[] = "month";
@@ -37,13 +39,28 @@ constexpr char kDueTimeMinutesComponent[] = "minutes";
 constexpr char kDueTimeSecondsComponent[] = "seconds";
 constexpr char kDueTimeNanosComponent[] = "nanos";
 
+constexpr char kApiResponseCourseWorkItemMaterialDriveKey[] = "driveFile";
+constexpr char kApiResponseCourseWorkItemMaterialYoutubeVideoKey[] =
+    "youtubeVideo";
+constexpr char kApiResponseCourseWorkItemMaterialLinkKey[] = "link";
+constexpr char kApiResponseCourseWorkItemMaterialFormKey[] = "form";
+
 constexpr char kPublishedCourseWorkItemState[] = "PUBLISHED";
+constexpr char kAssignmentCourseWorkItemType[] = "ASSIGNMENT";
 
 bool ConvertCourseWorkItemState(std::string_view input,
                                 CourseWorkItem::State* output) {
   *output = input == kPublishedCourseWorkItemState
                 ? CourseWorkItem::State::kPublished
                 : CourseWorkItem::State::kOther;
+  return true;
+}
+
+bool ConvertCourseWorkItemType(std::string_view input,
+                               CourseWorkItem::Type* output) {
+  *output = input == kAssignmentCourseWorkItemType
+                ? CourseWorkItem::Type::kAssignment
+                : CourseWorkItem::Type::kOther;
   return true;
 }
 
@@ -95,6 +112,76 @@ std::optional<CourseWorkItem::DueDateTime> GetCourseWorkItemDueDateTime(
 
 }  // namespace
 
+// ----- Material -----
+
+Material::Material() = default;
+
+Material::~Material() = default;
+
+// static
+bool Material::ConvertMaterial(const base::Value* input, Material* output) {
+  const base::Value::Dict* dict = input->GetIfDict();
+  if (!dict) {
+    return false;
+  }
+
+  const auto* const sharedDriveFile =
+      dict->FindDict(kApiResponseCourseWorkItemMaterialDriveKey);
+  const auto* const youtubeVideo =
+      dict->FindDict(kApiResponseCourseWorkItemMaterialYoutubeVideoKey);
+  const auto* const link =
+      dict->FindDict(kApiResponseCourseWorkItemMaterialLinkKey);
+  const auto* const form =
+      dict->FindDict(kApiResponseCourseWorkItemMaterialFormKey);
+  if (sharedDriveFile) {
+    const auto* const driveFile =
+        sharedDriveFile->FindDict(kApiResponseCourseWorkItemMaterialDriveKey);
+    if (!driveFile) {
+      // Shared drive file should contain a drive file.
+      return false;
+    }
+    const std::string* title =
+        driveFile->FindString(kApiResponseCourseWorkItemTitleKey);
+    if (!title) {
+      // Title is required field.
+      return false;
+    }
+    output->title_ = *title;
+    output->type_ = Material::Type::kSharedDriveFile;
+  } else if (youtubeVideo) {
+    const std::string* title =
+        youtubeVideo->FindString(kApiResponseCourseWorkItemTitleKey);
+    if (!title) {
+      // Title is required field.
+      return false;
+    }
+    output->title_ = *title;
+    output->type_ = Material::Type::kYoutubeVideo;
+  } else if (link) {
+    const std::string* title =
+        link->FindString(kApiResponseCourseWorkItemTitleKey);
+    if (!title) {
+      // Title is required field.
+      return false;
+    }
+    output->title_ = *title;
+    output->type_ = Material::Type::kLink;
+  } else if (form) {
+    const std::string* title =
+        form->FindString(kApiResponseCourseWorkItemTitleKey);
+    if (!title) {
+      // Title is required field.
+      return false;
+    }
+    output->title_ = *title;
+    output->type_ = Material::Type::kForm;
+  } else {
+    output->type_ = Material::Type::kUnknown;
+  }
+
+  return true;
+}
+
 // ----- CourseWorkItem -----
 
 CourseWorkItem::CourseWorkItem() = default;
@@ -119,6 +206,12 @@ void CourseWorkItem::RegisterJSONConverter(
   converter->RegisterCustomField<base::Time>(
       kApiResponseCourseWorkItemUpdateTimeKey, &CourseWorkItem::last_update_,
       &util::GetTimeFromString);
+  converter->RegisterCustomField<CourseWorkItem::Type>(
+      kApiResponseCourseWorkItemTypeKey, &CourseWorkItem::type_,
+      &ConvertCourseWorkItemType);
+  converter->RegisterRepeatedCustomValue<Material>(
+      kApiResponseCourseWorkItemMaterialsKey, &CourseWorkItem::materials_,
+      &Material::ConvertMaterial);
 }
 
 // static

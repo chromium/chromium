@@ -10,6 +10,7 @@
 @protocol ContentSuggestionsMenuElementsProvider;
 @class ContentSuggestionsMostVisitedItem;
 @class FaviconView;
+@protocol MagicStackModuleContentViewDelegate;
 
 // NTP Tile representing a most visited website. Displays a favicon and a title.
 @interface ContentSuggestionsMostVisitedTileView
@@ -34,6 +35,11 @@
 // Configuration for this view.
 @property(nonatomic, strong, readonly)
     ContentSuggestionsMostVisitedItem* config;
+
+// Delegate object to control the magic stack module. Should only be set when
+// the most visited tiles resides in the magic stack.
+@property(nonatomic, weak) id<MagicStackModuleContentViewDelegate>
+    magicStackModuleDelegate;
 
 @end
 

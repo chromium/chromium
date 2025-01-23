@@ -120,7 +120,7 @@ class CONTENT_EXPORT PrivateAggregationHost
   // This method is marked public for testing; this enables golden report
   // unittests to match the browser's actual behavior.
   static base::StrictNumeric<size_t> GetEffectiveMaxContributions(
-      PrivateAggregationCallerApi api,
+      PrivateAggregationCallerApi caller_api,
       std::optional<size_t> requested_max_contributions);
 
   // `on_report_request_details_received` and `browser_context` must be
@@ -140,7 +140,7 @@ class CONTENT_EXPORT PrivateAggregationHost
   [[nodiscard]] virtual bool BindNewReceiver(
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
-      PrivateAggregationCallerApi api,
+      PrivateAggregationCallerApi caller_api,
       std::optional<std::string> context_id,
       std::optional<base::TimeDelta> timeout,
       std::optional<url::Origin> aggregation_coordinator_origin,
@@ -172,7 +172,7 @@ class CONTENT_EXPORT PrivateAggregationHost
       AggregatableReportRequest::DelayType delay_type,
       base::Uuid report_id,
       const url::Origin& reporting_origin,
-      PrivateAggregationCallerApi api_for_budgeting,
+      PrivateAggregationCallerApi caller_api,
       std::optional<std::string> context_id,
       std::optional<url::Origin> aggregation_coordinator_origin,
       size_t specified_filtering_id_max_bytes,

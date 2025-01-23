@@ -218,41 +218,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="5" label="Abusive"/>
 </enum>
 
-<enum name="ActivityTrackerCollectInitStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Unknown directory"/>
-  <int value="2" label="Get stability file path failed"/>
-  <int value="3" label="Crashpad database init failed"/>
-</enum>
-
-<enum name="ActivityTrackerCollectStatus">
-  <int value="0" label="None"/>
-  <int value="1" label="Sucess"/>
-  <int value="2" label="Analyzer creation failed"/>
-  <int value="3" label="Debug file has no data"/>
-  <int value="4" label="Prepare new crash report failed"/>
-  <int value="5" label="Write to minidump failed"/>
-  <int value="6" label="Debug file deletion failed"/>
-  <int value="7" label="Finished writing crash report failed"/>
-  <int value="8" label="Unclean shutdown"/>
-  <int value="9" label="Unclean session"/>
-  <int value="10" label="Collection attempt"/>
-</enum>
-
-<enum name="ActivityTrackerSystemSessionAnalysisStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Missing timestamp"/>
-  <int value="2" label="Missing analyzer"/>
-  <int value="3" label="Analysis failed"/>
-  <int value="4" label="Outside range"/>
-</enum>
-
-<enum name="ActivityTrackerWriteDumpStatus">
-  <int value="0" label="Sucess"/>
-  <int value="1" label="Failed"/>
-  <int value="2" label="Failed (missing product details)"/>
-</enum>
-
 <!-- LINT.IfChange(AdaptiveToolbarButtonVariant) -->
 
 <enum name="AdaptiveToolbarButtonVariant">
@@ -969,175 +934,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="48" label="MerchantPromoCode"/>
   <int value="49" label="Iban"/>
   <int value="50" label="Unrecognized"/>
-</enum>
-
-<enum name="AutofillAssistantIntent">
-  <int value="0" label="UNDEFINED_INTENT"/>
-  <int value="3" label="BUY_MOVIE_TICKET"/>
-  <int value="9" label="RENT_CAR"/>
-  <int value="10" label="SHOPPING"/>
-  <int value="11" label="TELEPORT"/>
-  <int value="14" label="SHOPPING_ASSISTED_CHECKOUT"/>
-  <int value="15" label="FLIGHTS_CHECKIN"/>
-  <int value="17" label="FOOD_ORDERING"/>
-  <int value="18" label="PASSWORD_CHANGE"/>
-  <int value="19" label="FOOD_ORDERING_PICKUP"/>
-  <int value="20" label="FOOD_ORDERING_DELIVERY"/>
-  <int value="22" label="UNLAUNCHED_VERTICAL_1"/>
-  <int value="25" label="FIND_COUPONS"/>
-  <int value="32" label="CHROME_FAST_CHECKOUT"/>
-</enum>
-
-<enum name="AutofillAutocompleteState">
-  <int value="0" label="None"/>
-  <int value="1" label="Valid"/>
-  <int value="2" label="Garbage"/>
-  <int value="3" label="Off"/>
-  <int value="4" label="Password"/>
-</enum>
-
-<enum name="AutofillFormControlType">
-  <obsolete>
-    Deprecated as of 11/2023. Replaced by AutofillFormControlType2.
-  </obsolete>
-  <int value="0" label="Empty"/>
-  <int value="1" label="Other"/>
-  <int value="2" label="Text"/>
-  <int value="3" label="Textarea"/>
-  <int value="4" label="Checkbox"/>
-  <int value="5" label="Radio"/>
-  <int value="6" label="Select one"/>
-  <int value="7" label="Selectmenu"/>
-</enum>
-
-<enum name="AutofillFormControlType2">
-  <int value="0" label="ContentEditable"/>
-  <int value="1" label="InputCheckbox"/>
-  <int value="2" label="InputEmail"/>
-  <int value="3" label="InputMonth"/>
-  <int value="4" label="InputNumber"/>
-  <int value="5" label="InputPassword"/>
-  <int value="6" label="InputRadio"/>
-  <int value="7" label="InputSearch"/>
-  <int value="8" label="InputTelephone"/>
-  <int value="9" label="InputText"/>
-  <int value="10" label="InputUrl"/>
-  <int value="11" label="SelectOne"/>
-  <int value="12" label="SelectMultiple"/>
-  <int value="14" label="TextArea"/>
-</enum>
-
-<enum name="AutofillPasswordFormType">
-  <int value="0" label="No password form"/>
-  <int value="1" label="Login form"/>
-  <int value="2" label="Signup form"/>
-  <int value="3" label="Change password form"/>
-  <int value="4" label="Reset password form"/>
-  <int value="5" label="Single username form"/>
-</enum>
-
-<enum name="AutofillPhoneImportValidity">
-  <int value="0" label="None: No phone number in import"/>
-  <int value="1" label="Valid: Phone number was imported"/>
-  <int value="2" label="Invalid: Phone number was removed before the import"/>
-</enum>
-
-<enum name="AutofillPlusAddressDelegateSuggestionContext">
-  <int value="0" label="Autofill profile filling on email field"/>
-  <int value="1" label="Autofill profile filling on non-email field"/>
-  <int value="2" label="Autocomplete"/>
-  <int value="3" label="Manual fallback"/>
-</enum>
-
-<enum name="AutofillPredictionSource">
-  <int value="0" label="PREDICTION_SOURCE_UNKNOWN"/>
-  <int value="1" label="PREDICTION_SOURCE_HEURISTIC"/>
-  <int value="2" label="PREDICTION_SOURCE_SERVER"/>
-  <int value="3" label="PREDICTION_SOURCE_OVERALL"/>
-</enum>
-
-<enum name="AutofillQualitiyMetricType">
-  <int value="0" label="TYPE_SUBMISSION"/>
-  <int value="1" label="TYPE_NO_SUBMISSION"/>
-  <int value="2" label="TYPE_AUTOCOMPLETE_BASED"/>
-</enum>
-
-<enum name="AutofillServerPredictionSource">
-  <int value="0" label="SOURCE_UNSPECIFIED"/>
-  <int value="1" label="SOURCE_AUTOFILL_DEFAULT"/>
-  <int value="2" label="SOURCE_PASSWORDS_DEFAULT"/>
-  <int value="3" label="SOURCE_OVERRIDE"/>
-  <int value="4" label="SOURCE_ALL_APPROVED_EXPERIMENTS"/>
-  <int value="5" label="SOURCE_FIELD_RANKS"/>
-</enum>
-
-<enum name="AutofillWebDataBackendImplOperationResult">
-  <int value="0" label="AddFormElements: Success"/>
-  <int value="1" label="AddFormElements: Failure"/>
-  <int value="10" label="RemoveFormElementsAddedBetween: Success"/>
-  <int value="11" label="RemoveFormElementsAddedBetween: Failure"/>
-  <int value="20" label="RemoveFormValueForElementName: Success"/>
-  <int value="22" label="RemoveFormValueForElementName: Failure"/>
-  <int value="30" label="AddAutofillProfile: Success"/>
-  <int value="31" label="AddAutofillProfile: Failure"/>
-  <int value="40" label="UpdateAutofillProfile: Success"/>
-  <int value="41" label="UpdateAutofillProfile: ReadFailure"/>
-  <int value="42" label="UpdateAutofillProfile: WriteFailure"/>
-  <int value="50" label="RemoveAutofillProfile: Success"/>
-  <int value="51" label="RemoveAutofillProfile: ReadFailure"/>
-  <int value="52" label="RemoveAutofillProfile: WriteFailure"/>
-  <int value="60" label="UpdateAutocompleteEntries: Success"/>
-  <int value="61" label="UpdateAutocompleteEntries: Failure"/>
-  <int value="70" label="AddCreditCard: Success"/>
-  <int value="71" label="AddCreditCard: Failure"/>
-  <int value="80" label="UpdateCreditCard: Success"/>
-  <int value="81" label="UpdateCreditCard: ReadFailure"/>
-  <int value="82" label="UpdateCreditCard: WriteFailure"/>
-  <int value="90" label="RemoveCreditCard: Success"/>
-  <int value="91" label="RemoveCreditCard: ReadFailure"/>
-  <int value="92" label="RemoveCreditCard: WriteFailure"/>
-  <int value="100" label="AddServerCreditCardForTesting: Success"/>
-  <int value="101" label="AddServerCreditCardForTesting: Failure"/>
-  <int value="110" label="UnmaskServerCreditCard: Success"/>
-  <int value="111" label="UnmaskServerCreditCard: Failure"/>
-  <int value="120" label="MaskServerCreditCard: Success"/>
-  <int value="121" label="MaskServerCreditCard: Failure"/>
-  <int value="130" label="UpdateServerCardMetadata: Success"/>
-  <int value="131" label="UpdateServerCardMetadata: Failure"/>
-  <int value="140" label="AddIBAN: Success"/>
-  <int value="141" label="AddIBAN: Failure"/>
-  <int value="150" label="UpdateIBAN: Success"/>
-  <int value="151" label="UpdateIBAN: ReadFailure"/>
-  <int value="152" label="UpdateIBAN: WriteFailure"/>
-  <int value="160" label="RemoveIBAN: Success"/>
-  <int value="161" label="RemoveIBAN: ReadFailure"/>
-  <int value="162" label="RemoveIBAN: WriteFailure"/>
-  <int value="180" label="AddUpiId: Success"/>
-  <int value="181" label="AddUpiId: Failure"/>
-  <int value="190" label="ClearAllServerData: Success"/>
-  <int value="191" label="ClearAllServerData: Failure"/>
-  <int value="200" label="ClearAllLocalData: Success"/>
-  <int value="201" label="ClearAllLocalData: Failure"/>
-  <int value="210" label="RemoveAutofillDataModifiedBetween: Success"/>
-  <int value="211" label="RemoveAutofillDataModifiedBetween: Failure"/>
-  <int value="220" label="RemoveOriginURLsModifiedBetween: Success"/>
-  <int value="221" label="RemoveOriginURLsModifiedBetween: Failure"/>
-  <int value="230" label="AddServerCvc: Success"/>
-  <int value="231" label="AddServerCvc: Failure"/>
-  <int value="240" label="UpdateServerCvc: Success"/>
-  <int value="241" label="UpdateServerCvc: Failure"/>
-  <int value="250" label="RemoveServerCvc: Success"/>
-  <int value="251" label="RemoveServerCvc: Failure"/>
-  <int value="260" label="ClearServerCvcs: Success"/>
-  <int value="261" label="ClearServerCvcs: Failure"/>
-  <int value="270" label="UpdateCreditCardCvc: Success"/>
-  <int value="271" label="UpdateCreditCardCvc: Failure"/>
-  <int value="272" label="ClearLocalCvcs: Success"/>
-  <int value="273" label="ClearLocalCvcs: Failure"/>
-  <int value="274" label="UpdateServerIbanMetadata: Success"/>
-  <int value="275" label="UpdateServerIbanMetadata: Failure"/>
-  <int value="276" label="ClearAllCreditCardBenefits: Success"/>
-  <int value="277" label="ClearAllCreditCardBenefits: Failure"/>
 </enum>
 
 <enum name="AutoScreenBrightnessAlsReaderStatus">
@@ -19881,6 +19677,8 @@ from previous Chrome versions.
   <int value="-257478609" label="TextfieldFocusOnTapUp:enabled"/>
   <int value="-256940675" label="HelpAppSearchServiceIntegration:disabled"/>
   <int value="-256923848" label="ProfilesUIRevamp:disabled"/>
+  <int value="-256745779"
+      label="IsSecurePaymentConfirmationAvailableAPI:enabled"/>
   <int value="-255869867" label="eol-reset-dismissed-prefs:disabled"/>
   <int value="-255264176" label="OmniboxSearchEngineLogo:disabled"/>
   <int value="-255157394" label="ButtonARCNetworkDiagnostics:enabled"/>
@@ -25797,6 +25595,8 @@ from previous Chrome versions.
   <int value="2075207488" label="AutomaticPasswordGeneration:disabled"/>
   <int value="2075686131" label="AndroidExtendedKeyboardShortcuts:enabled"/>
   <int value="2075718434" label="NtpRealboxSuggestionAnswers:disabled"/>
+  <int value="2075807130"
+      label="IsSecurePaymentConfirmationAvailableAPI:disabled"/>
   <int value="2076787478" label="OmniboxDisplayTitleForCurrentUrl:disabled"/>
   <int value="2076903744" label="progress-bar-animation"/>
   <int value="2077106718" label="EnableMessagesWebPush:enabled"/>
@@ -31765,79 +31565,6 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="OsSettings"/>
 </enum>
 
-<enum name="SetupInstallResult">
-  <summary>
-    Return status of the Windows installer. The values in this enum must be kept
-    in sync with the InstallStatus enum in
-    //chrome/installer/util/util_constants.h.
-  </summary>
-  <int value="0" label="First install of Chrome succeeded."/>
-  <int value="1" label="Same version reinstalled for repair."/>
-  <int value="2" label="Chrome successfully updated to new version."/>
-  <int value="3" label="No work done; launched existing Chrome."/>
-  <int value="4" label="Higher version of Chrome already exists."/>
-  <int value="5" label="User level install already exists."/>
-  <int value="6" label="Machine level install already exists."/>
-  <int value="7" label="Install/update failed."/>
-  <int value="8" label="Failed to patch setup.exe."/>
-  <int value="9" label="Current OS not supported."/>
-  <int value="10" label="OS API call failed."/>
-  <int value="11" label="Unable to get Temp directory."/>
-  <int value="12" label="Failed to uncompress Chrome archive."/>
-  <int value="13" label="Something wrong with the installer archive."/>
-  <int value="14" label="User trying system level install is not Admin."/>
-  <int value="15" label="Chrome not installed (during uninstall)."/>
-  <int value="16" label="Chrome currently running (during uninstall)."/>
-  <int value="17" label="User has confirmed Chrome uninstall."/>
-  <int value="18" label="User okayed uninstall and profile deletion."/>
-  <int value="19" label="Chrome successfully uninstalled."/>
-  <int value="20" label="Chrome uninstallation failed."/>
-  <int value="21" label="User cancelled Chrome uninstallation."/>
-  <int value="22" label="Unknown status (this should never happen)."/>
-  <int value="23" label="Rename of new_chrome.exe to chrome.exe worked."/>
-  <int value="24" label="Rename of new_chrome.exe failed."/>
-  <int value="25" label="EULA dialog was not accepted by user."/>
-  <int value="26" label="EULA dialog was accepted by user."/>
-  <int value="27" label="EULA accepted with the crash option selected."/>
-  <int value="28" label="Installation directory is in use by another process."/>
-  <int value="29" label="Uninstallation required a reboot."/>
-  <int value="30" label="Chrome successfully updated but old version running."/>
-  <int value="31" label="Chrome repair failed as Chrome was running."/>
-  <int value="32" label="Setup has been re-launched as the interactive user."/>
-  <int value="33"
-      label="The chrome-sxs option provided does not work with other command
-             line options."/>
-  <int value="42" label="Failed to apply a diff patch."/>
-  <int value="47"
-      label="A non-install option was called with an invalid installer state."/>
-  <int value="49"
-      label="The arguments of --patch were missing or they were invalid for
-             any reason."/>
-  <int value="50"
-      label="No previous version archive found for differential update."/>
-  <int value="51"
-      label="No multi-install products to update. The binaries will be
-             uninstalled if they are not in use. (Removed in M84.)"/>
-  <int value="52" label="The binaries were uninstalled. (Removed in M84.)"/>
-  <int value="53" label="An unsupported legacy option was given."/>
-  <int value="54" label="Current CPU not supported."/>
-  <int value="55" label="Autoupdates are now enabled."/>
-  <int value="56" label="Autoupdates could not be enabled."/>
-  <int value="57"
-      label="Unpacking the (possibly patched) uncompressed archive failed."/>
-  <int value="71" label="Rotation of the device trust key failed."/>
-  <int value="72" label="Rotation of the device trust key succeeded."/>
-  <int value="73" label="Creation of shortcuts succeeded."/>
-  <int value="74" label="DMToken deletion failed."/>
-  <int value="75" label="DMToken deletion succeeded."/>
-  <int value="76" label="Failed Device Trust Rotation: Invalid Permissions"/>
-  <int value="77" label="Failed Device Trust Rotation: Conflict"/>
-  <int value="78"
-      label="Successfully configured the browser in a specified directory"/>
-  <int value="79"
-      label="Failed to configure the browser in a specified directory"/>
-</enum>
-
 <enum name="ShapeRunFallback">
   <int value="0" label="FAILED">Finding a fallback font failed.</int>
   <int value="1" label="NO_FALLBACK">No fallback font was required.</int>
@@ -33351,24 +33078,6 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Pin"/>
   <int value="2" label="Fingerprint"/>
   <int value="3" label="Challenge-response security token"/>
-</enum>
-
-<enum name="UnPackStatus">
-  <int value="0" label="No Error"/>
-  <int value="1" label="Archive file not found"/>
-  <int value="2" label="Archive file can not be opened"/>
-  <int value="3" label="Archive can not be opened by extract tool."/>
-  <int value="4" label="File can not be extracted"/>
-  <int value="5" label="Mapped file IO Exception"/>
-  <int value="6" label="Can not get the name of extracted file"/>
-  <int value="7" label="Can not create extracted file on disk"/>
-  <int value="8" label="Can not write the extracted file on disk"/>
-  <int value="9" label="Can not set the extract time to file (Deprecated)"/>
-  <int value="10" label="Can not close extracted file (Deprecated)"/>
-  <int value="11" label="Can not create file memory mapping"/>
-  <int value="12" label="File CRC mismatch"/>
-  <int value="13" label="There is not enough space on the disk."/>
-  <int value="14" label="I/O device error."/>
 </enum>
 
 <enum name="UpdateAppBadgeTypes">

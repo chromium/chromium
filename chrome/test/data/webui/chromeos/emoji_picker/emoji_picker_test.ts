@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EMOJI_PICKER_TOTAL_EMOJI_WIDTH, EMOJI_VARIANTS_SHOWN, EmojiButton, EmojiSearch} from 'chrome://emoji-picker/emoji_picker.js';
+import type {EmojiButton, EmojiSearch} from 'chrome://emoji-picker/emoji_picker.js';
+import {EMOJI_PICKER_TOTAL_EMOJI_WIDTH, EMOJI_VARIANTS_SHOWN} from 'chrome://emoji-picker/emoji_picker.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertGT, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

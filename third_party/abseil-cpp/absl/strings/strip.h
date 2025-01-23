@@ -24,6 +24,7 @@
 #include <cstddef>
 #include <string>
 
+#include "absl/base/attributes.h"
 #include "absl/base/macros.h"
 #include "absl/base/nullability.h"
 #include "absl/strings/ascii.h"
@@ -74,7 +75,8 @@ inline constexpr bool ConsumeSuffix(absl::Nonnull<absl::string_view*> str,
 // but leaving the original string intact. If the prefix does not match at the
 // start of the string, returns the original string instead.
 ABSL_MUST_USE_RESULT inline constexpr absl::string_view StripPrefix(
-    absl::string_view str, absl::string_view prefix) {
+    absl::string_view str ABSL_ATTRIBUTE_LIFETIME_BOUND,
+    absl::string_view prefix) {
   if (absl::StartsWith(str, prefix)) str.remove_prefix(prefix.size());
   return str;
 }
@@ -85,7 +87,8 @@ ABSL_MUST_USE_RESULT inline constexpr absl::string_view StripPrefix(
 // but leaving the original string intact. If the suffix does not match at the
 // end of the string, returns the original string instead.
 ABSL_MUST_USE_RESULT inline constexpr absl::string_view StripSuffix(
-    absl::string_view str, absl::string_view suffix) {
+    absl::string_view str ABSL_ATTRIBUTE_LIFETIME_BOUND,
+    absl::string_view suffix) {
   if (absl::EndsWith(str, suffix)) str.remove_suffix(suffix.size());
   return str;
 }

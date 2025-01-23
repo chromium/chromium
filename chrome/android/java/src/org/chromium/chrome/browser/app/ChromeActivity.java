@@ -1487,18 +1487,21 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     public void onProvideAssistContent(AssistContent outContent) {
         Tab tab = getActivityTab();
         // No information is provided in incognito mode and overview mode.
-        if (tab != null && !tab.isIncognito() && !isInOverviewMode()) {
+        if (tab != null && !tab.isOffTheRecord() && !isInOverviewMode()) {
             outContent.setWebUri(Uri.parse(tab.getUrl().getSpec()));
             PageContentProviderMetrics.recordUrlAttachedToAssistContent(true);
+            EnterpriseInfo.OwnedState enterpriseInfoState =
+                    EnterpriseInfo.getInstance().getDeviceEnterpriseInfoSync();
 
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_PDF_ASSIST_CONTENT)
                     && tab.getNativePage() instanceof PdfPage pdfPage) {
-                EnterpriseInfo.OwnedState state =
-                        EnterpriseInfo.getInstance().getDeviceEnterpriseInfoSync();
+
                 RecordHistogram.recordBooleanHistogram(
-                        "Android.Pdf.AssistContent.IsEnterpriseInfoCached", state != null);
-                if (state == null) return;
-                String structuredData = pdfPage.requestAssistContent(state.mProfileOwned);
+                        "Android.Pdf.AssistContent.IsEnterpriseInfoCached",
+                        enterpriseInfoState != null);
+                if (enterpriseInfoState == null) return;
+                String structuredData =
+                        pdfPage.requestAssistContent(enterpriseInfoState.mProfileOwned);
                 PageContentProviderMetrics.recordPdfStructuredDataAttachedToAssistContent(
                         structuredData != null);
                 if (structuredData != null) {
@@ -1506,9 +1509,15 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 }
             } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_CONTENT_PROVIDER)
                     && UrlUtilities.isHttpOrHttps(tab.getUrl())) {
+                PageContentProviderMetrics.recordEnterpriseInfoCacheStateForWebAssistContent(
+                        enterpriseInfoState != null);
+                if (enterpriseInfoState == null) return;
+
                 String pageContentStructuredData =
                         PageContentProviderImpl.getAssistContentStructuredDataForUrl(
-                                tab.getUrl().getSpec(), getActivityTabProvider());
+                                tab.getUrl().getSpec(),
+                                getActivityTabProvider(),
+                                enterpriseInfoState.mProfileOwned);
                 PageContentProviderMetrics.recordWebStructuredDataAttachedToAssistContent(
                         pageContentStructuredData != null);
                 if (pageContentStructuredData != null) {
@@ -1725,7 +1734,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     @Override
-    protected boolean shouldContentFitWindowInsets() {
+    protected boolean wrapContentWithEdgeToEdgeLayout() {
         return EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()
                 && !EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()
                 && !EdgeToEdgeUtils.isEdgeToEdgeWebOptInEnabled();

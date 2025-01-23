@@ -5,7 +5,7 @@
 import 'chrome://borealis-installer/error_dialog.js';
 
 import {InstallResult} from 'chrome://borealis-installer/borealis_types.mojom-webui.js';
-import {BorealisInstallerErrorDialogElement} from 'chrome://borealis-installer/error_dialog.js';
+import type {BorealisInstallerErrorDialogElement} from 'chrome://borealis-installer/error_dialog.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 

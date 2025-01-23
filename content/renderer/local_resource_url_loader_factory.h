@@ -45,7 +45,7 @@ class CONTENT_EXPORT LocalResourceURLLoaderFactory
   };
 
   LocalResourceURLLoaderFactory(
-      const blink::mojom::LocalResourceLoaderConfigPtr& config,
+      blink::mojom::LocalResourceLoaderConfigPtr config,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> fallback);
   ~LocalResourceURLLoaderFactory() override;
 

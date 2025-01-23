@@ -5,11 +5,12 @@
 import 'chrome://os-print/js/destination_select.js';
 
 import {DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
-import {DestinationProviderComposite} from 'chrome://os-print/js/data/destination_provider_composite.js';
+import type {DestinationProviderComposite} from 'chrome://os-print/js/data/destination_provider_composite.js';
 import {DestinationDropdownElement} from 'chrome://os-print/js/destination_dropdown.js';
 import {DestinationSelectElement} from 'chrome://os-print/js/destination_select.js';
-import {DESTINATION_SELECT_SHOW_LOADING_UI_CHANGED, DestinationSelectController} from 'chrome://os-print/js/destination_select_controller.js';
-import {FakeDestinationProvider} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
+import type {DestinationSelectController} from 'chrome://os-print/js/destination_select_controller.js';
+import {DESTINATION_SELECT_SHOW_LOADING_UI_CHANGED} from 'chrome://os-print/js/destination_select_controller.js';
+import type {FakeDestinationProvider} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
 import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {getDestinationProvider} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';

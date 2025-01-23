@@ -27,6 +27,7 @@
 #include "components/history/core/browser/url_row.h"
 #include "components/history_embeddings/answerer.h"
 #include "components/history_embeddings/intent_classifier.h"
+#include "components/history_embeddings/scheduling_embedder.h"
 #include "components/history_embeddings/sql_database.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -49,8 +50,6 @@ class OSCryptAsync;
 }
 
 namespace history_embeddings {
-
-class Embedder;
 
 // Counts the # of ' ' vanilla-space characters in `s`.
 // TODO(crbug.com/343256907): Should work on international inputs which may:
@@ -181,20 +180,23 @@ class HistoryEmbeddingsService : public KeyedService,
                                         base::Time visit_time,
                                         std::vector<std::string> passages);
 
-  // Find top `count` URL visit info entries nearest given `query`. Pass results
-  // to given `callback` when search completes. Search will be narrowed to a
-  // time range if `time_range_start` is provided. In that case, the start of
-  // the time range is inclusive and the end is unbounded. Practically, this can
-  // be thought of as [start, now) but now isn't fixed. Virtual for testing.
-  // The `callback` may be called back later with another search result
-  // containing an answer, only if `skip_answering` is false.  This two-phase
-  // result callback scheme lets callers receive initial search results without
-  // having to wait longer for answers.  The `previous_search_result` may be
-  // nullptr to signal the beginning of a completely new search session; if it
-  // is non-null and the session_id was set, the new session_id is set based on
-  // the previous to indicate a continuing search session. Returns a stub result
-  // that can be used to detect if a later published SearchResult instance is
-  // related to this search.
+  // Finds the top `count` URL visit info entries nearest to `query`. Passes the
+  // results to `callback` when search completes, whether successfully or not.
+  // Search will be narrowed to a time range if `time_range_start` is provided.
+  // In that case, the start of the time range is inclusive and the end is
+  // unbounded. Practically, this can be thought of as [start, now) but now
+  // isn't fixed.
+  // The `callback` may be called a second time with another search result
+  // containing an answer, only if `skip_answering` is false and an answer is
+  // successfully generated. This two-phase result callback scheme lets callers
+  // receive initial search results without having to wait longer for answers.
+  // The `previous_search_result` may be nullptr to signal the beginning of a
+  // completely new search session; if it is non-null and the session_id is set,
+  // the new session_id is set based on the previous to indicate a continuing
+  // search session.
+  // Returns a stub result that can be used to detect if a later published
+  // SearchResult instance is related to this search.
+  // Virtual for testing.
   virtual SearchResult Search(SearchResult* previous_search_result,
                               std::string query,
                               std::optional<base::Time> time_range_start,
@@ -333,6 +335,7 @@ class HistoryEmbeddingsService : public KeyedService,
       UrlData url_passages,
       std::vector<std::string> passages,
       std::vector<Embedding> embeddings,
+      SchedulingEmbedder::TaskId task_id,
       passage_embeddings::ComputeEmbeddingsStatus status);
 
   // Invoked after the embedding for the original search query has been
@@ -342,6 +345,7 @@ class HistoryEmbeddingsService : public KeyedService,
       SearchResult result,
       std::vector<std::string> query_passages,
       std::vector<Embedding> query_embedding,
+      SchedulingEmbedder::TaskId task_id,
       passage_embeddings::ComputeEmbeddingsStatus status);
 
   // Finishes a search result by combining found data with additional data from
@@ -421,7 +425,7 @@ class HistoryEmbeddingsService : public KeyedService,
       history_service_observation_{this};
 
   // The embedder used to compute embeddings.
-  std::unique_ptr<Embedder> embedder_;
+  std::unique_ptr<SchedulingEmbedder> embedder_;
 
   // The answerer used to answer queries with context. May be nullptr if
   // the kHistoryEmbeddingsAnswers feature is disabled.
@@ -448,7 +452,11 @@ class HistoryEmbeddingsService : public KeyedService,
   // atomic value itself. When it changes, any queries other than the latest
   // can be halted. Note this is not task cancellation, it breaks the inner
   // search loop while running so the atomic is needed for thread safety.
-  std::atomic<size_t> query_id_;
+  std::atomic<size_t> query_id_ = 0u;
+
+  // Used to cancel the in-flight embedding task for the previous stale query.
+  SchedulingEmbedder::TaskId query_embedding_task_id_ =
+      SchedulingEmbedder::kInvalidTaskId;
 
   base::CallbackListSubscription subscription_;
 

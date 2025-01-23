@@ -4,14 +4,15 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {GooglePhotosAlbum, GooglePhotosCollectionElement, GooglePhotosEnablementState, Paths, PersonalizationRouterElement} from 'chrome://personalization/js/personalization_app.js';
+import type {GooglePhotosAlbum} from 'chrome://personalization/js/personalization_app.js';
+import {GooglePhotosCollectionElement, GooglePhotosEnablementState, Paths, PersonalizationRouterElement} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 suite('GooglePhotosCollectionElementTest', function() {
   let googlePhotosCollectionElement: GooglePhotosCollectionElement|null;

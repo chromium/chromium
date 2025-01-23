@@ -182,7 +182,15 @@ promise_test(async t => {
   assert_implements_optional(
       vp8SendRecvCodecs.length > 0,
       `There are no sendrecv VP8 codecs available in getCapabilities.`);
-  const h264RecvOnlyCodec = h264RecvOnlyCodecs[0];
+  // Pick a level (3.1) that we're required to support for both sending and
+  // receiving. If such a codec is listed in `h264RecvOnlyCodecs` that means our
+  // sender capability has an even greater level.
+  const h264RecvOnlyCodec = h264RecvOnlyCodecs.find(
+      codec => codec.sdpFmtpLine.includes('profile-level-id=64001f'));
+  assert_implements_optional(
+      h264RecvOnlyCodec != undefined,
+      `profile-level-id=64001f is not exclusive to ` +
+      `RTCRtpReceiver.getCapabilities.`);
   const vp8SendRecvCodec = vp8SendRecvCodecs[0];
 
   const transceiver = pc.addTransceiver('video', {direction: 'sendrecv'});
@@ -191,13 +199,13 @@ promise_test(async t => {
   await pc.setLocalDescription();
   const offeredCodecs = parseCodecsFromSdp(pc.localDescription.sdp);
   // Even though this H264 codec with its level ID is recvonly, we should still
-  // offer to sendrecv H264 but with a different profile-level-id for sendrecv.
+  // offer to sendrecv it due to sender capabilities being even greater.
   assert_equals(offeredCodecs.length, 2, 'Two codecs are offered (H264, VP8).');
   assert_equals(offeredCodecs[0].mimeType, 'video/H264',
                 'The first offered codec is H264.');
-  assert_true(offeredCodecs[0].sdpFmtpLine != h264RecvOnlyCodec.sdpFmtpLine,
-              'The offered H264 profile-level-id should be different from ' +
-              'the recvonly one.');
+  assert_true(offeredCodecs[0].sdpFmtpLine == h264RecvOnlyCodec.sdpFmtpLine,
+              'The offered H264 profile-level-id should match the recvonly ' +
+              'codec since we expect the sender capability to be even higher.');
   assert_equals(offeredCodecs[1].mimeType, 'video/VP8',
                 'The second offered codec is VP8.');
 }, `Offering a recvonly codec on a sendrecv transceiver`);

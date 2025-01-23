@@ -68,7 +68,8 @@ bool DisplayResourceProvider::OnMemoryDump(
 
     bool backing_memory_allocated = false;
     if (resource.transferable.is_software)
-      backing_memory_allocated = !!resource.shared_bitmap;
+      backing_memory_allocated =
+          resource.shared_image_representation_created_and_set;
     else
       backing_memory_allocated = !!resource.image_context;
 
@@ -102,14 +103,9 @@ bool DisplayResourceProvider::OnMemoryDump(
     // GPU service will use a lower one.
     constexpr int kImportance =
         static_cast<int>(gpu::TracingImportance::kServiceOwner);
-    if (resource.transferable.is_software) {
-      pmd->CreateSharedMemoryOwnershipEdge(
-          dump->guid(), resource.shared_bitmap_tracing_guid, kImportance);
-    } else {
       auto guid = GetSharedImageGUIDForTracing(resource.transferable.mailbox());
       pmd->CreateSharedGlobalAllocatorDump(guid);
       pmd->AddOwnershipEdge(dump->guid(), guid, kImportance);
-    }
   }
 
   return true;
