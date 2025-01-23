@@ -42,8 +42,9 @@ class TabStripControllerTest : public PlatformTest {
   }
 
   void SetUp() override {
-    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET)
+    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
       return;
+    }
 
     visible_navigation_item_ = web::NavigationItem::Create();
     mock_application_commands_handler_ =
@@ -71,8 +72,9 @@ class TabStripControllerTest : public PlatformTest {
   }
 
   void TearDown() override {
-    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET)
+    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
       return;
+    }
     [controller_ disconnect];
   }
 
@@ -105,8 +107,9 @@ class TabStripControllerTest : public PlatformTest {
 };
 
 TEST_F(TabStripControllerTest, LoadAndDisplay) {
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET)
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     return;
+  }
   AddWebStateForTesting("Tab Title 1");
   AddWebStateForTesting("Tab Title 2");
   // Force the view to load.

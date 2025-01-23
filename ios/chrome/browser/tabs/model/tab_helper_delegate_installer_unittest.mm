@@ -48,16 +48,18 @@ class FakeTabHelper : public web::WebStateUserData<FakeTabHelper> {
   // Accessors for the Delegate.
   void SetDelegate(Delegate* delegate) {
     delegate_ = delegate;
-    if (!set_delegate_cb_.is_null())
+    if (!set_delegate_cb_.is_null()) {
       set_delegate_cb_.Run(delegate);
+    }
   }
   Delegate* GetDelegate() const { return delegate_; }
 
   // Accessors for the SecondDelegate.
   void SetSecondDelegate(SecondDelegate* delegate) {
     second_delegate_ = delegate;
-    if (!set_second_delegate_cb_.is_null())
+    if (!set_second_delegate_cb_.is_null()) {
       set_second_delegate_cb_.Run(second_delegate_.get());
+    }
   }
   SecondDelegate* GetSecondDelegate() const { return second_delegate_; }
 
