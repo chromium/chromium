@@ -1721,4 +1721,62 @@ public class AwPrerenderTest extends AwParameterizedTest {
         // Activation shouldn't send a request.
         Assert.assertEquals(1, mTestServer.getRequestCountForUrl(PRERENDER_URL));
     }
+
+    // Tests the following scenario:
+    // 1) Prefetching sends a request to "?a=12". This response allows to ignore the parameter for
+    //    the No-Vary-Search header.
+    // 2) Prerendering starts for "?a=124". Thanks to the header, this should be able to consume the
+    //    prefetched response, the parameter is different though.
+    // 3) Navigation starts for "?a=91". Thanks to the header, this should be able to activate the
+    //    prerendered page.
+    //
+    // In the end, a request should be sent only to "?a=12" one time.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testPrefetchAndPrerenderWithNoVarySearchHeader() throws Throwable {
+        loadInitialPage();
+
+        // Start prefetching and wait until response completion. This response will have
+        // `No-Vary-Search: params=("a")` header.
+        String prefetchPath = PRERENDER_URL.concat("?a=12");
+        String prefetchUrl = getUrl(prefetchPath);
+        startPrefetchingAndWait(prefetchUrl, /* prefetchParameters= */ null);
+
+        // Prefetching should send a request to "?a=12".
+        Assert.assertEquals(1, mTestServer.getRequestCountForUrl(prefetchPath));
+
+        var histogramWatcher = createFinalStatusHistogramWatcher(/*kActivated*/ 0);
+
+        // Start prerendering and wait until completion. This has the different query parameter but
+        // should consume the prefetched response for the No-Vary-Search header.
+        String prerenderPath = PRERENDER_URL.concat("?a=124");
+        String prerenderUrl = getUrl(prerenderPath);
+        startPrerenderingAndWait(
+                prerenderUrl,
+                null,
+                mActivationCallbackHelper.getActivationCallback(),
+                mPrerenderErrorCallbackHelper.getCallback());
+
+        // Prerendering shouldn't send a request to "?a=12" or "?a=124".
+        Assert.assertEquals(1, mTestServer.getRequestCountForUrl(prefetchPath));
+        Assert.assertEquals(0, mTestServer.getRequestCountForUrl(prerenderPath));
+
+        // Start navigation to the URL with yet another parameter. This should activate the
+        // prerendered page.
+        String navigationPath = PRERENDER_URL.concat("?a=91");
+        String navigationUrl = getUrl(navigationPath);
+        activatePage(navigationUrl, ActivationBy.LOAD_URL);
+
+        // Wait until the navigation activates the prerendered page.
+        mActivationCallbackHelper.waitForNext();
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+
+        // Activation shouldn't send a request to "?a=12", "?a=124", or "?a=91".
+        Assert.assertEquals(1, mTestServer.getRequestCountForUrl(prefetchPath));
+        Assert.assertEquals(0, mTestServer.getRequestCountForUrl(prerenderPath));
+        Assert.assertEquals(0, mTestServer.getRequestCountForUrl(navigationPath));
+    }
 }
