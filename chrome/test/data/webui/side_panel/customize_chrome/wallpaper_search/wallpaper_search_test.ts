@@ -118,9 +118,10 @@ suite('WallpaperSearchTest', () => {
       const learnMoreLink =
           wallpaperSearchElement.shadowRoot!.querySelector<HTMLAnchorElement>(
               '#disclaimer a')!;
-      const clickEvent = new Event('click', {cancelable: true});
-      learnMoreLink.dispatchEvent(clickEvent);
+      const whenClick = eventToPromise('click', learnMoreLink);
+      learnMoreLink.click();
       await handler.whenCalled('openHelpArticle');
+      const clickEvent = await whenClick;
       assertTrue(clickEvent.defaultPrevented);
     });
 
