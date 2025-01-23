@@ -157,7 +157,7 @@ public class PageInfoAboutThisSiteTest {
         CallbackHelper helper = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PageInfoController.getLastPageInfoControllerForTesting()
+                    PageInfoController.getLastPageInfoController()
                             .runAfterDismiss(helper::notifyCalled);
                 });
         helper.waitForCallback(0);

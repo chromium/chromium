@@ -2977,11 +2977,11 @@ public class CustomTabActivityTest {
 
         assertNull(
                 "Page info hasn't been shown, so PageInfoController should be null.",
-                PageInfoController.getLastPageInfoControllerForTesting());
+                PageInfoController.getLastPageInfoController());
         ThreadUtils.runOnUiThreadBlocking(() -> titleBar.performClick());
         assertNotNull(
                 "Page info should have been shown.",
-                PageInfoController.getLastPageInfoControllerForTesting());
+                PageInfoController.getLastPageInfoController());
     }
 
     private void rotateCustomTabActivity(CustomTabActivity activity, int orientation) {
