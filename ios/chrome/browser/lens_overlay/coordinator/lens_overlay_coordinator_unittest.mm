@@ -494,8 +494,9 @@ TEST_F(LensOverlayCoordinatorTest, TimingMetricsRecorded) {
   run_loop_.Run();
 
   // Destroy Lens UI.
-  [lens_overlay_handler destroyLensUI:NO
-                               reason:lens::LensOverlayDismissalSource::kOverlayCloseButton];
+  [lens_overlay_handler
+      destroyLensUI:NO
+             reason:lens::LensOverlayDismissalSource::kOverlayCloseButton];
 
   histogram_tester.ExpectTotalCount("Lens.Overlay.SessionDuration",
                                     /*expected_count=*/1);
