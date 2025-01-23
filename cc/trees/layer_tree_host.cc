@@ -65,6 +65,8 @@
 #include "cc/trees/mutator_host.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/property_tree_builder.h"
+#include "cc/trees/property_tree_layer_list_delegate.h"
+#include "cc/trees/property_tree_layer_tree_delegate.h"
 #include "cc/trees/proxy_main.h"
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "cc/trees/scroll_node.h"
@@ -154,7 +156,8 @@ LayerTreeHost::LayerTreeHost(InitParams params, CompositorMode mode)
       id_(s_layer_tree_host_sequence_number.GetNext() + 1),
       task_graph_runner_(params.task_graph_runner),
       mutator_host_(params.mutator_host),
-      dark_mode_filter_(params.dark_mode_filter) {
+      dark_mode_filter_(params.dark_mode_filter),
+      property_tree_delegate_(params.property_tree_delegate) {
   DCHECK(task_graph_runner_);
   DCHECK(!settings_.enable_checker_imaging || image_worker_task_runner_);
 
@@ -165,6 +168,18 @@ LayerTreeHost::LayerTreeHost(InitParams params, CompositorMode mode)
 
   rendering_stats_instrumentation_->set_record_rendering_stats(
       pending_commit_state_->debug_state.RecordRenderingStats());
+
+  if (!params.property_tree_delegate) {
+    if (IsUsingLayerLists()) {
+      owned_property_tree_delegate_ =
+          std::make_unique<PropertyTreeLayerListDelegate>();
+      property_tree_delegate_ = owned_property_tree_delegate_.get();
+    } else {
+      owned_property_tree_delegate_ =
+          std::make_unique<PropertyTreeLayerTreeDelegate>();
+      property_tree_delegate_ = owned_property_tree_delegate_.get();
+    }
+  }
 }
 
 bool LayerTreeHost::IsMobileOptimized() const {
@@ -963,31 +978,7 @@ bool LayerTreeHost::DoUpdateLayers() {
 
   UpdateHudLayer(pending_commit_state()->debug_state.ShouldCreateHudLayer());
 
-  // In layer lists mode, the cc property trees are built directly and do not
-  // need to be built here.
-  if (!IsUsingLayerLists()) {
-    TRACE_EVENT0("cc", "LayerTreeHost::UpdateLayers::BuildPropertyTrees");
-    PropertyTreeBuilder::BuildPropertyTrees(this);
-    TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-                         "LayerTreeHost::UpdateLayers_BuiltPropertyTrees",
-                         TRACE_EVENT_SCOPE_THREAD, "property_trees",
-                         property_trees()->AsTracedValue());
-  } else {
-    TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-                         "LayerTreeHost::UpdateLayers_ReceivedPropertyTrees",
-                         TRACE_EVENT_SCOPE_THREAD, "property_trees",
-                         property_trees()->AsTracedValue());
-    // The HUD layer is managed outside the layer list sent to LayerTreeHost
-    // and needs to have its property tree state set.
-    if (hud_layer() && root_layer()) {
-      hud_layer()->SetTransformTreeIndex(root_layer()->transform_tree_index());
-      hud_layer()->SetEffectTreeIndex(root_layer()->effect_tree_index());
-      hud_layer()->SetClipTreeIndex(root_layer()->clip_tree_index());
-      hud_layer()->SetScrollTreeIndex(root_layer()->scroll_tree_index());
-      hud_layer()->set_property_tree_sequence_number(
-          root_layer()->property_tree_sequence_number());
-    }
-  }
+  property_tree_delegate_->UpdatePropertyTreesIfNeeded(this);
 
 #if DCHECK_IS_ON()
   // Ensure property tree nodes were created for all layers. When using layer
@@ -1663,7 +1654,7 @@ void LayerTreeHost::SetLocalSurfaceIdFromParent(
 
   // If the parent sequence number has not advanced, then there is no need to
   // commit anything. This can occur when the child sequence number has
-  // advanced. Which means that child has changed visual properites, and the
+  // advanced. Which means that child has changed visual properties, and the
   // parent agreed upon these without needing to further advance its sequence
   // number. When this occurs the child is already up-to-date and a commit here
   // is simply redundant.

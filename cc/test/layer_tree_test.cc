@@ -522,7 +522,8 @@ class LayerTreeHostForTesting : public LayerTreeHost {
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> impl_task_runner,
       scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
-      MutatorHost* mutator_host) {
+      MutatorHost* mutator_host,
+      PropertyTreeDelegate* property_tree_delegate) {
     LayerTreeHost::InitParams params;
     params.client = client;
     params.scheduling_client = scheduling_client;
@@ -531,6 +532,7 @@ class LayerTreeHostForTesting : public LayerTreeHost {
     params.mutator_host = mutator_host;
     params.image_worker_task_runner = std::move(image_worker_task_runner);
     params.ukm_recorder_factory = std::make_unique<TestUkmRecorderFactory>();
+    params.property_tree_delegate = property_tree_delegate;
 
     auto layer_tree_host = base::WrapUnique(
         new LayerTreeHostForTesting(test_hooks, std::move(params), mode));
@@ -955,7 +957,8 @@ void LayerTreeTest::DoBeginTest() {
   layer_tree_host_ = LayerTreeHostForTesting::Create(
       this, mode_, client_.get(), scheduling_client, client_.get(),
       task_graph_runner_.get(), settings_, main_task_runner, impl_task_runner,
-      image_worker_->task_runner(), animation_host_.get());
+      image_worker_->task_runner(), animation_host_.get(),
+      property_tree_delegate_.get());
   ASSERT_TRUE(layer_tree_host_);
 
   main_task_runner_ =

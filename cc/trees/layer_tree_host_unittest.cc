@@ -70,6 +70,7 @@
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/paint_holding_reason.h"
+#include "cc/trees/property_tree_layer_tree_delegate.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/swap_promise.h"
@@ -11069,6 +11070,46 @@ class LayerTreeHostTestSetMaxSafeAreaInsets : public LayerTreeHostTest {
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestSetMaxSafeAreaInsets);
+
+class LayerTreeHostTestCustomPropertyTreeDelegate : public LayerTreeHostTest {
+ public:
+  class TestPropertyTreeDelegate : public PropertyTreeLayerTreeDelegate {
+   public:
+    bool update_called() { return update_called_; }
+
+    void UpdatePropertyTreesIfNeeded(LayerTreeHost* host) override {
+      update_called_ = true;
+      PropertyTreeLayerTreeDelegate::UpdatePropertyTreesIfNeeded(host);
+    }
+
+   private:
+    bool update_called_ = false;
+  };
+
+  void RunTest(CompositorMode mode) override {
+    owned_property_tree_delegate_ =
+        std::make_unique<TestPropertyTreeDelegate>();
+    SetPropertyTreeDelegate(owned_property_tree_delegate_.get());
+    LayerTreeHostTest::RunTest(mode);
+  }
+
+ protected:
+  void BeginTest() override { PostSetNeedsUpdateLayersToMainThread(); }
+
+  void DidBeginMainFrame() override { EndTest(); }
+
+  void AfterTest() override {
+    EXPECT_TRUE(owned_property_tree_delegate_->update_called());
+
+    // Prevent a dangling pointer error.
+    SetPropertyTreeDelegate(nullptr);
+  }
+
+ private:
+  std::unique_ptr<TestPropertyTreeDelegate> owned_property_tree_delegate_;
+};
+
+MULTI_THREAD_TEST_F(LayerTreeHostTestCustomPropertyTreeDelegate);
 
 }  // namespace
 }  // namespace cc
