@@ -556,7 +556,7 @@ bool IsDownloadAutoDeletionFeatureEnabled() {
 
 BASE_FEATURE(kDownloadedPDFOpening,
              "DownloadedPDFOpening",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Key for NSUserDefaults containing a bool indicating whether the next run
 // should enable feed background refresh capability. This is used because
