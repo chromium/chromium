@@ -28,7 +28,7 @@ namespace feature_engagement {
 class Tracker;
 }
 
-@protocol LocationBarViewControllerDelegate<NSObject>
+@protocol LocationBarViewControllerDelegate <NSObject>
 
 // Notifies the delegate about a tap on the steady-state location bar.
 - (void)locationBarSteadyViewTapped;

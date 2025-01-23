@@ -158,8 +158,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 - (void)start {
   DCHECK(self.browser);
 
-  if (self.started)
+  if (self.started) {
     return;
+  }
 
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
@@ -294,8 +295,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (void)stop {
-  if (!self.started)
+  if (!self.started) {
     return;
+  }
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
 
   [self.contextualPanelEntrypointCoordinator stop];
@@ -616,14 +618,16 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 - (void)searchImage:(std::optional<gfx::Image>)optionalImage
           usingLens:(BOOL)usingLens {
-  if (!optionalImage)
+  if (!optionalImage) {
     return;
+  }
 
   // If the Browser has been destroyed, then the UI should
   // no longer be active. Return early to avoid crashing.
   Browser* browser = self.browser;
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   UIImage* image = optionalImage->ToUIImage();
   if (usingLens) {
