@@ -1116,15 +1116,25 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
             : SkBlendMode::kSrc;
     gfx::RectF src_rect((gfx::SizeF(Size())));
 
-    // Note: If hibernation is supported (i.e., there is a non-null hibernation
-    // handler), go through the context to take a snapshot - this will result in
-    // the snapshot being taken via the hibernation handler in the case where
-    // the canvas is hibernating. Otherwise, get the snapshot directly from the
-    // CanvasResourceProvider.
-    bool has_hibernation_handler = GetHibernationHandler() != nullptr;
+    // For canvas 2D, get the snapshot from the context to ensure that the
+    // recording is properly flushed (note that the fact that the canvas has
+    // a valid resource provider means that it is not possible for the
+    // canvas to be in hibernation at this point as the canvas' resource
+    // provider is dropped when going into hibernation and hibernation is ended
+    // if the canvas' resource provider is recreated).
+    // For all contexts other than canvas 2D, get a snapshot directly from
+    // the CanvasResourceProvider as the above
+    // `PaintRenderingResultsToCanvas()` call has ensured that the CRP has the
+    // current canvas contents.
+    // TODO(crbug.com/40260472): Move this flow to get the snapshot from the
+    // context for all context types as part of moving CanvasResourceProvider
+    // ownership to the context and decoupling non-2D canvas context types from
+    // needing to shoehorn contents into CanvasResourceProvider instances. Each
+    // context type will then flush any content in whatever way it needs to
+    // internally before snapshotting.
     scoped_refptr<StaticBitmapImage> snapshot =
-        has_hibernation_handler ? context_->GetImage(FlushReason::kPaint)
-                                : provider->Snapshot(FlushReason::kPaint);
+        IsRenderingContext2D() ? context_->GetImage(FlushReason::kPaint)
+                               : provider->Snapshot(FlushReason::kPaint);
     if (snapshot) {
       // GraphicsContext cannot handle gpu resource serialization.
       snapshot = snapshot->MakeUnaccelerated();
