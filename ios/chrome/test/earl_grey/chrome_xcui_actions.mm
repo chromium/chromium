@@ -51,8 +51,9 @@ XCUIElement* GetElementMatchingIdentifierInWindow(XCUIApplication* app,
     query = [app.windows matchingIdentifier:window_id];
   }
 
-  if (query.count == 0)
+  if (query.count == 0) {
     return nil;
+  }
 
   return [query elementBoundByIndex:0];
 }
@@ -73,8 +74,9 @@ void LongPressAndDragBetweenCoordinates(XCUICoordinate* start_point,
 BOOL LongPressAndDragBetweenElements(XCUIElement* src_element,
                                      XCUIElement* dst_element,
                                      CGVector dst_normalized_offset) {
-  if (!src_element || !dst_element)
+  if (!src_element || !dst_element) {
     return NO;
+  }
 
   XCUICoordinate* start_point =
       [src_element coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)];
@@ -148,18 +150,21 @@ BOOL DragWindowSplitterToSize(int first_window_number,
                               CGFloat first_window_normalized_screen_size) {
   CGRect first_rect =
       [ChromeEarlGrey screenPositionOfScreenWithNumber:first_window_number];
-  if (CGRectIsEmpty(first_rect))
+  if (CGRectIsEmpty(first_rect)) {
     return NO;
+  }
 
   CGRect second_rect =
       [ChromeEarlGrey screenPositionOfScreenWithNumber:second_window_number];
-  if (CGRectIsEmpty(second_rect))
+  if (CGRectIsEmpty(second_rect)) {
     return NO;
+  }
 
   // Fail early if a floating window was passed in in one of the windows.
   if (first_rect.origin.x != second_rect.origin.x &&
-      first_rect.origin.y != second_rect.origin.y)
+      first_rect.origin.y != second_rect.origin.y) {
     return NO;
+  }
 
   // Use device orientation to see if it is one of the modes where we need to
   // invert ltr, because the two rects returned above are always related to
@@ -177,16 +182,18 @@ BOOL DragWindowSplitterToSize(int first_window_number,
     ltr = first_rect.origin.y < second_rect.origin.y;
     landscape = YES;
   }
-  if (inverted_display)
+  if (inverted_display) {
     ltr = !ltr;
+  }
   int left_window = ltr ? first_window_number : second_window_number;
 
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElementQuery* query = [app.windows
       matchingIdentifier:GetWindowAccessibilityIdentifier(left_window)];
 
-  if (query.count == 0)
+  if (query.count == 0) {
     return NO;
+  }
   XCUIElement* element = [query elementBoundByIndex:0];
 
   // Start on center of splitter, right of leftmost window.
@@ -237,8 +244,9 @@ BOOL TapAtOffsetOf(NSString* accessibility_identifier,
   XCUIElement* element = GetElementMatchingIdentifierInWindow(
       app, accessibility_identifier, window_number, XCUIElementTypeAny);
 
-  if (!element)
+  if (!element) {
     return NO;
+  }
 
   XCUICoordinate* tap_point =
       [element coordinateWithNormalizedOffset:normalized_offset];
@@ -255,8 +263,9 @@ BOOL TypeText(NSString* accessibility_identifier,
   XCUIElement* element = GetElementMatchingIdentifierInWindow(
       app, accessibility_identifier, window_number, XCUIElementTypeTextField);
 
-  if (!element)
+  if (!element) {
     return NO;
+  }
 
   [element typeText:text];
 

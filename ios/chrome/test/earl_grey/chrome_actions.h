@@ -6,7 +6,6 @@
 #define IOS_CHROME_TEST_EARL_GREY_CHROME_ACTIONS_H_
 
 #import <Foundation/Foundation.h>
-
 #import <UIKit/UIKit.h>
 
 #include <string>

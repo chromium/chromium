@@ -127,8 +127,9 @@ HistogramTester::GetHistogramSamplesSinceCreation(
   std::unique_ptr<base::HistogramSamples> named_samples(
       histogram->SnapshotSamples());
   auto original_samples_it = histograms_snapshot_.find(histogram_name);
-  if (original_samples_it != histograms_snapshot_.end())
+  if (original_samples_it != histograms_snapshot_.end()) {
     named_samples->Subtract(*original_samples_it->second);
+  }
   return named_samples;
 }
 
@@ -140,8 +141,9 @@ BOOL HistogramTester::CheckBucketCount(
     FailureBlock failure_block) const {
   int actual_count = samples.GetCount(sample);
   auto histogram_data = histograms_snapshot_.find(name);
-  if (histogram_data != histograms_snapshot_.end())
+  if (histogram_data != histograms_snapshot_.end()) {
     actual_count -= histogram_data->second->GetCount(sample);
+  }
   if (expected_count == actual_count) {
     return YES;
   }
@@ -162,8 +164,9 @@ BOOL HistogramTester::CheckTotalCount(const std::string& name,
                                       FailureBlock failure_block) const {
   int actual_count = samples.TotalCount();
   auto histogram_data = histograms_snapshot_.find(name);
-  if (histogram_data != histograms_snapshot_.end())
+  if (histogram_data != histograms_snapshot_.end()) {
     actual_count -= histogram_data->second->TotalCount();
+  }
   if (expected_count == actual_count) {
     return YES;
   }

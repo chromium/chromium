@@ -444,8 +444,9 @@ BOOL IsUrlPresentOnClient(const GURL& url,
   history_service->GetCountsAndLastVisitForOriginsForTesting(
       origins, base::BindOnce(^(history::OriginCountAndLastVisitMap result) {
         auto iter = result.find(block_safe_url);
-        if (iter != result.end())
+        if (iter != result.end()) {
           count = iter->second.first;
+        }
         history_service_callback_called = true;
       }));
 

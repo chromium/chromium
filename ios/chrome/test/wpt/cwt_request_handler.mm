@@ -187,17 +187,21 @@ std::optional<base::Value> CWTRequestHandler::ProcessCommand(
                               kWebDriverNoActiveSessionMessage);
     }
 
-    if (command == kWebDriverWindowCommand)
+    if (command == kWebDriverWindowCommand) {
       return GetTargetTabId();
+    }
 
-    if (command == kWebDriverWindowHandlesCommand)
+    if (command == kWebDriverWindowHandlesCommand) {
       return GetAllTabIds();
+    }
 
-    if (command == kWebDriverScreenshotCommand)
+    if (command == kWebDriverScreenshotCommand) {
       return GetSnapshot();
+    }
 
-    if (command == kChromeVersionInfoCommand)
+    if (command == kChromeVersionInfoCommand) {
       return GetVersionInfo();
+    }
 
     return std::nullopt;
   }
@@ -211,22 +215,26 @@ std::optional<base::Value> CWTRequestHandler::ProcessCommand(
     }
     const base::Value::Dict& content_dict = content->GetDict();
 
-    if (command == kWebDriverSessionCommand)
+    if (command == kWebDriverSessionCommand) {
       return InitializeSession();
+    }
 
     if (session_id_.empty()) {
       return CreateErrorValue(kWebDriverInvalidSessionError,
                               kWebDriverNoActiveSessionMessage);
     }
 
-    if (command == kChromeCrashTestCommand)
+    if (command == kChromeCrashTestCommand) {
       return NavigateToUrlForCrashTest(*content);
+    }
 
-    if (command == kWebDriverNavigationCommand)
+    if (command == kWebDriverNavigationCommand) {
       return NavigateToUrl(content_dict.FindString(kWebDriverURLRequestField));
+    }
 
-    if (command == kWebDriverTimeoutsCommand)
+    if (command == kWebDriverTimeoutsCommand) {
       return SetTimeouts(*content);
+    }
 
     if (command == kWebDriverWindowCommand) {
       return SwitchToTabWithId(
@@ -247,8 +255,9 @@ std::optional<base::Value> CWTRequestHandler::ProcessCommand(
           content_dict.FindList(kWebDriverArgsRequestField));
     }
 
-    if (command == kWebDriverWindowRectCommand)
+    if (command == kWebDriverWindowRectCommand) {
       return SetWindowRect(*content);
+    }
 
     return std::nullopt;
   }
@@ -259,14 +268,17 @@ std::optional<base::Value> CWTRequestHandler::ProcessCommand(
                               kWebDriverNoActiveSessionMessage);
     }
 
-    if (command == session_id_)
+    if (command == session_id_) {
       return CloseSession();
+    }
 
-    if (command == kWebDriverWindowCommand)
+    if (command == kWebDriverWindowCommand) {
       return CloseTargetTab();
+    }
 
-    if (command == kWebDriverActionsCommand)
+    if (command == kWebDriverActionsCommand) {
       return ReleaseActions();
+    }
 
     return std::nullopt;
   }
@@ -358,8 +370,9 @@ base::Value CWTRequestHandler::NavigateToUrl(const std::string* url) {
       [CWTWebDriverAppInterface loadURL:base::SysUTF8ToNSString(*url)
                                   inTab:base::SysUTF8ToNSString(target_tab_id_)
                                 timeout:page_load_timeout_];
-  if (!error)
+  if (!error) {
     return base::Value(base::Value::Type::NONE);
+  }
 
   return CreateErrorValue(kWebDriverTimeoutError,
                           kWebDriverPageLoadTimeoutMessage);
@@ -453,10 +466,11 @@ base::Value CWTRequestHandler::SetTimeouts(const base::Value& timeouts) {
 
     // Only script and page load timeouts are supported in CWTChromeDriver.
     // Other values are ignored.
-    if (pair.first == kWebDriverScriptTimeoutRequestField)
+    if (pair.first == kWebDriverScriptTimeoutRequestField) {
       script_timeout_ = timeout;
-    else if (pair.first == kWebDriverPageLoadTimeoutRequestField)
+    } else if (pair.first == kWebDriverPageLoadTimeoutRequestField) {
       page_load_timeout_ = timeout;
+    }
   }
   return base::Value(base::Value::Type::NONE);
 }

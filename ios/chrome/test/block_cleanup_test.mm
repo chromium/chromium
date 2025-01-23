@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/test/block_cleanup_test.h"
+
 #import <Foundation/Foundation.h>
 
 #import <memory>
 
 #import "base/apple/scoped_nsautorelease_pool.h"
 #import "base/check.h"
-#import "ios/chrome/test/block_cleanup_test.h"
 
 BlockCleanupTest::BlockCleanupTest() = default;
 BlockCleanupTest::~BlockCleanupTest() = default;

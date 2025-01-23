@@ -29,8 +29,9 @@ using DecidePolicyForDownloadHandler = void (^)(NewDownloadPolicy);
 }
 
 - (BOOL)decidePolicy:(NewDownloadPolicy)policy {
-  if (!_decidePolicyForDownloadHandler)
+  if (!_decidePolicyForDownloadHandler) {
     return NO;
+  }
 
   _decidePolicyForDownloadHandler(policy);
   _decidingPolicyForDownload = nil;

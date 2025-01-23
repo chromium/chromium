@@ -28,7 +28,7 @@ enum TestLensProviderErrors : NSInteger {
   kTestLensProviderErrorNotImplemented,
 };
 
-}
+}  // namespace
 
 using LensWebParamsCallback =
     base::OnceCallback<void(web::NavigationManager::WebLoadParams)>;
