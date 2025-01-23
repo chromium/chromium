@@ -2478,6 +2478,26 @@ void ExtensionPrefs::BackfillAndMigrateInstallTimePrefs() {
 void ExtensionPrefs::MigrateDeprecatedDisableReasons() {
   const ExtensionsInfo extensions_info = GetInstalledExtensionsInfo();
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Perform a post-Lacros cleanup by clearing the old Ash keeplist enforcement.
+  // TODO(crbug.com/380780352): Delete this after the stepping stone and then
+  // remove DEPRECATED_DISABLE_NOT_ASH_KEEPLISTED from the disable_reason enum.
+  for (const auto& info : extensions_info) {
+    const ExtensionId& extension_id = info.extension_id;
+    int disable_reasons = GetDisableReasons(extension_id);
+    if ((disable_reasons &
+         disable_reason::DEPRECATED_DISABLE_NOT_ASH_KEEPLISTED) == 0) {
+      continue;
+    }
+    disable_reasons &= ~disable_reason::DEPRECATED_DISABLE_NOT_ASH_KEEPLISTED;
+    if (disable_reasons == 0 && IsExtensionDisabled(extension_id)) {
+      SetExtensionEnabled(extension_id);
+    } else {
+      ReplaceDisableReasons(extension_id, disable_reasons);
+    }
+  }
+#endif
+
   for (const auto& info : extensions_info) {
     const ExtensionId& extension_id = info.extension_id;
     int disable_reasons = GetDisableReasons(extension_id);

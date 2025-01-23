@@ -27,7 +27,7 @@ bool IsValidDisableReason(int reason) {
          reason == disable_reason::DISABLE_BLOCKED_BY_POLICY ||
          reason == disable_reason::DISABLE_REINSTALL ||
          reason == disable_reason::DISABLE_NOT_ALLOWLISTED ||
-         reason == disable_reason::DISABLE_NOT_ASH_KEEPLISTED ||
+         reason == disable_reason::DEPRECATED_DISABLE_NOT_ASH_KEEPLISTED ||
          reason ==
              disable_reason::DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY ||
          reason == disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION ||

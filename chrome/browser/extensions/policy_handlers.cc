@@ -39,10 +39,6 @@
 #include "base/enterprise_util.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 namespace extensions {
 namespace {
 // Returns true if extensions_ids contains a list of valid extension ids,

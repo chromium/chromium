@@ -64,7 +64,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/keyboard/ui/grit/keyboard_resources.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -72,10 +72,6 @@
 #include "extensions/common/switches.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "ui/file_manager/grit/file_manager_resources.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/constants/chromeos_features.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -425,9 +421,7 @@ void ComponentLoader::AddWebStoreApp() {
 void ComponentLoader::AddChromeApp() {
   AddWithNameAndDescription(
       IDR_CHROME_APP_MANIFEST, base::FilePath(FILE_PATH_LITERAL("chrome_app")),
-      crosapi::browser_util::IsAshWebBrowserEnabled()
-          ? l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME)
-          : "Ash Chrome",  // Because this is debug only, we do not need i18n.
+      l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME),
       l10n_util::GetStringUTF8(IDS_CHROME_SHORTCUT_DESCRIPTION));
 }
 

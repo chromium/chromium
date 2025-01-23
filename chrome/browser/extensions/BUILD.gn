@@ -1182,7 +1182,6 @@ source_set("extensions") {
         "//chrome/browser/ash/bruschetta",
         "//chrome/browser/ash/child_accounts",
         "//chrome/browser/ash/child_accounts/time_limits",
-        "//chrome/browser/ash/crosapi:browser_util",
         "//chrome/browser/ash/crostini",
         "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
         "//chrome/browser/ash/crostini/throttle",

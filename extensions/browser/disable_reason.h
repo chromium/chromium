@@ -51,8 +51,8 @@ enum DisableReason {
   DISABLE_REINSTALL = 1 << 19,
   // Disabled by Safe Browsing extension allowlist enforcement.
   DISABLE_NOT_ALLOWLISTED = 1 << 20,
-  // Disabled by Ash extension keep-list enforcement.
-  DISABLE_NOT_ASH_KEEPLISTED = 1 << 21,
+  // Deprecated, do not use in new code.
+  DEPRECATED_DISABLE_NOT_ASH_KEEPLISTED = 1 << 21,
   // Disabled by policy when the extension is unpublished from the web store.
   DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY = 1 << 22,
   // Disabled because the extension uses an unsupported manifest version.
