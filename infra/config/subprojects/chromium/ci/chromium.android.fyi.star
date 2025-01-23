@@ -521,6 +521,9 @@ ci.builder(
         ],
         per_test_modifications = {
             "android_browsertests": targets.mixin(
+                args = [
+                    "--emulator-debug-tags=all",
+                ],
                 swarming = targets.swarming(
                     shards = 9,
                 ),
@@ -547,6 +550,9 @@ ci.builder(
                 ),
             ),
             "content_browsertests": targets.mixin(
+                args = [
+                    "--emulator-debug-tags=all",
+                ],
                 swarming = targets.swarming(
                     shards = 40,
                 ),

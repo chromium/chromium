@@ -55,6 +55,7 @@
         "args": [
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
+          "--emulator-debug-tags=all",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -922,6 +923,7 @@
         "args": [
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
+          "--emulator-debug-tags=all",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
