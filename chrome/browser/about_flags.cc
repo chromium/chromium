@@ -11719,6 +11719,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          blink::features::kIsSecurePaymentConfirmationAvailableAPI)},
 
+    {"copy-image-filename-to-clipboard",
+     flag_descriptions::kCopyImageFilenameToClipboardName,
+     flag_descriptions::kCopyImageFilenameToClipboardDescription, kOsAll,
+     FEATURE_VALUE_TYPE(download::features::kCopyImageFilenameToClipboard)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

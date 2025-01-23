@@ -1628,6 +1628,11 @@
     "expiry_milestone": 124
   },
   {
+    "name": "copy-image-filename-to-clipboard",
+    "owners": [ "dmblack@google.com" ],
+    "expiry_milestone": 136
+  },
+  {
     "name": "coral-feature-key",
     "owners": [ "cros-coral@google.com" ],
     "expiry_milestone": 134

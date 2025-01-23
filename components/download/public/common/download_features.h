@@ -54,6 +54,9 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kAllowFileBufferSizeControl);
 
 // Whether mixed-content PDF links can be downloaded if opening inline.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kAllowedMixedContentInlinePdf);
+
+// Whether to write filename to the clipboard when copying image downloads.
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kCopyImageFilenameToClipboard);
 }  // namespace features
 
 }  // namespace download

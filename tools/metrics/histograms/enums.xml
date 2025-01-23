@@ -16213,6 +16213,7 @@ from previous Chrome versions.
   <int value="-1624854957" label="enable-es3-apis"/>
   <int value="-1624593106" label="NewTabPageBackgrounds:enabled"/>
   <int value="-1624412478" label="OptimizationGuideModelDownloading:disabled"/>
+  <int value="-1624107722" label="CopyImageFilenameToClipboard:enabled"/>
   <int value="-1623394051" label="NtpRealboxTailSuggest:disabled"/>
   <int value="-1623003151"
       label="SafeBrowsingkRealTimeUrlLookupEnterpriseGaEndpoint:disabled"/>
@@ -19874,6 +19875,7 @@ from previous Chrome versions.
       label="ServiceWorkerImportedScriptUpdateCheck:enabled"/>
   <int value="-174425466" label="ContextualSearchLegacyHttpPolicy:disabled"/>
   <int value="-174319545" label="BulkPrinters:enabled"/>
+  <int value="-174272004" label="CopyImageFilenameToClipboard:disabled"/>
   <int value="-173268856" label="GesturePropertiesDBusService"/>
   <int value="-172850851"
       label="AutofillEnableUnmaskCardRequestSetInstrumentId:enabled"/>
