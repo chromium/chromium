@@ -547,8 +547,16 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
         });
   }
 
-  document.View()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kUnknown);
+  // Running lifecycle beyond layout is expensive and the information is only
+  // needed to compute geometry. Limit the update to layout if we don't need the
+  // geometry.
+  if (options_->include_geometry) {
+    document.View()->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kUnknown);
+  } else {
+    document.View()->UpdateLifecycleToLayoutClean(
+        DocumentUpdateReason::kUnknown);
+  }
 
   auto* layout_view = document.GetLayoutView();
   auto* document_style = layout_view->Style();
