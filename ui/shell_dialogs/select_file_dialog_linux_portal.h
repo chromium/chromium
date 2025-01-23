@@ -5,16 +5,16 @@
 #ifndef UI_SHELL_DIALOGS_SELECT_FILE_DIALOG_LINUX_PORTAL_H_
 #define UI_SHELL_DIALOGS_SELECT_FILE_DIALOG_LINUX_PORTAL_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/dbus/properties/types.h"
+#include "components/dbus/xdg/request.h"
 #include "dbus/bus.h"
-#include "dbus/message.h"
-#include "dbus/object_proxy.h"
 #include "ui/shell_dialogs/select_file_dialog_linux.h"
 
 namespace ui {
@@ -63,6 +63,14 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
   bool HasMultipleFileTypeChoicesImpl() override;
 
  private:
+  // Glob-style patterns are indicated by 0, MIME types by 1. Patterns are
+  // case-sensitive.
+  using DbusFilterPattern = DbusStruct<DbusUint32, DbusString>;
+  using DbusFilterPatterns = DbusArray<DbusFilterPattern>;
+  // The first string is a user-visible name for the filter.
+  using DbusFilter = DbusStruct<DbusString, DbusFilterPatterns>;
+  using DbusFilters = DbusArray<DbusFilter>;
+
   // A named set of patterns used as a dialog filter.
   struct PortalFilter {
     PortalFilter();
@@ -91,47 +99,6 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
     std::optional<PortalFilter> default_filter;
   };
 
-  // Sets up listeners for the response handle's signals.
-  void SelectFileImplOnMainThread(std::u16string title,
-                                  base::FilePath default_path,
-                                  const bool default_path_exists,
-                                  PortalFilterSet filter_set,
-                                  base::FilePath::StringType default_extension,
-                                  std::string parent_handle);
-
-  // Should run on main thread.
-  void ConnectToHandle();
-  void OnCallResponse(scoped_refptr<dbus::Bus> bus,
-                      dbus::Response* response,
-                      dbus::ErrorResponse* error_response);
-  void OnResponseSignalEmitted(dbus::Signal* signal);
-  bool CheckResponseCode(dbus::MessageReader* reader);
-  bool ReadResponseResults(dbus::MessageReader* reader,
-                           std::vector<std::string>* uris,
-                           std::string* current_filter);
-  void OnResponseSignalConnected(const std::string& interface,
-                                 const std::string& signal,
-                                 bool connected);
-  void AppendFiltersOption(dbus::MessageWriter* writer,
-                           const std::vector<PortalFilter>& filters);
-  void AppendOptions(dbus::MessageWriter* writer,
-                     const std::string& response_handle_token,
-                     const base::FilePath& default_path,
-                     const bool default_path_exists,
-                     const PortalFilterSet& filter_set);
-  void AppendFilterStruct(dbus::MessageWriter* writer,
-                          const PortalFilter& filter);
-  std::vector<base::FilePath> ConvertUrisToPaths(
-      const std::vector<std::string>& uris);
-
-  // Completes an open call, notifying the listener with the given paths, and
-  // marks the dialog as closed.
-  void CompleteOpen(std::vector<base::FilePath> paths,
-                    std::string current_filter);
-  // Completes an open call, notifying the listener with a cancellation, and
-  // marks the dialog as closed.
-  void CancelOpen();
-
   PortalFilterSet BuildFilterSet();
 
   void SelectFileImplWithParentHandle(
@@ -140,6 +107,32 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
       PortalFilterSet filter_set,
       base::FilePath::StringType default_extension,
       std::string parent_handle);
+
+  void SelectFileImplOnMainThread(std::u16string title,
+                                  base::FilePath default_path,
+                                  const bool default_path_exists,
+                                  PortalFilterSet filter_set,
+                                  base::FilePath::StringType default_extension,
+                                  std::string parent_handle);
+
+  DbusDictionary BuildOptionsDictionary(const base::FilePath& default_path,
+                                        bool default_path_exists,
+                                        const PortalFilterSet& filter_set);
+
+  DbusFilter MakeFilterStruct(const PortalFilter& filter);
+
+  void MakeFileChooserRequest(const std::string& method,
+                              const std::string& title,
+                              DbusDictionary options,
+                              std::string parent_handle);
+
+  void OnFileChooserResponse(
+      base::expected<DbusDictionary, dbus_xdg::ResponseError> results);
+
+  void CompleteOpen(std::vector<base::FilePath> paths,
+                    std::string current_filter);
+
+  void CancelOpen();
 
   void DialogCreatedOnInvoker();
   void CompleteOpenOnInvoker(std::vector<base::FilePath> paths,
@@ -154,14 +147,15 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
   // The task runner the SelectFileImpl method was called on.
   scoped_refptr<base::SequencedTaskRunner> invoker_task_runner_;
 
-  // The response object handle that the portal will send a signal to upon the
-  // dialog's completion.
-  raw_ptr<dbus::ObjectProxy> response_handle_ = nullptr;
-
   // This should be used by the invoker task runner.
   base::WeakPtr<aura::WindowTreeHost> host_;
 
   std::vector<PortalFilter> filters_;
+
+  // The Request representing an in-flight file chooser call, if any.
+  // We keep this alive until the response arrives or until the dialog
+  // is destroyed, whichever comes first.
+  std::unique_ptr<dbus_xdg::Request> file_chooser_request_;
 
   // Event handling on the parent window is disabled while the dialog is active
   // to make the dialog modal.  This closure should be run when the dialog is

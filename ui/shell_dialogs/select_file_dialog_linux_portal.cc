@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/shell_dialogs/select_file_dialog_linux_portal.h"
 
 #include <string_view>
 
 #include "base/check.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/nix/xdg_util.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
@@ -21,12 +19,14 @@
 #include "base/time/time.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "components/dbus/utils/check_for_service_and_start.h"
+#include "components/dbus/xdg/request.h"
+#include "dbus/message.h"
 #include "dbus/object_path.h"
+#include "dbus/object_proxy.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/linux/linux_ui_delegate.h"
-#include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
@@ -42,17 +42,12 @@ constexpr char kXdgPortalObject[] = "/org/freedesktop/portal/desktop";
 
 constexpr int kXdgPortalRequiredVersion = 3;
 
-constexpr char kXdgPortalRequestInterfaceName[] =
-    "org.freedesktop.portal.Request";
-constexpr char kXdgPortalResponseSignal[] = "Response";
-
 constexpr char kFileChooserInterfaceName[] =
     "org.freedesktop.portal.FileChooser";
 
 constexpr char kFileChooserMethodOpenFile[] = "OpenFile";
 constexpr char kFileChooserMethodSaveFile[] = "SaveFile";
 
-constexpr char kFileChooserOptionHandleToken[] = "handle_token";
 constexpr char kFileChooserOptionAcceptLabel[] = "accept_label";
 constexpr char kFileChooserOptionMultiple[] = "multiple";
 constexpr char kFileChooserOptionDirectory[] = "directory";
@@ -62,7 +57,7 @@ constexpr char kFileChooserOptionCurrentFolder[] = "current_folder";
 constexpr char kFileChooserOptionCurrentName[] = "current_name";
 constexpr char kFileChooserOptionModal[] = "modal";
 
-constexpr int kFileChooserFilterKindGlob = 0;
+constexpr uint32_t kFileChooserFilterKindGlob = 0;
 
 constexpr char kFileUriPrefix[] = "file://";
 
@@ -74,52 +69,6 @@ enum class ServiceAvailability {
 };
 
 ServiceAvailability g_service_availability = ServiceAvailability::kNotStarted;
-
-int g_handle_token_counter = 0;
-
-void AppendStringOption(dbus::MessageWriter* writer,
-                        const std::string& name,
-                        const std::string& value) {
-  dbus::MessageWriter option_writer(nullptr);
-  writer->OpenDictEntry(&option_writer);
-
-  option_writer.AppendString(name);
-  option_writer.AppendVariantOfString(value);
-
-  writer->CloseContainer(&option_writer);
-}
-
-void AppendByteStringOption(dbus::MessageWriter* writer,
-                            const std::string& name,
-                            const std::string& value) {
-  dbus::MessageWriter option_writer(nullptr);
-  writer->OpenDictEntry(&option_writer);
-
-  option_writer.AppendString(name);
-
-  dbus::MessageWriter value_writer(nullptr);
-  option_writer.OpenVariant("ay", &value_writer);
-
-  value_writer.AppendArrayOfBytes(
-      base::span(reinterpret_cast<const std::uint8_t*>(value.c_str()),
-                 // size + 1 will include the null terminator.
-                 value.size() + 1));
-
-  option_writer.CloseContainer(&value_writer);
-  writer->CloseContainer(&option_writer);
-}
-
-void AppendBoolOption(dbus::MessageWriter* writer,
-                      const std::string& name,
-                      bool value) {
-  dbus::MessageWriter option_writer(nullptr);
-  writer->OpenDictEntry(&option_writer);
-
-  option_writer.AppendString(name);
-  option_writer.AppendVariantOfBool(value);
-
-  writer->CloseContainer(&option_writer);
-}
 
 scoped_refptr<base::SequencedTaskRunner>& GetMainTaskRunner() {
   static base::NoDestructor<scoped_refptr<base::SequencedTaskRunner>>
@@ -161,6 +110,32 @@ void OnServiceStarted(std::optional<bool> service_started) {
   get_property_writer.AppendString("version");
   portal->CallMethod(&get_property_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
                      base::BindOnce(&OnGetPropertyReply));
+}
+
+DbusByteArray PathToByteArray(const base::FilePath& path) {
+  return DbusByteArray(base::MakeRefCounted<base::RefCountedBytes>(
+      base::as_bytes(base::span_with_nul_from_cstring_view(
+          base::cstring_view(path.value())))));
+}
+
+std::vector<base::FilePath> ConvertUrisToPaths(
+    const std::vector<std::string>& uris) {
+  std::vector<base::FilePath> paths;
+  for (const std::string& uri : uris) {
+    if (!base::StartsWith(uri, kFileUriPrefix, base::CompareCase::SENSITIVE)) {
+      LOG(WARNING) << "Ignoring unknown file chooser URI: " << uri;
+      continue;
+    }
+
+    std::string_view encoded_path(uri);
+    encoded_path.remove_prefix(strlen(kFileUriPrefix));
+
+    url::RawCanonOutputT<char16_t> decoded_path;
+    url::DecodeURLEscapeSequences(
+        encoded_path, url::DecodeURLMode::kUTF8OrIsomorphic, &decoded_path);
+    paths.emplace_back(base::UTF16ToUTF8(decoded_path.view()));
+  }
+  return paths;
 }
 
 }  // namespace
@@ -375,13 +350,9 @@ void SelectFileDialogLinuxPortal::SelectFileImplOnMainThread(
       NOTREACHED();
   }
 
-  dbus::MethodCall method_call(kFileChooserInterfaceName, method);
-  dbus::MessageWriter writer(&method_call);
-
-  writer.AppendString(parent_handle);
-
+  std::string utf8_title;
   if (!title.empty()) {
-    writer.AppendString(base::UTF16ToUTF8(title));
+    utf8_title = base::UTF16ToUTF8(title);
   } else {
     int message_id = 0;
     if (type_ == SELECT_SAVEAS_FILE) {
@@ -391,169 +362,156 @@ void SelectFileDialogLinuxPortal::SelectFileImplOnMainThread(
     } else {
       message_id = IDS_OPEN_FILE_DIALOG_TITLE;
     }
-    writer.AppendString(l10n_util::GetStringUTF8(message_id));
+    utf8_title = l10n_util::GetStringUTF8(message_id);
   }
 
-  std::string response_handle_token =
-      base::StringPrintf("handle_%d", g_handle_token_counter++);
-
-  AppendOptions(&writer, response_handle_token, default_path,
-                default_path_exists, filter_set);
-
-  scoped_refptr<dbus::Bus> bus = dbus_thread_linux::GetSharedSessionBus();
-  dbus::ObjectPath expected_handle_path(base::nix::XdgDesktopPortalRequestPath(
-      bus->GetConnectionName(), response_handle_token));
-
-  response_handle_ =
-      bus->GetObjectProxy(kXdgPortalService, expected_handle_path);
-  ConnectToHandle();
-
-  dbus::ObjectPath portal_path(kXdgPortalObject);
-  dbus::ObjectProxy* portal =
-      bus->GetObjectProxy(kXdgPortalService, portal_path);
-  portal->CallMethodWithErrorResponse(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&SelectFileDialogLinuxPortal::OnCallResponse, this, bus));
+  MakeFileChooserRequest(
+      method, utf8_title,
+      BuildOptionsDictionary(default_path, default_path_exists, filter_set),
+      std::move(parent_handle));
 }
 
-void SelectFileDialogLinuxPortal::AppendOptions(
-    dbus::MessageWriter* writer,
-    const std::string& response_handle_token,
+DbusDictionary SelectFileDialogLinuxPortal::BuildOptionsDictionary(
     const base::FilePath& default_path,
-    const bool default_path_exists,
-    const SelectFileDialogLinuxPortal::PortalFilterSet& filter_set) {
-  CHECK(GetMainTaskRunner()->RunsTasksInCurrentSequence());
-  dbus::MessageWriter options_writer(nullptr);
-  writer->OpenArray("{sv}", &options_writer);
+    bool default_path_exists,
+    const PortalFilterSet& filter_set) {
+  DbusDictionary dict;
 
-  AppendStringOption(&options_writer, kFileChooserOptionHandleToken,
-                     response_handle_token);
-
-  if (type_ == SelectFileDialog::Type::SELECT_UPLOAD_FOLDER) {
-    AppendStringOption(&options_writer, kFileChooserOptionAcceptLabel,
-                       l10n_util::GetStringUTF8(
-                           IDS_SELECT_UPLOAD_FOLDER_DIALOG_UPLOAD_BUTTON));
-  }
-
-  if (type_ == SelectFileDialog::Type::SELECT_FOLDER ||
-      type_ == SelectFileDialog::Type::SELECT_UPLOAD_FOLDER ||
-      type_ == SelectFileDialog::Type::SELECT_EXISTING_FOLDER) {
-    AppendBoolOption(&options_writer, kFileChooserOptionDirectory, true);
-  } else if (type_ == SelectFileDialog::Type::SELECT_OPEN_MULTI_FILE) {
-    AppendBoolOption(&options_writer, kFileChooserOptionMultiple, true);
+  switch (type_) {
+    case SelectFileDialog::SELECT_FOLDER:
+      dict.PutAs(kFileChooserOptionDirectory, DbusBoolean(true));
+      break;
+    case SelectFileDialog::SELECT_UPLOAD_FOLDER:
+      dict.PutAs(kFileChooserOptionAcceptLabel,
+                 DbusString(l10n_util::GetStringUTF8(
+                     IDS_SELECT_UPLOAD_FOLDER_DIALOG_UPLOAD_BUTTON)));
+      dict.PutAs(kFileChooserOptionDirectory, DbusBoolean(true));
+      break;
+    case SelectFileDialog::SELECT_OPEN_MULTI_FILE:
+      dict.PutAs(kFileChooserOptionMultiple, DbusBoolean(true));
+      break;
+    default:
+      break;
   }
 
   if (!default_path.empty()) {
     if (default_path_exists) {
       // If this is an existing directory, navigate to that directory, with no
       // filename.
-      AppendByteStringOption(&options_writer, kFileChooserOptionCurrentFolder,
-                             default_path.value());
+      dict.PutAs(kFileChooserOptionCurrentFolder,
+                 PathToByteArray(default_path));
     } else {
       // The default path does not exist, or is an existing file. We use
       // current_folder followed by current_name, as per the recommendation of
       // the GTK docs and the pattern followed by SelectFileDialogLinuxGtk.
-      AppendByteStringOption(&options_writer, kFileChooserOptionCurrentFolder,
-                             default_path.DirName().value());
+      dict.PutAs(kFileChooserOptionCurrentFolder,
+                 PathToByteArray(default_path.DirName()));
 
       // current_folder is supported by xdg-desktop-portal but current_name
       // is not - only try to set this when invoking a save file dialog.
-      if (type_ == SelectFileDialog::Type::SELECT_SAVEAS_FILE) {
-        AppendStringOption(&options_writer, kFileChooserOptionCurrentName,
-                           default_path.BaseName().value());
+      if (type_ == SELECT_SAVEAS_FILE) {
+        dict.PutAs(kFileChooserOptionCurrentName,
+                   DbusString(default_path.BaseName().value()));
       }
     }
   }
 
-  AppendFiltersOption(&options_writer, filter_set.filters);
-  if (filter_set.default_filter) {
-    dbus::MessageWriter option_writer(nullptr);
-    options_writer.OpenDictEntry(&option_writer);
+  if (!filter_set.filters.empty()) {
+    DbusFilters filters_array;
+    for (const auto& filter : filter_set.filters) {
+      filters_array.value().push_back(MakeFilterStruct(filter));
+    }
+    dict.PutAs(kFileChooserOptionFilters, std::move(filters_array));
 
-    option_writer.AppendString(kFileChooserOptionCurrentFilter);
-
-    dbus::MessageWriter value_writer(nullptr);
-    option_writer.OpenVariant("(sa(us))", &value_writer);
-
-    AppendFilterStruct(&value_writer, *filter_set.default_filter);
-
-    option_writer.CloseContainer(&value_writer);
-    options_writer.CloseContainer(&option_writer);
+    if (filter_set.default_filter) {
+      dict.PutAs(kFileChooserOptionCurrentFilter,
+                 MakeFilterStruct(*filter_set.default_filter));
+    }
   }
 
-  AppendBoolOption(&options_writer, kFileChooserOptionModal, true);
+  dict.PutAs(kFileChooserOptionModal, DbusBoolean(true));
 
-  writer->CloseContainer(&options_writer);
+  return dict;
 }
 
-void SelectFileDialogLinuxPortal::AppendFiltersOption(
-    dbus::MessageWriter* writer,
-    const std::vector<PortalFilter>& filters) {
+SelectFileDialogLinuxPortal::DbusFilter
+SelectFileDialogLinuxPortal::MakeFilterStruct(const PortalFilter& filter) {
+  DbusFilterPatterns patterns;
+  for (const std::string& pattern_str : filter.patterns) {
+    patterns.value().push_back(MakeDbusStruct(
+        DbusUint32(kFileChooserFilterKindGlob), DbusString(pattern_str)));
+  }
+  return MakeDbusStruct(DbusString(filter.name), std::move(patterns));
+}
+
+void SelectFileDialogLinuxPortal::MakeFileChooserRequest(
+    const std::string& method,
+    const std::string& title,
+    DbusDictionary options,
+    std::string parent_handle) {
   CHECK(GetMainTaskRunner()->RunsTasksInCurrentSequence());
-  dbus::MessageWriter option_writer(nullptr);
-  writer->OpenDictEntry(&option_writer);
+  scoped_refptr<dbus::Bus> bus = dbus_thread_linux::GetSharedSessionBus();
+  dbus::ObjectProxy* portal = bus->GetObjectProxy(
+      kXdgPortalService, dbus::ObjectPath(kXdgPortalObject));
 
-  option_writer.AppendString(kFileChooserOptionFilters);
-
-  dbus::MessageWriter variant_writer(nullptr);
-  option_writer.OpenVariant("a(sa(us))", &variant_writer);
-
-  dbus::MessageWriter filters_writer(nullptr);
-  variant_writer.OpenArray("(sa(us))", &filters_writer);
-
-  for (const PortalFilter& filter : filters) {
-    AppendFilterStruct(&filters_writer, filter);
-  }
-
-  variant_writer.CloseContainer(&filters_writer);
-  option_writer.CloseContainer(&variant_writer);
-  writer->CloseContainer(&option_writer);
-}
-
-void SelectFileDialogLinuxPortal::AppendFilterStruct(
-    dbus::MessageWriter* writer,
-    const PortalFilter& filter) {
-  CHECK(GetMainTaskRunner()->RunsTasksInCurrentSequence());
-  dbus::MessageWriter filter_writer(nullptr);
-  writer->OpenStruct(&filter_writer);
-
-  filter_writer.AppendString(filter.name);
-
-  dbus::MessageWriter patterns_writer(nullptr);
-  filter_writer.OpenArray("(us)", &patterns_writer);
-
-  for (const std::string& pattern : filter.patterns) {
-    dbus::MessageWriter pattern_writer(nullptr);
-    patterns_writer.OpenStruct(&pattern_writer);
-
-    pattern_writer.AppendUint32(kFileChooserFilterKindGlob);
-    pattern_writer.AppendString(pattern);
-
-    patterns_writer.CloseContainer(&pattern_writer);
-  }
-
-  filter_writer.CloseContainer(&patterns_writer);
-  writer->CloseContainer(&filter_writer);
-}
-
-void SelectFileDialogLinuxPortal::ConnectToHandle() {
-  dbus_thread_linux::GetSharedSessionBus()->AssertOnOriginThread();
-  response_handle_->ConnectToSignal(
-      kXdgPortalRequestInterfaceName, kXdgPortalResponseSignal,
-      base::BindRepeating(&SelectFileDialogLinuxPortal::OnResponseSignalEmitted,
-                          this),
-      base::BindOnce(&SelectFileDialogLinuxPortal::OnResponseSignalConnected,
+  // Unretained is safe since we own the Request object.
+  auto callback =
+      base::BindOnce(&SelectFileDialogLinuxPortal::OnFileChooserResponse,
+                     base::Unretained(this));
+  file_chooser_request_ = std::make_unique<dbus_xdg::Request>(
+      bus, portal, kFileChooserInterfaceName, method,
+      MakeDbusParameters(DbusString(std::move(parent_handle)),
+                         DbusString(title)),
+      std::move(options), std::move(callback));
+  invoker_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SelectFileDialogLinuxPortal::DialogCreatedOnInvoker,
                      this));
+}
+
+void SelectFileDialogLinuxPortal::OnFileChooserResponse(
+    base::expected<DbusDictionary, dbus_xdg::ResponseError> results) {
+  CHECK(GetMainTaskRunner()->RunsTasksInCurrentSequence());
+
+  file_chooser_request_.reset();
+
+  if (!results.has_value()) {
+    CancelOpen();
+    return;
+  }
+
+  std::vector<std::string> uris;
+  auto* wrapped_uris = results->GetAs<DbusArray<DbusString>>("uris");
+  if (wrapped_uris) {
+    for (auto& element : wrapped_uris->value()) {
+      uris.push_back(element.value());
+    }
+  }
+
+  if (uris.empty()) {
+    CancelOpen();
+    return;
+  }
+
+  std::vector<base::FilePath> paths = ConvertUrisToPaths(uris);
+  if (paths.empty()) {
+    CancelOpen();
+    return;
+  }
+
+  std::string current_filter_name;
+  auto* current_filter = results->GetAs<DbusFilter>("current_filter");
+  if (current_filter) {
+    current_filter_name = std::get<0>(current_filter->value()).value();
+  }
+
+  CompleteOpen(std::move(paths), std::move(current_filter_name));
 }
 
 void SelectFileDialogLinuxPortal::CompleteOpen(
     std::vector<base::FilePath> paths,
     std::string current_filter) {
   dbus_thread_linux::GetSharedSessionBus()->AssertOnOriginThread();
-  auto object_path = response_handle_->object_path();
-  response_handle_ = nullptr;
-  dbus_thread_linux::GetSharedSessionBus()->RemoveObjectProxy(
-      kXdgPortalService, object_path, base::DoNothing());
   invoker_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&SelectFileDialogLinuxPortal::CompleteOpenOnInvoker, this,
@@ -562,10 +520,6 @@ void SelectFileDialogLinuxPortal::CompleteOpen(
 
 void SelectFileDialogLinuxPortal::CancelOpen() {
   dbus_thread_linux::GetSharedSessionBus()->AssertOnOriginThread();
-  auto object_path = response_handle_->object_path();
-  response_handle_ = nullptr;
-  dbus_thread_linux::GetSharedSessionBus()->RemoveObjectProxy(
-      kXdgPortalService, object_path, base::DoNothing());
   invoker_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&SelectFileDialogLinuxPortal::CancelOpenOnInvoker, this));
@@ -620,162 +574,6 @@ void SelectFileDialogLinuxPortal::UnparentOnInvoker() {
     std::move(reenable_window_event_handling_).Run();
   }
   host_ = nullptr;
-}
-
-void SelectFileDialogLinuxPortal::OnCallResponse(
-    scoped_refptr<dbus::Bus> bus,
-    dbus::Response* response,
-    dbus::ErrorResponse* error_response) {
-  dbus_thread_linux::GetSharedSessionBus()->AssertOnOriginThread();
-  if (response) {
-    dbus::MessageReader reader(response);
-    dbus::ObjectPath actual_handle_path;
-    if (!reader.PopObjectPath(&actual_handle_path)) {
-      LOG(ERROR) << "Invalid portal response";
-    } else {
-      if (response_handle_->object_path() != actual_handle_path) {
-        VLOG(1) << "Re-attaching response handle to "
-                << actual_handle_path.value();
-
-        auto old_object_path = response_handle_->object_path();
-        response_handle_ = nullptr;
-        dbus_thread_linux::GetSharedSessionBus()->RemoveObjectProxy(
-            kXdgPortalService, old_object_path, base::DoNothing());
-        response_handle_ =
-            bus->GetObjectProxy(kXdgPortalService, actual_handle_path);
-        ConnectToHandle();
-      }
-
-      // Return before the operation is cancelled.
-      return;
-    }
-  } else if (error_response) {
-    std::string error_name = error_response->GetErrorName();
-    std::string error_message;
-    dbus::MessageReader reader(error_response);
-    reader.PopString(&error_message);
-
-    LOG(ERROR) << "Portal returned error: " << error_name << ": "
-               << error_message;
-  } else {
-    NOTREACHED();
-  }
-
-  // All error paths end up here.
-  CancelOpen();
-}
-
-void SelectFileDialogLinuxPortal::OnResponseSignalConnected(
-    const std::string& interface,
-    const std::string& signal,
-    bool connected) {
-  dbus_thread_linux::GetSharedSessionBus()->AssertOnOriginThread();
-  if (!connected) {
-    LOG(ERROR) << "Could not connect to Response signal";
-    CancelOpen();
-    return;
-  }
-
-  invoker_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SelectFileDialogLinuxPortal::DialogCreatedOnInvoker,
-                     this));
-}
-
-void SelectFileDialogLinuxPortal::OnResponseSignalEmitted(
-    dbus::Signal* signal) {
-  dbus_thread_linux::GetSharedSessionBus()->AssertOnOriginThread();
-  dbus::MessageReader reader(signal);
-
-  std::vector<std::string> uris;
-  std::string current_filter;
-  if (!CheckResponseCode(&reader) ||
-      !ReadResponseResults(&reader, &uris, &current_filter)) {
-    CancelOpen();
-    return;
-  }
-
-  std::vector<base::FilePath> paths = ConvertUrisToPaths(uris);
-  if (!paths.empty()) {
-    CompleteOpen(std::move(paths), std::move(current_filter));
-  } else {
-    CancelOpen();
-  }
-}
-
-bool SelectFileDialogLinuxPortal::CheckResponseCode(
-    dbus::MessageReader* reader) {
-  std::uint32_t response = 0;
-  if (!reader->PopUint32(&response)) {
-    LOG(ERROR) << "Failed to read response ID";
-    return false;
-  } else if (response != 0) {
-    return false;
-  }
-
-  return true;
-}
-
-bool SelectFileDialogLinuxPortal::ReadResponseResults(
-    dbus::MessageReader* reader,
-    std::vector<std::string>* uris,
-    std::string* current_filter) {
-  dbus::MessageReader results_reader(nullptr);
-  if (!reader->PopArray(&results_reader)) {
-    LOG(ERROR) << "Failed to read file chooser variant";
-    return false;
-  }
-
-  while (results_reader.HasMoreData()) {
-    dbus::MessageReader entry_reader(nullptr);
-    std::string key;
-    if (!results_reader.PopDictEntry(&entry_reader) ||
-        !entry_reader.PopString(&key)) {
-      LOG(ERROR) << "Failed to read response entry";
-      return false;
-    }
-
-    if (key == "uris") {
-      dbus::MessageReader uris_reader(nullptr);
-      if (!entry_reader.PopVariant(&uris_reader) ||
-          !uris_reader.PopArrayOfStrings(uris)) {
-        LOG(ERROR) << "Failed to read <uris> response entry value";
-        return false;
-      }
-    }
-    if (key == "current_filter") {
-      dbus::MessageReader current_filter_reader(nullptr);
-      dbus::MessageReader current_filter_struct_reader(nullptr);
-      if (!entry_reader.PopVariant(&current_filter_reader) ||
-          !current_filter_reader.PopStruct(&current_filter_struct_reader) ||
-          !current_filter_struct_reader.PopString(current_filter)) {
-        LOG(ERROR) << "Failed to read <current_filter> response entry value";
-      }
-    }
-  }
-
-  return true;
-}
-
-std::vector<base::FilePath> SelectFileDialogLinuxPortal::ConvertUrisToPaths(
-    const std::vector<std::string>& uris) {
-  std::vector<base::FilePath> paths;
-  for (const std::string& uri : uris) {
-    if (!uri.starts_with(kFileUriPrefix)) {
-      LOG(WARNING) << "Ignoring unknown file chooser URI: " << uri;
-      continue;
-    }
-
-    std::string_view encoded_path(uri);
-    encoded_path.remove_prefix(strlen(kFileUriPrefix));
-
-    url::RawCanonOutputT<char16_t> decoded_path;
-    url::DecodeURLEscapeSequences(
-        encoded_path, url::DecodeURLMode::kUTF8OrIsomorphic, &decoded_path);
-    paths.emplace_back(base::UTF16ToUTF8(decoded_path.view()));
-  }
-
-  return paths;
 }
 
 SelectFileDialogLinuxPortal::PortalFilter::PortalFilter() = default;
