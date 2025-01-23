@@ -652,11 +652,6 @@ public class CreatorCoordinator
                     mContext.getResources().getDimensionPixelSize(R.dimen.preview_tab_favicon_size);
         }
 
-        /** Destroys the native favicon helper. */
-        public void destroy() {
-            mFaviconHelper.destroy();
-        }
-
         /**
          * Generates a favicon for a given URL. If no favicon was could be found or generated from
          * the URL, a default favicon will be shown.

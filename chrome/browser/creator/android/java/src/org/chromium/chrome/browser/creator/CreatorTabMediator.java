@@ -231,6 +231,5 @@ public class CreatorTabMediator {
         mWebContents = null;
         mSheetContent = null;
         mProfile = null;
-        mFaviconLoader.destroy();
     }
 }
