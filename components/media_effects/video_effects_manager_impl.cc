@@ -23,17 +23,19 @@ void VideoEffectsManagerImpl::Bind(
   receivers_.Add(this, std::move(receiver));
 }
 
+void VideoEffectsManagerImpl::GetConfiguration(
+    GetConfigurationCallback callback) {
+  std::move(callback).Run(configuration_->Clone());
+}
+
 void VideoEffectsManagerImpl::SetConfiguration(
-    media::mojom::VideoEffectsConfigurationPtr configuration) {
+    media::mojom::VideoEffectsConfigurationPtr configuration,
+    SetConfigurationCallback callback) {
   configuration_ = configuration->Clone();
   for (const auto& observer : observers_) {
     observer->OnConfigurationChanged(configuration_->Clone());
   }
-}
-
-void VideoEffectsManagerImpl::GetConfiguration(
-    GetConfigurationCallback callback) {
-  std::move(callback).Run(configuration_->Clone());
+  std::move(callback).Run(media::mojom::SetConfigurationResult::kOk);
 }
 
 void VideoEffectsManagerImpl::AddObserver(
