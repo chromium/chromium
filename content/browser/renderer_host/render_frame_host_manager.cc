@@ -3381,7 +3381,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     // should have its own SiteInstance that shares a group with the initiator.
     // Main frame data: URLs are excluded, as they must be browser initiated,
     // and will not be part of another group.
-    // TODO(crbug.com/40269084): Add support for sandboxed and PDF data:
+    // TODO(crbug.com/390452841): Add support for sandboxed and PDF data:
     // subframe URLs, which require a variation of the source SiteInstance's
     // group.
     AppendReason(reason, "DetermineSiteInstanceForURL => related_in_group");
