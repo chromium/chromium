@@ -2615,7 +2615,7 @@ void LensOverlayController::AddBackgroundBlur() {
   overlay_view_->layer()->StackAtBottom(
       lens_overlay_blur_layer_delegate_->layer());
   lens_overlay_blur_layer_delegate_->layer()->SetBounds(
-      overlay_view_->parent()->GetLocalBounds());
+      overlay_view_->GetLocalBounds());
 }
 
 void LensOverlayController::CloseRequestedByOverlayCloseButton() {
