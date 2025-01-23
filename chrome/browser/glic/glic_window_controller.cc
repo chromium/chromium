@@ -222,19 +222,34 @@ void GlicWindowController::SetWebClient(GlicWebClientAccess* web_client) {
   }
 }
 
+// Monitoring the glic widget.
 void GlicWindowController::OnWidgetActivationChanged(views::Widget* widget,
                                                      bool active) {
-  window_activation_callback_list_.Notify(active);
+  if (GetGlicWidget() == widget) {
+    window_activation_callback_list_.Notify(active);
+  }
 }
 
+// Monitoring the glic widget.
 void GlicWindowController::OnWidgetDestroyed(views::Widget* widget) {
   // This is used to handle the case where the native window is closed
   // directly (e.g., Windows context menu close on the title bar).
   // Conceptually this should synchronously call Close(), but the Widget
   // implementation currently does not support this.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&GlicWindowController::Close,
-                                weak_ptr_factory_.GetWeakPtr()));
+  if (GetGlicWidget() == widget) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&GlicWindowController::Close,
+                                  weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+// Monitoring the attached browser.
+void GlicWindowController::OnWidgetBoundsChanged(views::Widget* widget,
+                                                 const gfx::Rect& new_bounds) {
+  if (attached_browser_ &&
+      attached_browser_->GetBrowserView().GetWidget() == widget) {
+    MovePositionToBrowserGlicButton(attached_browser_, false);
+  }
 }
 
 void GlicWindowController::Show(views::View* glic_button_view) {
@@ -282,7 +297,7 @@ void GlicWindowController::Show(views::View* glic_button_view) {
 
   glic_attached_widget_ =
       CreateAttachedWidget(profile_, glic_window_widget_initial_rect);
-  glic_attached_widget_->AddObserver(this);
+  glic_widget_observation_.Observe(glic_attached_widget_.get());
 
   if (attached_browser_) {
     GetGlicWidget()->Show();
@@ -464,7 +479,8 @@ void GlicWindowController::AttachToBrowser(Browser* browser) {
 
   // Makes the glic widget a child view of the given widget's browser.
   // Add observer to new parent.
-  attached_target_widget_observer_.SetAttachedTargetWidget(browser_widget);
+  attached_browser_widget_observation_.Reset();
+  attached_browser_widget_observation_.Observe(browser_widget);
   views::Widget::ReparentNativeView(glic_attached_widget_->GetNativeView(),
                                     browser_widget->GetNativeView());
   NotifyIfPanelStateChanged();
@@ -555,10 +571,11 @@ void GlicWindowController::Close() {
   }
   state_ = State::kClosed;
   attached_browser_ = nullptr;
+  attached_browser_widget_observation_.Reset();
   window_resize_animation_.reset();
   window_event_observer_.reset();
   browser_close_subscription_.reset();
-  glic_attached_widget_->RemoveObserver(this);
+  glic_widget_observation_.Reset();
   glic_attached_widget_.reset();
   NotifyIfPanelStateChanged();
 
@@ -686,7 +703,7 @@ void GlicWindowController::MovePositionToBrowserGlicButton(Browser* browser,
 
 void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
   attached_browser_ = nullptr;
-  attached_target_widget_observer_.SetAttachedTargetWidget(nullptr);
+  attached_browser_widget_observation_.Reset();
   browser_close_subscription_.reset();
   if (!holder_widget_) {
     holder_widget_ = std::make_unique<views::Widget>();
@@ -784,49 +801,6 @@ bool GlicWindowController::IsWarmed() {
 
 base::WeakPtr<GlicWindowController> GlicWindowController::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// AttachedTargetWidgetObserver implementations:
-GlicWindowController::AttachedTargetWidgetObserver::
-    AttachedTargetWidgetObserver(
-        glic::GlicWindowController* glic_window_controller)
-    : glic_window_controller_(glic_window_controller) {}
-
-GlicWindowController::AttachedTargetWidgetObserver::
-    ~AttachedTargetWidgetObserver() {
-  SetAttachedTargetWidget(nullptr);
-}
-
-void GlicWindowController::AttachedTargetWidgetObserver::
-    SetAttachedTargetWidget(views::Widget* new_attachment_target) {
-  if (new_attachment_target == current_attachment_target_) {
-    return;
-  }
-  if (current_attachment_target_ &&
-      current_attachment_target_->HasObserver(this)) {
-    current_attachment_target_->RemoveObserver(this);
-    current_attachment_target_ = nullptr;
-  }
-  // Start observing the new widget that the glic window has attached to.
-  if (new_attachment_target && !new_attachment_target->HasObserver(this)) {
-    new_attachment_target->AddObserver(this);
-    current_attachment_target_ = new_attachment_target;
-  }
-}
-
-void GlicWindowController::AttachedTargetWidgetObserver::OnWidgetBoundsChanged(
-    views::Widget* widget,
-    const gfx::Rect& new_bounds) {
-  // Update the position of the glic window to follow changes in the browser
-  // window widget that it is attached to.
-  glic_window_controller_->MovePositionToBrowserGlicButton(
-      chrome::FindBrowserWithWindow(widget->GetNativeWindow()), false);
-}
-
-void GlicWindowController::AttachedTargetWidgetObserver::OnWidgetDestroying(
-    views::Widget* widget) {
-  SetAttachedTargetWidget(nullptr);
 }
 
 void GlicWindowController::Shutdown() {

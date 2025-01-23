@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_web_client_access.h"
 #include "chrome/browser/profiles/profile.h"
@@ -137,6 +138,10 @@ class GlicWindowController : public views::WidgetObserver {
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetDestroyed(views::Widget* widget) override;
 
+  // views::WidgetObserver implementation, monitoring the attached browser.
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
+
   GlicView* GetGlicView();
 
   // Called when the programmatic resize has finished; public for use by
@@ -171,27 +176,6 @@ class GlicWindowController : public views::WidgetObserver {
 
   // Reparents the glic widget under 'browser'.
   void AttachToBrowser(Browser* browser);
-
-  // Observes changes in the widget that the glic window is currently attached
-  // to in order to update its position.
-  class AttachedTargetWidgetObserver : public views::WidgetObserver {
-   public:
-    explicit AttachedTargetWidgetObserver(
-        glic::GlicWindowController* glic_window_controller);
-    AttachedTargetWidgetObserver(const AttachedTargetWidgetObserver&) = delete;
-    AttachedTargetWidgetObserver& operator=(
-        const AttachedTargetWidgetObserver&) = delete;
-    ~AttachedTargetWidgetObserver() override;
-    void SetAttachedTargetWidget(views::Widget* new_attachment_target);
-    void OnWidgetBoundsChanged(views::Widget* widget,
-                               const gfx::Rect& new_bounds) override;
-    void OnWidgetDestroying(views::Widget* widget) override;
-
-   private:
-    raw_ptr<glic::GlicWindowController> glic_window_controller_;
-    // The browser window widget that the glic window is currently attached to.
-    raw_ptr<views::Widget> current_attachment_target_;
-  };
 
   // If `widget` is within attachment distance of a browser window's glic
   // button, attach the glic window to the button's position.
@@ -229,7 +213,13 @@ class GlicWindowController : public views::WidgetObserver {
       Profile* profile,
       const gfx::Rect& initial_bounds);
 
-  AttachedTargetWidgetObserver attached_target_widget_observer_{this};
+  // Observes the widget for the attached browser.
+  base::ScopedObservation<views::Widget, WidgetObserver>
+      attached_browser_widget_observation_{this};
+
+  // Observes the glic widget.
+  base::ScopedObservation<views::Widget, WidgetObserver>
+      glic_widget_observation_{this};
 
   // Used for observing closing of the pinned browser.
   std::optional<base::CallbackListSubscription> browser_close_subscription_;
