@@ -26,8 +26,6 @@ extern const char kScrollableTabStripOverflowModeName[];
 
 BASE_DECLARE_FEATURE(kTabSearchPositionSetting);
 
-BASE_DECLARE_FEATURE(kTabStripCollectionStorage);
-
 extern bool CanShowTabSearchPositionSetting();
 
 }  // namespace tabs

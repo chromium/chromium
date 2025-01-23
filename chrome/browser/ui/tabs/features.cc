@@ -45,12 +45,6 @@ BASE_FEATURE(kTabSearchPositionSetting,
              "TabSearchPositionSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Stores the tabs as a tree based data structure instead of a
-// vector in the tabstrip model. b/323937237
-BASE_FEATURE(kTabStripCollectionStorage,
-             "TabStripCollectionStorage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool CanShowTabSearchPositionSetting() {
   // The combo button, which includes tab search, is always on the right side
   // and cannot be repositioned.

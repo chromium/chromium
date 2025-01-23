@@ -120,8 +120,7 @@ void TabStripCollection::MoveTabsRecursive(
   }
 }
 
-void TabStripCollection::MoveGroupTo(const TabGroupModel* group_model,
-                                     const tab_groups::TabGroupId& group,
+void TabStripCollection::MoveGroupTo(const tab_groups::TabGroupId& group,
                                      int to_index) {
   tabs::TabGroupTabCollection* group_collection =
       unpinned_collection_->GetTabGroupCollection(group);
@@ -260,7 +259,7 @@ void TabStripCollection::MaybeRemoveGroupCollection(
   }
 }
 
-void TabStripCollection::ValidateData(const TabGroupModel* group_model) {
+void TabStripCollection::ValidateData() {
   unpinned_collection_->ValidateCollections();
 }
 

@@ -39,7 +39,6 @@
 #endif
 
 class Profile;
-class TabContentsData;
 class TabGroupModel;
 class TabStripModelDelegate;
 class TabStripModelObserver;
@@ -47,6 +46,10 @@ class TabDragController;
 
 namespace content {
 class WebContents;
+}
+
+namespace tabs {
+class TabStripCollection;
 }
 
 class TabGroupModelFactory {
@@ -990,7 +993,7 @@ class TabStripModel : public TabGroupController {
 
   // The WebContents data currently hosted within this TabStripModel. This must
   // be kept in sync with |selection_model_|.
-  std::unique_ptr<TabContentsData> contents_data_;
+  std::unique_ptr<tabs::TabStripCollection> contents_data_;
 
   // The model for tab groups hosted within this TabStripModel.
   std::unique_ptr<TabGroupModel> group_model_;

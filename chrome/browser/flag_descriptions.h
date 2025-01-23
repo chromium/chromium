@@ -1937,10 +1937,6 @@ extern const char kScrollableTabStripFlagId[];
 extern const char kScrollableTabStripName[];
 extern const char kScrollableTabStripDescription[];
 
-extern const char kTabStripCollectionStorageFlagId[];
-extern const char kTabStripCollectionStorageName[];
-extern const char kTabStripCollectionStorageDescription[];
-
 extern const char kTabstripComboButtonFlagId[];
 extern const char kTabstripComboButtonName[];
 extern const char kTabstripComboButtonDescription[];

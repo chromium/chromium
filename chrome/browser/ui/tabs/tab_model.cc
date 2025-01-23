@@ -122,13 +122,11 @@ void TabModel::OnRemovedFromModel() {
 
 TabCollection* TabModel::GetParentCollection(
     base::PassKey<TabCollection>) const {
-  CHECK(base::FeatureList::IsEnabled(tabs::kTabStripCollectionStorage));
   return parent_collection_;
 }
 
 void TabModel::OnReparented(TabCollection* parent,
                             base::PassKey<TabCollection>) {
-  CHECK(base::FeatureList::IsEnabled(tabs::kTabStripCollectionStorage));
   parent_collection_ = parent;
 }
 

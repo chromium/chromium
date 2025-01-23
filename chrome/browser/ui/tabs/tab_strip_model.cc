@@ -60,7 +60,6 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
-#include "chrome/browser/ui/tabs/tab_contents_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -217,7 +216,7 @@ TabStripModel::TabStripModel(TabStripModelDelegate* delegate,
     : delegate_(delegate), profile_(profile) {
   DCHECK(delegate_);
 
-  contents_data_ = CreateTabContentsDataImpl();
+  contents_data_ = std::make_unique<tabs::TabStripCollection>();
 
   if (group_model_factory) {
     group_model_ = group_model_factory->Create(this);
@@ -610,7 +609,7 @@ void TabStripModel::MoveGroupToImpl(const tab_groups::TabGroupId& group,
       PrepareTabsToMoveToIndex(tab_indices, to_index);
 
   // Remove all the tabs from the model.
-  contents_data_->MoveGroupTo(group_model(), group, to_index);
+  contents_data_->MoveGroupTo(group, to_index);
 
   UpdateSelectionModelForMoves(tab_indices, to_index);
   ValidateTabStripModel();
@@ -831,10 +830,7 @@ int TabStripModel::SetTabPinned(int index, bool pinned) {
 
 bool TabStripModel::IsTabPinned(int index) const {
   CHECK(ContainsIndex(index)) << index;
-  if (base::FeatureList::IsEnabled(tabs::kTabStripCollectionStorage)) {
-    return index < IndexOfFirstNonPinnedTab();
-  }
-  return GetTabAtIndex(index)->IsPinned();
+  return index < IndexOfFirstNonPinnedTab();
 }
 
 bool TabStripModel::IsTabCollapsed(int index) const {
@@ -2995,7 +2991,7 @@ void TabStripModel::ValidateTabStripModel() {
   }
 #endif
 
-  contents_data_->ValidateData(group_model());
+  contents_data_->ValidateData();
 }
 
 void TabStripModel::SendMoveNotificationForTab(
