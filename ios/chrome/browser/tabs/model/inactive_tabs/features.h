@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_TABS_MODEL_INACTIVE_TABS_FEATURES_H_
 #define IOS_CHROME_BROWSER_TABS_MODEL_INACTIVE_TABS_FEATURES_H_
 
-#import "base/feature_list.h"
-
 #import <Foundation/Foundation.h>
+
+#import "base/feature_list.h"
 
 namespace base {
 class TimeDelta;

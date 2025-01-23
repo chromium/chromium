@@ -251,7 +251,7 @@ TEST_F(SaveToDriveCoordinatorTest, ShowsAddAccount) {
                 EXPECT_EQ(AuthenticationOperation::kAddAccount,
                           command.operation);
                 EXPECT_FALSE(command.identity);
-                EXPECT_EQ(signin_metrics::AccessPoint::kSaveToDriveIOS,
+                EXPECT_EQ(signin_metrics::AccessPoint::kSaveToDriveIos,
                           command.accessPoint);
                 EXPECT_EQ(
                     signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,

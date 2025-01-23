@@ -45,7 +45,8 @@ public final class SearchEnginesFeatureUtils {
      * <p>This param is surfaced in {@code chrome://flags}.
      */
     public static boolean clayBlockingEnableVerboseLogging() {
-        return clayBlockingFeatureParamAsBoolean("enable_verbose_logging", true);
+        // TODO(crbug.com/391570180): Finish cleaning up this flag once usage is removed.
+        return false;
     }
 
     /**

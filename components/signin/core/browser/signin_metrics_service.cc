@@ -117,7 +117,7 @@ void MaybeRecordWebSigninToChromeSigninTimes(
       break;
     // All other access point should not record this metric.
     case signin_metrics::AccessPoint::kStartPage:
-    case signin_metrics::AccessPoint::kNTPLink:
+    case signin_metrics::AccessPoint::kNtpLink:
     case signin_metrics::AccessPoint::kMenu:
     case signin_metrics::AccessPoint::kSettings:
     case signin_metrics::AccessPoint::kSupervisedUser:
@@ -145,15 +145,15 @@ void MaybeRecordWebSigninToChromeSigninTimes(
     case signin_metrics::AccessPoint::kEnterpriseSignoutCoordinator:
     case signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience:
     case signin_metrics::AccessPoint::kSendTabToSelfPromo:
-    case signin_metrics::AccessPoint::kNTPFeedTopPromo:
+    case signin_metrics::AccessPoint::kNtpFeedTopPromo:
     case signin_metrics::AccessPoint::kSettingsSyncOffRow:
     case signin_metrics::AccessPoint::kPostDeviceRestoreSigninPromo:
     case signin_metrics::AccessPoint::kPostDeviceRestoreBackgroundSignin:
-    case signin_metrics::AccessPoint::kNTPSignedOutIcon:
-    case signin_metrics::AccessPoint::kNTPFeedCardMenuPromo:
-    case signin_metrics::AccessPoint::kNTPFeedBottomPromo:
+    case signin_metrics::AccessPoint::kNtpSignedOutIcon:
+    case signin_metrics::AccessPoint::kNtpFeedCardMenuPromo:
+    case signin_metrics::AccessPoint::kNtpFeedBottomPromo:
     case signin_metrics::AccessPoint::kDesktopSigninManager:
-    case signin_metrics::AccessPoint::kForYouFRE:
+    case signin_metrics::AccessPoint::kForYouFre:
     case signin_metrics::AccessPoint::kCreatorFeedFollow:
     case signin_metrics::AccessPoint::kReadingList:
     case signin_metrics::AccessPoint::kReauthInfoBar:
@@ -161,24 +161,24 @@ void MaybeRecordWebSigninToChromeSigninTimes(
     case signin_metrics::AccessPoint::kSearchCompanion:
     case signin_metrics::AccessPoint::kSetUpList:
     case signin_metrics::AccessPoint::kPasswordMigrationWarningAndroid:
-    case signin_metrics::AccessPoint::kSaveToPhotosIOS:
+    case signin_metrics::AccessPoint::kSaveToPhotosIos:
     case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
     case signin_metrics::AccessPoint::kRestorePrimaryAccountOnProfileLoad:
     case signin_metrics::AccessPoint::kTabOrganization:
-    case signin_metrics::AccessPoint::kSaveToDriveIOS:
+    case signin_metrics::AccessPoint::kSaveToDriveIos:
     case signin_metrics::AccessPoint::kTipsNotification:
     case signin_metrics::AccessPoint::kNotificationsOptInScreenContentToggle:
     case signin_metrics::AccessPoint::kSigninChoiceRemembered:
     case signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt:
     case signin_metrics::AccessPoint::kSettingsSignoutConfirmationPrompt:
-    case signin_metrics::AccessPoint::kNTPIdentityDisc:
-    case signin_metrics::AccessPoint::kOIDCRedirectionInterception:
+    case signin_metrics::AccessPoint::kNtpIdentityDisc:
+    case signin_metrics::AccessPoint::kOidcRedirectionInterception:
     case signin_metrics::AccessPoint::kWebauthnModalDialog:
     case signin_metrics::AccessPoint::kAccountMenu:
     case signin_metrics::AccessPoint::kProductSpecifications:
     case signin_metrics::AccessPoint::kAccountMenuFailedSwitch:
-    case signin_metrics::AccessPoint::kCCTAccountMismatchNotification:
-    case signin_metrics::AccessPoint::kDriveFilePickerIOS:
+    case signin_metrics::AccessPoint::kCctAccountMismatchNotification:
+    case signin_metrics::AccessPoint::kDriveFilePickerIos:
     case signin_metrics::AccessPoint::kCollaborationTabGroup:
       return;
   }

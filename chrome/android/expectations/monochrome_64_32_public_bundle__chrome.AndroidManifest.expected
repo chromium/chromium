@@ -36,6 +36,18 @@
         android:label="@string/title_activity_qr_code_capture"
         android:theme="@style/Theme.AppCompat.NoActionBar">
     </activity>  # DIFF-ANCHOR: ce279235
+    <activity  # DIFF-ANCHOR: f181e7f6
+        android:name="org.chromium.chrome.browser.AutofillOptionsLauncher"
+        android:excludeFromRecents="true"
+        android:exported="true"
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
+      <intent-filter>  # DIFF-ANCHOR: 175a3a0f
+        <action android:name="android.intent.action.APPLICATION_PREFERENCES"/>
+        <category android:name="android.intent.category.APP_BROWSER"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.PREFERENCE"/>
+      </intent-filter>  # DIFF-ANCHOR: 175a3a0f
+    </activity>  # DIFF-ANCHOR: f181e7f6
     <activity  # DIFF-ANCHOR: 93d41352
         android:name="org.chromium.chrome.browser.BrowserRestartActivity"
         android:excludeFromRecents="true"

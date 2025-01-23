@@ -136,33 +136,33 @@ enum class ProfileSignout {
 // LINT.IfChange
 enum class AccessPoint : int {
   kStartPage = 0,
-  kNTPLink = 1,
+  kNtpLink = 1,
   // Access point from the three dot app menu.
   kMenu = 2,
   kSettings = 3,
   kSupervisedUser = 4,
   kExtensionInstallBubble = 5,
   kExtensions = 6,
-  // APPS_PAGE_LINK = 7, no longer used.
+  // kAppsPageLink = 7, no longer used.
   kBookmarkBubble = 8,
   kBookmarkManager = 9,
   kAvatarBubbleSignIn = 10,
   kUserManager = 11,
   kDevicesPage = 12,
-  // CLOUD_PRINT = 13, no longer used.
-  // CONTENT_AREA = 14, no longer used.
+  // kCloudPrint = 13, no longer used.
+  // kContentArea = 14, no longer used.
   kSigninPromo = 15,
   kRecentTabs = 16,
   // This should never have been used to get signin URL.
   kUnknown = 17,
   kPasswordBubble = 18,
   kAutofillDropdown = 19,
-  // NTP_CONTENT_SUGGESTIONS = 20, no longer used.
+  // kNtpContentSuggestions = 20, no longer used.
   kResigninInfobar = 21,
   kTabSwitcher = 22,
-  // FORCE_SIGNIN_WARNING = 23, no longer used.
-  // SAVE_CARD_BUBBLE = 24, no longer used
-  // MANAGE_CARDS_BUBBLE = 25, no longer used
+  // kForceSigninWarning = 23, no longer used.
+  // kSaveCardBubble = 24, no longer used
+  // kManageCardsBubble = 25, no longer used
   kMachineLogon = 26,
   kGoogleServicesSettings = 27,
   kSyncErrorCard = 28,
@@ -174,17 +174,17 @@ enum class AccessPoint : int {
   kEnterpriseSignoutCoordinator = 34,
   kSigninInterceptFirstRunExperience = 35,
   kSendTabToSelfPromo = 36,
-  kNTPFeedTopPromo = 37,
+  kNtpFeedTopPromo = 37,
   kSettingsSyncOffRow = 38,
   kPostDeviceRestoreSigninPromo = 39,
   kPostDeviceRestoreBackgroundSignin = 40,
-  kNTPSignedOutIcon = 41,
-  kNTPFeedCardMenuPromo = 42,
-  kNTPFeedBottomPromo = 43,
+  kNtpSignedOutIcon = 41,
+  kNtpFeedCardMenuPromo = 42,
+  kNtpFeedBottomPromo = 43,
   kDesktopSigninManager = 44,
   // Access point for the "For You" First Run Experience on Desktop. See
   // go/for-you-fre or launch/4223982 for more info.
-  kForYouFRE = 45,
+  kForYouFre = 45,
   // Access point for Cormorant (Creator Feed) on Android only when the "Follow"
   // button is tapped while in a signed-out state.
   kCreatorFeedFollow = 46,
@@ -201,7 +201,7 @@ enum class AccessPoint : int {
   // Access point for the local password migration warning on Android.
   kPasswordMigrationWarningAndroid = 52,
   // Access point for the Save to Photos feature on iOS.
-  kSaveToPhotosIOS = 53,
+  kSaveToPhotosIos = 53,
   // Access point for the Chrome Signin Intercept Bubble.
   kChromeSigninInterceptBubble = 54,
   // Restore primary account info in case it was lost.
@@ -209,7 +209,7 @@ enum class AccessPoint : int {
   // Access point for the tab organization UI within the tab search bubble.
   kTabOrganization = 56,
   // Access point for the Save to Drive feature on iOS.
-  kSaveToDriveIOS = 57,
+  kSaveToDriveIos = 57,
   // Access point for the Tips Notification on iOS.
   kTipsNotification = 58,
   // Access point for the Notifications Opt-In Screen.
@@ -223,10 +223,10 @@ enum class AccessPoint : int {
   kSettingsSignoutConfirmationPrompt = 62,
   // The identity disc (avatar) on the New Tab page. Note that this only covers
   // SignedIn avatars - interactions with the signed-out avatar are instead
-  kNTPIdentityDisc = 63,
+  kNtpIdentityDisc = 63,
   // The identity is received through an interception of a 3rd party OIDC auth
   // redirection.
-  kOIDCRedirectionInterception = 64,
+  kOidcRedirectionInterception = 64,
   // The "Sign in again" button on a Web Authentication modal dialog when
   // reauthentication is necessary to sign in with or save a passkey from the
   // Google Password Manager.
@@ -245,9 +245,9 @@ enum class AccessPoint : int {
   kAddressBubble = 70,
   // A message notification displayed on CCTs embedded in 1P apps when there is
   // an account mismatch between Chrome and the 1P app. Android only.
-  kCCTAccountMismatchNotification = 71,
+  kCctAccountMismatchNotification = 71,
   // Access point for the Drive file picker on iOS.
-  kDriveFilePickerIOS = 72,
+  kDriveFilePickerIos = 72,
   // Access point triggered when a user attempts to share or join a tab group
   // without being signed in or synced.
   kCollaborationTabGroup = 73,

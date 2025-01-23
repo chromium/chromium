@@ -25,8 +25,8 @@
 
 namespace {
 
-// A global variable is needed to detect multiprofile scenarios where more than one profile
-// tries to register a synthetic field trial.
+// A global variable is needed to detect multiprofile scenarios where more than
+// one profile tries to register a synthetic field trial.
 bool trusted_vault_synthetic_field_trial_registered = false;
 
 }  // namespace

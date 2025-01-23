@@ -75,7 +75,9 @@ IN_PROC_BROWSER_TEST_F(InputOnVizBrowserTest, TransfersStateOnTouchDown) {
   input_transfer_handler->set_jni_delegate_for_testing(std::move(jni_delegate));
 
   gfx::Point point(/*x=*/100, /*y=*/100);
-  ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0, 0);
+  int tool_type = static_cast<int>(ui::MotionEvent::ToolType::FINGER);
+  ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0,
+                                    tool_type);
   JNIEnv* env = base::android::AttachCurrentThread();
   auto time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();
   auto action = ui::MotionEvent::Action::DOWN;

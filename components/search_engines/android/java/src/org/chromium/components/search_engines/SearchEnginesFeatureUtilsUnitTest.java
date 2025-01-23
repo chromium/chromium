@@ -95,9 +95,10 @@ public class SearchEnginesFeatureUtilsUnitTest {
 
     @Test
     public void clayBlockingEnableVerboseLogging() {
+        // TODO(crbug.com/391570180): Remove this test once the cleanup is done.
         FeatureOverrides.Builder overrides = FeatureOverrides.newBuilder().enable(CLAY_BLOCKING);
         overrides.apply();
-        assertTrue(SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging());
+        assertFalse(SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging());
 
         overrides.param("enable_verbose_logging", false).apply();
         assertFalse(SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging());

@@ -63,8 +63,9 @@ class DownloadResponse : public net::test_server::BasicHttpResponse {
       base::WeakPtr<net::test_server::HttpResponseDelegate> delegate,
       int count) {
     if (!count) {
-      if (delegate)
+      if (delegate) {
         delegate->FinishResponse();
+      }
       return;
     }
     int block_size = std::min(count, 1000);

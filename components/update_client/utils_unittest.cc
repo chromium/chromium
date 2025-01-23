@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/update_client/utils.h"
 
 #include <string>
@@ -81,25 +76,25 @@ TEST(UpdateClientUtils, IsValidBrand) {
 }
 
 TEST(UpdateClientUtils, GetCrxComponentId) {
-  static const uint8_t kHash[16] = {
+  static constexpr uint8_t kHash[16] = {
       0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
       0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
   };
   CrxComponent component;
-  component.pk_hash.assign(kHash, kHash + sizeof(kHash));
+  component.pk_hash.assign(std::begin(kHash), std::end(kHash));
 
   EXPECT_EQ(std::string("abcdefghijklmnopabcdefghijklmnop"),
             GetCrxComponentID(component));
 }
 
 TEST(UpdateClientUtils, GetCrxIdFromPublicKeyHash) {
-  static const uint8_t kHash[16] = {
+  static constexpr uint8_t kHash[16] = {
       0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
       0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
   };
 
   EXPECT_EQ(std::string("abcdefghijklmnopabcdefghijklmnop"),
-            GetCrxIdFromPublicKeyHash({std::cbegin(kHash), std::cend(kHash)}));
+            GetCrxIdFromPublicKeyHash(kHash));
 }
 
 // Tests that the name of an InstallerAttribute matches ^[-_=a-zA-Z0-9]{1,256}$

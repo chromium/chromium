@@ -41,6 +41,8 @@ InputTransferHandlerAndroid::InputTransferHandlerAndroid(
   CHECK(input::IsTransferInputToVizSupported());
 }
 
+InputTransferHandlerAndroid::InputTransferHandlerAndroid() = default;
+
 InputTransferHandlerAndroid::~InputTransferHandlerAndroid() = default;
 
 bool InputTransferHandlerAndroid::OnTouchEvent(const ui::MotionEvent& event) {
@@ -67,6 +69,10 @@ bool InputTransferHandlerAndroid::OnTouchEvent(const ui::MotionEvent& event) {
   }
 
   if (event.GetAction() != ui::MotionEvent::Action::DOWN) {
+    return false;
+  }
+
+  if (event.GetToolType() != ui::MotionEvent::ToolType::FINGER) {
     return false;
   }
 

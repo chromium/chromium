@@ -950,7 +950,7 @@
     ShowSigninCommand* const showSigninCommand = [[ShowSigninCommand alloc]
         initWithOperation:AuthenticationOperation::kSheetSigninAndHistorySync
                  identity:nil
-              accessPoint:signin_metrics::AccessPoint::kNTPSignedOutIcon
+              accessPoint:signin_metrics::AccessPoint::kNtpSignedOutIcon
               promoAction:signin_metrics::PromoAction::
                               PROMO_ACTION_NO_SIGNIN_PROMO
                completion:^(SigninCoordinatorResult result,
@@ -1197,7 +1197,7 @@
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kSigninOnly
                identity:nil
-            accessPoint:signin_metrics::AccessPoint::kNTPFeedCardMenuPromo
+            accessPoint:signin_metrics::AccessPoint::kNtpFeedCardMenuPromo
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:^(SigninCoordinatorResult result,
@@ -1209,7 +1209,7 @@
                                 feed::FeedSignInUI::kShowSignInOnlyFlow];
   [self.feedMetricsRecorder recordShowSignInOnlyUIWithUserId:hasUserIdentities];
   signin_metrics::RecordSigninUserActionForAccessPoint(
-      signin_metrics::AccessPoint::kNTPFeedCardMenuPromo);
+      signin_metrics::AccessPoint::kNtpFeedCardMenuPromo);
 }
 
 - (void)showSignInUI {
@@ -1236,7 +1236,7 @@
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:operation
                identity:nil
-            accessPoint:signin_metrics::AccessPoint::kNTPFeedBottomPromo
+            accessPoint:signin_metrics::AccessPoint::kNtpFeedBottomPromo
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:^(SigninCoordinatorResult result,
@@ -1250,7 +1250,7 @@
   [self.feedMetricsRecorder
       recordShowSyncnRelatedUIWithType:feed::FeedSyncPromo::kShowSyncFlow];
   signin_metrics::RecordSigninUserActionForAccessPoint(
-      signin_metrics::AccessPoint::kNTPFeedBottomPromo);
+      signin_metrics::AccessPoint::kNtpFeedBottomPromo);
 }
 
 #pragma mark - FeedWrapperViewControllerDelegate

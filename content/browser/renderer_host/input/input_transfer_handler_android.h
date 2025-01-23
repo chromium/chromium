@@ -39,9 +39,10 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
 
   explicit InputTransferHandlerAndroid(
       InputTransferHandlerAndroidClient* client);
-  ~InputTransferHandlerAndroid();
+  virtual ~InputTransferHandlerAndroid();
 
-  bool OnTouchEvent(const ui::MotionEvent& event);
+  // Virtual for testing.
+  virtual bool OnTouchEvent(const ui::MotionEvent& event);
 
   void set_jni_delegate_for_testing(std::unique_ptr<JniDelegate> delegate) {
     jni_delegate_ = std::move(delegate);
@@ -54,6 +55,9 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
 
  private:
   void Reset();
+
+  friend class MockInputTransferHandler;
+  InputTransferHandlerAndroid();
 
   raw_ptr<InputTransferHandlerAndroidClient> client_ = nullptr;
   bool touch_transferred_ = false;

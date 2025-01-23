@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/component_updater/soda_component_installer.h"
 
 #include <memory>
@@ -56,8 +51,7 @@ constexpr uint8_t kSodaPublicKeySHA256[32] = {
     0x8e, 0xd0, 0x0c, 0xef, 0xa5, 0xc0, 0x97, 0x00, 0x84, 0x1c, 0x21,
     0xa6, 0xae, 0xc8, 0x1b, 0x87, 0xfb, 0x12, 0x27, 0x28, 0xb1};
 
-static_assert(std::size(kSodaPublicKeySHA256) == crypto::kSHA256Length,
-              "Wrong hash length");
+static_assert(std::size(kSodaPublicKeySHA256) == crypto::kSHA256Length);
 
 constexpr char kSodaManifestName[] = "SODA Library";
 
@@ -208,8 +202,8 @@ base::FilePath SodaComponentInstallerPolicy::GetRelativeInstallDir() const {
 }
 
 void SodaComponentInstallerPolicy::GetHash(std::vector<uint8_t>* hash) const {
-  hash->assign(kSodaPublicKeySHA256,
-               kSodaPublicKeySHA256 + std::size(kSodaPublicKeySHA256));
+  hash->assign(std::begin(kSodaPublicKeySHA256),
+               std::end(kSodaPublicKeySHA256));
 }
 
 std::string SodaComponentInstallerPolicy::GetName() const {

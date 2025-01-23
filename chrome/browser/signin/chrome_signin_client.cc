@@ -154,7 +154,7 @@ std::string_view NameOfGroupedAccessPointHistogram(
     case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
       return ".UnoSigninBubble";
     case signin_metrics::AccessPoint::kUserManager:
-    case signin_metrics::AccessPoint::kForYouFRE:
+    case signin_metrics::AccessPoint::kForYouFre:
     case signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience:
     case signin_metrics::AccessPoint::kStartPage:
       return ".ProfileCreation";
