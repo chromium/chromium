@@ -42,6 +42,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
+import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController;
@@ -73,6 +74,7 @@ public class ChromeActivityUnitTest {
     @Mock ReadAloudController mReadAloudController;
     @Mock FullscreenVideoPictureInPictureController mFullscreenVideoPictureInPictureController;
     @Mock PictureInPictureUiState mPictureInPictureUiState;
+    @Mock EnterpriseInfo mEnterpriseInfo;
 
     ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
             new ObservableSupplierImpl<>();
@@ -200,6 +202,12 @@ public class ChromeActivityUnitTest {
         when(mActivityTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL);
         when(mActivityTab.getWebContents()).thenReturn(mock(WebContents.class));
         when(mActivityTab.getWebContents().getMainFrame()).thenReturn(mock(RenderFrameHost.class));
+        // Set enterprise info to report as enterprise owned.
+        EnterpriseInfo.setInstanceForTest(mEnterpriseInfo);
+        EnterpriseInfo.OwnedState enterpriseInfoState =
+                new EnterpriseInfo.OwnedState(
+                        /* isDeviceOwned= */ true, /* isProfileOwned= */ true);
+        when(mEnterpriseInfo.getDeviceEnterpriseInfoSync()).thenReturn(enterpriseInfoState);
 
         AssistContent result = new AssistContent();
         chromeActivity.onProvideAssistContent(result);
@@ -209,7 +217,9 @@ public class ChromeActivityUnitTest {
         JSONObject jsonObject =
                 (JSONObject) new org.json.JSONTokener(result.getStructuredData()).nextValue();
         var pageMetadata = jsonObject.getJSONObject("page_metadata");
+        var isWorkProfile = pageMetadata.getBoolean("is_work_profile");
         var contentUri = pageMetadata.getString("content_uri");
+        assertTrue(isWorkProfile);
         assertEquals("content", Uri.parse(contentUri).getScheme());
     }
 }

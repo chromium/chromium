@@ -451,6 +451,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.AssistContent.IsEnterpriseInfoCached" enum="Boolean"
+    expires_after="2025-03-01">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <summary>
+    Records whether enterprise info was cached while trying to populate an
+    AssistContent when assistant was invoked while ChromeActivity was in the
+    foreground.
+
+    If false we don't populate AssistContent.
+
+    Only recorded when the &quot;PageContentProvider&quot; feature is enabled
+    and assistant is invoked while viewing a web page.
+  </summary>
+</histogram>
+
 <histogram name="Android.AssistContent.StructuredDataAttachedSuccess.Pdf"
     enum="BooleanSuccess" expires_after="2025-03-01">
   <owner>salg@google.com</owner>
