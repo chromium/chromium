@@ -312,6 +312,10 @@ packager_builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-33/google_atd/x86_64.yaml",
             },
             {
+                "sdk_package_name": "system-images;android-34;android-desktop;x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-34/android-desktop/x86_64.yaml",
+            },
+            {
                 "sdk_package_name": "system-images;android-34;google_apis;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-34/google_apis/x86_64.yaml",
             },
@@ -320,12 +324,12 @@ packager_builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-35/google_apis/x86_64.yaml",
             },
             {
-                "sdk_package_name": "system-images;android-Baklava;google_apis;x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-Baklava/google_apis/x86_64.yaml",
+                "sdk_package_name": "system-images;android-35;google_apis_tablet;x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-35/google_apis_tablet/x86_64.yaml",
             },
             {
-                "sdk_package_name": "system-images;android-34;android-desktop;x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-34/android-desktop/x86_64.yaml",
+                "sdk_package_name": "system-images;android-Baklava;google_apis;x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-Baklava/google_apis/x86_64.yaml",
             },
         ],
     },
