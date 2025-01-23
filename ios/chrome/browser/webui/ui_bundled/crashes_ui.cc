@@ -69,7 +69,6 @@ class CrashesDOMHandler : public web::WebUIIOSMessageHandler {
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
 
-
  private:
   // Crash UploadList callback.
   void OnUploadListAvailable();
@@ -113,8 +112,9 @@ void CrashesDOMHandler::RegisterMessages() {
 void CrashesDOMHandler::HandleRequestCrashes(const base::Value::List& args) {
   if (first_load_) {
     first_load_ = false;
-    if (list_available_)
+    if (list_available_) {
       UpdateUI();
+    }
   } else {
     list_available_ = false;
     upload_list_->Load(base::BindOnce(&CrashesDOMHandler::OnUploadListAvailable,
@@ -135,16 +135,18 @@ void CrashesDOMHandler::HandleRequestSingleCrashUpload(
 
 void CrashesDOMHandler::OnUploadListAvailable() {
   list_available_ = true;
-  if (!first_load_)
+  if (!first_load_) {
     UpdateUI();
+  }
 }
 
 void CrashesDOMHandler::UpdateUI() {
   bool crash_reporting_enabled =
       IOSChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
   base::Value::List crash_list;
-  if (crash_reporting_enabled)
+  if (crash_reporting_enabled) {
     crash_reporter::UploadListToValue(upload_list_.get(), &crash_list);
+  }
 
   base::Value::Dict result;
   result.Set("enabled", crash_reporting_enabled);

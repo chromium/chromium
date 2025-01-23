@@ -84,26 +84,30 @@ void InternalsUIHandler::OnLoaded(const base::Value::List& args) {
 void InternalsUIHandler::StartSubscription() {
   LogRouter* log_router =
       get_log_router_function_.Run(ProfileIOS::FromWebUIIOS(web_ui()));
-  if (!log_router)
+  if (!log_router) {
     return;
+  }
 
   registered_with_log_router_ = true;
   log_router->RegisterReceiver(this);
 }
 
 void InternalsUIHandler::EndSubscription() {
-  if (!registered_with_log_router_)
+  if (!registered_with_log_router_) {
     return;
+  }
   registered_with_log_router_ = false;
   LogRouter* log_router =
       get_log_router_function_.Run(ProfileIOS::FromWebUIIOS(web_ui()));
-  if (log_router)
+  if (log_router) {
     log_router->UnregisterReceiver(this);
+  }
 }
 
 void InternalsUIHandler::LogEntry(const base::Value::Dict& entry) {
-  if (!registered_with_log_router_)
+  if (!registered_with_log_router_) {
     return;
+  }
 
   base::Value log_event("add-structured-log");
   base::ValueView args[] = {log_event, entry};

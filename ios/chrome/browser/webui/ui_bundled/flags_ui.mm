@@ -150,13 +150,15 @@ void FlagsDOMHandler::HandleEnableExperimentalFeatureMessage(
     const base::Value::List& args) {
   DCHECK(flags_storage_);
   DCHECK_EQ(2u, args.size());
-  if (args.size() != 2)
+  if (args.size() != 2) {
     return;
+  }
 
   const std::string* entry_internal_name = args[0].GetIfString();
   const std::string* enable_str = args[1].GetIfString();
-  if (!entry_internal_name || !enable_str)
+  if (!entry_internal_name || !enable_str) {
     return;
+  }
 
   SetFeatureEntryEnabled(flags_storage_.get(), *entry_internal_name,
                          *enable_str == "true");
