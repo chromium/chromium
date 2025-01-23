@@ -465,6 +465,13 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("expect_legacy_policy_status_succeeds");
   }
 
+  void LegacyInstallApp(const std::string& app_id,
+                        const base::Version& version) const override {
+    RunCommand(
+        "legacy_install_app",
+        {Param("app_id", app_id), Param("app_version", version.GetString())});
+  }
+
   void RunUninstallCmdLine() const override {
     RunCommand("run_uninstall_cmd_line");
   }

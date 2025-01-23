@@ -918,6 +918,22 @@ void UpdateServiceImplImpl::CheckForUpdate(
   VLOG(1) << __func__ << ": " << app_id;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  base::MakeRefCounted<FindUnregisteredAppsTask>(config_, GetUpdaterScope())
+      ->Run(base::BindOnce(&UpdateServiceImplImpl::CheckForUpdateImpl, this,
+                           app_id, priority, policy_same_version_update,
+                           language, state_update, std::move(callback)));
+}
+
+void UpdateServiceImplImpl::CheckForUpdateImpl(
+    const std::string& app_id,
+    Priority priority,
+    PolicySameVersionUpdate policy_same_version_update,
+    const std::string& language,
+    base::RepeatingCallback<void(const UpdateState&)> state_update,
+    base::OnceCallback<void(Result)> callback) {
+  VLOG(1) << __func__ << ": " << app_id;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!config_->GetUpdaterPersistedData()
            ->GetProductVersion(app_id)
            .IsValid()) {
@@ -946,6 +962,24 @@ void UpdateServiceImplImpl::CheckForUpdate(
 }
 
 void UpdateServiceImplImpl::Update(
+    const std::string& app_id,
+    const std::string& install_data_index,
+    Priority priority,
+    PolicySameVersionUpdate policy_same_version_update,
+    const std::string& language,
+    base::RepeatingCallback<void(const UpdateState&)> state_update,
+    base::OnceCallback<void(Result)> callback) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::MakeRefCounted<FindUnregisteredAppsTask>(config_, GetUpdaterScope())
+      ->Run(base::BindOnce(&UpdateServiceImplImpl::UpdateImpl, this, app_id,
+                           install_data_index, priority,
+                           policy_same_version_update, language, state_update,
+                           std::move(callback)));
+}
+
+void UpdateServiceImplImpl::UpdateImpl(
     const std::string& app_id,
     const std::string& install_data_index,
     Priority priority,

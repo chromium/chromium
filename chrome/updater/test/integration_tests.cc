@@ -406,6 +406,11 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->ExpectLegacyPolicyStatusSucceeds();
   }
 
+  void LegacyInstallApp(const std::string& app_id,
+                        const base::Version& version = base::Version("0.1")) {
+    test_commands_->LegacyInstallApp(app_id, version);
+  }
+
   void RunUninstallCmdLine() { test_commands_->RunUninstallCmdLine(); }
 
   void RunHandoff(const std::string& app_id) {
@@ -4683,18 +4688,27 @@ TEST_P(IntegrationLegacyUpdate3WebNewInstallTest, Install) {
 }
 
 class IntegrationLegacyUpdate3WebTest
-    : public ::testing::WithParamInterface<TestUpdaterVersion>,
+    : public ::testing::WithParamInterface<
+          std::tuple<TestUpdaterVersion, bool>>,
       public IntegrationTest {
  protected:
   void SetUp() override {
+    // TODO(crbug.com/391634935): remove this `if` once the older versions are
+    // updated to a version that supports `LegacyInstallApp`.
+    if (UseLegacyInstallApp() &&
+        (GetSetup().version != base::Version(kUpdaterVersion))) {
+      GTEST_SKIP();
+    }
+
     IntegrationTest::SetUp();
     if (IsSkipped()) {
       return;
     }
 
     test_server_ = std::make_unique<ScopedServer>(test_commands_);
-    ASSERT_NO_FATAL_FAILURE(SetupRealUpdater(GetParam().updater_setup_path));
-    ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
+    ASSERT_NO_FATAL_FAILURE(SetupRealUpdater(GetSetup().updater_setup_path));
+    ASSERT_NO_FATAL_FAILURE(UseLegacyInstallApp() ? LegacyInstallApp(kAppId)
+                                                  : InstallApp(kAppId));
   }
 
   void TearDown() override {
@@ -4710,17 +4724,22 @@ class IntegrationLegacyUpdate3WebTest
     IntegrationTest::TearDown();
   }
 
+  TestUpdaterVersion GetSetup() { return std::get<0>(GetParam()); }
+  bool UseLegacyInstallApp() { return std::get<1>(GetParam()); }
+
   std::unique_ptr<ScopedServer> test_server_;
   static constexpr char kAppId[] = "test1";
 };
 
-INSTANTIATE_TEST_SUITE_P(IntegrationLegacyUpdate3WebTestCases,
-                         IntegrationLegacyUpdate3WebTest,
-                         ::testing::ValuesIn(GetRealUpdaterVersions()));
+INSTANTIATE_TEST_SUITE_P(
+    IntegrationLegacyUpdate3WebTestCases,
+    IntegrationLegacyUpdate3WebTest,
+    ::testing::Combine(::testing::ValuesIn(GetRealUpdaterVersions()),
+                       ::testing::Bool()));
 
 TEST_P(IntegrationLegacyUpdate3WebTest, NoUpdate) {
   ASSERT_NO_FATAL_FAILURE(
-      ExpectNoUpdateSequence(test_server_.get(), kAppId, GetParam().version));
+      ExpectNoUpdateSequence(test_server_.get(), kAppId, GetSetup().version));
   ASSERT_NO_FATAL_FAILURE(ExpectLegacyUpdate3WebSucceeds(
       kAppId, AppBundleWebCreateMode::kCreateInstalledApp, STATE_NO_UPDATE,
       S_OK));
@@ -4749,7 +4768,7 @@ TEST_P(IntegrationLegacyUpdate3WebTest, DisabledPolicy) {
 TEST_P(IntegrationLegacyUpdate3WebTest, CheckForUpdate) {
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(
       test_server_.get(), kAppId, UpdateService::Priority::kForeground,
-      base::Version("0.1"), base::Version("0.2"), GetParam().version));
+      base::Version("0.1"), base::Version("0.2"), GetSetup().version));
   ASSERT_NO_FATAL_FAILURE(ExpectLegacyUpdate3WebSucceeds(
       kAppId, AppBundleWebCreateMode::kCreateInstalledApp,
       STATE_UPDATE_AVAILABLE, S_OK));
@@ -4758,11 +4777,11 @@ TEST_P(IntegrationLegacyUpdate3WebTest, CheckForUpdate) {
 TEST_P(IntegrationLegacyUpdate3WebTest, Update) {
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(
       test_server_.get(), kAppId, UpdateService::Priority::kForeground,
-      base::Version("0.1"), base::Version("0.2"), GetParam().version));
+      base::Version("0.1"), base::Version("0.2"), GetSetup().version));
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
       test_server_.get(), kAppId, "", UpdateService::Priority::kForeground,
       base::Version("0.1"), base::Version("0.2"), /*do_fault_injection=*/false,
-      /*skip_download=*/false, GetParam().version));
+      /*skip_download=*/false, GetSetup().version));
   ASSERT_NO_FATAL_FAILURE(ExpectLegacyUpdate3WebSucceeds(
       kAppId, AppBundleWebCreateMode::kCreateInstalledApp,
       STATE_INSTALL_COMPLETE, S_OK));
@@ -4771,7 +4790,7 @@ TEST_P(IntegrationLegacyUpdate3WebTest, Update) {
 TEST_P(IntegrationLegacyUpdate3WebTest, CheckForInstall) {
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(
       test_server_.get(), kAppId, UpdateService::Priority::kForeground,
-      base::Version("0.1"), base::Version("0.1"), GetParam().version));
+      base::Version("0.1"), base::Version("0.1"), GetSetup().version));
   ASSERT_NO_FATAL_FAILURE(
       ExpectLegacyUpdate3WebSucceeds(kAppId, AppBundleWebCreateMode::kCreateApp,
                                      STATE_UPDATE_AVAILABLE, S_OK));
@@ -4780,11 +4799,11 @@ TEST_P(IntegrationLegacyUpdate3WebTest, CheckForInstall) {
 TEST_P(IntegrationLegacyUpdate3WebTest, Install) {
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(
       test_server_.get(), kAppId, UpdateService::Priority::kForeground,
-      base::Version("0.1"), base::Version("0.1"), GetParam().version));
+      base::Version("0.1"), base::Version("0.1"), GetSetup().version));
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       test_server_.get(), kAppId, "", UpdateService::Priority::kForeground,
       base::Version("0.1"), base::Version("0.1"), /*do_fault_injection=*/false,
-      /*skip_download=*/false, GetParam().version));
+      /*skip_download=*/false, GetSetup().version));
   ASSERT_NO_FATAL_FAILURE(
       ExpectLegacyUpdate3WebSucceeds(kAppId, AppBundleWebCreateMode::kCreateApp,
                                      STATE_INSTALL_COMPLETE, S_OK));
