@@ -8120,7 +8120,7 @@ class InterestGroupAuctionReportBuyersEnableDebugModeTest
               EXPECT_EQ(request.shared_info().debug_mode, debug_mode);
               EXPECT_EQ(request.debug_key(), debug_key);
 
-              EXPECT_EQ(budget_key.api(),
+              EXPECT_EQ(budget_key.caller_api(),
                         PrivateAggregationCallerApi::kProtectedAudience);
               EXPECT_EQ(budget_key.origin(), test_origin_);
               EXPECT_EQ(
@@ -8415,7 +8415,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
               PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             request_returned = std::move(generator).Run(contributions);
 
-            EXPECT_EQ(budget_key.api(),
+            EXPECT_EQ(budget_key.caller_api(),
                       PrivateAggregationCallerApi::kProtectedAudience);
             EXPECT_EQ(budget_key.origin(), test_origin_);
             EXPECT_EQ(
@@ -19755,7 +19755,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
             EXPECT_EQ(request.payload_contents().contributions[0].bucket, 3);
             EXPECT_EQ(request.payload_contents().contributions[0].value, 5);
             EXPECT_EQ(request.shared_info().reporting_origin, test_origin);
-            EXPECT_EQ(budget_key.api(),
+            EXPECT_EQ(budget_key.caller_api(),
                       PrivateAggregationCallerApi::kProtectedAudience);
             EXPECT_EQ(budget_key.origin(), test_origin);
             EXPECT_EQ(

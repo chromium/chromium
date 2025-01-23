@@ -44,7 +44,7 @@ class TestInterestGroupPrivateAggregationManager
   bool BindNewReceiver(
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
-      PrivateAggregationCallerApi api_for_budgeting,
+      PrivateAggregationCallerApi caller_api,
       std::optional<std::string> context_id,
       std::optional<base::TimeDelta> timeout,
       std::optional<url::Origin> aggregation_coordinator_origin,

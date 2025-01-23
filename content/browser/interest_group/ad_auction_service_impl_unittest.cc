@@ -802,7 +802,7 @@ class MockPrivateAggregationHostForTest : public PrivateAggregationHost {
     ON_CALL(*this, BindNewReceiver)
         .WillByDefault(
             [this](url::Origin worklet_origin, url::Origin top_frame_origin,
-                   PrivateAggregationCallerApi api_for_budgeting,
+                   PrivateAggregationCallerApi caller_api,
                    std::optional<std::string> context_id,
                    std::optional<base::TimeDelta> timeout,
                    std::optional<url::Origin> aggregation_coordinator_origin,
@@ -814,7 +814,7 @@ class MockPrivateAggregationHostForTest : public PrivateAggregationHost {
                                      worklet_origin);
               return PrivateAggregationHost::BindNewReceiver(
                   std::move(worklet_origin), std::move(top_frame_origin),
-                  api_for_budgeting, std::move(context_id), timeout,
+                  caller_api, std::move(context_id), timeout,
                   std::move(aggregation_coordinator_origin),
                   filtering_id_max_bytes, std::move(max_contributions),
                   std::move(pending_receiver));
@@ -9924,7 +9924,7 @@ function scoreAd(
                         /*bucket=*/3, /*value=*/4,
                         /*filtering_id=*/std::nullopt)));
             EXPECT_EQ(request.shared_info().reporting_origin, kOriginA);
-            EXPECT_EQ(budget_key.api(),
+            EXPECT_EQ(budget_key.caller_api(),
                       PrivateAggregationCallerApi::kProtectedAudience);
             EXPECT_EQ(budget_key.origin(), kOriginA);
             EXPECT_EQ(

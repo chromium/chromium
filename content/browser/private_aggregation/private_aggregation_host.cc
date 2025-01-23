@@ -105,14 +105,14 @@ void RecordFilteringIdStatusHistogram(bool has_filtering_id,
 // unique bucket and filtering ID pairs) that passed through the mojo pipe.
 void RecordNumberOfContributionMergeKeysHistogram(
     size_t num_merge_keys_sent_or_truncated,
-    PrivateAggregationCallerApi api,
+    PrivateAggregationCallerApi caller_api,
     bool has_timeout) {
   constexpr std::string_view kMergeKeysHistogramBase =
       "PrivacySandbox.PrivateAggregation.Host.NumContributionMergeKeysInPipe";
 
   base::UmaHistogramCounts10000(kMergeKeysHistogramBase,
                                 num_merge_keys_sent_or_truncated);
-  switch (api) {
+  switch (caller_api) {
     case PrivateAggregationCallerApi::kProtectedAudience:
       base::UmaHistogramCounts10000(
           base::StrCat({kMergeKeysHistogramBase, ".ProtectedAudience"}),
@@ -151,7 +151,7 @@ struct ContributionMergeKey {
 struct PrivateAggregationHost::ReceiverContext {
   url::Origin worklet_origin;
   url::Origin top_frame_origin;
-  PrivateAggregationCallerApi api_for_budgeting;
+  PrivateAggregationCallerApi caller_api;
   std::optional<std::string> context_id;
   std::optional<url::Origin> aggregation_coordinator_origin;
   size_t filtering_id_max_bytes;
@@ -222,7 +222,7 @@ PrivateAggregationHost::~PrivateAggregationHost() {
 // static
 base::StrictNumeric<size_t>
 PrivateAggregationHost::GetEffectiveMaxContributions(
-    PrivateAggregationCallerApi api,
+    PrivateAggregationCallerApi caller_api,
     std::optional<size_t> requested_max_contributions) {
   // These constants define the maximum number of contributions that can go in
   // an `AggregatableReport` after merging.
@@ -242,7 +242,7 @@ PrivateAggregationHost::GetEffectiveMaxContributions(
                     kMaxContributionsWhenCustomized);
   }
 
-  switch (api) {
+  switch (caller_api) {
     case PrivateAggregationCallerApi::kSharedStorage:
       return kMaxContributionsSharedStorage;
     case PrivateAggregationCallerApi::kProtectedAudience:
@@ -257,7 +257,7 @@ PrivateAggregationHost::GetEffectiveMaxContributions(
 bool PrivateAggregationHost::BindNewReceiver(
     url::Origin worklet_origin,
     url::Origin top_frame_origin,
-    PrivateAggregationCallerApi api,
+    PrivateAggregationCallerApi caller_api,
     std::optional<std::string> context_id,
     std::optional<base::TimeDelta> timeout,
     std::optional<url::Origin> aggregation_coordinator_origin,
@@ -308,13 +308,13 @@ bool PrivateAggregationHost::BindNewReceiver(
       ReceiverContext{
           .worklet_origin = std::move(worklet_origin),
           .top_frame_origin = std::move(top_frame_origin),
-          .api_for_budgeting = api,
+          .caller_api = caller_api,
           .context_id = std::move(context_id),
           .aggregation_coordinator_origin =
               std::move(aggregation_coordinator_origin),
           .filtering_id_max_bytes = filtering_id_max_bytes,
           .effective_max_contributions = GetEffectiveMaxContributions(
-              api, /*requested_max_contributions=*/max_contributions),
+              caller_api, /*requested_max_contributions=*/max_contributions),
           .null_report_behavior = needs_deterministic_report_count
                                       ? NullReportBehavior::kSendNullReport
                                       : NullReportBehavior::kDontSendReport,
@@ -444,7 +444,7 @@ AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
     AggregatableReportRequest::DelayType delay_type,
     base::Uuid report_id,
     const url::Origin& reporting_origin,
-    PrivateAggregationCallerApi api_for_budgeting,
+    PrivateAggregationCallerApi caller_api,
     std::optional<std::string> context_id,
     std::optional<url::Origin> aggregation_coordinator_origin,
     size_t filtering_id_max_bytes,
@@ -484,10 +484,10 @@ AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
       /*additional_fields=*/base::Value::Dict(),
       /*api_version=*/kApiReportVersion,
       /*api_identifier=*/
-      private_aggregation::GetApiIdentifier(api_for_budgeting));
+      private_aggregation::GetApiIdentifier(caller_api));
 
   std::string reporting_path = private_aggregation::GetReportingPath(
-      api_for_budgeting,
+      caller_api,
       /*is_immediate_debug_report=*/false);
 
   std::optional<uint64_t> debug_key;
@@ -625,7 +625,7 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
   RecordNumberOfContributionMergeKeysHistogram(
       receiver_context.accepted_contributions.size() +
           receiver_context.truncated_merge_keys.size(),
-      receiver_context.api_for_budgeting,
+      receiver_context.caller_api,
       /*has_timeout=*/!!receiver_context.timeout_timer);
 
   contributions.reserve(receiver_context.accepted_contributions.size());
@@ -680,7 +680,7 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
       GenerateReportRequest, std::move(timeout_or_disconnect_timer),
       std::move(receiver_context.report_debug_details), scheduled_report_time,
       delay_type, /*report_id=*/base::Uuid::GenerateRandomV4(),
-      reporting_origin, receiver_context.api_for_budgeting,
+      reporting_origin, receiver_context.caller_api,
       std::move(receiver_context.context_id),
       std::move(receiver_context.aggregation_coordinator_origin),
       receiver_context.filtering_id_max_bytes,
@@ -694,7 +694,7 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
   std::optional<PrivateAggregationBudgetKey> budget_key =
       PrivateAggregationBudgetKey::Create(
           /*origin=*/reporting_origin, /*api_invocation_time=*/now,
-          /*api=*/receiver_context.api_for_budgeting);
+          receiver_context.caller_api);
 
   // The origin should be potentially trustworthy.
   CHECK(budget_key.has_value());

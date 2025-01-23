@@ -71,7 +71,7 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
   [[nodiscard]] bool BindNewReceiver(
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
-      PrivateAggregationCallerApi api_for_budgeting,
+      PrivateAggregationCallerApi caller_api,
       std::optional<std::string> context_id,
       std::optional<base::TimeDelta> timeout,
       std::optional<url::Origin> aggregation_coordinator_origin,
@@ -118,7 +118,7 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
       PrivateAggregationHost::ReportRequestGenerator report_request_generator,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>
           contributions,
-      PrivateAggregationCallerApi api_for_budgeting,
+      PrivateAggregationCallerApi caller_api,
       PrivateAggregationHost::NullReportBehavior null_report_behavior,
       PrivateAggregationBudgeter::RequestResult request_result);
 
@@ -126,7 +126,7 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
       PrivateAggregationHost::ReportRequestGenerator report_request_generator,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>
           contributions,
-      PrivateAggregationCallerApi api_for_budgeting);
+      PrivateAggregationCallerApi caller_api);
 
   virtual void OnBudgeterGetAllDataKeysReturned(
       base::OnceCallback<void(std::set<DataKey>)> callback,

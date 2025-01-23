@@ -89,7 +89,7 @@ constexpr std::string_view kFilteringIdStatusHistogram =
 void ExpectNumberOfContributionMergeKeysHistogram(
     const base::HistogramTester& tester,
     size_t value,
-    PrivateAggregationCallerApi api,
+    PrivateAggregationCallerApi caller_api,
     bool is_reduced_delay) {
   constexpr std::string_view kBaseHistogram =
       "PrivacySandbox.PrivateAggregation.Host.NumContributionMergeKeysInPipe";
@@ -99,22 +99,24 @@ void ExpectNumberOfContributionMergeKeysHistogram(
   tester.ExpectUniqueSample(
       base::StrCat({kBaseHistogram, ".ProtectedAudience"}), value,
       /*expected_bucket_count=*/
-      (api == PrivateAggregationCallerApi::kProtectedAudience) ? 1 : 0);
+      (caller_api == PrivateAggregationCallerApi::kProtectedAudience) ? 1 : 0);
   tester.ExpectUniqueSample(
       base::StrCat({kBaseHistogram, ".SharedStorage"}), value,
       /*expected_bucket_count=*/
-      (api == PrivateAggregationCallerApi::kSharedStorage) ? 1 : 0);
+      (caller_api == PrivateAggregationCallerApi::kSharedStorage) ? 1 : 0);
 
   tester.ExpectUniqueSample(
       base::StrCat({kBaseHistogram, ".SharedStorage.ReducedDelay"}), value,
       /*expected_bucket_count=*/
-      (api == PrivateAggregationCallerApi::kSharedStorage && is_reduced_delay)
+      (caller_api == PrivateAggregationCallerApi::kSharedStorage &&
+       is_reduced_delay)
           ? 1
           : 0);
   tester.ExpectUniqueSample(
       base::StrCat({kBaseHistogram, ".SharedStorage.FullDelay"}), value,
       /*expected_bucket_count=*/
-      (api == PrivateAggregationCallerApi::kSharedStorage && !is_reduced_delay)
+      (caller_api == PrivateAggregationCallerApi::kSharedStorage &&
+       !is_reduced_delay)
           ? 1
           : 0);
 }
@@ -171,7 +173,7 @@ TEST_F(PrivateAggregationHostTest,
   std::optional<AggregatableReportRequest> validated_request;
   EXPECT_CALL(mock_callback_,
               Run(_, _,
-                  Property(&PrivateAggregationBudgetKey::api,
+                  Property(&PrivateAggregationBudgetKey::caller_api,
                            PrivateAggregationCallerApi::kProtectedAudience),
                   NullReportBehavior::kDontSendReport))
       .WillOnce(GenerateAndSaveReportRequest(&validated_request));
@@ -266,9 +268,10 @@ TEST_F(PrivateAggregationHostTest, ApiDiffers_RequestUpdatesCorrectly) {
         PrivateAggregationHost::kDefaultFilteringIdMaxBytes,
         /*max_contributions=*/std::nullopt,
         remotes[i].BindNewPipeAndPassReceiver()));
-    EXPECT_CALL(mock_callback_,
-                Run(_, _, Property(&PrivateAggregationBudgetKey::api, apis[i]),
-                    NullReportBehavior::kDontSendReport))
+    EXPECT_CALL(
+        mock_callback_,
+        Run(_, _, Property(&PrivateAggregationBudgetKey::caller_api, apis[i]),
+            NullReportBehavior::kDontSendReport))
         .WillOnce(GenerateAndSaveReportRequest(&validated_requests[i]));
 
     std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
@@ -425,7 +428,7 @@ TEST_F(PrivateAggregationHostTest,
   // Use the bucket as a sentinel to ensure that calls were routed correctly.
   EXPECT_CALL(mock_callback_,
               Run(_, _,
-                  Property(&PrivateAggregationBudgetKey::api,
+                  Property(&PrivateAggregationBudgetKey::caller_api,
                            PrivateAggregationCallerApi::kProtectedAudience),
                   NullReportBehavior::kDontSendReport))
       .WillOnce(Invoke(
@@ -445,7 +448,7 @@ TEST_F(PrivateAggregationHostTest,
 
   EXPECT_CALL(mock_callback_,
               Run(_, _,
-                  Property(&PrivateAggregationBudgetKey::api,
+                  Property(&PrivateAggregationBudgetKey::caller_api,
                            PrivateAggregationCallerApi::kSharedStorage),
                   NullReportBehavior::kDontSendReport))
       .WillOnce(Invoke(
@@ -1292,7 +1295,7 @@ TEST_F(PrivateAggregationHostTest,
 
   const struct {
     const std::string_view description;
-    PrivateAggregationCallerApi api;
+    PrivateAggregationCallerApi caller_api;
     std::optional<std::string> context_id;
     size_t filtering_id_max_bytes;
     std::optional<base::TimeDelta> timeout;
@@ -1334,7 +1337,7 @@ TEST_F(PrivateAggregationHostTest,
 
     mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
     bool bind_result = host_->BindNewReceiver(
-        kExampleOrigin, kMainFrameOrigin, test_case.api,
+        kExampleOrigin, kMainFrameOrigin, test_case.caller_api,
         /*context_id=*/test_case.context_id, /*timeout=*/test_case.timeout,
         /*aggregation_coordinator_origin=*/std::nullopt,
         /*filtering_id_max_bytes=*/test_case.filtering_id_max_bytes,
@@ -1354,7 +1357,7 @@ TEST_F(PrivateAggregationHostTest,
     host_->FlushReceiverSetForTesting();
 
     ExpectNumberOfContributionMergeKeysHistogram(
-        histogram, kExpectedNumberMergeKeys, test_case.api,
+        histogram, kExpectedNumberMergeKeys, test_case.caller_api,
         /*is_reduced_delay=*/test_case.timeout.has_value());
   }
 }
@@ -2008,7 +2011,7 @@ TEST_F(PrivateAggregationHostTest,
     std::optional<AggregatableReportRequest> validated_request;
     EXPECT_CALL(mock_callback_,
                 Run(_, _,
-                    Property(&PrivateAggregationBudgetKey::api,
+                    Property(&PrivateAggregationBudgetKey::caller_api,
                              PrivateAggregationCallerApi::kProtectedAudience),
                     NullReportBehavior::kDontSendReport))
         .WillOnce(GenerateAndSaveReportRequest(&validated_request));
@@ -2681,7 +2684,7 @@ TEST_F(PrivateAggregationHostTest, GetEffectiveMaxContributions) {
       /*disabled_features=*/{});
 
   struct TestCase {
-    PrivateAggregationCallerApi api;
+    PrivateAggregationCallerApi caller_api;
     std::optional<size_t> requested_max_contributions;
     size_t expected;
   };
@@ -2705,13 +2708,14 @@ TEST_F(PrivateAggregationHostTest, GetEffectiveMaxContributions) {
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(testing::Message()
-                 << "api: " << testing::PrintToString(test_case.api)
+                 << "caller_api: "
+                 << testing::PrintToString(test_case.caller_api)
                  << ", requested_max_contributions: "
                  << testing::PrintToString(
                         test_case.requested_max_contributions)
                  << ", expected: " << test_case.expected);
     EXPECT_EQ(PrivateAggregationHost::GetEffectiveMaxContributions(
-                  test_case.api, test_case.requested_max_contributions),
+                  test_case.caller_api, test_case.requested_max_contributions),
               test_case.expected);
   }
 }
@@ -2745,7 +2749,7 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
   std::optional<AggregatableReportRequest> validated_request;
   EXPECT_CALL(mock_callback_,
               Run(_, _,
-                  Property(&PrivateAggregationBudgetKey::api,
+                  Property(&PrivateAggregationBudgetKey::caller_api,
                            PrivateAggregationCallerApi::kProtectedAudience),
                   NullReportBehavior::kDontSendReport))
       .WillOnce(GenerateAndSaveReportRequest(&validated_request));
@@ -2787,7 +2791,7 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
   std::optional<AggregatableReportRequest> validated_request;
   EXPECT_CALL(mock_callback_,
               Run(_, _,
-                  Property(&PrivateAggregationBudgetKey::api,
+                  Property(&PrivateAggregationBudgetKey::caller_api,
                            PrivateAggregationCallerApi::kProtectedAudience),
                   NullReportBehavior::kSendNullReport))
       .WillOnce(GenerateAndSaveReportRequest(&validated_request));

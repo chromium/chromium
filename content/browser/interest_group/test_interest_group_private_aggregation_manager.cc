@@ -45,7 +45,7 @@ TestInterestGroupPrivateAggregationManager::
 bool TestInterestGroupPrivateAggregationManager::BindNewReceiver(
     url::Origin worklet_origin,
     url::Origin top_frame_origin,
-    PrivateAggregationCallerApi api_for_budgeting,
+    PrivateAggregationCallerApi caller_api,
     std::optional<std::string> context_id,
     std::optional<base::TimeDelta> timeout,
     std::optional<url::Origin> aggregation_coordinator_origin,
@@ -54,7 +54,7 @@ bool TestInterestGroupPrivateAggregationManager::BindNewReceiver(
     mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
         pending_receiver) {
   EXPECT_EQ(expected_top_frame_origin_, top_frame_origin);
-  EXPECT_EQ(PrivateAggregationCallerApi::kProtectedAudience, api_for_budgeting);
+  EXPECT_EQ(PrivateAggregationCallerApi::kProtectedAudience, caller_api);
   EXPECT_FALSE(context_id.has_value());
   EXPECT_FALSE(timeout.has_value());
   EXPECT_EQ(filtering_id_max_bytes, 1u);
