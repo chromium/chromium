@@ -225,8 +225,8 @@ const CGFloat kClearButtonImageSize = 17.0f;
 }
 
 - (void)setClearButtonHidden:(BOOL)isHidden {
-    self.textField.rightViewMode =
-        isHidden ? UITextFieldViewModeNever : UITextFieldViewModeAlways;
+  self.textField.rightViewMode =
+      isHidden ? UITextFieldViewModeNever : UITextFieldViewModeAlways;
 }
 
 - (void)setSemanticContentAttribute:
