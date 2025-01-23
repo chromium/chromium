@@ -119,6 +119,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTab) {
 
 #if !BUILDFLAG(IS_ANDROID)
 // Check having multiple extensions with the same override.
+// TODO(crbug.com/390020193): Port to desktop Android when our test framework
+// supports reloading/unloading extensions. Right now this requires
+// ExtensionService, which is unsupported on Android.
 IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTabMultiple) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -218,6 +221,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTabMultiple) {
 
 // Test that unloading an extension overriding the page reloads the page with
 // the proper url.
+// TODO(crbug.com/390020193): Port to desktop Android when our test framework
+// supports reloading/unloading extensions. Right now this requires
+// ExtensionService, which is unsupported on Android.
 IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest,
                        OverridingExtensionUnloadedWithPageOpen) {
   // Prefer IDs because loading/unloading invalidates the extension ptrs.
@@ -256,15 +262,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest,
   EXPECT_TRUE(content::WaitForLoadStop(active_tab));
   EXPECT_FALSE(ExtensionControlsPage(active_tab, extension1_id));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTabIncognito) {
   LoadExtension(data_dir().AppendASCII("newtab"));
 
   // Navigate an incognito tab to the new tab page.  We should get the actual
   // new tab page because we can't load chrome-extension URLs in incognito.
-  Browser* otr_browser =
-      OpenURLOffTheRecord(browser()->profile(), GURL("chrome://newtab/"));
-  WebContents* tab = otr_browser->tab_strip_model()->GetActiveWebContents();
+  WebContents* tab =
+      PlatformOpenURLOffTheRecord(profile(), GURL("chrome://newtab/"));
   ASSERT_TRUE(tab->GetController().GetVisibleEntry());
   EXPECT_FALSE(tab->GetController().GetVisibleEntry()->GetURL().
                SchemeIs(kExtensionScheme));
@@ -290,9 +296,9 @@ IN_PROC_BROWSER_TEST_F(
   // Navigate to the new tab page.  The overridden new tab page
   // will call chrome.test.sendMessage('controlled by first').
   ExtensionTestMessageListener listener("controlled by first");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
-  WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* contents = GetActiveWebContents();
+  ASSERT_TRUE(
+      content::NavigateToURL(contents, GURL(chrome::kChromeUINewTabURL)));
   EXPECT_TRUE(ExtensionControlsPage(contents, extension->id()));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 
@@ -327,8 +333,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, MAYBE_OverrideHistory) {
     ResultCatcher catcher;
     // Navigate to the history page.  The overridden history page
     // will call chrome.test.notifyPass() .
-    ASSERT_TRUE(
-        ui_test_utils::NavigateToURL(browser(), GURL("chrome://history/")));
+    ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                       GURL("chrome://history/")));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 }
@@ -343,8 +349,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, ShouldNotCreateDuplicateEntries) {
   // a preferences file without corresponding UnloadExtension() calls.
   for (size_t i = 0; i < 3; ++i) {
     ExtensionWebUI::RegisterOrActivateChromeURLOverrides(
-        browser()->profile(),
-        URLOverrides::GetChromeURLOverrides(extension));
+        profile(), URLOverrides::GetChromeURLOverrides(extension));
   }
 
   ASSERT_TRUE(CheckHistoryOverridesContainsNoDupes());
@@ -366,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, ShouldCleanUpDuplicateEntries) {
   }
 
   {
-    ScopedDictPrefUpdate update(browser()->profile()->GetPrefs(),
+    ScopedDictPrefUpdate update(profile()->GetPrefs(),
                                 ExtensionWebUI::kExtensionURLOverrides);
     update->Set("history", std::move(list));
   }
@@ -377,6 +382,5 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, ShouldCleanUpDuplicateEntries) {
 
   ASSERT_TRUE(CheckHistoryOverridesContainsNoDupes());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions
