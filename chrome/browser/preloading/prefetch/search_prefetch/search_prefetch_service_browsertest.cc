@@ -334,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchWithoutPrefetchingBrowserTest,
   EXPECT_FALSE(prefetch_status.has_value());
 
   // Navigate to flush metrics.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), prefetch_url));
   {
     // Check that we don't store any preloading attempts in case prefetch is
     // disabled.
@@ -399,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchHoldbackBrowserTest,
   EXPECT_FALSE(prefetch_status.has_value());
 
   // Navigate to flush metrics.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), prefetch_url));
   {
     // Check that we store one entry corresponding to the preloading attempt
     // for prefetch.
@@ -543,8 +543,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
 
   // Navigate to a different URL other than the prefetch URL to flush the
   // metrics.
-  GURL navigated_url = GURL("https://google.com");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), navigated_url));
+  GURL navigated_url = GetSearchServerQueryURL("newpage");
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), navigated_url));
   {
     // Check that we store one entry corresponding to the preloading attempt
     // for prefetch.
@@ -600,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   content::SetBrowserClientForTesting(old_client);
 
   // Navigate to flush the metrics.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), prefetch_url));
   {
     ukm::SourceId ukm_source_id =
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
@@ -771,7 +771,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest, SlowNetwork) {
       SearchPrefetchEligibilityReason::kSlowNetwork, 1);
 
   // Navigate to flush the metrics.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), prefetch_url));
   {
     ukm::SourceId ukm_source_id =
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
@@ -867,7 +867,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
 
   HeaderObserverContentBrowserClient browser_client;
   auto* old_client = content::SetBrowserClientForTesting(&browser_client);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
 
   EXPECT_FALSE(browser_client.had_raw_request_info());
   content::SetBrowserClientForTesting(old_client);
@@ -934,8 +934,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_FALSE(prefetch_status.has_value());
 
   // Navigate to flush the metrics.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GetSearchServerQueryURL("prefetch_1")));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(),
+                                     GetSearchServerQueryURL("prefetch_1")));
   {
     ukm::SourceId ukm_source_id =
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
@@ -993,7 +993,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
                        BasicClientHintsFunctionality) {
   // Fetch a response that will set client hints on future requests.
   GURL client_hints = GetSearchServerQueryURLWithNoQuery(kClientHintsURL);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), client_hints));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), client_hints));
 
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
@@ -1062,7 +1062,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_EQ(SearchPrefetchStatus::kRequestFailed, prefetch_status.value());
 
   // Navigate to flush the metrics.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), prefetch_url));
   {
     ukm::SourceId ukm_source_id =
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
@@ -1119,7 +1119,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       SearchPrefetchEligibilityReason::kAttemptedQueryRecently, 1);
 
   // Navigate to flush the metrics.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), prefetch_url));
   {
     ukm::SourceId ukm_source_id =
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
@@ -1171,7 +1171,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest, BadURL) {
       SearchPrefetchEligibilityReason::kNotDefaultSearchWithTerms, 1);
 
   // Navigate to flush the metrics.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), prefetch_url));
   {
     ukm::SourceId ukm_source_id =
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
@@ -1219,7 +1219,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       SearchPrefetchEligibilityReason::kPrefetchDisabled, 1);
 
   // Navigate to flush the metrics.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), prefetch_url));
   {
     ukm::SourceId ukm_source_id =
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
@@ -1275,7 +1275,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
 
   auto inner_html = GetDocumentInnerHTML();
 
@@ -1341,7 +1341,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
                                                         GetWebContents()));
   WaitUntilStatusChangesTo(canonical_search_url,
                            SearchPrefetchStatus::kComplete);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
 
   // The prefetch should be served, and only 1 request should be issued.
   EXPECT_EQ(1u, search_server_requests().size());
@@ -1364,7 +1364,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
                                                         GetWebContents()));
   WaitUntilStatusChangesTo(canonical_search_url_2,
                            SearchPrefetchStatus::kComplete);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url_2));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url_2));
 
   // The prefetch should be served, and only 1 request (now the second total
   // request) should be issued.
@@ -1432,7 +1432,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
                                                         GetWebContents()));
   WaitUntilStatusChangesTo(canonical_search_url,
                            SearchPrefetchStatus::kComplete);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
 
   // Add a ref param onto the page before navigating away.
   std::string script = R"(
@@ -1465,7 +1465,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
                                                         GetWebContents()));
   WaitUntilStatusChangesTo(canonical_search_url_2,
                            SearchPrefetchStatus::kComplete);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url_2));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url_2));
 
   // The prefetch should be served, and only 1 request (now the second total
   // request) should be issued.
@@ -1532,8 +1532,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
                                                         GetWebContents()));
   WaitUntilStatusChangesTo(canonical_search_url,
                            SearchPrefetchStatus::kComplete);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GetSearchServerQueryURL(search_terms)));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(),
+                                     GetSearchServerQueryURL(search_terms)));
 
   // The prefetch should be served, and only 1 request should be issued.
   EXPECT_EQ(1u, search_server_requests().size());
@@ -1548,8 +1548,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
                                                         GetWebContents()));
   WaitUntilStatusChangesTo(canonical_search_url,
                            SearchPrefetchStatus::kComplete);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GetSearchServerQueryURL(search_terms)));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(),
+                                     GetSearchServerQueryURL(search_terms)));
 
   // The prefetch should be served, and only 1 request (now the second total
   // request) should be issued.
@@ -1602,8 +1602,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
                                                         GetWebContents()));
   WaitUntilStatusChangesTo(canonical_search_url,
                            SearchPrefetchStatus::kComplete);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GetSearchServerQueryURL(search_terms)));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(),
+                                     GetSearchServerQueryURL(search_terms)));
 
   // The prefetch should be served, and only 1 request should be issued.
   EXPECT_EQ(1u, search_server_requests().size());
@@ -1612,8 +1612,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
 
   search_terms = "prefetch_content_2";
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GetSearchServerQueryURL(search_terms)));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(),
+                                     GetSearchServerQueryURL(search_terms)));
 
   // No prefetch request started, and only 1 request (now the second total
   // request) should be issued.
@@ -1661,8 +1661,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
                                                         GetWebContents()));
   WaitUntilStatusChangesTo(canonical_search_url,
                            SearchPrefetchStatus::kComplete);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GetSearchServerQueryURL(search_terms)));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(),
+                                     GetSearchServerQueryURL(search_terms)));
 
   // The prefetch should be served, and only 1 request should be issued.
   ASSERT_EQ(1u, search_server_requests().size());
@@ -1672,8 +1672,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_FALSE(base::Contains(inner_html, "regular"));
   EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GetSearchServerQueryURL("search")));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(),
+                                     GetSearchServerQueryURL("search")));
 
   // The prefetch should be served, and only 1 request (now the second total
   // request) should be issued.
@@ -1724,7 +1724,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
 
   GURL search_url = GetSearchServerQueryURL(search_terms);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
 
   auto inner_html = GetDocumentInnerHTML();
 
@@ -1761,8 +1761,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GetSearchServerQueryURL(search_terms_other)));
+  ASSERT_TRUE(content::NavigateToURL(
+      GetWebContents(), GetSearchServerQueryURL(search_terms_other)));
 
   auto inner_html = GetDocumentInnerHTML();
 
@@ -1809,7 +1809,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       SearchPrefetchEligibilityReason::kErrorBackoff, 1);
 
   // Navigate to flush the metrics.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), prefetch_url));
+
   {
     ukm::SourceId ukm_source_id =
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
@@ -1880,8 +1881,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GetSearchServerQueryURL(search_terms)));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(),
+                                     GetSearchServerQueryURL(search_terms)));
 
   auto inner_html = GetDocumentInnerHTML();
 
@@ -1950,8 +1951,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       search_prefetch_service->GetSearchPrefetchStatusForTesting(
           canonical_search_url);
   EXPECT_FALSE(prefetch_status.has_value());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GetSearchServerQueryURL(search_terms)));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(),
+                                     GetSearchServerQueryURL(search_terms)));
 
   auto inner_html = GetDocumentInnerHTML();
 
@@ -2486,7 +2487,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       SearchPrefetchEligibilityReason::kJavascriptDisabled, 1);
 
   // Navigate to flush the metrics.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), prefetch_url));
   {
     ukm::SourceId ukm_source_id =
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
@@ -2575,8 +2576,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kWebKitJavascriptEnabled,
                                                false);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
-
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchServingReason2",
       SearchPrefetchServingReason::kJavascriptDisabled, 1);
@@ -2618,8 +2618,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       ->SetContentSettingDefaultScope(prefetch_url, GURL(),
                                       ContentSettingsType::JAVASCRIPT,
                                       CONTENT_SETTING_BLOCK);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
 
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchServingReason2",
@@ -2660,8 +2659,15 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_EQ(1u, search_server_request_count());
 
   // Link click.
-  NavigateParams params(browser(), search_url, ui::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  content::TestNavigationManager navigation_manager(GetWebContents(),
+                                                    search_url);
+  GetWebContents()->OpenURL(
+      content::OpenURLParams(search_url, content::Referrer(),
+                             WindowOpenDisposition::CURRENT_TAB,
+                             ui::PAGE_TRANSITION_LINK,
+                             /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   EXPECT_EQ(2u, search_server_request_count());
   histogram_tester.ExpectUniqueSample(
@@ -2680,7 +2686,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest, NoServeReload) {
   auto [prefetch_url, search_url] =
       GetSearchPrefetchAndNonPrefetch(search_terms);
   GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
 
   EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
                                                         GetWebContents()));
@@ -2742,7 +2748,18 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest, NoServePost) {
   EXPECT_EQ(1u, search_server_request_count());
 
   // Post request.
-  ui_test_utils::NavigateToURLWithPost(browser(), search_url);
+  content::TestNavigationManager navigation_manager(GetWebContents(),
+                                                    search_url);
+  content::OpenURLParams params(search_url, content::Referrer(),
+                                WindowOpenDisposition::CURRENT_TAB,
+                                ui::PAGE_TRANSITION_TYPED,
+
+                                /*is_renderer_initiated=*/false);
+  std::string post_data = "test=body";
+  params.post_data = network::ResourceRequestBody::CreateFromCopyOfBytes(
+      base::as_byte_span(post_data));
+  GetWebContents()->OpenURL(params, /*navigation_handle_callback=*/{});
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   EXPECT_EQ(2u, search_server_request_count());
   histogram_tester.ExpectUniqueSample(
@@ -2807,7 +2824,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), navigation_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), navigation_url));
 
   const auto& requests = search_server_requests();
   EXPECT_EQ(3u, requests.size());
@@ -2909,7 +2926,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
 
   auto inner_html = GetDocumentInnerHTML();
 
@@ -2947,7 +2964,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
 
   content::RenderFrameHost* frame = GetWebContents()->GetPrimaryMainFrame();
 
@@ -3009,8 +3026,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceBFCacheTest,
                                                         GetWebContents()));
   WaitUntilStatusChangesTo(canonical_search_url,
                            SearchPrefetchStatus::kComplete);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GetSearchServerQueryURL(search_terms)));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(),
+                                     GetSearchServerQueryURL(search_terms)));
 
   // The prefetch should be served, and only 1 request should be issued.
   EXPECT_EQ(1u, search_server_requests().size());
@@ -3025,8 +3042,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceBFCacheTest,
                                                         GetWebContents()));
   WaitUntilStatusChangesTo(canonical_search_url,
                            SearchPrefetchStatus::kComplete);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GetSearchServerQueryURL(search_terms)));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(),
+                                     GetSearchServerQueryURL(search_terms)));
 
   // The page should be restored from BF cache.
   EXPECT_EQ(2u, search_server_requests().size());
@@ -3415,7 +3432,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
       GetSearchPrefetchAndNonPrefetch(search_terms);
   GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
   // Navigate.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
 
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       canonical_search_url);
@@ -3499,7 +3516,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
       GetSearchPrefetchAndNonPrefetch(search_terms);
   GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
   // Navigate.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
 
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       canonical_search_url);
@@ -3582,7 +3599,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
       GetSearchPrefetchAndNonPrefetch(search_terms);
   GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
   // Navigate.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
 
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       canonical_search_url);
@@ -3865,7 +3882,7 @@ IN_PROC_BROWSER_TEST_F(SearchNavigationPrefetchHoldbackBrowserTest,
       GetSearchPrefetchAndNonPrefetch(search_terms);
   GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
   // Navigate.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
 
   {
     ukm::SourceId ukm_source_id =
