@@ -80,13 +80,17 @@ RotationDebugInfo::FailureInfo* AddFirstFailureInfo(
     RotationDebugInfo& info,
     base::Time timestamp,
     RotationDebugInfo::FailureType type,
-    bool received_challenge) {
+    bool received_challenge,
+    const base::flat_set<std::string>& missing_cookies) {
   RotationDebugInfo::FailureInfo* first_failure =
       info.mutable_first_failure_info();
   *first_failure->mutable_failure_time() =
       bound_session_credentials::TimeToTimestamp(timestamp);
   first_failure->set_type(type);
   first_failure->set_received_challenge(received_challenge);
+  for (const std::string& cookie_name : missing_cookies) {
+    first_failure->add_missing_cookies(cookie_name);
+  }
   return first_failure;
 }
 
@@ -1148,7 +1152,7 @@ TEST_F(BoundSessionCookieControllerImplTest, UpdateDebugInfo) {
   SimulateCompleteRefreshRequest(Result::kConnectionError, std::nullopt);
   AddFirstFailureInfo(expected_info, base::Time::Now(),
                       RotationDebugInfo::CONNECTION_ERROR,
-                      /*received_challenge=*/false);
+                      /*received_challenge=*/false, /*missing_cookies=*/{});
   RotationDebugInfo::FailureCounter* connection_error_counter =
       AddFailureCounter(expected_info, RotationDebugInfo::CONNECTION_ERROR);
   EXPECT_THAT(debug_info(), base::test::EqualsProto(expected_info));
@@ -1174,12 +1178,63 @@ TEST_F(BoundSessionCookieControllerImplTest, UpdateDebugInfo) {
   AddFailureCounter(expected_info, RotationDebugInfo::TIMEOUT);
   EXPECT_THAT(debug_info(), base::test::EqualsProto(expected_info));
 
+  // CONNECTION_ERROR: 2
+  // SERVER_ERROR: 1
+  // TIMEOUT: 1
+  // SUCCESS_WITH_MISSING_COOKIES: 1
+  trigger_rotation();
+  SimulateCompleteRefreshRequest(Result::kServerUnexepectedResponse,
+                                 std::nullopt);
+  AddFailureCounter(expected_info,
+                    RotationDebugInfo::SUCCESS_WITH_MISSING_COOKIES);
+  EXPECT_THAT(debug_info(), base::test::EqualsProto(expected_info));
+
   // CONNECTION_ERROR: 3
   // SERVER_ERROR: 1
   // TIMEOUT: 1
+  // SUCCESS_WITH_MISSING_COOKIES: 1
   trigger_rotation();
   SimulateCompleteRefreshRequest(Result::kConnectionError, std::nullopt);
   connection_error_counter->set_count(3);
+  EXPECT_THAT(debug_info(), base::test::EqualsProto(expected_info));
+
+  // Debug info is cleared on success.
+  trigger_rotation();
+  EXPECT_TRUE(CompletePendingRefreshRequestIfAny());
+  EXPECT_THAT(debug_info(), base::test::EqualsProto(RotationDebugInfo()));
+}
+
+TEST_F(BoundSessionCookieControllerImplTest,
+       UpdateDebugInfoWithMissingCookies) {
+  RotationDebugInfo expected_info;
+  // Debug info is empty on startup.
+  EXPECT_THAT(debug_info(), base::test::EqualsProto(expected_info));
+
+  auto trigger_rotation = [&]() {
+    EXPECT_FALSE(AreAllCookiesFresh());
+    task_environment()->FastForwardBy(base::Seconds(2));
+    bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
+        base::DoNothing());
+  };
+
+  // SUCCESS_WITH_MISSING_COOKIES: 1
+  trigger_rotation();
+  SimulateCompleteRefreshRequest(Result::kServerUnexepectedResponse,
+                                 std::nullopt);
+  AddFirstFailureInfo(
+      expected_info, base::Time::Now(),
+      RotationDebugInfo::SUCCESS_WITH_MISSING_COOKIES,
+      /*received_challenge=*/false,
+      /*missing_cookies=*/{k1PSIDTSCookieName, k3PSIDTSCookieName});
+  RotationDebugInfo::FailureCounter* missing_cookies_error_counter =
+      AddFailureCounter(expected_info,
+                        RotationDebugInfo::SUCCESS_WITH_MISSING_COOKIES);
+  EXPECT_THAT(debug_info(), base::test::EqualsProto(expected_info));
+
+  // SUCCESS_WITH_MISSING_COOKIES: 2
+  SimulateCompleteRefreshRequest(Result::kServerUnexepectedResponse,
+                                 std::nullopt);
+  missing_cookies_error_counter->set_count(2);
   EXPECT_THAT(debug_info(), base::test::EqualsProto(expected_info));
 
   // Debug info is cleared on success.

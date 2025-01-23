@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
@@ -43,6 +44,7 @@ class BoundSessionRefreshCookieDebugReportFetcher
       std::optional<std::string> sec_session_challenge_response) override;
   bool IsChallengeReceived() const override;
   std::optional<std::string> TakeSecSessionChallengeResponseIfAny() override;
+  base::flat_set<std::string> GetNonRefreshedCookieNames() override;
 
  private:
   void OnURLLoaderComplete(scoped_refptr<net::HttpResponseHeaders> headers);

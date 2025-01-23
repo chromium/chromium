@@ -298,6 +298,9 @@ class FakeBoundSessionDebugReportFetcher
   std::optional<std::string> TakeSecSessionChallengeResponseIfAny() override {
     return std::nullopt;
   }
+  base::flat_set<std::string> GetNonRefreshedCookieNames() override {
+    return {};
+  }
 };
 
 class MockObserver : public BoundSessionCookieRefreshService::Observer {

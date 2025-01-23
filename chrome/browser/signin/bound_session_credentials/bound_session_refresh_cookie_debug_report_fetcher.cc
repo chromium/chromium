@@ -100,6 +100,11 @@ std::optional<std::string> BoundSessionRefreshCookieDebugReportFetcher::
   return std::nullopt;
 }
 
+base::flat_set<std::string>
+BoundSessionRefreshCookieDebugReportFetcher::GetNonRefreshedCookieNames() {
+  return {};
+}
+
 void BoundSessionRefreshCookieDebugReportFetcher::OnURLLoaderComplete(
     scoped_refptr<net::HttpResponseHeaders> headers) {
   net::Error net_error = static_cast<net::Error>(url_loader_->NetError());
