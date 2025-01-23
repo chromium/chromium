@@ -24,11 +24,16 @@ using passage_embeddings::PassagePriority;
 }  // namespace
 
 SchedulingEmbedder::Job::Job(passage_embeddings::PassagePriority priority,
+                             TaskId task_id,
                              std::vector<std::string> passages,
                              ComputePassagesEmbeddingsCallback callback)
     : priority(priority),
+      task_id(task_id),
       passages(std::move(passages)),
-      callback(std::move(callback)) {}
+      callback(std::move(callback)) {
+  // No Job should have an invalid task Id.
+  CHECK_NE(task_id, kInvalidTaskId);
+}
 SchedulingEmbedder::Job::~Job() = default;
 SchedulingEmbedder::Job::Job(Job&&) = default;
 SchedulingEmbedder::Job& SchedulingEmbedder::Job::operator=(Job&&) = default;
@@ -42,28 +47,39 @@ SchedulingEmbedder::SchedulingEmbedder(std::unique_ptr<Embedder> embedder,
 
 SchedulingEmbedder::~SchedulingEmbedder() = default;
 
-void SchedulingEmbedder::ComputePassagesEmbeddings(
+SchedulingEmbedder::TaskId SchedulingEmbedder::ComputePassagesEmbeddings(
     passage_embeddings::PassagePriority priority,
     std::vector<std::string> passages,
     ComputePassagesEmbeddingsCallback callback) {
+  TaskId task_id = next_task_id_;
+  next_task_id_++;
+
   // Zero size jobs are expected, and can be called back immediately
   // instead of waiting in line for nothing.
   if (passages.empty()) {
     std::move(callback).Run(
-        /*passages=*/{}, /*embeddings=*/{},
+        /*passages=*/{}, /*embeddings=*/{}, task_id,
         passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
-    return;
+    return task_id;
   }
 
   // Only start work if none is in progress. If work is already begun
   // then it will continue later when embeddings are returned.
   bool submit = jobs_.empty();
 
-  jobs_.emplace_back(priority, std::move(passages), std::move(callback));
+  jobs_.emplace_back(priority, task_id, std::move(passages),
+                     std::move(callback));
+  // Put higher priority jobs at the front. This may suspend partially
+  // completed jobs of lower priority by pushing them toward the back.
+  std::stable_sort(jobs_.begin(), jobs_.end(), [](const Job& a, const Job& b) {
+    return a.priority < b.priority;
+  });
 
   if (submit) {
     SubmitWorkToEmbedder();
   }
+
+  return task_id;
 }
 
 void SchedulingEmbedder::SubmitWorkToEmbedder() {
@@ -77,25 +93,6 @@ void SchedulingEmbedder::SubmitWorkToEmbedder() {
     return;
   }
 
-  // Put higher priority jobs at the front. This may suspend partially
-  // completed jobs of lower priority by pushing them toward the back.
-  std::stable_sort(jobs_.begin(), jobs_.end(), [](const Job& a, const Job& b) {
-    return a.priority < b.priority;
-  });
-
-  // When submitting a query, only the latest is kept, and old waiting queries
-  // can be removed. They will be contiguous at the front due to above sort.
-  if (jobs_.front().priority == PassagePriority::kUserInitiated) {
-    while (jobs_.size() > 1 &&
-           jobs_.at(1).priority == PassagePriority::kUserInitiated) {
-      VLOG(2) << "Dropped pending query '" << jobs_.front().passages[0]
-              << "'. Next query: '" << jobs_.at(1).passages[0] << "'";
-      std::move(jobs_.front().callback)
-          .Run({}, {}, passage_embeddings::ComputeEmbeddingsStatus::kSkipped);
-      jobs_.pop_front();
-    }
-  }
-
   // Submit a batch of passages taken from jobs near the front of the queue.
   // Only submit one priority type of passage, regardless of count.
   PassagePriority priority = jobs_.front().priority;
@@ -103,7 +100,8 @@ void SchedulingEmbedder::SubmitWorkToEmbedder() {
   size_t job_index = 0;
   while (passages.size() < scheduled_max_ && job_index < jobs_.size() &&
          jobs_.at(job_index).priority == priority) {
-    const Job& job = jobs_.at(job_index);
+    Job& job = jobs_.at(job_index);
+    job.in_progress = true;
     size_t accept = std::min(scheduled_max_ - passages.size(),
                              job.passages.size() - job.embeddings.size());
     VLOG(3) << "Batching range [" << job.embeddings.size() << ','
@@ -130,6 +128,26 @@ void SchedulingEmbedder::SetOnEmbedderReady(OnEmbedderReadyCallback callback) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+bool SchedulingEmbedder::TryCancel(TaskId task_id) {
+  // No Job should have an invalid task Id.
+  CHECK_NE(task_id, kInvalidTaskId);
+
+  for (auto itr = jobs_.begin(); itr < jobs_.end(); itr++) {
+    Job& job = *itr;
+    if (task_id == job.task_id && !job.in_progress) {
+      VLOG(2) << "Aborted embedding work for " << job.passages.size()
+              << " passages starting with `"
+              << (job.passages.empty() ? "" : job.passages[0]) << "`";
+      std::move(job.callback)
+          .Run(std::move(job.passages), {}, job.task_id,
+               passage_embeddings::ComputeEmbeddingsStatus::kCanceled);
+      jobs_.erase(itr);
+      return true;
+    }
+  }
+  return false;
+}
+
 void SchedulingEmbedder::OnEmbedderReady(
     OnEmbedderReadyCallback callback,
     passage_embeddings::EmbedderMetadata metadata) {
@@ -154,7 +172,8 @@ void SchedulingEmbedder::OnEmbeddingsComputed(
     VLOG(2) << "Aborted embedding work for " << job.passages.size()
             << " passages starting with `"
             << (job.passages.empty() ? "" : job.passages[0]) << "`";
-    std::move(job.callback).Run({}, {}, status);
+    std::move(job.callback)
+        .Run(std::move(job.passages), {}, job.task_id, status);
     jobs_.pop_front();
     // Continue on to allow possibility of resuming any remaining jobs.
     // This upholds the 1:1 callback requirement and gives jobs another
@@ -182,7 +201,8 @@ void SchedulingEmbedder::OnEmbeddingsComputed(
       VLOG(2) << "Finished embedding work for " << job.passages.size()
               << " passages starting with `" << job.passages[0] << "`";
       std::move(job.callback)
-          .Run(std::move(job.passages), std::move(job.embeddings), status);
+          .Run(std::move(job.passages), std::move(job.embeddings), job.task_id,
+               status);
       jobs_.pop_front();
     }
   }

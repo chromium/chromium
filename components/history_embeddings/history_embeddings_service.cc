@@ -240,7 +240,6 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
           GetFeatureParameters().scheduled_embeddings_max)),
       answerer_(std::move(answerer)),
       intent_classifier_(std::move(intent_classifier)),
-      query_id_(0u),
       query_id_weak_ptr_factory_(&query_id_),
       weak_ptr_factory_(this) {
   // The history service is never nullptr; even unit tests should provide it.
@@ -398,7 +397,12 @@ SearchResult HistoryEmbeddingsService::Search(
     return result;
   }
 
-  embedder_->ComputePassagesEmbeddings(
+  // Try to cancel the embedding task for the previous query, if any.
+  if (query_embedding_task_id_ != SchedulingEmbedder::kInvalidTaskId) {
+    embedder_->TryCancel(query_embedding_task_id_);
+  }
+
+  query_embedding_task_id_ = embedder_->ComputePassagesEmbeddings(
       passage_embeddings::PassagePriority::kUserInitiated, {std::move(query)},
       base::BindOnce(&HistoryEmbeddingsService::OnQueryEmbeddingComputed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -411,6 +415,7 @@ void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
     SearchResult result,
     std::vector<std::string> query_passages,
     std::vector<Embedding> query_embeddings,
+    SchedulingEmbedder::TaskId task_id,
     passage_embeddings::ComputeEmbeddingsStatus status) {
   bool succeeded =
       status == passage_embeddings::ComputeEmbeddingsStatus::kSuccess;
@@ -420,6 +425,15 @@ void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
   VLOG(1) << "History.Embeddings.QueryEmbeddingSucceeded: " << succeeded
           << " ; Query: '"
           << (query_passages.empty() ? "(NONE)" : query_passages[0]) << "'";
+
+  // Ignore the previous query if a new one has been submitted to the embedder.
+  if (query_embedding_task_id_ != task_id) {
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  // Reset the query embedding task ID to avoid attempting to cancel it later.
+  query_embedding_task_id_ = SchedulingEmbedder::kInvalidTaskId;
 
   if (!succeeded) {
     std::move(callback).Run(std::move(result));
@@ -875,6 +889,7 @@ void HistoryEmbeddingsService::OnPassagesEmbeddingsComputed(
     UrlData url_passages,
     std::vector<std::string> passages,
     std::vector<Embedding> embeddings,
+    SchedulingEmbedder::TaskId task_id,
     passage_embeddings::ComputeEmbeddingsStatus status) {
   // Merge new and cached embeddings, expanding the `embeddings`
   // vector to fit the passages structure of `url_passages.passages`.

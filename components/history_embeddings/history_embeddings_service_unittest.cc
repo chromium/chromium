@@ -204,7 +204,8 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
     }
     service_->OnPassagesEmbeddingsComputed(
         /*embedding_cache=*/{}, std::move(url_passages), std::move(passages),
-        std::move(passages_embeddings), status);
+        std::move(passages_embeddings), SchedulingEmbedder::kInvalidTaskId,
+        status);
   }
 
   void SetMetadataScoreThreshold(double threshold) {
@@ -1136,15 +1137,11 @@ TEST_F(HistoryEmbeddingsServiceTest, CancelPreviousSearches) {
   service_->Search(nullptr, "passage", {}, 3, /*skip_answering=*/true,
                    future4.GetRepeatingCallback());
 
-  // The first query is processed.
-  // TODO(crbug.com/390241271): The first query should NOT be processed.
+  // The first query is skipped.
   SearchResult result1 = future1.Take();
   EXPECT_FALSE(result1.session_id.empty());
   EXPECT_EQ(result1.query, "passage");
-  ASSERT_EQ(result1.scored_url_rows.size(), 1u);
-  EXPECT_EQ(result1.scored_url_rows[0].scored_url.url_id, 1);
-  EXPECT_EQ(result1.scored_url_rows[0].scored_url.visit_id, 1);
-  EXPECT_EQ(result1.scored_url_rows[0].scored_url.visit_time, now);
+  ASSERT_EQ(result1.scored_url_rows.size(), 0u);
 
   // The second query is skipped.
   SearchResult result2 = future2.Take();

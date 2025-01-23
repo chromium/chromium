@@ -71,10 +71,8 @@ enum class ComputeEmbeddingsStatus {
   // Failure occurred during model execution.
   kExecutionFailure = 2,
 
-  // The generation request was skipped. This could happen if the embeddings
-  // request for a user query, which may have been obsolete (by a newer user
-  // query) by the time the embedder is free.
-  kSkipped = 3,
+  // The generation request was explicitly canceled.
+  kCanceled = 3,
 };
 
 }  // namespace passage_embeddings
