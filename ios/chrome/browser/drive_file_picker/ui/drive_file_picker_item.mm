@@ -85,21 +85,20 @@ const CGFloat kBiggerIconPointSize = 22;
 }
 
 + (instancetype)sharedWithMeItem {
-    UIImageConfiguration* drive_symbol_configuration =
-        [UIImageSymbolConfiguration
-            configurationWithPointSize:kBiggerIconPointSize
-                                weight:UIImageSymbolWeightSemibold
-                                 scale:UIImageSymbolScaleMedium];
-    UIImage* drive_symbol = DefaultSymbolWithConfiguration(
-        kPersonTwoSymbol, drive_symbol_configuration);
+  UIImageConfiguration* drive_symbol_configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kBiggerIconPointSize
+                          weight:UIImageSymbolWeightSemibold
+                           scale:UIImageSymbolScaleMedium];
+  UIImage* drive_symbol = DefaultSymbolWithConfiguration(
+      kPersonTwoSymbol, drive_symbol_configuration);
 
-    return [[DriveFilePickerItem alloc]
-        initWithIdentifier:kDriveFilePickerSharedWithMeItemIdentifier
-                     title:l10n_util::GetNSString(
-                               IDS_IOS_DRIVE_FILE_PICKER_SHARED_WITH_ME)
-                  subtitle:nil
-                      icon:drive_symbol
-                      type:DriveItemType::kSharedWithMe];
+  return [[DriveFilePickerItem alloc]
+      initWithIdentifier:kDriveFilePickerSharedWithMeItemIdentifier
+                   title:l10n_util::GetNSString(
+                             IDS_IOS_DRIVE_FILE_PICKER_SHARED_WITH_ME)
+                subtitle:nil
+                    icon:drive_symbol
+                    type:DriveItemType::kSharedWithMe];
 }
 
 @end
