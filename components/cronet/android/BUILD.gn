@@ -996,7 +996,6 @@ template("repackage_jars") {
     requires_android = true
     direct_deps_only = true
     use_unprocessed_jars = true
-    no_build_hooks = true
     jar_excluded_patterns = _excludes
 
     # This is to prevent clashing with the real jni_zero in apps that include
