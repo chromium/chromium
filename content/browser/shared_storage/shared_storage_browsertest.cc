@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <cmath>
+#include <cstddef>
 #include <limits>
 #include <map>
 #include <memory>
@@ -7754,6 +7755,7 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
                  std::optional<base::TimeDelta>,
                  std::optional<url::Origin>,
                  size_t,
+                 std::optional<size_t>,
                  mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>),
                 (override));
   };

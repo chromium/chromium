@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_TEST_UTILS_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <optional>
 #include <set>
@@ -86,6 +87,7 @@ class MockPrivateAggregationHost : public PrivateAggregationHost {
                std::optional<base::TimeDelta>,
                std::optional<url::Origin>,
                size_t,
+               std::optional<size_t>,
                mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>),
               (override));
 
@@ -115,6 +117,7 @@ class MockPrivateAggregationManagerImpl : public PrivateAggregationManagerImpl {
                std::optional<base::TimeDelta>,
                std::optional<url::Origin>,
                size_t,
+               std::optional<size_t>,
                mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>),
               (override));
 

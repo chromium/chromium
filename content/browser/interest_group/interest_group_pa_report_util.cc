@@ -475,6 +475,7 @@ void SplitContributionsIntoBatchesThenSendToHost(
         /*context_id=*/std::nullopt,
         /*timeout=*/std::nullopt, aggregation_coordinator_origin,
         PrivateAggregationHost::kDefaultFilteringIdMaxBytes,
+        /*max_contributions=*/std::nullopt,
         remote_host.BindNewPipeAndPassReceiver());
 
     // The worklet origin should be potentially trustworthy (and no context ID

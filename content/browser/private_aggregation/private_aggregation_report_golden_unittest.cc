@@ -50,6 +50,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "url/gurl.h"
@@ -533,8 +534,9 @@ TEST_F(PrivateAggregationReportGoldenLatestVersionTest, VerifyGoldenReport) {
         std::move(test_case.debug_details), std::move(test_case.contributions),
         std::move(test_case.api_identifier), test_case.report_file,
         test_case.cleartext_payloads_file, test_case.filtering_id_max_bytes,
-        PrivateAggregationHost::GetMaxNumContributions(
-            test_case.api_identifier));
+        PrivateAggregationHost::GetEffectiveMaxContributions(
+            test_case.api_identifier,
+            /*requested_max_contributions=*/std::nullopt));
   }
 }
 
