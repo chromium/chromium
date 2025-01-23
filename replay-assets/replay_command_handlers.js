@@ -100,8 +100,8 @@ function assert(v, msg = "") {
 /**
  * @see https://stackoverflow.com/a/37837872
  */
-function isIteratable(obj) {
-  return typeof obj?.[Symbol.iterator] !== 'function';
+function isIterable(obj) {
+  return typeof obj?.[Symbol.iterator] === 'function';
 }
 
 const gSourceMapData = new Map();
@@ -3053,7 +3053,7 @@ StackingContext.prototype = {
   },
 
   addChildrenWithParent(cx) {
-    if (!isIteratable(cx.raw.children)) {
+    if (!isIterable(cx.raw.children)) {
       // [TT-253] `cx.raw` should always be an Element and
       // Element.prototype.children should always return an `HTMLCollection`.
       // Not sure why it sometimes complains about not being iterable.
