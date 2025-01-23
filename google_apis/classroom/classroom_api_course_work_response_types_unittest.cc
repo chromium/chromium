@@ -41,7 +41,8 @@ TEST(ClassroomApiCourseWorkResponseTypesTest, ConvertsCourseWork) {
             "state": "PUBLISHED",
             "alternateLink": "https://classroom.google.com/c/abc/a/def/details",
             "creationTime": "2023-07-03T06:55:54.456Z",
-            "updateTime": "2023-07-09T06:55:54.456Z"
+            "updateTime": "2023-07-09T06:55:54.456Z",
+            "workType": "ASSIGNMENT"
           },
           {
             "id": "course-work-item-2",
@@ -49,7 +50,8 @@ TEST(ClassroomApiCourseWorkResponseTypesTest, ConvertsCourseWork) {
             "state": "DRAFT",
             "alternateLink": "https://classroom.google.com/c/ghi/a/jkl/details",
             "creationTime": "2023-04-03T00:10:55.000Z",
-            "updateTime": "2023-04-04T00:10:55.000Z"
+            "updateTime": "2023-04-04T00:10:55.000Z",
+            "workType": "SHORT_ANSWER_QUESTION"
           }
         ]
       })");
@@ -73,6 +75,8 @@ TEST(ClassroomApiCourseWorkResponseTypesTest, ConvertsCourseWork) {
       "2023-07-03T06:55:54.456Z");
   EXPECT_EQ(util::FormatTimeAsString(course_work->items().at(0)->last_update()),
             "2023-07-09T06:55:54.456Z");
+  EXPECT_EQ(course_work->items().at(0)->type(),
+            CourseWorkItem::Type::kAssignment);
 
   EXPECT_EQ(course_work->items().at(1)->id(), "course-work-item-2");
   EXPECT_EQ(course_work->items().at(1)->title(),
@@ -87,6 +91,7 @@ TEST(ClassroomApiCourseWorkResponseTypesTest, ConvertsCourseWork) {
       "2023-04-03T00:10:55.000Z");
   EXPECT_EQ(util::FormatTimeAsString(course_work->items().at(1)->last_update()),
             "2023-04-04T00:10:55.000Z");
+  EXPECT_EQ(course_work->items().at(1)->type(), CourseWorkItem::Type::kOther);
 }
 
 TEST(ClassroomApiCourseWorkResponseTypesTest, ConvertsNextPageToken) {
@@ -170,6 +175,90 @@ TEST(ClassroomApiCourseWorkResponseTypesTest,
 
   const auto course_work = CourseWork::CreateFrom(raw_course_work.value());
   ASSERT_FALSE(course_work);
+}
+
+TEST(ClassroomApiCourseWorkResponseTypesTest, ConvertsCourseWorkItemMaterials) {
+  const auto raw_course_work = JSONReader::Read(R"(
+      {
+        "courseWork": [
+          {
+            "id": "materials-id-multiple-item",
+            "materials": [
+              {
+                "driveFile": {
+                  "driveFile": {
+                    "title": "drive-file-title"
+                  }
+                }
+              },
+              {
+                "youtubeVideo": {
+                  "title": "youtube-video-title"
+                }
+              }
+            ]
+          },
+          {
+            "id": "materials-id-link",
+            "materials": [
+              {
+                "link": {
+                  "title": "link-title"
+                }
+              }
+            ]
+          },
+          {
+            "id": "materials-id-form",
+            "materials": [
+              {
+                "form": {
+                  "title": "form-title"
+                }
+              }
+            ]
+          },
+          {
+            "id": "materials-id-unknown",
+            "materials": [
+              {
+                "unknownType": {}
+              }
+            ]
+          }
+        ]
+      })");
+  ASSERT_TRUE(raw_course_work);
+
+  const auto course_work = CourseWork::CreateFrom(raw_course_work.value());
+  ASSERT_TRUE(course_work);
+  EXPECT_EQ(course_work->items().size(), 4u);
+
+  EXPECT_EQ(course_work->items().at(0)->id(), "materials-id-multiple-item");
+  EXPECT_EQ(course_work->items().at(0)->materials().size(), 2u);
+  EXPECT_EQ(course_work->items().at(0)->materials().at(0)->title(),
+            "drive-file-title");
+  EXPECT_EQ(course_work->items().at(0)->materials().at(0)->type(),
+            Material::Type::kSharedDriveFile);
+  EXPECT_EQ(course_work->items().at(0)->materials().at(1)->title(),
+            "youtube-video-title");
+  EXPECT_EQ(course_work->items().at(0)->materials().at(1)->type(),
+            Material::Type::kYoutubeVideo);
+  EXPECT_EQ(course_work->items().at(1)->id(), "materials-id-link");
+  EXPECT_EQ(course_work->items().at(1)->materials().size(), 1u);
+  EXPECT_EQ(course_work->items().at(1)->materials().at(0)->title(),
+            "link-title");
+  EXPECT_EQ(course_work->items().at(1)->materials().at(0)->type(),
+            Material::Type::kLink);
+  EXPECT_EQ(course_work->items().at(2)->id(), "materials-id-form");
+  EXPECT_EQ(course_work->items().at(2)->materials().size(), 1u);
+  EXPECT_EQ(course_work->items().at(2)->materials().at(0)->title(),
+            "form-title");
+  EXPECT_EQ(course_work->items().at(2)->materials().at(0)->type(),
+            Material::Type::kForm);
+  EXPECT_EQ(course_work->items().at(3)->materials().size(), 1u);
+  EXPECT_EQ(course_work->items().at(3)->materials().at(0)->type(),
+            Material::Type::kUnknown);
 }
 
 }  // namespace google_apis::classroom
