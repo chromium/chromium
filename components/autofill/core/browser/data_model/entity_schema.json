@@ -2,12 +2,12 @@
   {
     "name": "Passport",
     "attributes": [ "Name", "Number", "Country", "Expiry date", "Issue date" ],
-    "unique keys": [
-      [ "Number", "Expiry date" ]
-    ],
-    "required attributes": [
+    "import constraints": [
       [ "Number", "Name" ],
       [ "Number", "Country" ],
+      [ "Number", "Expiry date" ]
+    ],
+    "merge constraints": [
       [ "Number", "Expiry date" ]
     ],
     "disambiguation order": [ "Name", "Country", "Expiry date" ],
@@ -16,10 +16,10 @@
   {
     "name": "Loyalty Card",
     "attributes": [ "Program", "Provider", "Member ID" ],
-    "unique keys": [
+    "import constraints": [
       [ "Program", "Member ID" ]
     ],
-    "required attributes": [
+    "merge constraints": [
       [ "Program", "Member ID" ]
     ],
     "syncable": true

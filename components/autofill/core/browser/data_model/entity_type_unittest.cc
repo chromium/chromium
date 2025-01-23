@@ -31,18 +31,10 @@ TEST(AutofillEntityTypeTest, Attributes) {
   ASSERT_FALSE(e.attributes().empty());
 }
 
-TEST(AutofillEntityTypeTest, UniqueKeys) {
+TEST(AutofillEntityTypeTest, ImportConstraints) {
   using enum AttributeTypeName;
   EntityType e = EntityType(EntityTypeName::kPassport);
-  EXPECT_THAT(e.unique_keys(), ElementsAre(UnorderedElementsAre(
-                                   AttributeType(kPassportNumber),
-                                   AttributeType(kPassportExpiryDate))));
-}
-
-TEST(AutofillEntityTypeTest, RequiredAttributes) {
-  using enum AttributeTypeName;
-  EntityType e = EntityType(EntityTypeName::kPassport);
-  EXPECT_THAT(e.required_attributes(),
+  EXPECT_THAT(e.import_constraints(),
               UnorderedElementsAre(
                   UnorderedElementsAre(AttributeType(kPassportNumber),
                                        AttributeType(kPassportName)),
@@ -50,6 +42,14 @@ TEST(AutofillEntityTypeTest, RequiredAttributes) {
                                        AttributeType(kPassportCountry)),
                   UnorderedElementsAre(AttributeType(kPassportNumber),
                                        AttributeType(kPassportExpiryDate))));
+}
+
+TEST(AutofillEntityTypeTest, MergeConstraints) {
+  using enum AttributeTypeName;
+  EntityType e = EntityType(EntityTypeName::kPassport);
+  EXPECT_THAT(e.merge_constraints(), ElementsAre(UnorderedElementsAre(
+                                         AttributeType(kPassportNumber),
+                                         AttributeType(kPassportExpiryDate))));
 }
 
 TEST(AutofillEntityTypeTest, NameAsString) {
