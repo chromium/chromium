@@ -11,6 +11,13 @@ import org.chromium.base.lifetime.Destroyable;
 /** Interface for setting system bar color. */
 public interface SystemBarColorHelper extends Destroyable {
 
+    /**
+     * Whether this color helper can handle status bar colors. Default to true if not implemented.
+     */
+    default boolean canSetStatusBarColor() {
+        return true;
+    }
+
     /** Set the status bar color. */
     void setStatusBarColor(@ColorInt int color);
 
