@@ -212,6 +212,11 @@ id<GREYMatcher> EditProfileBottomSheet() {
   // Wait for the keyboard to appear.
   [ChromeEarlGrey waitForKeyboardToAppear];
 
+  // Wait for suggestions as it may take some time because of form fetch
+  // throttling or other delays.
+  [ChromeEarlGrey
+      waitForMatcher:chrome_test_util::AutofillSuggestionViewMatcher()];
+
   // Tap on the suggestion.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           AutofillSuggestionViewMatcher()]
