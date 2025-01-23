@@ -155,6 +155,7 @@ void HandleInstallBasedOnId(
 
 struct IwaInstallerTestParam {
   bool is_mgs_install_enabled;
+  bool is_cache_enabled = false;
   bool is_user_session;
   std::string bundle_id;
   std::string manifest_url;
@@ -176,6 +177,9 @@ class IwaInstallerTest
     if (GetParam().is_mgs_install_enabled) {
       enabled_features.push_back(
           features::kIsolatedWebAppManagedGuestSessionInstall);
+    }
+    if (GetParam().is_cache_enabled) {
+      enabled_features.push_back(features::kIsolatedWebAppBundleCache);
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
     scoped_feature_list_.InitWithFeatures(std::move(enabled_features),
@@ -320,12 +324,28 @@ INSTANTIATE_TEST_SUITE_P(
 // the appropriate file and install the app. It is successful case.
 #if BUILDFLAG(IS_CHROMEOS)
         {.is_mgs_install_enabled = true,
+         .is_cache_enabled = true,
+         .is_user_session = true,
+         .bundle_id = kWebBundleId1,
+         .manifest_url = kUpdateManifestUrl1,
+         .result_type = IwaInstallerResult::Type::kSuccess},
+        // Same as the first test case, but `is_cache_enabled` is disabled.
+        {.is_mgs_install_enabled = true,
+         .is_cache_enabled = false,
          .is_user_session = true,
          .bundle_id = kWebBundleId1,
          .manifest_url = kUpdateManifestUrl1,
          .result_type = IwaInstallerResult::Type::kSuccess},
         // Same as the first test case, but inside a managed guest session.
         {.is_mgs_install_enabled = true,
+         .is_cache_enabled = true,
+         .is_user_session = false,
+         .bundle_id = kWebBundleId1,
+         .manifest_url = kUpdateManifestUrl1,
+         .result_type = IwaInstallerResult::Type::kSuccess},
+        // Same as the third test case, but caching is disabled.
+        {.is_mgs_install_enabled = true,
+         .is_cache_enabled = false,
          .is_user_session = false,
          .bundle_id = kWebBundleId1,
          .manifest_url = kUpdateManifestUrl1,
