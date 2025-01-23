@@ -34,7 +34,7 @@ class ProfileIOS;
 namespace autofill {
 class LogManager;
 class LogRouter;
-}
+}  // namespace autofill
 
 namespace password_manager {
 class PasswordFormManagerForUI;

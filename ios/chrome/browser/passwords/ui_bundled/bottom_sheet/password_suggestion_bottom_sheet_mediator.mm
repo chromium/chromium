@@ -707,19 +707,19 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
     if (form.type ==
             password_manager::PasswordForm::Type::kReceivedViaSharing &&
         !form.sharing_notification_displayed) {
-        _sharedUnnotifiedForms.push_back(&form);
-        __weak __typeof__(self) weakSelf = self;
-        image_fetcher::ImageFetcherParams params(NO_TRAFFIC_ANNOTATION_YET,
-                                                 kImageFetcherUmaClient);
-        _imageFetcher->FetchImage(
-            form.sender_profile_image_url,
-            base::BindOnce(^(const gfx::Image& image,
-                             const image_fetcher::RequestMetadata& metadata) {
-              if (!image.IsEmpty()) {
-                [weakSelf onSenderImageFetched:[image.ToUIImage() copy]];
-              }
-            }),
-            params);
+      _sharedUnnotifiedForms.push_back(&form);
+      __weak __typeof__(self) weakSelf = self;
+      image_fetcher::ImageFetcherParams params(NO_TRAFFIC_ANNOTATION_YET,
+                                               kImageFetcherUmaClient);
+      _imageFetcher->FetchImage(
+          form.sender_profile_image_url,
+          base::BindOnce(^(const gfx::Image& image,
+                           const image_fetcher::RequestMetadata& metadata) {
+            if (!image.IsEmpty()) {
+              [weakSelf onSenderImageFetched:[image.ToUIImage() copy]];
+            }
+          }),
+          params);
     }
     _credentials.push_back(password_manager::CredentialUIEntry(form));
   }
