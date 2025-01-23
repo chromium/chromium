@@ -497,6 +497,14 @@ void SyncServiceImpl::GetThrottledDataTypesForTest(
   engine_->GetThrottledDataTypesForTest(std::move(cb));  // IN-TEST
 }
 
+size_t SyncServiceImpl::GetQueuedLocalDataMigrationItemCountForTest() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_IS_TEST();
+
+  return local_data_migration_item_queue_
+      ->GetItemsCountForTesting();  // IN-TEST
+}
+
 // static
 ShutdownReason SyncServiceImpl::ShutdownReasonForResetEngineReason(
     ResetEngineReason reset_reason) {

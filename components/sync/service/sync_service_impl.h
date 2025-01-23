@@ -263,6 +263,8 @@ class SyncServiceImpl : public SyncService,
   // Simulates data type error reported by the bridge.
   void ReportDataTypeErrorForTest(DataType type);
 
+  size_t GetQueuedLocalDataMigrationItemCountForTest() const;
+
  private:
   enum UnrecoverableErrorReason {
     ERROR_REASON_ENGINE_INIT_FAILURE,

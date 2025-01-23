@@ -118,6 +118,10 @@ if (is_chromeos_ash) {
   sync_integration_tests_sources += [ "//chrome/browser/sync/test/integration/two_client_web_apps_integration_test_cros.cc" ]
 }
 
+if (!is_chromeos_ash && !is_android) {
+  sync_integration_tests_sources += [ "//chrome/browser/sync/test/integration/select_type_and_migrate_local_data_items_when_active_sync_test.cc" ]
+}
+
 if (is_android) {
   sync_integration_tests_sources += [
     "//chrome/browser/sync/test/integration/single_client_web_apks_sync_test.cc",
