@@ -172,6 +172,22 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Unknown"/>
 </enum>
 
+<!-- LINT.IfChange -->
+
+<enum name="MerchantTrustInteraction">
+  <int value="0" label="kPageInfoRowShown">
+    Page info with merchant trust row was shown.
+  </int>
+  <int value="1" label="kBubbleOpenedFromPageInfo">
+    The merchant trust bubble was opened from the page info row.
+  </int>
+  <int value="2" label="kSidePanelOpened">
+    The merchant trust side panel was opened.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(/components/page_info/core/merchant_trust_service.h) -->
+
 <enum name="MerchantTrustStatus">
   <int value="0" label="kValid">A valid response.</int>
   <int value="1" label="kNoResult">No result received.</int>

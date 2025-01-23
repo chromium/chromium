@@ -112,7 +112,6 @@ bool MerchantTrustService::IsOptimizationGuideAllowed() const {
 std::optional<page_info::MerchantData>
 MerchantTrustService::GetMerchantDataFromProto(
     const std::optional<commerce::MerchantTrustSignalsV2>& metadata) const {
-
   auto status = merchant_trust_validation::ValidateProto(metadata);
   base::UmaHistogramEnumeration("Security.PageInfo.MerchantTrustStatus",
                                 status);
@@ -161,6 +160,23 @@ bool MerchantTrustService::CanShowEvaluationSurvey() {
   }
 
   return false;
+}
+
+void MerchantTrustService::RecordMerchantTrustInteraction(
+    GURL url,
+    MerchantTrustInteraction interaction) {
+  MerchantFamiliarity merchant_familiarity =
+      delegate_->GetSiteEngagementScore(url) >= kMerchantFamiliarityThreshold
+          ? MerchantFamiliarity::kFamiliar
+          : MerchantFamiliarity::kNotFamiliar;
+
+  auto histogram_name =
+      std::string("Security.PageInfo.MerchantTrustInteraction.") +
+      (merchant_familiarity == MerchantFamiliarity::kFamiliar
+           ? "FamiliarSite"
+           : "UnfamiliarSite");
+
+  base::UmaHistogramEnumeration(histogram_name, interaction);
 }
 
 }  // namespace page_info

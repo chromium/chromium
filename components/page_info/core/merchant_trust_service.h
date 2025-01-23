@@ -26,6 +26,26 @@ class OptimizationMetadata;
 
 namespace page_info {
 
+enum class MerchantFamiliarity {
+  kNotFamiliar,
+  kFamiliar,
+  kMaxValue = kFamiliar
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(MerchantTrustInteraction)
+enum class MerchantTrustInteraction {
+  kPageInfoRowShown = 0,
+  kBubbleOpenedFromPageInfo = 1,
+  kSidePanelOpened = 2,
+  kMaxValue = kSidePanelOpened
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/security/enums.xml:MerchantTrustInteraction)
+
+static constexpr double kMerchantFamiliarityThreshold = 5;
+
 // Provides merchant information for a web site.
 class MerchantTrustService : public KeyedService {
  public:
@@ -33,6 +53,8 @@ class MerchantTrustService : public KeyedService {
    public:
     // Launches the evaluation survey based on the experiment state.
     virtual void ShowEvaluationSurvey() = 0;
+
+    virtual double GetSiteEngagementScore(const GURL url) = 0;
 
     virtual ~Delegate() = default;
   };
@@ -58,6 +80,9 @@ class MerchantTrustService : public KeyedService {
   // Attempt to show an evaluation survey if the conditions apply. It will show
   // either a control or an experiment survey depending on the feature state.
   virtual void MaybeShowEvaluationSurvey();
+
+  void RecordMerchantTrustInteraction(GURL url,
+                                      MerchantTrustInteraction interaction);
 
  private:
   std::unique_ptr<Delegate> delegate_;

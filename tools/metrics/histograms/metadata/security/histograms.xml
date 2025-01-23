@@ -438,6 +438,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.PageInfo.MerchantTrustInteraction.{SiteFamiliarity}"
+    enum="MerchantTrustInteraction" expires_after="2026-01-30">
+  <owner>tommasin@chromium.org</owner>
+  <owner>privacy-on-the-web@google.com</owner>
+  <summary>
+    Tracks interactions with the merchant trust feature. Recorded every time the
+    user interacts with the merchant trust UI. Only recorded for familiar sites.
+  </summary>
+  <token key="SiteFamiliarity">
+    <variant name="FamiliarSite"/>
+    <variant name="UnfamiliarSite"/>
+  </token>
+</histogram>
+
 <histogram name="Security.PageInfo.MerchantTrustStatus"
     enum="MerchantTrustStatus" expires_after="2026-01-12">
   <owner>tommasin@chromium.org</owner>

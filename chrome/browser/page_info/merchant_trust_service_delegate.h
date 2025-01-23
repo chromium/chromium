@@ -23,6 +23,8 @@ class MerchantTrustServiceDelegate
   // experiment survey depending on the feature state.
   void ShowEvaluationSurvey() override;
 
+  double GetSiteEngagementScore(const GURL url) override;
+
  private:
   raw_ptr<Profile> profile_;
 };
