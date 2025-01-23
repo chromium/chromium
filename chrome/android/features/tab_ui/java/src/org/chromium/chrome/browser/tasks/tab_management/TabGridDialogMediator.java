@@ -1054,9 +1054,8 @@ public class TabGridDialogMediator
     }
 
     private boolean shouldShowShareButton() {
-        // TODO(crbug.com/360184707): Check DataSharingService configuration to see whether to show
-        // the share button.
-        return !mCurrentTabGroupModelFilterSupplier.get().isIncognitoBranded();
+        return !mCurrentTabGroupModelFilterSupplier.get().isIncognitoBranded()
+                && mCollaborationService.getServiceStatus().isAllowedToCreate();
     }
 
     private void onGroupSharedStateChanged(@Nullable @GroupSharedState Integer groupSharedState) {
