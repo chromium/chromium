@@ -6,6 +6,7 @@
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_DATA_TYPES_H_
 
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -144,6 +145,13 @@ enum class MdlType {
 // unexpected and will be logged as such.
 std::vector<MdlType> FromMdlResourceProto(
     masked_domain_list::Resource resource);
+
+struct IssuerToken {
+  std::int32_t version;
+  std::string u;
+  std::string e;
+  bool operator==(const IssuerToken& token) const = default;
+};
 
 }  // namespace ip_protection
 

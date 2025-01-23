@@ -565,3 +565,48 @@ source_set("ip_protection_crypter_unittest") {
     "//third_party/private-join-and-compute/src:ec_commutative_cipher",
   ]
 }
+
+source_set("ip_protection_issuer_token_direct_fetcher") {
+  sources = [
+    "ip_protection_issuer_token_direct_fetcher.cc",
+    "ip_protection_issuer_token_direct_fetcher.h",
+  ]
+  public_deps = [
+    ":ip_protection_issuer_token_fetcher",
+    "//base",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+  ]
+  deps = [
+    "//components/ip_protection:get_issuer_token_proto",
+    "//net",
+  ]
+}
+
+source_set("ip_protection_issuer_token_direct_fetcher_unittest") {
+  testonly = true
+  sources = [ "ip_protection_issuer_token_direct_fetcher_unittest.cc" ]
+  deps = [
+    ":ip_protection_issuer_token_direct_fetcher",
+    "//base",
+    "//base/test:test_support",
+    "//components/ip_protection:get_issuer_token_proto",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("ip_protection_issuer_token_fetcher") {
+  sources = [
+    "ip_protection_issuer_token_fetcher.cc",
+    "ip_protection_issuer_token_fetcher.h",
+  ]
+  public_deps = [
+    ":ip_protection_data_types",
+    "//base",
+  ]
+}

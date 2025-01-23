@@ -384,10 +384,16 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableIpProtectionProxy);
 // Sets the name of the IP protection auth token server.
 NET_EXPORT extern const base::FeatureParam<std::string> kIpPrivacyTokenServer;
 
+NET_EXPORT extern const base::FeatureParam<std::string>
+    kIpPrivacyIssuerTokenServer;
+
 // Sets the path component of the IP protection auth token server URL used for
 // getting initial token signing data.
 NET_EXPORT extern const base::FeatureParam<std::string>
     kIpPrivacyTokenServerGetInitialDataPath;
+
+NET_EXPORT extern const base::FeatureParam<std::string>
+    kIpPrivacyIssuerTokenServerPath;
 
 // Sets the path component of the IP protection auth token server URL used for
 // getting blind-signed tokens.
