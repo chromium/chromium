@@ -80,6 +80,15 @@ class ProfileOAuth2TokenServiceDelegate {
   virtual bool RefreshTokenIsAvailable(
       const CoreAccountId& account_id) const = 0;
 
+#if BUILDFLAG(IS_IOS)
+  // Returns |true| if a refresh token is available for |account_id| on the
+  // device, and |false| otherwise. Note: Implementations must make sure that
+  // |RefreshTokenIsAvailable| returns |true| if and only if |account_id| is
+  // contained in the list of accounts returned by |GetAccountsOnDevice|.
+  virtual bool RefreshTokenIsAvailableOnDevice(
+      const CoreAccountId& account_id) const = 0;
+#endif  // BUILDFLAG(IS_IOS)
+
   virtual GoogleServiceAuthError GetAuthError(
       const CoreAccountId& account_id) const;
   virtual void UpdateAuthError(const CoreAccountId& account_id,
