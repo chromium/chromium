@@ -364,23 +364,31 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
                 || Intent.ACTION_OPEN_DOCUMENT_TREE.equals(mIntentAction)
                 || Intent.ACTION_CREATE_DOCUMENT.equals(mIntentAction)) {
             Intent intent = new Intent(mIntentAction);
-            // No mime types for open-directory.
-            if (!Intent.ACTION_OPEN_DOCUMENT_TREE.equals(mIntentAction)) {
+            if (Intent.ACTION_OPEN_DOCUMENT.equals(mIntentAction)) {
                 intent.setType(ALL_TYPES);
-                if (!mMimeTypes.isEmpty()) {
+                boolean mimeTypesKnown = true;
+                for (String mimeType : mMimeTypes) {
+                    if (!MimeTypeMap.getSingleton().hasMimeType(mimeType)) {
+                        mimeTypesKnown = false;
+                        break;
+                    }
+                }
+                if (!mMimeTypes.isEmpty() && mimeTypesKnown) {
                     intent.putExtra(Intent.EXTRA_MIME_TYPES, mMimeTypes.toArray(new String[0]));
                 }
                 if (mAllowMultiple) {
                     intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 }
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
+            } else if (Intent.ACTION_CREATE_DOCUMENT.equals(intentAction)) {
+                intent.setType(!mMimeTypes.isEmpty() ? mMimeTypes.get(0) : ALL_TYPES);
+                if (!TextUtils.isEmpty(suggestedName)) {
+                    intent.putExtra(Intent.EXTRA_TITLE, suggestedName);
+                }
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
             }
             if (!TextUtils.isEmpty(defaultDirectory)) {
                 intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Uri.parse(defaultDirectory));
-            }
-            if (Intent.ACTION_CREATE_DOCUMENT.equals(intentAction)
-                    && !TextUtils.isEmpty(suggestedName)) {
-                intent.putExtra(Intent.EXTRA_TITLE, suggestedName);
             }
             if (!mWindowAndroid.showIntent(intent, this, R.string.low_memory_error)) {
                 onFileNotSelected();
