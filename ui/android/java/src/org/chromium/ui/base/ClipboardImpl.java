@@ -50,6 +50,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -228,8 +229,15 @@ public class ClipboardImpl extends Clipboard
             if (textLinks == null || textLinks.getLinks().isEmpty()) return null;
 
             CharSequence fullText = item.getText();
-            TextLinks.TextLink firstLink = textLinks.getLinks().iterator().next();
-            firstLinkText = fullText.subSequence(firstLink.getStart(), firstLink.getEnd());
+            Iterator<TextLinks.TextLink> it = textLinks.getLinks().iterator();
+            while (it.hasNext()) {
+                TextLinks.TextLink textLink = it.next();
+                if (textLink.getConfidenceScore(TextClassifier.TYPE_URL)
+                        > CONFIDENCE_THRESHOLD_FOR_URL_DETECTION) {
+                    firstLinkText = fullText.subSequence(textLink.getStart(), textLink.getEnd());
+                    break;
+                }
+            }
         }
         if (firstLinkText == null) return null;
 
