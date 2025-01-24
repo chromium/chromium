@@ -79,6 +79,7 @@ static void Java_SampleBidirectionalNonProxy_addStructB(
     const jni_zero::JavaRef<jobject>& obj,
     const jni_zero::JavaRef<jobject>& caller,
     const jni_zero::JavaRef<jobject>& b) {
+  jni_zero::CallNativeToJavaCallback("org/jni_zero/SampleBidirectionalNonProxy", "addStructB");
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleBidirectionalNonProxy_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
@@ -97,6 +98,7 @@ static void Java_SampleBidirectionalNonProxy_setBool(
     const jni_zero::JavaRef<jobject>& obj,
     const jni_zero::JavaRef<jobject>& b,
     const jni_zero::JavaRef<jobject>& i) {
+  jni_zero::CallNativeToJavaCallback("org/jni_zero/SampleBidirectionalNonProxy", "setBool");
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleBidirectionalNonProxy_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
@@ -114,6 +116,7 @@ static void Java_SampleBidirectionalNonProxy_setStringBuilder(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& obj,
     const jni_zero::JavaRef<jobject>& sb) {
+  jni_zero::CallNativeToJavaCallback("org/jni_zero/SampleBidirectionalNonProxy", "setStringBuilder");
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleBidirectionalNonProxy_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
@@ -128,6 +131,7 @@ static void Java_SampleBidirectionalNonProxy_setStringBuilder(
 }
 
 static jdouble Java_SampleBidirectionalNonProxy_testMethodWithNoParam(JNIEnv* env) {
+  jni_zero::CallNativeToJavaCallback("org/jni_zero/SampleBidirectionalNonProxy", "testMethodWithNoParam");
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleBidirectionalNonProxy_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, 0);
@@ -146,6 +150,7 @@ static void Java_SampleBidirectionalNonProxy_testMethodWithParam(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& obj,
     JniIntWrapper iParam) {
+  jni_zero::CallNativeToJavaCallback("org/jni_zero/SampleBidirectionalNonProxy", "testMethodWithParam");
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleBidirectionalNonProxy_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
@@ -163,6 +168,7 @@ static jni_zero::ScopedJavaLocalRef<jstring> Java_SampleBidirectionalNonProxy_te
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& obj,
     JniIntWrapper iParam) {
+  jni_zero::CallNativeToJavaCallback("org/jni_zero/SampleBidirectionalNonProxy", "testMethodWithParamAndReturn");
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleBidirectionalNonProxy_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
@@ -180,6 +186,7 @@ static jni_zero::ScopedJavaLocalRef<jstring> Java_SampleBidirectionalNonProxy_te
 
 static jni_zero::ScopedJavaLocalRef<jstring> Java_SampleBidirectionalNonProxy_testStaticMethodWithNoParam(
     JNIEnv* env) {
+  jni_zero::CallNativeToJavaCallback("org/jni_zero/SampleBidirectionalNonProxy", "testStaticMethodWithNoParam");
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleBidirectionalNonProxy_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
@@ -198,6 +205,7 @@ static jni_zero::ScopedJavaLocalRef<jstring> Java_SampleBidirectionalNonProxy_te
 static jint Java_SampleBidirectionalNonProxy_testStaticMethodWithParam(
     JNIEnv* env,
     JniIntWrapper iParam) {
+  jni_zero::CallNativeToJavaCallback("org/jni_zero/SampleBidirectionalNonProxy", "testStaticMethodWithParam");
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleBidirectionalNonProxy_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, 0);

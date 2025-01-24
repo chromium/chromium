@@ -33,6 +33,7 @@ enum Java_JavapClass_constant_fields {
 // Native to Java functions
 [[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor(
     JNIEnv* env) {
+  jni_zero::CallNativeToJavaCallback("org/jni_zero/JavapClass", "<init>");
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
@@ -50,6 +51,7 @@ enum Java_JavapClass_constant_fields {
 [[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor__boolean(
     JNIEnv* env,
     jboolean p0) {
+  jni_zero::CallNativeToJavaCallback("org/jni_zero/JavapClass", "<init>");
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
@@ -67,6 +69,7 @@ enum Java_JavapClass_constant_fields {
 [[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor__int(
     JNIEnv* env,
     JniIntWrapper p0) {
+  jni_zero::CallNativeToJavaCallback("org/jni_zero/JavapClass", "<init>");
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
@@ -85,6 +88,7 @@ enum Java_JavapClass_constant_fields {
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& obj,
     const jni_zero::JavaRef<jstring>& p0) {
+  jni_zero::CallNativeToJavaCallback("org/jni_zero/JavapClass", "intMethod");
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, 0);
@@ -100,6 +104,7 @@ enum Java_JavapClass_constant_fields {
 }
 
 [[maybe_unused]] static void Java_JavapClass_needsMangling__int(JNIEnv* env, JniIntWrapper p0) {
+  jni_zero::CallNativeToJavaCallback("org/jni_zero/JavapClass", "needsMangling");
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz);
@@ -116,6 +121,7 @@ enum Java_JavapClass_constant_fields {
 [[maybe_unused]] static void Java_JavapClass_needsMangling__String(
     JNIEnv* env,
     const jni_zero::JavaRef<jstring>& p0) {
+  jni_zero::CallNativeToJavaCallback("org/jni_zero/JavapClass", "needsMangling");
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz);
@@ -132,6 +138,7 @@ enum Java_JavapClass_constant_fields {
 [[maybe_unused]] static void Java_JavapClass_needsMangling__java_util_ArrayList(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& p0) {
+  jni_zero::CallNativeToJavaCallback("org/jni_zero/JavapClass", "needsMangling");
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz);
@@ -150,6 +157,7 @@ enum Java_JavapClass_constant_fields {
     const jni_zero::JavaRef<jobject>& obj,
     const jni_zero::JavaRef<jobject>& p0,
     const jni_zero::JavaRef<jobjectArray>& p1) {
+  jni_zero::CallNativeToJavaCallback("org/jni_zero/JavapClass", "objTest");
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
@@ -169,6 +177,7 @@ enum Java_JavapClass_constant_fields {
     JNIEnv* env,
     const jni_zero::JavaRef<jstring>& p0,
     const jni_zero::JavaRef<jobject>& p1) {
+  jni_zero::CallNativeToJavaCallback("org/jni_zero/JavapClass", "staticIntMethod");
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, 0);
@@ -186,6 +195,7 @@ enum Java_JavapClass_constant_fields {
 [[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobjectArray> Java_JavapClass_staticIntMethod(
     JNIEnv* env,
     const jni_zero::JavaRef<jstring>& p0) {
+  jni_zero::CallNativeToJavaCallback("org/jni_zero/JavapClass", "staticIntMethod");
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
