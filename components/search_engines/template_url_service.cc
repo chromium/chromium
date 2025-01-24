@@ -1635,7 +1635,10 @@ std::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
         "ProcessSyncChanges failed on ChangeType " +
         syncer::SyncChange::ChangeTypeToString(iter->change_type());
     if (iter->change_type() == syncer::SyncChange::ACTION_DELETE) {
-      if (!existing_turl) {
+      if (!existing_turl ||
+          (base::FeatureList::IsEnabled(
+               syncer::kSeparateLocalAndAccountSearchEngines) &&
+           !existing_turl->GetAccountData())) {
         // Can't DELETE a non-existent engine.
         error = syncer::ModelError(FROM_HERE, error_msg);
         continue;
@@ -1653,7 +1656,12 @@ std::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
       //
       // In the past, we tried re-creating the deleted TemplateURL, but it was
       // likely a source of duplicate search engine entries. crbug.com/1022775
-      if (existing_turl != GetDefaultSearchProvider()) {
+      if (base::FeatureList::IsEnabled(
+              syncer::kSeparateLocalAndAccountSearchEngines) &&
+          existing_turl->GetLocalData()) {
+        Update(existing_turl, TemplateURL(*existing_turl->GetLocalData()));
+        MaybeUpdateDSEViaPrefs(existing_turl);
+      } else if (existing_turl != GetDefaultSearchProvider()) {
         Remove(existing_turl);
       } else {
         postponed_deleted_default_engine_guid_ = existing_turl->sync_guid();
@@ -1675,7 +1683,12 @@ std::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
       TemplateURLData data(turl->data());
       data.id = kInvalidTemplateURLID;
 
-      TemplateURL* added = Add(std::make_unique<TemplateURL>(data));
+      // If flag is enabled, add `data` as account data member instead.
+      TemplateURL* added =
+          base::FeatureList::IsEnabled(
+              syncer::kSeparateLocalAndAccountSearchEngines)
+              ? Add(std::make_unique<TemplateURL>(std::nullopt, data))
+              : Add(std::make_unique<TemplateURL>(data));
       if (added) {
         MaybeUpdateDSEViaPrefs(added);
       }
