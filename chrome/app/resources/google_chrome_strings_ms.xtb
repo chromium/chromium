@@ -356,6 +356,7 @@
 <translation id="5648328599815354043">Chrome melakukan pelbagai cara bagi memastikan anda selamat dalam talian</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> mungkin berbahaya, jadi Chrome telah menyekat fail itu.</translation>
 <translation id="566568153320186256">Chrome menjimatkan kuasa bateri dengan mengehadkan aktiviti latar dan kesan visual, seperti penatalan lancar dan kadar bingkai video. <ph name="BEGIN_LINK" />Ketahui Penjimat Tenaga dengan lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="567202749201779594">Kosongkan data Chrome dalam akaun anda</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Pentadbir anda meminta anda melancarkan semula Chrome untuk menggunakan kemas kini ini}=1{Pentadbir anda meminta anda melancarkan semula Chrome untuk menggunakan kemas kini ini. Tetingkap Inkognito anda tidak dapat dibuka semula.}other{Pentadbir anda meminta anda melancarkan semula Chrome untuk menggunakan kemas kini ini. # tetingkap Inkognito anda tidak dapat dibuka semula.}}</translation>
 <translation id="5686916850681061684">Sesuaikan dan kawal Google Chrome. Perhatian anda diperlukan - klik untuk mendapatkan butiran.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -468,6 +469,7 @@
 <translation id="7024536598735240744">Ralat penyahpadatan: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Pemasangan Dihentikan.</translation>
 <translation id="7025800014283535195">Anda boleh beralih antara profil Chrome di sini</translation>
+<translation id="7031914411614877914">Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, <ph name="SETTINGS_LINK" /> data Chrome dalam akaun anda.</translation>
 <translation id="7048502283602470098">Terokai AI</translation>
 <translation id="7059914902409643750">Peribadikan Chrome Anda</translation>
 <translation id="7071827361006050863">Chrome akan memadamkan data semakan imbas sebentar lagi</translation>

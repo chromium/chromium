@@ -185,6 +185,7 @@
 <translation id="1310938305420497484">ముందుగా, ట్యాబ్‌లను తెరిచి, సైట్‌లకు వెళ్లండి</translation>
 <translation id="1314311879718644478">అగ్‌మెంటెడ్ రియాలిటీ కంటెంట్‌ను చూడండి</translation>
 <translation id="1314509827145471431">కుడివైపున బైండ్</translation>
+<translation id="1314784609072437689">కీబోర్డ్ ఓవర్‌రైడ్</translation>
 <translation id="1316805916535763484">ఓపెన్ ఆన్‌లైన్ కోర్సులు</translation>
 <translation id="1318023360584041678">ట్యాబ్ గ్రూప్‌లో సేవ్ చేయబడింది</translation>
 <translation id="1319245136674974084">ఈ యాప్‌ కోసం మళ్లీ అడగవద్దు</translation>
@@ -2915,6 +2916,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome థర్డ్-పార్టీ కుక్కీలను ఆటోమేటిక్‌గా పరిమితం చేస్తుంది</translation>
 <translation id="6188479691141473408">&amp; <ph name="N_FIELDS" />, ఇంకా మరిన్ని ఫీల్డ్‌లు</translation>
+<translation id="6190518157737269631">మీ కీబోర్డ్‌లోని కొన్ని కీలను ఓవర్‌రైడ్ చేయండి, ఉదా., Esc</translation>
 <translation id="6194209731893739467">మీరు ట్రాక్ చేసిన అన్ని ప్రోడక్ట్‌లను ఇక్కడ చూడండి</translation>
 <translation id="6195163219142236913">థర్డ్-పార్టీ కుక్కీలు పరిమితం చేయబడ్డాయి</translation>
 <translation id="6195371403461054755">భూగర్భశాస్త్రం</translation>
@@ -4188,6 +4190,7 @@
 <translation id="8421158157346464398">వర్క్ ప్రొఫైల్ సమాచారం (మీ వర్క్ ప్రొఫైల్ యూజర్‌నేమ్ వంటివి)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">మార్చండి</translation>
+<translation id="8426945547715537628">కీబోర్డ్ ఓవర్‌రైడ్‌ను అనుమతించాలా?</translation>
 <translation id="8427848540066057481">500 x 750 మి.మీ.</translation>
 <translation id="8428213095426709021">సెట్టింగ్‌లు</translation>
 <translation id="8428634594422941299">అర్థమైంది</translation>
@@ -4274,6 +4277,7 @@
 <translation id="8574841453995331336">రెఫ్రిజిరేటర్‌లు &amp; ఫ్రీజర్‌లు</translation>
 <translation id="8577192028579836704">అన్ని ఆప్షన్‌లు సాధారణంగా <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">వర్చువల్ కార్డ్ అందుబాటులో లేదు</translation>
+<translation id="8579000896558714521">కీబోర్డ్ ఓవర్‌రైడ్</translation>
 <translation id="8580265901435899937">టూరిస్ట్ గమ్యస్థానాలు</translation>
 <translation id="8581064022803799721">ఈ పేజీ <ph name="LAST_BOOKMARKS_FOLDER" />‌లో సేవ్ చేయబడింది.</translation>
 <translation id="8586082901536468629">స్క్వాష్ &amp; రాకెట్‌బాల్ ఎక్విప్‌మెంట్</translation>

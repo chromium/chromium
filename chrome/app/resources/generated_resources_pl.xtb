@@ -396,6 +396,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1260810365552581339">Być może brakuje wolnego miejsca na dysku Linuksa. Możesz zwiększyć ilość miejsca i ponowić przywracanie w <ph name="LINK_START" />Ustawieniach<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Umiarkowana</translation>
 <translation id="126156426083987769">Wystąpił problem z licencjami na urządzenia w trybie demonstracyjnym.</translation>
+<translation id="1262564987698748643">Witryny mogą prosić o zastępowanie sygnałów z klawiatury</translation>
 <translation id="1263231323834454256">Do przeczytania</translation>
 <translation id="1263733306853729545">Użyj znaków <ph name="MINUS" /> i <ph name="EQUAL" /> do przechodzenia między stronami listy kandydatów</translation>
 <translation id="126387934568812801">Dołącz ten zrzut ekranu i tytuły otwartych kart</translation>
@@ -773,6 +774,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1536883206862903762">Spowoduje to wyłączenie rozszerzeń i przywrócenie bezpiecznych ustawień domyślnych. Karty i pliki, w tym pliki cookie, zostaną zachowane. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Lupa pełnego ekranu</translation>
 <translation id="15373452373711364">Duży kursor myszy</translation>
+<translation id="1539248305642687917">Nie zezwalaj witrynom na zastępowanie sygnałów z klawiatury</translation>
 <translation id="1539727654733007771">Brak skonfigurowanych sieci komórkowych. Pobierz nowy <ph name="BEGIN_LINK" />profil<ph name="END_LINK" />.</translation>
 <translation id="1540265419569299117">Usługa aplikacji na ChromeOS</translation>
 <translation id="1540543470504988112">Zarządzaj certyfikatami zaimportowanymi z macOS</translation>
@@ -984,6 +986,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="166278006618318542">Algorytm klucza publicznego podmiotu</translation>
 <translation id="1662801900924515589">Aplikacja <ph name="APP" /> została zainstalowana</translation>
 <translation id="1663698992894057019">Przejdź na nowego Chromebooka, aby mieć dostęp do najnowszych zabezpieczeń i oprogramowania</translation>
+<translation id="166454475160289583">Witryny bez pozwolenia na zastępowanie sygnałów z klawiatury</translation>
 <translation id="1665328953287874063">Aby odblokować urządzenie <ph name="DEVICE_TYPE" />, użyj hasła lub kodu PIN</translation>
 <translation id="1665859804801131136">Ekspresjonizm</translation>
 <translation id="1667842670298352129">Umożliwia odsłuchanie określonego tekstu. Najpierw kliknij ikonę Przeczytaj na głos u dołu ekranu, a potem zaznacz tekst. Możesz też użyć skrótu klawiszowego: zaznaczyć tekst, a następnie nacisnąć klawisz wyszukiwania + S.</translation>
@@ -1215,6 +1218,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1832511806131704864">Zmiana telefonu została zapisana</translation>
 <translation id="1832848789136765277">Aby zapewnić sobie stały dostęp do zsynchronizowanych danych, potwierdź swoją tożsamość</translation>
 <translation id="1833059747301212935">Łatwo wyświetlaj ostatnie dokumenty i nadchodzące wydarzenia w kalendarzu</translation>
+<translation id="183445248400150852">Witryny używają tej funkcji do zastępowania sygnałów z klawiatury, na przykład w grach lub aplikacjach pulpitu zdalnego</translation>
 <translation id="1834503245783133039">Nie udało się pobrać: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Uaktualnianie Linuksa</translation>
 <translation id="1837441256780906162">Usługa Microsoft OneDrive odrzuciła prośbę. Spróbuj później.</translation>
@@ -6731,6 +6735,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5794700615121138172">Foldery udostępnione Linuksa</translation>
 <translation id="5794786537412027208">Zamknij wszystkie aplikacje Chrome</translation>
 <translation id="5796485699458186843">Nowa &amp;karta incognito</translation>
+<translation id="5796956053441619942">URL z urządzenia zdalnego nie jest obsługiwany</translation>
 <translation id="5797934230382081317">Dowiedz się, jak zacząć korzystać z tej usługi na &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Androidzie&lt;/a&gt; i &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
 <translation id="5798079537501238810">Strony mogą instalować moduły do obsługi płatności</translation>
 <translation id="5798086737841799234">Wpisz kod potwierdzenia</translation>
@@ -7386,6 +7391,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6264485186158353794">Wróć do bezpieczeństwa</translation>
 <translation id="6264520534872750757">Nadal korzystaj z urządzenia</translation>
 <translation id="6264636978858465832">Menedżer haseł potrzebuje szerszych uprawnień dostępu</translation>
+<translation id="626495329434552273">Witryny z pozwoleniem na zastępowanie sygnałów z klawiatury</translation>
 <translation id="6265159465845424232">Pytaj przed skopiowaniem lub przeniesieniem plików Microsoft do Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Usuń port</translation>
 <translation id="6266532094411434237">Łączę z urządzeniem <ph name="DEVICE" /></translation>

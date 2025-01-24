@@ -398,6 +398,7 @@
 <translation id="1260810365552581339">‏قد لا تتوفّر مساحة تخزين كافية على القرص في نظام التشغيل Linux. يمكنك زيادة مساحة التخزين على القرص في نظام التشغيل Linux ومحاولة الاستعادة مرة أخرى من خلال <ph name="LINK_START" />الإعدادات<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">معتدل</translation>
 <translation id="126156426083987769">حدثت مشكلة متعلِّقة بتراخيص الجهاز في الوضع التجريبي</translation>
+<translation id="1262564987698748643">السماح للمواقع الإلكترونية بطلب تجاوُز إدخالات لوحة المفاتيح</translation>
 <translation id="1263231323834454256">قائمة القراءة</translation>
 <translation id="1263733306853729545">استخدام مفتاحَي <ph name="MINUS" /> و<ph name="EQUAL" /> لتصفّح قائمة خيارات</translation>
 <translation id="126387934568812801">يُرجى إدراج لقطة الشاشة هذه وعناوين علامات التبويب المفتوحة.</translation>
@@ -774,6 +775,7 @@
 <translation id="1536883206862903762">سيؤدي هذا الإجراء إلى إيقاف الإضافات وإعادة ضبط الجهاز على الإعدادات التلقائية الآمنة، علمًا بأنّه سيتم الاحتفاظ بالملفات وعلامات التبويب وملفات تعريف الارتباط. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">مكبّر بملء الشاشة</translation>
 <translation id="15373452373711364">مؤشر الماوس الكبير</translation>
+<translation id="1539248305642687917">عدم السماح للمواقع الإلكترونية بتجاوُز إدخالات لوحة المفاتيح</translation>
 <translation id="1539727654733007771">لم يتم إعداد أي شبكات جوّال. يجب تنزيل <ph name="BEGIN_LINK" />ملف شخصي<ph name="END_LINK" /> جديد.</translation>
 <translation id="1540265419569299117">‏خدمة تطبيق نظام التشغيل ChromeOS</translation>
 <translation id="1540543470504988112">‏إدارة الشهادات المستورَدة من MacOS</translation>
@@ -985,6 +987,7 @@
 <translation id="166278006618318542">خوارزمية المفتاح العام لصاحب الشهادة</translation>
 <translation id="1662801900924515589">تم تثبيت <ph name="APP" />.</translation>
 <translation id="1663698992894057019">‏عليك الترقية إلى جهاز Chromebook جديد للحصول على أحدث البرامج وميزات الأمان</translation>
+<translation id="166454475160289583">المواقع الإلكترونية غير المسموح لها بتجاوُز إدخالات لوحة المفاتيح</translation>
 <translation id="1665328953287874063">مطلوب استخدام كلمة مرور أو رقم تعريف شخصي لفتح قفل <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">تعبيري</translation>
 <translation id="1667842670298352129">‏هذه الميزة تتيح لك إمكانية سماع نص معيَّن بصوت عالٍ. أولاً، انقر على رمز "سماع الاختيار" في أسفل الشاشة، ثم ميِّز النص التي تريد سماعه. ويمكنك أيضًا استخدام اختصار لوحة المفاتيح لسماع النص، وذلك من خلال تمييز النص، ثم الضغط على مفتاح البحث + S.</translation>
@@ -1217,6 +1220,7 @@
 <translation id="1832511806131704864">تم تحديث تغيير الهاتف</translation>
 <translation id="1832848789136765277">لضمان إمكانية الوصول دائمًا إلى البيانات التي تتم مزامنتها، عليك إثبات هويتك.</translation>
 <translation id="1833059747301212935">الوصول بسهولة إلى المستندات الحديثة وأحداث التقويم القادمة</translation>
+<translation id="183445248400150852">تستخدم المواقع الإلكترونية هذه الميزة لتجاوُز إدخالات لوحة المفاتيح، مثل الألعاب أو تطبيقات الاتصال عن بعد بين أجهزة الكمبيوتر</translation>
 <translation id="1834503245783133039">تعذّر التنزيل: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">‏جارٍ ترقية نظام التشغيل Linux</translation>
 <translation id="1837441256780906162">‏رفضت خدمة Microsoft OneDrive الطلب. يُرجى إعادة المحاولة لاحقًا.</translation>
@@ -6753,6 +6757,7 @@
 <translation id="5794700615121138172">‏مجلدات نظام التشغيل Linux التي تمت مشاركتها</translation>
 <translation id="5794786537412027208">‏إنهاء جميع تطبيقات Chrome</translation>
 <translation id="5796485699458186843">&amp;علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
+<translation id="5796956053441619942">‏عنوان URL من الجهاز البعيد غير متوافق</translation>
 <translation id="5797934230382081317">‏تعرَّف على كيفية بدء الاستخدام على &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; و&lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;.</translation>
 <translation id="5798079537501238810">السماح للمواقع الإلكترونية بتثبيت معالجات الدفع</translation>
 <translation id="5798086737841799234">إدخال رمز تأكيد البيانات</translation>
@@ -7408,6 +7413,7 @@
 <translation id="6264485186158353794">الرجوع</translation>
 <translation id="6264520534872750757">مواصلة استخدام الجهاز</translation>
 <translation id="6264636978858465832">يحتاج "مدير كلمات المرور" إلى مزيد من أذونات الوصول</translation>
+<translation id="626495329434552273">المواقع الإلكترونية المسموح لها بتجاوُز إدخالات لوحة المفاتيح</translation>
 <translation id="6265159465845424232">‏طلب الإذن قبل نسخ ملفات Microsoft أو نقلها إلى Microsoft OneDrive</translation>
 <translation id="6265687851677020761">إزالة المنفذ</translation>
 <translation id="6266532094411434237">جارٍ الربط بجهاز <ph name="DEVICE" /></translation>

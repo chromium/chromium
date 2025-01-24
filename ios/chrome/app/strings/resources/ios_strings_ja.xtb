@@ -476,6 +476,7 @@
 <translation id="3053332585453689122">アクセスした URL と、ページのコンテンツ、ダウンロード、拡張機能のアクティビティ、システム情報の一部のサンプルを Google セーフ ブラウジングに送信して、有害かどうか確認します。</translation>
 <translation id="3055102495753300780">情報容量</translation>
 <translation id="3059270601560379555">新しい検索</translation>
+<translation id="3064547930554042309">ダウンロードの管理</translation>
 <translation id="3072279342064724558">このパスワードはすでに存在します</translation>
 <translation id="3076846064362030967">Google アカウントへのログイン状態は維持されます。ログイン中は Google アカウントに<ph name="BEGIN_LINK" />その他のアクティビティ<ph name="END_LINK" />が保存される可能性があります。これらのデータはいつでも削除できます。
 
@@ -698,6 +699,7 @@
 <translation id="4154753961803534698">カメラで検索</translation>
 <translation id="4158491215857439601">パスワード マネージャー</translation>
 <translation id="4163699139741158298">{count,plural, =1{ブックマークを「{title}」に保存しました。このデバイスにのみ保存されます。}other{{count} 件のブックマークを「{title}」に保存しました。このデバイスにのみ保存されます。}}</translation>
+<translation id="4164514562270305824">ダウンロードを自動削除</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />（末尾 4 桁: <ph name="LAST_FOUR_DIGITS" />）</translation>
 <translation id="4169535189173047238">許可しない</translation>
 <translation id="4172051516777682613">常に表示</translation>
@@ -1016,6 +1018,7 @@
 <translation id="5579012242779565775">リーディング リストを非表示</translation>
 <translation id="5585019845078534178">カード</translation>
 <translation id="5595485650161345191">住所の編集</translation>
+<translation id="559567008082979829">ダウンロードを 1 か月後に削除するよう設定します。</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
 <translation id="560322036295180549">組織によって無効にされています</translation>
 <translation id="5611107723541161735">このデバイスで最近アクセスしたサイトのショートカット。</translation>

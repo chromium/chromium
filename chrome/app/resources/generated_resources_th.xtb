@@ -55,6 +55,7 @@
 <translation id="103279545524624934">เพิ่มพื้นที่ว่างในดิสก์เพื่อเปิดแอป Android</translation>
 <translation id="1033780634303702874">เข้าถึงอุปกรณ์ซีเรียล</translation>
 <translation id="1034484273907870301">แนวแท็บภาพขนาดย่อสำหรับโหมดแท็บเล็ต</translation>
+<translation id="1035289631433631911">เครื่องมือ Content Transfer</translation>
 <translation id="1035875743511577452">คลิก "เปลี่ยนธีม" เพื่อสำรวจธีมที่ได้รับแรงบันดาลใจจากศิลปิน ธรรมชาติ และอื่นๆ</translation>
 <translation id="1036348656032585052">ปิด</translation>
 <translation id="1036511912703768636">เข้าถึงอุปกรณ์ USB ใดๆ ก็ได้เหล่านี้</translation>
@@ -380,6 +381,7 @@
 <translation id="1246863218384630739">ไม่สามารถติดตั้ง <ph name="VM_NAME" />: URL ของรูปภาพแสดงรหัสข้อผิดพลาด <ph name="HTTP_ERROR" /> โปรดติดต่อผู้ดูแลระบบ</translation>
 <translation id="1247372569136754018">ไมโครโฟน (ภายใน)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{ไม่อนุญาตให้มีการแจ้งเตือนสำหรับ 1 เว็บไซต์}other{ไม่อนุญาตให้มีการแจ้งเตือนสำหรับ {NUM_SITES} เว็บไซต์}}</translation>
+<translation id="125097549534200450">ล้าง</translation>
 <translation id="1251366534849411931">เครื่องหมายวงเล็บปีกกาเปิดที่ต้องมี: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">กำลังสแกนหาเครือข่ายอินเทอร์เน็ตมือถือ...</translation>
 <translation id="125220115284141797">ค่าเริ่มต้น</translation>
@@ -394,6 +396,7 @@
 <translation id="1260810365552581339">Linux อาจมีพื้นที่ในดิสก์ไม่พอ คุณเพิ่มพื้นที่ในดิสก์ของ Linux และพยายามกู้คืนข้อมูลอีกครั้งได้ใน<ph name="LINK_START" />การตั้งค่า<ph name="LINK_END" /></translation>
 <translation id="1261380933454402672">ปานกลาง</translation>
 <translation id="126156426083987769">เกิดปัญหาเกี่ยวกับใบอนุญาตของอุปกรณ์โหมดสาธิต</translation>
+<translation id="1262564987698748643">เว็บไซต์ต่างๆ ขอลบล้างอินพุตจากแป้นพิมพ์ได้</translation>
 <translation id="1263231323834454256">เรื่องรออ่าน</translation>
 <translation id="1263733306853729545">ใช้คีย์ <ph name="MINUS" /> และ <ph name="EQUAL" /> เพื่อสร้างหน้ารายการตัวเลือก</translation>
 <translation id="126387934568812801">รวมภาพหน้าจอนี้และชื่อของแท็บที่เปิดอยู่</translation>
@@ -772,6 +775,7 @@
 <translation id="1536883206862903762">การดำเนินการนี้จะเป็นการปิดใช้ส่วนขยายและรีเซ็ตการตั้งค่าเป็นค่าเริ่มต้นที่ปลอดภัย โดยแท็บ ไฟล์ และคุกกี้จะยังคงอยู่ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">แว่นขยายทั้งหน้าจอ</translation>
 <translation id="15373452373711364">เคอร์เซอร์เมาส์ขนาดใหญ่</translation>
+<translation id="1539248305642687917">ไม่อนุญาตให้เว็บไซต์ต่างๆ ลบล้างอินพุตจากแป้นพิมพ์</translation>
 <translation id="1539727654733007771">ไม่ได้ตั้งค่าเครือข่ายมือถือไว้ ดาวน์โหลด<ph name="BEGIN_LINK" />โปรไฟล์<ph name="END_LINK" />ใหม่</translation>
 <translation id="1540265419569299117">บริการแอป ChromeOS</translation>
 <translation id="1540543470504988112">จัดการใบรับรองที่นำเข้าจาก MacOS</translation>
@@ -983,6 +987,7 @@
 <translation id="166278006618318542">อัลกอริทึมหัวเรื่องคีย์ส่วนตัว</translation>
 <translation id="1662801900924515589">ติดตั้ง <ph name="APP" /> แล้ว</translation>
 <translation id="1663698992894057019">อัปเกรดไปใช้ Chromebook เครื่องใหม่เพื่อรับการรักษาความปลอดภัยและซอฟต์แวร์ล่าสุด</translation>
+<translation id="166454475160289583">ไม่ได้รับอนุญาตให้ลบล้างอินพุตจากแป้นพิมพ์</translation>
 <translation id="1665328953287874063">ใช้รหัสผ่านหรือ PIN เพื่อปลดล็อก <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">เอ็กซ์เพรสชันนิสม์</translation>
 <translation id="1667842670298352129">ฟังการอ่านออกเสียงข้อความที่เจาะจง ก่อนอื่นให้เลือกไอคอน "เลือกเพื่อให้อ่าน" ที่ด้านล่างของหน้าจอแล้วไฮไลต์ข้อความ คุณยังใช้แป้นพิมพ์ลัด: ไฮไลต์ข้อความ แล้วกดแป้นค้นหา + S ได้ด้วย</translation>
@@ -1214,6 +1219,7 @@
 <translation id="1832511806131704864">อัปเดตการเปลี่ยนแปลงของโทรศัพท์แล้ว</translation>
 <translation id="1832848789136765277">โปรดยืนยันว่าเป็นคุณเพื่อให้เข้าถึงข้อมูลที่ซิงค์ไว้ได้ทุกเมื่อ</translation>
 <translation id="1833059747301212935">เข้าถึงเอกสารล่าสุดและกิจกรรมในปฏิทินที่กำลังจะเกิดขึ้นได้อย่างง่ายดาย</translation>
+<translation id="183445248400150852">เว็บไซต์ต่างๆ ใช้ฟีเจอร์นี้เพื่อลบล้างอินพุตจากแป้นพิมพ์ เช่น เพื่อการดำเนินการของเกมหรือแอป Remote Desktop</translation>
 <translation id="1834503245783133039">ดาวน์โหลดไม่สำเร็จ: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">กำลังอัปเกรด Linux</translation>
 <translation id="1837441256780906162">Microsoft OneDrive ปฏิเสธคำขอดังกล่าว โปรดลองอีกครั้งภายหลัง</translation>
@@ -5926,6 +5932,7 @@
 <translation id="5177479852722101802">บล็อกการเข้าถึงกล้องถ่ายรูปและไมโครโฟนต่อไป</translation>
 <translation id="5177549709747445269">คุณกำลังใช้ข้อมูลมือถือ</translation>
 <translation id="5178667623289523808">ค้นหาก่อนหน้านี้</translation>
+<translation id="5180276433875360121">แสดง <ph name="CERT_LIST" /></translation>
 <translation id="5181140330217080051">กำลังดาวน์โหลด</translation>
 <translation id="5181172023548002891">ที่เครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="ACCOUNT" /></translation>
 <translation id="5181551096188687373">รหัสผ่านข้างต้นจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google <ph name="USER_EMAIL" /></translation>
@@ -6759,6 +6766,7 @@
 <translation id="5794700615121138172">โฟลเดอร์ที่แชร์ใน Linux</translation>
 <translation id="5794786537412027208">ปิดแอป Chrome ทั้งหมด</translation>
 <translation id="5796485699458186843">แท็บที่ไม่ระบุตัวตนใหม่</translation>
+<translation id="5796956053441619942">ไม่รองรับ URL จากอุปกรณ์ระยะไกล</translation>
 <translation id="5797934230382081317">ดูวิธีเริ่มต้นใช้งานใน &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; และ &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
 <translation id="5798079537501238810">เว็บไซต์ติดตั้งเครื่องจัดการการชำระเงินได้</translation>
 <translation id="5798086737841799234">ป้อนรหัสยืนยัน</translation>
@@ -7415,6 +7423,7 @@
 <translation id="6264485186158353794">กลับสู่ความปลอดภัย</translation>
 <translation id="6264520534872750757">ใช้อุปกรณ์ต่อไป</translation>
 <translation id="6264636978858465832">เครื่องมือจัดการรหัสผ่านต้องการเข้าถึงเพิ่มเติม</translation>
+<translation id="626495329434552273">ได้รับอนุญาตให้ลบล้างอินพุตจากแป้นพิมพ์</translation>
 <translation id="6265159465845424232">ถามก่อนคัดลอกหรือย้ายไฟล์ Microsoft ไปยัง Microsoft OneDrive</translation>
 <translation id="6265687851677020761">นำพอร์ตออก</translation>
 <translation id="6266532094411434237">กำลังเชื่อมต่อกับ <ph name="DEVICE" /></translation>
@@ -8515,6 +8524,7 @@
 <translation id="7063311912041006059">URL ที่มี <ph name="SPECIAL_SYMBOL" /> ในตำแหน่งคำค้นหา</translation>
 <translation id="706342288220489463">อนุญาตให้ Assistant ใช้ข้อมูลบนหน้าจอเพื่อช่วยเหลือ</translation>
 <translation id="70641621694466590">ไปที่หน้ารหัสผ่าน</translation>
+<translation id="7064209589142995848">โอนเนื้อหา</translation>
 <translation id="7064734931812204395">กำลังกำหนดค่าคอนเทนเนอร์ Linux ซึ่งอาจใช้เวลาถึง 30 นาที</translation>
 <translation id="7065223852455347715">มีการล็อกอุปกรณ์นี้ในโหมดที่ป้องกันการลงทะเบียนขององค์กร หากคุณต้องการลงทะเบียนอุปกรณ์ คุณจะต้องดำเนินการกู้คืนอุปกรณ์ก่อน</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{นำเข้ารหัสผ่าน 1 รายการสำหรับ <ph name="USER_EMAIL" /> ไปยัง<ph name="BRAND" /> แล้ว}other{นำเข้ารหัสผ่าน {NUM_PASSWORDS} รายการสำหรับ <ph name="USER_EMAIL" /> ไปยัง<ph name="BRAND" /> แล้ว}}</translation>
@@ -9553,6 +9563,7 @@
 <translation id="7810202088502699111">หน้าเว็บนี้บล็อกป๊อปอัป</translation>
 <translation id="7810367892333449285">รหัสที่คุณป้อนควรอยู่ในรูปแบบ <ph name="LPA_0" />$<ph name="LPA_1" />ที่อยู่ SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />รหัสที่ตรงกัน (ไม่บังคับ)<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">ลองอีกครั้งหรือเลือกจากธีมใดธีมหนึ่งที่สร้างขึ้นก่อนหน้านี้ที่ด้านล่าง</translation>
+<translation id="7811986034759500329">ตั้งค่าในการตั้งค่าระบบ</translation>
 <translation id="7812170317334653156">Google ปฏิทินซ่อนอยู่</translation>
 <translation id="7814090115158024843">ไม่ต้องเสนอความช่วยเหลือในการเขียนในเว็บไซต์เหล่านี้</translation>
 <translation id="7814458197256864873">&amp;คัดลอก</translation>

@@ -394,6 +394,7 @@
 <translation id="1260810365552581339">Linux 的磁碟空間可能不足。您可增加 Linux 磁碟空間並嘗試在「<ph name="LINK_START" />設定<ph name="LINK_END" />」中再次還原。</translation>
 <translation id="1261380933454402672">普通模式</translation>
 <translation id="126156426083987769">示範模式的裝置授權發生問題。</translation>
+<translation id="1262564987698748643">網站可以要求取代鍵盤輸入</translation>
 <translation id="1263231323834454256">閱讀清單</translation>
 <translation id="1263733306853729545">使用「<ph name="MINUS" />」和「<ph name="EQUAL" />」鍵顯示候選字詞名單</translation>
 <translation id="126387934568812801">包括此螢幕截圖和已開啟分頁的標題</translation>
@@ -772,6 +773,7 @@
 <translation id="1536883206862903762">這麼做會停用擴充程式，並將設定重設為安全預設值。系統會保留分頁、檔案和 Cookie。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">全螢幕放大鏡</translation>
 <translation id="15373452373711364">大型滑鼠游標</translation>
+<translation id="1539248305642687917">不允許網站取代鍵盤輸入</translation>
 <translation id="1539727654733007771">未設定流動網絡。請下載新的<ph name="BEGIN_LINK" />設定檔。<ph name="END_LINK" /></translation>
 <translation id="1540265419569299117">ChromeOS 應用程式服務</translation>
 <translation id="1540543470504988112">管理從 MacOS 匯入的憑證</translation>
@@ -983,6 +985,7 @@
 <translation id="166278006618318542">主體公開金鑰演算法</translation>
 <translation id="1662801900924515589">已安裝「<ph name="APP" />」</translation>
 <translation id="1663698992894057019">請改用新 Chromebook，以獲得最新的安全和軟件更新</translation>
+<translation id="166454475160289583">不允許取代鍵盤輸入</translation>
 <translation id="1665328953287874063">使用密碼或 PIN 解鎖 <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">表現主義</translation>
 <translation id="1667842670298352129">由系統讀出特定文字。請先選取畫面底部的「揀選朗讀內容」圖示，然後突顯所需文字。您亦可使用鍵盤快速鍵：突顯文字，然後按下搜尋鍵 + S 鍵。</translation>
@@ -1221,6 +1224,7 @@
 <translation id="1832511806131704864">手機變更內容已更新</translation>
 <translation id="1832848789136765277">為確保您可隨時存取同步資料，請驗證您的身分</translation>
 <translation id="1833059747301212935">輕鬆存取最近使用的文件和近期日曆活動</translation>
+<translation id="183445248400150852">網站會使用此功能來取代鍵盤輸入，例如遊戲或遠端桌面應用程式</translation>
 <translation id="1834503245783133039"><ph name="FILE_NAME" /> 下載失敗</translation>
 <translation id="1835261175655098052">正在升級 Linux</translation>
 <translation id="1837441256780906162">Microsoft OneDrive 已拒絕要求，請稍後再試。</translation>
@@ -6749,6 +6753,7 @@
 <translation id="5794700615121138172">Linux 共用資料夾</translation>
 <translation id="5794786537412027208">結束所有 Chrome 應用程式</translation>
 <translation id="5796485699458186843">新無痕式分頁</translation>
+<translation id="5796956053441619942">不支援來自遠端裝置的網址</translation>
 <translation id="5797934230382081317">瞭解如何在 &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; 和 &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; 裝置上開始使用密碼管理工具</translation>
 <translation id="5798079537501238810">網站可安裝付款處理常式</translation>
 <translation id="5798086737841799234">輸入確認碼</translation>
@@ -7403,6 +7408,7 @@
 <translation id="6264485186158353794">返回安全連線</translation>
 <translation id="6264520534872750757">繼續使用此裝置</translation>
 <translation id="6264636978858465832">「密碼管理工具」需要更多存取權</translation>
+<translation id="626495329434552273">允許取代鍵盤輸入</translation>
 <translation id="6265159465845424232">在複製或移動 Microsoft 檔案至 Microsoft OneDrive 前先詢問</translation>
 <translation id="6265687851677020761">移除連接埠</translation>
 <translation id="6266532094411434237">正在連接 <ph name="DEVICE" /></translation>

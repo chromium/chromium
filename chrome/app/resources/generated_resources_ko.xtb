@@ -482,6 +482,7 @@
 <translation id="1317637799698924700">현재 도킹 스테이션은 USB 타입-C 호환 모드에서 작동합니다.</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> 하위 페이지 뒤로 버튼</translation>
 <translation id="1322046419516468189"><ph name="SAVED_PASSWORDS_STORE" />에 저장된 비밀번호 보기 및 관리</translation>
+<translation id="132539964543492755">마우스 버튼 선택을 왼쪽 버튼, 오른쪽 버튼, 둘 다로 변경하려면 'x' 키를 사용하세요.</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos 티켓</translation>
 <translation id="1327495825214193325">ADB 디버깅을 사용 설정하려면 이 <ph name="DEVICE_TYPE" /> 기기를 다시 시작해야 합니다. ADB 디버깅을 사용 중지하려면 초기화해야 합니다.</translation>
@@ -1690,6 +1691,7 @@
 <translation id="2155772377859296191"><ph name="WIDTH" />x<ph name="HEIGHT" />처럼 보입니다.</translation>
 <translation id="2156294658807918600">서비스 워커: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156707722163479690">공유한 탭의 스크롤 및 확대/축소가 허용됨</translation>
+<translation id="2157457598652721267">왼쪽 또는 오른쪽 마우스 버튼을 선택하려면 '/' 및 '-' 키를 사용하세요. 둘 다 선택하려면 '*' 키를 사용하세요.</translation>
 <translation id="2157474325782140681">추가 기능을 사용하려면 이 Chromebook과 호환되는 Dell 도킹 스테이션을 사용하세요.</translation>
 <translation id="215753907730220065">전체화면 종료</translation>
 <translation id="2157779167749714207"><ph name="DEVICE_TYPE" />의 경우 Gemini가 탑재되어 출시됩니다</translation>
@@ -1794,6 +1796,7 @@
 <translation id="2233502537820838181">추가 정보</translation>
 <translation id="223356358902285214">웹 및 앱 활동</translation>
 <translation id="2234065144797002621">시냇물</translation>
+<translation id="2234208862050358325">커서를 이동하려면 1, 2, 3, q, e, a, s, d 키를 사용하세요.</translation>
 <translation id="2234827758954819389">개인 정보 보호 가이드</translation>
 <translation id="2234876718134438132">동기화 및 Google 서비스</translation>
 <translation id="2235344399760031203">타사 쿠키가 차단됨</translation>
@@ -1813,6 +1816,7 @@
 <translation id="2249111429176737533">탭 창으로 열기</translation>
 <translation id="2249605167705922988">예: 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">사이트에서 광고를 표시하는 데 사용하는 정보를 맞춤설정합니다.</translation>
+<translation id="22505994009453896">숫자 키패드로 마우스 커서 제어하기</translation>
 <translation id="2250624716625396929">이 탭에서 카메라 및 마이크를 사용 중입니다.</translation>
 <translation id="2251218783371366160">시스템 뷰어로 열기</translation>
 <translation id="225163402930830576">네트워크 새로고침</translation>
@@ -2010,6 +2014,7 @@
 <translation id="236939127352773362">근처에 공유 중인 기기가 있을 때</translation>
 <translation id="2371076942591664043">완료되면 열기(&amp;D)</translation>
 <translation id="237336063998926520">IP 주소를 사용하여 위치 파악</translation>
+<translation id="2373499590298659902">마우스 버튼을 길게 누르려면 '0' 키를 사용하세요.</translation>
 <translation id="2373666622366160481">용지에 맞춤</translation>
 <translation id="2375406435414127095">휴대전화에 연결</translation>
 <translation id="2376056713414548745">소리내어 읽기</translation>
@@ -2771,6 +2776,7 @@
 <translation id="2902312830803030883">추가 작업</translation>
 <translation id="2903457445916429186">선택한 항목 열기</translation>
 <translation id="2903882649406874750">항상 <ph name="HOST" />의 센서 액세스 차단</translation>
+<translation id="2903925626657991994">마우스 버튼 선택을 왼쪽 버튼, 오른쪽 버튼, 둘 다로 변경하려면 ',' 키를 사용하세요.</translation>
 <translation id="290415756080113152">사이트에서 기기에 액세스할 수 있는 프린터를 찾거나 사용할 수 없습니다.</translation>
 <translation id="2904210161403910217">마지막 로그인 이후 비밀번호가 변경됨</translation>
 <translation id="2904506722835398619">로그인 및 동기화 필요</translation>
@@ -3125,6 +3131,7 @@
 <translation id="3170072451822350649">로그인을 건너뛰고 <ph name="LINK_START" />게스트로 로그인<ph name="LINK_END" />할 수도 있습니다.</translation>
 <translation id="3175067642577044620">본문</translation>
 <translation id="3175862692832442091">숲</translation>
+<translation id="3176347586396987181">마우스 버튼을 길게 누르려면 'z' 키를 사용하세요.</translation>
 <translation id="3177430966804511955">분리형 웹 앱 관리(베타)</translation>
 <translation id="31774765611822736">새 좌측 탭</translation>
 <translation id="3177909033752230686">페이지 언어:</translation>
@@ -4505,6 +4512,7 @@
 <translation id="412730574613779332">스판덱스</translation>
 <translation id="4130199216115862831">기기 로그</translation>
 <translation id="4130750466177569591">동의함</translation>
+<translation id="4130877444234883490">마우스 버튼을 길게 누르려면 'm' 키를 사용하세요.</translation>
 <translation id="413121957363593859">컴포넌트</translation>
 <translation id="4131283654370308898">이 사이트에서 <ph name="EXTENSION_NAME" /> 허용</translation>
 <translation id="4131410914670010031">흑백</translation>
@@ -4524,6 +4532,7 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID 기기 연결됨</translation>
 <translation id="4139326893730851150">펌웨어 업데이트</translation>
 <translation id="4142052906269098341">휴대전화를 사용해 <ph name="DEVICE_TYPE" />을 잠금 해제하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
+<translation id="4143606504420684845">AI가 사용자 환경을 어떻게 형성하는지 살펴보고, 개인 정보 보호에 대한 현명한 결정을 내리세요.</translation>
 <translation id="4146026355784316281">항상 시스템 뷰어로 열기</translation>
 <translation id="4146785383423576110">재설정 및 정리하기</translation>
 <translation id="4147099377280085053">점자표 선택</translation>
@@ -4807,6 +4816,7 @@
 <translation id="4360738659108163902">마우스 오른쪽 버튼으로 클릭</translation>
 <translation id="4361142739114356624">이 클라이언트 인증서의 비공개 키가 없거나 잘못되었습니다.</translation>
 <translation id="4361745360460842907">탭으로 열기</translation>
+<translation id="4362459470237309049">마우스 버튼을 놓으려면 '.' 키를 사용하세요.</translation>
 <translation id="4363262124589131906">내 드라이브의 새 파일이 이 Chromebook에 자동으로 동기화되지 않습니다.</translation>
 <translation id="4364327530094270451">멜론</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{항목 1개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요}other{항목 {ITEM_COUNT}개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요}}</translation>
@@ -4832,6 +4842,7 @@
 <translation id="4378308539633073595">앞으로 스크롤</translation>
 <translation id="4378551569595875038">연결 중...</translation>
 <translation id="4378556263712303865">기기 요청</translation>
+<translation id="4378589147979399051">기본 키보드로 마우스 커서 제어하기</translation>
 <translation id="4379097572583973456">사이트에서는 이미지, 광고, 텍스트와 같은 다른 사이트의 콘텐츠도 삽입할 수 있습니다. 이와 같은 다른 사이트에서도 데이터를 저장할 수 있습니다.</translation>
 <translation id="4379281552162875326">‘<ph name="APP_NAME" />’ 앱을 제거하시겠습니까?</translation>
 <translation id="4380055775103003110">이 문제가 계속 발생하는 경우 다른 방법으로 <ph name="SITE_ETLD_PLUS_ONE" />에서 진행해 볼 수 있습니다.</translation>
@@ -5153,6 +5164,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4610493438923139095">신뢰할 수 없음</translation>
 <translation id="4610637590575890427"><ph name="SITE" />(으)로 이동하려고 하셨나요?</translation>
 <translation id="4611114513649582138">데이터 연결을 사용할 수 있습니다.</translation>
+<translation id="4611619000650855880">왼쪽 마우스 버튼이 선택된 경우 더블클릭하려면 ‘/’ 키를 사용하세요.</translation>
 <translation id="4611759022973144129">이 비밀번호를 사용하여 <ph name="DEVICE_TYPE" />에 로그인할 수 있습니다</translation>
 <translation id="4612841084470706111">요청된 모든 사이트에 대한 액세스 권한 부여</translation>
 <translation id="4613144866899789710">Linux 설치를 취소하는 중...</translation>
@@ -5278,6 +5290,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4694820450536519583">권한</translation>
 <translation id="4695318956047767909">어두운 테마, 화면 보호기</translation>
 <translation id="4697071790493980729">검색결과 없음</translation>
+<translation id="4697231114332146850">커서를 이동하려면 7, 8, 9, 4, 6, 1, 2, 3 키를 사용하세요.</translation>
 <translation id="4697551882387947560">탐색 세션이 종료될 때</translation>
 <translation id="469838979880025581">사이트에서 마이크 사용을 요청할 수 있음</translation>
 <translation id="4699172675775169585">캐시된 이미지 및 파일</translation>
@@ -6391,6 +6404,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5499453227627332024">Linux 컨테이너를 업그레이드할 수 있습니다. 나중에 설정 앱에서 업그레이드해도 됩니다.</translation>
 <translation id="5499476581866658341">이제 휴대전화의 최근 사진과 미디어를 확인할 수 있습니다.</translation>
 <translation id="549957179819296104">새로운 아이콘</translation>
+<translation id="5500163593833085874">왼쪽 마우스 버튼이 선택된 경우 더블클릭하려면 '+' 키를 사용하세요.</translation>
 <translation id="5500168250243071806">로그인할 경우 <ph name="BEGIN_LINK_SEARCH" />검색 기록<ph name="END_LINK_SEARCH" /> 및 <ph name="BEGIN_LINK_GOOGLE" />다른 활동 형식<ph name="END_LINK_GOOGLE" />이 Google 계정에 저장될 수 있습니다. 이러한 데이터는 언제든지 삭제할 수 있습니다.</translation>
 <translation id="5501322521654567960">왼쪽 정렬 측면 패널</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신 실패}other{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신 실패}}</translation>
@@ -6688,6 +6702,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5733913382424854675">AI로 탭 그룹화</translation>
 <translation id="5734362860645681824">커뮤니케이션</translation>
 <translation id="5734697361979786483">파일 공유 추가</translation>
+<translation id="573520097779121706">커서를 이동하려면 7, 8, 9, u, o, j, k, l 키를 사용하세요.</translation>
 <translation id="5735513236153491131">지금 향상</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{데이터 또는 기기가 조직의 보안 정책 중 일부를 준수하지 않습니다. 관리자와 함께 문제 해결을 상의하세요.}=1{파일 또는 기기가 조직의 보안 정책 중 일부를 준수하지 않습니다. 관리자와 함께 문제 해결을 상의하세요.}other{파일이 조직의 보안 정책 중 일부를 준수하지 않습니다. 관리자와 함께 문제 해결을 상의하세요.}}</translation>
 <translation id="5738093759615225354">컴퓨터에 로그인하려면 이 패스키가 필요합니다.</translation>
@@ -6921,6 +6936,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5901069264981746702">지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">캡처 중인 탭으로 전환</translation>
 <translation id="5901494423252125310">프린터 덮개 열림</translation>
+<translation id="5901526412306322179">활동 로그</translation>
 <translation id="5901630391730855834">노란색</translation>
 <translation id="5902892210366342391">시크릿 모드에서 안전하지 않은 사이트로 이동하기 전에 경고를 표시합니다.</translation>
 <translation id="5904614460720589786">구성 문제로 인해 <ph name="APP_NAME" /> 앱을 설정할 수 없습니다. 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
@@ -7296,6 +7312,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6171779718418683144">방문할 때마다 확인</translation>
 <translation id="617213288191670920">추가된 언어 없음</translation>
 <translation id="6173623053897475761">PIN을 다시 입력하세요</translation>
+<translation id="6174909075810107548">마우스 버튼을 누르려면 '5' 키를 사용하세요.</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6175910054050815932">링크 가져오기</translation>
 <translation id="6177412385419165772">삭제 중…</translation>
@@ -7781,6 +7798,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />참고:<ph name="END_BOLD" /> 데이터 수집으로 인해 성능이 감소할 수 있으므로 확신이 있는 경우 또는 요청을 받은 경우에만 사용하도록 설정합니다.</translation>
 <translation id="6540488083026747005">이 사이트에서 서드 파티 쿠키를 허용했습니다</translation>
 <translation id="6541638731489116978">움직임 감지 센서 액세스가 차단된 사이트입니다.</translation>
+<translation id="654219396498297850">왼쪽 마우스 버튼이 선택된 경우 더블클릭하려면 'v' 키를 사용하세요.</translation>
 <translation id="6542417422899025860">대부분의 개인 정보 자동 삭제</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />(으)로 전송 중</translation>
 <translation id="6544134392255015460">키보드 백라이트 전환 버튼</translation>
@@ -8779,6 +8797,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7258225044283673131">애플리케이션이 응답하지 않습니다. '강제 종료'를 선택하여 앱을 닫으세요.</translation>
 <translation id="7260186537988033909">키오스크 및 사이니지 기기 등록 완료</translation>
 <translation id="7260206782629605806">기준점을 낮추면 미세하게 움직여도 감지됩니다. 기준점을 높이면 더욱 과장되게 움직여야 감지될 수 있습니다.</translation>
+<translation id="7260802376010589729">마우스 버튼을 놓으려면 'c' 키를 사용하세요.</translation>
 <translation id="7261217796641151584">그룹 공유</translation>
 <translation id="7261612856573623172">시스템 TTS(텍스트 음성 변환) 음성</translation>
 <translation id="7262004276116528033">이 로그인 서비스는 <ph name="SAML_DOMAIN" />에서 호스팅됩니다.</translation>
@@ -9620,6 +9639,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="78526636422538552">Google 계정 추가가 사용 중지되었습니다.</translation>
 <translation id="785371335555334021">클릭하여 <ph name="TITLE" />에서 나가기</translation>
 <translation id="7853747251428735">도구 더보기(&amp;L)</translation>
+<translation id="7855258394151767387">마우스 버튼을 누르려면 'w' 키를 사용하세요.</translation>
 <translation id="7855678561139483478">탭을 새 창으로 이동</translation>
 <translation id="7857004848504343806">컴퓨터에 보안 모듈이 있습니다. 이 모듈은 ChromeOS Flex에서 여러 중요한 보안 기능을 구현하는 데 사용됩니다. 자세히 알아보려면 Chromebook 고객센터의 다음 페이지를 방문하세요.
 https://support.google.com/chromebook/?p=sm</translation>
@@ -9993,6 +10013,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="810362914482827094">패스키 검색</translation>
 <translation id="8104088837833760645">eSIM 프로필 다운로드</translation>
 <translation id="8105273883928376822">계속하려면 로그인하세요</translation>
+<translation id="8106114112474206597">마우스 버튼을 누르려면 'i' 키를 사용하세요.</translation>
 <translation id="8107015733319732394"><ph name="DEVICE_TYPE" />에 Google Play 스토어를 설치합니다. 설치하는 데 몇 분 정도 걸릴 수 있습니다.</translation>
 <translation id="810728361871746125">화면 해상도</translation>
 <translation id="8108161424633979910">멤버 <ph name="NUM" />명</translation>

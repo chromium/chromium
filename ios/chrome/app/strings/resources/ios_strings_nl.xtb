@@ -476,6 +476,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="3053332585453689122">Stuurt de URL's die je bezoekt en een klein gedeelte van de paginacontent, downloads, extensie-activiteit en systeeminformatie naar Google Safe Browsing om te checken of de URL's schadelijk zijn.</translation>
 <translation id="3055102495753300780">Informatieopslag</translation>
 <translation id="3059270601560379555">Nieuwe zoekopdracht</translation>
+<translation id="3064547930554042309">Downloads beheren</translation>
 <translation id="3072279342064724558">Wachtwoord bestaat al</translation>
 <translation id="3076846064362030967">Je wordt niet uitgelogd van je Google-account. Er kunnen <ph name="BEGIN_LINK" />andere vormen van activiteit<ph name="END_LINK" /> worden opgeslagen op je Google-account als je bent ingelogd. Je kunt ze wanneer je wilt verwijderen.
 
@@ -698,6 +699,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4154753961803534698">Zoeken met camera</translation>
 <translation id="4158491215857439601">Wachtwoordmanager</translation>
 <translation id="4163699139741158298">{count,plural, =1{Bookmark opgeslagen in {title}. Deze wordt alleen op dit apparaat opgeslagen.}other{{count} bookmarks opgeslagen in {title}. Deze worden alleen op dit apparaat opgeslagen.}}</translation>
+<translation id="4164514562270305824">Downloads automatisch verwijderen</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> eindigend op <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Niet toestaan</translation>
 <translation id="4172051516777682613">Altijd bekijken</translation>
@@ -1016,6 +1018,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5579012242779565775">Leeslijst verbergen</translation>
 <translation id="5585019845078534178">Kaarten</translation>
 <translation id="5595485650161345191">Adres bewerken</translation>
+<translation id="559567008082979829">Stel in dat je downloads na één maand worden verwijderd.</translation>
 <translation id="5596627076506792578">Meer opties</translation>
 <translation id="560322036295180549">Uitgezet door je organisatie</translation>
 <translation id="5611107723541161735">Snelkoppelingen naar sites die je recent hebt bezocht op dit apparaat.</translation>

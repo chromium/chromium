@@ -55,6 +55,7 @@
 <translation id="103279545524624934">Libera spazio sul disco per avviare le app Android.</translation>
 <translation id="1033780634303702874">Accesso ai dispositivi seriali</translation>
 <translation id="1034484273907870301">Tabstrip miniatura per la modalità tablet</translation>
+<translation id="1035289631433631911">Strumento Trasferimento dei contenuti</translation>
 <translation id="1035875743511577452">Fai clic su "Cambia tema" per esplorare temi ispirati ad artisti, natura e altro ancora</translation>
 <translation id="1036348656032585052">Disattiva</translation>
 <translation id="1036511912703768636">Accedi a tutti questi dispositivi USB</translation>
@@ -380,6 +381,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1246863218384630739">Impossibile installare <ph name="VM_NAME" />: l'URL dell'immagine ha restituito un codice di errore <ph name="HTTP_ERROR" />. Contatta l'amministratore.</translation>
 <translation id="1247372569136754018">Microfono (interno)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Notifiche non consentite per 1 sito}other{Notifiche non consentite per {NUM_SITES} siti}}</translation>
+<translation id="125097549534200450">cancella</translation>
 <translation id="1251366534849411931">Parentesi graffa aperta prevista: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">Ricerca di reti di dati mobili in corso…</translation>
 <translation id="125220115284141797">Predefiniti</translation>
@@ -5919,6 +5921,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5177479852722101802">Continua a impedire l'accesso a webcam e microfono</translation>
 <translation id="5177549709747445269">Dati mobili in uso</translation>
 <translation id="5178667623289523808">Trova precedente</translation>
+<translation id="5180276433875360121">Mostra <ph name="CERT_LIST" /></translation>
 <translation id="5181140330217080051">Download in corso</translation>
 <translation id="5181172023548002891">Su Gestore delle password di Google per l'account <ph name="ACCOUNT" /></translation>
 <translation id="5181551096188687373">La password viene salvata solo su questo dispositivo. Per usarlo sugli altri tuoi dispositivi, salvalo nel tuo Account Google <ph name="USER_EMAIL" />.</translation>
@@ -8506,6 +8509,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7063311912041006059">URL con <ph name="SPECIAL_SYMBOL" /> al posto della query</translation>
 <translation id="706342288220489463">Consenti all'assistente di usare le informazioni visualizzate sullo schermo per aiutarti</translation>
 <translation id="70641621694466590">Vai alla pagina Password</translation>
+<translation id="7064209589142995848">Trasferimento dei contenuti</translation>
 <translation id="7064734931812204395">Configurazione del contenitore Linux. L'operazione potrebbe richiedere fino a 30 minuti.</translation>
 <translation id="7065223852455347715">Questo dispositivo è bloccato su una modalità che impedisce la registrazione aziendale. Se desideri registrare il dispositivo, devi prima eseguire il ripristino.</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{1 password importata in <ph name="BRAND" /> per <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} password importate in <ph name="BRAND" /> per <ph name="USER_EMAIL" />}}</translation>
@@ -9544,6 +9548,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7810202088502699111">I popup sono stati bloccati in questa pagina.</translation>
 <translation id="7810367892333449285">Il formato dell'elemento dovrebbe essere <ph name="LPA_0" />$<ph name="LPA_1" />indirizzo SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ID corrispondenza facoltativo<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">Riprova o seleziona uno dei temi generati in precedenza riportati di seguito.</translation>
+<translation id="7811986034759500329">Imposta nelle impostazioni di sistema</translation>
 <translation id="7812170317334653156">Google Calendar nascosto</translation>
 <translation id="7814090115158024843">Non offrire mai assistenza per la scrittura su questi siti</translation>
 <translation id="7814458197256864873">&amp;Copia</translation>

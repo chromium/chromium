@@ -55,6 +55,7 @@
 <translation id="103279545524624934">Android қолданбаларын орнату үшін дискіде орын босатыңыз.</translation>
 <translation id="1033780634303702874">Сериялық құрылғыларыңызға кіру</translation>
 <translation id="1034484273907870301">Планшет режиміндегі нобай қойындылары жолағы</translation>
+<translation id="1035289631433631911">Контент тасымалы құралы</translation>
 <translation id="1035875743511577452">Суретшілер, табиғат және т.б. шабыттандырған тақырыптарды зерттеу үшін "Тақырыпты өзгерту" түймесін басыңыз</translation>
 <translation id="1036348656032585052">Өшіру</translation>
 <translation id="1036511912703768636">Осы USB құрылғыларының кел келгеніне кіру</translation>
@@ -380,6 +381,7 @@
 <translation id="1246863218384630739"><ph name="VM_NAME" /> орнатылмады: суреттің URL мекенжайы <ph name="HTTP_ERROR" /> қате кодын қайтарды. Әкімшіге хабарласыңыз.</translation>
 <translation id="1247372569136754018">Микрофон (ішкі)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{1 сайтта хабарландырулар рұқсат етілмеді}other{{NUM_SITES} сайтта хабарландырулар рұқсат етілмеді}}</translation>
+<translation id="125097549534200450">тазалаңыз</translation>
 <translation id="1251366534849411931">Ирек жақша ашылмаған: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">Мобильдік интернет желілері ізделуде…</translation>
 <translation id="125220115284141797">Әдепкі</translation>
@@ -394,6 +396,7 @@
 <translation id="1260810365552581339">Linux жүйесінде диск жады аз болуы мүмкін. Linux диск жадын көбейтіңіз де, оны <ph name="LINK_START" />параметрлерде<ph name="LINK_END" /> қайтадан қалпына келтіріп көріңіз.</translation>
 <translation id="1261380933454402672">Баяу</translation>
 <translation id="126156426083987769">Демо режиміндегі құрылғы лицензияларына қатысты ақау орын алды.</translation>
+<translation id="1262564987698748643">Сайттар пернетақта кірісін қайта анықтауға рұқсат сұрай алады</translation>
 <translation id="1263231323834454256">Оқу тізімі</translation>
 <translation id="1263733306853729545">Нұсқалар тізімін қарап шығу үшін "<ph name="MINUS" />" және "<ph name="EQUAL" />" пернелерін пайдалану</translation>
 <translation id="126387934568812801">Осы скриншотты және ашық қойындылардың атауларын қосыңыз</translation>
@@ -768,6 +771,7 @@
 <translation id="1536883206862903762">Кеңейтімдер өшіріледі және параметрлер қауіпсіз әдепкі мәндеріне қайтарылады. Қойындылар, файлдар мен cookie файлдары сақталады. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Толық экран ұлғайтқышы</translation>
 <translation id="15373452373711364">Үлкен тінтуір курсоры</translation>
+<translation id="1539248305642687917">Сайттарға пернетақта кірісін қайта анықтауға рұқсат бермеу</translation>
 <translation id="1539727654733007771">Ешқандай мобильдік желі реттелмеген. Жаңа <ph name="BEGIN_LINK" />профильді<ph name="END_LINK" /> жүктеп алыңыз.</translation>
 <translation id="1540265419569299117">ChromeOS қолданбалар қызметі</translation>
 <translation id="1540543470504988112">MacOS-тен импортталған сертификаттарды басқару</translation>
@@ -979,6 +983,7 @@
 <translation id="166278006618318542">Тақырыптың ортақ кілт алгоритмі</translation>
 <translation id="1662801900924515589"><ph name="APP" /> орнатылды.</translation>
 <translation id="1663698992894057019">Соңғы қауіпсіздік пен бағдарламалық құрал үшін жаңа Chromebook жүйесіне жаңартыңыз.</translation>
+<translation id="166454475160289583">Пернетақта кірісін қайта анықтауға рұқсаты жоқ</translation>
 <translation id="1665328953287874063"><ph name="DEVICE_TYPE" /> құлпын ашу үшін құпия сөзді немесе PIN кодын пайдаланыңыз</translation>
 <translation id="1665859804801131136">Экспрессионизм</translation>
 <translation id="1667842670298352129">Дауыстап оқылатын мәтінді тыңдаңыз. Алдымен экранның төменгі жағындағы Select to Speak белгішесін басыңыз, одан кейін мәтінді ерекшелеңіз. Сондай-ақ перне тіркесімін пайдалана аласыз: мәтінді ерекшелеп, "Іздеу" + S перне тіркесімін басыңыз.</translation>
@@ -1210,6 +1215,7 @@
 <translation id="1832511806131704864">Телефон өзгерісі жаңартылды</translation>
 <translation id="1832848789136765277">Синхрондау деректерін әрдайым пайдалана алатыныңызға көз жеткізу үшін, жеке басыңызды растаңыз.</translation>
 <translation id="1833059747301212935">Соңғы құжаттар мен күнтізбедегі алдағы іс-шараларға оңай қол жеткізіңіз.</translation>
+<translation id="183445248400150852">Сайттар бұл функцияны (мысалы, ойындар не қашықтағы жұмыс үстелі қолданбалары үшін) пернетақта кірісін қайта анықтауға қолданады.</translation>
 <translation id="1834503245783133039">Жүктеп алынбады: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux жүйесінің жаңа нұсқасын орнату</translation>
 <translation id="1837441256780906162">Microsoft OneDrive сұрауды қабылдамады. Кейінірек қайталап көріңіз.</translation>
@@ -5910,6 +5916,7 @@
 <translation id="5177479852722101802">Камера мен микрофонды пайдалануға салынған тыйымды сақтау</translation>
 <translation id="5177549709747445269">Ұялы деректеріңізді пайдаланудасыз</translation>
 <translation id="5178667623289523808">Алдыңғысын табу</translation>
+<translation id="5180276433875360121"><ph name="CERT_LIST" /> көрсету</translation>
 <translation id="5181140330217080051">Жүктеу</translation>
 <translation id="5181172023548002891"><ph name="ACCOUNT" /> аккаунтына арналған Google Құпия сөз менеджеріне</translation>
 <translation id="5181551096188687373">Бұл құпия сөз тек осы құрылғыға сақталады. Оны басқа құрылғыларыңызда пайдалану үшін Google аккаунтына (<ph name="USER_EMAIL" />) сақтаңыз.</translation>
@@ -6741,6 +6748,7 @@
 <translation id="5794700615121138172">Linux ортақ қалталары</translation>
 <translation id="5794786537412027208">Барлық Chrome қолданбаларынан шығу</translation>
 <translation id="5796485699458186843">Жаңа инкогнито қойындысы</translation>
+<translation id="5796956053441619942">Қашықтағы құрылғыдағы URL мекенжайына қолдау көрсетілмейді.</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; және &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; жүйелерінде жұмысты бастау жолын біліп алыңыз.</translation>
 <translation id="5798079537501238810">Сайттар төлем өңдегіштерін орната алады.</translation>
 <translation id="5798086737841799234">Растау кодын енгізіңіз</translation>
@@ -7395,6 +7403,7 @@
 <translation id="6264485186158353794">Қауіпсіз аймаққа қайту</translation>
 <translation id="6264520534872750757">Құрылғыны пайдалануды жалғастыру</translation>
 <translation id="6264636978858465832">Password Manager қызметіне көбірек рұқсат қажет</translation>
+<translation id="626495329434552273">Пернетақта кірісін қайта анықтауға рұқсаты бар</translation>
 <translation id="6265159465845424232">Microsoft файлдарын Microsoft OneDrive-ға көшіру немесе тасымалдау алдында сұрау</translation>
 <translation id="6265687851677020761">Портты өшіру</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> құрылғысына жалғануда</translation>
@@ -8493,6 +8502,7 @@
 <translation id="7063311912041006059">Сұрау орнындағы <ph name="SPECIAL_SYMBOL" /> таңбасы бар URL сілтемесі</translation>
 <translation id="706342288220489463">Assistant-тің экраныңыздағы ақпаратты пайдалануына рұқсат етіңіз</translation>
 <translation id="70641621694466590">Құпия сөздер бетіне өту</translation>
+<translation id="7064209589142995848">Контент тасымалы</translation>
 <translation id="7064734931812204395">Linux контейнері конфигурацияланып жатыр. Оған 30 минуттай уақыт кетуі мүмкін.</translation>
 <translation id="7065223852455347715">Бұл құрылғы кәсіпорын тіркеуіне жол бермейтін режимде бекітілген. Құрылғыны тіркегіңіз келсе, алдымен құрылғыны қалпына келтіру қажет.</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{<ph name="USER_EMAIL" /> аккаунтына арналған <ph name="BRAND" /> қызметіне 1 құпия сөз импортталды}other{<ph name="USER_EMAIL" /> аккаунтына арналған <ph name="BRAND" /> қызметіне {NUM_PASSWORDS} құпия сөз импортталды}}</translation>
@@ -9530,6 +9540,7 @@
 <translation id="7810202088502699111">Қалқымалы терезелерге бұл бетте тыйым салынған.</translation>
 <translation id="7810367892333449285"><ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ мекенжай<ph name="LPA_2" />$<ph name="LPA_3" />қосымша сәйкестендіру идентификаторы<ph name="LPA_4" /> форматында жазуыңыз керек.</translation>
 <translation id="7811263553491007091">Әрекетті қайталаңыз немесе төменнен алдыңғы жасалған тақырыптардың бірін таңдаңыз.</translation>
+<translation id="7811986034759500329">Жүйе параметрлерінде реттеу</translation>
 <translation id="7812170317334653156">Google Calendar жасырылды.</translation>
 <translation id="7814090115158024843">Бұл сайттарда ешқашан жазу бойынша көмек ұсынбау</translation>
 <translation id="7814458197256864873">&amp;Көшіру</translation>

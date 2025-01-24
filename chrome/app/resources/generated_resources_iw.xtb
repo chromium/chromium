@@ -396,6 +396,7 @@
 <translation id="1260810365552581339">‏יכול להיות שאין מספיק מקום אחסון פנוי ב‑Linux. אפשר להגדיל את מקום האחסון הפנוי ב‑Linux ולנסות לשחזר שוב ב<ph name="LINK_START" />הגדרות<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">מתון</translation>
 <translation id="126156426083987769">התרחשה בעיה שקשורה לרישיונות המכשירים של מצב ההדגמה.</translation>
+<translation id="1262564987698748643">אתרים יכולים לבקש הרשאה לשנות את ברירת המחדל של קלט המקלדת</translation>
 <translation id="1263231323834454256">רשימת קריאה</translation>
 <translation id="1263733306853729545">מעבר בין העמודים של רשימת התווים האפשריים באמצעות המקש <ph name="MINUS" /> והמקש <ph name="EQUAL" /></translation>
 <translation id="126387934568812801">יש לכלול את צילום המסך הזה ושמות של כרטיסיות פתוחות</translation>
@@ -771,6 +772,7 @@
 <translation id="1536883206862903762">‏הפעולה הזו תשבית תוספים ותאפס את ההגדרות לברירות מחדל בטוחות. הכרטיסיות, הקבצים וקובצי ה-Cookie יישמרו. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">מגדיל למסך מלא</translation>
 <translation id="15373452373711364">סמן עכבר גדול</translation>
+<translation id="1539248305642687917">לא לאפשר לאתרים לשנות את ברירת המחדל של קלט המקלדת</translation>
 <translation id="1539727654733007771">לא הוגדרו רשתות סלולריות. ניתן להוריד <ph name="BEGIN_LINK" />פרופיל<ph name="END_LINK" /> חדש.</translation>
 <translation id="1540265419569299117">‏שירות לאפליקציות של ChromeOS</translation>
 <translation id="1540543470504988112">‏ניהול אישורים שיובאו מ-MacOS</translation>
@@ -982,6 +984,7 @@
 <translation id="166278006618318542">אלגוריתם מפתח ציבורי של נושא</translation>
 <translation id="1662801900924515589">האפליקציה <ph name="APP" /> הותקנה</translation>
 <translation id="1663698992894057019">‏כדאי לשדרג למכשיר Chromebook חדש כדי לקבל את גרסאות התוכנה והאבטחה העדכניות</translation>
+<translation id="166454475160289583">אין הרשאה לשנות את ברירת המחדל של קלט המקלדת</translation>
 <translation id="1665328953287874063">צריך להשתמש בסיסמה או בקוד אימות כדי לבטל את הנעילה של <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">אקספרסיוניזם</translation>
 <translation id="1667842670298352129">‏האזנה להקראת טקסט ספציפי. קודם לוחצים על סמל ההקראה בתחתית המסך ואז מדגישים את הטקסט. אפשר גם להשתמש במקשי הקיצור: מדגישים טקסט ומקישים על מקש החיפוש + S.</translation>
@@ -1221,6 +1224,7 @@
 <translation id="1832511806131704864">השינוי בטלפון עודכן</translation>
 <translation id="1832848789136765277">כדי לוודא שתמיד תהיה לך גישה לנתונים המסונכרנים שלך, עליך לאמת את זהותך</translation>
 <translation id="1833059747301212935">אפשר לגשת בקלות למסמכים האחרונים ולאירועים הקרובים ביומן</translation>
+<translation id="183445248400150852">‏התכונה הזו מאפשרת לאתרים לשנות את ברירת המחדל של קלט המקלדת, למשל במשחקים או באפליקציות Remote Desktop</translation>
 <translation id="1834503245783133039">ההורדה נכשלה: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">‏Linux שודרגה</translation>
 <translation id="1837441256780906162">‏הבקשה נדחתה על ידי Microsoft OneDrive. אפשר לנסות שוב מאוחר יותר.</translation>
@@ -6763,6 +6767,7 @@
 <translation id="5794700615121138172">‏תיקיות משותפות של Linux</translation>
 <translation id="5794786537412027208">‏יציאה מכל אפליקציות Chrome</translation>
 <translation id="5796485699458186843">&amp;כרטיסיית מצב אנונימי חדשה</translation>
+<translation id="5796956053441619942">‏כתובת ה-URL מהמכשיר שמחובר לרשת אחרת לא נתמכת</translation>
 <translation id="5797934230382081317">‏כך מתחילים להשתמש במנהל הסיסמאות ב-&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; וב-&lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;.</translation>
 <translation id="5798079537501238810">‏אתרים מורשים להתקין רכיבי handler של תשלומים</translation>
 <translation id="5798086737841799234">הזנת קוד אישור</translation>
@@ -7418,6 +7423,7 @@
 <translation id="6264485186158353794">חזרה לחוף מבטחים</translation>
 <translation id="6264520534872750757">המשך השימוש במכשיר</translation>
 <translation id="6264636978858465832">למנהל הסיסמאות נדרשת עוד גישה</translation>
+<translation id="626495329434552273">יש הרשאה לשנות את ברירת המחדל של קלט המקלדת</translation>
 <translation id="6265159465845424232">‏צריך לשאול לפני שמעתיקים או מעבירים קובצי Microsoft ל-Microsoft OneDrive</translation>
 <translation id="6265687851677020761">הסרת היציאה</translation>
 <translation id="6266532094411434237">מתבצעת התחברות אל <ph name="DEVICE" /></translation>

@@ -482,6 +482,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1317637799698924700">Je dockingstation werkt in de voor USB Type-C-geschikte modus.</translation>
 <translation id="1319983966058170660">Terugknop van subpagina <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">Bekijk en beheer opgeslagen wachtwoorden in je <ph name="SAVED_PASSWORDS_STORE" /></translation>
+<translation id="132539964543492755">Gebruik x om de selectie van de muisknop te wijzigen tussen de linkerknop, de rechterknop en beide</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos-tickets</translation>
 <translation id="1327495825214193325">Als je ADB-foutopsporing wilt aanzetten, moet je deze <ph name="DEVICE_TYPE" /> opnieuw opstarten. Je kunt ADB-foutopsporing alleen uitzetten door de fabrieksinstellingen van je apparaat te herstellen.</translation>
@@ -1679,6 +1680,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2155772377859296191">Ziet eruit als <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156707722163479690">Scrollen en zoomen op gedeelde tabbladen toegestaan</translation>
+<translation id="2157457598652721267">Gebruik / en - om de linker- of rechtermuisknop te selecteren. Gebruik * om beide te selecteren.</translation>
 <translation id="2157474325782140681">Gebruik voor aanvullende functies een Dell-dockingstation dat is bedoeld voor gebruik met deze Chromebook.</translation>
 <translation id="215753907730220065">Volledig scherm sluiten</translation>
 <translation id="2157779167749714207">Je <ph name="DEVICE_TYPE" /> wordt geleverd met Gemini</translation>
@@ -1783,6 +1785,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2233502537820838181">&amp;Meer informatie</translation>
 <translation id="223356358902285214">Web- en app-activiteit</translation>
 <translation id="2234065144797002621">Kreek</translation>
+<translation id="2234208862050358325">Gebruik de toetsen 1, 2, 3, q, e, a, s, d om de cursor te verplaatsen</translation>
 <translation id="2234827758954819389">Privacygids</translation>
 <translation id="2234876718134438132">Synchronisatie en Google-services</translation>
 <translation id="2235344399760031203">Cookies van derden worden geblokkeerd</translation>
@@ -1802,6 +1805,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2249111429176737533">Openen als venster met tabbladen</translation>
 <translation id="2249605167705922988">bijv. 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Pas de informatie aan die sites gebruiken om advertenties te tonen</translation>
+<translation id="22505994009453896">Je muiscursor bedienen met een numeriek toetsenblok</translation>
 <translation id="2250624716625396929">Dit tabblad gebruikt je camera of microfoon</translation>
 <translation id="2251218783371366160">Openen met systeemviewer</translation>
 <translation id="225163402930830576">Netwerken vernieuwen</translation>
@@ -1995,6 +1999,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="236939127352773362">Als apparaten in de buurt content delen</translation>
 <translation id="2371076942591664043">Openen wanneer geree&amp;d</translation>
 <translation id="237336063998926520">Je IP-adres gebruiken om je locatie te bepalen</translation>
+<translation id="2373499590298659902">Gebruik 0 om een muisknop ingedrukt te houden</translation>
 <translation id="2373666622366160481">Aanpassen aan papierformaat</translation>
 <translation id="2375406435414127095">Verbinding maken met je telefoon</translation>
 <translation id="2376056713414548745">Voorlezen</translation>
@@ -2756,6 +2761,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2902312830803030883">Meer acties</translation>
 <translation id="2903457445916429186">Geselecteerde items openen</translation>
 <translation id="2903882649406874750"><ph name="HOST" /> nooit toegang tot sensoren geven</translation>
+<translation id="2903925626657991994">Gebruik , om de selectie van de muisknop te wijzigen tussen de linkerknop, de rechterknop en beide</translation>
 <translation id="290415756080113152">Sites mogen printers die toegankelijk zijn voor je apparaat niet zoeken of gebruiken</translation>
 <translation id="2904210161403910217">Je wachtwoord is gewijzigd sinds de laatste keer dat je hebt ingelogd</translation>
 <translation id="2904506722835398619">Inloggen en synchronisatie vereist</translation>
@@ -3110,6 +3116,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3170072451822350649">Je kunt het inloggen ook overslaan en <ph name="LINK_START" />browsen als gast<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Body</translation>
 <translation id="3175862692832442091">Bos</translation>
+<translation id="3176347586396987181">Gebruik z om een muisknop ingedrukt te houden</translation>
 <translation id="3177430966804511955">Geïsoleerde web-apps beheren (bèta)</translation>
 <translation id="31774765611822736">Nieuw tabblad aan linkerkant</translation>
 <translation id="3177909033752230686">Brontaal:</translation>
@@ -4489,6 +4496,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="412730574613779332">Superheld</translation>
 <translation id="4130199216115862831">Apparaatlogboek</translation>
 <translation id="4130750466177569591">Ik ga akkoord</translation>
+<translation id="4130877444234883490">Gebruik m om een muisknop ingedrukt te houden</translation>
 <translation id="413121957363593859">Componenten</translation>
 <translation id="4131283654370308898"><ph name="EXTENSION_NAME" /> toestaan op deze site</translation>
 <translation id="4131410914670010031">Zwart/wit</translation>
@@ -4508,6 +4516,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" />: HID-apparaat verbonden</translation>
 <translation id="4139326893730851150">Firmware-updates</translation>
 <translation id="4142052906269098341">Ontgrendel je <ph name="DEVICE_TYPE" /> met je telefoon. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
+<translation id="4143606504420684845">Ontdek hoe AI van invloed is op de functionaliteit en maak weloverwogen keuzes over je privacy</translation>
 <translation id="4146026355784316281">Altijd openen met systeemviewer</translation>
 <translation id="4146785383423576110">Resetten en opruimen</translation>
 <translation id="4147099377280085053">Brailletabel selecteren</translation>
@@ -4791,6 +4800,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4360738659108163902">Klikken met de rechtermuisknop</translation>
 <translation id="4361142739114356624">De privésleutel voor dit clientcertificaat ontbreekt of is ongeldig</translation>
 <translation id="4361745360460842907">Openen als tabblad</translation>
+<translation id="4362459470237309049">Gebruik . om een muisknop los te laten</translation>
 <translation id="4363262124589131906">Nieuwe bestanden in Mijn Drive worden niet meer automatisch gesynchroniseerd met deze Chromebook</translation>
 <translation id="4364327530094270451">Meloen</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 item wordt alleen op dit apparaat opgeslagen. Als je het wilt gebruiken op je andere apparaten, sla je het op in je Google-account.}other{{ITEM_COUNT} items worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account.}}</translation>
@@ -4816,6 +4826,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4378308539633073595">Vooruit scrollen</translation>
 <translation id="4378551569595875038">Verbinden...</translation>
 <translation id="4378556263712303865">Apparaataanvraag</translation>
+<translation id="4378589147979399051">Je muiscursor bedienen met je primaire toetsenbord</translation>
 <translation id="4379097572583973456">Een site kan ook content van andere sites insluiten, zoals afbeeldingen, advertenties en tekst. Deze andere sites kunnen ook data besparen.</translation>
 <translation id="4379281552162875326">'<ph name="APP_NAME" />' verwijderen?</translation>
 <translation id="4380055775103003110">Als dit probleem zich blijft voordoen, kun je andere manieren proberen om door te gaan op <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -5136,6 +5147,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4610493438923139095">Niet vertrouwd</translation>
 <translation id="4610637590575890427">Wilde je naar <ph name="SITE" /> gaan?</translation>
 <translation id="4611114513649582138">Gegevensverbinding beschikbaar</translation>
+<translation id="4611619000650855880">Als de linkermuisknop is geselecteerd, gebruik je / om te dubbelklikken</translation>
 <translation id="4611759022973144129">Je kunt dit wachtwoord gebruiken om in te loggen bij je <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4612841084470706111">Toegang geven tot alle gevraagde sites.</translation>
 <translation id="4613144866899789710">Linux-installatie annuleren…</translation>
@@ -5261,6 +5273,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4694820450536519583">rechten</translation>
 <translation id="4695318956047767909">Donker thema, screensaver</translation>
 <translation id="4697071790493980729">Geen resultaten gevonden</translation>
+<translation id="4697231114332146850">Gebruik de toetsen 7, 8, 9, 4, 6, 1, 2, 3 om de cursor te verplaatsen</translation>
 <translation id="4697551882387947560">Wanneer de browsingsessie eindigt</translation>
 <translation id="469838979880025581">Sites kunnen vragen of ze je microfoon mogen gebruiken</translation>
 <translation id="4699172675775169585">Gecachete afbeeldingen en bestanden</translation>
@@ -6372,6 +6385,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5499453227627332024">Er is een upgrade beschikbaar voor je Linux-container. Je kunt ook later upgraden via de app Instellingen.</translation>
 <translation id="5499476581866658341">Je kunt nu de recente foto's en media van je telefoon bekijken</translation>
 <translation id="549957179819296104">Nieuw icoon</translation>
+<translation id="5500163593833085874">Als de linkermuisknop is geselecteerd, gebruik je + om te dubbelklikken</translation>
 <translation id="5500168250243071806">Je <ph name="BEGIN_LINK_SEARCH" />zoekgeschiedenis<ph name="END_LINK_SEARCH" /> en <ph name="BEGIN_LINK_GOOGLE" />andere vormen van activiteit<ph name="END_LINK_GOOGLE" /> kunnen worden opgeslagen in je Google-account als je bent ingelogd. Je kunt ze altijd verwijderen.</translation>
 <translation id="5501322521654567960">Links uitgelijnd zijvenster</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Kan <ph name="ATTACHMENTS" /> van <ph name="DEVICE_NAME" /> niet ontvangen}other{Kan <ph name="ATTACHMENTS" /> van <ph name="DEVICE_NAME" /> niet ontvangen}}</translation>
@@ -6667,6 +6681,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5733913382424854675">Tabbladen groeperen met AI</translation>
 <translation id="5734362860645681824">Communicatie</translation>
 <translation id="5734697361979786483">Fileshare toevoegen</translation>
+<translation id="573520097779121706">Gebruik de toetsen 7, 8, 9, u, o, j, k, l om de cursor te verplaatsen</translation>
 <translation id="5735513236153491131">Nu boosten</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Deze gegevens of je apparaat voldoen niet aan het beveiligingsbeleid van je organisatie. Neem contact op met je beheerder over wat moet worden opgelost.}=1{Dit bestand of je apparaat voldoet niet aan het beveiligingsbeleid van je organisatie. Neem contact op met je beheerder over wat moet worden opgelost.}other{Deze bestanden voldoen niet aan het beveiligingsbeleid van je organisatie. Neem contact op met je beheerder over wat moet worden opgelost.}}</translation>
 <translation id="5738093759615225354">Je hebt deze toegangscode nodig om in te loggen op je computer</translation>
@@ -6900,6 +6915,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5901069264981746702">Je vingerafdrukgegevens worden beveiligd opgeslagen en blijven uitsluitend op je <ph name="DEVICE_TYPE" /> staan. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">Overschakelen naar tabblad vastleggen</translation>
 <translation id="5901494423252125310">Printerklep is open</translation>
+<translation id="5901526412306322179">Activiteitenlogboek</translation>
 <translation id="5901630391730855834">Geel</translation>
 <translation id="5902892210366342391">Waarschuwingen tonen voordat je in de incognitomodus naar niet-beveiligde sites gaat</translation>
 <translation id="5904614460720589786">Kan <ph name="APP_NAME" /> niet instellen vanwege een configuratieprobleem. Neem contact op met je beheerder. Foutcode: <ph name="ERROR_CODE" />.</translation>
@@ -7274,6 +7290,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6171779718418683144">Vragen bij elk bezoek</translation>
 <translation id="617213288191670920">Geen talen toegevoegd</translation>
 <translation id="6173623053897475761">Typ je pincode nog een keer</translation>
+<translation id="6174909075810107548">Gebruik 5 om op een muisknop te drukken</translation>
 <translation id="6175314957787328458">Microsoft-domein-GUID</translation>
 <translation id="6175910054050815932">Een link ophalen</translation>
 <translation id="6177412385419165772">Verwijderen...</translation>
@@ -7759,6 +7776,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Opmerking:<ph name="END_BOLD" /> Zet dit alleen aan als je weet wat je doet of als je bent gevraagd dit te doen, omdat het verzamelen van gegevens kan leiden tot verminderde prestaties.</translation>
 <translation id="6540488083026747005">Je hebt cookies van derden toegestaan voor deze site</translation>
 <translation id="6541638731489116978">Deze site heeft geen toegang tot je bewegingssensoren.</translation>
+<translation id="654219396498297850">Als de linkermuisknop is geselecteerd, gebruik je v om te dubbelklikken</translation>
 <translation id="6542417422899025860">Automatisch de meeste persoonlijke informatie verwijderen</translation>
 <translation id="6542521951477560771">Er wordt gecast naar <ph name="RECEIVER_NAME" /></translation>
 <translation id="6544134392255015460">schakelaar voor achtergrondverlichting toetsenbord</translation>
@@ -8757,6 +8775,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7258225044283673131">De app reageert niet. Selecteer 'Nu sluiten' om de app te sluiten.</translation>
 <translation id="7260186537988033909">Apparaatinschrijving voor kiosken en digitale borden afgerond</translation>
 <translation id="7260206782629605806">Als je de drempelwaarde verlaagt, kun je een subtiele beweging gebruiken. Als je de drempelwaarde verhoogt, moet je misschien een meer overdreven beweging maken.</translation>
+<translation id="7260802376010589729">Gebruik c om een muisknop los te laten</translation>
 <translation id="7261217796641151584">Groep delen</translation>
 <translation id="7261612856573623172">Systeemstem voor tekst-naar-spraak</translation>
 <translation id="7262004276116528033">Deze inlogservice wordt gehost door <ph name="SAML_DOMAIN" />.</translation>
@@ -9597,6 +9616,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="78526636422538552">Toevoegen van meer Google-accounts staat uit</translation>
 <translation id="785371335555334021">Klikken om <ph name="TITLE" /> te verlaten</translation>
 <translation id="7853747251428735">Meer hu&amp;lpprogramma's</translation>
+<translation id="7855258394151767387">Gebruik w om op een muisknop te drukken</translation>
 <translation id="7855678561139483478">Tabblad verplaatsen naar nieuw venster</translation>
 <translation id="7857004848504343806">Je computer bevat een beveiligde module die wordt gebruikt om veel van de belangrijke beveiligingsfuncties in Chrome OS Flex te implementeren. Ga voor meer informatie naar het Helpcentrum voor Chromebooks: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Tekstsuggesties</translation>
@@ -9969,6 +9989,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="810362914482827094">Toegangscodes zoeken</translation>
 <translation id="8104088837833760645">E-simkaartprofiel downloaden</translation>
 <translation id="8105273883928376822">Log in om door te gaan.</translation>
+<translation id="8106114112474206597">Gebruik i om op een muisknop te drukken</translation>
 <translation id="8107015733319732394">De Google Play Store wordt geïnstalleerd op je <ph name="DEVICE_TYPE" />. Dit kan enkele minuten duren.</translation>
 <translation id="810728361871746125">Schermresolutie</translation>
 <translation id="8108161424633979910"><ph name="NUM" /> leden</translation>

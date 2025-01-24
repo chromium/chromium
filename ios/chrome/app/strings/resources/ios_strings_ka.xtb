@@ -563,6 +563,7 @@
 <translation id="3517216995152707259">თქვენი დათვალიერების მონაცემების წაშლა არ გამოგიყვანთ თქვენი Google ანგარიშიდან. ამისთვის <ph name="BEGIN_LINK" />Chrome-იდან უნდა გახვიდეთ<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">ვების დასათვალიერებლად გახსენით ჩანართი.</translation>
 <translation id="3519905498307021260">{count,plural, =1{ჩანართის გახსნა}other{{count} ჩანართის გახსნა}}</translation>
+<translation id="3523513363815970085">„თქვენი ტოპ საიტების“ დამალვა</translation>
 <translation id="3523789730715594198">სინქრონიზაციის ნებისმიერ დროს შეცვლა შეგიძლიათ პარამეტრებიდან. თქვენი ისტორიის მეშვეობით Google შეძლებს Search-ისა და სხვა სერვისების თქვენზე მორგებას.</translation>
 <translation id="3527085408025491307">საქაღალდე</translation>
 <translation id="3529024052484145543">დაუცველი</translation>
@@ -838,6 +839,7 @@
 <translation id="4769198578611055647">დაგეხმარებათ ნებისმიერ მოწყობილობაში შენახული წვდომის გასაღებებზე წვდომაში</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">გსურთ ინკოგნიტო ფანჯარაში გახსნა?</translation>
+<translation id="479208892659046780">თქვენი ტოპ საიტები</translation>
 <translation id="4792385443586519711">კომპანიის სახელი</translation>
 <translation id="479628432297359449">გსურთ ჩამოტვირთვის შეწყვეტა?</translation>
 <translation id="4796496140132859135">ჩანართების ჯგუფი. ჩაკეცილია.</translation>

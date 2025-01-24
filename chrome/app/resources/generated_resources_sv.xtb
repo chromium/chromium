@@ -394,6 +394,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1260810365552581339">Det kanske inte finns tillräckligt med diskutrymme för Linux. Du kan ge Linux mer diskutrymme i <ph name="LINK_START" />inställningarna<ph name="LINK_END" /> och försöka återställa igen.</translation>
 <translation id="1261380933454402672">Måttlig</translation>
 <translation id="126156426083987769">Ett problem med enhetslicenser för demoläge uppstod.</translation>
+<translation id="1262564987698748643">Webbplatser kan be att åsidosätta indata från tangentbordet</translation>
 <translation id="1263231323834454256">Läslista</translation>
 <translation id="1263733306853729545">Använd tangenterna <ph name="MINUS" /> och <ph name="EQUAL" /> om du vill söka i en kandidatlista</translation>
 <translation id="126387934568812801">Ta med den här skärmbilden och namnet på öppna flikar</translation>
@@ -772,6 +773,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1536883206862903762">Detta gör att tillägg inaktiveras och inställningarna återställs till säkra standardinställningar. Flikar, filer och cookies bevaras. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Helskärmsförstorare</translation>
 <translation id="15373452373711364">Stor muspekare</translation>
+<translation id="1539248305642687917">Tillåt inte att webbplatser åsidosätter indata från tangentbordet</translation>
 <translation id="1539727654733007771">Inga mobilnätverk har konfigurerats. Ladda ned en ny <ph name="BEGIN_LINK" />profil.<ph name="END_LINK" /></translation>
 <translation id="1540265419569299117">ChromeOS-apptjänst</translation>
 <translation id="1540543470504988112">Hantera importerade certifikat från MacOS</translation>
@@ -983,6 +985,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="166278006618318542">Mottagarens publika nyckelalgoritm</translation>
 <translation id="1662801900924515589"><ph name="APP" /> har installerats</translation>
 <translation id="1663698992894057019">Uppgradera till en ny Chromebook för den senaste säkerheten och mjukvaran</translation>
+<translation id="166454475160289583">Får inte åsidosätta indata från tangentbordet</translation>
 <translation id="1665328953287874063">Lås upp <ph name="DEVICE_TYPE" /> med ett lösenord eller en pinkod</translation>
 <translation id="1665859804801131136">Expressionism</translation>
 <translation id="1667842670298352129">Få utvald text uppläst. Välj först textuppläsningsikonen längst ned på skärmen och markera sedan texten. Du kan även använda ett kortkommando: Markera texten och tryck sedan på Sök + S.</translation>
@@ -1222,6 +1225,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1832511806131704864">Mobiländringen har uppdaterats</translation>
 <translation id="1832848789136765277">Verifiera din identitet så att du alltid får åtkomst till din synkroniserade data</translation>
 <translation id="1833059747301212935">Få enkelt åtkomst till de senaste dokumenten och kommande kalenderhändelserna</translation>
+<translation id="183445248400150852">Webbplatser använder den här funktionen för att åsidosätta indata från tangentbordet, till exempel för spel eller fjärrskrivbordsappar</translation>
 <translation id="1834503245783133039">Nedladdningen misslyckades: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Uppgraderar Linux</translation>
 <translation id="1837441256780906162">Microsoft OneDrive avvisade begäran. Försök igen senare.</translation>
@@ -6763,6 +6767,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5794700615121138172">Delade mappar i Linux</translation>
 <translation id="5794786537412027208">Stäng alla Chrome-appar</translation>
 <translation id="5796485699458186843">Ny inkognitoflik</translation>
+<translation id="5796956053441619942">Webbadressen från fjärrenheten stöds inte</translation>
 <translation id="5797934230382081317">Läs mer om hur du kommer igång på &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; och &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
 <translation id="5798079537501238810">Webbplatser kan installera betalningshanterare</translation>
 <translation id="5798086737841799234">Ange bekräftelsekod</translation>
@@ -7418,6 +7423,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6264485186158353794">Tillbaka till säker webbplats</translation>
 <translation id="6264520534872750757">Fortsätta att använda enheten</translation>
 <translation id="6264636978858465832">Lösenordshantering behöver mer åtkomst</translation>
+<translation id="626495329434552273">Får åsidosätta indata från tangentbordet</translation>
 <translation id="6265159465845424232">Fråga innan Microsoft-filer kopieras eller flyttas till Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Ta bort port</translation>
 <translation id="6266532094411434237">Ansluter till <ph name="DEVICE" /></translation>

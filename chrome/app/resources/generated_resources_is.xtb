@@ -395,6 +395,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1260810365552581339">Hugsanlega er ekki nægt diskpláss á Linux. Þú getur aukið diskplássið á Linux og reynt að endurheimta aftur í <ph name="LINK_START" />Stillingum<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Hófleg</translation>
 <translation id="126156426083987769">Vandamál með tækjaleyfi fyrir prufustillingu kom upp.</translation>
+<translation id="1262564987698748643">Vefsvæði mega biðja um að hnekkja innslætti lyklaborðs</translation>
 <translation id="1263231323834454256">Leslisti</translation>
 <translation id="1263733306853729545">Nota lyklana <ph name="MINUS" /> og <ph name="EQUAL" /> til að fara á milli tillögusíðna</translation>
 <translation id="126387934568812801">Taka með þessa skjámynd og heiti opinna flipa</translation>
@@ -773,6 +774,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1536883206862903762">Þetta slekkur á viðbótum og endurstillir tækið á öruggar, sjálfgefnar stillingar. Flipar, skrár og fótspor varðveitast. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Stækkunargler á öllum skjánum</translation>
 <translation id="15373452373711364">Stór músarbendill</translation>
+<translation id="1539248305642687917">Ekki leyfa vefsvæðum að hnekkja innslætti lyklaborðs</translation>
 <translation id="1539727654733007771">Ekkert farsímakerfi er uppsett. Sækja nýjan <ph name="BEGIN_LINK" />prófíl.<ph name="END_LINK" /></translation>
 <translation id="1540265419569299117">Forritaþjónusta ChromeOS</translation>
 <translation id="1540543470504988112">Stjórna innfluttum vottorðum úr MacOS</translation>
@@ -984,6 +986,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="166278006618318542">Reiknirit opinbers lykils viðfangs</translation>
 <translation id="1662801900924515589"><ph name="APP" /> var sett upp</translation>
 <translation id="1663698992894057019">Skiptu yfir í nýja Chromebook-tölvu til að fá nýjustu öryggis- og hugbúnaðaruppfærslurnar</translation>
+<translation id="166454475160289583">Mega ekki hnekkja innslætti lyklaborðs</translation>
 <translation id="1665328953287874063">Notaðu aðgangsorð eða PIN-númer til að opna <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Expressjónismi</translation>
 <translation id="1667842670298352129">Heyra tiltekinn texta í upplestri. Veldu fyrst táknið „Textaupplestur“ neðst á skjánum og yfirstrikaðu síðan textann. Þú getur einnig notað flýtilykil: Yfirstrikaðu textann og ýttu síðan á Search + S.</translation>
@@ -1223,6 +1226,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1832511806131704864">Símabreyting uppfærð</translation>
 <translation id="1832848789136765277">Staðfestu að þetta sért þú til að hafa alltaf aðgang að samstillingargögnunum þínum</translation>
 <translation id="1833059747301212935">Auðveldur aðgangur að nýlegum skjölum og væntanlegum dagatalsviðburðum</translation>
+<translation id="183445248400150852">Vefsvæði nota þennan eiginleika til að hnekkja innslætti lyklaborðsins þíns, t.d. fyrir leiki eða fjarstýrð skjáborðsforrit</translation>
 <translation id="1834503245783133039">Niðurhal mistókst: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Uppfærir Linux</translation>
 <translation id="1837441256780906162">Microsoft OneDrive hafnaði beiðninni. Reyndu aftur síðar.</translation>
@@ -6764,6 +6768,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5794700615121138172">Sameiginlegar möppur í Linux</translation>
 <translation id="5794786537412027208">Loka öllum Chrome forritum</translation>
 <translation id="5796485699458186843">Nýr huliðsflipi</translation>
+<translation id="5796956053441619942">Vefslóðin úr fjartengda tækinu er ekki studd</translation>
 <translation id="5797934230382081317">Kynntu þér hvernig þú hefst handa í &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; og &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
 <translation id="5798079537501238810">Vefsvæði mega setja upp greiðslumiðlara</translation>
 <translation id="5798086737841799234">Sláðu inn staðfestingarkóða</translation>
@@ -7419,6 +7424,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6264485186158353794">Aftur í öruggt skjól</translation>
 <translation id="6264520534872750757">Halda áfram að nota tækið</translation>
 <translation id="6264636978858465832">Aðgangsorðastjórnun þarfnast fleiri aðgangsheimilda</translation>
+<translation id="626495329434552273">Mega hnekkja innslætti lyklaborðs</translation>
 <translation id="6265159465845424232">Spyrja áður en Microsoft-skrár eru afritaðar eða fluttar yfir á Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Fjarlægja tengi</translation>
 <translation id="6266532094411434237">Tengist <ph name="DEVICE" /></translation>

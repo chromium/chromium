@@ -586,7 +586,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3710560693796335511">Zusammenarbeit</translation>
 <translation id="3714981814255182093">Suchleiste öffnen</translation>
 <translation id="3718765429352682176">Möglicherweise siehst du den Verlauf von anderen Apps, die Links in Chrome öffnen.</translation>
-<translation id="3720422586473670527">Nein, danke</translation>
+<translation id="3720422586473670527">Nein danke</translation>
 <translation id="3721119614952978349">Google und ich</translation>
 <translation id="3737319253362202215">Übersetzungseinstellungen</translation>
 <translation id="3738139272394829648">Zum Suchen antippen</translation>
@@ -1688,7 +1688,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="854522910157234410">Diese Seite öffnen</translation>
 <translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{Inaktiver Tab (1)}other{Inaktive Tabs (#)}}</translation>
 <translation id="8551513938758868521">Inkognitotabs beim Verlassen von Chrome sperren</translation>
-<translation id="8551524210492420949">Anstößig oder nicht sicher</translation>
+<translation id="8551524210492420949">Anstößig oder bedenklich</translation>
 <translation id="8559961053328923750">Chrome beschränkt die Gesamtmenge an Daten, die Websites über den Browser zur Analyse der Werbeleistung teilen können</translation>
 <translation id="8559990750235505898">Übersetzung von fremdsprachigen Seiten anbieten</translation>
 <translation id="8560602726703398413">In den Lesezeichen findest du deine Leseliste</translation>

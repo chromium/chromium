@@ -185,6 +185,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1310938305420497484">First, open tabs and visit sites</translation>
 <translation id="1314311879718644478">View augmented reality content</translation>
 <translation id="1314509827145471431">Bind right</translation>
+<translation id="1314784609072437689">keyboard override</translation>
 <translation id="1316805916535763484">Open Online Courses</translation>
 <translation id="1318023360584041678">Saved in tab group</translation>
 <translation id="1319245136674974084">Don’t ask again for this app</translation>
@@ -2920,6 +2921,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6182972682129119950">A4 x 5</translation>
 <translation id="6184868291074982484">Chrome automatically limits third-party cookies</translation>
 <translation id="6188479691141473408">and <ph name="N_FIELDS" /> more fields</translation>
+<translation id="6190518157737269631">Override some keys on your keyboard, like Esc</translation>
 <translation id="6194209731893739467">See all your tracked products here</translation>
 <translation id="6195163219142236913">Third-party cookies limited</translation>
 <translation id="6195371403461054755">Geology</translation>
@@ -4193,6 +4195,7 @@ Additional details:
 <translation id="8421158157346464398">Work profile information (such as your work profile username)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Change</translation>
+<translation id="8426945547715537628">Allow keyboard override?</translation>
 <translation id="8427848540066057481">500 mm x 750 mm</translation>
 <translation id="8428213095426709021">Settings</translation>
 <translation id="8428634594422941299">Got it</translation>
@@ -4279,6 +4282,7 @@ Additional details:
 <translation id="8574841453995331336">Refrigerators and Freezers</translation>
 <translation id="8577192028579836704">All options typically <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtual card not available</translation>
+<translation id="8579000896558714521">Keyboard override</translation>
 <translation id="8580265901435899937">Tourist destinations</translation>
 <translation id="8581064022803799721">This page is saved in <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Squash and Racketball Equipment</translation>

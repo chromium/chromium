@@ -394,6 +394,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1260810365552581339">É posible que Linux non teña suficiente espazo no disco. Podes aumentar o espazo e tentar a restauración de novo en <ph name="LINK_START" />Configuración<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Moderada</translation>
 <translation id="126156426083987769">Produciuse un problema coas licenzas do dispositivo do modo de demostración.</translation>
+<translation id="1262564987698748643">Os sitios poden pedirche permiso para ignorar a entrada do teclado</translation>
 <translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1263733306853729545">Utilizar teclas <ph name="MINUS" /> e <ph name="EQUAL" /> para mostrar unha lista de suxestións</translation>
 <translation id="126387934568812801">Incluír esta captura de pantalla e os títulos das pestanas abertas</translation>
@@ -770,6 +771,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1536883206862903762">Con esta acción, desactivaranse as extensións e restablecerase a configuración aos valores predeterminados seguros. Conservaranse as pestanas, ficheiros e cookies. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Lupa de pantalla completa</translation>
 <translation id="15373452373711364">Cursor do rato grande</translation>
+<translation id="1539248305642687917">Non permitir que os sitios ignoren a entrada do teclado</translation>
 <translation id="1539727654733007771">Non se configurou ningunha rede de telefonía móbil. Descarga un novo <ph name="BEGIN_LINK" />perfil<ph name="END_LINK" />.</translation>
 <translation id="1540265419569299117">Servizo de aplicacións de ChromeOS</translation>
 <translation id="1540543470504988112">Xestionar os certificados importados de macOS</translation>
@@ -981,6 +983,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="166278006618318542">Algoritmo de clave pública de entidade</translation>
 <translation id="1662801900924515589">Instalouse a aplicación <ph name="APP" /></translation>
 <translation id="1663698992894057019">Consigue un Chromebook novo que conte coa seguranza e o software máis recentes</translation>
+<translation id="166454475160289583">Permiso denegado para ignorar a entrada do teclado</translation>
 <translation id="1665328953287874063">Usa un contrasinal ou un PIN para desbloquear o teu dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="1665859804801131136">Expresionista</translation>
 <translation id="1667842670298352129">Escoita a lectura dun determinado texto. Primeiro, selecciona a icona de Escoitar selección, situada na parte inferior da pantalla, e despois destaca o texto. Tamén podes utilizar un atallo de teclado: destaca o texto e, a continuación, preme Buscar + S.</translation>
@@ -1212,6 +1215,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1832511806131704864">Cambio de teléfono actualizado</translation>
 <translation id="1832848789136765277">Para asegurarte de poder acceder sempre aos teus datos sincronizados, verifica a túa identidade</translation>
 <translation id="1833059747301212935">Accede facilmente aos documentos recentes e aos próximos eventos do calendario</translation>
+<translation id="183445248400150852">Os sitios usan esta función para ignorar a entrada do teclado, como en xogos ou aplicacións de escritorios remotos</translation>
 <translation id="1834503245783133039">Non se descargou correctamente o ficheiro <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Actualizando Linux</translation>
 <translation id="1837441256780906162">Microsoft OneDrive rexeitou esta solicitude. Téntao de novo máis tarde.</translation>
@@ -6750,6 +6754,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5794700615121138172">Cartafoles compartidos de Linux</translation>
 <translation id="5794786537412027208">Saír de todas as aplicacións de Chrome</translation>
 <translation id="5796485699458186843">Nova pestana do modo de incógni&amp;to</translation>
+<translation id="5796956053441619942">Non se admite o URL do dispositivo remoto</translation>
 <translation id="5797934230382081317">Máis información sobre como comezar a usar &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; e &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
 <translation id="5798079537501238810">Os sitios poden instalar controladores de pago</translation>
 <translation id="5798086737841799234">Mete o código de confirmación</translation>
@@ -7404,6 +7409,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6264485186158353794">Volver para estar a salvo</translation>
 <translation id="6264520534872750757">Continuar usando o dispositivo</translation>
 <translation id="6264636978858465832">O xestor de contrasinais necesita máis acceso</translation>
+<translation id="626495329434552273">Permiso concedido para ignorar a entrada do teclado</translation>
 <translation id="6265159465845424232">Preguntar antes de copiar ficheiros de Microsoft e movelos a Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Quitar porto</translation>
 <translation id="6266532094411434237">Conectando co dispositivo (<ph name="DEVICE" />)</translation>

@@ -185,6 +185,7 @@
 <translation id="1310938305420497484">ਪਹਿਲਾਂ, ਟੈਬਾਂ ਖੋਲ੍ਹੋ ਅਤੇ ਸਾਈਟਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="1314311879718644478">ਆਗਮੈਂਟਿਡ ਰਿਐਲਿਟੀ ਸੰਬੰਧੀ ਸਮੱਗਰੀ ਦੇਖੋ</translation>
 <translation id="1314509827145471431">ਸੱਜੇ ਜਿਲਦਬੰਦ</translation>
+<translation id="1314784609072437689">ਕੀ-ਬੋਰਡ ਓਵਰਰਾਈਡ</translation>
 <translation id="1316805916535763484">ਓਪਨ ਆਨਲਾਈਨ ਸਕੂਲ</translation>
 <translation id="1318023360584041678">ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀ ਗਈ</translation>
 <translation id="1319245136674974084">ਇਸ ਐਪ ਲਈ ਦੁਬਾਰਾ ਨਾ ਪੁੱਛੋ</translation>
@@ -2916,6 +2917,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸੀਮਤ ਕਰਦਾ ਹੈ</translation>
 <translation id="6188479691141473408">ਅਤੇ <ph name="N_FIELDS" /> ਹੋਰ ਖੇਤਰ</translation>
+<translation id="6190518157737269631">ਆਪਣੇ ਕੀ-ਬੋਰਡ 'ਤੇ ਕੁਝ ਕੁੰਜੀਆਂ ਨੂੰ ਓਵਰਰਾਈਡ ਕਰੋ, ਜਿਵੇਂ ਕਿ Esc</translation>
 <translation id="6194209731893739467">ਆਪਣੇ ਸਾਰੇ ਟਰੈਕ ਕੀਤੇ ਉਤਪਾਦ ਇੱਥੇ ਦੇਖੋ</translation>
 <translation id="6195163219142236913">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਸੀਮਤ ਹਨ</translation>
 <translation id="6195371403461054755">ਭੂ-ਵਿਗਿਆਨ</translation>
@@ -4188,6 +4190,7 @@
 <translation id="8421158157346464398">ਕਾਰਜ ਪ੍ਰੋਫਾਈਲ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ (ਜਿਵੇਂ ਕਿ, ਤੁਹਾਡੇ ਕਾਰਜ ਪ੍ਰੋਫਾਈਲ ਦਾ ਵਰਤੋਂਕਾਰ ਨਾਮ)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">ਬਦਲੋ</translation>
+<translation id="8426945547715537628">ਕੀ ਕੀ-ਬੋਰਡ ਓਵਰਰਾਈਡ ਨੂੰ ਆਗਿਆ ਦੇਣੀ ਹੈ?</translation>
 <translation id="8427848540066057481">500 x 750 ਮਿ.ਮੀ.</translation>
 <translation id="8428213095426709021">ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8428634594422941299">ਸਮਝ ਲਿਆ</translation>
@@ -4274,6 +4277,7 @@
 <translation id="8574841453995331336">ਫਰਿੱਜ ਅਤੇ ਫ੍ਰੀਜ਼ਰ</translation>
 <translation id="8577192028579836704">ਆਮ ਤੌਰ 'ਤੇ ਸਾਰੇ ਵਿਕਲਪ <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">ਆਭਾਸੀ ਕਾਰਡ ਉਪਲਬਧ ਨਹੀਂ</translation>
+<translation id="8579000896558714521">ਕੀ-ਬੋਰਡ ਓਵਰਰਾਈਡ</translation>
 <translation id="8580265901435899937">ਘੁੰਮਣ-ਫਿਰਨ ਦੀਆਂ ਥਾਵਾਂ</translation>
 <translation id="8581064022803799721">ਇਹ ਪੰਨਾ <ph name="LAST_BOOKMARKS_FOLDER" /> ਵਿੱਚ ਰੱਖਿਅਤ ਹੈ।</translation>
 <translation id="8586082901536468629">ਸਕਵੈਸ਼ ਅਤੇ ਰੈਕੇਟਬਾਲ ਸੰਬੰਧੀ ਉਪਕਰਨ</translation>

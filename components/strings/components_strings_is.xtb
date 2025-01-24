@@ -185,6 +185,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1310938305420497484">Opnaðu fyrst flipa og heimsæktu vefsvæði</translation>
 <translation id="1314311879718644478">Skoða efni aukins veruleika</translation>
 <translation id="1314509827145471431">Binda hægra megin</translation>
+<translation id="1314784609072437689">hnekking lyklaborðs</translation>
 <translation id="1316805916535763484">Opin netnámskeið</translation>
 <translation id="1318023360584041678">Vistað í flipahópi</translation>
 <translation id="1319245136674974084">Ekki spyrja aftur fyrir þetta forrit</translation>
@@ -2920,6 +2921,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome takmarkar fótspor þriðju aðila sjálfkrafa</translation>
 <translation id="6188479691141473408">og <ph name="N_FIELDS" /> reitir í viðbót</translation>
+<translation id="6190518157737269631">Hnekktu tilteknum lyklum á lyklaborðinu þínu, t.d. Esc</translation>
 <translation id="6194209731893739467">Sjá allar vaktaðar vörur hér</translation>
 <translation id="6195163219142236913">Fótspor þriðja aðila takmörkuð</translation>
 <translation id="6195371403461054755">Jarðfræði</translation>
@@ -4192,6 +4194,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8421158157346464398">Upplýsingar um vinnusnið (s.s. notandanafn vinnusniðsins þíns)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Breyta</translation>
+<translation id="8426945547715537628">Leyfa hnekkingu lyklaborðs?</translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Stillingar</translation>
 <translation id="8428634594422941299">Ég skil</translation>
@@ -4278,6 +4281,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8574841453995331336">Kæliskápar og frystar</translation>
 <translation id="8577192028579836704">Verð eru yfirleitt <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Sýndarkort ekki tiltækt</translation>
+<translation id="8579000896558714521">Hnekking lyklaborðs</translation>
 <translation id="8580265901435899937">Ferðamannastaðir</translation>
 <translation id="8581064022803799721">Þessi síða er vistuð í <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Skvass- og veggjatennisbúnaður</translation>

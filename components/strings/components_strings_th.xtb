@@ -185,6 +185,7 @@
 <translation id="1310938305420497484">ขั้นแรก ให้เปิดแท็บและไปที่เว็บไซต์</translation>
 <translation id="1314311879718644478">ดูเนื้อหา Augmented Reality</translation>
 <translation id="1314509827145471431">เย็บเล่มด้านขวา</translation>
+<translation id="1314784609072437689">การลบล้างแป้นพิมพ์</translation>
 <translation id="1316805916535763484">หลักสูตรออนไลน์แบบเปิด</translation>
 <translation id="1318023360584041678">บันทึกไว้ในกลุ่มแท็บ</translation>
 <translation id="1319245136674974084">ไม่ต้องถามอีกสำหรับแอปนี้</translation>
@@ -2919,6 +2920,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome จำกัดคุกกี้ของบุคคลที่สามโดยอัตโนมัติ</translation>
 <translation id="6188479691141473408">และอีก <ph name="N_FIELDS" /> ช่อง</translation>
+<translation id="6190518157737269631">ลบล้างแป้นพิมพ์บางแป้นบนแป้นพิมพ์ของคุณ เช่น Esc</translation>
 <translation id="6194209731893739467">ดูผลิตภัณฑ์ที่ติดตามทั้งหมดที่นี่</translation>
 <translation id="6195163219142236913">จำกัดคุกกี้ของบุคคลที่สาม</translation>
 <translation id="6195371403461054755">ธรณีวิทยา</translation>
@@ -4192,6 +4194,7 @@
 <translation id="8421158157346464398">ข้อมูลโปรไฟล์งาน (เช่น ชื่อผู้ใช้ในโปรไฟล์งาน)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">เปลี่ยน</translation>
+<translation id="8426945547715537628">อนุญาตให้ลบล้างแป้นพิมพ์ไหม</translation>
 <translation id="8427848540066057481">500 x 750 มม.</translation>
 <translation id="8428213095426709021">การตั้งค่า</translation>
 <translation id="8428634594422941299">รับทราบ</translation>
@@ -4278,6 +4281,7 @@
 <translation id="8574841453995331336">ตู้เย็นและตู้แช่แข็ง</translation>
 <translation id="8577192028579836704">ราคาปกติของตัวเลือกทั้งหมดอยู่ที่ <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">บัตรเสมือนไม่พร้อมใช้งาน</translation>
+<translation id="8579000896558714521">การลบล้างแป้นพิมพ์</translation>
 <translation id="8580265901435899937">แหล่งท่องเที่ยว</translation>
 <translation id="8581064022803799721">บันทึกหน้านี้ใน<ph name="LAST_BOOKMARKS_FOLDER" />แล้ว</translation>
 <translation id="8586082901536468629">อุปกรณ์สควอชและแร็กเก็ตบอล</translation>

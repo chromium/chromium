@@ -185,6 +185,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1310938305420497484">Avage kõigepealt vahekaardid ja külastage saite</translation>
 <translation id="1314311879718644478">Liitreaalse sisu vaatamine</translation>
 <translation id="1314509827145471431">Köide paremal</translation>
+<translation id="1314784609072437689">klaviatuuri alistamine</translation>
 <translation id="1316805916535763484">Avatud e-õpe</translation>
 <translation id="1318023360584041678">Salvestati vahelehtede gruppi</translation>
 <translation id="1319245136674974084">Ära enam selle rakenduse kohta küsi</translation>
@@ -2920,6 +2921,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6182972682129119950">A4 × 5</translation>
 <translation id="6184868291074982484">Chrome piirab automaatselt kolmanda osapoole küpsisefaile</translation>
 <translation id="6188479691141473408">Ja veel <ph name="N_FIELDS" /> välja</translation>
+<translation id="6190518157737269631">Saate alistada oma klaviatuuri teatud klahve, näiteks paoklahvi</translation>
 <translation id="6194209731893739467">Vaadake kõiki oma jälgitavaid tooteid siin</translation>
 <translation id="6195163219142236913">Kolmanda osapoole küpsisefailid on piiratud</translation>
 <translation id="6195371403461054755">Geoloogia</translation>
@@ -4193,6 +4195,7 @@ Lisateave:
 <translation id="8421158157346464398">tööprofiili teave (näiteks teie tööprofiili kasutajanimi);</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Muuda</translation>
+<translation id="8426945547715537628">Kas lubada klaviatuuri alistamine?</translation>
 <translation id="8427848540066057481">500 × 750 mm</translation>
 <translation id="8428213095426709021">Seaded</translation>
 <translation id="8428634594422941299">Selge</translation>
@@ -4279,6 +4282,7 @@ Lisateave:
 <translation id="8574841453995331336">Külmutuskapid ja sügavkülmikud</translation>
 <translation id="8577192028579836704">Kõigi valikute tavaline hind on <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtuaalkaart pole saadaval</translation>
+<translation id="8579000896558714521">Klaviatuuri alistamine</translation>
 <translation id="8580265901435899937">Turismisihtkohad</translation>
 <translation id="8581064022803799721">See leht on salvestatud kausta <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Squashi- ja reketpallivarustus</translation>

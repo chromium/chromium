@@ -394,6 +394,7 @@
 <translation id="1260810365552581339">Linuxilla ei välttämättä ole riittävästi levytilaa. Voit lisätä Linuxin levytilaa ja kokeilla palautusta uudelleen <ph name="LINK_START" />Asetuksista<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Maltillinen</translation>
 <translation id="126156426083987769">Esittelytilan laitelisenssien kanssa tapahtui ongelma.</translation>
+<translation id="1262564987698748643">Sivustot voivat pyytää näppäimistösyötön ohittamista</translation>
 <translation id="1263231323834454256">Lukulista</translation>
 <translation id="1263733306853729545">Selaa vaihtoehtolistaa näppäimillä <ph name="MINUS" /> ja <ph name="EQUAL" /></translation>
 <translation id="126387934568812801">Liitä mukaan tämä kuvakaappaus ja avoimien välilehtien nimet</translation>
@@ -772,6 +773,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1536883206862903762">Tämä poistaa laajennukset käytöstä ja palauttaa asetuksesi turvallisiin oletusasetuksiin. Välilehdet, tiedostot ja evästeet säilytetään. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Koko näytön suurennus</translation>
 <translation id="15373452373711364">Suuri hiiren osoitin</translation>
+<translation id="1539248305642687917">Älä salli sivustojen ohittaa näppäimistösyöttöä</translation>
 <translation id="1539727654733007771">Mobiiliverkkoja ei luotu. Lataa uusi <ph name="BEGIN_LINK" />profiili<ph name="END_LINK" />.</translation>
 <translation id="1540265419569299117">ChromeOS-sovelluspalvelu</translation>
 <translation id="1540543470504988112">Hallinnoi MacOS:stä tuotuja varmenteita</translation>
@@ -983,6 +985,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="166278006618318542">Kohteen julkisen avaimen algoritmi</translation>
 <translation id="1662801900924515589"><ph name="APP" /> asennettu</translation>
 <translation id="1663698992894057019">Päivitä uuteen Chromebookiin, niin saat uusimmat ohjelmistot ja tietoturvaominaisuudet</translation>
+<translation id="166454475160289583">Näppäimistösyötön ohittaminen ei ole sallittu</translation>
 <translation id="1665328953287874063">Avaa <ph name="DEVICE_TYPE" /> salasanalla tai PIN-koodilla</translation>
 <translation id="1665859804801131136">Ekspressionismi</translation>
 <translation id="1667842670298352129">Kuuntele tietty teksti ääneen luettuna. Valitse ensin Teksti puhuttuna ‐kuvake näytön alareunasta ja korosta sitten tekstiä. Voit myös käyttää pikanäppäinyhdistelmää: korosta tekstiä ja paina Haku + S.</translation>
@@ -1221,6 +1224,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1832511806131704864">Puhelimen vaihdos päivitettiin</translation>
 <translation id="1832848789136765277">Todenna henkilöllisyytesi varmistaaksesi, että sinulla on aina pääsy synkronoituun dataasi</translation>
 <translation id="1833059747301212935">Pääset helposti viimeaikaisiin dokumentteihin ja tuleviin kalenteritapahtumiin</translation>
+<translation id="183445248400150852">Sivustot käyttävät tätä ominaisuutta näppäimistön syötön ohittamiseen (esimerkiksi peleissä tai etäkäyttösovelluksissa)</translation>
 <translation id="1834503245783133039">Lataus epäonnistui: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Päivitetään Linuxia</translation>
 <translation id="1837441256780906162">Microsoft OneDrive hylkäsi pyynnön. Yritä myöhemmin uudelleen.</translation>
@@ -6759,6 +6763,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5794700615121138172">Linuxin jaetut kansiot</translation>
 <translation id="5794786537412027208">Sulje kaikki Chrome-sovellukset</translation>
 <translation id="5796485699458186843">Uusi incognito-välilehti</translation>
+<translation id="5796956053441619942">Etälaitteen URL-osoitetta ei tueta</translation>
 <translation id="5797934230382081317">Lue lisää &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Androidin&lt;/a&gt; ja &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS:n&lt;/a&gt; käytön aloittamisesta</translation>
 <translation id="5798079537501238810">Sivustot voivat asentaa maksunkäsittelijöitä</translation>
 <translation id="5798086737841799234">Lisää vahvistuskoodi</translation>
@@ -7414,6 +7419,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6264485186158353794">Takaisin suojaukseen</translation>
 <translation id="6264520534872750757">Jatka laitteen käyttöä</translation>
 <translation id="6264636978858465832">Salasanat tarvitsee lisää pääsyoikeuksia</translation>
+<translation id="626495329434552273">Salli näppäimistösyötön ohittaminen</translation>
 <translation id="6265159465845424232">Kysy ennen Microsoft-tiedostojen kopioimista tai siirtämistä Microsoft OneDriveen</translation>
 <translation id="6265687851677020761">Poista portti</translation>
 <translation id="6266532094411434237">Yhdistetään: <ph name="DEVICE" /></translation>
