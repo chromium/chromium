@@ -60,6 +60,11 @@ bool MigrateBtmSchemaToLatestVersion(sql::Database& db,
           return false;
         }
         break;
+      case 9:
+        if (!migrator.MigrateSchemaVersionFrom8To9()) {
+          return false;
+        }
+        break;
     }
   }
   return true;
@@ -301,6 +306,31 @@ bool BtmDatabaseMigrator::MigrateSchemaVersionFrom7To8() {
          meta_table_->SetVersionNumber(8) &&
          meta_table_->SetCompatibleVersionNumber(
              std::min(8, BtmDatabase::kMinCompatibleSchemaVersion));
+}
+
+bool BtmDatabaseMigrator::MigrateSchemaVersionFrom8To9() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(db_->HasActiveTransactions());
+
+  static constexpr char kRenameFirstUserInteractionTimeSql[] =
+      "ALTER TABLE bounces RENAME COLUMN first_user_interaction_time TO "
+      "first_user_activation_time";
+  DCHECK(db_->IsSQLValid(kRenameFirstUserInteractionTimeSql));
+  if (!db_->Execute(kRenameFirstUserInteractionTimeSql)) {
+    return false;
+  }
+
+  static constexpr char kRenameLastUserInteractionTimeSql[] =
+      "ALTER TABLE bounces RENAME COLUMN last_user_interaction_time TO "
+      "last_user_activation_time";
+  DCHECK(db_->IsSQLValid(kRenameLastUserInteractionTimeSql));
+  if (!db_->Execute(kRenameLastUserInteractionTimeSql)) {
+    return false;
+  }
+
+  return meta_table_->SetVersionNumber(9) &&
+         meta_table_->SetCompatibleVersionNumber(
+             std::min(9, BtmDatabase::kMinCompatibleSchemaVersion));
 }
 
 }  // namespace content

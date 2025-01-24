@@ -80,7 +80,7 @@ void OpenerHeuristicTabHelper::InitPopup(
 
 void OpenerHeuristicTabHelper::GotPopupDipsState(const BtmState& state) {
   popup_observer_->SetPastInteractionTimeAndType(
-      state.user_interaction_times(), state.web_authn_assertion_times());
+      state.user_activation_times(), state.web_authn_assertion_times());
 }
 
 void OpenerHeuristicTabHelper::PrimaryPageChanged(Page& page) {

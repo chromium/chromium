@@ -29,10 +29,10 @@ class CONTENT_EXPORT BtmDatabase {
   // Version number of the database schema.
   // NOTE: When changing the version, add a new golden file for the new version
   // at `//chrome/test/data/dips/v<N>.sql`.
-  static constexpr int kLatestSchemaVersion = 8;
+  static constexpr int kLatestSchemaVersion = 9;
 
   // The minimum database schema version this Chrome code is compatible with.
-  static constexpr int kMinCompatibleSchemaVersion = 8;
+  static constexpr int kMinCompatibleSchemaVersion = 9;
 
   static constexpr char kPrepopulatedKey[] = "prepopulated";
 
@@ -58,7 +58,7 @@ class CONTENT_EXPORT BtmDatabase {
   // DIPS Bounce table functions -----------------------------------------------
   bool Write(const std::string& site,
              const TimestampRange& storage_times,
-             const TimestampRange& interaction_times,
+             const TimestampRange& user_activation_times,
              const TimestampRange& stateful_bounce_times,
              const TimestampRange& bounce_times,
              const TimestampRange& web_authn_assertion_times);
@@ -91,14 +91,14 @@ class CONTENT_EXPORT BtmDatabase {
   std::vector<std::string> GetAllSitesForTesting(const BtmDatabaseTable table);
 
   // Returns the subset of sites in |sites| WITH a protective event recorded.
-  // A protective event is a user interaction or successful WebAuthn assertion.
+  // A protective event is a user activation or successful WebAuthn assertion.
   //
   // NOTE: This method's main procedure is performed after calling
   // `ClearExpiredRows()`.
   //
   // TODO(njeunje): Consider making a method FilterSites(set<string> sites,
   // FilterType filter) that we call from this method, where FilterType lets us
-  // specify if we want to filter out interactions, WebAuthn assertions, or
+  // specify if we want to filter out user activations, WebAuthn assertions, or
   // both. There may be other criteria that we want to filter for in the future.
   std::set<std::string> FilterSitesWithProtectiveEvent(
       const std::set<std::string>& sites);
@@ -107,8 +107,8 @@ class CONTENT_EXPORT BtmDatabase {
   //
   // A site can be protected in several ways:
   // - it's still in its grace period after the first bounce
-  // - it received user interaction or WAA before the first bounce
-  // - it received user interaction or WAA in the grace period after the first
+  // - it received user activation or WAA before the first bounce
+  // - it received user activation or WAA in the grace period after the first
   // bounce.
   //
   // NOTE: This method's main procedure is performed after calling
@@ -119,8 +119,8 @@ class CONTENT_EXPORT BtmDatabase {
   //
   // A site can be protected in several ways:
   // - it's still in its grace period after the first storage
-  // - it received user interaction or WAA before the first storage
-  // - it received user interaction or WAA in the grace period after the first
+  // - it received user activation or WAA before the first storage
+  // - it received user activation or WAA in the grace period after the first
   // storage.
   //
   // NOTE: This method's main procedure is performed after calling
@@ -133,8 +133,8 @@ class CONTENT_EXPORT BtmDatabase {
   //
   // A site can be protected in several ways:
   // - it's still in its grace period after the first stateful bounce
-  // - it received user interaction or WAA before the first stateful bounce
-  // - it received user interaction or WAA in the grace period after the first
+  // - it received user activation or WAA before the first stateful bounce
+  // - it received user activation or WAA in the grace period after the first
   // stateful bounce.
   //
   // NOTE: This method's main procedure is performed after calling
@@ -189,7 +189,7 @@ class CONTENT_EXPORT BtmDatabase {
   size_t GarbageCollect();
 
   // Removes the |purge_goal| entries with the oldest
-  // |MAX(last_user_interaction_time,last_site_storage_time)| value. Returns the
+  // |MAX(last_user_activation_time,last_site_storage_time)| value. Returns the
   // number of entries deleted.
   //
   // NOTE: The SQLITE sub-query in this method must match that of

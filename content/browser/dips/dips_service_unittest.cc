@@ -576,7 +576,7 @@ TEST_F(BtmServiceStateRemovalTest,
                increment_bounce);
   GetService()
       ->storage()
-      ->AsyncCall(&BtmStorage::RecordInteraction)
+      ->AsyncCall(&BtmStorage::RecordUserActivation)
       .WithArgs(redirect_url_3, bounce, GetService()->GetCookieMode());
   WaitOnStorage(GetService());
 
@@ -663,7 +663,7 @@ TEST_F(BtmServiceStateRemovalTest,
                increment_bounce);
   GetService()
       ->storage()
-      ->AsyncCall(&BtmStorage::RecordInteraction)
+      ->AsyncCall(&BtmStorage::RecordUserActivation)
       .WithArgs(redirect_url_3, bounce, GetService()->GetCookieMode());
   WaitOnStorage(GetService());
 
@@ -731,7 +731,7 @@ TEST_F(
                increment_bounce);
   GetService()
       ->storage()
-      ->AsyncCall(&BtmStorage::RecordInteraction)
+      ->AsyncCall(&BtmStorage::RecordUserActivation)
       .WithArgs(redirect_url_2, bounce, GetService()->GetCookieMode());
   WaitOnStorage(GetService());
   // Record a bounce through redirect_url_3 that starts on a non-blocked URL.

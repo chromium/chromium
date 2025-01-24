@@ -63,8 +63,8 @@ class CONTENT_EXPORT BtmState {
   TimestampRange site_storage_times() const {
     return state_.site_storage_times;
   }
-  TimestampRange user_interaction_times() const {
-    return state_.user_interaction_times;
+  TimestampRange user_activation_times() const {
+    return state_.user_activation_times;
   }
   TimestampRange stateful_bounce_times() const {
     return state_.stateful_bounce_times;
@@ -75,7 +75,7 @@ class CONTENT_EXPORT BtmState {
   }
 
   void update_site_storage_time(base::Time time);
-  void update_user_interaction_time(base::Time time);
+  void update_user_activation_time(base::Time time);
   void update_stateful_bounce_time(base::Time time);
   void update_bounce_time(base::Time time);
   void update_web_authn_assertion_time(base::Time time);

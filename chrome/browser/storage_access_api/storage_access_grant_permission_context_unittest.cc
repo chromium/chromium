@@ -145,7 +145,7 @@ class StorageAccessGrantPermissionContextTest
         std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
 
     CHECK_DEREF(content::BtmService::Get(browser_context()))
-        .RecordInteractionForTesting(GetRequesterURL());
+        .RecordUserActivationForTesting(GetRequesterURL());
     permission_context_ =
         std::make_unique<StorageAccessGrantPermissionContext>(profile());
   }

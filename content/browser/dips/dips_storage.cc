@@ -46,7 +46,7 @@ BtmState BtmStorage::ReadSite(std::string site) {
   if (state.has_value()) {
     // We should not have entries in the DB without any timestamps.
     DCHECK(state->site_storage_times.has_value() ||
-           state->user_interaction_times.has_value() ||
+           state->user_activation_times.has_value() ||
            state->stateful_bounce_times.has_value() ||
            state->bounce_times.has_value() ||
            state->web_authn_assertion_times.has_value());
@@ -61,7 +61,7 @@ void BtmStorage::Write(const BtmState& state) {
   DCHECK(db_);
 
   db_->Write(state.site(), state.site_storage_times(),
-             state.user_interaction_times(), state.stateful_bounce_times(),
+             state.user_activation_times(), state.stateful_bounce_times(),
              state.bounce_times(), state.web_authn_assertion_times());
 }
 
@@ -165,14 +165,14 @@ void BtmStorage::RecordStorage(const GURL& url,
   state.update_site_storage_time(time);
 }
 
-void BtmStorage::RecordInteraction(const GURL& url,
-                                   base::Time time,
-                                   BtmCookieMode mode) {
+void BtmStorage::RecordUserActivation(const GURL& url,
+                                      base::Time time,
+                                      BtmCookieMode mode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
   BtmState state = Read(url);
-  state.update_user_interaction_time(time);
+  state.update_user_activation_time(time);
 }
 
 void BtmStorage::RecordWebAuthnAssertion(const GURL& url,
@@ -260,20 +260,20 @@ std::vector<std::string> BtmStorage::GetSitesToClear(
   return sites_to_clear;
 }
 
-bool BtmStorage::DidSiteHaveInteractionSince(const GURL& url,
-                                             base::Time bound) {
-  auto last_user_interaction_time = LastUserActivationTime(url);
-  return last_user_interaction_time.has_value() &&
-         last_user_interaction_time >= bound;
+bool BtmStorage::DidSiteHaveUserActivationSince(const GURL& url,
+                                                base::Time bound) {
+  auto last_user_activation_time = LastUserActivationTime(url);
+  return last_user_activation_time.has_value() &&
+         last_user_activation_time >= bound;
 }
 
 std::optional<base::Time> BtmStorage::LastUserActivationTime(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const BtmState state = Read(url);
-  if (!state.user_interaction_times().has_value()) {
+  if (!state.user_activation_times().has_value()) {
     return std::nullopt;
   }
-  return state.user_interaction_times()->second;
+  return state.user_activation_times()->second;
 }
 
 std::optional<base::Time> BtmStorage::LastWebAuthnAssertionTime(

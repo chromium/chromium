@@ -124,7 +124,7 @@ std::ostream& operator<<(std::ostream& os, TimestampRange type);
 // Values for a site in the `bounces` table.
 struct StateValue {
   TimestampRange site_storage_times;
-  TimestampRange user_interaction_times;
+  TimestampRange user_activation_times;
   TimestampRange stateful_bounce_times;
   TimestampRange bounce_times;
   TimestampRange web_authn_assertion_times;
@@ -157,10 +157,10 @@ inline OptionalBool ToOptionalBool(bool b) {
 }
 
 inline bool operator==(const StateValue& lhs, const StateValue& rhs) {
-  return std::tie(lhs.site_storage_times, lhs.user_interaction_times,
+  return std::tie(lhs.site_storage_times, lhs.user_activation_times,
                   lhs.stateful_bounce_times, lhs.bounce_times,
                   lhs.web_authn_assertion_times) ==
-         std::tie(rhs.site_storage_times, rhs.user_interaction_times,
+         std::tie(rhs.site_storage_times, rhs.user_activation_times,
                   rhs.stateful_bounce_times, rhs.bounce_times,
                   rhs.web_authn_assertion_times);
 }
@@ -238,8 +238,8 @@ inline std::optional<GURL> GetFirstPartyURL(RenderFrameHost* rfh) {
              : std::nullopt;
 }
 
-// The amount of time since a page last received user interaction before a
-// subsequent user interaction event may be recorded to DIPS Storage for the
+// The amount of time since a page last received user activation before a
+// subsequent user activation event may be recorded to DIPS Storage for the
 // same page.
 inline constexpr base::TimeDelta kBtmTimestampUpdateInterval = base::Minutes(1);
 
@@ -258,7 +258,7 @@ enum class BtmInteractionType {
 
 enum class BtmRecordedEvent {
   kStorage,
-  kInteraction,
+  kUserActivation,
   kWebAuthnAssertion,
 };
 

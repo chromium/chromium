@@ -33,8 +33,8 @@ void BtmState::update_site_storage_time(base::Time time) {
   dirty_ |= UpdateTimestampRange(state_.site_storage_times, time);
 }
 
-void BtmState::update_user_interaction_time(base::Time time) {
-  dirty_ |= UpdateTimestampRange(state_.user_interaction_times, time);
+void BtmState::update_user_activation_time(base::Time time) {
+  dirty_ |= UpdateTimestampRange(state_.user_activation_times, time);
 }
 
 void BtmState::update_stateful_bounce_time(base::Time time) {

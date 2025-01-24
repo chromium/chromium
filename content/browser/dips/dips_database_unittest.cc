@@ -48,7 +48,7 @@ class TestDatabase : public BtmDatabase {
 
 enum ColumnType {
   kSiteStorage,
-  kUserInteraction,
+  kUserActivation,
   kStatefulBounce,
   kBounce,
   kWebAuthnAssertion
@@ -255,7 +255,7 @@ class BtmDatabaseAllColumnTest
   bool WriteToVariableColumn(const std::string& site,
                              const TimestampRange& times) {
     return db_->Write(site, column_ == kSiteStorage ? times : TimestampRange(),
-                      column_ == kUserInteraction ? times : TimestampRange(),
+                      column_ == kUserActivation ? times : TimestampRange(),
                       column_ == kStatefulBounce ? times : TimestampRange(),
                       IsBounce(column_) ? times : TimestampRange(),
                       column_ == kWebAuthnAssertion ? times : TimestampRange());
@@ -265,8 +265,8 @@ class BtmDatabaseAllColumnTest
     switch (column_) {
       case ColumnType::kSiteStorage:
         return value->site_storage_times;
-      case ColumnType::kUserInteraction:
-        return value->user_interaction_times;
+      case ColumnType::kUserActivation:
+        return value->user_activation_times;
       case ColumnType::kStatefulBounce:
         return value->stateful_bounce_times;
       case ColumnType::kBounce:
@@ -280,8 +280,8 @@ class BtmDatabaseAllColumnTest
     switch (column_) {
       case ColumnType::kSiteStorage:
         return {"first_site_storage_time", "last_site_storage_time"};
-      case ColumnType::kUserInteraction:
-        return {"first_user_interaction_time", "last_user_interaction_time"};
+      case ColumnType::kUserActivation:
+        return {"first_user_activation_time", "last_user_activation_time"};
       case ColumnType::kStatefulBounce:
         return {"first_stateful_bounce_time", "last_stateful_bounce_time"};
       case ColumnType::kBounce:
@@ -605,7 +605,7 @@ INSTANTIATE_TEST_SUITE_P(
     BtmDatabaseAllColumnTest,
     ::testing::Combine(::testing::Bool(),
                        ::testing::Values(ColumnType::kSiteStorage,
-                                         ColumnType::kUserInteraction,
+                                         ColumnType::kUserActivation,
                                          ColumnType::kStatefulBounce,
                                          ColumnType::kBounce,
                                          ColumnType::kWebAuthnAssertion)));
@@ -621,28 +621,28 @@ class BtmDatabaseInteractionTest : public BtmDatabaseTest,
     features_.InitWithFeatures({features::kBtmTtl, features::kBtm}, {});
   }
 
-  // This test only focuses on user interaction and WAA times, that's the
+  // This test only focuses on user activation and WAA times, that's the
   // reason why the other times like bounce times not being tested here are left
   // NULL throughout.
   void LoadDatabase() {
     DCHECK(db_);
-    // Case1: last_web_authn_assertion_time == last_user_interaction_time.
+    // Case1: last_web_authn_assertion_time == last_user_activation_time.
     EXPECT_TRUE(db_->Write("case1.test", {}, {{dummy_time, dummy_time}}, {}, {},
                            {{dummy_time, dummy_time}}));
-    // Case2: last_web_authn_assertion_time > last_user_interaction_time.
+    // Case2: last_web_authn_assertion_time > last_user_activation_time.
     EXPECT_TRUE(db_->Write("case2.test", {}, {{dummy_time, dummy_time}}, {}, {},
                            {{dummy_time, dummy_time + tiny_delta}}));
-    // Case3: last_web_authn_assertion_time < last_user_interaction_time.
+    // Case3: last_web_authn_assertion_time < last_user_activation_time.
     EXPECT_TRUE(
         db_->Write("case3.test", {}, {{dummy_time, dummy_time}}, {}, {},
                    {{dummy_time - tiny_delta, dummy_time - tiny_delta}}));
     // Case4: last_web_authn_assertion_time is NULL.
     EXPECT_TRUE(
         db_->Write("case4.test", {}, {{dummy_time, dummy_time}}, {}, {}, {}));
-    // Case5: last_user_interaction_time is NULL.
+    // Case5: last_user_activation_time is NULL.
     EXPECT_TRUE(
         db_->Write("case5.test", {}, {}, {}, {}, {{dummy_time, dummy_time}}));
-    // Case6: last_web_authn_assertion_time and last_user_interaction_time are
+    // Case6: last_web_authn_assertion_time and last_user_activation_time are
     // NULL.
     EXPECT_TRUE(db_->Write("case6.test", {}, {}, {}, {}, {}));
   }
@@ -1380,7 +1380,7 @@ TEST_F(BtmDatabaseBounceTableGarbageCollectionTest,
   for (int i = 1; i <= 6; i++) {
     auto state = db_->Read(base::StringPrintf("entry%d.test", i));
     AddEntry(base::StringPrintf("entry%d.test", i), {},
-             state->user_interaction_times, state->web_authn_assertion_times);
+             state->user_activation_times, state->web_authn_assertion_times);
   }
   EXPECT_THAT(
       db_->GetGarbageCollectOldestSitesForTesting(BtmDatabaseTable::kBounces),
@@ -1410,7 +1410,7 @@ TEST_F(BtmDatabaseBounceTableGarbageCollectionTest,
   for (int i = 1; i <= 6; i++) {
     auto state = db_->Read(base::StringPrintf("entry%d.test", i));
     AddEntry(base::StringPrintf("entry%d.test", i), state->site_storage_times,
-             state->user_interaction_times, {});
+             state->user_activation_times, {});
   }
   EXPECT_THAT(
       db_->GetGarbageCollectOldestSitesForTesting(BtmDatabaseTable::kBounces),
@@ -1429,7 +1429,7 @@ TEST_F(BtmDatabaseBounceTableGarbageCollectionTest,
   for (int i = 1; i <= 6; i++) {
     auto state = db_->Read(base::StringPrintf("entry%d.test", i));
     AddEntry(base::StringPrintf("entry%d.test", i), {},
-             state->user_interaction_times, {});
+             state->user_activation_times, {});
   }
   EXPECT_THAT(
       db_->GetGarbageCollectOldestSitesForTesting(BtmDatabaseTable::kBounces),
@@ -1556,13 +1556,6 @@ class BtmDatabaseInitializationTest : public testing::Test {
   }
 
  protected:
-  // Time columns root:
-  const char* kStorageTimes = "site_storage";
-  const char* kInteractionTimes = "user_interaction";
-  const char* kStatefulBounceTimes = "stateful_bounce";
-  const char* kStatelessBounceTimesV1 = "stateless_bounce";
-  const char* kBounceTimesV2ToV3 = "bounce";
-
   void InitializeDatabase() { TestDatabase db(db_path_); }
 
   void ValidateSchemaAndMetadataMatchLatestVersion(sql::Database* db) {
@@ -1661,8 +1654,8 @@ class BtmDatabaseInitializationTest : public testing::Test {
     EXPECT_TRUE(db->DoesColumnExist("bounces", "last_stateful_bounce_time"));
     EXPECT_TRUE(db->DoesColumnExist("bounces", "first_site_storage_time"));
     EXPECT_TRUE(db->DoesColumnExist("bounces", "last_site_storage_time"));
-    EXPECT_TRUE(db->DoesColumnExist("bounces", "first_user_interaction_time"));
-    EXPECT_TRUE(db->DoesColumnExist("bounces", "last_user_interaction_time"));
+    EXPECT_TRUE(db->DoesColumnExist("bounces", "first_user_activation_time"));
+    EXPECT_TRUE(db->DoesColumnExist("bounces", "last_user_activation_time"));
     EXPECT_TRUE(db->DoesColumnExist("bounces", "first_stateful_bounce_time"));
     EXPECT_TRUE(db->DoesColumnExist("bounces", "last_stateful_bounce_time"));
     EXPECT_TRUE(

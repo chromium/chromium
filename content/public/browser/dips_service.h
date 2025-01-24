@@ -31,7 +31,7 @@ class CONTENT_EXPORT BtmService : public base::SupportsUserData {
  public:
   using DeletedSitesCallback =
       base::OnceCallback<void(const std::vector<std::string>& sites)>;
-  using CheckInteractionCallback = base::OnceCallback<void(bool)>;
+  using CheckUserActivationCallback = base::OnceCallback<void(bool)>;
 
   class Observer : public base::CheckedObserver {
    public:
@@ -61,14 +61,14 @@ class CONTENT_EXPORT BtmService : public base::SupportsUserData {
   // Unit tests of embedders can use this to simulate user interaction on `url`.
   // (Browser tests should perform actual interactions to ensure realistic test
   // behavior.)
-  virtual void RecordInteractionForTesting(const GURL& url) = 0;
+  virtual void RecordUserActivationForTesting(const GURL& url) = 0;
 
   // Asynchronously checks whether the user ever interacted on the site of `url`
   // since `bound`, and calls `callback` with the result.
-  virtual void DidSiteHaveInteractionSince(
+  virtual void DidSiteHaveUserActivationSince(
       const GURL& url,
       base::Time bound,
-      CheckInteractionCallback callback) const = 0;
+      CheckUserActivationCallback callback) const = 0;
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(const Observer* observer) = 0;

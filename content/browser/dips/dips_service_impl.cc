@@ -60,25 +60,25 @@ BASE_FEATURE(kDipsOnForegroundSequence,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BtmRedirectCategory ClassifyRedirect(BtmDataAccessType access,
-                                     bool has_interaction) {
+                                     bool has_user_activation) {
   using enum BtmRedirectCategory;
 
   switch (access) {
     case BtmDataAccessType::kUnknown:
-      return has_interaction ? kUnknownCookies_HasEngagement
-                             : kUnknownCookies_NoEngagement;
+      return has_user_activation ? kUnknownCookies_HasEngagement
+                                 : kUnknownCookies_NoEngagement;
     case BtmDataAccessType::kNone:
-      return has_interaction ? kNoCookies_HasEngagement
-                             : kNoCookies_NoEngagement;
+      return has_user_activation ? kNoCookies_HasEngagement
+                                 : kNoCookies_NoEngagement;
     case BtmDataAccessType::kRead:
-      return has_interaction ? kReadCookies_HasEngagement
-                             : kReadCookies_NoEngagement;
+      return has_user_activation ? kReadCookies_HasEngagement
+                                 : kReadCookies_NoEngagement;
     case BtmDataAccessType::kWrite:
-      return has_interaction ? kWriteCookies_HasEngagement
-                             : kWriteCookies_NoEngagement;
+      return has_user_activation ? kWriteCookies_HasEngagement
+                                 : kWriteCookies_NoEngagement;
     case BtmDataAccessType::kReadWrite:
-      return has_interaction ? kReadWriteCookies_HasEngagement
-                             : kReadWriteCookies_NoEngagement;
+      return has_user_activation ? kReadWriteCookies_HasEngagement
+                                 : kReadWriteCookies_NoEngagement;
   }
 }
 
@@ -163,7 +163,7 @@ class StateClearer : public BrowsingDataRemover::Observer {
   //
   // NOTE: This deletion task removing rows for `sites_to_clear` from the
   // BtmStorage backend relies on the assumption that rows flagged as DIPS
-  // eligible don't have user interaction time values. So even though 'remover'
+  // eligible don't have user activation time values. So even though 'remover'
   // will only clear the storage timestamps, that's sufficient to delete the
   // entire row.
   static void DeleteState(BrowsingDataRemover* remover,
@@ -405,16 +405,16 @@ void BtmServiceImpl::HandleRedirectChain(
                            std::move(chain), 0, stateful_bounce_callback));
 }
 
-void BtmServiceImpl::RecordInteractionForTesting(const GURL& url) {
-  storage_.AsyncCall(&BtmStorage::RecordInteraction)
+void BtmServiceImpl::RecordUserActivationForTesting(const GURL& url) {
+  storage_.AsyncCall(&BtmStorage::RecordUserActivation)
       .WithArgs(url, base::Time::Now(), GetCookieMode());
 }
 
-void BtmServiceImpl::DidSiteHaveInteractionSince(
+void BtmServiceImpl::DidSiteHaveUserActivationSince(
     const GURL& url,
     base::Time bound,
-    CheckInteractionCallback callback) const {
-  storage_.AsyncCall(&BtmStorage::DidSiteHaveInteractionSince)
+    CheckUserActivationCallback callback) const {
+  storage_.AsyncCall(&BtmStorage::DidSiteHaveUserActivationSince)
       .WithArgs(url, bound)
       .Then(std::move(callback));
 }
@@ -428,9 +428,10 @@ void BtmServiceImpl::GotState(
   DCHECK_LT(index, redirects.size());
 
   BtmRedirectInfo* redirect = redirects[index].get();
-  // If there's any user interaction recorded in the DIPS DB, that's engagement.
-  DCHECK(!redirect->has_interaction.has_value());
-  redirect->has_interaction = url_state.user_interaction_times().has_value();
+  // If there's any user activation recorded in the DIPS DB, that's engagement.
+  DCHECK(!redirect->site_had_user_activation.has_value());
+  redirect->site_had_user_activation =
+      url_state.user_activation_times().has_value();
   DCHECK(!redirect->chain_id.has_value());
   redirect->chain_id = chain->chain_id;
   DCHECK(!redirect->chain_index.has_value());
@@ -539,7 +540,7 @@ void BtmServiceImpl::HandleRedirect(
   DCHECK_LT(redirect.chain_index.value(), chain.length);
 
   ukm::builders::DIPS_Redirect(redirect.url.source_id)
-      .SetSiteEngagementLevel(redirect.has_interaction.value() ? 1 : 0)
+      .SetSiteEngagementLevel(redirect.site_had_user_activation.value() ? 1 : 0)
       .SetRedirectType(static_cast<int64_t>(redirect.redirect_type))
       .SetCookieAccessType(static_cast<int64_t>(redirect.access_type))
       .SetRedirectAndInitialSiteSame(initial_site_same)
@@ -570,8 +571,8 @@ void BtmServiceImpl::HandleRedirect(
         stateful_bounce_callback);
   }
 
-  BtmRedirectCategory category =
-      ClassifyRedirect(redirect.access_type, redirect.has_interaction.value());
+  BtmRedirectCategory category = ClassifyRedirect(
+      redirect.access_type, redirect.site_had_user_activation.value());
   UmaHistogramBounceCategory(category, chain.cookie_mode.value(),
                              redirect.redirect_type);
 
@@ -704,7 +705,7 @@ void BtmServiceImpl::RemoveObserver(const Observer* observer) {
 
 void BtmServiceImpl::RecordBrowserSignIn(std::string_view domain) {
   storage()
-      ->AsyncCall(&BtmStorage::RecordInteraction)
+      ->AsyncCall(&BtmStorage::RecordUserActivation)
       .WithArgs(url::SchemeHostPort("http", domain, 80).GetURL(),
                 base::Time::Now(), GetCookieMode());
 }

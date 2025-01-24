@@ -94,7 +94,8 @@ class TestBounceDetectorDelegate : public BtmBounceDetectorDelegate {
     size_t redirect_index = chain->length - redirects.size();
 
     for (auto& redirect : redirects) {
-      redirect->has_interaction = GetSiteHasInteraction(redirect->url.url);
+      redirect->site_had_user_activation =
+          GetSiteHasUserActivation(redirect->url.url);
       redirect->chain_id = chain->chain_id;
       redirect->chain_index = redirect_index;
       redirect->has_3pc_exception = false;
@@ -133,12 +134,12 @@ class TestBounceDetectorDelegate : public BtmBounceDetectorDelegate {
     return url_by_source_id_[source_id];
   }
 
-  bool GetSiteHasInteraction(const GURL& url) {
-    return site_has_interaction_[GetSiteForBtm(url)];
+  bool GetSiteHasUserActivation(const GURL& url) {
+    return site_has_user_activation_[GetSiteForBtm(url)];
   }
 
-  void SetSiteHasInteraction(const GURL& url) {
-    site_has_interaction_[GetSiteForBtm(url)] = true;
+  void SetSiteHasUserActivation(const GURL& url) {
+    site_has_user_activation_[GetSiteForBtm(url)] = true;
   }
 
   void SetCommittedURL(PassKey<FakeNavigation>,
@@ -178,7 +179,7 @@ class TestBounceDetectorDelegate : public BtmBounceDetectorDelegate {
   GURL committed_url_;
   ukm::SourceId source_id_;
   std::map<ukm::SourceId, std::string> url_by_source_id_;
-  std::map<std::string, bool> site_has_interaction_;
+  std::map<std::string, bool> site_has_user_activation_;
   std::vector<std::string> redirects_;
   std::set<BounceTuple> recorded_bounces_;
   std::vector<std::string> reported_sites_;
@@ -301,8 +302,8 @@ class BtmBounceDetectorTest : public ::testing::Test {
     return delegate_.URLForSourceId(source_id);
   }
 
-  void SetSiteHasInteraction(const std::string& url) {
-    return delegate_.SetSiteHasInteraction(GURL(url));
+  void SetSiteHasUserActivation(const std::string& url) {
+    return delegate_.SetSiteHasUserActivation(GURL(url));
   }
 
   std::set<BounceTuple> GetRecordedBounces() const {
@@ -912,7 +913,7 @@ const std::vector<std::string>& GetAllRedirectMetrics() {
 TEST_F(BtmBounceDetectorTest, Histograms_UMA) {
   base::HistogramTester histograms;
 
-  SetSiteHasInteraction("http://b.test");
+  SetSiteHasUserActivation("http://b.test");
 
   NavigateTo("http://a.test", kWithUserGesture);
   NavigateTo("http://b.test", kWithUserGesture);
@@ -953,7 +954,7 @@ TEST_F(BtmBounceDetectorTest, Histograms_UMA) {
 TEST_F(BtmBounceDetectorTest, Histograms_UKM) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  SetSiteHasInteraction("http://c.test");
+  SetSiteHasUserActivation("http://c.test");
 
   NavigateTo("http://a.test", kWithUserGesture);
   NavigateTo("http://b.test", kWithUserGesture);

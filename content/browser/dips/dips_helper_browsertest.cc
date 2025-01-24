@@ -184,12 +184,12 @@ IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
   SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
   observer_a.Wait();
 
-  // User interaction is recorded for a.test (the top-level frame).
+  // User activation is recorded for a.test (the top-level frame).
   std::optional<StateValue> state_a =
       GetBtmState(GetDipsService(web_contents), url_a);
   ASSERT_TRUE(state_a.has_value());
   EXPECT_FALSE(state_a->site_storage_times.has_value());
-  EXPECT_EQ(std::make_optional(time), state_a->user_interaction_times->first);
+  EXPECT_EQ(std::make_optional(time), state_a->user_activation_times->first);
 
   // Update the top-level page to have an iframe pointing to b.test.
   ASSERT_TRUE(NavigateIframeToURL(web_contents, kIframeId, url_b));
@@ -213,13 +213,13 @@ IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
 #endif
   observer_b.Wait();
 
-  // User interaction on the top-level is updated by interacting with b.test
+  // User activation on the top-level is updated by interacting with b.test
   // (the iframe).
   state_a = GetBtmState(GetDipsService(web_contents), url_a);
   ASSERT_TRUE(state_a.has_value());
   EXPECT_FALSE(state_a->site_storage_times.has_value());
   EXPECT_EQ(std::make_optional(frame_interaction_time),
-            state_a->user_interaction_times->second);
+            state_a->user_activation_times->second);
 
   // The iframe site doesn't have any state.
   EXPECT_FALSE(GetBtmState(GetDipsService(web_contents), url_b).has_value());
@@ -244,32 +244,32 @@ IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
   SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
   observer1.Wait();
 
-  // One instance of user interaction is recorded.
+  // One instance of user activation is recorded.
   std::optional<StateValue> state_1 =
       GetBtmState(GetDipsService(web_contents), url);
   ASSERT_TRUE(state_1.has_value());
   EXPECT_FALSE(state_1->site_storage_times.has_value());
-  EXPECT_EQ(std::make_optional(time), state_1->user_interaction_times->first);
-  EXPECT_EQ(state_1->user_interaction_times->first,
-            state_1->user_interaction_times->second);
+  EXPECT_EQ(std::make_optional(time), state_1->user_activation_times->first);
+  EXPECT_EQ(state_1->user_activation_times->first,
+            state_1->user_activation_times->second);
 
   SetBtmTime(time + kBtmTimestampUpdateInterval + base::Seconds(10));
   UserActivationObserver observer_2(web_contents, frame);
   SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
   observer_2.Wait();
 
-  // A second, different, instance of user interaction is recorded for the same
+  // A second, different, instance of user activation is recorded for the same
   // site.
   std::optional<StateValue> state_2 =
       GetBtmState(GetDipsService(web_contents), url);
   ASSERT_TRUE(state_2.has_value());
   EXPECT_FALSE(state_2->site_storage_times.has_value());
-  EXPECT_NE(state_2->user_interaction_times->second,
-            state_2->user_interaction_times->first);
-  EXPECT_EQ(std::make_optional(time), state_2->user_interaction_times->first);
+  EXPECT_NE(state_2->user_activation_times->second,
+            state_2->user_activation_times->first);
+  EXPECT_EQ(std::make_optional(time), state_2->user_activation_times->first);
   EXPECT_EQ(std::make_optional(time + kBtmTimestampUpdateInterval +
                                base::Seconds(10)),
-            state_2->user_interaction_times->second);
+            state_2->user_activation_times->second);
 }
 
 IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest, StorageRecordedInSingleFrame) {
@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
   std::optional<StateValue> state_1 =
       GetBtmState(GetDipsService(GetActiveWebContents()), url);
   ASSERT_TRUE(state_1.has_value());
-  EXPECT_FALSE(state_1->user_interaction_times.has_value());
+  EXPECT_FALSE(state_1->user_activation_times.has_value());
   EXPECT_EQ(std::make_optional(time), state_1->site_storage_times->first);
   EXPECT_EQ(state_1->site_storage_times->second,
             state_1->site_storage_times->first);
@@ -403,7 +403,7 @@ IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
   std::optional<StateValue> state_2 =
       GetBtmState(GetDipsService(GetActiveWebContents()), url);
   ASSERT_TRUE(state_2.has_value());
-  EXPECT_FALSE(state_2->user_interaction_times.has_value());
+  EXPECT_FALSE(state_2->user_activation_times.has_value());
   EXPECT_NE(state_2->site_storage_times->second,
             state_2->site_storage_times->first);
   EXPECT_EQ(std::make_optional(time), state_2->site_storage_times->first);
@@ -460,15 +460,15 @@ IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
   std::optional<StateValue> state_initial =
       GetBtmState(GetDipsService(web_contents), GURL("http://a.test"));
   ASSERT_TRUE(state_initial.has_value());
-  ASSERT_TRUE(state_initial->user_interaction_times.has_value());
-  EXPECT_EQ(state_initial->user_interaction_times->first, interaction_time);
+  ASSERT_TRUE(state_initial->user_activation_times.has_value());
+  EXPECT_EQ(state_initial->user_activation_times->first, interaction_time);
 
   // Remove browsing data for the past day.
   ASSERT_TRUE(ClearBrowsingData(
       GetActiveWebContents()->GetBrowserContext()->GetBrowsingDataRemover(),
       base::Days(1)));
 
-  // Verify that the user interaction has been cleared from the DIPS DB.
+  // Verify that the user activation has been cleared from the DIPS DB.
   std::optional<StateValue> state_final =
       GetBtmState(GetDipsService(web_contents), GURL("http://a.test"));
   EXPECT_FALSE(state_final.has_value());
@@ -600,13 +600,13 @@ IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
   ASSERT_TRUE(state.has_value());
   ASSERT_THAT(state->stateful_bounce_times,
               Optional(Pair(old_bounce_time, old_bounce_time)));
-  ASSERT_EQ(state->user_interaction_times, std::nullopt);
+  ASSERT_EQ(state->user_activation_times, std::nullopt);
   // c.test:
   state = GetBtmState(GetDipsService(web_contents), GURL("http://c.test"));
   ASSERT_TRUE(state.has_value());
   ASSERT_THAT(state->stateful_bounce_times,
               Optional(Pair(recent_bounce_time, recent_bounce_time)));
-  ASSERT_EQ(state->user_interaction_times, std::nullopt);
+  ASSERT_EQ(state->user_activation_times, std::nullopt);
 
   // Remove browsing data for the past hour. This should include c.test but not
   // b.test.
@@ -672,14 +672,14 @@ IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest, SitesInOpenTabsAreExempt) {
   ASSERT_TRUE(b_state.has_value());
   ASSERT_THAT(b_state->stateful_bounce_times,
               Optional(Pair(bounce_time, bounce_time)));
-  ASSERT_EQ(b_state->user_interaction_times, std::nullopt);
+  ASSERT_EQ(b_state->user_activation_times, std::nullopt);
 
   std::optional<StateValue> c_state =
       GetBtmState(GetDipsService(web_contents), GURL("http://c.test"));
   ASSERT_TRUE(c_state.has_value());
   ASSERT_THAT(c_state->stateful_bounce_times,
               Optional(Pair(bounce_time, bounce_time)));
-  ASSERT_EQ(c_state->user_interaction_times, std::nullopt);
+  ASSERT_EQ(c_state->user_activation_times, std::nullopt);
 
   // Open b.test in a new tab.
   auto new_tab = OpenInNewTab(
@@ -734,7 +734,7 @@ IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
   ASSERT_TRUE(b_state.has_value());
   ASSERT_THAT(b_state->stateful_bounce_times,
               Optional(Pair(bounce_time, bounce_time)));
-  ASSERT_EQ(b_state->user_interaction_times, std::nullopt);
+  ASSERT_EQ(b_state->user_activation_times, std::nullopt);
 
   // Open b.test in a new tab.
   auto new_tab = OpenInNewTab(
@@ -785,7 +785,7 @@ IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
   ASSERT_TRUE(c_state.has_value());
   ASSERT_THAT(c_state->stateful_bounce_times,
               Optional(Pair(bounce_time, bounce_time)));
-  ASSERT_EQ(c_state->user_interaction_times, std::nullopt);
+  ASSERT_EQ(c_state->user_activation_times, std::nullopt);
 
   // Open c.test on a new tab in a new window/profile.
   Shell* another_window = Shell::CreateNewWindow(
