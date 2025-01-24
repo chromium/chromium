@@ -543,12 +543,7 @@ bool DawnSharedContext::Initialize(
   // of loading libraries, initializing backend, etc
 #ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
   dawn::native::DawnInstanceDescriptor dawn_instance_desc;
-  dawn_instance_desc.SetLoggingCallback(
-      [](wgpu::LoggingType type, wgpu::StringView message,
-         DawnSharedContext* context) {
-        DawnSharedContext::LogInfo(type, message, context);
-      },
-      this);
+  dawn_instance_desc.SetLoggingCallback(&DawnSharedContext::LogInfo, this);
   instance_ = webgpu::DawnInstance::Create(&platform_, gpu_preferences,
                                            webgpu::SafetyLevel::kUnsafe,
                                            &dawn_instance_desc);
@@ -729,16 +724,7 @@ bool DawnSharedContext::Initialize(
     return false;
   }
 
-#ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
-  // TODO(369445924): fix this code once the new callback type is about to be
-  // landed in dawn.
-  device_.SetLoggingCallback(
-      [this](wgpu::LoggingType type, wgpu::StringView message) {
-        DawnSharedContext::LogInfo(type, message, this);
-      });
-#else
   device_.SetLoggingCallback(&DawnSharedContext::LogInfo, this);
-#endif
 
   backend_type_ = backend_type;
   is_vulkan_swiftshader_adapter_ =
