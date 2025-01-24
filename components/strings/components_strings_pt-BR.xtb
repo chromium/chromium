@@ -638,6 +638,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2105838220373099643">Jogos de RPG</translation>
 <translation id="2107021941795971877">Compatibilidades de impressão</translation>
 <translation id="2108755909498034140">Reiniciar seu computador</translation>
+<translation id="2109845311767915560">Grupo de guias compartilhado</translation>
 <translation id="2111166930115883695">Pressione a barra de espaço para jogar</translation>
 <translation id="2113977810652731515">Cartão</translation>
 <translation id="2114841414352855701">Ignorado porque foi substituído por <ph name="POLICY_NAME" />.</translation>
@@ -910,7 +911,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="255497580849974774">Mantenha seu dispositivo conectado a um carregador durante a atualização.</translation>
 <translation id="2556876185419854533">&amp;Desfazer editar</translation>
 <translation id="2559566667529177711">Multicamadas</translation>
-<translation id="2565789370591907825">Bloqueio e uso do teclado</translation>
 <translation id="2570734079541893434">Gerenciar configurações</translation>
 <translation id="257136025287118539">O administrador está movendo seus arquivos para <ph name="CLOUD_PROVIDER" />. Você poderá modificar esses arquivos quando o upload for concluído.</translation>
 <translation id="2571488850200220306">Para garantir a segurança, o administrador também pode ver o SO do dispositivo, a versão do navegador e os softwares instalados</translation>
@@ -1108,7 +1108,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2974468223369775963">Não foi possível salvar o IBAN na sua Conta do Google. Ele foi salvo no Chrome neste dispositivo. O Chrome vai perguntar de novo na próxima vez que você usar esse IBAN.</translation>
 <translation id="297667759942911166">Colaborar em grupos de guias</translation>
 <translation id="2977665033722899841">Selecionado no momento: <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">Bloquear e usar o teclado</translation>
 <translation id="2978824962390592855">Ópera</translation>
 <translation id="2979424420072875974">Recursos para escritores</translation>
 <translation id="2979639724566107830">Abrir em uma nova janela</translation>
@@ -2092,6 +2091,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4704745399240123930">Os cartões não aceitos por esta loja, como os virtuais, estão desativados.</translation>
 <translation id="4708268264240856090">A conexão foi interrompida</translation>
 <translation id="4708276642004148190">Fornecimento e tratamento de água</translation>
+<translation id="4711628883879888561">Colaborar no grupo de guias</translation>
 <translation id="471880041731876836">Você não tem permissão para visitar este site</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Executar o Diagnóstico de Rede do Windows<ph name="END_LINK" /></translation>
@@ -2464,6 +2464,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5363532265530011914">Meias e meias-calças</translation>
 <translation id="5371425731340848620">Atualizar cartão</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> mudou uma guia</translation>
+<translation id="5374324662289354619">As páginas de depuração internas estão desativadas no momento.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Seu relógio está atrasado", "Seu relógio está adiantado" ou "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Para acessar essa senha em todos os seus dispositivos, confirme sua identidade</translation>
@@ -2698,6 +2699,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="578305955206182703">Âmbar</translation>
 <translation id="5783700460098783980">Bagagens e acessórios de viagem</translation>
 <translation id="57838592816432529">Desativar som</translation>
+<translation id="5783922175933467571">O link do grupo de guias <ph name="TAB_GROUP_DISPLAY_NAME" /> expira em 48 horas.</translation>
 <translation id="5784606427469807560">Ocorreu um problema ao confirmar seu cartão. Verifique a conexão com a Internet e tente novamente.</translation>
 <translation id="5785756445106461925">Além disso, esta página inclui outros recursos que não são seguros. Esses recursos podem ser visualizados por outros usuários enquanto eles navegam e podem ser modificados por um invasor para alterar o comportamento da página.</translation>
 <translation id="5793317771769868848">A forma de pagamento será excluída do dispositivo</translation>
@@ -2770,6 +2772,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5930147475897662863">Ative essa configuração para usar o recurso Quero ajuda para escrever</translation>
 <translation id="593102073240001326">Aprenda a fazer, faça você mesmo e conteúdo profissional</translation>
 <translation id="5932224571077948991">No site, há exibição de anúncios invasivos ou enganosos</translation>
+<translation id="5933597524153120073">Abrir todos (<ph name="ITEMS" />) em uma nova janela</translation>
 <translation id="5937560539988385583">Página traduzida</translation>
 <translation id="5938153366081463283">Adicionar cartão virtual</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3042,6 +3045,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6394852772105848029">Este site quer abrir o app <ph name="APP_NAME" /></translation>
 <translation id="639673288733510393">Scooters e mobiletes</translation>
 <translation id="6398765197997659313">Sair do modo tela cheia</translation>
+<translation id="6399633237874954301">Leitor de cartão inteligente permitido pelo administrador</translation>
 <translation id="6401136357288658127">Essa política está obsoleta. Use a política <ph name="NEW_POLICY" />.</translation>
 <translation id="640163077447496506">Expira hoje</translation>
 <translation id="6402537308870515461">Revise antes de mover os arquivos</translation>
@@ -4103,7 +4107,6 @@ Mais detalhes:
 <translation id="8278544367771164040">Empréstimo comercial</translation>
 <translation id="8279290844152565425">Shows e festivais de música</translation>
 <translation id="8279611986089885641">As notificações do Chrome precisam estar ativadas. Faça isso nas <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
-<translation id="8280387559022105172">Bloquear o teclado?</translation>
 <translation id="8280630997017109758">Bandeja 11</translation>
 <translation id="8281730697546299650">Outros recursos de privacidade de anúncios disponíveis</translation>
 <translation id="8281886186245836920">Pular</translation>
@@ -4173,7 +4176,6 @@ Mais detalhes:
 <translation id="8398335999901363925">Formas de pagamento disponíveis para preenchimento com um toque abertas na altura máxima.</translation>
 <translation id="8398446215576328011">Reverter políticas aplicadas</translation>
 <translation id="8398790343843005537">Encontrar seu smartphone</translation>
-<translation id="8399276468426899527">bloqueio e uso do teclado</translation>
 <translation id="8400929824946688748">Empregos e educação</translation>
 <translation id="8402442052798347631">Invasores no site que você tentou acessar podem induzir você a instalar softwares nocivos que afetam a navegação, por exemplo, ao mudar sua página inicial ou mostrar mais anúncios nos sites que você visita. O Chrome recomenda voltar a uma página segura para evitar danos. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais sobre este aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Fanfiction</translation>

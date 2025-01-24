@@ -185,6 +185,7 @@
 <translation id="1310938305420497484">Прво отворите картице и посетите сајтове</translation>
 <translation id="1314311879718644478">Прегледајте садржај са проширеном реалношћу</translation>
 <translation id="1314509827145471431">Повез на десној страни</translation>
+<translation id="1314784609072437689">замена уноса са тастатуре</translation>
 <translation id="1316805916535763484">Отворени онлајн курсеви</translation>
 <translation id="1318023360584041678">Сачувано је у групи картица</translation>
 <translation id="1319245136674974084">Не питај поново за ову апликацију</translation>
@@ -911,7 +912,6 @@
 <translation id="255497580849974774">Нека уређај буде повезан са пуњачем током ажурирања.</translation>
 <translation id="2556876185419854533">&amp;Опозови измену</translation>
 <translation id="2559566667529177711">Више слојева</translation>
-<translation id="2565789370591907825">Закључавање и коришћење тастатуре</translation>
 <translation id="2570734079541893434">Управљајте подешавањима</translation>
 <translation id="257136025287118539">Администратор премешта фајлове у <ph name="CLOUD_PROVIDER" />. Можете да измените ове фајлове када се отпремање заврши.</translation>
 <translation id="2571488850200220306">Из безбедносних разлога уређај може да види и ОС уређаја, верзију прегледача и који софтвер је инсталиран</translation>
@@ -1109,7 +1109,6 @@
 <translation id="2974468223369775963">Овај IBAN није сачуван на Google налогу. Уместо тога, сачуван је у Chrome-у на овом уређају. Chrome ће вас поново питати следећи пут када користите овај IBAN.</translation>
 <translation id="297667759942911166">Сарађујте у групама картица</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, тренутно изабрано. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">закључа и користи тастатуру</translation>
 <translation id="2978824962390592855">Опера</translation>
 <translation id="2979424420072875974">Ресурси за писце</translation>
 <translation id="2979639724566107830">Отворите у новом прозору</translation>
@@ -2466,6 +2465,7 @@
 <translation id="5363532265530011914">Чарапе</translation>
 <translation id="5371425731340848620">Ажурирајте картицу</translation>
 <translation id="537425196847960924">Корисник <ph name="USER_DISPLAY_NAME" /> је променио картицу</translation>
+<translation id="5374324662289354619">Странице за интерно отклањање грешака су тренутно онемогућене.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Сат касни“ или „Сат жури“ или „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;“</translation>
 <translation id="5379618281582508161">Да бисте добили ову лозинку на свим уређајима, потврдите свој идентитет</translation>
@@ -2920,6 +2920,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome аутоматски ограничава колачиће треће стране</translation>
 <translation id="6188479691141473408">и још <ph name="N_FIELDS" /> поља</translation>
+<translation id="6190518157737269631">Замена уноса неких тастера на тастатури, као што је Esc</translation>
 <translation id="6194209731893739467">Погледајте све производе које пратите овде</translation>
 <translation id="6195163219142236913">Колачићи треће стране су ограничени</translation>
 <translation id="6195371403461054755">Геологија</translation>
@@ -4107,7 +4108,6 @@
 <translation id="8278544367771164040">Комерцијално позајмљивање</translation>
 <translation id="8279290844152565425">Концерти и музички фестивали</translation>
 <translation id="8279611986089885641">Chrome обавештења морају да буду укључена. Можете да их укључите у одељку <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
-<translation id="8280387559022105172">Желите да закључате тастатуру?</translation>
 <translation id="8280630997017109758">11. фиока</translation>
 <translation id="8281730697546299650">Остале функције за приватност са огласима су сада доступне</translation>
 <translation id="8281886186245836920">Прескочи</translation>
@@ -4177,7 +4177,6 @@
 <translation id="8398335999901363925">Начини плаћања доступни за унос додиром отворени су у пуној висини.</translation>
 <translation id="8398446215576328011">Врати примењиве смернице</translation>
 <translation id="8398790343843005537">Пронађи телефон</translation>
-<translation id="8399276468426899527">закључавање и коришћење тастатуре</translation>
 <translation id="8400929824946688748">Послови и образовање</translation>
 <translation id="8402442052798347631">Нападачи на сајту који сте пробали да посетите могу да вас преваре да инсталирате штетан софтвер који утиче на начин на који прегледате – на пример, тако што ће променити почетну страницу или вам приказивати додатне огласе на сајтовима које посећујете. Chrome искрено препоручује да се вратите на безбедно како не би било штете. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више о овом упозорењу<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Дела поклоника чувених ликова</translation>
@@ -4195,6 +4194,7 @@
 <translation id="8421158157346464398">Информације о пословном профилу (попут корисничког имена за пословни профил)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Промени</translation>
+<translation id="8426945547715537628">Желите ли да дозволите замену уноса са тастатуре?</translation>
 <translation id="8427848540066057481">500×750 mm</translation>
 <translation id="8428213095426709021">Подешавања</translation>
 <translation id="8428634594422941299">Важи</translation>
@@ -4281,6 +4281,7 @@
 <translation id="8574841453995331336">Фрижидери и замрзивачи</translation>
 <translation id="8577192028579836704">Све опције су обично <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Виртуелна картица није доступна</translation>
+<translation id="8579000896558714521">Замена уноса са тастатуре</translation>
 <translation id="8580265901435899937">Туристичке дестинације</translation>
 <translation id="8581064022803799721">Ова страница је сачувана у: <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Опрема за сквош и рекетбол</translation>

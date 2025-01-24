@@ -22,7 +22,7 @@
 
 constexpr char kTestProfileName[] = "user@gmail.com";
 constexpr char16_t kTestProfileName16[] = u"user@gmail.com";
-constexpr char kTestGaiaId[] = "1234567890";
+constexpr GaiaId::Literal kTestGaiaId("1234567890");
 
 class AmbientClientImplTest : public testing::Test {
  public:
@@ -102,28 +102,28 @@ class AmbientClientImplTest : public testing::Test {
 
 TEST_F(AmbientClientImplTest, AllowedByPrimaryUser) {
   AddAndLoginUser(AccountId::FromUserEmailGaiaId(
-      profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
+      profile()->GetProfileUserName(), kTestGaiaId));
   EXPECT_TRUE(ash::AmbientClient::Get()->IsAmbientModeAllowed());
 }
 
 TEST_F(AmbientClientImplTest, DisallowedByNonPrimaryUser) {
   AddAndLoginUser(
-      AccountId::FromUserEmailGaiaId("user2@gmail.com", GaiaId(kTestGaiaId)));
+      AccountId::FromUserEmailGaiaId("user2@gmail.com", kTestGaiaId));
   AddAndLoginUser(AccountId::FromUserEmailGaiaId(
-      profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
+      profile()->GetProfileUserName(), kTestGaiaId));
   EXPECT_FALSE(ash::AmbientClient::Get()->IsAmbientModeAllowed());
 }
 
 TEST_F(AmbientClientImplTest, DisallowedByEmailDomain) {
-  AddAndLoginUser(AccountId::FromUserEmailGaiaId("user@gmailtest.com",
-                                                 GaiaId(kTestGaiaId)));
+  AddAndLoginUser(
+      AccountId::FromUserEmailGaiaId("user@gmailtest.com", kTestGaiaId));
   EXPECT_FALSE(ash::AmbientClient::Get()->IsAmbientModeAllowed());
 }
 
 TEST_F(AmbientClientImplTest, DownloadImage) {
   identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
   AddAndLoginUser(AccountId::FromUserEmailGaiaId(
-      profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
+      profile()->GetProfileUserName(), kTestGaiaId));
   ambient_client().DownloadImage("test_url", base::DoNothing());
   base::RunLoop().RunUntilIdle();
 
@@ -136,7 +136,7 @@ TEST_F(AmbientClientImplTest, DownloadImage) {
 TEST_F(AmbientClientImplTest, DownloadImageMultipleTimes) {
   identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
   AddAndLoginUser(AccountId::FromUserEmailGaiaId(
-      profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
+      profile()->GetProfileUserName(), kTestGaiaId));
   // make sure multiple images can download at the same time.
   ambient_client().DownloadImage("test_url_1", base::DoNothing());
   ambient_client().DownloadImage("test_url_2", base::DoNothing());

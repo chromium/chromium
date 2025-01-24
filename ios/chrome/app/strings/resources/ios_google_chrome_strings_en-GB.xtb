@@ -183,7 +183,6 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
 <translation id="5998675059699164418">Your organisation requires you to sign in to use Chrome.</translation>
 <translation id="6021312115739110405">A custom feed made for you by Google. Including news, sports and weather.</translation>
 <translation id="6022659036123304283">Make Chrome your own</translation>
-<translation id="6110625574506755980">Some Chrome features won’t be available anymore.</translation>
 <translation id="6132149203299792222">Sign in with your Google Account to sync your passwords, bookmarks and more.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Search in Chrome</translation>
@@ -289,7 +288,6 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="8317674518145175158">Payment methods and addresses won't be encrypted. Browsing history from Chrome won't sync.
 
 Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your account<ph name="END_LINK" />.</translation>
-<translation id="8357607116237445042">Choose whether to clear your Chrome data from this device or keep it</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="8371138994040262994">Opens the settings in Chrome.</translation>
 <translation id="8387459386171870978">Continue using Chrome</translation>

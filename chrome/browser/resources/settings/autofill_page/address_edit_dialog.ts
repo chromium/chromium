@@ -297,7 +297,7 @@ export class SettingsAddressEditDialogElement extends
     return !!this.accountInfo?.isEligibleForAddressAccountStorage;
   }
 
-  private getAccountAddressRecordTypeNotice_(): string|undefined {
+  private getAccountAddressRecordTypeNotice_(): string {
     if (this.accountInfo) {
       return this.i18n(
           this.address.guid ? 'editAccountAddressRecordTypeNotice' :
@@ -305,7 +305,7 @@ export class SettingsAddressEditDialogElement extends
           this.accountInfo.email);
     }
 
-    return undefined;
+    return '';
   }
 
   /**

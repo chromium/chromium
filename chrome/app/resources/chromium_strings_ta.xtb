@@ -399,7 +399,6 @@
 <translation id="6455857529632101747">Chromium சுயவிவரங்களுக்கு வரவேற்கிறோம்</translation>
 <translation id="6466344609055215035">Chromiumமில் இருந்து கணக்கை அகற்று</translation>
 <translation id="6475912303565314141">Chromium ஐத் தொடங்கும்போது காண்பிக்கப்படும் பக்கத்தையும் இது கட்டுப்படுத்துகிறது.</translation>
-<translation id="648062525172759633">இந்தப் பக்கங்கள் Chromium டெவெலப்பர்களுக்கானவை. இவை தொடர்ச்சியாகப் பராமரிக்கப்படாமலோ பரிசோதிக்கப்படாமலோ இருக்கலாம். இவற்றை இயக்க, <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> பக்கத்திற்குச் சென்று, பிழைதிருத்துதல் பக்கங்களை இயக்குவதற்கான பட்டனைக் கிளிக் செய்யவும். பிறகு, இந்தப் பக்கத்திற்குத் திரும்ப வரவும்.</translation>
 <translation id="648319183876919572">ஆபத்தான இணையதளங்கள், பதிவிறக்கங்களில் இருந்து உங்களைப் பாதுகாக்க மேம்பட்ட பாதுகாப்பு உலாவல் அம்சம் பலவற்றைச் செய்கிறது</translation>
 <translation id="6510925080656968729">Chromium ஐ நிறுவல் நீக்கு</translation>
 <translation id="651535675648445253">ஷார்ட்கட்கள் Chromiumமில் திறக்கும்</translation>
@@ -533,7 +532,6 @@
 <translation id="8313851650939857356">துவக்கப் பிழை: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Chromium <ph name="TIMEOUT_DURATION" /> பயன்படுத்தப்படாமல் இருந்தால் உங்கள் நிறுவனம் அதை மூடிவிடும்.</translation>
 <translation id="8321888067342493336">படமாகச் சேமி</translation>
-<translation id="8326785589245660814">உங்கள் கணக்கில் உள்ள Chromium தரவை அழியுங்கள்</translation>
 <translation id="8330519371938183845">உங்கள் எல்லாச் சாதனங்களிலும் Chromiumஐ ஒத்திசைக்க மற்றும் தனிப்பயனாக்க, உள்நுழையவும்</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> ஏற்கனவே Chromiumஐப் பயன்படுத்திக் கொண்டிருந்தது</translation>
 <translation id="8359544530202147897">உங்கள் Google கணக்கில் (<ph name="ACCOUNT_EMAIL" />) உள்ள Chromium தரவைத் தொடர்ந்து பயன்படுத்த Chromiumமைப் புதுப்பிக்கவும்</translation>

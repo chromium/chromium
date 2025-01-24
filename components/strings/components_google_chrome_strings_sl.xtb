@@ -10,6 +10,7 @@
 <translation id="2447485272386224171">Chrome omogočajo odprtokodni projekt <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> in druga <ph name="BEGIN_LINK_OSS" />odprtokodna programska oprema<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Chromov logotip</translation>
 <translation id="3444832043240812445">Ta stran prikazuje informacije o zadnjih zrušitvah, samo če <ph name="BEGIN_LINK" />omogočite poročanje o zrušitvah<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Te strani so namenjene razvijalcem za Chrome in morda niso aktivno vzdrževane ali preizkušane. Če jih želite omogočiti, odprite <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknite gumb, da omogočite strani za odpravljanje napak, in se znova pomaknite na to stran.</translation>
 <translation id="3875312571075912821">V nastavitvah požarnega zidu ali protivirusnega programa omogočite Chromu dostop do
         omrežja.</translation>
 <translation id="5005121315113832363">To stran je blokiral Chrome.</translation>

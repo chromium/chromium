@@ -33,7 +33,7 @@ namespace {
 
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
 const AccountId account_id =
-    AccountId::FromUserEmailGaiaId(kFakeTestEmail, GaiaId(kFakeTestEmail));
+    AccountId::FromUserEmailGaiaId(kFakeTestEmail, GaiaId("1111"));
 
 class TestKeyboardBacklightObserver
     : public ash::personalization_app::mojom::KeyboardBacklightObserver {

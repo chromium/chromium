@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">yeşil</translation>
 <translation id="225692081236532131">Etkinleştirme durumu</translation>
 <translation id="2267285889943769271">Ekran görüntüsü ekle</translation>
+<translation id="2268044343513325586">Hassaslaştır</translation>
 <translation id="2271469253353559191">Koyu mod programı</translation>
 <translation id="2276999893457278469">En çok görüntülenen yardım içeriği</translation>
 <translation id="2277631741861284101">Sesinizi kolayca kaydedip paylaşın</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">Tarayıcılar aranıyor</translation>
 <translation id="3226657629376379887">Düzen işlemleri menüsü</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> değerini <ph name="CONVERSION_RATE" /> değerine böl</translation>
-<translation id="3237710083340813756">Yeniden yaz</translation>
 <translation id="3246869037381808805">1 günden daha eski yazdırma işleri kaldırılır</translation>
 <translation id="324961752321393509">Yöneticiniz bu uygulamanın kapatılmasına izin vermiyor</translation>
 <translation id="3263941347294171263">Güncelleme işlemine devam etmek için <ph name="DEVICE_NAME" /> cihazını çıkarıp tekrar takın</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> güncelleniyor</translation>
 <translation id="346423161771747987">Mevcut güç tüketimi</translation>
 <translation id="346539236881580388">Tekrar çek</translation>
+<translation id="3479552764303398839">Şimdi değil</translation>
 <translation id="3484914941826596830">Donanım yazılımı güncellenirken bu harici cihazı çıkarmayın ya da bilgisayarınızı kapatmayın. Bu pencereyi simge durumuna küçültebilirsiniz. Güncelleme birkaç dakika sürebilir ve bu süre boyunca harici cihazınız çalışmayabilir.</translation>
 <translation id="3486220673238053218">tanım</translation>
 <translation id="3487866404496702283">Mahi özelliği ile ilgili geri bildirim</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">Ses seviyesini ayarla</translation>
 <translation id="3767737419527918477">Kayıt dosyalarını ara</translation>
 <translation id="3771294271822695279">Video Dosyaları</translation>
+<translation id="3771694256347217732">Google Hizmet Şartları</translation>
 <translation id="3780740315729837296">Klavye tuşu atayın</translation>
 <translation id="3784455785234192852">Kilitle</translation>
 <translation id="3785643128701396311">piksel sanatı</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) HTTP Gecikmesi</translation>
 <translation id="6078323886959318429">Kısayol ekle</translation>
 <translation id="6091080061796993741">sarı</translation>
-<translation id="6093853427925392522">Erişiminizi kaybetmeden önce okul hesabı verilerinizi kişisel hesabınıza taşımak için Google'ın İçerik Aktarımı uygulamasını kullandığınızdan emin olun.</translation>
 <translation id="6104112872696127344">Tarama iptal edildi</translation>
 <translation id="6106186594183574873">Bitirmek için eski şifrenizi girin</translation>
 <translation id="6108689792487843350">Ağ geçidine ulaşılamıyor</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">Kısayol araması yapın</translation>
 <translation id="7138614237884624401">Basitleştirilmiş metin</translation>
 <translation id="7138668887584231801">Özetleyecek yeterli kelime yok</translation>
-<translation id="7141470099673912333">İçerik Aktarımı</translation>
 <translation id="7143207342074048698">Bağlanıyor</translation>
 <translation id="7144878232160441200">Yeniden dene</translation>
 <translation id="7144954474087165241">pagoda</translation>
@@ -1541,7 +1541,6 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8261506727792406068">Sil</translation>
 <translation id="8262870577632766028">1 saat</translation>
 <translation id="827422111966801947">Çivit Mavisi</translation>
-<translation id="8281886186245836920">Atla</translation>
 <translation id="8286154143153872371">Duvar kağıdını görmek için lütfen bir ağa bağlanıp sayfayı yeniden yükleyin.</translation>
 <translation id="8291967909914612644">Ev sağlayıcısının ülkesi</translation>
 <translation id="8294431847097064396">Kaynak</translation>
@@ -1646,6 +1645,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8797082062139985406">Google Yapay Zeka'yı kullanarak ad oluşturun</translation>
 <translation id="8798099450830957504">Varsayılan</translation>
 <translation id="8798441408945964110">Sağlayıcı adı</translation>
+<translation id="8804164990146287819">Gizlilik Politikası</translation>
 <translation id="8808828119384186784">Chrome Ayarları</translation>
 <translation id="8814190375133053267">Kablosuz Ağ</translation>
 <translation id="8818152010000655963">Duvar kağıdı</translation>

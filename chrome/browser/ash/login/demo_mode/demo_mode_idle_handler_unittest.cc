@@ -34,7 +34,7 @@ const base::TimeDelta kReLuanchDemoAppIdleDuration = base::Seconds(90);
 
 const char kUser[] = "user@gmail.com";
 const AccountId kAccountId =
-    AccountId::FromUserEmailGaiaId(kUser, GaiaId(kUser));
+    AccountId::FromUserEmailGaiaId(kUser, GaiaId("1111"));
 constexpr SkColor kWallpaperColor = SK_ColorMAGENTA;
 
 }  // namespace

@@ -40,7 +40,7 @@ namespace ash {
 namespace {
 
 constexpr char kTestUser1[] = "test-user1@gmail.com";
-constexpr char kTestUser1GaiaId[] = "test-user1@gmail.com";
+constexpr GaiaId::Literal kTestUser1GaiaId("test-user1@gmail.com");
 
 // HTML Elements
 constexpr char kResetScreen[] = "reset";
@@ -151,7 +151,7 @@ class ResetTest : public OobeBaseTest, public LocalStateMixin::Delegate {
 
  private:
   LoginManagerMixin::TestUserInfo test_user_{
-      AccountId::FromUserEmailGaiaId(kTestUser1, GaiaId(kTestUser1GaiaId))};
+      AccountId::FromUserEmailGaiaId(kTestUser1, kTestUser1GaiaId)};
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {test_user_}};
   system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };

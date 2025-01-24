@@ -911,7 +911,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="255497580849974774">Med posodabljanjem naj bo naprava priključena na polnilnik.</translation>
 <translation id="2556876185419854533">&amp;Razveljavi urejanje</translation>
 <translation id="2559566667529177711">Multi-Layer</translation>
-<translation id="2565789370591907825">Zaklepanje in uporaba tipkovnice</translation>
 <translation id="2570734079541893434">Upravljanje nastavitev</translation>
 <translation id="257136025287118539">Skrbnik premika datoteke v storitev <ph name="CLOUD_PROVIDER" />. Ko bo nalaganje končano, boste te datoteke lahko spremenili.</translation>
 <translation id="2571488850200220306">Zaradi zagotavljanja varnosti so morda vidni tudi operacijski sistem naprave, različica brskalnika in nameščena programska oprema</translation>
@@ -1109,7 +1108,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2974468223369775963">Te številke IBAN ni bilo mogoče shraniti v računu Google. Namesto tega je shranjena v Chromu v tej napravi. Chrome vas bo ob naslednji uporabi te številke IBAN znova vprašal.</translation>
 <translation id="297667759942911166">Sodelujte v skupinah zavihkov</translation>
 <translation id="2977665033722899841">Trenutno izbrano: <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">Zakleniti in uporabiti tipkovnico</translation>
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Viri za pisatelje</translation>
 <translation id="2979639724566107830">Odpri v novem oknu</translation>
@@ -2466,6 +2464,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5363532265530011914">Nogavice in pletenine</translation>
 <translation id="5371425731340848620">Posodobite kartico</translation>
 <translation id="537425196847960924">Oseba <ph name="USER_DISPLAY_NAME" /> je spremenila zavihek</translation>
+<translation id="5374324662289354619">Notranje strani za odpravljanje napak so trenutno onemogočene.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">Ura zaostaja« ali »Ura prehiteva« ali »&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;«</translation>
 <translation id="5379618281582508161">Če želite imeti to geslo v vseh napravah, potrdite, da ste to vi</translation>
@@ -3046,6 +3045,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6394852772105848029">To spletno mesto želi odpreti aplikacijo <ph name="APP_NAME" />.</translation>
 <translation id="639673288733510393">Skuterji in mopedi</translation>
 <translation id="6398765197997659313">Izhod iz celozaslonskega načina</translation>
+<translation id="6399633237874954301">Bralnik pametnih kartic, ki ga je dovolil skrbnik</translation>
 <translation id="6401136357288658127">Ta pravilnik je zastarel. Uporabite pravilnik <ph name="NEW_POLICY" />.</translation>
 <translation id="640163077447496506">Poteče danes</translation>
 <translation id="6402537308870515461">Pred premikom je zahtevan pregled</translation>
@@ -4107,7 +4107,6 @@ Dodatne podrobnosti:
 <translation id="8278544367771164040">Komercialna posojila</translation>
 <translation id="8279290844152565425">Koncerti in glasbeni festivali</translation>
 <translation id="8279611986089885641">Obvestila v Chromu morajo biti vklopljena. Vklopite jih lahko tukaj: <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
-<translation id="8280387559022105172">Želite zakleniti tipkovnico?</translation>
 <translation id="8280630997017109758">Pladenj 11</translation>
 <translation id="8281730697546299650">Zdaj so na voljo druge funkcije za zasebnost pri oglaševanju</translation>
 <translation id="8281886186245836920">Preskoči</translation>
@@ -4177,7 +4176,6 @@ Dodatne podrobnosti:
 <translation id="8398335999901363925">Plačilna sredstva, ki jih je mogoče izpolniti z dotikom, odprta pri polni višini.</translation>
 <translation id="8398446215576328011">Razveljavi uporabljene pravilnike</translation>
 <translation id="8398790343843005537">Poiščite telefon</translation>
-<translation id="8399276468426899527">zaklepanje in uporaba tipkovnice</translation>
 <translation id="8400929824946688748">Zaposlitev in izobrazba</translation>
 <translation id="8402442052798347631">Napadalci vas lahko na spletnem mestu, ki ste ga poskušali obiskati, zavedejo, da namestite škodljivo programsko opremo, ki vpliva na vaš način brskanja – na primer tako, da spremenijo vašo domačo stran ali vam na spletnih mestih, ki jih obiščete, prikazujejo dodatne oglase. Chrome močno priporoča, da se vrnete na varno, da se izognete škodi. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem opozorilu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Zgodbe, ki jih pišejo navdušenci</translation>

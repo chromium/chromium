@@ -16,6 +16,6 @@ export function getHtml(this: HistoryEmbeddingsResultImageElement) {
     </svg>
 
     <img id="image" is="cr-auto-img" auto-src="${this.imageUrl_}"
-        .hidden="${!this.hasImage}" alt=""></img>
+        ?hidden="${!this.hasImage}" alt="">
   `;
 }

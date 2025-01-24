@@ -183,7 +183,6 @@ Počakajte nekaj minut, preden preklopite račun. Če zdaj preklopite med račun
 <translation id="5998675059699164418">Vaša organizacija zahteva, da se za uporabo Chroma prijavite.</translation>
 <translation id="6021312115739110405">Vir po meri, ki ga je za vas ustvaril Google. Vključuje novice, šport in vreme.</translation>
 <translation id="6022659036123304283">Prilagodite si Chrome</translation>
-<translation id="6110625574506755980">Nekatere Chromove funkcije ne bodo več na voljo.</translation>
 <translation id="6132149203299792222">Prijavite se z računom Google, če želite sinhronizirati gesla, zaznamke in drugo.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Iskanje v Chromu</translation>
@@ -289,7 +288,6 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma
 <translation id="8317674518145175158">Plačilna sredstva in naslovi ne bodo šifrirani. Zgodovina brskanja v Chromu se ne bo sinhronizirala.
 
 Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni poslano Googlu in ga Google ne hrani. Če pozabite geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
-<translation id="8357607116237445042">Izberite, ali želite izbrisati podatke v Chromu iz te naprave ali jih obdržati.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Vse pravice pridržane.</translation>
 <translation id="8371138994040262994">V Chromu odpre nastavitve.</translation>
 <translation id="8387459386171870978">Še naprej uporabljaj Chrome</translation>

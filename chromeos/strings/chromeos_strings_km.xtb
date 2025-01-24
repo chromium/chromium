@@ -296,7 +296,9 @@
 <translation id="2240366984605217732">ប៊ូតុងបិទបើក​ប្លង់</translation>
 <translation id="2244834438220057800">បៃតង</translation>
 <translation id="225692081236532131">ស្ថានភាពនៃការធ្វើឲ្យសកម្ម</translation>
+<translation id="2265792117169966196">ជ្រើសរើស និងទាញយកគំរូ​ប្រតិចារឹកជាភាសា<ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">បញ្ចូល​រូបថត​អេក្រង់</translation>
+<translation id="2268044343513325586">សម្រាំង</translation>
 <translation id="2271469253353559191">កាលវិភាគ​មុខងារ​ងងឹត</translation>
 <translation id="2276999893457278469">ខ្លឹមសារ​ជំនួយ​ពេញនិយម</translation>
 <translation id="2277631741861284101">ថត និងចែករំលែកសំឡេងរបស់អ្នកយ៉ាងងាយស្រួល</translation>
@@ -464,7 +466,6 @@
 <translation id="3226405216343213872">កំពុងរកមើលម៉ាស៊ីនស្កេន</translation>
 <translation id="3226657629376379887">ម៉ឺនុយសកម្មភាព​ប្លង់​</translation>
 <translation id="3227186760713762082">ចែក​តម្លៃ<ph name="CATEGORY_TEXT" />នឹង <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">សរសេរឡើងវិញ</translation>
 <translation id="3246869037381808805">កិច្ចការបោះពុម្ពដែលចាស់ជាង 1 ថ្ងៃនឹងត្រូវលុបចេញ</translation>
 <translation id="324961752321393509">អ្នកគ្រប់គ្រងរបស់អ្នកមិនអនុញ្ញាតឱ្យបិទកម្មវិធីនេះទេ</translation>
 <translation id="3263941347294171263">ដករួចដោតខ្សែ <ph name="DEVICE_NAME" /> វិញ ដើម្បីបន្តដំណើរការដំឡើងកំណែ</translation>
@@ -509,6 +510,7 @@
 <translation id="3462187165860821523">កំពុង​ដំឡើងកំណែ <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">បច្ចុប្បន្ន</translation>
 <translation id="346539236881580388">ថតឡើងវិញ</translation>
+<translation id="3479552764303398839">មិនមែនឥឡូវនេះទេ</translation>
 <translation id="3484914941826596830">សូមកុំដកឧបករណ៍ខាងក្រៅនេះ ឬបិទកុំព្យូទ័ររបស់អ្នក ពេលកំពុងដំឡើងកំណែកម្មវិធី​បង្កប់។ អ្នកអាចបង្រួមវិនដូនេះបាន។ ការដំឡើងកំណែនេះអាចចំណាយពេលពីរបីនាទី ហើយឧបករណ៍ខាងក្រៅរបស់អ្នកអាចមិនដំណើរការនៅអំឡុងពេលនេះទេ។</translation>
 <translation id="3486220673238053218">និយមន័យ</translation>
 <translation id="3487866404496702283">មតិកែលម្អសម្រាប់មុខងារ mahi</translation>
@@ -567,6 +569,7 @@
 <translation id="3763034084412196440">កែតម្រូវ​កម្រិត​សំឡេង</translation>
 <translation id="3767737419527918477">ស្វែងរកឯកសារសំឡេងថត</translation>
 <translation id="3771294271822695279">ឯកសារវីដេអូ</translation>
+<translation id="3771694256347217732">លក្ខខណ្ឌប្រើប្រាស់ Google</translation>
 <translation id="3780740315729837296">ចាត់តាំង​គ្រាប់ចុច​លើក្ដារចុច</translation>
 <translation id="3784455785234192852">ចាក់សោរ</translation>
 <translation id="3785643128701396311">រូបសិល្បៈភីកសែល</translation>
@@ -772,6 +775,7 @@
 <translation id="473775607612524610">ធ្វើបច្ចុប្បន្នភាព</translation>
 <translation id="4744944742468440486">ព័ត៌មានពាក់ព័ន្ធនឹងការជ្រើសរើសរបស់អ្នក</translation>
 <translation id="4750394297954878236">ការផ្តល់យោបល់</translation>
+<translation id="4763771683769971829">បញ្ជីភាសាដែលអាចប្រើបាន</translation>
 <translation id="4771607256327216405">ក្ដារចុចភ្លឺជាងមុន</translation>
 <translation id="4771923071974529837">ថ្ងៃស្អែក</translation>
 <translation id="4773299976671772492">បានឈប់</translation>
@@ -853,6 +857,7 @@
 <translation id="5095761549884461003">ដក​ខ្សែ USB <ph name="DEVICE_NAME" /> រួចដោតវា​ចូលម្ដង​ទៀត ដើម្បីបន្ត​ដំណើរការ​ដំឡើងកំណែ</translation>
 <translation id="5099354524039520280">ឡើងលើ</translation>
 <translation id="5107243100836678918">ផ្លូវកាត់​ដែលគ្មានគ្រាប់ចុច<ph name="META_KEY" />ប្រហែលជា​ជាន់គ្នា​ជាមួយ​ផ្លូវកាត់​របស់កម្មវិធី​មួយចំនួន។ សូមចុច​ផ្លូវកាត់នេះ​ម្ដងទៀត ដើម្បីបន្ត​ប្រើប្រាស់​វា ឬចុច​ផ្លូវកាត់ថ្មី​ដោយប្រើគ្រាប់ចុច<ph name="KEY" />។ <ph name="LINK_BEGIN" />ស្វែងយល់​បន្ថែម<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399">មិនអាច​ទាញយកគំរូប្រតិចារឹកជាភាសា<ph name="LANGUAGE_NAME" />បានទេ។ សូម​ព្យាយាម​ម្ដងទៀត ឬ​ចាប់ផ្ដើម Chromebook របស់អ្នក​ឡើងវិញ</translation>
 <translation id="5108781503443873320">ស្រដៀង៖</translation>
 <translation id="5121677070210013200">មិនអាច​ទាញយក​គំរូ​ប្រតិចារឹក​បានទេ។ សូម​ព្យាយាម​ម្ដងទៀត ឬ​ចាប់ផ្ដើម Chromebook របស់អ្នក​ឡើងវិញ។</translation>
 <translation id="5130848777448318809">កូនសេះ</translation>
@@ -1053,7 +1058,6 @@
 <translation id="6075872808778243331">(Android) ការពន្យារ HTTP</translation>
 <translation id="6078323886959318429">បន្ថែម​ផ្លូវកាត់</translation>
 <translation id="6091080061796993741">លឿង</translation>
-<translation id="6093853427925392522">សូមប្រាកដថាត្រូវប្រើប្រាស់កម្មវិធីផ្ទេរខ្លឹមសាររបស់ Google ដើម្បីផ្លាស់ទីទិន្នន័យគណនីសាលារៀនរបស់អ្នកទៅគណនីផ្ទាល់ខ្លួនរបស់អ្នក មុនពេលអ្នកបាត់បង់សិទ្ធិចូលប្រើ។</translation>
 <translation id="6104112872696127344">បានបោះបង់ការស្កេនហើយ</translation>
 <translation id="6106186594183574873">ដើម្បី​បញ្ចប់ សូម​បញ្ចូល​ពាក្យសម្ងាត់​ចាស់​របស់អ្នក</translation>
 <translation id="6108689792487843350">មិនអាចភ្ជាប់ជាមួយច្រកបានទេ</translation>
@@ -1277,6 +1281,7 @@
 <translation id="7049916119678019302">ទាញយក​គំរូ​ប្រតិចារឹក​នៅក្នុង "ការកំណត់"</translation>
 <translation id="7058278511608979688">បញ្ចប់ និងរក្សាទុក</translation>
 <translation id="7059230779847288458">កំពុងសាកថ្ម <ph name="TIME_VALUE" /> ទៀត​ទើបពេញ</translation>
+<translation id="7065336548231472971">បានជ្រើសរើសភាសា<ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186">គ្រាប់ចុច <ph name="KEY" /></translation>
 <translation id="7068619307603204412">រៀបចំ​ឧបករណ៍​របស់អ្នក</translation>
 <translation id="7076851914315147928">ជ្រើសរើស​ផ្ទាំង​រូបភាព</translation>
@@ -1300,7 +1305,6 @@
 <translation id="7135814714616751706">ស្វែងរកផ្លូវកាត់</translation>
 <translation id="7138614237884624401">ខ្លឹមសារជាអក្សរ​ដ៏សាមញ្ញ</translation>
 <translation id="7138668887584231801">គ្មានពាក្យ​គ្រប់គ្រាន់​ដើម្បី​សង្ខេបទេ</translation>
-<translation id="7141470099673912333">ផ្ទេរខ្លឹមសារ</translation>
 <translation id="7143207342074048698">កំពុងភ្ជាប់...</translation>
 <translation id="7144878232160441200">ព្យាយាមម្តងទៀត</translation>
 <translation id="7144954474087165241">វត្ត</translation>
@@ -1371,6 +1375,7 @@
 <translation id="7415801143053185905">ការពន្យារ HTTP ខ្ពស់ខ្លាំង</translation>
 <translation id="7418738250896500352">មានពាក្យ​ច្រើនពេក មិនអាច​សម្រួល​បានទេ</translation>
 <translation id="7425037327577270384">ជួយខ្ញុំក្នុងការសរសេរ</translation>
+<translation id="7425832472614771259">ទាញយកគំរូ​ប្រតិចារឹកជាភាសា<ph name="LANGUAGE_NAME" />បាន <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">មិន​អាច​បិទ ឬ​ដក APN នេះ​ចេញ​បាន​ទេ។ សូមប្រាកដថាបិទ ឬដកចេញនូវ APN <ph name="ATTACH" /> ដែលបានបើក។</translation>
 <translation id="7453118953486228603">ចុច​ដើម្បី​សង្ខេប​ខ្លឹមសារជាអក្សរ​ដែលបាន​ជ្រើសរើស</translation>
@@ -1407,6 +1412,7 @@
 <translation id="7595982850646262331">នៅសល់ <ph name="TIME_VALUE" /> ទៀត</translation>
 <translation id="7600430297804876776">អ្នកគ្រប់គ្រង <ph name="MANAGER" /> បាន​កំណត់​ពេលដែលអាចប្រើ <ph name="DEVICE_TYPE" /> នេះបាន។</translation>
 <translation id="7613724632293948900">ប្ដូរ​ទីតាំង​ដោយ​ប្រើកណ្ដុរ ឬ​គ្រាប់ចុច​ព្រួញ។</translation>
+<translation id="7618216277886673749">ជ្រើសរើសភាសា<ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">ស្រាល</translation>
 <translation id="7620771111601174153">ស្វែងយល់បន្ថែម​នៅក្នុងមជ្ឈមណ្ឌលជំនួយ</translation>
 <translation id="7625095758347640998">ផ្ទាំង​រូបភាព AI</translation>
@@ -1541,7 +1547,6 @@
 <translation id="8261506727792406068">លុប</translation>
 <translation id="8262870577632766028">1 ម៉ោង</translation>
 <translation id="827422111966801947">ទឹកប៊ិក</translation>
-<translation id="8281886186245836920">រំលង</translation>
 <translation id="8286154143153872371">សូមភ្ជាប់​បណ្ដាញ រួចផ្ទុកទំព័រ​ឡើងវិញ ដើម្បីមើល​ផ្ទាំងរូបភាព។</translation>
 <translation id="8291967909914612644">ប្រទេសនៃអ្នកផ្តល់សេវាកម្មនៅផ្ទះ</translation>
 <translation id="8294431847097064396">ប្រភព</translation>
@@ -1646,6 +1651,7 @@
 <translation id="8797082062139985406">បង្កើត​ឈ្មោះ​ដោយប្រើ Google AI</translation>
 <translation id="8798099450830957504">លំនាំដើម</translation>
 <translation id="8798441408945964110">ឈ្មោះក្រុមហ៊ុនផ្តល់សេវា</translation>
+<translation id="8804164990146287819">គោលការណ៍ឯកជនភាព</translation>
 <translation id="8808828119384186784">ការកំណត់ Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">ផ្ទាំងរូបភាព</translation>

@@ -31,10 +31,6 @@
 
 namespace autofill {
 
-namespace {
-constexpr int64_t kCreditCardInstrumentId = 0x4444;
-}  // namespace
-
 // Test base class for the OfferNotificationBubbleViews related tests. Provides
 // helper function and common setups.
 class OfferNotificationBubbleViewsTestBase

@@ -9,6 +9,7 @@
 <translation id="2447485272386224171">Chrome はオープンソース プロジェクト <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> やその他の<ph name="BEGIN_LINK_OSS" />オープンソース ソフトウェア<ph name="END_LINK_OSS" />によって実現しました。</translation>
 <translation id="2588322182880276190">Chrome ロゴ</translation>
 <translation id="3444832043240812445"><ph name="BEGIN_LINK" />障害レポートを有効<ph name="END_LINK" />にした場合にのみ、このページに最近の障害情報が表示されます。</translation>
+<translation id="3512634283363927263">これらのページは Chrome デベロッパーが使用することを目的としたもので、積極的なメンテナンスやテストが行われていない可能性があります。これらのページを有効にするには、<ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> でデバッグページを有効にするボタンをクリックしてから、このページに戻ります。</translation>
 <translation id="3875312571075912821">ファイアウォールやウイルス対策の設定で、Chrome からネットワークへのアクセスを
         許可します。</translation>
 <translation id="5005121315113832363">このページは Chrome によってブロックされています</translation>

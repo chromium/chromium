@@ -153,11 +153,6 @@ void AffiliationServiceImpl::PrefetchChangePasswordURLs(
   }
 }
 
-void AffiliationServiceImpl::Clear() {
-  pending_fetches_.clear();
-  change_password_urls_.clear();
-}
-
 GURL AffiliationServiceImpl::GetChangePasswordURL(const GURL& url) const {
   auto it = change_password_urls_.find(url::SchemeHostPort(url));
   if (it != change_password_urls_.end()) {
@@ -218,10 +213,9 @@ void AffiliationServiceImpl::OnMalformedResponse(
 
 void AffiliationServiceImpl::GetAffiliationsAndBranding(
     const FacetURI& facet_uri,
-    AffiliationService::StrategyOnCacheMiss cache_miss_strategy,
     ResultCallback result_callback) {
   PostToBackend(&AffiliationBackend::GetAffiliationsAndBranding, facet_uri,
-                cache_miss_strategy, std::move(result_callback),
+                StrategyOnCacheMiss::FAIL, std::move(result_callback),
                 base::SequencedTaskRunner::GetCurrentDefault());
 }
 

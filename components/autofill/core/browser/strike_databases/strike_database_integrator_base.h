@@ -22,10 +22,6 @@
 
 namespace autofill {
 
-namespace {
-static const char kSharedId[] = "shared_id";
-}  // namespace
-
 // Contains virtual functions for per-project implementations of StrikeDatabase
 // to interface from, as well as a pointer to StrikeDatabase. This class is
 // seperated from StrikeDatabase since we only want StrikeDatabase's cache to
@@ -42,6 +38,8 @@ class StrikeDatabaseIntegratorBase {
     // Block feature: Not enough time has passed since the last strike.
     kRequiredDelayNotPassed = 2,
   };
+
+  static constexpr char kSharedId[] = "shared_id";
 
   explicit StrikeDatabaseIntegratorBase(StrikeDatabaseBase* strike_database);
   virtual ~StrikeDatabaseIntegratorBase();

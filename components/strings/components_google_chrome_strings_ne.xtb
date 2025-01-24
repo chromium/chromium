@@ -10,6 +10,7 @@
 <translation id="2447485272386224171"><ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> खुला स्रोतको परियोजना र अन्य <ph name="BEGIN_LINK_OSS" />खुला स्रोतको सफ्टवेयर<ph name="END_LINK_OSS" /> प्रयोग गरी Chrome निर्माण गरिएको हो।</translation>
 <translation id="2588322182880276190">Chrome चिन्ह</translation>
 <translation id="3444832043240812445">यदि तपाइँले <ph name="BEGIN_LINK" />क्रयास प्रतिवेदन सक्षम<ph name="END_LINK" /> गर्नुभयो बने यस पृष्ठले तपाइँका भर्खरैका क्रयासहरूमा जानकारी देखाउँछ।</translation>
+<translation id="3512634283363927263">यी पेजहरू Chrome विकासकर्ताहरूको प्रयोगका लागि बनाइएका हुनाले सक्रिय रूपमा यिनको व्यवस्थापन वा परीक्षण नगरिएको हुन सक्छ। यी पेजहरू अन गर्न <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> मा जानुहोस्, यो बटन क्लिक गरी पेज डिबग गर्ने सुविधा अन गर्नुहोस् र त्यसपछि फेरि यो पेजमा जानुहोस्।</translation>
 <translation id="3875312571075912821">Chrome लाई आफ्नो फायरवाल वा एन्टिभाइरसका सेटिङहरूमा
           नेटवर्कमा पहुँच गर्ने अनुमति दिनुहोस्।</translation>
 <translation id="5005121315113832363">Chrome ले यो पेज ब्लक गरेको छ</translation>

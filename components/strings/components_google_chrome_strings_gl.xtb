@@ -9,6 +9,7 @@
 <translation id="2447485272386224171">Chrome creouse grazas ao proxecto de código aberto <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> e a outro <ph name="BEGIN_LINK_OSS" />software de código aberto<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logotipo de Chrome</translation>
 <translation id="3444832043240812445">Esta páxina só mostra información sobre os teus erros recentes se <ph name="BEGIN_LINK" />activas os informes de erros<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Estas páxinas están pensadas para os programadores de Chrome, polo que é posible que non se manteñan nin proben activamente. Para habilitalas, vai a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, fai clic no botón para activar as páxinas de depuración e, a continuación, volve a esta páxina.</translation>
 <translation id="3875312571075912821">Configura o teu firewall ou o teu antivirus para permitir o acceso
           de Chrome á rede.</translation>
 <translation id="5005121315113832363">Chrome bloqueou esta páxina</translation>

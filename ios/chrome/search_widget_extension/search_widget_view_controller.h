@@ -8,7 +8,7 @@
 #import <NotificationCenter/NotificationCenter.h>
 #import <UIKit/UIKit.h>
 
-@interface SearchWidgetViewController : UIViewController<NCWidgetProviding>
+@interface SearchWidgetViewController : UIViewController <NCWidgetProviding>
 
 @end
 

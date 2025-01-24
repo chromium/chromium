@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">zelena</translation>
 <translation id="225692081236532131">Stanje aktiviranja</translation>
 <translation id="2267285889943769271">Dodaj posnetek zaslona</translation>
+<translation id="2268044343513325586">Izboljšaj iskanje</translation>
 <translation id="2271469253353559191">Urnik za temni način</translation>
 <translation id="2276999893457278469">Najbolj priljubljena vsebina s pomočjo</translation>
 <translation id="2277631741861284101">Preprosto snemanje in deljenje zvoka</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">Iskanje optičnih bralnikov</translation>
 <translation id="3226657629376379887">Meni z dejanji za postavitev</translation>
 <translation id="3227186760713762082">Deljenje vrednosti kategorije »<ph name="CATEGORY_TEXT" />« s/z: <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Preoblikovanje</translation>
 <translation id="3246869037381808805">Izbrisana bodo tiskalna opravila, starejša od 1 dneva</translation>
 <translation id="324961752321393509">Skrbnik ne dovoli zapiranja te aplikacije</translation>
 <translation id="3263941347294171263">Če želite nadaljevati postopek posodobitve, odklopite in znova priklopite napravo <ph name="DEVICE_NAME" /></translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523">Posodabljanje naprave <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Tok</translation>
 <translation id="346539236881580388">Znova posnemi</translation>
+<translation id="3479552764303398839">Ne zdaj</translation>
 <translation id="3484914941826596830">Med posodabljanjem vdelane programske opreme ne odklopite zunanje naprave ali izklopite računalnika. To okno lahko pomanjšate. Ta posodobitev bo morda trajala nekaj minut in zunanja naprava v tem času morda ne bo delovala.</translation>
 <translation id="3486220673238053218">opredelitev</translation>
 <translation id="3487866404496702283">Povratne informacije za funkcijo mahi</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">Prilagajanje glasnosti</translation>
 <translation id="3767737419527918477">Iskanje datotek s posnetki</translation>
 <translation id="3771294271822695279">Videodatoteke</translation>
+<translation id="3771694256347217732">Googlovi pogoji storitve</translation>
 <translation id="3780740315729837296">Dodelitev tipke tipkovnice</translation>
 <translation id="3784455785234192852">Zakleni</translation>
 <translation id="3785643128701396311">umetniška dela iz slikovnih pik</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">Zakasnitev HTTP (Android)</translation>
 <translation id="6078323886959318429">Dodajanje bližnjice</translation>
 <translation id="6091080061796993741">rumena</translation>
-<translation id="6093853427925392522">Uporabite Googlovo aplikacijo za prenos vsebine, če želite podatke iz šolskega računa premakniti v osebni račun, preden izgubite dostop.</translation>
 <translation id="6104112872696127344">Optično branje je preklicano</translation>
 <translation id="6106186594183574873">Za dokončanje vnesite staro geslo</translation>
 <translation id="6108689792487843350">Prehod ni dosegljiv</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">Iskanje bližnjic</translation>
 <translation id="7138614237884624401">Poenostavljeno besedilo</translation>
 <translation id="7138668887584231801">Premalo besed za povzetek</translation>
-<translation id="7141470099673912333">Prenos vsebine</translation>
 <translation id="7143207342074048698">Povezovanje</translation>
 <translation id="7144878232160441200">Poskusi ponovno</translation>
 <translation id="7144954474087165241">pagoda</translation>
@@ -1541,7 +1541,6 @@
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8262870577632766028">1 ura</translation>
 <translation id="827422111966801947">Indigo</translation>
-<translation id="8281886186245836920">Preskoči</translation>
 <translation id="8286154143153872371">Povežite se z omrežjem in znova naložite stran, če si želite ogledati zaslonsko ozadje.</translation>
 <translation id="8291967909914612644">Država domačega ponudnika</translation>
 <translation id="8294431847097064396">Vir</translation>
@@ -1646,6 +1645,7 @@
 <translation id="8797082062139985406">Ustvarjanje imena z Googlovo umetno inteligenco</translation>
 <translation id="8798099450830957504">Privzeto</translation>
 <translation id="8798441408945964110">Ime ponudnika</translation>
+<translation id="8804164990146287819">Pravilnik o zasebnosti</translation>
 <translation id="8808828119384186784">Chromove nastavitve</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Ozadje</translation>

@@ -111,7 +111,8 @@ class CORE_EXPORT InspectorPageAgent final
 
   static bool CachedResourceContent(const Resource*,
                                     String* result,
-                                    bool* base64_encoded);
+                                    bool* base64_encoded,
+                                    bool* was_cached);
   static bool SegmentedBufferContent(const SegmentedBuffer*,
                                      const String& mime_type,
                                      const String& text_encoding_name,

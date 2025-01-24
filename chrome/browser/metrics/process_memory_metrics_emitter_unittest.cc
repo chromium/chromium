@@ -124,7 +124,8 @@ OSMemDumpPtr GetFakeOSMemDump(uint32_t resident_set_kb,
                               uint32_t shared_footprint_kb
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
                               ,
-                              uint32_t private_swap_footprint_kb
+                              uint32_t private_swap_footprint_kb,
+                              uint32_t mappings_count
 #endif
 ) {
   using memory_instrumentation::mojom::VmRegion;
@@ -134,7 +135,7 @@ OSMemDumpPtr GetFakeOSMemDump(uint32_t resident_set_kb,
       /*is_peak_rss_resettable=*/true, private_footprint_kb, shared_footprint_kb
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
       ,
-      private_swap_footprint_kb
+      private_swap_footprint_kb, mappings_count
 #endif
   );
 }
@@ -149,7 +150,10 @@ OSMemDumpPtr GetFakeOSMemDump(MetricMap& metrics_mb) {
       // modify metrics_mb to create the value, which leads
       // to expectation failures.
       ,
-      /*private_swap_footprint_kb=*/metrics_mb["PrivateSwapFootprint"] * 1024
+      /*private_swap_footprint_kb=*/metrics_mb["PrivateSwapFootprint"] * 1024,
+      /* mappings_count= */ metrics_mb.contains("MappingsCount")
+          ? metrics_mb["MappingsCount"]
+          : 0
 #endif
   );
 }
@@ -905,6 +909,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
   global_dump->aggregated_metrics =
       memory_instrumentation::mojom::AggregatedMetrics::New();
   MetricMap expected_metrics = GetExpectedRendererMetrics();
+  constexpr size_t kTestMappingsCount = 12;
+  expected_metrics["MappingsCount"] = kTestMappingsCount;
   PopulateRendererMetrics(global_dump, expected_metrics, kTestRendererPid201);
   PopulateRendererMetrics(global_dump, expected_metrics, kTestRendererPid202);
 
@@ -977,7 +983,10 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
                                 kTestRendererSharedMemoryFootprint, 2);
   histograms.ExpectUniqueSample("Memory.Renderer.ResidentSet",
                                 kTestRendererResidentSet, 2);
-
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  histograms.ExpectUniqueSample("Memory.Renderer.MappingsCount",
+                                kTestMappingsCount, 2);
+#endif
   histograms.ExpectUniqueSample("Memory.Total.HibernatedCanvas.Size", 12 + 22,
                                 1);
   histograms.ExpectUniqueSample("Memory.Total.PrivateMemoryFootprint",

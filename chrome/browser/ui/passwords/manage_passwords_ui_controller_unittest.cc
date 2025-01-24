@@ -1936,8 +1936,8 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordChangeOngoing) {
       .WillOnce(testing::Return(GURL("https://example.com/password/")));
   auto* password_change_service =
       PasswordChangeServiceFactory::GetForProfile(profile());
-  password_change_service->StartPasswordChange(kUrl, u"new_username",
-                                               u"new_password", web_contents());
+  password_change_service->OfferPasswordChangeUi(
+      kUrl, u"new_username", u"new_password", web_contents());
 
   ASSERT_EQ(password_manager::ui::PASSWORD_CHANGE_STATE,
             controller()->GetState());

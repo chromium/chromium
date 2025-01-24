@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">verde</translation>
 <translation id="225692081236532131">Estado de activación</translation>
 <translation id="2267285889943769271">Engadir captura de pantalla</translation>
+<translation id="2268044343513325586">Refina</translation>
 <translation id="2271469253353559191">Modo escuro programado</translation>
 <translation id="2276999893457278469">Contido de axuda principal</translation>
 <translation id="2277631741861284101">Grava e comparte o audio con facilidade</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">Buscando escáneres</translation>
 <translation id="3226657629376379887">Menú de accións de deseño</translation>
 <translation id="3227186760713762082">Divide o valor de <ph name="CATEGORY_TEXT" /> entre <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Reescribir</translation>
 <translation id="3246869037381808805">Quitaranse os traballos de impresión de máis de 1 día</translation>
 <translation id="324961752321393509">A persoa administradora non permite que se peche esta aplicación</translation>
 <translation id="3263941347294171263">Desconecta e volve conectar o dispositivo (<ph name="DEVICE_NAME" />) para seguir co proceso de actualización</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523">Actualizando dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="346423161771747987">Actual</translation>
 <translation id="346539236881580388">Repetir</translation>
+<translation id="3479552764303398839">Agora non</translation>
 <translation id="3484914941826596830">Mentres se actualiza o firmware, non desenchufes este dispositivo externo nin apagues o ordenador. Podes minimizar esta ventá. Esta actualización pode tardar uns minutos en completarse e é posible que o dispositivo externo non funcione durante o proceso.</translation>
 <translation id="3486220673238053218">definición</translation>
 <translation id="3487866404496702283">Comentarios sobre a función mahi</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">Axustar o volume</translation>
 <translation id="3767737419527918477">Buscar ficheiros de gravación</translation>
 <translation id="3771294271822695279">Ficheiros de vídeo</translation>
+<translation id="3771694256347217732">Condicións de servizo de Google</translation>
 <translation id="3780740315729837296">Asigna unha tecla do teclado</translation>
 <translation id="3784455785234192852">Bloquear</translation>
 <translation id="3785643128701396311">pixel art</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) latencia de HTTP</translation>
 <translation id="6078323886959318429">Engadir atallo</translation>
 <translation id="6091080061796993741">amarela</translation>
-<translation id="6093853427925392522">Usa a aplicación de transferencia de contido de Google para pasar os datos da túa conta de centro educativo á túa conta persoal antes de perder o acceso.</translation>
 <translation id="6104112872696127344">Cancelouse o escaneamento</translation>
 <translation id="6106186594183574873">Para finalizar, introduce o teu antigo contrasinal</translation>
 <translation id="6108689792487843350">Non se puido acceder á pasarela</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">Busca atallos</translation>
 <translation id="7138614237884624401">Texto simplificado</translation>
 <translation id="7138668887584231801">Non hai suficientes palabras para xerar un resumo</translation>
-<translation id="7141470099673912333">Transferencia de contido</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Volver tentar</translation>
 <translation id="7144954474087165241">pagode</translation>
@@ -1541,7 +1541,6 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8262870577632766028">1 hora</translation>
 <translation id="827422111966801947">Índigo</translation>
-<translation id="8281886186245836920">Omitir</translation>
 <translation id="8286154143153872371">Para ver o fondo de pantalla, conéctate a unha rede e volve cargar a páxina.</translation>
 <translation id="8291967909914612644">País do fornecedor de orixe</translation>
 <translation id="8294431847097064396">Fonte</translation>
@@ -1646,6 +1645,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8797082062139985406">Crear un nome coa IA de Google</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8798441408945964110">Nome do fornecedor</translation>
+<translation id="8804164990146287819">Política de privacidade</translation>
 <translation id="8808828119384186784">Configuración de Chrome</translation>
 <translation id="8814190375133053267">Wifi</translation>
 <translation id="8818152010000655963">Fondo de pantalla</translation>

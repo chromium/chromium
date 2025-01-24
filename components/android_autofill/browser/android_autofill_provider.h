@@ -10,6 +10,7 @@
 #include "components/android_autofill/browser/android_autofill_provider_bridge.h"
 #include "components/android_autofill/browser/autofill_provider.h"
 #include "components/android_autofill/browser/form_data_android.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
@@ -230,7 +231,7 @@ class AndroidAutofillProvider : public AutofillProvider,
         const FormStructure& form_structure);
 
     // Creates a map as expected by `FormDataAndroid::UpdateFieldTypes`.
-    base::flat_map<FieldGlobalId, AutofillType> ToFieldTypeMap() const;
+    base::flat_map<FieldGlobalId, FieldType> ToFieldTypeMap() const;
 
     std::optional<FieldGlobalId> username_field_id;
     std::optional<FieldGlobalId> password_field_id;

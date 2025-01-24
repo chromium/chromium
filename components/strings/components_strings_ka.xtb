@@ -185,6 +185,7 @@
 <translation id="1310938305420497484">პირველ რიგში, გახსენით ჩანართები და ეწვიეთ ვებსაიტებს</translation>
 <translation id="1314311879718644478">აუგმენტური რეალობის კონტენტის ნახვა</translation>
 <translation id="1314509827145471431">აკინძვა მარჯვნივ</translation>
+<translation id="1314784609072437689">კლავიატურის უგულებელყოფა</translation>
 <translation id="1316805916535763484">ღია ონლაინკურსები</translation>
 <translation id="1318023360584041678">შენახულია ჩანართების ჯგუფში</translation>
 <translation id="1319245136674974084">ამ აპისთვის აღარასოდეს კითხვა</translation>
@@ -638,6 +639,7 @@
 <translation id="2105838220373099643">როლური თამაშები</translation>
 <translation id="2107021941795971877">ბეჭდვის დამხმარე საშუალებები</translation>
 <translation id="2108755909498034140">თქვენი კომპიუტერის გადატვირთვა</translation>
+<translation id="2109845311767915560">ჩანართების გაზიარებული ჯგუფი</translation>
 <translation id="2111166930115883695">დასაკრავად დააჭირეთ შორისს</translation>
 <translation id="2113977810652731515">ბიზნეს ბარათი დიზაინი</translation>
 <translation id="2114841414352855701">იგნორირებულია, რადგან იგი ჩანაცვლებულია <ph name="POLICY_NAME" />-ის მიერ.</translation>
@@ -910,7 +912,6 @@
 <translation id="255497580849974774">განახლების მიმდინარეობისას მიერთებული გქონდეთ მოწყობილობა დამტენთან.</translation>
 <translation id="2556876185419854533">რედაქტირების &amp;მოქმედების გაუქმება</translation>
 <translation id="2559566667529177711">მრავალშრიანი</translation>
-<translation id="2565789370591907825">კლავიატურის დაბლოკვა და გამოყენება</translation>
 <translation id="2570734079541893434">პარამეტრების მართვა</translation>
 <translation id="257136025287118539">თქვენს ადმინისტრატორს თქვენი ფაილები გადააქვს აქ: <ph name="CLOUD_PROVIDER" />. ფაილების მოდიფიცირებას შეძლებთ ატვირთვის დასრულების შემდეგ.</translation>
 <translation id="2571488850200220306">უსაფრთხოების დაცვის მიზნით მან შეიძლება ნახოს მოწყობილობის ოპერაციული სისტემის, ბრაუზერის ვერსიისა და დაყენებული პროგრამული უზრუნველყოფის ინფორმაციაც.</translation>
@@ -1108,7 +1109,6 @@
 <translation id="2974468223369775963">შეუძლებელია ამ IBAN-ის თქვენს Google ანგარიშში შენახვა. სანაცვლოდ ის შენახულია Chrome-ში, ამ მოწყობილობაზე. Chrome კვლავ გკითხავთ, როცა შემდეგ ჯერზე ამ IBAN-ს გამოიყენებთ.</translation>
 <translation id="297667759942911166">ჩანართების ჯგუფებში თანამშრომლობა</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, ამჟამად არჩეულია. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">თქვენი კლავიატურის დაბლოკვა და გამოყენება</translation>
 <translation id="2978824962390592855">ოპერა</translation>
 <translation id="2979424420072875974">სამწერლობო რესურსები</translation>
 <translation id="2979639724566107830">ახალ ფანჯარაში გახსნა</translation>
@@ -2092,6 +2092,7 @@
 <translation id="4704745399240123930">ბარათები, მაგალითად, ვირტუალური ბარათები, რომლებსაც ეს მოვაჭრე არ იღებს, გათიშულია</translation>
 <translation id="4708268264240856090">თქვენი კავშირი შეფერხდა</translation>
 <translation id="4708276642004148190">წყალმომარაგება და წყლის დამუშავება</translation>
+<translation id="4711628883879888561">თანამშრომლობა ჩანართების ჯგუფში</translation>
 <translation id="471880041731876836">თქვენ არ გაქვთ ამ საიტის მონახულების ნებართვა</translation>
 <translation id="4718897478554657123">600 x 900 მმ</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows-ის ქსელის დიაგნოსტიკის ხელსაწყოს გაშვება<ph name="END_LINK" /></translation>
@@ -2464,6 +2465,7 @@
 <translation id="5363532265530011914">წინდები და ტრიკოტაჟის ნაწარმი</translation>
 <translation id="5371425731340848620">ბარათის განახლება</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" />-მა შეცვალა ჩანართი</translation>
+<translation id="5374324662289354619">შეცდომების გამართვის შიდა გვერდები ამჟამად გათიშულია.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„თქვენი საათი უკანაა“, „თქვენი საათი წინაა“ ან „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;“</translation>
 <translation id="5379618281582508161">ამ პაროლის თქვენს ყველა მოწყობილობაში მისაღებად საჭიროა ვინაობის დადასტურება</translation>
@@ -2698,6 +2700,7 @@
 <translation id="578305955206182703">ქარვისფერი</translation>
 <translation id="5783700460098783980">ბარგი და სამოგზაურო აქსესუარები</translation>
 <translation id="57838592816432529">დადუმება</translation>
+<translation id="5783922175933467571"><ph name="TAB_GROUP_DISPLAY_NAME" /> ბმულს ვადა ეწურება 48 საათში</translation>
 <translation id="5784606427469807560">თქვენი ბარათის დადასტურებისას პრობლემა წარმოიქმნა. შეამოწმეთ ინტერნეტთან კავშირი და ხელახლა ცადეთ.</translation>
 <translation id="5785756445106461925">გარდა ამისა, ეს გვერდი შეიცავს სხვა არაუსაფრთხო რესურსებს. ამ რესურსების დათვალიერება გადაცემისას სხვა პირებს შეუძლიათ, ხოლო თავდამსხმელს მათი მოდიფიკაცია გვერდის იერის შეცვლის მიზნით შეუძლია.</translation>
 <translation id="5793317771769868848">გადახდის ეს მეთოდი წაიშლება ამ მოწყობილობიდან</translation>
@@ -2770,6 +2773,7 @@
 <translation id="5930147475897662863">ჩართეთ ეს პარამეტრი, „დაწერაში დახმარება“ რომ გამოიყენოთ</translation>
 <translation id="593102073240001326">ინსტრუქციები, საკუთარი ხელით დამზადება და ექსპერტთა კონტენტი</translation>
 <translation id="5932224571077948991">საიტზე ნაჩვენებია მომაბეზრებელი ან შეცდომაში შემყვანი რეკლამა</translation>
+<translation id="5933597524153120073">ყველას (<ph name="ITEMS" />) გახსნა ახალ ფანჯარაში</translation>
 <translation id="5937560539988385583">გვერდი ითარგმნა</translation>
 <translation id="5938153366081463283">დაამატეთ ვირტუალური ბარათი</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -2917,6 +2921,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome ავტომატურად ზღუდავს მესამე მხარის ქუქი-ჩანაწერებს</translation>
 <translation id="6188479691141473408">და კიდევ <ph name="N_FIELDS" /> ველი</translation>
+<translation id="6190518157737269631">უგულებელყავით თქვენი კლავიატურის ზოგიერთი კლავიში, მაგალითად Esc</translation>
 <translation id="6194209731893739467">აქ შეგიძლიათ იხილოთ თქვენი ყველა თვალმიდევნებული პროდუქტი</translation>
 <translation id="6195163219142236913">მესამე მხარის ქუქი-ჩანაწერები შეზღუდულია</translation>
 <translation id="6195371403461054755">გეოლოგია</translation>
@@ -3042,6 +3047,7 @@
 <translation id="6394852772105848029">ამ საიტს სურს, გახსნას <ph name="APP_NAME" /> აპი</translation>
 <translation id="639673288733510393">სკუტერები და მოპედები</translation>
 <translation id="6398765197997659313">სრულეკრანიანი რეჟიმიდან გამოსვლა</translation>
+<translation id="6399633237874954301">ბარათის გონიერი წამკითხველი ნებადართულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="6401136357288658127">ეს წესები მოძველდა. სანაცვლოდ უნდა გამოიყენოთ <ph name="NEW_POLICY" />.</translation>
 <translation id="640163077447496506">მოქმედების ვადა იწურება დღეს</translation>
 <translation id="6402537308870515461">გადაადგილებამდე საჭიროა შემოწმება</translation>
@@ -4102,7 +4108,6 @@
 <translation id="8278544367771164040">ბიზნესსესხები</translation>
 <translation id="8279290844152565425">კონცერტები და მუსიკალური ფესტივალები</translation>
 <translation id="8279611986089885641">Chrome-ში შეტყობინებების მიღება ჩართული უნდა იყოს. მათი ჩართვა შეგიძლიათ სექციიდან „<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />“.</translation>
-<translation id="8280387559022105172">გსურთ თქვენი კლავიატურის ჩაკეტვა?</translation>
 <translation id="8280630997017109758">ლანგარი 11</translation>
 <translation id="8281730697546299650">რეკლამების კონფიდენციალურობის სხვა ფუნქციები უკვე ხელმისაწვდომია</translation>
 <translation id="8281886186245836920">გამოტოვება</translation>
@@ -4172,7 +4177,6 @@
 <translation id="8398335999901363925">იმ გადახდის მეთოდების სია, რომელთა შევსებაც შესაძლებელია შეხებით, გახსნილია სრულ სიმაღლეზე.</translation>
 <translation id="8398446215576328011">წესების გადაყენება</translation>
 <translation id="8398790343843005537">მოძებნეთ თქვენი ტელეფონი</translation>
-<translation id="8399276468426899527">კლავიატურის დაბლოკვა და გამოყენება</translation>
 <translation id="8400929824946688748">ვაკანსიები და განათლება</translation>
 <translation id="8402442052798347631">თავდამსხმელებმა საიტზე, რომლის მონახულებაც ცადეთ, შესაძლოა, მოტყუებით დაგაინსტალირებინონ საზიანო პროგრამული უზრუნველყოფა, რომელიც უარყოფითად აისახება ვების დათვალიერების პროცესზე — მაგალითად, შესაძლოა, შეიცვალოს მთავარი გვერდი ან თქვენ მიერ მონახულებულ საიტებზე გამოჩნდეს მეტი რეკლამა. Chrome დაჟინებით გირჩევთ, დაუბრუნდეთ უსაფრთხოებას, ზიანი თავიდან რომ აიცილოთ. <ph name="BEGIN_LEARN_MORE_LINK" />შეიტყვეთ მეტი ამ გაფრთხილების შესახებ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">ფანფიქცია</translation>
@@ -4190,6 +4194,7 @@
 <translation id="8421158157346464398">სამსახურის პროფილის ინფორმაცია (როგორიცაა სამსახურის პროფილის მომხმარებლის სახელი)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">შეცვლა</translation>
+<translation id="8426945547715537628">დაუშვებთ კლავიატურის უგულებელყოფას?</translation>
 <translation id="8427848540066057481">500 x 750 მმ</translation>
 <translation id="8428213095426709021">პარამეტრები</translation>
 <translation id="8428634594422941299">გასაგებია</translation>
@@ -4276,6 +4281,7 @@
 <translation id="8574841453995331336">მაცივრები და საყინულეები</translation>
 <translation id="8577192028579836704">ყველა ვარიანტი, როგორც წესი, <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">ვირტუალური ბარათი მიუწვდომელია</translation>
+<translation id="8579000896558714521">კლავიატურის უგულებელყოფა</translation>
 <translation id="8580265901435899937">ტურისტული მიმართულებები</translation>
 <translation id="8581064022803799721">ეს გვერდი შენახულია „<ph name="LAST_BOOKMARKS_FOLDER" />“-ში.</translation>
 <translation id="8586082901536468629">სკვოშისა და რაკეტბოლის აღჭურვილობა</translation>

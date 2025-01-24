@@ -206,7 +206,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="345171907106878721">Añadirte a Chrome</translation>
 <translation id="3453763134178591239">Términos de ChromeOS</translation>
 <translation id="3503306920980160878">Chrome necesita acceder a tu ubicación para compartirla con este sitio web</translation>
-<translation id="3512634283363927263">Estas páginas están pensadas para que las usen los desarrolladores de Chrome y es posible que no se mantengan ni se prueben activamente. Para habilitarlas, ve a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, haz clic en el botón para habilitar las páginas de depuración y vuelve a esta página.</translation>
 <translation id="3533694711092285624">No hay ninguna contraseña guardada. Chrome puede comprobar tus contraseñas cuando las guardas.</translation>
 <translation id="3541482654983822893">Chrome no puede comprobar tus contraseñas. Vuelve a intentarlo en 24 horas.</translation>
 <translation id="3564543103555793392">Si inicias sesión en Chrome, podrás guardar marcadores y contraseñas, entre otros, y utilizarlos en tu teléfono</translation>
@@ -224,7 +223,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3673813398384385993">Chrome ha detectado que "<ph name="EXTENSION_NAME" />" contiene malware</translation>
 <translation id="3695446226812920698">Descubre cómo hacerlo</translation>
 <translation id="3697952514309507634">Otros perfiles de Chrome</translation>
-<translation id="3700276346088749847">borra los datos de Chrome de tu cuenta</translation>
 <translation id="3703994572283698466">ChromeOS se ha creado gracias a <ph name="BEGIN_LINK_CROS_OSS" />software libre<ph name="END_LINK_CROS_OSS" /> adicional, como el <ph name="BEGIN_LINK_LINUX_OSS" />entorno de desarrollo de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versión de ChromeOS Flex</translation>
 <translation id="3718181793972440140">Se eliminará un elemento de este dispositivo. Para recuperar tus datos en otro momento, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>

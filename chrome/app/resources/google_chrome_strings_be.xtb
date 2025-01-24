@@ -206,7 +206,6 @@
 <translation id="345171907106878721">Дадаць мяне ў Chrome</translation>
 <translation id="3453763134178591239">Умовы выкарыстання Chrome OS</translation>
 <translation id="3503306920980160878">Chrome патрабуе доступу да вашага месцазнаходжання, каб абагуліць яго з гэтым сайтам</translation>
-<translation id="3512634283363927263">Гэтыя старонкі прызначаны для распрацоўшчыкаў Chrome, таму іх тэхнічная падтрымка ці праверка могуць праводзіцца рэдка. Для ўключэння перайдзіце на старонку <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, націсніце кнопку, каб уключыць старонкі адладкі, і зноў вярніцеся на гэту старонку.</translation>
 <translation id="3533694711092285624">Няма захаваных пароляў. Chrome можа правяраць толькі захаваныя паролі.</translation>
 <translation id="3541482654983822893">Браўзеру Chrome не ўдаецца праверыць паролі. Паўтарыце спробу праз 24 гадзіны.</translation>
 <translation id="3564543103555793392">Калі ўвайсці ў Chrome, вы зможаце захоўваць закладкі, паролі і іншыя даныя, а затым выкарыстоўваць іх на тэлефоне</translation>
@@ -224,7 +223,6 @@
 <translation id="3673813398384385993">Браўзер Chrome выявіў, што пашырэнне "<ph name="EXTENSION_NAME" />" змяшчае шкоднае ПЗ</translation>
 <translation id="3695446226812920698">Даведацца больш</translation>
 <translation id="3697952514309507634">Іншыя профілі Chrome</translation>
-<translation id="3700276346088749847">ачысціць даныя Chrome ва ўліковым запісе</translation>
 <translation id="3703994572283698466">Chrome OS, як і <ph name="BEGIN_LINK_LINUX_OSS" />асяроддзе распрацоўкі Linux<ph name="END_LINK_LINUX_OSS" />, працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="3716540481907974026">Версія Chrome OS Flex</translation>
 <translation id="3718181793972440140">Будзе выдалены 1 элемент з гэтай прылады. Каб потым атрымаць свае даныя, увайдзіце ва ўліковы запіс Chrome як <ph name="USER_EMAIL" />.</translation>

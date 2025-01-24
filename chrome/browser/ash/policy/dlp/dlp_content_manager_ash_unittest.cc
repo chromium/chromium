@@ -57,7 +57,7 @@ namespace policy {
 namespace {
 
 constexpr char kEmailId[] = "test@example.com";
-constexpr char kGaiaId[] = "12345";
+constexpr GaiaId::Literal kGaiaId("12345");
 constexpr char kSrcPattern[] = "example";
 constexpr char kRuleName[] = "ruleName";
 constexpr char kRuleId[] = "obfuscatedId";
@@ -236,8 +236,7 @@ class DlpContentManagerAshTest : public testing::Test {
 
  private:
   void LoginFakeUser() {
-    AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kEmailId, GaiaId(kGaiaId));
+    AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
 
     profile_ = profile_manager_.CreateTestingProfile(account_id.GetUserEmail());
     profile_->SetIsNewProfile(true);

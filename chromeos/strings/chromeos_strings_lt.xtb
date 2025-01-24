@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">žalios spalvos</translation>
 <translation id="225692081236532131">Aktyvinimo būsena</translation>
 <translation id="2267285889943769271">Pridėti ekrano kopiją</translation>
+<translation id="2268044343513325586">Patikslinti</translation>
 <translation id="2271469253353559191">Tamsaus režimo planavimas</translation>
 <translation id="2276999893457278469">Geriausias pagalbos centro turinys</translation>
 <translation id="2277631741861284101">Lengvai įrašykite ir bendrinkite garso įrašą</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">Ieškoma skaitytuvų</translation>
 <translation id="3226657629376379887">Išdėstymo veiksmų meniu</translation>
 <translation id="3227186760713762082">Reikia padalyti kategorijos „<ph name="CATEGORY_TEXT" />“ vertę iš <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Perrašyti</translation>
 <translation id="3246869037381808805">Senesnės nei 1 dienos spausdinimo užduotys bus pašalintos</translation>
 <translation id="324961752321393509">Administratorius neleidžia uždaryti šios programos</translation>
 <translation id="3263941347294171263">Jei norite tęsti atnaujinimo procesą, atjunkite ir iš naujo prijunkite „<ph name="DEVICE_NAME" />“</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523">Atnaujinamas įrenginys „<ph name="DEVICE_NAME" />“</translation>
 <translation id="346423161771747987">Srovė</translation>
 <translation id="346539236881580388">Perfotografuoti</translation>
+<translation id="3479552764303398839">Ne dabar</translation>
 <translation id="3484914941826596830">Kol programinė aparatinė įranga atnaujinama, neatjunkite išorinio įrenginio ir neišjunkite kompiuterio. Galite sumažinti šį langą. Šis atnaujinimo procesas gali užtrukti kelias minutes ir tuo metu jūsų išorinis įrenginys gali neveikti.</translation>
 <translation id="3486220673238053218">apibrėžimas</translation>
 <translation id="3487866404496702283">Atsiliepimas apie „mahi“ funkciją</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">Garsumo koregavimas</translation>
 <translation id="3767737419527918477">Ieškoti įrašų failų</translation>
 <translation id="3771294271822695279">Vaizdo įrašų failai</translation>
+<translation id="3771694256347217732">„Google“ paslaugų teikimo sąlygos</translation>
 <translation id="3780740315729837296">Priskirkite klaviatūros klavišą</translation>
 <translation id="3784455785234192852">Užrakinti</translation>
 <translation id="3785643128701396311">taškinė grafika</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(„Android“) HTTP delsa</translation>
 <translation id="6078323886959318429">Pridėti spartųjį klavišą</translation>
 <translation id="6091080061796993741">geltonos spalvos</translation>
-<translation id="6093853427925392522">Įsitikinkite, kad naudojate „Google“ turinio perkėlimo programą, kad perkeltumėte mokyklos paskyros duomenis į asmeninę paskyrą, kol nepraradote prieigos.</translation>
 <translation id="6104112872696127344">Nuskaitymas atšauktas</translation>
 <translation id="6106186594183574873">Norėdami užbaigti įveskite seną slaptažodį</translation>
 <translation id="6108689792487843350">Tinklų sietuvas nepasiekiamas</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">Ieškoti sparčiųjų klavišų</translation>
 <translation id="7138614237884624401">Supaprastintas tekstas</translation>
 <translation id="7138668887584231801">Nepakanka žodžių, kad būtų galima apibendrinti</translation>
-<translation id="7141470099673912333">Turinio perkėlimas</translation>
 <translation id="7143207342074048698">Jungiama</translation>
 <translation id="7144878232160441200">Kartoti</translation>
 <translation id="7144954474087165241">pagoda</translation>
@@ -1541,7 +1541,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8261506727792406068">Ištrinti</translation>
 <translation id="8262870577632766028">Viena valanda</translation>
 <translation id="827422111966801947">Indigo spalva</translation>
-<translation id="8281886186245836920">Praleisti</translation>
 <translation id="8286154143153872371">Jei norite peržiūrėti ekrano foną, prisijunkite prie tinklo ir iš naujo įkelkite puslapį.</translation>
 <translation id="8291967909914612644">Namų paslaugos teikėjo šalis</translation>
 <translation id="8294431847097064396">Šaltinis</translation>
@@ -1646,6 +1645,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8797082062139985406">Kurti pavadinimą naudojantis „Google“ DI</translation>
 <translation id="8798099450830957504">Numatytasis</translation>
 <translation id="8798441408945964110">Teikėjo pavadinimas</translation>
+<translation id="8804164990146287819">Privatumo politika</translation>
 <translation id="8808828119384186784">„Chrome“ nustatymai</translation>
 <translation id="8814190375133053267">WI-Fi</translation>
 <translation id="8818152010000655963">Ekrano fonas</translation>

@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">綠色</translation>
 <translation id="225692081236532131">啟用狀態</translation>
 <translation id="2267285889943769271">新增螢幕截圖</translation>
+<translation id="2268044343513325586">修正搜尋</translation>
 <translation id="2271469253353559191">深色模式時間表</translation>
 <translation id="2276999893457278469">熱門說明內容</translation>
 <translation id="2277631741861284101">輕鬆錄音及分享</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">正在尋找掃描器</translation>
 <translation id="3226657629376379887">版面配置動作選單</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />值除以 <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">重新編寫</translation>
 <translation id="3246869037381808805">系統會移除 1 天前的列印工作</translation>
 <translation id="324961752321393509">系統管理員不允許關閉這個應用程式</translation>
 <translation id="3263941347294171263">請將「<ph name="DEVICE_NAME" />」的線拔除再重新接上，以繼續進行更新程序</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523">正在更新「<ph name="DEVICE_NAME" />」</translation>
 <translation id="346423161771747987">電流</translation>
 <translation id="346539236881580388">重拍</translation>
+<translation id="3479552764303398839">現在不要</translation>
 <translation id="3484914941826596830">在韌體更新期間，請勿拔除這台外部裝置的插頭或關閉電腦。你可以將這個視窗縮到最小。更新作業可能需要幾分鐘才會完成，這段期間外部裝置可能無法正常運作。</translation>
 <translation id="3486220673238053218">定義</translation>
 <translation id="3487866404496702283">對 Mahi 功能提供意見</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">調整音量</translation>
 <translation id="3767737419527918477">搜尋音訊錄音檔</translation>
 <translation id="3771294271822695279">影片檔</translation>
+<translation id="3771694256347217732">Google 服務條款</translation>
 <translation id="3780740315729837296">指定鍵盤按鍵</translation>
 <translation id="3784455785234192852">鎖定</translation>
 <translation id="3785643128701396311">像素畫</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) HTTP 延遲時間</translation>
 <translation id="6078323886959318429">新增捷徑</translation>
 <translation id="6091080061796993741">黃色</translation>
-<translation id="6093853427925392522">請務必在失去學校帳戶存取權前，使用 Google 的內容轉移應用程式將學校帳戶資料移至個人帳戶。</translation>
 <translation id="6104112872696127344">已取消掃描作業</translation>
 <translation id="6106186594183574873">如要完成變更，請輸入你的舊密碼</translation>
 <translation id="6108689792487843350">無法連上閘道</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">搜尋捷徑</translation>
 <translation id="7138614237884624401">簡化的文字</translation>
 <translation id="7138668887584231801">字數不足，無法建立摘要</translation>
-<translation id="7141470099673912333">內容轉移</translation>
 <translation id="7143207342074048698">連線中</translation>
 <translation id="7144878232160441200">重試</translation>
 <translation id="7144954474087165241">塔</translation>
@@ -1541,7 +1541,6 @@
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8262870577632766028">1 小時</translation>
 <translation id="827422111966801947">靛藍</translation>
-<translation id="8281886186245836920">略過</translation>
 <translation id="8286154143153872371">如要查看桌布，請連上網路並重新載入網頁。</translation>
 <translation id="8291967909914612644">家用提供者國家/地區</translation>
 <translation id="8294431847097064396">來源</translation>
@@ -1646,6 +1645,7 @@
 <translation id="8797082062139985406">使用 Google AI 設定名稱</translation>
 <translation id="8798099450830957504">預設</translation>
 <translation id="8798441408945964110">提供者名稱</translation>
+<translation id="8804164990146287819">隱私權政策</translation>
 <translation id="8808828119384186784">Chrome 設定</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">桌布</translation>

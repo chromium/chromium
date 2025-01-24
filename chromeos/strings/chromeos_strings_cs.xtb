@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">zelená</translation>
 <translation id="225692081236532131">Stav aktivace</translation>
 <translation id="2267285889943769271">Přidat snímek obrazovky</translation>
+<translation id="2268044343513325586">Upřesnit</translation>
 <translation id="2271469253353559191">Plán tmavého režimu</translation>
 <translation id="2276999893457278469">Nejnavštěvovanější obsah nápovědy</translation>
 <translation id="2277631741861284101">Snadno nahrávejte a sdílejte zvuk</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">Vyhledávání skenerů</translation>
 <translation id="3226657629376379887">Nabídka akcí s rozvržením</translation>
 <translation id="3227186760713762082">Vydělte hodnotu <ph name="CATEGORY_TEXT" /> číslem <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Přepsání</translation>
 <translation id="3246869037381808805">Tiskové úlohy starší než 1 den budou odstraněny</translation>
 <translation id="324961752321393509">Váš administrátor tuto aplikaci nedovoluje zavřít</translation>
 <translation id="3263941347294171263">Pokud chcete v procesu aktualizace pokračovat, odpojte zařízení <ph name="DEVICE_NAME" /> a znovu ho připojte</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523">Aktualizace zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Aktuální</translation>
 <translation id="346539236881580388">Pořídit další</translation>
+<translation id="3479552764303398839">Teď ne</translation>
 <translation id="3484914941826596830">Během aktualizace firmwaru neodpojujte externí zařízení ani nevypínejte počítač. Toto okno můžete minimalizovat. Aktualizace může trvat několik minut a externí zařízení po tuto dobu nemusí fungovat.</translation>
 <translation id="3486220673238053218">definice</translation>
 <translation id="3487866404496702283">Zpětná vazba k funkci mahi</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">Upravit hlasitost</translation>
 <translation id="3767737419527918477">Vyhledat soubory nahrávek</translation>
 <translation id="3771294271822695279">Soubory videa</translation>
+<translation id="3771694256347217732">Smluvní podmínky společnosti Google</translation>
 <translation id="3780740315729837296">Přiřaďte klávesu</translation>
 <translation id="3784455785234192852">Uzamknout</translation>
 <translation id="3785643128701396311">pixel art</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) Latence požadavků HTTP</translation>
 <translation id="6078323886959318429">Přidat zástupce</translation>
 <translation id="6091080061796993741">žlutá</translation>
-<translation id="6093853427925392522">Než ztratíte přístup, pomocí aplikace Přenesení obsahu od Googlu přeneste data ze školního účtu do osobního.</translation>
 <translation id="6104112872696127344">Skenování bylo zrušeno</translation>
 <translation id="6106186594183574873">Chcete-li akci dokončit, zadejte své staré heslo</translation>
 <translation id="6108689792487843350">Brána není dostupná</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">Vyhledat zkratky</translation>
 <translation id="7138614237884624401">Zjednodušený text</translation>
 <translation id="7138668887584231801">Text je na shrnutí moc krátký</translation>
-<translation id="7141470099673912333">Přenesení obsahu</translation>
 <translation id="7143207342074048698">Připojování</translation>
 <translation id="7144878232160441200">Opakovat</translation>
 <translation id="7144954474087165241">pagoda</translation>
@@ -1541,7 +1541,6 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8261506727792406068">Smazat</translation>
 <translation id="8262870577632766028">1 hodina</translation>
 <translation id="827422111966801947">Indigová</translation>
-<translation id="8281886186245836920">Přeskočit</translation>
 <translation id="8286154143153872371">Pokud chcete zobrazit tapetu, připojte se k síti a znovu načtěte stránku.</translation>
 <translation id="8291967909914612644">Země domácího poskytovatele</translation>
 <translation id="8294431847097064396">Zdroj</translation>
@@ -1646,6 +1645,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8797082062139985406">Vytvořte název pomocí Google AI</translation>
 <translation id="8798099450830957504">Výchozí</translation>
 <translation id="8798441408945964110">Název poskytovatele</translation>
+<translation id="8804164990146287819">Zásady ochrany soukromí</translation>
 <translation id="8808828119384186784">Nastavení Chromu</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Tapeta</translation>

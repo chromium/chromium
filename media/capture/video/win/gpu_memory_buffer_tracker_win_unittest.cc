@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <mfidl.h>
+#include "media/capture/video/win/gpu_memory_buffer_tracker_win.h"
 
 #include <dxgi1_2.h>
 #include <mfapi.h>
 #include <mferror.h>
+#include <mfidl.h>
 #include <wrl.h>
 #include <wrl/client.h>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "media/capture/video/win/d3d_capture_test_utils.h"
-#include "media/capture/video/win/gpu_memory_buffer_tracker_win.h"
 #include "media/capture/video/win/video_capture_device_factory_win.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -56,7 +56,7 @@ class MockDXGIDeviceManager : public DXGIDeviceManager {
   }
 
  protected:
-  ~MockDXGIDeviceManager() override {}
+  ~MockDXGIDeviceManager() override = default;
   Microsoft::WRL::ComPtr<MockD3D11Device> mock_d3d_device_;
 };
 
@@ -72,8 +72,7 @@ class GpuMemoryBufferTrackerWinTest : public ::testing::Test {
           << "Media foundation is not supported by the current platform.";
     }
 
-    dxgi_device_manager_ =
-        scoped_refptr<MockDXGIDeviceManager>(new MockDXGIDeviceManager());
+    dxgi_device_manager_ = base::MakeRefCounted<MockDXGIDeviceManager>();
   }
 
   base::test::TaskEnvironment task_environment_;

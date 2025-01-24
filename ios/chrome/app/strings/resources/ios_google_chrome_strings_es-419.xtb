@@ -183,7 +183,6 @@ Espera unos minutos antes de cambiar de cuenta. Si cambias de cuenta ahora, se b
 <translation id="5998675059699164418">Tu organización requiere que accedas para usar Chrome.</translation>
 <translation id="6021312115739110405">Un feed personalizado que Google creó para ti. Incluye noticias, deportes y el clima.</translation>
 <translation id="6022659036123304283">Personaliza Chrome a tu medida</translation>
-<translation id="6110625574506755980">Algunas funciones de Chrome ya no estarán disponibles.</translation>
 <translation id="6132149203299792222">Accede con tu Cuenta de Google para sincronizar tus contraseñas, favoritos y más.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Buscar en Chrome</translation>
@@ -289,7 +288,6 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="8317674518145175158">No se encriptarán formas de pago ni direcciones. No se sincronizará el historial de navegación de Chrome.
 
 Solo alguien con tu frase de contraseña puede leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si olvidas tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
-<translation id="8357607116237445042">Decide si quieres borrar o conservar los datos de Chrome que tienes almacenados en este dispositivo</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
 <translation id="8371138994040262994">Abre la configuración en Chrome.</translation>
 <translation id="8387459386171870978">Seguir usando Chrome</translation>

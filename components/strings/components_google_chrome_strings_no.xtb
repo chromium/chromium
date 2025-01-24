@@ -9,6 +9,7 @@
 <translation id="2447485272386224171">Chrome er gjort mulig av åpen kildekode-prosjektet <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> og annen <ph name="BEGIN_LINK_OSS" />programvare med åpen kildekode<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Chrome-logo</translation>
 <translation id="3444832043240812445">Denne siden viser kun informasjon om nylige krasj hvis du <ph name="BEGIN_LINK" />aktiverer rapportering av krasj<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Disse sidene er beregnet for bruk av Chrome-utviklere. Det kan hende at de ikke aktivt vedlikeholdes eller testes. For å slå dem på, gå til <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klikk på knappen for å slå på feilsøkingssider, og gå til denne siden igjen.</translation>
 <translation id="3875312571075912821">Tillat at Chrome bruker nettverket, i brannmur- eller
           antivirusinnstillingene dine.</translation>
 <translation id="5005121315113832363">Denne siden er blokkert av Chrome</translation>

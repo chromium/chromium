@@ -42,13 +42,13 @@ namespace ash {
 namespace {
 
 constexpr char kUser1Email[] = "test-user1@gmail.com";
-constexpr char kGaia1ID[] = "111111";
+constexpr GaiaId::Literal kGaia1ID("111111");
 
 constexpr char kUser2Email[] = "test-user2@gmail.com";
-constexpr char kGaia2ID[] = "222222";
+constexpr GaiaId::Literal kGaia2ID("222222");
 
 constexpr char kUser3Email[] = "test-user3@gmail.com";
-constexpr char kGaia3ID[] = "333333";
+constexpr GaiaId::Literal kGaia3ID("333333");
 
 constexpr base::TimeDelta kLoginOnlineShortDelay = base::Seconds(10);
 constexpr base::TimeDelta kLoginOnlineLongDelay = base::Seconds(20);
@@ -218,13 +218,13 @@ class UserSelectionScreenBlockOfflineTest : public LoginManagerTest,
   }
 
   const LoginManagerMixin::TestUserInfo test_user_over_the_limit_{
-      AccountId::FromUserEmailGaiaId(kUser1Email, GaiaId(kGaia1ID)),
+      AccountId::FromUserEmailGaiaId(kUser1Email, kGaia1ID),
       test::UserAuthConfig::Create(test::kDefaultAuthSetup).RequireReauth()};
   const LoginManagerMixin::TestUserInfo test_user_under_the_limit_{
-      AccountId::FromUserEmailGaiaId(kUser2Email, GaiaId(kGaia2ID)),
+      AccountId::FromUserEmailGaiaId(kUser2Email, kGaia2ID),
       test::UserAuthConfig::Create(test::kDefaultAuthSetup).RequireReauth()};
   const LoginManagerMixin::TestUserInfo test_user_limit_not_set_{
-      AccountId::FromUserEmailGaiaId(kUser3Email, GaiaId(kGaia3ID)),
+      AccountId::FromUserEmailGaiaId(kUser3Email, kGaia3ID),
       test::UserAuthConfig::Create(test::kDefaultAuthSetup).RequireReauth()};
   LoginManagerMixin login_mixin_{
       &mixin_host_,
@@ -283,10 +283,8 @@ class DarkLightEnabledTest : public LoginManagerTest {
   }
 
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
-  const AccountId user1{
-      AccountId::FromUserEmailGaiaId(kUser1Email, GaiaId(kGaia1ID))};
-  const AccountId user2{
-      AccountId::FromUserEmailGaiaId(kUser2Email, GaiaId(kGaia2ID))};
+  const AccountId user1{AccountId::FromUserEmailGaiaId(kUser1Email, kGaia1ID)};
+  const AccountId user2{AccountId::FromUserEmailGaiaId(kUser2Email, kGaia2ID)};
 };
 
 // OOBE + login of the first user.

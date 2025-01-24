@@ -185,6 +185,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1310938305420497484">Primeiro, abra separadores e visite sites</translation>
 <translation id="1314311879718644478">Veja conteúdo de realidade aumentada</translation>
 <translation id="1314509827145471431">Encadernar à direita</translation>
+<translation id="1314784609072437689">substituição do teclado</translation>
 <translation id="1316805916535763484">Cursos online abertos</translation>
 <translation id="1318023360584041678">Guardado no grupo de separadores</translation>
 <translation id="1319245136674974084">Não voltar a perguntar para esta app</translation>
@@ -911,7 +912,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="255497580849974774">Mantenha o dispositivo ligado a um carregador durante a atualização.</translation>
 <translation id="2556876185419854533">&amp;Anular edição</translation>
 <translation id="2559566667529177711">Multicamada</translation>
-<translation id="2565789370591907825">Bloqueio e utilização do teclado</translation>
 <translation id="2570734079541893434">Gerir definições</translation>
 <translation id="257136025287118539">O administrador está a mover os seus ficheiros para o <ph name="CLOUD_PROVIDER" />. Pode modificar estes ficheiros quando o carregamento estiver concluído.</translation>
 <translation id="2571488850200220306">Para ajudar a garantir a segurança, também pode ver o SO do dispositivo, a versão do navegador e o software instalado</translation>
@@ -1109,7 +1109,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2974468223369775963">Não foi possível guardar este IBAN na sua Conta Google. Em alternativa, foi guardado no Chrome neste dispositivo. O Chrome vai perguntar-lhe novamente da próxima vez que usar este IBAN.</translation>
 <translation id="297667759942911166">Colabore em grupos de separadores</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> selecionado atualmente. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">Bloquear e usar o teclado</translation>
 <translation id="2978824962390592855">Ópera</translation>
 <translation id="2979424420072875974">Recursos para escritores</translation>
 <translation id="2979639724566107830">Abrir numa nova janela</translation>
@@ -2466,6 +2465,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5363532265530011914">Meias e colãs</translation>
 <translation id="5371425731340848620">Atualizar cartão</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> alterou um separador</translation>
+<translation id="5374324662289354619">As páginas de depuração internas estão atualmente desativadas.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"O seu relógio está atrasado" ou "O seu relógio está adiantado" ou "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Para ter esta palavra-passe em todos os seus dispositivos, valide a sua identidade</translation>
@@ -2921,6 +2921,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">O Chrome limita automaticamente os cookies de terceiros</translation>
 <translation id="6188479691141473408">e mais <ph name="N_FIELDS" /> campos</translation>
+<translation id="6190518157737269631">Substituir algumas teclas do teclado, como a tecla Esc</translation>
 <translation id="6194209731893739467">Veja todos os produtos monitorizados aqui</translation>
 <translation id="6195163219142236913">Cookies de terceiros limitados</translation>
 <translation id="6195371403461054755">Geologia</translation>
@@ -4107,7 +4108,6 @@ Detalhes adicionais:
 <translation id="8278544367771164040">Empréstimos comerciais</translation>
 <translation id="8279290844152565425">Concertos e festivais de música</translation>
 <translation id="8279611986089885641">As notificações do Chrome têm de estar ativadas. Pode ativá-las nas <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
-<translation id="8280387559022105172">Bloquear o teclado?</translation>
 <translation id="8280630997017109758">Tabuleiro 11</translation>
 <translation id="8281730697546299650">Outras funcionalidades de privacidade dos anúncios já disponíveis</translation>
 <translation id="8281886186245836920">Ignorar</translation>
@@ -4177,7 +4177,6 @@ Detalhes adicionais:
 <translation id="8398335999901363925">Métodos de pagamento disponíveis para preenchimento com o toque abertos à altura total.</translation>
 <translation id="8398446215576328011">Reverter políticas aplicadas</translation>
 <translation id="8398790343843005537">Localizar o seu telemóvel</translation>
-<translation id="8399276468426899527">bloqueio e utilização do teclado</translation>
 <translation id="8400929824946688748">Empregos e educação</translation>
 <translation id="8402442052798347631">Os atacantes no site que tentou visitar podem fazer com que instale software prejudicial que afeta a forma como navega, por exemplo, alterando a sua página inicial ou apresentando anúncios adicionais nos sites que visita. O Chrome recomenda vivamente voltar para um site seguro de forma a evitar danos. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais acerca deste aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Ficção escrita por fãs</translation>
@@ -4195,6 +4194,7 @@ Detalhes adicionais:
 <translation id="8421158157346464398">Informações do perfil de trabalho (como o nome de utilizador do perfil de trabalho)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Alterar</translation>
+<translation id="8426945547715537628">Permitir substituição do teclado?</translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Definições</translation>
 <translation id="8428634594422941299">OK</translation>
@@ -4281,6 +4281,7 @@ Detalhes adicionais:
 <translation id="8574841453995331336">Frigoríficos e arcas congeladoras</translation>
 <translation id="8577192028579836704">Preço habitual de todas as opções: <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Cartão virtual não disponível</translation>
+<translation id="8579000896558714521">Substituição do teclado</translation>
 <translation id="8580265901435899937">Destinos turísticos</translation>
 <translation id="8581064022803799721">Esta página foi guardada em <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Equipamento de squash e raquetebol</translation>

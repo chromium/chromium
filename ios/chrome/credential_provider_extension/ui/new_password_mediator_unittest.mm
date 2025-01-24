@@ -50,8 +50,8 @@
 
 namespace {
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForFileOperationTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 NSString* const testWebsiteBase = @"https://wwww.example.com";
 NSString* const testWebsite =

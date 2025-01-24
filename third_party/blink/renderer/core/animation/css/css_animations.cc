@@ -2559,6 +2559,7 @@ void CSSAnimations::CalculateTransitionUpdate(
     Element& animating_element,
     const ComputedStyleBuilder& style_builder,
     const ComputedStyle* old_style,
+    const StyleRecalcContext& style_recalc_context,
     bool can_trigger_animations) {
   if (animating_element.GetDocument().FinishingOrIsPrinting()) {
     return;
@@ -2616,7 +2617,8 @@ void CSSAnimations::CalculateTransitionUpdate(
                                    /*after_change_style=*/nullptr,
                                    active_transitions,
                                    listed_properties_maybe,
-                                   transition_data};
+                                   transition_data,
+                                   style_recalc_context};
 
     if (transition_data) {
       for (wtf_size_t transition_index = 0;
@@ -2689,9 +2691,9 @@ const ComputedStyle& CSSAnimations::CalculateBeforeChangeStyle(
     // before-change style for @starting-style inherits from the after-change
     // style of the parent.
     if (const ComputedStyle* after_change_style =
-            EnsureAfterChangeStyleIfNecessary(
-                state.animating_element, state.old_style,
-                transitioning_property, /* for_starting_style */ true)) {
+            EnsureAfterChangeStyleIfNecessary(state, state.old_style,
+                                              transitioning_property,
+                                              /* for_starting_style */ true)) {
       base_style = after_change_style;
       state.before_change_style_is_accurate_for_starting_style = true;
     }
@@ -2784,6 +2786,7 @@ HeapVector<Member<Element>> CollectAncestorsToEnsure(Element& element,
 const ComputedStyle& CSSAnimations::EnsureAfterChangeStyle(
     Element& animating_element,
     Element& after_change_root,
+    const StyleRecalcContext& style_recalc_context,
     bool for_starting_style) {
   HeapVector<Member<Element>> ancestors =
       CollectAncestorsToEnsure(animating_element, after_change_root);
@@ -2819,15 +2822,17 @@ const ComputedStyle& CSSAnimations::EnsureAfterChangeStyle(
       context.container = ancestor;
     }
   }
+  context = style_recalc_context;
   // Let the old_style be nullptr if @starting-style rules should apply.
-  context.old_style =
-      for_starting_style ? nullptr : animating_element.GetComputedStyle();
+  if (for_starting_style) {
+    context.old_style = nullptr;
+  }
   return resolver.ResolveBaseStyle(animating_element, parent_style,
                                    layout_parent_style, context);
 }
 
 const ComputedStyle* CSSAnimations::EnsureAfterChangeStyleIfNecessary(
-    Element& animating_element,
+    TransitionUpdateState& state,
     const ComputedStyle& base_style,
     const PropertyHandle& transitioning_property,
     bool for_starting_style) {
@@ -2846,7 +2851,7 @@ const ComputedStyle* CSSAnimations::EnsureAfterChangeStyleIfNecessary(
   bool needs_after_change_style = false;
 
   for (Element* ancestor =
-           LayoutTreeBuilderTraversal::ParentElement(animating_element);
+           LayoutTreeBuilderTraversal::ParentElement(state.animating_element);
        ancestor;
        ancestor = LayoutTreeBuilderTraversal::ParentElement(*ancestor)) {
     const ComputedStyle& ancestor_style = ancestor->ComputedStyleRef();
@@ -2879,8 +2884,9 @@ const ComputedStyle* CSSAnimations::EnsureAfterChangeStyleIfNecessary(
   }
 
   CHECK(after_change_style_root);
-  return &EnsureAfterChangeStyle(animating_element, *after_change_style_root,
-                                 for_starting_style);
+  return &EnsureAfterChangeStyle(
+      state.animating_element, *after_change_style_root,
+      state.style_recalc_context, for_starting_style);
 }
 
 const ComputedStyle& CSSAnimations::CalculateAfterChangeStyle(
@@ -2891,7 +2897,7 @@ const ComputedStyle& CSSAnimations::CalculateAfterChangeStyle(
   }
   if (!state.after_change_style) {
     state.after_change_style = EnsureAfterChangeStyleIfNecessary(
-        state.animating_element, state.base_style, transitioning_property,
+        state, state.base_style, transitioning_property,
         /* for_starting_style */ false);
   }
   if (state.after_change_style) {

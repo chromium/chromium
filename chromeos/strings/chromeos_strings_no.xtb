@@ -296,7 +296,9 @@
 <translation id="2240366984605217732">Oppsettsbytte</translation>
 <translation id="2244834438220057800">grønn</translation>
 <translation id="225692081236532131">Aktiveringsstatus</translation>
+<translation id="2265792117169966196">Velg og last ned transkripsjonsmodellen for <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Legg til skjermbilde</translation>
+<translation id="2268044343513325586">Finstem</translation>
 <translation id="2271469253353559191">Tidsplan for mørk modus</translation>
 <translation id="2276999893457278469">Populært hjelpeinnhold</translation>
 <translation id="2277631741861284101">Ta opp og del lyd på en enkel måte</translation>
@@ -464,7 +466,6 @@
 <translation id="3226405216343213872">Ser etter skannere</translation>
 <translation id="3226657629376379887">Handlingsmeny for layout</translation>
 <translation id="3227186760713762082">Divider <ph name="CATEGORY_TEXT" />-verdien med <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Skriv om</translation>
 <translation id="3246869037381808805">Utskriftsjobber som er eldre enn 1 dag, blir fjernet</translation>
 <translation id="324961752321393509">Administratoren din tillater ikke lukking av denne appen</translation>
 <translation id="3263941347294171263">Koble <ph name="DEVICE_NAME" /> fra og koble den til igjen for å fortsette oppdateringsprosessen</translation>
@@ -509,6 +510,7 @@
 <translation id="3462187165860821523">Oppdaterer <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Nåværende</translation>
 <translation id="346539236881580388">Ta på nytt</translation>
+<translation id="3479552764303398839">Ikke nå</translation>
 <translation id="3484914941826596830">Ikke koble fra denne eksterne enheten eller slå av datamaskinen mens fastvaren oppdateres. Du kan minimere dette vinduet. Denne oppdateringen kan ta noen minutter, og det kan hende den eksterne enheten ikke fungerer i dette tidsrommet.</translation>
 <translation id="3486220673238053218">definisjon</translation>
 <translation id="3487866404496702283">Tilbakemelding for mahi-funksjonen</translation>
@@ -567,6 +569,7 @@
 <translation id="3763034084412196440">Juster volumet</translation>
 <translation id="3767737419527918477">Søk i opptaksfiler</translation>
 <translation id="3771294271822695279">Videofiler</translation>
+<translation id="3771694256347217732">Googles vilkår for bruk</translation>
 <translation id="3780740315729837296">Tilordne en tastaturtast</translation>
 <translation id="3784455785234192852">Lås</translation>
 <translation id="3785643128701396311">pikselkunst</translation>
@@ -772,6 +775,7 @@
 <translation id="473775607612524610">Oppdater</translation>
 <translation id="4744944742468440486">Informasjon om det du har markert</translation>
 <translation id="4750394297954878236">Forslag</translation>
+<translation id="4763771683769971829">Liste over tilgjengelige språk</translation>
 <translation id="4771607256327216405">tastatur gjør lysere</translation>
 <translation id="4771923071974529837">i morgen</translation>
 <translation id="4773299976671772492">Stoppet</translation>
@@ -853,6 +857,7 @@
 <translation id="5095761549884461003">Koble fra USB-kabelen for <ph name="DEVICE_NAME" /> og sett den inn igjen for å fortsette oppdateringsprosessen</translation>
 <translation id="5099354524039520280">opp</translation>
 <translation id="5107243100836678918">Hurtigtaster uten <ph name="META_KEY" />-tasten kan komme i konflikt med hurtigtastene i enkelte apper. Trykk på hurtigtasten en gang til for å fortsette å bruke den, eller trykk på en ny hurtigtast som inneholder <ph name="KEY" />-tasten. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399">Kan ikke laste ned transkripsjonsmodellen for <ph name="LANGUAGE_NAME" />. Prøv på nytt, eller start Chromebooken på nytt</translation>
 <translation id="5108781503443873320">Lignende:</translation>
 <translation id="5121677070210013200">Kan ikke laste ned transkripsjonsmodellen. Prøv på nytt, eller start Chromebooken på nytt.</translation>
 <translation id="5130848777448318809">ponnier</translation>
@@ -1053,7 +1058,6 @@
 <translation id="6075872808778243331">(Android) HTTP-tidsforsinkelse</translation>
 <translation id="6078323886959318429">Legg til snarvei</translation>
 <translation id="6091080061796993741">gul</translation>
-<translation id="6093853427925392522">Sørg for å bruke Innholdsoverføring-appen fra Google for å flytte dataene fra skolekontoen din til den personlige kontoen din før du mister tilgangen.</translation>
 <translation id="6104112872696127344">Skanningen er avbrutt</translation>
 <translation id="6106186594183574873">For å fullføre passordendringen, skriv inn det gamle passordet</translation>
 <translation id="6108689792487843350">Gatewayen er utilgjengelig</translation>
@@ -1277,6 +1281,7 @@
 <translation id="7049916119678019302">Last ned transkripsjonsmodellen i innstillingene</translation>
 <translation id="7058278511608979688">Avslutt og lagre</translation>
 <translation id="7059230779847288458">Lader – fulladet om <ph name="TIME_VALUE" /></translation>
+<translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> er valgt</translation>
 <translation id="7066538517128343186"><ph name="KEY" />-nøkkelen</translation>
 <translation id="7068619307603204412">Gjør enheten klar</translation>
 <translation id="7076851914315147928">Velg en bakgrunn</translation>
@@ -1300,7 +1305,6 @@
 <translation id="7135814714616751706">Søkesnarveier</translation>
 <translation id="7138614237884624401">Forenklet tekst</translation>
 <translation id="7138668887584231801">Ikke nok ord til å oppsummere</translation>
-<translation id="7141470099673912333">Innholdsoverføring</translation>
 <translation id="7143207342074048698">Kobler til</translation>
 <translation id="7144878232160441200">Prøv på nytt</translation>
 <translation id="7144954474087165241">pagode</translation>
@@ -1371,6 +1375,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="7415801143053185905">Svært høy HTTP-tidsforsinkelse</translation>
 <translation id="7418738250896500352">For mange ord til å forenkle</translation>
 <translation id="7425037327577270384">Hjelp meg å skrive</translation>
+<translation id="7425832472614771259">Transkripsjonsmodellen for <ph name="LANGUAGE_NAME" /> er <ph name="PROGRESS_PERCENTAGE" /> % lastet ned</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Kan ikke slå av eller fjerne dette APN-et. Sørg for å deaktivere eller fjerne aktiverte <ph name="ATTACH" />-APN.</translation>
 <translation id="7453118953486228603">Klikk for å oppsummere den markerte teksten</translation>
@@ -1407,6 +1412,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> igjen</translation>
 <translation id="7600430297804876776">Administratoren for <ph name="MANAGER" /> har angitt når denne <ph name="DEVICE_TYPE" />-enheten kan brukes.</translation>
 <translation id="7613724632293948900">Juster med muse- eller piltastene.</translation>
+<translation id="7618216277886673749">Velg <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Nøytral</translation>
 <translation id="7620771111601174153">Finn ut mer i Brukerstøtte</translation>
 <translation id="7625095758347640998">AI-bakgrunner</translation>
@@ -1541,7 +1547,6 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8261506727792406068">Slett</translation>
 <translation id="8262870577632766028">1 time</translation>
 <translation id="827422111966801947">Indigo</translation>
-<translation id="8281886186245836920">Hopp over</translation>
 <translation id="8286154143153872371">Koble til et nettverk og last inn siden på nytt for å se bakgrunnsbildet.</translation>
 <translation id="8291967909914612644">Land for leverandøren av hjemmeenheten</translation>
 <translation id="8294431847097064396">Kilde</translation>
@@ -1646,6 +1651,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8797082062139985406">Opprett et navn med AI fra Google</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8798441408945964110">Leverandørnavn</translation>
+<translation id="8804164990146287819">Personvernregler</translation>
 <translation id="8808828119384186784">Chrome-innstillinger</translation>
 <translation id="8814190375133053267">Wifi</translation>
 <translation id="8818152010000655963">Bakgrunn</translation>

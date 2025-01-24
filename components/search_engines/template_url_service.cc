@@ -757,7 +757,7 @@ void TemplateURLService::Remove(const TemplateURL* template_url) {
   template_urls_.erase(i);
 
   if (template_url->type() == TemplateURL::NORMAL) {
-    if (web_data_service_) {
+    if (web_data_service_ && template_url->GetLocalData()) {
       web_data_service_->RemoveKeyword(template_url->id());
     }
     // Inform sync of the deletion.
@@ -1635,7 +1635,10 @@ std::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
         "ProcessSyncChanges failed on ChangeType " +
         syncer::SyncChange::ChangeTypeToString(iter->change_type());
     if (iter->change_type() == syncer::SyncChange::ACTION_DELETE) {
-      if (!existing_turl) {
+      if (!existing_turl ||
+          (base::FeatureList::IsEnabled(
+               syncer::kSeparateLocalAndAccountSearchEngines) &&
+           !existing_turl->GetAccountData())) {
         // Can't DELETE a non-existent engine.
         error = syncer::ModelError(FROM_HERE, error_msg);
         continue;
@@ -1653,7 +1656,12 @@ std::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
       //
       // In the past, we tried re-creating the deleted TemplateURL, but it was
       // likely a source of duplicate search engine entries. crbug.com/1022775
-      if (existing_turl != GetDefaultSearchProvider()) {
+      if (base::FeatureList::IsEnabled(
+              syncer::kSeparateLocalAndAccountSearchEngines) &&
+          existing_turl->GetLocalData()) {
+        Update(existing_turl, TemplateURL(*existing_turl->GetLocalData()));
+        MaybeUpdateDSEViaPrefs(existing_turl);
+      } else if (existing_turl != GetDefaultSearchProvider()) {
         Remove(existing_turl);
       } else {
         postponed_deleted_default_engine_guid_ = existing_turl->sync_guid();
@@ -1675,7 +1683,12 @@ std::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
       TemplateURLData data(turl->data());
       data.id = kInvalidTemplateURLID;
 
-      TemplateURL* added = Add(std::make_unique<TemplateURL>(data));
+      // If flag is enabled, add `data` as account data member instead.
+      TemplateURL* added =
+          base::FeatureList::IsEnabled(
+              syncer::kSeparateLocalAndAccountSearchEngines)
+              ? Add(std::make_unique<TemplateURL>(std::nullopt, data))
+              : Add(std::make_unique<TemplateURL>(data));
       if (added) {
         MaybeUpdateDSEViaPrefs(added);
       }
@@ -1879,8 +1892,15 @@ void TemplateURLService::ProcessTemplateURLChange(
 
   if (base::FeatureList::IsEnabled(
           syncer::kSeparateLocalAndAccountSearchEngines)) {
-    // Dual-write active value to local and account.
-    turl->CopyActiveValueToLocalAndAccount();
+    if (type == syncer::SyncChange::ACTION_ADD ||
+        type == syncer::SyncChange::ACTION_UPDATE) {
+      // Dual-write active value to local and account.
+      turl->CopyActiveValueToLocalAndAccount();
+    } else if (!turl->GetAccountData()) {
+      CHECK_EQ(type, syncer::SyncChange::ACTION_DELETE);
+      // Nothing to commit if there was no account data to begin with.
+      return;
+    }
   }
 
   syncer::SyncData sync_data = CreateSyncDataFromTemplateURLData(turl->data());

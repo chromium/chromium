@@ -1027,7 +1027,10 @@ void PermissionRequestManager::ShowPrompt() {
         DetermineCurrentRequestUIDispositionReasonForUMA(),
         requests_[0]->GetGestureType(),
         /*prompt_display_duration=*/std::nullopt, /*is_post_prompt=*/false,
-        web_contents()->GetLastCommittedURL(),
+        web_contents()
+            ->GetPrimaryMainFrame()
+            ->GetLastCommittedOrigin()
+            .GetURL(),
         current_request_pepc_prompt_position_,
         GetRequestInitialStatus(requests_[0]),
         hats_shown_callback_.has_value()

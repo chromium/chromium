@@ -373,7 +373,7 @@
 <translation id="6245734527075554892">Сверяет URL со списком небезопасных сайтов в Chromium.</translation>
 <translation id="6248213926982192922">Назначить Chromium браузером по умолчанию</translation>
 <translation id="6268381023930128611">Выйти из Chromium?</translation>
-<translation id="6270547683008298381">Чтобы поддерживать работу этих вкладок, используется оперативная память. Разрешите Chromium сделать их неактивными, и производительность повысится.</translation>
+<translation id="6270547683008298381">Эти вкладки занимают лишние ресурсы. Чтобы повысить производительность, разрешите Chromium сделать их неактивными.</translation>
 <translation id="6281746429495226318">Настроить профиль Chromium</translation>
 <translation id="6290827346642914212">Настройте профиль Chromium</translation>
 <translation id="6294831894865512704">Расширение запрашивает вход в Chromium</translation>
@@ -396,7 +396,6 @@
 <translation id="6455857529632101747">Представляем профили Chromium</translation>
 <translation id="6466344609055215035">Удалить аккаунт из Chromium</translation>
 <translation id="6475912303565314141">Кроме того, расширение изменило стартовую страницу Chromium.</translation>
-<translation id="648062525172759633">Эти страницы, предназначенные для разработчиков Chromium, могут тестироваться или поддерживаться нерегулярно. Чтобы включить их, перейдите по адресу <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, нажмите на кнопку включения отладочных страниц, а затем вернитесь сюда.</translation>
 <translation id="648319183876919572">Улучшенный Безопасный просмотр дополнительно защищает вас от угроз на сайтах и вредоносных скачанных файлов.</translation>
 <translation id="6510925080656968729">Удаление Chromium</translation>
 <translation id="651535675648445253">Вкладки быстрого доступа будут открываться в Chromium</translation>
@@ -528,7 +527,6 @@
 <translation id="8313851650939857356">Ошибка при запуске: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Ваша организация задала настройки, согласно которым браузер Chromium закрывается, если он не используется в течение <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Сохранить как изображение</translation>
-<translation id="8326785589245660814">удалите данные Chromium из аккаунта</translation>
 <translation id="8330519371938183845">Войдите, чтобы синхронизировать данные Chromium на всех устройствах</translation>
 <translation id="8340674089072921962">Адрес <ph name="USER_EMAIL_ADDRESS" /> уже использовался в Chromium</translation>
 <translation id="8359544530202147897">Обновите Chromium, чтобы продолжать использовать данные Chromium в аккаунте Google <ph name="ACCOUNT_EMAIL" />.</translation>

@@ -185,6 +185,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1310938305420497484">Najprije otvorite kartice i posjetite web-lokacije</translation>
 <translation id="1314311879718644478">Gledajte sadržaj u proširenoj stvarnosti</translation>
 <translation id="1314509827145471431">Uvez s desne strane</translation>
+<translation id="1314784609072437689">nadjačavanje tipkovnice</translation>
 <translation id="1316805916535763484">Otvoreni online tečajevi</translation>
 <translation id="1318023360584041678">Spremljeno u grupu kartica</translation>
 <translation id="1319245136674974084">Ne pitaj ponovno za ovu aplikaciju</translation>
@@ -911,7 +912,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="255497580849974774">Neka uređaj ostane povezan s punjačem tijekom ažuriranja.</translation>
 <translation id="2556876185419854533">&amp;Poništi uređivanje</translation>
 <translation id="2559566667529177711">Višeslojno</translation>
-<translation id="2565789370591907825">Zaključavanje i upotreba tipkovnice</translation>
 <translation id="2570734079541893434">Upravljajte postavkama</translation>
 <translation id="257136025287118539">Administrator premješta vaše datoteke na uslugu <ph name="CLOUD_PROVIDER" />. Te datoteke možete izmijeniti nakon dovršetka prijenosa.</translation>
 <translation id="2571488850200220306">Da bi se osigurala sigurnost, administrator može vidjeti i OS uređaja, verziju preglednika i koji je softver instaliran</translation>
@@ -1109,7 +1109,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2974468223369775963">IBAN se nije mogao spremiti na vaš Google račun. Spremljen je u Chrome na ovom uređaju. Chrome će vas ponovo pitati sljedeći put kad budete upotrebljavali taj IBAN.</translation>
 <translation id="297667759942911166">Surađujte u grupama kartica</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, trenutačno odabrano. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">Zaključavanje i upotreba tipkovnice</translation>
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Resursi za pisce</translation>
 <translation id="2979639724566107830">Otvori u novom prozoru</translation>
@@ -2465,6 +2464,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5363532265530011914">Čarape</translation>
 <translation id="5371425731340848620">Ažuriranje kartice</translation>
 <translation id="537425196847960924">Korisnik <ph name="USER_DISPLAY_NAME" /> promijenio je karticu</translation>
+<translation id="5374324662289354619">Stranice za interno otklanjanje pogrešaka trenutačno su onemogućene.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Sat kasni" ili "Sat ide unaprijed" ili "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Da biste tu zaporku dobili na svim svojim uređajima, potvrdite da ste to vi</translation>
@@ -2920,6 +2920,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome automatski ograničava kolačiće trećih strana</translation>
 <translation id="6188479691141473408">i još <ph name="N_FIELDS" /> polja</translation>
+<translation id="6190518157737269631">Nadjačavanje nekih tipki na tipkovnici, kao što je Esc</translation>
 <translation id="6194209731893739467">Ovdje pogledajte sve svoje praćene proizvode</translation>
 <translation id="6195163219142236913">Ograničeni su kolačići trećih strana</translation>
 <translation id="6195371403461054755">Geologija</translation>
@@ -4107,7 +4108,6 @@ Dodatne pojedinosti:
 <translation id="8278544367771164040">Krediti</translation>
 <translation id="8279290844152565425">Koncerti i glazbeni festivali</translation>
 <translation id="8279611986089885641">Obavijesti u Chromeu moraju biti uključene. Možete ih uključiti u odjeljku <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
-<translation id="8280387559022105172">Zaključati tipkovnicu?</translation>
 <translation id="8280630997017109758">Ladica 11</translation>
 <translation id="8281730697546299650">Sada su dostupne ostale značajke zaštite privatnosti u online oglašavanju</translation>
 <translation id="8281886186245836920">Preskoči</translation>
@@ -4177,7 +4177,6 @@ Dodatne pojedinosti:
 <translation id="8398335999901363925">Načini plaćanja dostupni za unos dodirom otvoreni su preko cijelog zaslona.</translation>
 <translation id="8398446215576328011">Vrati primijenjena pravila</translation>
 <translation id="8398790343843005537">Pronađite svoj telefon</translation>
-<translation id="8399276468426899527">zaključavanje i upotreba tipkovnice</translation>
 <translation id="8400929824946688748">Poslovi i obrazovanje</translation>
 <translation id="8402442052798347631">Napadači na web-lokaciji koju ste pokušali posjetiti mogu vas na prijevaru navesti da instalirate štetan softver koji utječe na način na koji pregledavate, primjerice promjenom početne stranice ili prikazivanjem dodatnih oglasa na web-lokacijama koje posjetite. Chrome preporučuje da se vratite na sigurno kako biste izbjegli štetu. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više o tom upozorenju<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">"Fanfic" književnost</translation>
@@ -4195,6 +4194,7 @@ Dodatne pojedinosti:
 <translation id="8421158157346464398">Podaci o poslovnom profilu (na primjer korisničko ime poslovnog profila)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Promijeni</translation>
+<translation id="8426945547715537628">Dopustiti nadjačavanje tipkovnice?</translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Postavke</translation>
 <translation id="8428634594422941299">Shvaćam</translation>
@@ -4281,6 +4281,7 @@ Dodatne pojedinosti:
 <translation id="8574841453995331336">Hladnjaci i zamrzivači</translation>
 <translation id="8577192028579836704">Uobičajena cijena svih opcija: <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtualna kartica nije dostupna</translation>
+<translation id="8579000896558714521">Nadjačavanje tipkovnice</translation>
 <translation id="8580265901435899937">Turistička odredišta</translation>
 <translation id="8581064022803799721">Ova je stranica spremljena u mapu <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Oprema za skvoš i racquetball</translation>

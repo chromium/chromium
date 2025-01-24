@@ -7,6 +7,7 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/icons.html.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
+import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -97,7 +98,7 @@ export class HistoryEmbeddingsFilterChips extends
     };
   }
 
-  enableShowResultsByGroupOption: boolean;
+  enableShowResultsByGroupOption: boolean = false;
   selectedSuggestion?: Suggestion;
   showResultsByGroup: boolean = false;
   protected suggestions_: Suggestion[] = generateSuggestions();
@@ -134,6 +135,7 @@ export class HistoryEmbeddingsFilterChips extends
   protected onSuggestionClick_(e: Event) {
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
     const clickedSuggestion = this.suggestions_[index];
+    assert(clickedSuggestion);
     if (this.isSuggestionSelected_(clickedSuggestion)) {
       this.selectedSuggestion = undefined;
     } else {

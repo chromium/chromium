@@ -69,7 +69,7 @@ constexpr char kApiKeyParam[] = "key";
 
 constexpr char kPublicAccountUserId[] = "public_session_user@localhost";
 
-constexpr char kTestGaiaId[] = "123";
+constexpr GaiaId::Literal kTestGaiaId("123");
 constexpr char kTestEmail[] = "example@gmail.com";
 
 }  // namespace
@@ -209,7 +209,7 @@ class DemoLoginControllerTest : public testing::Test {
   void AppendTestUserToUserList() {
     EXPECT_EQ(1U, fake_user_manager_->GetUsers().size());
     fake_user_manager_->AddUser(AccountId::FromNonCanonicalEmail(
-        kTestEmail, GaiaId(kTestGaiaId), AccountType::GOOGLE));
+        kTestEmail, kTestGaiaId, AccountType::GOOGLE));
     // Expect 2 users: test user with `kTestGaiaId` and public account user.
     EXPECT_EQ(2U, fake_user_manager_->GetUsers().size());
   }
@@ -326,7 +326,7 @@ TEST_F(DemoLoginControllerTest, CannotObtainDMTokenAndClientID) {
 TEST_F(DemoLoginControllerTest, ServerCleanUpSuccess) {
   AppendTestUserToUserList();
   auto* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kDemoAccountGaiaId, kTestGaiaId);
+  local_state->SetString(prefs::kDemoAccountGaiaId, kTestGaiaId.ToString());
   const std::string last_session_id = "device_id";
   local_state->SetString(prefs::kDemoModeSessionIdentifier, last_session_id);
   base::MockCallback<DemoLoginController::FailedRequestCallback>

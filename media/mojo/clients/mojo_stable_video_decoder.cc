@@ -7,7 +7,9 @@
 #include <optional>
 
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/types/pass_key.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -77,6 +79,8 @@ std::optional<viz::SharedImageFormat> GetSharedImageFormat(
 class MojoStableVideoDecoder::SharedImageHolder
     : public base::RefCountedThreadSafe<SharedImageHolder> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   static scoped_refptr<SharedImageHolder> CreateFromFrameResource(
       const scoped_refptr<FrameResource>& frame_resource,
       scoped_refptr<gpu::SharedImageInterface> sii) {
@@ -129,10 +133,18 @@ class MojoStableVideoDecoder::SharedImageHolder
       return nullptr;
     }
 
-    return base::WrapRefCounted(
-        new SharedImageHolder(std::move(new_client_shared_image),
-                              frame_resource->ColorSpace(), std::move(sii)));
+    return base::MakeRefCounted<SharedImageHolder>(
+        base::PassKey<SharedImageHolder>(), std::move(new_client_shared_image),
+        frame_resource->ColorSpace(), std::move(sii));
   }
+
+  SharedImageHolder(base::PassKey<SharedImageHolder>,
+                    scoped_refptr<gpu::ClientSharedImage> client_shared_image,
+                    const gfx::ColorSpace& color_space,
+                    scoped_refptr<gpu::SharedImageInterface> sii)
+      : color_space_(color_space),
+        sii_(std::move(sii)),
+        client_shared_image_(std::move(client_shared_image)) {}
 
   SharedImageHolder(const SharedImageHolder&) = delete;
   SharedImageHolder& operator=(const SharedImageHolder&) = delete;
@@ -162,14 +174,6 @@ class MojoStableVideoDecoder::SharedImageHolder
 
  private:
   friend class base::RefCountedThreadSafe<SharedImageHolder>;
-
-  SharedImageHolder(scoped_refptr<gpu::ClientSharedImage> client_shared_image,
-                    const gfx::ColorSpace& color_space,
-                    scoped_refptr<gpu::SharedImageInterface> sii)
-      : color_space_(color_space),
-        sii_(std::move(sii)),
-        client_shared_image_(std::move(client_shared_image)) {}
-
   ~SharedImageHolder() { CHECK(client_shared_image_->HasOneRef()); }
 
   const gfx::ColorSpace color_space_;

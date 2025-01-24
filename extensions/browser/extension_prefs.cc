@@ -1058,7 +1058,7 @@ void ExtensionPrefs::RemoveDisableReason(
 }
 
 void ExtensionPrefs::ReplaceDisableReasons(const ExtensionId& extension_id,
-                                           int disable_reasons) {
+                                           DisableReasonSet disable_reasons) {
   // TODO(crbug.com/372186532) This assertion is temporary. Many callers do
   // this:
   //
@@ -1073,13 +1073,10 @@ void ExtensionPrefs::ReplaceDisableReasons(const ExtensionId& extension_id,
   // should be removed. We handle the case when DISABLE_UNKNOWN is passed here
   // by getting all unknown reasons from the prefs and adding them back to the
   // set before writing it to the prefs.
-  CHECK_EQ(disable_reasons & disable_reason::DISABLE_UNKNOWN, 0)
+  CHECK(!disable_reasons.contains(disable_reason::DISABLE_UNKNOWN))
       << "Can not add DISABLE_UNKNOWN to the disable reasons list.";
-  const base::flat_set<int> incoming_disable_reasons_set =
-      BitflagToIntegerSet(disable_reasons);
-
   auto passkey = DisableReasonRawManipulationPasskey();
-  ReplaceDisableReasons(passkey, extension_id, incoming_disable_reasons_set);
+  ReplaceDisableReasons(passkey, extension_id, disable_reasons);
 }
 
 void ExtensionPrefs::ReplaceDisableReasons(
@@ -1110,18 +1107,22 @@ void ExtensionPrefs::ClearDisableReasons(const ExtensionId& extension_id) {
 
 void ExtensionPrefs::ClearInapplicableDisableReasonsForComponentExtension(
     const ExtensionId& component_extension_id) {
-  static constexpr int kAllowDisableReasons =
-      disable_reason::DISABLE_RELOAD |
-      disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT |
-      disable_reason::DISABLE_CORRUPTED | disable_reason::DISABLE_REINSTALL;
-  int allowed_disable_reasons = kAllowDisableReasons;
+  const DisableReasonSet kAllowDisableReasons = {
+      disable_reason::DISABLE_RELOAD,
+      disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT,
+      disable_reason::DISABLE_CORRUPTED, disable_reason::DISABLE_REINSTALL};
+
+  // TODO(crbug.com/372186532): Remove this conversion code after
+  // GetDisableReasons() is migrated to return a `DisableReasonSet`.
+  const DisableReasonSet current_disable_reasons =
+      BitflagToIntegerSet(GetDisableReasons(component_extension_id));
 
   // Some disable reasons incorrectly cause component extensions to never
   // activate on load. See https://crbug.com/946839 for more details on why we
   // do this.
-  ReplaceDisableReasons(
-      component_extension_id,
-      allowed_disable_reasons & GetDisableReasons(component_extension_id));
+  ReplaceDisableReasons(component_extension_id,
+                        base::STLSetIntersection<DisableReasonSet>(
+                            current_disable_reasons, kAllowDisableReasons));
 }
 
 void ExtensionPrefs::ModifyBitMapPrefBits(const ExtensionId& extension_id,
@@ -2484,13 +2485,19 @@ void ExtensionPrefs::MigrateDeprecatedDisableReasons() {
   // remove DEPRECATED_DISABLE_NOT_ASH_KEEPLISTED from the disable_reason enum.
   for (const auto& info : extensions_info) {
     const ExtensionId& extension_id = info.extension_id;
-    int disable_reasons = GetDisableReasons(extension_id);
-    if ((disable_reasons &
-         disable_reason::DEPRECATED_DISABLE_NOT_ASH_KEEPLISTED) == 0) {
+    // TODO(crbug.com/372186532): Remove this conversion code after
+    // GetDisableReasons() is migrated to return a `DisableReasonSet`.
+    const int disable_reasons_legacy_bitflag = GetDisableReasons(extension_id);
+    DisableReasonSet disable_reasons =
+        BitflagToIntegerSet(disable_reasons_legacy_bitflag);
+
+    if (!disable_reasons.contains(
+            disable_reason::DEPRECATED_DISABLE_NOT_ASH_KEEPLISTED)) {
       continue;
     }
-    disable_reasons &= ~disable_reason::DEPRECATED_DISABLE_NOT_ASH_KEEPLISTED;
-    if (disable_reasons == 0 && IsExtensionDisabled(extension_id)) {
+    disable_reasons.erase(
+        disable_reason::DEPRECATED_DISABLE_NOT_ASH_KEEPLISTED);
+    if (disable_reasons.empty() && IsExtensionDisabled(extension_id)) {
       SetExtensionEnabled(extension_id);
     } else {
       ReplaceDisableReasons(extension_id, disable_reasons);
@@ -2500,17 +2507,25 @@ void ExtensionPrefs::MigrateDeprecatedDisableReasons() {
 
   for (const auto& info : extensions_info) {
     const ExtensionId& extension_id = info.extension_id;
-    int disable_reasons = GetDisableReasons(extension_id);
-    if ((disable_reasons &
-         disable_reason::DEPRECATED_DISABLE_UNKNOWN_FROM_SYNC) == 0)
+    // TODO(crbug.com/372186532): Remove this conversion code after
+    // GetDisableReasons() is migrated to return a `DisableReasonSet`.
+    const int disable_reasons_legacy_bitflag = GetDisableReasons(extension_id);
+    DisableReasonSet disable_reasons =
+        BitflagToIntegerSet(disable_reasons_legacy_bitflag);
+
+    if (!disable_reasons.contains(
+            disable_reason::DEPRECATED_DISABLE_UNKNOWN_FROM_SYNC)) {
       continue;
-    disable_reasons &= ~disable_reason::DEPRECATED_DISABLE_UNKNOWN_FROM_SYNC;
-    if (disable_reasons == 0) {
+    }
+
+    disable_reasons.erase(disable_reason::DEPRECATED_DISABLE_UNKNOWN_FROM_SYNC);
+
+    if (disable_reasons.empty()) {
       // We don't know exactly why the extension was disabled, but we don't
       // want to just suddenly re-enable it. Default to disabling it by the
       // user (which was most likely for coming in from sync, and is
       // reversible).
-      disable_reasons = disable_reason::DISABLE_USER_ACTION;
+      disable_reasons = {disable_reason::DISABLE_USER_ACTION};
     }
     ReplaceDisableReasons(extension_id, disable_reasons);
   }

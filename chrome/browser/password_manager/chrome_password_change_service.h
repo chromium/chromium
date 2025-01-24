@@ -39,12 +39,13 @@ class ChromePasswordChangeService
       affiliations::AffiliationService* affiliation_service);
   ~ChromePasswordChangeService() override;
 
-  // Starts password change for a given `url`, `username` and `password`.
-  // `originator` belongs to a tab which initiated the process.
-  void StartPasswordChange(const GURL& url,
-                           const std::u16string& username,
-                           const std::u16string& password,
-                           content::WebContents* originator);
+  // Indicates that password change will be proposed to the user for a given
+  // `url`, `username` and `password`. `originator` belongs to a tab which
+  // initiated the process.
+  void OfferPasswordChangeUi(const GURL& url,
+                             const std::u16string& username,
+                             const std::u16string& password,
+                             content::WebContents* originator);
 
   // Responds with PasswordChangeDelegate for a given `web_contents`.
   // The same object is returned for a tab which initiated password change and a

@@ -206,7 +206,6 @@
 <translation id="345171907106878721">নিজকে Chromeত যোগ কৰক</translation>
 <translation id="3453763134178591239">ChromeOSৰ চৰ্তাৱলী</translation>
 <translation id="3503306920980160878">এই ছাইটটোৰ সৈতে আপোনাৰ অৱস্থান শ্বেয়াৰ কৰিবলৈ Chromeএ আপোনাৰ অৱস্থান এক্সেছ কৰাটো দৰকাৰ</translation>
-<translation id="3512634283363927263">এই পৃষ্ঠাসমূহ Chromeৰ বিকাশকৰ্তাৰ ব্যৱহাৰৰ বাবে সৃষ্টি কৰা হৈছে আৰু সেইসমূহ সক্ৰিয়ভাৱে ৰক্ষণাবেক্ষণ বা পৰীক্ষা কৰা নহ’বও পাৰে। সেয়া সক্ষম কৰিবলৈ <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />লৈ যাওক, পৃষ্ঠা ডিবাগ কৰাৰ সুবিধা সক্ষম কৰিবলৈ বুটামটোত ক্লিক কৰক আৰু তাৰ পাছত পুনৰ এই পৃষ্ঠাখনলৈ যাওক।</translation>
 <translation id="3533694711092285624">ছেভ কৰা কোনো পাছৱৰ্ড নাই। আপুনি আপোনাৰ পাছৱর্ডসমূহ ছেভ কৰিলে Chromeএ সেইবোৰ পৰীক্ষা কৰিব পাৰে।</translation>
 <translation id="3541482654983822893">Chromeএ আপোনাৰ পাছৱর্ডসমূহ পৰীক্ষা কৰিব নোৱাৰে। ২৪ ঘণ্টাৰ পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3564543103555793392">আপুনি Chromeত ছাইন ইন কৰিলে, বুকমাৰ্ক, পাছৱৰ্ড আৰু অধিক তথ্য ছেভ কৰিব পাৰে, তাৰ পাছত সেইসমূহ আপোনাৰ ফ’নত ব্যৱহাৰ কৰিব পাৰে</translation>
@@ -224,7 +223,6 @@
 <translation id="3673813398384385993">Chromeএ "<ph name="EXTENSION_NAME" />"ত মালৱেৰ থকাটো পাইছে</translation>
 <translation id="3695446226812920698">কেনেকৈ কৰিব সেয়া জানক</translation>
 <translation id="3697952514309507634">Chromeৰ অন্য প্ৰ’ফাইল</translation>
-<translation id="3700276346088749847">আপোনাৰ একাউণ্টৰ Chromeৰ ডেটা মচক</translation>
 <translation id="3703994572283698466"><ph name="BEGIN_LINK_LINUX_OSS" />Linux বিকাশৰ পৰিৱেশ<ph name="END_LINK_LINUX_OSS" />ৰ দৰে ChromeOSক অতিৰিক্ত <ph name="BEGIN_LINK_CROS_OSS" />মুক্ত উৎসৰ ছফ্টৱেৰ<ph name="END_LINK_CROS_OSS" />ৰ দ্বাৰা তৈয়াৰ কৰা হৈছে।</translation>
 <translation id="3716540481907974026">ChromeOS Flexৰ সংস্কৰণ</translation>
 <translation id="3718181793972440140">ইয়াৰ ফলত এই ডিভাইচটোৰ পৰা ১টা বস্তু মচা হ’ব। আপোনাৰ ডেটা পাছত পুনৰুদ্ধাৰ কৰিবলৈ Chromeত <ph name="USER_EMAIL" /> হিচাপে ছাইন ইন কৰক।</translation>

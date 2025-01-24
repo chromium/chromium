@@ -638,6 +638,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2105838220373099643">Role-playing games</translation>
 <translation id="2107021941795971877">Print supports</translation>
 <translation id="2108755909498034140">Restart your computer</translation>
+<translation id="2109845311767915560">Shared tab group</translation>
 <translation id="2111166930115883695">Press space to play</translation>
 <translation id="2113977810652731515">Card</translation>
 <translation id="2114841414352855701">Ignored because it was overridden by <ph name="POLICY_NAME" />.</translation>
@@ -910,7 +911,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="255497580849974774">Please keep your device connected to a charger during the update.</translation>
 <translation id="2556876185419854533">&amp;Undo Edit</translation>
 <translation id="2559566667529177711">Multi-layer</translation>
-<translation id="2565789370591907825">Keyboard lock and use</translation>
 <translation id="2570734079541893434">Manage settings</translation>
 <translation id="257136025287118539">Your administrator is moving your files to <ph name="CLOUD_PROVIDER" />. You can modify these files once the upload is complete.</translation>
 <translation id="2571488850200220306">To help ensure security, it can also see the device's OS, browser version and what software is installed</translation>
@@ -1108,7 +1108,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2974468223369775963">This IBAN couldn't be saved in your Google Account. It's been saved to Chrome on this device instead. Chrome will ask you again the next time that you use this IBAN.</translation>
 <translation id="297667759942911166">Collaborate in tab groups</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, currently selected. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">Lock and use your keyboard</translation>
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Writers Resources</translation>
 <translation id="2979639724566107830">Open in new window</translation>
@@ -2092,6 +2091,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4704745399240123930">Cards not accepted by this merchant are disabled, such as virtual cards.</translation>
 <translation id="4708268264240856090">Your connection was interrupted</translation>
 <translation id="4708276642004148190">Water supply and treatment</translation>
+<translation id="4711628883879888561">Collaborate on tab group</translation>
 <translation id="471880041731876836">You don't have permission to visit this site</translation>
 <translation id="4718897478554657123">600 mm x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Running Windows Network Diagnostics<ph name="END_LINK" /></translation>
@@ -2464,6 +2464,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5363532265530011914">Socks and Hosiery</translation>
 <translation id="5371425731340848620">Update card</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> changed a tab</translation>
+<translation id="5374324662289354619">Internal debugging pages are currently disabled.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">'Your clock is behind' or 'Your clock is ahead' or "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">To get this password on all your devices, verify that it's you</translation>
@@ -2698,6 +2699,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="578305955206182703">Amber</translation>
 <translation id="5783700460098783980">Luggage and travel accessories</translation>
 <translation id="57838592816432529">Mute</translation>
+<translation id="5783922175933467571"><ph name="TAB_GROUP_DISPLAY_NAME" /> link expires in 48 hours</translation>
 <translation id="5784606427469807560">There was a problem confirming your card. Check your Internet connection and try again.</translation>
 <translation id="5785756445106461925">Further, this page includes other resources which are not secure. These resources can be viewed by others while in transit, and can be modified by an attacker to change the look of the page.</translation>
 <translation id="5793317771769868848">This payment method will be deleted from this device</translation>
@@ -2770,6 +2772,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5930147475897662863">Turn on this setting to use Help me write</translation>
 <translation id="593102073240001326">How-to, DIY and expert content</translation>
 <translation id="5932224571077948991">Site shows intrusive or misleading ads</translation>
+<translation id="5933597524153120073">Open all (<ph name="ITEMS" />) in new window</translation>
 <translation id="5937560539988385583">Page translated</translation>
 <translation id="5938153366081463283">Add virtual card</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3042,6 +3045,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6394852772105848029">This site wants to open the <ph name="APP_NAME" /> app</translation>
 <translation id="639673288733510393">Scooters and mopeds</translation>
 <translation id="6398765197997659313">Exit full screen</translation>
+<translation id="6399633237874954301">Smart card reader allowed by your administrator</translation>
 <translation id="6401136357288658127">This policy is deprecated. You should use the <ph name="NEW_POLICY" /> policy instead.</translation>
 <translation id="640163077447496506">Expires today</translation>
 <translation id="6402537308870515461">Review is required before moving</translation>
@@ -4103,7 +4107,6 @@ Additional details:
 <translation id="8278544367771164040">Commercial lending</translation>
 <translation id="8279290844152565425">Concerts and music festivals</translation>
 <translation id="8279611986089885641">Chrome notifications must be on. You can turn them on in <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
-<translation id="8280387559022105172">Lock your keyboard?</translation>
 <translation id="8280630997017109758">Tray 11</translation>
 <translation id="8281730697546299650">Other ad privacy features now available</translation>
 <translation id="8281886186245836920">Skip</translation>
@@ -4173,7 +4176,6 @@ Additional details:
 <translation id="8398335999901363925">Payment methods available to be filled on touch opened at full height.</translation>
 <translation id="8398446215576328011">Revert applied policies</translation>
 <translation id="8398790343843005537">Find your phone</translation>
-<translation id="8399276468426899527">keyboard lock and use</translation>
 <translation id="8400929824946688748">Jobs and education</translation>
 <translation id="8402442052798347631">Attackers on the site that you tried visiting might trick you into installing harmful software that affects the way you browse – for example, by changing your homepage or showing you extra ads on sites that you visit. Chrome strongly recommends going back to safety to avoid harm. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Fan Fiction</translation>

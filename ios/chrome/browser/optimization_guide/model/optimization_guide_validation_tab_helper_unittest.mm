@@ -27,7 +27,7 @@
 namespace {
 constexpr char kHintsHost[] = "hints.com";
 constexpr char kHintsURL[] = "https://hints.com/with_hints.html";
-}
+}  // namespace
 
 class OptimizationGuideValidationTabHelperTest : public PlatformTest {
  public:

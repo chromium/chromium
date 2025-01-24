@@ -158,9 +158,10 @@ void NetworkResourcesData::ResourceData::ProcessCustomWeakness(
       String content;
       bool base64_encoded;
       if (InspectorPageAgent::CachedResourceContent(cached_resource_, &content,
-                                                    &base64_encoded))
+                                                    &base64_encoded, nullptr)) {
         network_resources_data_->SetResourceContent(RequestId(), content,
                                                     base64_encoded);
+      }
     }
   } else {
     // We could be evicting resource being loaded, save the loaded part, the

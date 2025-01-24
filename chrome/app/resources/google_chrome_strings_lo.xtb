@@ -206,7 +206,6 @@
 <translation id="345171907106878721">ເພີ່ມທ່ານເອງໃສ່ Chrome</translation>
 <translation id="3453763134178591239">ຂໍ້ກຳນົດ ChromeOS</translation>
 <translation id="3503306920980160878">Chrome ຕ້ອງການເຂົ້າເຖິງສະຖານທີ່ຂອງທ່ານເພື່ອແບ່ງປັນສະຖານທີ່ຂອງທ່ານກັບເວັບໄຊນີ້</translation>
-<translation id="3512634283363927263">ໜ້າເຫຼົ່ານີ້ມີໄວ້ສຳລັບນັກພັດທະນາ Chrome ເທົ່ານັ້ນ ແລະ ອາດບໍ່ໄດ້ຮັບການບຳລຸງຮັກສາ ຫຼື ທົດສອບຢ່າງສະໝ່ຳສະເໝີ. ເພື່ອເປີດການນຳໃຊ້, ໃຫ້ເຂົ້າໄປ <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, ຄລິກປຸ່ມເພື່ອເປີດການນຳໃຊ້ໜ້າດີບັກ, ຈາກນັ້ນນຳທາງໄປຫາໜ້ານີ້ອີກຄັ້ງ.</translation>
 <translation id="3533694711092285624">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້. Chrome ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານເມື່ອທ່ານບັນທຶກພວກມັນໄວ້.</translation>
 <translation id="3541482654983822893">Chrome ບໍ່ສາມາດກວດລະຫັດຜ່ານຂອງທ່ານໄດ້. ກະລຸນາລອງໃໝ່ຫຼັງຈາກ 24 ຊົ່ວໂມງ.</translation>
 <translation id="3564543103555793392">ເມື່ອທ່ານເຂົ້າສູ່ລະບົບ Chrome, ທ່ານສາມາດບັນທຶກບຸກມາກ, ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆ, ແລ້ວໃຊ້ຂໍ້ມູນເຫຼົ່ານັ້ນຢູ່ໂທລະສັບຂອງທ່ານໄດ້</translation>
@@ -224,7 +223,6 @@
 <translation id="3673813398384385993">Chrome ພົບວ່າ "<ph name="EXTENSION_NAME" />" ມີເມົາແວ</translation>
 <translation id="3695446226812920698">ສຶກສາວິທີການ</translation>
 <translation id="3697952514309507634">ໂປຣໄຟລ໌ Chrome ອື່ນໆ</translation>
-<translation id="3700276346088749847">ລຶບລ້າງຂໍ້ມູນ Chrome ໃນບັນຊີຂອງທ່ານ</translation>
 <translation id="3703994572283698466">ChromeOS ເກີດຂຶ້ນໄດ້ດ້ວຍ <ph name="BEGIN_LINK_CROS_OSS" />ຊອບແວໂອເພນຊອດ<ph name="END_LINK_CROS_OSS" /> ເພີ່ມເຕີມ, ຮວມທັງ <ph name="BEGIN_LINK_LINUX_OSS" />ສະພາບແວດລ້ອມການພັດທະນາ Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">ເວີຊັນ ChromeOS Flex</translation>
 <translation id="3718181793972440140">ນີ້ຈະລຶບ 1 ລາຍການອອກຈາກວິດີໂອນີ້. ເພື່ອກູ້ຂໍ້ມູນຂອງທ່ານຄືນໃນພາຍຫຼັງ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chrome ເປັນ <ph name="USER_EMAIL" />.</translation>

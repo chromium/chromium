@@ -28,10 +28,10 @@
 namespace ash {
 namespace {
 
-const char kSAMLUserId1[] = "12345";
-const char kSAMLUserEmail1[] = "alice@corp.example.com";
+constexpr GaiaId::Literal kSAMLUserId1("12345");
+constexpr char kSAMLUserEmail1[] = "alice@corp.example.com";
 
-const char kFakeToken[] = "fake-token";
+constexpr char kFakeToken[] = "fake-token";
 
 }  // namespace
 
@@ -51,7 +51,7 @@ class InSessionPasswordSyncManagerTest : public testing::Test {
   bool IsReauthRequiredBySamlTokenMismatch();
 
   const AccountId saml_login_account_id1_ =
-      AccountId::FromUserEmailGaiaId(kSAMLUserEmail1, GaiaId(kSAMLUserId1));
+      AccountId::FromUserEmailGaiaId(kSAMLUserEmail1, kSAMLUserId1);
 
   content::BrowserTaskEnvironment test_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,

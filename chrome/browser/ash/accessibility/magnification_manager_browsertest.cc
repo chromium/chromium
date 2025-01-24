@@ -33,7 +33,7 @@ namespace ash {
 namespace {
 
 constexpr char kTestUserName[] = "owner@invalid.domain";
-constexpr char kTestUserGaiaId[] = "9876543210";
+constexpr GaiaId::Literal kTestUserGaiaId("9876543210");
 
 void SetMagnifierEnabled(bool enabled) {
   MagnificationManager::Get()->SetMagnifierEnabled(enabled);
@@ -177,7 +177,7 @@ class MagnificationManagerTest : public InProcessBrowserTest {
   }
 
   const AccountId test_account_id_ =
-      AccountId::FromUserEmailGaiaId(kTestUserName, GaiaId(kTestUserGaiaId));
+      AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
 };
 
 IN_PROC_BROWSER_TEST_F(MagnificationManagerTest, PRE_LoginOffToOff) {

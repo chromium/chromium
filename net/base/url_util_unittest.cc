@@ -9,11 +9,9 @@
 
 #include "base/format_macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
-#include "url/url_features.h"
 #include "url/url_util.h"
 
 using base::ASCIIToUTF16;
@@ -672,90 +670,54 @@ TEST(UrlUtilTest, IsLocalhost) {
   EXPECT_TRUE(IsLocalhost(localhost6));
 }
 
-class UrlUtilTypedTest : public ::testing::TestWithParam<bool> {
- public:
-  UrlUtilTypedTest()
-      : use_standard_compliant_non_special_scheme_url_parsing_(GetParam()) {
-    if (use_standard_compliant_non_special_scheme_url_parsing_) {
-      scoped_feature_list_.InitAndEnableFeature(
-          url::kStandardCompliantNonSpecialSchemeURLParsing);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          url::kStandardCompliantNonSpecialSchemeURLParsing);
-    }
-  }
-
- protected:
-  bool use_standard_compliant_non_special_scheme_url_parsing_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All, UrlUtilTypedTest, ::testing::Bool());
-
 TEST(UrlUtilTest, SimplifyUrlForRequest) {
   struct {
     const char* const input_url;
     const char* const expected_simplified_url;
   } tests[] = {
-    {
-      // Reference section should be stripped.
-      "http://www.google.com:78/foobar?query=1#hash",
-      "http://www.google.com:78/foobar?query=1",
-    },
-    {
-      // Reference section can itself contain #.
-      "http://192.168.0.1?query=1#hash#10#11#13#14",
-      "http://192.168.0.1?query=1",
-    },
-    { // Strip username/password.
-      "http://user:pass@google.com",
-      "http://google.com/",
-    },
-    { // Strip both the reference and the username/password.
-      "http://user:pass@google.com:80/sup?yo#X#X",
-      "http://google.com/sup?yo",
-    },
-    { // Try an HTTPS URL -- strip both the reference and the username/password.
-      "https://user:pass@google.com:80/sup?yo#X#X",
-      "https://google.com:80/sup?yo",
-    },
-    { // Try an FTP URL -- strip both the reference and the username/password.
-      "ftp://user:pass@google.com:80/sup?yo#X#X",
-      "ftp://google.com:80/sup?yo",
-    },
+      {
+          // Reference section should be stripped.
+          "http://www.google.com:78/foobar?query=1#hash",
+          "http://www.google.com:78/foobar?query=1",
+      },
+      {
+          // Reference section can itself contain #.
+          "http://192.168.0.1?query=1#hash#10#11#13#14",
+          "http://192.168.0.1?query=1",
+      },
+      {
+          // Strip username/password.
+          "http://user:pass@google.com",
+          "http://google.com/",
+      },
+      {
+          // Strip both the reference and the username/password.
+          "http://user:pass@google.com:80/sup?yo#X#X",
+          "http://google.com/sup?yo",
+      },
+      {
+          // Try an HTTPS URL -- strip both the reference and the
+          // username/password.
+          "https://user:pass@google.com:80/sup?yo#X#X",
+          "https://google.com:80/sup?yo",
+      },
+      {
+          // Try an FTP URL -- strip both the reference and the
+          // username/password.
+          "ftp://user:pass@google.com:80/sup?yo#X#X",
+          "ftp://google.com:80/sup?yo",
+      },
+      {
+          // Try a non-special URL.
+          "foobar://user:pass@google.com:80/sup?yo#X#X",
+          "foobar://google.com:80/sup?yo",
+      },
   };
   for (const auto& test : tests) {
     SCOPED_TRACE(test.input_url);
     GURL input_url(GURL(test.input_url));
     GURL expected_url(GURL(test.expected_simplified_url));
     EXPECT_EQ(expected_url, SimplifyUrlForRequest(input_url));
-  }
-}
-
-TEST_P(UrlUtilTypedTest, SimplifyUrlForRequest) {
-  static constexpr struct {
-    const char* const input_url;
-    const char* const expected_when_compliant;
-    const char* const expected_when_non_compliant;
-  } tests[] = {
-      {
-          // Try a non-special URL
-          "foobar://user:pass@google.com:80/sup?yo#X#X",
-          "foobar://google.com:80/sup?yo",
-          "foobar://user:pass@google.com:80/sup?yo",
-      },
-  };
-
-  for (const auto& test : tests) {
-    SCOPED_TRACE(test.input_url);
-    GURL simplified = SimplifyUrlForRequest(GURL(test.input_url));
-    if (use_standard_compliant_non_special_scheme_url_parsing_) {
-      EXPECT_EQ(simplified, GURL(test.expected_when_compliant));
-    } else {
-      EXPECT_EQ(simplified, GURL(test.expected_when_non_compliant));
-    }
   }
 }
 

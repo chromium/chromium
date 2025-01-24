@@ -296,7 +296,9 @@
 <translation id="2240366984605217732">Prekidač rasporeda</translation>
 <translation id="2244834438220057800">zelene</translation>
 <translation id="225692081236532131">Status aktivacije</translation>
+<translation id="2265792117169966196">Izaberite i preuzmite model transkripcije za jezik <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Dodaj snimak ekrana</translation>
+<translation id="2268044343513325586">Preciziraj</translation>
 <translation id="2271469253353559191">Raspored tamnog režima</translation>
 <translation id="2276999893457278469">Najpopularniji sadržaj pomoći</translation>
 <translation id="2277631741861284101">Lako snimajte i delite zvuk</translation>
@@ -464,7 +466,6 @@
 <translation id="3226405216343213872">Traže se skeneri</translation>
 <translation id="3226657629376379887">Meni sa radnjama za raspored</translation>
 <translation id="3227186760713762082">Vrednost (<ph name="CATEGORY_TEXT" />) deli se brojem <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Prerada</translation>
 <translation id="3246869037381808805">Zadaci štampanja stariji od 1 dana se uklanjaju</translation>
 <translation id="324961752321393509">Administrator ne dozvoljava zatvaranje ove aplikacije</translation>
 <translation id="3263941347294171263">Isključite i ponovo priključite uređaj <ph name="DEVICE_NAME" /> da biste nastavili proces ažuriranja</translation>
@@ -509,6 +510,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> se ažurira</translation>
 <translation id="346423161771747987">Struja</translation>
 <translation id="346539236881580388">Ponovo snimi</translation>
+<translation id="3479552764303398839">Ne sada</translation>
 <translation id="3484914941826596830">Ne isključujte spoljni uređaj ni računar dok se firmver ažurira. Možete da umanjite ovaj prozor. Ovo ažuriranje može da potraje nekoliko minuta, a spoljni uređaj možda neće raditi tokom tog perioda.</translation>
 <translation id="3486220673238053218">definicija</translation>
 <translation id="3487866404496702283">Povratne informacije o funkciji mahi</translation>
@@ -567,6 +569,7 @@
 <translation id="3763034084412196440">Prilagodite jačinu zvuka</translation>
 <translation id="3767737419527918477">Pretražite fajlove snimaka</translation>
 <translation id="3771294271822695279">Video datoteke</translation>
+<translation id="3771694256347217732">Google uslovi korišćenja usluge</translation>
 <translation id="3780740315729837296">Dodelite taster na tastaturi</translation>
 <translation id="3784455785234192852">Zaključaj</translation>
 <translation id="3785643128701396311">pikselska grafika</translation>
@@ -772,6 +775,7 @@
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4744944742468440486">Informacije vezane za vaš izbor</translation>
 <translation id="4750394297954878236">Predlozi</translation>
+<translation id="4763771683769971829">Lista dostupnih jezika</translation>
 <translation id="4771607256327216405">osvetljavanje tastature</translation>
 <translation id="4771923071974529837">sutra</translation>
 <translation id="4773299976671772492">Zaustavljeno je</translation>
@@ -853,6 +857,7 @@
 <translation id="5095761549884461003">Isključite USB kabl <ph name="DEVICE_NAME" />, pa ga ponovo priključite da biste nastavili proces ažuriranja</translation>
 <translation id="5099354524039520280">nagore</translation>
 <translation id="5107243100836678918">Prečica bez tastera <ph name="META_KEY" /> može da bude u suprotnosti sa prečicom neke aplikacije. Ponovo pritisnite ovu prečicu da biste nastavili da je koristite ili pritisnite novu prečicu pomoću tastera <ph name="KEY" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399">Preuzimanje modela transkripcije za jezik <ph name="LANGUAGE_NAME" /> nije uspelo. Probajte ponovo ili restartujte Chromebook</translation>
 <translation id="5108781503443873320">Slično:</translation>
 <translation id="5121677070210013200">Preuzimanje modela transkripcije nije uspelo. Probajte ponovo ili restartujte Chromebook.</translation>
 <translation id="5130848777448318809">poniji</translation>
@@ -1053,7 +1058,6 @@
 <translation id="6075872808778243331">(Android) HTTP kašnjenje</translation>
 <translation id="6078323886959318429">Dodaj prečicu</translation>
 <translation id="6091080061796993741">žute</translation>
-<translation id="6093853427925392522">Obavezno koristite Google aplikaciju Prenos sadržaja da biste premestili podatke sa školskog naloga na lični nalog pre nego što izgubite pristup.</translation>
 <translation id="6104112872696127344">Skeniranje je otkazano</translation>
 <translation id="6106186594183574873">Da biste završili, unesite staru lozinku</translation>
 <translation id="6108689792487843350">Mrežni prolaz je nedostupan</translation>
@@ -1277,6 +1281,7 @@
 <translation id="7049916119678019302">Preuzmite model transkripcije u Podešavanjima</translation>
 <translation id="7058278511608979688">Završi i sačuvaj</translation>
 <translation id="7059230779847288458">Puni se. <ph name="TIME_VALUE" /> do kraja punjenja</translation>
+<translation id="7065336548231472971">Izabrali ste <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186">taster <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Pripremite uređaj</translation>
 <translation id="7076851914315147928">Odaberite pozadinu</translation>
@@ -1300,7 +1305,6 @@
 <translation id="7135814714616751706">Pretražite prečice</translation>
 <translation id="7138614237884624401">Pojednostavljen tekst</translation>
 <translation id="7138668887584231801">Nema dovoljno reči za rezimiranje</translation>
-<translation id="7141470099673912333">Prenos sadržaja</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
 <translation id="7144878232160441200">Probaj ponovo</translation>
 <translation id="7144954474087165241">Pagoda</translation>
@@ -1371,6 +1375,7 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="7415801143053185905">Veoma veliko HTTP kašnjenje</translation>
 <translation id="7418738250896500352">Previše reči za pojednostavljivanje</translation>
 <translation id="7425037327577270384">Pomoć pri pisanju</translation>
+<translation id="7425832472614771259">Model transkripcije za jezik <ph name="LANGUAGE_NAME" /> je preuzet <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Ne možete da onemogućite niti uklonite ovaj naziv pristupne tačke. Uverite se da su omogućeni nazivi pristupnih tačaka koji imaju tip <ph name="ATTACH" /> onemogućeni ili uklonjeni.</translation>
 <translation id="7453118953486228603">Kliknite da biste rezimirali izabrani tekst</translation>
@@ -1407,6 +1412,7 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="7595982850646262331">Još <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Administrator za <ph name="MANAGER" /> je podesio kada ovaj <ph name="DEVICE_TYPE" /> može da se koristi</translation>
 <translation id="7613724632293948900">Promenite položaj pomoću tastera miša ili tastera sa strelicama.</translation>
+<translation id="7618216277886673749">Izaberite <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutralno</translation>
 <translation id="7620771111601174153">Saznajte više u Centru za pomoć</translation>
 <translation id="7625095758347640998">AI pozadine</translation>
@@ -1541,7 +1547,6 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8262870577632766028">1 sat</translation>
 <translation id="827422111966801947">Tamnoplava</translation>
-<translation id="8281886186245836920">Preskoči</translation>
 <translation id="8286154143153872371">Povežite se na mrežu i ponovo učitajte stranicu da biste videli pozadinu.</translation>
 <translation id="8291967909914612644">Zemlja dobavljača za Home</translation>
 <translation id="8294431847097064396">Izvor</translation>
@@ -1646,6 +1651,7 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="8797082062139985406">Napravite naziv pomoću Google veštačke inteligencije</translation>
 <translation id="8798099450830957504">Podrazumevano</translation>
 <translation id="8798441408945964110">Naziv dobavljača</translation>
+<translation id="8804164990146287819">Politika privatnosti</translation>
 <translation id="8808828119384186784">Podešavanje Chrome-a</translation>
 <translation id="8814190375133053267">WiFi</translation>
 <translation id="8818152010000655963">Pozadina</translation>

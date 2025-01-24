@@ -50,7 +50,7 @@ namespace policy {
 namespace {
 
 constexpr char kEmail[] = "email@gmail.com";
-constexpr char kGaiaId[] = "gaia_id";
+constexpr GaiaId::Literal kGaiaId("gaia_id");
 constexpr char kOAuthToken[] = "oauth_token";
 
 constexpr base::TimeDelta kTokenLifetime = base::Minutes(30);
@@ -129,7 +129,7 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
   // and user policy manager.
   void CreateUserWithType(user_manager::UserType user_type) {
     const AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kEmail, GaiaId(kGaiaId));
+        AccountId::FromUserEmailGaiaId(kEmail, kGaiaId);
     TestingProfile* profile = profile_manager_->CreateTestingProfile(
         account_id.GetUserEmail(),
         std::unique_ptr<sync_preferences::PrefServiceSyncable>(),

@@ -29,12 +29,10 @@ class MockAffiliationService : public AffiliationService {
               PrefetchChangePasswordURLs,
               (const std::vector<GURL>&, base::OnceClosure),
               (override));
-  MOCK_METHOD(void, Clear, (), (override));
   MOCK_METHOD(GURL, GetChangePasswordURL, (const GURL&), (override, const));
   MOCK_METHOD(void,
               GetAffiliationsAndBranding,
               (const FacetURI&,
-               AffiliationService::StrategyOnCacheMiss,
                AffiliationService::ResultCallback),
               (override));
   MOCK_METHOD(void, Prefetch, (const FacetURI&, const base::Time&), (override));

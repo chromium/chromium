@@ -29,6 +29,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           et assurez-vous que vos paramètres aient comme valeur « sans mandataire » ou « direct ».</translation>
+<translation id="648062525172759633">Ces pages visent à être utilisées par les développeurs Chromium et ne peuvent pas être activement entretenues ou testées. Pour les activer, accédez à <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, cliquez sur le bouton permettant d'activer les pages de débogage, puis accédez de nouveau à cette page.</translation>
 <translation id="6549378540556750549">Chromium est également rendu possible par d'autres <ph name="BEGIN_LINK_OSS" />logiciels libres<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Vos modifications seront prises en compte au prochain redémarrage de Chromium.</translation>
 <translation id="691026815377248078">Chromium nécessite l'accès au Bluetooth pour continuer l'association. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

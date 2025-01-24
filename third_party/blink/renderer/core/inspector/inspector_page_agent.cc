@@ -346,8 +346,12 @@ bool InspectorPageAgent::SegmentedBufferContent(
 // static
 bool InspectorPageAgent::CachedResourceContent(const Resource* cached_resource,
                                                String* result,
-                                               bool* base64_encoded) {
+                                               bool* base64_encoded,
+                                               bool* was_cached) {
   bool has_zero_size;
+  if (cached_resource && was_cached) {
+    *was_cached = cached_resource->GetResponse().WasCached();
+  }
   if (!PrepareResourceBuffer(cached_resource, &has_zero_size))
     return false;
 
@@ -764,11 +768,17 @@ void InspectorPageAgent::GetResourceContentAfterResourcesContentLoaded(
     return;
   }
   String content;
+  bool was_cached;
   bool base64_encoded;
   if (InspectorPageAgent::CachedResourceContent(
           CachedResource(frame, KURL(url), inspector_resource_content_loader_),
-          &content, &base64_encoded)) {
-    callback->sendSuccess(content, base64_encoded);
+          &content, &base64_encoded, &was_cached)) {
+    if (content.empty() && !was_cached) {
+      callback->sendFailure(protocol::Response::ServerError(
+          "Content unavailable. Resource was not cached"));
+    } else {
+      callback->sendSuccess(content, base64_encoded);
+    }
   } else {
     callback->sendFailure(
         protocol::Response::ServerError("No resource with given URL found"));
@@ -823,12 +833,19 @@ void InspectorPageAgent::SearchContentAfterResourcesContentLoaded(
     return;
   }
   String content;
+  bool was_cached;
   bool base64_encoded;
   if (!InspectorPageAgent::CachedResourceContent(
           CachedResource(frame, KURL(url), inspector_resource_content_loader_),
-          &content, &base64_encoded)) {
+          &content, &base64_encoded, &was_cached)) {
     callback->sendFailure(
         protocol::Response::ServerError("No resource with given URL found"));
+    return;
+  }
+
+  if (content.empty() && !was_cached) {
+    callback->sendFailure(protocol::Response::ServerError(
+        "Content unavailable. Resource was not cached"));
     return;
   }
 

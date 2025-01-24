@@ -180,7 +180,11 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
 
 PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() = default;
 
-void PasswordChangeDelegateImpl::Init() {
+void PasswordChangeDelegateImpl::OfferPasswordChangeUi() {
+  UpdateState(PasswordChangeDelegate::State::kOfferingPasswordChange);
+}
+
+void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
   if (IsPrivacyNoticeAcknowledged()) {
     StartPasswordChange();
     return;
@@ -190,6 +194,7 @@ void PasswordChangeDelegateImpl::Init() {
 
 void PasswordChangeDelegateImpl::StartPasswordChange() {
   CHECK(originator_);
+  UpdateState(State::kWaitingForChangePasswordForm);
   if (executor_) {
     executor_->OpenURL(
         content::OpenURLParams(change_password_url_, content::Referrer(),
@@ -377,7 +382,6 @@ void PasswordChangeDelegateImpl::OnPrivacyNoticeAccepted() {
       Profile::FromBrowserContext(originator_->GetBrowserContext());
   profile->GetPrefs()->SetBoolean(
       password_manager::prefs::kPasswordChangeFlowNoticeAgreement, true);
-  UpdateState(PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
   StartPasswordChange();
 }
 
@@ -401,6 +405,7 @@ void PasswordChangeDelegateImpl::UpdateState(
       }
       // Fallthrough to trigger bubble display.
       [[fallthrough]];
+    case State::kOfferingPasswordChange:
     case State::kWaitingForAgreement:
     case State::kPasswordChangeFailed:
       DisplayChangePasswordBubbleAutomatically(originator_, executor_);

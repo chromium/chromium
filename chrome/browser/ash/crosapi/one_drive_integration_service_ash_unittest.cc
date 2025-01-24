@@ -28,7 +28,7 @@ namespace crosapi {
 namespace {
 
 constexpr char kProfileName[] = "user@gmail.com";
-constexpr char kGaiaId[] = "1234567890";
+constexpr GaiaId::Literal kGaiaId("1234567890");
 
 const base::FilePath kOneDrivePath(file_manager::util::kFuseBoxMediaPath);
 
@@ -87,8 +87,8 @@ class OneDriveIntegrationServiceAshTest : public testing::Test {
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile(kProfileName);
-    const AccountId account_id = AccountId::FromUserEmailGaiaId(
-        profile_->GetProfileUserName(), GaiaId(kGaiaId));
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(), kGaiaId);
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
     DCHECK(ash::ProfileHelper::IsPrimaryProfile(profile_));

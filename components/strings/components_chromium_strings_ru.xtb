@@ -29,6 +29,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           и убедитесь, что в конфигурации отключено использование прокси-сервера или выбрано непосредственное подключение.</translation>
+<translation id="648062525172759633">Эти страницы, предназначенные для разработчиков Chromium, могут тестироваться или поддерживаться нерегулярно. Чтобы включить их, перейдите по адресу <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, нажмите на кнопку включения отладочных страниц, а затем вернитесь сюда.</translation>
 <translation id="6549378540556750549">Chromium также работает благодаря <ph name="BEGIN_LINK_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Изменения вступят в силу при следующем входе в Chromium.</translation>
 <translation id="691026815377248078">Чтобы продолжить подключение, предоставьте браузеру Chromium доступ к Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

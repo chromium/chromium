@@ -116,11 +116,11 @@ using ::testing::Return;
 const char kObjectGuid[] = "12345";
 const char kAdUsername[] = "test_user@ad-domain.com";
 const char kNewUser[] = "new_test_user@gmail.com";
-const char kNewGaiaID[] = "11111";
+const GaiaId::Literal kNewGaiaID("11111");
 const char kExistingUser[] = "existing_test_user@gmail.com";
-const char kExistingGaiaID[] = "22222";
+const GaiaId::Literal kExistingGaiaID("22222");
 const char kManagedUser[] = "user@example.com";
-const char kManagedGaiaID[] = "33333";
+const GaiaId::Literal kManagedGaiaID("33333");
 const char kManager[] = "admin@example.com";
 const char kManagedDomain[] = "example.com";
 
@@ -294,9 +294,9 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
       AccountId::AdFromUserEmailObjGuid(kAdUsername, kObjectGuid);
 
   const LoginManagerMixin::TestUserInfo new_user_{
-      AccountId::FromUserEmailGaiaId(kNewUser, GaiaId(kNewGaiaID))};
+      AccountId::FromUserEmailGaiaId(kNewUser, kNewGaiaID)};
   const LoginManagerMixin::TestUserInfo existing_user_{
-      AccountId::FromUserEmailGaiaId(kExistingUser, GaiaId(kExistingGaiaID))};
+      AccountId::FromUserEmailGaiaId(kExistingUser, kExistingGaiaID)};
 
   CryptohomeMixin cryptohome_mixin_{&mixin_host_};
   LoginManagerMixin login_manager_{&mixin_host_,
@@ -970,9 +970,9 @@ class ExistingUserControllerProfileTest : public LoginManagerTest {
   }
 
   const LoginManagerMixin::TestUserInfo not_managed_user_{
-      AccountId::FromUserEmailGaiaId(kNewUser, GaiaId(kNewGaiaID))};
+      AccountId::FromUserEmailGaiaId(kNewUser, kNewGaiaID)};
   const LoginManagerMixin::TestUserInfo managed_user_{
-      AccountId::FromUserEmailGaiaId(kManagedUser, GaiaId(kManagedGaiaID))};
+      AccountId::FromUserEmailGaiaId(kManagedUser, kManagedGaiaID)};
   UserPolicyMixin user_policy_mixin_{&mixin_host_, managed_user_.account_id};
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
 };

@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">grön</translation>
 <translation id="225692081236532131">Aktiveringsstatus</translation>
 <translation id="2267285889943769271">Lägg till skärmdump</translation>
+<translation id="2268044343513325586">Finjustera</translation>
 <translation id="2271469253353559191">Schema för mörkt läge</translation>
 <translation id="2276999893457278469">Populärt hjälpinnehåll</translation>
 <translation id="2277631741861284101">Spela enkelt in och dela ljud</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">Söker efter skannrar</translation>
 <translation id="3226657629376379887">Layoutåtgärdsmeny</translation>
 <translation id="3227186760713762082">Dividera värdet för <ph name="CATEGORY_TEXT" /> med <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Skriv om</translation>
 <translation id="3246869037381808805">Utskriftsjobb som är äldre än 1 dagar tas bort</translation>
 <translation id="324961752321393509">Administratören tillåter inte att den här appen stängs</translation>
 <translation id="3263941347294171263">Dra ur strömkabeln från <ph name="DEVICE_NAME" /> och sätt i den igen för att fortsätta uppdateringsprocessen</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523">Uppdaterar <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Ström</translation>
 <translation id="346539236881580388">Ta om</translation>
+<translation id="3479552764303398839">Inte nu</translation>
 <translation id="3484914941826596830">Koppla inte från den externa enheten eller stäng av datorn medan firmware uppdateras. Du kan minimera fönstret. Uppdateringen kan ta en stund och din externa enhet kanske inte fungerar under tiden.</translation>
 <translation id="3486220673238053218">definition</translation>
 <translation id="3487866404496702283">Feedback om mahi-funktionen</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">Justera volym</translation>
 <translation id="3767737419527918477">Sök efter inspelningsfiler</translation>
 <translation id="3771294271822695279">Videofiler</translation>
+<translation id="3771694256347217732">Googles användarvillkor</translation>
 <translation id="3780740315729837296">Tilldela en tangent</translation>
 <translation id="3784455785234192852">Lås</translation>
 <translation id="3785643128701396311">pixelkonst</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) HTTP-latens</translation>
 <translation id="6078323886959318429">Lägg till genväg</translation>
 <translation id="6091080061796993741">gul</translation>
-<translation id="6093853427925392522">Se till att använda appen Content Transfer från Google för att flytta data från ditt skolkonto till ditt personliga konto innan du förlorar åtkomsten.</translation>
 <translation id="6104112872696127344">Skanningen har avbrutits</translation>
 <translation id="6106186594183574873">Slutför genom att ange det gamla lösenordet</translation>
 <translation id="6108689792487843350">Gateway kan inte nås</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">Sök efter kortkommando</translation>
 <translation id="7138614237884624401">Förenklad text</translation>
 <translation id="7138668887584231801">Inte tillräckligt många ord för att sammanfatta</translation>
-<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Ansluter</translation>
 <translation id="7144878232160441200">Försök igen</translation>
 <translation id="7144954474087165241">pagod</translation>
@@ -1541,7 +1541,6 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8261506727792406068">Radera</translation>
 <translation id="8262870577632766028">1 timme</translation>
 <translation id="827422111966801947">Indigoblå</translation>
-<translation id="8281886186245836920">Hoppa över</translation>
 <translation id="8286154143153872371">Anslut till ett nätverk och läs in sidan igen för att se bakgrunden.</translation>
 <translation id="8291967909914612644">Hemleverantörens land</translation>
 <translation id="8294431847097064396">Källa</translation>
@@ -1646,6 +1645,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8797082062139985406">Skapa ett namn med Google AI</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8798441408945964110">Leverantörens namn</translation>
+<translation id="8804164990146287819">Integritetspolicy</translation>
 <translation id="8808828119384186784">Inställningar för Chrome</translation>
 <translation id="8814190375133053267">wifi</translation>
 <translation id="8818152010000655963">Bakgrund</translation>

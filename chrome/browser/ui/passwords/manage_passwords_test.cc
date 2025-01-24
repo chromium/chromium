@@ -23,12 +23,14 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
+#include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/password_manager/core/browser/form_saver.h"
 #include "components/password_manager/core/browser/form_saver_impl.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
@@ -148,8 +150,16 @@ void ManagePasswordsTest::SetupPasswordChange() {
   ON_CALL(mock_affiliation_service, GetChangePasswordURL(kUrl))
       .WillByDefault(testing::Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields.html")));
-  static_cast<PasswordsLeakDialogDelegate*>(GetController())
-      ->ChangePassword(kUrl, u"new_username", u"new_password");
+  GetController()->OnCredentialLeak(password_manager::LeakedPasswordDetails(
+      password_manager::CreateLeakType(
+          password_manager::IsSaved(true), password_manager::IsReused(false),
+          password_manager::IsSyncing(true),
+          password_manager::HasChangePasswordUrl(true)),
+      kUrl, u"new_username", u"new_password",
+      /*in_account_store=*/true));
+  static_cast<PasswordsModelDelegate*>(GetController())
+      ->GetPasswordChangeDelegate()
+      ->StartPasswordChangeFlow();
 }
 
 void ManagePasswordsTest::SetupPendingPassword() {

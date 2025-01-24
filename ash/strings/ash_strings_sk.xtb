@@ -114,7 +114,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="132346741904777634">Kamera bola prichytená do ľavého horného rohu. Konflikt s platformou systému.</translation>
 <translation id="132415371743256095">Zavrite <ph name="DESK_NAME" /> aj okná</translation>
 <translation id="1333308631814936910">Pripojená obrazovka: <ph name="DISPLAY_NAME" /></translation>
-<translation id="1337081488893096731">Pomocou aplikácie Prenos obsahu preneste svoje údaje zo školského účtu do osobného</translation>
 <translation id="1340378040547539434">Oddialenie na stránke</translation>
 <translation id="1341651618736211726">Rozšírené</translation>
 <translation id="1341926407152459446">Používať <ph name="DEVICE_NAME" /> pre zvukový vstup aj výstup</translation>
@@ -285,7 +284,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1948405482892809935">Prepnutie na ďalšieho používateľa</translation>
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1954252331066828794">Nahrávanie obrazovky bolo dokončené</translation>
-<translation id="1956087014741188812">Pozastaviť klávesy myši</translation>
+<translation id="1956087014741188812">Pozastaviť myš klávesnicou</translation>
 <translation id="1957958912175573503">Nastavenie jazyka</translation>
 <translation id="1961239773406905488">Ukážka kamery je skrytá</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -354,7 +353,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="225680501294068881">Hľadajú sa zariadenia...</translation>
 <translation id="2257486738914982088">Pri sťahovaní súboru <ph name="FILENAME" /> sa vyskytol problém</translation>
 <translation id="2258734398699965611">Navrhované súbory</translation>
-<translation id="2266607665880926261">Klávesy myši boli pozastavené</translation>
+<translation id="2266607665880926261">Myš klávesnicou bola pozastavená</translation>
 <translation id="2268130516524549846">Rozhranie Bluetooth je deaktivované</translation>
 <translation id="2268731132310444948"><ph name="STEP" />. krok prehliadky z <ph name="TOTAL_STEPS" />. Po aktivácii Spúšťača budete mať k dispozícii zlepšený vyhľadávací panel. Môžete začať zadávať text a vyhľadať tak svoje súbory, aplikácie a ďalší obsah. Môžete získať aj odpovede na otázky o zariadení <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Odhlásiť všetkých</translation>
@@ -546,7 +545,7 @@ Ak to neurobíte, vstavaný touchpad sa znova aktivuje o <ph name="TIMEOUT_SECO
 <translation id="2876338922445400217">Priblíženie na obrazovke</translation>
 <translation id="2878884018241093801">Žiadne nedávne položky</translation>
 <translation id="2880541185262491188">Príliš veľa pokusov o zadanie kódu PIN. Počkajte <ph name="TIME_LEFT" /> a skúste to znova.</translation>
-<translation id="2883271196820422439">Obnoviť klávesy myši</translation>
+<translation id="2883271196820422439">Obnoviť myš klávesnicou</translation>
 <translation id="2885950158625301909">Ďalšie informácie</translation>
 <translation id="2891209721153296020">Zrušiť výber</translation>
 <translation id="2894949423239620203">Kábel môže ovplyvniť výkonnosť</translation>
@@ -734,7 +733,7 @@ Ak to neurobíte, vstavaný touchpad sa znova aktivuje o <ph name="TIMEOUT_SECO
 <translation id="3539957339480430241">Hotspot zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Zrušiť nastavovanie zobrazovania nedávnych fotiek a médií z telefónu</translation>
 <translation id="3542066395059568317">Zobrazia sa vám odporúčania, aby ste mohli pokračovať tam, kde ste prestali. Odstránite ich kliknutím pravým tlačidlom.</translation>
-<translation id="3545224667633138205">Klávesy myši boli obnovené</translation>
+<translation id="3545224667633138205">Myš klávesnicou bola obnovená</translation>
 <translation id="3552189655002856821">Pripojenie Wi‑Fi je vypnuté</translation>
 <translation id="3554215588514239132">Zobrazenie alebo skrytie panela s nástrojmi pre vývojárov</translation>
 <translation id="3554637740840164787">Položka <ph name="ITEM_TITLE" /> bola pripnutá</translation>
@@ -1841,7 +1840,7 @@ Nová inštalácia</translation>
 <translation id="7118268675952955085">snímka obrazovky</translation>
 <translation id="7118597077555700347">Otvoriť <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Výber ďalšieho slova alebo písmena</translation>
-<translation id="7124556000457919678">Po zapnutí pozastaviť a obnoviť klávesy myši</translation>
+<translation id="7124556000457919678">Po zapnutí pozastaviť a obnoviť myš klávesnicou</translation>
 <translation id="7126996685418858413">Otvorené v poslednom týždni</translation>
 <translation id="7130207228079676353">S NAJVÄČŠOU PRAVDEPODOBNOSŤOU</translation>
 <translation id="7131634465328662194">Odhlásenie prebehne automaticky.</translation>

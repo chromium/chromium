@@ -54,7 +54,7 @@ using ArcGoogleLocationServiceConsent =
     ::sync_pb::UserConsentTypes::ArcGoogleLocationServiceConsent;
 
 const char kManagedUser[] = "user@example.com";
-const char kManagedGaiaID[] = "33333";
+const GaiaId::Literal kManagedGaiaID("33333");
 
 constexpr char kConsolidatedConsentId[] = "consolidated-consent";
 
@@ -862,7 +862,7 @@ class ConsolidatedConsentScreenManagedUserTest
 
  private:
   const LoginManagerMixin::TestUserInfo managed_user_{
-      AccountId::FromUserEmailGaiaId(kManagedUser, GaiaId(kManagedGaiaID))};
+      AccountId::FromUserEmailGaiaId(kManagedUser, kManagedGaiaID)};
   UserPolicyMixin user_policy_mixin_{&mixin_host_, managed_user_.account_id};
 };
 
@@ -1051,7 +1051,7 @@ class ConsolidatedConsentScreenManagedUserLocationPolicyInterplayTest
 
  private:
   const LoginManagerMixin::TestUserInfo managed_user_{
-      AccountId::FromUserEmailGaiaId(kManagedUser, GaiaId(kManagedGaiaID))};
+      AccountId::FromUserEmailGaiaId(kManagedUser, kManagedGaiaID)};
   UserPolicyMixin user_policy_mixin_{&mixin_host_, managed_user_.account_id};
 
   base::test::ScopedFeatureList feature_list_;

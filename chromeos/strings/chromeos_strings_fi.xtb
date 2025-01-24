@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">vihreä</translation>
 <translation id="225692081236532131">Aktivoinnin tila</translation>
 <translation id="2267285889943769271">Lisää kuvakaappaus</translation>
+<translation id="2268044343513325586">Tarkenna</translation>
 <translation id="2271469253353559191">Tumman tilan aikataulu</translation>
 <translation id="2276999893457278469">Suosituin ohjesisältö</translation>
 <translation id="2277631741861284101">Tallenna ja jaa audiota helposti</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">Haetaan skannereita</translation>
 <translation id="3226657629376379887">Asettelun toimintovalikko</translation>
 <translation id="3227186760713762082">Jaa <ph name="CATEGORY_TEXT" /> tällä luvulla: <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Kirjoita uudelleen</translation>
 <translation id="3246869037381808805">Yli päivän vanhat tulostustyöt poistetaan</translation>
 <translation id="324961752321393509">Järjestelmänvalvoja ei salli tämän sovelluksen sulkemista</translation>
 <translation id="3263941347294171263">Irrota johto (<ph name="DEVICE_NAME" />) ja kytke se takaisin jatkaaksesi päivitysprosessia</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523">Päivitetään: <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Nykyinen</translation>
 <translation id="346539236881580388">Uusi otos</translation>
+<translation id="3479552764303398839">Ei nyt</translation>
 <translation id="3484914941826596830">Älä irrota ulkoista laitetta äläkä sammuta tietokonetta sillä aikaa kun laiteohjelmisto päivittyy. Voit pienentää ikkunan. Päivityksessä voi mennä muutama minuutti, eikä ulkoinen laite välttämättä toimi sen aikana.</translation>
 <translation id="3486220673238053218">määritelmä</translation>
 <translation id="3487866404496702283">Palaute mahi-ominaisuudesta</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">Säädä äänenvoimakkuutta</translation>
 <translation id="3767737419527918477">Hae tallennetiedostoja</translation>
 <translation id="3771294271822695279">Videotiedostot </translation>
+<translation id="3771694256347217732">Googlen käyttöehdot</translation>
 <translation id="3780740315729837296">Aseta näppäimistön näppäin</translation>
 <translation id="3784455785234192852">Lukitse</translation>
 <translation id="3785643128701396311">pikselitaide</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) HTTP-viive</translation>
 <translation id="6078323886959318429">Lisää pikakuvake</translation>
 <translation id="6091080061796993741">keltainen</translation>
-<translation id="6093853427925392522">Muista siirtää koulutilin data henkilökohtaiselle tilillesi Googlen Content Transfer ‑sovelluksella ennen kuin menetät pääsyn.</translation>
 <translation id="6104112872696127344">Skannaus on peruttu</translation>
 <translation id="6106186594183574873">Lisää lopuksi vanha salasana</translation>
 <translation id="6108689792487843350">Yhdyskäytävään ei saa yhteyttä</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">Hae pikakomentoja</translation>
 <translation id="7138614237884624401">Yksinkertaistettu teksti</translation>
 <translation id="7138668887584231801">Sanoja on liian vähän yhteenvedon tekemiseen</translation>
-<translation id="7141470099673912333">Sisällön siirto</translation>
 <translation id="7143207342074048698">Yhdistetään</translation>
 <translation id="7144878232160441200">Yritä uudelleen</translation>
 <translation id="7144954474087165241">pagodi</translation>
@@ -1541,7 +1541,6 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8261506727792406068">Poista</translation>
 <translation id="8262870577632766028">1 tunti</translation>
 <translation id="827422111966801947">Indigo</translation>
-<translation id="8281886186245836920">Ohita</translation>
 <translation id="8286154143153872371">Yhdistä verkkoon ja päivitä sivu nähdäksesi taustakuvan.</translation>
 <translation id="8291967909914612644">Kotiverkon palveluntarjoajan maa</translation>
 <translation id="8294431847097064396">Lähde</translation>
@@ -1646,6 +1645,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8797082062139985406">Luo nimi Googlen tekoälyn avulla</translation>
 <translation id="8798099450830957504">Oletus</translation>
 <translation id="8798441408945964110">Palveluntarjoajan nimi</translation>
+<translation id="8804164990146287819">Tietosuojakäytäntö</translation>
 <translation id="8808828119384186784">Chromen asetukset</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Taustakuva</translation>

@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/passwords/password_change/password_change_credential_leak_bubble_view.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -62,7 +63,6 @@
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/form_saver_impl.h"
-#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/move_password_to_account_store_helper.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
@@ -435,6 +435,14 @@ void ManagePasswordsUIController::OnCredentialLeak(
     HidePasswordBubble();
   } else {
     ClearPopUpFlagForBubble();
+  }
+
+  if (password_manager::IsPasswordChangeSupported(details.leak_type) &&
+      GetPasswordChangeService(web_contents())) {
+    GetPasswordChangeService(web_contents())
+        ->OfferPasswordChangeUi(details.origin, details.username,
+                                details.password, web_contents());
+    return;
   }
 
   auto metric_recorder = std::make_unique<
@@ -1010,20 +1018,6 @@ void ManagePasswordsUIController::OnLeakDialogHidden() {
     }
     UpdateBubbleAndIconVisibility();
   }
-}
-
-void ManagePasswordsUIController::ChangePassword(
-    const GURL& url,
-    const std::u16string& username,
-    const std::u16string& password) {
-  ChromePasswordChangeService* password_change_service =
-      GetPasswordChangeService(web_contents());
-  if (!password_change_service) {
-    return;
-  }
-  password_change_service->StartPasswordChange(url, username, password,
-                                               web_contents());
-  UpdateBubbleAndIconVisibility();
 }
 
 bool ManagePasswordsUIController::IsSavingPromptBlockedExplicitlyOrImplicitly()

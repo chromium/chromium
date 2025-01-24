@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">green</translation>
 <translation id="225692081236532131">Activation status</translation>
 <translation id="2267285889943769271">Add screenshot</translation>
+<translation id="2268044343513325586">Refine</translation>
 <translation id="2271469253353559191">Dark mode schedule</translation>
 <translation id="2276999893457278469">Top help content</translation>
 <translation id="2277631741861284101">Easily record and share your audio</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">Looking for scanners</translation>
 <translation id="3226657629376379887">Layout actions menu</translation>
 <translation id="3227186760713762082">Divide the <ph name="CATEGORY_TEXT" /> value by <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Rewrite</translation>
 <translation id="3246869037381808805">Print jobs older than 1 day will be removed</translation>
 <translation id="324961752321393509">Your administrator doesn't allow closing this app</translation>
 <translation id="3263941347294171263">Unplug and replug the <ph name="DEVICE_NAME" /> to continue the update process</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523">Updating <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Current</translation>
 <translation id="346539236881580388">Retake</translation>
+<translation id="3479552764303398839">Not now</translation>
 <translation id="3484914941826596830">While the firmware is updating, do not unplug this external device or shut down your computer. You can minimise this window. This update may take a few minutes and your external device may not work during this time.</translation>
 <translation id="3486220673238053218">definition</translation>
 <translation id="3487866404496702283">Feedback for mahi feature</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">Adjust volume</translation>
 <translation id="3767737419527918477">Search recording files</translation>
 <translation id="3771294271822695279">Video Files</translation>
+<translation id="3771694256347217732">Google Terms of Service</translation>
 <translation id="3780740315729837296">Assign a keyboard key</translation>
 <translation id="3784455785234192852">Lock</translation>
 <translation id="3785643128701396311">pixel art</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) HTTP Latency</translation>
 <translation id="6078323886959318429">Add shortcut</translation>
 <translation id="6091080061796993741">yellow</translation>
-<translation id="6093853427925392522">Make sure that you use the Content Transfer app by Google to move your school account data to your personal account before you lose access.</translation>
 <translation id="6104112872696127344">Scanning has been cancelled</translation>
 <translation id="6106186594183574873">To finish, enter your old password</translation>
 <translation id="6108689792487843350">Gateway is unreachable</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">Search shortcuts</translation>
 <translation id="7138614237884624401">Simplified text</translation>
 <translation id="7138668887584231801">Not enough words to summarise</translation>
-<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Connecting</translation>
 <translation id="7144878232160441200">Retry</translation>
 <translation id="7144954474087165241">pagoda</translation>
@@ -1541,7 +1541,6 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8262870577632766028">1 hour</translation>
 <translation id="827422111966801947">Indigo</translation>
-<translation id="8281886186245836920">Skip</translation>
 <translation id="8286154143153872371">Please connect to a network and reload the page to view wallpaper.</translation>
 <translation id="8291967909914612644">Home provider country</translation>
 <translation id="8294431847097064396">Source</translation>
@@ -1646,6 +1645,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8797082062139985406">Create name using Google AI</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8798441408945964110">Provider name</translation>
+<translation id="8804164990146287819">Privacy Policy</translation>
 <translation id="8808828119384186784">Chrome settings</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Wallpaper</translation>

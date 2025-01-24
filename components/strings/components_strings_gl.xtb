@@ -638,6 +638,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2105838220373099643">Xogos de rol</translation>
 <translation id="2107021941795971877">Soportes de impresión</translation>
 <translation id="2108755909498034140">Reinicia o ordenador</translation>
+<translation id="2109845311767915560">Grupo de pestanas compartido</translation>
 <translation id="2111166930115883695">Pulsa Espazo para xogar</translation>
 <translation id="2113977810652731515">Tarxeta</translation>
 <translation id="2114841414352855701">Ignorouse porque a anulou <ph name="POLICY_NAME" />.</translation>
@@ -910,7 +911,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="255497580849974774">Conecta o dispositivo a un cargador durante a actualización.</translation>
 <translation id="2556876185419854533">&amp;Desfacer modificación</translation>
 <translation id="2559566667529177711">Varias capas</translation>
-<translation id="2565789370591907825">Bloqueo e uso do teclado</translation>
 <translation id="2570734079541893434">Xestionar configuración</translation>
 <translation id="257136025287118539">A persoa administradora vai mover os ficheiros a <ph name="CLOUD_PROVIDER" />. Podes modificalos cando a carga se complete.</translation>
 <translation id="2571488850200220306">Para axudar a garantir a seguranza, tamén pode ver o sistema operativo do dispositivo, a versión do navegador e o software instalado</translation>
@@ -1108,7 +1108,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2974468223369775963">Este IBAN non se puido gardar na túa Conta de Google. En lugar diso, gardouse en Chrome neste dispositivo. Chrome preguntarache de novo a próxima vez que o uses.</translation>
 <translation id="297667759942911166">Colabora en grupos de pestanas</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />: opción actualmente seleccionada. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">Bloquear e usar o teclado</translation>
 <translation id="2978824962390592855">Ópera</translation>
 <translation id="2979424420072875974">Recursos para escritores</translation>
 <translation id="2979639724566107830">Abre o marcador nunha ventá nova</translation>
@@ -2092,6 +2091,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4704745399240123930">As tarxetas que non acepta este comerciante (por exemplo, as virtuais) están desactivadas.</translation>
 <translation id="4708268264240856090">Interrompeuse a túa conexión</translation>
 <translation id="4708276642004148190">Abastecemento e tratamento de augas</translation>
+<translation id="4711628883879888561">Colaborar nun grupo de pestanas</translation>
 <translation id="471880041731876836">Non tes permiso para visitar este sitio</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Executar diagnóstico de rede de Windows<ph name="END_LINK" /></translation>
@@ -2464,6 +2464,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5363532265530011914">Calcetíns e medias</translation>
 <translation id="5371425731340848620">Actualizar tarxeta</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> modificou unha pestana</translation>
+<translation id="5374324662289354619">As páxinas de depuración interna están actualmente desactivadas.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"O reloxo está atrasado", "O reloxo está adiantado" ou "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Para poder acceder a este contrasinal en todos os teus dispositivos, verifica a túa identidade</translation>
@@ -2698,6 +2699,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="578305955206182703">Ámbar</translation>
 <translation id="5783700460098783980">Maletas e accesorios de viaxe</translation>
 <translation id="57838592816432529">Silenciar</translation>
+<translation id="5783922175933467571">A ligazón a "<ph name="TAB_GROUP_DISPLAY_NAME" />" caduca ás 48 horas</translation>
 <translation id="5784606427469807560">Produciuse un problema ao confirmar a túa tarxeta. Comproba a túa conexión a Internet e téntao de novo.</translation>
 <translation id="5785756445106461925">Ademais, esta páxina inclúe outros recursos que non son seguros. Outros usuarios poden ver estes recursos mentres se desprazan e un atacante pode cambiar o aspecto da páxina.</translation>
 <translation id="5793317771769868848">Este método de pago eliminarase do dispositivo</translation>
@@ -2770,6 +2772,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5930147475897662863">Activa esta opción de configuración para poder usar Axúdame a escribir</translation>
 <translation id="593102073240001326">Guías, bricolaxe e contido de especialistas</translation>
 <translation id="5932224571077948991">O sitio mostra anuncios enganosos ou intrusivos</translation>
+<translation id="5933597524153120073">Abrir todos os URL (<ph name="ITEMS" />) nunha nova ventá</translation>
 <translation id="5937560539988385583">Traduciuse a páxina</translation>
 <translation id="5938153366081463283">Engadir tarxeta virtual</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3042,6 +3045,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6394852772105848029">Este sitio quere abrir a aplicación <ph name="APP_NAME" /></translation>
 <translation id="639673288733510393">Scooters e ciclomotores</translation>
 <translation id="6398765197997659313">Saír do modo de pantalla completa</translation>
+<translation id="6399633237874954301">Lector de tarxetas intelixentes permitido pola persoa administradora</translation>
 <translation id="6401136357288658127">Esta política quedou obsoleta. Debes utilizar a política <ph name="NEW_POLICY" />.</translation>
 <translation id="640163077447496506">Caduca hoxe</translation>
 <translation id="6402537308870515461">Cómpre revisar os ficheiros antes de movelos</translation>
@@ -4102,7 +4106,6 @@ Detalles adicionais:
 <translation id="8278544367771164040">Préstamos comerciais</translation>
 <translation id="8279290844152565425">Concertos e festivais de música</translation>
 <translation id="8279611986089885641">As notificacións de Chrome deben estar activadas. Podes activalas en <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
-<translation id="8280387559022105172">Queres bloquear o teclado?</translation>
 <translation id="8280630997017109758">Bandexa 11</translation>
 <translation id="8281730697546299650">Xa están dispoñibles outras funcións de privacidade nos anuncios</translation>
 <translation id="8281886186245836920">Omitir</translation>
@@ -4172,7 +4175,6 @@ Detalles adicionais:
 <translation id="8398335999901363925">Lista de métodos de pago dispoñibles que se completarán ao tocalos aberta a altura completa.</translation>
 <translation id="8398446215576328011">Desfacer políticas aplicadas</translation>
 <translation id="8398790343843005537">Atopa o teu teléfono</translation>
-<translation id="8399276468426899527">bloqueo e uso do teclado</translation>
 <translation id="8400929824946688748">Emprego e educación</translation>
 <translation id="8402442052798347631">Os atacantes do sitio que tentaches visitar poderían enganarte para que instales software daniño que afecte á túa navegación (por exemplo, que cambie a túa páxina de inicio ou mostre máis anuncios nos sitios aos que accedas). Chrome recoméndache encarecidamente volver a un sitio seguro para evitar danos. <ph name="BEGIN_LEARN_MORE_LINK" />Máis información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Ficción de afeccionados</translation>

@@ -15,10 +15,6 @@
 
 namespace autofill {
 
-namespace {
-const char kKeyDeliminator[] = "__";
-}  // namespace
-
 class StrikeData;
 
 // Interface for the StrikeDatabase which is used by the
@@ -74,6 +70,8 @@ class StrikeDatabaseBase : public KeyedService {
 
  protected:
   friend class StrikeDatabaseIntegratorBase;
+
+  static constexpr char kKeyDeliminator[] = "__";
 
   // Returns a pointer to the internal cache.
   virtual std::map<std::string, StrikeData>& GetStrikeCache() = 0;

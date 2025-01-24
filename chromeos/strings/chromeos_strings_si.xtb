@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">කොළ</translation>
 <translation id="225692081236532131">සක්‍රිය කිරීමේ තත්ත්වය</translation>
 <translation id="2267285889943769271">තිර රුවක් එක් කරන්න</translation>
+<translation id="2268044343513325586">පිරිපහදු කරන්න</translation>
 <translation id="2271469253353559191">අඳුරු ප්‍රකාර කාල සටහන</translation>
 <translation id="2276999893457278469">ඉහළම උදවු අන්තර්ගතය</translation>
 <translation id="2277631741861284101">ඔබේ ශ්‍රව්‍යය පහසුවෙන් පටිගත කර බෙදා ගන්න</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">ස්කෑනර සඳහා සොයමින්</translation>
 <translation id="3226657629376379887">පිරිසැලසුම් ක්‍රියා මෙනුව</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> අගය <ph name="CONVERSION_RATE" />න් බෙදන්න</translation>
-<translation id="3237710083340813756">නැවත ලියන්න</translation>
 <translation id="3246869037381808805">දින 1කට වඩා පැරණි මුද්‍රණ කාර්ය ඉවත් කරනු ඇත</translation>
 <translation id="324961752321393509">ඔබේ පරිපාලකයා මෙම යෙදුම වැසීමට ඉඩ නොදෙයි</translation>
 <translation id="3263941347294171263">යාවත්කාලීන ක්‍රියාවලිය දිගටම කිරීමට <ph name="DEVICE_NAME" /> පේනු නොගත කර නැවත පේනු ගත කරන්න</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> යාවත්කාලීන කරමින්</translation>
 <translation id="346423161771747987">වත්මන්</translation>
 <translation id="346539236881580388">නැවත ගන්න</translation>
+<translation id="3479552764303398839">දැන් නොවේ</translation>
 <translation id="3484914941826596830">නිත්‍ය මෘදුකාංග යාවත්කාලීන වන අතරතුර, මෙම බාහිර උපාංගය විසන්ධි කිරීම හෝ ඔබගේ පරිගණකය වැසීම නොකරන්න. ඔබට මෙම කවුළුව කුඩා කළ හැකිය. මෙම යාවත්කාලීන කිරීමට මිනිත්තු කිහිපයක් ගත විය හැකි අතර මෙම කාලය තුළ ඔබගේ බාහිර උපාංගය ක්‍රියා නොකළ හැකිය.</translation>
 <translation id="3486220673238053218">නිර්වචනය</translation>
 <translation id="3487866404496702283">මහී විශේෂාංගය සඳහා ප්‍රතිපෝෂණ</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">හඬ පරිමාව සීරුමාරු කරන්න</translation>
 <translation id="3767737419527918477">පටිගත කිරීමේ ගොනු සොයන්න</translation>
 <translation id="3771294271822695279">වීඩියෝ ගොනු</translation>
+<translation id="3771694256347217732">Google සේවා නියම</translation>
 <translation id="3780740315729837296">යතුරුපුවරු යතුරක් පවරන්න</translation>
 <translation id="3784455785234192852">අගුලු ලන්න</translation>
 <translation id="3785643128701396311">පික්සල් කලාව</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) HTTP පමාව</translation>
 <translation id="6078323886959318429">කෙටිමඟක් එක් කරන්න</translation>
 <translation id="6091080061796993741">කහ</translation>
-<translation id="6093853427925392522">ඔබට ප්‍රවේශය අහිමි වීමට පෙර ඔබේ පාසල් ගිණුම් දත්ත ඔබේ පුද්ගලික ගිණුමට ගෙන යාමට Google වෙතින් අන්තර්ගත හුවමාරු යෙදුම භාවිත කිරීමට වග බලා ගන්න.</translation>
 <translation id="6104112872696127344">ස්කෑන් කිරීම අවලංගු කර ඇත</translation>
 <translation id="6106186594183574873">අවසන් කිරීමට, ඔබේ පැරණි මුරපදය ඇතුළත් කරන්න</translation>
 <translation id="6108689792487843350">වාහල වෙත ළඟා විය නොහැකිය</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">කෙටිමං සොයන්න</translation>
 <translation id="7138614237884624401">සරල කළ පෙළ</translation>
 <translation id="7138668887584231801">සාරාංශ කිරීමට ප්‍රමාණවත් වචන නොමැත</translation>
-<translation id="7141470099673912333">අන්තර්ගත හුවමාරුව</translation>
 <translation id="7143207342074048698">සම්බන්ධ වෙමින්…</translation>
 <translation id="7144878232160441200">නැවත උත්සහ කරන්න</translation>
 <translation id="7144954474087165241">දාගැබ</translation>
@@ -1541,7 +1541,6 @@
 <translation id="8261506727792406068">මකන්න</translation>
 <translation id="8262870577632766028">පැය 1</translation>
 <translation id="827422111966801947">අවරිය</translation>
-<translation id="8281886186245836920">මඟහරින්න</translation>
 <translation id="8286154143153872371">වෝල්පේපරය බැලීමට කරුණාකර ජාලයකට සම්බන්ධ වී පිටුව නැවත පූරණය කරන්න.</translation>
 <translation id="8291967909914612644">නිවෙස් සපයන්නාගේ රට</translation>
 <translation id="8294431847097064396">මූලාශ්‍රය</translation>
@@ -1646,6 +1645,7 @@
 <translation id="8797082062139985406">Google AI භාවිතයෙන් නම තනන්න</translation>
 <translation id="8798099450830957504">පෙරනිමි</translation>
 <translation id="8798441408945964110">සපයන්නාගේ නම</translation>
+<translation id="8804164990146287819">පුද්ගලිකත්ව ප්‍රතිපත්තිය</translation>
 <translation id="8808828119384186784">Chrome සැකසීම්</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">වෝල්පේපරය</translation>

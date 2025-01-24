@@ -29,6 +29,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           et assurez-vous que vos paramètres sont définis sur "sans proxy" ou "direct".</translation>
+<translation id="648062525172759633">Ces pages sont destinées aux développeurs Chromium, et il est possible qu'elles ne fassent pas l'objet d'une maintenance ni de tests actifs. Pour les activer, accédez à <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, cliquez sur le bouton pour activer les pages de débogage, puis accédez à nouveau à cette page.</translation>
 <translation id="6549378540556750549">Chromium fonctionne également grâce à d'autres <ph name="BEGIN_LINK_OSS" />logiciels Open Source<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Vos modifications seront prises en compte au prochain redémarrage de Chromium.</translation>
 <translation id="691026815377248078">Chromium a besoin d'accéder au Bluetooth pour continuer 

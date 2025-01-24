@@ -8616,12 +8616,6 @@ crbug.com/324441376 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling
 crbug.com/388445687 http/tests/devtools/console/console-copy-treeoutline.js [ Failure Pass ]
 crbug.com/388445687 http/tests/devtools/console/console-viewport-selection.js [ Failure Pass ]
 
-# Temporarily disabled to unblock https://crrev.com/c/6184803
-crbug.com/391381439 http/tests/devtools/security/blocked-mixed-content.js [ Failure Pass ]
-crbug.com/391381439 http/tests/devtools/security/mixed-content-active-and-passive-reload.js [ Failure Pass ]
-crbug.com/391381439 http/tests/devtools/security/mixed-content-reload.js [ Failure Pass ]
-crbug.com/391381439 http/tests/devtools/security/security-blocked-mixed-content.js [ Failure Pass ]
-
 # Temporarily disabled to unblock https://crrev.com/c/6187530
 crbug.com/391381439 http/tests/devtools/components/minimum-size.js [ Failure Pass ]
 crbug.com/391381439 http/tests/devtools/components/split-widget.js [ Failure Pass ]
@@ -8989,8 +8983,9 @@ crbug.com/380323589 [ Win11 ] external/wpt/pointerevents/pointerevent_sequence_a
 crbug.com/380327348 [ Mac ] media/encrypted-media/encrypted-media-async-creation-with-gc.html [ Crash Failure Pass ]
 crbug.com/380327348 [ Mac ] media/encrypted-media/encrypted-media-async-setcert-with-gc.html [ Crash Failure Pass ]
 
-# This test will [PRECONDITION_FAILED] on some bots and not others based on its HW capabilities, skip the test on such bots.
-crbug.com/381407888 [ Win11-arm64 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
+# Tests temporarily disabled to unblock a WebRTC roll that make more tests pass
+crbug.com/381407888 external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
+crbug.com/381407888 fast/peerconnection/RTCRtpSender-setParameters.html [ Failure Pass ]
 # Will pass or fail depending on bot's HW capabilities, allow either while this feature is behind flag.
 crbug.com/388299759 virtual/webrtc-h265/external/wpt/webrtc/protocol/h265-level-id.https.html [ Failure Pass ]
 

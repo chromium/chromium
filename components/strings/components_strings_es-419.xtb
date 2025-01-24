@@ -911,7 +911,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="255497580849974774">Mantén el dispositivo conectado a un cargador durante la actualización.</translation>
 <translation id="2556876185419854533">&amp;Deshacer Editar</translation>
 <translation id="2559566667529177711">Multicapa</translation>
-<translation id="2565789370591907825">Bloqueo y uso del teclado</translation>
 <translation id="2570734079541893434">Administrar configuración</translation>
 <translation id="257136025287118539">El administrador está moviendo tus archivos a <ph name="CLOUD_PROVIDER" />. Puedes modificar estos archivos una vez que se complete la carga.</translation>
 <translation id="2571488850200220306">Para ayudar a garantizar la seguridad, también puede ver el SO del dispositivo, la versión del navegador y el software instalado</translation>
@@ -1109,7 +1108,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2974468223369775963">No se pudo guardar este IBAN en tu Cuenta de Google. Se guardó en Chrome en este dispositivo. Chrome te volverá a preguntar la próxima vez que uses este IBAN.</translation>
 <translation id="297667759942911166">Colabora en grupos de pestañas</translation>
 <translation id="2977665033722899841">Fila <ph name="ROW_NAME" /> seleccionada. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">Bloquear y usar el teclado</translation>
 <translation id="2978824962390592855">Ópera</translation>
 <translation id="2979424420072875974">Recursos para escritores</translation>
 <translation id="2979639724566107830">Abrir en una ventana nueva</translation>
@@ -2467,6 +2465,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5363532265530011914">Calcetines y medias</translation>
 <translation id="5371425731340848620">Actualizar tarjeta</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> cambió una pestaña</translation>
+<translation id="5374324662289354619">Las páginas de depuración internas están inhabilitadas en este momento.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"El reloj está atrasado", "El reloj está adelantado" o "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Para obtener esta contraseña en todos tus dispositivos, verifica tu identidad</translation>
@@ -3047,6 +3046,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6394852772105848029">Este sitio quiere abrir la app de <ph name="APP_NAME" /></translation>
 <translation id="639673288733510393">Motonetas y ciclomotores</translation>
 <translation id="6398765197997659313">Salir de pantalla completa</translation>
+<translation id="6399633237874954301">Lector de tarjetas inteligentes que permite tu administrador</translation>
 <translation id="6401136357288658127">Esta política es obsoleta. En su lugar, debes usar la política <ph name="NEW_POLICY" />.</translation>
 <translation id="640163077447496506">Vence hoy</translation>
 <translation id="6402537308870515461">Se debe revisar antes de mover los archivos</translation>
@@ -4108,7 +4108,6 @@ Detalles adicionales:
 <translation id="8278544367771164040">Préstamos comerciales</translation>
 <translation id="8279290844152565425">Conciertos y festivales de música</translation>
 <translation id="8279611986089885641">Las notificaciones de Chrome deben estar activadas. Puedes activarlas en la <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
-<translation id="8280387559022105172">¿Quieres bloquear tu teclado?</translation>
 <translation id="8280630997017109758">Bandeja 11</translation>
 <translation id="8281730697546299650">Ya hay otras funciones de privacidad en los anuncios disponibles</translation>
 <translation id="8281886186245836920">Omitir</translation>
@@ -4178,7 +4177,6 @@ Detalles adicionales:
 <translation id="8398335999901363925">La lista de formas de pago disponibles que se debe tocar para completar está totalmente abierta.</translation>
 <translation id="8398446215576328011">Revertir las políticas aplicadas</translation>
 <translation id="8398790343843005537">Buscar teléfono</translation>
-<translation id="8399276468426899527">bloqueo y uso del teclado</translation>
 <translation id="8400929824946688748">Trabajo y educación</translation>
 <translation id="8402442052798347631">Los atacantes del sitio que intentaste visitar podrían engañarte para que instales software dañino que afecta la manera en la que navegas. Por ejemplo, pueden cambiar la página principal o mostrarte anuncios adicionales en los sitios que visitas. Chrome recomienda que regreses a un sitio seguro para evitar daños. <ph name="BEGIN_LEARN_MORE_LINK" />Más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Fan Fiction</translation>

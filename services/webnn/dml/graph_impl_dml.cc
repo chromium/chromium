@@ -194,34 +194,35 @@ void CheckInputDataTypeForReduce(const DataTypeLimits& data_type_limits,
                                  OperandDataType data_type) {
   switch (kind) {
     case mojom::Reduce::Kind::kL1:
-      CHECK(data_type_limits.reduce_l1_input.Has(data_type));
+      CHECK(data_type_limits.reduce_l1_input.data_types.Has(data_type));
       break;
     case mojom::Reduce::Kind::kL2:
-      CHECK(data_type_limits.reduce_l2_input.Has(data_type));
+      CHECK(data_type_limits.reduce_l2_input.data_types.Has(data_type));
       break;
     case mojom::Reduce::Kind::kLogSum:
-      CHECK(data_type_limits.reduce_log_sum_input.Has(data_type));
+      CHECK(data_type_limits.reduce_log_sum_input.data_types.Has(data_type));
       break;
     case mojom::Reduce::Kind::kLogSumExp:
-      CHECK(data_type_limits.reduce_log_sum_exp_input.Has(data_type));
+      CHECK(
+          data_type_limits.reduce_log_sum_exp_input.data_types.Has(data_type));
       break;
     case mojom::Reduce::Kind::kMax:
-      CHECK(data_type_limits.reduce_max_input.Has(data_type));
+      CHECK(data_type_limits.reduce_max_input.data_types.Has(data_type));
       break;
     case mojom::Reduce::Kind::kMean:
-      CHECK(data_type_limits.reduce_mean_input.Has(data_type));
+      CHECK(data_type_limits.reduce_mean_input.data_types.Has(data_type));
       break;
     case mojom::Reduce::Kind::kMin:
-      CHECK(data_type_limits.reduce_min_input.Has(data_type));
+      CHECK(data_type_limits.reduce_min_input.data_types.Has(data_type));
       break;
     case mojom::Reduce::Kind::kProduct:
-      CHECK(data_type_limits.reduce_product_input.Has(data_type));
+      CHECK(data_type_limits.reduce_product_input.data_types.Has(data_type));
       break;
     case mojom::Reduce::Kind::kSum:
-      CHECK(data_type_limits.reduce_sum_input.Has(data_type));
+      CHECK(data_type_limits.reduce_sum_input.data_types.Has(data_type));
       break;
     case mojom::Reduce::Kind::kSumSquare:
-      CHECK(data_type_limits.reduce_sum_square_input.Has(data_type));
+      CHECK(data_type_limits.reduce_sum_square_input.data_types.Has(data_type));
       break;
   }
 }
@@ -1686,7 +1687,7 @@ void CreateOperatorNodeForClamp(Adapter* adapter,
       GetNodeOutputForOperand(id_to_node_output_map, clamp->input_operand_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
 
-  CHECK(context_properties.data_type_limits.clamp_input.Has(
+  CHECK(context_properties.data_type_limits.clamp_input.data_types.Has(
       DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
   uint64_t output_id = clamp->output_operand_id;
@@ -1910,7 +1911,7 @@ void CreateOperatorNodeForCumulativeSum(
       id_to_node_output_map, cumulative_sum->input_operand_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
 
-  CHECK(context_properties.data_type_limits.cumulative_sum_input.Has(
+  CHECK(context_properties.data_type_limits.cumulative_sum_input.data_types.Has(
       DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
   uint64_t output_id = cumulative_sum->output_operand_id;
@@ -2375,7 +2376,7 @@ void CreateOperatorNodeForPad(const ContextProperties& context_properties,
       GetNodeOutputForOperand(id_to_node_output_map, pad->input_operand_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
 
-  CHECK(context_properties.data_type_limits.pad_input.Has(
+  CHECK(context_properties.data_type_limits.pad_input.data_types.Has(
       DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
   uint64_t output_id = pad->output_operand_id;
@@ -2455,8 +2456,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
   const std::string& label = pool2d->label;
   switch (pool2d->kind) {
     case mojom::Pool2d::Kind::kAveragePool2d: {
-      CHECK(context_properties.data_type_limits.average_pool2d_input.Has(
-          DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
+      CHECK(context_properties.data_type_limits.average_pool2d_input.data_types
+                .Has(DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
       // TODO(crbug.com/40206287): Work around dilation support for L2 and
       // average pooling. According to WebNN spec:
@@ -2487,7 +2488,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
       break;
     }
     case mojom::Pool2d::Kind::kL2Pool2d: {
-      CHECK(context_properties.data_type_limits.l2_pool2d_input.Has(
+      CHECK(context_properties.data_type_limits.l2_pool2d_input.data_types.Has(
           DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
       DML_LP_POOLING_OPERATOR_DESC l2_pooling_desc = {
@@ -2505,7 +2506,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
       break;
     }
     case mojom::Pool2d::Kind::kMaxPool2d: {
-      CHECK(context_properties.data_type_limits.max_pool2d_input.Has(
+      CHECK(context_properties.data_type_limits.max_pool2d_input.data_types.Has(
           DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
       // If the dilations are { 1, 1 } by default, prefer using
@@ -2844,66 +2845,72 @@ void CreateOperatorNodeForElementWiseUnary(
                                .GetDataType());
   switch (operation->kind) {
     case mojom::ElementWiseUnary::Kind::kAbs: {
-      CHECK(context_properties.data_type_limits.abs_input.Has(input_data_type));
+      CHECK(context_properties.data_type_limits.abs_input.data_types.Has(
+          input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_ABS_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_ABS>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kCast: {
-      CHECK(
-          context_properties.data_type_limits.cast_input.Has(input_data_type));
+      CHECK(context_properties.data_type_limits.cast_input.data_types.Has(
+          input_data_type));
       return CreateOperatorNodeForUnary<DML_CAST_OPERATOR_DESC,
                                         DML_OPERATOR_CAST>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kCeil: {
-      CHECK(
-          context_properties.data_type_limits.ceil_input.Has(input_data_type));
+      CHECK(context_properties.data_type_limits.ceil_input.data_types.Has(
+          input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_CEIL_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_CEIL>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kCos: {
-      CHECK(context_properties.data_type_limits.cos_input.Has(input_data_type));
+      CHECK(context_properties.data_type_limits.cos_input.data_types.Has(
+          input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_COS_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_COS>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kErf: {
-      CHECK(context_properties.data_type_limits.erf_input.Has(input_data_type));
+      CHECK(context_properties.data_type_limits.erf_input.data_types.Has(
+          input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_ERF_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_ERF>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kExp: {
-      CHECK(context_properties.data_type_limits.exp_input.Has(input_data_type));
+      CHECK(context_properties.data_type_limits.exp_input.data_types.Has(
+          input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_EXP_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_EXP>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kFloor: {
-      CHECK(
-          context_properties.data_type_limits.floor_input.Has(input_data_type));
+      CHECK(context_properties.data_type_limits.floor_input.data_types.Has(
+          input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_FLOOR_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_FLOOR>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kIdentity: {
-      CHECK(context_properties.data_type_limits.identity_input.Has(
+      CHECK(context_properties.data_type_limits.identity_input.data_types.Has(
           input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_IDENTITY>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kLog: {
-      CHECK(context_properties.data_type_limits.log_input.Has(input_data_type));
+      CHECK(context_properties.data_type_limits.log_input.data_types.Has(
+          input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_LOG_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_LOG>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kLogicalNot: {
-      CHECK(context_properties.data_type_limits.logical_not_input.Has(
-          input_data_type));
+      CHECK(
+          context_properties.data_type_limits.logical_not_input.data_types.Has(
+              input_data_type));
       return CreateOperatorNodeForUnary<
           DML_ELEMENT_WISE_LOGICAL_NOT_OPERATOR_DESC,
           DML_OPERATOR_ELEMENT_WISE_LOGICAL_NOT>(
@@ -2914,39 +2921,42 @@ void CreateOperatorNodeForElementWiseUnary(
     // DML_FEATURE_LEVEL_5_0.
     // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_negate_operator_desc#availability
     case mojom::ElementWiseUnary::Kind::kNeg: {
-      CHECK(context_properties.data_type_limits.neg_input.Has(input_data_type));
+      CHECK(context_properties.data_type_limits.neg_input.data_types.Has(
+          input_data_type));
       return CreateOperatorNodeForNeg(id_to_operand_map, operation,
                                       graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kReciprocal: {
-      CHECK(context_properties.data_type_limits.reciprocal_input.Has(
+      CHECK(context_properties.data_type_limits.reciprocal_input.data_types.Has(
           input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_RECIP_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_RECIP>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kSign: {
-      CHECK(
-          context_properties.data_type_limits.sign_input.Has(input_data_type));
+      CHECK(context_properties.data_type_limits.sign_input.data_types.Has(
+          input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_SIGN_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_SIGN>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kSin: {
-      CHECK(context_properties.data_type_limits.sin_input.Has(input_data_type));
+      CHECK(context_properties.data_type_limits.sin_input.data_types.Has(
+          input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_SIN_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_SIN>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kSqrt: {
-      CHECK(
-          context_properties.data_type_limits.sqrt_input.Has(input_data_type));
+      CHECK(context_properties.data_type_limits.sqrt_input.data_types.Has(
+          input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_SQRT_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_SQRT>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kTan: {
-      CHECK(context_properties.data_type_limits.tan_input.Has(input_data_type));
+      CHECK(context_properties.data_type_limits.tan_input.data_types.Has(
+          input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_TAN_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_TAN>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
@@ -2963,7 +2973,7 @@ void CreateOperatorNodeForResample2d(
   const NodeOutput* input = GetNodeOutputForOperand(
       id_to_node_output_map, resample2d->input_operand_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
-  CHECK(context_properties.data_type_limits.resample2d_input.Has(
+  CHECK(context_properties.data_type_limits.resample2d_input.data_types.Has(
       DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
   uint64_t output_id = resample2d->output_operand_id;
@@ -3114,7 +3124,7 @@ void CreateOperatorNodeForReshape(const ContextProperties& context_properties,
                                   IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, reshape->input_operand_id);
-  CHECK(context_properties.data_type_limits.reshape_input.Has(
+  CHECK(context_properties.data_type_limits.reshape_input.data_types.Has(
       DmlDataTypeToOperand(input->GetTensorDesc().GetDataType())));
 
   uint64_t output_id = reshape->output_operand_id;
@@ -3205,7 +3215,7 @@ void CreateOperatorNodeForExpand(const ContextProperties& context_properties,
       GetNodeOutputForOperand(id_to_node_output_map, expand->input_operand_id);
   auto input_tensor_desc = input->GetTensorDesc();
 
-  CHECK(context_properties.data_type_limits.expand_input.Has(
+  CHECK(context_properties.data_type_limits.expand_input.data_types.Has(
       DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
   const uint64_t output_id = expand->output_operand_id;
@@ -4296,7 +4306,7 @@ void CreateOperatorNodeForLinear(const ContextProperties& context_properties,
       GetNodeOutputForOperand(id_to_node_output_map, linear->input_operand_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
 
-  CHECK(context_properties.data_type_limits.linear_input.Has(
+  CHECK(context_properties.data_type_limits.linear_input.data_types.Has(
       DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
   uint64_t output_id = linear->output_operand_id;
@@ -5025,7 +5035,7 @@ void CreateOperatorNodeForTile(const ContextProperties& context_properties,
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, tile->input_operand_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
-  CHECK(context_properties.data_type_limits.tile_input.Has(
+  CHECK(context_properties.data_type_limits.tile_input.data_types.Has(
       DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
   const uint64_t output_id = tile->output_operand_id;
@@ -5060,7 +5070,7 @@ void CreateOperatorNodeForTranspose(const ContextProperties& context_properties,
                                     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input = GetNodeOutputForOperand(
       id_to_node_output_map, transpose->input_operand_id);
-  CHECK(context_properties.data_type_limits.transpose_input.Has(
+  CHECK(context_properties.data_type_limits.transpose_input.data_types.Has(
       DmlDataTypeToOperand(input->GetTensorDesc().GetDataType())));
 
   const OperandPtr& operand = id_to_operand_map.at(transpose->input_operand_id);
@@ -5127,7 +5137,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
   const NodeOutput* input = GetNodeOutputForOperand(
       id_to_node_output_map, triangular->input_operand_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
-  CHECK(context_properties.data_type_limits.triangular_input.Has(
+  CHECK(context_properties.data_type_limits.triangular_input.data_types.Has(
       DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
   auto& id_to_operand_map = graph_info->id_to_operand_map;

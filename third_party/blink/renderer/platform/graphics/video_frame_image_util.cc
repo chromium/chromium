@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/release_callback.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "media/base/video_frame.h"
@@ -336,17 +337,28 @@ scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() {
 std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
     const SkImageInfo& info,
     viz::RasterContextProvider* raster_context_provider) {
+  return CreateResourceProviderForVideoFrame(
+      gfx::Size(info.width(), info.height()),
+      viz::SkColorTypeToSinglePlaneSharedImageFormat(info.colorType()),
+      info.alphaType(), SkColorSpaceToGfxColorSpace(info.refColorSpace()),
+      raster_context_provider);
+}
+
+std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space,
+    viz::RasterContextProvider* raster_context_provider) {
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
   if (!ShouldCreateAcceleratedImages(raster_context_provider)) {
     return CanvasResourceProvider::CreateBitmapProvider(
-        gfx::Size(info.width(), info.height()), info.colorType(),
-        info.alphaType(), SkColorSpaceToGfxColorSpace(info.refColorSpace()),
+        size, viz::ToClosestSkColorType(format), alpha_type, color_space,
         kShouldInitialize);
   }
   return CanvasResourceProvider::CreateSharedImageProvider(
-      gfx::Size(info.width(), info.height()), info.colorType(),
-      info.alphaType(), SkColorSpaceToGfxColorSpace(info.refColorSpace()),
+      size, viz::ToClosestSkColorType(format), alpha_type, color_space,
       kShouldInitialize, SharedGpuContext::ContextProviderWrapper(),
       RasterMode::kGPU, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
 }

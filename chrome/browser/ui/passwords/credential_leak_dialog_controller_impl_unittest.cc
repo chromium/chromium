@@ -212,37 +212,4 @@ TEST_F(CredentialLeakDialogControllerTest, CredentialLeakDialogCheckPasswords) {
       LeakDialogDismissalReason::kClickedCheckPasswords);
 }
 
-TEST_F(CredentialLeakDialogControllerTest, PasswordChangeStarted) {
-  SetUpController(CreateLeakType(IsSaved(false), IsReused(false),
-                                 IsSyncing(true), HasChangePasswordUrl(true)));
-
-  auto leak_prompt = SetupLeakPrompt();
-
-  EXPECT_CALL(*leak_prompt, ShowCredentialLeakPrompt());
-  controller().ShowCredentialLeakPrompt(std::move(leak_prompt));
-
-  EXPECT_CALL(ui_controller_mock(),
-              ChangePassword(GURL(kUrl), std::u16string(kUsername),
-                             std::u16string(kPassword)));
-  EXPECT_CALL(ui_controller_mock(), OnLeakDialogHidden());
-  controller().OnAcceptDialog();
-}
-
-TEST_F(CredentialLeakDialogControllerTest, PasswordChangeNotStarted) {
-  // Mark password as reused, so the dialog will prompt the user to run the
-  // password check instead of changing the password immediately.
-  SetUpController(CreateLeakType(IsSaved(false), IsReused(true),
-                                 IsSyncing(true), HasChangePasswordUrl(true)));
-
-  auto leak_prompt = SetupLeakPrompt();
-
-  EXPECT_CALL(*leak_prompt, ShowCredentialLeakPrompt());
-  controller().ShowCredentialLeakPrompt(std::move(leak_prompt));
-
-  EXPECT_CALL(ui_controller_mock(), ChangePassword).Times(0);
-  EXPECT_CALL(ui_controller_mock(), NavigateToPasswordCheckup);
-  EXPECT_CALL(ui_controller_mock(), OnLeakDialogHidden());
-  controller().OnAcceptDialog();
-}
-
 }  // namespace

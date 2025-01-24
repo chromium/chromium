@@ -960,6 +960,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="544776284582297024">To open tabs and visit different pages at the same time, tap the open tabs button</translation>
 <translation id="5454166040603940656">with <ph name="PROVIDER" /></translation>
 <translation id="5454215368971121976">When your device is folded, you can choose an option or touch and hold the address bar to change the position.</translation>
+<translation id="5456381639095306749">Download page</translation>
 <translation id="5458366071038729214">You'll find the sites that you follow here</translation>
 <translation id="5468068603361015296">Do you want to download <ph name="FILE_NAME" /> anyway?</translation>
 <translation id="548278423535722844">Open in maps app</translation>
@@ -1002,6 +1003,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5665379678064389456">Create event in <ph name="APP_NAME" /></translation>
 <translation id="5680616253592639556">Missing information</translation>
 <translation id="5683547024293500885">Chrome can’t check for updates</translation>
+<translation id="5683916195767086779">Tab group</translation>
 <translation id="5686790454216892815">File name too long</translation>
 <translation id="5687606994963670306">Chrome auto-deletes sites that are older than 30 days. A site that you visit again might reappear on the list. Or you can block a site from suggesting ads for you. Learn more about <ph name="BEGIN_LINK" />managing your ad privacy in Chrome.<ph name="END_LINK" /></translation>
 <translation id="569536719314091526">Translate this page to any language from the More options button</translation>
@@ -1210,6 +1212,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6569373978618239158">You'll now see stories from <ph name="SITE_NAME" /> when you open a new tab. The sites that you follow are saved in your Google Account. You can manage them in Discover settings.</translation>
 <translation id="6570116402456758630">Page summary</translation>
 <translation id="657177046675873214">To get your bookmarks on all your devices, turn on 'Bookmarks' in Settings.</translation>
+<translation id="6573096386450695060">Always allow</translation>
 <translation id="6573431926118603307">Tabs that you've opened in Chrome on your other devices will appear here.</translation>
 <translation id="6583199322650523874">Bookmark the current page</translation>
 <translation id="6588043302623806746">Use secure DNS</translation>

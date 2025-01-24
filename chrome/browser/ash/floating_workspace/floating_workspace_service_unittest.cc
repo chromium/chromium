@@ -76,12 +76,16 @@ constexpr char kLocalSessionName[] = "local_session";
 constexpr char kRemoteSessionOneName[] = "remote_session_1";
 constexpr char kRemoteSession2Name[] = "remote_session_2";
 constexpr char kTestAccount[] = "usertest@gmail.com";
-constexpr char kFakeGaia[] = "fakegaia";
+constexpr GaiaId::Literal kFakeGaia("fakegaia");
 constexpr char kTestAccount2[] = "usertest2@gmail.com";
-constexpr char kFakeGaia2[] = "fakegaia2";
-const base::Time most_recent_time = base::Time::FromSecondsSinceUnixEpoch(15);
-const base::Time more_recent_time = base::Time::FromSecondsSinceUnixEpoch(10);
-const base::Time least_recent_time = base::Time::FromSecondsSinceUnixEpoch(5);
+constexpr GaiaId::Literal kFakeGaia2("fakegaia2");
+constexpr base::Time most_recent_time =
+    base::Time::FromSecondsSinceUnixEpoch(15);
+constexpr base::Time more_recent_time =
+    base::Time::FromSecondsSinceUnixEpoch(10);
+constexpr base::Time least_recent_time =
+    base::Time::FromSecondsSinceUnixEpoch(5);
+
 std::unique_ptr<sync_sessions::SyncedSession> CreateNewSession(
     const std::string& session_name,
     const base::Time& session_time) {
@@ -417,8 +421,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
     fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>(
         TestingBrowserProcess::GetGlobal()->local_state()));
-    account_id_ =
-        AccountId::FromUserEmailGaiaId(kTestAccount, GaiaId(kFakeGaia));
+    account_id_ = AccountId::FromUserEmailGaiaId(kTestAccount, kFakeGaia);
     fake_user_manager()->AddGaiaUser(account_id_,
                                      user_manager::UserType::kRegular);
     fake_user_manager()->UserLoggedIn(
@@ -2305,8 +2308,7 @@ class FloatingWorkspaceServiceMultiUserTest
         kTestAccount2, std::move(prefs), std::u16string(),
         /*avatar_id=*/0, TestingProfile::TestingFactories());
 
-    account_id2_ =
-        AccountId::FromUserEmailGaiaId(kTestAccount2, GaiaId(kFakeGaia2));
+    account_id2_ = AccountId::FromUserEmailGaiaId(kTestAccount2, kFakeGaia2);
     fake_user_manager()->AddGaiaUser(account_id2_,
                                      user_manager::UserType::kRegular);
     fake_user_manager()->UserLoggedIn(

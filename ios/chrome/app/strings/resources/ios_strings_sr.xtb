@@ -476,6 +476,7 @@
 <translation id="3053332585453689122">Шаље URL-ове које посећујете и мали узорак садржаја странице, преузимања, активности додатака и информација о систему у Google безбедно прегледање ради провере штетности.</translation>
 <translation id="3055102495753300780">Меморијски простор за податке</translation>
 <translation id="3059270601560379555">Нова претрага</translation>
+<translation id="3064547930554042309">Управљајте преузимањима</translation>
 <translation id="3072279342064724558">Лозинка већ постоји</translation>
 <translation id="3076846064362030967">Нећемо вас одјавити са Google налога. <ph name="BEGIN_LINK" />Други облици активности<ph name="END_LINK" /> могу да се сачувају на Google налогу када сте пријављени. Можете да их избришете у било ком тренутку.
 
@@ -543,7 +544,6 @@
 <translation id="3409785640040772790">Мапе</translation>
 <translation id="3416023309465857378">25. октобар 2023.</translation>
 <translation id="3435738964857648380">Безбедност</translation>
-<translation id="343850944564645513">Најпосећенији сајтови</translation>
 <translation id="3443810440409579745">Картица је примљена.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="344589138074534176">Сазнајте више о Google објективу</translation>
@@ -658,7 +658,6 @@
 <translation id="3967327056943561740">Обележивачи</translation>
 <translation id="3967822245660637423">Преузимање је довршено</translation>
 <translation id="3982893814825393515">Пријављивање проблема…</translation>
-<translation id="3984527584375648997">Сакриј Најпосећеније сајтове</translation>
 <translation id="398604237578616937">Пријављени сте као <ph name="USER_EMAIL" />. Отвори мени налога.</translation>
 <translation id="3986739045730058129">Иди на картицу</translation>
 <translation id="3992684624889376114">О овој страници</translation>
@@ -700,6 +699,7 @@
 <translation id="4154753961803534698">Претражите помоћу камере</translation>
 <translation id="4158491215857439601">Менаџер лозинки</translation>
 <translation id="4163699139741158298">{count,plural, =1{Обележивач је сачуван у: {title}. Чува се само на овом уређају.}one{{count} обележивач је сачуван у: {title}. Чува се само на овом уређају.}few{{count} обележивача су сачувана у: {title}. Чувају се само на овом уређају.}other{{count} обележивача је сачувано у: {title}. Чувају се само на овом уређају.}}</translation>
+<translation id="4164514562270305824">Аутоматски бриши преузимања</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> се завршава бројевима <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Не дозволи</translation>
 <translation id="4172051516777682613">Увек прикажи</translation>
@@ -1016,9 +1016,9 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5576885723883013398">Нови прозор</translation>
 <translation id="5578795271662203820">Потражи ову слику на <ph name="SEARCH_ENGINE" />-у</translation>
 <translation id="5579012242779565775">Сакриј опцију Листа за читање</translation>
-<translation id="5581202956276923239">Пречице за сајтове</translation>
 <translation id="5585019845078534178">Картице</translation>
 <translation id="5595485650161345191">Измена адресе</translation>
+<translation id="559567008082979829">Подесите да се преузимања бришу после једног месеца.</translation>
 <translation id="5596627076506792578">Још опција</translation>
 <translation id="560322036295180549">Искључила је организација</translation>
 <translation id="5611107723541161735">Пречице до сајтова које сте недавно посетили на овом уређају.</translation>

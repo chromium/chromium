@@ -29,6 +29,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           dhe sigurohu që konfigurimi yt të jetë i caktuar në "pa përfaqësues" ose "direkt".</translation>
+<translation id="648062525172759633">Këto faqe synohen të përdoren nga zhvilluesit e Chromium dhe mund të mos mirëmbahen apo testohen në mënyrë aktive. Për t'i aktivizuar ato, navigo te <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliko butonin për të aktivizuar faqet e korrigjimit dhe më pas navigo përsëri te kjo faqe.</translation>
 <translation id="6549378540556750549">Chromium është mundësuar po ashtu nga <ph name="BEGIN_LINK_OSS" />softuerë të tjerë me burim të hapur<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Ndryshimet e tua do të hyjnë në fuqi herën tjetër kur të rinisësh Chromium.</translation>
 <translation id="691026815377248078">Chromium i nevojitet leje te Bluetooth-i për të vazhduar me çiftimin. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

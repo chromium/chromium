@@ -396,7 +396,7 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
       browser_context, frame, render_process_id, type, navigation_id,
       ukm_source_id, factory_builder, header_client,
       std::move(navigation_response_task_runner), request_initiator);
-  base::UmaHistogramEnumeration("Extensions.WebRequest.ProxyDecision",
+  base::UmaHistogramEnumeration("Extensions.WebRequest.ProxyDecision2",
                                 decision);
   return decision != ProxyDecision::kWillNotProxy;
 }
@@ -414,9 +414,10 @@ WebRequestAPI::ProxyDecision WebRequestAPI::MaybeProxyURLLoaderFactoryInternal(
     scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner,
     const url::Origin& request_initiator) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!MayHaveProxies()) {
-    ProxyDecision decision = ProxyDecision::kWillNotProxy;
-
+  ProxyDecision decision = MayHaveProxies()
+                               ? ProxyDecision::kWillProxyForExtension
+                               : ProxyDecision::kWillNotProxy;
+  if (decision != ProxyDecision::kWillProxyForExtension) {
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
     // There are a few internal WebUIs that use WebView tag that are allowlisted
     // for webRequest.
@@ -484,7 +485,7 @@ WebRequestAPI::ProxyDecision WebRequestAPI::MaybeProxyURLLoaderFactoryInternal(
       std::move(navigation_id), ukm_source_id, factory_builder,
       std::move(header_client_receiver), proxies_.get(), type,
       std::move(navigation_response_task_runner));
-  return ProxyDecision::kWillProxyForExtension;
+  return decision;
 }
 
 bool WebRequestAPI::MaybeProxyAuthRequest(

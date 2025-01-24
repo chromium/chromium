@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_CONSTANTS_H_
 
 #import <Foundation/Foundation.h>
+
 #import <string>
 
 // Enum specifying the various types of push notifications. Entries should not

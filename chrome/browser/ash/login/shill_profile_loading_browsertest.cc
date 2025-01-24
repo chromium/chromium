@@ -49,11 +49,11 @@ namespace em = ::enterprise_management;
 using ::testing::ElementsAre;
 
 constexpr char kUnmanagedUser[] = "unmanaged@gmail.com";
-constexpr char kUnmanagedGaiaID[] = "33333";
+constexpr GaiaId::Literal kUnmanagedGaiaID("33333");
 constexpr char kSecondaryUnmanagedUser[] = "secondaryunmanaged@gmail.com";
-constexpr char kSecondaryUnmanagedGaiaID[] = "44444";
+constexpr GaiaId::Literal kSecondaryUnmanagedGaiaID("44444");
 constexpr char kManagedUser[] = "user@example.com";
-constexpr char kManagedGaiaID[] = "55555";
+constexpr GaiaId::Literal kManagedGaiaID("55555");
 
 // Implements waiting for the LoadShillProfile call to SessionManagerClient and
 // counting how many LoadShillProfile calls were performed.
@@ -112,12 +112,12 @@ class ShillProfileLoadingTest : public LoginManagerTest {
   }
 
   const LoginManagerMixin::TestUserInfo unmanaged_user_{
-      AccountId::FromUserEmailGaiaId(kUnmanagedUser, GaiaId(kUnmanagedGaiaID))};
+      AccountId::FromUserEmailGaiaId(kUnmanagedUser, kUnmanagedGaiaID)};
   const LoginManagerMixin::TestUserInfo secondary_unmanaged_user_{
       AccountId::FromUserEmailGaiaId(kSecondaryUnmanagedUser,
-                                     GaiaId(kSecondaryUnmanagedGaiaID))};
+                                     kSecondaryUnmanagedGaiaID)};
   const LoginManagerMixin::TestUserInfo managed_user_{
-      AccountId::FromUserEmailGaiaId(kManagedUser, GaiaId(kManagedGaiaID))};
+      AccountId::FromUserEmailGaiaId(kManagedUser, kManagedGaiaID)};
 
   UserPolicyMixin user_policy_mixin_{&mixin_host_, managed_user_.account_id};
   LoginManagerMixin login_manager_{&mixin_host_,

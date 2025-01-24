@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">பச்சை</translation>
 <translation id="225692081236532131">செயலாக்க நிலை</translation>
 <translation id="2267285889943769271">ஸ்கிரீன்ஷாட்டைச் சேர்</translation>
+<translation id="2268044343513325586">துல்லியமாக்கு</translation>
 <translation id="2271469253353559191">டார்க் பயன்முறையைத் திட்டமிடுதல்</translation>
 <translation id="2276999893457278469">சிறந்த உதவி உள்ளடக்கம்</translation>
 <translation id="2277631741861284101">ஆடியோவை எளிதாக ரெக்கார்டு செய்து பகிருங்கள்</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">ஸ்கேனர்களைத் தேடுகிறது</translation>
 <translation id="3226657629376379887">தளவமைப்புகளுக்கான செயல்பாட்டு மெனு</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> மதிப்பை <ph name="CONVERSION_RATE" /> ஆல் வகுக்கவும்</translation>
-<translation id="3237710083340813756">மீண்டும் எழுதுதல்</translation>
 <translation id="3246869037381808805">1 நாளுக்கும் முன்னதாக உள்ள பிரிண்ட்டிங் பணிகள் அகற்றப்படும்</translation>
 <translation id="324961752321393509">இந்த ஆப்ஸை மூடுவதை உங்கள் நிர்வாகி அனுமதிக்கவில்லை</translation>
 <translation id="3263941347294171263">புதுப்பிப்பைத் தொடர <ph name="DEVICE_NAME" /> ஐ அகற்றிவிட்டு மீண்டும் செருகவும்</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> ஐப் புதுப்பிக்கிறது</translation>
 <translation id="346423161771747987">மின்னோட்டம்</translation>
 <translation id="346539236881580388">மீண்டும் எடு</translation>
+<translation id="3479552764303398839">இப்பொழுது இல்லை</translation>
 <translation id="3484914941826596830">நிலைபொருளைப் புதுப்பிக்கும்போது இந்த வெளிப்புறச் சாதனத்தின் இணைப்பைத் துண்டிக்கவோ உங்கள் கம்ப்யூட்டரை ஷட் டவுன் செய்யவோ கூடாது. இந்தச் சாளரத்தைச் சிறிதாக்கிக்கொள்ளலாம். இந்தப் புதுப்பிப்பு நிறைவடைய சில நிமிடங்கள் ஆகலாம். அதுவரை உங்கள் வெளிப்புறச் சாதனத்தில் வேறு எதுவும் செய்ய முடியாமல் போகலாம்.</translation>
 <translation id="3486220673238053218">விளக்கம்</translation>
 <translation id="3487866404496702283">Mahi அம்சத்திற்கான கருத்து</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">ஒலியளவை மாற்றலாம்</translation>
 <translation id="3767737419527918477">ரெக்கார்டிங் ஃபைல்களைத் தேடும்</translation>
 <translation id="3771294271822695279">வீடியோ ஃபைல்கள் </translation>
+<translation id="3771694256347217732">Google சேவை விதிமுறைகள்</translation>
 <translation id="3780740315729837296">கீபோர்டு பட்டனை அமைக்கவும்</translation>
 <translation id="3784455785234192852">பூட்டு</translation>
 <translation id="3785643128701396311">பிக்சல் ஆர்ட்</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) HTTP தாமதம்</translation>
 <translation id="6078323886959318429">ஷார்ட்கட்டைச் சேர்</translation>
 <translation id="6091080061796993741">மஞ்சள்</translation>
-<translation id="6093853427925392522">அணுகலை இழப்பதற்கு முன் உங்கள் பள்ளிக் கணக்கின் தரவை உங்கள் தனிப்பட்ட கணக்கிற்கு நகர்த்த, Google வழங்கும் Content Transfer ஆப்ஸைப் பயன்படுத்துவதை உறுதிசெய்துகொள்ளவும்.</translation>
 <translation id="6104112872696127344">ஸ்கேன் செய்வது ரத்துசெய்யப்பட்டது</translation>
 <translation id="6106186594183574873">நிறைவுசெய்ய தற்போதைய கடவுச்சொல்லை உள்ளிடவும்</translation>
 <translation id="6108689792487843350">கேட்வேயை அணுக முடியவில்லை</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">ஷார்ட்கட்களைத் தேடுக</translation>
 <translation id="7138614237884624401">எளிதாக்கப்பட்ட வார்த்தை</translation>
 <translation id="7138668887584231801">சுருக்க, போதுமான வார்த்தைகள் இல்லை</translation>
-<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">இணைத்தல்</translation>
 <translation id="7144878232160441200">மீண்டும் முயற்சி செய்க</translation>
 <translation id="7144954474087165241">பகோடா</translation>
@@ -1541,7 +1541,6 @@
 <translation id="8261506727792406068">நீக்கு</translation>
 <translation id="8262870577632766028">1 மணிநேரம்</translation>
 <translation id="827422111966801947">இண்டிகோ</translation>
-<translation id="8281886186245836920">தவிர்</translation>
 <translation id="8286154143153872371">வால்பேப்பரைப் பார்க்க நெட்வொர்க்குடன் இணைத்து, பக்கத்தை ரெஃப்ரெஷ் செய்யவும்.</translation>
 <translation id="8291967909914612644">உள்நாட்டு மொபைல் சேவை வழங்குநரின் நாடு</translation>
 <translation id="8294431847097064396">மூலம்</translation>
@@ -1646,6 +1645,7 @@
 <translation id="8797082062139985406">Google AI மூலம் பெயரை உருவாக்கலாம்</translation>
 <translation id="8798099450830957504">இயல்புநிலை</translation>
 <translation id="8798441408945964110">வழங்குநர் பெயர்</translation>
+<translation id="8804164990146287819">தனியுரிமைக் கொள்கை</translation>
 <translation id="8808828119384186784">Chrome அமைப்புகள்</translation>
 <translation id="8814190375133053267">வைஃபை</translation>
 <translation id="8818152010000655963">வால்பேப்பர்</translation>

@@ -76,7 +76,8 @@ constexpr char AffiliationTestHelper::kFakeRefreshToken[] =
     "fake-refresh-token";
 constexpr char AffiliationTestHelper::kEnterpriseUserEmail[] =
     "testuser@example.com";
-constexpr char AffiliationTestHelper::kEnterpriseUserGaiaId[] = "01234567890";
+constexpr GaiaId::Literal AffiliationTestHelper::kEnterpriseUserGaiaId(
+    "01234567890");
 
 // static
 AffiliationTestHelper AffiliationTestHelper::CreateForCloud(

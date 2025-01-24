@@ -431,15 +431,14 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiWithSignIn) {
               Run(CollaborationControllerDelegate::Outcome::kSuccess));
 
   OCMExpect([application_commands_mock_
-              showSignin:[OCMArg
-                             checkWithBlock:^BOOL(ShowSigninCommand* command) {
-                               AcceptSyncOptIn();
-                               command.completion(
-                                   SigninCoordinatorResultSuccess,
+              showSignin:[OCMArg checkWithBlock:^BOOL(
+                                     ShowSigninCommand* command) {
+                AcceptSyncOptIn();
+                command.completion(SigninCoordinatorResultSuccess,
                                    [FakeSystemIdentity fakeIdentity1]);
-                               return command.operation ==
-                                      AuthenticationOperation::kHistorySync;
-                             }]
+                return command.operation ==
+                       AuthenticationOperation::kHistorySync;
+              }]
       baseViewController:base_view_controller_]);
 
   delegate_->ShowAuthenticationUi(mock_callback.Get());

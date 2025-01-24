@@ -31,13 +31,16 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
     size_t& count_hints_requests_received,
     const net::test_server::HttpRequest& request) {
   // Fail the response if it does not have the expected attributes.
-  if (request.method != net::test_server::METHOD_POST)
+  if (request.method != net::test_server::METHOD_POST) {
     return nullptr;
+  }
   optimization_guide::proto::GetHintsRequest hints_request;
-  if (!hints_request.ParseFromString(request.content))
+  if (!hints_request.ParseFromString(request.content)) {
     return nullptr;
-  if (hints_request.hosts().empty() && hints_request.urls().empty())
+  }
+  if (hints_request.hosts().empty() && hints_request.urls().empty()) {
     return nullptr;
+  }
   // TODO(crbug.com/40103566): Verify that hosts count in the hint does not
   // exceed MaxHostsForOptimizationGuideServiceHintsFetch()
 

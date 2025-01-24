@@ -98,7 +98,8 @@ void FailedPasswordChangeView::OnWidgetInitialized() {
 }
 
 void FailedPasswordChangeView::AddedToWidget() {
-  SetBubbleHeader(IDR_SAVE_PASSWORD, IDR_SAVE_PASSWORD_DARK);
+  SetBubbleHeader(IDR_PASSWORD_CHANGE_FAILURE,
+                  IDR_PASSWORD_CHANGE_FAILURE_DARK);
 }
 
 BEGIN_METADATA(FailedPasswordChangeView)

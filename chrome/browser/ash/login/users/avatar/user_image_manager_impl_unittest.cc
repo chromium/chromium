@@ -118,7 +118,7 @@ TEST_F(UserImageManagerImplTest, RecordsUserImageLoggedInHistogram) {
   base::HistogramTester histogram_tester;
 
   const AccountId account_id = AccountId::FromUserEmailGaiaId(
-      std::string(kFakeRegularUserEmail), GaiaId(kFakeRegularUserEmail));
+      std::string(kFakeRegularUserEmail), GaiaId("1111"));
   AddUser(account_id);
 
   EXPECT_CALL(*mock_user_image_loader_delegate(), FromGURLAnimated);

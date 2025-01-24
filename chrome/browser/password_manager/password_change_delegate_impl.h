@@ -56,13 +56,14 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   PasswordChangeDelegateImpl& operator=(const PasswordChangeDelegateImpl&) =
       delete;
 
-  // Initiates password change flow.
-  void Init();
+  // Sets `kOfferingPasswordChange` state and triggers the leak check bubble.
+  void OfferPasswordChangeUi();
 
   base::WeakPtr<PasswordChangeDelegate> AsWeakPtr() override;
 
  private:
   // PasswordChangeDelegate Impl
+  void StartPasswordChangeFlow() override;
   bool IsPasswordChangeOngoing(content::WebContents* web_contents) override;
   State GetCurrentState() const override;
   void Stop() override;
@@ -115,7 +116,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   OpenPasswordChangeTabCallback open_password_change_tab_callback_;
   base::WeakPtr<content::WebContents> executor_;
 
-  State current_state_ = State::kWaitingForChangePasswordForm;
+  State current_state_ = static_cast<State>(-1);
 
   // Class which awaits for change password form to appear.
   std::unique_ptr<ParsedPasswordFormWaiter> form_waiter_;

@@ -10,6 +10,7 @@
 <translation id="2447485272386224171">Chrome je založený na open source projekte <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> a ďalšom <ph name="BEGIN_LINK_OSS" />open source softvéri<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logo Chrome</translation>
 <translation id="3444832043240812445">Táto stránka zobrazuje informácie o nedávnych zlyhaniach, len ak ste <ph name="BEGIN_LINK" />povolili hlásenia zlyhaní<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Tieto stránky môžu používať vývojári Chromu a nemusia byť aktívne udržiavané ani testované. Ak ich chcete povoliť, prejdite na <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknutím na tlačidlo povoľte stránky ladenia a potom sa vráťte na túto stránku.</translation>
 <translation id="3875312571075912821">Chromu povoľte prístup k sieti v nastaveniach brány firewall alebo antivírusového softvéru.</translation>
 <translation id="5005121315113832363">Táto stránka bola zablokovaná Chromom</translation>
 <translation id="6011049234605203654">Prejdite na

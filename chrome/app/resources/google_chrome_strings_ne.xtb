@@ -204,7 +204,6 @@
 <translation id="345171907106878721">आफूलाई Chrome मा थप्नुहोस</translation>
 <translation id="3453763134178591239">ChromeOS का सर्तहरू</translation>
 <translation id="3503306920980160878">यो साइटसँग तपाईंको स्थान आदान प्रदान गर्न Chrome सँग तपाईंको स्थानमाथिको पहुँच हुनु पर्छ</translation>
-<translation id="3512634283363927263">यी पेजहरू Chrome विकासकर्ताहरूको प्रयोगका लागि बनाइएका हुनाले सक्रिय रूपमा यिनको व्यवस्थापन वा परीक्षण नगरिएको हुन सक्छ। यी पेजहरू अन गर्न <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> मा जानुहोस्, यो बटन क्लिक गरी पेज डिबग गर्ने सुविधा अन गर्नुहोस् र त्यसपछि फेरि यो पेजमा जानुहोस्।</translation>
 <translation id="3533694711092285624">कुनै पनि सुरक्षित गरिएको पासवर्ड छैन। तपाईंले आफ्ना पासवर्डहरू सुरक्षित गर्नुभएको छ भने मात्र Chrome ले तिनको जाँच गर्न सक्छ।</translation>
 <translation id="3541482654983822893">Chrome तपाईंका पासवर्डहरू जाँच्न सक्दैन। २४ घन्टापछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3564543103555793392">तपाईंले Chrome मा साइन इन गरेपछि तपाईं बुकमार्क तथा पासवर्डलगायतका कुराहरू सेभ गर्न अनि आफ्नो फोनमा ती कुरा प्रयोग गर्न सक्नुहुन्छ</translation>
@@ -222,7 +221,6 @@
 <translation id="3673813398384385993">Chrome ले "<ph name="EXTENSION_NAME" />" मा मालवेयर भएको कुरा पत्ता लगाएको छ</translation>
 <translation id="3695446226812920698">कसरी सिक्नुहोस्</translation>
 <translation id="3697952514309507634">Chrome का अन्य प्रोफाइलहरू</translation>
-<translation id="3700276346088749847">आफ्नो खातामा सेभ गरिएको Chrome को डेटा मेटाउनुहोस्</translation>
 <translation id="3703994572283698466">ChromeOS पनि <ph name="BEGIN_LINK_LINUX_OSS" />Linux डेभलपमेन्ट इनभारमेन्ट<ph name="END_LINK_LINUX_OSS" /> जस्तै अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />खुला स्रोत सफ्टवेयर<ph name="END_LINK_CROS_OSS" /> प्रयोग गरी निर्माण गरिएको हो।</translation>
 <translation id="3716540481907974026">ChromeOS Flex को संस्करण</translation>
 <translation id="3718181793972440140">यसले यो डिभाइसको १ वस्तु मेट्नेछ। पछि आफ्नो डेटा प्राप्त गर्न Chrome मा <ph name="USER_EMAIL" /> को रूपमा साइन इन गर्नुहोस्।</translation>

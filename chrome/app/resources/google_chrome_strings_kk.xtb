@@ -206,7 +206,6 @@
 <translation id="345171907106878721">Chrome жүйесіне өзіңізді қосу</translation>
 <translation id="3453763134178591239">ChromeOS шарттары</translation>
 <translation id="3503306920980160878">Бұл сайтқа көрсету үшін Chrome браузері орналасқан жеріңізді білуі керек</translation>
-<translation id="3512634283363927263">Бұл беттер Chrome әзірлеушілерінің қолданысына арналған және белсенді түрде жүргізілмеуі не сыналмауы мүмкін. Оларды қосу үшін <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> сайтына өтіп, түзету беттерін қосатын түймені басып, осы бетке қайтып келіңіз.</translation>
 <translation id="3533694711092285624">Ешқандай құпия сөз сақталмаған. Құпия сөздер сақталған кезде, Chrome оларды тексере алады.</translation>
 <translation id="3541482654983822893">Chrome сіздің құпия сөздеріңізді тексере алмай жатыр. 24 сағаттан кейін қайталап көріңіз.</translation>
 <translation id="3564543103555793392">Chrome-ға кірген кезде, бетбелгілерді, құпия сөздерді және т.б. сақтап, оларды телефонда пайдалануға болады.</translation>
@@ -224,7 +223,6 @@
 <translation id="3673813398384385993">Chrome "<ph name="EXTENSION_NAME" />" кеңейтімінде зиянды бағдарлама бар екенін анықтады.</translation>
 <translation id="3695446226812920698">Әдісін білу</translation>
 <translation id="3697952514309507634">Chrome басқа профильдері</translation>
-<translation id="3700276346088749847">аккаунтыңыздағы Chrome деректерін жойыңыз.</translation>
 <translation id="3703994572283698466">ChromeOS жүйесі де <ph name="BEGIN_LINK_LINUX_OSS" />Linux әзірлеу ортасы<ph name="END_LINK_LINUX_OSS" /> сияқты қосымша <ph name="BEGIN_LINK_CROS_OSS" />ашық кодты бағдарламалық құрал<ph name="END_LINK_CROS_OSS" /> арқылы қолжетімді болады.</translation>
 <translation id="3716540481907974026">ChromeOS Flex нұсқасы</translation>
 <translation id="3718181793972440140">Құрылғыдан 1 элемент жойылады. Деректерді кейінірек алу үшін Chrome браузеріне <ph name="USER_EMAIL" /> болып кіріңіз.</translation>

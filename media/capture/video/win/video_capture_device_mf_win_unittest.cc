@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/capture/video/win/video_capture_device_mf_win.h"
+
 #include <d3d11_4.h>
 #include <ks.h>
 #include <ksmedia.h>
@@ -17,6 +19,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -27,7 +30,6 @@
 #include "media/capture/video/win/d3d_capture_test_utils.h"
 #include "media/capture/video/win/sink_filter_win.h"
 #include "media/capture/video/win/video_capture_device_factory_win.h"
-#include "media/capture/video/win/video_capture_device_mf_win.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -2184,7 +2186,7 @@ class VideoCaptureDeviceMFWinTestWithDXGI : public VideoCaptureDeviceMFWinTest {
     HRESULT hr = MFCreateDXGIDeviceManager(&d3d_device_reset_token,
                                            &mf_dxgi_device_manager);
     ASSERT_EQ(hr, S_OK);
-    dxgi_device_manager_ = new MockDXGIDeviceManager(
+    dxgi_device_manager_ = base::MakeRefCounted<MockDXGIDeviceManager>(
         std::move(mf_dxgi_device_manager), d3d_device_reset_token);
     VideoCaptureDeviceMFWinTest::SetUp();
   }

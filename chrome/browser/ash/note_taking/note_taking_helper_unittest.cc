@@ -75,6 +75,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkTypes.h"
@@ -97,13 +98,13 @@ auto& kDevKeepExtensionId = NoteTakingHelper::kDevKeepExtensionId;
 auto& kProdKeepExtensionId = NoteTakingHelper::kProdKeepExtensionId;
 
 // Name of default profile.
-const char kTestProfileName[] = "test-profile";
-const char kSecondProfileName[] = "second-profile";
-const char kFakeGaia2[] = "fakegaia2";
+constexpr char kTestProfileName[] = "test-profile";
+constexpr char kSecondProfileName[] = "second-profile";
+constexpr GaiaId::Literal kFakeGaia2("fakegaia2");
 
 // Names for keep apps used in tests.
-const char kProdKeepAppName[] = "Google Keep [prod]";
-const char kDevKeepAppName[] = "Google Keep [dev]";
+constexpr char kProdKeepAppName[] = "Google Keep [prod]";
+constexpr char kDevKeepAppName[] = "Google Keep [dev]";
 
 std::string GetAppString(const std::string& name,
                          const std::string& id,
@@ -400,7 +401,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterUserProfilePrefs(prefs->registry());
     const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(kSecondProfileName, GaiaId(kFakeGaia2)));
+        AccountId::FromUserEmailGaiaId(kSecondProfileName, kFakeGaia2));
     user_manager()->AddGaiaUser(account_id, user_manager::UserType::kRegular);
     TestingProfile* profile = profile_manager()->CreateTestingProfile(
         kSecondProfileName, std::move(prefs), u"second-profile-username",

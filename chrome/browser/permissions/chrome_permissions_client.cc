@@ -471,8 +471,8 @@ void ChromePermissionsClient::OnPromptResolved(
       web_contents, request_type, std::make_optional(action),
       prompt_disposition, prompt_disposition_reason, gesture_type,
       std::make_optional(prompt_display_duration), /*is_post_prompt=*/true,
-      web_contents->GetLastCommittedURL(), pepc_prompt_position,
-      initial_permission_status, base::DoNothing());
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().GetURL(),
+      pepc_prompt_position, initial_permission_status, base::DoNothing());
 }
 
 std::optional<bool>

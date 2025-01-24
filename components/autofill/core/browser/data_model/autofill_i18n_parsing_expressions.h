@@ -8,6 +8,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_I18N_PARSING_EXPRESSIONS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_I18N_PARSING_EXPRESSIONS_H_
 
+#include <string_view>
+#include <utility>
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -17,7 +20,6 @@
 #include "third_party/re2/src/re2/re2.h"
 
 namespace autofill::i18n_model_definition {
-namespace {
 
 using CountryAndFieldType = std::pair<std::string_view, FieldType>;
 
@@ -116,7 +118,6 @@ inline constexpr ExtractPart const* kExtractParts_6_Pieces[]{&kExtractPartList[7
 inline constexpr ExtractParts kExtractParts_6 = ExtractParts("", kExtractParts_6_Pieces);
 inline constexpr ExtractPart const* kExtractParts_7_Pieces[]{&kExtractPartList[9],&kExtractPartList[5],&kExtractPartList[6],&kExtractPartList[7],&kExtractPartList[8]};
 inline constexpr ExtractParts kExtractParts_7 = ExtractParts("", kExtractParts_7_Pieces);
-}  // namespace
 
 // A lookup map for parsing expressions for countries and field types.
 inline constexpr auto kAutofillParsingRulesMap =

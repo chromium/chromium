@@ -206,7 +206,6 @@
 <translation id="345171907106878721">ਖੁਦ ਨੂੰ Chrome ਨਾਲ ਜੋੜੋ</translation>
 <translation id="3453763134178591239">ChromeOS ਦੇ ਨਿਯਮ</translation>
 <translation id="3503306920980160878">Chrome ਨੂੰ ਇਸ ਸਾਈਟ ਨਾਲ ਤੁਹਾਡੀ ਟਿਕਾਣਾ ਜਾਣਕਾਰੀ ਸਾਂਝੀ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਟਿਕਾਣੇ 'ਤੇ ਪਹੁੰਚ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
-<translation id="3512634283363927263">ਇਹ ਪੰਨੇ Chrome ਵਿਕਾਸਕਾਰਾਂ ਵੱਲੋਂ ਵਰਤੋਂ ਕਰਨ ਲਈ ਬਣਾਏ ਗਏ ਹਨ ਅਤੇ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਨ੍ਹਾਂ ਦੀ ਸਮੇਂ-ਸਮੇਂ 'ਤੇ ਸਾਂਭ-ਸੰਭਾਲ ਜਾਂ ਜਾਂਚ ਨਾ ਕੀਤੀ ਜਾਂਦੀ ਹੋਵੇ। ਉਨ੍ਹਾਂ ਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> 'ਤੇ ਜਾਓ, ਡੀਬੱਗ ਪੰਨਿਆਂ ਦੀ ਸੈਟਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ ਬਟਨ 'ਤੇ ਕਲਿੱਕ ਕਰੋ ਅਤੇ ਫਿਰ ਇਸ ਪੰਨੇ 'ਤੇ ਦੁਬਾਰਾ ਜਾਓ।</translation>
 <translation id="3533694711092285624">ਕੋਈ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਨਹੀਂ। ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਪਣੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨ 'ਤੇ Chrome ਉਹਨਾਂ ਦੀ ਜਾਂਚ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="3541482654983822893">Chrome ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਦਾ। 24 ਘੰਟਿਆਂ ਬਾਅਦ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="3564543103555793392">ਜਦੋਂ ਤੁਸੀਂ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਦੇ ਹੋ, ਤਾਂ ਤੁਸੀਂ ਬੁੱਕਮਾਰਕ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰ ਸਕਦੇ ਹੋ, ਫਿਰ ਉਨ੍ਹਾਂ ਨੂੰ ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ ਵਰਤ ਸਕਦੇ ਹੋ</translation>
@@ -224,7 +223,6 @@
 <translation id="3673813398384385993">Chrome ਨੂੰ ਇਹ ਪਤਾ ਲੱਗਾ ਕਿ <ph name="EXTENSION_NAME" /> ਵਿੱਚ ਮਾਲਵੇਅਰ ਸ਼ਾਮਲ ਹਨ</translation>
 <translation id="3695446226812920698">ਜਾਣੋ ਕਿਵੇਂ</translation>
 <translation id="3697952514309507634">ਹੋਰ Chrome ਪ੍ਰੋਫਾਈਲਾਂ</translation>
-<translation id="3700276346088749847">ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="3703994572283698466">ChromeOS ਨੂੰ ਵਧੀਕ <ph name="BEGIN_LINK_CROS_OSS" />ਖੁੱਲ੍ਹੇ ਸਰੋਤ ਸਾਫ਼ਟਵੇਅਰ<ph name="END_LINK_CROS_OSS" /> ਕਰਕੇ ਸੰਭਵ ਬਣਾਇਆ ਗਿਆ ਹੈ, ਜਿਵੇਂ ਕਿ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ਵਿਕਾਸ ਵਾਤਾਵਰਨ<ph name="END_LINK_LINUX_OSS" />।</translation>
 <translation id="3716540481907974026">ChromeOS Flex ਵਰਜਨ</translation>
 <translation id="3718181793972440140">ਇਸ ਨਾਲ ਇਸ ਡੀਵਾਈਸ ਤੋਂ 1 ਆਈਟਮ ਮਿਟਾ ਦਿੱਤੀ ਜਾਵੇਗੀ। ਬਾਅਦ ਵਿੱਚ ਆਪਣੇ ਡਾਟੇ ਨੂੰ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, Chrome 'ਤੇ <ph name="USER_EMAIL" /> ਵਜੋਂ ਸਾਈਨ ਇਨ ਕਰੋ।</translation>

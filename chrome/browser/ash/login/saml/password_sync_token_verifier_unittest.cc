@@ -32,10 +32,10 @@
 namespace ash {
 namespace {
 
-const char kSAMLUserId1[] = "12345";
-const char kSAMLUserEmail1[] = "alice@corp.example.com";
+constexpr GaiaId::Literal kSAMLUserId1("12345");
+constexpr char kSAMLUserEmail1[] = "alice@corp.example.com";
 
-const char kSyncToken[] = "sync-token-1";
+constexpr char kSyncToken[] = "sync-token-1";
 
 constexpr base::TimeDelta kSyncTokenCheckInterval = base::Minutes(6);
 
@@ -57,7 +57,7 @@ class PasswordSyncTokenVerifierTest : public testing::Test {
   bool PasswordSyncTokenFetcherIsAllocated();
 
   const AccountId saml_login_account_id_ =
-      AccountId::FromUserEmailGaiaId(kSAMLUserEmail1, GaiaId(kSAMLUserId1));
+      AccountId::FromUserEmailGaiaId(kSAMLUserEmail1, kSAMLUserId1);
 
   content::BrowserTaskEnvironment test_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,

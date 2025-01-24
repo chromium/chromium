@@ -399,7 +399,6 @@
 <translation id="6455857529632101747">Selamat datang di profil Chromium</translation>
 <translation id="6466344609055215035">Hapus Akun dari Chromium</translation>
 <translation id="6475912303565314141">Juga mengontrol halaman apa yang ditampilkan saat Anda memulai Chromium.</translation>
-<translation id="648062525172759633">Halaman ini ditujukan untuk digunakan oleh developer Chromium, dan mungkin tidak dikelola atau diuji secara aktif. Untuk mengaktifkannya, buka <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klik tombol untuk mengaktifkan halaman debug, lalu buka lagi halaman ini.</translation>
 <translation id="648319183876919572">Safe Browsing yang Disempurnakan melakukan lebih banyak hal untuk melindungi Anda dari situs dan download berbahaya</translation>
 <translation id="6510925080656968729">Uninstal Chromium</translation>
 <translation id="651535675648445253">Pintasan dibuka di Chromium</translation>
@@ -533,7 +532,6 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8313851650939857356">Error saat sistem dimulai: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Organisasi Anda menutup Chromium saat tidak digunakan selama <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Simpan sebagai gambar</translation>
-<translation id="8326785589245660814">hapus data Chromium di akun Anda</translation>
 <translation id="8330519371938183845">Login untuk menyinkronkan dan mempersonalisasi Chromium di perangkat Anda</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> sebelumnya menggunakan Chromium</translation>
 <translation id="8359544530202147897">Update Chromium untuk terus menggunakan data Chromium di Akun Google Anda, <ph name="ACCOUNT_EMAIL" /></translation>

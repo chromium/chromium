@@ -251,7 +251,8 @@ SuccessfulPasswordChangeView::GetController() const {
 }
 
 void SuccessfulPasswordChangeView::AddedToWidget() {
-  SetBubbleHeader(IDR_SAVE_PASSWORD, IDR_SAVE_PASSWORD_DARK);
+  SetBubbleHeader(IDR_PASSWORD_CHANGE_SUCCESS,
+                  IDR_PASSWORD_CHANGE_SUCCESS_DARK);
 }
 
 BEGIN_METADATA(SuccessfulPasswordChangeView)

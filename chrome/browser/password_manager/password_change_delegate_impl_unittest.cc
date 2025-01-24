@@ -38,7 +38,7 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
         base::BindRepeating([](content::WebContents* contents, const GURL&,
                                content::WebContents*) { return contents; },
                             base::Unretained(contents)));
-    delegate->Init();
+    delegate->OfferPasswordChangeUi();
     return delegate;
   }
 
@@ -63,6 +63,7 @@ TEST_F(PasswordChangeDelegateImplTest, WaitingForAgreement) {
   std::unique_ptr<content::WebContents> test_web_contents = CreateWebContents();
   std::unique_ptr<PasswordChangeDelegate> delegate =
       CreateDelegate(test_web_contents.get());
+  delegate->StartPasswordChangeFlow();
 
   ASSERT_FALSE(prefs()->GetBoolean(
       password_manager::prefs::kPasswordChangeFlowNoticeAgreement));
@@ -85,6 +86,7 @@ TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFormNotFound) {
   std::unique_ptr<content::WebContents> test_web_contents = CreateWebContents();
   std::unique_ptr<PasswordChangeDelegate> delegate =
       CreateDelegate(test_web_contents.get());
+  delegate->StartPasswordChangeFlow();
 
   EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
             delegate->GetCurrentState());
@@ -102,6 +104,7 @@ TEST_F(PasswordChangeDelegateImplTest, RestartPasswordChange) {
   std::unique_ptr<content::WebContents> test_web_contents = CreateWebContents();
   std::unique_ptr<PasswordChangeDelegate> delegate =
       CreateDelegate(test_web_contents.get());
+  delegate->StartPasswordChangeFlow();
 
   EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
             delegate->GetCurrentState());

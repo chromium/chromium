@@ -53,9 +53,6 @@ void CredentialLeakDialogControllerImpl::OnAcceptDialog() {
         LeakDialogDismissalReason::kClickedCheckPasswords);
     delegate_->NavigateToPasswordCheckup(
         password_manager::PasswordCheckReferrer::kPasswordBreachDialog);
-  } else if (change_password_supported_) {
-    // TODO(crbug.com/375564659): Remove once a new dedicated dialog is added.
-    delegate_->ChangePassword(url_, username_, password_);
   } else {
     metrics_recorder_->LogLeakDialogTypeAndDismissalReason(
         LeakDialogDismissalReason::kClickedOk);

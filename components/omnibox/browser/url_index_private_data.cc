@@ -358,11 +358,12 @@ void URLIndexPrivateData::ScheduleUpdateRecentVisits(
 
 bool URLIndexPrivateData::DeleteURL(const GURL& url) {
   // Find the matching entry in the history_info_map_.
+  // To avoid creating a temporary GURL instance,
+  // the lambda expression should return the GURL reference.
   auto pos = base::ranges::find(
       history_info_map_, url,
-      [](const std::pair<const HistoryID, HistoryInfoMapValue>& item) {
-        return item.second.url_row.url();
-      });
+      [](const std::pair<const HistoryID, HistoryInfoMapValue>& item)
+          -> const GURL& { return item.second.url_row.url(); });
   if (pos == history_info_map_.end())
     return false;
   RemoveRowFromIndex(pos->second.url_row);

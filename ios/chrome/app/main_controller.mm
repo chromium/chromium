@@ -283,11 +283,21 @@ void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
   sessions_storage_util::ResetDiscardedSessions();
 }
 
+// Helper used to call -unloadProfileMarkedForDeletion:completion: from
+// a callback.
 void UnloadProfileMarkedForDeletion(MainController* controller,
                                     std::string_view profile_name,
                                     ProfileDeletedCallback completion) {
   [controller unloadProfileMarkedForDeletion:profile_name
                                   completion:std::move(completion)];
+}
+
+// Helper used to implement a continuation that invoke `done_closure`.
+void DeleteProfileContinuation(base::OnceClosure done_closure,
+                               SceneState* scene_state,
+                               base::OnceClosure next_closure) {
+  std::move(done_closure).Run();
+  std::move(next_closure).Run();
 }
 
 }  // namespace
@@ -1614,34 +1624,33 @@ void UnloadProfileMarkedForDeletion(MainController* controller,
   DCHECK_GT(personalProfile.size(), 0u);
 
   manager->MarkProfileForDeletion(profileName);
-  if (auto iter = _profileControllers.find(profileName);
-      iter != _profileControllers.end()) {
+  auto iter = _profileControllers.find(profileName);
+
+  NSArray<SceneState*>* scenes = nil;
+  if (iter != _profileControllers.end()) {
     ProfileController* controller = iter->second;
-    NSArray<SceneState*>* scenes = controller.state.connectedScenes;
-    if (scenes.count > 0) {
-      __weak MainController* weakSelf = self;
-      base::RepeatingClosure closure = BarrierClosure(
-          scenes.count,
-          base::BindOnce(&UnloadProfileMarkedForDeletion, weakSelf, profileName,
-                         std::move(completion)));
-      for (SceneState* scene in scenes) {
-        ChangeProfileContinuation continuation = base::BindOnce(
-            [](base::OnceClosure done_closure, SceneState* scene_state,
-               base::OnceClosure next_closure) {
-              std::move(done_closure).Run();
-              std::move(next_closure).Run();
-            },
-            closure);
-        [self changeProfile:personalProfile
-                   forScene:scene
-               continuation:std::move(continuation)];
-      }
-      return;
-    }
-    _profileControllers.erase(iter);
+    scenes = controller.state.connectedScenes;
   }
-  [self unloadProfileMarkedForDeletion:profileName
-                            completion:std::move(completion)];
+
+  if (scenes.count == 0) {
+    // Either the Profile is not loaded or there is no scene connected, so
+    // there is no need to switch any scene to another Profile. Invoke the
+    // next step directly without waiting.
+    [self unloadProfileMarkedForDeletion:profileName
+                              completion:std::move(completion)];
+    return;
+  }
+
+  __weak MainController* weakSelf = self;
+  base::RepeatingClosure closure = BarrierClosure(
+      scenes.count, base::BindOnce(&UnloadProfileMarkedForDeletion, weakSelf,
+                                   profileName, std::move(completion)));
+
+  for (SceneState* scene in scenes) {
+    [self changeProfile:personalProfile
+               forScene:scene
+           continuation:base::BindOnce(&DeleteProfileContinuation, closure)];
+  }
 }
 
 #pragma mark - Private
@@ -1657,8 +1666,12 @@ void UnloadProfileMarkedForDeletion(MainController* controller,
     ProfileController* controller = iter->second;
     NSArray<SceneState*>* scenes = controller.state.connectedScenes;
     DCHECK_EQ(scenes.count, 0u);
+
+    // Call -shutdown before deleting the object.
+    [controller shutdown];
     _profileControllers.erase(iter);
   }
+
   manager->UnloadProfile(profileName);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(completion), true));

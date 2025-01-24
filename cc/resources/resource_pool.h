@@ -27,6 +27,7 @@
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "ui/gfx/color_space.h"
@@ -93,6 +94,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
 
     scoped_refptr<gpu::ClientSharedImage> shared_image;
     gpu::SyncToken mailbox_sync_token;
+    scoped_refptr<gpu::SharedImageInterface> shared_image_interface;
   };
 
   // Scoped move-only object returned when getting a resource from the pool.

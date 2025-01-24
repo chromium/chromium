@@ -150,6 +150,11 @@ export default [
               'Remove unnecessary "!" non-null operator after querySelectorAll(). It always returns a non-null result',
         },
         {
+          // Prevent unnecessary usage of dispatchEvent(new Event('click'))
+          'selector': 'NewExpression[callee.name=Event][arguments.0.type=Literal][arguments.0.value=click]',
+          'message': 'Don\'t use dispatchEvent(new Event(\'click\')) for click events. Use the click() method instead.',
+        },
+        {
           // https://google.github.io/styleguide/jsguide.html#es-module-imports
           //  1) Matching only import URLs that have at least one '/' slash,
           //  to avoid false positives for NodeJS imports like `import fs from

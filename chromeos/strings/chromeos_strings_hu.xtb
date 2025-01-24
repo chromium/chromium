@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">zöld</translation>
 <translation id="225692081236532131">Aktiválás állapota</translation>
 <translation id="2267285889943769271">Képernyőkép hozzáadása</translation>
+<translation id="2268044343513325586">Pontosítás</translation>
 <translation id="2271469253353559191">Sötét mód ütemezése</translation>
 <translation id="2276999893457278469">Legnépszerűbb súgótartalmak</translation>
 <translation id="2277631741861284101">Egyszerűen rögzíthet és megoszthat hangfelvételt</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">Szkennerek keresése</translation>
 <translation id="3226657629376379887">Elrendezésműveletek menüje</translation>
 <translation id="3227186760713762082">Ossza el a(z) <ph name="CATEGORY_TEXT" /> értékét ennyivel: <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Átírás</translation>
 <translation id="3246869037381808805">Az 1 napnál régebbi nyomtatási feladatokat eltávolítja a rendszer</translation>
 <translation id="324961752321393509">A rendszergazda nem engedélyezi az alkalmazás bezárását</translation>
 <translation id="3263941347294171263">Húzza ki, majd csatlakoztassa újra a(z) <ph name="DEVICE_NAME" /> eszközt a frissítési folyamat folytatásához</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> frissítése…</translation>
 <translation id="346423161771747987">Áram</translation>
 <translation id="346539236881580388">Új kép készítése</translation>
+<translation id="3479552764303398839">Ne most</translation>
 <translation id="3484914941826596830">A firmware frissítése közben ne húzza ki a külső eszközt, és ne kapcsolja ki számítógépét. Ezt az ablakot kis méretre állíthatja. A frissítés eltarthat néhány percig, és előfordulhat, hogy közben nem működik a külső eszköz.</translation>
 <translation id="3486220673238053218">definíció</translation>
 <translation id="3487866404496702283">Visszajelzés a mahi funkcióról</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">Hangerő módosítása</translation>
 <translation id="3767737419527918477">Felvételt tartalmazó fájlok keresése</translation>
 <translation id="3771294271822695279">Videofájlok</translation>
+<translation id="3771694256347217732">Google Általános Szerződési Feltételek</translation>
 <translation id="3780740315729837296">Rendeljen hozzá egy billentyűt</translation>
 <translation id="3784455785234192852">Zárolás</translation>
 <translation id="3785643128701396311">pixelképek</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) HTTP várakozási idő</translation>
 <translation id="6078323886959318429">Parancsikon hozzáadása</translation>
 <translation id="6091080061796993741">sárga</translation>
-<translation id="6093853427925392522">A Google Content Transfer alkalmazásával helyezze át az iskolai fiókja adatait a személyes fiókjába, mielőtt elveszítené a hozzáférését.</translation>
 <translation id="6104112872696127344">Beolvasás megszakítva</translation>
 <translation id="6106186594183574873">A befejezéshez adja meg régi jelszavát</translation>
 <translation id="6108689792487843350">Az átjáró nem érhető el</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">Billentyűparancs keresése</translation>
 <translation id="7138614237884624401">Egyszerűsített szöveg</translation>
 <translation id="7138668887584231801">Nincs elég szó kijelölve az összegzéshez</translation>
-<translation id="7141470099673912333">Tartalom átvitele</translation>
 <translation id="7143207342074048698">Csatlakozás</translation>
 <translation id="7144878232160441200">Újra</translation>
 <translation id="7144954474087165241">pagoda</translation>
@@ -1541,7 +1541,6 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8261506727792406068">Törlés</translation>
 <translation id="8262870577632766028">1 óra</translation>
 <translation id="827422111966801947">Indigókék</translation>
-<translation id="8281886186245836920">Kihagyás</translation>
 <translation id="8286154143153872371">A háttérkép megtekintése érdekében csatlakozzon egy hálózathoz, majd töltse be újra az oldalt.</translation>
 <translation id="8291967909914612644">Otthoni szolgáltató országa</translation>
 <translation id="8294431847097064396">Forrás</translation>
@@ -1646,6 +1645,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8797082062139985406">Név létrehozása a Google AI használatával</translation>
 <translation id="8798099450830957504">Alapértelmezett</translation>
 <translation id="8798441408945964110">Szolgáltató neve</translation>
+<translation id="8804164990146287819">Adatvédelmi irányelvek</translation>
 <translation id="8808828119384186784">A Chrome beállításai</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Háttérkép</translation>

@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">أخضر</translation>
 <translation id="225692081236532131">حالة التفعيل</translation>
 <translation id="2267285889943769271">إضافة لقطة شاشة</translation>
+<translation id="2268044343513325586">تحسين</translation>
 <translation id="2271469253353559191">الجدول الزمني للوضع المُعتِم</translation>
 <translation id="2276999893457278469">أهم مقالات المحتوى المساعِد ذات الصلة</translation>
 <translation id="2277631741861284101">تسجيل الصوت ومشاركته بسهولة</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">جارٍ البحث عن أجهزة مسح ضوئي</translation>
 <translation id="3226657629376379887">قائمة إجراءات التصميم</translation>
 <translation id="3227186760713762082">قسمة قيمة <ph name="CATEGORY_TEXT" /> على <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">إعادة الكتابة</translation>
 <translation id="3246869037381808805">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من يوم.</translation>
 <translation id="324961752321393509">لا يسمح المشرف بإغلاق هذا التطبيق.</translation>
 <translation id="3263941347294171263">عليك فصل "<ph name="DEVICE_NAME" />" عن مصدر الطاقة ثم إعادة توصيله به لمواصلة عملية التحديث</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523">جارٍ تحديث <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">الاستهلاك الحالي لطاقة البطارية</translation>
 <translation id="346539236881580388">إعادة التقاط</translation>
+<translation id="3479552764303398839">ليس الآن</translation>
 <translation id="3484914941826596830">لا تفصل هذا الجهاز الخارجي أو توقف تشغيل الكمبيوتر أثناء تحديث البرامج الثابتة. يمكنك تصغير هذه النافذة. قد يستغرق هذا التحديث بضع دقائق وقد يتوقف الجهاز الخارجي عن العمل أثناء التحديث.</translation>
 <translation id="3486220673238053218">تعريف</translation>
 <translation id="3487866404496702283">‏ملاحظات حول ميزة Mahi</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">ضبط مستوى الصوت</translation>
 <translation id="3767737419527918477">البحث في ملفات التسجيل</translation>
 <translation id="3771294271822695279">ملفات فيديو</translation>
+<translation id="3771694256347217732">‏بنود خدمة Google</translation>
 <translation id="3780740315729837296">تخصيص أحد مفاتيح لوحة المفاتيح</translation>
 <translation id="3784455785234192852">قفل</translation>
 <translation id="3785643128701396311">فن البكسل</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">‏(نظام التشغيل Android) اختبار وقت استجابة بروتوكول HTTP</translation>
 <translation id="6078323886959318429">إضافة اختصار</translation>
 <translation id="6091080061796993741">أصفر</translation>
-<translation id="6093853427925392522">‏احرص على استخدام تطبيق "نقل المحتوى" من Google لنقل بيانات حسابك الذي تديره المؤسسة التعليمية إلى حسابك الشخصي قبل أن تفقد إمكانية الوصول إليه.</translation>
 <translation id="6104112872696127344">تم إلغاء المسح الضوئي.</translation>
 <translation id="6106186594183574873">يُرجى إدخال كلمة المرور القديمة لإنهاء الإجراء.</translation>
 <translation id="6108689792487843350">يتعذّر الوصول إلى البوابة</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">البحث في الاختصارات</translation>
 <translation id="7138614237884624401">نص مُبسّط</translation>
 <translation id="7138668887584231801">عدد الكلمات غير كافٍ لتلخيص النص</translation>
-<translation id="7141470099673912333">نقل المحتوى</translation>
 <translation id="7143207342074048698">اتصال</translation>
 <translation id="7144878232160441200">إعادة المحاولة</translation>
 <translation id="7144954474087165241">معبد هندي</translation>
@@ -1541,7 +1541,6 @@
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8262870577632766028">ساعة واحدة</translation>
 <translation id="827422111966801947">نيلي</translation>
-<translation id="8281886186245836920">التخطّي</translation>
 <translation id="8286154143153872371">يُرجى الاتصال بإحدى الشبكات وإعادة تحميل الصفحة لعرض الخلفية.</translation>
 <translation id="8291967909914612644">بلد مقدم الخدمة الرئيسي</translation>
 <translation id="8294431847097064396">المصدر</translation>
@@ -1646,6 +1645,7 @@
 <translation id="8797082062139985406">‏إنشاء اسم باستخدام الذكاء الاصطناعي من Google</translation>
 <translation id="8798099450830957504">التلقائي</translation>
 <translation id="8798441408945964110">اسم مقدم الخدمة</translation>
+<translation id="8804164990146287819">سياسة الخصوصية</translation>
 <translation id="8808828119384186784">‏إعدادات Chrome</translation>
 <translation id="8814190375133053267">‏لاسلكي، Wi-Fi</translation>
 <translation id="8818152010000655963">الخلفية</translation>

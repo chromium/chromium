@@ -205,7 +205,6 @@
 <translation id="345171907106878721">Chrome वर आपल्या स्वतःस जोडा</translation>
 <translation id="3453763134178591239">ChromeOS अटी</translation>
 <translation id="3503306920980160878">तुमचे स्थान या साइटसोबत शेअर करण्यासाठी Chrome ला तुमच्या स्थानाचा अ‍ॅक्सेस हवा आहे</translation>
-<translation id="3512634283363927263">ही पेज Chrome डेव्हलपरद्वारे वापरण्यासाठी आहेत आणि सक्रियपणे देखरेख किंवा चाचणी केली जाऊ शकत नाहीत. ती सुरू करण्यासाठी, <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> वर नेव्हिगेट करा, पेज डीबग करा सुरू करण्यासाठी बटणावर क्लिक करा आणि नंतर या पेजवर पुन्हा नेव्हिगेट करा.</translation>
 <translation id="3533694711092285624">सेव्ह केलेले पासवर्ड नाहीत. तुम्ही तुमचे पासवर्ड सेव्ह केल्यावर Chrome ते तपासू शकते.</translation>
 <translation id="3541482654983822893">Chrome तुमचे पासवर्ड तपासू शकत नाही. २४ तासांनंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="3564543103555793392">तुम्ही Chrome मध्ये साइन इन करता, तेव्हा बुकमार्क, पासवर्ड आणि आणखी बऱ्याच गोष्टी सेव्ह करू शकता, त्यानंतर ते तुमच्या फोनवर वापरू शकता</translation>
@@ -223,7 +222,6 @@
 <translation id="3673813398384385993">Chrome ला "<ph name="EXTENSION_NAME" />" मध्ये मालवेअर असल्याचे आढळले</translation>
 <translation id="3695446226812920698">कसे ते जाणून घ्या</translation>
 <translation id="3697952514309507634">इतर Chrome प्रोफाइल</translation>
-<translation id="3700276346088749847">तुमच्या खात्यामधील Chrome डेटा साफ करा</translation>
 <translation id="3703994572283698466">ChromeOS हे <ph name="BEGIN_LINK_LINUX_OSS" />Linux डेव्हलपमेंट पद्धत<ph name="END_LINK_LINUX_OSS" /> यासारखे अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_CROS_OSS" /> याद्वारे तयार करण्यात आले आहे.</translation>
 <translation id="3716540481907974026">ChromeOS Flex आवृत्ती</translation>
 <translation id="3718181793972440140">हे या डिव्‍हाइस मधून 1 आयटम हटवेल. नंतर तुमचा डेटा पुनर्प्राप्त करण्‍यासाठी, Chrome मध्ये <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>

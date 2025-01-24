@@ -30,6 +30,7 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/pass_key.h"
 #include "media/base/android/android_util.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/android/media_drm_bridge_client.h"
@@ -449,10 +450,11 @@ MediaDrmBridge::CdmCreationResult MediaDrmBridge::CreateInternal(
   // TODO(crbug.com/41433110): Check that |origin_id| is specified on devices
   // that support it.
 
-  scoped_refptr<MediaDrmBridge> media_drm_bridge(new MediaDrmBridge(
-      scheme_uuid, origin_id, security_level, message, requires_media_crypto,
-      std::move(storage), std::move(create_fetcher_cb), session_message_cb,
-      session_closed_cb, session_keys_change_cb, session_expiration_update_cb));
+  auto media_drm_bridge = base::MakeRefCounted<MediaDrmBridge>(
+      base::PassKey<MediaDrmBridge>(), scheme_uuid, origin_id, security_level,
+      message, requires_media_crypto, std::move(storage),
+      std::move(create_fetcher_cb), session_message_cb, session_closed_cb,
+      session_keys_change_cb, session_expiration_update_cb);
 
   if (!media_drm_bridge->j_media_drm_) {
     DCHECK_NE(media_drm_bridge->last_create_error_,
@@ -993,6 +995,7 @@ void MediaDrmBridge::OnCreateError(JNIEnv* env, jint j_error_code) {
 // The following are private methods.
 
 MediaDrmBridge::MediaDrmBridge(
+    base::PassKey<MediaDrmBridge>,
     const std::vector<uint8_t>& scheme_uuid,
     const std::string& origin_id,
     SecurityLevel security_level,

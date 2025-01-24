@@ -53,7 +53,7 @@ constexpr char kTestDomain[] = "test.org";
 constexpr char kTestAuthCode[] = "test_auth_code";
 constexpr char kTestDeviceId[] = "test_device_id";
 constexpr char kTestUserEmail[] = "user@test.org";
-constexpr char kTestUserGaiaId[] = "test_user_gaia_id";
+constexpr GaiaId::Literal kTestUserGaiaId("test_user_gaia_id");
 constexpr char kTestUserPassword[] = "test_password";
 constexpr char kTestRefreshToken[] = "test_refresh_token";
 
@@ -289,7 +289,7 @@ class EnrollmentScreenBaseTest : public testing::Test {
     EXPECT_CALL(mock_view_, Show()).WillOnce([this, license_type]() {
       login::OnlineSigninArtifacts signin_artifacts;
       signin_artifacts.email = kTestUserEmail;
-      signin_artifacts.gaia_id = GaiaId(kTestUserGaiaId);
+      signin_artifacts.gaia_id = kTestUserGaiaId;
       signin_artifacts.password = kTestUserPassword;
       signin_artifacts.using_saml = false;
 
@@ -585,7 +585,7 @@ class EnrollmentAddUserTest : public EnrollmentScreenBaseTest {
     EXPECT_TRUE(user_context_holder->HasUserContext());
     EXPECT_EQ(user_context_holder->GetAccountId().GetUserEmail(),
               kTestUserEmail);
-    EXPECT_EQ(user_context_holder->GetGaiaID(), GaiaId(kTestUserGaiaId));
+    EXPECT_EQ(user_context_holder->GetGaiaID(), kTestUserGaiaId);
     EXPECT_TRUE(user_context_holder->GetPassword());
     EXPECT_EQ(user_context_holder->GetPassword().value(),
               PasswordInput(kTestUserPassword));

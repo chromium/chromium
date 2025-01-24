@@ -40,7 +40,7 @@
 namespace {
 constexpr base::TimeDelta kMinimumNotificationPresenceTime = base::Seconds(6);
 constexpr char kUserMail[] = "testingprofile@chromium.org";
-constexpr char kFakeGaia[] = "fakegaia";
+constexpr GaiaId::Literal kFakeGaia("fakegaia");
 
 class MockMultiCaptureService : public crosapi::mojom::MultiCaptureService {
  public:
@@ -97,7 +97,7 @@ class MultiCaptureNotificationsTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     UserDataAuthClient::InitializeFake();
 
-    LogIn(kUserMail, GaiaId(kFakeGaia));
+    LogIn(kUserMail, kFakeGaia);
     auto* user_profile = CreateProfile(kUserMail);
     ASSERT_TRUE(user_profile);
 

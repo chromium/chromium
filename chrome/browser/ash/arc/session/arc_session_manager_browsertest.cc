@@ -65,7 +65,7 @@ namespace {
 
 constexpr char kWellKnownConsumerName[] = "test@gmail.com";
 constexpr char kFakeUserName[] = "test@example.com";
-constexpr char kFakeGaiaId[] = "1234567890";
+constexpr GaiaId::Literal kFakeGaiaId("1234567890");
 
 std::unique_ptr<KeyedService> CreateCertificateProviderService(
     content::BrowserContext* context) {
@@ -139,7 +139,7 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
     ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
 
     const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(kFakeUserName, GaiaId(kFakeGaiaId)));
+        AccountId::FromUserEmailGaiaId(kFakeUserName, kFakeGaiaId));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
 
@@ -185,7 +185,7 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
     // TODO(nya): Consider removing all users from ProfileHelper in the
     // destructor of ash::FakeChromeUserManager.
     const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(kFakeUserName, GaiaId(kFakeGaiaId)));
+        AccountId::FromUserEmailGaiaId(kFakeUserName, kFakeGaiaId));
     fake_user_manager_->RemoveUserFromList(account_id);
     // Since ArcServiceLauncher is (re-)set up with profile() in
     // SetUpOnMainThread() it is necessary to Shutdown() before the profile()

@@ -79,8 +79,9 @@ class ModelFileObserver
       optimization_guide::proto::OptimizationTarget optimization_target,
       base::optional_ref<const optimization_guide::ModelInfo> model_info)
       override {
-    if (file_received_callback_)
+    if (file_received_callback_) {
       std::move(file_received_callback_).Run(optimization_target, model_info);
+    }
   }
 
  private:
@@ -202,12 +203,15 @@ class PredictionManagerTestBase : public PlatformTest {
       const net::test_server::HttpRequest& request) {
     // Returning nullptr will cause the test server to fallback to serving the
     // file from the test data directory.
-    if (request.GetURL() == model_file_url_)
+    if (request.GetURL() == model_file_url_) {
       return nullptr;
-    if (request.GetURL() == model_file_with_good_additional_file_url_)
+    }
+    if (request.GetURL() == model_file_with_good_additional_file_url_) {
       return nullptr;
-    if (request.GetURL() == model_file_with_nonexistent_additional_file_url_)
+    }
+    if (request.GetURL() == model_file_with_nonexistent_additional_file_url_) {
       return nullptr;
+    }
 
     std::unique_ptr<net::test_server::BasicHttpResponse> response;
 

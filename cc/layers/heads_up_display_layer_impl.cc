@@ -145,31 +145,15 @@ class HudGpuBacking : public ResourcePool::GpuBacking {
       return;
     }
     if (returned_sync_token.HasData())
-      shared_image_interface->DestroySharedImage(returned_sync_token,
-                                                 std::move(shared_image));
+      shared_image->UpdateDestructionSyncToken(returned_sync_token);
     else if (mailbox_sync_token.HasData())
-      shared_image_interface->DestroySharedImage(mailbox_sync_token,
-                                                 std::move(shared_image));
+      shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
   }
-
-  raw_ptr<gpu::SharedImageInterface> shared_image_interface = nullptr;
 };
 
 class HudSoftwareBacking : public ResourcePool::SoftwareBacking {
  public:
-  ~HudSoftwareBacking() override {
-    DCHECK(shared_image);
-    shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
-
-    shared_image.reset();
-    // DestroySharedImage is a DeferredRequest, so it doesn't trigger IPC
-    // itself. Flush here to trigger IPC.
-    if (shared_image_interface) {
-      shared_image_interface->Flush();
-    }
-  }
-
-  scoped_refptr<gpu::SharedImageInterface> shared_image_interface;
+  ~HudSoftwareBacking() override = default;
 };
 
 bool HeadsUpDisplayLayerImpl::WillDraw(
@@ -278,7 +262,6 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     if (!pool_resource.gpu_backing()) {
       auto backing = std::make_unique<HudGpuBacking>();
       auto* sii = raster_context_provider->SharedImageInterface();
-      backing->shared_image_interface = sii;
       backing->overlay_candidate = raster_caps.tile_overlay_candidate;
 
       gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |

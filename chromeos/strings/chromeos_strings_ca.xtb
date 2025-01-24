@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">verd</translation>
 <translation id="225692081236532131">Estat d'activació</translation>
 <translation id="2267285889943769271">Afegeix una captura de pantalla</translation>
+<translation id="2268044343513325586">Refina</translation>
 <translation id="2271469253353559191">Programació del mode fosc</translation>
 <translation id="2276999893457278469">Contingut d'ajuda principal</translation>
 <translation id="2277631741861284101">Grava i comparteix fàcilment el teu àudio</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">S'estan cercant escàners</translation>
 <translation id="3226657629376379887">Menú d'accions de disseny</translation>
 <translation id="3227186760713762082">Divideix el valor de <ph name="CATEGORY_TEXT" /> per <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Reescriu</translation>
 <translation id="3246869037381808805">Se suprimiran les tasques d'impressió amb una antiguitat superior a 1 dia</translation>
 <translation id="324961752321393509">L'administrador no permet tancar aquesta aplicació</translation>
 <translation id="3263941347294171263">Desendolla i torna a endollar el <ph name="DEVICE_NAME" /> per continuar amb el procés d'actualització</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523">S'està actualitzant <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Corrent</translation>
 <translation id="346539236881580388">Repeteix</translation>
+<translation id="3479552764303398839">Ara no</translation>
 <translation id="3484914941826596830">Mentre el microprogramari s'actualitza, no desconnectis el dispositiu extern ni apaguis l'ordinador. Pots minimitzar aquesta finestra. Aquesta actualització pot tardar uns quants minuts i és possible que, durant aquest temps, el dispositiu extern no funcioni.</translation>
 <translation id="3486220673238053218">definició</translation>
 <translation id="3487866404496702283">Comentaris sobre la funció Mahi</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">Ajusta el volum</translation>
 <translation id="3767737419527918477">Cerca fitxers de gravacions</translation>
 <translation id="3771294271822695279">Fitxers de vídeo</translation>
+<translation id="3771694256347217732">Condicions del servei de Google</translation>
 <translation id="3780740315729837296">Assigna una tecla del teclat</translation>
 <translation id="3784455785234192852">Bloqueja</translation>
 <translation id="3785643128701396311">pixel art</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) Latència d'HTTP</translation>
 <translation id="6078323886959318429">Afegeix una drecera</translation>
 <translation id="6091080061796993741">groc</translation>
-<translation id="6093853427925392522">Assegura't d'utilitzar l'aplicació Transferència de contingut de Google per moure les dades del teu compte de centre educatiu al teu compte personal abans no perdis l'accés.</translation>
 <translation id="6104112872696127344">L'escaneig s'ha cancel·lat</translation>
 <translation id="6106186594183574873">Per acabar, introdueix la contrasenya antiga</translation>
 <translation id="6108689792487843350">No es pot accedir a la passarel·la</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">Cerca dreceres</translation>
 <translation id="7138614237884624401">Text simplificat</translation>
 <translation id="7138668887584231801">No hi ha prou paraules per fer un resum</translation>
-<translation id="7141470099673912333">Transferència de contingut</translation>
 <translation id="7143207342074048698">Connectant</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>
 <translation id="7144954474087165241">pagoda</translation>
@@ -1541,7 +1541,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="8262870577632766028">1 hora</translation>
 <translation id="827422111966801947">Anyil</translation>
-<translation id="8281886186245836920">Omet</translation>
 <translation id="8286154143153872371">Connecta't a una xarxa i torna a carregar la pàgina per veure el fons de pantalla.</translation>
 <translation id="8291967909914612644">País del proveïdor domèstic</translation>
 <translation id="8294431847097064396">Font</translation>
@@ -1646,6 +1645,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8797082062139985406">Crea un nom amb la IA de Google</translation>
 <translation id="8798099450830957504">Predeterminat</translation>
 <translation id="8798441408945964110">Nom del proveïdor</translation>
+<translation id="8804164990146287819">Política de privadesa</translation>
 <translation id="8808828119384186784">Configuració de Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Fons de pantalla</translation>

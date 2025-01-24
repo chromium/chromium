@@ -17,18 +17,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill {
-namespace test {
-
-namespace {
-
-// Default form url.
-constexpr char kFormUrl[] = "https://example.com/form.html";
-
-// Default form action url.
-constexpr char kFormActionUrl[] = "https://example.com/submit.html";
-
-}  // namespace
+namespace autofill::test {
 
 namespace internal {
 
@@ -76,8 +65,8 @@ struct FormDescription {
   std::optional<LocalFrameToken> host_frame;
   std::optional<FormRendererId> renderer_id;
   const std::u16string name = u"TestForm";
-  const std::string url = kFormUrl;
-  const std::string action = kFormActionUrl;
+  const std::string url = "https://example.com/form.html";
+  const std::string action = "https://example.com/submit.html";
   std::optional<url::Origin> main_frame_origin;
 };
 
@@ -162,7 +151,6 @@ class FormStructureTest : public testing::Test {
       const std::vector<FormStructureTestCase>& test_cases);
 };
 
-}  // namespace test
-}  // namespace autofill
+}  // namespace autofill::test
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_AUTOFILL_FORM_TEST_UTILS_H_

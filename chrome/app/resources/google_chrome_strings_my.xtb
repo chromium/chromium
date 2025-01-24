@@ -206,7 +206,6 @@
 <translation id="345171907106878721">ကိုယ့်ဘာသာကိုယ် Chrome သို့ ထည့်ပေးရန်</translation>
 <translation id="3453763134178591239">ChromeOS စည်းမျဉ်းများ</translation>
 <translation id="3503306920980160878">ဤဝဘ်ဆိုက်နှင့် သင်၏တည်နေရာကို မျှဝေရန် Chrome သည် သင့်တည်နေရာကို အသုံးပြုခွင့် လိုအပ်ပါသည်</translation>
-<translation id="3512634283363927263">ဤစာမျက်နှာများကို Chrome ဆော့ဖ်ဝဲရေးသူများ သုံးရန်အတွက် ရည်ရွယ်ထားပြီး အမြဲတစေ ပြုပြင်ထိန်းသိမ်းခြင်း/စမ်းသပ်ထားခြင်း မရှိနိုင်ပါ။ ၎င်းတို့ကိုဖွင့်ရန် <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> သို့ သွားပြီး အမှားရှာပြင်ခြင်းစာမျက်နှာများ ဖွင့်ရန် ခလုတ်ကိုနှိပ်ပြီးနောက် ဤစာမျက်နှာသို့ ပြန်လာပါ။</translation>
 <translation id="3533694711092285624">သိမ်းထားသော စကားဝှက် မရှိပါ။ သင်စကားဝှက်များကို သိမ်းသည့်အခါ Chrome က ၎င်းတို့ကို စစ်ဆေးနိုင်သည်။</translation>
 <translation id="3541482654983822893">Chrome က သင့်စကားဝှက်များကို စစ်ဆေး၍မရပါ။ ၂၄ နာရီအကြာတွင် ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="3564543103555793392">Chrome သို့ လက်မှတ်ထိုးဝင်သောအခါ လိပ်စာ၊ စကားဝှက် စသည်တို့ကို သိမ်းပြီး သင့်ဖုန်းတွင် သုံးနိုင်သည်</translation>
@@ -224,7 +223,6 @@
 <translation id="3673813398384385993">“<ph name="EXTENSION_NAME" />” တွင် မဲလ်ဝဲပါဝင်သည်ကို Chrome ကတွေ့ထားသည်</translation>
 <translation id="3695446226812920698">လုပ်ပုံကို လေ့လာပါ။</translation>
 <translation id="3697952514309507634">အခြား Chrome ပရိုဖိုင်များ</translation>
-<translation id="3700276346088749847">သင့်အကောင့်တွင် Chrome ဒေတာကို ရှင်းရန်</translation>
 <translation id="3703994572283698466"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ဆော့ဖ်ဝဲရေးဆွဲမှု ပတ်ဝန်းကျင်<ph name="END_LINK_LINUX_OSS" /> တွင် <ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ် ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" /> ထပ်ဆောင်းဖြည့်ခြင်းဖြင့် ChromeOS ကို ရေးဆွဲထားသည်။</translation>
 <translation id="3716540481907974026">ChromeOS Flex ဗားရှင်း</translation>
 <translation id="3718181793972440140">၎င်းသည် ဤစက်ပစ္စည်းမှ အကြောင်းအရာ ၁ ခုကို ဖျက်လိုက်ပါမည်။ သင့်ဒေတာကို နောက်မှ ပြန်ယူရန် Chrome သို့ <ph name="USER_EMAIL" /> အဖြစ် လက်မှတ်ထိုးဝင်ပါ။</translation>

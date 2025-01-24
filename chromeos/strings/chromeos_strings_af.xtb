@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">groen</translation>
 <translation id="225692081236532131">Aktiveringstatus</translation>
 <translation id="2267285889943769271">Voeg skermskoot by</translation>
+<translation id="2268044343513325586">Verfyn</translation>
 <translation id="2271469253353559191">Donkermodus-skedule</translation>
 <translation id="2276999893457278469">Beste hulpinhoud</translation>
 <translation id="2277631741861284101">Neem jou oudio maklik op en deel dit</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">Soek skandeerders</translation>
 <translation id="3226657629376379887">Uitleghandelingekieslys</translation>
 <translation id="3227186760713762082">Deel die <ph name="CATEGORY_TEXT" />-waarde deur <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Herskryf</translation>
 <translation id="3246869037381808805">Druktake ouer as 1 dag sal verwyder word</translation>
 <translation id="324961752321393509">Jou administrateur laat nie toe dat hierdie app toegemaak word nie</translation>
 <translation id="3263941347294171263">Prop die <ph name="DEVICE_NAME" /> uit en weer in om met die opdateringproses voort te gaan</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523">Dateer tans <ph name="DEVICE_NAME" /> op</translation>
 <translation id="346423161771747987">Stroom</translation>
 <translation id="346539236881580388">Neem weer</translation>
+<translation id="3479552764303398839">Nie nou nie</translation>
 <translation id="3484914941826596830">Moenie hierdie eksterne toestel uitprop of jou rekenaar afskakel terwyl die fermware opdateer nie. Jy kan hierdie venster klein maak. Hierdie opdatering kan 'n paar minute neem, en jou eksterne toestel sal dalk nie in hierdie tyd werk nie.</translation>
 <translation id="3486220673238053218">definisie</translation>
 <translation id="3487866404496702283">Terugvoer vir mahi-kenmerk</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">Stel die volume</translation>
 <translation id="3767737419527918477">Soek opnamelêers</translation>
 <translation id="3771294271822695279">Videolêers</translation>
+<translation id="3771694256347217732">Google se diensbepalings</translation>
 <translation id="3780740315729837296">Wys ’n sleutelbordsleutel toe</translation>
 <translation id="3784455785234192852">Sluit</translation>
 <translation id="3785643128701396311">piekselkuns</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) HTTP-traagheid</translation>
 <translation id="6078323886959318429">Voeg kortpad by</translation>
 <translation id="6091080061796993741">geel</translation>
-<translation id="6093853427925392522">Maak seker dat jy die Content Transfer-app deur Google gebruik om jou skoolrekeningdata na jou persoonlike rekening te skuif voordat jy toegang verloor.</translation>
 <translation id="6104112872696127344">Skandering is gekanselleer.</translation>
 <translation id="6106186594183574873">Voer jou ou wagwoord in om dit te voltooi</translation>
 <translation id="6108689792487843350">Kan nie deurgang bereik nie</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">Soek kortpaaie</translation>
 <translation id="7138614237884624401">Vereenvoudigde teks</translation>
 <translation id="7138668887584231801">Nie genoeg woorde om op te som nie</translation>
-<translation id="7141470099673912333">Inhoudoordrag</translation>
 <translation id="7143207342074048698">Koppel tans</translation>
 <translation id="7144878232160441200">Probeer weer</translation>
 <translation id="7144954474087165241">pagoda</translation>
@@ -1541,7 +1541,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8261506727792406068">Vee uit</translation>
 <translation id="8262870577632766028">1 uur</translation>
 <translation id="827422111966801947">Indigo</translation>
-<translation id="8281886186245836920">Slaan Oor</translation>
 <translation id="8286154143153872371">Koppel asseblief aan 'n netwerk en herlaai die bladsy om muurpapier te bekyk.</translation>
 <translation id="8291967909914612644">Tuisverskafferland</translation>
 <translation id="8294431847097064396">Bron</translation>
@@ -1646,6 +1645,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8797082062139985406">Skep naam met Google AI</translation>
 <translation id="8798099450830957504">Verstek</translation>
 <translation id="8798441408945964110">Verskaffer se naam</translation>
+<translation id="8804164990146287819">Privaatheidbeleid</translation>
 <translation id="8808828119384186784">Chrome-instellings</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Muurpapier</translation>

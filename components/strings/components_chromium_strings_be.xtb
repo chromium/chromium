@@ -29,6 +29,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           і ўпэўніцеся, што ў канфігурацыі зададзены значэнні "no proxy" або "direct".</translation>
+<translation id="648062525172759633">Гэтыя старонкі прызначаны для распрацоўшчыкаў Chromium, таму іх тэхнічная падтрымка ці праверка могуць праводзіцца рэдка. Для ўключэння перайдзіце на старонку <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, націсніце кнопку, каб уключыць старонкі адладкі, і зноў вярніцеся на гэту старонку.</translation>
 <translation id="6549378540556750549">Chromium працуе ў тым ліку дзякуючы іншаму <ph name="BEGIN_LINK_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Змены ўступяць у сілу пасля перазапуску Chromium.</translation>
 <translation id="691026815377248078">Каб працягнуць спалучэнне, Chromium патрабуе доступу да Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

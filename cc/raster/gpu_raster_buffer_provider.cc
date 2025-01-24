@@ -52,15 +52,11 @@ class GpuRasterBufferProvider::GpuRasterBacking
     if (!shared_image) {
       return;
     }
-    auto* sii = worker_context_provider->SharedImageInterface();
     if (returned_sync_token.HasData())
-      sii->DestroySharedImage(returned_sync_token, std::move(shared_image));
+      shared_image->UpdateDestructionSyncToken(returned_sync_token);
     else if (mailbox_sync_token.HasData())
-      sii->DestroySharedImage(mailbox_sync_token, std::move(shared_image));
+      shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
   }
-
-  // The context used to clean up the mailbox
-  raw_ptr<viz::RasterContextProvider> worker_context_provider = nullptr;
 };
 
 GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
@@ -170,7 +166,6 @@ std::unique_ptr<RasterBuffer> GpuRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_hardware_accelerated_webp_candidates) {
   if (!resource.gpu_backing()) {
     auto backing = std::make_unique<GpuRasterBacking>();
-    backing->worker_context_provider = worker_context_provider_;
     backing->overlay_candidate = tile_overlay_candidate_;
     backing->is_using_raw_draw =
         !backing->overlay_candidate && is_using_raw_draw_;

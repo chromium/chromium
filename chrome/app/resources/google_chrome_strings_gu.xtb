@@ -206,7 +206,6 @@
 <translation id="345171907106878721">સ્વયંને Chrome માં ઉમેરો</translation>
 <translation id="3453763134178591239">ChromeOSની શરતો</translation>
 <translation id="3503306920980160878">Chromeને આ સાઇટ સાથે તમારું સ્થાન શેર કરવા માટે તમારા સ્થાનના ઍક્સેસની જરૂર પડે છે</translation>
-<translation id="3512634283363927263">આ પેજ Chrome ડેવલપર દ્વારા ઉપયોગમાં લેવાના હેતુથી બનાવવામાં આવ્યા છે અને તેમની સક્રિય રીતે જાળવણી અથવા પરીક્ષણ ન કરવામાં આવે એવું બની શકે છે. તેમને ચાલુ કરવા માટે, નૅવિગેટ કરીને <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> પર જાઓ, પેજને ડિબગ કરવાની સુવિધા ચાલુ કરવા માટેના બટન પર ક્લિક કરો અને નૅવિગેટ કરીને ફરી પાછા આ પેજ પર આવો.</translation>
 <translation id="3533694711092285624">કોઈ સાચવેલો પાસવર્ડ નથી. જ્યારે તમે તમારા પાસવર્ડ સાચવો ત્યારે Chrome તેને ચેક કરી શકે છે.</translation>
 <translation id="3541482654983822893">Chrome તમારા પાસવર્ડ ચેક કરી શકતું નથી. 24 કલાક પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="3564543103555793392">જ્યારે તમે તમારા Chromeમાં સાઇન ઇન કરો છો, ત્યારે તમે બુકમાર્ક, પાસવર્ડ અને બીજું ઘણું સાચવી શકો છો, જે તમારા ફોન પરના ઉપયોગ કરતાં વધુ સરળ છે</translation>
@@ -224,7 +223,6 @@
 <translation id="3673813398384385993">Chromeને "<ph name="EXTENSION_NAME" />"માં માલવેર હોવાનું જાણવા મળ્યું છે</translation>
 <translation id="3695446226812920698">જાણો કેવી રીતે</translation>
 <translation id="3697952514309507634">અન્ય Chrome પ્રોફાઇલ</translation>
-<translation id="3700276346088749847">તમારા એકાઉન્ટમાંનો Chrome ડેટા સાફ કરો</translation>
 <translation id="3703994572283698466"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ડેવલપમેન્ટ એન્વાયરમેન્ટ<ph name="END_LINK_LINUX_OSS" />ની જેમ, ChromeOSને વધારાના <ph name="BEGIN_LINK_CROS_OSS" />ઓપન સૉર્સ સૉફ્ટવેર<ph name="END_LINK_CROS_OSS" /> દ્વારા શક્ય બનાવવામાં આવ્યું છે.</translation>
 <translation id="3716540481907974026">ChromeOS Flexનું વર્ઝન</translation>
 <translation id="3718181793972440140">આ, 1 આઇટમને આ ડિવાઇસમાંથી ડિલીટ કરશે. પછીથી તમારો ડેટા ફરીથી મેળવવા માટે, Chromeમાં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>

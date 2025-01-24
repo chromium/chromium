@@ -30,7 +30,7 @@ namespace arc {
 namespace {
 
 constexpr char kTestProfileName[] = "user@gmail.com";
-constexpr char kTestGaiaId[] = "1234567890";
+constexpr GaiaId::Literal kTestGaiaId("1234567890");
 constexpr int64_t kTestTimeMs = 100;
 
 class ArcEnterpriseReportingServiceTest : public testing::Test {
@@ -53,7 +53,7 @@ class ArcEnterpriseReportingServiceTest : public testing::Test {
     profile_ = profile_manager_->CreateTestingProfile(kTestProfileName);
 
     const auto account_id = AccountId::FromUserEmailGaiaId(
-        profile_->GetProfileUserName(), GaiaId(kTestGaiaId));
+        profile_->GetProfileUserName(), kTestGaiaId);
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
 

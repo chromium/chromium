@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">зелен</translation>
 <translation id="225692081236532131">Състояние на активирането</translation>
 <translation id="2267285889943769271">Добавяне на екранна снимка</translation>
+<translation id="2268044343513325586">Прецизиране</translation>
 <translation id="2271469253353559191">График за тъмния режим</translation>
 <translation id="2276999893457278469">Най-популярно помощно съдържание</translation>
 <translation id="2277631741861284101">Лесно записване и споделяне на аудио</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">Търсят се скенери</translation>
 <translation id="3226657629376379887">Меню с действия за оформлението</translation>
 <translation id="3227186760713762082">Разделете стойността за <ph name="CATEGORY_TEXT" /> на <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Пренаписване</translation>
 <translation id="3246869037381808805">Заданията за отпечатване, по-стари от 1 ден, ще бъдат премахнати</translation>
 <translation id="324961752321393509">Администраторът ви не разрешава затварянето на това приложение</translation>
 <translation id="3263941347294171263">Изключете и включете отново устройството (<ph name="DEVICE_NAME" />) към захранването, за да продължите процеса на актуализиране</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> се актуализира</translation>
 <translation id="346423161771747987">Ток</translation>
 <translation id="346539236881580388">Повторно заснемане</translation>
+<translation id="3479552764303398839">Не сега</translation>
 <translation id="3484914941826596830">Докато фърмуерът се актуализира, не изключвайте това външно устройство, нито компютъра си. Можете да намалите прозореца. Възможно е актуализацията да отнеме няколко минути и през това време външното ви устройство може да не работи.</translation>
 <translation id="3486220673238053218">дефиниция</translation>
 <translation id="3487866404496702283">Отзиви за функцията mahi</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">Коригиране на силата на звука</translation>
 <translation id="3767737419527918477">Търсене на файлове със записи</translation>
 <translation id="3771294271822695279">Видеофайлове</translation>
+<translation id="3771694256347217732">Общи условия на Google</translation>
 <translation id="3780740315729837296">Задаване на клавиш на клавиатурата</translation>
 <translation id="3784455785234192852">Заключване</translation>
 <translation id="3785643128701396311">изкуство с пиксели</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) Забавяне на HTTP</translation>
 <translation id="6078323886959318429">Добавяне на пряк път</translation>
 <translation id="6091080061796993741">жълт</translation>
-<translation id="6093853427925392522">Използвайте приложението Content Transfer от Google, за да преместите в личния си профил данните от училищния, преди да загубите достъп до него.</translation>
 <translation id="6104112872696127344">Сканирането бе отменено</translation>
 <translation id="6106186594183574873">За да завършите процеса, въведете старата си парола</translation>
 <translation id="6108689792487843350">Шлюзът е недостъпен</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">Търсете комбинации</translation>
 <translation id="7138614237884624401">Опростен текст</translation>
 <translation id="7138668887584231801">Няма достатъчно думи за обобщаване</translation>
-<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Свързва се</translation>
 <translation id="7144878232160441200">Повторен опит</translation>
 <translation id="7144954474087165241">пагода</translation>
@@ -1541,7 +1541,6 @@
 <translation id="8261506727792406068">Изтриване</translation>
 <translation id="8262870577632766028">1 час</translation>
 <translation id="827422111966801947">индиго</translation>
-<translation id="8281886186245836920">Пропускане</translation>
 <translation id="8286154143153872371">Моля, свържете се с мрежа и презаредете страницата, за да прегледате тапета.</translation>
 <translation id="8291967909914612644">Държава на собствения доставчик</translation>
 <translation id="8294431847097064396">Източник</translation>
@@ -1646,6 +1645,7 @@
 <translation id="8797082062139985406">Създаване на име чрез AI на Google</translation>
 <translation id="8798099450830957504">По подразбиране</translation>
 <translation id="8798441408945964110">Име на доставчика</translation>
+<translation id="8804164990146287819">Декларация за поверителност</translation>
 <translation id="8808828119384186784">Настройки на Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Тапет</translation>

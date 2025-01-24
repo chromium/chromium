@@ -10,6 +10,7 @@
 <translation id="2447485272386224171">Chromen mahdollistivat avoimen lähdekoodin projekti <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ja muut <ph name="BEGIN_LINK_OSS" />avoimen lähdekoodin ohjelmistot<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Chrome-logo</translation>
 <translation id="3444832043240812445">Tällä sivulla näkyy tietoja viimeaikaisista kaatumisista vain, jos <ph name="BEGIN_LINK" />otat kaatumisraportit käyttöön<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Nämä sivut on tarkoitettu Chromen kehittäjille, eikä niitä välttämättä ylläpidetä tai testata aktiivisesti. Voit ottaa ne käyttöön siirtymällä osoitteeseen <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klikkaamalla painiketta, jolla voit ottaa virheenkorjaussivut käyttöön, ja siirtymällä sitten uudelleen tälle sivulle.</translation>
 <translation id="3875312571075912821">Myönnä Chromelle verkon käyttöoikeus palomuurin tai virustorjuntaohjelmiston
           asetuksissa</translation>
 <translation id="5005121315113832363">Chrome on estänyt tämän sivun</translation>

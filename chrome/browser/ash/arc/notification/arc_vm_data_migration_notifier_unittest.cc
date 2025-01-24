@@ -34,7 +34,7 @@ namespace arc {
 namespace {
 
 constexpr char kProfileName[] = "user@gmail.com";
-constexpr char kGaiaId[] = "1234567890";
+constexpr GaiaId::Literal kGaiaId("1234567890");
 
 constexpr char kNotificationId[] = "arc_vm_data_migration_notification";
 
@@ -68,7 +68,7 @@ class ArcVmDataMigrationNotifierTest : public ash::AshTestBase {
     ASSERT_TRUE(profile_manager_->SetUp());
     testing_profile_ = profile_manager_->CreateTestingProfile(kProfileName);
     const AccountId account_id = AccountId::FromUserEmailGaiaId(
-        testing_profile_->GetProfileUserName(), GaiaId(kGaiaId));
+        testing_profile_->GetProfileUserName(), kGaiaId);
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
     DCHECK(ash::ProfileHelper::IsPrimaryProfile(testing_profile_));

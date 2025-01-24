@@ -15,8 +15,10 @@
 #include "base/containers/heap_array.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/types/pass_key.h"
 #include "media/base/audio_bus.h"
 #include "media/base/limits.h"
 #include "media/base/timestamp_constants.h"
@@ -116,7 +118,8 @@ void AudioBufferMemoryPool::ReturnBuffer(ExternalMemoryFromPool memory) {
   entries_.emplace_back(std::move(memory));
 }
 
-AudioBuffer::AudioBuffer(SampleFormat sample_format,
+AudioBuffer::AudioBuffer(base::PassKey<AudioBuffer>,
+                         SampleFormat sample_format,
                          ChannelLayout channel_layout,
                          int channel_count,
                          int sample_rate,
@@ -224,7 +227,8 @@ AudioBuffer::AudioBuffer(SampleFormat sample_format,
   }
 }
 
-AudioBuffer::AudioBuffer(SampleFormat sample_format,
+AudioBuffer::AudioBuffer(base::PassKey<AudioBuffer>,
+                         SampleFormat sample_format,
                          ChannelLayout channel_layout,
                          int channel_count,
                          int sample_rate,
@@ -295,9 +299,10 @@ scoped_refptr<AudioBuffer> AudioBuffer::CopyFrom(
   // If you hit this CHECK you likely have a bug in a demuxer. Go fix it.
   CHECK_GT(frame_count, 0);  // Otherwise looks like an EOF buffer.
   CHECK(data[0]);
-  return base::WrapRefCounted(
-      new AudioBuffer(sample_format, channel_layout, channel_count, sample_rate,
-                      frame_count, true, data, 0, timestamp, std::move(pool)));
+  return base::MakeRefCounted<AudioBuffer>(
+      base::PassKey<AudioBuffer>(), sample_format, channel_layout,
+      channel_count, sample_rate, frame_count, true, data, 0, timestamp,
+      std::move(pool));
 }
 
 // static
@@ -350,9 +355,10 @@ scoped_refptr<AudioBuffer> AudioBuffer::CopyBitstreamFrom(
   // If you hit this CHECK you likely have a bug in a demuxer. Go fix it.
   CHECK_GT(frame_count, 0);  // Otherwise looks like an EOF buffer.
   CHECK(data[0]);
-  return base::WrapRefCounted(new AudioBuffer(
-      sample_format, channel_layout, channel_count, sample_rate, frame_count,
-      true, data, data_size, timestamp, std::move(pool)));
+  return base::MakeRefCounted<AudioBuffer>(
+      base::PassKey<AudioBuffer>(), sample_format, channel_layout,
+      channel_count, sample_rate, frame_count, true, data, data_size, timestamp,
+      std::move(pool));
 }
 
 // static
@@ -364,9 +370,10 @@ scoped_refptr<AudioBuffer> AudioBuffer::CreateBuffer(
     int frame_count,
     scoped_refptr<AudioBufferMemoryPool> pool) {
   CHECK_GT(frame_count, 0);  // Otherwise looks like an EOF buffer.
-  return base::WrapRefCounted(new AudioBuffer(
-      sample_format, channel_layout, channel_count, sample_rate, frame_count,
-      true, nullptr, 0, kNoTimestamp, std::move(pool)));
+  return base::MakeRefCounted<AudioBuffer>(
+      base::PassKey<AudioBuffer>(), sample_format, channel_layout,
+      channel_count, sample_rate, frame_count, true, nullptr, 0, kNoTimestamp,
+      std::move(pool));
 }
 
 // static
@@ -379,9 +386,10 @@ scoped_refptr<AudioBuffer> AudioBuffer::CreateBitstreamBuffer(
     size_t data_size,
     scoped_refptr<AudioBufferMemoryPool> pool) {
   CHECK_GT(frame_count, 0);  // Otherwise looks like an EOF buffer.
-  return base::WrapRefCounted(new AudioBuffer(
-      sample_format, channel_layout, channel_count, sample_rate, frame_count,
-      true, nullptr, data_size, kNoTimestamp, std::move(pool)));
+  return base::MakeRefCounted<AudioBuffer>(
+      base::PassKey<AudioBuffer>(), sample_format, channel_layout,
+      channel_count, sample_rate, frame_count, true, nullptr, data_size,
+      kNoTimestamp, std::move(pool));
 }
 
 // static
@@ -393,9 +401,10 @@ scoped_refptr<AudioBuffer> AudioBuffer::CreateEmptyBuffer(
     const base::TimeDelta timestamp) {
   CHECK_GT(frame_count, 0);  // Otherwise looks like an EOF buffer.
   // Since data == nullptr, format doesn't matter.
-  return base::WrapRefCounted(new AudioBuffer(
-      kSampleFormatF32, channel_layout, channel_count, sample_rate, frame_count,
-      false, nullptr, 0, timestamp, nullptr));
+  return base::MakeRefCounted<AudioBuffer>(
+      base::PassKey<AudioBuffer>(), kSampleFormatF32, channel_layout,
+      channel_count, sample_rate, frame_count, false, nullptr, 0, timestamp,
+      nullptr);
 }
 
 // static
@@ -408,16 +417,17 @@ scoped_refptr<AudioBuffer> AudioBuffer::CreateFromExternalMemory(
     const base::TimeDelta timestamp,
     std::unique_ptr<AudioBuffer::ExternalMemory> external_memory) {
   CHECK_GT(frame_count, 0);
-  return base::WrapRefCounted(
-      new AudioBuffer(sample_format, channel_layout, channel_count, sample_rate,
-                      frame_count, timestamp, std::move(external_memory)));
+  return base::MakeRefCounted<AudioBuffer>(
+      base::PassKey<AudioBuffer>(), sample_format, channel_layout,
+      channel_count, sample_rate, frame_count, timestamp,
+      std::move(external_memory));
 }
 
 // static
 scoped_refptr<AudioBuffer> AudioBuffer::CreateEOSBuffer() {
-  return base::WrapRefCounted(
-      new AudioBuffer(kUnknownSampleFormat, CHANNEL_LAYOUT_NONE, 0, 0, 0, false,
-                      nullptr, 0, kNoTimestamp, nullptr));
+  return base::MakeRefCounted<AudioBuffer>(
+      base::PassKey<AudioBuffer>(), kUnknownSampleFormat, CHANNEL_LAYOUT_NONE,
+      0, 0, 0, false, nullptr, 0, kNoTimestamp, nullptr);
 }
 
 // static

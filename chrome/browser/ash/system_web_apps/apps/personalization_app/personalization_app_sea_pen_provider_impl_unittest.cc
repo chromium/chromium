@@ -73,11 +73,11 @@ namespace ash::personalization_app {
 namespace {
 
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
-constexpr char kTestGaiaId[] = "1234567890";
+constexpr GaiaId::Literal kTestGaiaId("1234567890");
 constexpr char kFakeTestEmail2[] = "anotherfakeemail@personalization";
-constexpr char kTestGaiaId2[] = "9876543210";
+constexpr GaiaId::Literal kTestGaiaId2("9876543210");
 constexpr char kGooglerEmail[] = "user@google.com";
-constexpr char kGooglerGaiaId[] = "123459876";
+constexpr GaiaId::Literal kGooglerGaiaId("123459876");
 constexpr char kDemoModeEmail[] = "demo-public-account@example.com";
 
 constexpr uint32_t kSeaPenId1 = 111;
@@ -113,15 +113,15 @@ std::string RepeatToSize(std::string_view repeat,
 }
 
 AccountId GetTestAccountId() {
-  return AccountId::FromUserEmailGaiaId(kFakeTestEmail, GaiaId(kTestGaiaId));
+  return AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId);
 }
 
 AccountId GetTestAccountId2() {
-  return AccountId::FromUserEmailGaiaId(kFakeTestEmail2, GaiaId(kTestGaiaId2));
+  return AccountId::FromUserEmailGaiaId(kFakeTestEmail2, kTestGaiaId2);
 }
 
 AccountId GetGooglerAccountId() {
-  return AccountId::FromUserEmailGaiaId(kGooglerEmail, GaiaId(kGooglerGaiaId));
+  return AccountId::FromUserEmailGaiaId(kGooglerEmail, kGooglerGaiaId);
 }
 
 AccountId GetDemoModeAccountId() {

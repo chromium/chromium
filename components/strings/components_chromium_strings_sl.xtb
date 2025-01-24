@@ -29,6 +29,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           in poskrbite, da je konfiguracija nastavljena na »brez namestniškega strežnika« ali »neposredno«.</translation>
+<translation id="648062525172759633">Te strani so namenjene razvijalcem za Chromium in morda niso aktivno vzdrževane ali preizkušane. Če jih želite omogočiti, odprite <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknite gumb, da omogočite strani za odpravljanje napak, in se znova pomaknite na to stran.</translation>
 <translation id="6549378540556750549">Chromium omogoča tudi druga <ph name="BEGIN_LINK_OSS" />odprtokodna programska oprema<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Spremembe bodo začele veljati ob naslednjem zagonu Chromiuma.</translation>
 <translation id="691026815377248078">Chromium potrebuje dostop do Bluetootha za nadaljevanje 

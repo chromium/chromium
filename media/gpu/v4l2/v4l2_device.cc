@@ -74,11 +74,11 @@ class V4L2QueueFactory {
   static scoped_refptr<V4L2Queue> CreateQueue(scoped_refptr<V4L2Device> dev,
                                               enum v4l2_buf_type type,
                                               base::OnceClosure destroy_cb) {
-    return new V4L2Queue(base::BindRepeating(&V4L2Device::Ioctl, dev),
-                         base::BindRepeating(&V4L2Device::SchedulePoll, dev),
-                         base::BindRepeating(&V4L2Device::Mmap, dev),
-                         dev->get_secure_allocate_cb(), type,
-                         std::move(destroy_cb));
+    return base::MakeRefCounted<V4L2Queue>(
+        V4L2Queue::PassKey::Get(), base::BindRepeating(&V4L2Device::Ioctl, dev),
+        base::BindRepeating(&V4L2Device::SchedulePoll, dev),
+        base::BindRepeating(&V4L2Device::Mmap, dev),
+        dev->get_secure_allocate_cb(), type, std::move(destroy_cb));
   }
 };
 

@@ -34,7 +34,7 @@ namespace {
 
 constexpr char kPrimaryProfileName[] = "primary_profile";
 constexpr char kSecondaryProfileName[] = "secondary_profile";
-constexpr char kFakeGaia2[] = "fakegaia2";
+constexpr GaiaId::Literal kFakeGaia2("fakegaia2");
 constexpr char kTestGroupCalendarId[] =
     "oz2iwbysdg20tn8zdjvtqnkj12test@group.calendar.google.com";
 constexpr char kTestGroupCalendarColorId[] = "3";
@@ -65,7 +65,7 @@ class CalendarKeyedServiceTest : public BrowserWithTestWindowTest {
   }
 
   TestingProfile* CreateSecondaryProfile() {
-    LogIn(kSecondaryProfileName, GaiaId(kFakeGaia2));
+    LogIn(kSecondaryProfileName, kFakeGaia2);
     return CreateProfile(kSecondaryProfileName);
   }
 };

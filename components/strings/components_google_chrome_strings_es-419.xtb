@@ -10,6 +10,7 @@
 <translation id="2447485272386224171">Chrome es una realidad gracias al proyecto de código abierto <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> y a otros <ph name="BEGIN_LINK_OSS" />software de código abierto<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logo de Chrome</translation>
 <translation id="3444832043240812445">Esta página sólo muestra información sobre fallas recientes si se <ph name="BEGIN_LINK" />activan los informes sobre fallas<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Estas páginas están destinadas a los desarrolladores de Chrome y es posible que no se prueben ni se mantengan de forma activa. Para habilitarlas, ve a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, haz clic en el botón para habilitar las páginas de depuración y, luego, vuelve a esta página.</translation>
 <translation id="3875312571075912821">Permite que Chrome acceda a la red en tu configuración de firewall
           o antivirus.</translation>
 <translation id="5005121315113832363">Chrome bloqueó esta página</translation>

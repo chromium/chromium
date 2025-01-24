@@ -44,7 +44,7 @@ namespace {
 
 constexpr char kFakePrimaryUsername[] = "test-primary@example.com";
 constexpr char kFakeSecondaryUsername[] = "test-secondary@example.com";
-constexpr char kFakeSecondaryGaiaId[] = "fake-secondary-gaia-id";
+constexpr GaiaId::Literal kFakeSecondaryGaiaId("fake-secondary-gaia-id");
 
 }  // namespace
 
@@ -97,7 +97,7 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
         primary_account_info.email,
         account_manager::AccountManager::kInvalidToken);
     account_manager_->UpsertAccount(
-        ::account_manager::AccountKey::FromGaiaId(GaiaId(kFakeSecondaryGaiaId)),
+        ::account_manager::AccountKey::FromGaiaId(kFakeSecondaryGaiaId),
         kFakeSecondaryUsername, account_manager::AccountManager::kInvalidToken);
 
     AccountManagerPolicyControllerFactory::GetForBrowserContext(profile());

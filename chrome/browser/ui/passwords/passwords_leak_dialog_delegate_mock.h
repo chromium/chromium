@@ -5,12 +5,9 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_LEAK_DIALOG_DELEGATE_MOCK_H_
 #define CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_LEAK_DIALOG_DELEGATE_MOCK_H_
 
-#include <string>
-
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/passwords_leak_dialog_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
-class GURL;
 
 class PasswordsLeakDialogDelegateMock : public PasswordsLeakDialogDelegate {
  public:
@@ -27,12 +24,6 @@ class PasswordsLeakDialogDelegateMock : public PasswordsLeakDialogDelegate {
   MOCK_METHOD(void,
               NavigateToPasswordCheckup,
               (password_manager::PasswordCheckReferrer),
-              (override));
-  MOCK_METHOD(void,
-              ChangePassword,
-              (const GURL& url,
-               const std::u16string& username,
-               const std::u16string& password),
               (override));
 };
 

@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">പച്ച</translation>
 <translation id="225692081236532131">സജീവമാക്കല്‍ സ്റ്റാറ്റസ്</translation>
 <translation id="2267285889943769271">സ്ക്രീൻഷോട്ട് ചേർക്കുക</translation>
+<translation id="2268044343513325586">പരിഷ്‌ക്കരിക്കുക</translation>
 <translation id="2271469253353559191">ഡാർക്ക് മോഡ് ഷെഡ്യൂൾ ചെയ്യൽ</translation>
 <translation id="2276999893457278469">മികച്ച സഹായ ഉള്ളടക്കം</translation>
 <translation id="2277631741861284101">നിങ്ങളുടെ ഓഡിയോ എളുപ്പത്തിൽ റെക്കോർഡ് ചെയ്ത് പങ്കിടൂ</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">സ്‌കാനറുകൾ തിരയുന്നു</translation>
 <translation id="3226657629376379887">ലേഔട്ട് പ്രവർത്തന മെനു</translation>
 <translation id="3227186760713762082"><ph name="CONVERSION_RATE" /> കൊണ്ട് <ph name="CATEGORY_TEXT" /> എന്ന മൂല്യത്തെ ഭാഗിക്കുക</translation>
-<translation id="3237710083340813756">മാറ്റിയെഴുതുക</translation>
 <translation id="3246869037381808805">1 ദിവസം മുമ്പുള്ള പ്രിന്റ് ജോലികൾ നീക്കം ചെയ്യും</translation>
 <translation id="324961752321393509">ഈ ആപ്പ് അടയ്‌ക്കാൻ നിങ്ങളുടെ അഡ്‌മിൻ അനുവദിക്കുന്നില്ല</translation>
 <translation id="3263941347294171263">അപ്‌ഡേറ്റ് പ്രക്രിയ തുടരുന്നതിന് <ph name="DEVICE_NAME" /> അൺപ്ലഗ് ചെയ്ത ശേഷം വീണ്ടും പ്ലഗ് ചെയ്യുക</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> അപ്‌ഡേറ്റ് ചെയ്യുന്നു</translation>
 <translation id="346423161771747987">വൈദ്യുതി</translation>
 <translation id="346539236881580388">വീണ്ടും എടുക്കുക</translation>
+<translation id="3479552764303398839">ഇപ്പോഴല്ല</translation>
 <translation id="3484914941826596830">ഫേംവെയർ അപ്ഡേറ്റ് ചെയ്തുകൊണ്ടിരിക്കുമ്പോൾ ഈ എക്സ്റ്റേണൽ ഉപകരണം അൺപ്ലഗ് ചെയ്യാനോ നിങ്ങളുടെ കമ്പ്യൂട്ടർ ഷട്ട് ഡൗൺ ചെയ്യാനോ പാടില്ല. നിങ്ങൾക്ക് ഈ വിൻഡോ ചെറുതാക്കാം. ഈ അപ്ഡേറ്റ് പൂർത്തിയാകാൻ ഏതാനും മിനിറ്റുകൾ എടുത്തേക്കാം, അതുവരെ നിങ്ങളുടെ എക്സ്റ്റേണൽ ഉപകരണം പ്രവർത്തിക്കില്ല.</translation>
 <translation id="3486220673238053218">നിർവചനം</translation>
 <translation id="3487866404496702283">mahi ഫീച്ചറിനുള്ള ഫീഡ്ബാക്ക്</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">വോളിയം ക്രമീകരിക്കുക</translation>
 <translation id="3767737419527918477">റെക്കോർഡിംഗ് ഫയലുകൾ തിരയുക</translation>
 <translation id="3771294271822695279">വീഡിയോ ഫയലുകള്‍</translation>
+<translation id="3771694256347217732">Google സേവന നിബന്ധനകൾ</translation>
 <translation id="3780740315729837296">കീബോർഡ് കീ അസൈൻ ചെയ്യുക</translation>
 <translation id="3784455785234192852">ലോക്കുചെയ്യുക</translation>
 <translation id="3785643128701396311">പിക്‌സൽ ആർട്ട്</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) HTTP പ്രതികരണ സമയം</translation>
 <translation id="6078323886959318429">കുറുക്കുവഴി ചേർക്കുക</translation>
 <translation id="6091080061796993741">മഞ്ഞ</translation>
-<translation id="6093853427925392522">ആക്‌സസ് നഷ്ടപ്പെടുന്നതിന് മുമ്പ്, സ്‌കൂൾ അക്കൗണ്ട് ഡാറ്റ നിങ്ങളുടെ വ്യക്തിഗത അക്കൗണ്ടിലേക്ക് നീക്കുന്നതിന് Google-ന്റെ ഉള്ളടക്ക കൈമാറ്റ ആപ്പ് ഉപയോഗിക്കുന്ന കാര്യം ഉറപ്പാക്കുക.</translation>
 <translation id="6104112872696127344">സ്‌കാൻ ചെയ്യൽ റദ്ദാക്കി</translation>
 <translation id="6106186594183574873">പൂർത്തിയാക്കാൻ നിങ്ങളുടെ പഴയ പാസ്‌വേഡ് നൽകുക</translation>
 <translation id="6108689792487843350">ഗേറ്റ്‌വേയിലേക്ക് എത്താനാകുന്നില്ല</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">Search കുറുക്കുവഴികൾ</translation>
 <translation id="7138614237884624401">ലളിതമാക്കിയ ടെക്‌സ്റ്റ്</translation>
 <translation id="7138668887584231801">സംഗ്രഹിക്കാനാവശ്യമായ വാക്കുകൾ ഇല്ല</translation>
-<translation id="7141470099673912333">ഉള്ളടക്ക കൈമാറ്റം</translation>
 <translation id="7143207342074048698">കണക്റ്റിംഗ്</translation>
 <translation id="7144878232160441200">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="7144954474087165241">പഗോഡ</translation>
@@ -1541,7 +1541,6 @@
 <translation id="8261506727792406068">ഇല്ലാതാക്കുക</translation>
 <translation id="8262870577632766028">1 മണിക്കൂർ</translation>
 <translation id="827422111966801947">ഇൻഡിഗോ</translation>
-<translation id="8281886186245836920">ഉപേക്ഷിക്കുക</translation>
 <translation id="8286154143153872371">വാൾപേപ്പർ കാണാൻ ഒരു നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റ് ചെയ്‌ത് പേജ് റീലോഡ് ചെയ്യുക.</translation>
 <translation id="8291967909914612644">ഹോം പ്രൊവൈഡറിന്റെ രാജ്യം</translation>
 <translation id="8294431847097064396">ഉറവിടം</translation>
@@ -1646,6 +1645,7 @@
 <translation id="8797082062139985406">Google AI ഉപയോഗിച്ച് പേര് സൃഷ്ടിക്കുക</translation>
 <translation id="8798099450830957504">ഡിഫോൾട്ട്</translation>
 <translation id="8798441408945964110">പ്രൊവൈഡറിന്റെ പേര്</translation>
+<translation id="8804164990146287819">സ്വകാര്യത നയം</translation>
 <translation id="8808828119384186784">Chrome ക്രമീകരണം</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">വാൾപേപ്പർ</translation>

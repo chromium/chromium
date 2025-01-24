@@ -29,6 +29,7 @@
 &gt;
 <ph name="PROXIES_TITLE" />
 и се уверете, че за конфигурацията ви е зададено „no proxy“ или „direct“.</translation>
+<translation id="648062525172759633">Тези страници са предназначени за програмисти на Chromium и може да не се поддържат или тестват активно. За да ги активирате, навигирайте до <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, кликнете върху бутона за активиране на страниците за отстраняване на грешки и след това отново се придвижете до тази страница.</translation>
 <translation id="6549378540556750549">Браузърът Chromium е възможен и благодарение на друг <ph name="BEGIN_LINK_OSS" />софтуер с отворен код<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Промените ви ще влязат в сила следващия път, когато стартирате отново Chromium.</translation>
 <translation id="691026815377248078">Chromium се нуждае от достъп до Bluetooth, за да продължи

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/password_change/password_change_info_bubble_controller.h"
 
-#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,19 +37,13 @@ PasswordChangeInfoBubbleController::~PasswordChangeInfoBubbleController() {
 }
 
 std::u16string PasswordChangeInfoBubbleController::GetTitle() const {
-  switch (state_) {
-    case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORD_MANAGER_UI_SIGN_IN_CHECK_TITLE);
-    case PasswordChangeDelegate::State::kChangingPassword:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_INFO_BUBBLE_TITLE);
-    case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
-    case PasswordChangeDelegate::State::kPasswordChangeFailed:
-    case PasswordChangeDelegate::State::kWaitingForAgreement:
-    case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
-      NOTIMPLEMENTED();
-      break;
+  if (state_ == PasswordChangeDelegate::State::kWaitingForChangePasswordForm) {
+    return l10n_util::GetStringUTF16(
+        IDS_PASSWORD_MANAGER_UI_SIGN_IN_CHECK_TITLE);
+  }
+  if (state_ == PasswordChangeDelegate::State::kChangingPassword) {
+    return l10n_util::GetStringUTF16(
+        IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_INFO_BUBBLE_TITLE);
   }
   NOTREACHED();
 }

@@ -82,9 +82,18 @@ class FfxEmulator(AbstractContextManager):
                 'sdk.overrides.qemu_internal=' +
                 os.path.join(DIR_SRC_ROOT, 'third_party', 'qemu-linux-arm64',
                              'bin', 'qemu-system-aarch64'))
+            # TODO(https://fxbug.dev/389932396): Remove the override for
+            # 'sdk.overrides.uefi_internal' once the Fuchsia SDK has completed
+            # the migration to using the '_arm64' / 'x64' suffix.
             configs.append('sdk.overrides.uefi_internal=' +
                            os.path.join(DIR_SRC_ROOT, 'third_party', 'edk2',
                                         'qemu-arm64', 'QEMU_EFI.fd'))
+            configs.append('sdk.overrides.uefi_internal_arm64=' +
+                           os.path.join(DIR_SRC_ROOT, 'third_party', 'edk2',
+                                        'qemu-arm64', 'QEMU_EFI.fd'))
+            configs.append('sdk.overrides.uefi_internal_x64=' +
+                           os.path.join(DIR_SRC_ROOT, 'third_party', 'edk2',
+                                        'qemu-x64', 'OVMF_CODE.fd'))
 
         # Always use qemu for arm64 images, no matter it runs on arm64 hosts or
         # x64 hosts with simulation.

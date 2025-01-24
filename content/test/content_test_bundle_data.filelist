@@ -5637,6 +5637,8 @@ data/accessibility/mac/methods/accessibility-row-index-range-expected.txt
 data/accessibility/mac/methods/accessibility-row-index-range.html
 data/accessibility/mac/methods/accessibility-rows-expected.txt
 data/accessibility/mac/methods/accessibility-rows.html
+data/accessibility/mac/methods/accessibility-scrollbars-expected.txt
+data/accessibility/mac/methods/accessibility-scrollbars.html
 data/accessibility/mac/methods/accessibility-selected-expected.txt
 data/accessibility/mac/methods/accessibility-selected-rows-expected.txt
 data/accessibility/mac/methods/accessibility-selected-rows.html

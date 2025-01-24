@@ -399,7 +399,6 @@
 <translation id="6455857529632101747">Chromium профайлд тавтай морилно уу</translation>
 <translation id="6466344609055215035">Chromium-с бүртгэл хасах</translation>
 <translation id="6475912303565314141">Энэ нь мөн таныг Chromium-ыг эхлүүлж байх үед гарч ирсэн хуудсыг хянадаг.</translation>
-<translation id="648062525172759633">Эдгээр хуудас Chromium-н хөгжүүлэгчдийн ашиглалтад зориулагдсан бөгөөд идэвхтэйгээр үргэлжлүүлэхгүй эсвэл туршихгүй байж магадгүй. Тэдгээрийг идэвхжүүлэхийн тулд <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> руу шилжиж, хуудаснуудыг дебаг хийхийг идэвхжүүлэхийн тулд товчин дээр товшиж, дараа нь энэ хуудас руу дахин шилжинэ үү.</translation>
 <translation id="648319183876919572">Сайжруулсан аюулгүй хөтөч нь таныг аюултай вебсайт болон таталтаас хамгаалахын тулд илүү ихийг хийдэг</translation>
 <translation id="6510925080656968729">Chromium-ийг устгах</translation>
 <translation id="651535675648445253">Chromium-д нээх товчлол</translation>
@@ -531,7 +530,6 @@
 <translation id="8313851650939857356">Эхлэхэд алдаа гарлаа: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Танай байгууллага Chromium-г <ph name="TIMEOUT_DURATION" />-н турш ашиглаагүй үед хаадаг.</translation>
 <translation id="8321888067342493336">Зургаар хадгалах</translation>
-<translation id="8326785589245660814">бүртгэлийнхээ Chromium-н өгөгдлийг арилгана уу</translation>
 <translation id="8330519371938183845">Төхөөрөмжүүддээ Chromium-г синк хийж, хувийн болгохын тулд нэвтрэх</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> өмнө нь Chromium-г ашиглаж байсан</translation>
 <translation id="8359544530202147897"><ph name="ACCOUNT_EMAIL" /> Google Бүртгэлдээ Chromium-н өгөгдлөө ашигласаар байхын тулд Chromium-г шинэчилнэ үү</translation>

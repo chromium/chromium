@@ -193,6 +193,17 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
     EXPECT_TRUE(found_empty_username_with_new_password);
   }
 
+  void StartPasswordChange(const GURL& url,
+                           const std::u16string& username,
+                           const std::u16string& password,
+                           content::WebContents* web_contents) {
+    password_change_service()->OfferPasswordChangeUi(url, username, password,
+                                                     web_contents);
+    password_change_service()
+        ->GetPasswordChangeDelegate(web_contents)
+        ->StartPasswordChangeFlow();
+  }
+
  private:
   base::CallbackListSubscription create_services_subscription_;
   base::WeakPtrFactory<PasswordChangeBrowserTest> weak_ptr_factory_{this};
@@ -212,8 +223,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(testing::Return(change_pwd_url));
 
-  password_change_service()->StartPasswordChange(main_url, u"test", u"password",
-                                                 WebContents());
+  StartPasswordChange(main_url, u"test", u"password", WebContents());
 
   // Verify a new tab is added, although the focus remained on the initial tab.
   ASSERT_EQ(2, tab_strip->count());
@@ -246,8 +256,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(testing::Return(change_pwd_url));
 
-  password_change_service()->StartPasswordChange(main_url, u"test", u"password",
-                                                 WebContents());
+  StartPasswordChange(main_url, u"test", u"password", WebContents());
 
   // No new tab should be opened until the privacy notice acceptance.
   ASSERT_EQ(1, tab_strip->count());
@@ -276,8 +285,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       .WillOnce(testing::Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields.html")));
 
-  password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
-                                                 WebContents());
+  StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
+
   // Activate tab with password change to simplify testing.
   SetWebContents(browser()->tab_strip_model()->GetWebContentsAt(1));
 
@@ -302,8 +311,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, PasswordChangeStateUpdated) {
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(testing::Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields.html")));
-  password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
-                                                 WebContents());
+  StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
 
   // Verify the delegate is created and it's currently waiting for change
   // password form.
@@ -341,8 +349,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       .WillOnce(testing::Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields.html")));
 
-  password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
-                                                 WebContents());
+  StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
   // Activate tab with password change to simplify testing.
   SetWebContents(browser()->tab_strip_model()->GetWebContentsAt(1));
 
@@ -371,8 +378,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, StopPasswordChange) {
       .WillOnce(testing::Return(
           embedded_test_server()->GetURL("/password/done.html")));
 
-  password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
-                                                 WebContents());
+  StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
 
   auto* password_change_tab = browser()->tab_strip_model()->GetWebContentsAt(1);
   ASSERT_TRUE(password_change_service()->GetPasswordChangeDelegate(
@@ -393,8 +399,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
       .WillOnce(testing::Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields.html")));
 
-  password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
-                                                 WebContents());
+  StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
   MockPasswordChangeOutcome(
       PasswordChangeOutcome::
           PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);
@@ -436,8 +441,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
       .WillOnce(testing::Return(embedded_test_server()->GetURL(
           "example.com", "/password/update_form_empty_fields.html")));
 
-  password_change_service()->StartPasswordChange(
-      main_url, form.username_value, form.password_value, WebContents());
+  StartPasswordChange(main_url, form.username_value, form.password_value,
+                      WebContents());
   MockPasswordChangeOutcome(
       PasswordChangeOutcome::
           PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);
@@ -483,8 +488,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       .WillOnce(testing::Return(embedded_test_server()->GetURL(
           "example.com", "/password/update_form_empty_fields.html")));
 
-  password_change_service()->StartPasswordChange(
-      origin, form.username_value, form.password_value, WebContents());
+  StartPasswordChange(origin, form.username_value, form.password_value,
+                      WebContents());
 
   MockPasswordChangeOutcome(
       PasswordChangeOutcome::
@@ -520,8 +525,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(testing::Return(change_password_url));
 
-  password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
-                                                 WebContents());
+  StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
   // Verify the delegate is created and it's currently waiting for change
   // password form.
   auto* delegate =
@@ -559,8 +563,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OpenTabWithPasswordChange) {
 
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(testing::Return(change_password_url));
-  password_change_service()->StartPasswordChange(main_url, u"test", u"password",
-                                                 WebContents());
+  StartPasswordChange(main_url, u"test", u"password", WebContents());
 
   TabStripModel* tab_strip = browser()->tab_strip_model();
   ASSERT_EQ(2, tab_strip->count());
@@ -582,8 +585,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
           "/password/update_form_empty_fields.html")));
 
   BubbleObserver prompt_observer(WebContents());
-  password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
-                                                 WebContents());
+  StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
 
   EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForAgreement,
             password_change_service()
@@ -602,8 +604,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
           "/password/update_form_empty_fields.html")));
 
   BubbleObserver prompt_observer(WebContents());
-  password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
-                                                 WebContents());
+  StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
 
   MockPasswordChangeOutcome(
       PasswordChangeOutcome::
@@ -635,8 +636,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
           "/password/update_form_empty_fields.html")));
   BubbleObserver prompt_observer(WebContents());
 
-  password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
-                                                 WebContents());
+  StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
   MockPasswordChangeOutcome(
       PasswordChangeOutcome::
           PasswordChangeSubmissionData_PasswordChangeOutcome_UNSUCCESSFUL_OUTCOME);
@@ -658,6 +658,25 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
+                       LeakCheckBubbleDisplayedAutomatically) {
+  GURL main_url("https://example.com/");
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(testing::Return(embedded_test_server()->GetURL(
+          "/password/update_form_empty_fields.html")));
+  BubbleObserver prompt_observer(WebContents());
+
+  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
+                                                   u"pa$$word", WebContents());
+
+  PasswordChangeDelegate* delegate =
+      password_change_service()->GetPasswordChangeDelegate(WebContents());
+  EXPECT_EQ(delegate->GetCurrentState(),
+            PasswordChangeDelegate::State::kOfferingPasswordChange);
+  // Now bubble should automatically appear.
+  EXPECT_TRUE(prompt_observer.IsBubbleDisplayedAutomatically());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                        BubbleIsNotDisplayedWhenSwitchedToDifferentTab) {
   SetPrivacyNoticeAcceptedPref();
   GURL main_url("https://example.com/");
@@ -674,8 +693,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents());
 
   // Start password change in the old tab
-  password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
-                                                 WebContents());
+  StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
   MockPasswordChangeOutcome(
       PasswordChangeOutcome::
           PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);
@@ -704,8 +722,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       .WillOnce(testing::Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields.html")));
 
-  password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
-                                                 WebContents());
+  StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
   auto* tab_strip = browser()->tab_strip_model();
   ASSERT_EQ(2, tab_strip->count());
 
@@ -738,8 +755,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       .WillOnce(testing::Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields.html")));
 
-  password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
-                                                 WebContents());
+  StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
   auto* tab_strip = browser()->tab_strip_model();
   ASSERT_EQ(2, tab_strip->count());
   tab_strip->ActivateTabAt(1);

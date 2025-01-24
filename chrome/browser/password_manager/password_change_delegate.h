@@ -19,6 +19,10 @@ class PasswordChangeDelegate {
  public:
   // Internal state of a password change flow.
   enum class State {
+    // Password change is being offered to the user, waiting from the to accept
+    // or reject it.
+    kOfferingPasswordChange,
+
     // Waiting for the user to accept privacy notice.
     kWaitingForAgreement,
 
@@ -51,6 +55,10 @@ class PasswordChangeDelegate {
   };
 
   virtual ~PasswordChangeDelegate() = default;
+
+  // Starts the password change flow (including showing the privacy notice
+  // agreement if necessary).
+  virtual void StartPasswordChangeFlow() = 0;
 
   // Responds whether password change is ongoing for a given |web_contents|.
   // This is true both for originator and a tab where password change is

@@ -911,7 +911,6 @@
 <translation id="255497580849974774">Жаңарту кезінде құрылғыны зарядтағышқа қосып қойыңыз.</translation>
 <translation id="2556876185419854533">&amp;Өзгертуді болдырмау</translation>
 <translation id="2559566667529177711">Көпқабатты</translation>
-<translation id="2565789370591907825">Пернетақтаны құлыптап пайдалану</translation>
 <translation id="2570734079541893434">Параметрлерді басқару</translation>
 <translation id="257136025287118539">Әкімші файлдарды <ph name="CLOUD_PROVIDER" /> қызметіне көшіріп жатыр. Бұл файлдарды олар жүктеп салынғаннан кейін өзгертуге болады.</translation>
 <translation id="2571488850200220306">Қауіпсіздікті қамтамасыз ету үшін ол құрылғының операциялық жүйесін, браузер нұсқасы мен қандай бағдарламалық құрал орнатылғанын да көреді.</translation>
@@ -1109,7 +1108,6 @@
 <translation id="2974468223369775963">Бұл IBAN нөмірін Google аккаунтыңызға сақтау мүмкін болмады. Ол осы құрылғыдағы Chrome-ға сақталды. Келесі жолы осы IBAN нөмірін қолданған кезде, Chrome сізден қайтадан рұқсат сұрайды.</translation>
 <translation id="297667759942911166">Қойындылар топтарында бірлесіп жұмыс істеңіз</translation>
 <translation id="2977665033722899841">Ағымдағы таңдалғаны: <ph name="ROW_NAME" />, <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">Пернетақтаңызды құлыптап пайдалану</translation>
 <translation id="2978824962390592855">Опера</translation>
 <translation id="2979424420072875974">Жазушылар ресурстары</translation>
 <translation id="2979639724566107830">Жаңа терезеде ашу</translation>
@@ -2465,6 +2463,7 @@
 <translation id="5363532265530011914">Шұлық және шұлық бұйымы</translation>
 <translation id="5371425731340848620">Картаны жаңарту</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> қойындыны өзгертті.</translation>
+<translation id="5374324662289354619">Ішкі түзету беттері әзірше өшірілген.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Сағатыңыз артта", "Сағатыңыз алда" немесе "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Бұл құпия сөз барлық құрылғыңызда болуы үшін жеке басыңызды растаңыз.</translation>
@@ -3045,6 +3044,7 @@
 <translation id="6394852772105848029">Бұл сайт <ph name="APP_NAME" /> қолданбасын ашқысы келіп тұр.</translation>
 <translation id="639673288733510393">Скутерлер мен мопедтер</translation>
 <translation id="6398765197997659313">Толық экраннан шығу</translation>
+<translation id="6399633237874954301">Әкімші рұқсат берген смарт терминал</translation>
 <translation id="6401136357288658127">Бұл саясат ескірді. Орнына <ph name="NEW_POLICY" /> саясатын пайдаланғаныңыз жөн.</translation>
 <translation id="640163077447496506">Мерзімі бүгін бітеді</translation>
 <translation id="6402537308870515461">Жылжыту алдында қарап шығу қажет</translation>
@@ -4105,7 +4105,6 @@
 <translation id="8278544367771164040">Коммерциялық несие беру</translation>
 <translation id="8279290844152565425">Концерттер мен музыкалық фестивальдар</translation>
 <translation id="8279611986089885641">Chrome хабарландырулары қосулы болуы керек. Оларды <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> бөлімінен қосуға болады.</translation>
-<translation id="8280387559022105172">Пернетақтаны құлыптауға рұқсат беру қажет пе?</translation>
 <translation id="8280630997017109758">11-науа</translation>
 <translation id="8281730697546299650">Енді басқа жарнамадағы құпиялық функциялары қолжетімді</translation>
 <translation id="8281886186245836920">Өткізіп жіберу</translation>
@@ -4175,7 +4174,6 @@
 <translation id="8398335999901363925">Толығымен ашылған, түрту арқылы толтыруға болатын төлеу әдістері.</translation>
 <translation id="8398446215576328011">Қолданыстағы саясаттарды қайтару</translation>
 <translation id="8398790343843005537">Телефоныңызды табу</translation>
-<translation id="8399276468426899527">пернетақтаны құлыптап пайдалану</translation>
 <translation id="8400929824946688748">Жұмыс және оқу</translation>
 <translation id="8402442052798347631">Сіз кіргіңіз келген сайттағы шабуылдаушылар браузерді пайдалануға теріс әсер ететін зиянды бағдарламалық құралды алдап орнатқызуы (мысалы, негізгі бетті өзгерту немесе сіз кірген сайттарда қосымша жарнамалар көрсету арқылы) мүмкін. Chrome зиянды әрекеттерден аулақ болу үшін міндетті түрде қауіпсіздікке оралуды ұсынады. <ph name="BEGIN_LEARN_MORE_LINK" />Бұл ескерту туралы толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Фанаттар шығармашылығы</translation>

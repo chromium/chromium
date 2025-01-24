@@ -296,7 +296,9 @@
 <translation id="2240366984605217732">Penukaran reka letak</translation>
 <translation id="2244834438220057800">hijau</translation>
 <translation id="225692081236532131">Status pengaktifan</translation>
+<translation id="2265792117169966196">Pilih dan muat turun model transkripsi <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Tambahkan tangkapan skrin</translation>
+<translation id="2268044343513325586">Perhalusi</translation>
 <translation id="2271469253353559191">Jadual mod gelap</translation>
 <translation id="2276999893457278469">Kandungan bantuan paling popular</translation>
 <translation id="2277631741861284101">Rakam dan kongsi audio anda dengan mudah</translation>
@@ -464,7 +466,6 @@
 <translation id="3226405216343213872">Mencari pengimbas</translation>
 <translation id="3226657629376379887">Menu tindakan reka letak</translation>
 <translation id="3227186760713762082">Bahagikan nilai <ph name="CATEGORY_TEXT" /> dengan <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Tulis semula</translation>
 <translation id="3246869037381808805">Tugas cetak yang melebihi 1 hari akan dialih keluar</translation>
 <translation id="324961752321393509">Pentadbir anda tidak membenarkan apl ini ditutup</translation>
 <translation id="3263941347294171263">Cabut dan palamkan semula <ph name="DEVICE_NAME" /> untuk meneruskan proses kemaskinian</translation>
@@ -509,6 +510,7 @@
 <translation id="3462187165860821523">Mengemas kini <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Arus</translation>
 <translation id="346539236881580388">Ambil semula</translation>
+<translation id="3479552764303398839">Bukan sekarang</translation>
 <translation id="3484914941826596830">Semasa perisian tegar sedang dikemas kini, jangan cabut palam peranti luaran ini atau matikan komputer anda. Anda boleh meminimumkan tetingkap ini. Kemaskinian ini mungkin mengambil masa beberapa minit dan peranti luaran anda mungkin tidak berfungsi pada masa ini.</translation>
 <translation id="3486220673238053218">takrif</translation>
 <translation id="3487866404496702283">Maklum balas untuk ciri mahi</translation>
@@ -567,6 +569,7 @@
 <translation id="3763034084412196440">Laraskan kelantangan</translation>
 <translation id="3767737419527918477">Cari fail rakaman</translation>
 <translation id="3771294271822695279">Fail Video</translation>
+<translation id="3771694256347217732">Syarat Perkhidmatan Google</translation>
 <translation id="3780740315729837296">Tetapkan kekunci papan kekunci</translation>
 <translation id="3784455785234192852">Kunci</translation>
 <translation id="3785643128701396311">seni piksel</translation>
@@ -772,6 +775,7 @@
 <translation id="473775607612524610">Kemas kini</translation>
 <translation id="4744944742468440486">Maklumat yang berkaitan dengan pilihan anda</translation>
 <translation id="4750394297954878236">Cadangan</translation>
+<translation id="4763771683769971829">Senarai bahasa yang tersedia</translation>
 <translation id="4771607256327216405">cerahkan papan kekunci</translation>
 <translation id="4771923071974529837">esok</translation>
 <translation id="4773299976671772492">Dihentikan</translation>
@@ -853,6 +857,7 @@
 <translation id="5095761549884461003">Cabut kabel USB <ph name="DEVICE_NAME" /> dan masukkan semula kabel USB tersebut untuk meneruskan proses kemaskinian</translation>
 <translation id="5099354524039520280">ke atas</translation>
 <translation id="5107243100836678918">Pintasan tanpa kekunci <ph name="META_KEY" /> mungkin bercanggah dengan sesetengah pintasan apl. Tekan pintasan ini sekali lagi untuk terus digunakan atau tekan pintasan baharu menggunakan kekunci <ph name="KEY" />. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399">Tidak dapat memuat turun model transkripsi <ph name="LANGUAGE_NAME" />. Cuba lagi atau mulakan semula Chromebook anda</translation>
 <translation id="5108781503443873320">Serupa:</translation>
 <translation id="5121677070210013200">Tidak dapat memuat turun model transkrip. Cuba lagi atau mulakan semula Chromebook anda.</translation>
 <translation id="5130848777448318809">kuda padi</translation>
@@ -1053,7 +1058,6 @@
 <translation id="6075872808778243331">Kependaman HTTP (Android)</translation>
 <translation id="6078323886959318429">Tambahkan pintasan</translation>
 <translation id="6091080061796993741">kuning</translation>
-<translation id="6093853427925392522">Pastikan anda menggunakan apl Pemindahan Kandungan oleh Google untuk mengalihkan data akaun sekolah anda kepada akaun peribadi anda sebelum anda kehilangan akses.</translation>
 <translation id="6104112872696127344">Pengimbasan telah dibatalkan</translation>
 <translation id="6106186594183574873">Untuk menyelesaikan proses ini, masukkan kata laluan lama anda</translation>
 <translation id="6108689792487843350">Get Laluan tidak boleh dicapai</translation>
@@ -1277,6 +1281,7 @@
 <translation id="7049916119678019302">Muat turun model transkrip dalam Tetapan</translation>
 <translation id="7058278511608979688">Tamatkan &amp; simpan</translation>
 <translation id="7059230779847288458">Mengecas, <ph name="TIME_VALUE" /> sehingga penuh</translation>
+<translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> dipilih</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> kunci</translation>
 <translation id="7068619307603204412">Sediakan peranti anda</translation>
 <translation id="7076851914315147928">Pilih hiasan latar</translation>
@@ -1300,7 +1305,6 @@
 <translation id="7135814714616751706">Pintasan carian</translation>
 <translation id="7138614237884624401">Teks ringkas</translation>
 <translation id="7138668887584231801">Perkataan tidak mencukupi untuk diringkaskan</translation>
-<translation id="7141470099673912333">Pemindahan Kandungan</translation>
 <translation id="7143207342074048698">Menyambung</translation>
 <translation id="7144878232160441200">Cuba semula</translation>
 <translation id="7144954474087165241">pagoda</translation>
@@ -1371,6 +1375,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="7415801143053185905">Kependaman HTTP sangat tinggi</translation>
 <translation id="7418738250896500352">Terlalu banyak perkataan untuk diringkaskan</translation>
 <translation id="7425037327577270384">Bantu saya tulis</translation>
+<translation id="7425832472614771259">Model transkripsi <ph name="LANGUAGE_NAME" /> telah <ph name="PROGRESS_PERCENTAGE" />% dimuat turun</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Tidak boleh melumpuhkan atau mengalih keluar APN ini. Pastikan APN <ph name="ATTACH" /> didayakan ini dilumpuhkan atau dialih keluar.</translation>
 <translation id="7453118953486228603">Klik untuk meringkaskan teks yang dipilih</translation>
@@ -1407,6 +1412,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> lagi</translation>
 <translation id="7600430297804876776">Pentadbir <ph name="MANAGER" /> telah menetapkan masa untuk <ph name="DEVICE_TYPE" /> boleh digunakan.</translation>
 <translation id="7613724632293948900">Ubah kedudukan dengan tetikus atau kekunci anak panah.</translation>
+<translation id="7618216277886673749">Pilih <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutral</translation>
 <translation id="7620771111601174153">Ketahui lebih lanjut dalam Pusat Bantuan</translation>
 <translation id="7625095758347640998">Hiasan latar AI</translation>
@@ -1541,7 +1547,6 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8261506727792406068">Padam</translation>
 <translation id="8262870577632766028">1 jam</translation>
 <translation id="827422111966801947">Biru Nila</translation>
-<translation id="8281886186245836920">Langkau</translation>
 <translation id="8286154143153872371">Sila sambung kepada rangkaian dan muatkan semula halaman untuk melihat kertas dinding.</translation>
 <translation id="8291967909914612644">Negara pembekal tempatan</translation>
 <translation id="8294431847097064396">Sumber</translation>
@@ -1646,6 +1651,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8797082062139985406">Buat nama menggunakan Google AI</translation>
 <translation id="8798099450830957504">Lalai</translation>
 <translation id="8798441408945964110">Nama penyedia</translation>
+<translation id="8804164990146287819">Dasar Privasi</translation>
 <translation id="8808828119384186784">Tetapan Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Kertas dinding</translation>

@@ -204,7 +204,6 @@
 <translation id="345171907106878721">Ավելացնել Chrome-ի օգտատիրոջ</translation>
 <translation id="3453763134178591239">ChromeOS-ի օգտագործման պայմաններ</translation>
 <translation id="3503306920980160878">Chrome-ին այս կայքի համար անհրաժեշտ է ձեզ տեղորոշելու թույլտվություն</translation>
-<translation id="3512634283363927263">Այս էջերը, որոնք նախատեսված են Chrome-ի մշակողների համար, չեն կարող պարբերաբար փորձարկվել կամ մշակվել։ Միացնելու համար անցեք <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> էջ, սեղմեք կոճակը՝ վրիպազերծման էջերը միացնելու համար, այնուհետև վերադարձեք այստեղ։</translation>
 <translation id="3533694711092285624">Պահված գաղտնաբառեր չկան։ Chrome-ը կարող է ստուգել ձեր գաղտնաբառերը, երբ պահում եք դրանք։</translation>
 <translation id="3541482654983822893">Chrome-ը չի կարող ստուգել ձեր գաղտնաբառերը։ 24 ժամ հետո նորից փորձեք։</translation>
 <translation id="3564543103555793392">Եթե մուտք գործեք Chrome, կկարողանաք պահպանել ձեր էջանիշները, գաղտնաբառերը և այլ տվյալներ, այնուհետև օգտագործել դրանք ձեր հեռախոսում</translation>
@@ -222,7 +221,6 @@
 <translation id="3673813398384385993">Chrome-ը «<ph name="EXTENSION_NAME" />» ընդլայնման մեջ վնասագիր է հայտնաբերել</translation>
 <translation id="3695446226812920698">Իմանալ ինչպես</translation>
 <translation id="3697952514309507634">Այլ Chrome պրոֆիլներ</translation>
-<translation id="3700276346088749847">մաքրեք Chrome-ի տվյալները ձեր հաշվից</translation>
 <translation id="3703994572283698466">ChromeOS-ը ստեղծվել է <ph name="BEGIN_LINK_CROS_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_CROS_OSS" /> հիման վրա, ինչպիսին է <ph name="BEGIN_LINK_LINUX_OSS" />Լինուքսի մշակման միջավայրը<ph name="END_LINK_LINUX_OSS" />։</translation>
 <translation id="3716540481907974026">ChromeOS Flex-ի տարբերակը</translation>
 <translation id="3718181793972440140">1 տարր ձեր սարքից կջնջվի: Հետագայում ձեր տվյալներն առբերելու համար մուտք գործեք Chrome <ph name="USER_EMAIL" /> հաշվով:</translation>

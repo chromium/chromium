@@ -489,6 +489,17 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       // Password Change strings.
       {"passwordChangeSettingLabel", IDS_SETTINGS_PASSWORD_CHANGE_LABEL},
       {"passwordChangeSettingSubLabel", IDS_SETTINGS_PASSWORD_CHANGE_SUBLABEL},
+      {"passwordChangeSettingDataBreach",
+       IDS_SETTINGS_PASSWORD_CHANGE_DATA_BREACH},
+      {"passwordChangeSettingWhereSaved",
+       IDS_SETTINGS_PASSWORD_CHANGE_WHERE_SAVED},
+      {"passwordChangeSettingExperimental",
+       IDS_SETTINGS_PASSWORD_CHANGE_EXPERIMENTAL},
+      {"passwordChangeSettingContent", IDS_SETTINGS_PASSWORD_CHANGE_CONTENT},
+      {"passwordChangeSettingEncryption",
+       IDS_SETTINGS_PASSWORD_CHANGE_ENCRYPTION},
+      {"passwordChangeLearnMore",
+       IDS_SETTINGS_PASSWORD_CHANGE_SUBLABEL_LEARN_MORE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

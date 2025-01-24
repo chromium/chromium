@@ -1,6 +1,6 @@
 Name: Descriptive name of the package.
 Short Name (OPTIONAL): Name the package is distributed under (ex. libxml, openssl, etc).
-URL: The URL where the package lives.
+URL: The URL where the package lives i.e. A clonable url for git repositories, a package manager url for packages from package managers, etc. If there is no upstream, use 'This is the canonical public repository'.
 Version: A searchable version number for the package (if the package does not version or is versioned by date or revision this field should be "N/A" and the revision, or date should be enumerated in the appropriate field).
 Date: (OPTIONAL if Version or Revision is supplied) The date that the package was updated, in format YYYY-MM-DD.
 Revision: (REQUIRED for dependencies which have a git repository as an upstream, OPTIONAL if the upstream is not a git repository and Version or Date is supplied)

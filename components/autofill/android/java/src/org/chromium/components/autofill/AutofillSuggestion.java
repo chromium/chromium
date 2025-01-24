@@ -236,28 +236,6 @@ public class AutofillSuggestion extends DropdownItemBase {
                 && areIconsEqual(this.mIconDrawable, other.mIconDrawable);
     }
 
-    public Builder toBuilder() {
-        return new Builder()
-                .setLabel(mLabel)
-                .setSecondaryLabel(mSecondaryLabel)
-                .setSubLabel(mSublabel)
-                .setSecondarySubLabel(mSecondarySublabel)
-                .setLabelContentDescription(mLabelContentDescription)
-                .setItemTag(mItemTag)
-                .setIconId(mIconId)
-                .setIsIconAtStart(mIsIconAtStart)
-                .setSuggestionType(mSuggestionType)
-                .setIsDeletable(mIsDeletable)
-                .setIsMultiLineLabel(mIsMultilineLabel)
-                .setIsBoldLabel(mIsBoldLabel)
-                .setApplyDeactivatedStyle(mApplyDeactivatedStyle)
-                .setShouldDisplayTermsAvailable(mShouldDisplayTermsAvailable)
-                .setFeatureForIph(mFeatureForIph)
-                .setIphDescriptionText(mIphDescriptionText)
-                .setCustomIconUrl(mCustomIconUrl)
-                .setIconDrawable(mIconDrawable);
-    }
-
     /** Builder for the {@link AutofillSuggestion}. */
     public static final class Builder {
         private int mIconId;

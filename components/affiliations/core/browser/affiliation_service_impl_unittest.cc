@@ -207,22 +207,6 @@ TEST_F(AffiliationServiceImplTest, FetchRequestIsStarted) {
   service()->PrefetchChangePasswordURLs(origins, base::DoNothing());
 }
 
-TEST_F(AffiliationServiceImplTest, ClearStopsOngoingRequest) {
-  const std::vector<GURL> origins = {GURL(k1ExampleURL), GURL(k2ExampleURL)};
-  auto mock_fetcher = std::make_unique<MockAffiliationFetcher>();
-
-  EXPECT_CALL(*mock_fetcher, StartRequest(ToFacetsURIs(origins),
-                                          kChangePasswordUrlRequestInfo));
-  EXPECT_CALL(mock_fetcher_factory(), CreateInstance)
-      .WillOnce(Return(ByMove(std::move(mock_fetcher))));
-
-  base::MockOnceClosure callback;
-  service()->PrefetchChangePasswordURLs(origins, callback.Get());
-
-  EXPECT_CALL(callback, Run());
-  service()->Clear();
-}
-
 TEST_F(AffiliationServiceImplTest,
        OnFetchSuccededInsertsChangePasswordURLOfRequestedSiteIfFound) {
   const GURL origin(k1ExampleURL);
@@ -553,53 +537,36 @@ class AffiliationServiceImplTestWithFetcherFactory
 };
 
 TEST_F(AffiliationServiceImplTestWithFetcherFactory,
-       GetAffiliationsAndBrandingSucceeds) {
-  // The first request allows on-demand fetching, and should trigger a fetch.
-  // Then, it should succeed after the fetch is complete.
-  service()->GetAffiliationsAndBranding(
-      FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1),
-      StrategyOnCacheMiss::FETCH_OVER_NETWORK,
-      mock_consumer()->GetResultCallback());
-
-  background_task_runner()->RunUntilIdle();
-  ASSERT_TRUE(fake_affiliation_api()->HasPendingRequest());
-  fake_affiliation_api()->ServeNextRequest();
-
-  const auto equivalence_class_alpha(GetTestEquivalenceClassAlpha());
-  mock_consumer()->ExpectSuccessWithResult(equivalence_class_alpha);
-  EXPECT_THAT(
-      equivalence_class_alpha,
-      testing::Contains(testing::Field(
-          &Facet::uri, FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1))));
-
-  RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(mock_consumer());
-
-  // The second request should be (and can be) served from cache.
-  service()->GetAffiliationsAndBranding(
-      FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1),
-      StrategyOnCacheMiss::FAIL, mock_consumer()->GetResultCallback());
-
-  background_task_runner()->RunUntilIdle();
-  ASSERT_FALSE(fake_affiliation_api()->HasPendingRequest());
-
-  mock_consumer()->ExpectSuccessWithResult(equivalence_class_alpha);
-  RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(mock_consumer());
-}
-
-TEST_F(AffiliationServiceImplTestWithFetcherFactory,
-       GetAffiliationsAndBrandingFails) {
-  // The third request is also restricted to the cache, but cannot be served
+       GetAffiliationsAndBranding) {
+  // This request is restricted to the cache, but cannot be served
   // from cache, thus it should fail.
   service()->GetAffiliationsAndBranding(
       FacetURI::FromCanonicalSpec(kTestFacetURIBeta1),
-      StrategyOnCacheMiss::FAIL, mock_consumer()->GetResultCallback());
+      mock_consumer()->GetResultCallback());
 
   background_task_runner()->RunUntilIdle();
   ASSERT_FALSE(fake_affiliation_api()->HasPendingRequest());
 
   mock_consumer()->ExpectFailure();
+  RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(mock_consumer());
+
+  // Now update cache to verify requests succeeds.
+  service()->UpdateAffiliationsAndBranding(
+      {FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1)}, base::DoNothing());
+  background_task_runner()->RunUntilIdle();
+  fake_affiliation_api()->ServeNextRequest();
+  background_task_runner()->RunUntilIdle();
+
+  service()->GetAffiliationsAndBranding(
+      FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1),
+      mock_consumer()->GetResultCallback());
+
+  background_task_runner()->RunUntilIdle();
+  ASSERT_FALSE(fake_affiliation_api()->HasPendingRequest());
+
+  const auto equivalence_class_alpha(GetTestEquivalenceClassAlpha());
+  mock_consumer()->ExpectSuccessWithResult(equivalence_class_alpha);
   RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(mock_consumer());
 }
@@ -608,7 +575,6 @@ TEST_F(AffiliationServiceImplTestWithFetcherFactory,
        ShutdownWhileTasksArePosted) {
   service()->GetAffiliationsAndBranding(
       FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1),
-      StrategyOnCacheMiss::FETCH_OVER_NETWORK,
       mock_consumer()->GetResultCallback());
   EXPECT_TRUE(background_task_runner()->HasPendingTask());
 

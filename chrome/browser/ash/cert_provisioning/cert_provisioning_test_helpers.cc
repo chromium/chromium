@@ -132,7 +132,7 @@ const net::CertificateList& CertificateHelperForTesting::GetCerts() const {
 
 namespace {
 const char kTestUserEmail[] = "user@gmail.com";
-const char kTestUserGaiaId[] = "test_gaia_id";
+const GaiaId::Literal kTestUserGaiaId("test_gaia_id");
 }  // namespace
 
 ProfileHelperForTesting::ProfileHelperForTesting()
@@ -153,7 +153,7 @@ void ProfileHelperForTesting::Init(bool user_is_affiliated) {
   ASSERT_TRUE(testing_profile_);
 
   auto test_account =
-      AccountId::FromUserEmailGaiaId(kTestUserEmail, GaiaId(kTestUserGaiaId));
+      AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
   user_ = fake_user_manager_->AddUserWithAffiliation(test_account,
                                                      user_is_affiliated);
 }

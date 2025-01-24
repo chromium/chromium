@@ -296,7 +296,9 @@
 <translation id="2240366984605217732">Paigutuse lüliti</translation>
 <translation id="2244834438220057800">rohelistes toonides</translation>
 <translation id="225692081236532131">Aktiveerimise olek</translation>
+<translation id="2265792117169966196">Valige ja laadige alla <ph name="LANGUAGE_NAME" /> keele transkriptsiooni mudel</translation>
 <translation id="2267285889943769271">Ekraanipildi lisamine</translation>
+<translation id="2268044343513325586">Täpsustamine</translation>
 <translation id="2271469253353559191">Tumeda režiimi ajakava</translation>
 <translation id="2276999893457278469">Peamine abisisu</translation>
 <translation id="2277631741861284101">Hõlbus heli salvestamine ja jagamine</translation>
@@ -464,7 +466,6 @@
 <translation id="3226405216343213872">Skannerite otsimine</translation>
 <translation id="3226657629376379887">Paigutuse toimingute menüü</translation>
 <translation id="3227186760713762082">Jagage <ph name="CATEGORY_TEXT" /> arvuga <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Ümberkirjutamine</translation>
 <translation id="3246869037381808805">Prinditööd, mis on vanemad kui 1 päev, eemaldatakse</translation>
 <translation id="324961752321393509">Teie administraator ei luba seda rakendust sulgeda</translation>
 <translation id="3263941347294171263">Katkestage seadme <ph name="DEVICE_NAME" /> ühendus ja ühendage see uuesti, et värskendamist jätkata</translation>
@@ -509,6 +510,7 @@
 <translation id="3462187165860821523">Seadme <ph name="DEVICE_NAME" /> värskendamine</translation>
 <translation id="346423161771747987">Praegune</translation>
 <translation id="346539236881580388">Tee uuesti</translation>
+<translation id="3479552764303398839">Mitte praegu</translation>
 <translation id="3484914941826596830">Püsivara värskendamise ajal ärge seda välist seadet eemaldage ega arvutit välja lülitage. Võite selle akna minimeerida. Selle värskenduse lõpuleviimiseks võib kuluda mõni minut ja teie väline seade ei pruugi sel ajal töötada.</translation>
 <translation id="3486220673238053218">definitsioon</translation>
 <translation id="3487866404496702283">Mahi funktsiooni tagasiside</translation>
@@ -567,6 +569,7 @@
 <translation id="3763034084412196440">Helitugevuse reguleerimine</translation>
 <translation id="3767737419527918477">Salvestiste failide otsimine</translation>
 <translation id="3771294271822695279">Videofailid</translation>
+<translation id="3771694256347217732">Google’i teenusetingimused</translation>
 <translation id="3780740315729837296">Määrake klaviatuuriklahv</translation>
 <translation id="3784455785234192852">Lukusta</translation>
 <translation id="3785643128701396311">pikslikunst</translation>
@@ -772,6 +775,7 @@
 <translation id="473775607612524610">Värskenda</translation>
 <translation id="4744944742468440486">Teie valikuga seotud teave</translation>
 <translation id="4750394297954878236">Soovitused</translation>
+<translation id="4763771683769971829">Saadaolevate keelte loend</translation>
 <translation id="4771607256327216405">klaviatuuri heledamaks muutmine</translation>
 <translation id="4771923071974529837">homme</translation>
 <translation id="4773299976671772492">Peatatud</translation>
@@ -853,6 +857,7 @@
 <translation id="5095761549884461003">Eemaldage seadme <ph name="DEVICE_NAME" /> USB-kaabel ja sisestage see uuesti, et värskendamist jätkata</translation>
 <translation id="5099354524039520280">üles</translation>
 <translation id="5107243100836678918">Otsetee ilma klahvita <ph name="META_KEY" /> võib olla vastuolus mõne rakenduse otseteega. Kasutamise jätkamiseks vajutage seda otseteed uuesti või vajutage klahvi <ph name="KEY" /> abil uut otseteed. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399">Transkriptsiooni mudelit (<ph name="LANGUAGE_NAME" /> keel) ei saa alla laadida. Proovige uuesti või taaskäivitage Chromebook</translation>
 <translation id="5108781503443873320">Sarnased:</translation>
 <translation id="5121677070210013200">Transkriptsiooni mudelit ei saa alla laadida. Proovige uuesti või taaskäivitage Chromebook.</translation>
 <translation id="5130848777448318809">ponid</translation>
@@ -1053,7 +1058,6 @@
 <translation id="6075872808778243331">(Android) HTTP latentsusaeg</translation>
 <translation id="6078323886959318429">Otsetee lisamine</translation>
 <translation id="6091080061796993741">kollastes toonides</translation>
-<translation id="6093853427925392522">Enne juurdepääsu kaotamist kasutage kindlasti Google’i rakendust Content Transfer, et kanda koolikonto andmed üle isiklikule kontole.</translation>
 <translation id="6104112872696127344">Skannimine tühistati</translation>
 <translation id="6106186594183574873">Toimingu lõpuleviimiseks sisestage oma vana parool</translation>
 <translation id="6108689792487843350">Lüüs on kättesaamatu</translation>
@@ -1277,6 +1281,7 @@
 <translation id="7049916119678019302">Laadige transkriptsiooni mudel menüüs Seaded alla</translation>
 <translation id="7058278511608979688">Lõpeta ja salvesta</translation>
 <translation id="7059230779847288458">Laadimine, täislaadimiseks kulub <ph name="TIME_VALUE" /></translation>
+<translation id="7065336548231472971">Valitud on <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186">võti <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Seadme ettevalmistamine</translation>
 <translation id="7076851914315147928">Taustapildi valimine</translation>
@@ -1300,7 +1305,6 @@
 <translation id="7135814714616751706">Otseteede otsing</translation>
 <translation id="7138614237884624401">Lihtsustatud tekst</translation>
 <translation id="7138668887584231801">Kokkuvõtte tegemiseks pole piisavalt sõnu</translation>
-<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Ühendamine</translation>
 <translation id="7144878232160441200">Proovi uuesti</translation>
 <translation id="7144954474087165241">pagood</translation>
@@ -1371,6 +1375,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="7415801143053185905">Väga pikk HTTP latentsusaeg</translation>
 <translation id="7418738250896500352">Lihtsustamiseks on liiga palju sõnu</translation>
 <translation id="7425037327577270384">Aita mul kirjutada</translation>
+<translation id="7425832472614771259">Transkriptsiooni mudel (<ph name="LANGUAGE_NAME" /> keel) on <ph name="PROGRESS_PERCENTAGE" />% ulatuses alla laaditud</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Seda APN-i ei saa keelata ega eemaldada. Veenduge, et lubatud <ph name="ATTACH" />-tüüpi APN-id oleksid keelatud või eemaldatud.</translation>
 <translation id="7453118953486228603">Klõpsake valitud tekstist kokkuvõtte tegemiseks</translation>
@@ -1407,6 +1412,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> on jäänud</translation>
 <translation id="7600430297804876776">Administraator <ph name="MANAGER" /> on määranud, millal seadet <ph name="DEVICE_TYPE" /> kasutada saab.</translation>
 <translation id="7613724632293948900">Ümberpaigutamine hiire või nooleklahvidega.</translation>
+<translation id="7618216277886673749">Valige <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutraalne</translation>
 <translation id="7620771111601174153">Lisateavet leiate abikeskusest</translation>
 <translation id="7625095758347640998">AI taustapildid</translation>
@@ -1541,7 +1547,6 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8261506727792406068">Kustuta</translation>
 <translation id="8262870577632766028">1 tund</translation>
 <translation id="827422111966801947">Indigosinine</translation>
-<translation id="8281886186245836920">Jäta vahele</translation>
 <translation id="8286154143153872371">Taustapildi vaatamiseks looge ühendus võrguga ja laadige leht uuesti.</translation>
 <translation id="8291967909914612644">Koduteenuse pakkuja riik</translation>
 <translation id="8294431847097064396">Allikas</translation>
@@ -1646,6 +1651,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8797082062139985406">Nime loomine Google'i AI abil</translation>
 <translation id="8798099450830957504">Vaikimisi</translation>
 <translation id="8798441408945964110">Teenusepakkuja nimi</translation>
+<translation id="8804164990146287819">Privaatsuseeskirjad</translation>
 <translation id="8808828119384186784">Chrome'i seaded</translation>
 <translation id="8814190375133053267">WiFi</translation>
 <translation id="8818152010000655963">Taustapilt</translation>

@@ -10,6 +10,7 @@
 <translation id="2447485272386224171">Chrome được xây dựng bằng dự án nguồn mở <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> và <ph name="BEGIN_LINK_OSS" />phần mềm nguồn mở<ph name="END_LINK_OSS" /> khác.</translation>
 <translation id="2588322182880276190">Biểu trưng Chrome</translation>
 <translation id="3444832043240812445">Trang này chỉ hiển thị thông tin về các sự cố gần đây của bạn nếu bạn <ph name="BEGIN_LINK" />bật báo cáo sự cố<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Các trang này dành cho nhà phát triển Chrome sử dụng và có thể không được duy trì hoặc kiểm tra liên tục. Để kích hoạt các trang này, hãy chuyển đến <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, nhấp vào nút để kích hoạt trang gỡ lỗi, rồi chuyển đến trang này một lần nữa.</translation>
 <translation id="3875312571075912821">Cho phép Chrome truy cập mạng trong cài đặt tường lửa hoặc diệt vi-rút
           của bạn.</translation>
 <translation id="5005121315113832363">Trang này bị Chrome chặn</translation>

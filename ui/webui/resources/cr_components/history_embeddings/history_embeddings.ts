@@ -155,7 +155,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   isEmpty: boolean = true;
   numCharsForQuery: number = 0;
   private numCharsForLastResultQuery_: number = 0;
-  searchQuery: string;
+  searchQuery: string = '';
   timeRangeStart?: Date;
   private searchResultChangedId_: number|null = null;
   /**
@@ -225,7 +225,11 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       this.answerSource_ = this.computeAnswerSource_();
     }
 
-    if (changedProperties.has('searchQuery') ||
+    const isSearchQueryInitialization =
+        changedProperties.get('searchQuery') === undefined &&
+        this.searchQuery === '';
+    if ((changedProperties.has('searchQuery') &&
+         !isSearchQueryInitialization) ||
         changedProperties.has('timeRangeStart')) {
       this.onSearchQueryChanged_();
     }
@@ -281,7 +285,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       // multiple links in the UI. If the directive contains a comma, it is
       // intended to be part of the start,end syntax and should not be encoded.
       sourceUrl.hash = `:~:text=${
-          textDirectives[0].split(',').map(encodeURIComponent).join(',')}`;
+          textDirectives[0]!.split(',').map(encodeURIComponent).join(',')}`;
     }
     return sourceUrl.toString();
   }
@@ -390,6 +394,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     const target = e.target as HTMLElement;
     const index = Number(target.dataset['index']);
     const item = this.searchResult_.items[index];
+    assert(item);
     this.actionMenuItem_ = item;
     this.$.sharedMenu.get().showAt(target);
   }

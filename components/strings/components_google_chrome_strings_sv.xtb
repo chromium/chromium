@@ -10,6 +10,7 @@
 <translation id="2447485272386224171">Chrome finns tack vare det öppna källkodsprojektet <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> och andra <ph name="BEGIN_LINK_OSS" />program med öppen källkod<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logotypen för Chrome</translation>
 <translation id="3444832043240812445">Du måste <ph name="BEGIN_LINK" />aktivera kraschrapportering<ph name="END_LINK" /> för att information om de senaste krascherna ska visas på den här sidan.</translation>
+<translation id="3512634283363927263">Dessa sidor är avsedda för Chrome-utvecklare och kanske inte underhålls eller testas aktivt. Om du vill aktivera dem navigerar du till <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klickar på knappen för att aktivera felsökningssidor och navigerar sedan till den här sidan igen.</translation>
 <translation id="3875312571075912821">Tillåt att Chrome får åtkomst till nätverket i inställningarna för brandväggen eller
         antivirusprogrammet.</translation>
 <translation id="5005121315113832363">Den här sidan har blockerats av Chrome</translation>

@@ -60,6 +60,10 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
         browser_interface_broker,
     ukm::SourceId ukm_source_id,
     bool require_cross_site_request_for_cookies,
+    mojo::PendingReceiver<blink::mojom::ReportingObserver>
+        coep_reporting_observer,
+    mojo::PendingReceiver<blink::mojom::ReportingObserver>
+        dip_reporting_observer,
     const std::vector<std::string>& cors_exempt_header_list)
     : receiver_(this, std::move(receiver)) {
   DCHECK(main_script_load_params);
@@ -130,7 +134,8 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
       std::move(worker_main_script_load_params),
       ToWebPolicyContainer(std::move(policy_container)),
       std::move(web_worker_fetch_context), std::move(host), this, ukm_source_id,
-      require_cross_site_request_for_cookies);
+      require_cross_site_request_for_cookies,
+      std::move(coep_reporting_observer), std::move(dip_reporting_observer));
 
   // If the host drops its connection, then self-destruct.
   receiver_.set_disconnect_handler(base::BindOnce(

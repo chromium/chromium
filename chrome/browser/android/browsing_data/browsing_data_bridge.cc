@@ -26,7 +26,11 @@
 #include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/content/android/browsing_data_model_android.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
@@ -37,6 +41,8 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/BrowsingDataBridge_jni.h"
@@ -288,4 +294,28 @@ static void JNI_BrowsingDataBridge_BuildBrowsingDataModelFromDisk(
       profile, ChromeBrowsingDataModelDelegate::CreateForProfile(profile),
       base::BindOnce(&OnBrowsingDataModelBuilt, env,
                      ScopedJavaGlobalRef<jobject>(java_callback)));
+}
+
+static void JNI_BrowsingDataBridge_TriggerHatsSurvey(
+    JNIEnv* env,
+    Profile* profile,
+    content::WebContents* web_contents) {
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+
+  if (hats_service) {
+    hats_service->LaunchDelayedSurveyForWebContents(
+        kHatsSurveyTriggerQuickDelete, web_contents,
+        /*timeout_ms=*/5000,
+        /*product_specific_bits_data=*/{},
+        /*product_specific_string_data=*/{},
+        HatsService::NavigationBehaviour::ALLOW_ANY,
+        /*success_callback=*/base::DoNothing(),
+        /*failure_callback=*/base::DoNothing(),
+        /*supplied_trigger_id=*/std::nullopt,
+        HatsService::SurveyOptions(
+            l10n_util::GetStringUTF16(
+                IDS_QUICK_DELETE_PROMPT_SURVEY_CUSTOM_INVITATION),
+            messages::MessageIdentifier::PROMPT_HATS_QUICK_DELETE));
+  }
 }

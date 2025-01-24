@@ -47,6 +47,7 @@
 #import "ios/chrome/app/profile/search_engine_choice_profile_agent.h"
 #import "ios/chrome/app/profile/session_metrics_profile_agent.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_profile_agent.h"
@@ -515,7 +516,7 @@ ProfileAttributesIOS RemoveSessionsFromSessionsToDiscard(
           ->GetAttributesForProfileWithName(profile->GetProfileName())
           .GetDiscardedSessions();
 
-  if (sessionIDs.empty()) {
+  if (sessionIDs.empty() || tests_hook::NeverPurgeDiscardedSessionsData()) {
     // No data to purge since there is no discarded sessions, advance stage.
     [self dataPurgedForDiscardedSessions:sessionIDs];
     return;

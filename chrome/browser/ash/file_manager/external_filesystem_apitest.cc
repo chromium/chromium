@@ -89,7 +89,7 @@ constexpr char kTestFileContent[] = "This is some test content.";
 // User account email and directory hash for secondary account for multi-profile
 // sensitive test cases.
 constexpr char kSecondProfileAccount[] = "profile2@test.com";
-constexpr char kSecondProfileGiaId[] = "9876543210";
+constexpr GaiaId::Literal kSecondProfileGaiaId("9876543210");
 constexpr char kSecondProfileHash[] = "fileBrowserApiTestProfile2";
 
 // Waits for a WebContents of the background page of the extension under test
@@ -471,7 +471,7 @@ class MultiProfileDriveFileSystemExtensionApiTest
     base::PathService::Get(chrome::DIR_USER_DATA, &user_data_directory);
     session_manager::SessionManager::Get()->CreateSession(
         AccountId::FromUserEmailGaiaId(kSecondProfileAccount,
-                                       GaiaId(kSecondProfileGiaId)),
+                                       kSecondProfileGaiaId),
         kSecondProfileHash, false);
     // Set up the secondary profile.
     base::FilePath profile_dir = user_data_directory.AppendASCII(

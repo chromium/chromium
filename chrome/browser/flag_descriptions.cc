@@ -24,6 +24,12 @@ const char kAiSettingsPageRefreshName[] = "AI settings page refresh";
 const char kAiSettingsPageRefreshDescription[] =
     "Enables a revamp of the existing AI settings page.";
 
+const char kAiSettingsPageEnterpriseDisabledName[] =
+    "AI settings page enterprise disabled UI";
+const char kAiSettingsPageEnterpriseDisabledDescription[] =
+    "Enables settings UI for AI features that are disabled by enterprise "
+    "policy.";
+
 const char kCanvasHibernationName[] = "Hibernation for 2D canvas";
 const char kCanvasHibernationDescription[] =
     "Enables canvas hibernation for 2D canvas.";

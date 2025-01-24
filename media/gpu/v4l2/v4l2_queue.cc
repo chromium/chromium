@@ -21,6 +21,7 @@
 #include "base/not_fatal_until.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/pass_key.h"
 #include "media/gpu/chromeos/native_pixmap_frame_resource.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
@@ -922,7 +923,8 @@ size_t V4L2WritableBufferRef::BufferId() const {
   return buffer_data_->v4l2_buffer_.index;
 }
 
-V4L2ReadableBuffer::V4L2ReadableBuffer(const struct v4l2_buffer& v4l2_buffer,
+V4L2ReadableBuffer::V4L2ReadableBuffer(base::PassKey<V4L2BufferRefFactory>,
+                                       const struct v4l2_buffer& v4l2_buffer,
                                        base::WeakPtr<V4L2Queue> queue,
                                        scoped_refptr<FrameResource> frame)
     : buffer_data_(
@@ -1050,7 +1052,8 @@ struct SecureBufferData {
 #define DVQLOGF(level) \
   DVLOGF(level) << "(" << V4L2BufferTypeToString(type_) << ") "
 
-V4L2Queue::V4L2Queue(const IoctlAsCallback& ioctl_cb,
+V4L2Queue::V4L2Queue(base::PassKey<PassKey>,
+                     const IoctlAsCallback& ioctl_cb,
                      const base::RepeatingClosure& schedule_poll_cb,
                      const MmapAsCallback& mmap_cb,
                      const AllocateSecureBufferAsCallback& allocate_secure_cb,
@@ -1309,8 +1312,9 @@ class V4L2BufferRefFactory {
       const struct v4l2_buffer& v4l2_buffer,
       base::WeakPtr<V4L2Queue> queue,
       scoped_refptr<FrameResource> frame) {
-    return new V4L2ReadableBuffer(v4l2_buffer, std::move(queue),
-                                  std::move(frame));
+    return base::MakeRefCounted<V4L2ReadableBuffer>(
+        base::PassKey<V4L2BufferRefFactory>(), v4l2_buffer, std::move(queue),
+        std::move(frame));
   }
 };
 

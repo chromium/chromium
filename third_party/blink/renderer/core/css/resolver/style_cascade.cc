@@ -1542,7 +1542,8 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
 
     StringView argument_string;
 
-    if (first_parameter || stream.Peek().GetType() == kCommaToken) {
+    if (!stream.AtEnd() &&
+        (first_parameter || stream.Peek().GetType() == kCommaToken)) {
       first_parameter = false;
       if (stream.Peek().GetType() == kCommaToken) {
         stream.ConsumeIncludingWhitespace();

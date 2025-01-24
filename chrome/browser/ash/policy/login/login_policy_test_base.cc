@@ -41,12 +41,11 @@ constexpr char kTestSessionLSIDCookie[] = "fake-session-LSID-cookie";
 // which cannot be enterprise domain. See kNonManagedDomainPatterns in
 // browser_policy_connector.cc.
 constexpr char kAccountId[] = "user@example.com";
-constexpr char kAccountGaiaId[] = "user-example-com-test-gaia-id";
+constexpr GaiaId::Literal kAccountGaiaId("user-example-com-test-gaia-id");
 }  // namespace
 
 LoginPolicyTestBase::LoginPolicyTestBase()
-    : account_id_(
-          AccountId::FromUserEmailGaiaId(kAccountId, GaiaId(kAccountGaiaId))) {
+    : account_id_(AccountId::FromUserEmailGaiaId(kAccountId, kAccountGaiaId)) {
   set_open_about_blank_on_browser_launch(false);
   login_manager_.SetShouldLaunchBrowser(true);
 }

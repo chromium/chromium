@@ -139,12 +139,12 @@ dictionary MLQuantizeDequantizeLinearSupportLimits {
 };
 
 dictionary MLLogicalNotSupportLimits {
-  MLDataTypeLimits a;
+  MLTensorLimits a;
   MLDataTypeLimits output;
 };
 
 dictionary MLSingleInputSupportLimits {
-  MLDataTypeLimits input;
+  MLTensorLimits input;
   MLDataTypeLimits output;
 };
 

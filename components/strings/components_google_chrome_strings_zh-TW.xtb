@@ -9,6 +9,7 @@
 <translation id="2447485272386224171">Chrome 的開發仰賴 <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> 開放原始碼計畫與其他<ph name="BEGIN_LINK_OSS" />開放原始碼軟體<ph name="END_LINK_OSS" />的協助才得以完成。</translation>
 <translation id="2588322182880276190">Chrome 標誌</translation>
 <translation id="3444832043240812445">如果你<ph name="BEGIN_LINK" />啟用當機報告功能<ph name="END_LINK" />，這個頁面僅會顯示最近的當機資訊。</translation>
+<translation id="3512634283363927263">這些頁面的適用對象為 Chrome 開發人員，可能不會主動維護或測試。如要啟用，請前往 <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> 點選啟用偵錯頁面的按鈕，再返回這個頁面。</translation>
 <translation id="3875312571075912821">允許 Chrome 存取受到防火牆或防毒軟體設定所阻擋的
           網路。</translation>
 <translation id="5005121315113832363">Chrome 已封鎖這個網頁</translation>

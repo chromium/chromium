@@ -399,7 +399,6 @@
 <translation id="6455857529632101747">Καλώς ήρθατε στα προφίλ του Chromium</translation>
 <translation id="6466344609055215035">Κατάργηση λογαριασμού από το Chromium</translation>
 <translation id="6475912303565314141">Επίσης, ελέγχει τη σελίδα που εμφανίζεται κατά την εκκίνηση του Chromium.</translation>
-<translation id="648062525172759633">Αυτές οι σελίδες προορίζονται για χρήση από προγραμματιστές του Chromium και ενδέχεται να μην συντηρούνται ή να ελέγχονται ενεργά. Για να τις ενεργοποιήσετε, μεταβείτε στο <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, κάντε κλικ στο κουμπί, για να ενεργοποιήσετε τις σελίδες εντοπισμού σφαλμάτων και, στη συνέχεια, μεταβείτε ξανά σε αυτή τη σελίδα.</translation>
 <translation id="648319183876919572">Η Βελτιωμένη Ασφαλής περιήγηση κάνει περισσότερα για την προστασία σας από επικίνδυνους ιστοτόπους και λήψεις</translation>
 <translation id="6510925080656968729">Απεγκατάσταση Chromium</translation>
 <translation id="651535675648445253">Οι συντομεύσεις ανοίγουν στο Chromium</translation>
@@ -533,7 +532,6 @@
 <translation id="8313851650939857356">Σφάλμα εκκίνησης: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Ο οργανισμός σας κλείνει το Chromium όταν δεν χρησιμοποιείται για <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Αποθήκευση ως εικόνα</translation>
-<translation id="8326785589245660814">διαγράψετε τα δεδομένα Chromium στον λογαριασμό σας</translation>
 <translation id="8330519371938183845">Συνδεθείτε, για να συγχρονίσετε και να εξατομικεύσετε το Chromium στις συσκευές σας</translation>
 <translation id="8340674089072921962">Η διεύθυνση <ph name="USER_EMAIL_ADDRESS" /> χρησιμοποιούσε το Chromium στο παρελθόν</translation>
 <translation id="8359544530202147897">Ενημερώστε το Chromium, για να συνεχίσετε να χρησιμοποιείτε τα δεδομένα του Chromium στον Λογαριασμό σας Google, <ph name="ACCOUNT_EMAIL" /></translation>

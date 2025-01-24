@@ -438,7 +438,6 @@ if (is_android) {
     sources = [
       "src/org/chromium/chrome/browser/autofill/AutofillImageFetcherTest.java",
       "src/org/chromium/chrome/browser/autofill/AutofillImageFetcherUtilsTest.java",
-      "src/org/chromium/chrome/browser/autofill/AutofillSuggestionTest.java",
       "src/org/chromium/chrome/browser/autofill/AutofillUiUtilsTest.java",
       "src/org/chromium/chrome/browser/autofill/PlusAddressesHelperTest.java",
       "src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePromptTest.java",

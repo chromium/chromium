@@ -26,7 +26,7 @@ namespace ash {
 namespace {
 
 const char kRegularUser[] = "regular@example.com";
-const char kRegularGaiaID[] = "111111";
+const GaiaId::Literal kRegularGaiaID("111111");
 const char kSchoolAllowlist[] = "*@edu.com";
 
 }  // namespace
@@ -72,7 +72,7 @@ class UserAllowlistPolicyTest : public LoginManagerTest {
 
  private:
   const LoginManagerMixin::TestUserInfo regular_user_{
-      AccountId::FromUserEmailGaiaId(kRegularUser, GaiaId(kRegularGaiaID))};
+      AccountId::FromUserEmailGaiaId(kRegularUser, kRegularGaiaID)};
 
   policy::DevicePolicyCrosTestHelper policy_helper_;
   DeviceStateMixin device_state_{

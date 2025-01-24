@@ -18,10 +18,7 @@ class DiscoverFeedExperimentsTracker;
 class IOSChromeSyncClient;
 class IOSChromeVariationsServiceClient;
 class OptimizationGuideService;
-
-namespace {
 class CrashesDOMHandler;
-}
 
 namespace segmentation_platform {
 class IOSFieldTrialRegisterImpl;

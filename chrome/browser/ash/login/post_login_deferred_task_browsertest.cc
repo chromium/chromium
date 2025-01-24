@@ -46,7 +46,7 @@ enum class StartMode {
 };
 
 constexpr char kTestUser[] = "test_user@gmail.com";
-constexpr char kTestGaiaId[] = "12345";
+constexpr GaiaId::Literal kTestGaiaId("12345");
 
 // DeferredTaskStartWaiter waits for post login deferred task to start.
 class DeferredTaskStartWaiter : public session_manager::SessionManagerObserver {
@@ -122,7 +122,7 @@ class PostLoginDeferredTaskTest
   RestoreOption restore_option() const { return std::get<1>(GetParam()); }
 
   AccountId account_id() const {
-    return AccountId::FromUserEmailGaiaId(kTestUser, GaiaId(kTestGaiaId));
+    return AccountId::FromUserEmailGaiaId(kTestUser, kTestGaiaId);
   }
 
   SessionState session_state() const {

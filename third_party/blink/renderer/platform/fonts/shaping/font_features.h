@@ -56,9 +56,11 @@ struct PLATFORM_EXPORT FontFeatureRange : public FontFeatureValue {
 // Represents a list of `FontFeatureRange`.
 //
 class PLATFORM_EXPORT FontFeatures {
-  STACK_ALLOCATED();
-
  public:
+  // Returns an instance for the initial style.
+  static const FontFeatures& Initial();
+  bool IsInitial() const;
+
   // Initialize the list from |Font|.
   void Initialize(const FontDescription&);
 

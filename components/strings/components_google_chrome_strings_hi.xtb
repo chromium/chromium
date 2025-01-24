@@ -10,6 +10,7 @@
 <translation id="2447485272386224171">Chrome को <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ओपन सोर्स प्रोजेक्ट और अन्य <ph name="BEGIN_LINK_OSS" />ओपन सोर्स सॉफ़्टवेयर<ph name="END_LINK_OSS" /> की मदद से बनाया गया है.</translation>
 <translation id="2588322182880276190">Chrome लोगो</translation>
 <translation id="3444832043240812445">अगर आप <ph name="BEGIN_LINK" />क्रैश रिपोर्ट करना चालू<ph name="END_LINK" /> करते हैं तो यह पेज सिर्फ़ आपके हाल ही के क्रैश की जानकारी दिखाएगा.</translation>
+<translation id="3512634283363927263">इन पेजों को Chrome डेवलपर के इस्तेमाल के लिए बनाया गया है. ऐसा हो सकता है कि समय-समय पर इनका रखरखाव या इनकी जांच न की जाती हो. इन पेजों की सेटिंग को चालू करने के लिए, <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> पर जाएं. इसके बाद, बटन पर क्लिक करके डीबग पेजों की सेटिंग को चालू करें और फिर इस पेज पर वापस जाएं.</translation>
 <translation id="3875312571075912821">Chrome को अपनी फ़ायरवॉल और एंटीवायरस सेटिंग में
           नेटवर्क एक्सेस करने दें.</translation>
 <translation id="5005121315113832363">इस पेज को Chrome ने ब्लॉक कर दिया है</translation>

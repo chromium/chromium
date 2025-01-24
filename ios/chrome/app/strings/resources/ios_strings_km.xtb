@@ -476,6 +476,7 @@
 <translation id="3053332585453689122">ផ្ញើ URL ដែលអ្នក​ចូលមើលនិង​គំរូតូចមួយ​នៃខ្លឹមសារទំព័រ, ការទាញយក, សកម្មភាព​កម្មវិធីបន្ថែម និង​ព័ត៌មាន​ប្រព័ន្ធ​ទៅការរុករកដោយសុវត្ថិភាព​នៅលើ Google ដើម្បីពិនិត្យមើល​ថាតើ​ពួកវា​បង្កគ្រោះថ្នាក់​ឬអត់។</translation>
 <translation id="3055102495753300780">ទំហំផ្ទុកព័ត៌មាន</translation>
 <translation id="3059270601560379555">ការស្វែងរក​ថ្មី</translation>
+<translation id="3064547930554042309">គ្រប់គ្រងអ្វីដែលបានទាញយក</translation>
 <translation id="3072279342064724558">មាន​ពាក្យសម្ងាត់​រួច​ហើយ</translation>
 <translation id="3076846064362030967">អ្នកនឹងមិនត្រូវបាននាំចេញពីគណនី Google របស់អ្នកទេ។ <ph name="BEGIN_LINK" />ទម្រង់​ផ្សេងទៀត​នៃសកម្មភាព<ph name="END_LINK" />អាចត្រូវបាន​រក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក នៅពេលអ្នក​ចូលគណនី។ អ្នកអាច​លុបវា​បានគ្រប់ពេល។
 
@@ -543,7 +544,6 @@
 <translation id="3409785640040772790">ផែនទី</translation>
 <translation id="3416023309465857378">25 តុលា 2023</translation>
 <translation id="3435738964857648380">សុវត្ថិភាព</translation>
-<translation id="343850944564645513">គេហទំព័រពេញនិយមរបស់អ្នក</translation>
 <translation id="3443810440409579745">បាន​ទទួលផ្ទាំង។</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> នាទី</translation>
 <translation id="344589138074534176">ស្វែងយល់បន្ថែម​អំពី Google Lens</translation>
@@ -658,7 +658,6 @@
 <translation id="3967327056943561740">ចំណាំ</translation>
 <translation id="3967822245660637423">ការទាញយកបានបញ្ចប់</translation>
 <translation id="3982893814825393515">រាយការណ៍​អំពីបញ្ហា…</translation>
-<translation id="3984527584375648997">លាក់ "គេហទំព័រពេញនិយមរបស់អ្នក"</translation>
 <translation id="398604237578616937">បានចូលគណនី​ជា <ph name="USER_EMAIL" />។ បើកម៉ឺនុយគណនី។</translation>
 <translation id="3986739045730058129">ទៅកាន់​ផ្ទាំង</translation>
 <translation id="3992684624889376114">អំពី​ទំព័រ​នេះ</translation>
@@ -700,6 +699,7 @@
 <translation id="4154753961803534698">ស្វែងរកដោយប្រើកាមេរ៉ា</translation>
 <translation id="4158491215857439601">កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់</translation>
 <translation id="4163699139741158298">{count,plural, =1{បានរក្សាទុក​ចំណាំ​ទៅក្នុង "{title}"។ ចំណាំនេះ​ត្រូវបាន​រក្សាទុក​តែនៅក្នុង​ឧបករណ៍នេះ​ប៉ុណ្ណោះ។}other{បានរក្សាទុក​ចំណាំ​ចំនួន {count} ទៅក្នុង "{title}"។ ចំណាំ​ទាំងនេះ​ត្រូវបាន​រក្សាទុក​តែនៅក្នុង​ឧបករណ៍នេះ​ប៉ុណ្ណោះ។}}</translation>
+<translation id="4164514562270305824">លុបអ្វីដែលបានទាញយកដោយស្វ័យប្រវត្តិ</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> ដែលបញ្ចប់ដោយ <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">កុំ​អនុញ្ញាត</translation>
 <translation id="4172051516777682613">បង្ហាញជានិច្ច</translation>
@@ -1016,9 +1016,9 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="5576885723883013398">វិនដូថ្មី</translation>
 <translation id="5578795271662203820">ស្វែងរក <ph name="SEARCH_ENGINE" /> សម្រាប់រូបភាពនេះ</translation>
 <translation id="5579012242779565775">លាក់បញ្ជីអាន</translation>
-<translation id="5581202956276923239">ផ្លូវ​កាត់គេហទំព័រ</translation>
 <translation id="5585019845078534178">បណ្ណ</translation>
 <translation id="5595485650161345191">កែអាសយដ្ឋាន</translation>
+<translation id="559567008082979829">កំណត់ឱ្យលុបអ្វីដែលអ្នកបានទាញយក បន្ទាប់ពីរយៈពេលមួយខែ។</translation>
 <translation id="5596627076506792578">ជម្រើសច្រើនទៀត</translation>
 <translation id="560322036295180549">បានបិទ​ដោយស្ថាប័ន​របស់អ្នក</translation>
 <translation id="5611107723541161735">ផ្លូវ​កាត់ទៅកាន់គេហទំព័រដែលអ្នកបានចូលមើលនាពេលថ្មីៗនៅលើឧបករណ៍នេះ។</translation>
