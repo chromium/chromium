@@ -36,6 +36,20 @@ cr-toolbar-selection-overlay {
   border: 0;
 }
 
+cr-toast {
+  height: var(--footer-height);
+  justify-content: space-between;
+  margin: 0;
+  margin-top: var(--container-padding);
+  position: sticky;
+  width: 100%;
+}
+
+cr-toast:not([open]) {
+  /* Prevent toast from occupying space when closed. */
+  display: none;
+}
+
 cr-toolbar-selection-overlay::part(clearIcon) {
   --cr-icon-button-icon-size: 16px;
   height: 20px;
