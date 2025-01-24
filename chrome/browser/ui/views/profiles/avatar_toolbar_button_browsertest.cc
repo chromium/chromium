@@ -1139,6 +1139,12 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
     EXPECT_NE(avatar_button->GetText(), work_label);
     clear_closure.RunAndReset();
     EXPECT_EQ(avatar_button->GetText(), work_label);
+    EXPECT_EQ(GetProfileAttributesEntry(browser()->profile())
+                  ->GetEnterpriseProfileLabel(),
+              work_label);
+    EXPECT_EQ(
+        GetProfileAttributesEntry(browser()->profile())->GetLocalProfileName(),
+        work_label);
   }
 
   {
@@ -1150,6 +1156,15 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
     EXPECT_NE(avatar_button->GetText(), work_label);
     clear_closure.RunAndReset();
     EXPECT_NE(avatar_button->GetText(), work_label);
+    EXPECT_EQ(GetProfileAttributesEntry(browser()->profile())
+                  ->GetEnterpriseProfileLabel(),
+              std::u16string());
+    // The profile name should be the default profile name.
+    std::u16string local_name =
+        GetProfileAttributesEntry(browser()->profile())->GetLocalProfileName();
+    EXPECT_TRUE(g_browser_process->profile_manager()
+                    ->GetProfileAttributesStorage()
+                    .IsDefaultProfileName(local_name, true));
   }
 }
 
@@ -1164,6 +1179,15 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 
   // There should be no text because the policy fully disables badging.
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
+  EXPECT_EQ(GetProfileAttributesEntry(browser()->profile())
+                ->GetEnterpriseProfileLabel(),
+            std::u16string());
+  // The profile name should be the default profile name.
+  std::u16string local_name =
+      GetProfileAttributesEntry(browser()->profile())->GetLocalProfileName();
+  EXPECT_TRUE(g_browser_process->profile_manager()
+                  ->GetProfileAttributesStorage()
+                  .IsDefaultProfileName(local_name, true));
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
@@ -1179,6 +1203,15 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 
   // There should be no text because the policy fully disables badging.
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
+  EXPECT_EQ(GetProfileAttributesEntry(browser()->profile())
+                ->GetEnterpriseProfileLabel(),
+            std::u16string());
+  // The profile name should be the default profile name.
+  std::u16string local_name =
+      GetProfileAttributesEntry(browser()->profile())->GetLocalProfileName();
+  EXPECT_TRUE(g_browser_process->profile_manager()
+                  ->GetProfileAttributesStorage()
+                  .IsDefaultProfileName(local_name, true));
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
@@ -1190,9 +1223,15 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
 
   enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
-
   // The text should be tuncated to 16 characters followed by "...".
   EXPECT_EQ(avatar_button->GetText(), u"Custom Label Can…");
+  // The profile label will be handled by the individual UI components.
+  EXPECT_EQ(GetProfileAttributesEntry(browser()->profile())
+                ->GetEnterpriseProfileLabel(),
+            u"Custom Label Can Be Max 16 Characters");
+  EXPECT_EQ(
+      GetProfileAttributesEntry(browser()->profile())->GetLocalProfileName(),
+      u"Custom Label Can Be Max 16 Characters");
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
@@ -1336,6 +1375,12 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   signin::WaitForRefreshTokensLoaded(GetIdentityManager());
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   EXPECT_EQ(avatar->GetText(), u"Work");
+  EXPECT_EQ(GetProfileAttributesEntry(browser()->profile())
+                ->GetEnterpriseProfileLabel(),
+            u"Work");
+  EXPECT_EQ(
+      GetProfileAttributesEntry(browser()->profile())->GetLocalProfileName(),
+      u"Work");
   // Previously added image on signin should still be shown in the new session.
   EXPECT_TRUE(IsSignedInImageUsed());
 }

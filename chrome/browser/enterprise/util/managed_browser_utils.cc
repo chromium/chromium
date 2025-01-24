@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -22,8 +23,10 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/certificate_matching/certificate_principal_pattern.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -36,10 +39,13 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/client_cert_identity.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/text_elider.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -56,6 +62,10 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace enterprise_util {
+
+// Enterprise custom labels have a limmit of 16 characters, so they will be cut
+// at the 17th characters.
+constexpr int kMaximumEnterpriseCustomLabelLengthCutOff = 17;
 
 namespace {
 
@@ -127,6 +137,23 @@ void OnManagementIconReceived(
   std::move(callback).Run(icon);
 }
 
+// Expected to be called when Management is set and enterprise badging is
+// enabled. Returns:
+// - true for Work.
+// - false for School.
+bool IsManagementWork(Profile* profile) {
+  CHECK(enterprise_util::CanShowEnterpriseBadgingForAvatar(profile));
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  auto management_environment = enterprise_util::GetManagementEnvironment(
+      profile, identity_manager->FindExtendedAccountInfoByAccountId(
+                   identity_manager->GetPrimaryAccountId(
+                       signin::ConsentLevel::kSignin)));
+  CHECK_NE(management_environment,
+           enterprise_util::ManagementEnvironment::kNone);
+  return management_environment ==
+         enterprise_util::ManagementEnvironment::kWork;
+}
+
 }  // namespace
 
 bool IsBrowserManaged(Profile* profile) {
@@ -193,8 +220,12 @@ void SetUserAcceptedAccountManagement(Profile* profile, bool accepted) {
   ProfileAttributesEntry* entry =
       profile_manager->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile->GetPath());
-  if (entry)
+  if (entry) {
     entry->SetUserAcceptedAccountManagement(accepted);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    entry->SetEnterpriseProfileLabel(GetEnterpriseLabel(profile));
+#endif
+  }
 }
 
 bool UserAcceptedAccountManagement(Profile* profile) {
@@ -317,6 +348,7 @@ jboolean JNI_ManagedBrowserUtils_IsProfileReportingEnabled(JNIEnv* env,
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
 void GetManagementIcon(const GURL& url,
                        Profile* profile,
                        base::OnceCallback<void(const gfx::Image&)> callback) {
@@ -369,6 +401,26 @@ void GetManagementIcon(const GURL& url,
       image_fetcher::ImageFetcherParams(
           kTrafficAnnotation,
           /*uma_client_name=*/"BrowserManagementMetadata"));
+}
+
+std::u16string GetEnterpriseLabel(Profile* profile, bool truncated) {
+  if (!CanShowEnterpriseBadgingForAvatar(profile)) {
+    return std::u16string();
+  }
+  const std::string enterprise_custom_label =
+      profile->GetPrefs()->GetString(prefs::kEnterpriseCustomLabelForProfile);
+  if (!enterprise_custom_label.empty()) {
+    return truncated
+               ? gfx::TruncateString(base::UTF8ToUTF16(enterprise_custom_label),
+                                     kMaximumEnterpriseCustomLabelLengthCutOff,
+                                     gfx::CHARACTER_BREAK)
+               : base::UTF8ToUTF16(enterprise_custom_label);
+  } else if (IsManagementWork(profile)) {
+    return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_WORK);
+  } else {
+    // School.
+    return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SCHOOL);
+  }
 }
 
 }  // namespace enterprise_util

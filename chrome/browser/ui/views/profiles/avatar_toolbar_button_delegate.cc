@@ -80,10 +80,6 @@ constexpr base::TimeDelta kShowSigninPendingTextDelay = base::Minutes(50);
 static std::optional<base::TimeDelta>
     g_show_signin_pending_text_delay_for_testing;
 
-// Enterprise custom labels have a limmit of 16 characters, so they will be cut
-// at the 17th characters.
-constexpr int kMaximumEnterpriseCustomLabelLengthCutOff = 17;
-
 ProfileAttributesStorage& GetProfileAttributesStorage() {
   return g_browser_process->profile_manager()->GetProfileAttributesStorage();
 }
@@ -105,23 +101,6 @@ gfx::Image GetGaiaAccountImage(Profile* profile) {
         .account_image;
   }
   return gfx::Image();
-}
-
-// Expected to be called when Management is set and enterprise badging is
-// enabled. Returns:
-// - true for Work.
-// - false for School.
-bool IsManagementWork(Profile* profile) {
-  CHECK(enterprise_util::CanShowEnterpriseBadgingForAvatar(profile));
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  auto management_environment = enterprise_util::GetManagementEnvironment(
-      profile, identity_manager->FindExtendedAccountInfoByAccountId(
-                   identity_manager->GetPrimaryAccountId(
-                       signin::ConsentLevel::kSignin)));
-  CHECK_NE(management_environment,
-           enterprise_util::ManagementEnvironment::kNone);
-  return management_environment ==
-         enterprise_util::ManagementEnvironment::kWork;
 }
 
 }  // namespace
@@ -1392,19 +1371,7 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
       break;
     }
     case ButtonState::kManagement: {
-      const std::string enterprise_custom_label =
-          profile_->GetPrefs()->GetString(
-              prefs::kEnterpriseCustomLabelForProfile);
-      if (!enterprise_custom_label.empty()) {
-        text = gfx::TruncateString(base::UTF8ToUTF16(enterprise_custom_label),
-                                   kMaximumEnterpriseCustomLabelLengthCutOff,
-                                   gfx::CHARACTER_BREAK);
-      } else if (IsManagementWork(profile_)) {
-        text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_WORK);
-      } else {
-        // School.
-        text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SCHOOL);
-      }
+      text = enterprise_util::GetEnterpriseLabel(profile_, /*truncated=*/true);
       color = color_provider->GetColor(kColorAvatarButtonHighlightNormal);
       break;
     }

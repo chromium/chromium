@@ -2307,5 +2307,23 @@ TEST_P(ProfileAttributesStorageTestWithProfileReorderingParam,
   }
 }
 
+TEST_F(ProfileAttributesStorageTest, EnterpriseLabelOverridesLocalProfileName) {
+  AddTestingProfile();
+
+  base::FilePath path = GetProfilePath("testing_profile_path0");
+
+  ProfileAttributesEntry* entry = storage()->GetProfileAttributesWithPath(path);
+  ASSERT_NE(entry, nullptr);
+  EXPECT_EQ(path, entry->GetPath());
+
+  EXPECT_CALL(observer(), OnProfileNameChanged(path, _));
+  entry->SetLocalProfileName(u"first_value", true);
+  EXPECT_EQ(u"first_value", entry->GetLocalProfileName());
+
+  entry->SetEnterpriseProfileLabel(u"management_label");
+  EXPECT_EQ(u"management_label", entry->GetEnterpriseProfileLabel());
+  EXPECT_EQ(u"management_label", entry->GetLocalProfileName());
+}
+
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     ProfileAttributesStorageTestWithProfileReorderingParam);
