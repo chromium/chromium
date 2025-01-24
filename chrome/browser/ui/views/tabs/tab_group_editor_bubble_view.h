@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -37,8 +36,7 @@ class ColorPickerView;
 class TabGroupHeader;
 
 // A dialog for changing a tab group's visual parameters.
-class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
-                                 public TabStripModelObserver {
+class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   METADATA_HEADER(TabGroupEditorBubbleView, views::BubbleDialogDelegateView)
 
  public:
@@ -81,9 +79,6 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
                            std::optional<gfx::Rect> anchor_rect,
                            bool stop_context_menu_propagation);
   ~TabGroupEditorBubbleView() override;
-
-  // TabStripModelObserver:
-  void OnTabGroupChanged(const TabGroupChange& change) override;
 
   void UpdateGroup();
   const std::u16string GetTextForCloseButton() const;
@@ -192,7 +187,6 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
     bool stop_context_menu_propagation_;
   };
   std::unique_ptr<TitleField> BuildTitleField(const std::u16string& title);
-  std::u16string GetGroupTitle();
 
   class Footer : public views::View {
     METADATA_HEADER(Footer, views::View)
