@@ -103,6 +103,7 @@ class NATIVE_THEME_EXPORT OverlayScrollbarAnimatorMac {
   float thumb_alpha_ = 0;
   float track_alpha_ = 0;
   bool mouse_in_track_ = false;
+  bool animations_enabled_;
 
   static const float kAnimationDurationSeconds;
   static const base::TimeDelta kFadeOutDelay;

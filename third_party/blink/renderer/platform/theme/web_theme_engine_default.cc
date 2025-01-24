@@ -272,7 +272,10 @@ SkColor4f WebThemeEngineDefault::GetScrollbarThumbColor(
 }
 
 void WebThemeEngineDefault::GetOverlayScrollbarStyle(ScrollbarStyle* style) {
-  if (IsFluentOverlayScrollbarEnabled()) {
+  if (!base::FeatureList::IsEnabled(features::kScrollbarAnimations)) {
+    style->fade_out_delay = base::TimeDelta::Max();
+    style->fade_out_duration = base::TimeDelta();
+  } else if (IsFluentOverlayScrollbarEnabled()) {
     style->fade_out_delay = ui::kFluentOverlayScrollbarFadeDelay;
     style->fade_out_duration = ui::kFluentOverlayScrollbarFadeDuration;
   } else {
