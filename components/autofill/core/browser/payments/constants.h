@@ -14,6 +14,7 @@ namespace autofill {
 // consistent between server and client.
 inline constexpr std::string_view kAmexCardIssuerId = "amex";
 inline constexpr std::string_view kAnzCardIssuerId = "anz";
+inline constexpr std::string_view kBmoCardIssuerId = "bmo";
 inline constexpr std::string_view kCapitalOneCardIssuerId = "capitalone";
 inline constexpr std::string_view kChaseCardIssuerId = "chase";
 inline constexpr std::string_view kCitiCardIssuerId = "citi";

@@ -451,7 +451,7 @@ TEST_F(
       guide().ShouldBlockBenefitSuggestionLabelsForCardAndUrl(card, url));
 }
 
-// Test that we do not block benefits suggestions when a kUnknown decision is
+// Test that we do not block benefits suggestions when a `kUnknown` decision is
 // returned.
 TEST_F(
     AutofillOptimizationGuideTest,
@@ -536,6 +536,48 @@ TEST_F(AutofillOptimizationGuideTest,
   guide().OnDidParseForm(form_structure, payments_data_manager());
 }
 
+// Test that the BMO category-benefit optimization types are registered when a
+// credit card form is present and the user has an BMO card.
+TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_BmoCategoryBenefits) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableCardBenefitsSync,
+       features::kAutofillEnableAllowlistForBmoCardCategoryBenefits},
+      /*disabled_features=*/{});
+  FormStructure form_structure{
+      CreateTestCreditCardFormData(/*is_https=*/true,
+                                   /*use_month_type=*/true)};
+  test_api(form_structure)
+      .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
+                      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
+  payments_data_manager().AddServerCreditCard(
+      // TODO: crbug.com/391664356 - Rename this function.
+      GetVcnEnrolledCardForMerchantOptOut(
+          /*network=*/kMasterCard,
+          /*virtual_card_enrollment_type=*/
+          CreditCard::VirtualCardEnrollmentType::kNetwork,
+          /*issuer_id=*/kBmoCardIssuerId));
+
+  EXPECT_CALL(
+      decider(),
+      RegisterOptimizationTypes(UnorderedElementsAre(
+          optimization_guide::proto::BMO_CREDIT_CARD_AIR_MILES_PARTNER_BENEFITS,
+          optimization_guide::proto::BMO_CREDIT_CARD_ALCOHOL_STORE_BENEFITS,
+          optimization_guide::proto::BMO_CREDIT_CARD_DINING_BENEFITS,
+          optimization_guide::proto::BMO_CREDIT_CARD_DRUGSTORE_BENEFITS,
+          optimization_guide::proto::BMO_CREDIT_CARD_ENTERTAINMENT_BENEFITS,
+          optimization_guide::proto::BMO_CREDIT_CARD_GROCERY_BENEFITS,
+          optimization_guide::proto::BMO_CREDIT_CARD_OFFICE_SUPPLY_BENEFITS,
+          optimization_guide::proto::BMO_CREDIT_CARD_RECURRING_BILL_BENEFITS,
+          optimization_guide::proto::BMO_CREDIT_CARD_TRANSIT_BENEFITS,
+          optimization_guide::proto::BMO_CREDIT_CARD_TRAVEL_BENEFITS,
+          optimization_guide::proto::BMO_CREDIT_CARD_WHOLESALE_CLUB_BENEFITS,
+          optimization_guide::proto::VCN_MERCHANT_OPT_OUT_MASTERCARD)));
+
+  guide().OnDidParseForm(form_structure, payments_data_manager());
+}
+
 // Test that the Capital One category-benefit optimization types are registered
 // when we have seen a credit card form and the user has a Capital One card.
 TEST_F(AutofillOptimizationGuideTest,
@@ -570,7 +612,7 @@ TEST_F(AutofillOptimizationGuideTest,
 }
 
 // Test that the Amex category-benefit optimization types are not registered
-// when the kAutofillEnableCardBenefitsSync experiment is disabled.
+// when the `kAutofillEnableCardBenefitsSync` experiment is disabled.
 TEST_F(AutofillOptimizationGuideTest,
        CreditCardFormFound_AmexCategoryBenefits_ExperimentDisabled) {
   base::test::ScopedFeatureList feature_list;
@@ -599,8 +641,38 @@ TEST_F(AutofillOptimizationGuideTest,
   guide().OnDidParseForm(form_structure, payments_data_manager());
 }
 
+// Test that the BMO category-benefit optimization types are not registered when
+// the `kAutofillEnableAllowlistForBmoCardCategoryBenefits` experiment is
+// disabled.
+TEST_F(AutofillOptimizationGuideTest,
+       CreditCardFormFound_BmoCategoryBenefits_ExperimentDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillEnableAllowlistForBmoCardCategoryBenefits);
+  FormStructure form_structure{
+      CreateTestCreditCardFormData(/*is_https=*/true,
+                                   /*use_month_type=*/true)};
+  test_api(form_structure)
+      .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
+                      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
+  payments_data_manager().AddServerCreditCard(
+      GetVcnEnrolledCardForMerchantOptOut(
+          /*network=*/kMasterCard,
+          /*virtual_card_enrollment_type=*/
+          CreditCard::VirtualCardEnrollmentType::kNetwork,
+          /*issuer_id=*/kBmoCardIssuerId));
+
+  // Since the experiment is disabled, there should be no benefits-related
+  // optimization types registered.
+  EXPECT_CALL(decider(),
+              RegisterOptimizationTypes(UnorderedElementsAre(
+                  optimization_guide::proto::VCN_MERCHANT_OPT_OUT_MASTERCARD)));
+
+  guide().OnDidParseForm(form_structure, payments_data_manager());
+}
+
 // Test that the Capital One category-benefit optimization types are not
-// registered when the kAutofillEnableCardBenefitsSync experiment is disabled.
+// registered when the `kAutofillEnableCardBenefitsSync` experiment is disabled.
 TEST_F(AutofillOptimizationGuideTest,
        CreditCardFormFound_CapitalOneCategoryBenefits_ExperimentDisabled) {
   base::test::ScopedFeatureList feature_list;
