@@ -7,6 +7,7 @@ found in the LICENSE file.
 
 <org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -74,8 +75,7 @@ found in the LICENSE file.
         android:layout_height="match_parent"
         android:id="@+id/dialog_frame"
         android:alpha="0.0"
-        android:background="@drawable/tab_grid_dialog_background">
-    </View>
+        android:background="@drawable/tab_grid_dialog_background"/>
     <FrameLayout
         android:id="@+id/dialog_animation_clip"
         android:layout_width="match_parent"
@@ -90,5 +90,28 @@ found in the LICENSE file.
             tools:ignore="UselessParent">
             <include layout="@layout/tab_grid_card_item_layout"/>
         </FrameLayout>
-   </FrameLayout>
+      </FrameLayout>
+      <!-- Keep margin and height + 15dp in sync with tab_grid_dialog_min_bottom_margin_with_fab. -->
+      <org.chromium.ui.widget.ButtonCompat
+          android:id="@+id/send_feedback_button"
+          style="@style/FilledButton"
+          android:layout_width="wrap_content"
+          android:layout_height="56dp"
+          android:layout_margin="30dp"
+          android:layout_gravity="end|bottom"
+          android:paddingStart="16dp"
+          android:paddingEnd="20dp"
+          android:drawablePadding="12dp"
+          android:drawableStart="@drawable/ic_feedback_24dp"
+          android:drawableTint="@macro/default_icon_color"
+          android:text="@string/send_feedback_tab_grid_dialog"
+          android:singleLine="true"
+          android:visibility="gone"
+          app:rippleCornerRadiusBottomEnd="@dimen/send_feedback_button_radius"
+          app:rippleCornerRadiusBottomStart="@dimen/send_feedback_button_radius"
+          app:rippleCornerRadiusTopEnd="@dimen/send_feedback_button_radius"
+          app:rippleCornerRadiusTopStart="@dimen/send_feedback_button_radius"
+          app:buttonTextColor="@macro/default_text_color"
+          app:buttonColor="?attr/colorPrimaryContainer"
+          app:verticalInset="0dp" />
 </org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView>

@@ -34,10 +34,12 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProp
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.MENU_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.PRIMARY_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SEND_FEEDBACK_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHARE_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHARE_BUTTON_STRING_RES;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHARE_IMAGE_TILES_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHOW_IMAGE_TILES;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHOW_SEND_FEEDBACK;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHOW_SHARE_BUTTON;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.TAB_GROUP_COLOR_ID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.TINT;
@@ -271,6 +273,10 @@ class TabGridDialogViewBinder {
                                 ? View.CONTENT_SENSITIVITY_SENSITIVE
                                 : View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
             }
+        } else if (SHOW_SEND_FEEDBACK == propertyKey) {
+            viewHolder.dialogView.setSendFeedbackVisible(model.get(SHOW_SEND_FEEDBACK));
+        } else if (SEND_FEEDBACK_RUNNABLE == propertyKey) {
+            viewHolder.dialogView.setSendFeedbackRunnable(model.get(SEND_FEEDBACK_RUNNABLE));
         }
     }
 

@@ -954,6 +954,10 @@
       <message name="IDS_ACCESSIBILITY_ARCHIVED_TABS_DIALOG" desc="Accessibility string for archived tabs dialog. This string is announced when the Tab Selection Editor is shown to screen.">
         Inactive tabs dialog
       </message>
+
+      <message name="IDS_SEND_FEEDBACK_TAB_GRID_DIALOG" desc="Button to send feedback on shared tab groups.">
+        Send feedback
+      </message>
     </messages>
   </release>
 </grit>

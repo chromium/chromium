@@ -32,6 +32,7 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -50,6 +51,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ButtonCompat;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -92,10 +94,11 @@ public class TabGridDialogView extends FrameLayout {
     private View mAnimationCardView;
     private View mItemView;
     private View mUngroupBar;
+    private TextView mUngroupBarTextView;
+    private ButtonCompat mSendFeedbackButton;
     private ViewGroup mSnackBarContainer;
     private ViewGroup mParent;
     private ImageView mHairline;
-    private TextView mUngroupBarTextView;
     private RelativeLayout mDialogContainerView;
     private PropertyModel mScrimPropertyModel;
     private ScrimCoordinator mScrimCoordinator;
@@ -115,6 +118,7 @@ public class TabGridDialogView extends FrameLayout {
     private AnimatorListenerAdapter mHideDialogAnimationListener;
     private int mSideMargin;
     private int mTopMargin;
+    private int mBottomMargin;
     private int mAppHeaderHeight;
     private int mOrientation;
     private int mParentHeight;
@@ -213,6 +217,7 @@ public class TabGridDialogView extends FrameLayout {
         mRecyclerViewContainer = findViewById(R.id.tab_grid_dialog_recycler_view_container);
         mUngroupBar = findViewById(R.id.dialog_ungroup_bar);
         mUngroupBarTextView = mUngroupBar.findViewById(R.id.dialog_ungroup_bar_text);
+        mSendFeedbackButton = findViewById(R.id.send_feedback_button);
         mAnimationClip = findViewById(R.id.dialog_animation_clip);
         mBackgroundFrame = findViewById(R.id.dialog_frame);
         mBackgroundFrame.setLayoutParams(mContainerParams);
@@ -279,10 +284,16 @@ public class TabGridDialogView extends FrameLayout {
                         // logic to ScrimView so that it can be shared by all components using
                         // ScrimView.
                         clearBackgroundViewAccessibilityImportance();
+                        mSendFeedbackButton.setAlpha(1f);
                     }
                 };
         mHideDialogAnimationListener =
                 new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+                        mSendFeedbackButton.setAlpha(0f);
+                    }
+
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         setVisibility(View.GONE);
@@ -413,7 +424,7 @@ public class TabGridDialogView extends FrameLayout {
         updateAnimationCardView(mItemView);
 
         // Calculate dialog size.
-        int dialogHeight = mParentHeight - 2 * mTopMargin;
+        int dialogHeight = mParentHeight - mTopMargin - mBottomMargin;
         int dialogWidth = mParentWidth - 2 * mSideMargin;
 
         // Calculate a clip mask to avoid any source view that is not fully visible from drawing
@@ -733,8 +744,7 @@ public class TabGridDialogView extends FrameLayout {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         // At the end of the hiding animation, reset the alpha of animation related
-                        // views to
-                        // 0.
+                        // views to 0.
                         mBackgroundFrame.setAlpha(0f);
                         mAnimationCardView.setAlpha(0f);
                     }
@@ -808,10 +818,20 @@ public class TabGridDialogView extends FrameLayout {
             sideMargin = clampMargin(Math.round(mParentWidth * 0.1f), minMargin, maxMargin);
             topMargin = clampMargin(minMargin + mAppHeaderHeight, minMargin, maxMargin);
         }
-        if (mSideMargin != sideMargin || mTopMargin != topMargin) {
+        int bottomMargin;
+        if (mSendFeedbackButton.getVisibility() == View.VISIBLE) {
+            int minBottomMarginWithFab =
+                    res.getDimensionPixelSize(R.dimen.tab_grid_dialog_min_bottom_margin_with_fab);
+            bottomMargin = Math.max(topMargin, minBottomMarginWithFab);
+        } else {
+            bottomMargin = topMargin;
+        }
+
+        if (mSideMargin != sideMargin || mTopMargin != topMargin || mBottomMargin != bottomMargin) {
             mSideMargin = sideMargin;
             mTopMargin = topMargin;
-            mContainerParams.setMargins(mSideMargin, mTopMargin, mSideMargin, mTopMargin);
+            mBottomMargin = bottomMargin;
+            mContainerParams.setMargins(mSideMargin, mTopMargin, mSideMargin, mBottomMargin);
             // Set params to force requestLayout() to reflect margin immediately.
             mDialogContainerView.setLayoutParams(mContainerParams);
         }
@@ -1081,6 +1101,25 @@ public class TabGridDialogView extends FrameLayout {
     /** Return the container view for undo closure snack bar. */
     ViewGroup getSnackBarContainer() {
         return mSnackBarContainer;
+    }
+
+    /**
+     * Update the visibility of the send feedback button, its alpha may still be overridden during
+     * animations.
+     */
+    void setSendFeedbackVisible(boolean visible) {
+        mSendFeedbackButton.setVisibility(visible ? View.VISIBLE : View.GONE);
+        updateDialogWithOrientation(mOrientation);
+    }
+
+    /** Sets an {@link Runnable} to be invoked when the feedback button is clicked. */
+    void setSendFeedbackRunnable(@Nullable Runnable r) {
+        mSendFeedbackButton.setOnClickListener(
+                unused -> {
+                    if (r == null) return;
+
+                    r.run();
+                });
     }
 
     void setBindingToken(Integer bindingToken) {
