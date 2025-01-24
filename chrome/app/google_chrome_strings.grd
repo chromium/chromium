@@ -2282,13 +2282,13 @@ Google Chrome is unable to recover your settings.
           Sign into Chrome with your Google Account to use <ph name="START_GLIC_STYLING">&lt;span class="glic-brand-style"&gt;</ph>Glic<ph name="END_GLIC_STYLING">&lt;/span&gt;</ph>
         </message>
         <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC" desc="Profile picker main view subtitle for Glic version." translateable="false">
-          Select the Chrome profile linked to your Google Account to personalize your glic experience.
+          Select the Chrome profile linked to your Google Account to personalize your Glic experience
         </message>
         <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC_NO_PROFILE" desc="Profile picker main view subtitle for Glic version. This version is shown when no profiles are eligibile to use Glic." translateable="false">
-          To add a new profile and use it with glic, sign in to Chrome with a Google Account. <ph name="BEGIN_LINK">&lt;a class="learn-more-link" href="#" target=&quot;_blank&quot;&gt;</ph>Learn how<ph name="END_LINK">&lt;/a&gt;</ph>
+          To add a new profile and use it with Glic, sign in to Chrome with a Google Account. <ph name="BEGIN_LINK">&lt;a class="learn-more-link" href="#" target=&quot;_blank&quot;&gt;</ph>Learn how to sign in to Chrome<ph name="END_LINK">&lt;/a&gt;</ph>
         </message>
         <message name="IDS_PROFILE_PICKER_ADD_PROFILE_HELPER_GLIC" desc="Text shown in the Profile Picker Glic version below the profiles list container that helps the user to create a new profile and sign in to it." translateable="false">
-          To add a new profile and use it with glic, sign in to Chrome with a different Google Account. <ph name="BEGIN_LINK">&lt;a class="learn-more-link" href="#" target=&quot;_blank&quot;&gt;</ph>Learn how<ph name="END_LINK">&lt;/a&gt;</ph>
+          To add a new profile and use it with Glic, sign in to Chrome with a different Google Account. <ph name="BEGIN_LINK">&lt;a class="learn-more-link" href="#" target=&quot;_blank&quot;&gt;</ph>Learn how to add a new Chrome profile<ph name="END_LINK">&lt;/a&gt;</ph>
         </message>
 
         <!-- First Run Experience -->
