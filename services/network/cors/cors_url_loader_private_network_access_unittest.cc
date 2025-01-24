@@ -36,7 +36,7 @@ constexpr char kPreflightWarningHistogramName[] =
     "Net.Cors.PreflightCheckWarning";
 
 base::Bucket MakeBucket(mojom::CorsError error,
-                        base::HistogramBase::Count count) {
+                        base::HistogramBase::Count32 count) {
   return base::Bucket(static_cast<base::HistogramBase::Sample32>(error), count);
 }
 

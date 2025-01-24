@@ -156,7 +156,7 @@ class ParkableImageBaseTest : public ::testing::Test {
   // Checks the counts for all 3 metrics, but only checks the value for
   // "Memory.ParkableImage.Write.Size", since the others can't be easily tested.
   void ExpectWriteStatistics(base::HistogramBase::Sample32 sample,
-                             base::HistogramBase::Count expected_count) {
+                             base::HistogramBase::Count32 expected_count) {
     histogram_tester_.ExpectTotalCount("Memory.ParkableImage.Write.Latency",
                                        expected_count);
     histogram_tester_.ExpectBucketCount("Memory.ParkableImage.Write.Size",
@@ -171,7 +171,7 @@ class ParkableImageBaseTest : public ::testing::Test {
   // Checks the counts for both metrics, but not their values, since they can't
   // be easily tested.
   void ExpectReadStatistics(base::HistogramBase::Sample32 sample,
-                            base::HistogramBase::Count expected_count) {
+                            base::HistogramBase::Count32 expected_count) {
     histogram_tester_.ExpectTotalCount("Memory.ParkableImage.Read.Latency",
                                        expected_count);
     histogram_tester_.ExpectTotalCount("Memory.ParkableImage.Read.Throughput",

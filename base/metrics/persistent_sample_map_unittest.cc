@@ -166,7 +166,7 @@ TEST(PersistentSampleMapIteratorTest, IterateTest) {
 
   HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
 
   it->Get(&min, &max, &count);
   EXPECT_EQ(1, min);
@@ -216,7 +216,7 @@ TEST(PersistentSampleMapIteratorTest, SkipEmptyRanges) {
 
   HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
 
   it->Get(&min, &max, &count);
   EXPECT_EQ(10, min);
@@ -247,7 +247,7 @@ TEST(PersistentSampleMapIteratorDeathTest, IterateDoneTest) {
 
   HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
   EXPECT_DCHECK_DEATH(it->Get(&min, &max, &count));
 
   EXPECT_DCHECK_DEATH(it->Next());

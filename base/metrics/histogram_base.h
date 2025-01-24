@@ -97,9 +97,6 @@ class BASE_EXPORT HistogramBase {
   using Sample32 = int32_t;              // Used for samples.
   using AtomicCount = subtle::Atomic32;  // Used to count samples.
   using Count32 = int32_t;  // Used to manipulate counts in temporaries.
-  // Temporary alias for backward compatibility.
-  // TODO(crbug.com/40899968): Remove this alias.
-  using Count = Count32;
 
   static const Sample32 kSampleType_MAX;  // INT_MAX
 

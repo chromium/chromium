@@ -590,9 +590,9 @@ TEST_P(RasterBufferProviderTest, MeasureGpuRasterDuration) {
 
   // Only in Chrome OS, we should be measuring raster scheduling delay (and only
   // for tasks that don't depend on at-raster image decodes).
-  base::HistogramBase::Count expected_delay_histogram_all_tiles_count = 0;
-  base::HistogramBase::Count expected_delay_histogram_jpeg_tiles_count = 0;
-  base::HistogramBase::Count expected_delay_histogram_webp_tiles_count = 0;
+  base::HistogramBase::Count32 expected_delay_histogram_all_tiles_count = 0;
+  base::HistogramBase::Count32 expected_delay_histogram_jpeg_tiles_count = 0;
+  base::HistogramBase::Count32 expected_delay_histogram_webp_tiles_count = 0;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (GetParam() == RASTER_BUFFER_PROVIDER_TYPE_GPU) {
     expected_delay_histogram_all_tiles_count = 5;

@@ -32,7 +32,7 @@ void EncodeHistogramDelta(const std::string& histogram_name,
        !it->Done(); it->Next()) {
     base::Histogram::Sample32 min;
     int64_t max;
-    base::Histogram::Count count;
+    base::Histogram::Count32 count;
     it->Get(&min, &max, &count);
     HistogramEventProto::Bucket* bucket = histogram_proto->add_bucket();
     bucket->set_min(min);

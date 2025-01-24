@@ -264,7 +264,7 @@ class UnsentLogStore : public LogStore {
   int staged_log_index_;
 
   // The total number of samples that have been sent from this LogStore.
-  base::HistogramBase::Count total_samples_sent_ = 0;
+  base::HistogramBase::Count32 total_samples_sent_ = 0;
 };
 
 }  // namespace metrics
