@@ -57,8 +57,8 @@ class EnterpriseSearchAggregatorSuggestionsService : public KeyedService {
                               std::unique_ptr<std::string> response_body)>;
 
   void CreateEnterpriseSearchAggregatorSuggestionsRequest(
+      const std::u16string& query,
       const GURL& suggest_url,
-      const std::string& request_body,
       CreationCallback creation_callback,
       StartCallback start_callback,
       CompletionCallback completion_callback);

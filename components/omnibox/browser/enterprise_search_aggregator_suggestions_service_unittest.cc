@@ -114,8 +114,17 @@ TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest, ValidateRequest) {
 
   base::Value::Dict root;
   root.Set("query", base::Value("test"));
+
+  base::Value::List suggestion_types_list;
+  std::vector<int> suggestion_types = {1, 2, 3, 5};
+  for (const auto& item : suggestion_types) {
+    suggestion_types_list.Append(item);
+  }
+  root.Set("suggestionTypes", std::move(suggestion_types_list));
+
   std::string test_request_body;
   base::JSONWriter::Write(root, &test_request_body);
+  const std::u16string query = u"test";
   const GURL test_endpoint = GURL("https://fake_url.com");
 
   base::test::TestFuture<network::ResourceRequest*> request_future;
@@ -128,7 +137,7 @@ TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest, ValidateRequest) {
 
   enterprise_search_aggregator_suggestions_service_
       ->CreateEnterpriseSearchAggregatorSuggestionsRequest(
-          test_endpoint, test_request_body, request_future.GetCallback(),
+          query, test_endpoint, request_future.GetCallback(),
           loader_future.GetCallback(), complete_future.GetCallback());
 
   ASSERT_TRUE(request_future.Wait());

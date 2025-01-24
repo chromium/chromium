@@ -6,19 +6,23 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
+#include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
-#include "components/omnibox/browser/autocomplete_provider_debouncer.h"
+#include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/search_engines/template_url_data.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
+// static
 EnterpriseSearchAggregatorProvider::EnterpriseSearchAggregatorProvider(
     AutocompleteProviderClient* client)
     : AutocompleteProvider(
@@ -29,19 +33,47 @@ EnterpriseSearchAggregatorProvider::EnterpriseSearchAggregatorProvider(
 EnterpriseSearchAggregatorProvider::~EnterpriseSearchAggregatorProvider() =
     default;
 
+bool EnterpriseSearchAggregatorProvider::IsProviderAllowed(
+    const AutocompleteInput& input) {
+  // Don't start in incognito mode.
+  if (client_->IsOffTheRecord()) {
+    return false;
+  }
+
+  // For now, only start if mock engines are valid.
+  if (!omnibox_feature_configs::SearchAggregatorProvider::Get()
+           .AreMockEnginesValid()) {
+    return false;
+  }
+
+  // TODO(crbug.com/380642693): Add backoff check.
+  return true;
+}
+
 void EnterpriseSearchAggregatorProvider::Start(const AutocompleteInput& input,
                                                bool minimal_changes) {
+  Stop(/*clear_cached_results=*/!minimal_changes,
+       /*due_to_user_inactivity=*/false);
+
+  if (!IsProviderAllowed(input)) {
+    return;
+  }
+
   // No need to redo or restart the previous request/response if the input
   // hasn't changed.
   if (minimal_changes)
     return;
 
-  if (!omnibox_feature_configs::SearchAggregatorProvider::Get()
-           .AreMockEnginesValid()) {
-    return;
-  }
+  input_ = input;
+  done_ = false;  // Set true in callbacks.
 
-  auto adjusted_input = input;
+  // Unretained is safe because `this` owns `debouncer_`.
+  debouncer_->RequestRun(base::BindOnce(
+      &EnterpriseSearchAggregatorProvider::Run, base::Unretained(this)));
+}
+
+void EnterpriseSearchAggregatorProvider::Run() {
+  auto adjusted_input = input_;
   const TemplateURL* template_url =
       AutocompleteInput::GetSubstitutingTemplateURLForInput(
           client_->GetTemplateURLService(), &adjusted_input);
@@ -50,17 +82,43 @@ void EnterpriseSearchAggregatorProvider::Start(const AutocompleteInput& input,
   CHECK(template_url->policy_origin() ==
         TemplateURLData::PolicyOrigin::kSearchAggregator);
 
-  matches_.clear();
+  auto match = CreateMatch(input_, template_url->keyword(), true, 1500,
+                           "https://wikipedia.org", u"Your document",
+                           u"Last edited Feb 25");
+  matches_.push_back(match);
+  NotifyListeners(/*updated_matches=*/true);
 
-  // Unretained is safe because `this` owns `debouncer_`.
-  debouncer_->RequestRun(base::BindOnce(
-      &EnterpriseSearchAggregatorProvider::Run, base::Unretained(this)));
+  client_->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
+      ->CreateEnterpriseSearchAggregatorSuggestionsRequest(
+          adjusted_input.text(), GURL(template_url->suggestions_url()),
+          base::BindOnce(&EnterpriseSearchAggregatorProvider::RequestStarted,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(
+              &EnterpriseSearchAggregatorProvider::RequestCompleted,
+              base::Unretained(this) /* this owns SimpleURLLoader */));
 }
-
-void EnterpriseSearchAggregatorProvider::Run() {}
 
 void EnterpriseSearchAggregatorProvider::Stop(bool clear_cached_results,
                                               bool due_to_user_inactivity) {
+  AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
+  debouncer_->CancelRequest();
+
+  if (loader_) {
+    loader_.reset();
+  }
+}
+
+void EnterpriseSearchAggregatorProvider::RequestStarted(
+    std::unique_ptr<network::SimpleURLLoader> loader) {
+  loader_ = std::move(loader);
+}
+
+void EnterpriseSearchAggregatorProvider::RequestCompleted(
+    const network::SimpleURLLoader* source,
+    const int response_code,
+    std::unique_ptr<std::string> response_body) {
+  DCHECK(!done_);
+  DCHECK_EQ(loader_.get(), source);
   done_ = true;
 }
 

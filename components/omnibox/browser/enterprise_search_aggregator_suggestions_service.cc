@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
@@ -21,6 +22,34 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
+
+namespace {
+// Builds an enterprise search aggregator request body. Inputs that affect the
+// request are:
+//   `query`: Current omnibox query text, passed as an argument.
+//   `suggestion_types`: Types of suggestions requested. Ex. [1,2] indicates
+//   Query and Person Suggestions respectively.
+// The format of the request is:
+//     {
+//       query: "`query`",
+//       suggestionTypes: `suggestion_types`
+//     }
+std::string BuildRequestBody(std::u16string query,
+                             std::vector<int>& suggestion_types) {
+  base::Value::Dict root;
+  root.Set("query", query);
+
+  base::Value::List suggestion_types_list;
+  for (const auto& item : suggestion_types) {
+    suggestion_types_list.Append(item);
+  }
+
+  root.Set("suggestionTypes", std::move(suggestion_types_list));
+  std::string result;
+  base::JSONWriter::Write(root, &result);
+  return result;
+}
+}  // namespace
 
 EnterpriseSearchAggregatorSuggestionsService::
     EnterpriseSearchAggregatorSuggestionsService(
@@ -35,8 +64,8 @@ EnterpriseSearchAggregatorSuggestionsService::
 
 void EnterpriseSearchAggregatorSuggestionsService::
     CreateEnterpriseSearchAggregatorSuggestionsRequest(
+        const std::u16string& query,
         const GURL& suggest_url,
-        const std::string& request_body,
         CreationCallback creation_callback,
         StartCallback start_callback,
         CompletionCallback completion_callback) {
@@ -90,8 +119,14 @@ void EnterpriseSearchAggregatorSuggestionsService::
         }
       })");
 
+  // For now, show all suggestions except recent suggestions (4).
+  std::vector<int> suggestion_types_list = {1, 2, 3, 5};
+  const std::string& request_body =
+      BuildRequestBody(query, suggestion_types_list);
+
   // Create and fetch an OAuth2 token.
   signin::ScopeSet scopes;
+
   // TODO(crbug.com/380631529): Add scope once access is provided.
   token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
       "enterprise_search_aggregator_suggestions_service", identity_manager_,
