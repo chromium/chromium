@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "media/capture/mojom/video_effects_manager.mojom.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -66,6 +67,10 @@ class ASH_EXPORT FakeCameraDevice
 
   void RegisterVideoEffectsProcessor(
       mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor> remote)
+      override;
+
+  void RegisterReadonlyVideoEffectsManager(
+      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager> remote)
       override;
 
   // video_capture::mojom::VideoFrameAccessHandler:

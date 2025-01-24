@@ -296,6 +296,13 @@ VideoEffectsContext::VideoEffectsContext(
     mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor> remote)
     : video_effects_processor_(std::move(remote)) {}
 
+VideoEffectsContext::VideoEffectsContext(
+    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
+        processor_remote,
+    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
+        readonly_manager_remote)
+    : video_effects_processor_(std::move(processor_remote)) {}
+
 VideoEffectsContext::VideoEffectsContext(VideoEffectsContext&& other) = default;
 VideoEffectsContext& VideoEffectsContext::operator=(
     VideoEffectsContext&& other) = default;

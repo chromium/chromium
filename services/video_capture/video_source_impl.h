@@ -53,6 +53,10 @@ class VideoSourceImpl : public mojom::VideoSource {
       mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor> remote)
       override;
 
+  void RegisterReadonlyVideoEffectsManager(
+      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager> remote)
+      override;
+
  private:
   enum class DeviceStatus {
     kNotStarted,
@@ -95,6 +99,11 @@ class VideoSourceImpl : public mojom::VideoSource {
   // `device_`.
   mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
       pending_video_effects_processor_;
+
+  // Video effects manager that will be used to check / observe configuration
+  // state as we as report errors.
+  mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
+      pending_readonly_video_effects_manager_;
 
   base::TimeTicks device_startup_start_time_;
 
