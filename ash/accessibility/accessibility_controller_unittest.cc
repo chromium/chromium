@@ -1425,6 +1425,26 @@ TEST_F(AccessibilityControllerTest, SetMonoAudioEnabled) {
   controller()->RemoveObserver(&observer);
 }
 
+TEST_F(AccessibilityControllerTest, SetSlowKeysEnabled) {
+  EXPECT_FALSE(controller()->slow_keys().enabled());
+
+  TestAccessibilityObserver observer;
+  controller()->AddObserver(&observer);
+  EXPECT_EQ(0, observer.status_changed_count_);
+
+  controller()->slow_keys().SetEnabled(true);
+  EXPECT_TRUE(controller()->slow_keys().enabled());
+  EXPECT_EQ(1, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosSlowKeys", 0);
+
+  controller()->slow_keys().SetEnabled(false);
+  EXPECT_FALSE(controller()->slow_keys().enabled());
+  EXPECT_EQ(2, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosSlowKeys", 1);
+
+  controller()->RemoveObserver(&observer);
+}
+
 TEST_F(AccessibilityControllerTest, SetSpokenFeedbackEnabled) {
   EXPECT_FALSE(controller()->spoken_feedback().enabled());
 

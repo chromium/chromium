@@ -1983,6 +1983,18 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
             prefs->GetInteger(prefs::kAccessibilityBounceKeysDelayMs));
       }
     }
+
+    if (::features::IsAccessibilitySlowKeysEnabled()) {
+      bool slow_keys_enabled =
+          prefs->GetBoolean(prefs::kAccessibilitySlowKeysEnabled);
+      base::UmaHistogramBoolean("Accessibility.CrosSlowKeys",
+                                slow_keys_enabled);
+      if (slow_keys_enabled) {
+        base::UmaHistogramSparse(
+            "Accessibility.CrosSlowKeysDelay",
+            prefs->GetInteger(prefs::kAccessibilitySlowKeysDelayMs));
+      }
+    }
   }
   base::UmaHistogramBoolean("Accessibility.CrosCaretHighlight",
                             IsCaretHighlightEnabled());
