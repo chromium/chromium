@@ -29,9 +29,11 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
+#include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
@@ -708,3 +710,41 @@ IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest, DC_Screenshot) {
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+namespace {
+
+// chrome/test/data/simple.html
+const char kSimplePage[] = "/simple.html";
+
+class BrowserViewScrimPixelTest : public UiBrowserTest {
+ public:
+  // UiBrowserTest:
+  void ShowUi(const std::string& name) override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+    GURL url = embedded_test_server()->GetURL(kSimplePage);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    browser()->window()->Show();
+    BrowserView::GetBrowserViewForBrowser(browser())
+        ->contents_scrim_view()
+        ->SetVisible(true);
+  }
+
+  bool VerifyUi() override {
+    const auto* const test_info =
+        testing::UnitTest::GetInstance()->current_test_info();
+    return VerifyPixelUi(BrowserView::GetBrowserViewForBrowser(browser())
+                             ->contents_container(),
+                         test_info->test_suite_name(),
+                         test_info->name()) != ui::test::ActionResult::kFailed;
+  }
+
+  void WaitForUserDismissal() override {
+    ui_test_utils::WaitForBrowserToClose();
+  }
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(BrowserViewScrimPixelTest, InvokeUi_content_scrim) {
+  ShowAndVerifyUi();
+}

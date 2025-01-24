@@ -15,6 +15,7 @@ class ContentsLayoutManager : public views::LayoutManagerBase {
  public:
   ContentsLayoutManager(views::View* devtools_view,
                         views::View* contents_view,
+                        views::View* scrim_view,
                         views::View* border_view = nullptr,
                         views::View* watermark_view = nullptr);
 
@@ -35,6 +36,7 @@ class ContentsLayoutManager : public views::LayoutManagerBase {
  private:
   const raw_ptr<views::View> devtools_view_;
   const raw_ptr<views::View> contents_view_;
+  const raw_ptr<views::View> scrim_view_;
   const raw_ptr<views::View> border_view_;
   const raw_ptr<views::View> watermark_view_;
 

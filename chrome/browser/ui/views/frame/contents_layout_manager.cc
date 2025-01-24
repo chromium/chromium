@@ -8,10 +8,12 @@
 
 ContentsLayoutManager::ContentsLayoutManager(views::View* devtools_view,
                                              views::View* contents_view,
+                                             views::View* scrim_view,
                                              views::View* border_view,
                                              views::View* watermark_view)
     : devtools_view_(devtools_view),
       contents_view_(contents_view),
+      scrim_view_(scrim_view),
       border_view_(border_view),
       watermark_view_(watermark_view) {}
 
@@ -57,6 +59,12 @@ views::ProposedLayout ContentsLayoutManager::CalculateProposedLayout(
                                      contents_view_->GetVisible(),
                                      contents_rect, optional_size_bound);
 
+  // The scrim view bounds are the same as the contents view.
+  CHECK(scrim_view_);
+  layouts.child_layouts.emplace_back(scrim_view_.get(),
+                                     scrim_view_->GetVisible(), contents_rect,
+                                     optional_size_bound);
+
   if (border_view_) {
     layouts.child_layouts.push_back(
         {.child_view = border_view_.get(),
@@ -72,6 +80,7 @@ views::ProposedLayout ContentsLayoutManager::CalculateProposedLayout(
         watermark_view_.get(), watermark_view_->GetVisible(),
         gfx::Rect(0, 0, width, height), views::SizeBounds(container_size));
   }
+
   layouts.host_size = gfx::Size(width, height);
   return layouts;
 }
