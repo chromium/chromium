@@ -588,7 +588,7 @@ const base::FeatureParam<DelayAsyncScriptTarget>::Option
 BASE_FEATURE_ENUM_PARAM(DelayAsyncScriptTarget,
                         kDelayAsyncScriptTargetParam,
                         &kDelayAsyncScriptExecution,
-                        "delay_async_exec_target",
+                        "delay_async_exec_target_site",
                         DelayAsyncScriptTarget::kAll,
                         &delay_async_script_target_types);
 
@@ -640,7 +640,7 @@ const base::FeatureParam<AsyncScriptExperimentalSchedulingTarget>::Option
 BASE_FEATURE_ENUM_PARAM(AsyncScriptExperimentalSchedulingTarget,
                         kDelayAsyncScriptExecutionTargetParam,
                         &kDelayAsyncScriptExecution,
-                        "delay_async_exec_target",
+                        "delay_async_exec_target_script_category",
                         AsyncScriptExperimentalSchedulingTarget::kBoth,
                         &async_script_experimental_scheduling_targets);
 
