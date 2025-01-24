@@ -92,10 +92,6 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.AppFirefoxWindowOperations.minimize_bookworm_clamshell_stable@volteer",
   "crostini.AppFirefoxWindowOperations.switch_tablet_bookworm_clamshell_stable@volteer",
 
-  # b/383280237
-  "audio.CrasNoiseCancellation.aec",
-  "audio.CrasNoiseCancellation.no_effects",
-
   # b/384060114
   "inputs.InputMethodShelfInputs@reven-vmtest",
   "inputs.VirtualKeyboardHandwriting.docked@reven-vmtest",
