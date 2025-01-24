@@ -376,4 +376,42 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function injectIntoBlobUrl() {
+    const tab = await getSingleTab({url: 'http://f.com/*'});
+
+    // First run a no-op function in each frame. This allows us to get the
+    // frame IDs including the ID of the frame containing the blob URL (which
+    // isn't returned by `webNavigation.getAllFrames`) and also to test the
+    // `allFrames` property.
+    const frames = await chrome.scripting.executeScript({
+      target: {
+        tabId: tab.id,
+        allFrames: true,
+      },
+      func: () => undefined,
+    });
+
+    // Then, run a test function in each frame. This allows us to test the
+    // `frameIds` property, which runs through a slightly different code path.
+    // In this code path, access to each frame is checked on the browser side
+    // before sending a message to the renderer which can cause differences in
+    // behavior.
+    const results = await chrome.scripting.executeScript({
+      target: {
+        tabId: tab.id,
+        frameIds: frames.map((f) => f.frameId),
+      },
+      func: injectedFunction,
+    });
+    chrome.test.assertEq(2, results.length);
+
+    // Note: The 'f.com' result is guaranteed to be first, since it's the root
+    // frame.
+    const url1 = new URL(results[0].result);
+    chrome.test.assertEq('f.com', url1.hostname);
+
+    chrome.test.assertTrue(results[1].result.startsWith('blob:'));
+    chrome.test.succeed();
+  },
+
 ]);

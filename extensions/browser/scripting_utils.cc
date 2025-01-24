@@ -7,6 +7,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/browser_frame_context_data.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
@@ -17,8 +18,10 @@
 #include "extensions/browser/scripting_constants.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/api/scripts_internal.h"
+#include "extensions/common/content_script_injection_url_getter.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/mojom/match_origin_as_fallback.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/user_script.h"
 #include "extensions/common/utils/content_script_utils.h"
@@ -162,22 +165,14 @@ bool HasPermissionToInjectIntoFrame(const PermissionsData& permissions,
     return true;
   }
 
-  // TODO(devlin): Add more schemes here, in line with
-  // https://crbug.com/55084.
-  if (committed_url.SchemeIs(url::kAboutScheme) ||
-      committed_url.SchemeIs(url::kDataScheme)) {
-    url::Origin origin = frame->GetLastCommittedOrigin();
-    const url::SchemeHostPort& tuple_or_precursor_tuple =
-        origin.GetTupleOrPrecursorTupleIfOpaque();
-    if (!tuple_or_precursor_tuple.IsValid()) {
-      *error = GetCannotAccessPageErrorMessage(permissions, committed_url);
-      return false;
-    }
-
-    committed_url = tuple_or_precursor_tuple.GetURL();
-  }
-
-  return permissions.CanAccessPage(committed_url, tab_id, error);
+  // We set `allow_inaccessible_parents` to `true`, since this matches the
+  // behavior of statically registered content scripts. We should be able to
+  // inject into a frame even without access to its parent.
+  GURL effective_url = ContentScriptInjectionUrlGetter::Get(
+      BrowserFrameContextData(frame), committed_url,
+      mojom::MatchOriginAsFallbackBehavior::kAlways,
+      /*allow_inaccessible_parents=*/true);
+  return permissions.CanAccessPage(effective_url, tab_id, error);
 }
 
 // Constructs an array of file sources from the read file `data`.
