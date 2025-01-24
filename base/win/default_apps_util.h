@@ -12,9 +12,9 @@
 namespace base::win {
 
 // Launches the Windows 'settings' modern app with the 'default apps' view
-// focused. If `protocol` is not empty, it also highlights the `protocol` in
-// the dialog. Returns true if the default apps dialog was successfully opened,
-// and the `protocol`, if not empty, was highlighted.
+// focused. On Windows 10, if `protocol` is not empty, it also highlights
+// the `protocol` in the dialog. Returns true if the default apps dialog was
+// successfully opened, and the `protocol`, if not empty, was highlighted.
 BASE_EXPORT bool LaunchDefaultAppsSettingsModernDialog(
     std::wstring_view protocol);
 
