@@ -72,11 +72,6 @@ tast_disabled_tests_from_chrome_all = [
   "nacl.Pnacl@brya",
   "terminal.SSH@brya",
 
-  # b/354660409, tests will be re-enabled after the tast test is updated to work with the new change. Disabling these to unblock uprev and LKGM.
-  "inputs.PhysicalKeyboardEmojiSuggestion",
-  "inputs.PhysicalKeyboardEmojiSuggestion.guest",
-  "inputs.PhysicalKeyboardEmojiSuggestion.incognito",
-
   # b/352703668: tests failing on trogdor.
   "security.SELinuxFilesDataDir.arcvm_user@trogdor",
 
