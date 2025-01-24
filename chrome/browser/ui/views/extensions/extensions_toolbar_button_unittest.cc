@@ -75,26 +75,9 @@ TEST_F(ExtensionsToolbarButtonUnitTest, ButtonOpensMenu) {
   EXPECT_FALSE(extensions_coordinator()->IsShowing());
 }
 
-class ExtensionsToolbarButtonFeatureUnitTest
-    : public ExtensionsToolbarUnitTest {
- public:
-  ExtensionsToolbarButtonFeatureUnitTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionsMenuAccessControl);
-  }
-  ~ExtensionsToolbarButtonFeatureUnitTest() override = default;
-  ExtensionsToolbarButtonFeatureUnitTest(
-      const ExtensionsToolbarButtonFeatureUnitTest&) = delete;
-  ExtensionsToolbarButtonFeatureUnitTest& operator=(
-      const ExtensionsToolbarButtonFeatureUnitTest&) = delete;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Tests that updating the button state properly modifies the tooltip and
 // accessible name.
-TEST_F(ExtensionsToolbarButtonFeatureUnitTest, UpdateState) {
+TEST_F(ExtensionsToolbarButtonUnitTest, UpdateState) {
   InstallExtension("Extension");
 
   extensions_button()->UpdateState(ExtensionsToolbarButton::State::kDefault);
