@@ -205,11 +205,11 @@ class AutofillAgent : public content::RenderFrameObserver,
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  // TODO(crbug.com/40147954): Find a better name for this method.
-  // Invoked when form needs to be saved because of `reason`, `element` is
-  // valid if the callback caused by a reason other than
-  // SaveFormReason::kWillSendSubmitEvent, |form| is valid for the callback
-  // caused by SaveFormReason::kWillSendSubmitEvent.
+  // Called after updating the last interacted element in FormTracker because of
+  // `reason`. It is always the case that `form` or `element` are non-null. If
+  // `form_element` is non-null, then `element` (if non-null) is owned by
+  // `form_element`, otherwise `element` is unowned and is surely non-null.
+  // TODO(crbug.com/40281981): Remove.
   void OnProvisionallySaveForm(const blink::WebFormElement& form,
                                const blink::WebFormControlElement& element,
                                FormTracker::SaveFormReason reason);

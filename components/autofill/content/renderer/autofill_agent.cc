@@ -2004,6 +2004,7 @@ void AutofillAgent::OnProvisionallySaveForm(
       }
       return;
     }
+    CHECK(element);
     std::erase_if(
         formless_elements_user_edited_, [](const FieldRendererId field_id) {
           WebFormControlElement field =
