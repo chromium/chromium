@@ -272,6 +272,20 @@ InteractiveBrowserTestApi::InstrumentInnerWebContents(
   return steps;
 }
 
+InteractiveBrowserTestApi::StepBuilder
+InteractiveBrowserTestApi::UninstrumentWebContents(
+    ui::ElementIdentifier id,
+    bool fail_if_not_instrumented) {
+  return std::move(
+      (fail_if_not_instrumented
+           ? Check([this, id]() {
+               return test_impl().UninstrumentWebContents(id);
+             })
+           : Do([this, id]() { test_impl().UninstrumentWebContents(id); }))
+          .SetDescription(
+              base::StringPrintf("UninstrumentWebContents(%s)", id.GetName())));
+}
+
 // static
 ui::InteractionSequence::StepBuilder
 InteractiveBrowserTestApi::WaitForWebContentsReady(

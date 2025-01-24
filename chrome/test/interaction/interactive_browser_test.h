@@ -168,6 +168,13 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
       size_t inner_contents_index,
       bool wait_for_ready = true);
 
+  // Removes instrumentation for the WebContents with identifier `id`.
+  // `fail_if_not_instrumented` defines what happens if `id` is not in use;
+  // if true, crashes the test. If false, ignores and continues.
+  [[nodiscard]] StepBuilder UninstrumentWebContents(
+      ui::ElementIdentifier id,
+      bool fail_if_not_instrumented = true);
+
   // These convenience methods wait for page navigation/ready. If you specify
   // `expected_url`, the test will fail if that is not the loaded page. If you
   // do not, there is no step start callback and you can add your own logic.
