@@ -107,6 +107,8 @@ class RecentActivityRowImageView : public views::View {
   gfx::ImageSkia resized_favicon_image_;
   collaboration::messaging::ActivityLogItem item_;
   const raw_ptr<Profile> profile_ = nullptr;
+
+  base::WeakPtrFactory<RecentActivityRowImageView> weak_factory_{this};
 };
 
 // The bubble coordinator for Shared Tab Group Recent Activity.

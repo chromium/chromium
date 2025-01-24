@@ -239,7 +239,7 @@ void RecentActivityRowImageView::FetchAvatar() {
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_RECENT_ACTIVITY_AVATAR_SIZE),
       base::BindOnce(&RecentActivityRowImageView::SetAvatar,
-                     base::Unretained(this)),
+                     weak_factory_.GetWeakPtr()),
       image_fetcher_service->GetImageFetcher(
           image_fetcher::ImageFetcherConfig::kDiskCacheOnly));
 }
@@ -262,7 +262,7 @@ void RecentActivityRowImageView::FetchFavicon() {
       favicon_service->GetFaviconImageForPageURL(
           GURL(url.value()),
           base::BindOnce(&RecentActivityRowImageView::SetFavicon,
-                         base::Unretained(this)),
+                         weak_factory_.GetWeakPtr()),
           &favicon_fetching_task_tracker_);
     }
   }
