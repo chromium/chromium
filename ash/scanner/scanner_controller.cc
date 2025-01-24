@@ -32,6 +32,7 @@
 #include "base/check_is_test.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -215,22 +216,24 @@ void RecordActionExecutionAndRun(
 
 // Executes the populated action, if it exists, calling
 // `action_finished_callback` with the result of the execution.
-void ExecutePopulatedAction(manta::proto::ScannerAction::ActionCase action_case,
-                            base::TimeTicks request_start_time,
-                            base::WeakPtr<ScannerCommandDelegate> delegate,
-                            ScannerCommandCallback action_finished_callback,
-                            manta::proto::ScannerAction populated_action) {
+void ExecutePopulatedAction(
+    manta::proto::ScannerAction::ActionCase action_case,
+    base::TimeTicks request_start_time,
+    base::WeakPtr<ScannerCommandDelegate> delegate,
+    base::OnceCallback<void(manta::proto::ScannerAction populated_action,
+                            bool success)> action_finished_callback,
+    manta::proto::ScannerAction populated_action) {
   RecordPopulateActionTimer(action_case, request_start_time);
   if (populated_action.action_case() ==
       manta::proto::ScannerAction::ACTION_NOT_SET) {
     RecordPopulateActionFailure(action_case);
-    std::move(action_finished_callback).Run(false);
+    std::move(action_finished_callback).Run(std::move(populated_action), false);
     return;
   }
 
   ScannerCommandCallback record_metrics_callback = base::BindOnce(
       &RecordActionExecutionAndRun, action_case, base::TimeTicks::Now(),
-      std::move(action_finished_callback));
+      base::BindOnce(std::move(action_finished_callback), populated_action));
 
   HandleScannerCommand(std::move(delegate),
                        ScannerActionToCommand(std::move(populated_action)),
@@ -318,11 +321,11 @@ void ScannerController::ExecuteAction(
   scanner_session_->PopulateAction(
       scanner_action.downscaled_jpeg_bytes(),
       scanner_action.unpopulated_action(),
-      base::BindOnce(
-          &ExecutePopulatedAction, action_case, base::TimeTicks::Now(),
-          command_delegate_->GetWeakPtr(),
-          base::BindOnce(&ScannerController::OnActionFinished,
-                         weak_ptr_factory_.GetWeakPtr(), action_case)));
+      base::BindOnce(&ExecutePopulatedAction, action_case,
+                     base::TimeTicks::Now(), command_delegate_->GetWeakPtr(),
+                     base::BindOnce(&ScannerController::OnActionFinished,
+                                    weak_ptr_factory_.GetWeakPtr(), action_case,
+                                    scanner_action.downscaled_jpeg_bytes())));
   ShowActionProgressNotification(action_case);
 }
 
@@ -359,6 +362,8 @@ bool ScannerController::HasActiveSessionForTesting() const {
 
 void ScannerController::OnActionFinished(
     manta::proto::ScannerAction::ActionCase action_case,
+    scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes,
+    manta::proto::ScannerAction populated_action,
     bool success) {
   // Remove the action progress notification.
   message_center::MessageCenter::Get()->RemoveNotification(
@@ -366,14 +371,22 @@ void ScannerController::OnActionFinished(
       /*by_user=*/false);
 
   if (success) {
-    // TODO: crbug.com/375967525 - Finalize the action toast string.
-    if (action_case == manta::proto::ScannerAction::kCopyToClipboard) {
-      ToastManager::Get()->Show(ToastData(
-          kScannerActionSuccessToastId, ToastCatalogName::kScannerActionSuccess,
-          u"Text copied to clipboard"));
-    }
-    // TODO: crbug.com/383925780 - We should also show a toast for other action
-    // cases once the feedback mechanism is ready.
+    // TODO: crbug.com/375967525 - Finalize the action toast strings.
+    std::u16string toast_text =
+        action_case == manta::proto::ScannerAction::kCopyToClipboard
+            ? u"Text copied to clipboard"
+            : u"Action succeeded";
+    ToastData toast_data(kScannerActionSuccessToastId,
+                         ToastCatalogName::kScannerActionSuccess, toast_text);
+    toast_data.button_type = ToastData::ButtonType::kIconButton;
+    toast_data.button_text = u"Send feedback";
+    toast_data.button_icon = &kFeedbackIcon;
+    // TODO: b/259100049 - Change this to be `BindOnce` once
+    // `ToastData::button_callback` is migrated to be a `OnceClosure`.
+    toast_data.button_callback = base::BindRepeating(
+        &ScannerController::OpenFeedbackDialog, weak_ptr_factory_.GetWeakPtr(),
+        std::move(populated_action), std::move(downscaled_jpeg_bytes));
+    ToastManager::Get()->Show(std::move(toast_data));
   } else {
     // TODO: crbug.com/383926250 - The action failure text should depend on the
     // type of action attempted.

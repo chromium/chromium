@@ -16,6 +16,7 @@
 #include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/public/cpp/scanner/scanner_enums.h"
 #include "ash/public/cpp/scanner/scanner_feedback_info.h"
+#include "ash/public/cpp/system/scoped_toast_pause.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/scanner/fake_scanner_delegate.h"
@@ -24,6 +25,8 @@
 #include "ash/scanner/scanner_session.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/toast/toast_manager_impl.h"
+#include "ash/system/toast/toast_overlay.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
 #include "base/check.h"
@@ -55,6 +58,7 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/fake_message_center.h"
 #include "ui/message_center/message_center.h"
+#include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -107,6 +111,28 @@ class MockNewWindowDelegate : public TestNewWindowDelegate {
               OpenUrl,
               (const GURL& url, OpenUrlFrom from, Disposition disposition),
               (override));
+};
+
+// Only used in ScannerControllerNoFixtureTest.
+class MockToastManager : public ToastManager {
+ public:
+  MOCK_METHOD(void, Show, (ToastData data), (override));
+  MOCK_METHOD(void, Cancel, (std::string_view id), (override));
+  MOCK_METHOD(bool,
+              RequestFocusOnActiveToastButton,
+              (std::string_view id),
+              (override));
+  MOCK_METHOD(bool, IsToastShown, (std::string_view id), (const override));
+  MOCK_METHOD(bool,
+              IsToastButtonFocused,
+              (std::string_view id),
+              (const override));
+  MOCK_METHOD(std::unique_ptr<ScopedToastPause>,
+              CreateScopedPause,
+              (),
+              (override));
+  MOCK_METHOD(void, Pause, (), (override));
+  MOCK_METHOD(void, Resume, (), (override));
 };
 
 class ScannerControllerTest : public AshTestBase {
@@ -305,6 +331,61 @@ TEST_F(ScannerControllerTest, ShowsToastAfterActionFailure) {
   scanner_controller->ExecuteAction(actions[0]);
 
   EXPECT_TRUE(ToastManager::Get()->IsToastShown(kScannerActionFailureToastId));
+}
+
+TEST_F(ScannerControllerTest, ActionSuccessToastButtonOpensFeedbackDialog) {
+  base::test::TestFuture<std::vector<ScannerActionViewModel>> actions_future;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_TRUE(scanner_controller->StartNewSession());
+  manta::proto::ScannerOutput output;
+  output.add_objects()
+      ->add_actions()
+      ->mutable_copy_to_clipboard()
+      ->set_html_text("<b>Hello</b>");
+  FakeScannerProfileScopedDelegate& fake_profile_scoped_delegate =
+      *GetFakeScannerProfileScopedDelegate(*scanner_controller);
+  // Mock a successful action.
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::make_unique<manta::proto::ScannerOutput>(output),
+          manta::MantaStatus()));
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionDetailsForImage)
+      .WillOnce(RunOnceCallback<2>(
+          std::make_unique<manta::proto::ScannerOutput>(output),
+          manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
+
+  // Fetch an action and execute it.
+  scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
+                                           actions_future.GetCallback());
+  std::vector<ScannerActionViewModel> actions = actions_future.Take();
+  ASSERT_THAT(actions, SizeIs(1));
+  scanner_controller->ExecuteAction(actions[0]);
+
+  EXPECT_TRUE(ToastManager::Get()->IsToastShown(kScannerActionSuccessToastId));
+  ToastOverlay* toast_overlay =
+      Shell::Get()->toast_manager()->GetCurrentOverlayForTesting();
+  ASSERT_TRUE(toast_overlay);
+  views::Button* feedback_button = toast_overlay->button_for_testing();
+  ASSERT_TRUE(feedback_button);
+
+  FakeScannerDelegate& fake_scanner_delegate =
+      *GetFakeScannerDelegate(*scanner_controller);
+  base::test::TestFuture<const AccountId&, ScannerFeedbackInfo,
+                         ScannerDelegate::SendFeedbackCallback>
+      feedback_info_future;
+  fake_scanner_delegate.SetOpenFeedbackDialogCallback(
+      feedback_info_future.GetRepeatingCallback());
+
+  LeftClickOn(feedback_button);
+
+  auto [unused_account_id, feedback_dialog_info,
+        unused_send_feedback_callback] = feedback_info_future.Take();
+  EXPECT_THAT(feedback_dialog_info.action_details, IsJson(R"json({
+    "copy_to_clipboard": {
+      "html_text": "<b>Hello</b>",
+    }
+  })json"));
 }
 
 TEST_F(ScannerControllerTest, OpenFeedbackDialogCallsDelegate) {
@@ -706,6 +787,8 @@ TEST(ScannerControllerNoFixtureTest, RunningNewContactActionOpensUrl) {
   SessionControllerImpl session_controller;
   // A message center for showing notifications.
   message_center::MessageCenter::Initialize();
+  // A toast manager for showing toasts.
+  MockToastManager toast_manager;
   // A new window delegate for opening the URL in test.
   MockNewWindowDelegate mock_new_window_delegate;
   EXPECT_CALL(mock_new_window_delegate,

@@ -78,8 +78,11 @@ class ASH_EXPORT ScannerController : public SessionObserver {
 
  private:
   // Should be called when an action finishes execution.
-  void OnActionFinished(manta::proto::ScannerAction::ActionCase action_case,
-                        bool success);
+  void OnActionFinished(
+      manta::proto::ScannerAction::ActionCase action_case,
+      scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes,
+      manta::proto::ScannerAction populated_action,
+      bool success);
 
   std::unique_ptr<ScannerDelegate> delegate_;
 
