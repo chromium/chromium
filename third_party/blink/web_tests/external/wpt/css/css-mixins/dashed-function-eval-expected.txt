@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Single parameter with default value
-  assert_equals: expected "PASS" but got ""
-Harness: the test ran to completion.
-
