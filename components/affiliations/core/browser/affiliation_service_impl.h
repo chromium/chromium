@@ -33,10 +33,6 @@ class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
 }  // namespace network
 
-namespace url {
-class SchemeHostPort;
-}
-
 namespace affiliations {
 
 extern const char kGetChangePasswordURLMetricName[];
@@ -152,7 +148,7 @@ class AffiliationServiceImpl : public AffiliationService,
   void OnMalformedResponse(AffiliationFetcherInterface* fetcher) override;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::map<url::SchemeHostPort, ChangePasswordUrlMatch> change_password_urls_;
+  std::map<FacetURI, ChangePasswordUrlMatch> change_password_urls_;
   std::vector<FetchInfo> pending_fetches_;
   std::unique_ptr<AffiliationFetcherFactory> fetcher_factory_;
   AffiliationPrefetcher prefetcher_{this};

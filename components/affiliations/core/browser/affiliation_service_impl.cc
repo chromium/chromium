@@ -21,7 +21,6 @@
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
-#include "url/scheme_host_port.h"
 
 namespace affiliations {
 
@@ -70,10 +69,10 @@ const char kGetChangePasswordURLMetricName[] =
 
 struct AffiliationServiceImpl::FetchInfo {
   FetchInfo(std::unique_ptr<AffiliationFetcherInterface> pending_fetcher,
-            std::vector<url::SchemeHostPort> tuple_origins,
+            std::vector<FacetURI> facets,
             base::OnceClosure result_callback)
       : fetcher(std::move(pending_fetcher)),
-        requested_tuple_origins(std::move(tuple_origins)),
+        requested_facets(std::move(facets)),
         callback(std::move(result_callback)) {}
 
   FetchInfo(FetchInfo&& other) = default;
@@ -89,7 +88,7 @@ struct AffiliationServiceImpl::FetchInfo {
   }
 
   std::unique_ptr<AffiliationFetcherInterface> fetcher;
-  std::vector<url::SchemeHostPort> requested_tuple_origins;
+  std::vector<FacetURI> requested_facets;
   // Callback is passed in PrefetchChangePasswordURLs and is run to indicate the
   // prefetch has finished or got canceled.
   base::OnceClosure callback;
@@ -129,32 +128,36 @@ void AffiliationServiceImpl::PrefetchChangePasswordURLs(
     const std::vector<GURL>& urls,
     base::OnceClosure callback) {
   std::vector<FacetURI> facets;
-  std::vector<url::SchemeHostPort> tuple_origins;
   for (const auto& url : urls) {
-    if (url.is_valid()) {
-      url::SchemeHostPort scheme_host_port(url);
-      if (!base::Contains(change_password_urls_, scheme_host_port)) {
-        facets.push_back(
-            FacetURI::FromCanonicalSpec(scheme_host_port.Serialize()));
-        tuple_origins.push_back(std::move(scheme_host_port));
-      }
+    FacetURI facet_uri =
+        FacetURI::FromPotentiallyInvalidSpec(url.possibly_invalid_spec());
+    if (!facet_uri.is_valid()) {
+      continue;
     }
+    if (base::Contains(change_password_urls_, facet_uri)) {
+      continue;
+    }
+    facets.push_back(std::move(facet_uri));
   }
+
   if (!facets.empty()) {
     auto fetcher = fetcher_factory_->CreateInstance(url_loader_factory_, this);
-    if (!fetcher) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, std::move(callback));
+    if (fetcher) {
+      fetcher->StartRequest(facets, kChangePasswordUrlRequestInfo);
+      pending_fetches_.emplace_back(std::move(fetcher), std::move(facets),
+                                    std::move(callback));
       return;
     }
-    fetcher->StartRequest(facets, kChangePasswordUrlRequestInfo);
-    pending_fetches_.emplace_back(std::move(fetcher), tuple_origins,
-                                  std::move(callback));
   }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(callback));
 }
 
 GURL AffiliationServiceImpl::GetChangePasswordURL(const GURL& url) const {
-  auto it = change_password_urls_.find(url::SchemeHostPort(url));
+  FacetURI uri =
+      FacetURI::FromPotentiallyInvalidSpec(url.possibly_invalid_spec());
+  auto it = change_password_urls_.find(uri);
   if (it != change_password_urls_.end()) {
     if (it->second.group_url_override) {
       LogFetchResult(GetChangePasswordUrlMetric::kGroupUrlOverrideUsed);
@@ -164,9 +167,8 @@ GURL AffiliationServiceImpl::GetChangePasswordURL(const GURL& url) const {
     return it->second.change_password_url;
   }
 
-  url::SchemeHostPort tuple(url);
-  if (base::ranges::any_of(pending_fetches_, [&tuple](const auto& info) {
-        return base::Contains(info.requested_tuple_origins, tuple);
+  if (base::ranges::any_of(pending_fetches_, [&uri](const auto& info) {
+        return base::Contains(info.requested_facets, uri);
       })) {
     LogFetchResult(GetChangePasswordUrlMetric::kNotFetchedYet);
   } else {
@@ -186,11 +188,10 @@ void AffiliationServiceImpl::OnFetchSucceeded(
 
   std::map<FacetURI, AffiliationServiceImpl::ChangePasswordUrlMatch>
       uri_to_url = CreateFacetUriToChangePasswordUrlMap(result->groupings);
-  for (const auto& requested_tuple : processed_fetch->requested_tuple_origins) {
-    auto it = uri_to_url.find(
-        FacetURI::FromPotentiallyInvalidSpec(requested_tuple.Serialize()));
+  for (const auto& requested_facets : processed_fetch->requested_facets) {
+    auto it = uri_to_url.find(requested_facets);
     if (it != uri_to_url.end()) {
-      change_password_urls_[requested_tuple] = it->second;
+      change_password_urls_[requested_facets] = it->second;
     }
   }
 
