@@ -190,6 +190,36 @@
       },
     },
   },
+  'gpu_force_angle_gl': {
+    'args': [
+      '--extra-browser-args=--use-angle=gl',
+    ],
+  },
+  'gpu_force_angle_gles': {
+    'args': [
+      '--extra-browser-args=--use-angle=gles',
+    ],
+  },
+  'gpu_force_angle_metal': {
+    'args': [
+      '--extra-browser-args=--use-angle=metal',
+    ],
+  },
+  'gpu_force_command_decoder_passthrough': {
+    'args': [
+      '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle',
+    ],
+  },
+  'gpu_force_skia_ganesh': {
+    'args': [
+      '--extra-browser-args=--disable-features=SkiaGraphite',
+    ],
+  },
+  'gpu_force_skia_graphite': {
+    'args': [
+      '--extra-browser-args=--enable-features=SkiaGraphite',
+    ],
+  },
   'gpu_integration_test_common_args': {
     'args': [
       '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
@@ -207,6 +237,30 @@
       '--no-xvfb',
       '--use-weston',
       '--weston-use-gl',
+    ],
+  },
+  'gpu_integration_test_pixel_args': {
+    'args': [
+      '--dont-restore-color-profile-after-test',
+      '--test-machine-name',
+      '${buildername}',
+    ],
+    'android_args': [
+      '--extra-browser-args=--force-online-connection-state-for-indicator',
+    ],
+  },
+  'gpu_integration_test_screenshot_sync_args': {
+    'args': [
+      '--dont-restore-color-profile-after-test',
+    ],
+    'android_args': [
+      '--extra-browser-args=--force-online-connection-state-for-indicator',
+    ],
+  },
+  'gpu_integration_test_webgl1_args': {
+    'args': [
+      '--extra-browser-args=--force_high_performance_gpu',
+      '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
     ],
   },
   'gpu_nvidia_shield_tv_stable': {

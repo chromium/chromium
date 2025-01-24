@@ -807,6 +807,37 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "gpu_integration_test_pixel_args",
+    args = [
+        "--dont-restore-color-profile-after-test",
+        "--test-machine-name",
+        "${buildername}",
+    ],
+    android_args = [
+        "--extra-browser-args=--force-online-connection-state-for-indicator",
+    ],
+)
+
+targets.mixin(
+    name = "gpu_integration_test_screenshot_sync_args",
+    args = [
+        "--dont-restore-color-profile-after-test",
+    ],
+    android_args = [
+        "--extra-browser-args=--force-online-connection-state-for-indicator",
+    ],
+)
+
+targets.mixin(
+    name = "gpu_integration_test_webgl1_args",
+    args = [
+        # On dual-GPU devices we want the high-performance GPU to be active.
+        "--extra-browser-args=--force_high_performance_gpu",
+        targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
+    ],
+)
+
+targets.mixin(
     name = "gpu_nvidia_shield_tv_stable",
     # We always need this entry to be generated since it is used by
     # //content/test/gpu/find_bad_machines.py.
@@ -948,6 +979,56 @@ targets.mixin(
             "pool": "chromium.tests.gpu",
         },
     ),
+)
+
+targets.mixin(
+    name = "gpu_force_angle_gles",
+    args = [
+        "--extra-browser-args=--use-angle=gles",
+    ],
+)
+
+targets.mixin(
+    name = "gpu_force_angle_gl",
+    args = [
+        "--extra-browser-args=--use-angle=gl",
+    ],
+)
+
+targets.mixin(
+    name = "gpu_force_angle_metal",
+    args = [
+        "--extra-browser-args=--use-angle=metal",
+    ],
+)
+
+targets.mixin(
+    name = "gpu_force_command_decoder_validating",
+    generate_pyl_entry = False,
+    args = [
+        "--extra-browser-args=--use-cmd-decoder=validating",
+    ],
+)
+
+targets.mixin(
+    name = "gpu_force_command_decoder_passthrough",
+    args = [
+        "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle",
+    ],
+)
+
+targets.mixin(
+    name = "gpu_force_skia_ganesh",
+    args = [
+        "--extra-browser-args=--disable-features=SkiaGraphite",
+    ],
+)
+
+targets.mixin(
+    name = "gpu_force_skia_graphite",
+    args = [
+        "--extra-browser-args=--enable-features=SkiaGraphite",
+    ],
 )
 
 # Use of this mixin signals to the recipe that the test uploads its results
