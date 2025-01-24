@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_signals.h"
 #include "components/segmentation_platform/public/features.h"
 
@@ -19,8 +20,13 @@ GetForcedEphemeralModuleShowResult() {
       features::kEphemeralCardRankerForceShowCardParam, "");
 
   if (!force_show_param.empty()) {
+#if BUILDFLAG(IS_ANDROID)
+    return CardSelectionInfo::ShowResult(EphemeralHomeModuleRank::kLast,
+                                         force_show_param);
+#else
     return CardSelectionInfo::ShowResult(EphemeralHomeModuleRank::kTop,
                                          force_show_param);
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   std::string force_hide_param = base::GetFieldTrialParamByFeatureAsString(
