@@ -586,20 +586,21 @@ bool DrmDisplay::SetColorspaceProperty(const gfx::ColorSpace color_space) {
 
     ScopedDrmPropertyPtr color_space_property(
         drm_->GetProperty(crtc_connector_pair.connector.get(), kColorSpace));
-    if (!color_space_property) {
+    if (!color_space_property || !color_space_property->prop_id) {
       PLOG(INFO) << "'" << kColorSpace << "' property doesn't exist.";
       return false;
     }
 
+    const uint64_t enum_value_for_colorspace =
+        GetEnumValueForName(*drm_, color_space_property->prop_id,
+                            GetNameForColorspace(color_space));
+
     // TODO(b/342617770): Atomically set connector properties across all
     // connectors owned by DrmDisplay to prevent scenarios where SetProperty()
     // succeeds for a subset of the connectors and creates inconsistencies.
-    if (!color_space_property->prop_id ||
-        !drm_->SetProperty(
-            crtc_connector_pair.connector->connector_id,
-            color_space_property->prop_id,
-            GetEnumValueForName(*drm_, color_space_property->prop_id,
-                                GetNameForColorspace(color_space)))) {
+    if (!drm_->SetProperty(crtc_connector_pair.connector->connector_id,
+                           color_space_property->prop_id,
+                           enum_value_for_colorspace)) {
       PLOG(ERROR) << "Cannot set '" << GetNameForColorspace(color_space)
                   << "' to '" << kColorSpace << "' property for connector "
                   << crtc_connector_pair.connector->connector_id;
