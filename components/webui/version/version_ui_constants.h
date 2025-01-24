@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VERSION_UI_VERSION_UI_CONSTANTS_H_
-#define COMPONENTS_VERSION_UI_VERSION_UI_CONSTANTS_H_
+#ifndef COMPONENTS_WEBUI_VERSION_VERSION_UI_CONSTANTS_H_
+#define COMPONENTS_WEBUI_VERSION_VERSION_UI_CONSTANTS_H_
 
 #include "build/build_config.h"
 
@@ -95,4 +95,4 @@ extern const char kVersionProcessorVariation[];
 
 }  // namespace version_ui
 
-#endif  // COMPONENTS_VERSION_UI_VERSION_UI_CONSTANTS_H_
+#endif  // COMPONENTS_WEBUI_VERSION_VERSION_UI_CONSTANTS_H_

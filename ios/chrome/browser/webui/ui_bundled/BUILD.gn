@@ -71,7 +71,7 @@ source_set("coordinator") {
     "//components/ukm/debug:util",
     "//components/variations/service",
     "//components/version_info",
-    "//components/version_ui",
+    "//components/webui/version",
     "//google_apis",
     "//ios/chrome/app/resources:ios_resources",
     "//ios/chrome/app/strings",

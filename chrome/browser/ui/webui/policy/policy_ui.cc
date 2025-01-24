@@ -35,7 +35,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/version_info/version_info.h"
-#include "components/version_ui/version_handler_helper.h"
+#include "components/webui/version/version_handler_helper.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_message_handler.h"

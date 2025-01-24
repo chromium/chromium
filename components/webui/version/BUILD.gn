@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("version_ui") {
+static_library("version") {
   sources = [
     "version_handler_helper.cc",
     "version_handler_helper.h",

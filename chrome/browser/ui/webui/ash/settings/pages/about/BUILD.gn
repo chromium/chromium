@@ -43,7 +43,7 @@ static_library("about") {
     "//components/signin/public/identity_manager",
     "//components/strings:components_branded_strings",
     "//components/strings:components_strings",
-    "//components/version_ui",
+    "//components/webui/version",
     "//content/public/browser",
     "//ui/base",
     "//ui/chromeos",
