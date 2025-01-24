@@ -607,9 +607,6 @@ tflite_static_library("mediapipe_core") {
       "src/mediapipe/framework/formats/image_frame.cc",
       "src/mediapipe/framework/formats/image_frame.h",
       "src/mediapipe/gpu/attachments.h",
-      "src/mediapipe/gpu/egl_base.h",
-      "src/mediapipe/gpu/egl_errors.cc",
-      "src/mediapipe/gpu/egl_errors.h",
       "src/mediapipe/gpu/gl_base.h",
       "src/mediapipe/gpu/gl_calculator_helper.cc",
       "src/mediapipe/gpu/gl_calculator_helper.h",
@@ -649,15 +646,6 @@ tflite_static_library("mediapipe_core") {
       "src/mediapipe/gpu/webgpu/webgpu_utils.h",
       "src/mediapipe/web/jspi_check.h",
     ]
-
-    if (!is_win) {
-      sources += [
-        "src/mediapipe/gpu/egl_sync.cc",
-        "src/mediapipe/gpu/egl_sync.h",
-        "src/mediapipe/gpu/egl_sync_point.cc",
-        "src/mediapipe/gpu/egl_sync_point.h",
-      ]
-    }
 
     if (is_mac) {
       sources += [
