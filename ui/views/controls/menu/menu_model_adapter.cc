@@ -276,6 +276,15 @@ void MenuModelAdapter::OnMenuClosed(MenuItemView* menu) {
 }
 
 // MenuModelDelegate overrides:
+void MenuModelAdapter::OnIconChanged(int command_id) {
+  ui::MenuModel* model = menu_model_;
+  size_t index;
+  menu_model_->GetModelAndIndexForCommandId(command_id, &model, &index);
+  views::MenuItemView* item = menu_->GetMenuItemByID(command_id);
+  CHECK(item);
+  item->SetIcon(model->GetIconAt(index));
+}
+
 void MenuModelAdapter::OnMenuStructureChanged() {
   if (menu_) {
     BuildMenu(menu_);
