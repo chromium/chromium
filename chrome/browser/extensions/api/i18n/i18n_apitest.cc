@@ -29,14 +29,14 @@ using ExtensionI18nTest = ExtensionApiTest;
 #endif
 
 IN_PROC_BROWSER_TEST_F(ExtensionI18nTest, I18nBasic) {
-#if !BUILDFLAG(IS_ANDROID)
   ASSERT_TRUE(StartEmbeddedTestServer());
-#endif
   ASSERT_TRUE(RunExtensionTest("i18n")) << message_;
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest, I18NUpdate) {
+// TODO(crbug.com/391920604): Port to desktop Android once ReloadExtension() is
+// supported by ExtensionPlatformApiTest.
+IN_PROC_BROWSER_TEST_F(ExtensionI18nTest, I18NUpdate) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Create an Extension whose messages.json file will be updated.
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -79,10 +79,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, I18NUpdate) {
   ui_test_utils::GetCurrentTabTitle(browser(), &title);
   EXPECT_EQ(u"SECONDMESSAGE", title);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // detectLanguage has some custom hooks that handle the asynchronous response
 // manually, so explicitly test that it stays working as expected with promises.
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest, I18NDetectLanguage) {
+IN_PROC_BROWSER_TEST_F(ExtensionI18nTest, I18NDetectLanguage) {
   constexpr char kManifest[] = R"(
       {
         "name": "detect language",
@@ -118,6 +119,5 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, I18NDetectLanguage) {
 
   ASSERT_TRUE(RunExtensionTest(dir.UnpackedPath(), {}, {}));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions
