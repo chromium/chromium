@@ -816,7 +816,7 @@ class CONTENT_EXPORT WebContentsImpl
       const network::mojom::SharedDictionaryAccessDetails& details) override;
   void OnDeviceBoundSessionAccessed(
       RenderFrameHostImpl* render_frame_host,
-      const net::device_bound_sessions::SessionKey& session) override;
+      const net::device_bound_sessions::SessionAccess& access) override;
   void NotifyStorageAccessed(RenderFrameHostImpl*,
                              blink::mojom::StorageTypeAccessed storage_type,
                              bool blocked) override;
@@ -1062,7 +1062,7 @@ class CONTENT_EXPORT WebContentsImpl
                              const TrustTokenAccessDetails& details) override;
   void OnDeviceBoundSessionAccessed(
       NavigationHandle* navigation_handle,
-      const net::device_bound_sessions::SessionKey& session) override;
+      const net::device_bound_sessions::SessionAccess& access) override;
   void OnSharedDictionaryAccessed(
       NavigationHandle*,
       const network::mojom::SharedDictionaryAccessDetails& details) override;

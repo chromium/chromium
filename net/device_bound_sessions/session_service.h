@@ -11,8 +11,8 @@
 #include "net/base/net_export.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 #include "net/device_bound_sessions/session.h"
+#include "net/device_bound_sessions/session_access.h"
 #include "net/device_bound_sessions/session_challenge_param.h"
-#include "net/device_bound_sessions/session_key.h"
 #include "net/log/net_log_with_source.h"
 
 namespace net {
@@ -28,7 +28,7 @@ namespace net::device_bound_sessions {
 class NET_EXPORT SessionService {
  public:
   using RefreshCompleteCallback = base::OnceClosure;
-  using OnAccessCallback = base::RepeatingCallback<void(const SessionKey&)>;
+  using OnAccessCallback = base::RepeatingCallback<void(const SessionAccess&)>;
 
   // Returns nullptr if unexportable key provider is not supported by the
   // platform or the device.
@@ -89,9 +89,12 @@ class NET_EXPORT SessionService {
   virtual void GetAllSessionsAsync(
       base::OnceCallback<void(const std::vector<SessionKey>&)> callback) = 0;
 
-  // Delete the session matching `key`.
-  virtual void DeleteSession(const SchemefulSite& site,
-                             const Session::Id& id) = 0;
+  // Delete the session on `site` with `id`, notifying
+  // `per_request_callback` about any deletions.
+  virtual void DeleteSessionAndNotify(
+      const SchemefulSite& site,
+      const Session::Id& id,
+      SessionService::OnAccessCallback per_request_callback) = 0;
 
   // Delete all sessions that match the filtering arguments. See
   // `device_bound_sessions.mojom` for details on the filtering logic.

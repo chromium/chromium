@@ -1129,12 +1129,13 @@ class StoragePartitionImpl::ServiceWorkerDeviceBoundSessionAccessObserver
   }
 
   void OnDeviceBoundSessionAccessed(
-      const net::device_bound_sessions::SessionKey& session) override {
+      const net::device_bound_sessions::SessionAccess& access) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     for (GlobalRenderFrameHostId frame_id : GetRoutingIdsForOrigin(
-             storage_partition_, url::Origin::Create(session.site.GetURL()))) {
+             storage_partition_,
+             url::Origin::Create(access.session_key.site.GetURL()))) {
       if (RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(frame_id)) {
-        rfh->OnDeviceBoundSessionAccessed(session);
+        rfh->OnDeviceBoundSessionAccessed(access);
       }
     }
   }

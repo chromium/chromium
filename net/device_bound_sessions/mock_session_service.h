@@ -53,8 +53,10 @@ class SessionServiceMock : public SessionService {
       (base::OnceCallback<void(const std::vector<SessionKey>&)> callback),
       (override));
   MOCK_METHOD(void,
-              DeleteSession,
-              (const SchemefulSite& site, const Session::Id& id),
+              DeleteSessionAndNotify,
+              (const SchemefulSite& site,
+               const Session::Id& id,
+               SessionService::OnAccessCallback per_request_callback),
               (override));
   MOCK_METHOD(
       void,

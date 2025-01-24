@@ -13,10 +13,12 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "net/base/features.h"
+#include "net/device_bound_sessions/session_access.h"
 #include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/test_support.h"
 #include "net/test/embedded_test_server/http_response.h"
 
+using net::device_bound_sessions::SessionAccess;
 using net::device_bound_sessions::SessionKey;
 
 namespace {
@@ -25,21 +27,21 @@ class DeviceBoundSessionAccessObserver : public content::WebContentsObserver {
  public:
   DeviceBoundSessionAccessObserver(
       content::WebContents* web_contents,
-      base::RepeatingCallback<void(const SessionKey&)> on_access_callback)
+      base::RepeatingCallback<void(const SessionAccess&)> on_access_callback)
       : WebContentsObserver(web_contents),
         on_access_callback_(std::move(on_access_callback)) {}
 
   void OnDeviceBoundSessionAccessed(content::NavigationHandle* navigation,
-                                    const SessionKey& session) override {
-    on_access_callback_.Run(session);
+                                    const SessionAccess& access) override {
+    on_access_callback_.Run(access);
   }
   void OnDeviceBoundSessionAccessed(content::RenderFrameHost* rfh,
-                                    const SessionKey& session) override {
-    on_access_callback_.Run(session);
+                                    const SessionAccess& access) override {
+    on_access_callback_.Run(access);
   }
 
  private:
-  base::RepeatingCallback<void(const SessionKey&)> on_access_callback_;
+  base::RepeatingCallback<void(const SessionAccess&)> on_access_callback_;
 };
 
 class DeviceBoundSessionBrowserTest : public InProcessBrowserTest {
@@ -64,17 +66,17 @@ class DeviceBoundSessionBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
                        AccessCalledOnRegistration) {
-  base::test::TestFuture<SessionKey> future;
+  base::test::TestFuture<SessionAccess> future;
   DeviceBoundSessionAccessObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(),
-      future.GetRepeatingCallback<const SessionKey&>());
+      future.GetRepeatingCallback<const SessionAccess&>());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/dbsc_required")));
 
-  SessionKey session = future.Take();
-  EXPECT_EQ(session.site,
+  SessionAccess access = future.Take();
+  EXPECT_EQ(access.session_key.site,
             net::SchemefulSite(embedded_test_server()->base_url()));
-  EXPECT_EQ(session.id, SessionKey::Id("session_id"));
+  EXPECT_EQ(access.session_key.id, SessionKey::Id("session_id"));
 }
 
 }  // namespace

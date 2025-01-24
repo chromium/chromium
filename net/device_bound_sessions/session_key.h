@@ -11,6 +11,7 @@
 namespace net::device_bound_sessions {
 
 // Unique identifier for a `Session`.
+// LINT.IfChange
 struct NET_EXPORT SessionKey {
   using Id = base::StrongAlias<class IdTag, std::string>;
 
@@ -30,6 +31,7 @@ struct NET_EXPORT SessionKey {
   bool operator==(const SessionKey& other) const;
   bool operator<(const SessionKey& other) const;
 };
+// LINT.ThenChange(//services/network/public/mojom/device_bound_sessions.mojom)
 
 }  // namespace net::device_bound_sessions
 

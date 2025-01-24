@@ -9774,8 +9774,8 @@ void NavigationRequest::Clone(
 }
 
 void NavigationRequest::OnDeviceBoundSessionAccessed(
-    const net::device_bound_sessions::SessionKey& session) {
-  GetDelegate()->OnDeviceBoundSessionAccessed(this, session);
+    const net::device_bound_sessions::SessionAccess& access) {
+  GetDelegate()->OnDeviceBoundSessionAccessed(this, access);
 }
 void NavigationRequest::Clone(
     mojo::PendingReceiver<network::mojom::DeviceBoundSessionAccessObserver>
