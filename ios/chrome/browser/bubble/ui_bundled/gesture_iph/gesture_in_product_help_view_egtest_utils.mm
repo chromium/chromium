@@ -34,8 +34,14 @@ void ResetFirstRunRecency() {
 }
 
 void RelaunchWithIPHFeature(NSString* feature, BOOL safari_switcher) {
+  RelaunchConfigurationWithIPHFeature(AppLaunchConfiguration(), feature,
+                                      safari_switcher);
+}
+
+void RelaunchConfigurationWithIPHFeature(AppLaunchConfiguration config,
+                                         NSString* feature,
+                                         BOOL safari_switcher) {
   // Enable the flag to ensure the IPH triggers.
-  AppLaunchConfiguration config = AppLaunchConfiguration();
   config.iph_feature_enabled = base::SysNSStringToUTF8(feature);
   if (safari_switcher) {
     config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");

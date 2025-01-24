@@ -90,6 +90,19 @@ void ReloadFromOmnibox() {
   [super tearDownHelper];
 }
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+
+  // Enable lens overlay flag to test the IPH.
+  if ([self
+          isRunningTest:@selector
+          (testLensOverlayEntrypointTipDismissedWhenOmniboxPositionChanged)]) {
+    config.features_enabled.push_back(kEnableLensOverlay);
+  }
+
+  return config;
+}
+
 // Tests that the pull-to-refresh IPH is attempted when user taps the omnibox
 // to reload the same page, and disappears after the user navigates away.
 - (void)testPullToRefreshIPHAfterReloadFromOmniboxAndDisappearsAfterNavigation {
@@ -577,8 +590,9 @@ void ReloadFromOmnibox() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
   }
-  RelaunchWithIPHFeature(@"IPH_iOSLensOverlayEntrypointTip",
-                         /*safari_switcher=*/NO);
+  RelaunchConfigurationWithIPHFeature([self appConfigurationForTestCase],
+                                      @"IPH_iOSLensOverlayEntrypointTip",
+                                      /*safari_switcher=*/NO);
 
   // Load a random page.
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
