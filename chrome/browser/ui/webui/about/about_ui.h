@@ -63,7 +63,7 @@ class LinuxProxyConfigUI : public AboutUIConfigBase {
 };
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // chrome://os-credits
 class OSCreditsUI : public AboutUIConfigBase {
  public:
@@ -109,7 +109,7 @@ class AboutUIHTMLSource : public content::URLDataSource {
   void FinishDataRequest(const std::string& html,
                          content::URLDataSource::GotDataCallback callback);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetOSCreditsPrefixForTesting(const base::FilePath& prefix) {
     os_credits_prefix_ = prefix;
   }
@@ -120,7 +120,7 @@ class AboutUIHTMLSource : public content::URLDataSource {
  private:
   std::string source_name_;
   raw_ptr<Profile> profile_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   base::FilePath os_credits_prefix_;
 #endif
 };

@@ -83,16 +83,12 @@ std::u16string GetManagedUiWebUILabel(Profile* profile);
 std::u16string GetDeviceManagedUiHelpLabel(Profile* profile);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // The label for the WebUI footnote for Managed UI indicating that the device
 // is mananged. These strings contain HTML for an <a> element.
 std::u16string GetDeviceManagedUiWebUILabel();
 #else
-// The subtitle for the management page.
 std::u16string GetManagementPageSubtitle(Profile* profile);
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS)
 std::u16string GetManagementBubbleTitle(Profile* profile);
 #endif
 

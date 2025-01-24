@@ -22,7 +22,7 @@
 #include "ui/native_theme/native_theme_win.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // gn check complains on Linux Ozone.
 #include "ash/public/cpp/ash_typography.h"  // nogncheck
 #endif
@@ -39,7 +39,7 @@ bool ChromeTypographyProvider::StyleAllowedForContext(int context,
     // Limit emphasizing text to contexts where it's obviously correct. If you
     // hit this check, ensure it's sane and UX-approved to extend it to your
     // new case (e.g. don't add CONTEXT_BUTTON_MD).
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // TODO(crbug.com/40234831): Limit more specific Ash contexts.
     return true;
 #else
@@ -75,7 +75,7 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetailsImpl(
 
   details.size_delta = gfx::PlatformFont::GetFontSizeDelta(kDefaultSize);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ApplyAshFontStyles(context, style, details);
 #endif
 

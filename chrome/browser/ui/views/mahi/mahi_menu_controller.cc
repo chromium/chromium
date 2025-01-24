@@ -83,7 +83,7 @@ bool ShouldShowMahiCondensedMenuView(const std::u16string& selected_text) {
 MahiMenuController::MahiMenuController(
     ReadWriteCardsUiController& read_write_cards_ui_controller)
     : read_write_cards_ui_controller_(read_write_cards_ui_controller) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // MahiMediaAppEventsProxy is initialized only in ash chrome.
   CHECK(chromeos::MahiMediaAppEventsProxy::Get());
   chromeos::MahiMediaAppEventsProxy::Get()->AddObserver(this);
@@ -91,7 +91,7 @@ MahiMenuController::MahiMenuController(
 }
 
 MahiMenuController::~MahiMenuController() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   CHECK(chromeos::MahiMediaAppEventsProxy::Get());
   chromeos::MahiMediaAppEventsProxy::Get()->RemoveObserver(this);
 #endif
@@ -102,7 +102,7 @@ void MahiMenuController::OnContextMenuShown(Profile* profile) {}
 void MahiMenuController::OnTextAvailable(const gfx::Rect& anchor_bounds,
                                          const std::string& selected_text,
                                          const std::string& surrounding_text) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!MahiManager::Get() || !MahiManager::Get()->IsEnabled()) {
     return;
   }

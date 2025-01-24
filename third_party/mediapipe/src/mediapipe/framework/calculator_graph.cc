@@ -28,7 +28,6 @@
 #include "absl/container/flat_hash_set.h"
 #include "absl/log/absl_check.h"
 #include "absl/log/absl_log.h"
-#include "absl/log/check.h"  // nogncheck
 #include "absl/memory/memory.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
@@ -37,10 +36,12 @@
 #include "absl/strings/string_view.h"
 #include "absl/strings/substitute.h"
 #include "absl/synchronization/mutex.h"
+#include "absl/time/time.h"
 #include "mediapipe/framework/calculator.pb.h"
 #include "mediapipe/framework/calculator_base.h"
 #include "mediapipe/framework/counter_factory.h"
 #include "mediapipe/framework/delegating_executor.h"
+#include "mediapipe/framework/deps/clock.h"
 #include "mediapipe/framework/executor.h"
 #include "mediapipe/framework/graph_output_stream.h"
 #include "mediapipe/framework/graph_service_manager.h"
@@ -76,6 +77,7 @@
 #include "mediapipe/framework/tool/validate.h"
 #include "mediapipe/framework/tool/validate_name.h"
 #include "mediapipe/framework/validated_graph_config.h"
+#include "mediapipe/framework/vlog_overrides.h"
 #include "mediapipe/gpu/gpu_service.h"
 #include "mediapipe/gpu/graph_support.h"
 #include "mediapipe/util/cpu_util.h"
@@ -131,19 +133,22 @@ void CalculatorGraph::GraphInputStream::Close() {
   manager_->Close();
 }
 
-CalculatorGraph::CalculatorGraph(
-    std::shared_ptr<GraphServiceManager> service_manager)
-    : counter_factory_(std::make_unique<BasicCounterFactory>()),
-      service_manager_(std::move(service_manager)),
-      profiler_(std::make_shared<ProfilingContext>()),
-      scheduler_(this) {}
-
-CalculatorGraph::CalculatorGraph()
-    : CalculatorGraph(std::make_shared<GraphServiceManager>()) {}
+CalculatorGraph::CalculatorGraph() : CalculatorGraph(/*cc=*/nullptr) {}
 
 // Adopt all services from the CalculatorContext / parent graph.
 CalculatorGraph::CalculatorGraph(CalculatorContext* cc)
-    : CalculatorGraph(cc->GetSharedGraphServiceManager()) {}
+    : counter_factory_(std::make_unique<BasicCounterFactory>()),
+      service_manager_(cc != nullptr ? cc->GetGraphServiceManager() : nullptr),
+      profiler_(std::make_shared<ProfilingContext>()),
+      scheduler_(this) {
+  if (cc != nullptr) {
+    // Nested graphs should not create default initialized services to avoid
+    // collisions between newly created and inherited graphs.
+    // TODO b/368015341- Use factory method to avoid CHECK in constructor.
+    ABSL_CHECK_OK(DisallowServiceDefaultInitialization());
+  }
+  SetVLogOverrides();
+}
 
 CalculatorGraph::CalculatorGraph(CalculatorGraphConfig config)
     : CalculatorGraph() {
@@ -280,7 +285,7 @@ absl::Status CalculatorGraph::InitializeCalculatorNodes() {
     const absl::Status result = nodes_.back()->Initialize(
         validated_graph_.get(), node_ref, input_stream_managers_.get(),
         output_stream_managers_.get(), output_side_packets_.get(),
-        &buffer_size_hint, profiler_, service_manager_);
+        &buffer_size_hint, profiler_, &service_manager_);
     MaybeFixupLegacyGpuNodeContract(*nodes_.back());
     if (buffer_size_hint > 0) {
       max_queue_size_ = std::max(max_queue_size_, buffer_size_hint);
@@ -318,7 +323,7 @@ absl::Status CalculatorGraph::InitializePacketGeneratorNodes(
     const absl::Status result = nodes_.back()->Initialize(
         validated_graph_.get(), node_ref, input_stream_managers_.get(),
         output_stream_managers_.get(), output_side_packets_.get(),
-        &buffer_size_hint, profiler_, service_manager_);
+        &buffer_size_hint, profiler_, &service_manager_);
     MaybeFixupLegacyGpuNodeContract(*nodes_.back());
     if (!result.ok()) {
       // Collect as many errors as we can before failing.
@@ -389,6 +394,11 @@ absl::Status CalculatorGraph::InitializeExecutors() {
     MEDIAPIPE_CHECK_OK(SetExecutorInternal(
         executor_config.name(), std::shared_ptr<Executor>(executor)));
   }
+#ifdef __EMSCRIPTEN__
+  // Emscripten runs the application single threaded and therefore requires to
+  // use the application thread.
+  use_application_thread = true;
+#endif  // __EMSCRIPTEN__
 
   if (!mediapipe::ContainsKey(executors_, "")) {
     MP_RETURN_IF_ERROR(InitializeDefaultExecutor(default_executor_options,
@@ -402,7 +412,9 @@ absl::Status CalculatorGraph::InitializeDefaultExecutor(
     const ThreadPoolExecutorOptions* default_executor_options,
     bool use_application_thread) {
 #ifdef __EMSCRIPTEN__
-  use_application_thread = true;
+  // Emscripten runs the application single threaded and therefore requires to
+  // use the application thread.
+  RET_CHECK(use_application_thread);
 #endif  // __EMSCRIPTEN__
   // If specified, run synchronously on the calling thread.
   if (use_application_thread) {
@@ -454,6 +466,25 @@ absl::Status CalculatorGraph::Initialize(
 #endif
 
   initialized_ = true;
+
+#if !defined(__EMSCRIPTEN__)
+  // Emscripten only supports single threaded applications.
+  const auto& runtime_info_logger_config =
+      validated_graph_->Config().runtime_info();
+  if (runtime_info_logger_config.enable_graph_runtime_info()) {
+    MP_RETURN_IF_ERROR(graph_runtime_info_logger_.StartInBackground(
+        runtime_info_logger_config,
+        [this]() { return GetGraphRuntimeInfo(); }));
+  }
+#else
+  const auto& runtime_info_logger_config =
+      validated_graph_->Config().runtime_info();
+  // TODO - remove once graph runtime infos are supported in
+  // Emscripten.
+  if (runtime_info_logger_config.enable_graph_runtime_info()) {
+    ABSL_LOG(WARNING) << "Graph runtime infos are not supported in Emscripten.";
+  }
+#endif  // defined(__EMSCRIPTEN__)
   return absl::OkStatus();
 }
 
@@ -467,7 +498,7 @@ absl::Status CalculatorGraph::Initialize(
   auto validated_graph = std::make_unique<ValidatedGraphConfig>();
   MP_RETURN_IF_ERROR(validated_graph->Initialize(
       std::move(input_config), /*graph_registry=*/nullptr,
-      /*graph_options=*/nullptr, service_manager_));
+      /*graph_options=*/nullptr, &service_manager_));
   return Initialize(std::move(validated_graph), side_packets);
 }
 
@@ -478,7 +509,7 @@ absl::Status CalculatorGraph::Initialize(
     const std::string& graph_type, const Subgraph::SubgraphOptions* options) {
   auto validated_graph = std::make_unique<ValidatedGraphConfig>();
   MP_RETURN_IF_ERROR(validated_graph->Initialize(
-      input_configs, input_templates, graph_type, options, service_manager_));
+      input_configs, input_templates, graph_type, options, &service_manager_));
   return Initialize(std::move(validated_graph), side_packets);
 }
 
@@ -596,15 +627,15 @@ absl::Status CalculatorGraph::StartRun(
 absl::Status CalculatorGraph::SetGpuResources(
     std::shared_ptr<::mediapipe::GpuResources> resources) {
   RET_CHECK_NE(resources, nullptr);
-  auto gpu_service = service_manager_->GetServiceObject(kGpuService);
+  auto gpu_service = service_manager_.GetServiceObject(kGpuService);
   RET_CHECK_EQ(gpu_service, nullptr)
       << "The GPU resources have already been configured.";
-  return service_manager_->SetServiceObject(kGpuService, std::move(resources));
+  return service_manager_.SetServiceObject(kGpuService, std::move(resources));
 }
 
 std::shared_ptr<::mediapipe::GpuResources> CalculatorGraph::GetGpuResources()
     const {
-  return service_manager_->GetServiceObject(kGpuService);
+  return service_manager_.GetServiceObject(kGpuService);
 }
 
 static Packet GetLegacyGpuSharedSidePacket(
@@ -620,7 +651,7 @@ static Packet GetLegacyGpuSharedSidePacket(
 absl::Status CalculatorGraph::MaybeSetUpGpuServiceFromLegacySidePacket(
     Packet legacy_sp) {
   if (legacy_sp.IsEmpty()) return absl::OkStatus();
-  auto gpu_resources = service_manager_->GetServiceObject(kGpuService);
+  auto gpu_resources = service_manager_.GetServiceObject(kGpuService);
   if (gpu_resources) {
     ABSL_LOG(WARNING)
         << "::mediapipe::GpuSharedData provided as a side packet while the "
@@ -628,13 +659,13 @@ absl::Status CalculatorGraph::MaybeSetUpGpuServiceFromLegacySidePacket(
     return absl::OkStatus();
   }
   gpu_resources = legacy_sp.Get<::mediapipe::GpuSharedData*>()->gpu_resources;
-  return service_manager_->SetServiceObject(kGpuService, gpu_resources);
+  return service_manager_.SetServiceObject(kGpuService, gpu_resources);
 }
 
 std::map<std::string, Packet> CalculatorGraph::MaybeCreateLegacyGpuSidePacket(
     Packet legacy_sp) {
   std::map<std::string, Packet> additional_side_packets;
-  auto gpu_resources = service_manager_->GetServiceObject(kGpuService);
+  auto gpu_resources = service_manager_.GetServiceObject(kGpuService);
   if (gpu_resources &&
       (legacy_sp.IsEmpty() ||
        legacy_sp.Get<::mediapipe::GpuSharedData*>()->gpu_resources !=
@@ -652,7 +683,7 @@ static bool UsesGpu(const CalculatorNode& node) {
 }
 
 absl::Status CalculatorGraph::PrepareGpu() {
-  auto gpu_resources = service_manager_->GetServiceObject(kGpuService);
+  auto gpu_resources = service_manager_.GetServiceObject(kGpuService);
   if (!gpu_resources) return absl::OkStatus();
   // Set up executors.
   for (auto& node : nodes_) {
@@ -671,7 +702,7 @@ absl::Status CalculatorGraph::PrepareGpu() {
 absl::Status CalculatorGraph::PrepareServices() {
   for (const auto& node : nodes_) {
     for (const auto& [key, request] : node->Contract().ServiceRequests()) {
-      auto packet = service_manager_->GetServicePacket(request.Service());
+      auto packet = service_manager_.GetServicePacket(request.Service());
       if (!packet.IsEmpty()) continue;
       absl::StatusOr<Packet> packet_or;
       if (allow_service_default_initialization_) {
@@ -681,7 +712,7 @@ absl::Status CalculatorGraph::PrepareServices() {
             "Service default initialization is disallowed.");
       }
       if (packet_or.ok()) {
-        MP_RETURN_IF_ERROR(service_manager_->SetServicePacket(
+        MP_RETURN_IF_ERROR(service_manager_.SetServicePacket(
             request.Service(), std::move(packet_or).value()));
       } else if (request.IsOptional()) {
         continue;
@@ -802,7 +833,7 @@ absl::Status CalculatorGraph::PrepareForRun(
     // TODO: update calculator node to use GraphServiceManager
     // instead of service packets?
     const absl::Status result = node->PrepareForRun(
-        current_run_side_packets_, service_manager_->ServicePackets(),
+        current_run_side_packets_, service_manager_.ServicePackets(),
         std::bind(&internal::Scheduler::ScheduleNodeForOpen, &scheduler_,
                   node.get()),
         std::bind(&internal::Scheduler::AddNodeToSourcesQueue, &scheduler_,
@@ -908,6 +939,17 @@ absl::Status CalculatorGraph::WaitUntilDone() {
 
 absl::Status CalculatorGraph::WaitForObservedOutput() {
   return scheduler_.WaitForObservedOutput();
+}
+
+absl::StatusOr<GraphRuntimeInfo> CalculatorGraph::GetGraphRuntimeInfo() {
+  RET_CHECK(initialized_);
+  GraphRuntimeInfo info;
+  for (const auto& node : nodes_) {
+    *info.add_calculator_infos() = node->GetStreamMonitoringInfo();
+  }
+  const absl::Time time_now = mediapipe::Clock::RealClock()->TimeNow();
+  info.set_capture_time_unix_us(absl::ToUnixMicros(time_now));
+  return info;
 }
 
 absl::Status CalculatorGraph::AddPacketToInputStream(

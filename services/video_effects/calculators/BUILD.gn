@@ -43,6 +43,7 @@ source_set("inference") {
     "//services/on_device_model/ml:ml_holder",
     "//third_party/abseil-cpp:absl",
     "//third_party/dawn/src/dawn:proc",
+    "//third_party/dawn/src/dawn/wire:headers",
     "//third_party/mediapipe",
   ]
 }

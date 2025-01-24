@@ -1,0 +1,162 @@
+From b4ebbbe0492cc67324417fe9216b7c6b222b6d6b Mon Sep 17 00:00:00 2001
+From: Victor Hugo Vianna Silva <victorvianna@google.com>
+Date: Wed, 22 Jan 2025 20:18:30 +0000
+Subject: [PATCH] Replace LOG()/VLOG() with ABSL_* ones
+
+LOG() and VLOG() are disallowed because they conflict with the Chromium //base
+macros, but the aliases ABSL_LOG() and ABSL_VLOG() are allowed.
+Also remove one unused absl/log/check.h #include, which runs into the same
+issue.
+
+---
+ .../tensor/vector_to_tensor_calculator.cc         |  2 --
+ .../mediapipe/framework/input_stream_handler.cc   |  5 ++---
+ .../mediapipe/framework/validated_graph_config.cc | 15 +++++++--------
+ .../src/mediapipe/framework/vlog_utils.cc         |  5 ++---
+ 4 files changed, 11 insertions(+), 16 deletions(-)
+
+diff --git a/third_party/mediapipe/src/mediapipe/calculators/tensor/vector_to_tensor_calculator.cc b/third_party/mediapipe/src/mediapipe/calculators/tensor/vector_to_tensor_calculator.cc
+index a0ba58cc17d68..2b8d3c8a5b2c6 100644
+--- a/third_party/mediapipe/src/mediapipe/calculators/tensor/vector_to_tensor_calculator.cc
++++ b/third_party/mediapipe/src/mediapipe/calculators/tensor/vector_to_tensor_calculator.cc
+@@ -18,8 +18,6 @@ limitations under the License.
+ #include <utility>
+ #include <vector>
+
+-#include "absl/log/check.h"
+-#include "absl/log/log.h"
+ #include "absl/status/status.h"
+ #include "mediapipe/calculators/tensor/vector_to_tensor_calculator.pb.h"
+ #include "mediapipe/framework/api2/node.h"
+diff --git a/third_party/mediapipe/src/mediapipe/framework/input_stream_handler.cc b/third_party/mediapipe/src/mediapipe/framework/input_stream_handler.cc
+index ee4a86adf26b8..88ee6dddc4bf6 100644
+--- a/third_party/mediapipe/src/mediapipe/framework/input_stream_handler.cc
++++ b/third_party/mediapipe/src/mediapipe/framework/input_stream_handler.cc
+@@ -22,7 +22,6 @@
+
+ #include "absl/log/absl_check.h"
+ #include "absl/log/absl_log.h"
+-#include "absl/log/log.h"
+ #include "absl/strings/str_cat.h"
+ #include "absl/strings/str_join.h"
+ #include "absl/strings/substitute.h"
+@@ -50,12 +49,12 @@ class FillInputSetLogger {
+  private:
+   void OutputLogs() const {
+     if (!missing_streams_.empty()) {
+-      VLOG(1) << absl::StrCat(
++      ABSL_VLOG(1) << absl::StrCat(
+           node_name_, ": Filled input set at ts: ", timestamp_.DebugString(),
+           " with MISSING packets in input streams: ",
+           absl::StrJoin(missing_streams_, ", "), ".");
+     } else {
+-      VLOG(1) << absl::StrCat(
++      ABSL_VLOG(1) << absl::StrCat(
+           node_name_, ": Filled input set at ts: ", timestamp_.DebugString());
+     }
+   }
+diff --git a/third_party/mediapipe/src/mediapipe/framework/validated_graph_config.cc b/third_party/mediapipe/src/mediapipe/framework/validated_graph_config.cc
+index e5d44b1efe138..126cd9b0f1107 100644
+--- a/third_party/mediapipe/src/mediapipe/framework/validated_graph_config.cc
++++ b/third_party/mediapipe/src/mediapipe/framework/validated_graph_config.cc
+@@ -20,7 +20,6 @@
+ #include "absl/container/flat_hash_set.h"
+ #include "absl/log/absl_check.h"
+ #include "absl/log/absl_log.h"
+-#include "absl/log/log.h"
+ #include "absl/status/status.h"
+ #include "absl/strings/str_cat.h"
+ #include "absl/strings/str_join.h"
+@@ -712,7 +711,7 @@ absl::Status ValidatedGraphConfig::AddInputStreamsForNode(
+       }
+     } else {
+       if (edge_info.back_edge) {
+-        VLOG(1) << "Encountered expected behavior: the back edge \"" << name
++        ABSL_VLOG(1) << "Encountered expected behavior: the back edge \"" << name
+                 << "\" for node with (possibly sorted) index " << node_index
+                 << " name " << node_type_info->Contract().GetNodeName()
+                 << " has an output stream which we have not yet seen.";
+@@ -768,7 +767,7 @@ NodeTypeInfo::NodeRef ValidatedGraphConfig::NodeForSorterIndex(
+
+ absl::Status ValidatedGraphConfig::TopologicalSortNodes() {
+ #if !(defined(MEDIAPIPE_LITE) || defined(MEDIAPIPE_MOBILE))
+-  VLOG(2) << "BEFORE TOPOLOGICAL SORT:\n" << config_.DebugString();
++  ABSL_VLOG(2) << "BEFORE TOPOLOGICAL SORT:\n" << config_.DebugString();
+ #endif  // !(MEDIAPIPE_LITE || MEDIAPIPE_MOBILE)
+   // The topological sorter assumes the nodes in the graph are identified
+   // by consecutive indexes 0, 1, 2, ... We sort the generators and
+@@ -788,7 +787,7 @@ absl::Status ValidatedGraphConfig::TopologicalSortNodes() {
+       if (output_streams_[upstream].parent_node.type !=
+               NodeTypeInfo::NodeType::GRAPH_INPUT_STREAM &&
+           !input_streams_[index].back_edge) {
+-        VLOG(3) << "Adding an edge for stream \"" << name << "\" from "
++        ABSL_VLOG(3) << "Adding an edge for stream \"" << name << "\" from "
+                 << output_streams_[upstream].parent_node.index << " to "
+                 << input_streams_[index].parent_node.index;
+         sorter.AddEdge(
+@@ -810,7 +809,7 @@ absl::Status ValidatedGraphConfig::TopologicalSortNodes() {
+     auto iter = side_packet_to_producer_.find(name);
+     if (iter != side_packet_to_producer_.end()) {
+       int upstream = iter->second;
+-      VLOG(3) << "Adding an edge for side packet \"" << name << "\" from "
++      ABSL_VLOG(3) << "Adding an edge for side packet \"" << name << "\" from "
+               << output_side_packets_[upstream].parent_node.index << " to "
+               << input_side_packets_[index].parent_node.index;
+       sorter.AddEdge(
+@@ -836,7 +835,7 @@ absl::Status ValidatedGraphConfig::TopologicalSortNodes() {
+   while (sorter.GetNext(&index, &cyclic, &cycle_indexes)) {
+     NodeTypeInfo::NodeRef node = NodeForSorterIndex(index);
+     if (node.type == NodeTypeInfo::NodeType::PACKET_GENERATOR) {
+-      VLOG(3) << "Taking generator with index " << node.index
++      ABSL_VLOG(3) << "Taking generator with index " << node.index
+               << " in the original order";
+       tmp_generators.emplace_back(std::move(generators_[node.index]));
+       tmp_generators.back().SetNodeIndex(tmp_generators.size() - 1);
+@@ -844,7 +843,7 @@ absl::Status ValidatedGraphConfig::TopologicalSortNodes() {
+           config_.mutable_packet_generator(node.index));
+       sorted_nodes_.push_back(&tmp_generators.back());
+     } else {
+-      VLOG(3) << "Taking calculator with index " << node.index
++      ABSL_VLOG(3) << "Taking calculator with index " << node.index
+               << " in the original order";
+       tmp_calculators.emplace_back(std::move(calculators_[node.index]));
+       tmp_calculators.back().SetNodeIndex(tmp_calculators.size() - 1);
+@@ -872,7 +871,7 @@ absl::Status ValidatedGraphConfig::TopologicalSortNodes() {
+   node_configs.Swap(config_.mutable_node());
+   tmp_calculators.swap(calculators_);
+ #if !(defined(MEDIAPIPE_LITE) || defined(MEDIAPIPE_MOBILE))
+-  VLOG(2) << "AFTER TOPOLOGICAL SORT:\n" << config_.DebugString();
++  ABSL_VLOG(2) << "AFTER TOPOLOGICAL SORT:\n" << config_.DebugString();
+ #endif  // !(MEDIAPIPE_LITE || MEDIAPIPE_MOBILE)
+   return absl::OkStatus();
+ }
+diff --git a/third_party/mediapipe/src/mediapipe/framework/vlog_utils.cc b/third_party/mediapipe/src/mediapipe/framework/vlog_utils.cc
+index 6faaabb3b045a..1710d4083751d 100644
+--- a/third_party/mediapipe/src/mediapipe/framework/vlog_utils.cc
++++ b/third_party/mediapipe/src/mediapipe/framework/vlog_utils.cc
+@@ -1,7 +1,6 @@
+ #include "mediapipe/framework/vlog_utils.h"
+
+ #include "absl/log/absl_log.h"
+-#include "absl/log/log.h"
+ #include "absl/strings/str_split.h"  // IWYU pragma: keep
+ #include "absl/strings/string_view.h"
+ #include "mediapipe/framework/port/logging.h"
+@@ -12,12 +11,12 @@ void VlogLargeMessage(int verbose_level, absl::string_view message) {
+ #if defined(MEDIAPIPE_MOBILE)
+   if (message.size() > 4096) {
+     for (const auto& line : absl::StrSplit(message, '\n')) {
+-      VLOG(verbose_level) << line;
++      ABSL_VLOG(verbose_level) << line;
+     }
+     return;
+   }
+ #endif
+-  VLOG(verbose_level) << message;
++  ABSL_VLOG(verbose_level) << message;
+ }
+
+ }  // namespace mediapipe
+--
+2.48.1.262.g85cc9f2d1e-goog
+

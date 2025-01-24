@@ -41,46 +41,6 @@ i18n.input.common.dom.sameDomainIframes_ = {};
 
 
 /**
- * Checks the given element whether is editable.
- *
- * @param {!Element} element The element.
- * @return {boolean} Whether the give element is editable.
- */
-i18n.input.common.dom.isEditable = function(element) {
-  if (!element.tagName) {
-    return false;
-  }
-
-  if (element.readOnly) {
-    return false;
-  }
-
-  switch (element.tagName.toUpperCase()) {
-    case 'TEXTAREA':
-      return true;
-    case 'INPUT':
-      return (element.type.toUpperCase() == 'TEXT' ||
-          element.type.toUpperCase() == 'SEARCH');
-    case 'IFRAME':
-      // Accessing iframe's contents or properties throws exception when the
-      // iframe is not hosted on the same domain.
-      // When it happens, ignore it and consider this iframe isn't editable.
-      /** @preserveTry */
-      try {
-        var ifdoc = i18n.input.common.dom.getSameDomainFrameDoc(element);
-        return !!ifdoc && (ifdoc.designMode &&
-            ifdoc.designMode.toUpperCase() == 'ON' ||
-            ifdoc.body && ifdoc.body.isContentEditable);
-      } catch (e) {
-        return false;
-      }
-    default:
-      return !!element.isContentEditable;
-  }
-};
-
-
-/**
  * Sets class names to an element.
  *
  * @param {Element} elem Element to set class names.

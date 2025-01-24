@@ -64,7 +64,7 @@ ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
   view_->SetProperty(views::kElementIdentifierKey,
                      kExclusiveAccessBubbleViewElementId);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Technically the exit fullscreen key on ChromeOS is F11 and the
   // "Fullscreen" key on the keyboard is just translated to F11 or F4 (which
   // is also a toggle-fullscreen command on ChromeOS). However most Chromebooks

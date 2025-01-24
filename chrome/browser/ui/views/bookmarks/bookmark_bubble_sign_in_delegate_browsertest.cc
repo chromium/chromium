@@ -29,10 +29,6 @@
 #include "ui/events/event_constants.h"
 #include "ui/gfx/range/range.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/views/profiles/profile_menu_view.h"
-#endif
-
 class BookmarkBubbleSignInDelegateTest : public InProcessBrowserTest {
  public:
   BookmarkBubbleSignInDelegateTest() = default;

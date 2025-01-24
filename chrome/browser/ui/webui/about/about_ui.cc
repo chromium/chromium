@@ -66,7 +66,7 @@
 #include "chrome/browser/ui/webui/theme_source.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include <map>
 
 #include "base/base64.h"
@@ -87,10 +87,6 @@
 #include "third_party/zlib/google/compression_utils.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/common/webui_url_constants.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 using content::BrowserThread;
 
 namespace {
@@ -100,7 +96,7 @@ constexpr char kCreditsCssPath[] = "credits.css";
 constexpr char kStatsJsPath[] = "stats.js";
 constexpr char kStringsJsPath[] = "strings.js";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 constexpr char kTerminaCreditsPath[] = "about_os_credits.html";
 
@@ -548,7 +544,7 @@ LinuxProxyConfigUI::LinuxProxyConfigUI()
     : AboutUIConfigBase(chrome::kChromeUILinuxProxyConfigHost) {}
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 OSCreditsUI::OSCreditsUI()
     : AboutUIConfigBase(chrome::kChromeUIOSCreditsHost) {}
 
@@ -599,7 +595,7 @@ void AboutUIHTMLSource::StartDataRequest(
   } else if (source_name_ == chrome::kChromeUILinuxProxyConfigHost) {
     response = AboutLinuxProxyConfig();
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   } else if (source_name_ == chrome::kChromeUIOSCreditsHost ||
              source_name_ == chrome::kChromeUICrostiniCreditsHost ||
              source_name_ == chrome::kChromeUIBorealisCreditsHost) {
@@ -628,7 +624,7 @@ void AboutUIHTMLSource::StartDataRequest(
 #endif
 #if !BUILDFLAG(IS_ANDROID)
   } else if (source_name_ == chrome::kChromeUITermsHost) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (!path.empty()) {
       ChromeOSTermsHandler::Start(path, std::move(callback));
       return;
@@ -665,7 +661,7 @@ std::string AboutUIHTMLSource::GetMimeType(const GURL& url) {
 
 std::string AboutUIHTMLSource::GetAccessControlAllowOriginForOrigin(
     const std::string& origin) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Allow chrome://oobe to load chrome://terms via XHR.
   if (source_name_ == chrome::kChromeUITermsHost &&
       base::StartsWith(chrome::kChromeUIOobeURL, origin,

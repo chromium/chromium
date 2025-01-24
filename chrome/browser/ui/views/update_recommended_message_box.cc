@@ -50,7 +50,7 @@ UpdateRecommendedMessageBox::UpdateRecommendedMessageBox() {
 #endif
 
   std::u16string update_message;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   update_message = l10n_util::GetStringUTF16(IDS_UPDATE_RECOMMENDED);
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
@@ -76,7 +76,7 @@ bool UpdateRecommendedMessageBox::Accept() {
 }
 
 bool UpdateRecommendedMessageBox::ShouldShowWindowTitle() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return false;
 #else
   return true;

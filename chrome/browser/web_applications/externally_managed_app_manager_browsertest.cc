@@ -857,7 +857,7 @@ IN_PROC_BROWSER_TEST_P(ExternallyManagedAppManagerBrowserTestShortcut,
 
   ExternalInstallOptions options =
       CreateInstallOptions(install_url, ExternalInstallSource::kExternalPolicy);
-  options.install_as_diy = GetParam();
+  options.install_as_shortcut = GetParam();
 
   InstallApp(options);
   ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
@@ -874,7 +874,7 @@ IN_PROC_BROWSER_TEST_P(ExternallyManagedAppManagerBrowserTestShortcut,
       registrar().GetAppByStartUrl(manifest_start_url) != nullptr;
   EXPECT_NE(startUrlIsInstallUrl, startUrlFromManifest);
 
-  EXPECT_EQ(options.install_as_diy, startUrlIsInstallUrl);
+  EXPECT_EQ(options.install_as_shortcut, startUrlIsInstallUrl);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

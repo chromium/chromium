@@ -92,7 +92,7 @@ class ExclusiveAccessBubbleViewsTest : public TestWithBrowserView {
   }
 
   std::u16string GetFullscreenAcceleratorString() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     return u"Fullscreen";
 #else
     ui::Accelerator accelerator;

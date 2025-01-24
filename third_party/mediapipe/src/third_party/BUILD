@@ -15,12 +15,26 @@
 
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@rules_foreign_cc//foreign_cc:cmake.bzl", "cmake")
+load(
+    "//mediapipe/framework/tool:mediapipe_files.bzl",
+    "mediapipe_files",
+)
 
 licenses(["notice"])  # Apache License 2.0
 
 package(default_visibility = ["//visibility:public"])
 
-exports_files(["LICENSE"])
+exports_files([
+    "LICENSE",
+    "requirements_lock.txt",
+    "requirements_lock_3_10.txt",
+    "requirements_lock_3_11.txt",
+    "requirements_lock_3_12.txt",
+])
+
+mediapipe_files(srcs = [
+    "libc++_shared.so",
+])
 
 cc_library(
     name = "glog",
@@ -57,6 +71,14 @@ config_setting(
     name = "opencv_source_build",
     define_values = {
         "OPENCV": "source",
+    },
+    visibility = ["//visibility:public"],
+)
+
+config_setting(
+    name = "opencv_prebuilt_build",
+    define_values = {
+        "OPENCV": "prebuilt",
     },
     visibility = ["//visibility:public"],
 )
@@ -105,10 +127,43 @@ config_setting(
     },
 )
 
+config_setting(
+    name = "opencv_darwin_prebuild",
+    define_values = {
+        "OPENCV": "prebuilt",
+    },
+    values = {
+        "apple_platform_type": "macos",
+        "cpu": "darwin",
+    },
+)
+
+config_setting(
+    name = "opencv_darwin_arm64_prebuild",
+    define_values = {
+        "OPENCV": "prebuilt",
+    },
+    values = {
+        "apple_platform_type": "macos",
+        "cpu": "darwin_arm64",
+    },
+)
+
+alias(
+    name = "opencv_prebuilt",
+    actual = select({
+        "//mediapipe:ios": "@ios_opencv//:opencv",
+        ":opencv_darwin_prebuild": "//third_party/prebuilts:opencv_darwin",
+        ":opencv_darwin_arm64_prebuild": "//third_party/prebuilts:opencv_darwin_arm64",
+        "//conditions:default": ":opencv_cmake",
+    }),
+)
+
 alias(
     name = "opencv",
     actual = select({
         ":opencv_source_build": ":opencv_cmake",
+        ":opencv_prebuilt_build": ":opencv_prebuilt",
         ":opencv_ios_sim_arm64_source_build": "@ios_opencv_source//:opencv",
         ":opencv_ios_arm64_source_build": "@ios_opencv_source//:opencv",
         ":opencv_ios_x86_64_source_build": "@ios_opencv_source//:opencv",
@@ -181,7 +236,7 @@ cmake(
         # For example, when building //mediapipe/calculators/video:opencv_video_encoder_calculator_test,
         # the dependency //mediapipe/framework/formats:image_frame_opencv will
         # be built as a shared library, which depends on a cv::Mat constructor,
-        # and expects it to be provided by the main exacutable. The main
+        # and expects it to be provided by the main executable. The main
         # executable depends on libimage_frame_opencv.so and links in
         # libopencv_core.a, which contains cv::Mat. However, if
         # libopencv_core.a marks its symbols as hidden, then cv::Mat is in
@@ -379,4 +434,17 @@ java_import(
     jars = [
         "@com_google_protobuf//java/core:libcore.jar",
     ],
+)
+
+cc_binary(
+    name = "libc++_shared",
+    srcs = ["libc++_shared.so"],
+    linkshared = 1,
+    linkstatic = 1,
+)
+
+cc_library(
+    name = "libc++_shared_lib",
+    srcs = [":libc++_shared.so"],
+    alwayslink = 1,
 )
