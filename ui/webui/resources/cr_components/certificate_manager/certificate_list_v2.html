@@ -44,7 +44,7 @@
     </cr-expand-button>
   </div>
 
-  <cr-collapse id="certs" opened="[[expanded_]]">
+  <cr-collapse id="certs" opened="[[expanded_]]" aria-live="polite">
     <template is="dom-repeat" items="[[certificates_]]">
       <certificate-entry-v2
           cert-source="[[certSource]]"

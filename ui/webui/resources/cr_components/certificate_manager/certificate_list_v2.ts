@@ -170,6 +170,7 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
     if (result !== null && result.success !== undefined) {
       // On successful deletion, refresh the certificate list.
       this.refreshCertificates();
+      this.$.importCert.focus();
     }
   }
 
