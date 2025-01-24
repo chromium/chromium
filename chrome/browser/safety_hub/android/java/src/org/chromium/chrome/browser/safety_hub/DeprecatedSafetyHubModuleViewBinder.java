@@ -46,17 +46,6 @@ public class DeprecatedSafetyHubModuleViewBinder {
         }
     }
 
-    public static void bindNotificationsReviewProperties(
-            PropertyModel model,
-            SafetyHubExpandablePreference preference,
-            PropertyKey propertyKey) {
-        bindCommonProperties(model, preference, propertyKey);
-        if (DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT
-                == propertyKey) {
-            updateNotificationsReviewModule(preference, model);
-        }
-    }
-
     public static void bindBrowserStateProperties(
             PropertyModel model, CardPreference preference, PropertyKey propertyKey) {
         if (DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE == propertyKey
@@ -81,72 +70,6 @@ public class DeprecatedSafetyHubModuleViewBinder {
         boolean managed = model.get(DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
         preference.setIcon(getIconForModuleState(preference.getContext(), state, managed));
         preference.setOrder(getOrderForModuleState(option, state, managed));
-    }
-
-    private static void updateNotificationsReviewModule(
-            SafetyHubExpandablePreference preference, PropertyModel model) {
-        @ModuleOption int option = ModuleOption.NOTIFICATION_REVIEW;
-        int notificationPermissionsForReviewCount =
-                model.get(
-                        DeprecatedSafetyHubModuleProperties
-                                .NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT);
-        @ModuleState int state = getModuleState(model, option);
-        String title;
-        String summary;
-        String primaryButtonText = null;
-        String secondaryButtonText;
-        View.OnClickListener primaryButtonListener = null;
-        View.OnClickListener secondaryButtonListener = null;
-
-        if (notificationPermissionsForReviewCount > 0) {
-            title =
-                    preference
-                            .getContext()
-                            .getResources()
-                            .getQuantityString(
-                                    R.plurals.safety_hub_notifications_review_warning_title,
-                                    notificationPermissionsForReviewCount,
-                                    notificationPermissionsForReviewCount);
-            summary =
-                    preference
-                            .getContext()
-                            .getString(R.string.safety_hub_notifications_review_warning_summary);
-            primaryButtonText =
-                    preference
-                            .getContext()
-                            .getString(R.string.safety_hub_notifications_reset_all_button);
-            secondaryButtonText =
-                    preference.getContext().getString(R.string.safety_hub_view_sites_button);
-            primaryButtonListener =
-                    model.get(DeprecatedSafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
-            secondaryButtonListener =
-                    model.get(DeprecatedSafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER);
-        } else {
-            title =
-                    preference
-                            .getContext()
-                            .getString(R.string.safety_hub_notifications_review_ok_title);
-            summary =
-                    preference
-                            .getContext()
-                            .getString(R.string.safety_hub_notifications_review_ok_summary);
-            secondaryButtonText =
-                    preference
-                            .getContext()
-                            .getString(R.string.safety_hub_go_to_notification_settings_button);
-            secondaryButtonListener =
-                    model.get(DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
-        }
-
-        preference.setTitle(title);
-        preference.setSummary(summary);
-        preference.setPrimaryButtonText(primaryButtonText);
-        preference.setSecondaryButtonText(secondaryButtonText);
-        preference.setPrimaryButtonClickListener(primaryButtonListener);
-        preference.setSecondaryButtonClickListener(secondaryButtonListener);
-
-        preference.setIcon(getIconForModuleState(preference.getContext(), state, false));
-        preference.setOrder(getOrderForModuleState(option, state, false));
     }
 
     private static void updateBrowserStateModule(CardPreference preference, PropertyModel model) {
