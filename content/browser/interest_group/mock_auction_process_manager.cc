@@ -409,6 +409,9 @@ void MockSellerWorklet::ScoreAd(
     const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
     auction_worklet::mojom::TrustedSignalsCacheKeyPtr trusted_signals_cache_key,
+    auction_worklet::mojom::CreativeInfoWithoutOwnerPtr ad,
+    std::vector<auction_worklet::mojom::CreativeInfoWithoutOwnerPtr>
+        ad_components,
     const std::optional<GURL>& direct_from_seller_seller_signals,
     const std::optional<std::string>&
         direct_from_seller_seller_signals_header_ad_slot,
@@ -419,14 +422,11 @@ void MockSellerWorklet::ScoreAd(
         browser_signals_other_seller,
     const std::optional<blink::AdCurrency>& component_expect_bid_currency,
     const url::Origin& browser_signal_interest_group_owner,
-    const GURL& browser_signal_render_url,
     const std::optional<std::string>&
         browser_signal_selected_buyer_and_seller_reporting_id,
     const std::optional<std::string>&
         browser_signal_buyer_and_seller_reporting_id,
-    const std::vector<GURL>& browser_signal_ad_components,
     uint32_t browser_signal_bidding_duration_msecs,
-    const std::optional<blink::AdSize>& browser_signal_render_size,
     bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
     const std::optional<base::TimeDelta> seller_timeout,
     uint64_t trace_id,

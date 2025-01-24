@@ -3710,6 +3710,19 @@ Se <ph name="PRODUCT_NAME" /> non si chiude correttamente (ad esempio, in caso d
 <translation id="3700193037252896716">La frequenza del riavvio.</translation>
 <translation id="3700318587977845664">La frequenza del controllo della disponibilità di aggiornamenti.</translation>
 <translation id="3701121231485832347">Consente di gestire le impostazioni specifiche dei dispositivi <ph name="PRODUCT_OS_NAME" /> gestiti da <ph name="MS_AD_NAME" />.</translation>
+<translation id="3701177991731919830">Questa policy consente di attivare l'app Trasferimento dei contenuti per gli utenti gestiti. L'app Trasferimento dei contenuti aiuta gli utenti a trasferire i propri dati dal loro account gestito a un account consumer.
+
+Se la policy <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> è impostata su <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />, l'app Trasferimento dei contenuti verrà mostrata tra le date di inizio e fine (comprese) in base all'ora locale.
+
+Se la policy <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> è impostata su <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> o se non viene configurata, l'app non viene mostrata.
+
+Se la policy <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> non viene configurata, l'app viene mostrata fino alla data di fine.
+
+Se la policy <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" /> non viene configurata, l'app viene mostrata a tempo indeterminato dalla data di inizio.
+
+Se non vengono impostate né <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> né <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" />, l'app viene mostrata a tempo indeterminato. Se le date di inizio e fine non sono valide, l'app Trasferimento dei contenuti non viene mostrata. Ciò include i casi in cui le date fornite non esistono o la data di fine è precedente alla data di inizio.
+
+Per il corretto funzionamento dell'app Trasferimento dei contenuti, è necessario attivare anche il trasferimento di dati con Takeout. Per maggiori informazioni, visita la pagina https://support.google.com/a/answer/6364687.</translation>
 <translation id="3702518095257671450">Attestazione da remoto</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Il campo a una sola riga è obsoleto e sarà rimosso a breve. Inizia a usare la casella di testo multiriga qui sotto).</translation>
 <translation id="3711561721191203926">Se questo criterio viene impostato su Attivato, ogni volta che dovrebbe essere visualizzato un avviso in <ph name="DEV_TOOLS_NAME" /> a causa di controlli <ph name="PRIVATE_NETWORK_ACCESS" /> non riusciti, la richiesta principale verrà bloccata.
@@ -8473,6 +8486,14 @@ Se questo criterio viene impostato su <ph name="PROVISION_MANAGED_CLIENT_CERTIFI
       Se il criterio non viene impostato, la barra delle app verrà posizionata per impostazione predefinita nella parte inferiore dello schermo, ma l'utente potrà cambiare la posizione.</translation>
 <translation id="7039815268521168329">Mostrare il flusso Voice Match dell'Assistente Google durante la configurazione iniziale</translation>
 <translation id="7040229947030068419">Valore di esempio:</translation>
+<translation id="7044626519138840387">Un elenco di origini di app client Remote Desktop che potrebbero eseguire le richieste
+API WebAuthn provenienti da una sessione di navigazione su un host remoto.
+
+Qualsiasi origine configurata in questa policy può inviare richieste WebAuthn per ID
+Relying Party (ID RP) che normalmente non sarebbe autorizzata a richiedere.
+
+Sono consentite solo origini HTTPS valide. I caratteri jolly non sono supportati.
+Le voci non valide vengono ignorate.</translation>
 <translation id="7044883996351280650">Controlla il servizio backup e ripristino di Android</translation>
 <translation id="7045221780834308118">Se il criterio viene impostato su Enabled, le applicazioni web di terze parti possono usare l'API Desk per controllare le scrivanie di <ph name="PRODUCT_OS_NAME" />. Se il criterio non viene configurato o se viene disattivato, <ph name="DESK_API_NAME" /> non sarà disponibile. Il criterio verrà applicato soltanto sui dispositivi registrati.</translation>
 <translation id="7046113122884041950">Non consentire Smart Lock</translation>
@@ -10673,6 +10694,7 @@ lo schema HTTPS.</translation>
 <translation id="8734543507835977857">Avvia i ritardi di gestione dell'alimentazione e i limiti di durata delle sessioni all'inizio della sessione</translation>
 <translation id="8736538322216687231">Imponi livello minimo della Modalità con restrizioni di YouTube</translation>
 <translation id="873800217865395140">Frequenza di raccolta della telemetria dei siti web in millisecondi.</translation>
+<translation id="8743149927570551353">Configura quando lo strumento Trasferimento dei contenuti di <ph name="PRODUCT_OS_NAME" /> è disponibile</translation>
 <translation id="8743902569031401303">Consenti sondaggi di Navigazione sicura</translation>
 <translation id="8744844164152340112">Consente di stabilire il tema (scuro/chiaro/automatico) usato per eseguire il rendering dell'UI durante l'OOBE e nella sessione.
       Con la modalità automatica viene effettuato il passaggio automatico tra tema scuro e tema chiaro all'alba e al tramonto.
@@ -11276,6 +11298,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="9149075762533142978">La funzionalità Generatore codice QR è attiva.</translation>
 <translation id="9149678135092892302">Disattiva la generazione di report sulle informazioni di versione</translation>
 <translation id="9150416707757015439">Questa norma è obsoleta. Utilizza IncognitoModeAvailability. Consente di attivare la modalità di navigazione in incognito in <ph name="PRODUCT_NAME" />. Se questa impostazione viene attivata o non viene configurata, gli utenti potranno aprire le pagine web in modalità di navigazione in incognito. Se l'impostazione viene disattivata, gli utenti non potranno aprire le pagine web in modalità di navigazione in incognito. Se questa norma non viene impostata, l'impostazione verrà attivata e gli utenti potranno utilizzare la modalità di navigazione in incognito.</translation>
+<translation id="9151267823917882070">Origini consentite per le richieste WebAuthn tramite proxy da applicazioni Remote Desktop.</translation>
 <translation id="9152473318295429890">Attiva i suggerimenti contestuali delle pagine web correlate</translation>
 <translation id="9155218447258425310">Durata della notifica alla rimozione della smart card per <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9155375380628728544">Se il criterio viene impostato, gli utenti possono aggiungere all'elenco di lingue preferite soltanto una delle lingue elencate in questo criterio.

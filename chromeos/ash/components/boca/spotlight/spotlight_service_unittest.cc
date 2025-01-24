@@ -35,7 +35,7 @@ using ::testing::WithArg;
 
 namespace ash::boca {
 namespace {
-constexpr char kGaiaId[] = "123";
+constexpr GaiaId::Literal kGaiaId("123");
 constexpr char kUserEmail[] = "cat@gmail.com";
 constexpr char kDeviceId[] = "device0";
 constexpr char kStudentDeviceId[] = "device1";
@@ -47,7 +47,7 @@ constexpr char kConnectionCode[] = "456";
   session.set_session_state(::boca::Session::ACTIVE);
   session.set_session_id("session_id");
   auto* teacher = session.mutable_teacher();
-  teacher->set_gaia_id(kGaiaId);
+  teacher->set_gaia_id(kGaiaId.ToString());
   ::boca::StudentStatus status;
   (*status.mutable_devices())[kStudentDeviceId] = ::boca::StudentDevice();
   (*session.mutable_student_statuses())[kStudentId] = std::move(status);

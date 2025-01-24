@@ -84,8 +84,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     bool is_using_raw_draw = false;
   };
 
-  // A base class to hold ownership of software backed PoolResources. Allows the
-  // client to define destruction semantics.
+  // A class to hold ownership of software backed PoolResources.
   class CC_EXPORT SoftwareBacking {
    public:
     SoftwareBacking();

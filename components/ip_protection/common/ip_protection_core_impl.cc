@@ -71,7 +71,8 @@ IpProtectionCoreImpl::IpProtectionCoreImpl(
         ip_protection_proxy_config_manager,
     std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
         ip_protection_token_managers,
-    bool is_ip_protection_enabled)
+    bool is_ip_protection_enabled,
+    bool use_regular_mdl)
     : masked_domain_list_manager_(masked_domain_list_manager),
       ipp_proxy_config_manager_(std::move(ip_protection_proxy_config_manager)),
       ipp_token_managers_(std::move(ip_protection_token_managers)),
@@ -79,6 +80,7 @@ IpProtectionCoreImpl::IpProtectionCoreImpl(
       ipp_over_quic_(net::features::kIpPrivacyUseQuicProxies.Get()),
       enable_token_caching_by_geo_(
           net::features::kIpPrivacyCacheTokensByGeo.Get()) {
+  mdl_type_ = use_regular_mdl ? MdlType::kRegularBrowsing : MdlType::kDefault;
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
 }
 
@@ -95,7 +97,7 @@ bool IpProtectionCoreImpl::RequestShouldBeProxied(
     const net::NetworkAnonymizationKey& network_anonymization_key) {
   base::ElapsedTimer matches_call;
   bool should_be_proxied = masked_domain_list_manager_->Matches(
-      request_url, network_anonymization_key);
+      request_url, network_anonymization_key, mdl_type_);
   Telemetry().MdlMatchesTime(matches_call.Elapsed());
   return should_be_proxied;
 }

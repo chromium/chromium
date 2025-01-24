@@ -27,6 +27,8 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -370,6 +372,15 @@ void MultiProfileSignOut(Browser* browser,
                          bool force_snackbar_over_toolbar,
                          MDCSnackbarMessage* snackbar_message,
                          ProceduralBlock signout_completion) {
+  SceneState* scene_state = browser->GetSceneState();
+  if (browser->type() != Browser::Type::kRegular) {
+    // Regardless of the current browser type, the corresponding regular browser
+    // should be used to execute the signout. Note: if the brower is derived at
+    // a later stage from the SceneState, the mainBrowserProvider should be
+    // used.
+    browser = scene_state.browserProviderInterface.mainBrowserProvider.browser;
+  }
+
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
 
@@ -377,8 +388,6 @@ void MultiProfileSignOut(Browser* browser,
       AreSeparateProfilesForManagedAccountsEnabled() &&
       authentication_service->HasPrimaryIdentityManaged(
           signin::ConsentLevel::kSignin);
-
-  SceneState* scene_state = browser->GetSceneState();
 
   ChangeProfileContinuation continuation =
       CreateChangeProfileSignoutContinuation(

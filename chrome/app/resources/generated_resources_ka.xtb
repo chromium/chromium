@@ -55,6 +55,7 @@
 <translation id="103279545524624934">Android აპების გასაშვებად, გამოათავისუფლეთ მეხსიერება დისკზე.</translation>
 <translation id="1033780634303702874">წვდომა თქვენს სერიულ მოწყობილობებზე</translation>
 <translation id="1034484273907870301">ჩანართების მინიატურული ზოლი ტაბლეტის რეჟიმისთვის</translation>
+<translation id="1035289631433631911">კონტენტის ტრანსფერის ხელსაწყო</translation>
 <translation id="1035875743511577452">დაწკაპუნებით აირჩიეთ „თემის შეცვლა“, ხელოვანებით, ბუნებითა და სხვა თემებით შთაგონებული თემები რომ შეარჩიოთ</translation>
 <translation id="1036348656032585052">გამორთვა</translation>
 <translation id="1036511912703768636">წვდომა ამ რომელიმე USB მოწყობილობაზე</translation>
@@ -380,6 +381,7 @@
 <translation id="1246863218384630739"><ph name="VM_NAME" />-ის ინსტალაცია ვერ მოხერხდა: სურათის URL-მა დააბრუნა შეცდომის კოდი <ph name="HTTP_ERROR" />. მიმართეთ თქვენს ადმინისტრატორს.</translation>
 <translation id="1247372569136754018">მიკროფონი (შიდა)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{შეტყობინებების გამოგზავნა არ არის დაშვებული 1 საიტისთვის}other{შეტყობინებების გამოგზავნა არ არის დაშვებული {NUM_SITES} საიტისთვის}}</translation>
+<translation id="125097549534200450">გასუფთავება</translation>
 <translation id="1251366534849411931">მოსალოდნელი იყო გამხსნელი ფიგურული ფრჩხილი: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">მიმდინარეობს მობილური ინტერნეტის ქსელების სკანირება...</translation>
 <translation id="125220115284141797">ნაგულისხმევი</translation>
@@ -5933,6 +5935,7 @@
 <translation id="5177479852722101802">გაგრძელება კამერისა და მიკროფონზე წვდომის დაბლოკვით</translation>
 <translation id="5177549709747445269">თქვენ იყენებთ მობილურ მონაცემებს</translation>
 <translation id="5178667623289523808">წინა ელემენტის ძებნა</translation>
+<translation id="5180276433875360121">გამოჩნდეს <ph name="CERT_LIST" /></translation>
 <translation id="5181140330217080051">ჩამოტვირთვა</translation>
 <translation id="5181172023548002891">Google პაროლების მმართველში <ph name="ACCOUNT" />-ისთვის</translation>
 <translation id="5181551096188687373">ეს პაროლი შენახულია მხოლოდ ამ მოწყობილობაზე. თქვენს სხვა მოწყობილობებზე მის გამოსაყენებლად შეინახეთ ის თქვენს Google ანგარიშში (<ph name="USER_EMAIL" />).</translation>
@@ -8527,6 +8530,7 @@
 <translation id="7063311912041006059">URL <ph name="SPECIAL_SYMBOL" />-ით მოთხოვნის ადგილზე</translation>
 <translation id="706342288220489463">დართეთ ნება თქვენს ასისტენტს, დაგეხმაროთ თქვენს ეკრანზე არსებული ინფორმაციის მეშვეობით</translation>
 <translation id="70641621694466590">პაროლების გვერდზე გადასვლა</translation>
+<translation id="7064209589142995848">კონტენტის ტრანსფერი</translation>
 <translation id="7064734931812204395">მიმდინარეობს Linux-ის კონტეინერის კონფიგურაცია. ამას შეიძლება 30 წუთამდე დრო დასჭირდეს.</translation>
 <translation id="7065223852455347715">ეს მოწყობილობა იმგვარადაა ჩაკეტილი, რომ მისი ორგანიზაციაში რეგისტრაცია შეუძლებელია.  თუ მოწყობილობის რეგისტრაცია გსურთ, ჯერ უნდა გაიაროთ მოწყობილობის აღდგენა.</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{1 პაროლი იმპორტირებულია <ph name="BRAND" />-ში <ph name="USER_EMAIL" />-ისთვის}other{{NUM_PASSWORDS} პაროლი იმპორტირებულია <ph name="BRAND" />-ში <ph name="USER_EMAIL" />-ისთვის}}</translation>
@@ -9565,6 +9569,7 @@
 <translation id="7810202088502699111">კონტექსტური ფანჯრები დაბლოკილია ამ გვერდზე.</translation>
 <translation id="7810367892333449285">თქვენი შენატანის ფორმატი უნდა იყოს <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ მისამართი<ph name="LPA_2" />$<ph name="LPA_3" />დამთხვევის არასავალდებულო იდენტიფიკატორი<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">სცადეთ ხელახლა, ან ქვემოთ აირჩიეთ ადრე გენერირებული ერთ-ერთი თემა.</translation>
+<translation id="7811986034759500329">დაყენებულია სისტემის პარამეტრებში</translation>
 <translation id="7812170317334653156">Google Calendar დამალულია</translation>
 <translation id="7814090115158024843">არასდროს შემომთავაზო წერაში დახმარება ამ საიტებზე</translation>
 <translation id="7814458197256864873">&amp;კოპირება</translation>

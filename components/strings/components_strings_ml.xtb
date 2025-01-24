@@ -185,6 +185,7 @@
 <translation id="1310938305420497484">ആദ്യം, ടാബുകൾ തുറന്ന് സൈറ്റുകൾ സന്ദർശിക്കുക</translation>
 <translation id="1314311879718644478">അനുബന്ധയാഥാർത്ഥ്യ ഉള്ളടക്കം കാണുക</translation>
 <translation id="1314509827145471431">വലതുവശത്ത് ബൈൻഡ് ചെയ്യുക</translation>
+<translation id="1314784609072437689">കീബോർഡ് അസാധുവാക്കൽ</translation>
 <translation id="1316805916535763484">ഓപ്പൺ ഓൺലൈൻ കോഴ്സുകൾ</translation>
 <translation id="1318023360584041678">ടാബ് ഗ്രൂപ്പിൽ സംരക്ഷിച്ചു</translation>
 <translation id="1319245136674974084">ഈ ആപ്പിൽ വീണ്ടും ആവശ്യപ്പെടരുത്</translation>
@@ -2919,6 +2920,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">മൂന്നാം കക്ഷി കുക്കികളെ Chrome സ്വയമേവ പരിമിതപ്പെടുത്തുന്നു</translation>
 <translation id="6188479691141473408">എന്നിവയും മറ്റ് <ph name="N_FIELDS" /> ഫീൽഡുകളും</translation>
+<translation id="6190518157737269631">നിങ്ങളുടെ കീബോർഡിലെ Esc പോലുള്ള ചില കീകൾ അസാധുവാക്കുക</translation>
 <translation id="6194209731893739467">നിങ്ങൾ ട്രാക്ക് ചെയ്യുന്ന എല്ലാ ഉൽപ്പന്നങ്ങളും ഇവിടെ കാണാം</translation>
 <translation id="6195163219142236913">മൂന്നാം കക്ഷി കുക്കികൾ പരിമിതപ്പെടുത്തിയിരിക്കുന്നു</translation>
 <translation id="6195371403461054755">ജിയോളജി</translation>
@@ -4190,6 +4192,7 @@
 <translation id="8421158157346464398">ഔദ്യോഗിക പ്രൊഫൈൽ വിവരങ്ങൾ (നിങ്ങളുടെ ഔദ്യോഗിക പ്രൊഫൈൽ ഉപയോക്തൃനാമം പോലുള്ളവ)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">മാറ്റുക</translation>
+<translation id="8426945547715537628">കീബോർഡ് അസാധുവാക്കാൻ അനുവദിക്കണോ?</translation>
 <translation id="8427848540066057481">500 x 750 മി.മീ</translation>
 <translation id="8428213095426709021">ക്രമീകരണം</translation>
 <translation id="8428634594422941299">മനസ്സിലായി</translation>
@@ -4276,6 +4279,7 @@
 <translation id="8574841453995331336">റെഫ്രിജറേറ്ററുകളും ഫ്രീസറുകളും</translation>
 <translation id="8577192028579836704">എല്ലാ ഓപ്ഷനുകളും സാധാരണഗതിയിൽ <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">വെർച്വൽ കാർഡ് ലഭ്യമല്ല</translation>
+<translation id="8579000896558714521">കീബോർഡ് അസാധുവാക്കൽ</translation>
 <translation id="8580265901435899937">വിനോദസഞ്ചാര കേന്ദ്രങ്ങൾ</translation>
 <translation id="8581064022803799721">ഈ പേജ് <ph name="LAST_BOOKMARKS_FOLDER" /> എന്നതിൽ സംരക്ഷിച്ചിരിക്കുന്നു.</translation>
 <translation id="8586082901536468629">സ്‌ക്വാഷ്, റാക്കറ്റ്‌ബോൾ ഉപകരണം</translation>

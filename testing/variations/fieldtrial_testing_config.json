@@ -18553,6 +18553,25 @@
             ]
         }
     ],
+    "ProtectedAudienceTrustedSignalsKVv1CreativeScanning": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FledgeTrustedSignalsKVv1CreativeScanning"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProtectedAudiencesEnableBandAKAnonEnforcement": [
         {
             "platforms": [

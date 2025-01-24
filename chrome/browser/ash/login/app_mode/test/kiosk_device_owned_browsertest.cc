@@ -5,7 +5,6 @@
 #include <string>
 
 #include "base/check_deref.h"
-#include "base/functional/bind.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
@@ -14,10 +13,7 @@
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
-#include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
-#include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -28,8 +24,6 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -47,23 +41,10 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
 namespace {
-
-const test::UIPath kSplashScreenLaunchText = {"app-launch-splash",
-                                              "launchText"};
-
-void WaitForNetworkTimeoutMessage() {
-  test::TestPredicateWaiter(base::BindRepeating([]() {
-    return test::OobeJS().GetString(
-               ash::test::GetOobeElementPath(kSplashScreenLaunchText) +
-               ".textContent") ==
-           l10n_util::GetStringUTF8(IDS_APP_START_NETWORK_WAIT_TIMEOUT_MESSAGE);
-  })).Wait();
-}
 
 // Helper class to count how many times an extension has been loaded.
 class ExtensionReadyObserver : public extensions::ExtensionRegistryObserver {
@@ -123,26 +104,6 @@ class KioskDeviceOwnedTest : public KioskBaseTest {
         user_manager::UserManager::Get()));
   }
 };
-
-IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
-                       LaunchAppNetworkDownConfigureNotAllowed) {
-  auto auto_reset =
-      NetworkUiController::SetCanConfigureNetworkForTesting(false);
-
-  // Start app launch and wait for network connectivity timeout.
-  StartAppLaunchFromLoginScreen(NetworkStatus::kOffline);
-  OobeScreenWaiter splash_waiter(AppLaunchSplashScreenView::kScreenId);
-  splash_waiter.Wait();
-
-  WaitForNetworkTimeoutMessage();
-
-  // Configure network link should not be visible.
-  test::OobeJS().ExpectHiddenPath(kConfigNetwork);
-
-  // Network becomes online and app launch is resumed.
-  SimulateNetworkOnline();
-  WaitForAppLaunchSuccess();
-}
 
 // Verifies that an enterprise device does not auto-launch kiosk mode when cros
 // settings are untrusted.

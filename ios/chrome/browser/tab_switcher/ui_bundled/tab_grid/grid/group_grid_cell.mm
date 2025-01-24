@@ -173,6 +173,7 @@ const CGFloat kTopBarLargeInset = 20;
 
 #pragma mark - UIView
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
 
@@ -190,6 +191,7 @@ const CGFloat kTopBarLargeInset = 20;
     [self updateTopBarConstraints];
   }
 }
+#endif
 
 - (void)didMoveToWindow {
   if (self.theme == GridThemeLight) {

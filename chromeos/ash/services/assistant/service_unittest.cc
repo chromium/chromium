@@ -47,9 +47,9 @@ constexpr base::TimeDelta kAutoRecoverTime = base::Seconds(60);
 
 #define EXPECT_STATE(_state) EXPECT_EQ(_state, assistant_manager()->GetState())
 
-const char* kAccessToken = "fake access token";
-const char* kGaiaId = "gaia_id_for_user_gmail.com";
-const char* kEmailAddress = "user@gmail.com";
+constexpr char kAccessToken[] = "fake access token";
+constexpr GaiaId::Literal kGaiaId("gaia_id_for_user_gmail.com");
+constexpr char kEmailAddress[] = "user@gmail.com";
 
 // Should be the same value as the one in service.cc.
 constexpr int kMaxStartServiceRetries = 1;
@@ -281,7 +281,7 @@ TEST_F(AssistantServiceTest, ShouldSendUserInfoWhenStarting) {
   ASSERT_TRUE(assistant_manager()->access_token().has_value());
   EXPECT_EQ(kAccessToken, assistant_manager()->access_token().value());
   ASSERT_TRUE(assistant_manager()->gaia_id().has_value());
-  EXPECT_EQ(GaiaId(kGaiaId), assistant_manager()->gaia_id());
+  EXPECT_EQ(kGaiaId, assistant_manager()->gaia_id());
 }
 
 TEST_F(AssistantServiceTest, ShouldSendUserInfoWhenAccessTokenIsRefreshed) {
@@ -298,7 +298,7 @@ TEST_F(AssistantServiceTest, ShouldSendUserInfoWhenAccessTokenIsRefreshed) {
   ASSERT_TRUE(assistant_manager()->access_token().has_value());
   EXPECT_EQ("new token", assistant_manager()->access_token());
   ASSERT_TRUE(assistant_manager()->gaia_id().has_value());
-  EXPECT_EQ(GaiaId(kGaiaId), assistant_manager()->gaia_id());
+  EXPECT_EQ(kGaiaId, assistant_manager()->gaia_id());
 }
 
 TEST_F(AssistantServiceTest, ShouldSetClientStatusToNotReadyWhenStarting) {

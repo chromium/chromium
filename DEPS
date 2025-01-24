@@ -276,7 +276,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': '78aad45e140fbc2b906e55481363db8e95ae3cde',
+  'src_internal_revision': '8262714acc40f9146bc67266f0bb157583297683',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
@@ -352,7 +352,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling chromium_variations
   # and whatever else without interference from each other.
-  'chromium_variations_revision': '4b9768b2d06ff735ffe85beb05caf84b0acb409b',
+  'chromium_variations_revision': '4a63832eb1dbb356420f5ba2b248d0721fc1090a',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'f29a5bd0f607f46060759d4a919f6531df5a6a53',
+  'devtools_frontend_revision': '1198dc18befa69262bce1ae1c0bc9fbd3b5299a9',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1435,7 +1435,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '033f8b5cca8e28efc6e4a984315dec5a20010b5b',
+    'fe286657605d753c862ed21ab69a86e13bf7e7d7',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2429,7 +2429,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'e81305634834e4403052756ad8056ac1499eab5a',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'bc6aeafb395f6f3db7dc11df0deccdee07adc8e3',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',
@@ -2939,7 +2939,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': 'uI04oZ1khnf3eRhmAYSxxFnDXbxgWpu-HUnITxVx-P0C',
+        'version': 'OWb8lAU1rOOSIykacOpcmLku5WxO2FszHRx6mJBtmMUC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',

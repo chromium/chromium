@@ -9,6 +9,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 // Settings that adjust color, exposure and white balance of the image.
 struct ImageEnhancement {
   bool lighting;
+
   // Additional parameters/adjustments will be added in the future.
 };
 
@@ -47,11 +48,11 @@ enum SetConfigurationResult {
 
 // The interface for reading / observing the effects that are applied to live
 // video streams.
+// Hosted in VideoEffectsManagerImpl running in the browser process.
 interface ReadonlyVideoEffectsManager {
   // Returns the current configuration.
   GetConfiguration() => (VideoEffectsConfiguration configuration);
 
   // Registers an observer to receive configuration change callbacks.
-  AddObserver(
-    pending_remote<VideoEffectsConfigurationObserver> observer);
+  AddObserver(pending_remote<VideoEffectsConfigurationObserver> observer);
 };

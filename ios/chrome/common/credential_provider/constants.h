@@ -40,6 +40,10 @@ NSString* AppGroupUserDefaultsCredentialProviderSavingPasskeysEnabled();
 // currently enabled.
 NSString* AppGroupUserDefaultsCredentialProviderPasswordSyncSetting();
 
+// Key for the app group user defaults containing whether automatic passkey
+// upgrade is currently enabled.
+NSString* AppGroupUserDefaulsCredentialProviderAutomaticPasskeyUpgradeEnabled();
+
 // Key for the app group user defaults containing whether passkey PRF support is
 // currently enabled.
 NSString* AppGroupUserDefaulsCredentialProviderPasskeyPRFEnabled();

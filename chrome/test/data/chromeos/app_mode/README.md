@@ -9,13 +9,49 @@ Chrome apps and extensions accessible to `FakeCWS` in automated tests.
 
 ### How to add a new test Chrome app or extension?
 
-1.  Pack your app or extension in the chrome://extensions page.
-2.  Save `<app_id>.pem` file to the app source directory inside
-    `apps_and_extensions`.
-3.  Save `<app_id>.crx` file to `webstore/downloads/` directory.
-4.  Create `<app_id>.textproto` file in `webstore/itemsnippet/` directory. See
-    other files in that directory for more details.
-5.  In `webstore/itemsnippet/BUILD.gn`, add `<app_id>.textproto` to `sources` so
+1.  Implement your app or extension under
+    `apps_and_extensions/<app_name>/v<number>`.
+
+2.  Pack your CRX.
+
+    *   You can navigate to chrome://extensions and click "Pack extension".
+    *   Or you can use Chrome on the command line to pack and generate a new key
+        as follows:
+
+    ```
+    testing/xvfb.py out/Release/chrome \
+      --pack-extension=</absolute/path/to/app>
+    ```
+
+    *   Or if you already have a key:
+
+    ```
+    testing/xvfb.py out/Release/chrome \
+      --pack-extension=</absolute/path/to/app> \
+      --pack-extension-key=</absolute/path/to/key.pem>
+    ```
+
+3.  Find the ID of your app.
+
+    *   You can navigate to chrome://extensions, drag and drop the CRX onto the
+        page, then find the ID in the entry for your app.
+    *   Or you can use the command line as follows:
+
+    ```
+    openssl rsa -in <path/to/key.pem> -pubout -outform DER \
+      | shasum -a 256 \
+      | head -c32 \
+      | tr 0-9a-f a-p
+    ```
+
+4.  Save the key file at `apps_and_extensions/<app_name>/<app_id>.pem`.
+
+5.  Save the CRX file at `webstore/downloads/<app_id>.crx`.
+
+6.  Create the `webstore/itemsnippet/<app_id>.textproto` file. See other files
+    in that directory for reference.
+
+7.  In `webstore/itemsnippet/BUILD.gn`, add `<app_id>.textproto` to `sources` so
     a protobuf string API response can be generated from the `.textproto` file.
 
 TODO(crbug.com/325314721): `webstore/inlineinstall/detail` is deprecated and no
@@ -24,8 +60,11 @@ is fully rolled out.
 
 ### How to use test Chrome Apps or extensions?
 
-To use a Chrome app in the test code, you need to know app id. You can find app
-id in the app source directory: `<app_id>.pem`.
+It's recommended to use these apps and extensions with `KioskMixin` via the
+helpers defined in `//chrome/browser/ash/app_mode/test/fake_cws_chrome_apps.h`.
+`KioskMixin` configures `FakeCWS` to serve the test apps, which in turn will
+read the files in `webstore/downloads`.
 
-As an example, see usage of "Kiosk base test app" with id
-`epancfbahpnkphlhpeefecinmgclhjlj` in `ChromeAppKioskLacrosTest` browser tests.
+As an example, see usages of the "Kiosk App With Local Data" app with ID
+`ckgconpclkocfoolbepdpgmgaicpegnp` in `KioskChromeAppDataUpdateTest` browser
+tests.

@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/sync/base/features.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_consumer.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -264,4 +265,44 @@ TEST_F(PasswordSettingsViewControllerTest,
                                 /*item=*/0)
                    .accessibilityTraits &
                UIAccessibilityTraitNotEnabled);
+}
+
+TEST_F(PasswordSettingsViewControllerTest,
+       DeleteAllDataDisabledWhenUserNotEligible) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kIOSEnableDeleteAllSavedCredentials);
+
+  // Re-create the controller so that the enabled flag is picked up.
+  CreateController();
+
+  id<PasswordSettingsConsumer> consumer =
+      base::apple::ObjCCast<PasswordSettingsViewController>(controller());
+  [consumer setCanDeleteAllCredentials:NO];
+  [consumer updateDeleteAllCredentialsButton];
+  EXPECT_TRUE(
+      GetTableViewItem(ExpectedSectionAfterAlwaysVisibleTopSections() + 1,
+                       /*item=*/0)
+          .accessibilityTraits &
+      UIAccessibilityTraitNotEnabled);
+}
+
+TEST_F(PasswordSettingsViewControllerTest,
+       DeleteAllDataButtonEnabledWhenUserEligible) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kIOSEnableDeleteAllSavedCredentials);
+
+  // Re-create the controller so that the enabled flag is picked up.
+  CreateController();
+
+  id<PasswordSettingsConsumer> consumer =
+      base::apple::ObjCCast<PasswordSettingsViewController>(controller());
+  [consumer setCanDeleteAllCredentials:YES];
+  [consumer updateDeleteAllCredentialsButton];
+  EXPECT_FALSE(
+      GetTableViewItem(ExpectedSectionAfterAlwaysVisibleTopSections() + 1,
+                       /*item=*/0)
+          .accessibilityTraits &
+      UIAccessibilityTraitNotEnabled);
 }

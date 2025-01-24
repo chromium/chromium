@@ -216,6 +216,7 @@ CredentialProviderService::CredentialProviderService(
   // Make sure the initial value of the pref is stored.
   OnPrefOrPolicyStatusChanged();
   UpdatePasswordSyncSetting();
+  UpdateAutomaticPasskeyUpgradeSetting();
   UpdatePasskeyPRFSetting();
   UpdatePasskeysM2Availability();
 }
@@ -536,6 +537,15 @@ void CredentialProviderService::UpdatePasswordSyncSetting() {
   [app_group::GetGroupUserDefaults()
       setObject:[NSNumber numberWithBool:is_syncing]
          forKey:AppGroupUserDefaultsCredentialProviderPasswordSyncSetting()];
+}
+
+void CredentialProviderService::UpdateAutomaticPasskeyUpgradeSetting() {
+  BOOL is_enabled =
+      base::FeatureList::IsEnabled(kCredentialProviderAutomaticPasskeyUpgrade);
+  [app_group::GetGroupUserDefaults()
+      setObject:[NSNumber numberWithBool:is_enabled]
+         forKey:
+             AppGroupUserDefaulsCredentialProviderAutomaticPasskeyUpgradeEnabled()];
 }
 
 void CredentialProviderService::UpdatePasskeyPRFSetting() {

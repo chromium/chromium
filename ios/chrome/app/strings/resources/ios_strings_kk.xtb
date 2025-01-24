@@ -562,6 +562,7 @@
 <translation id="3517216995152707259">Браузерді пайдалану деректерін жойсаңыз да, Google аккаунтыңыздан шығарылмайсыз. Ол үшін <ph name="BEGIN_LINK" />Chrome аккаунтынан шығыңыз<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">Интернетті шолу үшін қойындыны ашыңыз.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Қойындыны ашу}other{{count} қойындыны ашу}}</translation>
+<translation id="3523513363815970085">"Сіз көп кірген сайттар" модулін жасыру</translation>
 <translation id="3523789730715594198">Синхрондауды кез келген уақытта параметрлерде тоқтатуға болады. Google жүйесі Search және басқа да қызметтерді тарихыңызға негіздеп жекелендіре алады.</translation>
 <translation id="3527085408025491307">Қалта</translation>
 <translation id="3529024052484145543">Қауіпсіз емес</translation>
@@ -836,6 +837,7 @@
 <translation id="4769198578611055647">Кез келген құрылғыға сақталған кіру кілттеріне қол жеткізуге мүмкіндік береді.</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Инкогнито режимінде ашылсын ба?</translation>
+<translation id="479208892659046780">Сіз көп кірген сайттар</translation>
 <translation id="4792385443586519711">Компания атауы</translation>
 <translation id="479628432297359449">Жүктеп алу процесін тоқтату керек пе?</translation>
 <translation id="4796496140132859135">Қойындылар тобы. Жиылды.</translation>

@@ -185,6 +185,7 @@
 <translation id="1310938305420497484">पहिला ट्याबहरू खोल्नुहोस् र साइटहरूमा जानुहोस्</translation>
 <translation id="1314311879718644478">अग्मेन्टेड रियालिटीसम्बन्धी सामग्री हेर्नुहोस्</translation>
 <translation id="1314509827145471431">दायाँ बाइन्ड</translation>
+<translation id="1314784609072437689">किबोर्ड ओभरराइड</translation>
 <translation id="1316805916535763484">अनलाइन कोर्सहरू खोल्नुहोस्</translation>
 <translation id="1318023360584041678">ट्याब समूहमा सेभ गरिएको छ</translation>
 <translation id="1319245136674974084">यो एपका हकमा फेरि नसोधियोस्</translation>
@@ -2918,6 +2919,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome ले तेस्रो पक्षीय कुकीहरू स्वतः सीमित पार्छ</translation>
 <translation id="6188479691141473408">र थप <ph name="N_FIELDS" /> वटा फिल्ड</translation>
+<translation id="6190518157737269631">किबोर्डका Esc जस्ता केही कीहरू ओभरराइड गर्नुहोस्</translation>
 <translation id="6194209731893739467">तपाईंले ट्र्याक गरेका सबै उत्पादन यहाँ देखिन्छन्</translation>
 <translation id="6195163219142236913">तेस्रो पक्षीय कुकीहरू सीमित गरिएका छन्</translation>
 <translation id="6195371403461054755">भूगर्भशास्त्र</translation>
@@ -4190,6 +4192,7 @@
 <translation id="8421158157346464398">कार्य प्रोफाइलसम्बन्धी जानकारी (तपाईंको कार्य प्रोफाइलको युजरनेम जस्ता)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">परिवर्तन गर्नुहोस्</translation>
+<translation id="8426945547715537628">किबोर्ड ओभरराइड गर्न दिने हो?</translation>
 <translation id="8427848540066057481">५०० x ७५० मिलिमिटर</translation>
 <translation id="8428213095426709021">सेटिङहरू</translation>
 <translation id="8428634594422941299">बुझेँ</translation>
@@ -4276,6 +4279,7 @@
 <translation id="8574841453995331336">रेफ्रिजेरेटर तथा फ्रिजर</translation>
 <translation id="8577192028579836704">सबै विकल्पहरू सामान्यतया <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">भर्चुअल कार्ड उपलब्ध छैन</translation>
+<translation id="8579000896558714521">किबोर्ड ओभरराइड</translation>
 <translation id="8580265901435899937">पर्यटकीय स्थलहरू</translation>
 <translation id="8581064022803799721">यो पेज <ph name="LAST_BOOKMARKS_FOLDER" /> मा सेभ गरिएको छ।</translation>
 <translation id="8586082901536468629">स्क्वास र राकेटबलसम्बन्धी उपकरण</translation>

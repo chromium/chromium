@@ -51,7 +51,8 @@ IpProtectionCoreImplMojo::IpProtectionCoreImplMojo(
     mojo::PendingReceiver<ip_protection::mojom::CoreControl> pending_receiver,
     scoped_refptr<IpProtectionCoreHostRemote> core_host_remote,
     MaskedDomainListManager* masked_domain_list_manager,
-    bool is_ip_protection_enabled)
+    bool is_ip_protection_enabled,
+    bool use_regular_mdl)
     : IpProtectionCoreImpl(
           masked_domain_list_manager,
           core_host_remote
@@ -64,7 +65,8 @@ IpProtectionCoreImplMojo::IpProtectionCoreImplMojo(
               ? MakeTokenManagerMap(this, core_host_remote)
               : std::map<ProxyLayer,
                          std::unique_ptr<IpProtectionTokenManager>>(),
-          is_ip_protection_enabled),
+          is_ip_protection_enabled,
+          use_regular_mdl),
       receiver_(this, std::move(pending_receiver)) {}
 
 IpProtectionCoreImplMojo::IpProtectionCoreImplMojo(
@@ -73,11 +75,13 @@ IpProtectionCoreImplMojo::IpProtectionCoreImplMojo(
         ip_protection_proxy_config_manager,
     std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
         ip_protection_token_managers,
-    bool is_ip_protection_enabled)
+    bool is_ip_protection_enabled,
+    bool use_regular_mdl)
     : IpProtectionCoreImpl(masked_domain_list_manager,
                            std::move(ip_protection_proxy_config_manager),
                            std::move(ip_protection_token_managers),
-                           is_ip_protection_enabled),
+                           is_ip_protection_enabled,
+                           use_regular_mdl),
       receiver_(this) {}
 
 IpProtectionCoreImplMojo::~IpProtectionCoreImplMojo() = default;

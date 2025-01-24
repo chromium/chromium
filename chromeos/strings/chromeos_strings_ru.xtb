@@ -296,6 +296,7 @@
 <translation id="2240366984605217732">Переключение раскладки клавиатуры</translation>
 <translation id="2244834438220057800">зеленый</translation>
 <translation id="225692081236532131">Статус активации</translation>
+<translation id="2265792117169966196">Выбрать и скачать модель расшифровки для этого языка: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Добавить скриншот</translation>
 <translation id="2268044343513325586">Уточнить</translation>
 <translation id="2271469253353559191">Расписание тёмной темы</translation>
@@ -774,6 +775,7 @@
 <translation id="473775607612524610">Обновить</translation>
 <translation id="4744944742468440486">Информация на основе выделенного текста</translation>
 <translation id="4750394297954878236">Предложения</translation>
+<translation id="4763771683769971829">Список доступных языков</translation>
 <translation id="4771607256327216405">клавиатура сделать ярче</translation>
 <translation id="4771923071974529837">завтра</translation>
 <translation id="4773299976671772492">Остановлено</translation>
@@ -855,6 +857,7 @@
 <translation id="5095761549884461003">Чтобы продолжить обновление, отсоедините и снова подключите USB-кабель устройства (<ph name="DEVICE_NAME" />).</translation>
 <translation id="5099354524039520280">вверх</translation>
 <translation id="5107243100836678918">Сочетание без клавиши <ph name="META_KEY" /> может конфликтовать с сочетаниями клавиш некоторых приложений. Нажмите это сочетание клавиш ещё раз, чтобы продолжить его использовать, или выберите новое с клавишей <ph name="KEY" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399">Не удается скачать модель расшифровки для этого языка: <ph name="LANGUAGE_NAME" />. Повторите попытку или перезапустите Chromebook.</translation>
 <translation id="5108781503443873320">Синонимы:</translation>
 <translation id="5121677070210013200">Не удалось скачать модель расшифровки. Повторите попытку или перезагрузите Chromebook.</translation>
 <translation id="5130848777448318809">пони</translation>
@@ -1278,6 +1281,7 @@
 <translation id="7049916119678019302">Перейдите в настройки и скачайте модель расшифровки.</translation>
 <translation id="7058278511608979688">Завершить и сохранить</translation>
 <translation id="7059230779847288458">Заряжается, осталось <ph name="TIME_VALUE" /></translation>
+<translation id="7065336548231472971">Вы выбрали <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186">клавиша <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Подготовьте устройство</translation>
 <translation id="7076851914315147928">Выбрать обои</translation>
@@ -1371,6 +1375,7 @@
 <translation id="7415801143053185905">очень большое время ожидания HTTP</translation>
 <translation id="7418738250896500352">Выделено слишком много слов</translation>
 <translation id="7425037327577270384">Генератор текстов</translation>
+<translation id="7425832472614771259">Модель расшифровки скачана на <ph name="PROGRESS_PERCENTAGE" /> %. Язык: <ph name="LANGUAGE_NAME" />.</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Не удается отключить или удалить эту точку доступа. Убедитесь, что точки доступа типа <ph name="ATTACH" /> отключены или удалены.</translation>
 <translation id="7453118953486228603">Нажмите, чтобы создать краткий пересказ выбранного текста</translation>
@@ -1407,6 +1412,7 @@
 <translation id="7595982850646262331">Ещё <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Администратор <ph name="MANAGER" /> ограничил время использования этого устройства (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="7613724632293948900">Измените положение с помощью мыши или клавиш со стрелками.</translation>
+<translation id="7618216277886673749">Выбрать <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Нейтральные цвета</translation>
 <translation id="7620771111601174153">Узнать больше в Справочном центре</translation>
 <translation id="7625095758347640998">ИИ-обои</translation>

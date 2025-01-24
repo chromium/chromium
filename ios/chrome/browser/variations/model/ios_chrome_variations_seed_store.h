@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_VARIATIONS_MODEL_IOS_CHROME_VARIATIONS_SEED_STORE_H_
 
 #import <Foundation/Foundation.h>
+
 #import <memory>
 
 namespace variations {

@@ -37,7 +37,8 @@ fn main() {
     let fptr =
         unsafe { std::mem::transmute::<usize, fn()>(nop_sled as usize + NOP_INSTRUCTION_SIZE) };
     // Generates a FAST_FAIL_GUARD_ICALL_CHECK_FAILURE if CFG triggers.
-    indirect_call(fptr);
+    // `std::hint::black_box` is used to prevent optimizing away the call.
+    indirect_call(std::hint::black_box(fptr));
     // Should only reach here if CFG is disabled.
     eprintln!("failed");
 }

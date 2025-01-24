@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">ยกเลิกแล้ว</translation>
 <translation id="1020274983236703756">ชิ้นงานสุดพิเศษจาก <ph name="PRODUCT_NAME" /> พร้อมใช้งานแล้ว</translation>
 <translation id="1022628058306505708">การเคลื่อนที่ของโลก</translation>
+<translation id="102432830749687801">โปรดใช้แอป Content Transfer โดย Google เพื่อย้ายข้อมูลบัญชีโรงเรียนไปยังบัญชีส่วนตัวก่อนที่คุณจะสูญเสียสิทธิ์เข้าถึง</translation>
 <translation id="1026212596705997935">มีการใช้แป้นพิมพ์ลัดนี้สำหรับ "<ph name="CONFLICT_ACCEL_NAME" />" แล้ว โปรดกดแป้นพิมพ์ลัดใหม่ หากต้องการเปลี่ยนแป้นพิมพ์ลัดที่มีอยู่ ให้กดแป้นพิมพ์ลัดนี้อีกครั้ง</translation>
 <translation id="1030856839388844477">รีเซ็ตปริมาณการใช้อินเทอร์เน็ต</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> เทรด, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">อุปกรณ์มีระดับแบตเตอรี่ของเคส <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1397738625398125236">ปิงเกตเวย์ได้</translation>
 <translation id="1398634363027580500">เวลาในการตอบสนองของ HTTPS สูงมาก</translation>
+<translation id="1406389211945506521">ขอบคุณสำหรับการแชร์ประสบการณ์ของคุณ ความคิดเห็นของคุณจะช่วยให้เราสร้างเนื้อหาที่ถูกต้องและเป็นประโยชน์มากขึ้นได้</translation>
 <translation id="1407069428457324124">ธีมมืด</translation>
 <translation id="1413240736185167732">ไม่สำเร็จ - ตัวกรองล้มเหลว</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">ศิลปะคลาสสิก</translation>
 <translation id="181434555916624618">ในตอนนี้ระบบจะไม่แสดงผลการค้นหาที่มีผู้คน โปรดลองใช้พรอมต์อื่น</translation>
 <translation id="1815850098929213707">คีย์ที่เลือกคือ <ph name="KEYS" /> แตะปุ่มเพื่อแก้ไขตัวควบคุม</translation>
+<translation id="1818174214124933000">เมื่อคุณเลือกส่ง ระบบจะส่งความคิดเห็นและเนื้อหาของคุณ (ดังที่แสดงด้านล่าง) ไปยัง Google ข้อมูลดังกล่าวจะได้รับการตรวจสอบโดยเจ้าหน้าที่ และใช้เพื่อฝึกหรือปรับปรุงผลิตภัณฑ์และบริการโดยเป็นไปตาม<ph name="LINK_POLICY_BEGIN" />นโยบายความเป็นส่วนตัว<ph name="LINK_POLICY_END" />และ<ph name="LINK_TERMS_OF_SERVICE_BEGIN" />ข้อกำหนดในการให้บริการของ Google<ph name="LINK_TERMS_OF_SERVICE_END" /></translation>
 <translation id="1823120442877418684">ตัวละคร</translation>
 <translation id="1827738518074806965">แกลเลอรีศิลปะ</translation>
+<translation id="183287940576828840">ไม่เหมาะสม/ไม่ปลอดภัย</translation>
 <translation id="1836553715834333258">สีของระบบ</translation>
 <translation id="183675228220305365">สมจริง</translation>
 <translation id="1838374766361614909">ล้างการค้นหา</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">ขอ UDP ไม่สำเร็จ</translation>
 <translation id="1908394185991500139">ลูกศรซ้าย</translation>
 <translation id="1914144885717544695">ในวันศุกร์</translation>
+<translation id="1915960750806557358">แชร์ความคิดเห็นหรืออธิบายปัญหาของคุณ โดยไม่ใส่เรื่องส่วนตัว ข้อมูลที่ละเอียดอ่อน หรือข้อมูลที่เป็นความลับ</translation>
 <translation id="1923388006036088459">สีเฉพาะจุด</translation>
 <translation id="1945403655450283000">โปรแกรมอัดเสียง</translation>
 <translation id="1947737735496445907">พิมพ์แล้ว</translation>
@@ -596,6 +601,7 @@
 <translation id="387301095347517405">จำนวนครั้งที่ชาร์จแบตเตอรี่จนเต็ม</translation>
 <translation id="3877066159641251281">ฟังคำแปล</translation>
 <translation id="3880601782712134623">ตรวจหาเสียงที่แตกต่างกันและติดป้ายกำกับทั่วไปให้ผู้พูดแต่ละคน เช่น ผู้พูด 1 และผู้พูด 2 โดยอัตโนมัติ</translation>
+<translation id="38811596981744338">ปัญหาทางกฎหมาย</translation>
 <translation id="3885327323343477505">เปลี่ยนโปรแกรมรักษาหน้าจอ</translation>
 <translation id="3889914174935857450">วันที่รีเซ็ต</translation>
 <translation id="3897092660631435901">เมนู</translation>
@@ -821,6 +827,7 @@
 <translation id="4921665434385737356">ชาร์จ <ph name="RATE" /> ใน <ph name="NUM_SECONDS" /> วินาที</translation>
 <translation id="4930320165497208503">ไปที่<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" />เพื่อตั้งค่าหรืออัปเดตการเชื่อมต่อ</translation>
 <translation id="4932733599132424254">วันที่</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" /> เปิดในแท็บใหม่</translation>
 <translation id="4946927805998996217">กำลังสร้างข้อมูลสรุป</translation>
 <translation id="4950314376641394653">เฟิร์มแวร์ <ph name="DEVICE_NAME" /> ได้รับการอัปเดตเป็นเวอร์ชัน <ph name="VERSION" /> แล้ว</translation>
 <translation id="4950893758552030541">อุโมงค์ต้นไม้</translation>
@@ -1208,6 +1215,7 @@
 <translation id="6692996468359469499">ดูข้อมูลที่เกี่ยวข้องกับการเลือกของคุณ</translation>
 <translation id="6694534975463174713">ล็อก</translation>
 <translation id="6700703207451721535">ไม่อนุญาตให้เข้าถึงลิงก์นี้ โปรดสอบถามครูหากต้องการสิทธิ์เข้าถึง</translation>
+<translation id="6703179086771097594">อะไรที่ยังทำงานได้ไม่ดี</translation>
 <translation id="6704062477274546131">การแปลง DNS</translation>
 <translation id="6712933881624804031">หุบเขา</translation>
 <translation id="6716013206176357696">สตรอเบอร์รี</translation>
@@ -1281,6 +1289,7 @@
 <translation id="7049916119678019302">ดาวน์โหลดโมเดลการถอดเสียงเป็นคำในการตั้งค่า</translation>
 <translation id="7058278511608979688">สิ้นสุดและบันทึก</translation>
 <translation id="7059230779847288458">กำลังชาร์จ อีก <ph name="TIME_VALUE" />จะเต็ม</translation>
+<translation id="7064209589142995848">โอนเนื้อหา</translation>
 <translation id="7065336548231472971">เลือกไว้ <ph name="LANGUAGE_NAME" /> รายการ</translation>
 <translation id="7066538517128343186">คีย์ <ph name="KEY" /></translation>
 <translation id="7068619307603204412">เตรียมอุปกรณ์ให้พร้อม</translation>
@@ -1592,6 +1601,7 @@
 <translation id="8476942730579767658">หน้าต่างและเดสก์</translation>
 <translation id="8477536061607044749">การออกแบบกราฟิก</translation>
 <translation id="8477551185774834963">เวลาในการตอบสนอง DNS สูงกว่าเกณฑ์ที่ยอมรับได้เล็กน้อย</translation>
+<translation id="8481308460877552925">ไม่ถูกต้องตามข้อเท็จจริง</translation>
 <translation id="8482376765267780829">เลือกข้อความบางส่วนเพื่อย่อความ</translation>
 <translation id="8483248364096924578">ที่อยู่ IP</translation>
 <translation id="8491311378305535241">ไม่สามารถเชื่อมต่อผ่านไฟร์วอลล์ไปยังเว็บไซต์ HTTP จากแอป Android</translation>

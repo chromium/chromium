@@ -42,7 +42,7 @@ namespace ash::babelorca {
 namespace {
 
 const std::string kApplicationLocale = "en-US";
-const std::string kGaiaId = "gaia-id";
+const GaiaId::Literal kGaiaId("gaia-id");
 const std::string kSessionId = "session_id";
 const std::string kEmail = "test@school.edu";
 const std::string kTranslationTargetLocale = "de-DE";
@@ -102,7 +102,7 @@ class BabelOrcaConsumerTest : public testing::Test {
 
     consumer_ = std::make_unique<BabelOrcaConsumer>(
         url_loader_factory_.GetSafeWeakWrapper(),
-        identity_test_env_.identity_manager(), GaiaId(kGaiaId),
+        identity_test_env_.identity_manager(), kGaiaId,
         std::move(caption_controller), &token_manager_,
         request_data_provider_.get(),
         base::BindLambdaForTesting(
@@ -123,7 +123,7 @@ class BabelOrcaConsumerTest : public testing::Test {
     return base::StrCat(
         {boca::kSchoolToolsApiBaseUrl,
          base::ReplaceStringPlaceholders(boca::kJoinTachyonGroupUrlTemplate,
-                                         {kGaiaId, kSessionId},
+                                         {kGaiaId.ToString(), kSessionId},
                                          /*=offsets*/ nullptr)});
   }
 

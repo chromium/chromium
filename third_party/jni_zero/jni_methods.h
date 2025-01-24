@@ -46,6 +46,13 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT void DisableJvmForTesting();
 JNI_ZERO_COMPONENT_BUILD_EXPORT void SetExceptionHandler(
     void (*callback)(JNIEnv*));
 
+JNI_ZERO_COMPONENT_BUILD_EXPORT void SetNativeToJavaCallback(
+    void (*callback)(char const*, char const*));
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT void CallNativeToJavaCallback(
+    char const* className,
+    char const* methodName);
+
 // Returns true if an exception is pending in the provided JNIEnv*.
 JNI_ZERO_COMPONENT_BUILD_EXPORT bool HasException(JNIEnv* env);
 

@@ -47,8 +47,10 @@ void ChangeProfileSignoutContinuation(
     base::OnceClosure signout_completion,
     SceneState* scene_state,
     base::OnceClosure closure) {
+  // The regular browser should be used to complete the signout, even if in
+  // incognito mode.
   Browser* browser =
-      scene_state.browserProviderInterface.currentBrowserProvider.browser;
+      scene_state.browserProviderInterface.mainBrowserProvider.browser;
   CHECK(browser);
 
   // Create the closure corresponding to the action to perform once the signout
@@ -59,12 +61,8 @@ void ChangeProfileSignoutContinuation(
           .Then(std::move(signout_completion))
           .Then(std::move(closure));
 
-  // TODO(crbug.com/391863244): Long-term fix, the code that create the
-  // continuation should ensure that the method is not called with an incognito
-  // Browser.
   AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForProfile(
-          browser->GetProfile()->GetOriginalProfile());
+      AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
   authentication_service->SignOut(signout_source_metric, force_clear_data,
                                   base::CallbackToBlock(std::move(completion)));
 

@@ -15,6 +15,7 @@
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/product_install_details.h"
+#include "chrome/windows_services/service_program/crashpad_handler.h"
 #include "chrome/windows_services/service_program/logging_support.h"
 #include "chrome/windows_services/service_program/process_wrl_module.h"
 #include "chrome/windows_services/service_program/service.h"
@@ -37,6 +38,11 @@ int ServiceProgramMain(ServiceDelegate& delegate) {
       base::WideToUTF8(
           install_static::InstallDetails::Get().install_full_name()),
       delegate.GetLogEventCategory(), delegate.GetLogEventMessageId());
+
+  if (auto optional_result = RunAsCrashpadHandlerIfRequired(*cmd_line);
+      optional_result.has_value()) {
+    return *optional_result;
+  }
 
   // Make sure the process exits cleanly on unexpected errors.
   base::EnableTerminationOnHeapCorruption();

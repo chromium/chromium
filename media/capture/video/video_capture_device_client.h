@@ -52,6 +52,15 @@ class CAPTURE_EXPORT VideoEffectsContext {
  public:
   explicit VideoEffectsContext(
       mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor> remote);
+  // TODO(crbug.com/377532863): Use ReadonlyVideoEffectsManager new parameter.
+  // Also, remove the single argument constructor in a follow-up CL after all
+  // usage adjustment.
+  VideoEffectsContext(
+      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
+          processor_remote,
+      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
+          readonly_manager_remote);
+
   ~VideoEffectsContext();
 
   VideoEffectsContext(const VideoEffectsContext& other) = delete;

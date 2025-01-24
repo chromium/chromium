@@ -21,7 +21,7 @@ namespace ash::bluetooth_config {
 namespace {
 
 constexpr char kUser1Email[] = "user1@bluetooth";
-constexpr char kFakeGaia1[] = "fakegaia1";
+constexpr GaiaId::Literal kFakeGaia1("fakegaia1");
 
 }  // namespace
 
@@ -152,7 +152,7 @@ TEST_F(BluetoothPowerControllerImplTest, ToggleBluetoothEnabled) {
 
   // Toggling Bluetooth off/on when there is user session should affect
   // user prefs.
-  AddUserSession(kUser1Email, GaiaId(kFakeGaia1));
+  AddUserSession(kUser1Email, kFakeGaia1);
   EXPECT_TRUE(
       active_user_prefs()->GetBoolean(prefs::kUserBluetoothAdapterEnabled));
 
@@ -251,7 +251,7 @@ TEST_F(BluetoothPowerControllerImplTest, ApplyBluetoothPrimaryUserPrefDefault) {
                   ->IsDefaultValue());
   EXPECT_EQ(GetAdapterState(), mojom::BluetoothSystemState::kEnabled);
 
-  AddUserSession(kUser1Email, GaiaId(kFakeGaia1));
+  AddUserSession(kUser1Email, kFakeGaia1);
 
   // Pref should now contain the current Bluetooth adapter state (on).
   EXPECT_FALSE(active_user_prefs()
@@ -276,7 +276,7 @@ TEST_F(BluetoothPowerControllerImplTest,
                   ->IsDefaultValue());
   EXPECT_EQ(GetAdapterState(), mojom::BluetoothSystemState::kDisabled);
 
-  AddUserSession(kUser1Email, GaiaId(kFakeGaia1),
+  AddUserSession(kUser1Email, kFakeGaia1,
                  /*is_user_kiosk=*/false, /*is_new_profile=*/true);
 
   // Pref should be set to true for first-login users, and this will also
@@ -303,7 +303,7 @@ TEST_F(BluetoothPowerControllerImplTest, ApplyBluetoothKioskUserPrefDefault) {
                   ->IsDefaultValue());
   EXPECT_EQ(GetAdapterState(), mojom::BluetoothSystemState::kDisabled);
 
-  AddUserSession(kUser1Email, GaiaId(kFakeGaia1),
+  AddUserSession(kUser1Email, kFakeGaia1,
                  /*is_user_kiosk=*/true);
 
   // For non-regular user, the Bluetooth setting should not be applied and pref
@@ -332,7 +332,7 @@ TEST_F(BluetoothPowerControllerImplTest, ApplyBluetoothPrimaryUserPrefOn) {
                    ->IsDefaultValue());
   EXPECT_EQ(GetAdapterState(), mojom::BluetoothSystemState::kDisabled);
 
-  AddUserSession(kUser1Email, GaiaId(kFakeGaia1));
+  AddUserSession(kUser1Email, kFakeGaia1);
 
   // Pref should be applied to trigger the Bluetooth power on, and the pref
   // value should be unchanged.

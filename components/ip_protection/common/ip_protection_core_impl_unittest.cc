@@ -21,6 +21,7 @@
 #include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
 #include "components/ip_protection/common/ip_protection_token_manager.h"
 #include "components/ip_protection/common/masked_domain_list_manager.h"
+#include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
@@ -29,6 +30,9 @@
 namespace ip_protection {
 
 namespace {
+using ::masked_domain_list::MaskedDomainList;
+using ::masked_domain_list::Resource;
+using ::masked_domain_list::ResourceOwner;
 using ::network::mojom::IpProtectionProxyBypassPolicy;
 
 constexpr char kEmptyTokenCacheHistogram[] =
@@ -148,13 +152,14 @@ class IpProtectionCoreImplTest : public testing::Test {
   }
 
   std::unique_ptr<IpProtectionCoreImpl> MakeCore(
-      MaskedDomainListManager* masked_domain_list_manager) {
+      MaskedDomainListManager* masked_domain_list_manager,
+      bool use_regular_mdl = false) {
     return std::make_unique<IpProtectionCoreImpl>(
         masked_domain_list_manager,
         /*ip_protection_proxy_config_manager=*/nullptr,
         /*ip_protection_token_managers=*/
         std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>(),
-        /*is_ip_protection_enabled=*/true);
+        /*is_ip_protection_enabled=*/true, /*use_regular_mdl=*/use_regular_mdl);
   }
 
   std::unique_ptr<IpProtectionCoreImpl> MakeCore(
@@ -627,6 +632,66 @@ TEST_F(IpProtectionCoreImplTest, GeoChangeObservedInIppTokenManager) {
   // Since the new geo matches the geo of the proxy list manager, it should not
   // refresh the proxy list.
   EXPECT_TRUE(refresh_requested);
+}
+
+TEST_F(IpProtectionCoreImplTest,
+       RequestShouldBeProxied_MdlMatchesForDefaultMdlType) {
+  // Create a MDL manager w/ a single entry that matches the default MDL type.
+  std::string example_com = "example.com";
+  auto masked_domain_list_manager =
+      MaskedDomainListManager(IpProtectionProxyBypassPolicy::kNone);
+  MaskedDomainList mdl = masked_domain_list::MaskedDomainList();
+  ResourceOwner* resource_owner = mdl.add_resource_owners();
+  // By not setting an `Experiments` value, the entry is considered 'default'.
+  Resource* resource = resource_owner->add_owned_resources();
+  resource->set_domain(example_com);
+  masked_domain_list_manager.UpdateMaskedDomainList(mdl,
+                                                    /*exclusion_list=*/{});
+
+  // The core should be constructed with the default MDL type, so we set
+  // `use_regular_mdl` to false.
+  auto ip_protection_core =
+      MakeCore(&masked_domain_list_manager, /*use_regular_mdl=*/false);
+
+  EXPECT_FALSE(ip_protection_core->RequestShouldBeProxied(
+      GURL(base::StrCat({"http://", "irrelevant.com"})),
+      net::NetworkAnonymizationKey()));
+
+  EXPECT_TRUE(ip_protection_core->RequestShouldBeProxied(
+      GURL(base::StrCat({"http://", example_com})),
+      net::NetworkAnonymizationKey()));
+}
+
+TEST_F(IpProtectionCoreImplTest,
+       RequestShouldBeProxied_MdlMatchesForNonDefaultMdlType) {
+  // Create a MDL manager w/ a single non-default entry.
+  std::string example_com = "example.com";
+  auto masked_domain_list_manager =
+      MaskedDomainListManager(IpProtectionProxyBypassPolicy::kNone);
+  MaskedDomainList mdl = masked_domain_list::MaskedDomainList();
+  ResourceOwner* resource_owner = mdl.add_resource_owners();
+  // The following resource should only match when the MDL type is
+  // `MdlType::kRegularBrowsing`.
+  Resource* resource = resource_owner->add_owned_resources();
+  resource->set_domain(example_com);
+  resource->add_experiments(
+      Resource::Experiment::Resource_Experiment_EXPERIMENT_EXTERNAL_REGULAR);
+  resource->set_exclude_default_group(true);
+  masked_domain_list_manager.UpdateMaskedDomainList(mdl,
+                                                    /*exclusion_list=*/{});
+
+  // The core should be constructed with the regular browsing MDL type, so we
+  // set `use_regular_mdl` to true.
+  auto ip_protection_core =
+      MakeCore(&masked_domain_list_manager, /*use_regular_mdl=*/true);
+
+  EXPECT_FALSE(ip_protection_core->RequestShouldBeProxied(
+      GURL(base::StrCat({"http://", "irrelevant.com"})),
+      net::NetworkAnonymizationKey()));
+
+  EXPECT_TRUE(ip_protection_core->RequestShouldBeProxied(
+      GURL(base::StrCat({"http://", example_com})),
+      net::NetworkAnonymizationKey()));
 }
 
 }  // namespace

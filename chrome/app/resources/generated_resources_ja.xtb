@@ -482,6 +482,7 @@
 <translation id="1317637799698924700">ドッキング ステーションは USB Type-C 互換モードで動作します。</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> サブページの戻るボタン</translation>
 <translation id="1322046419516468189"><ph name="SAVED_PASSWORDS_STORE" /> での保存パスワードの表示と管理</translation>
+<translation id="132539964543492755">X キーを使用してマウスボタンの選択を左ボタン、右ボタン、両方の間で切り替える</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos チケット</translation>
 <translation id="1327495825214193325">ADB デバッグを有効にするには、この <ph name="DEVICE_TYPE" /> を再起動する必要があります。ADB デバッグを無効にする場合は、出荷時の設定へのリセットが必要になります。</translation>
@@ -1676,6 +1677,7 @@
 <translation id="2155772377859296191">表示上のサイズ: <ph name="WIDTH" />x<ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156707722163479690">共有タブのスクロールとズームを許可する</translation>
+<translation id="2157457598652721267">「/」キーを使用してマウスの左ボタン、「-」キーを使用してマウスの右ボタン、「*」キーを使用して両方を選択する</translation>
 <translation id="2157474325782140681">すべての機能を利用できるようにするには、この Chromebook に対応した Dell のドッキング ステーションを使用してください。</translation>
 <translation id="215753907730220065">全画面表示を終了</translation>
 <translation id="2157779167749714207">この <ph name="DEVICE_TYPE" /> には Gemini が搭載されています</translation>
@@ -1780,6 +1782,7 @@
 <translation id="2233502537820838181">詳細情報(&amp;M)</translation>
 <translation id="223356358902285214">ウェブとアプリのアクティビティ</translation>
 <translation id="2234065144797002621">小川</translation>
+<translation id="2234208862050358325">1、2、3、Q、E、A、S、D キーを使用してカーソルを動かす</translation>
 <translation id="2234827758954819389">プライバシー ガイド</translation>
 <translation id="2234876718134438132">同期と Google サービス</translation>
 <translation id="2235344399760031203">サードパーティの Cookie がブロックされています</translation>
@@ -1799,6 +1802,7 @@
 <translation id="2249111429176737533">タブ付きウィンドウとして開く</translation>
 <translation id="2249605167705922988">例 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">ウェブサイトが広告表示に使用する情報をカスタマイズします</translation>
+<translation id="22505994009453896">テンキーによるマウスカーソルの操作</translation>
 <translation id="2250624716625396929">このタブはカメラとマイクを使用しています</translation>
 <translation id="2251218783371366160">システム ビューアで開く</translation>
 <translation id="225163402930830576">ネットワークを更新</translation>
@@ -1990,6 +1994,7 @@
 <translation id="236939127352773362">コンテンツの送信を希望しているデバイスが近くにある場合に通知します</translation>
 <translation id="2371076942591664043">ダウンロードしたら開く(&amp;D)</translation>
 <translation id="237336063998926520">IP アドレスを使って現在地を特定します</translation>
+<translation id="2373499590298659902">0　キーを使用してマウスボタンを長押しする</translation>
 <translation id="2373666622366160481">用紙に合わせる</translation>
 <translation id="2375406435414127095">スマートフォンに接続</translation>
 <translation id="2376056713414548745">読み上げ</translation>
@@ -2750,6 +2755,7 @@
 <translation id="2902312830803030883">その他の操作</translation>
 <translation id="2903457445916429186">選択したアイテムを開く</translation>
 <translation id="2903882649406874750"><ph name="HOST" /> によるセンサーへのアクセスを常にブロックする</translation>
+<translation id="2903925626657991994">「,」キーを使用してマウスボタンの選択を左ボタン、右ボタン、両方の間で切り替える</translation>
 <translation id="290415756080113152">サイトがデバイスにアクセスできるプリンタを検索および使用できないようにする</translation>
 <translation id="2904210161403910217">前回のログイン後にパスワードが変更されています</translation>
 <translation id="2904506722835398619">ログインと同期が必要です</translation>
@@ -3104,6 +3110,7 @@
 <translation id="3170072451822350649">ログインせずに<ph name="LINK_START" />ゲストとしてブラウジング<ph name="LINK_END" />することもできます。</translation>
 <translation id="3175067642577044620">本文</translation>
 <translation id="3175862692832442091">森</translation>
+<translation id="3176347586396987181">Z　キーを使用してマウスボタンを長押しする</translation>
 <translation id="3177430966804511955">独立したウェブアプリを管理（ベータ版）</translation>
 <translation id="31774765611822736">左側の新しいタブ</translation>
 <translation id="3177909033752230686">ページの言語:</translation>
@@ -4483,6 +4490,7 @@
 <translation id="412730574613779332">スパンデックス</translation>
 <translation id="4130199216115862831">デバイスログ</translation>
 <translation id="4130750466177569591">同意する</translation>
+<translation id="4130877444234883490">M　キーを使用してマウスボタンを長押しする</translation>
 <translation id="413121957363593859">コンポーネント</translation>
 <translation id="4131283654370308898"><ph name="EXTENSION_NAME" /> をこのサイトで許可する</translation>
 <translation id="4131410914670010031">白黒</translation>
@@ -4502,6 +4510,7 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID デバイスに接続中</translation>
 <translation id="4139326893730851150">ファームウェア アップデート</translation>
 <translation id="4142052906269098341">スマートフォンを使って <ph name="DEVICE_TYPE" /> のロックを解除します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
+<translation id="4143606504420684845">AI を活用してエクスペリエンスをカスタマイズし、情報に基づきプライバシーに関する選択を行う方法を確認する</translation>
 <translation id="4146026355784316281">常にシステム ビューアで開く</translation>
 <translation id="4146785383423576110">リセットとクリーンアップ</translation>
 <translation id="4147099377280085053">点字表を選択</translation>
@@ -4784,6 +4793,7 @@
 <translation id="4360738659108163902">マウスを右クリックする</translation>
 <translation id="4361142739114356624">このクライアント証明書には秘密鍵がないか、秘密鍵が無効です</translation>
 <translation id="4361745360460842907">タブとして開く</translation>
+<translation id="4362459470237309049">「.」キーを使用してマウスボタンを離す</translation>
 <translation id="4363262124589131906">マイドライブ内の新しいファイルは、この Chromebook と自動的に同期されなくなります</translation>
 <translation id="4364327530094270451">メロン</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 件の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}other{{ITEM_COUNT} 件の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}}</translation>
@@ -4809,6 +4819,7 @@
 <translation id="4378308539633073595">前方スクロール</translation>
 <translation id="4378551569595875038">接続中...</translation>
 <translation id="4378556263712303865">デバイスの登録</translation>
+<translation id="4378589147979399051">メインのキーボードによるマウスカーソルの操作</translation>
 <translation id="4379097572583973456">サイトに他のサイトのコンテンツ（画像、広告、テキストなど）が埋め込まれている場合があります。これらの他のサイトでもデータが保存される可能性があります。</translation>
 <translation id="4379281552162875326">「<ph name="APP_NAME" />」をアンインストールしますか？</translation>
 <translation id="4380055775103003110">問題が解消しない場合は、<ph name="SITE_ETLD_PLUS_ONE" /> で続行するための別の方法をお試しください。</translation>
@@ -5128,6 +5139,7 @@
 <translation id="4610493438923139095">信頼不可</translation>
 <translation id="4610637590575890427">もしかして: <ph name="SITE" /></translation>
 <translation id="4611114513649582138">データ接続が可能です</translation>
+<translation id="4611619000650855880">マウスの左ボタンを選択した状態で「/」キーを使用してダブルクリックする</translation>
 <translation id="4611759022973144129">このパスワードを使用して、<ph name="DEVICE_TYPE" /> にログインできます。</translation>
 <translation id="4612841084470706111">リクエストされたすべてのサイトへのアクセスを許可</translation>
 <translation id="4613144866899789710">Linux のインストールをキャンセルしています...</translation>
@@ -5253,6 +5265,7 @@
 <translation id="4694820450536519583">権限</translation>
 <translation id="4695318956047767909">ダークモード、スクリーン セーバー</translation>
 <translation id="4697071790493980729">一致する検索結果は見つかりませんでした</translation>
+<translation id="4697231114332146850">7、8、9、4、6、1、2、3 キーを使用してカーソルを動かす</translation>
 <translation id="4697551882387947560">ブラウザ セッションの終了時</translation>
 <translation id="469838979880025581">サイトがマイクの使用を要求できるようにする</translation>
 <translation id="4699172675775169585">キャッシュされた画像とファイル</translation>
@@ -6361,6 +6374,7 @@
 <translation id="5499453227627332024">Linux コンテナのアップグレードが可能です。後で設定アプリからアップグレードすることもできます。</translation>
 <translation id="5499476581866658341">スマートフォンの最近の写真やメディアを表示できるようになりました</translation>
 <translation id="549957179819296104">アイコンが新しくなりました</translation>
+<translation id="5500163593833085874">マウスの左ボタンを選択した状態で「+」キーを使用してダブルクリックする</translation>
 <translation id="5500168250243071806">ログイン中は Google アカウントに<ph name="BEGIN_LINK_SEARCH" />検索履歴<ph name="END_LINK_SEARCH" />や<ph name="BEGIN_LINK_GOOGLE" />その他のアクティビティ<ph name="END_LINK_GOOGLE" />が保存される可能性があります。これらのデータはいつでも削除できます。</translation>
 <translation id="5501322521654567960">左揃えのサイドパネル</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> から <ph name="ATTACHMENTS" />を受け取れませんでした}other{<ph name="DEVICE_NAME" /> から <ph name="ATTACHMENTS" />を受け取れませんでした}}</translation>
@@ -6658,6 +6672,7 @@
 <translation id="5733913382424854675">AI でタブをグループ化</translation>
 <translation id="5734362860645681824">通信</translation>
 <translation id="5734697361979786483">ファイル共有を追加</translation>
+<translation id="573520097779121706">7、8、9、U、O、J、K、L キーを使用してカーソルを動かす</translation>
 <translation id="5735513236153491131">今すぐ向上</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{このデータまたはお使いのデバイスは、組織のセキュリティ ポリシーの一部に違反しています。修正が必要な箇所を管理者にご確認ください。}=1{このファイルまたはお使いのデバイスは、組織のセキュリティ ポリシーの一部に違反しています。修正が必要な箇所を管理者にご確認ください。}other{これらのファイルは、組織のセキュリティ ポリシーの一部に違反しています。修正が必要な箇所を管理者にご確認ください。}}</translation>
 <translation id="5738093759615225354">パソコンにログインするには、このパスキーが必要です</translation>
@@ -6891,6 +6906,7 @@
 <translation id="5901069264981746702">指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">キャプチャ中のタブに切り替え</translation>
 <translation id="5901494423252125310">プリンタの扉が開いています</translation>
+<translation id="5901526412306322179">アクティビティ ログ</translation>
 <translation id="5901630391730855834">黄</translation>
 <translation id="5902892210366342391">シークレット モードで安全でないサイトにアクセスする前に警告を表示する</translation>
 <translation id="5904614460720589786">設定に問題があったため、<ph name="APP_NAME" /> をセットアップできませんでした。管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
@@ -7266,6 +7282,7 @@
 <translation id="6171779718418683144">毎回確認する</translation>
 <translation id="617213288191670920">言語が追加されていません</translation>
 <translation id="6173623053897475761">もう一度 PIN を入力してください</translation>
+<translation id="6174909075810107548">5 キーを使用してマウスボタンを押す</translation>
 <translation id="6175314957787328458">Microsoft ドメイン GUID</translation>
 <translation id="6175910054050815932">リンクの取得</translation>
 <translation id="6177412385419165772">削除しています...</translation>
@@ -7751,6 +7768,7 @@
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> データの収集によりパフォーマンスが低下する場合があるため、意図的に行う場合、または指示された場合のみ有効にしてください。</translation>
 <translation id="6540488083026747005">このサイトのサードパーティ Cookie を許可しました</translation>
 <translation id="6541638731489116978">このサイトではモーション センサーへのアクセスがブロックされています。</translation>
+<translation id="654219396498297850">マウスの左ボタンを選択した状態で V　キーを使用してダブルクリックする</translation>
 <translation id="6542417422899025860">ほとんどの個人情報を自動的に削除する</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> にキャストしています</translation>
 <translation id="6544134392255015460">キーボード バックライトの切り替え</translation>
@@ -8747,6 +8765,7 @@
 <translation id="7258225044283673131">アプリケーションから応答がありません。終了するには [強制終了] を選択してください。</translation>
 <translation id="7260186537988033909">キオスクとサイネージ デバイスの登録が完了しました</translation>
 <translation id="7260206782629605806">しきい値を下げると、わずかな動きで操作できます。しきい値を上げると、大きな動きが必要になります。</translation>
+<translation id="7260802376010589729">C キーを使用してマウスボタンを離す</translation>
 <translation id="7261217796641151584">グループを共有</translation>
 <translation id="7261612856573623172">システムのテキスト読み上げの音声</translation>
 <translation id="7262004276116528033">このログイン サービスは <ph name="SAML_DOMAIN" /> でホストされています</translation>
@@ -9588,6 +9607,7 @@
 <translation id="78526636422538552">Google アカウントをさらに追加するオプションは無効になっています</translation>
 <translation id="785371335555334021">クリックすると <ph name="TITLE" /> から移動します</translation>
 <translation id="7853747251428735">その他のツール(&amp;L)</translation>
+<translation id="7855258394151767387">W キーを使用してマウスボタンを押す</translation>
 <translation id="7855678561139483478">タブを新しいウィンドウに移動</translation>
 <translation id="7857004848504343806">ご使用のパソコンにはセキュア モジュールが組み込まれています。これは ChromeOS Flex の多くの重要なセキュリティ機能を実装するために使用されます。詳しくは Chromebook ヘルプセンター（https://support.google.com/chromebook/?p=sm）をご覧ください。</translation>
 <translation id="7857093393627376423">テキスト候補</translation>
@@ -9960,6 +9980,7 @@
 <translation id="810362914482827094">パスキーを検索</translation>
 <translation id="8104088837833760645">eSIM プロファイルのダウンロード</translation>
 <translation id="8105273883928376822">続行するにはログインしてください。</translation>
+<translation id="8106114112474206597">I キーを使用してマウスボタンを押す</translation>
 <translation id="8107015733319732394"><ph name="DEVICE_TYPE" /> に Google Play ストアをインストールしています。この処理には数分かかる可能性があります。</translation>
 <translation id="810728361871746125">ディスプレイの解像度</translation>
 <translation id="8108161424633979910"><ph name="NUM" /> 人のメンバー</translation>

@@ -278,6 +278,7 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
                                                                username_);
       *reuse_event->mutable_reused_password_account_type() =
           password_account_type_to_add;
+      LogReusedPasswordAccountType(password_account_type_to_add);
       break;
     }
     default:

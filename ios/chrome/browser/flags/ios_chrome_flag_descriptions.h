@@ -211,6 +211,11 @@ extern const char kContextualPanelForceShowEntrypointDescription[];
 extern const char kContextualPanelName[];
 extern const char kContextualPanelDescription[];
 
+// Title and description for the flag to enable automatic passkey upgrade in the
+// Credential Provider.
+extern const char kCredentialProviderAutomaticPasskeyUpgradeName[];
+extern const char kCredentialProviderAutomaticPasskeyUpgradeDescription[];
+
 // Title and description for the flag to enable passkey PRF support in the
 // Credential Provider.
 extern const char kCredentialProviderPasskeyPRFName[];

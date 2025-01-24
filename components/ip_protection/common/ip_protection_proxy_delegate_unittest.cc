@@ -64,8 +64,11 @@ constexpr char kAvailabilityHistogram[] =
 class MockIpProtectionCore : public IpProtectionCore {
  public:
   explicit MockIpProtectionCore(
-      MaskedDomainListManager* masked_domain_list_manager)
-      : masked_domain_list_manager_(masked_domain_list_manager) {}
+      MaskedDomainListManager* masked_domain_list_manager,
+      bool use_regular_mdl = false)
+      : masked_domain_list_manager_(masked_domain_list_manager) {
+    mdl_type_ = use_regular_mdl ? MdlType::kRegularBrowsing : MdlType::kDefault;
+  }
 
   bool IsMdlPopulated() override {
     return masked_domain_list_manager_->IsPopulated();
@@ -74,8 +77,8 @@ class MockIpProtectionCore : public IpProtectionCore {
   bool RequestShouldBeProxied(
       const GURL& request_url,
       const net::NetworkAnonymizationKey& network_anonymization_key) override {
-    return masked_domain_list_manager_->Matches(request_url,
-                                                network_anonymization_key);
+    return masked_domain_list_manager_->Matches(
+        request_url, network_anonymization_key, mdl_type_);
   }
 
   bool IsIpProtectionEnabled() override { return is_ip_protection_enabled_; }
@@ -139,6 +142,7 @@ class MockIpProtectionCore : public IpProtectionCore {
  private:
   bool is_ip_protection_enabled_ = true;
   bool were_token_caches_ever_filled_ = false;
+  MdlType mdl_type_;
   std::optional<BlindSignedAuthToken> auth_token_;
   std::optional<std::vector<net::ProxyChain>> proxy_list_;
   std::vector<net::ProxyChain> proxy_chain_list_;

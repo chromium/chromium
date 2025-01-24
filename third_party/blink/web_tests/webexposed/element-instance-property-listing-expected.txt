@@ -995,6 +995,7 @@ html element script
     property integrity
     property noModule
     property referrerPolicy
+    property signature
     property src
     property text
     property type

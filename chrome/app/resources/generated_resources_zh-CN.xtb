@@ -482,6 +482,7 @@
 <translation id="1317637799698924700">您的基座将以与 USB C 型兼容的模式运行。</translation>
 <translation id="1319983966058170660">“<ph name="SUBPAGE_TITLE" />”子页面上的返回按钮</translation>
 <translation id="1322046419516468189">您可以查看和管理 <ph name="SAVED_PASSWORDS_STORE" />中保存的密码</translation>
+<translation id="132539964543492755">按下“x”键可在选择鼠标左键、右键或同时选择左右键之间切换</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos 票据</translation>
 <translation id="1327495825214193325">要启用 ADB 调试，您必须重启此<ph name="DEVICE_TYPE" />。要停用它，则必须将此设备恢复出厂设置。</translation>
@@ -1672,6 +1673,7 @@
 <translation id="2155772377859296191">有效分辨率：<ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker：<ph name="SCRIPT_URL" /></translation>
 <translation id="2156707722163479690">允许滚动和缩放分享的标签页</translation>
+<translation id="2157457598652721267">按下“/”和“-”键表示选择鼠标左键和右键。按下“*”键表示同时选择左右键。</translation>
 <translation id="2157474325782140681">要获得更多功能，请使用由戴尔专为这款 Chromebook 设计的基座。</translation>
 <translation id="215753907730220065">退出全屏模式</translation>
 <translation id="2157779167749714207">您的 <ph name="DEVICE_TYPE" /> 内置了 Gemini</translation>
@@ -1776,6 +1778,7 @@
 <translation id="2233502537820838181">详细信息(&amp;M)</translation>
 <translation id="223356358902285214">网络与应用活动记录</translation>
 <translation id="2234065144797002621">小溪</translation>
+<translation id="2234208862050358325">使用 1、2、3、q、e、a、s、d 键可移动光标</translation>
 <translation id="2234827758954819389">隐私保护指南</translation>
 <translation id="2234876718134438132">同步功能和 Google 服务</translation>
 <translation id="2235344399760031203">已阻止第三方 Cookie</translation>
@@ -1795,6 +1798,7 @@
 <translation id="2249111429176737533">在标签页窗口中打开</translation>
 <translation id="2249605167705922988">例如：1-5、8、11-13</translation>
 <translation id="2249635629516220541">自定义网站可用来向您投放广告的信息</translation>
+<translation id="22505994009453896">使用数字键盘控制鼠标光标</translation>
 <translation id="2250624716625396929">此标签页正在使用摄像头和麦克风</translation>
 <translation id="2251218783371366160">使用系统查看器打开</translation>
 <translation id="225163402930830576">刷新网络</translation>
@@ -1988,6 +1992,7 @@
 <translation id="236939127352773362">当附近的设备正在分享内容时</translation>
 <translation id="2371076942591664043">完成时打开(&amp;D)</translation>
 <translation id="237336063998926520">根据您的 IP 地址确定位置</translation>
+<translation id="2373499590298659902">按下“0”键表示按住鼠标按键</translation>
 <translation id="2373666622366160481">适合纸张大小</translation>
 <translation id="2375406435414127095">连接到您的手机</translation>
 <translation id="2376056713414548745">大声朗读</translation>
@@ -2748,6 +2753,7 @@
 <translation id="2902312830803030883">更多操作</translation>
 <translation id="2903457445916429186">打开所选项</translation>
 <translation id="2903882649406874750">始终禁止 <ph name="HOST" /> 使用传感器</translation>
+<translation id="2903925626657991994">按下“,”键可在选择鼠标左键、右键或同时选择左右键之间切换</translation>
 <translation id="290415756080113152">网站无法查找或使用您的设备可访问的打印机</translation>
 <translation id="2904210161403910217">自您上次登录以来，您的密码发生了更改</translation>
 <translation id="2904506722835398619">需要登录并同步</translation>
@@ -3102,6 +3108,7 @@
 <translation id="3170072451822350649">您也可以跳过登录步骤，<ph name="LINK_START" />以访客身份浏览<ph name="LINK_END" />。</translation>
 <translation id="3175067642577044620">正文</translation>
 <translation id="3175862692832442091">森林</translation>
+<translation id="3176347586396987181">按下“z”键表示按住鼠标按键</translation>
 <translation id="3177430966804511955">管理独立式 Web 应用（Beta 版）</translation>
 <translation id="31774765611822736">在左侧新增标签页</translation>
 <translation id="3177909033752230686">网页语言：</translation>
@@ -4481,6 +4488,7 @@
 <translation id="412730574613779332">勇士</translation>
 <translation id="4130199216115862831">设备日志</translation>
 <translation id="4130750466177569591">我同意</translation>
+<translation id="4130877444234883490">按下“m”键表示按住鼠标按键</translation>
 <translation id="413121957363593859">组件</translation>
 <translation id="4131283654370308898">允许在此网站上使用“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="4131410914670010031">黑白色</translation>
@@ -4500,6 +4508,7 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID 设备已连接</translation>
 <translation id="4139326893730851150">固件更新</translation>
 <translation id="4142052906269098341">使用手机解锁 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
+<translation id="4143606504420684845">探索 AI 如何影响您的体验，并就您的隐私权做出明智的选择</translation>
 <translation id="4146026355784316281">始终使用系统查看器打开</translation>
 <translation id="4146785383423576110">重置并清理</translation>
 <translation id="4147099377280085053">选择一种盲文表</translation>
@@ -4783,6 +4792,7 @@
 <translation id="4360738659108163902">右键点击鼠标</translation>
 <translation id="4361142739114356624">缺少此客户端证书的私钥，或私钥无效</translation>
 <translation id="4361745360460842907">作为标签页打开</translation>
+<translation id="4362459470237309049">按下“.”键表示松开鼠标按键</translation>
 <translation id="4363262124589131906">您在“我的云端硬盘”中保存的新文件将停止自动同步到此 Chromebook</translation>
 <translation id="4364327530094270451">甜瓜</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{有 1 项内容只保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号中。}other{有 {ITEM_COUNT} 项内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。}}</translation>
@@ -4808,6 +4818,7 @@
 <translation id="4378308539633073595">向前滚动</translation>
 <translation id="4378551569595875038">正在连接…</translation>
 <translation id="4378556263712303865">设备申请</translation>
+<translation id="4378589147979399051">使用主键盘控制鼠标光标</translation>
 <translation id="4379097572583973456">网站还可嵌入来自其他网站的内容，例如图片、广告和文字。这些其他网站也可保存数据。</translation>
 <translation id="4379281552162875326">卸载“<ph name="APP_NAME" />”？</translation>
 <translation id="4380055775103003110">如果此问题仍然存在，您可以尝试在 <ph name="SITE_ETLD_PLUS_ONE" /> 上通过其他方法继续操作。</translation>
@@ -5128,6 +5139,7 @@
 <translation id="4610493438923139095">不可信</translation>
 <translation id="4610637590575890427">您是不是要访问 <ph name="SITE" />？</translation>
 <translation id="4611114513649582138">有可用的数据网络连接</translation>
+<translation id="4611619000650855880">选择鼠标左键后，按下“/”键表示双击</translation>
 <translation id="4611759022973144129">您可以使用此密码登录您的 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="4612841084470706111">授权访问所请求的全部网站。</translation>
 <translation id="4613144866899789710">正在取消安装 Linux…</translation>
@@ -5253,6 +5265,7 @@
 <translation id="4694820450536519583">权限</translation>
 <translation id="4695318956047767909">深色主题，屏保</translation>
 <translation id="4697071790493980729">找不到任何结果</translation>
+<translation id="4697231114332146850">使用 7、8、9、4、6、1、2、3 键可移动光标</translation>
 <translation id="4697551882387947560">浏览会话结束时</translation>
 <translation id="469838979880025581">网站可以请求使用您的麦克风</translation>
 <translation id="4699172675775169585">缓存的图片和文件</translation>
@@ -6364,6 +6377,7 @@
 <translation id="5499453227627332024">Linux 容器有可用的升级，您也可过段时间再从“设置”应用中升级。</translation>
 <translation id="5499476581866658341">您现在可以查看手机中的近期照片和媒体</translation>
 <translation id="549957179819296104">新图标</translation>
+<translation id="5500163593833085874">选择鼠标左键后，按下“+”键表示双击</translation>
 <translation id="5500168250243071806">当您登录后，系统可能会将<ph name="BEGIN_LINK_SEARCH" />搜索记录<ph name="END_LINK_SEARCH" />和<ph name="BEGIN_LINK_GOOGLE" />其他形式的活动记录<ph name="END_LINK_GOOGLE" />保存在您的 Google 账号中。您可以随时删除这些记录。</translation>
 <translation id="5501322521654567960">靠左对齐的侧边栏</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{未能收到“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}other{未能收到“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}}</translation>
@@ -6659,6 +6673,7 @@
 <translation id="5733913382424854675">利用 AI 将标签页分组</translation>
 <translation id="5734362860645681824">通讯</translation>
 <translation id="5734697361979786483">添加文件共享</translation>
+<translation id="573520097779121706">使用 7、8、9、u、o、j、k、l 键可移动光标</translation>
 <translation id="5735513236153491131">立即提升</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{这些数据或您的设备不符合贵组织的某些安全政策。请与您的管理员联系，了解需要修正哪些方面。}=1{此文件或您的设备不符合贵组织的某些安全政策。请与您的管理员联系，了解需要修正哪些方面。}other{这些文件不符合贵组织的某些安全政策。请与您的管理员联系，了解需要修正哪些方面。}}</translation>
 <translation id="5738093759615225354">您需要使用此通行密钥才能登录计算机</translation>
@@ -6892,6 +6907,7 @@
 <translation id="5901069264981746702">您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" />上，绝不会外泄。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">切换到执行录屏操作的标签页</translation>
 <translation id="5901494423252125310">打印机机盖未关</translation>
+<translation id="5901526412306322179">活动日志</translation>
 <translation id="5901630391730855834">黄色</translation>
 <translation id="5902892210366342391">在您以无痕模式访问不安全的网站前发出警告</translation>
 <translation id="5904614460720589786">无法设置 <ph name="APP_NAME" />，因为出现了配置问题。请与您的管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
@@ -7266,6 +7282,7 @@
 <translation id="6171779718418683144">每次访问时都询问</translation>
 <translation id="617213288191670920">未添加任何语言</translation>
 <translation id="6173623053897475761">再次输入您的 PIN 码</translation>
+<translation id="6174909075810107548">按下“5”键表示按下鼠标按键</translation>
 <translation id="6175314957787328458">Microsoft 域 GUID</translation>
 <translation id="6175910054050815932">获取链接</translation>
 <translation id="6177412385419165772">正在移除…</translation>
@@ -7751,6 +7768,7 @@
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />除非您有意这么做或被要求这样做，否则请不要随意启用这项功能，因为收集数据可能会降低性能。</translation>
 <translation id="6540488083026747005">您已允许此网站使用第三方 Cookie</translation>
 <translation id="6541638731489116978">此网站已被禁止使用您的移动传感器。</translation>
+<translation id="654219396498297850">选择鼠标左键后，按下“v”键表示双击</translation>
 <translation id="6542417422899025860">自动移除大部分个人信息</translation>
 <translation id="6542521951477560771">正在投放到<ph name="RECEIVER_NAME" /></translation>
 <translation id="6544134392255015460">键盘背光切换开关</translation>
@@ -8749,6 +8767,7 @@
 <translation id="7258225044283673131">此应用无响应。请选择“强制关闭”以关闭此应用。</translation>
 <translation id="7260186537988033909">自助服务终端和数字标牌设备注册已完成</translation>
 <translation id="7260206782629605806">如果您降低阈值，就可以做出轻微的动作。如果您提高阈值，可能需要做出更夸张的动作。</translation>
+<translation id="7260802376010589729">按下“c”键表示松开鼠标按键</translation>
 <translation id="7261217796641151584">分享分组</translation>
 <translation id="7261612856573623172">系统默认文字转语音声音</translation>
 <translation id="7262004276116528033">此登录服务由 <ph name="SAML_DOMAIN" /> 托管</translation>
@@ -9591,6 +9610,7 @@
 <translation id="78526636422538552">禁止添加更多 Google 账号</translation>
 <translation id="785371335555334021">点击此按钮即可离开“<ph name="TITLE" />”</translation>
 <translation id="7853747251428735">更多工具(&amp;L)</translation>
+<translation id="7855258394151767387">按下“w”键表示按下鼠标按键</translation>
 <translation id="7855678561139483478">将标签页移至新窗口</translation>
 <translation id="7857004848504343806">您的计算机包含一个安全模块，该模块可用于在 ChromeOS Flex 中实现许多关键的安全功能。如需了解详情，请访问 Chromebook 帮助中心：https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">文字建议</translation>
@@ -9963,6 +9983,7 @@
 <translation id="810362914482827094">搜索密钥</translation>
 <translation id="8104088837833760645">下载 eSIM 卡配置文件</translation>
 <translation id="8105273883928376822">若要继续，请先登录。</translation>
+<translation id="8106114112474206597">按下“i”键表示按下鼠标按键</translation>
 <translation id="8107015733319732394">正在在您的 <ph name="DEVICE_TYPE" /> 上安装 Google Play 商店。这可能需要几分钟的时间。</translation>
 <translation id="810728361871746125">显示屏分辨率</translation>
 <translation id="8108161424633979910"><ph name="NUM" /> 位成员</translation>

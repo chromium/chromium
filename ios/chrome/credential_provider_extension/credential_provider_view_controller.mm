@@ -310,6 +310,12 @@ enum class PasskeyCreationEligibility {
     (ASPasskeyCredentialRequest*)registrationRequest API_AVAILABLE(ios(18.0)) {
   PasskeyRequestDetails* passkeyRequestDetails =
       [self passkeyDetailsFromRequest:registrationRequest];
+  if (![passkeyRequestDetails
+          hasMatchingPassword:self.credentialStore.credentials]) {
+    [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+    return;
+  }
+
   NSString* gaia = [self gaia];
   PasskeyCreationEligibility passkeyCreationEligibility =
       [self passkeyCreationEligibilityForGaia:gaia
@@ -322,10 +328,8 @@ enum class PasskeyCreationEligibility {
     return;
   }
 
-  // This function is called to silently create passkeys.
-  // We're always allowed to return an error until we support this flow.
-  // TODO(crbug.com/355666571): Create a passkey here.
-  [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+  // Try to create a passkey while user interaction is disallowed.
+  [self createPasskeyWithDetails:passkeyRequestDetails gaia:gaia];
 }
 
 - (void)prepareInterfaceForPasskeyRegistration:
@@ -659,7 +663,8 @@ enum class PasskeyCreationEligibility {
     return PasskeyCreationEligibility::kUnsupportedAlgorithm;
   }
 
-  if (passkeyRequestDetails.userVerificationRequired) {
+  if (passkeyRequestDetails.userVerificationRequired ||
+      !IsAutomaticPasskeyUpgradeEnabled()) {
     return PasskeyCreationEligibility::kCanCreateWithUserInteraction;
   }
 

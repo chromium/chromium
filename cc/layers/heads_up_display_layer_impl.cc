@@ -151,11 +151,6 @@ class HudGpuBacking : public ResourcePool::GpuBacking {
   }
 };
 
-class HudSoftwareBacking : public ResourcePool::SoftwareBacking {
- public:
-  ~HudSoftwareBacking() override = default;
-};
-
 bool HeadsUpDisplayLayerImpl::WillDraw(
     DrawMode draw_mode,
     viz::ClientResourceProvider* resource_provider) {
@@ -297,7 +292,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
                                            gfx::ColorSpace());
 
     if (!pool_resource.software_backing()) {
-      auto backing = std::make_unique<HudSoftwareBacking>();
+      auto backing = std::make_unique<ResourcePool::SoftwareBacking>();
       backing->shared_image_interface = sii;
       backing->shared_image = sii->CreateSharedImageForSoftwareCompositor(
           {pool_resource.format(), pool_resource.size(),
@@ -382,8 +377,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
         pool_resource.size().width(), pool_resource.size().height());
     SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
     const size_t row_bytes = info.minRowBytes();
-    auto* backing =
-        static_cast<HudSoftwareBacking*>(pool_resource.software_backing());
+    auto* backing = pool_resource.software_backing();
     auto mapping = backing->shared_image->Map();
     base::span<uint8_t> mem = mapping->GetMemoryForPlane(0);
     CHECK_GE(mem.size(), info.computeByteSize(row_bytes));

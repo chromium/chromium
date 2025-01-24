@@ -165,6 +165,7 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
       [self verticalMarginForLocationBarForFullscreenProgress:1];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
   // iOS 17 and later introduce a new way to handle trait changes. If the OS
@@ -174,6 +175,7 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
   }
   [self updateViews:self.view previousTraitCollection:previousTraitCollection];
 }
+#endif
 
 - (void)viewDidLoad {
   [super viewDidLoad];

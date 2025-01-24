@@ -67,6 +67,7 @@
 #include "chrome/installer/util/shell_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/installer/util/work_item.h"
+#include "chrome/windows_services/elevated_tracing_service/service_integration.h"
 #include "content/public/common/result_codes.h"
 #include "rlz/lib/rlz_lib_clear.h"
 #include "rlz/lib/supplementary_branding.h"
@@ -641,6 +642,18 @@ bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
             {install_static::GetTracingServiceIid()})) {
       LOG(WARNING) << "Failed to delete "
                    << install_static::GetTracingServiceName();
+    }
+    // Delete any storage written by the elevated tracing service.
+    base::FilePath path;
+    if (base::PathService::Get(base::DIR_SYSTEM_TEMP, &path)) {
+      path = path.Append(
+          base::FilePath(elevated_tracing_service::GetStorageDirBasename()));
+      if (base::DeletePathRecursively(path)) {
+        VLOG(1) << "Deleted elevated_tracing_service state in " << path;
+      } else {
+        PLOG(WARNING) << "Error deleting elevated_tracing_service state in "
+                      << path;
+      }
     }
   }
 

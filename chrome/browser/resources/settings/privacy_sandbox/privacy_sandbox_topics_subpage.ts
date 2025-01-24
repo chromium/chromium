@@ -34,7 +34,6 @@ import {getTemplate} from './privacy_sandbox_topics_subpage.html.js';
 export interface SettingsPrivacySandboxTopicsSubpageElement {
   $: {
     topicsToggle: SettingsToggleButtonElement,
-    footer: HTMLElement,
   };
 }
 
@@ -155,10 +154,6 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
 
     this.privacySandboxBrowserProxy_.getTopicsState().then(
         state => this.onTopicsStateChanged_(state));
-
-    this.$.footer.querySelectorAll('a').forEach(
-        link =>
-            link.setAttribute('aria-description', this.i18n('opensInNewTab')));
   }
 
   // Goal is to not show anything but the toggle and disclaimer when the pref is

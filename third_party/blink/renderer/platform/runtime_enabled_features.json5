@@ -3973,6 +3973,10 @@
       status: "stable",
     },
     {
+      name: "SignatureBasedInlineIntegrity",
+      status: "experimental",
+    },
+    {
       name: "SignatureBasedIntegrity",
       status: "experimental",
     },

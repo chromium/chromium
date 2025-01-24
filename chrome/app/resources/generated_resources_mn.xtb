@@ -394,6 +394,7 @@
 <translation id="1260810365552581339">Linux-д хангалттай дискийн зай байхгүй байж магадгүй. Та Linux-н дискийн зайгаа нэмэгдүүлэх болон <ph name="LINK_START" />Тохиргоо<ph name="LINK_END" /> хэсэгт сэргээхээр дахин оролдох боломжтой.</translation>
 <translation id="1261380933454402672">Бага</translation>
 <translation id="126156426083987769">Демо горимтой төхөөрөмжийн лицензэд асуудал гарлаа.</translation>
+<translation id="1262564987698748643">Сайтууд таны гарын оролтыг дарахыг хүсэх боломжтой</translation>
 <translation id="1263231323834454256">Унших жагсаалт</translation>
 <translation id="1263733306853729545">Боломжит хувилбарын жагсаалтыг гүйлгэж үзэхийн тулд <ph name="MINUS" /> болон <ph name="EQUAL" /> товчнуудыг ашиглах</translation>
 <translation id="126387934568812801">Энэ дэлгэцийн агшин болон нээлттэй табуудын гарчгийг оруулах</translation>
@@ -769,6 +770,7 @@
 <translation id="1536883206862903762">Энэ нь өргөтгөлүүдийг идэвхгүй болгож, таны тохиргоог аюулгүй өгөгдмөл тохиргоо руу шинэчилнэ. Таб, файл болон күүкинүүдийг хадгална. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Бүтэн дэлгэцийг томруулагч</translation>
 <translation id="15373452373711364">Том хулганын курсор</translation>
+<translation id="1539248305642687917">Сайтуудад таны гарын оролтыг дарахыг бүү зөвшөөр</translation>
 <translation id="1539727654733007771">Ямар ч хөдөлгөөнт холбооны сүлжээ тохируулаагүй. Шинэ <ph name="BEGIN_LINK" />профайл<ph name="END_LINK" /> татна уу.</translation>
 <translation id="1540265419569299117">ChromeOS аппын үйлчилгээ</translation>
 <translation id="1540543470504988112">MacOS-с импорт хийсэн сертификатыг удирдах</translation>
@@ -979,6 +981,7 @@
 <translation id="166278006618318542">Subject Public Key Algorithm</translation>
 <translation id="1662801900924515589"><ph name="APP" />-г суулгасан</translation>
 <translation id="1663698992894057019">Хамгийн сүүлийн үеийн аюулгүй байдал болон программ хангамжийг авах бол шинэ Chromebook рүү сайжруулна уу</translation>
+<translation id="166454475160289583">Таны гарын оролтыг дарахыг зөвшөөрөөгүй</translation>
 <translation id="1665328953287874063">Өөрийн <ph name="DEVICE_TYPE" />-н түгжээг тайлахын тулд нууц үг эсвэл ПИН ашиглана уу</translation>
 <translation id="1665859804801131136">Экспрессионизм</translation>
 <translation id="1667842670298352129">Тодорхой текстийг чангаар уншихыг сонсоно уу. Эхлээд дэлгэцийнхээ доороос Ярихаар сонгох дүрс тэмдгийг сонгоод, дараа нь текстийг тодруулна уу. Та мөн товчлуурын шууд холбоосыг ашиглах боломжтой: Текстийг тодруулаад, дараа нь Search + S дээр дарна уу.</translation>
@@ -1218,6 +1221,7 @@
 <translation id="1832511806131704864">Гар утасны өөрчлөлт шинэчлэгдсэн</translation>
 <translation id="1832848789136765277">Та синк хийсэн өгөгдөлдөө үргэлж хандах боломжтой эсэхээ баталгаажуулахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="1833059747301212935">Саяхны баримт бичиг, удахгүй болох календарийн үйл явдалд хялбар хандаарай</translation>
+<translation id="183445248400150852">Сайтууд энэ онцлогийг тоглоом, алсын зайн компьютерын апп зэрэгт зориулж таны гарын оролтыг дарахад ашигладаг</translation>
 <translation id="1834503245783133039">Татаж чадсангүй: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux-г дэвшүүлж байна</translation>
 <translation id="1837441256780906162">Microsoft OneDrive хүсэлтийг татгалзсан байна. Дараа дахин оролдоно уу.</translation>
@@ -6759,6 +6763,7 @@
 <translation id="5794700615121138172">Linux-н хуваалцсан фолдерууд</translation>
 <translation id="5794786537412027208">Бүх Chrome Apps-аас гарах</translation>
 <translation id="5796485699458186843">Шинэ нууцлалтай &amp;таб</translation>
+<translation id="5796956053441619942">Алсын зайн төхөөрөмжийн URL-г дэмждэггүй</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; болон &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; дээр хэрхэн эхлэх талаар мэдэж авна уу</translation>
 <translation id="5798079537501238810">Сайтууд төлбөр хариуцагч суулгах боломжтой</translation>
 <translation id="5798086737841799234">Баталгаажуулах код оруулах</translation>
@@ -7413,6 +7418,7 @@
 <translation id="6264485186158353794">Аюулгүй байдалд буцах</translation>
 <translation id="6264520534872750757">Төхөөрөмжийг үргэлжлүүлэн ашиглах</translation>
 <translation id="6264636978858465832">Нууц үгний менежерт хандах илүү эрх шаардлагатай</translation>
+<translation id="626495329434552273">Таны гарын оролтыг дарахыг зөвшөөрсөн</translation>
 <translation id="6265159465845424232">Microsoft файлуудыг Microsoft OneDrive руу хуулах эсвэл зөөхөөсөө өмнө асуух</translation>
 <translation id="6265687851677020761">Портыг хасах</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" />-д холбогдож байна</translation>

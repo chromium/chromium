@@ -300,7 +300,8 @@ class SellerWorkletTest : public testing::Test,
     browser_signal_buyer_and_seller_reporting_id_ = std::nullopt;
     browser_signal_selected_buyer_and_seller_reporting_id_ = std::nullopt;
     browser_signal_render_url_ = GURL("https://render.url.test/");
-    browser_signal_ad_components_.clear();
+    creative_scanning_metadata_ = std::nullopt;
+    component_ads_.clear();
     browser_signal_bidding_duration_msecs_ = 0;
     browser_signal_render_size_ = std::nullopt;
     browser_signal_for_debugging_only_in_cooldown_or_lockout_ = false;
@@ -309,6 +310,22 @@ class SellerWorkletTest : public testing::Test,
     bidder_joining_origin_ = url::Origin::Create(GURL("https://joining.test/"));
     browser_signal_highest_scoring_other_bid_ = 0;
     browser_signal_highest_scoring_other_bid_currency_ = std::nullopt;
+  }
+
+  auction_worklet::mojom::CreativeInfoWithoutOwnerPtr MainAd() const {
+    return auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+        blink::AdDescriptor(browser_signal_render_url_,
+                            browser_signal_render_size_),
+        creative_scanning_metadata_);
+  }
+
+  std::vector<auction_worklet::mojom::CreativeInfoWithoutOwnerPtr>
+  ComponentAds() const {
+    std::vector<auction_worklet::mojom::CreativeInfoWithoutOwnerPtr> out;
+    for (const auto& entry : component_ads_) {
+      out.push_back(entry->Clone());
+    }
+    return out;
   }
 
   // Configures `url_loader_factory_` to return a script with the specified
@@ -436,16 +453,16 @@ class SellerWorkletTest : public testing::Test,
       base::OnceClosure done_closure) {
     seller_worklet->ScoreAd(
         ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
-        trusted_signals_cache_key_.Clone(), direct_from_seller_seller_signals_,
+        trusted_signals_cache_key_.Clone(), MainAd(), ComponentAds(),
+        direct_from_seller_seller_signals_,
         direct_from_seller_seller_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
         direct_from_seller_auction_signals_header_ad_slot_,
         browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
-        browser_signal_interest_group_owner_, browser_signal_render_url_,
+        browser_signal_interest_group_owner_,
         browser_signal_selected_buyer_and_seller_reporting_id_,
         browser_signal_buyer_and_seller_reporting_id_,
-        browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
-        browser_signal_render_size_,
+        browser_signal_bidding_duration_msecs_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         seller_timeout_,
         /*trace_id=*/1, bidder_joining_origin_,
@@ -537,16 +554,16 @@ class SellerWorkletTest : public testing::Test,
       mojom::SellerWorklet* seller_worklet) {
     seller_worklet->ScoreAd(
         ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
-        trusted_signals_cache_key_.Clone(), direct_from_seller_seller_signals_,
+        trusted_signals_cache_key_.Clone(), MainAd(), ComponentAds(),
+        direct_from_seller_seller_signals_,
         direct_from_seller_seller_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
         direct_from_seller_auction_signals_header_ad_slot_,
         browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
-        browser_signal_interest_group_owner_, browser_signal_render_url_,
+        browser_signal_interest_group_owner_,
         browser_signal_selected_buyer_and_seller_reporting_id_,
         browser_signal_buyer_and_seller_reporting_id_,
-        browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
-        browser_signal_render_size_,
+        browser_signal_bidding_duration_msecs_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         seller_timeout_,
         /*trace_id=*/1, bidder_joining_origin_,
@@ -934,10 +951,12 @@ class SellerWorkletTest : public testing::Test,
   std::optional<blink::AdCurrency> component_expect_bid_currency_;
   url::Origin browser_signal_interest_group_owner_;
   GURL browser_signal_render_url_;
+  std::optional<std::string> creative_scanning_metadata_;
   std::optional<std::string>
       browser_signal_selected_buyer_and_seller_reporting_id_;
   std::optional<std::string> browser_signal_buyer_and_seller_reporting_id_;
-  std::vector<GURL> browser_signal_ad_components_;
+  std::vector<auction_worklet::mojom::CreativeInfoWithoutOwnerPtr>
+      component_ads_;
   uint32_t browser_signal_bidding_duration_msecs_;
   std::optional<blink::AdSize> browser_signal_render_size_;
   bool browser_signal_for_debugging_only_in_cooldown_or_lockout_;
@@ -1819,11 +1838,14 @@ TEST_F(SellerWorkletTest, ScoreAdRenderUrlNoDeprecationWarning) {
 }
 
 TEST_F(SellerWorkletTest, ScoreAdAdComponents) {
-  browser_signal_ad_components_.clear();
+  component_ads_.clear();
   RunScoreAdWithReturnValueExpectingResult(
       R"(browserSignals.adComponents === undefined ? 3 : 0)", 3);
 
-  browser_signal_ad_components_ = {GURL("https://bar.test/path")};
+  component_ads_.push_back(
+      auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+          blink::AdDescriptor(GURL("https://bar.test/path")),
+          /*creative_scanning_metadata=*/std::nullopt));
   RunScoreAdWithReturnValueExpectingResult(
       R"(browserSignals.adComponents.length)", 1);
   RunScoreAdWithReturnValueExpectingResult(
@@ -1831,9 +1853,19 @@ TEST_F(SellerWorkletTest, ScoreAdAdComponents) {
       3);
 
   // These are not in lexical order to make sure ordering is preserved.
-  browser_signal_ad_components_ = {GURL("https://2.test/"),
-                                   GURL("https://1.test/"),
-                                   GURL("https://3.test/")};
+  component_ads_.clear();
+  component_ads_.push_back(
+      auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+          blink::AdDescriptor(GURL("https://2.test/")),
+          /*creative_scanning_metadata=*/std::nullopt));
+  component_ads_.push_back(
+      auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+          blink::AdDescriptor(GURL("https://1.test/")),
+          /*creative_scanning_metadata=*/std::nullopt));
+  component_ads_.push_back(
+      auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+          blink::AdDescriptor(GURL("https://3.test/")),
+          /*creative_scanning_metadata=*/std::nullopt));
   RunScoreAdWithReturnValueExpectingResult(
       R"(browserSignals.adComponents.length)", 3);
   RunScoreAdWithReturnValueExpectingResult(
@@ -2177,8 +2209,14 @@ TEST_P(SellerWorkletMultiThreadingTest, ScoreAdTrustedScoringSignals) {
       /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{}, std::move(expected_real_time_contributions));
 
-  browser_signal_ad_components_ = {GURL("https://component1.test/"),
-                                   GURL("https://component2.test/")};
+  component_ads_.push_back(
+      auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+          blink::AdDescriptor(GURL("https://component1.test/")),
+          /*creative_scanning_metadata=*/std::nullopt));
+  component_ads_.push_back(
+      auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+          blink::AdDescriptor(GURL("https://component2.test/")),
+          /*creative_scanning_metadata=*/std::nullopt));
   AddVersionedJsonResponse(
       &url_loader_factory_,
       GURL("https://url.test/trusted_scoring_signals?hostname=window.test"
@@ -2205,6 +2243,145 @@ TEST_P(SellerWorkletMultiThreadingTest, ScoreAdTrustedScoringSignals) {
       mojom::ComponentAuctionModifiedBidParamsPtr(),
       TrustedSignalsRequestManager::kAutoSendDelay, /*expected_errors=*/{},
       /*expected_data_version=*/5);
+}
+
+TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignalsCreativeScanning) {
+  for (bool send_creative_scanning_metadata : {true, false}) {
+    SCOPED_TRACE(send_creative_scanning_metadata);
+    send_creative_scanning_metadata_ = send_creative_scanning_metadata;
+    creative_scanning_metadata_ = "legit main ad";
+    browser_signal_render_size_ =
+        blink::AdSize(80, blink::AdSize::LengthUnit::kScreenWidth, 100,
+                      blink::AdSize::LengthUnit::kPixels);
+    component_ads_.push_back(
+        auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+            blink::AdDescriptor(
+                GURL("https://component1.test/"),
+                blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 100,
+                              blink::AdSize::LengthUnit::kPixels)),
+            "good component"));
+    component_ads_.push_back(
+        auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+            blink::AdDescriptor(GURL("https://component2.test/")),
+            "dubious component"));
+    trusted_scoring_signals_url_ =
+        GURL("https://url.test/trusted_scoring_signals");
+
+    GURL signals_with_scanning(
+        "https://url.test/trusted_scoring_signals?hostname=window.test"
+        "&renderUrls=https%3A%2F%2Frender.url.test%2F"
+        "&adComponentRenderUrls=https%3A%2F%2Fcomponent1.test%2F,"
+        "https%3A%2F%2Fcomponent2.test%2F"
+        "&adCreativeScanningMetadata=legit+main+ad"
+        "&adComponentCreativeScanningMetadata=good+component,dubious+component"
+        "&adSizes=80sw,100px"
+        "&adComponentSizes=100px,100px,,"
+        "&adBuyer=https%3A%2F%2Finterest.group.owner.test"
+        "&adComponentBuyer=https%3A%2F%2Finterest.group.owner.test,"
+        "https%3A%2F%2Finterest.group.owner.test");
+    GURL signals_without_scanning(
+        "https://url.test/trusted_scoring_signals?hostname=window.test"
+        "&renderUrls=https%3A%2F%2Frender.url.test%2F"
+        "&adComponentRenderUrls=https%3A%2F%2Fcomponent1.test%2F,"
+        "https%3A%2F%2Fcomponent2.test%2F");
+    url_loader_factory_.ClearResponses();
+    AddJsonResponse(&url_loader_factory_,
+                    send_creative_scanning_metadata ? signals_with_scanning
+                                                    : signals_without_scanning,
+                    kTrustedScoringSignalsResponse);
+
+    RunScoreAdWithReturnValueExpectingResult(
+        "trustedScoringSignals.renderURL['https://render.url.test/']", 4);
+
+    RunScoreAdWithReturnValueExpectingResult(
+        "trustedScoringSignals.adComponentRenderURLs["
+        "'https://component1.test/']",
+        1);
+    RunScoreAdWithReturnValueExpectingResult(
+        "trustedScoringSignals.adComponentRenderURLs["
+        "'https://component2.test/']",
+        2);
+  }
+}
+
+TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignalsCreativeScanningBatch) {
+  send_creative_scanning_metadata_ = true;
+  trusted_scoring_signals_url_ =
+      GURL("https://url.test/trusted_scoring_signals");
+
+  const char kResponse[] = R"(
+    {
+      "renderUrls": {
+        "https://render.url.test/": 4,
+        "https://other.test/": 5
+      }
+    }
+  )";
+
+  AddJavascriptResponse(
+      &url_loader_factory_, decision_logic_url_,
+      CreateScoreAdScript(
+          "trustedScoringSignals.renderURL[browserSignals.renderURL]"));
+
+  auto seller_worklet = CreateWorklet();
+
+  struct {
+    blink::AdDescriptor ad_desciptor;
+    std::optional<std::string> creative_scanning_metadata;
+    int expected_score;
+    url::Origin owner;
+  } inputs[] = {
+      {blink::AdDescriptor(
+           GURL("https://render.url.test/"),
+           blink::AdSize(1920, blink::mojom::AdSize_LengthUnit::kPixels, 100,
+                         blink::mojom::AdSize_LengthUnit::kScreenHeight)),
+       "c1", 4, url::Origin::Create(GURL("https://b1.test"))},
+      {blink::AdDescriptor(
+           GURL("https://other.test/"),
+           blink::AdSize(400, blink::mojom::AdSize_LengthUnit::kPixels, 200,
+                         blink::mojom::AdSize_LengthUnit::kPixels)),
+       "c2", 5, url::Origin::Create(GURL("https://b2.test"))}};
+
+  size_t num_completed_worklets = 0;
+  base::RunLoop run_loop;
+  for (const auto& input : inputs) {
+    browser_signal_render_url_ = GURL(input.ad_desciptor.url);
+    browser_signal_render_size_ = input.ad_desciptor.size;
+    creative_scanning_metadata_ = input.creative_scanning_metadata;
+    browser_signal_interest_group_owner_ = input.owner;
+    RunScoreAdOnWorkletAsync(
+        seller_worklet.get(), /*expected_score=*/input.expected_score,
+        /*expected_errors=*/std::vector<std::string>(),
+        mojom::ComponentAuctionModifiedBidParamsPtr(),
+        /*expected_data_version=*/std::nullopt,
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
+        /*expected_reject_reason=*/
+        mojom::RejectReason::kNotAvailable,
+        /*expected_pa_requests=*/{},
+        /*expected_real_time_contributions=*/{},
+        /*expected_bid_in_seller_currency=*/std::nullopt,
+        /*expected_score_ad_timeout=*/false,
+        /*expected_signals_fetch_latency=*/std::nullopt,
+        /*expected_code_ready_latency=*/std::nullopt,
+        base::BindLambdaForTesting([&]() {
+          ++num_completed_worklets;
+          if (num_completed_worklets == std::size(inputs)) {
+            run_loop.Quit();
+          }
+        }));
+  }
+
+  GURL response_url(
+      "https://url.test/trusted_scoring_signals?hostname=window.test"
+      "&renderUrls=https%3A%2F%2Fother.test%2F,https%3A%2F%2Frender.url.test%2F"
+      "&adCreativeScanningMetadata=c2,c1"
+      "&adSizes=400px,200px,1920px,100sh"
+      "&adBuyer=https%3A%2F%2Fb2.test,https%3A%2F%2Fb1.test");
+
+  AddJsonResponse(&url_loader_factory_, response_url, kResponse);
+
+  run_loop.Run();
 }
 
 TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignalsLatency) {
@@ -2281,17 +2458,16 @@ TEST_F(SellerWorkletTest, ScoreAdJsFetchLatency) {
   base::RunLoop run_loop;
   seller_worklet->ScoreAd(
       ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
-      auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
-      direct_from_seller_seller_signals_,
+      auction_worklet::mojom::TrustedSignalsCacheKeyPtr(), MainAd(),
+      ComponentAds(), direct_from_seller_seller_signals_,
       direct_from_seller_seller_signals_header_ad_slot_,
       direct_from_seller_auction_signals_,
       direct_from_seller_auction_signals_header_ad_slot_,
       browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
-      browser_signal_interest_group_owner_, browser_signal_render_url_,
+      browser_signal_interest_group_owner_,
       browser_signal_selected_buyer_and_seller_reporting_id_,
       browser_signal_buyer_and_seller_reporting_id_,
-      browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
-      browser_signal_render_size_,
+      browser_signal_bidding_duration_msecs_,
       browser_signal_for_debugging_only_in_cooldown_or_lockout_,
       seller_timeout_,
       /*trace_id=*/1, bidder_joining_origin_,
@@ -4223,17 +4399,16 @@ TEST_P(SellerWorkletMultiThreadingTest, ScriptIsolation) {
       seller_worklet->ScoreAd(
           ad_metadata_, bid_, bid_currency_,
           auction_ad_config_non_shared_params_,
-          auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
-          direct_from_seller_seller_signals_,
+          auction_worklet::mojom::TrustedSignalsCacheKeyPtr(), MainAd(),
+          ComponentAds(), direct_from_seller_seller_signals_,
           direct_from_seller_seller_signals_header_ad_slot_,
           direct_from_seller_auction_signals_,
           direct_from_seller_auction_signals_header_ad_slot_,
           browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
-          browser_signal_interest_group_owner_, browser_signal_render_url_,
+          browser_signal_interest_group_owner_,
           browser_signal_selected_buyer_and_seller_reporting_id_,
           browser_signal_buyer_and_seller_reporting_id_,
-          browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
-          browser_signal_render_size_,
+          browser_signal_bidding_duration_msecs_,
           browser_signal_for_debugging_only_in_cooldown_or_lockout_,
           seller_timeout_,
           /*trace_id=*/1, bidder_joining_origin_,
@@ -4326,17 +4501,16 @@ TEST_F(SellerWorkletTest,
     base::RunLoop run_loop;
     seller_worklet->ScoreAd(
         ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
-        auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
-        direct_from_seller_seller_signals_,
+        auction_worklet::mojom::TrustedSignalsCacheKeyPtr(), MainAd(),
+        ComponentAds(), direct_from_seller_seller_signals_,
         direct_from_seller_seller_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
         direct_from_seller_auction_signals_header_ad_slot_,
         browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
-        browser_signal_interest_group_owner_, browser_signal_render_url_,
+        browser_signal_interest_group_owner_,
         browser_signal_selected_buyer_and_seller_reporting_id_,
         browser_signal_buyer_and_seller_reporting_id_,
-        browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
-        browser_signal_render_size_,
+        browser_signal_bidding_duration_msecs_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         seller_timeout_,
         /*trace_id=*/1, bidder_joining_origin_,
@@ -4432,17 +4606,16 @@ TEST_F(
     base::RunLoop run_loop;
     seller_worklet->ScoreAd(
         ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
-        auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
-        direct_from_seller_seller_signals_,
+        auction_worklet::mojom::TrustedSignalsCacheKeyPtr(), MainAd(),
+        ComponentAds(), direct_from_seller_seller_signals_,
         direct_from_seller_seller_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
         direct_from_seller_auction_signals_header_ad_slot_,
         browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
-        browser_signal_interest_group_owner_, browser_signal_render_url_,
+        browser_signal_interest_group_owner_,
         browser_signal_selected_buyer_and_seller_reporting_id_,
         browser_signal_buyer_and_seller_reporting_id_,
-        browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
-        browser_signal_render_size_,
+        browser_signal_bidding_duration_msecs_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         seller_timeout_,
         /*trace_id=*/1, bidder_joining_origin_,
@@ -4545,18 +4718,17 @@ TEST_F(
         ->ScoreAd(
             ad_metadata_, bid_, bid_currency_,
             auction_ad_config_non_shared_params_,
-            auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
-            direct_from_seller_seller_signals_,
+            auction_worklet::mojom::TrustedSignalsCacheKeyPtr(), MainAd(),
+            ComponentAds(), direct_from_seller_seller_signals_,
             direct_from_seller_seller_signals_header_ad_slot_,
             direct_from_seller_auction_signals_,
             direct_from_seller_auction_signals_header_ad_slot_,
             browser_signals_other_seller_.Clone(),
             component_expect_bid_currency_,
-            browser_signal_interest_group_owner_, browser_signal_render_url_,
+            browser_signal_interest_group_owner_,
             browser_signal_selected_buyer_and_seller_reporting_id_,
             browser_signal_buyer_and_seller_reporting_id_,
-            browser_signal_ad_components_,
-            browser_signal_bidding_duration_msecs_, browser_signal_render_size_,
+            browser_signal_bidding_duration_msecs_,
             browser_signal_for_debugging_only_in_cooldown_or_lockout_,
             seller_timeout_,
             /*trace_id=*/1, bidder_joining_origin_,
@@ -4664,17 +4836,16 @@ TEST_F(SellerWorkletTwoThreadsTest,
     base::RunLoop run_loop;
     seller_worklet->ScoreAd(
         ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
-        auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
-        direct_from_seller_seller_signals_,
+        auction_worklet::mojom::TrustedSignalsCacheKeyPtr(), MainAd(),
+        ComponentAds(), direct_from_seller_seller_signals_,
         direct_from_seller_seller_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
         direct_from_seller_auction_signals_header_ad_slot_,
         browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
-        browser_signal_interest_group_owner_, browser_signal_render_url_,
+        browser_signal_interest_group_owner_,
         browser_signal_selected_buyer_and_seller_reporting_id_,
         browser_signal_buyer_and_seller_reporting_id_,
-        browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
-        browser_signal_render_size_,
+        browser_signal_bidding_duration_msecs_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         seller_timeout_,
         /*trace_id=*/1, bidder_joining_origin_,
@@ -4727,17 +4898,16 @@ TEST_F(SellerWorkletTest, ContextReuseDoesNotCrashLazyFiller) {
     base::RunLoop run_loop;
     seller_worklet->ScoreAd(
         ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
-        auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
-        direct_from_seller_seller_signals_,
+        auction_worklet::mojom::TrustedSignalsCacheKeyPtr(), MainAd(),
+        ComponentAds(), direct_from_seller_seller_signals_,
         direct_from_seller_seller_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
         direct_from_seller_auction_signals_header_ad_slot_,
         browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
-        browser_signal_interest_group_owner_, browser_signal_render_url_,
+        browser_signal_interest_group_owner_,
         browser_signal_selected_buyer_and_seller_reporting_id_,
         browser_signal_buyer_and_seller_reporting_id_,
-        browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
-        browser_signal_render_size_,
+        browser_signal_bidding_duration_msecs_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         seller_timeout_,
         /*trace_id=*/1, bidder_joining_origin_,
@@ -4774,17 +4944,16 @@ TEST_F(SellerWorkletTest, DeleteBeforeScoreAdCallback) {
   base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper().get());
   seller_worklet->ScoreAd(
       ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
-      auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
-      direct_from_seller_seller_signals_,
+      auction_worklet::mojom::TrustedSignalsCacheKeyPtr(), MainAd(),
+      ComponentAds(), direct_from_seller_seller_signals_,
       direct_from_seller_seller_signals_header_ad_slot_,
       direct_from_seller_auction_signals_,
       direct_from_seller_auction_signals_header_ad_slot_,
       browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
-      browser_signal_interest_group_owner_, browser_signal_render_url_,
+      browser_signal_interest_group_owner_,
       browser_signal_selected_buyer_and_seller_reporting_id_,
       browser_signal_buyer_and_seller_reporting_id_,
-      browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
-      browser_signal_render_size_,
+      browser_signal_bidding_duration_msecs_,
       browser_signal_for_debugging_only_in_cooldown_or_lockout_,
       seller_timeout_,
       /*trace_id=*/1, bidder_joining_origin_,
@@ -5802,17 +5971,16 @@ TEST_F(SellerWorkletTest, Cancelation) {
 
   seller_worklet->ScoreAd(
       ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
-      auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
-      direct_from_seller_seller_signals_,
+      auction_worklet::mojom::TrustedSignalsCacheKeyPtr(), MainAd(),
+      ComponentAds(), direct_from_seller_seller_signals_,
       direct_from_seller_seller_signals_header_ad_slot_,
       direct_from_seller_auction_signals_,
       direct_from_seller_auction_signals_header_ad_slot_,
       browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
-      browser_signal_interest_group_owner_, browser_signal_render_url_,
+      browser_signal_interest_group_owner_,
       browser_signal_selected_buyer_and_seller_reporting_id_,
       browser_signal_buyer_and_seller_reporting_id_,
-      browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
-      browser_signal_render_size_,
+      browser_signal_bidding_duration_msecs_,
       browser_signal_for_debugging_only_in_cooldown_or_lockout_,
       seller_timeout_,
       /*trace_id=*/1, bidder_joining_origin_,
@@ -5869,17 +6037,16 @@ TEST_F(SellerWorkletTest, CancelBeforeFetch) {
 
   seller_worklet->ScoreAd(
       ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
-      auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
-      direct_from_seller_seller_signals_,
+      auction_worklet::mojom::TrustedSignalsCacheKeyPtr(), MainAd(),
+      ComponentAds(), direct_from_seller_seller_signals_,
       direct_from_seller_seller_signals_header_ad_slot_,
       direct_from_seller_auction_signals_,
       direct_from_seller_auction_signals_header_ad_slot_,
       browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
-      browser_signal_interest_group_owner_, browser_signal_render_url_,
+      browser_signal_interest_group_owner_,
       browser_signal_selected_buyer_and_seller_reporting_id_,
       browser_signal_buyer_and_seller_reporting_id_,
-      browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
-      browser_signal_render_size_,
+      browser_signal_bidding_duration_msecs_,
       browser_signal_for_debugging_only_in_cooldown_or_lockout_,
       seller_timeout_,
       /*trace_id=*/1, bidder_joining_origin_,
@@ -6533,8 +6700,14 @@ TEST_F(SellerWorkletKVv2Test, ScoreAdTrustedScoringSignals) {
   const base::TimeDelta kDelay = base::Milliseconds(135);
 
   browser_signal_render_url_ = GURL("https://bar.test/");
-  browser_signal_ad_components_ = {GURL("https://barsub.test/"),
-                                   GURL("https://foosub.test/")};
+  component_ads_.push_back(
+      auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+          blink::AdDescriptor(GURL("https://barsub.test/")),
+          /*creative_scanning_metadata=*/std::nullopt));
+  component_ads_.push_back(
+      auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+          blink::AdDescriptor(GURL("https://foosub.test/")),
+          /*creative_scanning_metadata=*/std::nullopt));
 
   for (bool use_signals_cache : {false, true}) {
     SCOPED_TRACE(use_signals_cache);
@@ -7376,17 +7549,16 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
     seller_worklet->ScoreAd(
         ad_metadata_, i + 1, bid_currency_,
         auction_ad_config_non_shared_params_,
-        auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
-        direct_from_seller_seller_signals_,
+        auction_worklet::mojom::TrustedSignalsCacheKeyPtr(), MainAd(),
+        ComponentAds(), direct_from_seller_seller_signals_,
         direct_from_seller_seller_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
         direct_from_seller_auction_signals_header_ad_slot_,
         browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
-        browser_signal_interest_group_owner_, browser_signal_render_url_,
+        browser_signal_interest_group_owner_,
         browser_signal_selected_buyer_and_seller_reporting_id_,
         browser_signal_buyer_and_seller_reporting_id_,
-        browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
-        browser_signal_render_size_,
+        browser_signal_bidding_duration_msecs_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         seller_timeout_,
         /*trace_id=*/1, bidder_joining_origin_,

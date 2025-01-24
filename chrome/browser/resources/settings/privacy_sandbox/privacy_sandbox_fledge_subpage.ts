@@ -28,7 +28,6 @@ import {getTemplate} from './privacy_sandbox_fledge_subpage.html.js';
 export interface SettingsPrivacySandboxFledgeSubpageElement {
   $: {
     fledgeToggle: SettingsToggleButtonElement,
-    footer: HTMLElement,
   };
 }
 
@@ -158,10 +157,6 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
 
     this.privacySandboxBrowserProxy_.getFledgeState().then(
         state => this.onFledgeStateChanged_(state));
-
-    this.$.footer.querySelectorAll('a').forEach(
-        link =>
-            link.setAttribute('aria-description', this.i18n('opensInNewTab')));
   }
 
   private isFledgePrefManaged_(): boolean {

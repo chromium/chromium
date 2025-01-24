@@ -599,7 +599,8 @@ class SubresourceIntegritySignatureTest
     : public SubresourceIntegrityTest,
       public ::testing::WithParamInterface<bool> {
  public:
-  SubresourceIntegritySignatureTest() : scoped_feature_(GetParam()) {}
+  SubresourceIntegritySignatureTest()
+      : scoped_integrity_(GetParam()), scoped_inline_integrity_(GetParam()) {}
 
   bool SignaturesEnabled() { return GetParam(); }
 
@@ -650,7 +651,8 @@ class SubresourceIntegritySignatureTest
   }
 
  private:
-  ScopedSignatureBasedIntegrityForTest scoped_feature_;
+  ScopedSignatureBasedIntegrityForTest scoped_integrity_;
+  ScopedSignatureBasedInlineIntegrityForTest scoped_inline_integrity_;
 };
 
 INSTANTIATE_TEST_SUITE_P(FeatureFlag,
@@ -869,6 +871,78 @@ TEST_P(SubresourceIntegritySignatureTest, CheckValidSignature) {
       metadata_set, /*buffer=*/nullptr, sec_url, *resource, integrity_report,
       nullptr))
       << "Resource variant";
+}
+
+TEST_P(SubresourceIntegritySignatureTest, Inline_NoSignatures) {
+  String kIntegrity = "ed25519-JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";
+  String kSource = "alert(1);";
+
+  const char* cases[] = {
+      "",                            // Empty
+      "   ",                         // Whitespace
+      "invalid-signature",           // Invalid prefix
+      "ed25519-invalid-base64ness",  // Invalid base64
+      "ed25519-aaa",                 // Invalid length
+  };
+
+  for (const char* test : cases) {
+    EXPECT_TRUE(
+        SubresourceIntegrity::VerifyInlineIntegrity(kIntegrity, test, kSource));
+  }
+}
+
+TEST_P(SubresourceIntegritySignatureTest, Inline_MatchingSignature) {
+  String kIntegrity = "ed25519-JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";
+  String kSource = "alert(1);";
+  String kSignature =
+      "ed25519-JXqOX/Ah0/d/"
+      "QEVqirecUGwbPaVWGWXWF6CcZrhYlVwB2+"
+      "64fDhfMKBXQna2RLH4lBBOPjWkZ8juVmIRItaoCQ==";
+
+  EXPECT_TRUE(SubresourceIntegrity::VerifyInlineIntegrity(kIntegrity,
+                                                          kSignature, kSource));
+  // Valid + valid = Verified
+  EXPECT_TRUE(SubresourceIntegrity::VerifyInlineIntegrity(
+      kIntegrity, kSignature + " " + kSignature, kSource));
+
+  // Valid + invalid = Verified
+  EXPECT_TRUE(SubresourceIntegrity::VerifyInlineIntegrity(
+      kIntegrity, kSignature + " ed25519-aaa", kSource));
+
+  // Invalid + valid = Verified
+  EXPECT_TRUE(SubresourceIntegrity::VerifyInlineIntegrity(
+      kIntegrity, "ed25519-aaa " + kSignature, kSource));
+}
+
+TEST_P(SubresourceIntegritySignatureTest, Inline_NonMatchingSignature) {
+  String kIntegrity = "ed25519-JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";
+  String kSource = "alert(1);";
+  String kSignature =
+      "ed25519-"
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      "AAAAAAAAAAAAAA==";
+
+  bool should_fail_verification = !SignaturesEnabled();
+
+  // Non-matching => Fail verification
+  EXPECT_EQ(should_fail_verification,
+            SubresourceIntegrity::VerifyInlineIntegrity(kIntegrity, kSignature,
+                                                        kSource));
+
+  // Non-matching + Non-matching => Fail verification
+  EXPECT_EQ(should_fail_verification,
+            SubresourceIntegrity::VerifyInlineIntegrity(
+                kIntegrity, kSignature + " " + kSignature, kSource));
+
+  // Non-matching + invalid => Fail verification
+  EXPECT_EQ(should_fail_verification,
+            SubresourceIntegrity::VerifyInlineIntegrity(
+                kIntegrity, kSignature + " ed25519-aaa", kSource));
+
+  // Invalid + non-matching => Fail verification
+  EXPECT_EQ(should_fail_verification,
+            SubresourceIntegrity::VerifyInlineIntegrity(
+                kIntegrity, "ed25519-aaa " + kSignature, kSource));
 }
 
 }  // namespace blink

@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/credential_provider/model/features.h"
 
+BASE_FEATURE(kCredentialProviderAutomaticPasskeyUpgrade,
+             "CredentialProviderAutomaticPasskeyUpgrade",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCredentialProviderPasskeyPRF,
              "CredentialProviderPasskeyPRF",
              base::FEATURE_ENABLED_BY_DEFAULT);

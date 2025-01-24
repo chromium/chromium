@@ -25,23 +25,58 @@ CREATE PERFETTO TABLE _chrome_input_pipeline_steps_no_input_type(
   -- Start time of the parent Chrome scheduler task (if any) of this step.
   task_start_time_ts TIMESTAMP
 ) AS
+WITH steps_with_potential_duplicates AS (
+  SELECT
+    EXTRACT_ARG(thread_slice.arg_set_id, 'chrome_latency_info.trace_id')
+      AS latency_id,
+    id AS slice_id,
+    ts,
+    dur,
+    utid,
+    EXTRACT_ARG(thread_slice.arg_set_id, 'chrome_latency_info.step') AS step,
+    EXTRACT_ARG(thread_slice.arg_set_id, 'chrome_latency_info.input_type')
+      AS input_type,
+    ts - (
+      EXTRACT_ARG(
+        thread_slice.arg_set_id,
+        'current_task.event_offset_from_task_start_time_us'
+      ) * 1000
+    ) AS task_start_time_ts
+  FROM
+    thread_slice
+  WHERE
+    step IS NOT NULL
+    AND latency_id != -1
+), steps_with_ordering AS (
+  SELECT
+    *,
+    ROW_NUMBER() OVER (
+      -- Partition the steps so that, if the same step (for the same input) was
+      -- emitted more than once (e.g. due to b:390406106), the step ends up in
+      -- the same partition as all its duplicates. This will enable us to
+      -- deduplicate the steps later.
+      PARTITION BY latency_id, utid, step, input_type
+      -- If there are multiple STEP_RESAMPLE_SCROLL_EVENTS steps, we assume that
+      -- the input was only dispatched after the last resampling, so we only
+      -- care about the last STEP_RESAMPLE_SCROLL_EVENTS step. We don't have any
+      -- preference for other steps but, for the sake of determinsm and
+      -- consistency, let's always pick the last step.
+      ORDER BY ts DESC
+    ) AS ordering_within_partition
+  FROM steps_with_potential_duplicates
+)
 SELECT
-  EXTRACT_ARG(thread_slice.arg_set_id, 'chrome_latency_info.trace_id') AS latency_id,
-  id AS slice_id,
+  latency_id,
+  slice_id,
   ts,
   dur,
   utid,
-  EXTRACT_ARG(thread_slice.arg_set_id, 'chrome_latency_info.step') AS step,
-  EXTRACT_ARG(thread_slice.arg_set_id, 'chrome_latency_info.input_type') AS input_type,
-  ts - (EXTRACT_ARG(thread_slice.arg_set_id, 'current_task.event_offset_from_task_start_time_us') * 1000) AS task_start_time_ts
-FROM
-  thread_slice
-WHERE
-  step IS NOT NULL
-  AND latency_id != -1
--- Deduplicate in the rare case where the browser emitted the same input event
--- more than once (b:390406106).
-GROUP BY latency_id, utid, step, input_type
+  step,
+  input_type,
+  task_start_time_ts
+FROM steps_with_ordering
+-- This is where we actually remove duplicate steps.
+WHERE ordering_within_partition = 1
 ORDER BY slice_id, ts;
 
 -- Each row represents one input pipeline.
