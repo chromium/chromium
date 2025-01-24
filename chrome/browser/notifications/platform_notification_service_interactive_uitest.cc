@@ -245,6 +245,11 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   histogram_tester_.ExpectUniqueSample(
       "Notifications.PersistentWebNotificationClickResult",
       0 /* SERVICE_WORKER_OK */, 1);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Notifications.Engagement.Displayed.Volume0", 1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Notifications.Engagement.Clicked.Volume0", 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,

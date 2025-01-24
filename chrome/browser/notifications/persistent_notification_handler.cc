@@ -139,17 +139,17 @@ void PersistentNotificationHandler::OnClick(
 
   // TODO(crbug.com/40280229)
   if (!origin.is_empty()) {
-    // Notification clicks are considered a form of engagement with the
-    // |origin|, thus we log the interaction with the Site Engagement service.
-    site_engagement::SiteEngagementService::Get(profile)
-        ->HandleNotificationInteraction(origin);
-
     auto* service =
         NotificationsEngagementServiceFactory::GetForProfile(profile);
     // This service might be missing for incognito profiles and in tests.
     if (service) {
       service->RecordNotificationInteraction(origin);
     }
+
+    // Notification clicks are considered a form of engagement with the
+    // |origin|, thus we log the interaction with the Site Engagement service.
+    site_engagement::SiteEngagementService::Get(profile)
+        ->HandleNotificationInteraction(origin);
   }
 
   content::NotificationEventDispatcher::GetInstance()
