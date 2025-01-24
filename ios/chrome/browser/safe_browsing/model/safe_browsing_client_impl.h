@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
-
-#import "base/memory/raw_ptr.h"
-
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_SAFE_BROWSING_CLIENT_IMPL_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_SAFE_BROWSING_CLIENT_IMPL_H_
+
+#import "base/memory/raw_ptr.h"
+#include "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
 
 class PrerenderService;
 
