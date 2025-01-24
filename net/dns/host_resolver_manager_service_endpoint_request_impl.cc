@@ -112,7 +112,6 @@ HostResolverManager::ServiceEndpointRequestImpl::GetDnsAliasResults() {
   }
 
   if (job_ && job_.value()->dns_task_results_manager()) {
-    // TODO(crbug.com/41493696): Call dns_alias_utility::FixUpDnsAliases().
     return job_.value()->dns_task_results_manager()->GetAliases();
   }
 
