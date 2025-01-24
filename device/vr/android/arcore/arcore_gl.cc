@@ -703,8 +703,8 @@ void ArCoreGl::GetFrameData(
     if (!stage_parameters_) {
       stage_parameters_ = mojom::VRStageParameters::New();
     }
-    stage_parameters_->mojo_from_floor = gfx::Transform();
-    stage_parameters_->mojo_from_floor.Translate3d(
+    stage_parameters_->mojo_from_stage = gfx::Transform();
+    stage_parameters_->mojo_from_stage.Translate3d(
         0, (-1 * *floor_height_estimate_), 0);
 
     stage_parameters_id_++;

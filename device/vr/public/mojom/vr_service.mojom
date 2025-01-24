@@ -325,7 +325,10 @@ struct XRView {
 };
 
 struct VRStageParameters {
-  gfx.mojom.Transform mojo_from_floor;
+  // The transform from mojo space to the origin of the "stage" space. This
+  // should be on the ground and can be used in-place of the floor if the floor
+  // is missing.
+  gfx.mojom.Transform mojo_from_stage;
 
   // If present, indicates that the device supports a bounded reference space
   // (https://immersive-web.github.io/webxr/#xrboundedreferencespace-interface).
