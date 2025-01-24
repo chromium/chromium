@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -90,6 +91,12 @@ void LogMetadata::AddSampleCount(base::HistogramBase::Count32 sample_count) {
 }
 
 namespace {
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+// The foreground/background ID. When a MetricsLog instance is created, its
+// `fg_bg_id` system profile field will be set to this value.
+static int g_fg_bg_id_counter = 1;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // Convenience function to return the given time at a resolution in seconds.
 static int64_t ToMonotonicSeconds(base::TimeTicks time_ticks) {
@@ -314,6 +321,17 @@ int64_t MetricsLog::GetCurrentTime() {
   return ToMonotonicSeconds(base::TimeTicks::Now());
 }
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+// static
+void MetricsLog::IncrementFgBgId() {
+  g_fg_bg_id_counter++;
+}
+
+void MetricsLog::ClearFgBgId() {
+  uma_proto_.mutable_system_profile()->clear_fg_bg_id();
+}
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
 void MetricsLog::AssignFinalizedRecordId(PrefService* local_state) {
   DCHECK(!uma_proto_.has_finalized_record_id());
   uma_proto_.set_finalized_record_id(
@@ -388,6 +406,10 @@ void MetricsLog::RecordCoreSystemProfile(
 #endif
 
   system_profile->set_session_hash(GetSessionHash());
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  system_profile->set_fg_bg_id(g_fg_bg_id_counter);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   metrics::SystemProfileProto::Hardware* hardware =
       system_profile->mutable_hardware();
@@ -506,10 +528,25 @@ const SystemProfileProto& MetricsLog::RecordEnvironment(
   // persistent histograms .pma file.
   if (has_environment_) {
     std::string client_uuid = uma_proto_.system_profile().client_uuid();
+    auto fg_bg_id =
+        uma_proto_.system_profile().has_fg_bg_id()
+            ? std::optional<int>(uma_proto_.system_profile().fg_bg_id())
+            : std::nullopt;
+
     uma_proto_.clear_system_profile();
     MetricsLog::RecordCoreSystemProfile(client_,
                                         uma_proto_.mutable_system_profile());
+
     uma_proto_.mutable_system_profile()->set_client_uuid(client_uuid);
+    // Ensure that the re-filled system profile keeps the same `fg_bg_id` as
+    // before. For example, it may have been cleared due to backgrounding and/or
+    // foregrounding while logs could not be closed yet -- so this ensures that
+    // this remains cleared. See MetricsService::OnAppEnter(Back|Fore)ground().
+    if (fg_bg_id.has_value()) {
+      uma_proto_.mutable_system_profile()->set_fg_bg_id(fg_bg_id.value());
+    } else {
+      uma_proto_.mutable_system_profile()->clear_fg_bg_id();
+    }
   }
 
   has_environment_ = true;

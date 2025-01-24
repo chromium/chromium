@@ -570,6 +570,7 @@ void MetricsService::OnApplicationNotIdle() {
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void MetricsService::OnAppEnterBackground(bool keep_recording_in_background) {
+  base::RecordAction(base::UserMetricsAction("UMA_OnBackgrounded"));
   is_in_foreground_ = false;
   reporting_service_.SetIsInForegound(false);
   if (!keep_recording_in_background) {
@@ -604,14 +605,28 @@ void MetricsService::OnAppEnterBackground(bool keep_recording_in_background) {
       PushPendingLogsToPersistentStorage(
           MetricsLogsEventManager::CreateReason::kBackgrounded);
     }
+
+    // Increment the global foreground/background ID for the upcoming new log.
+    MetricsLog::IncrementFgBgId();
+
     // Persisting logs closes the current log, so start recording a new log
     // immediately to capture any background work that might be done before the
     // process is killed.
     OpenNewLog();
+  } else {
+    // The first log can only be closed after a certain stage, and backgrounding
+    // too early will *not* close it (see `IsTooEarlyToCloseLog()`). In those
+    // cases, clear/unset the `fg_bg_id` field to make it clear that the log
+    // contains data from multiple background/foreground periods.
+    if (recording_active()) {
+      CHECK(current_log_);
+      current_log_->ClearFgBgId();
+    }
   }
 }
 
 void MetricsService::OnAppEnterForeground(bool force_open_new_log) {
+  base::RecordAction(base::UserMetricsAction("UMA_OnForegrounded"));
   is_in_foreground_ = true;
   reporting_service_.SetIsInForegound(true);
   state_manager_->LogHasSessionShutdownCleanly(false);
@@ -630,7 +645,27 @@ void MetricsService::OnAppEnterForeground(bool force_open_new_log) {
     // will close the log, allowing a new log to be opened.
     PushPendingLogsToPersistentStorage(
         MetricsLogsEventManager::CreateReason::kForegrounded);
+
+    // Increment the global foreground/background ID for the upcoming new log.
+    MetricsLog::IncrementFgBgId();
+
     OpenNewLog();
+  } else {
+    // The first log can only be closed after a certain stage, and foregrounding
+    // too early will *not* close it (see `IsTooEarlyToCloseLog()`). In those
+    // cases, clear/unset the `fg_bg_id` field to make it clear that the log
+    // contains data from multiple background/foreground periods.
+    // Further, certain platforms do not close a log at all upon foregrounding
+    // (i.e. `force_open_new_log` is set to false), so the `current_log_` will
+    // contain both background and foreground metrics. In those cases,
+    // `fg_bg_id` should also be cleared/unset.
+    // TODO(crbug.com/383881315): Currently, OnAppEnterForeground() is always
+    // called at startup (when launching the application), which causes the
+    // first log to always have its `fg_bg_id` field unset. Improve this.
+    if (recording_active()) {
+      CHECK(current_log_);
+      current_log_->ClearFgBgId();
+    }
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -1365,8 +1400,27 @@ std::string MetricsService::RecordCurrentEnvironmentHelper(
     MetricsLog* log,
     PrefService* local_state,
     DelegatingProvider* delegating_provider) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // Record to prefs (and global persistent system profile upstream) the `log`'s
+  // system profile, but with an empty `fg_bg_id`. This is to prevent
+  // independent logs and initial stability logs from having this field set,
+  // since there are many edge cases that would result in an incorrect value.
+  // Otherwise, for example, if the user foregrounds, backgrounds, and closes
+  // the application all before the first log can be closed, `fg_bg_id` should
+  // be unset, but an independent log generated from that session would have a
+  // value set. Or, if the user backgrounds the application, and very shortly
+  // after kills the application, an independent log generated from the leftover
+  // background metrics from that session would have its `fg_bg_id` set to the
+  // value of when the application was still in the foreground (since that's the
+  // last complete system profile written to the PMA file).
+  // TODO(crbug.com/383881315): Improve this.
+  SystemProfileProto system_profile =
+      log->RecordEnvironment(delegating_provider);
+  system_profile.clear_fg_bg_id();
+#else
   const SystemProfileProto& system_profile =
       log->RecordEnvironment(delegating_provider);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   EnvironmentRecorder recorder(local_state);
   return recorder.SerializeAndRecordEnvironmentToPrefs(system_profile);
 }

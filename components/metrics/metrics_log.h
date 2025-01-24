@@ -143,6 +143,15 @@ class MetricsLog {
       const std::string& package_name,
       SystemProfileProto* system_profile);
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // Increments the global foreground/background ID. Must be called on the main
+  // thread.
+  static void IncrementFgBgId();
+
+  // Clears/unsets the log's `fg_bg_id` system profile field.
+  void ClearFgBgId();
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
   // Assign a unique finalized record id to this log.
   void AssignFinalizedRecordId(PrefService* local_state);
 
