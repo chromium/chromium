@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/types/pass_key.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -37,6 +38,13 @@ class MEDIA_EXPORT DXGIDeviceScopedHandle {
 class MEDIA_EXPORT DXGIDeviceManager
     : public base::RefCountedThreadSafe<DXGIDeviceManager> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
+  DXGIDeviceManager(
+      base::PassKey<DXGIDeviceManager>,
+      Microsoft::WRL::ComPtr<IMFDXGIDeviceManager> mf_dxgi_device_manager,
+      UINT d3d_device_reset_token,
+      CHROME_LUID luid);
   DXGIDeviceManager(const DXGIDeviceManager&) = delete;
   DXGIDeviceManager& operator=(const DXGIDeviceManager&) = delete;
 

@@ -9,6 +9,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/gpu/chromeos/frame_resource.h"
@@ -25,6 +26,27 @@ namespace media {
 // accessors return nullptr.
 class NativePixmapFrameResource : public FrameResource {
  public:
+  // The underlying NativePixmap is constructed from `handle`.
+  NativePixmapFrameResource(base::PassKey<NativePixmapFrameResource>,
+                            const media::VideoFrameLayout& layout,
+                            const gfx::Rect& visible_rect,
+                            const gfx::Size& natural_size,
+                            base::TimeDelta timestamp,
+                            gfx::BufferFormat buffer_format,
+                            gfx::GenericSharedMemoryId id,
+                            const base::UnguessableToken& token,
+                            std::optional<gfx::BufferUsage> buffer_usage,
+                            gfx::NativePixmapHandle handle);
+  NativePixmapFrameResource(
+      base::PassKey<NativePixmapFrameResource>,
+      const media::VideoFrameLayout& layout,
+      const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
+      base::TimeDelta timestamp,
+      gfx::GenericSharedMemoryId id,
+      const base::UnguessableToken& token,
+      std::optional<gfx::BufferUsage> buffer_usage,
+      scoped_refptr<const gfx::NativePixmapDmaBuf> pixmap);
   NativePixmapFrameResource() = delete;
   NativePixmapFrameResource(const NativePixmapFrameResource&) = delete;
   NativePixmapFrameResource& operator=(const NativePixmapFrameResource&) =
@@ -118,27 +140,6 @@ class NativePixmapFrameResource : public FrameResource {
 
  private:
   ~NativePixmapFrameResource() override;
-
-  // The underlying NativePixmap is constructed from |handle|.
-  NativePixmapFrameResource(const media::VideoFrameLayout& layout,
-                            const gfx::Rect& visible_rect,
-                            const gfx::Size& natural_size,
-                            base::TimeDelta timestamp,
-                            gfx::BufferFormat buffer_format,
-                            gfx::GenericSharedMemoryId id,
-                            const base::UnguessableToken& token,
-                            std::optional<gfx::BufferUsage> buffer_usage,
-                            gfx::NativePixmapHandle handle);
-
-  NativePixmapFrameResource(
-      const media::VideoFrameLayout& layout,
-      const gfx::Rect& visible_rect,
-      const gfx::Size& natural_size,
-      base::TimeDelta timestamp,
-      gfx::GenericSharedMemoryId id,
-      const base::UnguessableToken& token,
-      std::optional<gfx::BufferUsage> buffer_usage,
-      scoped_refptr<const gfx::NativePixmapDmaBuf> pixmap);
 
   // |pixmap_| is the underlying NativePixmap. It is is set by the constructors.
   const scoped_refptr<const gfx::NativePixmapDmaBuf> pixmap_;

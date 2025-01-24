@@ -6,6 +6,7 @@
 #define MEDIA_GPU_CHROMEOS_VIDEO_FRAME_RESOURCE_H_
 
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/gpu/chromeos/frame_resource.h"
@@ -17,6 +18,8 @@ namespace media {
 // Implements a FrameResource that is backed by a media::VideoFrame.
 class VideoFrameResource : public FrameResource {
  public:
+  VideoFrameResource(base::PassKey<VideoFrameResource>,
+                     scoped_refptr<const VideoFrame> frame);
   VideoFrameResource(const VideoFrameResource&) = delete;
   VideoFrameResource& operator=(const VideoFrameResource&) = delete;
 
@@ -78,7 +81,6 @@ class VideoFrameResource : public FrameResource {
   scoped_refptr<const VideoFrame> GetVideoFrame() const;
 
  private:
-  explicit VideoFrameResource(scoped_refptr<const VideoFrame> frame);
   ~VideoFrameResource() override;
 
   const scoped_refptr<const VideoFrame> frame_;

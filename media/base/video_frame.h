@@ -29,6 +29,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/id_type.h"
+#include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -55,6 +56,8 @@ namespace media {
 
 class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   static constexpr size_t kFrameSizeAlignment = 16;
   static constexpr size_t kFrameSizePadding = 16;
 
@@ -145,6 +148,19 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping_;
   };
 
+  enum class FrameControlType {
+    kNone,
+    kEos,
+  };
+
+  // Clients must use the static factory/wrapping methods to create a new frame.
+  VideoFrame(base::PassKey<VideoFrame>,
+             const VideoFrameLayout& layout,
+             StorageType storage_type,
+             const gfx::Rect& visible_rect,
+             const gfx::Size& natural_size,
+             base::TimeDelta timestamp,
+             FrameControlType frame_control_type = FrameControlType::kNone);
   VideoFrame() = delete;
   VideoFrame(const VideoFrame&) = delete;
   VideoFrame& operator=(const VideoFrame&) = delete;
@@ -808,21 +824,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
  protected:
   friend class base::RefCountedThreadSafe<VideoFrame>;
-
-  enum class FrameControlType {
-    kNone,
-    kEos,
-  };
-
-  // Clients must use the static factory/wrapping methods to create a new frame.
-  // Derived classes should create their own factory/wrapping methods, and use
-  // this constructor to do basic initialization.
-  VideoFrame(const VideoFrameLayout& layout,
-             StorageType storage_type,
-             const gfx::Rect& visible_rect,
-             const gfx::Size& natural_size,
-             base::TimeDelta timestamp,
-             FrameControlType frame_control_type = FrameControlType::kNone);
   virtual ~VideoFrame();
 
   // Creates a summary of the configuration settings provided as parameters.

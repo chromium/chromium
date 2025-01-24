@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/types/pass_key.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 
 namespace media {
@@ -15,10 +16,9 @@ scoped_refptr<VideoFrameResource> VideoFrameResource::Create(
   if (!frame) {
     return nullptr;
   }
-  // Uses WrapRefCounted since MakeRefCounted cannot access a private
-  // constructor.
-  return base::WrapRefCounted<VideoFrameResource>(
-      new VideoFrameResource(std::move(frame)));
+
+  return base::MakeRefCounted<VideoFrameResource>(
+      base::PassKey<VideoFrameResource>(), std::move(frame));
 }
 
 scoped_refptr<const VideoFrameResource> VideoFrameResource::CreateConst(
@@ -28,12 +28,13 @@ scoped_refptr<const VideoFrameResource> VideoFrameResource::CreateConst(
   }
   // Uses WrapRefCounted since MakeRefCounted cannot access a private
   // constructor.
-  return base::WrapRefCounted<const VideoFrameResource>(
-      new VideoFrameResource(std::move(frame)));
+  return base::MakeRefCounted<const VideoFrameResource>(
+      base::PassKey<VideoFrameResource>(), std::move(frame));
 }
 
-VideoFrameResource::VideoFrameResource(scoped_refptr<const VideoFrame> frame)
-    : FrameResource(), frame_(std::move(frame)) {
+VideoFrameResource::VideoFrameResource(base::PassKey<VideoFrameResource>,
+                                       scoped_refptr<const VideoFrame> frame)
+    : frame_(std::move(frame)) {
   CHECK(frame_);
 }
 

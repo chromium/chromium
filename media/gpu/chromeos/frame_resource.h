@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_CHROMEOS_FRAME_RESOURCE_H_
 #define MEDIA_GPU_CHROMEOS_FRAME_RESOURCE_H_
 
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -29,6 +30,8 @@ class NativePixmapFrameResource;
 // e.g. VideoFrame or NativePixmap.
 class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   FrameResource();
   // FrameResource is not moveable or copyable.
   FrameResource(const FrameResource&) = delete;
@@ -177,7 +180,6 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
 
  protected:
   friend class base::RefCountedThreadSafe<FrameResource>;
-
   virtual ~FrameResource() = default;
 
  private:

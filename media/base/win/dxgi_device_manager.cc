@@ -70,8 +70,9 @@ scoped_refptr<DXGIDeviceManager> DXGIDeviceManager::Create(CHROME_LUID luid) {
   HRESULT hr = MFCreateDXGIDeviceManager(&d3d_device_reset_token,
                                          &mf_dxgi_device_manager);
   RETURN_ON_HR_FAILURE(hr, "Failed to create MF DXGI device manager", nullptr);
-  auto dxgi_device_manager = base::WrapRefCounted(new DXGIDeviceManager(
-      std::move(mf_dxgi_device_manager), d3d_device_reset_token, luid));
+  auto dxgi_device_manager = base::MakeRefCounted<DXGIDeviceManager>(
+      base::PassKey<DXGIDeviceManager>(), std::move(mf_dxgi_device_manager),
+      d3d_device_reset_token, luid);
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d_device;
   if (dxgi_device_manager &&
@@ -106,6 +107,7 @@ scoped_refptr<DXGIDeviceManager> DXGIDeviceManager::Create(
 }
 
 DXGIDeviceManager::DXGIDeviceManager(
+    base::PassKey<DXGIDeviceManager>,
     Microsoft::WRL::ComPtr<IMFDXGIDeviceManager> mf_dxgi_device_manager,
     UINT d3d_device_reset_token,
     CHROME_LUID luid)
@@ -114,6 +116,15 @@ DXGIDeviceManager::DXGIDeviceManager(
       luid_(luid) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
+
+DXGIDeviceManager::DXGIDeviceManager(
+    Microsoft::WRL::ComPtr<IMFDXGIDeviceManager> mf_dxgi_device_manager,
+    UINT d3d_device_reset_token,
+    CHROME_LUID luid)
+    : DXGIDeviceManager(base::PassKey<DXGIDeviceManager>(),
+                        std::move(mf_dxgi_device_manager),
+                        d3d_device_reset_token,
+                        luid) {}
 
 DXGIDeviceManager::~DXGIDeviceManager() = default;
 
