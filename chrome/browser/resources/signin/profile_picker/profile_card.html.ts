@@ -41,7 +41,7 @@ export function getHtml(this: ProfileCardElement) {
         @pointerleave="${this.onNameInputPointerLeave_}"
         ?disabled="${isGlicVersion()}" required>
     </cr-input>
-    <div id="hoverUnderline"></div>
+    <div id="hoverUnderline" ?hidden="${isGlicVersion()}"></div>
   </div>
   <profile-card-menu .profileState="${this.profileState}"
       ?hidden="${isGlicVersion()}">
