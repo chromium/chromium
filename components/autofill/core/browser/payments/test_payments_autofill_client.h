@@ -121,6 +121,11 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   MockMandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
       override;
   const PaymentsDataManager& GetPaymentsDataManager() const override;
+  void ShowUnmaskAuthenticatorSelectionDialog(
+      const std::vector<CardUnmaskChallengeOption>& challenge_options,
+      base::OnceCallback<void(const std::string&)>
+          confirm_unmask_challenge_option_callback,
+      base::OnceClosure cancel_unmasking_closure) override;
 
   bool GetMandatoryReauthOptInPromptWasShown();
 
@@ -188,6 +193,10 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
     autofill_offer_manager_ = std::move(autofill_offer_manager);
   }
 
+  bool unmask_authenticator_selection_dialog_shown() const {
+    return unmask_authenticator_selection_dialog_shown_;
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   // Set up a mock to simulate successful mandatory reauth when autofilling
   // payment methods.
@@ -252,6 +261,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   // respectively.
   bool mandatory_reauth_opt_in_prompt_was_shown_ = false;
   bool mandatory_reauth_opt_in_prompt_was_reshown_ = false;
+
+  bool unmask_authenticator_selection_dialog_shown_ = false;
 
   std::unique_ptr<MockIbanManager> mock_iban_manager_;
 

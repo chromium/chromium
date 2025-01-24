@@ -472,6 +472,7 @@ TEST_F(
                    ->risk_based_authentication_invoked());
 }
 
+#if !BUILDFLAG(IS_IOS)
 // Test the green path flow when the masked server card enrolled in card info
 // retrieval is successfully returned from the server during a risk-based
 // retrieval.
@@ -563,9 +564,58 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
 // retrieval is retrieved from the server with Sms Otp authentication.
 TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
        CardInfoRetrievalUnmasking_AuthenticationRequired_OtpOnly) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   std::vector<CardUnmaskChallengeOption> challenge_options =
       test::GetCardUnmaskChallengeOptions(
           {CardUnmaskChallengeOptionType::kSmsOtp});
+  MockCardUnmaskFlowUpToAuthenticationSelectionDialogAccepted(
+      /*fido_authenticator_is_user_opted_in=*/false,
+      /*is_user_verifiable=*/false, challenge_options, /*selected_index=*/0,
+      CreditCard::RecordType::kMaskedServerCard,
+      /*is_card_info_retrieval_enrolled=*/true);
+
+  const CreditCard* enrolled_card =
+      CreateServerCard(kTestGUID, kTestNumber, kTestServerId, kTestCvc16,
+                       CreditCard::RecordType::kMaskedServerCard,
+                       /*is_card_info_retrieval_enrolled=*/true);
+  credit_card_access_manager().OnOtpAuthenticationComplete(
+      CreditCardOtpAuthenticator::OtpAuthenticationResponse()
+          .with_result(CreditCardOtpAuthenticator::OtpAuthenticationResponse::
+                           Result::kSuccess)
+          .with_card(enrolled_card)
+          .with_cvc(kTestCvc16));
+
+  // Expect that we did not signal that there was no interactive authentication.
+  EXPECT_FALSE(
+      test_api(*autofill_client_.GetFormDataImporter())
+          .payment_method_type_if_non_interactive_authentication_flow_completed()
+          .has_value());
+
+  // Expect accessor to successfully retrieve the CVC.
+  EXPECT_EQ(kTestCvc16, accessor_->cvc());
+}
+
+// Test the yellow path flow when the masked server card enrolled in card info
+// retrieval is retrieved from the server with Sms Otp authentication via
+// multiple phone number options.
+TEST_F(
+    CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
+    CardInfoRetrievalUnmasking_AuthenticationRequired_OtpOnly_MultiplePhoneNumbers) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  std::vector<CardUnmaskChallengeOption> challenge_options =
+      test::GetCardUnmaskChallengeOptions(
+          {CardUnmaskChallengeOptionType::kSmsOtp,
+           CardUnmaskChallengeOptionType::kSmsOtp});
   MockCardUnmaskFlowUpToAuthenticationSelectionDialogAccepted(
       /*fido_authenticator_is_user_opted_in=*/false,
       /*is_user_verifiable=*/false, challenge_options, /*selected_index=*/0,
@@ -597,6 +647,12 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
 // flow.
 TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
        CardInfoRetrievalUnmasking_AuthenticationRequired_OtpOnly_Metrics) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   base::HistogramTester histogram_tester;
 
   std::vector<CardUnmaskChallengeOption> challenge_options =
@@ -631,6 +687,49 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
       "Autofill.ServerCardUnmask.ServerCard.Result.Otp",
       autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked, 1);
 }
+
+// Test the yellow path flow when the masked server card enrolled in card info
+// retrieval is retrieved and server returns non SMS OTP Challenge which is not
+// yet supported. Then the card info retrieval authentication is skipped.
+TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
+       CardInfoRetrievalUnmasking_NonSmsOtpChallenge_SelectionDialogSkipped) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // 3DS is the unsupported challenge option here.
+  std::vector<CardUnmaskChallengeOption> challenge_options =
+      test::GetCardUnmaskChallengeOptions(
+          {CardUnmaskChallengeOptionType::kSmsOtp,
+           CardUnmaskChallengeOptionType::kThreeDomainSecure});
+
+  // Mocking card unmask flow.
+  CreateServerCard(kTestGUID, kTestNumber, kTestServerId, kTestCvc16,
+                   CreditCard::RecordType::kMaskedServerCard,
+                   /*is_card_info_retrieval_enrolled=*/true);
+  const CreditCard* card =
+      personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
+
+  CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse response;
+  response.result = CreditCardRiskBasedAuthenticator::
+      RiskBasedAuthenticationResponse::Result::kAuthenticationRequired;
+  response.context_token = "fake_context_token";
+  response.card_unmask_challenge_options = challenge_options;
+
+  credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
+      response);
+
+  // Selection dialog should not be shown if an unsupported authentication
+  // method was returned for the card.
+  EXPECT_FALSE(
+      payments_autofill_client().unmask_authenticator_selection_dialog_shown());
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 // Params of the

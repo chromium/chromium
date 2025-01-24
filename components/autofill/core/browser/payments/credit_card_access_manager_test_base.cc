@@ -426,6 +426,11 @@ void CreditCardAccessManagerTestBase::
         });
   }
 
+  if (is_card_info_retrieval_enrolled) {
+    EXPECT_TRUE(payments_autofill_client()
+                    .unmask_authenticator_selection_dialog_shown());
+  }
+
   test_api(credit_card_access_manager())
       .OnUserAcceptedAuthenticationSelectionDialog(challenge_option.id.value());
 

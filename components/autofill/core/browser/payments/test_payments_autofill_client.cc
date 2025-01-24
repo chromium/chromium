@@ -274,6 +274,14 @@ void TestPaymentsAutofillClient::set_otp_authenticator(
   otp_authenticator_ = std::move(authenticator);
 }
 
+void TestPaymentsAutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
+    const std::vector<CardUnmaskChallengeOption>& challenge_options,
+    base::OnceCallback<void(const std::string&)>
+        confirm_unmask_challenge_option_callback,
+    base::OnceClosure cancel_unmasking_closure) {
+  unmask_authenticator_selection_dialog_shown_ = true;
+}
+
 #if BUILDFLAG(IS_ANDROID)
 void TestPaymentsAutofillClient::
     SetUpDeviceBiometricAuthenticatorSuccessOnAutomotive() {
