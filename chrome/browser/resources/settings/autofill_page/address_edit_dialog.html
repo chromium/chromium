@@ -110,10 +110,11 @@
           </div>
         </template>
         <div id="notices" hidden="[[!isAccountAddress_]]">
-          <div id="validationError">
-            [[validationError_]]<wbr>
+          <div id="validationError" hidden="[[!validationError_]]">
+            [[validationError_]]
           </div>
-          <div id="accountRecordTypeNotice">
+          <div id="accountRecordTypeNotice"
+              hidden="[[!accountAddressRecordTypeNotice_]]">
             [[accountAddressRecordTypeNotice_]]
           </div>
         </div>
