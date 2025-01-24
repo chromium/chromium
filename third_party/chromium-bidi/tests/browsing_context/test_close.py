@@ -38,7 +38,7 @@ async def test_browsingContext_close(websocket, context_id):
             "context": context_id,
             "parent": None,
             "url": "about:blank",
-            "children": None,
+            "children": [],
             "userContext": "default"
         }
     })
@@ -139,7 +139,7 @@ async def test_browsingContext_close_prompt(websocket, context_id, html,
             'method': 'browsingContext.contextDestroyed',
             'params': {
                 'context': context_id,
-                'children': None,
+                'children': [],
                 'originalOpener': None,
                 'clientWindow': ANY_STR,
                 'parent': None,

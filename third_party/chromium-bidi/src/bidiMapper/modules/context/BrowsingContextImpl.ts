@@ -221,7 +221,7 @@ export class BrowsingContextImpl {
         {
           type: 'event',
           method: ChromiumBidi.BrowsingContext.EventNames.ContextDestroyed,
-          params: this.serializeToBidiValue(),
+          params: this.serializeToBidiValue(null),
         },
         this.id,
       );
@@ -361,8 +361,11 @@ export class BrowsingContextImpl {
     return maybeSandboxes[0]!;
   }
 
+  /**
+   * Implements https://w3c.github.io/webdriver-bidi/#get-the-navigable-info.
+   */
   serializeToBidiValue(
-    maxDepth = 0,
+    maxDepth: number | null = 0,
     addParentField = true,
   ): BrowsingContext.Info {
     return {
@@ -373,9 +376,12 @@ export class BrowsingContextImpl {
       // TODO(#2646): Implement Client Window correctly
       clientWindow: '',
       children:
-        maxDepth > 0
+        maxDepth === null || maxDepth > 0
           ? this.directChildren.map((c) =>
-              c.serializeToBidiValue(maxDepth - 1, false),
+              c.serializeToBidiValue(
+                maxDepth === null ? maxDepth : maxDepth - 1,
+                false,
+              ),
             )
           : null,
       ...(addParentField ? {parent: this.#parentId} : {}),
