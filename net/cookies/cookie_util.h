@@ -56,7 +56,8 @@ enum class StorageAccessResult {
   // ACCESS_ALLOWED_CORS_EXCEPTION = 8,  // Deprecated
   ACCESS_ALLOWED_TOP_LEVEL_3PCD_TRIAL = 9,
   ACCESS_ALLOWED_SCHEME = 10,
-  kMaxValue = ACCESS_ALLOWED_SCHEME,
+  ACCESS_ALLOWED_SANDBOX_VALUE = 11,
+  kMaxValue = ACCESS_ALLOWED_SANDBOX_VALUE,
 };
 
 // This enum's values correspond to the values of the HTTP request header

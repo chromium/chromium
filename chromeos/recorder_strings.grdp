@@ -474,6 +474,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Label of the keep screen on toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_KEEP_SCREEN_ON_LABEL">
     Keep screen on when recording
   </message>
+  <message desc="Accessibility label of the chevron-right button to open transcription language subpage in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_LANGUAGE_SUBPAGE_BUTTON_ARIA_LABEL">
+    Open transcription language picker
+  </message>
   <message desc="Description of the speaker label toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SPEAKER_LABEL_DESCRIPTION">
     Currently only available in English (US)
   </message>
@@ -521,6 +524,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   </message>
   <message desc="Label of the transcription toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_LABEL">
     Audio transcription
+  </message>
+  <message desc="Description of transcription language subpage in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_LANGUAGE_DESCRIPTION">
+    Select transcription language
   </message>
   <message desc="Label of the transcription language option in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_LANGUAGE_LABEL">
     Transcription language

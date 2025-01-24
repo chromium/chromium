@@ -135,8 +135,10 @@ class CookieSettingsBase {
     kAllowByScheme = 19,
     // Allowed by tracking protection exception.
     kAllowByTrackingProtectionException = 20,
+    // Allowed by sandbox 'allow-same-site-none-cookies' value.
+    kAllowBySandboxValue = 21,
 
-    kMaxValue = kAllowByTrackingProtectionException,
+    kMaxValue = kAllowBySandboxValue,
   };
 
   // Enum for recording what type of storage permissions or overrides are
@@ -442,6 +444,10 @@ class CookieSettingsBase {
       const GURL& url,
       const GURL& first_party_url,
       net::CookieSettingOverrides overrides) const;
+
+  bool IsAllowedBySandboxValue(const GURL& url,
+                               const GURL& first_party_url,
+                               net::CookieSettingOverrides overrides) const;
 
   bool IsAllowedBy3pcdTrialSettings(
       const GURL& url,

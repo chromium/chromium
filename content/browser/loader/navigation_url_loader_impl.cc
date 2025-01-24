@@ -372,6 +372,26 @@ bool IsSameOriginRedirect(const std::vector<GURL>& url_chain) {
   return previous_origin.IsSameOriginWith(url_chain[url_chain.size() - 1]);
 }
 
+// Return whether the inherited frame policy or iframe sandbox attribute
+// contains the 'allow-same-site-none-cookies' value and the override should be
+// applied as the frame's ancestors are all same-site.
+bool ShouldAllowSameSiteNoneCookiesInSandbox(FrameTreeNode& frame_tree_node) {
+  if (frame_tree_node.IsInFencedFrameTree()) {
+    return false;
+  }
+
+  RenderFrameHostImpl* frame = frame_tree_node.current_frame_host();
+  return frame &&
+         frame->active_sandbox_flags() !=
+             network::mojom::WebSandboxFlags::kNone &&
+         !frame->IsSandboxed(
+             network::mojom::WebSandboxFlags::kAllowSameSiteNoneCookies) &&
+         frame->IsSandboxed(network::mojom::WebSandboxFlags::kOrigin) &&
+         frame->AncestorsAllowSameSiteNoneCookiesOverride(
+             frame_tree_node.navigation_request()
+                 ->GetTentativeOriginAtRequestTime());
+}
+
 // TODO(https://crbug.com/346000235) there is a known failure with extensions
 // See test: ExtensionWebRequestApiTestWithContextType.HSTSUpgradeAfterRedirect
 // We still want to check this in debug mode to avoid further regressions, but
@@ -1722,6 +1742,17 @@ NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
     return std::move(factory_builder)
         .Finish(storage_partition->GetNetworkContext(), std::move(params));
   } else {
+    if (ShouldAllowSameSiteNoneCookiesInSandbox(*frame_tree_node)) {
+      // Include a CookieSettingOverride in the UrlLoaderFactoryParams for the
+      // frame's SharedURLLoaderFactory if the frame contains the
+      // `allow-same-site-none-cookies` value in its sandbox policy.
+      network::mojom::URLLoaderFactoryParamsPtr params =
+          storage_partition->CreateURLLoaderFactoryParams();
+      params->cookie_setting_overrides.Put(
+          net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox);
+      return std::move(factory_builder)
+          .Finish(storage_partition->GetNetworkContext(), std::move(params));
+    }
     return std::move(factory_builder)
         .Finish(storage_partition->GetURLLoaderFactoryForBrowserProcess());
   }

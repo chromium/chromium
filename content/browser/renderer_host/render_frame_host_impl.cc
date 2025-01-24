@@ -744,6 +744,20 @@ DetermineAfterCommitWhetherToForbidTrustTokenOperation(
   return network::mojom::TrustTokenOperationPolicyVerdict::kForbid;
 }
 
+bool IsOriginSandboxedWithAllowSameSiteNoneCookiesValue(
+    network::mojom::WebSandboxFlags sandbox_flags) {
+  if (sandbox_flags == network::mojom::WebSandboxFlags::kNone) {
+    return false;
+  }
+  if ((sandbox_flags & network::mojom::WebSandboxFlags::kOrigin) ==
+      network::mojom::WebSandboxFlags::kNone) {
+    return false;
+  }
+  return (sandbox_flags &
+          network::mojom::WebSandboxFlags::kAllowSameSiteNoneCookies) ==
+         network::mojom::WebSandboxFlags::kNone;
+}
+
 // Verify that |browser_side_origin| and |renderer_side_origin| match.  See also
 // https://crbug.com/888079.
 void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
@@ -1595,6 +1609,17 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
             ? ukm::kInvalidSourceId
             : frame.GetPageUkmSourceId());
 
+    // Determine if the frame's sandboxing policy contains the
+    // `allow-same-site-none-cookies` value and a CookieSettingOverride should
+    // be applied so SameSite=None cookies are included in requests from this
+    // context. See
+    // https://github.com/explainers-by-googlers/csp-sandbox-allow-same-site-none-cookies
+    if (IsOriginSandboxedWithAllowSameSiteNoneCookiesValue(
+            frame.active_sandbox_flags()) &&
+        frame.AncestorsAllowSameSiteNoneCookiesOverride(result.origin())) {
+      result.cookie_setting_overrides_.Put(
+          net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox);
+    }
     return result;
   }
 
@@ -1641,6 +1666,20 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
               navigation_request.GetRenderFrameHost(),
               navigation_request.commit_params(), result.origin(),
               network::mojom::TrustTokenOperationType::kIssuance);
+
+      // Determine if the frame's sandboxing policy contains the
+      // `allow-same-site-none-cookies` value and a CookieSettingOverride should
+      // be applied so SameSite=None cookies are included in requests from this
+      // context. See
+      // https://github.com/explainers-by-googlers/csp-sandbox-allow-same-site-none-cookies
+      if (!navigation_request.IsSameDocument() &&
+          IsOriginSandboxedWithAllowSameSiteNoneCookiesValue(
+              navigation_request.SandboxFlagsToCommit()) &&
+          navigation_request.GetRenderFrameHost()
+              ->AncestorsAllowSameSiteNoneCookiesOverride(result.origin())) {
+        result.cookie_setting_overrides_.Put(
+            net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox);
+      }
     }
 
     return result;
@@ -6494,6 +6533,29 @@ bool RenderFrameHostImpl::IsBackForwardCacheEvictionTimeRunningForTesting()
 void RenderFrameHostImpl::SetSubframeUnloadTimeoutForTesting(
     const base::TimeDelta& timeout) {
   subframe_unload_timeout_ = timeout;
+}
+
+bool RenderFrameHostImpl::AncestorsAllowSameSiteNoneCookiesOverride(
+    const url::Origin& frame_origin) const {
+  // Use precursor for cases where the current or parent frames are sandboxed
+  // and have an opaque origin.
+  const url::SchemeHostPort scheme_host_port =
+      frame_origin.GetTupleOrPrecursorTupleIfOpaque();
+
+  // Use |parent_| (not `GetParentOrOuterDocument()`) when checking ancestor
+  // frames are same-site since the `allow-same-site-none-cookies` value is
+  // disallowed in Fenced Frame contexts.
+  for (const RenderFrameHostImpl* frame = parent_; frame;
+       frame = frame->parent_) {
+    url::SchemeHostPort parent_scheme_host_port =
+        frame->last_committed_origin_.GetTupleOrPrecursorTupleIfOpaque();
+    if ((scheme_host_port != parent_scheme_host_port) ||
+        (net::SchemefulSite(scheme_host_port.GetURL()) !=
+         net::SchemefulSite(parent_scheme_host_port.GetURL()))) {
+      return false;
+    }
+  }
+  return true;
 }
 
 #if BUILDFLAG(IS_ANDROID)

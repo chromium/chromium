@@ -101,8 +101,6 @@ void IOSChromeSigninClient::OnPrimaryAccountChanged(
       break;
     case signin::PrimaryAccountChangeEvent::Type::kSet:
       CHECK(event_details.GetSetPrimaryAccountAccessPoint().has_value());
-      signin_metrics::AccessPoint access_point =
-          event_details.GetSetPrimaryAccountAccessPoint().value();
 
       size_t tabs_count = 0;
 
@@ -112,7 +110,7 @@ void IOSChromeSigninClient::OnPrimaryAccountChanged(
         tabs_count += browser->GetWebStateList()->count();
       }
 
-      signin_metrics::RecordOpenTabCountOnSignin(
-          access_point, signin::ConsentLevel::kSignin, tabs_count);
+      signin_metrics::RecordOpenTabCountOnSignin(signin::ConsentLevel::kSignin,
+                                                 tabs_count);
   }
 }

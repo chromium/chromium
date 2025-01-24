@@ -184,31 +184,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="3" label="Account Corruption Detected"/>
 </enum>
 
-<enum name="AccuracyTipInteraction">
-  <obsolete>
-    Deprecated as of 12/2022.
-  </obsolete>
-  <int value="0" label="kNoAction"/>
-  <int value="1" label="kLearnMore"/>
-  <int value="2" label="kOptOut"/>
-  <int value="3" label="kClosed"/>
-  <int value="4" label="kDisabledByExperiment"/>
-  <int value="5" label="kIgnore"/>
-  <int value="6" label="kPermissionRequested"/>
-</enum>
-
-<enum name="AccuracyTipStatus">
-  <obsolete>
-    Deprecated as of 12/2022.
-  </obsolete>
-  <int value="0" label="kNone"/>
-  <int value="1" label="kShowAccuracyTip"/>
-  <int value="2" label="kRateLimited"/>
-  <int value="3" label="kOptOut"/>
-  <int value="4" label="kHighEngagement"/>
-  <int value="5" label="kNotSecure"/>
-</enum>
-
 <enum name="ActivationList">
   <int value="0" label="No match"/>
   <int value="1" label="Social Eng Ads Interstitial"/>
@@ -456,100 +431,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="1" label="LAUNCH_CONTAINER_PANEL"/>
   <int value="2" label="LAUNCH_CONTAINER_TAB"/>
   <int value="3" label="LAUNCH_CONTAINER_NONE (v2 packaged apps)"/>
-</enum>
-
-<enum name="AppListNonAppImpressionCategory">
-  <obsolete>
-    Deprecated March 2021.
-  </obsolete>
-  <int value="0" label="APPS"/>
-  <int value="1" label="SEARCH_RESULTS"/>
-  <int value="2" label="START"/>
-  <int value="3" label="CUSTOM_LAUNCHER_PAGE_DEPRECATED"/>
-</enum>
-
-<enum name="AppListNonAppImpressionDeviceMode">
-  <obsolete>
-    Deprecated March 2021.
-  </obsolete>
-  <int value="0" label="UNKNOWN"/>
-  <int value="1" label="FILE"/>
-  <int value="2" label="HISTORY"/>
-  <int value="3" label="NAV_SUGGEST"/>
-  <int value="4" label="SEARCH"/>
-  <int value="5" label="BOOKMARK"/>
-  <int value="6" label="DOCUMENT"/>
-  <int value="7" label="OMNIBOX_DEPRECATED"/>
-  <int value="8" label="OMNIBOX_GENERIC"/>
-</enum>
-
-<enum name="AppListNonAppImpressionFileExtension">
-  <obsolete>
-    Deprecated March 2021.
-  </obsolete>
-  <int value="0" label=".3ga"/>
-  <int value="1" label=".3gp"/>
-  <int value="2" label=".aac"/>
-  <int value="3" label=".alac"/>
-  <int value="4" label=".asf"/>
-  <int value="5" label=".avi"/>
-  <int value="6" label=".bmp"/>
-  <int value="7" label=".csv"/>
-  <int value="8" label=".doc"/>
-  <int value="9" label=".docx"/>
-  <int value="10" label=".flac"/>
-  <int value="11" label=".gif"/>
-  <int value="12" label=".jpeg"/>
-  <int value="13" label=".jpg"/>
-  <int value="14" label=".log"/>
-  <int value="15" label=".m3u"/>
-  <int value="16" label=".m3u8"/>
-  <int value="17" label=".m4a"/>
-  <int value="18" label=".m4v"/>
-  <int value="19" label=".mid"/>
-  <int value="20" label=".mkv"/>
-  <int value="21" label=".mov"/>
-  <int value="22" label=".mp3"/>
-  <int value="23" label=".mp4"/>
-  <int value="24" label=".mpg"/>
-  <int value="25" label=".odf"/>
-  <int value="26" label=".odp"/>
-  <int value="27" label=".ods"/>
-  <int value="28" label=".odt"/>
-  <int value="29" label=".oga"/>
-  <int value="30" label=".ogg"/>
-  <int value="31" label=".ogv"/>
-  <int value="32" label=".pdf"/>
-  <int value="33" label=".png"/>
-  <int value="34" label=".ppt"/>
-  <int value="35" label=".pptx"/>
-  <int value="36" label=".ra"/>
-  <int value="37" label=".ram"/>
-  <int value="38" label=".rar"/>
-  <int value="39" label=".rm"/>
-  <int value="40" label=".rtf"/>
-  <int value="41" label=".wav"/>
-  <int value="42" label=".webm"/>
-  <int value="43" label=".webp"/>
-  <int value="44" label=".wma"/>
-  <int value="45" label=".wmv"/>
-  <int value="46" label=".xls"/>
-  <int value="47" label=".xlsx"/>
-  <int value="48" label=".crdownload"/>
-  <int value="49" label=".crx"/>
-  <int value="50" label=".dmg"/>
-  <int value="51" label=".exe"/>
-  <int value="52" label=".html"/>
-  <int value="53" label=".htm"/>
-  <int value="54" label=".jar"/>
-  <int value="55" label=".ps"/>
-  <int value="56" label=".torrent"/>
-  <int value="57" label=".txt"/>
-  <int value="58" label=".zip"/>
-  <int value="59" label=".mhtml"/>
-  <int value="60" label=".gdoc"/>
-  <int value="61" label=".gsheet"/>
-  <int value="62" label=".gslides"/>
 </enum>
 
 <enum name="AppReadiness">
@@ -1848,15 +1729,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="9" label="INTERACTION_COMPLETE"/>
 </enum>
 
-<enum name="BreakageIndicatorType">
-  <obsolete>
-    Deprecated 02/2024.
-  </obsolete>
-  <int value="0" label="User Reload"/>
-  <int value="1" label="HTTP Error"/>
-  <int value="2" label="Uncaught JS Error"/>
-</enum>
-
 <enum name="BrotliFilterDecodingStatus">
   <int value="0" label="In progress"/>
   <int value="1" label="Done"/>
@@ -1917,16 +1789,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="1" label="State not ready"/>
   <int value="2" label="Access disallowed by settings"/>
   <int value="3" label="Success"/>
-</enum>
-
-<enum name="BrowsingTopicsEmptyApiResultReason">
-  <obsolete>
-    Deprecated 10/2022 in favor of BrowsingTopicsApiAccessFailureReason.
-  </obsolete>
-  <int value="0" label="State not ready"/>
-  <int value="1" label="Access disallowed by settings"/>
-  <int value="2" label="No candicate topics"/>
-  <int value="3" label="Candicate topics filtered"/>
 </enum>
 
 <enum name="BruschettaInstallResult">
@@ -11091,30 +10953,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="50" label="ConfigNotMatchingType"/>
 </enum>
 
-<enum name="FedCmRevokeStatus">
-  <obsolete>
-    Removed as of 06/2022. Revoke is deprecated.
-  </obsolete>
-  <int value="0" label="Success"/>
-  <int value="1" label="TooManyRequests"/>
-  <int value="2" label="UnhandledRequest"/>
-  <int value="3" label="NoNetworkManager"/>
-  <int value="4" label="NoAccountToRevoke"/>
-  <int value="5" label="RevokeUrlIsCrossOrigin"/>
-  <int value="6" label="RevocationFailedOnServer"/>
-  <int value="7" label="ManifestHttpNotFound"/>
-  <int value="8" label="ManifestNoResponse"/>
-  <int value="9" label="ManifestInvalidResponse"/>
-  <int value="10" label="DisabledInSettings"/>
-  <int value="11" label="DisabledInFlags"/>
-  <int value="12" label="ManifestListHttpNotFound"/>
-  <int value="13" label="ManifestListNoResponse"/>
-  <int value="14" label="ManifestListInvalidResponse"/>
-  <int value="15" label="ManifestNotInManifestList"/>
-  <int value="16" label="ManifestListTooBig"/>
-  <int value="17" label="ThirdPartyCookiesBlocked"/>
-</enum>
-
 <enum name="FedCmRpMode">
   <int value="0" label="Passive"/>
   <int value="1" label="Active"/>
@@ -13172,21 +13010,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="7" label="Installed by SubApp API"/>
   <int value="8" label="Installed by Kiosk on Chrome OS"/>
   <int value="9" label="(Deprecated) Installed by a command line argument"/>
-</enum>
-
-<enum name="InstallSource">
-  <obsolete>
-    Removed in M96. Replaced with InstallReason.
-  </obsolete>
-  <int value="0" label="Installed with unknown source"/>
-  <int value="1"
-      label="Installed with the system and is considered a part of the OS"/>
-  <int value="2" label="Installed by policy"/>
-  <int value="3" label="Installed by an OEM"/>
-  <int value="4"
-      label="Preinstalled by default, but is not considered a system app"/>
-  <int value="5" label="Installed by sync"/>
-  <int value="6" label="Installed by user action"/>
 </enum>
 
 <enum name="InstallSource2">
@@ -28084,25 +27907,6 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Open Link in Incognito Window clicked."/>
 </enum>
 
-<enum name="OptimizationGuideNavigationHostCoveredStatus">
-  <obsolete>
-    Removed as of 04/2020.
-  </obsolete>
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Covered">
-    The main frame host of the navigation was covered by a hint or was attempted
-    to be fetched from the remote Optimization Guide Service in the last 7 days.
-  </int>
-  <int value="2" label="Fetch Not Attempted">
-    A fetch for information from the remote Optimization Guide Service about the
-    main frame host of the navigation was not attempted.
-  </int>
-  <int value="3" label="Fetch Not Successful">
-    A fetch for information from the remote Optimization Guide Service about the
-    main frame host of the navigation was attempted but not successful.
-  </int>
-</enum>
-
 <enum name="OptimizationGuideOptimizationGuideDecision">
   <int value="0" label="Unknown">
     The necessary information needed to make the decision is not yet available.
@@ -28232,18 +28036,6 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Mixed foreground/background"/>
 </enum>
 
-<enum name="PageState">
-  <obsolete>
-    Deprecated as of Dec 2023 (M122).
-  </obsolete>
-  <int value="0" label="Focused"/>
-  <int value="1" label="Visible"/>
-  <int value="2" label="Background"/>
-  <int value="3" label="Throttled"/>
-  <int value="4" label="Frozen"/>
-  <int value="5" label="Discarded"/>
-</enum>
-
 <enum name="PageVisitFinalStatus">
   <int value="0" label="Never foregrounded"/>
   <int value="1"
@@ -28337,41 +28129,6 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Password checkup and manual password change offered"/>
   <int value="3"
       label="(Deprecated) Automatic and manual password change offered"/>
-</enum>
-
-<enum name="PasswordManager.PasswordChangeSuccessTracker.EndEvent">
-  <obsolete>
-    Deprecated as of Nov 2023 (M121).
-  </obsolete>
-  <int value="0"
-      label="(DEPRECATED IN M110) Automated flow, generated password chosen"/>
-  <int value="1"
-      label="(DEPRECATED IN M110) Automated flow, manual password chosen"/>
-  <int value="2"
-      label="(DEPRECATED IN M110) Automated flow, reset link requested"/>
-  <int value="3" label="Manual flow, generated password chosen"/>
-  <int value="4" label="Manual flow, manual password chosen"/>
-  <int value="5" label="Timeout"/>
-</enum>
-
-<enum name="PasswordManager.PasswordChangeSuccessTracker.EntryPoint">
-  <obsolete>
-    Deprecated as of Nov 2023 (M121).
-  </obsolete>
-  <int value="0" label="Leak check in settings"/>
-  <int value="1" label="Leak warning dialog"/>
-</enum>
-
-<enum name="PasswordManager.PasswordChangeSuccessTracker.StartEvent">
-  <obsolete>
-    Deprecated as of Nov 2023 (M121).
-  </obsolete>
-  <int value="0" label="(DEPRECATED IN M110) Automated flow"/>
-  <int value="1" label="Manual unknown flow"/>
-  <int value="2" label="Manual well-known URL flow"/>
-  <int value="3" label="Manual domain-specific URL flow"/>
-  <int value="4" label="Manual homepage flow"/>
-  <int value="5" label="(DEPRECATED IN M110) Manual reset link flow"/>
 </enum>
 
 <enum name="PaymentRequestFlowCompletionStatus">
@@ -33712,16 +33469,6 @@ others/histograms.xml -->
   <int value="4" label="Toolbar button"/>
 </enum>
 
-<enum name="VRStartReason">
-  <obsolete>
-    Removed as of 06/2020.
-  </obsolete>
-  <int value="1" label="Headset Activation"/>
-  <int value="2" label="Presentation Requset"/>
-  <int value="3" label="(obsolete) Deep linked app"/>
-  <int value="4" label="Intent Launch"/>
-</enum>
-
 <enum name="WebApkDistributor">
   <int value="0" label="Browser"/>
   <int value="1" label="Device Policy"/>
@@ -33829,20 +33576,6 @@ others/histograms.xml -->
   <int value="37"
       label="Installed from the ChromeOS help app directing a user to a page
              and showing the installation dialog."/>
-</enum>
-
-<enum name="WebAppPreinstalledWindowExperimentUserGroup">
-  <obsolete>
-    Removed 2024-04.
-  </obsolete>
-  <summary>
-    User group for an experiment on opening preinstalled apps in windows vs
-    tabs.
-  </summary>
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Control"/>
-  <int value="2" label="Window"/>
-  <int value="3" label="Tab"/>
 </enum>
 
 <enum name="WebClientHintsType">

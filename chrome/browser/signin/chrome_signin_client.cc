@@ -607,8 +607,7 @@ void ChromeSigninClient::RecordOpenTabCount(
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  signin_metrics::RecordOpenTabCountOnSignin(access_point, consent_level,
-                                             tabs_count);
+  signin_metrics::RecordOpenTabCountOnSignin(consent_level, tabs_count);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

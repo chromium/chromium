@@ -107,4 +107,28 @@ TEST(CookieManagerSharedMojomTraitsTest,
             net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial);
 }
 
+TEST(CookieManagerSharedMojomTraitsTest, Roundtrips_CookieExemptionReason) {
+  for (net::CookieInclusionStatus::ExemptionReason exemption_reason : {
+           net::CookieInclusionStatus::ExemptionReason::kNone,
+           net::CookieInclusionStatus::ExemptionReason::kUserSetting,
+           net::CookieInclusionStatus::ExemptionReason::k3PCDMetadata,
+           net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial,
+           net::CookieInclusionStatus::ExemptionReason::
+               kTopLevel3PCDDeprecationTrial,
+           net::CookieInclusionStatus::ExemptionReason::k3PCDHeuristics,
+           net::CookieInclusionStatus::ExemptionReason::kEnterprisePolicy,
+           net::CookieInclusionStatus::ExemptionReason::kStorageAccess,
+           net::CookieInclusionStatus::ExemptionReason::kTopLevelStorageAccess,
+           net::CookieInclusionStatus::ExemptionReason::kScheme,
+           net::CookieInclusionStatus::ExemptionReason::
+               kSameSiteNoneCookiesInSandbox,
+       }) {
+    net::CookieInclusionStatus::ExemptionReason roundtrip;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+                network::mojom::CookieExemptionReason>(exemption_reason,
+                                                       roundtrip));
+    EXPECT_EQ(exemption_reason, roundtrip);
+  }
+}
+
 }  // namespace mojo

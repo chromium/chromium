@@ -2510,6 +2510,78 @@ TEST_F(
       GURL(kURL), url::Origin::Create(GURL(kOtherURL))));
 }
 
+TEST_F(CookieSettingsTest,
+       IsCookieAccessible_SandboxValueAllowsSameSiteNoneCookiesWhenSet) {
+  CookieSettings settings;
+  GURL url(kURL);
+  url::Origin origin = url::Origin::Create(url);
+  settings.set_block_third_party_cookies(true);
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<net::CanonicalCookie> cookie =
+      MakeCanonicalSameSiteNoneCookie("name", url.spec());
+
+  // Cookie should be blocked by 3PC Blocking
+  ASSERT_FALSE(settings.IsCookieAccessible(
+      *cookie, url, net::SiteForCookies(), origin, net::FirstPartySetMetadata(),
+      net::CookieSettingOverrides(), nullptr));
+  histogram_tester.ExpectUniqueSample(
+      kAllowedRequestsHistogram,
+      net::cookie_util::StorageAccessResult::ACCESS_BLOCKED, 1);
+
+  // Set overrides and enable feature.
+  const net::CookieSettingOverrides overrides(
+      {net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox});
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      net::features::kAllowSameSiteNoneCookiesInSandbox);
+
+  // Override should allow cookie access despite null SiteForCookies due to the
+  // sandboxed context.
+  net::CookieInclusionStatus status;
+  EXPECT_TRUE(settings.IsCookieAccessible(*cookie, url, net::SiteForCookies(),
+                                          origin, net::FirstPartySetMetadata(),
+                                          overrides, &status));
+  EXPECT_EQ(status.exemption_reason(),
+            net::CookieInclusionStatus::ExemptionReason::
+                kSameSiteNoneCookiesInSandbox);
+  histogram_tester.ExpectBucketCount(
+      kAllowedRequestsHistogram,
+      net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_SANDBOX_VALUE, 1);
+}
+
+TEST_F(CookieSettingsTest,
+       IsCookieAccessible_SandboxValueDoesNotAllowCrossSiteCookiesWhenSet) {
+  CookieSettings settings;
+  GURL cross_site_url(kOtherURL);
+  url::Origin origin = url::Origin::Create(GURL(kURL));
+  settings.set_block_third_party_cookies(true);
+  base::HistogramTester histogram_tester;
+
+  // Create a cross-site cookie
+  std::unique_ptr<net::CanonicalCookie> cookie =
+      MakeCanonicalSameSiteNoneCookie("name", cross_site_url.spec());
+
+  // Set overrides and enable feature.
+  const net::CookieSettingOverrides overrides(
+      {net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox});
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      net::features::kAllowSameSiteNoneCookiesInSandbox);
+
+  // Override should not allow cookie that is cross-site with the top-level to
+  // be included in cross-site request
+  net::CookieInclusionStatus status;
+  EXPECT_FALSE(settings.IsCookieAccessible(
+      *cookie, cross_site_url, net::SiteForCookies(), origin,
+      net::FirstPartySetMetadata(), overrides, &status));
+  EXPECT_EQ(status.exemption_reason(),
+            net::CookieInclusionStatus::ExemptionReason::kNone);
+  histogram_tester.ExpectUniqueSample(
+      kAllowedRequestsHistogram,
+      net::cookie_util::StorageAccessResult::ACCESS_BLOCKED, 1);
+}
+
 // NOTE: These tests will fail if their FINAL name is of length greater than 256
 // characters. Thus, try to avoid (unnecessary) generalized parameterization
 // when possible.

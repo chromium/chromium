@@ -479,7 +479,6 @@ template("single_apple_toolchain") {
       # libraries, we always update the .TOC and skip the temporary file and
       # diffing steps, since that library always needs to be re-linked.
       tocname = dylib + ".TOC"
-      temporary_tocname = dylib + ".tmp"
 
       # Use explicit paths to binaries. The binaries present on the default
       # search path in /usr/bin are thin wrappers around xcrun, which requires a
@@ -493,20 +492,17 @@ template("single_apple_toolchain") {
         otool = "${prefix}llvm-otool"
       }
 
-      does_reexport_command = "[ ! -e \"$dylib\" -o ! -e \"$tocname\" ] || $otool -l \"$dylib\" | grep -q LC_REEXPORT_DYLIB"
-
-      link_command =
-          "$linker_driver_env $linker_driver $linker_driver_args -shared "
+      link_command = "$linker_driver_env $linker_driver"
+      link_command += " -Wcrl,otoolpath,$otool -Wcrl,nmpath,$nm"
+      link_command += " -Wcrl,tocname,\"$tocname\""
+      link_command += " $linker_driver_args -shared "
       if (toolchain_is_component_build) {
         link_command += " -Wl,-install_name,@rpath/\"{{target_output_name}}{{output_extension}}\" "
       }
       link_command += dsym_switch
       link_command += "{{ldflags}} -o \"$dylib\" \"@$rspfile\" {{rlibs}}"
 
-      replace_command = "if ! cmp -s \"$temporary_tocname\" \"$tocname\"; then mv \"$temporary_tocname\" \"$tocname\""
-      extract_toc_command = "{ $otool -l \"$dylib\" | grep LC_ID_DYLIB -A 5; $nm -gPp \"$dylib\" | cut -f1-2 -d' ' | grep -v U\$\$; true; }"
-
-      command = "if $does_reexport_command ; then $link_command && $extract_toc_command > \"$tocname\"; else $link_command && $extract_toc_command > \"$temporary_tocname\" && $replace_command ; fi; fi"
+      command = "$link_command"
 
       rspfile_content =
           "{{inputs}} {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}}"
