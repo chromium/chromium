@@ -23,16 +23,11 @@
 namespace cc {
 namespace {
 
-class BitmapSoftwareBacking : public ResourcePool::SoftwareBacking {
- public:
-  ~BitmapSoftwareBacking() override = default;
-};
-
 class BitmapRasterBufferImpl : public RasterBuffer {
  public:
   BitmapRasterBufferImpl(const gfx::Size& size,
                          const gfx::ColorSpace& color_space,
-                         BitmapSoftwareBacking* backing,
+                         ResourcePool::SoftwareBacking* backing,
                          uint64_t resource_content_id,
                          uint64_t previous_content_id)
       : resource_size_(size),
@@ -76,7 +71,7 @@ class BitmapRasterBufferImpl : public RasterBuffer {
   const gfx::ColorSpace color_space_;
 
   bool resource_has_previous_content_;
-  raw_ptr<BitmapSoftwareBacking> backing_;
+  raw_ptr<ResourcePool::SoftwareBacking> backing_;
 };
 
 }  // namespace
@@ -103,7 +98,7 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
   const gfx::Size& size = resource.size();
   const gfx::ColorSpace& color_space = resource.color_space();
   if (!resource.software_backing()) {
-    auto backing = std::make_unique<BitmapSoftwareBacking>();
+    auto backing = std::make_unique<ResourcePool::SoftwareBacking>();
     backing->shared_image_interface = shared_image_interface_;
     backing->shared_image =
         shared_image_interface_->CreateSharedImageForSoftwareCompositor(
@@ -117,8 +112,7 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
 
     resource.set_software_backing(std::move(backing));
   }
-  BitmapSoftwareBacking* backing =
-      static_cast<BitmapSoftwareBacking*>(resource.software_backing());
+  ResourcePool::SoftwareBacking* backing = resource.software_backing();
 
   return std::make_unique<BitmapRasterBufferImpl>(
       size, color_space, backing, resource_content_id, previous_content_id);
