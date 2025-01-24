@@ -665,7 +665,7 @@ void LayerTreeHostImpl::ReadyToCommit(
     browser_controls_manager()->NotifyConstraintSyncedToMainThread();
   }
 
-  // If the scoll offsets were not synchronized, undo the sending of offsets
+  // If the scroll offsets were not synchronized, undo the sending of offsets
   // similar to what's done when the commit is aborted.
   if (!scroll_and_viewport_changes_synced) {
     active_tree_->ApplySentScrollAndScaleDeltasFromAbortedCommit(
@@ -1548,7 +1548,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   // When doing a resourceless software draw, we don't have control over the
   // surface the compositor draws to, so even though the frame may not be
   // complete, the previous frame has already been potentially lost, so an
-  // incomplete frame is better than nothing, so this takes highest precidence.
+  // incomplete frame is better than nothing, so this takes highest precedence.
   if (resourceless_software_draw_)
     draw_result = DrawResult::kSuccess;
 
@@ -1898,7 +1898,7 @@ void LayerTreeHostImpl::UpdateTileManagerMemoryPolicy(
     // When the memory policy is set to zero, its important to release any
     // decoded images cached by the tracker. But we can not re-checker any
     // images that have been displayed since the resources, if held by the
-    // browser, may be re-used. Which is why its important to maintain the
+    // browser, may be reused. Which is why its important to maintain the
     // decode policy tracking.
     bool can_clear_decode_policy_tracking = false;
     tile_manager_.ClearCheckerImageTracking(can_clear_decode_policy_tracking);
@@ -2929,7 +2929,7 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
 
   // The next frame should start by assuming nothing has changed, and changes
   // are noted as they occur.
-  // TODO(boliu): If we did a temporary software renderer frame, propogate the
+  // TODO(boliu): If we did a temporary software renderer frame, propagate the
   // damage forward to the next frame.
   for (size_t i = 0; i < frame->render_surface_list->size(); i++) {
     auto* surface = (*frame->render_surface_list)[i];
@@ -3112,7 +3112,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     // All animations are impl-thread animations that tick at no more than
     // half the default display compositing fps.
     // Here and below with FrameRateEstimator::GetPreferredInterval(), the
-    // meta data's preferred_frame_interval is constrainted to either 0 or
+    // meta data's preferred_frame_interval is constrained to either 0 or
     // twice the default interval. The reason is because GPU process side
     // viz::FrameRateDecider is optimized for when all the preferred frame
     // rates are similar.
@@ -4242,7 +4242,7 @@ size_t LayerTreeHostImpl::CommitDurationSampleCountForTesting() const {
 
 void LayerTreeHostImpl::ClearCaches() {
   // It is safe to clear the decode policy tracking on navigations since it
-  // comes with an invalidation and the image ids are never re-used.
+  // comes with an invalidation and the image ids are never reused.
   bool can_clear_decode_policy_tracking = true;
   tile_manager_.ClearCheckerImageTracking(can_clear_decode_policy_tracking);
   // TODO(crbug.com/40243840): add tracking for which clients have used an image
@@ -5274,12 +5274,10 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   }
 
   // Once the backing has the UIResource inside it, we have to prepare it for
-  // export to the display compositor via ImportResource(). For gpu compositing,
-  // this requires a Mailbox+SyncToken as well. For software compositing, the
-  // SharedBitmapId must be notified to the LayerTreeFrameSink. The
-  // OnUIResourceReleased() method will be called once the resource is deleted
-  // and the display compositor is no longer using it, to free the memory
-  // allocated in this method above.
+  // export to the display compositor via ImportResource(). This requires a
+  // Mailbox+SyncToken as well. The OnUIResourceReleased() method will be called
+  // once the resource is deleted and the display compositor is no longer using
+  // it, to free the memory allocated in this method above.
   viz::TransferableResource transferable;
   if (layer_tree_frame_sink_->context_provider()) {
     gpu::SyncToken sync_token = layer_tree_frame_sink_->context_provider()

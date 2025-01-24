@@ -59,7 +59,7 @@ using ::testing::AtLeast;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;
 
-// TODO(crbug.com/40883999): settings new expecations after
+// TODO(crbug.com/40883999): settings new expectations after
 // VerifyAndClearExpectations is undefined behavior. See
 // http://google.github.io/googletest/gmock_cook_book.html#forcing-a-verification
 #define EXPECT_SET_NEEDS_COMMIT(expect, code_to_test)                 \
@@ -1559,13 +1559,12 @@ class SoftwareTextureLayerSwitchTreesTest : public SoftwareTextureLayerTest {
             std::move(transferable_resource), std::move(release_callback));
       } break;
       case 2:
-        // When the layer is removed from the tree, the bitmap should be
+        // When the layer is removed from the tree, the layer should be
         // unregistered.
         texture_layer_->RemoveFromParent();
         break;
       case 3:
-        // When the layer is added to a new tree, the SharedBitmapId is
-        // registered again.
+        // When the layer is added to a new tree, the layer is registered again.
         root_->AddChild(texture_layer_);
         break;
       case 4:
@@ -1644,8 +1643,8 @@ class SoftwareTextureLayerPurgeMemoryTest : public SoftwareTextureLayerTest {
   }
 
   void DrawLayersOnThread(LayerTreeHostImpl* host_impl) override {
-    // TextureLayerImpl will have registered the SharedBitmapId at this point.
-    // Call OnPurgeMemory() to ensure that the same SharedBitmapId doesn't get
+    // TextureLayerImpl will have registered the layer at this point.
+    // Call OnPurgeMemory() to ensure that the same layer doesn't get
     // registered again on the next draw.
     if (step_ == 1)
       base::MemoryPressureListener::SimulatePressureNotification(
@@ -1708,7 +1707,7 @@ class SoftwareTextureLayerMultipleResourceTest
                 viz::TransferableResource::ResourceSource::kTileRasterTask);
 
         // Give the TextureLayer a resource so it contributes to the frame. It
-        // doesn't need to register the SharedBitmapId otherwise.
+        // doesn't need to register the layer otherwise.
         auto release_callback1 =
             base::BindOnce(&DeleteSharedImage, std::move(shared_image1_));
         auto release_callback2 =

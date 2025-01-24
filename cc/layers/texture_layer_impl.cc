@@ -171,9 +171,6 @@ SimpleEnclosedRegion TextureLayerImpl::VisibleOpaqueRegion() const {
 
 void TextureLayerImpl::OnPurgeMemory() {
   // Do nothing here intentionally as the LayerTreeFrameSink isn't lost.
-  // Unregistering SharedBitmapIds with the LayerTreeFrameSink wouldn't free
-  // the shared memory, as the TextureLayer and/or TextureLayerClient will still
-  // have a reference to it.
 }
 
 void TextureLayerImpl::ReleaseResources() {
