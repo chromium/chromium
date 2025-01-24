@@ -12,6 +12,7 @@ import {ClientId as PageImageServiceClientId, PageImageServiceHandlerRemote} fro
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('cr-history-embeddings-result-image', () => {
   let element: HistoryEmbeddingsResultImageElement;
@@ -50,6 +51,9 @@ suite('cr-history-embeddings-result-image', () => {
   });
 
   test('RequestsImagesIfKnownToSync', async () => {
+    imageServiceHandler.setResultFor(
+        'getPageImageUrl', Promise.resolve({result: undefined}));
+
     // By default, results are not known to sync so they should not request
     // images.
     element.searchResult = generateResult();
@@ -80,7 +84,7 @@ suite('cr-history-embeddings-result-image', () => {
     await imageServiceHandler.whenCalled('getPageImageUrl');
 
     let imageElement = element.shadowRoot!.querySelector('#image')!;
-    assertTrue(imageElement.hasAttribute('hidden'));
+    assertFalse(isVisible(imageElement));
     assertFalse(element.hasAttribute('has-image'));
 
     // Make the handler now return a valid image URL.
@@ -97,7 +101,7 @@ suite('cr-history-embeddings-result-image', () => {
 
     // Verify images are shown and set to the correct url.
     imageElement = element.shadowRoot!.querySelector('#image')!;
-    assertFalse(imageElement.hasAttribute('hidden'));
+    assertTrue(isVisible(imageElement));
     assertEquals(imageUrl, imageElement.getAttribute('auto-src'));
     assertTrue(element.hasAttribute('has-image'));
   });
