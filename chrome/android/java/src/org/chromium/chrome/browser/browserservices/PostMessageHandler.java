@@ -109,7 +109,7 @@ public class PostMessageHandler implements OriginVerificationListener {
                         && navigation.hasCommitted()
                         && !navigation.isSameDocument()
                         && mChannel != null) {
-                    webContents.removeObserver(this);
+                    observe(null);
                     disconnectChannel();
                     return;
                 }

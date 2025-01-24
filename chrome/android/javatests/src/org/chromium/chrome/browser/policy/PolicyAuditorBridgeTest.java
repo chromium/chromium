@@ -118,7 +118,7 @@ public class PolicyAuditorBridgeTest {
                 };
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    tab.getWebContents().addObserver(observer);
+                    observer.observe(tab.getWebContents());
                     tab.loadUrl(new LoadUrlParams(invalidUrl));
                 });
 
@@ -127,7 +127,7 @@ public class PolicyAuditorBridgeTest {
         } finally {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        tab.getWebContents().removeObserver(observer);
+                        observer.observe(null);
                     });
         }
 

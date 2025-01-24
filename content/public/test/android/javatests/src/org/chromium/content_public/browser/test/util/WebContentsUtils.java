@@ -150,13 +150,13 @@ public class WebContentsUtils {
                 };
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    webContents.addObserver(observer);
+                    observer.observe(webContents);
                     WebContentsUtilsJni.get().crashTab(webContents);
                 });
         callbackHelper.waitForOnly();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    webContents.removeObserver(observer);
+                    observer.observe(null);
                 });
     }
 

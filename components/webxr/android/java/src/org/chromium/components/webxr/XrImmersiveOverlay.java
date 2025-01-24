@@ -196,7 +196,7 @@ public class XrImmersiveOverlay
             mOverlayDelegate.parentAndShowSurfaceView(mSurfaceView);
 
             mWebContentsObserver =
-                    new WebContentsObserver() {
+                    new WebContentsObserver(mWebContents) {
                         @Override
                         public void didToggleFullscreenModeForTab(
                                 boolean enteredFullscreen, boolean willCauseResize) {
@@ -207,18 +207,17 @@ public class XrImmersiveOverlay
                                                 + enteredFullscreen);
                             }
 
+                            // Watch for fullscreen exit triggered from JS, this needs to end the
+                            // session.
                             if (!enteredFullscreen) {
                                 cleanupAndExit();
                             }
                         }
                     };
-
-            // Watch for fullscreen exit triggered from JS, this needs to end the session.
-            mWebContents.addObserver(mWebContentsObserver);
         }
 
         public void destroy() {
-            mWebContents.removeObserver(mWebContentsObserver);
+            mWebContentsObserver.observe(null);
 
             if (!(DEFER_SURFACE_VIEW_DESTRUCTION && mDestructionFromVisibilityChanged)) {
                 removeAndDestroySurfaceView();

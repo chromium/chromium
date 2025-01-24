@@ -247,7 +247,6 @@ public class ContentViewFocusTest {
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> eventSink.onResumeForTesting());
         onTitleUpdatedHelper.waitForCallback(callCount);
         Assert.assertEquals("focused", mTitle);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mActivityTestRule.getWebContents().removeObserver(observer));
+        ThreadUtils.runOnUiThreadBlocking(() -> observer.observe(null));
     }
 }

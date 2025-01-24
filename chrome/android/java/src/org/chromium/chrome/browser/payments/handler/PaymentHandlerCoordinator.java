@@ -119,7 +119,7 @@ public class PaymentHandlerCoordinator {
         activity.getWindow().getDecorView().addOnLayoutChangeListener(mediator);
 
         bottomSheetController.addObserver(mediator);
-        mPaymentHandlerWebContents.addObserver(mediator);
+        mediator.observe(mPaymentHandlerWebContents);
 
         mToolbarCoordinator.setCloseButtonOnClickCallback(mediator::onToolbarCloseButtonClicked);
         IntentRequestTracker intentRequestTracker = windowAndroid.getIntentRequestTracker();
@@ -149,6 +149,7 @@ public class PaymentHandlerCoordinator {
                     assert activity.getWindow().getDecorView() != null;
                     activity.getWindow().getDecorView().removeOnLayoutChangeListener(mediator);
                     mediator.destroy();
+                    mToolbarCoordinator.destroy();
                     thinWebView.destroy();
                     mPaymentHandlerWebContents.destroy();
                 };

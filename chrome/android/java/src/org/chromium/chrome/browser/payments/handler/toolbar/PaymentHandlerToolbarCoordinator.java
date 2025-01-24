@@ -88,9 +88,13 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
         mIsSmallDevice = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         mMediator = new PaymentHandlerToolbarMediator(mModel, webContents, /* delegate= */ this);
         mToolbarView = new PaymentHandlerToolbarView(mActivity);
-        webContents.addObserver(mMediator);
         PropertyModelChangeProcessor.create(
                 mModel, mToolbarView, PaymentHandlerToolbarViewBinder::bind);
+    }
+
+    /** Perform any necessary cleanup. */
+    public void destroy() {
+        mMediator.observe(null);
     }
 
     /** Set a callback for the close button's onclick event. */

@@ -58,7 +58,7 @@ public class NavigationRecorder extends EmptyTabObserver {
             final NavigationController navController = webContents.getNavigationController();
             int startStackIndex = navController.getLastCommittedEntryIndex();
             mWebContentsObserver =
-                    new WebContentsObserver() {
+                    new WebContentsObserver(webContents) {
                         @Override
                         public void navigationEntryCommitted(LoadCommittedDetails details) {
                             if (startStackIndex != navController.getLastCommittedEntryIndex()) {
@@ -67,7 +67,6 @@ public class NavigationRecorder extends EmptyTabObserver {
                             endRecording(tab, tab.getUrl());
                         }
                     };
-            webContents.addObserver(mWebContentsObserver);
         } else {
             mWebContentsObserver = null;
         }
@@ -108,8 +107,8 @@ public class NavigationRecorder extends EmptyTabObserver {
     private void endRecording(@Nullable Tab removeObserverFromTab, @Nullable GURL endUrl) {
         if (removeObserverFromTab != null) {
             removeObserverFromTab.removeObserver(this);
-            if (removeObserverFromTab.getWebContents() != null && mWebContentsObserver != null) {
-                removeObserverFromTab.getWebContents().removeObserver(mWebContentsObserver);
+            if (mWebContentsObserver != null) {
+                mWebContentsObserver.observe(null);
             }
         }
 
