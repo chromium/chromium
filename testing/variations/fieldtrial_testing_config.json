@@ -8641,22 +8641,6 @@
             ]
         }
     ],
-    "EarlyEstablishGpuChannelAndroid": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "EarlyEstablishGpuChannel",
-                    "enable_features": [
-                        "EarlyEstablishGpuChannel"
-                    ]
-                }
-            ]
-        }
-    ],
     "EdgeToEdgeAndroid": [
         {
             "platforms": [
@@ -16706,8 +16690,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "EarlyEstablishGpuChannel",
-                        "EstablishGpuChannelAsync",
                         "ExpandedPrefetchRange",
                         "FledgeEnableWALForInterestGroupStorage",
                         "MojoBindingsInlineSLS",
@@ -16725,8 +16707,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "EarlyEstablishGpuChannel",
-                        "EstablishGpuChannelAsync",
                         "FledgeEnableWALForInterestGroupStorage",
                         "MojoBindingsInlineSLS",
                         "NumberOfCoresWithCpuSecurityMitigation",
@@ -16746,8 +16726,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "EarlyEstablishGpuChannel",
-                        "EstablishGpuChannelAsync",
                         "FledgeEnableWALForInterestGroupStorage",
                         "MojoBindingsInlineSLS",
                         "ReduceCpuUtilization2",
