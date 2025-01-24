@@ -233,6 +233,7 @@
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_all_collection.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_base_element.h"
@@ -5239,6 +5240,29 @@ void Document::DynamicViewportUnitsChanged() {
   GetStyleEngine().MarkViewportUnitDirty(ViewportUnitFlag::kDynamic);
 }
 
+// For changing :active and :hover we want to traverse the flat tree
+// ancestors of an element, except we don't want to cross from the
+// popover of an appearance:base <select> into the <select> (or any of
+// its ancestors).
+//
+// This reimplements TraversalParent<FlatTreeTraversal> with that slight
+// variation so that we can do traversals this way in a bunch of places.
+class FlatTreeTraversalParentElementExceptSelectPopover {
+ public:
+  using Traversal = FlatTreeTraversal;
+  using TraversalNodeType = Element;
+  static TraversalNodeType* Next(const TraversalNodeType& node) {
+    if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
+        HTMLSelectElement::IsPopoverForAppearanceBase(&node)) {
+      return nullptr;
+    }
+    return Traversal::ParentElement(node);
+  }
+};
+
+using InclusiveAncestorsForActiveOrHover = TraversalRange<
+    TraversalIterator<FlatTreeTraversalParentElementExceptSelectPopover>>;
+
 void EmitDidChangeHoverElement(Document& document, Element* new_hover_element) {
   LocalFrame* local_frame = document.GetFrame();
   if (!local_frame) {
@@ -8232,19 +8256,19 @@ void Document::UpdateActiveState(bool is_active,
     // The oldActiveElement layoutObject is null, dropped on :active by setting
     // display: none, for instance. We still need to clear the ActiveChain as
     // the mouse is released.
-    for (Element* element = old_active_element; element;
-         element = FlatTreeTraversal::ParentElement(*element)) {
-      element->SetActive(false);
-      user_action_elements_.SetInActiveChain(element, false);
+    for (Element& element :
+         InclusiveAncestorsForActiveOrHover(old_active_element)) {
+      element.SetActive(false);
+      user_action_elements_.SetInActiveChain(&element, false);
     }
     SetActiveElement(nullptr);
   } else {
     if (!old_active_element && new_active_element && is_active) {
       // We are setting the :active chain and freezing it. If future moves
       // happen, they will need to reference this chain.
-      for (Element* element = new_active_element; element;
-           element = FlatTreeTraversal::ParentElement(*element)) {
-        user_action_elements_.SetInActiveChain(element, true);
+      for (Element& element :
+           InclusiveAncestorsForActiveOrHover(new_active_element)) {
+        user_action_elements_.SetInActiveChain(&element, true);
       }
       SetActiveElement(new_active_element);
     }
@@ -8264,10 +8288,10 @@ void Document::UpdateActiveState(bool is_active,
   // is down and if this is a mouse move event, we want to restrict changes in
   // :active to only apply to elements that are in the :active chain that we
   // froze at the time the mouse went down.
-  for (Element* curr = new_element; curr;
-       curr = FlatTreeTraversal::ParentElement(*curr)) {
-    if (update_active_chain || curr->InActiveChain())
-      curr->SetActive(true);
+  for (Element& curr : InclusiveAncestorsForActiveOrHover(new_element)) {
+    if (update_active_chain || curr.InActiveChain()) {
+      curr.SetActive(true);
+    }
   }
 }
 
@@ -8287,44 +8311,65 @@ void Document::UpdateHoverState(Element* inner_element_in_document) {
   // Update our current hover element.
   SetHoverElement(new_hover_element);
 
-  Node* ancestor_element = nullptr;
-  if (old_hover_element && old_hover_element->isConnected() &&
-      new_hover_element) {
-    Node* ancestor = FlatTreeTraversal::CommonAncestor(*old_hover_element,
-                                                       *new_hover_element);
-    if (auto* element = DynamicTo<Element>(ancestor))
-      ancestor_element = element;
-  }
+  using ElementVector = HeapVector<Member<Element>, 64>;
+  using ElementSpan = base::span<Member<Element>>;
+  ElementVector elements_to_remove_from_chain;
+  ElementVector elements_to_add_to_chain;
 
-  HeapVector<Member<Element>, 32> elements_to_remove_from_chain;
-  HeapVector<Member<Element>, 32> elements_to_add_to_hover_chain;
-
-  // The old hover path only needs to be cleared up to (and not including) the
-  // common ancestor;
-  //
   // TODO(emilio): old_hover_element may be disconnected from the tree already.
   if (old_hover_element && old_hover_element->isConnected()) {
-    for (Element* curr = old_hover_element; curr && curr != ancestor_element;
-         curr = FlatTreeTraversal::ParentElement(*curr)) {
-      elements_to_remove_from_chain.push_back(curr);
+    for (Element& curr :
+         InclusiveAncestorsForActiveOrHover(old_hover_element)) {
+      elements_to_remove_from_chain.push_back(&curr);
     }
   }
 
   // Now set the hover state for our new object up to the root.
-  for (Element* curr = new_hover_element; curr;
-       curr = FlatTreeTraversal::ParentElement(*curr)) {
-    elements_to_add_to_hover_chain.push_back(curr);
+  for (Element& curr : InclusiveAncestorsForActiveOrHover(new_hover_element)) {
+    elements_to_add_to_chain.push_back(&curr);
   }
 
-  for (Element* element : elements_to_remove_from_chain)
-    element->SetHovered(false);
+  // The old hover path only needs to be cleared up to (and not including) the
+  // common ancestor.
+  //
+  // No need to notify elements that aren't changing because they're in both
+  // chains.  Find the index that starts the part of chains where they're the
+  // same.
+  wtf_size_t remove_size = elements_to_remove_from_chain.size();
+  wtf_size_t add_size = elements_to_add_to_chain.size();
+  wtf_size_t remove_index;
+  wtf_size_t add_index;
+  if (remove_size > add_size) {
+    add_index = 0;
+    remove_index = remove_size - add_size;
+  } else {
+    remove_index = 0;
+    add_index = add_size - remove_size;
+  }
+  while (add_index < add_size) {
+    if (elements_to_remove_from_chain[remove_index] ==
+        elements_to_add_to_chain[add_index]) {
+      break;
+    }
+    ++add_index;
+    ++remove_index;
+  }
 
-  bool saw_common_ancestor = false;
-  for (Element* element : elements_to_add_to_hover_chain) {
-    if (element == ancestor_element)
-      saw_common_ancestor = true;
-    if (!saw_common_ancestor || element == hover_element_)
+  for (Element* element :
+       ElementSpan(elements_to_remove_from_chain).first(remove_index)) {
+    element->SetHovered(false);
+  }
+
+  for (Element* element :
+       ElementSpan(elements_to_add_to_chain).first(add_index)) {
+    element->SetHovered(true);
+  }
+
+  for (Element* element :
+       ElementSpan(elements_to_add_to_chain).subspan(add_index)) {
+    if (element == hover_element_) {
       element->SetHovered(true);
+    }
   }
 }
 
