@@ -37,6 +37,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/allowlist_state.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -326,19 +327,25 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
       ExtensionSystem::Get(extension_service_->profile())->management_policy();
 
   if (extension_prefs_->IsExtensionDisabled(extension->id())) {
-    int disable_reasons = extension_prefs_->GetDisableReasons(extension->id());
+    // TODO(crbug.com/372186532): Remove this conversion code after
+    // GetDisableReasons() is migrated to return a `DisableReasonSet`.
+    const int disable_reasons_legacy_bitflag =
+        extension_prefs_->GetDisableReasons(extension->id());
+    DisableReasonSet disable_reasons =
+        BitflagToIntegerSet(disable_reasons_legacy_bitflag);
 
     // Update the extension prefs to reflect if the extension is no longer
     // blocked due to admin policy.
-    if ((disable_reasons & disable_reason::DISABLE_BLOCKED_BY_POLICY) &&
+    if (disable_reasons.contains(disable_reason::DISABLE_BLOCKED_BY_POLICY) &&
         !policy->MustRemainDisabled(extension.get(), nullptr)) {
-      disable_reasons &= (~disable_reason::DISABLE_BLOCKED_BY_POLICY);
+      disable_reasons.erase(disable_reason::DISABLE_BLOCKED_BY_POLICY);
       extension_prefs_->ReplaceDisableReasons(extension->id(), disable_reasons);
-      if (disable_reasons == disable_reason::DISABLE_NONE)
+      if (disable_reasons.empty()) {
         extension_prefs_->SetExtensionEnabled(extension->id());
+      }
     }
 
-    if ((disable_reasons & disable_reason::DISABLE_CORRUPTED)) {
+    if ((disable_reasons.contains(disable_reason::DISABLE_CORRUPTED))) {
       CorruptedExtensionReinstaller* corrupted_extension_reinstaller =
           extension_service_->corrupted_extension_reinstaller();
       if (policy->MustRemainEnabled(extension.get(), nullptr)) {
