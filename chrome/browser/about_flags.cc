@@ -2141,13 +2141,22 @@ const FeatureEntry::FeatureVariation
 
 const FeatureEntry::FeatureParam
     kShowWarningsForSuspiciousNotificationsScoreThreshold70[] = {
-        {"ShowWarningsForSuspiciousNotificationsScoreThreshold", "70"}};
-
+        {"ShowWarningsForSuspiciousNotificationsScoreThreshold", "70"},
+        {"ShowWarningsForSuspiciousNotificationsShouldSwapButtons", "false"}};
+const FeatureEntry::FeatureParam
+    kShowWarningsForSuspiciousNotificationsScoreThreshold70SwapButtons[] = {
+        {"ShowWarningsForSuspiciousNotificationsScoreThreshold", "70"},
+        {"ShowWarningsForSuspiciousNotificationsShouldSwapButtons", "true"}};
 const FeatureEntry::FeatureVariation
     kShowWarningsForSuspiciousNotificationsVariations[] = {
         {"with suspicious score 70",
          kShowWarningsForSuspiciousNotificationsScoreThreshold70,
          std::size(kShowWarningsForSuspiciousNotificationsScoreThreshold70),
+         nullptr},
+        {"with suspicious score 70 and swapped buttons",
+         kShowWarningsForSuspiciousNotificationsScoreThreshold70SwapButtons,
+         std::size(
+             kShowWarningsForSuspiciousNotificationsScoreThreshold70SwapButtons),
          nullptr},
 };
 

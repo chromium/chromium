@@ -32,6 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -1337,6 +1338,79 @@ public class NotificationPlatformBridgeTest {
         // Validate nothing is logged.
         Assert.assertTrue(NotificationPlatformBridge.sSuspiciousNotificationsMap.isEmpty());
         histogramWatcher.assertExpected();
+    }
+
+    /**
+     * Verifies that when `SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS` is enabled and the
+     * ShowWarningsForSuspiciousNotificationsShouldSwapButtons parameter is true, the buttons are
+     * switched.
+     */
+    @Test
+    @LargeTest
+    @Feature({"Browser", "Notifications"})
+    @Features.EnableFeatures({
+        ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE,
+        ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS
+    })
+    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
+    public void testShowWarningFeatureSwitchButtons() throws Exception {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS,
+                NotificationPlatformBridge
+                        .SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS_SHOULD_SWAP_BUTTONS_PARAM_NAME,
+                true);
+        mNotificationTestRule.setNotificationContentSettingForOrigin(
+                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+        Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
+
+        NotificationPlatformBridge notificationBridge =
+                NotificationPlatformBridge.getInstanceForTests();
+        Assert.assertNotNull(notificationBridge);
+        notificationBridge.setIsSuspiciousParameterForTesting(true);
+
+        // Display 1 notification.
+        showAndGetNotification("MyNotification1", "{body: 'Hello'}");
+        mNotificationTestRule.waitForNotificationCount(1);
+
+        // Click the "Show Notification" button, which is now the primary button.
+        List<NotificationEntry> notifications = mNotificationTestRule.getNotificationEntries();
+        Notification warningNotification = notifications.get(0).getNotification();
+        Assert.assertEquals(2, warningNotification.actions.length);
+        PendingIntent showNotificationIntent = warningNotification.actions[0].actionIntent;
+        Assert.assertNotNull(showNotificationIntent);
+        showNotificationIntent.send();
+
+        // Check the original notification is restored silently.
+        Notification restoredNotificationFromWarning =
+                mNotificationTestRule.waitForNotification().notification;
+        Assert.assertEquals(
+                Notification.GROUP_ALERT_SUMMARY,
+                restoredNotificationFromWarning.getGroupAlertBehavior());
+
+        // Set to false so the "Always allow" confirmation notification will not be marked as
+        // suspicious. Then click "Always allow".
+        notificationBridge.setIsSuspiciousParameterForTesting(false);
+        Assert.assertEquals(2, restoredNotificationFromWarning.actions.length);
+        PendingIntent alwaysAllowIntent = restoredNotificationFromWarning.actions[0].actionIntent;
+        Assert.assertNotNull(alwaysAllowIntent);
+        alwaysAllowIntent.send();
+        mNotificationTestRule.waitForNotificationCount(2);
+
+        // Verify notification has the original title and only has one button(Unsubscribe).
+        notifications = mNotificationTestRule.getNotificationEntries();
+        Notification restoredNotification = notifications.get(0).getNotification();
+        Assert.assertEquals(
+                "MyNotification1", NotificationTestUtil.getExtraTitle(restoredNotification));
+        Assert.assertEquals(1, restoredNotification.actions.length);
+
+        // Verify the confirmation notification.
+        Notification confirmationNotification = notifications.get(1).getNotification();
+        Assert.assertEquals(
+                "Chrome will stop flagging notifications from "
+                        + mPermissionTestRule.getOrigin()
+                        + " as spam",
+                NotificationTestUtil.getExtraTitle(confirmationNotification));
+        Assert.assertNull(confirmationNotification.actions);
     }
 
     /**

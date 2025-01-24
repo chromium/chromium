@@ -143,6 +143,12 @@ public class NotificationPlatformBridge {
     static Map<String, HashSet<String>> sSuspiciousNotificationsMap =
             new HashMap<String, HashSet<String>>();
 
+    // The name of the feature parameter that when set to true, switches the order of buttons on a
+    // notification when showing warnings.
+    @VisibleForTesting
+    static final String SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS_SHOULD_SWAP_BUTTONS_PARAM_NAME =
+            "ShowWarningsForSuspiciousNotificationsShouldSwapButtons";
+
     /** Encapsulates attributes that identify a notification and where it originates from. */
     private static class NotificationIdentifyingAttributes {
         public final String notificationId;
@@ -829,12 +835,17 @@ public class NotificationPlatformBridge {
             return;
         }
 
+        boolean shouldTreatNotificationAsSuspicious =
+                isSuspicious
+                        && ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE)
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
                 && identifyingAttributes.notificationType == NotificationType.WEB_PERSISTENT
-                && !skipUAButtons) {
+                && !skipUAButtons
+                && !shouldTreatNotificationAsSuspicious) {
             appendUnsubscribeButton(notificationBuilder, identifyingAttributes);
-        } else if (!skipUAButtons) {
+        } else if (!skipUAButtons && !shouldTreatNotificationAsSuspicious) {
             appendSiteSettingsButton(
                     notificationBuilder,
                     identifyingAttributes.notificationId,
@@ -860,10 +871,7 @@ public class NotificationPlatformBridge {
                             // INotificationManager.enqueueNotificationWithTag,
                             // see crbug.com/1077027.
                             try {
-                                if (ChromeFeatureList.isEnabled(
-                                                ChromeFeatureList
-                                                        .SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS)
-                                        && isSuspicious) {
+                                if (shouldTreatNotificationAsSuspicious) {
                                     mNotificationManager.notify(
                                             createWarningNotificationWrapper(
                                                     identifyingAttributes,
@@ -1145,6 +1153,27 @@ public class NotificationPlatformBridge {
                 res.getString(R.string.notification_unsubscribe_button),
                 unsubscribeIntentProvider,
                 NotificationUmaTracker.ActionType.PRE_UNSUBSCRIBE);
+    }
+
+    private static void appendUnsubscribeButton(
+            Notification.Builder notificationBuilder,
+            NotificationIdentifyingAttributes identifyingAttributes) {
+        PendingIntentProvider unsubscribeIntentProvider =
+                makePendingIntent(
+                        identifyingAttributes,
+                        NotificationConstants.ACTION_PRE_UNSUBSCRIBE,
+                        /* actionIndex= */ -1,
+                        false);
+
+        Context context = ContextUtils.getApplicationContext();
+        Resources res = context.getResources();
+
+        notificationBuilder.addAction(
+                new Notification.Action.Builder(
+                                /* iconId= */ 0,
+                                res.getString(R.string.notification_unsubscribe_button),
+                                unsubscribeIntentProvider.getPendingIntent())
+                        .build());
     }
 
     private void appendShowOriginalNotificationButton(
@@ -1589,7 +1618,19 @@ public class NotificationPlatformBridge {
                                 notificationBackup.clone());
                         builder.addExtras(extras);
 
-                        appendAlwaysAllowButton(builder, identifyingAttributes);
+                        // Add the unsubscribe and always allow notification buttons. If the feature
+                        // parameter specifies to swap buttons, then "Unsubscribe" should be the
+                        // secondary button. Otherwise, it should be the primary button.
+                        if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                                ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS,
+                                SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS_SHOULD_SWAP_BUTTONS_PARAM_NAME,
+                                /* defaultValue= */ false)) {
+                            appendAlwaysAllowButton(builder, identifyingAttributes);
+                            appendUnsubscribeButton(builder, identifyingAttributes);
+                        } else {
+                            appendUnsubscribeButton(builder, identifyingAttributes);
+                            appendAlwaysAllowButton(builder, identifyingAttributes);
+                        }
                         displayNotificationSilently(builder, identifyingAttributes.notificationId);
                     }
                 });
@@ -1628,6 +1669,7 @@ public class NotificationPlatformBridge {
                             Notification.Builder builder =
                                     Notification.Builder.recoverBuilder(
                                             context, notificationBackupOptional.get());
+                            appendUnsubscribeButton(builder, identifyingAttributes);
                             displayNotificationSilently(builder, proxy.getTag());
                         }
                     }
@@ -1859,9 +1901,19 @@ public class NotificationPlatformBridge {
                         /* actionIndex= */ -1,
                         /* mutable= */ false));
 
-        // Add the unsubscribe and show original notification buttons.
-        appendUnsubscribeButton(notificationBuilder, identifyingAttributes);
-        appendShowOriginalNotificationButton(notificationBuilder, identifyingAttributes);
+        // Add the unsubscribe and show original notification buttons. If the feature parameter
+        // specifies to swap buttons, then "Unsubscribe" should be the secondary button.
+        // Otherwise, it should be the primary button.
+        if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS,
+                SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS_SHOULD_SWAP_BUTTONS_PARAM_NAME,
+                /* defaultValue= */ false)) {
+            appendShowOriginalNotificationButton(notificationBuilder, identifyingAttributes);
+            appendUnsubscribeButton(notificationBuilder, identifyingAttributes);
+        } else {
+            appendUnsubscribeButton(notificationBuilder, identifyingAttributes);
+            appendShowOriginalNotificationButton(notificationBuilder, identifyingAttributes);
+        }
 
         // Add entry to `sSuspiciousNotificationsMap` for UMA logging.
         if (sSuspiciousNotificationsMap.containsKey(identifyingAttributes.origin)) {
