@@ -98,6 +98,11 @@ bool BatteryStateSampler::HasTestingInstance() {
   return g_test_instance_installed;
 }
 
+base::TimeDelta BatteryStateSampler::GetSampleInterval() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return sampling_event_source_->GetSampleInterval();
+}
+
 #if !BUILDFLAG(IS_MAC)
 // static
 std::unique_ptr<SamplingEventSource>

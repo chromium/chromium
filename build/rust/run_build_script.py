@@ -151,11 +151,19 @@ def main():
         env["CARGO_FEATURE_%s" % feature_name] = "1"
     if args.rustflags:
       with open(args.rustflags) as flags:
+        for flag in flags:
+          if "-Copt-level" in flag:
+            (_, opt) = flag.split("=")
+            env["OPT_LEVEL"] = opt.rstrip()
+        flags.seek(0)
         env["CARGO_ENCODED_RUSTFLAGS"] = '\x1f'.join(flags.readlines())
     if args.env:
       for e in args.env:
         (k, v) = e.split("=")
         env[k] = v
+    if "OPT_LEVEL" not in env:
+      env["OPT_LEVEL"] = "0"
+
     # Pass through a couple which are useful for diagnostics
     if os.environ.get("RUST_BACKTRACE"):
       env["RUST_BACKTRACE"] = os.environ.get("RUST_BACKTRACE")

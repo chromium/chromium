@@ -33,11 +33,6 @@
 
   const url = "" + document.location;
 
-  // TODO(vogelheim): The current set of tests allows for more variance in the
-  //     sample reports than the current spec draft does. Once the spec has
-  //     been finalized, we should clamp this down to check byte-for-byte
-  //     against the values mandated by the spec.
-
   // A sample policy we use to test trustedTypes.createPolicy behaviour.
   const id = x => x;
   const a_policy = {
@@ -47,26 +42,30 @@
   };
 
   promise_test(async t => {
+    const policyName = "three";
     let {violations, exception} =
         await trusted_type_violations_and_exception_for(_ =>
           trustedTypes.createPolicy("three", a_policy)
         );
     assert_equals(violations.length, 2);
     assert_true(violations[0].originalPolicy.includes("trusted-types one"));
+    assert_equals(violations[0].sample, clipSampleIfNeeded(policyName));
+    assert_equals(violations[0].blockedURI, "trusted-types-policy");
     assert_true(violations[1].originalPolicy.includes("trusted-types two"));
-    assert_true(violations[1].sample.includes("three"));
+    assert_equals(violations[1].sample, clipSampleIfNeeded(policyName));
     assert_equals(violations[1].blockedURI, "trusted-types-policy");
     assert_true(exception instanceof TypeError);
   }, "Trusted Type violation report: creating a forbidden policy.");
 
   promise_test(async t => {
+    const policyName = "two";
     let {violations, exception} =
         await trusted_type_violations_and_exception_for(_ =>
-          trustedTypes.createPolicy("two", a_policy)
+          trustedTypes.createPolicy(policyName, a_policy)
         );
     assert_equals(violations.length, 1);
     assert_true(violations[0].originalPolicy.includes("trusted-types one"));
-    assert_true(violations[0].sample.includes("two"));
+    assert_equals(violations[0].sample, clipSampleIfNeeded(policyName));
     assert_equals(violations[0].blockedURI, "trusted-types-policy");
     assert_true(exception instanceof TypeError);
   }, "Trusted Type violation report: creating a report-only-forbidden policy.");
@@ -75,15 +74,14 @@
   let policy_one = null;
 
   promise_test(async t => {
-    let {violations, exception} =
+    const policyName = "one";
+    let violation =
         await trusted_type_violation_without_exception_for(_ =>
-          policy_one = trustedTypes.createPolicy("one", a_policy)
+          policy_one = trustedTypes.createPolicy(policyName, a_policy)
         );
-    assert_equals(violations.length, 1);
-    assert_true(violations[0].originalPolicy.includes("trusted-types two"));
-    assert_true(violations[0].sample.includes("one"));
-    assert_equals(violations[0].blockedURI, "trusted-types-policy");
-    assert_equals(exception, null);
+    assert_true(violation.originalPolicy.includes("trusted-types two"));
+    assert_equals(violation.sample, clipSampleIfNeeded(policyName));
+    assert_equals(violation.blockedURI, "trusted-types-policy");
   }, "Trusted Type violation report: creating a forbidden-but-not-reported policy.");
 
   promise_test(async t => {
@@ -121,75 +119,83 @@
   }, "Trusted Type violation report: assign trusted HTML to html; no report");
 
   promise_test(async t => {
+    const input = "abc";
     let violation = await trusted_type_violation_for(TypeError, _ =>
-      document.getElementById("div").innerHTML = "abc"
+      document.getElementById("div").innerHTML = input
     );
     assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
     assert_equals(violation.blockedURI, "trusted-types-sink");
-    assert_true(violation.sample.includes("Element innerHTML|abc"));
+    assert_equals(violation.sample, `Element innerHTML|${clipSampleIfNeeded(input)}`);
   }, "Trusted Type violation report: sample for innerHTML assignment");
 
   promise_test(async t => {
+    const input = "1+2;";
     let violation = await trusted_type_violation_for(TypeError, _ =>
-      document.getElementById("script").text = "abc"
+      document.getElementById("script").text = input
     );
     assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
     assert_equals(violation.blockedURI, "trusted-types-sink");
-    assert_true(violation.sample.includes("HTMLScriptElement text|abc"));
+    assert_equals(violation.sample, `HTMLScriptElement text|${clipSampleIfNeeded(input)}`);
   }, "Trusted Type violation report: sample for text assignment");
 
   promise_test(async t => {
+    const input = "about:blank";
     let violation = await trusted_type_violation_for(TypeError, _ =>
-      document.getElementById("script").src = ""
+      document.getElementById("script").src = input
     );
     assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
     assert_equals(violation.blockedURI, "trusted-types-sink");
-    assert_true(violation.sample.includes("HTMLScriptElement src"));
+    assert_equals(violation.sample, `HTMLScriptElement src|${clipSampleIfNeeded(input)}`);
   }, "Trusted Type violation report: sample for script.src assignment");
 
   promise_test(async t => {
+    const input = "2+2;";
     let violation = await trusted_type_violation_for(TypeError, _ =>
       document.getElementById("script").innerText = "2+2;"
     );
     assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
     assert_equals(violation.blockedURI, "trusted-types-sink");
-    assert_true(violation.sample.includes("Element innerText|2+2"));
+    assert_equals(violation.sample, `HTMLScriptElement innerText|${clipSampleIfNeeded(input)}`);
   }, "Trusted Type violation report: sample for script innerText assignment");
 
   promise_test(async t => {
+    const input = "about:blank";
     let violation = await trusted_type_violation_for(TypeError, _ =>
-      document.getElementById("svgscript").href.baseVal = ""
+      document.getElementById("svgscript").href.baseVal = input
     );
     assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
     assert_equals(violation.blockedURI, "trusted-types-sink");
-    assert_true(violation.sample.includes("SVGScriptElement href"));
+    assert_equals(violation.sample, `SVGScriptElement href|${clipSampleIfNeeded(input)}`);
   }, "Trusted Type violation report: sample for SVGScriptElement href assignment");
 
   promise_test(async t => {
+    const input = "about:blank";
     let violation = await trusted_type_violation_for(TypeError, _ =>
-      document.getElementById("svgscript").setAttribute('href', "test")
+      document.getElementById("svgscript").setAttribute('href', input)
     );
     assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
     assert_equals(violation.blockedURI, "trusted-types-sink");
-    assert_true(violation.sample.includes("SVGScriptElement href"));
+    assert_equals(violation.sample, `SVGScriptElement href|${clipSampleIfNeeded(input)}`);
   }, "Trusted Type violation report: sample for SVGScriptElement href assignment by setAttribute");
 
   promise_test(async t => {
+    const input = "2+3";
     let violation = await trusted_type_violation_for(TypeError, _ =>
-      document.getElementById("svgscript").insertBefore(document.createTextNode("Hello"), null)
+      document.getElementById("svgscript").insertBefore(document.createTextNode(input), null)
     );
     assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
     assert_equals(violation.blockedURI, "trusted-types-sink");
-    assert_true(violation.sample.includes("SVGScriptElement text"));
+    assert_equals(violation.sample, `SVGScriptElement text|${clipSampleIfNeeded(input)}`);
   }, "Trusted Type violation report: sample for SVGScriptElement text assignment");
 
   promise_test(async t => {
+    const input = "2+2";
     let violation = await trusted_type_violation_for(EvalError, _ =>
-      eval("2+2")
+      eval(input)
     );
     assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
     assert_equals(violation.blockedURI, "trusted-types-sink");
-    assert_true(violation.sample.includes("eval|2+2"));
+    assert_equals(violation.sample, `eval|${clipSampleIfNeeded(input)}`);
   }, "Trusted Type violation report: sample for eval");
 
   promise_test(async t => {
@@ -201,8 +207,7 @@
     );
     assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
     assert_equals(violation.blockedURI, "trusted-types-sink");
-    assert_true(violation.sample.includes("HTMLScriptElement innerText|abbb"));
-    assert_less_than(violation.sample.length, 150);
+    assert_equals(violation.sample, `HTMLScriptElement innerText|${clipSampleIfNeeded(value)}`);
   }, "Trusted Type violation report: large values should be handled sanely.");
 
   // Test reporting for Custom Elements (where supported). The report should
@@ -213,22 +218,24 @@
     customElements.define("custom-script", CustomScript, { extends: "script" });
 
     promise_test(async t => {
+      const input = "about:blank";
       let violation = await trusted_type_violation_for(TypeError, _ =>
-        document.getElementById("customscript").src = "abc"
+        document.getElementById("customscript").src = input
       );
       assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
       assert_equals(violation.blockedURI, "trusted-types-sink");
-      assert_true(violation.sample.includes("HTMLScriptElement src|abc"));
+      assert_equals(violation.sample, `HTMLScriptElement src|${clipSampleIfNeeded(input)}`);
     }, "Trusted Type violation report: sample for custom element assignment");
   }
 
   promise_test(async t => {
+    const input = "about:blank";
     let violation = await trusted_type_violation_for(TypeError, _ =>
-      new Worker("blabla")
+      new Worker(input)
     );
     assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
     assert_equals(violation.blockedURI, "trusted-types-sink");
-    assert_true(violation.sample.includes("Worker constructor|"));
+    assert_equals(violation.sample, `Worker constructor|${clipSampleIfNeeded(input)}`);
   }, "Trusted Type violation report: Worker constructor");
 
   </script>

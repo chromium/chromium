@@ -68,3 +68,14 @@ async function trusted_type_violation_without_exception_for(fn) {
   assert_equals(exception, null, "no exception thrown");
   return violations[0];
 }
+
+function clipSampleIfNeeded(sample) {
+  const clippedSampleLength = 40;
+
+  // Clipping is a bit ambiguous when the sample contains surrogate pairs, so
+  // avoid that in our tests for now.
+  // https://github.com/w3c/trusted-types/issues/577
+  assert_equals(sample.match(/[\uD800-\uDBFF][\uDC00-\uDFFF]/), null);
+
+  return sample.substring(0, clippedSampleLength);
+}

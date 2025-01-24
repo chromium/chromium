@@ -51,13 +51,14 @@ bool LaunchDefaultAppsSettingsModernDialog(std::wstring_view protocol) {
   }
 
   DWORD pid = 0;
-  CoAllowSetForegroundWindow(activator.Get(), nullptr);
+  ::CoAllowSetForegroundWindow(activator.Get(), nullptr);
   hr = activator->ActivateApplication(
       kControlPanelAppModelId, L"page=SettingsPageAppsDefaults", AO_NONE, &pid);
   if (FAILED(hr)) {
     return false;
   }
-  if (protocol.empty()) {
+  // Scrolling to a specific protocol is only possible on Windows 10.
+  if (protocol.empty() || GetVersion() >= Version::WIN11) {
     return true;
   }
 

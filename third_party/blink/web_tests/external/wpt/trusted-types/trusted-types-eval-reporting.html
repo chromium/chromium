@@ -31,11 +31,13 @@
   const scriptyPolicy = trustedTypes.createPolicy('allowEval', a_policy);
 
   promise_test(async t => {
+    const input = 'beacon="should not run"';
     let beacon = 'never_overwritten';
     let violation = await trusted_type_violation_for(EvalError, _ =>
-      eval('beacon="should not run"')
+      eval(input)
     );
     assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
+    assert_equals(violation.sample, `eval|${clipSampleIfNeeded(input)}`);
     assert_equals(beacon, 'never_overwritten');
   }, "Trusted Type violation report: evaluating a string.");
 

@@ -197,7 +197,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                         this,
                         mEdgeToEdgeStateProvider,
                         createSystemBarColorHelperSupplier(),
-                        supportsEdgeToEdge());
+                        shouldDrawEdgeToEdgeOnCreate());
 
         if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
             initializeSystemBarColors();
@@ -356,7 +356,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     }
 
     /** Returns whether this activity should draw its content edge-to-edge by default. */
-    protected boolean supportsEdgeToEdge() {
+    protected boolean shouldDrawEdgeToEdgeOnCreate() {
         return EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled();
     }
 

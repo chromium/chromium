@@ -35,6 +35,24 @@ class BatteryDischargeReporter : public base::BatteryStateSampler::Observer {
           battery_state) override;
 
  private:
+  base::TimeDelta GetSampleInterval() const;
+
+  // A sample interval is considered valid if it is equal to `sample_interval_`,
+  // plus or minus a second.
+  bool IsValidSampleInterval(base::TimeDelta interval_duration);
+
+  // Resets the state tracking the one minute interval.
+  void StartNewOneMinuteInterval(
+      const std::optional<base::BatteryLevelProvider::BatteryState>&
+          battery_state);
+
+#if BUILDFLAG(IS_WIN)
+  // Resets the state tracking the ten minutes interval.
+  void StartNewTenMinutesInterval(
+      const std::optional<base::BatteryLevelProvider::BatteryState>&
+          battery_state);
+#endif  // BUILDFLAG(IS_WIN)
+
   // Reports battery discharge histograms for a 1 minute interval.
   void ReportOneMinuteInterval(
       base::TimeDelta interval_duration,
@@ -65,20 +83,40 @@ class BatteryDischargeReporter : public base::BatteryStateSampler::Observer {
                           base::BatteryStateSampler::Observer>
       scoped_battery_state_sampler_observation_{this};
 
+  // The sample interval retrieved from the BatteryStateSampler.
+  base::TimeDelta sample_interval_;
+
   // Track usage scenarios for the sampling interval.
   std::unique_ptr<UsageScenarioTracker> battery_usage_scenario_tracker_;
   raw_ptr<UsageScenarioDataStore> battery_usage_scenario_data_store_;
 
-  // The time and battery state at the last event received from
-  // `sampling_event_source_`.
-  std::optional<base::TimeTicks> one_minute_interval_start_time_;
+  // The time at the last sample received from `sampling_event_source_`.
+  // Is equal to nullopt on the first sample.
+  std::optional<base::TimeTicks> last_sample_time_;
+
+  // The number of consecutive samples since the last recording of the 1min
+  // battery discharge rate.
+  int one_minute_sample_count_ = 0;
+
+  // The time passed since the last recording of the 1min battery discharge
+  // rate.
+  base::TimeDelta one_minute_interval_duration_;
+
+  // The battery state at the time the last recording of the 1min battery state.
   std::optional<base::BatteryLevelProvider::BatteryState>
       one_minute_interval_start_battery_state_;
 
 #if BUILDFLAG(IS_WIN)
-  // The time and battery state at an event received from
-  // `sampling_event_source_` up to 10 minutes in the past.
-  std::optional<base::TimeTicks> ten_minutes_interval_start_time_;
+  // The number of consecutive samples since the last recording of the 10mins
+  // battery discharge rate.
+  int ten_minutes_sample_count_ = 0;
+
+  // The time passed since the last recording of the 10mins battery discharge
+  // rate.
+  base::TimeDelta ten_minutes_interval_duration_;
+
+  // The battery state at the time the last recording of the 10mins battery
+  // state.
   std::optional<base::BatteryLevelProvider::BatteryState>
       ten_minutes_interval_start_battery_state_;
 #endif  // BUILDFLAG(IS_WIN)
