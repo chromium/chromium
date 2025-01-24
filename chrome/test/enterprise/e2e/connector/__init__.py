@@ -13,7 +13,8 @@ from .reporting_connector_chronicle.reporting_connector_chronicle_test import *
 from .reporting_connector_client_only.reporting_connector_client_only_test import *
 from .reporting_connector_combined.reporting_connector_combined_test import *
 from .reporting_connector_crowdstrike.reporting_connector_crowdstrike_test import *
-from .reporting_connector_pan.reporting_connector_pan_test import *
+# TODO(b/392146618): Re-enable once the PAN license is renewed
+#from .reporting_connector_pan.reporting_connector_pan_test import *
 from .reporting_connector_pubsub.reporting_connector_pubsub_test import *
 # TODO(b/361382502): re-enable once the splunk license is renewed
 # from .reporting_connector_splunk.reporting_connector_splunk_test import *
