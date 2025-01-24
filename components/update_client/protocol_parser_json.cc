@@ -376,25 +376,6 @@ bool ProtocolParserJSON::DoParse(const std::string& response_json,
     }
   }
 
-  const base::Value::Dict* systemrequirements_node =
-      response_node->FindDict("systemrequirements");
-  if (systemrequirements_node) {
-    const std::string* platform =
-        systemrequirements_node->FindString("platform");
-    if (platform) {
-      results->system_requirements.platform = *platform;
-    }
-    const std::string* arch = systemrequirements_node->FindString("arch");
-    if (arch) {
-      results->system_requirements.arch = *arch;
-    }
-    const std::string* min_os_version =
-        systemrequirements_node->FindString("min_os_version");
-    if (min_os_version) {
-      results->system_requirements.min_os_version = *min_os_version;
-    }
-  }
-
   const base::Value::List* app_node = response_node->FindList("app");
   if (app_node) {
     for (const auto& app : *app_node) {
