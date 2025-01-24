@@ -491,10 +491,9 @@ void ExtensionMenuItemView::UpdateContextMenuButton(bool is_action_pinned) {
   // pinned in the toolbar. All other states should look, and behave, the same.
   context_menu_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      is_action_pinned
-          ? ui::ImageModel::FromVectorIcon(
-                kKeepIcon, kColorExtensionMenuPinButtonIcon, icon_size)
-          : three_dot_icon);
+      is_action_pinned ? ui::ImageModel::FromVectorIcon(
+                             kKeepIcon, kColorExtensionMenuIcon, icon_size)
+                       : three_dot_icon);
   context_menu_button_->SetImageModel(views::Button::STATE_HOVERED,
                                       three_dot_icon);
   context_menu_button_->SetImageModel(views::Button::STATE_PRESSED,
