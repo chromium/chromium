@@ -888,6 +888,7 @@ TEST_F(PolicyManagersTest, NullExternalConstants) {
 TEST_F(PolicyManagersTest, MachineUnmanaged) {
   ASSERT_TRUE(ExternalConstantsBuilder().SetMachineManaged(false).Overwrite());
   PolicyService::PolicyManagers managers(CreateExternalConstants());
+  managers.ResetDeviceManagementManager({});
 
   ASSERT_EQ(managers.managers().size(),
             size_t{1 + kPlatformPolicyManagerDefined});
@@ -935,6 +936,7 @@ TEST_F(PolicyManagersTest, ValidDictPlatformPolicies) {
   ASSERT_NO_FATAL_FAILURE(test::SetPlatformPolicies(policies));
 
   PolicyService::PolicyManagers managers(CreateExternalConstants());
+  managers.ResetDeviceManagementManager({});
 
   ASSERT_EQ(managers.managers().size(),
             size_t{2 + kPlatformPolicyManagerDefined});
