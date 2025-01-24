@@ -22,9 +22,9 @@
 
 namespace {
 constexpr char kTestAccount[] = "primary-test@gmail.com";
-constexpr char kFakeGaia[] = "fakegaia";
+constexpr GaiaId::Literal kFakeGaia("fakegaia");
 constexpr char kTestAccount2[] = "secondary-test@gmail.com";
-constexpr char kFakeGaia2[] = "fakegaia2";
+constexpr GaiaId::Literal kFakeGaia2("fakegaia2");
 }  // namespace
 
 namespace ash::file_manager {
@@ -39,7 +39,7 @@ class FileIndexServiceRegistryTest : public testing::Test {
     registry_ =
         std::make_unique<FileIndexServiceRegistry>(fake_user_manager_->Get());
     primary_account_id_ =
-        AccountId::FromUserEmailGaiaId(kTestAccount, GaiaId(kFakeGaia));
+        AccountId::FromUserEmailGaiaId(kTestAccount, kFakeGaia);
     fake_user_manager()->AddGaiaUser(primary_account_id_,
                                      user_manager::UserType::kRegular);
   }
@@ -106,7 +106,7 @@ TEST_F(FileIndexServiceRegistryTest, SecondaryUser) {
   EXPECT_NE(primary_index, nullptr);
 
   auto secondary_account_id =
-      AccountId::FromUserEmailGaiaId(kTestAccount2, GaiaId(kFakeGaia2));
+      AccountId::FromUserEmailGaiaId(kTestAccount2, kFakeGaia2);
   fake_user_manager()->AddGaiaUser(secondary_account_id,
                                    user_manager::UserType::kRegular);
   EXPECT_EQ(registry->GetFileIndexService(secondary_account_id), nullptr);

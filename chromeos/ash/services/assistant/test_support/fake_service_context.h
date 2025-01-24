@@ -19,7 +19,7 @@ namespace ash::assistant {
 class FakeServiceContext : public ServiceContext {
  public:
   // Gaia ID returned by primary_account_gaia_id() (unless overridden).
-  static constexpr const char* kGaiaId = "<fake-gaia-id>";
+  static constexpr GaiaId::Literal kGaiaId = GaiaId::Literal("<fake-gaia-id>");
 
   FakeServiceContext();
   FakeServiceContext(const FakeServiceContext&) = delete;
@@ -55,7 +55,7 @@ class FakeServiceContext : public ServiceContext {
   raw_ptr<AssistantStateBase> assistant_state_ = nullptr;
   raw_ptr<chromeos::PowerManagerClient, DanglingUntriaged>
       power_manager_client_ = nullptr;
-  GaiaId gaia_id_ = GaiaId(kGaiaId);
+  GaiaId gaia_id_ = kGaiaId;
   raw_ptr<AssistantAlarmTimerController> assistant_alarm_timer_controller_ =
       nullptr;
   raw_ptr<AssistantNotificationController> assistant_notification_controller_ =
