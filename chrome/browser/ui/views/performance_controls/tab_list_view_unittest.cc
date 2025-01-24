@@ -20,6 +20,7 @@
 #include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/test/button_test_api.h"
@@ -170,10 +171,13 @@ TEST_F(TabListViewUnitTest, TabListRowViewAccessibleName) {
   second_row->GetTextContainerForTesting()
       ->GetViewAccessibility()
       .GetAccessibleNodeData(&data);
-  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            second_row->GetTitleTextForTesting() + u" " +
-                l10n_util::GetStringUTF16(
-                    IDS_PERFORMANCE_INTERVENTION_SINGLE_SUGGESTED_ROW_ACCNAME));
+  EXPECT_EQ(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      l10n_util::GetStringFUTF16(
+          IDS_CONCAT_TWO_STRINGS_WITH_COMMA,
+          second_row->GetTitleTextForTesting(),
+          l10n_util::GetStringUTF16(
+              IDS_PERFORMANCE_INTERVENTION_SINGLE_SUGGESTED_ROW_ACCNAME)));
 }
 
 TEST_F(TabListViewUnitTest, TabListViewAccessibleName) {

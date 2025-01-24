@@ -240,7 +240,8 @@ const char kHistoryClustersBehaviorParam[] = "history-cluster-behavior";
 const char kMerchantWideBehaviorParam[] = "merchant-wide-behavior";
 const char kNonMerchantWideBehaviorParam[] = "non-merchant-wide-behavior";
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kDiscountDialogAutoPopupBehaviorSetting,
              "DiscountDialogAutoPopupBehaviorSetting",
              base::FEATURE_ENABLED_BY_DEFAULT);

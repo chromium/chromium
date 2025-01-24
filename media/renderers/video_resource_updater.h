@@ -126,9 +126,9 @@ class MEDIA_EXPORT VideoResourceUpdater
   scoped_refptr<gpu::SharedImageInterface> shared_image_interface() const;
 
  private:
-  class PlaneResource;
-  class HardwarePlaneResource;
-  class SoftwarePlaneResource;
+  class FrameResource;
+  class HardwareFrameResource;
+  class SoftwareFrameResource;
 
   bool software_compositor() const { return context_provider_ == nullptr; }
 
@@ -141,11 +141,11 @@ class MEDIA_EXPORT VideoResourceUpdater
   // Additionally, if the |unique_id| matches, then it is assumed that the
   // resource has the right data already and will only be used for reading, and
   // so is returned even if it is still referenced.
-  PlaneResource* RecycleOrAllocateResource(const gfx::Size& resource_size,
+  FrameResource* RecycleOrAllocateResource(const gfx::Size& resource_size,
                                            viz::SharedImageFormat si_format,
                                            const gfx::ColorSpace& color_space,
                                            VideoFrame::ID unique_id);
-  PlaneResource* AllocateResource(const gfx::Size& plane_size,
+  FrameResource* AllocateResource(const gfx::Size& size,
                                   viz::SharedImageFormat format,
                                   const gfx::ColorSpace& color_space);
 
@@ -153,13 +153,13 @@ class MEDIA_EXPORT VideoResourceUpdater
   // texture. This is used when there are multiple GPU threads (Android WebView)
   // and the source video frame texture can't be used on the output GL context.
   // https://crbug.com/582170
-  void CopyHardwarePlane(VideoFrame* video_frame,
-                         VideoFrameExternalResource* external_resources);
+  void CopyHardwareResource(VideoFrame* video_frame,
+                            VideoFrameExternalResource* external_resources);
 
   // Get resource ready to be appended into DrawQuad. This is used for GPU
   // compositing most of the time, except for the cases mentioned in
-  // CreateForSoftwarePlanes().
-  VideoFrameExternalResource CreateForHardwarePlanes(
+  // CreateForSoftwareFrame().
+  VideoFrameExternalResource CreateForHardwareFrame(
       scoped_refptr<VideoFrame> video_frame);
 
   // Get the shared image format for creating resource which is used for
@@ -174,12 +174,12 @@ class MEDIA_EXPORT VideoResourceUpdater
   // Transfer RGB pixels from the video frame to software resource through
   // canvas via PaintCanvasVideoRenderer.
   void TransferRGBPixelsToPaintCanvas(scoped_refptr<VideoFrame> video_frame,
-                                      PlaneResource* plane_resource);
+                                      FrameResource* frame_resource);
 
   // Write/copy RGB pixels from video frame to hardware resource through
   // WritePixels or TexSubImage2D.
   bool WriteRGBPixelsToTexture(scoped_refptr<VideoFrame> video_frame,
-                               PlaneResource* plane_resource,
+                               FrameResource* frame_resource,
                                viz::SharedImageFormat output_si_format);
 
   // Write/copy YUV pixels for all planes from video frame to hardware resource
@@ -188,18 +188,18 @@ class MEDIA_EXPORT VideoResourceUpdater
   // format.
   bool WriteYUVPixelsForAllPlanesToTexture(
       scoped_refptr<VideoFrame> video_frame,
-      HardwarePlaneResource* resource,
+      HardwareFrameResource* resource,
       size_t bits_per_channel);
 
   // Get resource ready to be appended into DrawQuad. This is always used for
   // software compositing. This is also used for GPU compositing when the input
   // video frame has no textures.
-  VideoFrameExternalResource CreateForSoftwarePlanes(
+  VideoFrameExternalResource CreateForSoftwareFrame(
       scoped_refptr<VideoFrame> video_frame);
 
   gpu::raster::RasterInterface* RasterInterface();
 
-  void RecycleResource(uint32_t plane_resource_id,
+  void RecycleResource(uint32_t resource_id,
                        const gpu::SyncToken& sync_token,
                        bool lost_resource);
   void ReturnTexture(scoped_refptr<VideoFrame> video_frame,
@@ -239,7 +239,7 @@ class MEDIA_EXPORT VideoResourceUpdater
 
   // Resources allocated by VideoResourceUpdater. Used to recycle resources so
   // we can reduce the number of allocations and data transfers.
-  std::vector<std::unique_ptr<PlaneResource>> all_resources_;
+  std::vector<std::unique_ptr<FrameResource>> all_resources_;
 
   base::WeakPtrFactory<VideoResourceUpdater> weak_ptr_factory_{this};
 };

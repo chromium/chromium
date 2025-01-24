@@ -90,9 +90,11 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
-import org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.ReorderType;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripIphController.IphType;
+import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate;
+import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
+import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabDragSource;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -4368,25 +4370,15 @@ public class StripLayoutHelperTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
     public void testDrag_clearState() {
-        // Initialize with 10 tabs.
-        int selectedIndex = 5;
-        initializeTest(false, false, selectedIndex, 10);
+        initializeTest(3);
         setTabDragSourceMock();
         mStripLayoutHelper.startDragAndDropTabForTesting(
-                mStripLayoutHelper.getStripLayoutTabsForTesting()[selectedIndex], DRAG_START_POINT);
-        mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
-        StripLayoutTab draggedTab =
-                mStripLayoutHelper.getStripLayoutTabsForTesting()[selectedIndex];
-        draggedTab.setIsDraggedOffStrip(true);
-
-        // Clear any animators.
-        mStripLayoutHelper.finishAnimationsAndPushTabUpdates();
-        assertNull("Should not be animating.", mStripLayoutHelper.getRunningAnimatorForTesting());
+                mStripLayoutHelper.getStripLayoutTabsForTesting()[0], DRAG_START_POINT);
 
         // Act and verify.
         mStripLayoutHelper.stopReorderMode();
-        assertNotNull("Should be animating.", mStripLayoutHelper.getRunningAnimatorForTesting());
+        assertFalse(
+                "Should not be in reorder mode", mStripLayoutHelper.getInReorderModeForTesting());
     }
 
     @Test
@@ -4405,7 +4397,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
-    public void testDrag_DragActiveClickedTabOntoStrip() {
+    public void testDrag_DragOntoSourceStrip() {
         // Setup and mark the active clicked tab.
         initializeTest(false, false, 0, 5);
         ReorderDelegate mockDelegate = mock(ReorderDelegate.class);
@@ -4428,7 +4420,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
-    public void testDrag2_DragActiveClickedTabOutOfStrip() {
+    public void testDrag_DragOutOfSourceStrip() {
         // Setup and start drag.
         initializeTest(false, false, 1, 5);
         setTabDragSourceMock();

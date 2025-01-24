@@ -2576,24 +2576,25 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
                                           now - last_omnibox_focus_);
   }
 
-  TemplateURLService* turl_service =
-      controller_->client()->GetTemplateURLService();
-  TemplateURL* template_url = match.GetTemplateURL(turl_service, false);
+  TemplateURLService* service = controller_->client()->GetTemplateURLService();
+  TemplateURL* template_url = match.GetTemplateURL(service, false);
   if (template_url) {
-    AutocompleteMatch::LogSearchEngineUsed(match, turl_service);
-
     if (ui::PageTransitionTypeIncludingQualifiersIs(
             match.transition, ui::PAGE_TRANSITION_KEYWORD) ||
         match.provider->type() ==
             AutocompleteProvider::TYPE_UNSCOPED_EXTENSION) {
-      // User is in keyword mode or accepted an unscoped extension suggestion.
+      // User is in keyword mode or accepted an unscoped extension suggestion,
+      // increment usage count for the keyword.
       base::RecordAction(base::UserMetricsAction("AcceptedKeyword"));
       EmitAcceptedKeywordSuggestionHistogram(keyword_mode_entry_method_,
                                              template_url);
       controller_->client()->GetTemplateURLService()->IncrementUsageCount(
           template_url);
 
-      if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION) {
+      // Notify the extension of the selected input, but ignore if the selection
+      // corresponds to an action created by an extension in unscoped mode.
+      if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION &&
+          !action) {
         controller_->client()->ProcessExtensionMatch(input_text, template_url,
                                                      match, disposition);
         if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB && view_) {

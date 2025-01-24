@@ -576,8 +576,6 @@ object in the update check request.
  *   `app`: A list of `app` objects. There is one object for each `app` in the
      request body.
  *   `daystart`: A `daystart` object.
- *   `systemrequirements`: A `systemrequirements` object. The server will not
-     send this element, but it may be present in offline installer manifests.
  *   `protocol`: The version of the Omaha protocol. Servers responding with this
      protocol must send a value of "4.0".
  *   `server`: A string identifying the server or server family for diagnostic
@@ -591,47 +589,6 @@ server's locale. It has the following members:
      request was received. The client should generally save this value for use
      in future update checks (for examples, see `request.app.ping.rd` and
      `request.app.installdate`).
-
-#### `systemrequirements` Objects (Update Check Response)
-A `systemrequirements` object contains information about the operating system
-that the application requires to install. It has the following members:
- *   `platform`: The operating system family that the application requires
-     (e.g. "win", "mac", "linux", "ios", "android"), or "" if not applicable.
- *   `arch`: Expected host processor architecture that the app is compatible
-     with, or "" if not applicable.
-
-     `arch` can be a single entry, or multiple entries separated with `,`.
-     Entries prefixed with a `-` (negative entries) indicate non-compatible
-     hosts. Non-prefixed entries indicate compatible guests.
-
-     An application is compatible with the current architecture if:
-     * `arch` is empty, or
-     * none of the negative entries within `arch` match the current host
-       architecture exactly, and there are no non-negative entries, or
-     * one of the non-negative entries within `arch` matches the current
-       architecture, or is compatible with the current architecture (i.e., it is
-       a compatible guest for the current host). The latter is determined by
-       `::IsWow64GuestMachineSupported()` on Windows.
-       * If `::IsWow64GuestMachineSupported()` is not available, returns `true`
-         if `arch` is x86.
-
-     Examples:
-     * `arch` == "x86".
-     * `arch` == "x64".
-     * `arch` == "x86,x64,-arm64": installation will fail if the underlying host
-       is arm64.
- *   `min_os_version`: The minimum required version of the operating system, or
-     "" if not applicable.
-
-     The `min_os_version` is in the format `major.minor.build.patch` for
-     Windows. The `major`, `minor` and `build` are the values returned by the
-     `::GetVersionEx` API. The `patch` is the `UBR` value under the registry
-     path `HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion`.
-
-     The `build` and the `patch` components may be omitted if all that is needed
-     is a minimum `major.minor` version. For example, `6.0` will match all OS
-     versions that are at or above that version, regardless of `build` and
-     `patch` numbers.
 
 #### `app` Objects (Update Check Response)
 An app object represents a per-application acknowledgement of the request. If an

@@ -22,14 +22,6 @@
       <include name="IDR_READING_MODE_GDOC_HELPER_CONTENT_JS" file="reading_mode_gdocs_helper/content.js" type="BINDATA" />
       <include name="IDR_READING_MODE_GDOC_HELPER_GDOCS_SCRIPT_JS" file="reading_mode_gdocs_helper/gdocs_script.js" type="BINDATA" />
 
-      <if expr="chromeos_ash">
-        <!-- Compiled TS -->
-        <include name="IDR_BRAILLE_IME_JS" file="${root_gen_dir}/chrome/browser/resources/chromeos/accessibility/braille_ime/tsc/braille_ime.js" use_base_dir="false" resource_path="chromeos/accessibility/braille_ime/braille_ime.js" type="BINDATA" />
-         <include name="IDR_BRAILLE_IME_MAIN_JS" file="${root_gen_dir}/chrome/browser/resources/chromeos/accessibility/braille_ime/tsc/main.js" use_base_dir="false" resource_path="chromeos/accessibility/braille_ime/main.js" type="BINDATA" />
-        <include name="IDR_BRAILLE_IME_MV3_JS" file="${root_gen_dir}/chrome/browser/resources/chromeos/accessibility/braille_ime/tsc/braille_ime.js" use_base_dir="false" resource_path="chromeos/accessibility/braille_ime/mv3/braille_ime.js" type="BINDATA" />
-         <include name="IDR_BRAILLE_IME_MV3_MAIN_JS" file="${root_gen_dir}/chrome/browser/resources/chromeos/accessibility/braille_ime/tsc/main.js" use_base_dir="false" resource_path="chromeos/accessibility/braille_ime/mv3/main.js" type="BINDATA" />
-      </if>
-
       <!-- Hangout Services extension, included in Google Chrome builds only. -->
       <if expr="_google_chrome or enable_hangout_services_extension">
         <include name="IDR_HANGOUT_SERVICES_BACKGROUND_HTML" file="hangout_services/background.html" type="BINDATA" />

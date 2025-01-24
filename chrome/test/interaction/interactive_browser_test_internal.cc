@@ -160,6 +160,18 @@ bool InteractiveBrowserTestPrivate::IsInstrumentedWebContents(
   return false;
 }
 
+bool InteractiveBrowserTestPrivate::UninstrumentWebContents(
+    ui::ElementIdentifier to_remove) {
+  for (auto it = instrumented_web_contents_.begin();
+       it != instrumented_web_contents_.end(); ++it) {
+    if ((*it)->page_identifier() == to_remove) {
+      instrumented_web_contents_.erase(it);
+      return true;
+    }
+  }
+  return false;
+}
+
 std::string InteractiveBrowserTestPrivate::DeepQueryToString(
     const WebContentsInteractionTestUtil::DeepQuery& deep_query) {
   std::ostringstream oss;

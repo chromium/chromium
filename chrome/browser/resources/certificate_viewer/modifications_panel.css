@@ -57,3 +57,17 @@ h3 {
   position: relative;
   width: 100%;
 }
+
+
+/* Cert viewer doesn't support dark mode (cr-tab-box doesn't). Hardcode cr-input
+ * and md-select styles to light mode. */
+cr-input {
+  --cr-input-background-color: rgb(225, 227, 225);
+  --cr-input-error-color: rgb(179, 38, 30);
+  --cr-input-focus-color: rgb(11, 87, 208);
+  --cr-input-color: rgb(31,31,31);
+  --cr-input-placeholder-color: rgb(130,130,130);
+}
+#trustStateSelect {
+  --md-select-option-bg-color: white;
+}

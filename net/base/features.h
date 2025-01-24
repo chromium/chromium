@@ -524,9 +524,11 @@ NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyCacheTokensByGeo;
 // protection.
 NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyAlwaysCreateCore;
 
-// Enables IP protection incognito mode. The default value of this feature is
-// false which maintains existing behavior by default. When set to true, the
-// main profile Network Context won't proxy traffic using IP Protection.
+// Enables IP protection in incognito mode only. The default value of this
+// feature is false, which maintains the existing behavior when
+// `kEnableIpProtectionProxy` is enabled, IPP is enabled in both regular and
+// incognito browsing sessions. When set to true, the main profile Network
+// Context won't proxy traffic using IP Protection.
 NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyOnlyInIncognito;
 
 // Whether QuicParams::migrate_sessions_on_network_change_v2 defaults to true or

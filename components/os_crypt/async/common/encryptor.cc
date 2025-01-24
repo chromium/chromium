@@ -25,8 +25,6 @@
 #include <windows.h>
 
 #include <dpapi.h>
-
-#include "components/os_crypt/async/common/encryptor_features.h"
 #endif
 
 namespace os_crypt_async {
@@ -53,8 +51,7 @@ Encryptor::Key::Key(base::span<const uint8_t> key,
 #endif
 {
 #if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(features::kProtectEncryptionKey) &&
-      !encrypted_) {
+  if (!encrypted_) {
     encrypted_ = ::CryptProtectMemory(std::data(key_), std::size(key_),
                                       CRYPTPROTECTMEMORY_SAME_PROCESS);
   }

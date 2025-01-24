@@ -37,9 +37,25 @@ struct SecurePaymentConfirmationServiceDeleter {
   }
 };
 
+static const int32_t kAlgorithmIdentifier = 1;
+static const int32_t kAnotherAlgorithmIdentifier = 2;
+
 }  // namespace
 
-class SecurePaymentConfirmationServiceTest : public ::testing::Test {
+struct CredentialTestParams {
+  // The algorithm identifier supported by the fake browser bound key store.
+  FakeBrowserBoundKey fake_key;
+  std::vector<device::PublicKeyCredentialParams::CredentialInfo>
+      public_key_parameters;
+  std::optional<std::vector<device::PublicKeyCredentialParams::CredentialInfo>>
+      browser_bound_key_cred_params;
+  std::vector<uint8_t> expected_signature;
+  std::vector<uint8_t> expected_browser_bound_key;
+  std::string test_description;
+};
+
+class SecurePaymentConfirmationServiceTest
+    : public ::testing::TestWithParam<CredentialTestParams> {
  public:
   SecurePaymentConfirmationServiceTest() = default;
 
@@ -86,11 +102,9 @@ class SecurePaymentConfirmationServiceTest : public ::testing::Test {
 
   const std::vector<uint8_t> fake_challenge_ = {0x01, 0x02, 0x03, 0x04};
   const std::vector<uint8_t> fake_credential_id_ = {0x10, 0x11, 0x12, 0x13};
-  const std::vector<uint8_t> fake_signature_ = {0x20, 0x21, 0x22, 0x23};
   const std::vector<uint8_t> fake_client_data_json_ = {0x30, 0x31, 0x32, 0x33};
   const std::vector<uint8_t> fake_browser_bound_key_id_ = {0x40, 0x41, 0x42,
                                                            0x43};
-  const std::vector<uint8_t> fake_public_key_ = {0x50, 0x51, 0x52, 0x53};
   const std::string fake_relying_party_id_ = "relying-party.example";
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext context_;
@@ -106,7 +120,8 @@ class SecurePaymentConfirmationServiceTest : public ::testing::Test {
       mock_payment_credential_callback_;
 };
 
-static testing::Matcher<::blink::mojom::MakeCredentialAuthenticatorResponsePtr>
+static ::testing::Matcher<
+    ::blink::mojom::MakeCredentialAuthenticatorResponsePtr>
 AuthenticatorResponseWithBrowserBoundSignature(std::vector<uint8_t> signature) {
   return Pointee(Field(
       "payment", &::blink::mojom::MakeCredentialAuthenticatorResponse::payment,
@@ -116,22 +131,64 @@ AuthenticatorResponseWithBrowserBoundSignature(std::vector<uint8_t> signature) {
                     Eq(signature)))));
 }
 
-TEST_F(SecurePaymentConfirmationServiceTest,
+INSTANTIATE_TEST_SUITE_P(
+    SecurePaymentConfirmationServiceTest,
+    SecurePaymentConfirmationServiceTest,
+    ::testing::Values<CredentialTestParams>(
+        CredentialTestParams{
+            .fake_key = FakeBrowserBoundKey(
+                /*public_key_as_cose_key=*/{0x50, 0x51, 0x52, 0x53},
+                /*signature=*/{0x20, 0x21, 0x22, 0x23},
+                kAlgorithmIdentifier,
+                /*expected_client_data=*/{0x30, 0x31, 0x32, 0x33}),
+            .public_key_parameters =
+                {device::PublicKeyCredentialParams::CredentialInfo(
+                    device::CredentialType::kPublicKey,
+                    kAnotherAlgorithmIdentifier)},
+            .browser_bound_key_cred_params =
+                {{device::PublicKeyCredentialParams::CredentialInfo(
+                    device::CredentialType::kPublicKey,
+                    kAlgorithmIdentifier)}},
+            .expected_signature = {0x20, 0x21, 0x22, 0x23},
+            .expected_browser_bound_key = {0x50, 0x51, 0x52, 0x53},
+            .test_description = "UsingPasskeyPubKeyCredParams",
+        },
+        CredentialTestParams{
+            .fake_key = FakeBrowserBoundKey(
+                /*public_key_as_cose_key=*/{0x50, 0x51, 0x52, 0x53},
+                /*signature=*/{0x20, 0x21, 0x22, 0x23},
+                kAlgorithmIdentifier,
+                /*expected_client_data=*/{0x30, 0x31, 0x32, 0x33}),
+            .public_key_parameters =
+                {device::PublicKeyCredentialParams::CredentialInfo(
+                    device::CredentialType::kPublicKey,
+                    kAlgorithmIdentifier)},
+            .browser_bound_key_cred_params = std::nullopt,
+            .expected_signature = {0x20, 0x21, 0x22, 0x23},
+            .expected_browser_bound_key = {0x50, 0x51, 0x52, 0x53},
+            .test_description = "UsingBrowserBoundPubKeyCredParams",
+        }, ),
+    [](const ::testing::TestParamInfo<CredentialTestParams>& info) {
+      return info.param.test_description;
+    });
+
+TEST_P(SecurePaymentConfirmationServiceTest,
        MakePaymentCredentialAddsBrowserBoundKey) {
   base::test::ScopedFeatureList features(
       blink::features::kSecurePaymentConfirmationBrowserBoundKeys);
   std::unique_ptr<SecurePaymentConfirmationService,
                   SecurePaymentConfirmationServiceDeleter>
       spc_service = CreateSecurePaymentConfirmationService();
-  fake_browser_bound_key_store_->PutFakeKey(
-      fake_browser_bound_key_id_,
-      FakeBrowserBoundKey(fake_public_key_, fake_signature_,
-                          fake_client_data_json_));
+  fake_browser_bound_key_store_->PutFakeKey(fake_browser_bound_key_id_,
+                                            GetParam().fake_key);
   auto creation_options =
       blink::mojom::PublicKeyCredentialCreationOptions::New();
   creation_options->relying_party.id = fake_relying_party_id_;
   creation_options->is_payment_credential_creation = true;
   creation_options->challenge = fake_challenge_;
+  creation_options->public_key_parameters = GetParam().public_key_parameters;
+  creation_options->payment_browser_bound_key_parameters =
+      GetParam().browser_bound_key_cred_params;
   auto fake_authenticator_response =
       ::blink::mojom::MakeCredentialAuthenticatorResponse::New();
   fake_authenticator_response->info =
@@ -160,15 +217,17 @@ TEST_F(SecurePaymentConfirmationServiceTest,
                 fake_authenticator_response.Clone(),
                 /*exception_details=*/nullptr);
           });
-  EXPECT_CALL(
-      mock_payment_credential_callback_,
-      Run(Eq(::blink::mojom::AuthenticatorStatus::SUCCESS),
-          AuthenticatorResponseWithBrowserBoundSignature(fake_signature_), _));
+  EXPECT_CALL(mock_payment_credential_callback_,
+              Run(Eq(::blink::mojom::AuthenticatorStatus::SUCCESS),
+                  AuthenticatorResponseWithBrowserBoundSignature(
+                      GetParam().expected_signature),
+                  _));
 
   spc_service->MakePaymentCredential(creation_options.Clone(),
                                      mock_payment_credential_callback_.Get());
   ASSERT_FALSE(actual_payment_options.is_null());
-  EXPECT_EQ(actual_payment_options->browser_bound_public_key, fake_public_key_);
+  EXPECT_EQ(actual_payment_options->browser_bound_public_key,
+            GetParam().expected_browser_bound_key);
 }
 
 }  // namespace payments

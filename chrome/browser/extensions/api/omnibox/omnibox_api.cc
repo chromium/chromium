@@ -204,6 +204,27 @@ void ExtensionOmniboxEventRouter::OnDeleteSuggestion(
                                                       std::move(event));
 }
 
+// static
+void ExtensionOmniboxEventRouter::OnActionExecuted(
+    Profile* profile,
+    const ExtensionId& extension_id,
+    const std::string& action_name) {
+  EventRouter* event_router = EventRouter::Get(profile);
+  if (!event_router->ExtensionHasEventListener(
+          extension_id, omnibox::OnActionExecuted::kEventName)) {
+    return;
+  }
+
+  base::Value::List args;
+  args.Append(action_name);
+
+  auto event = std::make_unique<Event>(events::OMNIBOX_ON_ACTION_EXECUTED,
+                                       omnibox::OnActionExecuted::kEventName,
+                                       std::move(args), profile);
+  event->user_gesture = EventRouter::USER_GESTURE_ENABLED;
+  event_router->DispatchEventToExtension(extension_id, std::move(event));
+}
+
 OmniboxAPI::OmniboxAPI(content::BrowserContext* context)
     : profile_(Profile::FromBrowserContext(context)),
       url_service_(TemplateURLServiceFactory::GetForProfile(profile_)) {
@@ -327,8 +348,23 @@ ExtensionFunction::ResponseAction OmniboxSendSuggestionsFunction::Run() {
   if (is_from_service_worker() && !params_->suggest_results.empty()) {
     std::vector<std::string_view> inputs;
     inputs.reserve(params_->suggest_results.size());
-    for (const auto& suggestion : params_->suggest_results)
+    for (const auto& suggestion : params_->suggest_results) {
       inputs.push_back(suggestion.description);
+      if (suggestion.actions) {
+        if (!IsUnscopedModeAllowed(extension())) {
+          return RespondNow(
+              Error(ExtensionOmniboxEventRouter::
+                        kActionsRequireDirectInputPermissionError));
+        }
+        if (suggestion.actions->size() >
+            ExtensionOmniboxEventRouter::kMaxSuggestionActions) {
+          return RespondNow(Error(base::StringPrintf(
+              ExtensionOmniboxEventRouter::kMaxSuggestionActionsExceededError,
+              suggestion.actions->size(),
+              ExtensionOmniboxEventRouter::kMaxSuggestionActions)));
+        }
+      }
+    }
 
     ParseDescriptionsAndStyles(
         inputs,

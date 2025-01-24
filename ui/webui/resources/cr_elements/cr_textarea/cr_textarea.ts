@@ -187,8 +187,7 @@ export class CrTextareaElement extends CrLitElement {
   protected async onInputChange_(e: Event) {
     // Ensure that |value| has been updated before re-firing 'change'.
     await this.updateComplete;
-    this.dispatchEvent(new CustomEvent(
-        'change', {bubbles: true, composed: true, detail: {sourceEvent: e}}));
+    this.fire('change', {sourceEvent: e});
   }
 
   protected calculateMirror_(): string {

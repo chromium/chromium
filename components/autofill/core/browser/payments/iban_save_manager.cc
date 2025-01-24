@@ -138,15 +138,15 @@ IbanSaveManager::TypeOfOfferToSave IbanSaveManager::DetermineHowToSaveIban(
 
   // Trigger server save if available, otherwise local save as long as the IBAN
   // isn't already saved locally.
-  if (base::FeatureList::IsEnabled(features::kAutofillEnableServerIban) &&
-      IsIbanUploadEnabled(
+  if (IsIbanUploadEnabled(
           client_->GetSyncService(),
           payments_data_manager().GetPaymentsSigninStateForMetrics()) &&
       payments_data_manager().GetServerIbans().size() <= kMaxNumServerIbans) {
     autofill_metrics::LogIbanSaveOfferedCountry(
         import_candidate.GetCountryCode());
     return TypeOfOfferToSave::kOfferServerSave;
-  } else if (import_candidate.record_type() != Iban::kLocalIban) {
+  }
+  if (import_candidate.record_type() != Iban::kLocalIban) {
     autofill_metrics::LogIbanSaveOfferedCountry(
         import_candidate.GetCountryCode());
     return TypeOfOfferToSave::kOfferLocalSave;

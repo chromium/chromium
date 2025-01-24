@@ -749,6 +749,12 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
         mojo_options->supplemental_pub_keys = std::move(*supplemental_pub_keys);
       }
     }
+    if (extensions->hasPayment() &&
+        extensions->payment()->hasBrowserBoundPubKeyCredParams()) {
+      mojo_options->payment_browser_bound_key_parameters =
+          ConvertTo<WTF::Vector<PublicKeyCredentialParametersPtr>>(
+              extensions->payment()->browserBoundPubKeyCredParams());
+    }
     if (extensions->hasPrf()) {
       mojo_options->prf_enable = true;
       if (extensions->prf()->hasEval()) {

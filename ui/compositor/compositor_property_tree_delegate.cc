@@ -6,13 +6,21 @@
 
 #include "base/check.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/input/scroll_snap_data.h"
+#include "cc/paint/element_id.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/property_tree_builder.h"
+#include "ui/compositor/compositor_export.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace ui {
 
 void CompositorPropertyTreeDelegate::UpdatePropertyTreesIfNeeded(
     cc::LayerTreeHost* host) {
+  // Note that this code is identical to the base method, except that
+  // we update the method names in the trace events to be more accurate.
+  // TODO(crbug.com/389771428): Implement this w/ layer lists.
+
   // Note: this leaves the _BuiltPropertyTrees trace event guarded by
   // cc.debug to be consistent with the default implementations in cc and
   // so we don't need to set two different logging options to get the output.
@@ -27,6 +35,18 @@ void CompositorPropertyTreeDelegate::UpdatePropertyTreesIfNeeded(
   if (observer_) {
     observer_->OnUpdateCalled(host);
   }
+}
+
+void CompositorPropertyTreeDelegate::UpdateScrollOffsetFromImpl(
+    cc::LayerTreeHost* host,
+    const cc::ElementId& id,
+    const gfx::Vector2dF& delta,
+    const std::optional<cc::TargetSnapAreaElementIds>& snap_target_ids) {
+  // TODO(crbug.com/389771428): Implement this w/ layer lists. For now,
+  // just call the base class implementation to ensure that we don't get
+  // out of date.
+  cc::PropertyTreeLayerTreeDelegate::UpdateScrollOffsetFromImpl(
+      host, id, delta, snap_target_ids);
 }
 
 void CompositorPropertyTreeDelegate::SetObserverForTesting(Observer* observer) {

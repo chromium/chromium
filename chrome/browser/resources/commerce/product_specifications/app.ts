@@ -37,7 +37,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './app.html.js';
 import type {BuyingOptions} from './buying_options_section.js';
 import type {ComparisonTableListElement} from './comparison_table_list.js';
-import type {ComparisonTableListItemClickEvent, ComparisonTableListItemDeleteEvent, ComparisonTableListItemRenameEvent} from './comparison_table_list_item.js';
+import type {ComparisonTableListItemClickEvent, ComparisonTableListItemRenameEvent} from './comparison_table_list_item.js';
 import type {ProductDescription} from './description_section.js';
 import type {HeaderElement} from './header.js';
 import type {NewColumnSelectorElement} from './new_column_selector.js';
@@ -1014,11 +1014,6 @@ export class ProductSpecificationsElement extends PolymerElement {
       event: ComparisonTableListItemRenameEvent) {
     this.shoppingApi_.setNameForProductSpecificationsSet(
         event.detail.uuid, event.detail.name);
-  }
-
-  private onComparisonTableListItemDelete_(
-      event: ComparisonTableListItemDeleteEvent) {
-    this.deleteSet_(event.detail.uuid);
   }
 
   private onHeaderMenuDeleteClick_() {

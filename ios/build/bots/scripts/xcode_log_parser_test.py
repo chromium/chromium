@@ -13,7 +13,7 @@ import shutil
 import subprocess
 import unittest
 
-from test_result_util import ResultCollection, TestStatus
+from test_result_util import ResultCollection, TestResult, TestStatus
 import test_runner
 import test_runner_test
 import xcode_log_parser
@@ -581,6 +581,29 @@ more of the stack trace and crash report logs...
 
 """
 
+APP_SIDE_ASAN_FAILURE_LOG = """Starting test: -[SmokeTestCase testOpenTab]
+=================================================================
+\x1b[1m\x1b[31m==74737==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x00016ee509ac at pc 0x000144992658 bp 0x00016ee50670 sp 0x00016ee4fe20
+\x1b[1m\x1b[0m\x1b[1m\x1b[34mREAD of size 16 at 0x00016ee509ac thread T0\x1b[1m\x1b[0m
+==74737==WARNING: invalid path to external symbolizer!
+==74737==WARNING: Failed to use and restart external symbolizer!
+
+"""
+
+APP_SIDE_ASAN_FAILURE_LOG_EXPECTED = """App crashed and disconnected.
+ERROR: AddressSanitizer
+Showing logs from application under test. For complete logs see attempt_0_simulator#0_StandardOutputAndStandardError-com.google.chrome.unittests.dev.txt in Artifacts.
+
+Starting test: -[SmokeTestCase testOpenTab]
+=================================================================
+\x1b[1m\x1b[31m==74737==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x00016ee509ac at pc 0x000144992658 bp 0x00016ee50670 sp 0x00016ee4fe20
+\x1b[1m\x1b[0m\x1b[1m\x1b[34mREAD of size 16 at 0x00016ee509ac thread T0\x1b[1m\x1b[0m
+==74737==WARNING: invalid path to external symbolizer!
+==74737==WARNING: Failed to use and restart external symbolizer!
+
+
+"""
+
 APP_SIDE_FAILURE_LOG_MISSING_EXPECTED = """App crashed and disconnected.
 App side failure reason not found for SmokeTestCase/testOpenTab.
 For complete logs see attempt_0_simulator#0_StandardOutputAndStandardError-com.google.chrome.unittests.dev.txt in Artifacts.
@@ -1024,6 +1047,10 @@ class XcodeLogParserTest(test_runner_test.TestCase):
       'builtins.open', new=mock.mock_open(read_data=APP_SIDE_FAILURE_LOG))
   def testLogAppSideFailureReason(self, mock_listdir):
     test_name = 'SmokeTestCase/testOpenTab'
+    test_result = TestResult(
+      test_name,
+      TestStatus.FAIL,
+    )
     expected_log_file_name = 'attempt_0_simulator#0_StandardOutputAndStandardError-com.google.chrome.unittests.dev.txt'
     mock_listdir.return_value = [
         'run_1696864672.xctestrun', 'attempt_0.xcresult.zip',
@@ -1031,21 +1058,57 @@ class XcodeLogParserTest(test_runner_test.TestCase):
         expected_log_file_name,
         'attempt_0_simulator#0_StandardOutputAndStandardError.txt',
     ]
-    app_side_failure_message, logs = \
+    app_side_failure_message = (
       xcode_log_parser.XcodeLogParser()._get_app_side_failure(
-        test_name, OUTPUT_PATH)
+        test_result, OUTPUT_PATH))
+    self.assertFalse(test_result.asan_failure_detected)
     self.assertEqual(app_side_failure_message, APP_SIDE_FAILURE_LOG_EXPECTED)
-    self.assertEqual(len(logs), 1)
-    self.assertEqual(logs[0][0], expected_log_file_name)
+    self.assertEqual(len(test_result.attachments), 1)
+    self.assertTrue(expected_log_file_name in test_result.attachments)
     expected_path = os.path.realpath(
       os.path.join(OUTPUT_PATH, os.pardir, expected_log_file_name))
-    self.assertEqual(logs[0][1], expected_path)
+    self.assertEqual(test_result.attachments[expected_log_file_name],
+                     expected_path)
+
+  @mock.patch('os.listdir')
+  @mock.patch(
+      'builtins.open', new=mock.mock_open(read_data=APP_SIDE_ASAN_FAILURE_LOG))
+  def testAsanFailureDetected(self, mock_listdir):
+    test_name = 'SmokeTestCase/testOpenTab'
+    test_result = TestResult(
+      test_name,
+      TestStatus.FAIL,
+    )
+    expected_log_file_name = 'attempt_0_simulator#0_StandardOutputAndStandardError-com.google.chrome.unittests.dev.txt'
+    mock_listdir.return_value = [
+        'run_1696864672.xctestrun',
+        'attempt_0.xcresult.zip',
+        'attempt_0.xcresult_diagnostic.zip',
+        expected_log_file_name,
+        'attempt_0_simulator#0_StandardOutputAndStandardError.txt',
+    ]
+    app_side_failure_message = (
+      xcode_log_parser.XcodeLogParser()._get_app_side_failure(
+        test_result, OUTPUT_PATH))
+    self.assertTrue(test_result.asan_failure_detected)
+    self.assertEqual(app_side_failure_message,
+                     APP_SIDE_ASAN_FAILURE_LOG_EXPECTED)
+    self.assertEqual(len(test_result.attachments), 1)
+    self.assertTrue(expected_log_file_name in test_result.attachments)
+    expected_path = os.path.realpath(
+        os.path.join(OUTPUT_PATH, os.pardir, expected_log_file_name))
+    self.assertEqual(test_result.attachments[expected_log_file_name],
+                     expected_path)
 
   @mock.patch('os.listdir')
   @mock.patch(
       'builtins.open', new=mock.mock_open(read_data=""))
   def testLogAppSideFailureReasonMissing(self, mock_listdir):
     test_name = 'SmokeTestCase/testOpenTab'
+    test_result = TestResult(
+      test_name,
+      TestStatus.FAIL,
+    )
     expected_log_file_name = 'attempt_0_simulator#0_StandardOutputAndStandardError-com.google.chrome.unittests.dev.txt'
     mock_listdir.return_value = [
         'run_1696864672.xctestrun', 'attempt_0.xcresult.zip',
@@ -1053,16 +1116,18 @@ class XcodeLogParserTest(test_runner_test.TestCase):
         expected_log_file_name,
         'attempt_0_simulator#0_StandardOutputAndStandardError.txt',
     ]
-    app_side_failure_message, logs = \
+    app_side_failure_message = (
       xcode_log_parser.XcodeLogParser()._get_app_side_failure(
-        test_name, OUTPUT_PATH)
+        test_result, OUTPUT_PATH))
+    self.assertFalse(test_result.asan_failure_detected)
     self.assertEqual(app_side_failure_message,
-      APP_SIDE_FAILURE_LOG_MISSING_EXPECTED)
-    self.assertEqual(len(logs), 1)
-    self.assertEqual(logs[0][0], expected_log_file_name)
+                     APP_SIDE_FAILURE_LOG_MISSING_EXPECTED)
+    self.assertEqual(len(test_result.attachments), 1)
+    self.assertTrue(expected_log_file_name in test_result.attachments)
     expected_path = os.path.realpath(
       os.path.join(OUTPUT_PATH, os.pardir, expected_log_file_name))
-    self.assertEqual(logs[0][1], expected_path)
+    self.assertEqual(test_result.attachments[expected_log_file_name],
+                     expected_path)
 
 
 class Xcode16LogParserTest(test_runner_test.TestCase):

@@ -6,5 +6,7 @@ group("resources") {
   public_deps = [
     "chrome_urls/resources:resources",
     "internal_debug_pages_disabled/resources:resources",
+    "user_actions/resources:resources",
+    "version/resources:resources",
   ]
 }

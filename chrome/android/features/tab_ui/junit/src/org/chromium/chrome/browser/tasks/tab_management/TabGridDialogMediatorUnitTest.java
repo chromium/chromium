@@ -1478,6 +1478,7 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.onToolbarMenuItemClick(R.id.recent_activity, TAB_GROUP_ID, COLLABORATION_ID1);
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.RecentActivity"));
         verify(mDataSharingTabManager).showRecentActivity(mActivity, COLLABORATION_ID1);
+        verifyClearDirtyMessagesForGroup();
     }
 
     @Test
@@ -1774,14 +1775,7 @@ public class TabGridDialogMediatorUnitTest {
                 .dismiss(MessageType.COLLABORATION_ACTIVITY);
 
         verify(mDialogController).removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
-        verify(mMessagingBackendService)
-                .clearDirtyTabMessagesForGroup(
-                        argThat(
-                                eitherGroupId ->
-                                        eitherGroupId
-                                                .getLocalId()
-                                                .tabGroupId
-                                                .equals(TAB_GROUP_ID)));
+        verifyClearDirtyMessagesForGroup();
     }
 
     @Test
@@ -1802,6 +1796,7 @@ public class TabGridDialogMediatorUnitTest {
         verify(mDataSharingTabManager, never()).showRecentActivity(any(), anyString());
         verify(mDialogController, atLeastOnce())
                 .removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
+        verifyClearDirtyMessagesForGroup();
     }
 
     @Test
@@ -1819,6 +1814,7 @@ public class TabGridDialogMediatorUnitTest {
                 .review();
 
         verify(mDataSharingTabManager).showRecentActivity(mActivity, COLLABORATION_ID1);
+        verifyClearDirtyMessagesForGroup();
     }
 
     @Test
@@ -1950,5 +1946,16 @@ public class TabGridDialogMediatorUnitTest {
         when(mMessagingBackendService.getMessagesForGroup(
                         any(), eq(Optional.of(PersistentNotificationType.DIRTY_TAB))))
                 .thenReturn(messageList);
+    }
+
+    private void verifyClearDirtyMessagesForGroup() {
+        verify(mMessagingBackendService)
+                .clearDirtyTabMessagesForGroup(
+                        argThat(
+                                eitherGroupId ->
+                                        eitherGroupId
+                                                .getLocalId()
+                                                .tabGroupId
+                                                .equals(TAB_GROUP_ID)));
     }
 }

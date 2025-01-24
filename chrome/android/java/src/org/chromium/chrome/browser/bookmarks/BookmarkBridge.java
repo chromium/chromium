@@ -915,7 +915,8 @@ class BookmarkBridge {
     }
 
     @CalledByNative
-    private void bookmarkNodeMoved(
+    @VisibleForTesting
+    void bookmarkNodeMoved(
             BookmarkItem oldParent, int oldIndex, BookmarkItem newParent, int newIndex) {
         if (mIsDoingExtensiveChanges) return;
 
@@ -925,7 +926,8 @@ class BookmarkBridge {
     }
 
     @CalledByNative
-    private void bookmarkNodeAdded(BookmarkItem parent, int index) {
+    @VisibleForTesting
+    void bookmarkNodeAdded(BookmarkItem parent, int index) {
         if (mIsDoingExtensiveChanges) return;
 
         for (BookmarkModelObserver observer : mObservers) {
@@ -934,7 +936,8 @@ class BookmarkBridge {
     }
 
     @CalledByNative
-    private void bookmarkNodeRemoved(BookmarkItem parent, int oldIndex, BookmarkItem node) {
+    @VisibleForTesting
+    void bookmarkNodeRemoved(BookmarkItem parent, int oldIndex, BookmarkItem node) {
         for (BookmarkModelObserver observer : mObservers) {
             observer.bookmarkNodeRemoved(parent, oldIndex, node, mIsDoingExtensiveChanges);
         }
@@ -948,7 +951,8 @@ class BookmarkBridge {
     }
 
     @CalledByNative
-    private void bookmarkNodeChanged(BookmarkItem node) {
+    @VisibleForTesting
+    void bookmarkNodeChanged(BookmarkItem node) {
         if (mIsDoingExtensiveChanges) return;
 
         for (BookmarkModelObserver observer : mObservers) {
@@ -966,12 +970,14 @@ class BookmarkBridge {
     }
 
     @CalledByNative
-    private void extensiveBookmarkChangesBeginning() {
+    @VisibleForTesting
+    void extensiveBookmarkChangesBeginning() {
         mIsDoingExtensiveChanges = true;
     }
 
     @CalledByNative
-    private void extensiveBookmarkChangesEnded() {
+    @VisibleForTesting
+    void extensiveBookmarkChangesEnded() {
         mIsDoingExtensiveChanges = false;
         bookmarkModelChanged();
     }

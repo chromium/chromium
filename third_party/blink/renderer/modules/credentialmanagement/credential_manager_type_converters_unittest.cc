@@ -37,8 +37,11 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_account.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_login_status_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_rp_entity.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_user_entity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_remote_desktop_client_override.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -478,6 +481,49 @@ TEST(CredentialManagerTypeConvertersTest,
           *blink_type);
 
   EXPECT_THAT(mojo_type->payment_browser_bound_key_parameters,
+              ::testing::Optional(
+                  ::testing::ElementsAre(EqPublicKeyCredentialParameters(
+                      blink::mojom::PublicKeyCredentialType::PUBLIC_KEY,
+                      kCoseAlgorithmEs256))));
+}
+
+TEST(CredentialManagerTypeConvertersTest,
+     PublicKeyCredentialCreationOptions_browserBoundPublicKeyCredential) {
+  blink::PublicKeyCredentialCreationOptions* blink_creation_options =
+      blink::PublicKeyCredentialCreationOptions::Create();
+  blink::PublicKeyCredentialRpEntity* blink_rp_entity =
+      blink::PublicKeyCredentialRpEntity::Create();
+  blink_rp_entity->setName("rp-name.test");
+  blink_creation_options->setRp(blink_rp_entity);
+  blink::PublicKeyCredentialUserEntity* blink_user =
+      blink::PublicKeyCredentialUserEntity::Create();
+  blink_user->setId(arrayBufferOrView(kSample, std::size(kSample)));
+  blink_creation_options->setUser(blink_user);
+  blink_creation_options->setChallenge(
+      arrayBufferOrView(kSample, std::size(kSample)));
+
+  blink::AuthenticationExtensionsClientInputs* blink_extensions =
+      blink::AuthenticationExtensionsClientInputs::Create();
+  blink::AuthenticationExtensionsPaymentInputs* blink_payment =
+      blink::AuthenticationExtensionsPaymentInputs::Create();
+  auto blink_cred_params =
+      blink::HeapVector<blink::Member<blink::PublicKeyCredentialParameters>>();
+  blink::PublicKeyCredentialParameters* blink_cred_params_1 =
+      blink::PublicKeyCredentialParameters::Create();
+  blink_cred_params_1->setType("public-key");
+  blink_cred_params_1->setAlg(kCoseAlgorithmEs256);
+  blink_cred_params.push_back(blink_cred_params_1);
+  blink_payment->setBrowserBoundPubKeyCredParams(std::move(blink_cred_params));
+  blink_extensions->setPayment(blink_payment);
+  blink_creation_options->setExtensions(blink_extensions);
+
+  blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr
+      mojo_creation_options =
+          ConvertTo<blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr>(
+              *blink_creation_options);
+
+  ASSERT_TRUE(mojo_creation_options);
+  EXPECT_THAT(mojo_creation_options->payment_browser_bound_key_parameters,
               ::testing::Optional(
                   ::testing::ElementsAre(EqPublicKeyCredentialParameters(
                       blink::mojom::PublicKeyCredentialType::PUBLIC_KEY,

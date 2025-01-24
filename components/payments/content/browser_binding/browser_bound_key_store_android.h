@@ -20,7 +20,9 @@ class BrowserBoundKeyStoreAndroid : public BrowserBoundKeyStore {
   ~BrowserBoundKeyStoreAndroid() override;
 
   std::unique_ptr<BrowserBoundKey> GetOrCreateBrowserBoundKeyForCredentialId(
-      const std::vector<uint8_t>& credential_id) override;
+      const std::vector<uint8_t>& credential_id,
+      const std::vector<device::PublicKeyCredentialParams::CredentialInfo>&
+          allowed_credentials) override;
 
  private:
   // The implementation Java object.

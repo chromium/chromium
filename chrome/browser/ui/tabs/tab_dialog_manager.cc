@@ -157,6 +157,8 @@ void TabDialogManager::ShowDialogAndBlockTabInteraction(views::Widget* widget) {
           constrained_window::kConstrainedWindowWidgetIdentifier));
   scoped_ignore_input_events_ =
       tab_interface_->GetContents()->IgnoreInputEvents(std::nullopt);
+  tab_interface_->GetBrowserWindowInterface()->SetWebContentsBlocked(
+      tab_interface_->GetContents(), /*blocked=*/true);
   tab_dialog_widget_observer_ =
       std::make_unique<TabDialogWidgetObserver>(this, widget_.get());
   if (tab_interface_->IsActivated()) {
@@ -183,6 +185,8 @@ void TabDialogManager::WidgetDestroyed(views::Widget* widget) {
   CHECK_EQ(widget, widget_.get());
   tab_dialog_widget_observer_.reset();
   scoped_ignore_input_events_.reset();
+  tab_interface_->GetBrowserWindowInterface()->SetWebContentsBlocked(
+      tab_interface_->GetContents(), /*blocked=*/false);
 }
 
 void TabDialogManager::DidFinishNavigation(

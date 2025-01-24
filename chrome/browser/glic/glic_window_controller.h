@@ -158,6 +158,9 @@ class GlicWindowController : public views::WidgetObserver {
   // Returns the widget that backs the glic window. Public for testing.
   views::Widget* GetGlicWidget();
 
+  // Returns the WebContents hosted in the glic window, or nullptr if none.
+  content::WebContents* GetWebContents();
+
  private:
   gfx::Rect GetInitialDetachedBounds();
 
@@ -224,8 +227,8 @@ class GlicWindowController : public views::WidgetObserver {
                      base::TimeDelta duration,
                      base::OnceClosure callback);
 
-  // Creates the widget for the attached UI.
-  std::unique_ptr<views::Widget> CreateAttachedWidget(
+  // Creates the glic widget.
+  std::unique_ptr<views::Widget> CreateGlicWidget(
       Profile* profile,
       const gfx::Rect& initial_bounds);
 
@@ -252,18 +255,18 @@ class GlicWindowController : public views::WidgetObserver {
   class ContentsAndProfileKeepAlive;
   std::unique_ptr<ContentsAndProfileKeepAlive> contents_;
 
-  // TODO(crbug.com/391402352): Create glic_detached_widget_. For now
-  // glic_attached_widget_ is used for both attached and detached state.
-  // When glic is attached `glic_attached_widget_` will be non-nullptr.
-  std::unique_ptr<views::Widget> glic_attached_widget_;
+  // Contains the glic webview. In the attached state the parent is set to a
+  // browser window. In the detached state the parent is set to holder_widget_.
+  std::unique_ptr<views::Widget> glic_widget_;
 
   std::unique_ptr<GlicWindowResizeAnimation> window_resize_animation_;
 
   // True if we've hit a login page (and have not yet shown).
   bool login_page_committed_ = false;
 
-  // TODO(crbug.com/391402352): This member does not make sense. Rework it.
-  gfx::Rect final_widget_bounds_;
+  // This member contains the last size that glic requested. This is reset
+  // every time glic is closed.
+  std::optional<gfx::Size> glic_size_;
 
   // Used to monitor key and mouse events from native window.
   class WindowEventObserver;

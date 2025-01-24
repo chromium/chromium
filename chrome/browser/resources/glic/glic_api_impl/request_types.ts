@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ChromeVersion, DraggableArea, GetTabContextErrorReason, PanelState, PdfDocumentData, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {AnnotatedPageData, ChromeVersion, DraggableArea, GetTabContextErrorReason, PanelState, PdfDocumentData, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -249,9 +249,10 @@ export enum ImageColorType {
 
 // TabContextResult data for postMessage transport.
 export declare interface TabContextResultPrivate extends
-    Omit<TabContextResult, 'tabData'|'pdfDocumentData'> {
+    Omit<TabContextResult, 'tabData'|'pdfDocumentData'|'annotatedPageData'> {
   tabData: TabDataPrivate;
   pdfDocumentData?: PdfDocumentDataPrivate;
+  annotatedPageData?: AnnotatedPageDataPrivate;
 }
 
 export declare interface UserProfileInfoPrivate extends
@@ -262,4 +263,9 @@ export declare interface UserProfileInfoPrivate extends
 export declare interface PdfDocumentDataPrivate extends
     Omit<PdfDocumentData, 'pdfData'> {
   pdfData?: ArrayBuffer;
+}
+
+export declare interface AnnotatedPageDataPrivate extends
+    Omit<AnnotatedPageData, 'annotatedPageContent'> {
+  annotatedPageContent?: ArrayBuffer;
 }

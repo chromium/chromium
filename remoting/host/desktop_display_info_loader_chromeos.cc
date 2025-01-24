@@ -20,7 +20,7 @@ DisplayGeometry ToDisplayGeometry(const display::Display& display,
           AshProxy::ScaleFactorToDpi(display.device_scale_factor())),
       /* bpp */ 0,
       /* is_default */ (display.id() == primary_display_id),
-      /* display_name */ std::string());
+      /* display_name */ display.label());
 }
 
 class DesktopDisplayInfoLoaderChromeOs : public DesktopDisplayInfoLoader {

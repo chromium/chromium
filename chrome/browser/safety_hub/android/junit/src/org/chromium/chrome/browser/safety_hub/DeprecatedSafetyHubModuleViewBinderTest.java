@@ -4,11 +4,9 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
-import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -32,11 +30,6 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class DeprecatedSafetyHubModuleViewBinderTest {
@@ -48,8 +41,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
     private Activity mActivity;
     private PropertyModel mPasswordCheckPropertyModel;
     private SafetyHubExpandablePreference mPasswordCheckPreference;
-    private PropertyModel mNotificationsReviewPropertyModel;
-    private SafetyHubExpandablePreference mNotificationsReviewPreference;
     private PropertyModel mBrowserStatePropertyModel;
     private CardPreference mBrowserStatePreference;
 
@@ -69,18 +60,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
                 mPasswordCheckPropertyModel,
                 mPasswordCheckPreference,
                 DeprecatedSafetyHubModuleViewBinder::bindPasswordCheckProperties);
-
-        // Set up notifications review preference.
-        mNotificationsReviewPreference = new SafetyHubExpandablePreference(mActivity, null);
-        mNotificationsReviewPropertyModel =
-                new PropertyModel.Builder(
-                                DeprecatedSafetyHubModuleProperties
-                                        .NOTIFICATIONS_REVIEW_MODULE_KEYS)
-                        .build();
-        PropertyModelChangeProcessor.create(
-                mNotificationsReviewPropertyModel,
-                mNotificationsReviewPreference,
-                DeprecatedSafetyHubModuleViewBinder::bindNotificationsReviewProperties);
 
         // Set up browser state preference.
         mBrowserStatePreference = new CardPreference(mActivity, null);
@@ -511,61 +490,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
     }
 
     @Test
-    public void testNotificationsReviewModule_NoNotificationPermissions() {
-        mNotificationsReviewPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT, 0);
-
-        String expectedTitle =
-                mActivity.getString(R.string.safety_hub_notifications_review_ok_title);
-        String expectedSummary =
-                mActivity.getString(R.string.safety_hub_notifications_review_ok_summary);
-        String expectedSecondaryButtonText =
-                mActivity.getString(R.string.safety_hub_go_to_notification_settings_button);
-
-        assertEquals(expectedTitle, mNotificationsReviewPreference.getTitle().toString());
-        assertEquals(expectedSummary, mNotificationsReviewPreference.getSummary().toString());
-        assertEquals(
-                SAFE_ICON,
-                shadowOf(mNotificationsReviewPreference.getIcon()).getCreatedFromResId());
-        assertNull(mNotificationsReviewPreference.getPrimaryButtonText());
-        assertEquals(
-                expectedSecondaryButtonText,
-                mNotificationsReviewPreference.getSecondaryButtonText());
-    }
-
-    @Test
-    public void testNotificationsReviewModule_NotificationPermissionsExist() {
-        int notificationPermissionsForReviewCount = 5;
-        mNotificationsReviewPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
-                notificationPermissionsForReviewCount);
-        String expectedTitle =
-                mActivity
-                        .getResources()
-                        .getQuantityString(
-                                R.plurals.safety_hub_notifications_review_warning_title,
-                                notificationPermissionsForReviewCount,
-                                notificationPermissionsForReviewCount);
-        String expectedSummary =
-                mActivity.getString(R.string.safety_hub_notifications_review_warning_summary);
-        String expectedPrimaryButtonText =
-                mActivity.getString(R.string.safety_hub_notifications_reset_all_button);
-        String expectedSecondaryButtonText =
-                mActivity.getString(R.string.safety_hub_view_sites_button);
-
-        assertEquals(expectedTitle, mNotificationsReviewPreference.getTitle().toString());
-        assertEquals(expectedSummary, mNotificationsReviewPreference.getSummary().toString());
-        assertEquals(
-                INFO_ICON,
-                shadowOf(mNotificationsReviewPreference.getIcon()).getCreatedFromResId());
-        assertEquals(
-                expectedPrimaryButtonText, mNotificationsReviewPreference.getPrimaryButtonText());
-        assertEquals(
-                expectedSecondaryButtonText,
-                mNotificationsReviewPreference.getSecondaryButtonText());
-    }
-
-    @Test
     public void testBrowserStateModule_OneUnSafeState() {
         @SafeBrowsingState int safeBrowsingState = SafeBrowsingState.ENHANCED_PROTECTION;
         UpdateStatusProvider.UpdateStatus updateStatus = new UpdateStatusProvider.UpdateStatus();
@@ -673,72 +597,5 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
                 notificationPermissionsForReviewCount);
 
         assertTrue(mBrowserStatePreference.isVisible());
-    }
-
-    @Test
-    public void testModuleOrder_AllSafeStates() {
-        int totalPasswordsCount = 1;
-        int compromisedPasswordsCount = 0;
-        int notificationPermissionsForReviewCount = 0;
-
-        mPasswordCheckPropertyModel.set(DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN, true);
-        mPasswordCheckPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
-                compromisedPasswordsCount);
-        mPasswordCheckPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
-        mNotificationsReviewPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
-                notificationPermissionsForReviewCount);
-
-        List<Integer> actualOrder =
-                Arrays.asList(
-                        mPasswordCheckPreference.getOrder(),
-                        mNotificationsReviewPreference.getOrder());
-        Collections.sort(actualOrder);
-
-        // Verify that there are no duplicate orders.
-        assertEquals(actualOrder.size(), new HashSet<>(actualOrder).size());
-        // Verify the actual order of modules reflects the expected order.
-        assertThat(
-                actualOrder,
-                contains(
-                        mPasswordCheckPreference.getOrder(),
-                        mNotificationsReviewPreference.getOrder()));
-    }
-
-    @Test
-    public void testModuleOrder_MixedStates() {
-        int totalPasswordsCount = 10;
-        int compromisedPasswordsCount = 6;
-        int notificationPermissionsForReviewCount = 5;
-
-        // Unmanaged warning state should rank first.
-        mPasswordCheckPropertyModel.set(DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN, true);
-        mPasswordCheckPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
-                compromisedPasswordsCount);
-        mPasswordCheckPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
-
-        // Info state should rank above safe.
-        mNotificationsReviewPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
-                notificationPermissionsForReviewCount);
-
-        List<Integer> actualOrder =
-                Arrays.asList(
-                        mPasswordCheckPreference.getOrder(),
-                        mNotificationsReviewPreference.getOrder());
-        Collections.sort(actualOrder);
-
-        // Verify that there are no duplicate orders.
-        assertEquals(actualOrder.size(), new HashSet<>(actualOrder).size());
-        // Verify the actual order of modules reflects the expected order.
-        assertThat(
-                actualOrder,
-                contains(
-                        mPasswordCheckPreference.getOrder(),
-                        mNotificationsReviewPreference.getOrder()));
     }
 }

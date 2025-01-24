@@ -505,17 +505,14 @@ void ChromePaymentsAutofillClient::ConfirmSaveIbanLocally(
     bool should_show_prompt,
     SaveIbanPromptCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kAutofillEnableLocalIban)) {
-    // For new IBANs, the save IBAN prompt is shown in a bottom sheet.
-    if (auto* bridge = GetOrCreateAutofillSaveIbanBottomSheetBridge()) {
-      auto save_iban_delegate = std::make_unique<AutofillSaveIbanDelegate>(
-          std::move(callback), web_contents());
-      AutofillSaveIbanUiInfo ui_info =
-          AutofillSaveIbanUiInfo::CreateForLocalSave(
-              iban.GetIdentifierStringForAutofillDisplay(
-                  /*is_value_masked=*/false));
-      bridge->RequestShowContent(ui_info, std::move(save_iban_delegate));
-    }
+  // For new IBANs, the save IBAN prompt is shown in a bottom sheet.
+  if (auto* bridge = GetOrCreateAutofillSaveIbanBottomSheetBridge()) {
+    auto save_iban_delegate = std::make_unique<AutofillSaveIbanDelegate>(
+        std::move(callback), web_contents());
+    AutofillSaveIbanUiInfo ui_info = AutofillSaveIbanUiInfo::CreateForLocalSave(
+        iban.GetIdentifierStringForAutofillDisplay(
+            /*is_value_masked=*/false));
+    bridge->RequestShowContent(ui_info, std::move(save_iban_delegate));
   }
 #else
   // Do lazy initialization of IbanBubbleControllerImpl.
@@ -531,19 +528,16 @@ void ChromePaymentsAutofillClient::ConfirmUploadIbanToCloud(
     bool should_show_prompt,
     SaveIbanPromptCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kAutofillEnableServerIban)) {
-    AutofillSaveIbanUiInfo ui_info =
-        AutofillSaveIbanUiInfo::CreateForUploadSave(
-            iban.GetIdentifierStringForAutofillDisplay(
-                /*is_value_masked=*/false),
-            legal_message_lines);
+  AutofillSaveIbanUiInfo ui_info = AutofillSaveIbanUiInfo::CreateForUploadSave(
+      iban.GetIdentifierStringForAutofillDisplay(
+          /*is_value_masked=*/false),
+      legal_message_lines);
 
-    // Upload a new IBAN to the server via a Bottom Sheet.
-    if (auto* bridge = GetOrCreateAutofillSaveIbanBottomSheetBridge()) {
-      bridge->RequestShowContent(ui_info,
-                                 std::make_unique<AutofillSaveIbanDelegate>(
-                                     std::move(callback), web_contents()));
-    }
+  // Upload a new IBAN to the server via a Bottom Sheet.
+  if (auto* bridge = GetOrCreateAutofillSaveIbanBottomSheetBridge()) {
+    bridge->RequestShowContent(
+        ui_info, std::make_unique<AutofillSaveIbanDelegate>(std::move(callback),
+                                                            web_contents()));
   }
 #else
   // Do lazy initialization of IbanBubbleControllerImpl.

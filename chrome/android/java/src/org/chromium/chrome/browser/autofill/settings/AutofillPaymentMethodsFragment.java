@@ -297,17 +297,8 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             getPreferenceScreen().addPreference(card_pref);
         }
 
-        boolean showLocalIbans =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN);
-        boolean showServerIbans =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_SERVER_IBAN);
-
         // Display all IBANs.
         for (Iban iban : personalDataManager.getIbansForSettings()) {
-            if ((iban.getRecordType() == IbanRecordType.LOCAL_IBAN && !showLocalIbans)
-                    || (iban.getRecordType() == IbanRecordType.SERVER_IBAN && !showServerIbans)) {
-                continue;
-            }
             Preference iban_pref = new Preference(getStyledContext());
             iban_pref.setIcon(R.drawable.iban_icon);
             iban_pref.setSingleLineTitle(false);
@@ -371,8 +362,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
 
         // Add 'Add IBAN' button. Tapping it brings up the IBAN editor which allows users to type in
         // a new IBAN.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN)
-                && personalDataManager.isAutofillPaymentMethodsEnabled()
+        if (personalDataManager.isAutofillPaymentMethodsEnabled()
                 && personalDataManager.shouldShowAddIbanButtonOnSettingsPage()) {
             Preference add_iban_pref = new Preference(getStyledContext());
             Drawable plusIcon = ApiCompatibilityUtils.getDrawable(getResources(), R.drawable.plus);

@@ -38,8 +38,6 @@ group("resources") {
     "../safe_browsing/content/browser/web_ui/resources",
     "../signin/core/browser/resources",
     "../translate/translate_internals:resources",
-    "../user_actions_ui/resources:resources",
-    "../version_ui/resources:resources",
     "../webui:resources",
   ]
 

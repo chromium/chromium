@@ -1,17 +1,29 @@
 This is a wdspec test.
 [FAIL] test_params_subscriptions_invalid_type[None]
-  TypeError: Session.unsubscribe() got an unexpected keyword argument 'subscriptions'
+  TypeError: unsubscribe() got an unexpected keyword argument 'subscriptions'
 [FAIL] test_params_subscriptions_invalid_type[True]
-  TypeError: Session.unsubscribe() got an unexpected keyword argument 'subscriptions'
+  TypeError: unsubscribe() got an unexpected keyword argument 'subscriptions'
 [FAIL] test_params_subscriptions_invalid_type[42]
-  TypeError: Session.unsubscribe() got an unexpected keyword argument 'subscriptions'
+  TypeError: unsubscribe() got an unexpected keyword argument 'subscriptions'
 [FAIL] test_params_subscriptions_invalid_type[subscriptions3]
-  TypeError: Session.unsubscribe() got an unexpected keyword argument 'subscriptions'
+  TypeError: unsubscribe() got an unexpected keyword argument 'subscriptions'
 [FAIL] test_params_subscriptions_invalid_type[foo]
-  TypeError: Session.unsubscribe() got an unexpected keyword argument 'subscriptions'
+  TypeError: unsubscribe() got an unexpected keyword argument 'subscriptions'
+[FAIL] test_params_subscriptions_entry_invalid_type[None]
+  TypeError: unsubscribe() got an unexpected keyword argument 'subscriptions'
+[FAIL] test_params_subscriptions_entry_invalid_type[True]
+  TypeError: unsubscribe() got an unexpected keyword argument 'subscriptions'
+[FAIL] test_params_subscriptions_entry_invalid_type[42]
+  TypeError: unsubscribe() got an unexpected keyword argument 'subscriptions'
+[FAIL] test_params_subscriptions_entry_invalid_type[subscription3]
+  TypeError: unsubscribe() got an unexpected keyword argument 'subscriptions'
+[FAIL] test_params_subscriptions_entry_invalid_type[subscription4]
+  TypeError: unsubscribe() got an unexpected keyword argument 'subscriptions'
 [FAIL] test_params_subscriptions_invalid_value[subscriptions0]
-  TypeError: Session.unsubscribe() got an unexpected keyword argument 'subscriptions'
+  TypeError: unsubscribe() got an unexpected keyword argument 'subscriptions'
 [FAIL] test_params_subscriptions_invalid_value[subscriptions1]
-  TypeError: Session.unsubscribe() got an unexpected keyword argument 'subscriptions'
+  TypeError: unsubscribe() got an unexpected keyword argument 'subscriptions'
+[FAIL] test_unsubscribe_with_subscription_id_twice
+  TypeError: unsubscribe() got an unexpected keyword argument 'subscriptions'
 Harness: the test ran to completion.
 

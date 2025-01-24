@@ -468,14 +468,20 @@ public interface WebContents extends Parcelable {
     EventForwarder getEventForwarder();
 
     /**
-     * Add an observer to the WebContents
+     * Avoid calling directly, prefer to use {@link WebContentsObserver#observe(WebContents)} or
+     * {@link WebContentsObserver#WebContentsObserver(WebContents)}.
+     *
+     * <p>Add an observer to the WebContents
      *
      * @param observer The observer to add.
      */
     void addObserver(WebContentsObserver observer);
 
     /**
-     * Remove an observer from the WebContents
+     * Avoid calling directly, prefer to pass null to {@link
+     * WebContentsObserver#observe(WebContents)}.
+     *
+     * <p>Remove an observer from the WebContents
      *
      * @param observer The observer to remove.
      */

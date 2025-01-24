@@ -101,6 +101,11 @@ void GetManagementIcon(const GURL& url,
                        Profile* profile,
                        base::OnceCallback<void(const gfx::Image&)> callback);
 
+// Returns the default enterprise label "Work"/"School" or the
+// `EnterpriseCustomLabel` set by policy if present.
+// `truncated` indicates whether the label returned needs to be truncated.
+std::u16string GetEnterpriseLabel(Profile* profile, bool truncated = false);
+
 }  // namespace enterprise_util
 
 #endif  // CHROME_BROWSER_ENTERPRISE_UTIL_MANAGED_BROWSER_UTILS_H_

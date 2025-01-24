@@ -7,9 +7,10 @@ import 'chrome://compare/comparison_table_list.js';
 import {ProductSpecificationsBrowserProxyImpl} from '//resources/cr_components/commerce/product_specifications_browser_proxy.js';
 import {ShoppingServiceBrowserProxyImpl} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
+import type {Uuid} from '//resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import type {ComparisonTableListElement} from 'chrome://compare/comparison_table_list.js';
-import type {ComparisonTableListItemElement} from 'chrome://compare/comparison_table_list_item.js';
 import {ShowSetDisposition} from 'chrome://compare/product_specifications.mojom-webui.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -42,11 +43,21 @@ suite('ComparisonTableListTest', () => {
         {url: 'https://example2.com'},
       ],
     },
+    {
+      name: 'pqr',
+      uuid: {value: '789'},
+      urls: [{url: 'https://example4.com'}],
+    },
   ];
 
+  function getListItems() {
+    assertTrue(!!listElement);
+    return listElement.shadowRoot!.querySelectorAll(
+        'comparison-table-list-item');
+  }
+
   async function toggleCheckboxAtIndex(index: number) {
-    const items =
-        listElement.shadowRoot!.querySelectorAll('comparison-table-list-item');
+    const items = getListItems();
     assertTrue(index >= 0 && index < items.length);
 
     const checkboxChangePromise =
@@ -68,6 +79,12 @@ suite('ComparisonTableListTest', () => {
     ProductSpecificationsBrowserProxyImpl.setInstance(productSpecsProxy);
 
     shoppingServiceApi.reset();
+    shoppingServiceApi.setResultMapperFor(
+        'getProductSpecificationsSetByUuid', (uuid: Uuid) => {
+          return {
+            set: TABLES.find(table => table.uuid.value === uuid.value),
+          };
+        });
     shoppingServiceApi.setResultFor(
         'deleteProductSpecificationsSet', Promise.resolve());
     shoppingServiceApi.setResultFor('getProductInfoForUrl', Promise.resolve({
@@ -86,8 +103,7 @@ suite('ComparisonTableListTest', () => {
   });
 
   test('an item is displayed for each table', async () => {
-    const items =
-        listElement.shadowRoot!.querySelectorAll('comparison-table-list-item');
+    const items = getListItems();
 
     assertEquals(TABLES.length, items.length);
     for (let i = 0; i < TABLES.length; i++) {
@@ -97,16 +113,35 @@ suite('ComparisonTableListTest', () => {
     }
   });
 
-  suite('multi-select', () => {
-    let items: NodeListOf<ComparisonTableListItemElement>;
+  test(
+      'table is deleted when the item\'s delete context menu option is clicked',
+      async () => {
+        listElement.resetDeletionToastDurationMsForTesting();
 
+        const deleteFinishedPromise =
+            eventToPromise('delete-finished-for-testing', listElement);
+        const listItem = getListItems()[0];
+        assertTrue(!!listItem);
+        listItem.fire('delete-table', {
+          uuid: TABLES[0]!.uuid,
+        });
+        await deleteFinishedPromise;
+
+        assertEquals(
+            1,
+            shoppingServiceApi.getCallCount('deleteProductSpecificationsSet'));
+        assertEquals(
+            '123',
+            shoppingServiceApi.getArgs('deleteProductSpecificationsSet')[0]
+                .value);
+      });
+
+  suite('multi-select', () => {
     setup(async () => {
       listElement.$.edit.click();
       await microtasksFinished();
 
-      items = listElement.shadowRoot!.querySelectorAll(
-          'comparison-table-list-item');
-      assertEquals(TABLES.length, items.length);
+      assertEquals(TABLES.length, getListItems().length);
       await toggleCheckboxAtIndex(0);
       await toggleCheckboxAtIndex(1);
     });
@@ -116,6 +151,8 @@ suite('ComparisonTableListTest', () => {
     });
 
     test('can delete multiple comparison tables', async () => {
+      listElement.resetDeletionToastDurationMsForTesting();
+
       const deleteFinishedPromise =
           eventToPromise('delete-finished-for-testing', listElement);
       listElement.$.delete.click();
@@ -123,28 +160,80 @@ suite('ComparisonTableListTest', () => {
 
       assertEquals(
           2, shoppingServiceApi.getCallCount('deleteProductSpecificationsSet'));
-      assertEquals(
-          TABLES[0]!.uuid,
-          shoppingServiceApi.getArgs('deleteProductSpecificationsSet')[0]);
-      assertEquals(
-          TABLES[1]!.uuid,
-          shoppingServiceApi.getArgs('deleteProductSpecificationsSet')[1]);
+      assertArrayEquals(
+          [TABLES[0]!.uuid, TABLES[1]!.uuid],
+          shoppingServiceApi.getArgs('deleteProductSpecificationsSet'));
     });
 
     test(
         'deleting a single table when in multi-select hides all checkboxes',
         async () => {
+          let items = getListItems();
+          assertEquals(TABLES.length, items.length);
           const menu = items[0]!.$.menu.get();
           const deleteButton = menu.querySelector<HTMLButtonElement>('#delete');
           assertTrue(!!deleteButton);
           deleteButton.click();
           await microtasksFinished();
 
+          items = getListItems();
+          assertEquals(TABLES.length - 1, items.length);
           for (let i = 0; i < items.length; i++) {
             assertFalse(items[i]!.hasCheckbox);
           }
         });
 
+    suite('deletion toast', () => {
+      let toast: CrToastElement;
+
+      setup(async () => {
+        // Wait for the toast to be shown after deletion.
+        listElement.$.delete.click();
+        await microtasksFinished();
+
+        const maybeToast = listElement.$.toast.getIfExists();
+        assertTrue(!!maybeToast);
+        toast = maybeToast;
+        assertTrue(toast.open);
+      });
+
+      test('tables pending deletion are hidden', () => {
+        // Only one table left after deletion.
+        assertEquals(1, getListItems().length);
+      });
+
+      test('can undo deletion from toast', async () => {
+        const undoButton = toast.querySelector<HTMLButtonElement>('#undo');
+        assertTrue(!!undoButton);
+        undoButton.click();
+        await microtasksFinished();
+
+        // All tables should be restored after deletion.
+        assertEquals(3, getListItems().length);
+        assertEquals(
+            0,
+            shoppingServiceApi.getCallCount('deleteProductSpecificationsSet'));
+      });
+
+      test(
+          'deletion is triggered when navigating away if toast has not ' +
+              'disappeared',
+          async () => {
+            const deleteFinishedPromise =
+                eventToPromise('delete-finished-for-testing', listElement);
+            window.dispatchEvent(new CustomEvent('beforeunload'));
+            await deleteFinishedPromise;
+
+            // Selected sets should be deleted.
+            assertEquals(
+                2,
+                shoppingServiceApi.getCallCount(
+                    'deleteProductSpecificationsSet'));
+            assertArrayEquals(
+                [TABLES[0]!.uuid, TABLES[1]!.uuid],
+                shoppingServiceApi.getArgs('deleteProductSpecificationsSet'));
+          });
+    });
 
     suite('context menu', () => {
       let menu: CrActionMenuElement;
@@ -196,6 +285,8 @@ suite('ComparisonTableListTest', () => {
       });
 
       test('can delete multiple comparison tables', async () => {
+        listElement.resetDeletionToastDurationMsForTesting();
+
         const deleteFinishedPromise =
             eventToPromise('delete-finished-for-testing', listElement);
         const deleteButton =
@@ -207,12 +298,9 @@ suite('ComparisonTableListTest', () => {
         assertEquals(
             2,
             shoppingServiceApi.getCallCount('deleteProductSpecificationsSet'));
-        assertEquals(
-            TABLES[0]!.uuid,
-            shoppingServiceApi.getArgs('deleteProductSpecificationsSet')[0]);
-        assertEquals(
-            TABLES[1]!.uuid,
-            shoppingServiceApi.getArgs('deleteProductSpecificationsSet')[1]);
+        assertArrayEquals(
+            [TABLES[0]!.uuid, TABLES[1]!.uuid],
+            shoppingServiceApi.getArgs('deleteProductSpecificationsSet'));
       });
     });
   });

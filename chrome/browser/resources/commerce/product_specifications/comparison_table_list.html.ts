@@ -18,18 +18,31 @@ export function getHtml(this: ComparisonTableListElement) {
   </div>
 
   <div id="listContainer">
-    <cr-lazy-list id="list" .scrollTarget="${this}" .items="${this.tables}">
-      ${this.tables.map(table => html`
-        <comparison-table-list-item
-          name="${table.name}"
-          .uuid="${table.uuid}"
-          .urls="${table.urls}"
-          ?has-checkbox="${this.isEditing_}"
-          @checkbox-change="${this.onCheckboxChange_}"
-          @delete-table="${this.stopEditing_}">
-        </comparison-table-list-item>`)}
+    <cr-lazy-list id="list" .scrollTarget="${this}"
+        .items="${this.getTables_(this.tables, this.tablesPendingDeletion_)}">
+      ${
+      this.getTables_(this.tables, this.tablesPendingDeletion_)
+          .map(table => html`
+          <comparison-table-list-item
+            name="${table.name}"
+            .uuid="${table.uuid}"
+            .urls="${table.urls}"
+            ?has-checkbox="${this.isEditing_}"
+            @checkbox-change="${this.onCheckboxChange_}"
+            @delete-table="${this.onItemDelete_}">
+          </comparison-table-list-item>`)}
     </cr-lazy-list>
   </div>
+
+  <cr-lazy-render-lit id="toast"
+      .template="${() => html`
+        <cr-toast duration="${this.deletionToastDurationMs_}">
+          <div>${this.deletionToastMessage_}</div>
+          <cr-button id="undo" @click="${this.onUndoDeletionClick_}">
+            $i18n{undoTableDeletion}
+          </cr-button>
+        </cr-toast>`}">
+  </cr-lazy-render-lit>
 
   <div id="footer" ?hidden="${!this.isEditing_}">
     <cr-toolbar-selection-overlay id="toolbar"
@@ -40,12 +53,12 @@ export function getHtml(this: ComparisonTableListElement) {
       <div class="sp-icon-buttons-row">
         <cr-icon-button id="delete" iron-icon="cr:delete"
             title="$i18n{menuDelete}" aria-label="$i18n{menuDelete}"
-            ?disabled="${this.deletePending_ || this.numSelected_ === 0}"
+            ?disabled="${this.numSelected_ === 0}"
             @click="${this.onDeleteClick_}">
         </cr-icon-button>
         <cr-icon-button id="more" iron-icon="cr:more-vert"
             title="$i18n{menuTooltipMore}" aria-label="$i18n{menuTooltipMore}"
-            ?disabled="${this.deletePending_ || this.numSelected_ === 0}"
+            ?disabled="${this.numSelected_ === 0}"
             @click="${this.onShowContextMenuClick_}">
       </cr-icon-button>
       </div>

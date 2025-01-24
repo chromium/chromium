@@ -15,6 +15,7 @@ assert(is_chromeos_ash)
 braille_ime_out_dir =
     "$root_out_dir/resources/chromeos/accessibility/braille_ime"
 tsc_out_dir = "$target_gen_dir/tsc"
+braille_ime_mv3_out_dir = "$braille_ime_out_dir/mv3"
 
 # TS files to compile.
 ts_modules = [
@@ -25,7 +26,9 @@ ts_modules = [
 group("build") {
   deps = [
     ":braille_ime_manifest",
+    ":braille_ime_mv3_manifest",
     ":copied_files",
+    ":copied_mv3_files",
   ]
 }
 
@@ -37,6 +40,7 @@ ts_library("ts_build") {
     "../definitions/extension_types.d.ts",
     "../definitions/input_ime.d.ts",
     "../definitions/runtime.d.ts",
+    "../definitions/storage_mv2.d.ts",
     "../definitions/tabs.d.ts",
     "../definitions/windows.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
@@ -58,6 +62,22 @@ run_jsbundler("copied_files") {
   deps = [ ":ts_build" ]
   sources = [ "background.html" ]
   sources += filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
+
+  rewrite_rules = [
+    rebase_path(tsc_out_dir, root_build_dir) + ":",
+    rebase_path(".", root_build_dir) + ":",
+  ]
+}
+copy("braille_ime_mv3_manifest") {
+  sources = [ "mv3/manifest.json" ]
+  outputs = [ "$braille_ime_mv3_out_dir/manifest.json" ]
+}
+
+run_jsbundler("copied_mv3_files") {
+  mode = "copy"
+  dest_dir = braille_ime_mv3_out_dir
+  deps = [ ":ts_build" ]
+  sources = filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
 
   rewrite_rules = [
     rebase_path(tsc_out_dir, root_build_dir) + ":",

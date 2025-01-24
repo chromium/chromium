@@ -24,7 +24,7 @@ import type {GlicAppController} from '../glic_app_controller.js';
 
 import type {PostMessageRequestHandler} from './post_message_transport.js';
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
-import type {HostRequestTypes, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, UserProfileInfoPrivate} from './request_types.js';
+import type {AnnotatedPageDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, UserProfileInfoPrivate} from './request_types.js';
 import {ImageAlphaType, ImageColorType} from './request_types.js';
 
 // Turn everything except void into a promise.
@@ -44,7 +44,9 @@ type HostMessageHandlerInterface = {
 };
 
 class WebClientImpl implements WebClientInterface {
-  constructor(private sender: PostMessageRequestSender) {}
+  constructor(
+      private sender: PostMessageRequestSender,
+      private appController: GlicAppController) {}
 
   notifyPanelOpened(attachedToWindowId: (number|null)): void {
     this.sender.requestNoResponse('glicWebClientNotifyPanelOpened', {
@@ -56,10 +58,13 @@ class WebClientImpl implements WebClientInterface {
     await this.sender.requestWithResponse('glicWebClientNotifyPanelClosed', {});
   }
 
-  notifyPanelWillOpen(panelState: PanelStateMojo): Promise<void> {
-    return this.sender.requestWithResponse(
+  async notifyPanelWillOpen(panelState: PanelStateMojo): Promise<void> {
+    await this.sender.requestWithResponse(
         'glicWebClientNotifyPanelWillOpen',
         {panelState: panelStateToClient(panelState)});
+    // The web client is ready to show, ensure the webview is
+    // displayed.
+    this.appController.openGuestPanel();
   }
 
   notifyPanelWasClosed(): Promise<void> {
@@ -121,7 +126,8 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   }
 
   async glicBrowserWebClientCreated({}, transfer: Transferable[]) {
-    this.receiver = new WebClientReceiver(new WebClientImpl(this.sender));
+    this.receiver = new WebClientReceiver(
+        new WebClientImpl(this.sender, this.appController));
     const {initialState} = await this.handler.webClientCreated(
         this.receiver.$.bindNewPipeAndPassRemote());
     const chromeVersion = initialState.chromeVersion.components;
@@ -142,6 +148,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   }
 
   glicBrowserWebClientInitialized(request: {success: boolean}) {
+    // The webview may have been re-shown by webui, having previously been
+    // opened by the browser. In that case, show the guest frame again.
+    this.appController.showGuest();
+
     if (request.success) {
       this.handler.webClientInitialized();
     } else {
@@ -205,6 +215,8 @@ class HostMessageHandler implements HostMessageHandlerInterface {
       includeInnerText: request.options.innerText || false,
       includeViewportScreenshot: request.options.viewportScreenshot || false,
       includePdf: request.options.pdfData || false,
+      includeAnnotatedPageContent:
+          request.options.annotatedPageContent || false,
       pdfSizeLimit: request.options.pdfSizeLimit === undefined ?
           DEFAULT_PDF_SIZE_LIMIT :
           Math.min(Number.MAX_SAFE_INTEGER, request.options.pdfSizeLimit),
@@ -269,6 +281,18 @@ class HostMessageHandler implements HostMessageHandlerInterface {
         pdfData,
       };
     }
+    let annotatedPageData: AnnotatedPageDataPrivate|undefined = undefined;
+    if (tabContext.annotatedPageData) {
+      const annotatedPageContent =
+          tabContext.annotatedPageData.annotatedPageContent ?
+          getArrayBufferFromBigBuffer(
+              tabContext.annotatedPageData.annotatedPageContent.smuggled) :
+          undefined;
+      if (annotatedPageContent) {
+        transfer.push(annotatedPageContent);
+      }
+      annotatedPageData = {annotatedPageContent};
+    }
 
     return {
       tabContextResult: {
@@ -276,6 +300,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
         webPageData: webPageDataResult,
         viewportScreenshot: viewportScreenshotResult,
         pdfDocumentData,
+        annotatedPageData,
       },
     };
   }

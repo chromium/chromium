@@ -304,6 +304,13 @@ public class TabListFaviconProvider {
                 mFaviconInset);
     }
 
+    /** Destroys the native part of {@link FaviconHelper}. */
+    public void destroy() {
+        if (mFaviconHelper != null) {
+            mFaviconHelper.destroy();
+        }
+    }
+
     /**
      * Initializes with native.
      *

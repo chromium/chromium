@@ -239,7 +239,7 @@ void RecentActivityRowImageView::FetchAvatar() {
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_RECENT_ACTIVITY_AVATAR_SIZE),
       base::BindOnce(&RecentActivityRowImageView::SetAvatar,
-                     base::Unretained(this)),
+                     weak_factory_.GetWeakPtr()),
       image_fetcher_service->GetImageFetcher(
           image_fetcher::ImageFetcherConfig::kDiskCacheOnly));
 }
@@ -262,7 +262,7 @@ void RecentActivityRowImageView::FetchFavicon() {
       favicon_service->GetFaviconImageForPageURL(
           GURL(url.value()),
           base::BindOnce(&RecentActivityRowImageView::SetFavicon,
-                         base::Unretained(this)),
+                         weak_factory_.GetWeakPtr()),
           &favicon_fetching_task_tracker_);
     }
   }
@@ -338,6 +338,8 @@ void RecentActivityRowImageView::PaintFavicon(gfx::Canvas* canvas,
   canvas->DrawCircle(favicon_center,
                      favicon_container_radius + favicon_container_border_width,
                      clear_flags);
+  // Restore the previously saved background.
+  canvas->Restore();
 
   // Draw the favicon container with a background.
   cc::PaintFlags indicator_flags;
@@ -371,6 +373,9 @@ void RecentActivityRowImageView::OnPaint(gfx::Canvas* canvas) {
   // Set the bounds of the avatar based off the container.
   gfx::Rect avatar_bounds(contents_bounds.x(), contents_bounds.y(), avatar_size,
                           avatar_size);
+
+  // Save background layer to be used in favicon container border.
+  canvas->SaveLayerAlpha(0xff);
 
   // Draw the avatar image.
   canvas->DrawImageInt(avatar_image_, 0, 0, avatar_size, avatar_size,

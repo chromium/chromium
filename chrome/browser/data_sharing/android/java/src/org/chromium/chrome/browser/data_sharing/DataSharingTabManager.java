@@ -243,6 +243,11 @@ public class DataSharingTabManager {
 
     /** Returns whether the current session supports creating collaborations. */
     public boolean isCreationEnabled() {
+        // Collaboration service may still be null if the DATA_SHARING feature is disabled or
+        // initWithProfile() has not been called. If this is the case do not allow creation yet.
+        // See https://crbug.com/392053335.
+        if (mCollaborationService == null) return false;
+
         return mCollaborationService.getServiceStatus().isAllowedToCreate();
     }
 

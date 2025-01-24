@@ -959,6 +959,7 @@ public class TabGridDialogMediator
         } else if (menuId == R.id.recent_activity) {
             RecordUserAction.record("TabGridDialogMenu.RecentActivity");
             mDataSharingTabManager.showRecentActivity(mActivity, collaborationId);
+            dismissAllDirtyTabMessagesForCurrentGroup();
         } else if (menuId == R.id.close_tab_group || menuId == R.id.delete_tab_group) {
             boolean hideTabGroups = menuId == R.id.close_tab_group;
             if (hideTabGroups) {
@@ -1312,6 +1313,14 @@ public class TabGridDialogMediator
         }
     }
 
+    private void dismissAllDirtyTabMessagesForCurrentGroup() {
+        @Nullable Token tabGroupId = getCurrentTabGroupId();
+        if (mMessagingBackendService != null && tabGroupId != null) {
+            mMessagingBackendService.clearDirtyTabMessagesForGroup(
+                    EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId)));
+        }
+    }
+
     private void showOrUpdateCollaborationActivityMessageCard() {
         @Nullable Token currentTabGroupId = getCurrentTabGroupId();
         if (currentTabGroupId == null) {
@@ -1343,13 +1352,11 @@ public class TabGridDialogMediator
                             mActivity,
                             this::showRecentActivityOrDismissActivityMessageCard,
                             (unused) -> {
-                                @Nullable Token tabGroupId = getCurrentTabGroupId();
-                                if (mMessagingBackendService != null && tabGroupId != null) {
-                                    mMessagingBackendService.clearDirtyTabMessagesForGroup(
-                                            EitherGroupId.createLocalId(
-                                                    new LocalTabGroupId(tabGroupId)));
-                                }
+                                // TODO(crbug.com/391946087): this shouldn't be required once
+                                // clearDirtyTabMessagesForCurrentGroup is fixed.
                                 removeCollaborationActivityMessageCard();
+
+                                dismissAllDirtyTabMessagesForCurrentGroup();
                             });
         }
         mCollaborationActivityPropertyModel.updateDescriptionText(
@@ -1368,8 +1375,11 @@ public class TabGridDialogMediator
         if (TabShareUtils.isCollaborationIdValid(collaborationId)) {
             mDataSharingTabManager.showRecentActivity(mActivity, collaborationId);
         } else {
+            // TODO(crbug.com/391946087): this shouldn't be required once
+            // clearDirtyTabMessagesForCurrentGroup is fixed.
             removeCollaborationActivityMessageCard();
         }
+        dismissAllDirtyTabMessagesForCurrentGroup();
     }
 
     private void updateUngroupBarText(int tabCount) {

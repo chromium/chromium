@@ -53,8 +53,10 @@ class WebViewPermissionHelperDelegate {
       const url::Origin& security_origin,
       blink::mojom::MediaStreamType type);
 
-  virtual void RequestPointerLockPermission(bool user_gesture,
-                                            bool last_unlocked_by_target) {}
+  virtual void RequestPointerLockPermission(
+      bool user_gesture,
+      bool last_unlocked_by_target,
+      base::OnceCallback<void(bool)> callback) {}
 
   // Requests Geolocation Permission from the embedder.
   virtual void RequestGeolocationPermission(

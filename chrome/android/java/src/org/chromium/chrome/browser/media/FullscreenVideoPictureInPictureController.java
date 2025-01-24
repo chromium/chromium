@@ -637,7 +637,7 @@ public class FullscreenVideoPictureInPictureController {
 
         private void cleanupWebContentsObserver() {
             if (mWebContentsObserver == null) return;
-            mWebContentsObserver.cleanup();
+            mWebContentsObserver.observe(null);
             mWebContentsObserver = null;
             mWebContents = null;
         }
@@ -745,17 +745,10 @@ public class FullscreenVideoPictureInPictureController {
      */
     private class DismissActivityOnWebContentsObserver extends WebContentsObserver {
         private final Activity mActivity;
-        private final WebContents mWebContents;
 
         public DismissActivityOnWebContentsObserver(Activity activity, WebContents webContents) {
+            super(webContents);
             mActivity = activity;
-            mWebContents = webContents;
-            mWebContents.addObserver(this);
-        }
-
-        /** Unregister us from `mWebContents`. */
-        public void cleanup() {
-            mWebContents.removeObserver(this);
         }
 
         @Override

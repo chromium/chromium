@@ -60,6 +60,35 @@ class MockPort {
   }
 }
 
+/**
+ * Mock chrome.storage.local mv2, supports set and get.
+ */
+class MockLocalStorage {
+  constructor() {
+    this.store = {};
+  }
+
+  /**
+   * Set the keyed storage.
+   * @param {Object}
+   */
+  set(obj, callback) {
+    for (let key in obj) {
+      this.store[key] = obj[key];
+    }
+    callback();
+  }
+
+  /**
+   * Gets the current storage. This function will only work with a callback
+   * provided, like chrome.storage.local.set mv2.
+   * @param {Array<string>} key for receiving specific store entries, ignored.
+   * @param {function()}
+   */
+  get(keys, callback) {
+    callback(this.store);
+  }
+}
 
 /**
  * Engine ID as specified in manifest.
@@ -92,7 +121,8 @@ BrailleImeUnitTest = class extends E2ETestBase {
     chrome.input = chrome.input || {};
     chrome.input.ime = chrome.input.ime || {};
     chrome.runtime = chrome.runtime || {};
-    localStorage.clear();
+    chrome.storage = chrome.storage || {local: new MockLocalStorage()};
+
     this.lastSentKeyRequestId_ = 0;
     this.lastHandledKeyRequestId_ = undefined;
     this.lastHandledKeyResult_ = undefined;

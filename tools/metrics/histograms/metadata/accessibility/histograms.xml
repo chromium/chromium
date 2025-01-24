@@ -1072,6 +1072,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.CrosSlowKeysDelay" units="ms"
+    expires_after="2026-01-22">
+  <owner>aluh@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The slow keys delay duration in milliseconds set by the user if Slow Keys is
+    turned on. Logged once after startup.
+  </summary>
+</histogram>
+
 <histogram
     name="Accessibility.CrosSpokenFeedback.BrailleDisplayConnected.ConnectionChanged"
     enum="BooleanConnected" expires_after="2025-06-08">
@@ -1215,6 +1225,7 @@ chromium-metrics-reviews@google.com.
     <variant name="LiveCaption"/>
     <variant name="MonoAudio"/>
     <variant name="MouseKeys"/>
+    <variant name="SlowKeys"/>
     <variant name="SpokenFeedback"/>
   </token>
 </histogram>
@@ -1251,6 +1262,9 @@ even if they fit the naming pattern. -->
     <variant name="FlashNotifications"
         summary="flash the screen for notifications"/>
     <variant name="MonoAudio.Enabled" summary="MonoAudio"/>
+    <variant name="SlowKeys"
+        summary="Slow Keys, which adds a delay between when you press a key
+                 and when it activates."/>
     <variant name="SpokenFeedback.BrailleDisplayConnected"
         summary="braille display. An enabled (true) value means that a
                  braille display is connected to the device."/>

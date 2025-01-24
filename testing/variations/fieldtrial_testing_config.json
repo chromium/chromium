@@ -101,21 +101,6 @@
             ]
         }
     ],
-    "AccessibilityPageZoomEnhancements": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AccessibilityPageZoomEnhancements"
-                    ]
-                }
-            ]
-        }
-    ],
     "AccessibilityPageZoomV2": [
         {
             "platforms": [
@@ -10730,6 +10715,29 @@
             ]
         }
     ],
+    "HappinessTrackingBluetoothAudio": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20250123",
+                    "params": {
+                        "enabled_for_googlers": "true",
+                        "histogram_name": "ChromeOS.HaTS.BluetoothAudio",
+                        "prob": "0.05",
+                        "survey_cycle_length": "7",
+                        "survey_start_date_ms": "1698332400000",
+                        "trigger_id": "9ymFQS2qm0jBnuKU19R0UaKeWPaL"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingBluetoothAudio"
+                    ]
+                }
+            ]
+        }
+    ],
     "HappinessTrackingBorealisGames": [
         {
             "platforms": [
@@ -11047,6 +11055,28 @@
                     },
                     "enable_features": [
                         "HappinessTrackingArcGames"
+                    ]
+                }
+            ]
+        }
+    ],
+    "HatsAudio": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20250123",
+                    "params": {
+                        "histogram_name": "ChromeOS.HaTS.Audio",
+                        "prob": "0.01",
+                        "survey_cycle_length": "7",
+                        "survey_start_date_ms": "1642608000000",
+                        "trigger_id": "cVHSWE7RR0jBnuKU19R0ThFKQTU5"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingAudio"
                     ]
                 }
             ]
@@ -13235,54 +13265,6 @@
                     },
                     "enable_features": [
                         "LCPPLazyLoadImagePreload"
-                    ]
-                }
-            ]
-        }
-    ],
-    "LCPPMultipleKey": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledKeyStat",
-                    "params": {
-                        "lcpp_max_hosts_to_track": "100",
-                        "lcpp_multiple_key_histogram_sliding_window_size": "1000",
-                        "lcpp_multiple_key_max_histogram_buckets": "10",
-                        "lcpp_multiple_key_max_path_length": "15",
-                        "lcpp_multiple_key_type": "lcpp_key_stat"
-                    },
-                    "enable_features": [
-                        "LCPPMultipleKey"
-                    ]
-                },
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "lcpp_max_hosts_to_track": "100",
-                        "lcpp_multiple_key_max_path_length": "15",
-                        "lcpp_multiple_key_type": "default"
-                    },
-                    "enable_features": [
-                        "LCPPMultipleKey"
-                    ]
-                },
-                {
-                    "name": "WithMaxHost1000",
-                    "params": {
-                        "lcpp_max_hosts_to_track": "1000",
-                        "lcpp_multiple_key_max_path_length": "15",
-                        "lcpp_multiple_key_type": "default"
-                    },
-                    "enable_features": [
-                        "LCPPMultipleKey"
                     ]
                 }
             ]
@@ -21288,6 +21270,24 @@
                     "name": "Enabled",
                     "enable_features": [
                         "BiometricsAuthForPwdFill"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ScrimForTabModal": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ScrimForTabModal"
                     ]
                 }
             ]

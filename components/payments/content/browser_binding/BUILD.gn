@@ -11,6 +11,7 @@ source_set("interface") {
     "browser_bound_key.h",
     "browser_bound_key_store.h",
   ]
+  public_deps = [ "//device/fido" ]
 }
 
 if (is_android) {
@@ -26,6 +27,7 @@ if (is_android) {
       ":interface",
       "//base",
       "//components/payments/content/android:browser_binding_jni",
+      "//device/fido",
       "//third_party/jni_zero",
     ]
   }
@@ -42,5 +44,6 @@ source_set("fake_browser_bound_key_store") {
   deps = [
     ":interface",
     "//base",
+    "//device/fido",
   ]
 }

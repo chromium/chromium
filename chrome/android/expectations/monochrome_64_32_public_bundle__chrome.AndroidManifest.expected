@@ -758,13 +758,15 @@
     <receiver  # DIFF-ANCHOR: df76237f
         android:name="org.chromium.chrome.browser.notifications.NotificationServiceImpl$Receiver"
         android:exported="false">
-      <intent-filter>  # DIFF-ANCHOR: 1c1c5ed8
+      <intent-filter>  # DIFF-ANCHOR: 16383087
+        <action android:name="org.chromium.chrome.browser.notifications.ALWAYS_ALLOW"/>
         <action android:name="org.chromium.chrome.browser.notifications.CLICK_NOTIFICATION"/>
         <action android:name="org.chromium.chrome.browser.notifications.CLOSE_NOTIFICATION"/>
         <action android:name="org.chromium.chrome.browser.notifications.COMMIT_UNSUBSCRIBE"/>
         <action android:name="org.chromium.chrome.browser.notifications.PRE_UNSUBSCRIBE"/>
+        <action android:name="org.chromium.chrome.browser.notifications.SHOW_ORIGINAL_NOTIFICATION"/>
         <action android:name="org.chromium.chrome.browser.notifications.UNDO_UNSUBSCRIBE"/>
-      </intent-filter>  # DIFF-ANCHOR: 1c1c5ed8
+      </intent-filter>  # DIFF-ANCHOR: 16383087
     </receiver>  # DIFF-ANCHOR: df76237f
     <receiver  # DIFF-ANCHOR: a9b53579
         android:name="org.chromium.chrome.browser.notifications.channels.LocaleChangedBroadcastReceiver"

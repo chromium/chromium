@@ -35,13 +35,8 @@ export class ProductSelectorElement extends CrLitElement {
 
   static override get properties() {
     return {
-      selectedItem: {
-        type: Object,
-      },
-
-      excludedUrls: {
-        type: Array,
-      },
+      selectedItem: {type: Object},
+      excludedUrls: {type: Array},
     };
   }
 

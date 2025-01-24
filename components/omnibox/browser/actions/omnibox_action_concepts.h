@@ -20,6 +20,7 @@ enum class OmniboxActionId {
   ACTION_IN_SUGGEST,
   TAB_SWITCH,
   ANSWER_ACTION,
+  EXTENSION_ACTION,
   // Keep as a last item in the list, with ID one larger than the last valid
   // Action Id.
   LAST

@@ -31,8 +31,7 @@ namespace os_crypt_async {
 
 class AppBoundEncryptionProviderWin : public os_crypt_async::KeyProvider {
  public:
-  AppBoundEncryptionProviderWin(PrefService* local_state,
-                                bool use_for_encryption);
+  explicit AppBoundEncryptionProviderWin(PrefService* local_state);
   ~AppBoundEncryptionProviderWin() override;
 
   // Not copyable.
@@ -81,8 +80,6 @@ class AppBoundEncryptionProviderWin : public os_crypt_async::KeyProvider {
 
   class COMWorker;
   base::SequenceBound<COMWorker> com_worker_;
-
-  const bool use_for_encryption_;
 
   const os_crypt::SupportLevel support_level_;
 

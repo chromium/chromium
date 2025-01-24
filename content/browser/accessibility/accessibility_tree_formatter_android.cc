@@ -117,7 +117,6 @@ base::Value::Dict AccessibilityTreeFormatterAndroid::BuildNode(
 void AccessibilityTreeFormatterAndroid::AddDefaultFilters(
     std::vector<AXPropertyFilter>* property_filters) {
   AddPropertyFilter(property_filters, "hint=*");
-  AddPropertyFilter(property_filters, "interesting", AXPropertyFilter::DENY);
   AddPropertyFilter(property_filters, "has_character_locations",
                     AXPropertyFilter::DENY);
   AddPropertyFilter(property_filters, "has_image", AXPropertyFilter::DENY);

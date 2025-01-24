@@ -6,6 +6,8 @@
 
 import argparse
 import fnmatch
+import json
+import logging
 import os
 import pathlib
 import sys
@@ -76,7 +78,7 @@ def _read_private_paths(path):
   # outside of // (and what would the obj/ path for them look like?).
   ret = [p[4:] for p in text.splitlines() if p.startswith('src/')]
   if not ret:
-    sys.stderr.write(f'No src/ paths found in {args.private_paths_file}\n')
+    sys.stderr.write(f'No src/ paths found in {path}\n')
     sys.stderr.write(f'This test should not be run on public bots.\n')
     sys.stderr.write(f'File contents:\n')
     sys.stderr.write(text)
@@ -87,10 +89,9 @@ def _read_private_paths(path):
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('--linker-inputs',
+  parser.add_argument('--collect-sources-json',
                       required=True,
-                      help='Path to file containing one linker input per line, '
-                      'relative to --root-out-dir')
+                      help='Path to ninja_parser.py output')
   parser.add_argument('--private-paths-file',
                       required=True,
                       help='Path to file containing list of paths that are '
@@ -105,15 +106,23 @@ def main():
                       action='store_true',
                       help='Invert exit code.')
   args = parser.parse_args()
+  logging.basicConfig(level=logging.INFO,
+                      format='%(levelname).1s %(relativeCreated)6d %(message)s')
+  with open(args.collect_sources_json) as f:
+    collect_sources_json = json.load(f)
+  if collect_sources_json['logs']:
+    logging.info('Start logs from ninja_parser.py:')
+    sys.stderr.write(collect_sources_json['logs'])
+    logging.info('End logs from ninja_parser.py:')
+  source_paths = collect_sources_json['source_paths']
 
   private_paths = _read_private_paths(args.private_paths_file)
-  linker_inputs = pathlib.Path(args.linker_inputs).read_text().splitlines()
 
   root_out_dir = args.root_out_dir
   if root_out_dir == '.':
     root_out_dir = ''
 
-  found = _find_private_paths(linker_inputs, private_paths, root_out_dir)
+  found = _find_private_paths(source_paths, private_paths, root_out_dir)
 
   if args.allow_violation:
     found, ignored_paths = _apply_allowlist(found, args.allow_violation)
@@ -127,6 +136,8 @@ def main():
     _print_paths(found, limit)
   elif args.expect_failure:
     print('Expected to find a private path, but none were found.')
+  else:
+    print('No private paths found 👍.')
 
   sys.exit(0 if bool(found) == args.expect_failure else 1)
 

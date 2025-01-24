@@ -993,9 +993,6 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, PinnedExtensions) {
 
   const ui::ColorProvider* color_provider =
       context_menu_button->GetColorProvider();
-  auto pin_icon = gfx::Image(gfx::CreateVectorIcon(
-      views::kPinIcon,
-      color_provider->GetColor(kColorExtensionMenuPinButtonIcon)));
   auto three_dot_icon = gfx::Image(
       gfx::CreateVectorIcon(kBrowserToolsChromeRefreshIcon,
                             color_provider->GetColor(kColorExtensionMenuIcon)));

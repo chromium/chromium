@@ -22,7 +22,7 @@ class Image;
 namespace policy {
 
 // This class gives information related to the browser's management state.
-// For more imformation please read
+// For more information please read
 // //components/policy/core/common/management/management_service.md
 class BrowserManagementService : public ManagementService, public KeyedService {
  public:
@@ -35,6 +35,8 @@ class BrowserManagementService : public ManagementService, public KeyedService {
  private:
   // Updates the management icon used to indicate profile level management.
   void UpdateManagementIconForProfile(Profile* profile);
+  // Updates the management label used to indicate profile level management.
+  void UpdateEnterpriseLabelForProfile(Profile* profile);
   void SetManagementIconForProfile(const gfx::Image& management_icon);
 
   PrefChangeRegistrar pref_change_registrar_;

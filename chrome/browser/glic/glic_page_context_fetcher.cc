@@ -11,12 +11,15 @@
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_tab_data.h"
 #include "components/favicon/content/content_favicon_driver.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "pdf/mojom/pdf.mojom.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
@@ -69,6 +72,23 @@ void GlicPageContextFetcher::Fetch(
   } else {
     pdf_done_ = true;
   }
+
+
+    if (options.include_annotated_page_content) {
+      blink::mojom::AIPageContentOptionsPtr ai_page_content_options;
+      ai_page_content_options =
+          optimization_guide::DefaultAIPageContentOptions();
+      ai_page_content_options->include_geometry = false;
+      ai_page_content_options->on_critical_path = true;
+      ai_page_content_options->include_hidden_searchable_content = true;
+      optimization_guide::GetAIPageContent(
+          web_contents(), std::move(ai_page_content_options),
+          base::BindOnce(&GlicPageContextFetcher::ReceivedAnnotatedPageContent,
+                         GetWeakPtr()));
+    } else {
+      annotated_page_content_done_ = true;
+    }
+
 
   RunCallbackIfComplete();
 }
@@ -141,9 +161,17 @@ void GlicPageContextFetcher::ReceivedInnerText(
   RunCallbackIfComplete();
 }
 
+void GlicPageContextFetcher::ReceivedAnnotatedPageContent(
+    std::optional<optimization_guide::proto::AnnotatedPageContent> content) {
+  annotated_page_content_ = std::move(content);
+  annotated_page_content_done_ = true;
+  RunCallbackIfComplete();
+}
+
 void GlicPageContextFetcher::RunCallbackIfComplete() {
   // Continue only if the primary page changed or work is complete.
-  bool work_complete = (screenshot_done_ && inner_text_done_ && pdf_done_) ||
+  bool work_complete = (screenshot_done_ && inner_text_done_ &&
+                        annotated_page_content_done_ && pdf_done_) ||
                        primary_page_changed_;
   if (!work_complete) {
     return;
@@ -175,6 +203,13 @@ void GlicPageContextFetcher::RunCallbackIfComplete() {
           pdf::mojom::PdfListener_GetPdfBytesStatus::kSizeLimitExceeded;
       tab_context->pdf_document_data = std::move(pdf_document_data);
     }
+
+    if (annotated_page_content_) {
+      auto annotated_page_data = mojom::AnnotatedPageData::New();
+      annotated_page_data->annotated_page_content = mojo_base::ProtoWrapper(annotated_page_content_.value());
+      tab_context->annotated_page_data = std::move(annotated_page_data);
+    }
+
     result = mojom::GetContextResult::NewTabContext(std::move(tab_context));
   } else {
     result = mojom::GetContextResult::NewErrorReason(

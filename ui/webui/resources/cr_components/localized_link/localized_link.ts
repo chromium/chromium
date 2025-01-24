@@ -193,8 +193,7 @@ export class LocalizedLinkElement extends CrLitElement {
       event.preventDefault();
       return;
     }
-    this.dispatchEvent(new CustomEvent(
-        'link-clicked', {bubbles: true, composed: true, detail: {event}}));
+    this.fire('link-clicked', {event});
     // Stop propagation of the event, since it has already been handled by
     // opening the link.
     event.stopPropagation();

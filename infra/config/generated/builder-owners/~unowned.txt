@@ -1,7 +1,6 @@
 ci/3pp-linux-amd64-packager
 ci/3pp-mac-amd64-packager
 ci/ASAN Release Media
-ci/Blink Unexpected Pass Finder
 ci/Comparison Android (reclient)
 ci/Comparison Android (reclient) (reproxy cache)
 ci/Comparison Android (reclient)(CQ)

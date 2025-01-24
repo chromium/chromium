@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -116,9 +115,6 @@ ChromeUserPopulation GetUserPopulationForProfileWithCookieTheftExperiments(
       ChromeUserPopulation::ENHANCED_PROTECTION) {
     static const base::NoDestructor<std::vector<const base::Feature*>>
         kCookieTheftExperiments{{
-#if BUILDFLAG(IS_WIN)
-            &features::kUseAppBoundEncryptionProviderForEncryption,
-#endif
             &features::kUseNewEncryptionKeyForWebData,
         }};
 

@@ -1545,7 +1545,7 @@ BASE_FEATURE_PARAM(int,
 
 BASE_FEATURE(kLCPPMultipleKey,
              "LCPPMultipleKey",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(size_t,
                    kLCPPMultipleKeyMaxPathLength,
@@ -1563,7 +1563,7 @@ BASE_FEATURE_ENUM_PARAM(LcppMultipleKeyTypes,
                         kLcppMultipleKeyType,
                         &kLCPPMultipleKey,
                         "lcpp_multiple_key_type",
-                        LcppMultipleKeyTypes::kDefault,
+                        LcppMultipleKeyTypes::kLcppKeyStat,
                         &lcpp_multiple_key_types);
 
 BASE_FEATURE_PARAM(int,

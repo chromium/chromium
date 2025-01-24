@@ -228,6 +228,7 @@ void ImageDownloaderImpl::DownloadImageFromAxNode(
   // If accessibility is not enabled just return not found for the images.
   if (!cache) {
     std::move(callback).Run(NOT_FOUND, {}, {});
+    return;
   }
 
   auto* obj = cache->ObjectFromAXID(ax_node_id);

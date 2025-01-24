@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VERSION_UI_VERSION_HANDLER_HELPER_H_
-#define COMPONENTS_VERSION_UI_VERSION_HANDLER_HELPER_H_
+#ifndef COMPONENTS_WEBUI_VERSION_VERSION_HANDLER_HELPER_H_
+#define COMPONENTS_WEBUI_VERSION_VERSION_HANDLER_HELPER_H_
 
 #include "base/values.h"
 
@@ -26,4 +26,4 @@ std::string GetVariationsCommandLine();
 
 }  // namespace version_ui
 
-#endif  // COMPONENTS_VERSION_UI_VERSION_HANDLER_HELPER_H_
+#endif  // COMPONENTS_WEBUI_VERSION_VERSION_HANDLER_HELPER_H_

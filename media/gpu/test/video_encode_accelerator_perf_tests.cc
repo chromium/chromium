@@ -15,6 +15,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
@@ -101,6 +102,12 @@ The following arguments are supported:
   --output_bitstream    save the output bitstream in either H264 AnnexB
                         format (for H264) or IVF format (for vp8 and
                         vp9) to <output_folder>/<testname>.
+  --enable-features     Comma-separated feature names to be enabled. These
+                        features will be enabled for the entire test run.
+                        Applies to Windows only.
+  --disable-features    Comma-separated feature names to be disabled. These
+                        features will be disabled for the entire test run.
+                        Applies to Windows only.
 
   --gtest_help          display the gtest help and exit.
   --help                display this help and exit.
@@ -1003,6 +1010,8 @@ int main(int argc, char** argv) {
   std::vector<base::test::FeatureRef> enabled_features;
 
   std::string svc_mode = "L1T1";
+  std::string enable_feature_str = "";
+  std::string disable_feature_str = "";
 
   // Parse command line arguments.
   base::FilePath::StringType output_folder = media::test::kDefaultOutputFolder;
@@ -1064,12 +1073,24 @@ int main(int argc, char** argv) {
     } else if (it->first == "quality") {
       test_type = media::test::VideoEncoderTestEnvironment::TestType::
           kQualityPerformance;
+    } else if (it->first == switches::kEnableFeatures) {
+      enable_feature_str =
+          cmd_line->GetSwitchValueASCII(switches::kEnableFeatures);
+    } else if (it->first == switches::kDisableFeatures) {
+      disable_feature_str =
+          cmd_line->GetSwitchValueASCII(switches::kDisableFeatures);
     } else {
       std::cout << "unknown option: --" << it->first << "\n"
                 << media::test::usage_msg;
       return EXIT_FAILURE;
     }
   }
+
+#if BUILDFLAG(IS_WIN)
+  std::unique_ptr<base::test::ScopedFeatureList> feature_list =
+      std::make_unique<base::test::ScopedFeatureList>();
+  feature_list->InitFromCommandLine(enable_feature_str, disable_feature_str);
+#endif  // BUILDFLAG(IS_WIN)
 
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
   enabled_features.push_back(media::kVaapiH264SWBitrateController);

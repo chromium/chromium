@@ -23,4 +23,15 @@ void PropertyTreeLayerTreeDelegate::UpdatePropertyTreesIfNeeded(
                        host->property_trees()->AsTracedValue());
 }
 
+void PropertyTreeLayerTreeDelegate::UpdateScrollOffsetFromImpl(
+    LayerTreeHost* host,
+    const ElementId& id,
+    const gfx::Vector2dF& delta,
+    const std::optional<TargetSnapAreaElementIds>& snap_target_ids) {
+  if (Layer* layer = host->LayerByElementId(id)) {
+    layer->SetScrollOffsetFromImplSide(layer->scroll_offset() + delta);
+    host->SetNeedsUpdateLayers();
+  }
+}
+
 }  // namespace cc

@@ -10,14 +10,22 @@
 
 namespace glic::test {
 
+namespace internal {
+
+DEFINE_STATE_IDENTIFIER_VALUE(GlicInitializedStateObserver,
+                              kGlicInitializedState);
 GlicInitializedStateObserver::GlicInitializedStateObserver(
     const GlicWindowController& controller)
     : PollingStateObserver(
           [&controller]() { return controller.web_client() != nullptr; }) {}
 GlicInitializedStateObserver::~GlicInitializedStateObserver() = default;
 
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kInstrumentedGlicWebContentsElementId);
-DEFINE_STATE_IDENTIFIER_VALUE(GlicInitializedStateObserver,
-                              kGlicInitializedState);
+}  // namespace internal
+
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kGlicHostElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kGlicContentsElementId);
+
+const InteractiveBrowserTestApi::DeepQuery kPathToMockGlicCloseButton = {
+    "#closebn"};
 
 }  // namespace glic::test

@@ -8,10 +8,12 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/browser/ash/magic_boost/mock_editor_panel_manager.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -309,5 +311,83 @@ TEST_F(MagicBoostStateAshTest, EnableOrcaFeature) {
   magic_boost_state()->EnableOrcaFeature();
   testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
 }
+
+struct MagicBoostHmrCardShowConditionTestCase {
+  std::string test_name;
+  bool magic_boost_revamp_enabled;
+  HMRConsentStatus hmr_consent_status;
+  bool expected_hmr_card_shown;
+};
+
+class MagicBoostHmrCardShowConditionTest
+    : public MagicBoostStateAshTest,
+      public testing::WithParamInterface<
+          MagicBoostHmrCardShowConditionTestCase> {};
+
+TEST_P(MagicBoostHmrCardShowConditionTest, ShouldShowHmrCard) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(chromeos::features::kMagicBoostRevamp,
+                                    GetParam().magic_boost_revamp_enabled);
+
+  MagicBoostState::Get()->AsyncWriteConsentStatus(
+      GetParam().hmr_consent_status);
+
+  EXPECT_EQ(MagicBoostState::Get()->ShouldShowHmrCard(),
+            GetParam().expected_hmr_card_shown);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    MagicBoostHmrCardShowConditionTest,
+    testing::ValuesIn<MagicBoostHmrCardShowConditionTestCase>(
+        {// magic_boost_revamp_enabled = false
+         MagicBoostHmrCardShowConditionTestCase{
+             /*test_name=*/"NoMagicBoostRevamp_ConsentStatusUnset",
+             /*magic_boost_revamp_enabled=*/false,
+             /*hmr_consent_status=*/HMRConsentStatus::kUnset,
+             /*expected_hmr_card_shown=*/false},
+         MagicBoostHmrCardShowConditionTestCase{
+             /*test_name=*/"NoMagicBoostRevamp_ConsentStatusDeclined",
+             /*magic_boost_revamp_enabled=*/false,
+             /*hmr_consent_status=*/HMRConsentStatus::kDeclined,
+             /*expected_hmr_card_shown=*/false},
+         MagicBoostHmrCardShowConditionTestCase{
+             /*test_name=*/"NoMagicBoostRevamp_ConsentStatusApproved",
+             /*magic_boost_revamp_enabled=*/false,
+             /*hmr_consent_status=*/HMRConsentStatus::kApproved,
+             /*expected_hmr_card_shown=*/true},
+         MagicBoostHmrCardShowConditionTestCase{
+             /*test_name=*/"NoMagicBoostRevamp_"
+                           "ConsentStatusPendingDisclaimer",
+             /*magic_boost_revamp_enabled=*/false,
+             /*hmr_consent_status=*/HMRConsentStatus::kPendingDisclaimer,
+             /*expected_hmr_card_shown=*/true},
+
+         // magic_boost_revamp_enabled = true
+         MagicBoostHmrCardShowConditionTestCase{
+             /*test_name=*/"MagicBoostRevamp_ConsentStatusUnset",
+             /*magic_boost_revamp_enabled=*/true,
+             /*hmr_consent_status=*/HMRConsentStatus::kUnset,
+             /*expected_hmr_card_shown=*/true},
+         MagicBoostHmrCardShowConditionTestCase{
+             /*test_name=*/"MagicBoostRevamp_ConsentStatusDeclined",
+             /*magic_boost_revamp_enabled=*/true,
+             /*hmr_consent_status=*/HMRConsentStatus::kDeclined,
+             /*expected_hmr_card_shown=*/false},
+         MagicBoostHmrCardShowConditionTestCase{
+             /*test_name=*/"MagicBoostRevamp_ConsentStatusApproved",
+             /*magic_boost_revamp_enabled=*/true,
+             /*hmr_consent_status=*/HMRConsentStatus::kApproved,
+             /*expected_hmr_card_shown=*/true},
+         MagicBoostHmrCardShowConditionTestCase{
+             /*test_name=*/"MagicBoostRevamp_"
+                           "ConsentStatusPendingDisclaimer",
+             /*magic_boost_revamp_enabled=*/true,
+             /*hmr_consent_status=*/HMRConsentStatus::kPendingDisclaimer,
+             /*expected_hmr_card_shown=*/true}}),
+    [](const testing::TestParamInfo<
+        MagicBoostHmrCardShowConditionTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace ash

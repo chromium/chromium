@@ -1459,7 +1459,7 @@ public class UrlOverridingTest {
                 };
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    tab.getWebContents().addObserver(observer);
+                    observer.observe(tab.getWebContents());
                 });
 
         mActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_PRERENDER));
@@ -1469,7 +1469,7 @@ public class UrlOverridingTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RedirectHandlerTabHelper.swapHandlerFor(tab, mRedirectHandler);
-                    tab.getWebContents().removeObserver(observer);
+                    observer.observe(null);
                 });
 
         // Click page to load prerender.
@@ -1535,7 +1535,7 @@ public class UrlOverridingTest {
                 };
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    tab.getWebContents().addObserver(observer);
+                    observer.observe(tab.getWebContents());
                 });
 
         try {
@@ -1547,7 +1547,7 @@ public class UrlOverridingTest {
         } finally {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        tab.getWebContents().removeObserver(observer);
+                        observer.observe(null);
                     });
         }
 

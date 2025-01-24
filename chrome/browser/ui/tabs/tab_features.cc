@@ -175,7 +175,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 #endif  // BUILDFLAG(ENABLE_GLIC)
   }     // IsInNormalWindow() end.
 
-  const auto* pinned_actions_model = PinnedToolbarActionsModel::Get(profile);
+  auto* pinned_actions_model = PinnedToolbarActionsModel::Get(profile);
   CHECK(pinned_actions_model);
   page_action_controller_ =
       std::make_unique<page_actions::PageActionController>(

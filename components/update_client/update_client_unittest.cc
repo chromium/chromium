@@ -498,7 +498,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
             <urls>
               <url codebase='http://localhost/download/'/>
             </urls>
-            <manifest version='1.0' prodversionmin='11.0.1.0'>
+            <manifest version='1.0'>
               <packages>
                 <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
                          hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
@@ -533,7 +533,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
         result.status = "ok";
         result.crx_urls.emplace_back("http://localhost/download/");
         result.manifest.version = "1.0";
-        result.manifest.browser_min_version = "11.0.1.0";
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
 
@@ -773,7 +772,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
             <urls>
               <url codebase='http://localhost/download/'/>
             </urls>
-            <manifest version='1.0' prodversionmin='11.0.1.0'>
+            <manifest version='1.0'>
               <packages>
                 <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
                          hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
@@ -805,7 +804,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
         result.status = "ok";
         result.crx_urls.emplace_back("http://localhost/download/");
         result.manifest.version = "1.0";
-        result.manifest.browser_min_version = "11.0.1.0";
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
 
@@ -1014,7 +1012,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
             <urls>
               <url codebase='http://localhost/download/'/>
             </urls>
-            <manifest version='1.0' prodversionmin='11.0.1.0'>
+            <manifest version='1.0'>
               <packages>
                 <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
                          hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
@@ -1046,7 +1044,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
         result.status = "ok";
         result.crx_urls.emplace_back("http://localhost/download/");
         result.manifest.version = "1.0";
-        result.manifest.browser_min_version = "11.0.1.0";
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
 
@@ -1357,7 +1354,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
             <urls>
               <url codebase='http://localhost/download/'/>
             </urls>
-            <manifest version='1.0' prodversionmin='11.0.1.0'>
+            <manifest version='1.0'>
               <packages>
                 <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
                          hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
@@ -1372,7 +1369,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
             <urls>
               <url codebase='http://localhost/download/'/>
             </urls>
-            <manifest version='1.0' prodversionmin='11.0.1.0'>
+            <manifest version='1.0'>
               <packages>
                 <package name='ihfokbkgjpifnbbojhneepfflplebdkc_1.crx'
                          hash_sha256='8f5aa190311237cae00675af87ff457f278cd1a05
@@ -1405,7 +1402,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
         result.status = "ok";
         result.crx_urls.emplace_back("http://localhost/download/");
         result.manifest.version = "1.0";
-        result.manifest.browser_min_version = "11.0.1.0";
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
       }
@@ -1426,7 +1422,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
         result.status = "ok";
         result.crx_urls.emplace_back("http://localhost/download/");
         result.manifest.version = "1.0";
-        result.manifest.browser_min_version = "11.0.1.0";
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
       }
@@ -1694,7 +1689,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
               <urls>
                 <url codebase='http://localhost/download/'/>
               </urls>
-              <manifest version='1.0' prodversionmin='11.0.1.0'>
+              <manifest version='1.0'>
                 <packages>
                   <package name='ihfokbkgjpifnbbojhneepfflplebdkc_1.crx'
                            hash_sha256='813c59747e139a608b3b5fc49633affc6db57437
@@ -1723,7 +1718,6 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
         result.status = "ok";
         result.crx_urls.emplace_back("http://localhost/download/");
         result.manifest.version = "1.0";
-        result.manifest.browser_min_version = "11.0.1.0";
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
       } else if (num_calls_ == 2) {
@@ -1737,7 +1731,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
                 <url codebase='http://localhost/download/'/>
                 <url codebasediff='http://localhost/download/'/>
               </urls>
-              <manifest version='2.0' prodversionmin='11.0.1.0'>
+              <manifest version='2.0'>
                 <packages>
                   <package name='ihfokbkgjpifnbbojhneepfflplebdkc_2.crx'
                            namediff='ihfokbkgjpifnbbojhneepfflplebdkc_1to2.crx'
@@ -1774,7 +1768,6 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
         result.crx_urls.emplace_back("http://localhost/download/");
         result.crx_diffurls.emplace_back("http://localhost/download/");
         result.manifest.version = "2.0";
-        result.manifest.browser_min_version = "11.0.1.0";
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
       } else {
@@ -2143,7 +2136,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
             <urls>
               <url codebase='http://localhost/download/'/>
             </urls>
-            <manifest version='1.0' prodversionmin='11.0.1.0'>
+            <manifest version='1.0'>
               <packages>
                 <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
                          hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
@@ -2172,7 +2165,6 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
       result.status = "ok";
       result.crx_urls.emplace_back("http://localhost/download/");
       result.manifest.version = "1.0";
-      result.manifest.browser_min_version = "11.0.1.0";
       result.manifest.packages.push_back(package);
 
       ProtocolParser::Results results;
@@ -2375,7 +2367,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
               <urls>
                 <url codebase='http://localhost/download/'/>
               </urls>
-              <manifest version='1.0' prodversionmin='11.0.1.0'>
+              <manifest version='1.0'>
                 <packages>
                   <package name='ihfokbkgjpifnbbojhneepfflplebdkc_1.crx'
                            hash_sha256='813c59747e139a608b3b5fc49633affc6db57437
@@ -2402,7 +2394,6 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
         result.status = "ok";
         result.crx_urls.emplace_back("http://localhost/download/");
         result.manifest.version = "1.0";
-        result.manifest.browser_min_version = "11.0.1.0";
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
       } else if (num_calls_ == 2) {
@@ -2416,7 +2407,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
                 <url codebase='http://localhost/download/'/>
                 <url codebasediff='http://localhost/download/'/>
               </urls>
-              <manifest version='2.0' prodversionmin='11.0.1.0'>
+              <manifest version='2.0'>
                 <packages>
                   <package name='ihfokbkgjpifnbbojhneepfflplebdkc_2.crx'
                            namediff='ihfokbkgjpifnbbojhneepfflplebdkc_1to2.crx'
@@ -2452,7 +2443,6 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
         result.crx_urls.emplace_back("http://localhost/download/");
         result.crx_diffurls.emplace_back("http://localhost/download/");
         result.manifest.version = "2.0";
-        result.manifest.browser_min_version = "11.0.1.0";
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
       } else {
@@ -2770,7 +2760,7 @@ TEST_F(UpdateClientTest,
               <urls>
                 <url codebase='http://localhost/download/'/>
               </urls>
-              <manifest version='1.0' prodversionmin='11.0.1.0'>
+              <manifest version='1.0'>
                 <packages>
                   <package name='ihfokbkgjpifnbbojhneepfflplebdkc_1.crx'
                            hash_sha256='813c59747e139a608b3b5fc49633affc6db57437
@@ -2797,7 +2787,6 @@ TEST_F(UpdateClientTest,
         result.status = "ok";
         result.crx_urls.emplace_back("http://localhost/download/");
         result.manifest.version = "1.0";
-        result.manifest.browser_min_version = "11.0.1.0";
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
       } else if (num_calls_ == 2) {
@@ -2811,7 +2800,7 @@ TEST_F(UpdateClientTest,
                 <url codebase='http://localhost/download/'/>
                 <url codebasediff='http://localhost/download/'/>
               </urls>
-              <manifest version='2.0' prodversionmin='11.0.1.0'>
+              <manifest version='2.0'>
                 <packages>
                   <package name='ihfokbkgjpifnbbojhneepfflplebdkc_2.crx'
                            namediff='ihfokbkgjpifnbbojhneepfflplebdkc_1to2.crx'
@@ -2845,7 +2834,6 @@ TEST_F(UpdateClientTest,
         result.crx_urls.emplace_back("http://localhost/download/");
         result.crx_diffurls.emplace_back("http://localhost/download/");
         result.manifest.version = "2.0";
-        result.manifest.browser_min_version = "11.0.1.0";
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
       } else {
@@ -3299,7 +3287,7 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
             <urls>
               <url codebase='http://localhost/download/'/>
             </urls>
-            <manifest version='1.0' prodversionmin='11.0.1.0'
+            <manifest version='1.0'
               run='UpdaterSetup.exe' arguments='--arg1 --arg2'>
               <packages>
                 <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
@@ -3329,7 +3317,6 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
       result.status = "ok";
       result.crx_urls.emplace_back("http://localhost/download/");
       result.manifest.version = "1.0";
-      result.manifest.browser_min_version = "11.0.1.0";
       result.manifest.run = "UpdaterSetup.exe";
       result.manifest.arguments = "--arg1 --arg2";
       result.manifest.packages.push_back(package);
@@ -3869,7 +3856,7 @@ TEST_F(UpdateClientTest, DiskFull) {
             <urls>
               <url codebase='http://localhost/download/'/>
             </urls>
-            <manifest version='1.0' prodversionmin='11.0.1.0'>
+            <manifest version='1.0'>
               <packages>
                 <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
                          hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
@@ -3904,7 +3891,6 @@ TEST_F(UpdateClientTest, DiskFull) {
         result.status = "ok";
         result.crx_urls.emplace_back("http://localhost/download/");
         result.manifest.version = "1.0";
-        result.manifest.browser_min_version = "11.0.1.0";
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
 
@@ -4079,7 +4065,7 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
               <urls>
                 <url codebase='http://localhost/download/'/>
               </urls>
-              <manifest version='1.0' prodversionmin='11.0.1.0'>
+              <manifest version='1.0'>
                 <packages>
                   <package name='ihfokbkgjpifnbbojhneepfflplebdkc_1.crx'
                            hash_sha256='813c59747e139a608b3b5fc49633affc6db57437
@@ -4108,7 +4094,6 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
         result.status = "ok";
         result.crx_urls.emplace_back("http://localhost/download/");
         result.manifest.version = "1.0";
-        result.manifest.browser_min_version = "11.0.1.0";
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
       } else if (num_calls_ == 2) {
@@ -4122,7 +4107,7 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
                 <url codebase='http://localhost/download/'/>
                 <url codebasediff='http://localhost/download/'/>
               </urls>
-              <manifest version='2.0' prodversionmin='11.0.1.0'>
+              <manifest version='2.0'>
                 <packages>
                   <package name='ihfokbkgjpifnbbojhneepfflplebdkc_2.crx'
                            namediff='ihfokbkgjpifnbbojhneepfflplebdkc_1to2.crx'
@@ -4161,7 +4146,6 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
         result.crx_urls.emplace_back("http://localhost/download/");
         result.crx_diffurls.emplace_back("http://localhost/download/");
         result.manifest.version = "2.0";
-        result.manifest.browser_min_version = "11.0.1.0";
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
       } else {
@@ -4759,7 +4743,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
             <urls>
               <url codebase='http://localhost/download/'/>
             </urls>
-            <manifest version='1.0' prodversionmin='11.0.1.0'>
+            <manifest version='1.0'>
               <packages>
                 <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
                          hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
@@ -4774,7 +4758,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
             <urls>
               <url codebase='http://localhost/download/'/>
             </urls>
-            <manifest version='1.0' prodversionmin='11.0.1.0'>
+            <manifest version='1.0'>
               <packages>
                 <package name='ihfokbkgjpifnbbojhneepfflplebdkc_1.crx'
                          hash_sha256='8f5aa190311237cae00675af87ff457f278cd1a05
@@ -4807,7 +4791,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
         result.status = "ok";
         result.crx_urls.emplace_back("http://localhost/download/");
         result.manifest.version = "1.0";
-        result.manifest.browser_min_version = "11.0.1.0";
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
       }
@@ -4828,7 +4811,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
         result.status = "ok";
         result.crx_urls.emplace_back("http://localhost/download/");
         result.manifest.version = "1.0";
-        result.manifest.browser_min_version = "11.0.1.0";
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
       }
@@ -5044,7 +5026,7 @@ TEST_F(UpdateClientTest, OneCrxUpdateDownloadTimeout) {
             <urls>
               <url codebase='http://localhost/download/'/>
             </urls>
-            <manifest version='1.0' prodversionmin='11.0.1.0'>
+            <manifest version='1.0'>
               <packages>
                 <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
                          hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
@@ -5075,7 +5057,6 @@ TEST_F(UpdateClientTest, OneCrxUpdateDownloadTimeout) {
         result.status = "ok";
         result.crx_urls.emplace_back("http://localhost/download/");
         result.manifest.version = "1.0";
-        result.manifest.browser_min_version = "11.0.1.0";
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
 
@@ -5582,7 +5563,7 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
             <urls>
               <url codebase='http://localhost/download/'/>
             </urls>
-            <manifest version='1.0' prodversionmin='11.0.1.0'>
+            <manifest version='1.0'>
               <packages>
                 <package name='runaction_test_win.crx3'
                          hash_sha256='89290a0d2ff21ca5b45e109c6cc859ab5fe294e19c102d54acd321429c372cea'
@@ -5614,7 +5595,6 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
       result.status = "ok";
       result.crx_urls.emplace_back("http://localhost/download/");
       result.manifest.version = "1.0";
-      result.manifest.browser_min_version = "11.0.1.0";
       result.manifest.packages.push_back(package);
       result.action_run = "ChromeRecovery.crx3";
 
@@ -6152,7 +6132,6 @@ TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
       result.status = "ok";
       result.crx_urls.emplace_back("http://localhost/download/");
       result.manifest.version = "1.0";
-      result.manifest.browser_min_version = "11.0.1.0";
       result.manifest.run = "UpdaterSetup.exe";
       result.manifest.arguments = "--arg1 --arg2";
       result.manifest.packages.push_back(package);
@@ -6296,7 +6275,6 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
       result.status = "ok";
       result.crx_urls.emplace_back("http://localhost/download/");
       result.manifest.version = "1.0";
-      result.manifest.browser_min_version = "11.0.1.0";
       result.manifest.run = "UpdaterSetup.exe";
       result.manifest.arguments = "--arg1 --arg2";
       result.manifest.packages.push_back(package);
@@ -6486,7 +6464,6 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
       result.status = "ok";
       result.crx_urls.emplace_back("http://localhost/download/");
       result.manifest.version = "1.0";
-      result.manifest.browser_min_version = "11.0.1.0";
       result.manifest.run = "UpdaterSetup.exe";
       result.manifest.arguments = "--arg1 --arg2";
       result.manifest.packages.push_back(package);
@@ -6765,7 +6742,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
             <urls>
               <url codebase='http://localhost/download/'/>
             </urls>
-            <manifest version='1.0' prodversionmin='11.0.1.0'>
+            <manifest version='1.0'>
               <packages>
                 <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
                          hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
@@ -6797,7 +6774,6 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
       result.status = "ok";
       result.crx_urls.emplace_back("http://localhost/download/");
       result.manifest.version = "1.0";
-      result.manifest.browser_min_version = "11.0.1.0";
       result.manifest.packages.push_back(package);
       results.list.push_back(result);
 
@@ -7303,7 +7279,7 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
             <urls>
               <url codebase='http://localhost/download/'/>
             </urls>
-            <manifest version='1.0' prodversionmin='11.0.1.0'>
+            <manifest version='1.0'>
               <packages>
                 <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
                          hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
@@ -7335,7 +7311,6 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
       result.status = "ok";
       result.crx_urls.emplace_back("http://localhost/download/");
       result.manifest.version = "1.0";
-      result.manifest.browser_min_version = "11.0.1.0";
       result.manifest.packages.push_back(package);
       results.list.push_back(result);
 
@@ -7491,7 +7466,7 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
             <urls>
               <url codebase='http://localhost/download/'/>
             </urls>
-            <manifest version='1.0' prodversionmin='11.0.1.0'>
+            <manifest version='1.0'>
               <packages>
                 <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
                           hash_sha256='813c59747e139a608b3b5fc49633affc6db57437
@@ -7523,7 +7498,6 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
       result.status = "ok";
       result.crx_urls.emplace_back("http://localhost/download/");
       result.manifest.version = "1.0";
-      result.manifest.browser_min_version = "11.0.1.0";
       result.manifest.packages.push_back(package);
 
       ProtocolParser::Results results;

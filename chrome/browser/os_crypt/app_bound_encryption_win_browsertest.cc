@@ -483,8 +483,7 @@ IN_PROC_BROWSER_TEST_P(AppBoundEncryptionWinReencryptTest, KeyProviderTest) {
   std::optional<os_crypt_async::Encryptor::Key> encryption_key;
   std::string encrypted_key;
   {
-    os_crypt_async::AppBoundEncryptionProviderWin provider(
-        &prefs, /*use_for_encryption=*/true);
+    os_crypt_async::AppBoundEncryptionProviderWin provider(&prefs);
     base::test::TestFuture<const std::string&,
                            std::optional<os_crypt_async::Encryptor::Key>>
         future;
@@ -505,8 +504,7 @@ IN_PROC_BROWSER_TEST_P(AppBoundEncryptionWinReencryptTest, KeyProviderTest) {
   EXPECT_CALL(observer, OnPreferenceChanged(_))
       .Times(ExpectReencrypt() ? 1 : 0);
   {
-    os_crypt_async::AppBoundEncryptionProviderWin provider(
-        &prefs, /*use_for_encryption=*/true);
+    os_crypt_async::AppBoundEncryptionProviderWin provider(&prefs);
     base::test::TestFuture<const std::string&,
                            std::optional<os_crypt_async::Encryptor::Key>>
         future;
@@ -536,42 +534,6 @@ INSTANTIATE_TEST_SUITE_P(
           {std::get<0>(info.param) ? "FakeReencrypt" : "NoFakeReencrypt",
            std::get<1>(info.param) ? "FeatureOn" : "FeatureOff"});
     });
-
-class AppBoundEncryptionWinTestFeatureMaybeDisabled
-    : public AppBoundEncryptionWinTest,
-      public ::testing::WithParamInterface</*feature enabled*/ bool> {
- public:
-  AppBoundEncryptionWinTestFeatureMaybeDisabled() {
-    feature_list_.InitWithFeatureState(
-        ::features::kUseAppBoundEncryptionProviderForEncryption, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(AppBoundEncryptionWinTestFeatureMaybeDisabled,
-                       ReEncrypt) {
-  std::string ciphertext;
-  ASSERT_TRUE(OSCrypt::EncryptString("secrets", &ciphertext));
-
-  auto encryptor = GetInstanceSync(*g_browser_process->os_crypt_async());
-
-  os_crypt_async::Encryptor::DecryptFlags flags;
-  std::string plaintext;
-  ASSERT_TRUE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
-  // With App-Bound enabled, a decryption of an OSCrypt Sync secret should
-  // result in a request to re-encrypt to get full protection, otherwise no
-  // re-encryption should be requested.
-  EXPECT_EQ(flags.should_reencrypt, GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(,
-                         AppBoundEncryptionWinTestFeatureMaybeDisabled,
-                         ::testing::Bool(),
-                         [](auto& info) {
-                           return info.param ? "Enabled" : "Disabled";
-                         });
 
 // These tests do not function correctly in component builds because they rely
 // on being able to run a standalone executable child process in various

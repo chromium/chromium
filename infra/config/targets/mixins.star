@@ -807,6 +807,20 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "gpu_integration_test_expected_color_args",
+    args = [
+        # TODO(crbug.com/391899126): Remove argument it's not used in expected_color.
+        "--dont-restore-color-profile-after-test",
+        "--test-machine-name",
+        "${buildername}",
+    ],
+    android_args = [
+        # TODO(crbug.com/40134877): Remove this once we fix the tests.
+        "--extra-browser-args=--force-online-connection-state-for-indicator",
+    ],
+)
+
+targets.mixin(
     name = "gpu_integration_test_pixel_args",
     args = [
         "--dont-restore-color-profile-after-test",
@@ -814,6 +828,7 @@ targets.mixin(
         "${buildername}",
     ],
     android_args = [
+        # TODO(crbug.com/40134877): Remove this once we fix the tests.
         "--extra-browser-args=--force-online-connection-state-for-indicator",
     ],
 )
@@ -824,6 +839,7 @@ targets.mixin(
         "--dont-restore-color-profile-after-test",
     ],
     android_args = [
+        # TODO(crbug.com/40134877): Remove this once we fix the tests.
         "--extra-browser-args=--force-online-connection-state-for-indicator",
     ],
 )
@@ -834,6 +850,16 @@ targets.mixin(
         # On dual-GPU devices we want the high-performance GPU to be active.
         "--extra-browser-args=--force_high_performance_gpu",
         targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
+    ],
+)
+
+targets.mixin(
+    name = "gpu_integration_test_webgl2_args",
+    args = [
+        "--webgl-conformance-version=2.0.1",
+        targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
+        # On dual-GPU devices we want the high-performance GPU to be active.
+        "--extra-browser-args=--force_high_performance_gpu",
     ],
 )
 
@@ -982,6 +1008,20 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "gpu_force_angle_d3d11",
+    args = [
+        "--extra-browser-args=--use-angle=d3d11",
+    ],
+)
+
+targets.mixin(
+    name = "gpu_force_angle_d3d9",
+    args = [
+        "--extra-browser-args=--use-angle=d3d9",
+    ],
+)
+
+targets.mixin(
     name = "gpu_force_angle_gles",
     args = [
         "--extra-browser-args=--use-angle=gles",
@@ -1004,7 +1044,6 @@ targets.mixin(
 
 targets.mixin(
     name = "gpu_force_command_decoder_validating",
-    generate_pyl_entry = False,
     args = [
         "--extra-browser-args=--use-cmd-decoder=validating",
     ],

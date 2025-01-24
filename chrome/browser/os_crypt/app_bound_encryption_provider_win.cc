@@ -47,11 +47,9 @@ constexpr ProtectionLevel kCurrentProtectionLevel =
 }  // namespace
 
 AppBoundEncryptionProviderWin::AppBoundEncryptionProviderWin(
-    PrefService* local_state,
-    bool use_for_encryption)
+    PrefService* local_state)
     : local_state_(local_state),
       com_worker_(base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})),
-      use_for_encryption_(use_for_encryption),
       support_level_(
           os_crypt::GetAppBoundEncryptionSupportLevel(local_state_)) {}
 
@@ -179,8 +177,7 @@ void AppBoundEncryptionProviderWin::GetKey(KeyCallback callback) {
 
 bool AppBoundEncryptionProviderWin::UseForEncryption() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return support_level_ == os_crypt::SupportLevel::kSupported &&
-         use_for_encryption_;
+  return support_level_ == os_crypt::SupportLevel::kSupported;
 }
 
 bool AppBoundEncryptionProviderWin::IsCompatibleWithOsCryptSync() {

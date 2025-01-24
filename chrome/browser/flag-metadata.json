@@ -556,6 +556,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "autofill-enable-allowlist-for-bmo-card-category-benefits",
+    "owners": [ "ferny@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "autofill-enable-amount-extraction-desktop",
     "owners": [ "jamessun@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 135
@@ -634,11 +639,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "autofill-enable-local-iban",
-    "owners": [ "qihuizhao@google.com", "averina@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "autofill-enable-log-form-events-to-all-parsed-form-types",
     "owners": [ "alexandertekle@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 136
@@ -706,11 +706,6 @@
       "chrome-payments-team@google.com"
     ],
     "expiry_milestone": 132
-  },
-  {
-    "name": "autofill-enable-server-iban",
-    "owners": [ "qihuizhao@google.com", "jsaul@google.com" ],
-    "expiry_milestone": 136
   },
   {
     "name": "autofill-enable-syncing-of-pix-bank-accounts",

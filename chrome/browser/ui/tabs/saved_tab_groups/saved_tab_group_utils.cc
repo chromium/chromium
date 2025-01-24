@@ -210,12 +210,21 @@ void SavedTabGroupUtils::DeleteSavedGroup(const Browser* browser,
       browser, saved_group_guid);
 
   if (tab_groups::IsTabGroupsSaveV2Enabled()) {
-    DeletionDialogController::DialogMetadata dialog_metadata(
+    DeletionDialogController::DialogMetadata saved_dialog_metadata(
         DeletionDialogController::DialogType::DeleteSingle,
         /*closing_group_count=*/1,
         /*closing_multiple_tabs=*/group->saved_tabs().size() > 1);
+
+    DeletionDialogController::DialogMetadata shared_dialog_metadata(
+        DeletionDialogController::DialogType::DeleteSingleShared,
+        /*closing_group_count=*/1,
+        /*closing_multiple_tabs=*/group->saved_tabs().size() > 1);
+    shared_dialog_metadata.title_of_closing_group = group->title();
+
+    const bool is_group_shared = group.value().collaboration_id().has_value();
     browser->tab_group_deletion_dialog_controller()->MaybeShowDialog(
-        dialog_metadata, std::move(close_callback));
+        is_group_shared ? shared_dialog_metadata : saved_dialog_metadata,
+        std::move(close_callback));
   } else {
     std::move(close_callback).Run();
   }

@@ -77,6 +77,7 @@ class ExclusiveAccessBubbleViews;
 class FullscreenControlHost;
 class InfoBarContainerView;
 class LocationBarView;
+class ScrimView;
 class SidePanel;
 class StatusBubbleViews;
 class TabSearchBubbleHost;
@@ -291,6 +292,8 @@ class BrowserView : public BrowserWindow,
   // Accessor for the contents and devtools WebViews.
   ContentsWebView* contents_web_view() { return contents_web_view_; }
   views::WebView* devtools_web_view() { return devtools_web_view_; }
+
+  ScrimView* contents_scrim_view() { return contents_scrim_view_; }
 
 #if BUILDFLAG(ENABLE_GLIC)
   glic::BorderView* glic_border() const { return glic_border_; }
@@ -541,6 +544,7 @@ class BrowserView : public BrowserWindow,
   void UpdateToolbar(content::WebContents* contents) override;
   bool UpdateToolbarSecurityState() override;
   void UpdateCustomTabBarVisibility(bool visible, bool animate) override;
+  void SetContentScrimVisibility(bool visible) override;
   void ResetToolbarTabState(content::WebContents* contents) override;
   void FocusToolbar() override;
   ExtensionsContainer* GetExtensionsContainer() override;
@@ -1218,6 +1222,10 @@ class BrowserView : public BrowserWindow,
 
   // The view that contains the selected WebContents.
   raw_ptr<ContentsWebView> contents_web_view_ = nullptr;
+
+  // The scrim view that covers the content area when a tab-modal dialog is
+  // open.
+  raw_ptr<ScrimView> contents_scrim_view_ = nullptr;
 
   // It draws a border around the web contents area, on top of the
   // `contents_web_view_`. Null if the feature isn't enabled, or the platform

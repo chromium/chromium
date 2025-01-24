@@ -602,11 +602,6 @@ public class TopToolbarCoordinator implements Toolbar {
         return mToolbarLayout.isReadyForTextureCapture();
     }
 
-    @Override
-    public boolean setForceTextureCapture(boolean forceTextureCapture) {
-        return mToolbarLayout.setForceTextureCapture(forceTextureCapture);
-    }
-
     /**
      * @param attached Whether or not the web content is attached to the view heirarchy.
      */

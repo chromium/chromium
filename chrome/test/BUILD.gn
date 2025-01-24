@@ -6922,7 +6922,10 @@ test("unit_tests") {
   }
 
   if (enable_glic) {
-    deps += [ "//chrome/browser/glic:unit_tests" ]
+    deps += [
+      "//chrome/browser/glic:unit_tests",
+      "//chrome/browser/glic/launcher:unit_tests",
+    ]
   }
 
   if (is_win || is_mac) {

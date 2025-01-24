@@ -1064,19 +1064,19 @@
     "META": {"sizes": {"includes": [5]}},
     "includes": [7440],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/components/user_actions_ui/resources/resources.grd": {
-    "META": {"sizes": {"includes": [5]}},
+  "<(SHARED_INTERMEDIATE_DIR)/components/webui/chrome_urls/resources/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
     "includes": [7450],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/components/version_ui/resources/resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/components/webui/internal_debug_pages_disabled/resources/resources.grd": {
     "META": {"sizes": {"includes": [5]}},
     "includes": [7460],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/components/webui/chrome_urls/resources/resources.grd": {
-    "META": {"sizes": {"includes": [10]}},
+  "<(SHARED_INTERMEDIATE_DIR)/components/webui/user_actions/resources/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
     "includes": [7465],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/components/webui/internal_debug_pages_disabled/resources/resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/components/webui/version/resources/resources.grd": {
     "META": {"sizes": {"includes": [5]}},
     "includes": [7470],
   },

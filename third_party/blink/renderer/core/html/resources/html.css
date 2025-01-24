@@ -1632,6 +1632,14 @@ img:is([sizes="auto" i], [sizes^="auto," i]) {
   contain-intrinsic-size: 300px 150px;
 }
 
+/* https://drafts.csswg.org/css-ui-4/#inertness */
+[inert] {
+  interactivity: inert;
+}
+dialog:modal {
+  interactivity: auto;
+}
+
 /* noscript is handled internally, as it depends on settings. */
 
 /*

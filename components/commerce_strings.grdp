@@ -709,6 +709,14 @@
   <message name="IDS_COMPARE_EDIT_MORE" desc="The tooltip for the menu button in the comparison table list bulk edit mode that shows more actions the user can take on selected comparison tables.">
     More
   </message>
+  <message name="IDS_COMPARE_TABLE_DELETION_TOAST_MESSAGE" desc="The message that shows when one or more comparison tables are deleted from the comparison table list.">
+    {COUNT, plural,
+      =1 {{COUNT} table deleted}
+      other {{COUNT} tables deleted}}
+  </message>
+  <message name="IDS_COMPARE_UNDO_TABLE_DELETION" desc="Label for the undo button displayed after deleting one or more comparison tables.">
+    Undo
+  </message>
   <!-- For Compare Disclosure -->
   <message name="IDS_COMPARE_DISCLOSURE_TITLE" desc="The text for the title of the Compare first-run experience disclosure bubble.">
     Compare similar products side-by-side

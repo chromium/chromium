@@ -18,6 +18,7 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.ColorInt;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -105,6 +106,12 @@ public class TabListFaviconProviderTest {
                                 .default_favicon_corner_radius);
         mTabListFaviconProvider.initWithNative(mProfile);
         mTabListFaviconProvider.setFaviconHelperForTesting(mMockFaviconHelper);
+    }
+
+    @After
+    public void tearDown() {
+        mTabListFaviconProvider.destroy();
+        verify(mMockFaviconHelper).destroy();
     }
 
     @Test

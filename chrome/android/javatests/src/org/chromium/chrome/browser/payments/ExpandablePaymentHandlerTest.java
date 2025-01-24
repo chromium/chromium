@@ -402,7 +402,7 @@ public class ExpandablePaymentHandlerTest {
                 };
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    paymentHandler.getWebContentsForTest().addObserver(observer);
+                    observer.observe(paymentHandler.getWebContentsForTest());
                 });
 
         DOMUtils.waitForNonZeroNodeBounds(paymentHandler.getWebContentsForTest(), "confirmButton");
@@ -425,7 +425,7 @@ public class ExpandablePaymentHandlerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    paymentHandler.getWebContentsForTest().removeObserver(observer);
+                    observer.observe(null);
                     paymentHandler.hide();
                 });
         waitForUiClosed();

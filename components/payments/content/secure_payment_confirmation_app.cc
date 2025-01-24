@@ -13,6 +13,7 @@
 #include "base/base64url.h"
 #include "base/check.h"
 #include "base/containers/flat_tree.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
@@ -31,6 +32,7 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_descriptor.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/url_constants.h"
 
@@ -46,6 +48,15 @@ void RecordSystemPromptResult(
       "PaymentRequest.SecurePaymentConfirmation.Funnel.SystemPromptResult",
       result);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+const device::PublicKeyCredentialParams::CredentialInfo
+    kDefaultBrowserBoundKeyCredentialParameters[] = {
+        {device::CredentialType::kPublicKey,
+         base::strict_cast<int32_t>(device::CoseAlgorithmIdentifier::kEs256)},
+        {device::CredentialType::kPublicKey,
+         base::strict_cast<int32_t>(device::CoseAlgorithmIdentifier::kRs256)}};
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -131,12 +142,14 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
     if (!browser_bound_key_store_) {
       browser_bound_key_store_ = GetBrowserBoundKeyStoreInstance();
     }
-    // TODO(crbug.com/377278827): Provide the browser bound public key
-    // credential parameters from the payment extensions to the key store.
     browser_bound_key_ =
         browser_bound_key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
-            *browser_bound_key_id_);
-    browser_bound_public_key = browser_bound_key_->GetPublicKeyAsCoseKey();
+            *browser_bound_key_id_,
+            options->extensions->payment_browser_bound_key_parameters.value_or(
+                base::ToVector(kDefaultBrowserBoundKeyCredentialParameters)));
+    if (browser_bound_key_) {
+      browser_bound_public_key = browser_bound_key_->GetPublicKeyAsCoseKey();
+    }
   }
 #endif  // BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/40225659): The 'showOptOut' flag status must also be signed
@@ -248,11 +261,13 @@ SecurePaymentConfirmationApp::SetAppSpecificResponseFields(
           response_->signature, response_->user_handle,
           response_->extensions.Clone());
 #if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSecurePaymentConfirmationBrowserBoundKeys) &&
+      assertion_response->extensions->payment.is_null()) {
+    assertion_response->extensions->payment =
+        blink::mojom::AuthenticationExtensionsPaymentResponse::New();
+  }
   if (browser_bound_key_) {
-    if (assertion_response->extensions->payment.is_null()) {
-      assertion_response->extensions->payment =
-          blink::mojom::AuthenticationExtensionsPaymentResponse::New();
-    }
     assertion_response->extensions->payment->browser_bound_signature =
         browser_bound_key_->Sign(response_->info->client_data_json);
   }

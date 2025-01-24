@@ -187,6 +187,7 @@ public class SingleTabSwitcherCoordinator implements ModuleProvider {
         if (mMediatorOnNtp != null) {
             mMediatorOnNtp.destroy();
         }
+        mTabListFaviconProvider.destroy();
     }
 
     // ModuleProvider implementation.

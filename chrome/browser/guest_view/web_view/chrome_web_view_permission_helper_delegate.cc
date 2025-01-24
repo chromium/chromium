@@ -10,9 +10,12 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
@@ -64,6 +67,24 @@ bool IsFeatureEnabledByEmbedderPermissionsPolicy(
     return false;
   }
   return true;
+}
+
+// Checks whether the embedder frame's origin is allowed the given content
+// setting.
+bool IsContentSettingAllowedInEmbedder(
+    WebViewGuest* web_view_guest,
+    ContentSettingsType content_settings_type) {
+  GURL embedder_url = CHECK_DEREF(web_view_guest->embedder_rfh())
+                          .GetLastCommittedOrigin()
+                          .GetURL();
+
+  const HostContentSettingsMap* const content_settings =
+      HostContentSettingsMapFactory::GetForProfile(
+          web_view_guest->browser_context());
+  ContentSetting setting = content_settings->GetContentSetting(
+      embedder_url, embedder_url, content_settings_type);
+  return setting == CONTENT_SETTING_ALLOW ||
+         setting == CONTENT_SETTING_SESSION_ONLY;
 }
 
 }  // anonymous namespace
@@ -250,7 +271,8 @@ void ChromeWebViewPermissionHelperDelegate::OnDownloadPermissionResponse(
 
 void ChromeWebViewPermissionHelperDelegate::RequestPointerLockPermission(
     bool user_gesture,
-    bool last_unlocked_by_target) {
+    bool last_unlocked_by_target,
+    base::OnceCallback<void(bool)> callback) {
   base::Value::Dict request_info;
   request_info.Set(guest_view::kUserGesture, user_gesture);
   request_info.Set(webview::kLastUnlockedBySelf, last_unlocked_by_target);
@@ -264,37 +286,22 @@ void ChromeWebViewPermissionHelperDelegate::RequestPointerLockPermission(
       WEB_VIEW_PERMISSION_TYPE_POINTER_LOCK, std::move(request_info),
       base::BindOnce(&ChromeWebViewPermissionHelperDelegate::
                          OnPointerLockPermissionResponse,
-                     weak_factory_.GetWeakPtr(), user_gesture,
-                     last_unlocked_by_target),
+                     weak_factory_.GetWeakPtr(), std::move(callback)),
       false /* allowed_by_default */);
 }
 
 void ChromeWebViewPermissionHelperDelegate::OnPointerLockPermissionResponse(
-    bool user_gesture,
-    bool last_unlocked_by_target,
+    base::OnceCallback<void(bool)> callback,
     bool allow,
     const std::string& user_input) {
-  content::WebContents* web_contents = web_view_guest()->web_contents();
-  if (!allow || !web_view_guest()->attached()) {
-    web_contents->GotPointerLockPermissionResponse(false);
+  if (web_view_guest()->attached() &&
+      web_view_guest()->IsOwnedByControlledFrameEmbedder() &&
+      !IsContentSettingAllowedInEmbedder(web_view_guest(),
+                                         ContentSettingsType::POINTER_LOCK)) {
+    std::move(callback).Run(false);
     return;
   }
-  // Controlled Frame embedders must also have a permission in order for it to
-  // be granted to the embedded content. Forward the request to the embedder's
-  // WebContents, which will check/prompt for the embedder's permission.
-  // WebContents::GotResponseToPointerLockRequest will be called downstream of
-  // the RequestPointerLock call by PointerLockController.
-  if (web_view_guest()->IsOwnedByControlledFrameEmbedder()) {
-    content::WebContents* embedder_web_contents =
-        web_view_guest()->embedder_web_contents();
-    // We request the pointer lock on the embedder's WebContents, but
-    // WebContentsImpl::GotResponseToPointerLockRequest will forward itself to
-    // the Controlled Frame's WebContents.
-    embedder_web_contents->GetDelegate()->RequestPointerLock(
-        embedder_web_contents, user_gesture, last_unlocked_by_target);
-    return;
-  }
-  web_contents->GotPointerLockPermissionResponse(true);
+  std::move(callback).Run(allow && web_view_guest()->attached());
 }
 
 void ChromeWebViewPermissionHelperDelegate::RequestGeolocationPermission(

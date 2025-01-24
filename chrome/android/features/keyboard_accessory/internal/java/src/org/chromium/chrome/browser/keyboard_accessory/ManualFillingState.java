@@ -21,8 +21,8 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import java.util.ArrayList;
 
 /**
- * This class holds all data that is necessary to restore the state of the Keyboard accessory
- * and its sheet for the {@link WebContents} it is attached to.
+ * This class holds all data that is necessary to restore the state of the Keyboard accessory and
+ * its sheet for the {@link WebContents} it is attached to.
  */
 class ManualFillingState {
     private static final int[] TAB_ORDER = {
@@ -65,7 +65,6 @@ class ManualFillingState {
         mWebContents = webContents;
         mWebContentsShowing = true;
         mWebContentsObserver = new Observer(mWebContents);
-        mWebContents.addObserver(mWebContentsObserver);
     }
 
     /**
@@ -98,7 +97,9 @@ class ManualFillingState {
     }
 
     void destroy() {
-        if (mWebContents != null) mWebContents.removeObserver(mWebContentsObserver);
+        if (mWebContentsObserver != null) {
+            mWebContentsObserver.observe(null);
+        }
         mActionsProvider = null;
         mSheetDataProviders.clear();
         mWebContentsShowing = false;

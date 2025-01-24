@@ -202,6 +202,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDynamicSafeAreaInsetsSupportedByCC);
 // frame production to 60Hz.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleMainFrameTo60Hz);
 
+// When enabled, stops the export of most DFCMetrics.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kStopExportDFCMetrics);
+CC_BASE_EXPORT extern bool StopExportDFCMetrics();
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

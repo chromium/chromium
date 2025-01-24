@@ -207,8 +207,9 @@ struct TypeConverter<blink::mojom::blink::PublicKeyCredentialParametersPtr,
 };
 
 template <>
-struct TypeConverter<blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr,
-                     blink::PublicKeyCredentialCreationOptions> {
+struct MODULES_EXPORT
+    TypeConverter<blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr,
+                  blink::PublicKeyCredentialCreationOptions> {
   static blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr Convert(
       const blink::PublicKeyCredentialCreationOptions&);
 };

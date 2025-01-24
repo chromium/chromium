@@ -1408,9 +1408,6 @@ public class ToolbarManager
                             mToolbar.setTabSwitcherMode(false);
                             mIsTabSwitcherFinishedShowingSupplier.set(false);
                             updateButtonStatus();
-                            if (mToolbar.setForceTextureCapture(true)) {
-                                mControlContainer.invalidateBitmap();
-                            }
                         }
                         mToolbar.onTransitionStart();
                     }

@@ -132,8 +132,7 @@ TouchToFillDelegateAndroidImpl::DryRunForIban() {
   PersonalDataManager& pdm = manager_->client().GetPersonalDataManager();
   std::vector<Iban> ibans_to_suggest =
       pdm.payments_data_manager().GetOrderedIbansToSuggest();
-  return ibans_to_suggest.empty() || !base::FeatureList::IsEnabled(
-                                         features::kAutofillEnableLocalIban)
+  return ibans_to_suggest.empty()
              ? DryRunResult(TriggerOutcome::kNoValidPaymentMethods, {})
              : DryRunResult(TriggerOutcome::kShown,
                             std::move(ibans_to_suggest));

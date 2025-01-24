@@ -567,39 +567,13 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneNotPhishing) {
   EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));
 }
 
-TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneDisabled) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
-    GTEST_SKIP();
-
-  // Case 2: client thinks the page is phishing and so does the server but
-  // showing the interstitial is disabled => no interstitial is shown.
-  ClientSideDetectionService::ClientReportPhishingRequestCallback cb;
-  ClientPhishingRequest verdict;
-  verdict.set_url("http://phishingurl.com/");
-  verdict.set_client_score(1.0f);
-  verdict.set_is_phishing(true);
-
-  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
-                                 PartiallyEqualVerdict(verdict), _, _))
-      .WillOnce(MoveArg<1>(&cb));
-  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
-  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
-  ASSERT_FALSE(cb.is_null());
-
-  // Make sure DisplayBlockingPage is not going to be called.
-  EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(0);
-  std::move(cb).Run(GURL(verdict.url()), false, net::HTTP_OK, std::nullopt);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));
-}
-
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
     GTEST_SKIP();
 
   base::HistogramTester histogram_tester;
 
-  // Case 3: client thinks the page is phishing and so does the server.
+  // Case 2: client thinks the page is phishing and so does the server.
   // We show an interstitial.
   ClientSideDetectionService::ClientReportPhishingRequestCallback cb;
   GURL phishing_url("http://phishingurl.com/");
@@ -646,7 +620,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
     GTEST_SKIP();
 
-  // Case 4 & 5: client thinks a page is phishing then navigates to
+  // Case 3 & 4: client thinks a page is phishing then navigates to
   // another page which is also considered phishing by the client
   // before the server responds with a verdict.  After a while the
   // server responds for both requests with a phishing verdict.  Only
@@ -719,7 +693,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneVerdictNotPhishing) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
     GTEST_SKIP();
 
-  // Case 6: renderer sends a verdict string that isn't phishing.
+  // Case 5: renderer sends a verdict string that isn't phishing.
   ClientPhishingRequest verdict;
   verdict.set_url("http://not-phishing.com/");
   verdict.set_client_score(0.1f);
@@ -795,7 +769,7 @@ TEST_F(ClientSideDetectionHostTest,
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
     GTEST_SKIP();
 
-  // Case 7: renderer sends a verdict string that isn't phishing but the URL
+  // Case 6: renderer sends a verdict string that isn't phishing but the URL
   // of a subresource was on the regular phishing or malware lists.
   GURL url("http://not-phishing.com/");
   ClientPhishingRequest verdict;

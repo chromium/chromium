@@ -69,32 +69,32 @@ export class ComparisonTableListItemElement extends CrLitElement {
 
   static override get properties() {
     return {
-      name: {type: String},
-      uuid: {type: Object},
-      urls: {type: Array},
       hasCheckbox: {type: Boolean},
       imageUrl_: {type: Object},
-      tableUrl_: {type: Object},
-      numItemsString_: {type: String},
       isMenuOpen_: {type: Boolean},
       isRenaming_: {type: Boolean},
+      name: {type: String},
+      numItemsString_: {type: String},
+      tableUrl_: {type: Object},
+      urls: {type: Array},
+      uuid: {type: Object},
     };
   }
 
-  name: string = '';
-  uuid: Uuid = {value: ''};
-  urls: Url[] = [];
   hasCheckbox: boolean = false;
-
+  name: string = '';
+  urls: Url[] = [];
+  uuid: Uuid = {value: ''};
   protected imageUrl_: Url|null = null;
-  protected tableUrl_: Url = {url: ''};
-  protected numItemsString_: string = '';
   protected isMenuOpen_: boolean = false;
   protected isRenaming_: boolean = false;
-  private productSpecificationsProxy_: ProductSpecificationsBrowserProxy =
-      ProductSpecificationsBrowserProxyImpl.getInstance();
+  protected numItemsString_: string = '';
+  protected tableUrl_: Url = {url: ''};
+
   private pluralStringProxy_: PluralStringProxy =
       PluralStringProxyImpl.getInstance();
+  private productSpecificationsProxy_: ProductSpecificationsBrowserProxy =
+      ProductSpecificationsBrowserProxyImpl.getInstance();
   private shoppingApi_: ShoppingServiceBrowserProxy =
       ShoppingServiceBrowserProxyImpl.getInstance();
 
@@ -140,6 +140,9 @@ export class ComparisonTableListItemElement extends CrLitElement {
   }
 
   protected async updateImage_() {
+    // Hide the currently displayed image.
+    this.imageUrl_ = null;
+
     // Find the first product with an image to use as the item's image.
     let imageUrl = null;
     for (let i = 0; i < this.urls.length; i++) {

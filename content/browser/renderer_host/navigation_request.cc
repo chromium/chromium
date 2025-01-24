@@ -9893,7 +9893,7 @@ void NavigationRequest::ComputePoliciesToCommit() {
   DCHECK(!IsErrorPage());
 
   policy_container_builder_->ComputePolicies(
-      url, IsMhtmlOrSubframe(), commit_params_->frame_policy.sandbox_flags,
+      this, IsMhtmlOrSubframe(), commit_params_->frame_policy.sandbox_flags,
       is_credentialless());
 }
 

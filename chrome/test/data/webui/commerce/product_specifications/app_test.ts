@@ -2635,28 +2635,7 @@ suite('AppTest', () => {
     });
 
     test(
-        'table is deleted when the delete context menu item is clicked',
-        async () => {
-          const appElement = await createAppElement();
-          await flushTasks();
-
-          appElement.$.comparisonTableList.fire('delete-table', {
-            uuid: {value: '123'},
-          });
-          await flushTasks();
-
-          assertEquals(
-              1,
-              shoppingServiceApi.getCallCount(
-                  'deleteProductSpecificationsSet'));
-          assertEquals(
-              '123',
-              shoppingServiceApi.getArgs('deleteProductSpecificationsSet')[0]
-                  .value);
-        });
-
-    test(
-        'table is deleted when the delete context menu item is clicked',
+        'table is renamed when the rename context menu item is clicked',
         async () => {
           const appElement = await createAppElement();
           await flushTasks();

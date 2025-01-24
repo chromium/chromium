@@ -154,6 +154,7 @@ class CORE_EXPORT StyleResolverState {
   PseudoElement* GetPseudoElement() const;
 
   void SetParentStyle(const ComputedStyle*);
+  void EnsureParentStyle();
   const ComputedStyle* ParentStyle() const { return parent_style_; }
 
   void SetLayoutParentStyle(const ComputedStyle*);

@@ -122,6 +122,7 @@
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/native_browser_frame.h"
+#include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/top_container_loading_bar.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
@@ -1025,6 +1026,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   contents_web_view_ =
       contents_container->AddChildView(std::move(contents_web_view));
   contents_web_view_->set_is_primary_web_contents_for_window(true);
+  contents_scrim_view_ =
+      contents_container->AddChildView(std::make_unique<ScrimView>());
 #if BUILDFLAG(ENABLE_GLIC)
   // `IsProfileEligible` returns true if the feature flags are present and the
   // profile can potentially enable the feature. If the feature is disabled the
@@ -1047,10 +1050,12 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
 #if BUILDFLAG(ENABLE_GLIC)
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
-      devtools_web_view_, contents_web_view_, glic_border_, watermark_view_));
+      devtools_web_view_, contents_web_view_, contents_scrim_view_,
+      glic_border_, watermark_view_));
 #else
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
-      devtools_web_view_, contents_web_view_, nullptr, watermark_view_));
+      devtools_web_view_, contents_web_view_, contents_scrim_view_, nullptr,
+      watermark_view_));
 #endif
 
   toolbar_ = top_container_->AddChildView(
@@ -1170,6 +1175,7 @@ BrowserView::~BrowserView() {
   infobar_container_ = nullptr;
   contents_web_view_ = nullptr;
   devtools_web_view_ = nullptr;
+  contents_scrim_view_ = nullptr;
   watermark_view_ = nullptr;
   glic_border_ = nullptr;
   contents_container_ = nullptr;
@@ -2333,6 +2339,12 @@ bool BrowserView::UpdateToolbarSecurityState() {
 void BrowserView::UpdateCustomTabBarVisibility(bool visible, bool animate) {
   if (toolbar_) {
     toolbar_->UpdateCustomTabBarVisibility(visible, animate);
+  }
+}
+
+void BrowserView::SetContentScrimVisibility(bool visible) {
+  if (base::FeatureList::IsEnabled(features::KScrimForTabModal)) {
+    contents_scrim_view()->SetVisible(visible);
   }
 }
 

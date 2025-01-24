@@ -362,18 +362,13 @@ void DigitalIdentityRequestImpl::Get(
     return;
   }
 
-  std::optional<std::string> protocol = digital_credential_provider->protocol;
-  std::optional<std::string> request_json_string =
-      digital_credential_provider->request;
+  std::string protocol = digital_credential_provider->protocol;
+  std::string request_json_string = digital_credential_provider->request;
   base::Value request_to_send =
       BuildGetRequest(std::move(digital_credential_provider));
-  if (!request_json_string) {
-    CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
-    return;
-  }
 
   data_decoder::DataDecoder::ParseJsonIsolated(
-      *request_json_string,
+      request_json_string,
       base::BindOnce(&DigitalIdentityRequestImpl::OnGetRequestJsonParsed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(protocol),
                      std::move(request_to_send)));
@@ -454,7 +449,7 @@ void DigitalIdentityRequestImpl::Abort() {
 }
 
 void DigitalIdentityRequestImpl::OnGetRequestJsonParsed(
-    std::optional<std::string> protocol,
+    std::string protocol,
     base::Value request_to_send,
     data_decoder::DataDecoder::ValueOrError parsed_result) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -502,7 +497,7 @@ void DigitalIdentityRequestImpl::OnGetRequestJsonParsed(
 }
 
 void DigitalIdentityRequestImpl::OnCreateRequestJsonParsed(
-    std::optional<std::string> protocol,
+    std::string protocol,
     base::Value request_to_send,
     data_decoder::DataDecoder::ValueOrError parsed_result) {
   if (!parsed_result.has_value()) {
@@ -543,7 +538,7 @@ void DigitalIdentityRequestImpl::OnCreateRequestJsonParsed(
 }
 
 void DigitalIdentityRequestImpl::OnInterstitialDone(
-    std::optional<std::string> protocol,
+    std::string protocol,
     base::Value request_to_send,
     RequestStatusForMetrics status_after_interstitial) {
   if (status_after_interstitial != RequestStatusForMetrics::kSuccess) {

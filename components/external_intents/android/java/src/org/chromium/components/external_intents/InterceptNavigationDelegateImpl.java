@@ -148,7 +148,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     public void associateWithWebContents(WebContents webContents) {
         if (mWebContents == webContents) return;
         if (mWebContents != null) {
-            mWebContents.removeObserver(mWebContentsObserver);
+            mWebContentsObserver.observe(null);
             mWebContentsObserver = null;
         }
         mWebContents = webContents;

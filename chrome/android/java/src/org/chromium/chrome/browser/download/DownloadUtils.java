@@ -38,6 +38,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.download.home.DownloadActivityLauncher;
+import org.chromium.chrome.browser.download.DownloadMetrics.OpenWithExternalAppsSource;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.media.MediaViewerUtils;
@@ -381,7 +382,8 @@ public class DownloadUtils {
                     offlineItem.mimeType,
                     offlineItem.originalUrl.getSpec(),
                     offlineItem.referrerUrl.getSpec(),
-                    context == null ? ContextUtils.getApplicationContext() : context)) {
+                    context == null ? ContextUtils.getApplicationContext() : context,
+                    OpenWithExternalAppsSource.DOWNLOAD_PROGRESS_MESSAGE)) {
                 DownloadUtils.showDownloadManager(null, null, otrProfileId, source);
             }
         } else {
@@ -445,7 +447,13 @@ public class DownloadUtils {
         }
 
         // Check if any apps can open the file.
-        if (openFileWithExternalApps(filePath, mimeType, originalUrl, referrer, context)) {
+        if (openFileWithExternalApps(
+                filePath,
+                mimeType,
+                originalUrl,
+                referrer,
+                context,
+                OpenWithExternalAppsSource.OPEN_FILE)) {
             service.updateLastAccessTime(downloadGuid, otrProfileId);
             return true;
         }
@@ -764,7 +772,8 @@ public class DownloadUtils {
             String mimeType,
             String originalUrl,
             String referrer,
-            Context context) {
+            Context context,
+            @OpenWithExternalAppsSource int source) {
         try {
             // TODO(qinmin): Move this to an AsyncTask so we don't need to temper with strict mode.
             Uri uri =
@@ -774,6 +783,7 @@ public class DownloadUtils {
             Intent viewIntent =
                     MediaViewerUtils.createViewIntentForUri(uri, mimeType, originalUrl, referrer);
             context.startActivity(viewIntent);
+            DownloadMetrics.recordOpenDownloadWithExternalAppsSource(source);
             return true;
         } catch (Exception e) {
             Log.e(TAG, "Cannot start activity to open file", e);

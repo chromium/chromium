@@ -62,12 +62,12 @@ def main():
 
     print("Updating DEPS files")
     for key, objects in updates.items():
-        obj = objects[0]
+        obj = objects["objects"][0]
         object_info = ','.join([
-            obj['object_name'],
-            obj['sha256sum'],
-            str(obj['size_bytes']),
-            str(obj['generation']),
+            obj["object_name"],
+            obj["sha256sum"],
+            str(obj["size_bytes"]),
+            str(obj["generation"]),
         ])
 
         print(f"Updating {key} in src/DEPS")

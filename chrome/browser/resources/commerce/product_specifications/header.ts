@@ -37,10 +37,7 @@ export class HeaderElement extends CrLitElement {
 
   static override get properties() {
     return {
-      menuButtonDisabled: {
-        type: Boolean,
-        value: false,
-      },
+      menuButtonDisabled: {type: Boolean},
 
       subtitle: {
         type: String,
@@ -49,22 +46,18 @@ export class HeaderElement extends CrLitElement {
 
       showingMenu_: {
         type: Boolean,
-        value: false,
         reflect: true,
       },
 
-      showingInput_: {
-        type: Boolean,
-        value: false,
-      },
+      showingInput_: {type: Boolean},
     };
   }
 
-  menuButtonDisabled: boolean;
+  menuButtonDisabled: boolean = false;
   subtitle: string|null = null;
 
-  protected showingMenu_: boolean;
-  protected showingInput_: boolean;
+  protected showingMenu_: boolean = false;
+  protected showingInput_: boolean = false;
   protected pageName_: string;
   protected maxNameLength_: number = loadTimeData.getInteger('maxNameLength');
 

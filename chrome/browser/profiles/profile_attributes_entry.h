@@ -110,6 +110,10 @@ class ProfileAttributesEntry {
   // Gets the local profile name.
   std::u16string GetLocalProfileName() const;
 
+  // Get the profile label set for a managed profile. This is used instead of
+  // the local profile name if present.
+  std::u16string GetEnterpriseProfileLabel() const;
+
   std::u16string GetShortcutName() const;
   // Gets the path to the profile. Should correspond to the path passed to
   // ProfileAttributesStorage::GetProfileAttributesWithPath to get this entry.
@@ -233,6 +237,7 @@ class ProfileAttributesEntry {
 
   // |is_using_default| should be set to false for non default profile names.
   void SetLocalProfileName(const std::u16string& name, bool is_default_name);
+  void SetEnterpriseProfileLabel(const std::u16string& name);
   void SetShortcutName(const std::u16string& name);
   void SetActiveTimeToNow();
   // Only ephemeral profiles can be set as omitted.
@@ -295,6 +300,7 @@ class ProfileAttributesEntry {
   static const char kGAIAIdKey[];
   static const char kIsConsentedPrimaryAccountKey[];
   static const char kNameKey[];
+  static const char kEnterpriseLabelKey[];
   static const char kIsUsingDefaultNameKey[];
   static const char kIsUsingDefaultAvatarKey[];
   static const char kUseGAIAPictureKey[];

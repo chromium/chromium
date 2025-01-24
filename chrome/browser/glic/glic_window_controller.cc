@@ -317,9 +317,9 @@ void GlicWindowController::Show(BrowserWindowInterface* bwi) {
 }
 
 gfx::Rect GlicWindowController::GetInitialDetachedBounds() {
-  gfx::Size default_widget_size(kWidgetDefaultWidth, kWidgetTopBarHeight);
-  if (!final_widget_bounds_.IsEmpty()) {
-    default_widget_size = final_widget_bounds_.size();
+  gfx::Size widget_size(kWidgetDefaultWidth, kWidgetTopBarHeight);
+  if (glic_size_) {
+    widget_size = *glic_size_;
   }
   gfx::Rect initial_rect;
   // Right now this only detects whether the glic widget is summoned from the
@@ -328,19 +328,16 @@ gfx::Rect GlicWindowController::GetInitialDetachedBounds() {
   // show up in a detached state.
   gfx::Point top_right_point = GetTopRightPositionForDetachedGlicWindow();
   int padding = 50;
-  initial_rect.set_x(top_right_point.x() - default_widget_size.width() -
-                     padding);
+  initial_rect.set_x(top_right_point.x() - widget_size.width() - padding);
   initial_rect.set_y(top_right_point.y() + padding);
-  initial_rect.set_size(default_widget_size);
+  initial_rect.set_size(widget_size);
   return initial_rect;
 }
 
 void GlicWindowController::OpenAttached(Browser* browser,
                                         views::View* glic_button_view) {
-  gfx::Size default_widget_size(kWidgetDefaultWidth, kWidgetTopBarHeight);
-  if (final_widget_bounds_.IsEmpty()) {
-    final_widget_bounds_.set_size(default_widget_size);
-  }
+  // When opening attached, we always go through the standard opening animation.
+  gfx::Size widget_size(kWidgetDefaultWidth, kWidgetTopBarHeight);
   gfx::Rect glic_window_widget_initial_rect;
 
   // If summoned from the tab strip button. This will always show up attached
@@ -350,18 +347,17 @@ void GlicWindowController::OpenAttached(Browser* browser,
       GetTopRightPositionForAttachedGlicWindow(glic_button_view);
   glic_window_widget_initial_rect = glic_button_view->GetBoundsInScreen();
 
-  glic_attached_widget_ =
-      CreateAttachedWidget(profile_, glic_window_widget_initial_rect);
-  glic_widget_observation_.Observe(glic_attached_widget_.get());
+  glic_widget_ = CreateGlicWidget(profile_, glic_window_widget_initial_rect);
+  glic_widget_observation_.Observe(glic_widget_.get());
 
-  glic_attached_widget_->Show();
+  glic_widget_->Show();
   AttachToBrowser(browser);
   // Set target bounds for animation and run the open attached animation.
-  gfx::Rect target_bounds = glic_attached_widget_->GetWindowBoundsInScreen();
-  int final_x = top_right_point.x() - final_widget_bounds_.width();
+  gfx::Rect target_bounds = glic_widget_->GetWindowBoundsInScreen();
+  int final_x = top_right_point.x() - widget_size.width();
   target_bounds.set_x(final_x);
-  target_bounds.set_width(final_widget_bounds_.width());
-  target_bounds.set_height(final_widget_bounds_.height());
+  target_bounds.set_width(widget_size.width());
+  target_bounds.set_height(widget_size.height());
 
   // TODO(crbug.com/389982576): Match the background color of the widget with
   // the web client background.
@@ -378,8 +374,8 @@ void GlicWindowController::OpenDetached() {
   gfx::Rect initial_bounds = GetInitialDetachedBounds();
 
   // Make the widget.
-  glic_attached_widget_ = CreateAttachedWidget(profile_, initial_bounds);
-  glic_widget_observation_.Observe(glic_attached_widget_.get());
+  glic_widget_ = CreateGlicWidget(profile_, initial_bounds);
+  glic_widget_observation_.Observe(glic_widget_.get());
 
   // We skip the showing animation and jump straight to waiting for glic to
   // load.
@@ -448,8 +444,18 @@ void GlicWindowController::ShowFinish() {
 
   // Set the draggable area to the top bar of the window, by default.
   GetGlicView()->SetDraggableAreas(
-      {{0, 0, final_widget_bounds_.width(), kWidgetTopBarHeight}});
+      {{0, 0, GetGlicView()->width(), kWidgetTopBarHeight}});
   NotifyIfPanelStateChanged();
+
+  // Animate to the requested size, if it exists.
+  if (glic_size_) {
+    gfx::Rect current_bounds = GetGlicWidget()->GetWindowBoundsInScreen();
+    if (*glic_size_ != current_bounds.size()) {
+      current_bounds.set_size(*glic_size_);
+      AnimateBounds(current_bounds, base::Milliseconds(kEntryDurationMs),
+                    base::DoNothing());
+    }
+  }
 }
 
 GlicView* GlicWindowController::GetGlicView() {
@@ -460,7 +466,14 @@ GlicView* GlicWindowController::GetGlicView() {
 }
 
 views::Widget* GlicWindowController::GetGlicWidget() {
-  return glic_attached_widget_.get();
+  return glic_widget_.get();
+}
+
+content::WebContents* GlicWindowController::GetWebContents() {
+  if (!contents_) {
+    return nullptr;
+  }
+  return contents_->web_contents();
 }
 
 gfx::Point GlicWindowController::GetTopRightPositionForAttachedGlicWindow(
@@ -514,9 +527,10 @@ void GlicWindowController::Detach() {
   // moves to the top right of the display.
   gfx::Size screen_size =
       display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel();
-  final_widget_bounds_.set_origin(
-      gfx::Point(screen_size.width() - final_widget_bounds_.width(), 0));
-  AnimateBounds(final_widget_bounds_, base::Milliseconds(kEntryDurationMs),
+  gfx::Rect widget_bounds = glic_widget_->GetWindowBoundsInScreen();
+  widget_bounds.set_origin(
+      gfx::Point(screen_size.width() - widget_bounds.width(), 0));
+  AnimateBounds(widget_bounds, base::Milliseconds(kEntryDurationMs),
                 base::DoNothing());
 }
 
@@ -535,7 +549,7 @@ void GlicWindowController::AttachToBrowser(Browser* browser) {
   // Add observer to new parent.
   attached_browser_widget_observation_.Reset();
   attached_browser_widget_observation_.Observe(browser_widget);
-  glic_attached_widget_->Reparent(browser_widget);
+  glic_widget_->Reparent(browser_widget);
   if (!IsActive()) {
     GetGlicWidget()->Activate();
   }
@@ -564,7 +578,7 @@ void GlicWindowController::AttachToBrowser(Browser* browser) {
 void GlicWindowController::Resize(const gfx::Size& size,
                                   base::TimeDelta duration,
                                   base::OnceClosure callback) {
-  final_widget_bounds_.set_size(size);
+  glic_size_ = size;
 
   if (!GetGlicWidget()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -575,7 +589,7 @@ void GlicWindowController::Resize(const gfx::Size& size,
   gfx::Rect current_bounds = GetGlicWidget()->GetWindowBoundsInScreen();
   int original_top_right = current_bounds.x() + current_bounds.width();
   current_bounds.set_size(size);
-  current_bounds.set_x(original_top_right - final_widget_bounds_.width());
+  current_bounds.set_x(original_top_right - size.width());
 
   AnimateBounds(current_bounds, duration, std::move(callback));
 }
@@ -598,7 +612,7 @@ void GlicWindowController::AnimateBounds(const gfx::Rect& target_bounds,
       this, target_bounds, duration, std::move(callback));
 }
 
-std::unique_ptr<views::Widget> GlicWindowController::CreateAttachedWidget(
+std::unique_ptr<views::Widget> GlicWindowController::CreateGlicWidget(
     Profile* profile,
     const gfx::Rect& initial_bounds) {
   views::Widget::InitParams params(
@@ -648,7 +662,7 @@ void GlicWindowController::Close() {
   window_event_observer_.reset();
   browser_close_subscription_.reset();
   glic_widget_observation_.Reset();
-  glic_attached_widget_.reset();
+  glic_widget_.reset();
   NotifyIfPanelStateChanged();
 
   if (web_client_) {
@@ -689,14 +703,10 @@ void GlicWindowController::HandleAttachmentToBrowserWindows(
   // This should only ever be called after a move is completed.
   CHECK(!in_move_loop_);
 
-  content::BrowserContext* glic_browser_context =
-      GetGlicView()->web_view()->GetBrowserContext();
-
   // The profile must have started off as Glic enabled since a Glic widget is
   // open but it may have been disabled at runtime by policy. In this edge-case,
   // prevent reattaching back to a window (as it no longer has a GlicButton).
-  if (!GlicEnabling::IsEnabledForProfile(
-          Profile::FromBrowserContext(glic_browser_context))) {
+  if (!GlicEnabling::IsEnabledForProfile(profile_)) {
     return;
   }
 
@@ -764,16 +774,18 @@ void GlicWindowController::MovePositionToBrowserGlicButton(Browser* browser,
   gfx::Rect glic_button_rect = glic_button->GetBoundsInScreen();
   gfx::Point top_right = glic_button_rect.top_right();
   int tab_strip_padding = GetLayoutConstant(TAB_STRIP_PADDING);
-  final_widget_bounds_.set_x(top_right.x() - final_widget_bounds_.width() -
-                             tab_strip_padding);
-  final_widget_bounds_.set_y(top_right.y() + tab_strip_padding);
+
+  gfx::Rect current_bounds = GetGlicWidget()->GetWindowBoundsInScreen();
+  gfx::Rect new_bounds = current_bounds;
+  new_bounds.set_x(top_right.x() - current_bounds.width() - tab_strip_padding);
+  new_bounds.set_y(top_right.y() + tab_strip_padding);
   // Avoid conversions between pixels and DIP on non 1.0 scale factor displays
   // changing widget width and height.
   if (animate) {
-    AnimateBounds(final_widget_bounds_, base::Milliseconds(kEntryDurationMs),
+    AnimateBounds(new_bounds, base::Milliseconds(kEntryDurationMs),
                   base::DoNothing());
   } else {
-    GetGlicWidget()->SetBounds(final_widget_bounds_);
+    GetGlicWidget()->SetBounds(new_bounds);
   }
   NotifyIfPanelStateChanged();
 }
@@ -791,13 +803,13 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
     params.accept_events = false;
     // Widget name is specified for debug purposes.
     params.name = "HolderWindow";
-    params.bounds = glic_attached_widget_->GetWindowBoundsInScreen();
+    params.bounds = glic_widget_->GetWindowBoundsInScreen();
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     holder_widget_->Init(std::move(params));
     holder_widget_->ShowInactive();
   }
 
-  glic_attached_widget_->Reparent(holder_widget_.get());
+  glic_widget_->Reparent(holder_widget_.get());
   NotifyIfPanelStateChanged();
 
   // When the glic window is in a detached state, elevate its z-order to be
@@ -814,11 +826,10 @@ bool GlicWindowController::IsBrowserGlicCompatible(Browser* browser) {
   // - is not a TYPE_NORMAL browser
   // - is from a glic-disabled profile
   // - is not visible
-  // - uses a different BrowserContext from glic
+  // - uses a different Profile from glic
   if (!GlicEnabling::IsEnabledForProfile(browser->profile()) ||
       !browser->is_type_normal() || !browser->window()->IsVisible() ||
-      browser->GetWebView()->GetBrowserContext() !=
-          GetGlicView()->web_view()->GetBrowserContext()) {
+      browser->profile() != profile_) {
     return false;
   }
   return true;

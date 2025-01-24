@@ -47,6 +47,10 @@ class InteractiveBrowserTestPrivate
 
   bool IsInstrumentedWebContents(ui::ElementIdentifier element_id) const;
 
+  // Removes WebContents instrumentation; can allow for re-instrumentation using
+  // the same ID later. Returns whether `to_remove` was found and removed.
+  bool UninstrumentWebContents(ui::ElementIdentifier to_remove);
+
   static std::string DeepQueryToString(
       const WebContentsInteractionTestUtil::DeepQuery& deep_query);
 

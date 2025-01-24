@@ -4,6 +4,7 @@
 
 module glic.mojom;
 
+import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/version.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -77,6 +78,8 @@ struct GetTabContextOptions {
   bool include_inner_text;
   // Whether to include a viewport screenshot in the response.
   bool include_viewport_screenshot;
+    // Whether to include annotated page content in the response.
+  bool include_annotated_page_content;
   // Whether to include PDF data in the response.
   bool include_pdf;
   // Maximum size of PDF data returned. If PDF data exceeds this size, no PDF
@@ -257,6 +260,9 @@ struct TabContext {
   // a document to contain multiple PDFs using iframes. Only the first PDF
   // document found while traversing the frame tree will be provided here.
   PdfDocumentData? pdf_document_data;
+  // Information about the annotated page content. Provided if the document is
+  // a web page and annotated page content was requested.
+  AnnotatedPageData? annotated_page_data;
 };
 
 // Information about a web page being rendered in a tab.
@@ -300,6 +306,14 @@ struct TabData {
   skia.mojom.BitmapN32? favicon;
   // MIME type of the main document in this tab.
   string document_mime_type;
+};
+
+// Information about the annotated page content.
+struct AnnotatedPageData {
+  // Proto for AnnotatedPageContent.
+  // See components/optimization_guide/proto/features/common_quality_data.proto
+  // Provided only if requested.
+  mojo_base.mojom.ProtoWrapper? annotated_page_content;
 };
 
 // Annotates an image, providing security relevant information about the origins

@@ -2042,14 +2042,16 @@ bool WebViewGuest::IsFullscreenForTabOrPending(
   return is_guest_fullscreen_;
 }
 
-void WebViewGuest::RequestPointerLock(WebContents* guest_web_contents,
+void WebViewGuest::RequestPointerLock(WebContents* web_contents,
                                       bool user_gesture,
                                       bool last_unlocked_by_target) {
   CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
-  CHECK_EQ(guest_web_contents, web_contents());
 
   web_view_permission_helper_->RequestPointerLockPermission(
-      user_gesture, last_unlocked_by_target);
+      user_gesture, last_unlocked_by_target,
+      base::BindOnce(
+          base::IgnoreResult(&WebContents::GotPointerLockPermissionResponse),
+          base::Unretained(web_contents)));
 }
 
 void WebViewGuest::LoadURLWithParams(

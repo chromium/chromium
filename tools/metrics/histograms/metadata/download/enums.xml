@@ -730,6 +730,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Never attached before job complete"/>
 </enum>
 
+<enum name="OpenDownloadWithExternalAppsSource">
+  <int value="0" label="Open file"/>
+  <int value="1" label="Download progress message"/>
+  <int value="2" label="App menu"/>
+</enum>
+
 <enum name="PresentAddPassesDialogResult">
   <summary>
     Defines the result of Add Passes dialog presentation. The presentation can

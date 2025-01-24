@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/css/css_light_dark_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
@@ -196,6 +197,13 @@ void StyleResolverState::SetParentStyle(const ComputedStyle* parent_style) {
   if (style_builder_) {
     // Need to update conversion data for 'lh' units.
     UpdateLengthConversionData();
+  }
+}
+
+void StyleResolverState::EnsureParentStyle() {
+  if (!ParentStyle()) {
+    SetParentStyle(StyleResolver(GetDocument()).InitialStyleForElement());
+    SetLayoutParentStyle(ParentStyle());
   }
 }
 

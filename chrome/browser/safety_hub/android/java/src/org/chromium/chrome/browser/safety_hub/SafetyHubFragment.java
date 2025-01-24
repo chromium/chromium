@@ -9,7 +9,6 @@ import static org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleVi
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.getDashboardModuleTypeForModuleOption;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordDashboardInteractions;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordModuleState;
-import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordNotificationsInteraction;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -35,10 +34,8 @@ import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModulePropertie
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardInteractions;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardModuleType;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.LifecycleEvent;
-import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.NotificationsModuleInteractions;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.CardPreference;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
@@ -49,12 +46,9 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-import java.util.List;
-
 /** Fragment containing Safety hub. */
 public class SafetyHubFragment extends SafetyHubBaseFragment
-        implements NotificationPermissionReviewBridge.Observer,
-                SafetyHubFetchService.Observer,
+        implements SafetyHubFetchService.Observer,
                 PasswordStoreBridge.PasswordStoreObserver,
                 SigninManager.SignInStateObserver,
                 SafetyHubModuleMediatorDelegate {
@@ -85,10 +79,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private static final int ORGANIC_HATS_SURVEY_DELAY_MS = 10000;
 
     private SafetyHubModuleDelegate mDelegate;
-    private NotificationPermissionReviewBridge mNotificationPermissionReviewBridge;
     private SafetyHubFetchService mSafetyHubFetchService;
     private PropertyModel mPasswordCheckPropertyModel;
-    private PropertyModel mNotificationsModel;
     private PropertyModel mBrowserStateModule;
     private PasswordStoreBridge mPasswordStoreBridge;
     private SigninManager mSigninManager;
@@ -100,6 +92,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private SafetyHubPermissionsRevocationModuleMediator mPermissionsRevocationModuleMediator;
     private SafetyHubSafeBrowsingModuleMediator mSafeBrowsingModuleMediator;
     private SafetyHubUpdateCheckModuleMediator mUpdateCheckModuleMediator;
+    private SafetyHubNotificationsModuleMediator mNotificationsModuleMediator;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -114,8 +107,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         SettingsUtils.addPreferencesFromResource(this, R.xml.safety_hub_preferences);
         mPageTitle.set(getString(R.string.prefs_safety_check));
 
-        mNotificationPermissionReviewBridge =
-                NotificationPermissionReviewBridge.getForProfile(getProfile());
         mSafetyHubFetchService = SafetyHubFetchServiceFactory.getForProfile(getProfile());
         mSigninManager = IdentityServicesProvider.get().getSigninManager(getProfile());
 
@@ -130,12 +121,17 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mSafeBrowsingModuleMediator =
                 new SafetyHubSafeBrowsingModuleMediator(
                         findPreference(PREF_SAFE_BROWSING), this, getProfile());
+        mNotificationsModuleMediator =
+                new SafetyHubNotificationsModuleMediator(
+                        findPreference(PREF_NOTIFICATIONS_REVIEW),
+                        this,
+                        NotificationPermissionReviewBridge.getForProfile(getProfile()));
 
         setUpAccountPasswordCheckModule();
         mUpdateCheckModuleMediator.setUpModule();
         mPermissionsRevocationModuleMediator.setUpModule();
-        setUpNotificationsReviewModule();
         mSafeBrowsingModuleMediator.setUpModule();
+        mNotificationsModuleMediator.setUpModule();
         setUpSafetyTipsModule();
         setUpBrowserStateModule();
         updateAllModules();
@@ -153,7 +149,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
             case ModuleOption.ACCOUNT_PASSWORDS:
                 return mPasswordCheckPropertyModel;
             case ModuleOption.NOTIFICATION_REVIEW:
-                return mNotificationsModel;
             case ModuleOption.UPDATE_CHECK:
             case ModuleOption.UNUSED_PERMISSIONS:
             case ModuleOption.SAFE_BROWSING:
@@ -181,6 +176,11 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         startSettings(fragment);
     }
 
+    @Override
+    public void launchSiteSettingsActivityForModule(@SiteSettingsCategory.Type int category) {
+        launchSiteSettingsActivity(category);
+    }
+
     private void setUpBrowserStateModule() {
         CardPreference browserStatePreference = findPreference(PREF_BROWSER_STATE_INDICATOR);
         int compromisedPasswordsCount =
@@ -193,7 +193,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         int sitesWithUnusedPermissionsCount =
                 mPermissionsRevocationModuleMediator.getRevokedPermissionsCount();
         int notificationPermissionsForReviewCount =
-                mNotificationPermissionReviewBridge.getNotificationPermissions().size();
+                mNotificationsModuleMediator.getNotificationsPermissionsCount();
 
         mBrowserStateModule =
                 new PropertyModel.Builder(
@@ -264,72 +264,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         }
     }
 
-    private void setUpNotificationsReviewModule() {
-        SafetyHubExpandablePreference notificationsPreference =
-                findPreference(PREF_NOTIFICATIONS_REVIEW);
-
-        mNotificationsModel =
-                new PropertyModel.Builder(
-                                DeprecatedSafetyHubModuleProperties
-                                        .NOTIFICATIONS_REVIEW_MODULE_KEYS)
-                        .with(DeprecatedSafetyHubModuleProperties.IS_VISIBLE, true)
-                        .with(
-                                DeprecatedSafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
-                                v -> {
-                                    List<NotificationPermissions> notificationPermissionsList =
-                                            mNotificationPermissionReviewBridge
-                                                    .getNotificationPermissions();
-                                    mNotificationPermissionReviewBridge
-                                            .bulkResetNotificationPermissions();
-                                    showSnackbar(
-                                            getResources()
-                                                    .getQuantityString(
-                                                            R.plurals
-                                                                    .safety_hub_notifications_bulk_reset_snackbar,
-                                                            notificationPermissionsList.size(),
-                                                            notificationPermissionsList.size()),
-                                            Snackbar.UMA_SAFETY_HUB_MULTIPLE_SITE_NOTIFICATIONS,
-                                            new SnackbarManager.SnackbarController() {
-                                                @Override
-                                                public void onAction(Object actionData) {
-                                                    mNotificationPermissionReviewBridge
-                                                            .bulkAllowNotificationPermissions(
-                                                                    (List<NotificationPermissions>)
-                                                                            actionData);
-                                                    recordNotificationsInteraction(
-                                                            NotificationsModuleInteractions
-                                                                    .UNDO_BLOCK_ALL);
-                                                }
-                                            },
-                                            notificationPermissionsList);
-                                    recordNotificationsInteraction(
-                                            NotificationsModuleInteractions.BLOCK_ALL);
-                                })
-                        .with(
-                                DeprecatedSafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER,
-                                v -> {
-                                    startSettings(SafetyHubNotificationsFragment.class);
-                                    recordNotificationsInteraction(
-                                            NotificationsModuleInteractions.OPEN_UI_REVIEW);
-                                })
-                        .with(
-                                DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
-                                v -> {
-                                    launchSiteSettingsActivity(
-                                            SiteSettingsCategory.Type.NOTIFICATIONS);
-                                    recordNotificationsInteraction(
-                                            NotificationsModuleInteractions.GO_TO_SETTINGS);
-                                })
-                        .build();
-
-        PropertyModelChangeProcessor.create(
-                mNotificationsModel,
-                notificationsPreference,
-                DeprecatedSafetyHubModuleViewBinder::bindNotificationsReviewProperties);
-
-        mNotificationPermissionReviewBridge.addObserver(this);
-    }
-
     private void setUpSafetyTipsModule() {
         ExpandablePreferenceGroup safetyTipsPreference = findPreference(PREF_SAFETY_TIPS);
         safetyTipsPreference.setExpanded(false);
@@ -398,7 +332,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         super.onDestroy();
         recordAllModulesState(LifecycleEvent.ON_EXIT);
 
-        mNotificationPermissionReviewBridge.removeObserver(this);
         mSafetyHubFetchService.removeObserver(this);
         mSigninManager.removeSignInStateObserver(this);
         if (mPasswordStoreBridge != null) {
@@ -416,11 +349,10 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
             mSafeBrowsingModuleMediator.destroy();
             mSafeBrowsingModuleMediator = null;
         }
-    }
-
-    @Override
-    public void notificationPermissionsChanged() {
-        updateNotificationsReviewPreference();
+        if (mNotificationsModuleMediator != null) {
+            mNotificationsModuleMediator.destroy();
+            mNotificationsModuleMediator = null;
+        }
     }
 
     @Override
@@ -464,7 +396,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         updatePasswordCheckPreference();
         mSafeBrowsingModuleMediator.updateModule();
         mPermissionsRevocationModuleMediator.updateModule();
-        updateNotificationsReviewPreference();
+        mNotificationsModuleMediator.updateModule();
 
         onUpdateNeeded();
     }
@@ -488,6 +420,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 mSafeBrowsingModuleMediator.setModuleExpandState(hasNonManagedWarningState);
             } else if (i == ModuleOption.UPDATE_CHECK) {
                 mUpdateCheckModuleMediator.setModuleExpandState(hasNonManagedWarningState);
+            } else if (i == ModuleOption.NOTIFICATION_REVIEW) {
+                mNotificationsModuleMediator.setModuleExpandState(hasNonManagedWarningState);
             } else {
                 updateModuleExpandState(i, hasNonManagedWarningState);
             }
@@ -509,6 +443,9 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
             } else if (i == ModuleOption.UPDATE_CHECK) {
                 moduleState = mUpdateCheckModuleMediator.getModuleState();
                 managed = mUpdateCheckModuleMediator.isManaged();
+            } else if (i == ModuleOption.NOTIFICATION_REVIEW) {
+                moduleState = mNotificationsModuleMediator.getModuleState();
+                managed = mNotificationsModuleMediator.isManaged();
             } else {
                 PropertyModel propertyModel = getModulePropertyModel(i);
                 moduleState = getModuleState(propertyModel, i);
@@ -534,6 +471,9 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mBrowserStateModule.set(
                 DeprecatedSafetyHubModuleProperties.UPDATE_STATUS,
                 mUpdateCheckModuleMediator.getUpdateStatus());
+        mBrowserStateModule.set(
+                DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
+                mNotificationsModuleMediator.getNotificationsPermissionsCount());
     }
 
     private void updateModuleExpandState(
@@ -565,19 +505,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
     public void setDelegate(SafetyHubModuleDelegate safetyHubModuleDelegate) {
         mDelegate = safetyHubModuleDelegate;
-    }
-
-    private void updateNotificationsReviewPreference() {
-        int notificationPermissionsForReviewCount =
-                mNotificationPermissionReviewBridge.getNotificationPermissions().size();
-        mNotificationsModel.set(
-                DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
-                notificationPermissionsForReviewCount);
-        mBrowserStateModule.set(
-                DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
-                notificationPermissionsForReviewCount);
-
-        onUpdateNeeded();
     }
 
     private void updatePasswordCheckPreference() {
@@ -656,6 +583,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 moduleState = mSafeBrowsingModuleMediator.getModuleState();
             } else if (i == ModuleOption.UPDATE_CHECK) {
                 moduleState = mUpdateCheckModuleMediator.getModuleState();
+            } else if (i == ModuleOption.NOTIFICATION_REVIEW) {
+                moduleState = mNotificationsModuleMediator.getModuleState();
             } else {
                 moduleState = getModuleState(getModulePropertyModel(i), i);
             }

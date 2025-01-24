@@ -214,9 +214,6 @@ public class ToolbarControlContainerTest {
 
         mAdapter.triggerBitmapCapture();
         verifyIsDirtyWasBlocked(TopToolbarBlockCaptureReason.VIEW_NOT_DIRTY);
-
-        mAdapter.forceInvalidate();
-        verifyIsDirtyWasAllowed(TopToolbarAllowCaptureReason.UNKNOWN);
     }
 
     @Test

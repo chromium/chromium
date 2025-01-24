@@ -130,6 +130,12 @@ struct XRSession {
 
   XREnvironmentBlendMode enviroment_blend_mode;
   XRInteractionMode interaction_mode;
+
+  // Indicates whether the device would like for the page to go fullscreen to
+  // finish the session configuration. Some runtimes (ARCore on mobile), need
+  // this for a fully immersive experience, but cannot trigger it themselves.
+  [EnableIf=is_android]
+  bool wants_fullscreen = false;
 };
 
 // This structure contains the infomation and interfaces needed to create a two

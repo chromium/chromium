@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/version_ui/version_handler_helper.h"
+#include "components/webui/version/version_handler_helper.h"
 
 #include <string_view>
 #include <utility>

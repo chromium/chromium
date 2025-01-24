@@ -529,11 +529,7 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     // Don't directly change the query, but instead let the containing element
     // update the searchbox UI. That in turn will cause this object to issue
     // a new query to the backend.
-    this.dispatchEvent(new CustomEvent('query-changed-by-user', {
-      bubbles: true,
-      composed: true,
-      detail: query,
-    }));
+    this.fire('query-changed-by-user', query);
   }
 
   private onScrollOrResize_() {

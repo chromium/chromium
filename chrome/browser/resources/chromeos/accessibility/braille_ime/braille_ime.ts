@@ -71,8 +71,7 @@ export class BrailleIme {
 
   /**
    * Identifier for the use standard keyboard option used
-   * in the menu and
-   * {@code localStorage}.  This can be switched on to
+   * in the menu and chrome.storage.local.  This can be switched on to
    * type braille using the standard keyboard, or off
    * (default) for the usual keyboard behaviour.
    */
@@ -155,12 +154,17 @@ export class BrailleIme {
     if (!this.port_) {
       this.connectChromeVox_();
     }
-    this.useStandardKeyboard_ =
-        localStorage[this.USE_STANDARD_KEYBOARD_ID] === String(true);
-    this.accumulated_ = 0;
-    this.pressed_ = 0;
-    this.updateMenuItems_();
-    this.sendActiveState_();
+
+    chrome.storage.local.get(
+        [this.USE_STANDARD_KEYBOARD_ID], (store: {[key: string]: any}) => {
+          this.useStandardKeyboard_ =
+              Boolean(store[this.USE_STANDARD_KEYBOARD_ID]);
+
+          this.accumulated_ = 0;
+          this.pressed_ = 0;
+          this.updateMenuItems_();
+          this.sendActiveState_();
+        });
   }
 
   /**
@@ -236,13 +240,15 @@ export class BrailleIme {
     if (engineID === this.engineID_ &&
         itemID === this.USE_STANDARD_KEYBOARD_ID) {
       this.useStandardKeyboard_ = !this.useStandardKeyboard_;
-      localStorage[this.USE_STANDARD_KEYBOARD_ID] =
-          String(this.useStandardKeyboard_);
-      if (!this.useStandardKeyboard_) {
-        this.accumulated_ = 0;
-        this.pressed_ = 0;
-      }
-      this.updateMenuItems_();
+
+      chrome.storage.local.set(
+          {[this.USE_STANDARD_KEYBOARD_ID]: this.useStandardKeyboard_}, () => {
+            if (!this.useStandardKeyboard_) {
+              this.accumulated_ = 0;
+              this.pressed_ = 0;
+            }
+            this.updateMenuItems_();
+          });
     }
   }
 

@@ -58,8 +58,6 @@ component("common") {
   sources = [
     "encryptor.cc",
     "encryptor.h",
-    "encryptor_features.cc",
-    "encryptor_features.h",
   ]
 
   deps = [

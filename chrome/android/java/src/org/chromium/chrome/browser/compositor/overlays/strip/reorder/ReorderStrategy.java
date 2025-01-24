@@ -8,12 +8,12 @@ import android.graphics.PointF;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.ReorderType;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
+import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
 
-public interface ReorderStrategy {
+interface ReorderStrategy {
     /**
      * Begin reordering the interacting view.
      *

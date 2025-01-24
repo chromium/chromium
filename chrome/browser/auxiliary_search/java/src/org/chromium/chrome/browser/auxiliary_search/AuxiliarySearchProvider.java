@@ -111,6 +111,10 @@ public class AuxiliarySearchProvider {
                         .getValue();
     }
 
+    void destroy() {
+        mFaviconHelper.destroy();
+    }
+
     /**
      * @return AuxiliarySearchGroup for bookmarks.
      */

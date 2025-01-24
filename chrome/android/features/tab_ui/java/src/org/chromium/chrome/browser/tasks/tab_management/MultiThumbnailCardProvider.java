@@ -66,9 +66,10 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
     private final Paint mSelectedEmptyThumbnailPaint;
     private final Paint mSelectedTextPaint;
     private final int mFaviconBackgroundPaintColor;
-    private TabListFaviconProvider mTabListFaviconProvider;
-    private Context mContext;
+
+    private final Context mContext;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final TabListFaviconProvider mTabListFaviconProvider;
 
     private class MultiThumbnailFetcher {
         private static final int MAX_THUMBNAIL_COUNT = 4;
@@ -431,6 +432,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
     /** Destroy any member that needs clean up. */
     public void destroy() {
         mCurrentTabGroupModelFilterSupplier.removeObserver(mOnTabGroupModelFilterChanged);
+        mTabListFaviconProvider.destroy();
     }
 
     @Override

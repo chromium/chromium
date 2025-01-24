@@ -5,8 +5,13 @@
 #ifndef CC_TREES_PROPERTY_TREE_LAYER_LIST_DELEGATE_H_
 #define CC_TREES_PROPERTY_TREE_LAYER_LIST_DELEGATE_H_
 
+#include <optional>
+
 #include "cc/cc_export.h"
+#include "cc/input/scroll_snap_data.h"
+#include "cc/paint/element_id.h"
 #include "cc/trees/property_tree_delegate.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {
 
@@ -23,6 +28,11 @@ class CC_EXPORT PropertyTreeLayerListDelegate : public PropertyTreeDelegate {
  public:
   // PropertyTreeDelegate overrides.
   void UpdatePropertyTreesIfNeeded(LayerTreeHost*) override;
+  void UpdateScrollOffsetFromImpl(
+      LayerTreeHost* host,
+      const ElementId& id,
+      const gfx::Vector2dF& delta,
+      const std::optional<TargetSnapAreaElementIds>& snap_target_ids) override;
 };
 
 }  // namespace cc

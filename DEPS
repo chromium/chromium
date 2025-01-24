@@ -276,19 +276,19 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': '80d1af3e067081991c26ca1eb45106e732ec52f0',
+  'src_internal_revision': '54598a6d30b267b93137ec8bf4e12b32aaf08043',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'c5c98fc67cc4efafae13fc210493a9dc7e61bfe2',
+  'skia_revision': 'a5c42ae18d32f4d735f01024795608ce1b35cfcb',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'eeaf2585756d9b91a941178d0f2bd66ca9004570',
+  'v8_revision': '83ad4c3cdfbbe766e4556f604f27cbddb2cb15f1',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': '41225dc8f8708d2d4a581c80939f14b63076755a',
+  'angle_revision': 'd7ea4b2ce3c0501afc2bed1adbec02c65600f838',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '3f36b4b6c60738628fb9b91464b3594b8a75ae81',
+  'devtools_frontend_revision': '53a3dbe49f377c75439e407a87a3ee2507b2362b',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '4ebb53b18cf11e371996d763a83a7ffdc002ba01',
+  'dawn_revision': 'f5b5bf7dbe8e7be6f37e24e09e55a80c73fcdca5',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -571,10 +571,10 @@ deps = {
     'dep_type': 'gcs',
     'objects': [
       {
-        'generation': 1714590045814759,
-        'object_name': 'dec7a3a0fc5b83b909cba1b6d119077e0429a138eadef6bf5a0f2e03b1904631',
-        'sha256sum': 'dec7a3a0fc5b83b909cba1b6d119077e0429a138eadef6bf5a0f2e03b1904631',
-        'size_bytes': 129948576,
+        'generation': 1737747193688999,
+        'object_name': '68d9889fc4926ac42e49cb9871e481de712bfa9a90f4fbb0a398dbff82c3d831',
+        'sha256sum': '68d9889fc4926ac42e49cb9871e481de712bfa9a90f4fbb0a398dbff82c3d831',
+        'size_bytes': 19726172,
       },
     ],
   },
@@ -584,10 +584,10 @@ deps = {
     'dep_type': 'gcs',
     'objects': [
       {
-        'generation': 1714589974958986,
-        'object_name': '308e23faba3174bd01accfe358467b8a40fad4db4c49ef629da30219f65a275f',
-        'sha256sum': '308e23faba3174bd01accfe358467b8a40fad4db4c49ef629da30219f65a275f',
-        'size_bytes': 108470444,
+        'generation': 1737747189650520,
+        'object_name': 'f78b961f42716c754c8fbaafd047538860d4cfe91e179f4da06c9e0874ede24c',
+        'sha256sum': 'f78b961f42716c754c8fbaafd047538860d4cfe91e179f4da06c9e0874ede24c',
+        'size_bytes': 18415176,
       },
     ],
   },
@@ -597,10 +597,10 @@ deps = {
     'dep_type': 'gcs',
     'objects': [
       {
-        'generation': 1714589870087834,
-        'object_name': 'fe81e7114b97440262bce004caf02c1514732e2fa7f99693b2836932ad1c4626',
-        'sha256sum': 'fe81e7114b97440262bce004caf02c1514732e2fa7f99693b2836932ad1c4626',
-        'size_bytes': 99265992,
+        'generation': 1737747188899179,
+        'object_name': '809cb5d0205a983027c60e4e292ea0d4db09193461605fcb2c69f21752d7ba8f',
+        'sha256sum': '809cb5d0205a983027c60e4e292ea0d4db09193461605fcb2c69f21752d7ba8f',
+        'size_bytes': 18375580,
       },
     ],
   },
@@ -610,10 +610,10 @@ deps = {
     'dep_type': 'gcs',
     'objects': [
       {
-        'generation': 1714589989387491,
-        'object_name': 'b53933120bb08ffc38140a817e3f0f99782254a6bf9622271574fa004e8783a4',
-        'sha256sum': 'b53933120bb08ffc38140a817e3f0f99782254a6bf9622271574fa004e8783a4',
-        'size_bytes': 122047968,
+        'generation': 1737747190784684,
+        'object_name': '01c02e3bc05dd2c92587d521d4fc8865dff4c7558578032d775bdb9384ffaa2f',
+        'sha256sum': '01c02e3bc05dd2c92587d521d4fc8865dff4c7558578032d775bdb9384ffaa2f',
+        'size_bytes': 19768156,
       },
     ],
   },
@@ -623,10 +623,10 @@ deps = {
     'dep_type': 'gcs',
     'objects': [
       {
-        'generation': 1714590006168779,
-        'object_name': '783cb79f26736c69e8125788d95ffb65a28172349009d75188838a004280a92b',
-        'sha256sum': '783cb79f26736c69e8125788d95ffb65a28172349009d75188838a004280a92b',
-        'size_bytes': 103362108,
+        'generation': 1737747185850858,
+        'object_name': 'fc6654e7e9e74213e3c242d5ec6da28d3cb3f6eb66d6aee4a4b624407827846b',
+        'sha256sum': 'fc6654e7e9e74213e3c242d5ec6da28d3cb3f6eb66d6aee4a4b624407827846b',
+        'size_bytes': 19039560,
       },
     ],
   },
@@ -636,10 +636,10 @@ deps = {
     'dep_type': 'gcs',
     'objects': [
       {
-        'generation': 1714589936675352,
-        'object_name': 'fcf8c3931476dd097c58f2f5d44621c7090b135e85ab56885aa4b44f4bd6cdb5',
-        'sha256sum': 'fcf8c3931476dd097c58f2f5d44621c7090b135e85ab56885aa4b44f4bd6cdb5',
-        'size_bytes': 96161964,
+        'generation': 1737747189124043,
+        'object_name': '9681b26951bd8a49befa52f50d789920d4f0c312f23971dcd7ae67ac463ebfbe',
+        'sha256sum': '9681b26951bd8a49befa52f50d789920d4f0c312f23971dcd7ae67ac463ebfbe',
+        'size_bytes': 18940520,
       },
     ],
   },
@@ -1435,7 +1435,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'be3c364a3f12ea79ce9e00868a45cd75901ba7e5',
+    '7559149299469cfa45e2d25a332f43bc2779e7c2',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1449,7 +1449,7 @@ deps = {
   },
 
   'src/ios/third_party/edo/src': {
-      'url': Var('chromium_git') + '/external/github.com/google/eDistantObject.git' + '@' + '840deebc126940afa5fb4c93f42be7a9fe077ca5',
+      'url': Var('chromium_git') + '/external/github.com/google/eDistantObject.git' + '@' + 'd6eabd6091eb8817e6abbb0a7a8367c7fb4bf914',
       'condition': 'checkout_ios',
   },
 
@@ -1464,7 +1464,7 @@ deps = {
   },
 
   'src/ios/third_party/material_components_ios/src': {
-      'url': Var('chromium_git') + '/external/github.com/material-components/material-components-ios.git' + '@' + 'b5bbb66b58798106ab6d1cab32a22288d3ccabd4',
+      'url': Var('chromium_git') + '/external/github.com/material-components/material-components-ios.git' + '@' + 'ae3d2df04bbab4fa6be7f8343e0a1e15b0594c98',
       'condition': 'checkout_ios',
   },
 
@@ -2429,7 +2429,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'c23d681cdc5b0550b732a48ba902643c16a0a1bd',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'd1206d48daed165bbfb76be18a8e0c8f37828769',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',
@@ -2611,7 +2611,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/r8',
-              'version': '3iC3eGx7wAPZJhIJjRdLvqyiJHhKFVT1Eq6-uccHw9oC',
+              'version': '1ekRXvysB0EIgE0bRo8ySQARP160Trvq6KH80n-zgn8C',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -4465,7 +4465,7 @@ deps = {
 
   'src/components/optimization_guide/internal': {
       'url': Var('chrome_git') + '/chrome/components/optimization_guide.git' + '@' +
-        '9f7423c7457b92bf1ec8cfe4e4127eea4eac014d',
+        'ca02c884aacc817d81d54cceccd3dd973cdc8e27',
       'condition': 'checkout_src_internal',
   },
 
@@ -4845,8 +4845,8 @@ include_rules = [
   '-third_party/abseil-cpp/absl/base/attributes.h',
   '-third_party/abseil-cpp/absl/base/no_destructor.h',
   '-third_party/abseil-cpp/absl/base/nullability.h',
-  '-third_party/abseil-cpp/absl/container',
-  '+third_party/abseil-cpp/absl/container/inlined_vector.h',
+  '-third_party/abseil-cpp/absl/container/btree_map.h',
+  '-third_party/abseil-cpp/absl/container/btree_set.h',
   '-third_party/abseil-cpp/absl/crc',
   '-third_party/abseil-cpp/absl/flags',
   '-third_party/abseil-cpp/absl/functional/any_invocable.h',

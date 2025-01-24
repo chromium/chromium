@@ -28,6 +28,7 @@ interface PageElementTypes {
   URL: HTMLInputElement;
   innerTextCheckbox: HTMLInputElement;
   viewportScreenshotCheckbox: HTMLInputElement;
+  annotatedPageContentCheckbox: HTMLInputElement;
   screenshotImg: HTMLImageElement;
   faviconImg: HTMLImageElement;
   getlocation: HTMLButtonElement;
@@ -187,6 +188,9 @@ $.getpagecontext.addEventListener('click', async () => {
   if ($.viewportScreenshotCheckbox.checked) {
     options.viewportScreenshot = {};
   }
+  if ($.annotatedPageContentCheckbox.checked) {
+    options.annotatedPageContent = true;
+  }
   try {
     const pageContent =
         await client!.browser!.getContextFromFocusedTab!(options);
@@ -199,6 +203,19 @@ $.getpagecontext.addEventListener('click', async () => {
       const favicon = await pageContent.tabData.favicon();
       if (favicon) {
         $.faviconImg.src = URL.createObjectURL(favicon);
+      }
+    }
+    if (pageContent.annotatedPageData && pageContent.annotatedPageData.annotatedPageContent) {
+      const reader = pageContent.annotatedPageData.annotatedPageContent.getReader();
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const uint8View = new Uint8Array(value);
+          logMessage(`Annotated page content data chunk length: ${uint8View.length}`);
+        }
+      } finally {
+        reader.releaseLock();
       }
     }
     logMessage(
