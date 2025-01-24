@@ -282,6 +282,12 @@ export namespace Session {
   export function parseUnsubscribeParams(
     params: unknown,
   ): Protocol.Session.UnsubscribeParameters {
+    if (params && typeof params === 'object' && 'subscriptions' in params) {
+      return parseObject(
+        params,
+        WebDriverBidi.Session.UnsubscribeByIdRequestSchema,
+      ) as Protocol.Session.UnsubscribeParameters;
+    }
     return parseObject(
       params,
       WebDriverBidi.Session.UnsubscribeParametersSchema,
