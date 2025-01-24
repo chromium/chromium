@@ -17,64 +17,54 @@ import '//resources/ash/common/cr_elements/cr_expand_button/cr_expand_button.js'
 import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '//resources/ash/common/cr_elements/md_select.css.js';
 
-import {assert} from '//resources/ash/common/assert.js';
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import type {CrButtonElement} from '//resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrDialogElement} from '//resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrInputElement} from '//resources/ash/common/cr_elements/cr_input/cr_input.js';
+import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
+import {assert} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
-import {ApnAuthenticationType, ApnIpType, ApnState, ApnType} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ApnAuthenticationType, ApnIpType, ApnState, ApnType, CrosNetworkConfigInterface} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './apn_detail_dialog.html.js';
 import {ApnDetailDialogMode} from './cellular_utils.js';
 import {MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
+import {ApnProperties} from './onc_mojo.js';
 
-/** @type {Array} */
-const AuthenticationTypes = [
+const AuthenticationTypes: ApnAuthenticationType[] = [
   ApnAuthenticationType.kAutomatic,
   ApnAuthenticationType.kPap,
   ApnAuthenticationType.kChap,
 ];
 
-/** @type {Array} */
-const IpTypes = [
+const IpTypes: ApnIpType[] = [
   ApnIpType.kAutomatic,
   ApnIpType.kIpv4,
   ApnIpType.kIpv6,
   ApnIpType.kIpv4Ipv6,
 ];
 
-/** @enum {number} */
-const UiElement = {
-  INPUT: 0,
-  ACTION_BUTTON: 1,
-  DONE_BUTTON: 2,
-};
+enum UiElement {
+  INPUT,
+  ACTION_BUTTON,
+  DONE_BUTTON,
+}
 
 /**
  * Regular expression that is used to test for non-ASCII characters.
- * @type {RegExp}
- * @private
  */
 const APN_NON_ASCII_REGEX = /[^\x00-\x7f]+/;
 
 /**
  * Maximum allowed length of the APN input field.
- * @type {number}
- * @private
  */
 const MAX_APN_INPUT_LENGTH = 63;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ApnDetailDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const ApnDetailDialogBase = I18nMixin(PolymerElement);
 
-/** @polymer */
-export class ApnDetailDialog extends ApnDetailDialogElementBase {
+export class ApnDetailDialog extends ApnDetailDialogBase {
   static get is() {
-    return 'apn-detail-dialog';
+    return 'apn-detail-dialog' as const;
   }
 
   static get template() {
@@ -83,13 +73,11 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
 
   static get properties() {
     return {
-      /** @type {ApnProperties|undefined} */
       apnProperties: {
         type: Object,
         observer: 'onApnPropertiesUpdated_',
       },
 
-      /** @type {ApnDetailDialogMode} */
       mode: {
         type: Object,
         value: ApnDetailDialogMode.CREATE,
@@ -97,26 +85,22 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
 
       guid: {type: String},
 
-      /** @type {Array<ApnProperties>} */
       apnList: {
         type: Array,
         value: [],
       },
 
-      /** @private */
       advancedSettingsExpanded_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       AuthenticationTypes: {
         type: Array,
         value: AuthenticationTypes,
         readOnly: true,
       },
 
-      /** @private */
       IpTypes: {
         type: Array,
         value: IpTypes,
@@ -125,58 +109,48 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
 
       /**
        * Enum used as an ID for specific UI elements.
-       * @type {!UiElement}
-       * @private
        */
       UiElement: {
         type: Object,
         value: UiElement,
       },
 
-      /** @private */
       selectedAuthType_: {
         type: String,
         value: AuthenticationTypes[0].toString(),
       },
 
-      /** @private */
       selectedIpType_: {
         type: String,
         value: IpTypes[0].toString(),
       },
 
-      /** @private */
       apn_: {
         type: String,
         value: '',
         observer: 'onApnValueChanged_',
       },
 
-      /** @private */
       username_: {
         type: String,
         value: '',
       },
 
-      /** @private */
       password_: {
         type: String,
         value: '',
       },
 
-      /** @private */
       isDefaultApnType_: {
         type: Boolean,
         value: true,
       },
 
-      /** @private */
       isAttachApnType_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       isApnInputInvalid_: {
         type: Boolean,
         value: false,
@@ -184,12 +158,11 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
             'computeIsApnInputInvalid_(apn_, isMaxApnInputLengthReached_)',
       },
 
-      /** @private */
       isMaxApnInputLengthReached_: {
         type: Boolean,
         value: false,
       },
-      /** @private */
+
       shouldShowApnTypeErrorMessage_: {
         type: Boolean,
         value: false,
@@ -203,14 +176,12 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
        * enable state of the action button changes as a result of user changes
        * in the dialog, and subsequent action button state changes (i.e the
        * initial enabled state of the button will not be announced).
-       * @private {boolean|undefined}
        */
       shouldAnnounceA11yActionButtonState_: {
         type: Object,
         value: undefined,
       },
 
-      /** @private */
       actionButtonEnabledA11yText_: {
         type: String,
         value: '',
@@ -222,32 +193,57 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
     };
   }
 
-  /** @override */
+  apnProperties: ApnProperties|undefined;
+  mode: ApnDetailDialogMode;
+  guid: string;
+  apnList: ApnProperties[];
+  private advancedSettingsExpanded_: boolean;
+  private AuthenticationTypes: ApnAuthenticationType[];
+  private IpTypes: ApnIpType[];
+  private UiElement: UiElement;
+  private selectedAuthType_: string;
+  private selectedIpType_: string;
+  private apn_: string;
+  private username_: string;
+  private password_: string;
+  private isDefaultApnType_: boolean;
+  private isAttachApnType_: boolean;
+  private isApnInputInvalid_: boolean;
+  private isMaxApnInputLengthReached_: boolean;
+  private shouldShowApnTypeErrorMessage_: boolean;
+  private shouldAnnounceA11yActionButtonState_: boolean|undefined;
+  private actionButtonEnabledA11yText_: string;
+  private networkConfig_: CrosNetworkConfigInterface;
+
   constructor() {
     super();
 
-    /** @private {!CrosNetworkConfigInterface} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // Set the default focus when the dialog opens.
-    afterNextRender(this, function() {
-      let element;
+    afterNextRender(this, () => {
       switch (this.mode) {
         case ApnDetailDialogMode.CREATE:
         case ApnDetailDialogMode.EDIT:
-          element = this.shadowRoot.querySelector('cr-input');
+          const input =
+              this.shadowRoot!.querySelector<CrInputElement>('cr-input');
+          if (input) {
+            focusWithoutInk(input);
+          }
           break;
         case ApnDetailDialogMode.VIEW:
-          element = this.shadowRoot.querySelector('#apnDoneBtn');
+          const doneBtn =
+              this.shadowRoot!.querySelector<CrButtonElement>('#apnDoneBtn');
+          if (doneBtn) {
+            focusWithoutInk(doneBtn);
+          }
           break;
       }
-      focusWithoutInk(element);
 
       // Only after dialog is connected and the intended element is focused can
       // action enabled state changes be a11y announced.
@@ -258,12 +254,11 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
 
   /**
    * Observer method used to fill the apn detail dialog, with the provided apn.
-   * @private
    */
-  onApnPropertiesUpdated_() {
-    this.apn_ = /** @type {string}*/ (this.apnProperties.accessPointName);
-    this.username_ = /** @type {string}*/ (this.apnProperties.username);
-    this.password_ = /** @type {string}*/ (this.apnProperties.password);
+  private onApnPropertiesUpdated_(): void {
+    this.apn_ = this.apnProperties.accessPointName;
+    this.username_ = this.apnProperties.username;
+    this.password_ = this.apnProperties.password;
     this.selectedIpType_ = this.apnProperties.ipType.toString();
     this.selectedAuthType_ = this.apnProperties.authentication.toString();
     this.isDefaultApnType_ = false;
@@ -281,11 +276,8 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
   /**
    * Observer for apn_ that is used for detecting whether the max apn length
    * was reached or not and truncating it to MAX_APN_INPUT_LENGTH if so.
-   * @param {string} newValue
-   * @param {string} oldValue
-   * @private
    */
-  onApnValueChanged_(newValue, oldValue) {
+  private onApnValueChanged_(_: string, oldValue: string): void {
     if (oldValue) {
       // If oldValue.length > MAX_APN_INPUT_LENGTH, the user attempted to
       // enter more than the max limit, this method was called and it was
@@ -303,11 +295,8 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
    * Computes whether the APN type error message should be shown or not. It
    * should be shown when the user tries to get into a state where no enabled
    * default APNs but still one or more enabled attach APNs.
-   *
-   * @returns {boolean}
-   * @private
    */
-  computeShouldShowApnTypeErrorMessage_() {
+  private computeShouldShowApnTypeErrorMessage_(): boolean {
     // APN type is always valid if the default APN type is checked.
     if (this.isDefaultApnType_) {
       return false;
@@ -345,14 +334,12 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
     return false;
   }
 
-  /** @private */
-  computeIsApnInputInvalid_() {
+  private computeIsApnInputInvalid_(): boolean {
     return this.isMaxApnInputLengthReached_ ||
         APN_NON_ASCII_REGEX.test(this.apn_);
   }
 
-  /** @private */
-  getApnErrorMessage_() {
+  private getApnErrorMessage_(): string {
     if (!this.isApnInputInvalid_) {
       return '';
     }
@@ -362,22 +349,16 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
     return this.i18n('apnDetailApnErrorInvalidChar');
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onCancelClicked_(event) {
+  private onCancelClicked_(event: Event): void {
     event.stopPropagation();
-    if (this.$.apnDetailDialog.open) {
-      this.$.apnDetailDialog.close();
+    const dialog =
+        this.shadowRoot!.querySelector<CrDialogElement>('#apnDetailDialog')!;
+    if (dialog.open) {
+      dialog.close();
     }
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onActionButtonClicked_(event) {
+  private onActionButtonClicked_(): void {
     assert(this.guid);
     assert(this.mode !== ApnDetailDialogMode.VIEW);
     if (this.mode === ApnDetailDialogMode.CREATE) {
@@ -389,14 +370,11 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
       this.networkConfig_.modifyCustomApn(
           this.guid, this.getApnProperties_(this.apnProperties));
     }
-    this.$.apnDetailDialog.close();
+    this.shadowRoot!.querySelector<CrDialogElement>(
+                        '#apnDetailDialog')!.close();
   }
 
-  /**
-   * @return {!ApnProperties}
-   * @private
-   */
-  getApnProperties_(apnProperties = {}) {
+  private getApnProperties_(apnProperties: ApnProperties = {}): ApnProperties {
     apnProperties.accessPointName = this.apn_;
     apnProperties.username = this.username_;
     apnProperties.password = this.password_;
@@ -404,25 +382,17 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
     apnProperties.ipType = Number(this.selectedIpType_);
     // TODO(b/162365553): Check that ApnTypes is non-empty
     apnProperties.apnTypes = this.getSelectedApnTypes_();
-    return /** @type {!ApnProperties}*/ (apnProperties);
+    return apnProperties;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getActionButtonTitle_() {
+  private getActionButtonTitle_(): string {
     if (this.mode === ApnDetailDialogMode.EDIT) {
       return this.i18n('apnDetailDialogSave');
     }
     return this.i18n('apnDetailDialogAdd');
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeActionButtonEnabledStateA11yText_() {
+  private computeActionButtonEnabledStateA11yText_(): string {
     const isDisabled = this.isUiElementDisabled_(UiElement.ACTION_BUTTON);
     if (this.mode === ApnDetailDialogMode.EDIT) {
       return isDisabled ? this.i18n('apnDetailDialogA11ySaveDisabled') :
@@ -434,12 +404,8 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
     return '';
   }
 
-  /**
-   * @param {string} newVal
-   * @param {string} oldVal
-   * @private
-   */
-  onActionButtonEnabledStateA11yTextChanged_(newVal, oldVal) {
+  private onActionButtonEnabledStateA11yTextChanged_(
+      newVal: string, oldVal: string): void {
     if (this.shouldAnnounceA11yActionButtonState_ === undefined) {
       return;
     }
@@ -450,10 +416,7 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
     this.shouldAnnounceA11yActionButtonState_ = oldVal !== newVal;
   }
 
-  /**
-   * @private
-   */
-  getDialogTitle_() {
+  private getDialogTitle_(): string {
     switch (this.mode) {
       case ApnDetailDialogMode.CREATE:
         return this.i18n('apnDetailAddApnDialogTitle');
@@ -462,13 +425,12 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
       case ApnDetailDialogMode.EDIT:
         return this.i18n('apnDetailEditApnDialogTitle');
     }
+    return '';
   }
   /**
    * Maps the checkboxes to an array of {@link ApnType}.
-   * @returns {Array<ApnType>}
-   * @private
    */
-  getSelectedApnTypes_() {
+  private getSelectedApnTypes_(): ApnType[] {
     const apnTypes = [];
     if (this.isDefaultApnType_) {
       apnTypes.push(ApnType.kDefault);
@@ -482,11 +444,9 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
 
   /**
    * Returns the localized label for the auth type.
-   * @param {ApnAuthenticationType} type
-   * @private
    */
-  getAuthTypeLocalizedLabel_(type) {
-    switch (type) {
+  private getAuthTypeLocalizedLabel_(auth_type: ApnAuthenticationType): string {
+    switch (auth_type) {
       case ApnAuthenticationType.kAutomatic:
         return this.i18n('apnDetailTypeAuto');
       case ApnAuthenticationType.kChap:
@@ -498,11 +458,9 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
 
   /**
    * Returns the localized label for the ip type.
-   * @param {ApnIpType} type
-   * @private
    */
-  getIpTypeLocalizedLabel_(type) {
-    switch (type) {
+  private getIpTypeLocalizedLabel_(ip_type: ApnIpType): string {
+    switch (ip_type) {
       case ApnIpType.kAutomatic:
         return this.i18n('apnDetailTypeAuto');
       case ApnIpType.kIpv4:
@@ -514,26 +472,15 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
     }
   }
 
-  /**
-   * @param {number} item
-   */
-  isSelectedIpType_(item) {
+  private isSelectedIpType_(item: number): boolean {
     return Number(this.selectedIpType_) === item;
   }
 
-  /**
-   * @param {number} item
-   */
-  isSelectedAuthType_(item) {
+  private isSelectedAuthType_(item: number): boolean {
     return Number(this.selectedAuthType_) === item;
   }
 
-  /**
-   * @param {!UiElement} uiElement
-   * @returns {boolean}
-   * @private
-   */
-  isUiElementDisabled_(uiElement) {
+  private isUiElementDisabled_(uiElement: UiElement): boolean {
     switch (uiElement) {
       case UiElement.INPUT:
         return this.mode === ApnDetailDialogMode.VIEW;
@@ -545,12 +492,7 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
     return false;
   }
 
-  /**
-   * @param {!UiElement} uiElement
-   * @returns {boolean}
-   * @private
-   */
-  isUiElementVisible_(uiElement) {
+  private isUiElementVisible_(uiElement: UiElement): boolean {
     switch (uiElement) {
       case UiElement.DONE_BUTTON:
         return this.mode === ApnDetailDialogMode.VIEW;
@@ -559,6 +501,12 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
             this.mode === ApnDetailDialogMode.EDIT;
     }
     return true;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [ApnDetailDialog.is]: ApnDetailDialog;
   }
 }
 
