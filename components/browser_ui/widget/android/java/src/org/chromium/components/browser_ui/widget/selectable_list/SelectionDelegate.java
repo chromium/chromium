@@ -5,6 +5,8 @@
 package org.chromium.components.browser_ui.widget.selectable_list;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -15,6 +17,7 @@ import java.util.Set;
  * A generic delegate used to keep track of selected items.
  * @param <E> The type of the selectable items this delegate interacts with.
  */
+@NullMarked
 public class SelectionDelegate<E> {
     // True if the SelectionDelegate should only support a single item being selected at a time.
     private boolean mIsSingleSelection;
@@ -58,7 +61,7 @@ public class SelectionDelegate<E> {
      * @param item The item to toggle.
      * @return Whether the item is selected.
      */
-    public boolean toggleSelectionForItem(E item) {
+    public boolean toggleSelectionForItem(@Nullable E item) {
         if (mSelectedItems.contains(item)) {
             mSelectedItems.remove(item);
         } else {
@@ -87,7 +90,7 @@ public class SelectionDelegate<E> {
      * @param item The item.
      * @return Whether the item is selected.
      */
-    public boolean isItemSelected(E item) {
+    public boolean isItemSelected(@Nullable E item) {
         return mSelectedItems.contains(item);
     }
 

@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.password_manager;
 
 import androidx.annotation.DrawableRes;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Provides functions that choose the correct resource IDs for the password manager UI.
  * Upstream resources may be overridden by a downstream implementation.
  */
+@NullMarked
 public interface PasswordManagerResourceProvider {
     /**
      * Returns the drawable id to be displayed as a password manager key icon.

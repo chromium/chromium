@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.TouchEventDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
@@ -21,6 +22,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** The properties that can be used to describe the behavior of the scrim widget. */
+@NullMarked
 public class ScrimProperties {
     /**
      * An invalid color that can be specified for {@link #BACKGROUND_COLOR}. This will trigger the

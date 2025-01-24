@@ -4,20 +4,22 @@
 
 package org.chromium.components.tab_group_sync;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /**
  * This class is the Java counterpart to the C++ SavedTabGroupTab
  * (components/saved_tab_groups/public/saved_tab_group_tab.h) class.
  */
+@NullMarked
 public class SavedTabGroupTab {
     /** The ID used to represent the tab in sync. */
     // TODO(shaktisahu): Decide if this will be used from Java to native flow. If yes, this ID
     //  can be nullable as well.
-    public String syncId;
+    public @Nullable String syncId;
 
     /**
      * The ID representing the tab locally, as returned by {@link Tab#getId()}. It can be null, if
@@ -26,7 +28,7 @@ public class SavedTabGroupTab {
     public @Nullable Integer localId;
 
     /** The ID used to represent the tab's group in sync. */
-    public @NonNull String syncGroupId;
+    public @Nullable String syncGroupId;
 
     /** The title of the website this url is associated with. */
     public @Nullable String title;
@@ -48,10 +50,10 @@ public class SavedTabGroupTab {
     public long updateTimeMs;
 
     /* The sync cache guid of the device that created the tab. */
-    public String creatorCacheGuid;
+    public @Nullable String creatorCacheGuid;
 
     /* The sync cache guid of the device that last updated the tab. */
-    public String lastUpdaterCacheGuid;
+    public @Nullable String lastUpdaterCacheGuid;
 
     @Override
     public String toString() {
@@ -65,7 +67,7 @@ public class SavedTabGroupTab {
         sb.append(", position = ");
         sb.append(position);
         sb.append(", url = ");
-        sb.append(url.getValidSpecOrEmpty());
+        sb.append(assumeNonNull(url).getValidSpecOrEmpty());
         return sb.toString();
     }
 }

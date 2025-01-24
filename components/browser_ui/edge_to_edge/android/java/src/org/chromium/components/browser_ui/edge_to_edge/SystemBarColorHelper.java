@@ -7,8 +7,10 @@ package org.chromium.components.browser_ui.edge_to_edge;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.build.annotations.NullMarked;
 
 /** Interface for setting system bar color. */
+@NullMarked
 public interface SystemBarColorHelper extends Destroyable {
 
     /**

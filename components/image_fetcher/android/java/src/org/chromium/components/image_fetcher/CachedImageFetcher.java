@@ -16,12 +16,15 @@ import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
 /** ImageFetcher implementation that uses a disk cache. */
+@NullMarked
 public class CachedImageFetcher extends ImageFetcher {
     private static final String TAG = "CachedImageFetcher";
 
@@ -32,6 +35,7 @@ public class CachedImageFetcher extends ImageFetcher {
          * @param filePath The path to the image on disk (including the filename).
          * @return The Bitmap that's on disk or null if the there's no file or the decoding failed.
          */
+        @Nullable
         Bitmap tryToLoadImageFromDisk(String filePath) {
             if (new File(filePath).exists()) {
                 return BitmapFactory.decodeFile(filePath, null);
@@ -47,6 +51,7 @@ public class CachedImageFetcher extends ImageFetcher {
          * @return The BaseGifImage that's on disk or null if the there's no file or the decoding
          *         failed.
          */
+        @Nullable
         BaseGifImage tryToLoadGifFromDisk(String filePath) {
             FileInputStream fileInputStream = null;
             try {
@@ -108,7 +113,7 @@ public class CachedImageFetcher extends ImageFetcher {
     void continueFetchGifAfterDisk(
             final ImageFetcher.Params params,
             Callback<BaseGifImage> callback,
-            BaseGifImage cachedGif,
+            @Nullable BaseGifImage cachedGif,
             long startTimeMillis) {
         if (cachedGif != null) {
             callback.onResult(cachedGif);
@@ -150,7 +155,7 @@ public class CachedImageFetcher extends ImageFetcher {
     void continueFetchImageAfterDisk(
             final ImageFetcher.Params params,
             Callback<Bitmap> callback,
-            Bitmap cachedBitmap,
+            @Nullable Bitmap cachedBitmap,
             long startTimeMillis) {
         if (cachedBitmap != null) {
             // In case the image's dimensions on disk don't match the desired dimensions.

@@ -16,11 +16,13 @@ import android.widget.LinearLayout;
 
 import androidx.activity.ComponentDialog;
 import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.widget.Toolbar;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
 
 /**
@@ -29,11 +31,12 @@ import org.chromium.components.browser_ui.util.AutomotiveUtils;
  * This class will automatically add the back button toolbar to automotive devices in full screen
  * Dialogs.
  */
+@NullMarked
 public class ChromeDialog extends ComponentDialog {
     private boolean mIsFullScreen;
     private Context mContext;
 
-    public ChromeDialog(@NonNull Context context, @StyleRes int themeResId) {
+    public ChromeDialog(Context context, @StyleRes int themeResId) {
         super(context, themeResId);
         mContext = context;
         if (themeResId == R.style.ThemeOverlay_BrowserUI_Fullscreen) {
@@ -71,7 +74,7 @@ public class ChromeDialog extends ComponentDialog {
     }
 
     @Override
-    public void setContentView(View view, ViewGroup.LayoutParams params) {
+    public void setContentView(View view, ViewGroup.@Nullable LayoutParams params) {
         if (BuildInfo.getInstance().isAutomotive && mIsFullScreen) {
             super.setContentView(
                     AutomotiveUtils.getAutomotiveLayoutWithBackButtonToolbar(mContext));
@@ -83,8 +86,9 @@ public class ChromeDialog extends ComponentDialog {
         }
     }
 
+    @NullUnmarked
     @Override
-    public void addContentView(View view, ViewGroup.LayoutParams params) {
+    public void addContentView(View view, ViewGroup.@Nullable LayoutParams params) {
         if (BuildInfo.getInstance().isAutomotive
                 && mIsFullScreen
                 && params.width == MATCH_PARENT

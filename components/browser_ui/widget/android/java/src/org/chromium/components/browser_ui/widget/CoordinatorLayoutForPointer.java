@@ -13,14 +13,17 @@ import android.view.View;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * This class overrides {@link onResolvePointerIcon} method to correctly determine the pointer icon
  * from a mouse motion event. This is needed because the default android impl does not consider view
  * visibility. It also allows a delegate to observe touch events.
  */
+@NullMarked
 public class CoordinatorLayoutForPointer extends CoordinatorLayout implements TouchEventProvider {
-    private Runnable mTouchEventCallback;
+    private @Nullable Runnable mTouchEventCallback;
     private final ObserverList<TouchEventObserver> mTouchEventObservers = new ObserverList<>();
 
     public CoordinatorLayoutForPointer(Context context, AttributeSet attrs) {

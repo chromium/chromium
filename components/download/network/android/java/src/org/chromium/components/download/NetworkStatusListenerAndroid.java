@@ -15,6 +15,9 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.download.BackgroundNetworkStatusListener.Observer;
 import org.chromium.net.ConnectionType;
 
@@ -24,10 +27,11 @@ import org.chromium.net.ConnectionType;
  * This object lives on main thread, so does the native object associated with it.
  */
 @JNINamespace("download")
+@NullMarked
 public class NetworkStatusListenerAndroid implements BackgroundNetworkStatusListener.Observer {
     private static final String THREAD_NAME = "NetworkStatusListener";
     private long mNativePtr;
-    private static Helper sSingletonHelper;
+    private static @Nullable Helper sSingletonHelper;
 
     /**
      * Helper class to query network state on one background thread. Notice that multiple
@@ -40,7 +44,7 @@ public class NetworkStatusListenerAndroid implements BackgroundNetworkStatusList
         private Handler mNetworkThreadHandler;
 
         // The object that performs actual network queries on a background thread.
-        private BackgroundNetworkStatusListener mBackgroundNetworkStatusListener;
+        private @Nullable BackgroundNetworkStatusListener mBackgroundNetworkStatusListener;
 
         private boolean mReady;
         private @ConnectionType int mConnectionType = ConnectionType.CONNECTION_UNKNOWN;
@@ -68,6 +72,7 @@ public class NetworkStatusListenerAndroid implements BackgroundNetworkStatusList
             if (mReady) observer.onNetworkStatusReady(mConnectionType);
         }
 
+        @NullUnmarked
         void stop(BackgroundNetworkStatusListener.Observer observer) {
             mNetworkThreadHandler.post(
                     () -> {
@@ -108,7 +113,7 @@ public class NetworkStatusListenerAndroid implements BackgroundNetworkStatusList
         }
     }
 
-    static Helper getHelperForTesting() {
+    static @Nullable Helper getHelperForTesting() {
         return sSingletonHelper;
     }
 

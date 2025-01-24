@@ -9,6 +9,7 @@ import android.app.Activity;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.module_installer.engine.InstallEngine;
 
 import java.util.HashSet;
@@ -18,6 +19,7 @@ import java.util.HashSet;
  *  Note that ActivityIds are managed globally and therefore any changes to it are to be made
  *  using a single thread (in this case, the UI thread).
  */
+@NullMarked
 public class ActivityObserver
         implements InstallerObserver, ApplicationStatus.ActivityStateListener {
     private static HashSet<Integer> sActivityIds = new HashSet<Integer>();

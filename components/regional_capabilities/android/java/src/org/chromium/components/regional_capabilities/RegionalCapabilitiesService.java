@@ -12,6 +12,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Android wrapper of the RegionalCapabilitiesService which provides access from the Java layer.
@@ -21,6 +22,7 @@ import org.chromium.base.ThreadUtils;
  * <p>See //components/regional_capabilities/regional_capabilities_service.h for more details.
  */
 @JNINamespace("regional_capabilities")
+@NullMarked
 public class RegionalCapabilitiesService {
 
     private long mNativeService;

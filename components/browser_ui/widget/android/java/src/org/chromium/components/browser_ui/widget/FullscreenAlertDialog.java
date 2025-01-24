@@ -13,11 +13,13 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
 
 /**
@@ -26,11 +28,12 @@ import org.chromium.components.browser_ui.util.AutomotiveUtils;
  * This class will automatically add the back button toolbar to automotive devices in full screen
  * AlertDialogs.
  */
+@NullMarked
 public class FullscreenAlertDialog extends AlertDialog {
     private Context mContext;
-    private Toolbar mAutomotiveToolbar;
+    private @Nullable Toolbar mAutomotiveToolbar;
 
-    public FullscreenAlertDialog(@NonNull Context context) {
+    public FullscreenAlertDialog(Context context) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
         mContext = context;
     }
@@ -96,10 +99,10 @@ public class FullscreenAlertDialog extends AlertDialog {
 
     public static class Builder extends AlertDialog.Builder {
         private Context mContext;
-        private AlertDialog mAlertDialog;
-        private Toolbar mAutomotiveToolbar;
+        private @Nullable AlertDialog mAlertDialog;
+        private @Nullable Toolbar mAutomotiveToolbar;
 
-        public Builder(@NonNull Context context) {
+        public Builder(Context context) {
             super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
             mContext = context;
         }
@@ -145,6 +148,7 @@ public class FullscreenAlertDialog extends AlertDialog {
             return this;
         }
 
+        @NullUnmarked
         @Override
         public AlertDialog create() {
             mAlertDialog = super.create();

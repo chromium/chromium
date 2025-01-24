@@ -17,6 +17,8 @@ import androidx.core.os.BuildCompat;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 
@@ -26,6 +28,7 @@ import java.util.List;
  * An implementation of {@link BackgroundTaskSchedulerDelegate} that uses the system
  * {@link JobScheduler} to schedule jobs.
  */
+@NullMarked
 class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelegate {
     private static final String TAG = "BkgrdTaskSchedulerJS";
 
@@ -109,6 +112,7 @@ class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelega
         return builder.build();
     }
 
+    @NullUnmarked
     @VisibleForTesting
     static JobInfo createJobInfoFromTaskInfo(Context context, TaskInfo taskInfo) {
         PersistableBundle jobExtras = new PersistableBundle();

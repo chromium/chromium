@@ -13,14 +13,15 @@ import static org.chromium.chrome.browser.partnercustomizations.PartnerCustomiza
 import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -37,6 +38,7 @@ import java.lang.annotation.RetentionPolicy;
  * recently. Then that UMA logs the interaction with customization and won't log again in any future
  * instance.
  */
+@NullMarked
 class PartnerCustomizationsUma {
     private static final String TAG = "PartnerCustUma";
 
@@ -109,8 +111,8 @@ class PartnerCustomizationsUma {
     void onCreateInitialTab(
             boolean isInitialized,
             @Nullable String homepageUrlCreated,
-            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            @NonNull Supplier<HomepageCharacterizationHelper> homepageCharacterizationHelper) {
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            Supplier<HomepageCharacterizationHelper> homepageCharacterizationHelper) {
         assert homepageUrlCreated != null : "Null created Homepage unexpected!";
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mHomepageCharacterizationHelper = homepageCharacterizationHelper;
@@ -193,9 +195,10 @@ class PartnerCustomizationsUma {
      * @param activityLifecycleDispatcher A lifecycle dispatcher used to delay any execution that
      *                                    might be risky until after native initialization.
      */
+    @NullUnmarked
     @VisibleForTesting
     void logInitialTabCustomizationOutcome(
-            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+            @Nullable ActivityLifecycleDispatcher activityLifecycleDispatcher) {
         // Snapshot static members in case a new async task starts up while we're delayed.
         final @CustomizationProviderDelegateType int whichDelegate = sWhichDelegate;
 

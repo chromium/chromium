@@ -9,6 +9,8 @@ import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.content.res.Resources;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 
 import java.util.ArrayDeque;
@@ -21,6 +23,7 @@ import java.util.Queue;
 import java.util.Set;
 
 /** Initializes our notification channels. */
+@NullMarked
 public class ChannelsInitializer {
     private final BaseNotificationManagerProxy mNotificationManager;
     private final ChannelDefinitions mChannelDefinitions;
@@ -136,7 +139,7 @@ public class ChannelsInitializer {
         ensureInitializedWithEnabledState(channelId, false);
     }
 
-    private ChannelDefinitions.PredefinedChannel getPredefinedChannel(String channelId) {
+    private ChannelDefinitions.@Nullable PredefinedChannel getPredefinedChannel(String channelId) {
         if (mChannelDefinitions.isValidNonPredefinedChannelId(channelId)) return null;
         ChannelDefinitions.PredefinedChannel predefinedChannel =
                 mChannelDefinitions.getChannelFromId(channelId);

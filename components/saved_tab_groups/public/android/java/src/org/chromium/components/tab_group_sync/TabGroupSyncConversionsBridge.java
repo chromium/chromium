@@ -9,6 +9,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Token;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /**
@@ -16,6 +18,7 @@ import org.chromium.url.GURL;
  * or methods and is meant as a private factory to build {@link SavedTabGroup} instances.
  */
 @JNINamespace("tab_groups")
+@NullMarked
 public class TabGroupSyncConversionsBridge {
     @CalledByNative
     private static void toNativeSavedTabGroup(
@@ -107,8 +110,12 @@ public class TabGroupSyncConversionsBridge {
 
     @NativeMethods
     interface Natives {
-        void updateVisualData(long groupPtr, LocalTabGroupId localId, String title, int color);
+        void updateVisualData(
+                long groupPtr,
+                @Nullable LocalTabGroupId localId,
+                @Nullable String title,
+                int color);
 
-        void addTab(long groupPtr, int tabId, String title, GURL url);
+        void addTab(long groupPtr, int tabId, @Nullable String title, @Nullable GURL url);
     }
 }

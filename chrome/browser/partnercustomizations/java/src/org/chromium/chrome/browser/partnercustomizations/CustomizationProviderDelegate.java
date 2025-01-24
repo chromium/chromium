@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.partnercustomizations;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Delegate used to retrieve information from the context provider about partner customization. */
+@NullMarked
 public interface CustomizationProviderDelegate {
     /** Returns the homepage string or null if none is available. */
     @Nullable

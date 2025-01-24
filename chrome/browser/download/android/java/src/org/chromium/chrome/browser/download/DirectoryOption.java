@@ -6,10 +6,14 @@ package org.chromium.chrome.browser.download;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Denotes a given option for directory selection; includes name, location, and space. */
+@NullMarked
 public class DirectoryOption {
     // Type to track user's selection of directory option. This enum is used in histogram and must
     // match DownloadLocationDirectoryType in enums.xml, so don't delete or reuse values.
@@ -28,10 +32,10 @@ public class DirectoryOption {
     }
 
     /** Name of the current download directory. */
-    public String name;
+    public @Nullable String name;
 
     /** The absolute path of the download location. */
-    public final String location;
+    public final @Nullable String location;
 
     /** The available space in this download directory. */
     public final long availableSpace;
@@ -43,8 +47,8 @@ public class DirectoryOption {
     public final @DownloadLocationDirectoryType int type;
 
     public DirectoryOption(
-            String name,
-            String location,
+            @Nullable String name,
+            @Nullable String location,
             long availableSpace,
             long totalSpace,
             @DownloadLocationDirectoryType int type) {
@@ -53,7 +57,7 @@ public class DirectoryOption {
     }
 
     public DirectoryOption(
-            String location,
+            @Nullable String location,
             long availableSpace,
             long totalSpace,
             @DownloadLocationDirectoryType int type) {

@@ -8,11 +8,14 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Java accessor for state of Omnibox feature flags. */
 @JNINamespace("omnibox::android")
+@NullMarked
 public class OmniboxFeatureMap extends FeatureMap {
-    private static OmniboxFeatureMap sInstance;
+    private static @Nullable OmniboxFeatureMap sInstance;
 
     // Not directly instantiable.
     private OmniboxFeatureMap() {

@@ -9,9 +9,13 @@ import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** A class that encapsulates {@link FadingShadow} as a self-contained view. */
+@NullMarked
 public class FadingShadowView extends View {
-    private FadingShadow mFadingShadow;
+    private @Nullable FadingShadow mFadingShadow;
     private int mPosition;
     private float mStrength = 1f;
 

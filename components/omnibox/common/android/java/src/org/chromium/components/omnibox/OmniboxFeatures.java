@@ -18,6 +18,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.cached_flags.BooleanCachedFeatureParam;
 import org.chromium.components.cached_flags.CachedFeatureParam;
 import org.chromium.components.cached_flags.CachedFlag;
@@ -31,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** This is the place where we define these: List of Omnibox features and parameters. */
+@NullMarked
 public class OmniboxFeatures {
     @IntDef({FeatureState.DISABLED, FeatureState.ENABLED_IN_TEST, FeatureState.ENABLED_IN_PROD})
     @Retention(RetentionPolicy.SOURCE)
@@ -70,7 +73,7 @@ public class OmniboxFeatures {
     private static final List<CachedFeatureParam<?>> sCachedParams = new ArrayList<>();
 
     /// Holds the information whether logic should focus on preserving memory on this device.
-    private static Boolean sIsLowMemoryDevice;
+    private static @Nullable Boolean sIsLowMemoryDevice;
 
     public static final CachedFlag sOmniboxAnswerActions =
             newFlag(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS, FeatureState.ENABLED_IN_TEST);
@@ -181,10 +184,10 @@ public class OmniboxFeatures {
             newBooleanParam(sAndroidHubSearch, "enable_press_enter_to_search", false);
 
     /** See {@link #setShouldRetainOmniboxOnFocusForTesting(boolean)}. */
-    private static Boolean sShouldRetainOmniboxOnFocusForTesting;
+    private static @Nullable Boolean sShouldRetainOmniboxOnFocusForTesting;
 
     /** When enabled, Jump Start Omnibox is activated and can engage if the feature is enabled. */
-    private static Boolean sActivateJumpStartOmnibox;
+    private static @Nullable Boolean sActivateJumpStartOmnibox;
 
     /**
      * Create an instance of a CachedFeatureFlag.

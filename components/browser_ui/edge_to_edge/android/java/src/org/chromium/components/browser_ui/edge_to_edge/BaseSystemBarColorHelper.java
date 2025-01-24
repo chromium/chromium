@@ -10,10 +10,12 @@ import android.view.Window;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.util.ColorUtils;
 
 /** Base implementation of a {@link SystemBarColorHelper} that tracks colors internally. */
+@NullMarked
 public abstract class BaseSystemBarColorHelper implements SystemBarColorHelper {
     protected @ColorInt int mStatusBarColor = Color.TRANSPARENT;
     protected @ColorInt int mNavBarColor = Color.TRANSPARENT;

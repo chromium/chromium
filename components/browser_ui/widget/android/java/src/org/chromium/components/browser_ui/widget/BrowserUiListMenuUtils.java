@@ -12,11 +12,11 @@ import android.widget.ListView;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
 import org.chromium.ui.listmenu.ListMenu;
@@ -26,6 +26,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Collection of utility methods related to the browser UI list menus. */
+@NullMarked
 public class BrowserUiListMenuUtils {
 
     /** @return The default icon tint color state list for list menu item icons. */
@@ -47,11 +48,8 @@ public class BrowserUiListMenuUtils {
      * @param data The data to display in the list.
      * @param delegate Delegate to handle item clicks.
      */
-    @NonNull
     public static BasicListMenu getBasicListMenu(
-            @NonNull Context context,
-            @NonNull MVCListAdapter.ModelList data,
-            @NonNull ListMenu.Delegate delegate) {
+            Context context, MVCListAdapter.ModelList data, ListMenu.Delegate delegate) {
         return getBasicListMenu(context, data, delegate, 0);
     }
 
@@ -63,11 +61,10 @@ public class BrowserUiListMenuUtils {
      * @param delegate Delegate to handle item clicks.
      * @param backgroundTintColor tint for the menu background.
      */
-    @NonNull
     public static BasicListMenu getBasicListMenu(
-            @NonNull Context context,
-            @NonNull MVCListAdapter.ModelList data,
-            @NonNull ListMenu.Delegate delegate,
+            Context context,
+            MVCListAdapter.ModelList data,
+            ListMenu.Delegate delegate,
             @ColorRes int backgroundTintColor) {
         View contentView = LayoutInflater.from(context).inflate(R.layout.app_menu_layout, null);
         ListView listView = contentView.findViewById(R.id.app_menu_list);
@@ -85,7 +82,6 @@ public class BrowserUiListMenuUtils {
      * @param enabled Whether or not this menu item should be enabled.
      * @return ListItem Representing an item with text or icon.
      */
-    @NonNull
     public static ListItem buildMenuListItem(
             @StringRes int titleId,
             @IdRes int menuId,
@@ -105,7 +101,6 @@ public class BrowserUiListMenuUtils {
      * @param startIconId The icon on the start of the menu item. Pass 0 for no icon.
      * @return ListItem Representing an item with text or icon.
      */
-    @NonNull
     public static ListItem buildMenuListItem(
             @StringRes int titleId, @IdRes int menuId, @DrawableRes int startIconId) {
         return new ListItem(
@@ -123,12 +118,8 @@ public class BrowserUiListMenuUtils {
      * @param enabled Whether or not this menu item should be enabled.
      * @return ListItem Representing an item with text or icon.
      */
-    @NonNull
     public static ListItem buildMenuListItem(
-            @NonNull String title,
-            @IdRes int menuId,
-            @DrawableRes int startIconId,
-            boolean enabled) {
+            String title, @IdRes int menuId, @DrawableRes int startIconId, boolean enabled) {
         return buildMenuListItem(title, menuId, startIconId, null, enabled);
     }
 
@@ -143,9 +134,8 @@ public class BrowserUiListMenuUtils {
      * @param enabled Whether or not this menu item should be enabled.
      * @return ListItem Representing an item with text or icon.
      */
-    @NonNull
     public static ListItem buildMenuListItem(
-            @NonNull String title,
+            String title,
             @IdRes int menuId,
             @DrawableRes int startIconId,
             @Nullable String contentDescription,
@@ -175,9 +165,8 @@ public class BrowserUiListMenuUtils {
      *     end
      * @return ListItem Representing an item with text or icon.
      */
-    @NonNull
     public static ListItem buildMenuListItemWithEllipsizedAtEnd(
-            @NonNull String title,
+            String title,
             @IdRes int menuId,
             @DrawableRes int startIconId,
             boolean enabled,
@@ -208,7 +197,6 @@ public class BrowserUiListMenuUtils {
      * @param enabled Whether or not this menu item should be enabled.
      * @return ListItem Representing an item with text and maybe an icon.
      */
-    @NonNull
     public static ListItem buildMenuListItemWithIncognitoBranding(
             @StringRes int titleId,
             @IdRes int menuId,
@@ -242,7 +230,6 @@ public class BrowserUiListMenuUtils {
      * @param enabled Whether or not this menu item should be enabled.
      * @return ListItem Representing an item with text or icon.
      */
-    @NonNull
     public static ListItem buildMenuListItemWithEndIcon(
             @StringRes int titleId,
             @IdRes int menuId,
@@ -259,7 +246,7 @@ public class BrowserUiListMenuUtils {
     }
 
     // Internal helper function to build a property model of list menu item.
-    @NonNull
+
     private static PropertyModel buildPropertyModel(
             @StringRes int titleId, @IdRes int menuId, @DrawableRes int iconId, boolean enabled) {
         return getListItemPropertyBuilder()
@@ -274,7 +261,6 @@ public class BrowserUiListMenuUtils {
      * Return a list menu item property builder with universal properties already set e.g the text
      * appearance & icon tint state list.
      */
-    @NonNull
     private static PropertyModel.Builder getListItemPropertyBuilder() {
         return new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                 .with(

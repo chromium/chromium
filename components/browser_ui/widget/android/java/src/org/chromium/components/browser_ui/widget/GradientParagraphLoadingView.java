@@ -18,9 +18,12 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.content.res.ResourcesCompat;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * ImageView with a scrolling gradient background and an outline with multiple horizontal lines,
@@ -43,6 +46,7 @@ import androidx.core.content.res.ResourcesCompat;
  * line having a width of 25% of this view. In Android APIs previous to R it will ignore
  * app:numberOfLines and show a single line.
  */
+@NullMarked
 public class GradientParagraphLoadingView extends AppCompatImageView {
 
     private final int mLineCount;
@@ -88,6 +92,7 @@ public class GradientParagraphLoadingView extends AppCompatImageView {
         initialize(context);
     }
 
+    @NullUnmarked
     private void initialize(Context context) {
 
         // TODO(salg): Handle theming on incognito mode.

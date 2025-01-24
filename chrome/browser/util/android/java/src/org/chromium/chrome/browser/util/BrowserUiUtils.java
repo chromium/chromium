@@ -8,8 +8,10 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 /** Deals with multiple parts of browser UI code calls. */
+@NullMarked
 public class BrowserUiUtils {
     /**
      * ModuleTypeOnStartAndNTP defined in tools/metrics/histograms/enums.xml.

@@ -16,6 +16,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.HashMap;
 
@@ -30,8 +32,9 @@ public class BluetoothDeviceWrapper {
             mCharacteristicsToWrappers;
     final HashMap<BluetoothGattDescriptor, BluetoothGattDescriptorWrapper> mDescriptorsToWrappers;
 
+    @NullUnmarked
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public BluetoothDeviceWrapper(BluetoothDevice device) {
+    public BluetoothDeviceWrapper(@Nullable BluetoothDevice device) {
         mDevice = device;
         mCharacteristicsToWrappers = new HashMap<>();
         mDescriptorsToWrappers = new HashMap<>();

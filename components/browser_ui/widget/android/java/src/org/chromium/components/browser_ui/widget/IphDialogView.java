@@ -19,6 +19,9 @@ import android.widget.TextView;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * A common base dialog view for IPH. This dialog view is composed of 3 elements from top to bottom:
  *
@@ -32,6 +35,7 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
  *
  * TODO(https://crbug.com/352614216): Merge into PromoDialog
  */
+@NullMarked
 public class IphDialogView extends LinearLayout {
     private final int mDialogHeight;
     private final int mDialogTopMargin;
@@ -39,14 +43,25 @@ public class IphDialogView extends LinearLayout {
     private final int mDialogTextTopMarginPortrait;
     private final int mDialogTextTopMarginLandscape;
     private final Context mContext;
+
+    @SuppressWarnings("NullAway.Init")
     private View mRootView;
+
     private long mIntervalMs = 1500; // Delay before repeating the animation.
-    private ImageView mIphImageView;
-    private Drawable mIphDrawable;
+    private @Nullable ImageView mIphImageView;
+    private @Nullable Drawable mIphDrawable;
+
+    @SuppressWarnings("NullAway.Init")
     private Animatable mIphAnimation;
+
     private Animatable2Compat.AnimationCallback mAnimationCallback;
+
+    @SuppressWarnings("NullAway.Init")
     private ViewGroup.MarginLayoutParams mTitleTextMarginParams;
+
+    @SuppressWarnings("NullAway.Init")
     private ViewGroup.MarginLayoutParams mDescriptionTextMarginParams;
+
     private int mParentViewHeight;
 
     public IphDialogView(Context context, AttributeSet attrs) {

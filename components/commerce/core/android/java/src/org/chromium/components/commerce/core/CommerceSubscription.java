@@ -6,15 +6,17 @@ package org.chromium.components.commerce.core;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Represents the information for one commerce subscription entry. */
+@NullMarked
 public class CommerceSubscription {
     public final @SubscriptionType int type;
     public final @IdentifierType int idType;
     public final String id;
     public final @ManagementType int managementType;
-    @Nullable public final UserSeenOffer userSeenOffer;
+    public final @Nullable UserSeenOffer userSeenOffer;
 
     /** User seen offer data upon price tracking subscribing. */
     public static class UserSeenOffer {

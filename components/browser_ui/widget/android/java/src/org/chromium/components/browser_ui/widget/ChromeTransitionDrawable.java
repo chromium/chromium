@@ -15,9 +15,9 @@ import android.graphics.drawable.TransitionDrawable;
 import android.graphics.drawable.VectorDrawable;
 import android.util.IntProperty;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.interpolators.Interpolators;
 
@@ -25,6 +25,7 @@ import org.chromium.ui.interpolators.Interpolators;
  * Re-implementation of {@link TransitionDrawable} that works with {@link VectorDrawable} and uses
  * an {@link Animator} instead of manually implementing animation.
  */
+@NullMarked
 public class ChromeTransitionDrawable extends LayerDrawable {
     private static final int MAX_PROGRESS_ALPHA = 255;
     private static final int MIN_PROGRESS_ALPHA = 0;
@@ -51,7 +52,7 @@ public class ChromeTransitionDrawable extends LayerDrawable {
          * Sets the end action to run when the animation ends. This will replace any existing end
          * actions set for this animator.
          */
-        public TransitionHandle withEndAction(@NonNull Runnable endAction) {
+        public TransitionHandle withEndAction(Runnable endAction) {
             mAnimator.removeAllListeners();
             mAnimator.addListener(
                     new CancelAwareAnimatorListener() {
@@ -77,9 +78,9 @@ public class ChromeTransitionDrawable extends LayerDrawable {
                 }
             };
 
-    @NonNull private final Drawable mInitialDrawable;
-    @NonNull private final Drawable mFinalDrawable;
-    @NonNull private ObjectAnimator mAnimator;
+    private final Drawable mInitialDrawable;
+    private final Drawable mFinalDrawable;
+    private ObjectAnimator mAnimator;
 
     private boolean mCrossFade;
     private int mProgress;
@@ -91,8 +92,7 @@ public class ChromeTransitionDrawable extends LayerDrawable {
      * @param initialDrawable The first, initially visible drawable.
      * @param finalDrawable The second, initially hidden, drawable.
      */
-    public ChromeTransitionDrawable(
-            @NonNull Drawable initialDrawable, @NonNull Drawable finalDrawable) {
+    public ChromeTransitionDrawable(Drawable initialDrawable, Drawable finalDrawable) {
         super(new Drawable[] {initialDrawable.mutate(), finalDrawable.mutate()});
         mInitialDrawable = getDrawable(0);
         mFinalDrawable = getDrawable(1);
@@ -156,13 +156,12 @@ public class ChromeTransitionDrawable extends LayerDrawable {
     }
 
     @VisibleForTesting
-    @NonNull
     public Animator getAnimatorForTesting() {
         return mAnimator;
     }
 
     @Override
-    public void draw(@NonNull Canvas canvas) {
+    public void draw(Canvas canvas) {
         if (mInitialDrawable.getAlpha() > 0) {
             mInitialDrawable.draw(canvas);
         }

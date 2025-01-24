@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.UiUtils;
 
 /**
@@ -18,12 +20,13 @@ import org.chromium.ui.UiUtils;
  * or the omnibox suggestions).
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+@NullMarked
 public class ScrimView extends View {
     /** The view that the scrim should exist in. */
     private final ViewGroup mParent;
 
     /** A means of passing all touch events to an external handler. */
-    private ScrimCoordinator.TouchEventDelegate mEventDelegate;
+    private ScrimCoordinator.@Nullable TouchEventDelegate mEventDelegate;
 
     /**
      * @param context An Android {@link Context} for creating the view.

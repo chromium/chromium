@@ -4,10 +4,13 @@
 
 package org.chromium.components.browser_ui.widget;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Observer interface for any object that needs to process touch events. This is useful when
  * ordinary Android view events processing hierarchy cannot be easily applied.
  */
+@NullMarked
 public interface TouchEventProvider {
     /** @param obs {@link TouchEventObserver} object to process. */
     void addTouchEventObserver(TouchEventObserver obs);

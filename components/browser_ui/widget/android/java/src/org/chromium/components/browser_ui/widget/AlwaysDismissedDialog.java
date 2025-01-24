@@ -8,6 +8,7 @@ import android.app.Activity;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Dialog subclass that ensures that dismiss() is called, even if the dialog is implicitly dismissed
@@ -15,6 +16,7 @@ import org.chromium.base.ApplicationStatus;
  * references to memory or performs other crucial cleanup. See http://crbug.com/507748.
  * DialogFragments ensure that dismiss() is called as well.
  */
+@NullMarked
 public class AlwaysDismissedDialog extends ChromeDialog
         implements ApplicationStatus.ActivityStateListener {
     public AlwaysDismissedDialog(Activity ownerActivity, int theme) {

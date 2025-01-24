@@ -16,9 +16,12 @@ import android.widget.ImageView;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** An alternative progress bar implemented using ClipDrawable for simplicity and performance. */
+@NullMarked
 public class ClipDrawableProgressBar extends ImageView {
     /** Structure that has complete {@link ClipDrawableProgressBar} drawing information. */
     public static class DrawingInfo {
@@ -52,7 +55,7 @@ public class ClipDrawableProgressBar extends ImageView {
     private int mDesiredVisibility;
 
     /** An observer of updates to the progress bar. */
-    private ProgressBarObserver mProgressBarObserver;
+    private @Nullable ProgressBarObserver mProgressBarObserver;
 
     /**
      * Create the progress bar with a custom height.

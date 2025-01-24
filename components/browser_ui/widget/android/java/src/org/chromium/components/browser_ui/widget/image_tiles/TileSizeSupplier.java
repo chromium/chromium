@@ -8,10 +8,12 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.components.browser_ui.widget.image_tiles.TileSizeSupplier.TileSize;
 
 /** A helper class to compute dimensions for the carousel layout. */
+@NullMarked
 class TileSizeSupplier implements Supplier<TileSize> {
     /** Contains details to be used by the grid layout when placing items. */
     public static class TileSize {

@@ -25,6 +25,9 @@ import androidx.annotation.StyleRes;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.ui.widget.LoadingView;
@@ -46,6 +49,7 @@ import org.chromium.ui.widget.ViewRectProvider;
  *   <li>An optional boolean (showLoadingView) to show a loading view in place of the start icon.
  * </ul>
  */
+@NullMarked
 public class ChipView extends LinearLayout {
     /** An id to use for {@link #setIcon(int, boolean)} when there is no icon on the chip. */
     public static final int INVALID_ICON_ID = -1;
@@ -64,8 +68,8 @@ public class ChipView extends LinearLayout {
     private final int mEndIconEndPadding;
     private final int mCornerRadius;
 
-    private ViewGroup mEndIconWrapper;
-    private AppCompatTextView mSecondaryText;
+    private @Nullable ViewGroup mEndIconWrapper;
+    private @Nullable AppCompatTextView mSecondaryText;
     private int mMaxWidth = Integer.MAX_VALUE;
 
     /** Constructor for applying a theme overlay. */
@@ -85,7 +89,7 @@ public class ChipView extends LinearLayout {
     /** Constructor for base classes and programmatic creation. */
     public ChipView(
             Context context,
-            AttributeSet attrs,
+            @Nullable AttributeSet attrs,
             @AttrRes int defStyleAttr,
             @StyleRes int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
@@ -399,6 +403,7 @@ public class ChipView extends LinearLayout {
      *
      * @param listener The listener to be invoked on click events.
      */
+    @NullUnmarked
     public void setRemoveIconClickListener(OnClickListener listener) {
         mEndIconWrapper.setOnClickListener(listener);
         String chipText = mPrimaryText.getText().toString();
@@ -477,8 +482,9 @@ public class ChipView extends LinearLayout {
         mRippleBackgroundHelper.setBackgroundColor(color);
     }
 
+    @NullUnmarked
     @Override
-    public void setBackgroundTintList(ColorStateList color) {
+    public void setBackgroundTintList(@Nullable ColorStateList color) {
         mRippleBackgroundHelper.setBackgroundColor(color);
     }
 

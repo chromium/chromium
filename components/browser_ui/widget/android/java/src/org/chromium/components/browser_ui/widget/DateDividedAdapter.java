@@ -11,12 +11,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.date.CalendarFactory;
 import org.chromium.components.browser_ui.util.date.StringUtils;
 
@@ -40,6 +42,7 @@ import java.util.TreeSet;
  * should call {@link #loadItems(List)} with a list of {@link TimedItem}, and this adapter will
  * insert the headers automatically.
  */
+@NullMarked
 public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder> {
     static {
         CalendarFactory.warmUp();
@@ -166,7 +169,7 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
 
     /** A {@link RecyclerView.ViewHolder} that displays a date header. */
     public static class DateViewHolder extends RecyclerView.ViewHolder {
-        private TextView mTextView;
+        private @Nullable TextView mTextView;
 
         public DateViewHolder(View view) {
             super(view);
@@ -174,6 +177,7 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
         }
 
         /** @param date The date that this DateViewHolder should display. */
+        @NullUnmarked
         public void setDate(Date date) {
             mTextView.setText(StringUtils.dateToHeaderString(date));
         }
@@ -434,8 +438,7 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
      * Creates a {@link BasicViewHolder} in the given view parent for the footer.
      * See {@link #onCreateViewHolder(ViewGroup, int)}.
      */
-    @Nullable
-    protected BasicViewHolder createFooter(ViewGroup parent) {
+    protected @Nullable BasicViewHolder createFooter(ViewGroup parent) {
         return null;
     }
 
@@ -453,8 +456,7 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
      * Creates a {@link ViewHolder} for a subsection in the given view parent.
      * @see #onCreateViewHolder(ViewGroup, int)
      */
-    @Nullable
-    protected SubsectionHeaderViewHolder createSubsectionHeader(ViewGroup parent) {
+    protected @Nullable SubsectionHeaderViewHolder createSubsectionHeader(ViewGroup parent) {
         return null;
     }
 
@@ -661,8 +663,9 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
         return group.getItemViewType(pair.second);
     }
 
+    @NullUnmarked
     @Override
-    public final RecyclerView.ViewHolder onCreateViewHolder(
+    public final RecyclerView.@Nullable ViewHolder onCreateViewHolder(
             ViewGroup parent, @ItemViewType int viewType) {
         switch (viewType) {
             case ItemViewType.DATE:
@@ -713,6 +716,7 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
     }
 
     /** Utility method to traverse all groups and find the {@link ItemGroup} for the given position. */
+    @NullUnmarked
     protected Pair<ItemGroup, Integer> getGroupAt(int position) {
         // TODO(ianwen): Optimize the performance if the number of groups becomes too large.
         int i = position;

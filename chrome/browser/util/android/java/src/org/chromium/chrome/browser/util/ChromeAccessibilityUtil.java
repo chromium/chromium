@@ -4,14 +4,15 @@
 
 package org.chromium.chrome.browser.util;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.util.AccessibilityUtil;
 
 /** Provides the chrome specific wiring for AccessibilityUtil. */
+@NullMarked
 public class ChromeAccessibilityUtil extends AccessibilityUtil {
-    private static ChromeAccessibilityUtil sInstance;
+    private static @Nullable ChromeAccessibilityUtil sInstance;
 
     public static ChromeAccessibilityUtil get() {
         if (sInstance == null) {

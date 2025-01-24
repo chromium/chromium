@@ -39,6 +39,8 @@ import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.NumberRollView;
 import org.chromium.components.browser_ui.widget.R;
@@ -63,6 +65,7 @@ import java.util.List;
  *
  * @param <E> The type of the selectable items this toolbar interacts with.
  */
+@NullMarked
 public class SelectableListToolbar<E> extends Toolbar
         implements SelectionObserver<E>,
                 OnClickListener,
@@ -103,21 +106,34 @@ public class SelectableListToolbar<E> extends Toolbar
     }
 
     protected boolean mIsSelectionEnabled;
+
+    @SuppressWarnings("NullAway.Init")
     protected SelectionDelegate<E> mSelectionDelegate;
 
     private final ObservableSupplierImpl<Boolean> mIsSearchingSupplier =
             new ObservableSupplierImpl<>();
     private boolean mHasSearchView;
+
+    @SuppressWarnings("NullAway.Init")
     private LinearLayout mSearchView;
+
+    @SuppressWarnings("NullAway.Init")
     private EditText mSearchEditText;
+
+    @SuppressWarnings("NullAway.Init")
     private ImageButton mClearTextButton;
+
+    @SuppressWarnings("NullAway.Init")
     private SearchDelegate mSearchDelegate;
+
     private boolean mSearchEnabled;
     private boolean mUpdateStatusBarColor;
     private boolean mShowBackInNormalView;
 
     protected NumberRollView mNumberRollView;
-    private Drawable mMenuButton;
+    private @Nullable Drawable mMenuButton;
+
+    @SuppressWarnings("NullAway.Init")
     private Drawable mNavigationIconDrawable;
 
     private @NavigationButton int mNavigationButton;
@@ -129,9 +145,9 @@ public class SelectableListToolbar<E> extends Toolbar
 
     private @ColorInt int mNormalBackgroundColor;
     private @ColorInt int mSearchBackgroundColor;
-    private ColorStateList mIconColorList;
+    private @Nullable ColorStateList mIconColorList;
 
-    private UiConfig mUiConfig;
+    private @Nullable UiConfig mUiConfig;
     private int mWideDisplayStartOffsetPx;
     private int mModernNavButtonStartOffsetPx;
     private int mModernToolbarActionMenuEndOffsetPx;
@@ -678,7 +694,7 @@ public class SelectableListToolbar<E> extends Toolbar
     }
 
     @Override
-    public void setTitle(CharSequence title) {
+    public void setTitle(@Nullable CharSequence title) {
         super.setTitle(title);
 
         // The super class adds an AppCompatTextView for the title which not focusable by default.

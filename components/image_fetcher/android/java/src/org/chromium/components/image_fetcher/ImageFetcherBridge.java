@@ -15,10 +15,13 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
 
 /** Provides access to native implementations of ImageFetcher for the given browser context. */
 @JNINamespace("image_fetcher")
+@NullMarked
 public class ImageFetcherBridge {
     private final SimpleFactoryKeyHandle mSimpleFactoryKeyHandle;
 
@@ -65,6 +68,7 @@ public class ImageFetcherBridge {
      * @param callback The callback to call when the gif is ready. The callback will be invoked on
      *      the same thread it was called on.
      */
+    @NullUnmarked
     public void fetchGif(
             @ImageFetcherConfig int config,
             final ImageFetcher.Params params,

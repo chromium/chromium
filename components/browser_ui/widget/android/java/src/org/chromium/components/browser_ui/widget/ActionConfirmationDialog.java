@@ -11,11 +11,11 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.core.util.Function;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -24,6 +24,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonStyles;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Dialog that asks the user if they're certain they want to perform and action. */
+@NullMarked
 public class ActionConfirmationDialog {
     @FunctionalInterface
     public interface ConfirmationDialogResult {
@@ -43,8 +44,7 @@ public class ActionConfirmationDialog {
      * @param context The context to use for resources.
      * @param modalDialogManager The global modal dialog manager.
      */
-    public ActionConfirmationDialog(
-            @NonNull Context context, @NonNull ModalDialogManager modalDialogManager) {
+    public ActionConfirmationDialog(Context context, ModalDialogManager modalDialogManager) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
     }
@@ -66,7 +66,7 @@ public class ActionConfirmationDialog {
             @StringRes int positiveButtonRes,
             @StringRes int negativeButtonRes,
             boolean supportStopShowing,
-            @NonNull ConfirmationDialogResult onResult) {
+            ConfirmationDialogResult onResult) {
         Resources resources = mContext.getResources();
 
         View customView =

@@ -8,6 +8,7 @@ import android.content.pm.PackageInfo;
 import android.text.TextUtils;
 
 import org.chromium.base.PackageUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.crash.CrashKeyIndex;
 import org.chromium.components.crash.CrashKeys;
 
@@ -16,6 +17,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /** CrashKey Recorder for installed modules. */
+@NullMarked
 class CrashKeyRecorder {
     public static void updateCrashKeys() {
         // Get modules that are fully installed as split APKs (excluding base which is always

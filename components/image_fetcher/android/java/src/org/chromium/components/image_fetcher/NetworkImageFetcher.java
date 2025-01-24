@@ -9,8 +9,10 @@ import android.graphics.Bitmap;
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 
 /** Image Fetcher implementation that fetches from the network. */
+@NullMarked
 public class NetworkImageFetcher extends ImageFetcher {
     /**
      * Creates a NetworkImageFetcher.

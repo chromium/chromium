@@ -9,6 +9,8 @@ import android.content.Context;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 
@@ -18,6 +20,7 @@ import org.chromium.components.background_task_scheduler.TaskInfo;
  *
  * To get an instance of this class, use {@link BackgroundTaskSchedulerFactory#getScheduler()}.
  */
+@NullMarked
 class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
     private static final String SWITCH_IGNORE_BACKGROUND_TASKS = "ignore-background-tasks";
 
@@ -28,6 +31,7 @@ class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
         mSchedulerDelegate = schedulerDelegate;
     }
 
+    @NullUnmarked
     @Override
     public boolean schedule(Context context, TaskInfo taskInfo) {
         if (CommandLine.getInstance().hasSwitch(SWITCH_IGNORE_BACKGROUND_TASKS)) {

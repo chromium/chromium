@@ -4,10 +4,9 @@
 
 package org.chromium.components.tab_group_sync;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Token;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -15,16 +14,17 @@ import java.util.Objects;
  * LocalTabGroupId is a convenient class to contain all the information needed to uniquely identify
  * a the local tab group.
  */
+@NullMarked
 public class LocalTabGroupId {
     // Stable ID of the tab group. This should be used going forward.
-    public final @NonNull Token tabGroupId;
+    public final Token tabGroupId;
 
     /**
      * Constructor.
      *
      * @param tabGroupId The stable ID of the tab group in {@link TabModel}.
      */
-    public LocalTabGroupId(@NonNull Token tabGroupId) {
+    public LocalTabGroupId(Token tabGroupId) {
         assert tabGroupId != null;
         this.tabGroupId = tabGroupId;
     }
@@ -43,7 +43,6 @@ public class LocalTabGroupId {
         return Objects.hash(tabGroupId);
     }
 
-    @NonNull
     @Override
     public String toString() {
         return tabGroupId.toString();

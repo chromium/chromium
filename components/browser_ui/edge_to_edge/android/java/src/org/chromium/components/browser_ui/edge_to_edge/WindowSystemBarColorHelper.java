@@ -9,7 +9,10 @@ import android.graphics.Color;
 import android.os.Build;
 import android.view.Window;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** A wrapper class around {@link Window} to change the system bar colors. */
+@NullMarked
 public final class WindowSystemBarColorHelper extends BaseSystemBarColorHelper {
     private final Window mWindow;
 

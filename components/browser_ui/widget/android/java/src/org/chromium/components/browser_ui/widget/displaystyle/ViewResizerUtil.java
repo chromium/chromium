@@ -7,11 +7,12 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.display.DisplayUtil;
 
 /** Util class for @{@link org.chromium.components.browser_ui.widget.displaystyle.ViewResizer}. */
+@NullMarked
 public class ViewResizerUtil {
 
     /**

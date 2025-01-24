@@ -4,7 +4,10 @@
 
 package org.chromium.components.commerce.core;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** An observer to notify that a (un)subscribe request has finished. */
+@NullMarked
 public interface SubscriptionsObserver {
     /**
      * Invoked when a subscribe request has finished.

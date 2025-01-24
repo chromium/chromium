@@ -12,9 +12,11 @@ import androidx.annotation.LayoutRes;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 
+@NullMarked
 public class AutomotiveUtils {
     private static boolean sForceHorizontalAutomotiveTesting;
 

@@ -10,14 +10,15 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -27,11 +28,12 @@ import org.chromium.ui.util.ColorUtils;
 import java.util.Objects;
 
 /** This class holds the animation and related business logic for the scrim. */
+@NullMarked
 class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
     private static final String TAG = "ScrimMediator";
 
     /** A callback that is run when the scrim has completely hidden. */
-    private final @NonNull Runnable mScrimHiddenRunnable;
+    private final Runnable mScrimHiddenRunnable;
 
     private final @ColorInt int mDefaultScrimColor;
     // TODO(skym): Re-implement to not have legacy suppliers.
@@ -47,13 +49,13 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
             new ObservableSupplierImpl<>(0f);
 
     /** The animator for fading the view in. */
-    private ValueAnimator mOverlayFadeInAnimator;
+    private @Nullable ValueAnimator mOverlayFadeInAnimator;
 
     /** The animator for fading the view out. */
-    private ValueAnimator mOverlayFadeOutAnimator;
+    private @Nullable ValueAnimator mOverlayFadeOutAnimator;
 
     /** The active animator (if any). */
-    private Animator mOverlayAnimator;
+    private @Nullable Animator mOverlayAnimator;
 
     /** The model for the scrim component. */
     private @Nullable PropertyModel mModel;
@@ -73,7 +75,7 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
      * @param scrimHiddenRunnable A mechanism for hiding the scrim.
      * @param defaultScrimColor The color of the scrim when not explicitly set.
      */
-    ScrimMediator(@NonNull Runnable scrimHiddenRunnable, @ColorInt int defaultScrimColor) {
+    ScrimMediator(Runnable scrimHiddenRunnable, @ColorInt int defaultScrimColor) {
         mScrimHiddenRunnable = scrimHiddenRunnable;
         mDefaultScrimColor = defaultScrimColor;
 
@@ -114,7 +116,7 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
     }
 
     /** Triggers a fade in of the scrim creating a new animation if necessary. */
-    void showScrim(@NonNull PropertyModel model, int animDurationMs) {
+    void showScrim(PropertyModel model, int animDurationMs) {
         // ALPHA is a protected property for this component that will only get added to the model
         // if ScrimProperties is used to build it.
         assert model.getAllProperties().contains(ScrimProperties.ALPHA)
@@ -255,7 +257,8 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         }
     }
 
-    /*package */ void setScrimColor(@ColorInt int scrimColor, PropertyModel propertyModel) {
+    /*package */ @NullUnmarked
+    void setScrimColor(@ColorInt int scrimColor, PropertyModel propertyModel) {
         if (!Objects.equals(mModel, propertyModel)) return;
         mModel.set(ScrimProperties.BACKGROUND_COLOR, scrimColor);
         mFullScrimColorSupplier.set(scrimColor);
@@ -303,6 +306,7 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         return mOverlayAnimator != null && mOverlayAnimator.isRunning();
     }
 
+    @NullUnmarked
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         if (mIsHidingOrHidden) return false;

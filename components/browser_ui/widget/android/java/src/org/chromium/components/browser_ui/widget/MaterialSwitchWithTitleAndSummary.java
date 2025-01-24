@@ -15,9 +15,10 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
 import com.google.android.material.materialswitch.MaterialSwitch;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 // TODO(crbug.com/326040498): Merge this class with MaterialSwitchWithText (this class can just hide
 // the summary if it is empty and will then be identical to MaterialSwitchWithText).
@@ -27,6 +28,7 @@ import com.google.android.material.materialswitch.MaterialSwitch;
  * title and summary text. It provides a convenient way to display a switch with associated labels
  * in your UI.
  */
+@NullMarked
 public class MaterialSwitchWithTitleAndSummary extends LinearLayout
         implements Checkable, OnClickListener {
     public interface Listener {

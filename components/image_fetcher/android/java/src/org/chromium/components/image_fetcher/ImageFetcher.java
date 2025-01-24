@@ -7,18 +7,21 @@ package org.chromium.components.image_fetcher;
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /**
  * Blueprint and some implementation for image fetching. Use ImageFetcherFactory for any
  * ImageFetcher instantiation.
  */
+@NullMarked
 public abstract class ImageFetcher {
     // All UMA client names collected here to prevent duplicates. While adding a new client, please
     // update the histogram suffix ImageFetcherClients in histograms.xml as well.
@@ -228,6 +231,7 @@ public abstract class ImageFetcher {
     }
 
     // Singleton ImageFetcherBridge.
+    @SuppressWarnings("NullAway.Init")
     private ImageFetcherBridge mImageFetcherBridge;
 
     /** Copy-constructor to support composite instances of ImageFetcher. */
@@ -256,6 +260,7 @@ public abstract class ImageFetcher {
      *
      * @return The resized image, or the original image if the  conditions aren't met.
      */
+    @NullUnmarked
     @VisibleForTesting
     public static Bitmap resizeImage(@Nullable Bitmap bitmap, int width, int height) {
         if (bitmap != null

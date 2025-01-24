@@ -23,9 +23,12 @@ import android.util.AttributeSet;
 import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.view.ViewCompat;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A custom {@link ImageView} that is able to render bitmaps and colors with rounded off corners.
@@ -41,18 +44,19 @@ import androidx.core.view.ViewCompat;
  * Note : This does not properly handle padding. Padding will not be taken into account when rounded
  * corners are used.
  */
+@NullMarked
 public class RoundedCornerImageView extends AppCompatImageView {
     private final RectF mTmpRect = new RectF();
     private final Matrix mTmpMatrix = new Matrix();
 
     private final Paint mRoundedBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Paint mRoundedContentPaint;
+    private @Nullable Paint mRoundedContentPaint;
     // True, if constructor had a chance to run.
     // This is needed, because ImageView's constructor may trigger updates on our end
     // if certain attributes (eg. Drawable) are supplied via layout attributes.
     private final boolean mIsInitialized;
 
-    private Shape mRoundedRectangle;
+    private @Nullable Shape mRoundedRectangle;
     private @ColorInt int mFillColor = Color.TRANSPARENT;
 
     public RoundedCornerImageView(Context context) {
@@ -63,7 +67,7 @@ public class RoundedCornerImageView extends AppCompatImageView {
         this(context, attrs, 0);
     }
 
-    public RoundedCornerImageView(Context context, AttributeSet attrs, int defStyle) {
+    public RoundedCornerImageView(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
         // Set attribute indicating that all required objects are created.
@@ -205,6 +209,7 @@ public class RoundedCornerImageView extends AppCompatImageView {
         }
     }
 
+    @NullUnmarked
     @Override
     protected void onDraw(Canvas canvas) {
         final int width = getWidth() - getPaddingLeft() - getPaddingRight();

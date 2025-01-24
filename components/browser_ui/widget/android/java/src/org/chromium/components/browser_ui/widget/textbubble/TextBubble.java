@@ -20,7 +20,6 @@ import android.widget.PopupWindow.OnDismissListener;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -28,6 +27,8 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.widget.AnchoredPopupWindow;
@@ -38,6 +39,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** UI component that handles showing a text callout bubble. */
+@NullMarked
 public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
     /**
      * Specifies no limit to the popup duration.
@@ -66,15 +68,15 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
     private final AnchoredPopupWindow mPopupWindow;
 
     /** The {@link Drawable} that is responsible for drawing the bubble and the arrow. */
-    @Nullable private ArrowBubbleDrawable mBubbleDrawable;
+    private @Nullable ArrowBubbleDrawable mBubbleDrawable;
 
     /** The {@link Drawable} that precedes the text in the bubble. */
-    protected final Drawable mImageDrawable;
+    protected final @Nullable Drawable mImageDrawable;
 
     /** Runnables for snoozable text bubble option. */
-    private final Runnable mSnoozeRunnable;
+    private final @Nullable Runnable mSnoozeRunnable;
 
-    private final Runnable mSnoozeDismissRunnable;
+    private final @Nullable Runnable mSnoozeDismissRunnable;
 
     /** Time tracking for histograms. */
     private long mBubbleShowStartTime;

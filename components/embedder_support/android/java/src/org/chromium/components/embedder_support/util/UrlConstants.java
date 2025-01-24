@@ -4,6 +4,7 @@
 
 package org.chromium.components.embedder_support.util;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /**
@@ -12,6 +13,7 @@ import org.chromium.url.GURL;
  * <p>Do not add any more NTP related constants. TODO(crbug.com/40281619) Move NTP related constants
  * to ChromeUrlConstants.java
  */
+@NullMarked
 public class UrlConstants {
     public static final String APP_INTENT_SCHEME = "android-app";
     public static final String BLOB_SCHEME = "blob";

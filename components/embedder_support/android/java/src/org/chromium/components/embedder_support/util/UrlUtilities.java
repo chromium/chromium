@@ -7,13 +7,14 @@ package org.chromium.components.embedder_support.util;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
 import androidx.core.text.BidiFormatter;
 
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
@@ -33,6 +34,7 @@ import java.util.regex.Pattern;
  * TODO(pshmakov): we probably should just make those methods non-static.
  */
 @JNINamespace("embedder_support")
+@NullMarked
 public class UrlUtilities {
     /** Regular expression for prefixes to strip from publisher hostnames. */
     private static final Pattern HOSTNAME_PREFIX_PATTERN =
@@ -103,7 +105,7 @@ public class UrlUtilities {
      *
      * @return True if the GURL's scheme is one that Chrome can download.
      */
-    public static boolean isDownloadableScheme(@NonNull GURL url) {
+    public static boolean isDownloadableScheme(GURL url) {
         if (!url.isValid()) return false;
         return DOWNLOADABLE_SCHEMES.contains(url.getScheme());
     }
@@ -113,7 +115,7 @@ public class UrlUtilities {
      *
      * @return Whether the URL's scheme is for a internal chrome page.
      */
-    public static boolean isInternalScheme(@NonNull GURL gurl) {
+    public static boolean isInternalScheme(GURL gurl) {
         return INTERNAL_SCHEMES.contains(gurl.getScheme());
     }
 
@@ -127,7 +129,7 @@ public class UrlUtilities {
      *
      * @return Whether the URL's scheme is HTTP or HTTPS.
      */
-    public static boolean isHttpOrHttps(@NonNull GURL url) {
+    public static boolean isHttpOrHttps(GURL url) {
         return isSchemeHttpOrHttps(url.getScheme());
     }
 
@@ -136,7 +138,7 @@ public class UrlUtilities {
      *
      * @return Whether the URL's scheme is HTTP or HTTPS.
      */
-    public static boolean isHttpOrHttps(@NonNull String url) {
+    public static boolean isHttpOrHttps(String url) {
         // URI#getScheme would throw URISyntaxException if the other parts contain invalid
         // characters. For example, "http://foo.bar/has[square].html" has [] in the path, which
         // is not valid in URI. Both Uri.parse().getScheme() and URL().getProtocol() work in
@@ -151,15 +153,15 @@ public class UrlUtilities {
      * @param url A URL.
      * @return Whether the URL's scheme is HTTPS.
      */
-    public static boolean isHttps(@NonNull String url) {
+    public static boolean isHttps(String url) {
         return isSchemeHttps(Uri.parse(url).getScheme());
     }
 
-    private static boolean isSchemeHttps(String scheme) {
+    private static boolean isSchemeHttps(@Nullable String scheme) {
         return UrlConstants.HTTPS_SCHEME.equals(scheme);
     }
 
-    private static boolean isSchemeHttpOrHttps(String scheme) {
+    private static boolean isSchemeHttpOrHttps(@Nullable String scheme) {
         return UrlConstants.HTTP_SCHEME.equals(scheme) || isSchemeHttps(scheme);
     }
 
@@ -377,7 +379,7 @@ public class UrlUtilities {
         boolean isGoogleSubDomainUrl(String url);
 
         /** Returns whether the given URL is a Google.com Search URL. */
-        boolean isGoogleSearchUrl(String url);
+        boolean isGoogleSearchUrl(@Nullable String url);
 
         /** Returns whether the given URL is the Google Web Search URL. */
         boolean isGoogleHomePageUrl(String url);

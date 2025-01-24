@@ -7,6 +7,7 @@ package org.chromium.components.module_installer.observer;
 import android.app.Activity;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
  * ActivityObserver Context. Class used to segregate external dependencies that
  * cannot be easily mocked and simplify the observer's design.
  */
+@NullMarked
 class ActivityObserverFacade {
     public List<Activity> getRunningActivities() {
         return ApplicationStatus.getRunningActivities();

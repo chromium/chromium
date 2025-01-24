@@ -9,13 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsCompat.Type;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.edge_to_edge.BaseSystemBarColorHelper;
 import org.chromium.components.browser_ui.edge_to_edge.R;
 import org.chromium.ui.InsetObserver;
@@ -28,6 +29,7 @@ import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
  *
  * <p>Currently the layout supports systemBars / displayCutout / IME
  */
+@NullMarked
 public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
         implements WindowInsetsConsumer {
     private final Activity mActivity;
@@ -41,8 +43,7 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
      * @param activity The base activity.
      * @param insetObserver The inset observer of current window, if exists.
      */
-    public EdgeToEdgeLayoutCoordinator(
-            @NonNull Activity activity, @Nullable InsetObserver insetObserver) {
+    public EdgeToEdgeLayoutCoordinator(Activity activity, @Nullable InsetObserver insetObserver) {
         mActivity = activity;
         mInsetObserver = insetObserver;
     }
@@ -65,6 +66,7 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
     /**
      * @see Activity#setContentView(View, LayoutParams)
      */
+    @NullUnmarked
     public View wrapContentView(View contentView, LayoutParams params) {
         ensureInitialized();
         mView.addView(contentView, params);
@@ -102,10 +104,9 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
         mView.setNavBarDividerColor(mNavBarDividerColor);
     }
 
-    @NonNull
+    @NullUnmarked
     @Override
-    public WindowInsetsCompat onApplyWindowInsets(
-            @NonNull View view, @NonNull WindowInsetsCompat windowInsets) {
+    public WindowInsetsCompat onApplyWindowInsets(View view, WindowInsetsCompat windowInsets) {
         Insets statusBarInsets = windowInsets.getInsets(Type.statusBars());
         mView.setStatusBarInsets(statusBarInsets);
 

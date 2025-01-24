@@ -15,10 +15,10 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.graphics.Insets;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.util.WindowInsetsUtils;
 
 /**
@@ -31,6 +31,7 @@ import org.chromium.ui.util.WindowInsetsUtils;
  *
  * <p>This layout is meant to be used when the activity is drawing under the system insets.
  */
+@NullMarked
 public class EdgeToEdgeBaseLayout extends FrameLayout {
     private static final int DEFAULT_NAV_BAR_DIVIDER_SIZE = 1;
     private static final int DISPLAY_CUTOUT_PAINT_COLOR = Color.BLACK;
@@ -59,7 +60,7 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
 
     private boolean mIsDebugging;
 
-    public EdgeToEdgeBaseLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public EdgeToEdgeBaseLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
         // Nav bar can draw on top of the status bar in landscape using 3-button mode.
@@ -74,7 +75,7 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
     }
 
     @Override
-    public void onDraw(@NonNull Canvas canvas) {
+    public void onDraw(Canvas canvas) {
         // Draw colors over its padding.
         colorRectOnDraw(canvas, mStatusBarRect, mStatusBarPaint);
         colorRectOnDraw(canvas, mNavBarRect, mNavBarPaint);
@@ -139,20 +140,20 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
         }
     }
 
-    void setStatusBarInsets(@NonNull Insets insets) {
+    void setStatusBarInsets(Insets insets) {
         mStatusBarInsets = insets;
     }
 
-    void setNavigationBarInsets(@NonNull Insets insets) {
+    void setNavigationBarInsets(Insets insets) {
         mNavigationBarInsets = insets;
     }
 
-    void setDisplayCutoutInsetLeft(@NonNull Insets insets) {
+    void setDisplayCutoutInsetLeft(Insets insets) {
         assert insets.left > 0 || Insets.NONE.equals(insets);
         mCutoutInsetsLeft = insets;
     }
 
-    void setDisplayCutoutInsetRight(@NonNull Insets insets) {
+    void setDisplayCutoutInsetRight(Insets insets) {
         assert insets.right > 0 || Insets.NONE.equals(insets);
         mCutoutInsetsRight = insets;
     }

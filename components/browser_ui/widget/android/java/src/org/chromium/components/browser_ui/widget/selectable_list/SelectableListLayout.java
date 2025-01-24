@@ -19,7 +19,6 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.MenuRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -30,6 +29,8 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.FadingShadow;
 import org.chromium.components.browser_ui.widget.FadingShadowView;
 import org.chromium.components.browser_ui.widget.R;
@@ -58,25 +59,40 @@ import java.util.Set;
  *
  * @param <E> The type of the selectable items this layout holds.
  */
+@NullMarked
 public class SelectableListLayout<E> extends FrameLayout
         implements DisplayStyleObserver, SelectionObserver<E>, BackPressHandler {
     private static final int WIDE_DISPLAY_MIN_PADDING_DP = 16;
+
+    @SuppressWarnings("NullAway.Init")
     private RecyclerView.Adapter mAdapter;
+
     private ViewStub mToolbarStub;
     private TextView mEmptyView;
+
+    @SuppressWarnings("NullAway.Init")
     private TextView mEmptyStateSubHeadingView;
+
     private View mEmptyViewWrapper;
+
+    @SuppressWarnings("NullAway.Init")
     private ImageView mEmptyImageView;
+
     private LoadingView mLoadingView;
+
+    @SuppressWarnings("NullAway.Init")
     private RecyclerView mRecyclerView;
-    private ItemAnimator mItemAnimator;
+
+    private @Nullable ItemAnimator mItemAnimator;
     SelectableListToolbar<E> mToolbar;
+
+    @SuppressWarnings("NullAway.Init")
     private FadingShadowView mToolbarShadow;
 
     private @StringRes int mEmptyStringResId;
-    private CharSequence mEmptySubheadingString;
+    private @Nullable CharSequence mEmptySubheadingString;
 
-    private UiConfig mUiConfig;
+    private @Nullable UiConfig mUiConfig;
 
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();

@@ -7,6 +7,9 @@ package org.chromium.components.browser_ui.notifications;
 import android.app.Notification;
 import android.app.NotificationChannel;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.List;
 
 /**
@@ -18,6 +21,7 @@ import java.util.List;
  *     https://developer.android.com/reference/android/app/NotificationManager.html</a>
  */
 @Deprecated
+@NullMarked
 public interface NotificationManagerProxy extends BaseNotificationManagerProxy {
     List<NotificationChannel> getNotificationChannels();
 
@@ -27,5 +31,6 @@ public interface NotificationManagerProxy extends BaseNotificationManagerProxy {
     @Deprecated
     void notify(String tag, int id, Notification notification);
 
+    @Nullable
     NotificationChannel getNotificationChannel(String channelId);
 }

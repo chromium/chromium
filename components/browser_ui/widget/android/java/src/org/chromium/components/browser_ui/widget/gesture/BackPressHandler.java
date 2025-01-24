@@ -6,10 +6,10 @@ package org.chromium.components.browser_ui.widget.gesture;
 
 import androidx.activity.BackEventCompat;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -20,6 +20,7 @@ import java.lang.annotation.RetentionPolicy;
  * be called; otherwise, when press event is triggered, it will be called, unless any other
  * implementer registered earlier has already consumed the back press event.
  */
+@NullMarked
 public interface BackPressHandler {
     // The smaller the value is, the higher the priority is.
     // When adding a new identifier, make corresponding changes in the
@@ -137,8 +138,8 @@ public interface BackPressHandler {
      * ({@link #handleOnBackStarted(BackEventCompat)}) and before a back press is released
      * (either {@link #handleBackPress()} or {@link #handleOnBackCancelled()})
      */
-    default void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {}
+    default void handleOnBackProgressed(BackEventCompat backEvent) {}
 
     /** API 34+ only. Triggered when a back press event is initialized. */
-    default void handleOnBackStarted(@NonNull BackEventCompat backEvent) {}
+    default void handleOnBackStarted(BackEventCompat backEvent) {}
 }

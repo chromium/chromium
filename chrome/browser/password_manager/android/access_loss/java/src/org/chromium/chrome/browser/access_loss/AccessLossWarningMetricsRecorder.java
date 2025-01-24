@@ -8,12 +8,15 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Used by the access loss warning UI to log metrics. */
+@NullMarked
 public class AccessLossWarningMetricsRecorder {
 
     // These values are persisted to logs. Entries should not be renumbered and
@@ -151,7 +154,7 @@ public class AccessLossWarningMetricsRecorder {
                 + EXPORT_FLOW_FINAL_STEP_SUFFIX;
     }
 
-    private static String getAccessLossWarningTypeName(
+    private static @Nullable String getAccessLossWarningTypeName(
             @PasswordAccessLossWarningType int warningType) {
         switch (warningType) {
             case PasswordAccessLossWarningType.NO_GMS_CORE:
