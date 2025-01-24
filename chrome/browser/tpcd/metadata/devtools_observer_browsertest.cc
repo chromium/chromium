@@ -126,14 +126,22 @@ class TpcdMetadataDevtoolsObserverBrowserTest
     : public subresource_filter::SubresourceFilterBrowserTest {
  public:
   explicit TpcdMetadataDevtoolsObserverBrowserTest(
+      bool enable_tracking_protection = true,
       bool enable_metadata_feature = true,
       bool enable_staged_control = true)
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     enabled_features_.push_back(
-        {content_settings::features::kTrackingProtection3pcd, {}});
-    enabled_features_.push_back(
         {network::features::kSkipTpcdMitigationsForAds,
          {{"SkipTpcdMitigationsForAdsMetadata", "true"}}});
+    // Since Tracking Protection is always enabled via the field trial config
+    // for browser tests, we need to manually disable it.
+    if (enable_tracking_protection) {
+      enabled_features_.push_back(
+          {content_settings::features::kTrackingProtection3pcd, {}});
+    } else {
+      disabled_features_.push_back(
+          content_settings::features::kTrackingProtection3pcd);
+    }
     if (enable_metadata_feature) {
       enabled_features_.push_back({net::features::kTpcdMetadataGrants, {}});
     } else {
@@ -410,6 +418,91 @@ IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
   WaitForMetadataIssueAndCheck({"c.test"}, 0u, false);
 }
 
+IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
+                       DoesNotEmitMetadataIssueWhenDevToolsDisableMetadata) {
+  AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
+  WaitForMetadataIssueAndCheck({"b.test"}, 0u, true);
+
+  SendSetCookieControls(/*enable_third_party_cookie_restriction=*/true,
+                        /*disable_third_party_cookie_metadata=*/true,
+                        /*disable_third_party_cookie_heuristics=*/false);
+
+  AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
+  CheckNoAddedIssue();
+}
+
+class TpcdMetadataDevtoolsObserverTrackingProtectionDisabledBrowserTest
+    : public TpcdMetadataDevtoolsObserverBrowserTest {
+ public:
+  TpcdMetadataDevtoolsObserverTrackingProtectionDisabledBrowserTest()
+      : TpcdMetadataDevtoolsObserverBrowserTest(
+            /*enable_tracking_protection=*/false) {}
+};
+
+IN_PROC_BROWSER_TEST_F(
+    TpcdMetadataDevtoolsObserverTrackingProtectionDisabledBrowserTest,
+    EmitCookieIssueWhenDevToolsBlockTPC) {
+  SendSetCookieControls(/*enable_third_party_cookie_restriction=*/true,
+                        /*disable_third_party_cookie_metadata=*/false,
+                        /*disable_third_party_cookie_heuristics=*/false);
+
+  AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
+  WaitForCookieIssueAndCheck("b.test", {"WarnDeprecationTrialMetadata"}, {});
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TpcdMetadataDevtoolsObserverTrackingProtectionDisabledBrowserTest,
+    EmitMetadataIssueWhenDevToolsBlockTPC) {
+  SendSetCookieControls(/*enable_third_party_cookie_restriction=*/true,
+                        /*disable_third_party_cookie_metadata=*/false,
+                        /*disable_third_party_cookie_heuristics=*/false);
+
+  AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
+  WaitForMetadataIssueAndCheck({"b.test"}, 0u, true);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TpcdMetadataDevtoolsObserverTrackingProtectionDisabledBrowserTest,
+    EmitCookieIssueWhenDevToolsDisableMetadata) {
+  AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
+  WaitForCookieIssueAndCheck("b.test", {"WarnThirdPartyPhaseout"}, {});
+
+  SendSetCookieControls(/*enable_third_party_cookie_restriction=*/true,
+                        /*disable_third_party_cookie_metadata=*/true,
+                        /*disable_third_party_cookie_heuristics=*/false);
+
+  AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
+  // Since the cookie is no longer exempted by metadata,
+  // ExcludeThirdPartyPhaseout cookie issue should be present.
+  WaitForCookieIssueAndCheck("b.test", {}, {"ExcludeThirdPartyPhaseout"});
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TpcdMetadataDevtoolsObserverTrackingProtectionDisabledBrowserTest,
+    DevToolsDisableMetadataJS) {
+  SendSetCookieControls(/*enable_third_party_cookie_restriction=*/true,
+                        /*disable_third_party_cookie_metadata=*/true,
+                        /*disable_third_party_cookie_heuristics=*/false);
+
+  NavigateToPageWith3pIFrame("a.test");
+
+  // Neither of these commands should work.
+  SetCookieFromJS(GetFrame(), "nonExistentCookie=value");
+  EXPECT_EQ(ReadCookiesFromJS(GetFrame()), "");
+
+  // Reenabling the metadata exemption. Cookie should now get set.
+  SendSetCookieControls(/*enable_third_party_cookie_restriction=*/true,
+                        /*disable_third_party_cookie_metadata=*/false,
+                        /*disable_third_party_cookie_heuristics=*/false);
+
+  // Refreshing so that RCM is re-created with new controls
+  NavigateToPageWith3pIFrame("a.test");
+
+  // Should now be unblocked by metadata and return the new cookie we set.
+  SetCookieFromJS(GetFrame(), "cookie=false");
+  EXPECT_EQ(ReadCookiesFromJS(GetFrame()), "cookie=false");
+}
+
 // Setting the DTRP values in the issue needs to be tested with the flag off.
 // Otherwise, a non-zero DTRP value might filter the entry and the issue will
 // never fire.
@@ -418,6 +511,7 @@ class TpcdMetadataDevtoolsObserverDtrpDisabledBrowserTest
  public:
   TpcdMetadataDevtoolsObserverDtrpDisabledBrowserTest()
       : TpcdMetadataDevtoolsObserverBrowserTest(
+            /*enable_tracking_protection=*/true,
             /*enable_metadata_feature=*/true,
             /*enable_staged_control=*/false) {}
 };
@@ -440,42 +534,6 @@ IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
   AddCookieAccess("a.test", "c.test", /*is_ad_tagged=*/false);
   WaitForCookieIssueAndCheck(
       "c.test", /*warning=*/{"WarnDeprecationTrialMetadata"}, /*exclusion=*/{});
-}
-
-IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
-                       DevToolsDisableMetadata) {
-  SendSetCookieControls(/*enable_third_party_cookie_restriction=*/true,
-                        /*disable_third_party_cookie_metadata=*/true,
-                        /*disable_third_party_cookie_heuristics=*/false);
-  AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
-  // Since the cookie is no longer exempted by metadata,
-  // ExcludeThirdPartyPhaseout cookie issue should be present.
-  WaitForCookieIssueAndCheck("b.test", {}, {"ExcludeThirdPartyPhaseout"});
-}
-
-IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
-                       DevToolsDisableMetadataJS) {
-  SendSetCookieControls(/*enable_third_party_cookie_restriction=*/true,
-                        /*disable_third_party_cookie_metadata=*/true,
-                        /*disable_third_party_cookie_heuristics=*/false);
-
-  NavigateToPageWith3pIFrame("a.test");
-
-  // Neither of these commands should work.
-  SetCookieFromJS(GetFrame(), "nonExistentCookie=value");
-  EXPECT_EQ(ReadCookiesFromJS(GetFrame()), "");
-
-  // Reenabling the metadata exemption. Cookie should now get set.
-  SendSetCookieControls(/*enable_third_party_cookie_restriction=*/true,
-                        /*disable_third_party_cookie_metadata=*/false,
-                        /*disable_third_party_cookie_heuristics=*/false);
-
-  // Refreshing so that RCM is re-created with new controls
-  NavigateToPageWith3pIFrame("a.test");
-
-  // Should now be unblocked by metadata and return the new cookie we set.
-  SetCookieFromJS(GetFrame(), "cookie=false");
-  EXPECT_EQ(ReadCookiesFromJS(GetFrame()), "cookie=false");
 }
 
 IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
@@ -507,7 +565,9 @@ class TpcdMetadataDevtoolsObserverDisabledBrowserTest
  public:
   TpcdMetadataDevtoolsObserverDisabledBrowserTest()
       : TpcdMetadataDevtoolsObserverBrowserTest(
-            /*enable_metadata_feature=*/false) {}
+            /*enable_tracking_protection=*/true,
+            /*enable_metadata_feature=*/false,
+            /*enable_staged_control=*/true) {}
 };
 
 IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverDisabledBrowserTest,
