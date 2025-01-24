@@ -27,7 +27,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -88,7 +87,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private SafetyHubModuleDelegate mDelegate;
     private NotificationPermissionReviewBridge mNotificationPermissionReviewBridge;
     private SafetyHubFetchService mSafetyHubFetchService;
-    private PropertyModel mUpdateCheckPropertyModel;
     private PropertyModel mPasswordCheckPropertyModel;
     private PropertyModel mNotificationsModel;
     private PropertyModel mBrowserStateModule;
@@ -101,6 +99,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     // `mBrowserStateModule` directly, then use a List of the SafetyHubModuleMediators instead.
     private SafetyHubPermissionsRevocationModuleMediator mPermissionsRevocationModuleMediator;
     private SafetyHubSafeBrowsingModuleMediator mSafeBrowsingModuleMediator;
+    private SafetyHubUpdateCheckModuleMediator mUpdateCheckModuleMediator;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -120,6 +119,9 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mSafetyHubFetchService = SafetyHubFetchServiceFactory.getForProfile(getProfile());
         mSigninManager = IdentityServicesProvider.get().getSigninManager(getProfile());
 
+        mUpdateCheckModuleMediator =
+                new SafetyHubUpdateCheckModuleMediator(
+                        findPreference(PREF_UPDATE), this, mDelegate, mSafetyHubFetchService);
         mPermissionsRevocationModuleMediator =
                 new SafetyHubPermissionsRevocationModuleMediator(
                         findPreference(PREF_UNUSED_PERMISSIONS),
@@ -130,7 +132,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         findPreference(PREF_SAFE_BROWSING), this, getProfile());
 
         setUpAccountPasswordCheckModule();
-        setUpUpdateCheckModule();
+        mUpdateCheckModuleMediator.setUpModule();
         mPermissionsRevocationModuleMediator.setUpModule();
         setUpNotificationsReviewModule();
         mSafeBrowsingModuleMediator.setUpModule();
@@ -148,12 +150,11 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
     private PropertyModel getModulePropertyModel(@ModuleOption int option) {
         switch (option) {
-            case ModuleOption.UPDATE_CHECK:
-                return mUpdateCheckPropertyModel;
             case ModuleOption.ACCOUNT_PASSWORDS:
                 return mPasswordCheckPropertyModel;
             case ModuleOption.NOTIFICATION_REVIEW:
                 return mNotificationsModel;
+            case ModuleOption.UPDATE_CHECK:
             case ModuleOption.UNUSED_PERMISSIONS:
             case ModuleOption.SAFE_BROWSING:
             default:
@@ -199,7 +200,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                                 DeprecatedSafetyHubModuleProperties.BROWSER_STATE_MODULE_KEYS)
                         .with(
                                 DeprecatedSafetyHubModuleProperties.UPDATE_STATUS,
-                                mDelegate.getUpdateStatus())
+                                mUpdateCheckModuleMediator.getUpdateStatus())
                         .with(
                                 DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN,
                                 SafetyHubUtils.isSignedIn(getProfile()))
@@ -261,36 +262,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
             mPasswordStoreBridge = new PasswordStoreBridge(getProfile());
             mPasswordStoreBridge.addObserver(this, true);
         }
-    }
-
-    private void setUpUpdateCheckModule() {
-        SafetyHubExpandablePreference updateCheckPreference = findPreference(PREF_UPDATE);
-
-        mUpdateCheckPropertyModel =
-                new PropertyModel.Builder(
-                                DeprecatedSafetyHubModuleProperties
-                                        .UPDATE_CHECK_SAFETY_HUB_MODULE_KEYS)
-                        .with(DeprecatedSafetyHubModuleProperties.IS_VISIBLE, true)
-                        .with(
-                                DeprecatedSafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
-                                v -> {
-                                    mDelegate.openGooglePlayStore(getContext());
-                                    recordDashboardInteractions(
-                                            DashboardInteractions.OPEN_PLAY_STORE);
-                                })
-                        .with(
-                                DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
-                                v -> {
-                                    mDelegate.openGooglePlayStore(getContext());
-                                    recordDashboardInteractions(
-                                            DashboardInteractions.OPEN_PLAY_STORE);
-                                })
-                        .build();
-
-        PropertyModelChangeProcessor.create(
-                mUpdateCheckPropertyModel,
-                updateCheckPreference,
-                DeprecatedSafetyHubModuleViewBinder::bindUpdateCheckProperties);
     }
 
     private void setUpNotificationsReviewModule() {
@@ -459,7 +430,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
     @Override
     public void updateStatusChanged() {
-        updateUpdateCheckPreference();
+        // no-op.
     }
 
     @Override
@@ -489,7 +460,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     }
 
     private void updateAllModules() {
-        updateUpdateCheckPreference();
+        mUpdateCheckModuleMediator.updateModule();
         updatePasswordCheckPreference();
         mSafeBrowsingModuleMediator.updateModule();
         mPermissionsRevocationModuleMediator.updateModule();
@@ -515,6 +486,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         hasNonManagedWarningState);
             } else if (i == ModuleOption.SAFE_BROWSING) {
                 mSafeBrowsingModuleMediator.setModuleExpandState(hasNonManagedWarningState);
+            } else if (i == ModuleOption.UPDATE_CHECK) {
+                mUpdateCheckModuleMediator.setModuleExpandState(hasNonManagedWarningState);
             } else {
                 updateModuleExpandState(i, hasNonManagedWarningState);
             }
@@ -533,6 +506,9 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
             } else if (i == ModuleOption.SAFE_BROWSING) {
                 moduleState = mSafeBrowsingModuleMediator.getModuleState();
                 managed = mSafeBrowsingModuleMediator.isManaged();
+            } else if (i == ModuleOption.UPDATE_CHECK) {
+                moduleState = mUpdateCheckModuleMediator.getModuleState();
+                managed = mUpdateCheckModuleMediator.isManaged();
             } else {
                 PropertyModel propertyModel = getModulePropertyModel(i);
                 moduleState = getModuleState(propertyModel, i);
@@ -555,6 +531,9 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mBrowserStateModule.set(
                 DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE,
                 mSafeBrowsingModuleMediator.getSafeBrowsingState());
+        mBrowserStateModule.set(
+                DeprecatedSafetyHubModuleProperties.UPDATE_STATUS,
+                mUpdateCheckModuleMediator.getUpdateStatus());
     }
 
     private void updateModuleExpandState(
@@ -666,15 +645,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         onUpdateNeeded();
     }
 
-    private void updateUpdateCheckPreference() {
-        UpdateStatusProvider.UpdateStatus updateStatus = mDelegate.getUpdateStatus();
-        mUpdateCheckPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
-        mBrowserStateModule.set(DeprecatedSafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
-
-        onUpdateNeeded();
-    }
-
     private void recordAllModulesState(@LifecycleEvent String event) {
         for (@ModuleOption int i = ModuleOption.OPTION_FIRST; i < ModuleOption.NUM_ENTRIES; i++) {
             @ModuleState int moduleState;
@@ -684,6 +654,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 moduleState = mPermissionsRevocationModuleMediator.getModuleState();
             } else if (i == ModuleOption.SAFE_BROWSING) {
                 moduleState = mSafeBrowsingModuleMediator.getModuleState();
+            } else if (i == ModuleOption.UPDATE_CHECK) {
+                moduleState = mUpdateCheckModuleMediator.getModuleState();
             } else {
                 moduleState = getModuleState(getModulePropertyModel(i), i);
             }
