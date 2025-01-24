@@ -601,10 +601,6 @@ public abstract class ToolbarLayout extends FrameLayout
 
     protected abstract CaptureReadinessResult isReadyForTextureCapture();
 
-    boolean setForceTextureCapture(boolean forceTextureCapture) {
-        return false;
-    }
-
     void setLayoutUpdater(Runnable layoutUpdater) {}
 
     /**

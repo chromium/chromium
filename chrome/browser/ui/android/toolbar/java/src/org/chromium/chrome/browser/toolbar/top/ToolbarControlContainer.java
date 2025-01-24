@@ -335,14 +335,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         return true;
     }
 
-    /** Invalidate the entire capturing bitmap region. */
-    public void invalidateBitmap() {
-        ((ToolbarViewResourceAdapter) getToolbarResourceAdapter()).forceInvalidate();
-    }
-
     /**
-     * Update whether the control container is ready to have the bitmap representation of
-     * itself be captured.
+     * Update whether the control container is ready to have the bitmap representation of itself be
+     * captured.
      */
     public void setReadyForBitmapCapture(boolean ready) {
         mToolbarContainer.mReadyForBitmapCapture = ready;
@@ -521,14 +516,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             mFullscreenManager = fullscreenManager;
         }
 
-        /**
-         * Force this resource to be recaptured in full, ignoring the checks
-         * {@link #invalidate(Rect)} does.
-         */
-        public void forceInvalidate() {
-            super.invalidate(null);
-        }
-
         @Override
         public boolean isDirty() {
             if (!super.isDirty()) {
@@ -635,9 +622,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         @Override
         public void onCaptureEnd() {
             mToolbar.setTextureCaptureMode(false);
-            // Forcing a texture capture should only be done for one draw. Turn off forced
-            // texture capture.
-            mToolbar.setForceTextureCapture(false);
         }
 
         @Override

@@ -55,18 +55,9 @@ public interface Toolbar {
     CaptureReadinessResult isReadyForTextureCapture();
 
     /**
-     * Sets whether or not the toolbar should force itself to draw for a texture capture regardless
-     * of other criteria used in isReadyForTextureCapture(). A texture capture will only be forced
-     * if the toolbar drawables tint is changing.
-     *
-     * @param forceTextureCapture Whether the toolbar should force itself to draw.
-     * @return True if a texture capture will be forced on the next draw.
-     */
-    boolean setForceTextureCapture(boolean forceTextureCapture);
-
-    /**
      * Returns the height of the tab strip, iff the toolbar has one. Returns 0 for toolbars that do
      * not have a tabstrip.
+     *
      * @return height of the tab strip in px.
      */
     int getTabStripHeight();

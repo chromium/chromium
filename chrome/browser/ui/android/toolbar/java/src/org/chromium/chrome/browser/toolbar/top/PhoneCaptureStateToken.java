@@ -104,13 +104,4 @@ class PhoneCaptureStateToken {
         }
         return ToolbarSnapshotDifference.NONE;
     }
-
-    @ColorInt
-    int getTint() {
-        return mTint;
-    }
-
-    int getTabCount() {
-        return mTabCount;
-    }
 }
