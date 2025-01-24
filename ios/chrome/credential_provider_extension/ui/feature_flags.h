@@ -7,6 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
+// Whether automatic passkey upgrade is enabled for the user.
+BOOL IsAutomaticPasskeyUpgradeEnabled();
+
 // Whether passkey PRF support is enabled.
 BOOL IsPasskeyPRFEnabled();
 

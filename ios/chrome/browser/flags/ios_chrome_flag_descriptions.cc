@@ -261,6 +261,11 @@ const char kContextualPanelName[] = "Contextual Panel";
 const char kContextualPanelDescription[] =
     "Enables the contextual panel feature.";
 
+const char kCredentialProviderAutomaticPasskeyUpgradeName[] =
+    "Credential Provider Automatic Passkey Upgrade";
+const char kCredentialProviderAutomaticPasskeyUpgradeDescription[] =
+    "Enables automatic passkey upgrade in the Credential Provider Extension.";
+
 const char kCredentialProviderPasskeyPRFName[] =
     "Credential Provider PRF support";
 const char kCredentialProviderPasskeyPRFDescription[] =

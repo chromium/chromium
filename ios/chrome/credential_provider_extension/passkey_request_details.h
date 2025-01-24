@@ -37,6 +37,10 @@
       securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
     API_AVAILABLE(ios(17.0));
 
+// Returns whether the list of credentials contains a password of the same
+// domain and username as the passkey request.
+- (BOOL)hasMatchingPassword:(NSArray<id<Credential>>*)credentials;
+
 // A preference for whether the authenticator should attempt to verify that it
 // is being used by its owner.
 @property(nonatomic, readonly) BOOL userVerificationRequired;
