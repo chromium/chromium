@@ -48,6 +48,21 @@ source_set("impl") {
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "glic_launcher_configuration_unittest.cc" ]
+  deps = [
+    ":impl",
+    ":launcher",
+    "//base/test:test_support",
+    "//chrome/browser/glic:glic",
+    "//chrome/browser/ui",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
