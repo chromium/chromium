@@ -39,6 +39,10 @@ bool GlicUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
 
 GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   static constexpr webui::LocalizedString kStrings[] = {
+      {"errorNotice", IDS_GLIC_ERROR_NOTICE},
+      {"errorNoticeActionButton", IDS_GLIC_ERROR_NOTICE_ACTION_BUTTON},
+      {"errorNoticeHeader", IDS_GLIC_ERROR_NOTICE_HEADER},
+      {"loadingNotice", IDS_GLIC_LOADING_NOTICE},
       {"offlineNotice", IDS_GLIC_OFFLINE_NOTICE},
       {"offlineNoticeAction", IDS_GLIC_OFFLINE_NOTICE_ACTION},
       {"offlineNoticeActionButton", IDS_GLIC_OFFLINE_NOTICE_ACTION_BUTTON},
@@ -67,6 +71,11 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
 
   // Set up guest URL via cli flag or default to finch param value.
   source->AddString("glicGuestURL", GetGuestURL().spec());
+
+  // Set up loading notice timeout values.
+  source->AddInteger("preLoadingTimeMs", features::kGlicPreLoadingTimeMs.Get());
+  source->AddInteger("minLoadingTimeMs", features::kGlicMinLoadingTimeMs.Get());
+  source->AddInteger("maxLoadingTimeMs", features::kGlicMaxLoadingTimeMs.Get());
 
   // Set up guest api source.
   // This comes from 'glic_api_injection' in

@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/glic_page_handler.h"
 
 #include "base/callback_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/browser_process.h"
@@ -100,6 +101,14 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void WebClientInitialized() override {
     glic_service_->window_controller().SetWebClient(this);
+    // If chrome://glic is opened in a tab for testing, send a synthetic open
+    // signal.
+    if (page_handler_->guest_contents() !=
+        glic_service_->window_controller().GetWebContents()) {
+      const auto& panel_state =
+          glic_service_->window_controller().GetPanelState();
+      web_client_->NotifyPanelWillOpen(panel_state.Clone(), base::DoNothing());
+    }
   }
 
   void CreateTab(const ::GURL& url,

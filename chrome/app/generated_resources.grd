@@ -18724,6 +18724,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_GLIC_OFFLINE_NOTICE_ACTION_BUTTON" translateable="false" desc="This is the button label text for the glic offline notice.">
         Retry connection
       </message>
+      <message name="IDS_GLIC_LOADING_NOTICE" translateable="false" desc="This is the text of the glic loading notice.">
+        Loading glic...
+      </message>
+      <message name="IDS_GLIC_ERROR_NOTICE_HEADER" translateable="false" desc="This is the headline on the glic error notice.">
+        Something went wrong
+      </message>
+      <message name="IDS_GLIC_ERROR_NOTICE" translateable="false" desc="This is the text of the glic error notice.">
+        Glic isn't available right now. Try again later
+      </message>
+      <message name="IDS_GLIC_ERROR_NOTICE_ACTION_BUTTON" translateable="false" desc="This is the button label text for the glic error notice.">
+        Try again
+      </message>
     </if>
 
     <!-- Smart Card Readers -->

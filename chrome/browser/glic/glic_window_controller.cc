@@ -469,6 +469,13 @@ views::Widget* GlicWindowController::GetGlicWidget() {
   return glic_widget_.get();
 }
 
+content::WebContents* GlicWindowController::GetWebContents() {
+  if (!contents_) {
+    return nullptr;
+  }
+  return contents_->web_contents();
+}
+
 gfx::Point GlicWindowController::GetTopRightPositionForAttachedGlicWindow(
     views::View* glic_button_view) {
   // Initial position determined by glic button bounds. Returns the top right

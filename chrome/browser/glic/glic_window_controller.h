@@ -158,6 +158,9 @@ class GlicWindowController : public views::WidgetObserver {
   // Returns the widget that backs the glic window. Public for testing.
   views::Widget* GetGlicWidget();
 
+  // Returns the WebContents hosted in the glic window, or nullptr if none.
+  content::WebContents* GetWebContents();
+
  private:
   gfx::Rect GetInitialDetachedBounds();
 

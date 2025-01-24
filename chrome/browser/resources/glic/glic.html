@@ -5,8 +5,8 @@
   <link rel="stylesheet" href="glic.css">
   <script type="module" src="main.js"></script>
 </head>
-<body>
-  <section class="hidden dialog" id="offline-panel">
+<body id="panelContainer">
+  <section class="hidden dialog panel" id="offlinePanel">
     <div class="container">
       <div class="header">
         <img class="logo" src="glic_logo.svg">
@@ -23,7 +23,34 @@
       </div>
     </div>
   </section>
-  <webview class="hidden" id="guest-frame" partition="persist:glicpart">
-  </webview>
+  <section class="hidden dialog panel" id="loadingPanel">
+    <div class="container">
+      <div class="header">
+        <img class="logo" src="glic_logo.svg">
+        <cr-icon-button class="close-button"
+          iron-icon="cr:close"></cr-icon-button>
+      </div>
+      <div class="notice">
+        <div class="icon">$i18n{loadingNotice}</div>
+        <cr-progress indeterminate></cr-progress>
+      </div>
+    </div>
+  </section>
+  <section class="hidden dialog panel" id="errorPanel">
+    <div class="container">
+      <div class="header">
+        <img class="logo" src="glic_logo.svg">
+        <cr-icon-button class="close-button"
+          iron-icon="cr:close"></cr-icon-button>
+      </div>
+      <div class="notice">
+        <div class="icon"><cr-icon icon="glic:error"></cr-icon></div>
+        <p class="headline"><b>$i18n{errorNoticeHeader}</b></p>
+        <p>$i18n{errorNotice}</p>
+        <cr-button class="tonal-button" id="reload"
+          role="button">$i18n{errorNoticeActionButton}</cr-button>
+      </div>
+    </div>
+  </section>
 </body>
 </html>
