@@ -675,6 +675,9 @@ bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyEnabledForUser(
 bool OptimizationGuideKeyedService::
     ShouldFeatureAllowModelExecutionForSignedInUser(
         optimization_guide::UserVisibleFeatureKey feature) const {
+  if (!model_execution_features_controller_) {
+    return false;
+  }
   return model_execution_features_controller_
       ->ShouldFeatureAllowModelExecutionForSignedInUser(feature);
 }
