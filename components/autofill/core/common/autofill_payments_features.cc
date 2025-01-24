@@ -132,14 +132,6 @@ BASE_FEATURE(kAutofillEnableVirtualCardJavaPaymentsDataManager,
              "AutofillEnableVirtualCardJavaPaymentsDataManager",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-// When enabled, saving and autofilling local IBANs (International Bank Account
-// Numbers) will be offered.
-BASE_FEATURE(kAutofillEnableLocalIban,
-             "AutofillEnableLocalIban",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // When enabled, a form event will log to all of the parsed forms of the same
 // type on a webpage. This means credit card form events will log to all credit
 // card form types and address form events will log to all address form types."
@@ -191,12 +183,6 @@ BASE_FEATURE(kAutofillEnableSaveCardLoadingAndConfirmation,
 // a card encounters a failure.
 BASE_FEATURE(kAutofillEnableSaveCardLocalSaveFallback,
              "AutofillEnableSaveCardLocalSaveFallback",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, Autofill will attempt to offer upload save for IBANs
-// (International Bank Account Numbers) and autofill server-based IBANs.
-BASE_FEATURE(kAutofillEnableServerIban,
-             "AutofillEnableServerIban",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)

@@ -370,9 +370,6 @@ extern const char kAutofillEnableCardInfoRuntimeRetrievalDescription[];
 extern const char kAutofillEnableCardProductNameName[];
 extern const char kAutofillEnableCardProductNameDescription[];
 
-extern const char kAutofillEnableLocalIbanName[];
-extern const char kAutofillEnableLocalIbanDescription[];
-
 extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesName[];
 extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[];
 
@@ -408,9 +405,6 @@ extern const char kAutofillEnableSaveCardLoadingAndConfirmationDescription[];
 
 extern const char kAutofillEnableSaveCardLocalSaveFallbackName[];
 extern const char kAutofillEnableSaveCardLocalSaveFallbackDescription[];
-
-extern const char kAutofillEnableServerIbanName[];
-extern const char kAutofillEnableServerIbanDescription[];
 
 #if BUILDFLAG(IS_ANDROID)
 extern const char kAutofillEnableSyncingOfPixBankAccountsName[];

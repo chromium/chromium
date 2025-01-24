@@ -595,12 +595,6 @@ const char kAutofillEnableCardProductNameDescription[] =
     "When enabled, card product name (instead of issuer network) will be shown "
     "in Payments Autofill UI.";
 
-const char kAutofillEnableLocalIbanName[] =
-    "Enable local IBAN save and autofilling";
-const char kAutofillEnableLocalIbanDescription[] =
-    "When enabled, saving and autofilling local IBANs (International Bank "
-    "Account Numbers) will be offered.";
-
 const char kAutofillEnableLogFormEventsToAllParsedFormTypesName[] =
     "Enable logging form events to all parsed form on a web page.";
 const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[] =
@@ -677,12 +671,6 @@ const char kAutofillEnableSaveCardLocalSaveFallbackDescription[] =
     "number and expiration date already exists in the local database, this "
     "will be a no-op and the existing card will not be updated with any card "
     "details from the form.";
-
-const char kAutofillEnableServerIbanName[] =
-    "Enable server-based IBAN uploading and autofilling";
-const char kAutofillEnableServerIbanDescription[] =
-    "When enabled, Autofill will attempt to offer upload save for IBANs "
-    "(International Bank Account Numbers) and autofill server-based IBANs.";
 
 #if BUILDFLAG(IS_ANDROID)
 const char kAutofillEnableSyncingOfPixBankAccountsName[] =

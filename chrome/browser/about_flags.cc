@@ -10143,11 +10143,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kUseAdHocSigningForWebAppShims)},
 #endif  // BUILDFLAG(IS_MAC)
 
-    {"autofill-enable-server-iban",
-     flag_descriptions::kAutofillEnableServerIbanName,
-     flag_descriptions::kAutofillEnableServerIbanDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableServerIban)},
-
 #if BUILDFLAG(IS_CHROMEOS)
     {"seal-key", flag_descriptions::kSealKeyName,
      flag_descriptions::kSealKeyDescription, kOsCrOS,
@@ -10382,13 +10377,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTearOffWebAppAppTabOpensWebAppWindowName,
      flag_descriptions::kTearOffWebAppAppTabOpensWebAppWindowDescription,
      kOsAll, FEATURE_VALUE_TYPE(features::kTearOffWebAppTabOpensWebAppWindow)},
-
-#if BUILDFLAG(IS_ANDROID)
-    {"autofill-enable-local-iban",
-     flag_descriptions::kAutofillEnableLocalIbanName,
-     flag_descriptions::kAutofillEnableLocalIbanDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableLocalIban)},
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
     {"offline-auto-fetch", flag_descriptions::kOfflineAutoFetchName,
