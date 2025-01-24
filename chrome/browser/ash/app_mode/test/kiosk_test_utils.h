@@ -53,7 +53,7 @@ namespace ash::kiosk::test {
 [[nodiscard]] bool IsAppInstalled(Profile& profile, const KioskApp& app);
 
 // Returns the version string of the Chrome `app` installed in the given
-// `profile`. CHECKs when the app is not installed.
+// `profile`. CHECKs when `app` is not a Chrome app or not installed.
 [[nodiscard]] std::string InstalledChromeAppVersion(Profile& profile,
                                                     const KioskApp& app);
 [[nodiscard]] std::string InstalledChromeAppVersion(Profile& profile,

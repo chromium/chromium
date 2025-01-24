@@ -116,6 +116,7 @@ bool IsAppInstalled(Profile& profile, const KioskApp& app) {
 }
 
 std::string InstalledChromeAppVersion(Profile& profile, const KioskApp& app) {
+  CHECK_EQ(app.id().type, KioskAppType::kChromeApp);
   return InstalledChromeAppVersion(profile, app.id().app_id.value());
 }
 
