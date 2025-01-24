@@ -192,10 +192,13 @@ public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateLis
     }
 
     protected boolean shouldSelfFreeze() {
+        // This is the last check before we call native.
         if (!LibraryLoader.getInstance().isInitialized()) return false;
         if (MemoryPurgeManagerJni.get() == null) return false;
 
-        return MemoryPurgeManagerJni.get().isSelfFreezeEnabled();
+        // We don't check the feature here, because we need to forward to
+        // native in all cases, in order to record metrics.
+        return true;
     }
 
     @NativeMethods
@@ -203,7 +206,5 @@ public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateLis
         void postDelayedPurgeTaskOnUiThread(long delayMillis);
 
         boolean isOnPreFreezeMemoryTrimEnabled();
-
-        boolean isSelfFreezeEnabled();
     }
 }
