@@ -800,6 +800,12 @@ void OrderChildWindow(NSWindow* child_window,
 
 // NSWindow overrides (NSAccessibility informal protocol implementation).
 
+- (NSString*)accessibilityDocument {
+  // TODO(crbug.com/363275809): Implement this after the URL is made available,
+  // e.g. via `ViewAccessibility`.
+  return nil;
+}
+
 - (id)accessibilityFocusedUIElement {
   if (![self delegate])
     return [super accessibilityFocusedUIElement];
