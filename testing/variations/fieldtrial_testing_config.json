@@ -22288,23 +22288,6 @@
             ]
         }
     ],
-    "SigninInterceptSimpleButtons": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SigninInterceptSimpleButtons"
-                    ]
-                }
-            ]
-        }
-    ],
     "SimdutfBase64Support": [
         {
             "platforms": [
