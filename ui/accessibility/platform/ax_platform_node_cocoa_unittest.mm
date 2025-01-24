@@ -400,10 +400,12 @@ TEST_P(AXPlatformNodeCocoaTest, TestRespondsToSelector) {
   NSArray<NSString*>* selectors_enabled_when_migrated = @[
     @"accessibilityColumnCount", @"accessibilityDisclosedByRow",
     @"accessibilityDisclosedRows", @"accessibilityDisclosureLevel",
-    @"accessibilityHeader", @"accessibilityIndex", @"accessibilityRowCount",
+    @"accessibilityHeader", @"accessibilityHorizontalScrollBar",
+    @"accessibilityIndex", @"accessibilityRowCount",
     @"accessibilitySortDirection", @"accessibilitySplitters",
-    @"accessibilityToolbarButton", @"isAccessibilityDisclosed",
-    @"isAccessibilityExpanded", @"isAccessibilityFocused"
+    @"accessibilityToolbarButton", @"accessibilityVerticalScrollBar",
+    @"isAccessibilityDisclosed", @"isAccessibilityExpanded",
+    @"isAccessibilityFocused"
   ];
 
   // Old API for which the new API was implemented prior to the creation of the
@@ -1292,6 +1294,44 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityToolbarButton) {
   Init(root);
   AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
   EXPECT_EQ([node accessibilityToolbarButton], nil);
+}
+
+// `accessibilityHorizontalScrollBar` and `accessibilityVerticalScrollBar`
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityScrollbars) {
+  AXNodeData root = AXNodeData();
+  root.id = 1;
+  root.role = ax::mojom::Role::kGenericContainer;
+  root.child_ids = {2, 3};
+
+  AXNodeData horizontal_scrollbar = AXNodeData();
+  horizontal_scrollbar.id = 2;
+  horizontal_scrollbar.role = ax::mojom::Role::kScrollBar;
+  horizontal_scrollbar.AddState(ax::mojom::State::kHorizontal);
+  horizontal_scrollbar.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kControlsIds, {1});
+  horizontal_scrollbar.SetNameChecked("Horizontal scrollbar");
+
+  AXNodeData vertical_scrollbar = AXNodeData();
+  vertical_scrollbar.id = 3;
+  vertical_scrollbar.role = ax::mojom::Role::kScrollBar;
+  vertical_scrollbar.AddState(ax::mojom::State::kVertical);
+  vertical_scrollbar.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kControlsIds, {1});
+  vertical_scrollbar.SetNameChecked("Vertical scrollbar");
+
+  ui::AXTreeUpdate update;
+  update.root_id = root.id;
+  update.nodes.push_back(root);
+  update.nodes.push_back(horizontal_scrollbar);
+  update.nodes.push_back(vertical_scrollbar);
+  Init(update);
+
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
+  AXPlatformNodeCocoa* scrollbar = [node accessibilityHorizontalScrollBar];
+  EXPECT_NSEQ([scrollbar accessibilityLabel], @"Horizontal scrollbar");
+
+  scrollbar = [node accessibilityVerticalScrollBar];
+  EXPECT_NSEQ([scrollbar accessibilityLabel], @"Vertical scrollbar");
 }
 
 }  // namespace ui
