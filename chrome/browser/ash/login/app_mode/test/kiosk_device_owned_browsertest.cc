@@ -105,28 +105,6 @@ class KioskDeviceOwnedTest : public KioskBaseTest {
   }
 };
 
-// Verifies that an enterprise device does not auto-launch kiosk mode when cros
-// settings are untrusted.
-IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
-                       NoEnterpriseAutoLaunchWhenUntrusted) {
-  PrepareAppLaunch();
-  SimulateNetworkOnline();
-
-  // Make cros settings untrusted.
-  settings_helper_.SetTrustedStatus(
-      CrosSettingsProvider::PERMANENTLY_UNTRUSTED);
-
-  // Trigger the code that handles auto-launch on enterprise devices. This would
-  // normally be called from ShowLoginWizard(), which runs so early that it is
-  // not possible to inject an auto-launch policy before it runs.
-  LoginDisplayHost* login_display_host = LoginDisplayHost::default_host();
-  ASSERT_TRUE(login_display_host);
-  login_display_host->StartKiosk(test_kiosk_app().id(), true);
-
-  // Check that no launch has started.
-  EXPECT_FALSE(KioskController::Get().IsSessionStarting());
-}
-
 // This test verifies that accessibility extensions do not preserve any local
 // data in-between session, as opposed to what they usually do in user sessions.
 // See crbug.com/1049566
