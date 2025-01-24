@@ -650,6 +650,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
 #pragma mark - UIView
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
 
@@ -662,5 +663,6 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
     [self updateLabelFont];
   }
 }
+#endif
 
 @end
