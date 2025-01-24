@@ -35,6 +35,12 @@ INSTANTIATE_TEST_SUITE_P(FontFeaturesTest,
                          FontFeaturesByOrientationTest,
                          testing::ValuesIn(orientations));
 
+TEST_F(FontFeaturesTest, Initial) {
+  EXPECT_TRUE(FontFeatures::Initial().IsInitial());
+
+  // More tests using `RenderingTest` are in `InlineNodeTest.FontFeatures*'.
+}
+
 // Test 'chws' or 'vchw' is on by default.
 TEST_P(FontFeaturesByOrientationTest, EastAsianContextualSpacingOnByDefault) {
   constexpr hb_tag_t chws = HB_TAG('c', 'h', 'w', 's');

@@ -1711,6 +1711,22 @@ TEST_F(InlineNodeTest, FindSvgTextChunksCrash3) {
   // Pass if no CHECK() failures in FindSvgTextChunks().
 }
 
+TEST_F(InlineNodeTest, FontFeaturesInitial) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="initial"></div>
+    <div id="no-kern" style="font-kerning: none"></div>
+  )HTML");
+  const auto is_initial = [this](const char* id) {
+    const auto* layout_object = GetLayoutObjectByElementId(id);
+    FontFeatures features;
+    features.Initialize(
+        layout_object->StyleRef().GetFont().GetFontDescription());
+    return features.IsInitial();
+  };
+  EXPECT_TRUE(is_initial("initial"));
+  EXPECT_FALSE(is_initial("no-kern"));
+}
+
 TEST_F(InlineNodeTest, ShapeCacheDisabled) {
   ScopedLayoutNGShapeCacheForTest scoped_feature(false);
 
