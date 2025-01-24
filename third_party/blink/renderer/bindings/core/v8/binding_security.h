@@ -99,9 +99,8 @@ class CORE_EXPORT BindingSecurity {
     if (accessing_script_state == target_script_state) [[likely]] {
       return true;
     }
-    ExceptionState* exception_state = nullptr;
-    return ShouldAllowAccessToV8ContextInternal(
-        accessing_script_state, target_script_state, exception_state);
+    return ShouldAllowAccessToV8ContextInternal(accessing_script_state,
+                                                target_script_state);
   }
 
   static void FailedAccessCheckFor(v8::Isolate*,
@@ -112,8 +111,7 @@ class CORE_EXPORT BindingSecurity {
  private:
   static bool ShouldAllowAccessToV8ContextInternal(
       ScriptState* accessing_script_state,
-      ScriptState* target_script_state,
-      ExceptionState* exception_state);
+      ScriptState* target_script_state);
 };
 
 }  // namespace blink

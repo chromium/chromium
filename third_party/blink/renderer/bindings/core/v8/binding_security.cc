@@ -76,33 +76,10 @@ void BindingSecurity::Init() {
 
 namespace {
 
-void ThrowSecurityError(
-    const LocalDOMWindow* accessing_window,
-    const DOMWindow* target_window,
-    DOMWindow::CrossDocumentAccessPolicy cross_document_access,
-    ExceptionState* exception_state) {
-  if (!exception_state) {
-    return;
-  }
-  if (target_window) {
-    exception_state->ThrowSecurityError(
-        target_window->SanitizedCrossDomainAccessErrorMessage(
-            accessing_window, cross_document_access),
-        target_window->CrossDomainAccessErrorMessage(accessing_window,
-                                                     cross_document_access));
-  } else {
-    exception_state->ThrowSecurityError("Cross origin access was denied.");
-  }
-}
-
-bool CanAccessWindowInternal(
-    const LocalDOMWindow* accessing_window,
-    const DOMWindow* target_window,
-    DOMWindow::CrossDocumentAccessPolicy* cross_document_access) {
+bool CanAccessWindow(const LocalDOMWindow* accessing_window,
+                     const DOMWindow* target_window) {
   SECURITY_CHECK(!(target_window && target_window->GetFrame()) ||
                  target_window == target_window->GetFrame()->DomWindow());
-  DCHECK_EQ(DOMWindow::CrossDocumentAccessPolicy::kAllowed,
-            *cross_document_access);
 
   // It's important to check that target_window is a LocalDOMWindow: it's
   // possible for a remote frame and local frame to have the same security
@@ -142,9 +119,6 @@ bool CanAccessWindowInternal(
            local_target_window->GetAgent()->IsOriginKeyedForInheritance()) ||
           (WebTestSupport::IsRunningWebTest() &&
            local_target_window->GetFrame()->PagePopupOwner()));
-
-      *cross_document_access =
-          DOMWindow::CrossDocumentAccessPolicy::kDisallowed;
     }
     return false;
   }
@@ -170,21 +144,6 @@ bool CanAccessWindowInternal(
   return true;
 }
 
-bool CanAccessWindow(const LocalDOMWindow* accessing_window,
-                     const DOMWindow* target_window,
-                     ExceptionState* exception_state) {
-  DOMWindow::CrossDocumentAccessPolicy cross_document_access =
-      DOMWindow::CrossDocumentAccessPolicy::kAllowed;
-  if (CanAccessWindowInternal(accessing_window, target_window,
-                              &cross_document_access)) {
-    return true;
-  }
-
-  ThrowSecurityError(accessing_window, target_window, cross_document_access,
-                     exception_state);
-  return false;
-}
-
 DOMWindow* FindWindow(v8::Isolate* isolate,
                       const WrapperTypeInfo* type,
                       v8::Local<v8::Object> holder) {
@@ -204,9 +163,9 @@ bool BindingSecurity::ShouldAllowAccessTo(
     const LocalDOMWindow* accessing_window,
     const DOMWindow* target) {
   DCHECK(target);
-  bool can_access = CanAccessWindow(accessing_window, target, nullptr);
+  bool can_access = CanAccessWindow(accessing_window, target);
 
-  if (!can_access && accessing_window) {
+  if (!can_access && accessing_window) [[unlikely]] {
     UseCounter::Count(accessing_window->document(),
                       WebFeature::kCrossOriginPropertyAccess);
     if (target->opener() == accessing_window) {
@@ -222,10 +181,9 @@ bool BindingSecurity::ShouldAllowAccessTo(
     const LocalDOMWindow* accessing_window,
     const Location* target) {
   DCHECK(target);
-  bool can_access =
-      CanAccessWindow(accessing_window, target->DomWindow(), nullptr);
+  bool can_access = CanAccessWindow(accessing_window, target->DomWindow());
 
-  if (!can_access && accessing_window) {
+  if (!can_access && accessing_window) [[unlikely]] {
     UseCounter::Count(accessing_window->document(),
                       WebFeature::kCrossOriginPropertyAccess);
     if (target->DomWindow()->opener() == accessing_window) {
@@ -242,14 +200,12 @@ bool BindingSecurity::ShouldAllowAccessTo(
     const Node* target) {
   if (!target)
     return false;
-  return CanAccessWindow(accessing_window, target->GetDocument().domWindow(),
-                         nullptr);
+  return CanAccessWindow(accessing_window, target->GetDocument().domWindow());
 }
 
 bool BindingSecurity::ShouldAllowAccessToV8ContextInternal(
     ScriptState* accessing_script_state,
-    ScriptState* target_script_state,
-    ExceptionState* exception_state) {
+    ScriptState* target_script_state) {
   // Workers and worklets do not support multiple contexts, so both of
   // |accessing_context| and |target_context| must be windows at this point.
 
@@ -258,22 +214,16 @@ bool BindingSecurity::ShouldAllowAccessToV8ContextInternal(
   CHECK_EQ(accessing_world.GetWorldId(), target_world.GetWorldId());
   return !accessing_world.IsMainWorld() ||
          CanAccessWindow(ToLocalDOMWindow(accessing_script_state),
-                         ToLocalDOMWindow(target_script_state),
-                         exception_state);
+                         ToLocalDOMWindow(target_script_state));
 }
 
 bool BindingSecurity::ShouldAllowAccessToV8Context(
     v8::Local<v8::Context> accessing_context,
     v8::MaybeLocal<v8::Context> maybe_target_context) {
-  ExceptionState* exception_state = nullptr;
-
   // remote_object->GetCreationContext() returns the empty handle. Remote
   // contexts are unconditionally treated as cross origin.
   v8::Local<v8::Context> target_context;
   if (!maybe_target_context.ToLocal(&target_context)) {
-    ThrowSecurityError(ToLocalDOMWindow(accessing_context), nullptr,
-                       DOMWindow::CrossDocumentAccessPolicy::kAllowed,
-                       exception_state);
     return false;
   }
 
@@ -285,7 +235,7 @@ bool BindingSecurity::ShouldAllowAccessToV8Context(
   v8::Isolate* isolate = accessing_context->GetIsolate();
   return ShouldAllowAccessToV8ContextInternal(
       ScriptState::From(isolate, accessing_context),
-      ScriptState::From(isolate, target_context), exception_state);
+      ScriptState::From(isolate, target_context));
 }
 
 void BindingSecurity::FailedAccessCheckFor(v8::Isolate* isolate,
