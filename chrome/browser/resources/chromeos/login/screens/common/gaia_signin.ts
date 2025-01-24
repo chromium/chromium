@@ -568,7 +568,6 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
     params.menuEnterpriseEnrollment =
         !(data.enterpriseManagedDevice || data.hasDeviceOwner);
     params.isFirstUser = !(data.enterpriseManagedDevice || data.hasDeviceOwner);
-    params.obfuscatedOwnerId = data.obfuscatedOwnerId;
 
     this.authenticatorParams = params;
 

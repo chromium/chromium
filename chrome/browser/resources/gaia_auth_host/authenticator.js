@@ -52,7 +52,6 @@ export let SyncTrustedRecoveryMethod;
  * Sync trusted vault encryption keys optionally passed with 'authCompleted'
  * message.
  * @typedef {{
- *   obfuscatedGaiaId: string,
  *   encryptionKeys: Array<SyncTrustedVaultKey>,
  *   trustedRecoveryMethods: Array<SyncTrustedRecoveryMethod>
  * }}
@@ -194,8 +193,7 @@ export const SUPPORTED_PARAMS = [
   'menuEnterpriseEnrollment',    // Enables "Enterprise enrollment" menu item.
   'lsbReleaseBoard',             // Chrome OS Release board name
   'isFirstUser',                 // True if this is non-enterprise device,
-                                 // and there are no users yet.
-  'obfuscatedOwnerId',           // Obfuscated device owner ID, if needed.
+  // and there are no users yet.
   'extractSamlPasswordAttributes',  // If enabled attempts to extract password
                                     // attributes from the SAML response.
   'ignoreCrOSIdpSetting',           // If set to true, causes Gaia to ignore 3P
@@ -849,9 +847,6 @@ export class Authenticator extends EventTarget {
     }
     if (data.isFirstUser) {
       url = appendParam(url, 'is_first_user', 'true');
-    }
-    if (data.obfuscatedOwnerId) {
-      url = appendParam(url, 'obfuscated_owner_id', data.obfuscatedOwnerId);
     }
     if (data.hl) {
       url = appendParam(url, 'hl', data.hl);
