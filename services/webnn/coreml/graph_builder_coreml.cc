@@ -3988,6 +3988,45 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPool2d(
       "exclude_padding_from_average";
   static constexpr char kParamCeilMode[] = "ceil_mode";
 
+  CHECK_EQ(input_operand_info.dimensions.size(), 4u);
+
+  int64_t height = static_cast<int64_t>(input_operand_info.dimensions[2]) -
+                   operation.window_dimensions->height +
+                   operation.padding->beginning->height +
+                   operation.padding->ending->height;
+
+  int64_t width = static_cast<int64_t>(input_operand_info.dimensions[3]) -
+                  operation.window_dimensions->width +
+                  operation.padding->beginning->width +
+                  operation.padding->ending->width;
+  bool is_ceil = false;
+
+  // Only check when the floor/ceil have different results.
+  if (height % operation.strides->height != 0 ||
+      width % operation.strides->width != 0) {
+    const OperandInfo& output_operand =
+        GetOperandInfo(operation.output_operand_id);
+    CHECK_EQ(output_operand.dimensions.size(), 4u);
+    if (output_operand.dimensions[2] ==
+            base::ClampCeil<uint32_t>(
+                static_cast<double>(height) / operation.strides->height + 1) &&
+        output_operand.dimensions[3] ==
+            base::ClampCeil<uint32_t>(
+                static_cast<double>(width) / operation.strides->width + 1)) {
+      is_ceil = true;
+      // TODO: crbug.com/334914466: Core ML requires padding to be symmetric if
+      // `ceil_mode` is true.
+      if (operation.padding->beginning->height !=
+              operation.padding->ending->height ||
+          operation.padding->beginning->width !=
+              operation.padding->ending->width) {
+        return NewNotSupportedError(
+            "Unsupported padding for pooling, padding has to be symmetric for "
+            "ceil roundingType.");
+      }
+    }
+  }
+
   // CoreML supports 1D, 2D, and 3D pooling, but WebNN only supports 2D.
   static constexpr size_t kSpatialDimensions = 2u;
 
@@ -4032,11 +4071,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPool2d(
        {kParamStrides, Create1DTensorImmediateValue<int32_t>(strides)},
        {kParamPadType, CreateStringImmediateValue(kParamPadTypeValue)},
        {kOpParamPad, Create1DTensorImmediateValue<int32_t>(pad)},
-       // TODO: crbug.com/334914466 - Support `ceil_mode` by calculating the
-       // expected output shape and comparing it to the shape of the output
-       // operand. Note that Core ML requires padding to be symmetric if
-       // `ceil_mode` is true.
-       {kParamCeilMode, CreateScalarImmediateValue(false)}});
+       {kParamCeilMode, CreateScalarImmediateValue(is_ceil)}});
 
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
   return base::ok();
