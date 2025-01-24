@@ -136,7 +136,8 @@ void TapMagicStackEditButton() {
     config.features_disabled.push_back(
         set_up_list::kSetUpListWithoutSignInItem);
   }
-  if ([self isRunningTest:@selector(testMVTInMagicStack)]) {
+  if ([self isRunningTest:@selector(testMVTInMagicStack)] ||
+      [self isRunningTest:@selector(testMVTInMagicStackToggleModule)]) {
     std::string enable_mvt_arg = std::string(kMagicStack.name) + ":" +
                                  kMagicStackMostVisitedModuleParam + "/true";
     config.additional_args.push_back("--enable-features=" + enable_mvt_arg);
