@@ -100,14 +100,12 @@ std::vector<const char*> GetEnabledToggles(
   for (const auto& toggle : gpu_preferences.enabled_dawn_features_list) {
     enabled_toggles.push_back(toggle.c_str());
   }
+
   // The following toggles are all device-scoped toggles so it's not necessary
   // to pass them when creating the Instance above.
-
-  // Only enable backend labels on Windows or DCHECK builds on other platforms
-  // since it can have non-trivial performance overhead e.g. with Metal.
-#if DCHECK_IS_ON() || BUILDFLAG(IS_WIN)
-  enabled_toggles.push_back("use_user_defined_labels_in_backend");
-#endif
+  if (features::kSkiaGraphiteDawnBackendDebugLabels.Get()) {
+    enabled_toggles.push_back("use_user_defined_labels_in_backend");
+  }
 
   if (features::kSkiaGraphiteDawnSkipValidation.Get()) {
     enabled_toggles.push_back("skip_validation");

@@ -4084,12 +4084,17 @@ const FeatureEntry::FeatureParam kSkiaGraphite_ValidationEnabled[] = {
     {"dawn_skip_validation", "false"}};
 const FeatureEntry::FeatureParam kSkiaGraphite_ValidationDisabled[] = {
     {"dawn_skip_validation", "true"}};
+const FeatureEntry::FeatureParam kSkiaGraphite_DebugLabelsEnabled[] = {
+    {"dawn_backend_debug_labels", "true"}};
 
 const FeatureEntry::FeatureVariation kSkiaGraphiteVariations[] = {
     {"dawn frontend validation enabled", kSkiaGraphite_ValidationEnabled,
      std::size(kSkiaGraphite_ValidationEnabled), nullptr},
     {"dawn frontend validation disabled", kSkiaGraphite_ValidationDisabled,
-     std::size(kSkiaGraphite_ValidationDisabled), nullptr}};
+     std::size(kSkiaGraphite_ValidationDisabled), nullptr},
+    {"dawn debug labels enabled", kSkiaGraphite_DebugLabelsEnabled,
+     std::size(kSkiaGraphite_DebugLabelsEnabled), nullptr},
+};
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 const FeatureEntry::FeatureParam kTranslationAPI_SkipLanguagePackLimit[] = {
