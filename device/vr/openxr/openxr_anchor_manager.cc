@@ -184,13 +184,15 @@ OpenXrAnchorManager::GetXrLocationFromReferenceSpace(
     }
     // local_from_mojo is currently identity.
     gfx::Transform local_from_mojo;
+    // stage_from_floor is currently identity.
+    gfx::Transform stage_from_floor;
     // Because we're told that the native origin is local_floor,
     // native_origin_from_anchor is floor_from_anchor.
     const auto& floor_from_anchor = native_origin_from_anchor;
     // We need to generate local_from_anchor to use the local reference space.
     gfx::Transform local_from_anchor =
-        local_from_mojo * current_stage_parameters->mojo_from_floor *
-        floor_from_anchor;
+        local_from_mojo * current_stage_parameters->mojo_from_stage *
+        stage_from_floor * floor_from_anchor;
     return XrLocation{
         GfxTransformToXrPose(local_from_anchor),
         openxr->GetReferenceSpace(device::mojom::XRReferenceSpaceType::kLocal)};
