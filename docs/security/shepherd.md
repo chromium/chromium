@@ -380,11 +380,14 @@ pass it along to / include someone who can direct it more precisely.
   [go/url-spoofs](http://go/url-spoofs) for a guide to triaging these.
 * **SQLite bugs** can be assigned to an owner from //third_party/sqlite/OWNERS.
   CC drhsqlite@ for upstream issues.
-* **Fullscreen bugs** the Open Screen team is taking ownership of Full Screen
-  issues, including security bugs. Please assign Full Screen security issues to
-  muyaoxu@ and cc: liberato@ and mfoltz@. The team is also currently working on
-  holistic changes to improve Full Screen security, so please remember to keep
-  a look out for potential duplicates of planned or ongoing work.
+* **Fullscreen bugs** There is ongoing and planned work to make overall
+  improvements to the security and functionality of Fullscreen. As of January
+  2025 and until [crbug.com/391919449](https://crbug.com/391919449) is closed,
+  new reports of Fullscreen issues should be merged into
+  [crbug.com/391919449](https://crbug.com/391919449) as a Duplicate. In general,
+  the Open Screen team has taken ownership of Fullscreen issues, including
+  security bugs. When necessary, Fullscreen security issues should be assigned
+  muyaoxu@ and cc: liberato@ and mfoltz@.
 * **BoringSSL** the BoringSSL project has moved into the Chromium tracker.
   BoringSSL is a library, so security bugs that do not impact Chrome may still
   be meaningful (e.g. server-side bugs). BoringSSL security issues should be
