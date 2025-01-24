@@ -23,6 +23,7 @@ import org.junit.runners.MethodSorters;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -109,6 +110,7 @@ public class PopupPTTest {
     // in the next tests as well.
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391842690")
     public void test900PopupWindowsAppearWhenAllowed() {
         PopupBlockedMessageFacility popupBlockedMessage =
                 PopupOnLoadPageStation.loadInCurrentTabExpectBlocked(sActivityTestRule, mEntryPage)
