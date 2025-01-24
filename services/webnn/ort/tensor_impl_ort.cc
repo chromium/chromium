@@ -27,11 +27,7 @@ TensorImplOrt::Create(
   //
   // TODO(https://github.com/shiyi9801/chromium/issues/65): Figure out how to
   // support allocator for other devices.
-  OrtStatus* status = ort_api->GetAllocatorWithDefaultOptions(&allocator);
-  if (status) {
-    std::string_view msg = ort_api->GetErrorMessage(status);
-    LOG(ERROR) << "[WebNN] Failed to get default allocator: " << msg;
-    ort_api->ReleaseStatus(status);
+  if (ORT_CALL_FAILED(ort_api->GetAllocatorWithDefaultOptions(&allocator))) {
     return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
                                               "Failed to create tensor."));
   }
@@ -44,13 +40,9 @@ TensorImplOrt::Create(
   std::vector<int64_t> ort_shape(tensor_info->descriptor.shape().begin(),
                                  tensor_info->descriptor.shape().end());
   ScopedOrtValuePtr tensor;
-  status = ort_api->CreateTensorAsOrtValue(allocator, ort_shape.data(),
-                                           ort_shape.size(), ort_data_type,
-                                           tensor.GetAddressOf());
-  if (status) {
-    std::string_view msg = ort_api->GetErrorMessage(status);
-    LOG(ERROR) << "[WebNN] Failed to create tensor: " << msg;
-    ort_api->ReleaseStatus(status);
+  if (ORT_CALL_FAILED(ort_api->CreateTensorAsOrtValue(
+          allocator, ort_shape.data(), ort_shape.size(), ort_data_type,
+          tensor.GetAddressOf()))) {
     return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
                                               "Failed to create tensor."));
   }

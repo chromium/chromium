@@ -10,6 +10,11 @@ namespace webnn::ort {
   ScopedOrt##ort_type##Ptr::ScopedOrt##ort_type##Ptr() {         \
     pptr_ = std::make_unique<Ort##ort_type*>(nullptr);           \
   }                                                              \
+  ScopedOrt##ort_type##Ptr::ScopedOrt##ort_type##Ptr(            \
+      Ort##ort_type* ort_type_ptr) {                             \
+    pptr_ = std::make_unique<Ort##ort_type*>(nullptr);           \
+    *pptr_.get() = ort_type_ptr;                                 \
+  }                                                              \
   ScopedOrt##ort_type##Ptr::~ScopedOrt##ort_type##Ptr() {        \
     if (pptr_) {                                                 \
       Get##ort_api()->Release##ort_type(*pptr_);                 \
@@ -23,6 +28,7 @@ namespace webnn::ort {
 SCOPED_ORT_TYPE_PTR_DEFINITION(Env, OrtApi)
 SCOPED_ORT_TYPE_PTR_DEFINITION(Session, OrtApi)
 SCOPED_ORT_TYPE_PTR_DEFINITION(SessionOptions, OrtApi)
+SCOPED_ORT_TYPE_PTR_DEFINITION(Status, OrtApi)
 SCOPED_ORT_TYPE_PTR_DEFINITION(Value, OrtApi)
 SCOPED_ORT_TYPE_PTR_DEFINITION(MemoryInfo, OrtApi)
 SCOPED_ORT_TYPE_PTR_DEFINITION(OpAttr, OrtApi)

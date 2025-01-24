@@ -113,15 +113,17 @@ class GraphBuilderOrt {
   // 4. Slice: parameter *starts*, *ends* and *steps*.
   template <typename DataType>
     requires internal::IsSupportedTensorType<DataType>
-  std::string CreateInitializer(base::span<const uint32_t> shape,
-                                base::span<const DataType> data);
+  [[nodiscard]] base::expected<std::string, mojom::ErrorPtr> CreateInitializer(
+      base::span<const uint32_t> shape,
+      base::span<const DataType> data);
 
   // A helper method wrapping the `CreateInitializer` above. It creates a
   // scalar initializer with the given scalar value (tensor of empty shape) to
   // the graph, returns the name of the initializer.
   template <typename DataType>
     requires internal::IsSupportedTensorType<DataType>
-  std::string CreateScalarInitializer(const DataType& value);
+  [[nodiscard]] base::expected<std::string, mojom::ErrorPtr>
+  CreateScalarInitializer(const DataType& value);
 
   // Insert a cast operation before an operation to convert its input to the
   // target `to_data_type`, return the output name of the cast operation. The
@@ -142,7 +144,8 @@ class GraphBuilderOrt {
 
   // Similar to the `CreateInitializer` above, add an initializer to the graph
   // with the given constant from WebNN.
-  void AddInitializer(uint64_t constant_id);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddInitializer(
+      uint64_t constant_id);
 
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddBatchNormalizationOperation(
@@ -165,11 +168,13 @@ class GraphBuilderOrt {
       std::string_view op_type);
   void AddArgMinMaxOperation(const mojom::ArgMinMax& arg_min_max);
   void AddCastOperation(const mojom::ElementWiseUnary& cast);
-  void AddClampOperation(const mojom::Clamp& clamp);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddClampOperation(
+      const mojom::Clamp& clamp);
   void AddConcatOperation(const mojom::Concat& concat);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddConv2dOperation(
       const mojom::Conv2d& conv2d);
-  void AddExpandOperation(const mojom::Expand& expand);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddExpandOperation(
+      const mojom::Expand& expand);
   void AddGatherOperation(const mojom::Gather& gather);
   void AddGemmOperation(const mojom::Gemm& gemm);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
@@ -183,14 +188,20 @@ class GraphBuilderOrt {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddPadOperation(
       const mojom::Pad& pad);
   void AddPool2dOperation(const mojom::Pool2d& pool2d);
-  void AddReduceOperation(const mojom::Reduce& reduce);
-  void AddResample2dOperation(const mojom::Resample2d& resample2d);
-  void AddReshapeOperation(const mojom::Reshape& reshape);
-  void AddSliceOperation(const mojom::Slice& slice);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddReduceOperation(
+      const mojom::Reduce& reduce);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddResample2dOperation(
+      const mojom::Resample2d& resample2d);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddReshapeOperation(
+      const mojom::Reshape& reshape);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddSliceOperation(
+      const mojom::Slice& slice);
   void AddSoftmaxOperation(const mojom::Softmax& softmax);
-  void AddSplitOperation(const mojom::Split& split);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddSplitOperation(
+      const mojom::Split& split);
   void AddTransposeOperation(const mojom::Transpose& transpose);
-  void AddTriangularOperation(const mojom::Triangular& triangular);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddTriangularOperation(
+      const mojom::Triangular& triangular);
   void AddWhereOperation(const mojom::Where& where);
 
   [[nodiscard]] base::expected<std::unique_ptr<OrtModelBuilder::ModelInfo>,

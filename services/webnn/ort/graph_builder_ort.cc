@@ -240,7 +240,7 @@ std::string GraphBuilderOrt::GenerateNextOperationName(std::string_view label) {
 
 template <typename DataType>
   requires internal::IsSupportedTensorType<DataType>
-std::string GraphBuilderOrt::CreateInitializer(
+base::expected<std::string, mojom::ErrorPtr> GraphBuilderOrt::CreateInitializer(
     base::span<const uint32_t> shape,
     base::span<const DataType> data) {
   std::string name = GenerateNextOperandName();
@@ -255,22 +255,31 @@ std::string GraphBuilderOrt::CreateInitializer(
     byte_span = base::as_byte_span(data);
   }
 
+  ScopedOrtStatusPtr status_ptr;
   // TODO(https://github.com/shiyi9801/chromium/issues/70): Remove this
   // workaround for OpenVINO EP once the invalid external data issue is fixed.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebNNOrtUseOpenvino)) {
-    model_builder_.AddInitializer(name, int64_shape, byte_span,
-                                  TensorTypeMap<DataType>::value);
+    status_ptr = model_builder_.AddInitializer(name, int64_shape, byte_span,
+                                               TensorTypeMap<DataType>::value);
+
   } else {
-    model_builder_.AddInitializerAsRawData(name, int64_shape, byte_span,
-                                           TensorTypeMap<DataType>::value);
+    status_ptr = model_builder_.AddInitializerAsRawData(
+        name, int64_shape, byte_span, TensorTypeMap<DataType>::value);
   }
-  return name;
+
+  if (status_ptr) {
+    return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
+                                              "Failed to create initializer."));
+  } else {
+    return name;
+  }
 }
 
 template <typename DataType>
   requires internal::IsSupportedTensorType<DataType>
-std::string GraphBuilderOrt::CreateScalarInitializer(const DataType& value) {
+[[nodiscard]] base::expected<std::string, mojom::ErrorPtr>
+GraphBuilderOrt::CreateScalarInitializer(const DataType& value) {
   return CreateInitializer<DataType>(
       /*shape=*/{}, base::span_from_ref(value));
 }
@@ -315,7 +324,8 @@ void GraphBuilderOrt::AddOutput(uint64_t output_id) {
       OperandTypeToONNXTensorElementDataType(operand.descriptor.data_type()));
 }
 
-void GraphBuilderOrt::AddInitializer(uint64_t constant_id) {
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddInitializer(uint64_t constant_id) {
   const WebNNConstantOperand& operand = *constant_operands_.at(constant_id);
   std::string name = GetOperandNameById(constant_id);
 
@@ -323,16 +333,23 @@ void GraphBuilderOrt::AddInitializer(uint64_t constant_id) {
                                    operand.descriptor().shape().end());
   ONNXTensorElementDataType onnx_data_type =
       OperandTypeToONNXTensorElementDataType(operand.descriptor().data_type());
-
+  ScopedOrtStatusPtr status_ptr;
   // TODO(https://github.com/shiyi9801/chromium/issues/70): Remove this
   // workaround for OpenVINO EP once the invalid external data issue is fixed.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebNNOrtUseOpenvino)) {
-    model_builder_.AddInitializer(name, int64_shape, operand.ByteSpan(),
-                                  onnx_data_type);
+    status_ptr = model_builder_.AddInitializer(
+        name, int64_shape, operand.ByteSpan(), onnx_data_type);
   } else {
-    model_builder_.AddInitializerAsRawData(name, int64_shape,
-                                           operand.ByteSpan(), onnx_data_type);
+    status_ptr = model_builder_.AddInitializerAsRawData(
+        name, int64_shape, operand.ByteSpan(), onnx_data_type);
+  }
+
+  if (status_ptr) {
+    return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
+                                              "Failed to add initializer."));
+  } else {
+    return base::ok();
   }
 }
 
@@ -369,13 +386,14 @@ GraphBuilderOrt::AddBatchNormalizationOperation(
       case OperandDataType::kFloat16: {
         std::vector<uint16_t> scale_data_fp16(input_channel,
                                               fp16_ieee_from_fp32_value(1.0f));
-        scale_name =
-            CreateInitializer<uint16_t>(constant_dims, scale_data_fp16);
+        ASSIGN_OR_RETURN(scale_name, CreateInitializer<uint16_t>(
+                                         constant_dims, scale_data_fp16));
         break;
       }
       case OperandDataType::kFloat32: {
         std::vector<float> scale_data(input_channel, 1.0f);
-        scale_name = CreateInitializer<float>(constant_dims, scale_data);
+        ASSIGN_OR_RETURN(scale_name,
+                         CreateInitializer<float>(constant_dims, scale_data));
         break;
       }
       default:
@@ -394,12 +412,14 @@ GraphBuilderOrt::AddBatchNormalizationOperation(
       case OperandDataType::kFloat16: {
         std::vector<uint16_t> bias_data_fp16(input_channel,
                                              fp16_ieee_from_fp32_value(0.0f));
-        bias_name = CreateInitializer<uint16_t>(constant_dims, bias_data_fp16);
+        ASSIGN_OR_RETURN(bias_name, CreateInitializer<uint16_t>(
+                                        constant_dims, bias_data_fp16));
         break;
       }
       case OperandDataType::kFloat32: {
         std::vector<float> bias_data(input_channel, 0.0f);
-        bias_name = CreateInitializer<float>(constant_dims, bias_data);
+        ASSIGN_OR_RETURN(bias_name,
+                         CreateInitializer<float>(constant_dims, bias_data));
         break;
       }
       default:
@@ -717,7 +737,8 @@ void GraphBuilderOrt::AddCastOperation(const mojom::ElementWiseUnary& cast) {
   ADD_CAST_NODE(node_name, input_name, output_name, to_data_type);
 }
 
-void GraphBuilderOrt::AddClampOperation(const mojom::Clamp& clamp) {
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddClampOperation(const mojom::Clamp& clamp) {
   const std::string node_name = GenerateNextOperationName(clamp.label);
   const std::string input_name = GetOperandNameById(clamp.input_operand_id);
   const std::string output_name = GetOperandNameById(clamp.output_operand_id);
@@ -731,15 +752,17 @@ void GraphBuilderOrt::AddClampOperation(const mojom::Clamp& clamp) {
   std::string max_name;
   switch (input_data_type) {
     case OperandDataType::kFloat32: {
-      min_name = CreateScalarInitializer(clamp.min_value);
-      max_name = CreateScalarInitializer(clamp.max_value);
+      ASSIGN_OR_RETURN(min_name, CreateScalarInitializer(clamp.min_value));
+      ASSIGN_OR_RETURN(max_name, CreateScalarInitializer(clamp.max_value));
       break;
     }
     case OperandDataType::kFloat16: {
-      min_name =
-          CreateScalarInitializer(fp16_ieee_from_fp32_value(clamp.min_value));
-      max_name =
-          CreateScalarInitializer(fp16_ieee_from_fp32_value(clamp.max_value));
+      ASSIGN_OR_RETURN(
+          min_name,
+          CreateScalarInitializer(fp16_ieee_from_fp32_value(clamp.min_value)));
+      ASSIGN_OR_RETURN(
+          max_name,
+          CreateScalarInitializer(fp16_ieee_from_fp32_value(clamp.max_value)));
       break;
     }
     // TODO(https://github.com/shiyi9801/chromium/issues/60): Add other data
@@ -754,6 +777,8 @@ void GraphBuilderOrt::AddClampOperation(const mojom::Clamp& clamp) {
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
   model_builder_.AddNode(kOpTypeClamp, node_name, input_names, output_names);
+
+  return base::ok();
 }
 
 void GraphBuilderOrt::AddConcatOperation(const mojom::Concat& concat) {
@@ -899,7 +924,8 @@ GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
   return base::ok();
 }
 
-void GraphBuilderOrt::AddExpandOperation(const mojom::Expand& expand) {
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddExpandOperation(const mojom::Expand& expand) {
   const std::string node_name = GenerateNextOperationName(expand.label);
   const std::string input_name = GetOperandNameById(expand.input_operand_id);
   const std::string output_name = GetOperandNameById(expand.output_operand_id);
@@ -914,14 +940,16 @@ void GraphBuilderOrt::AddExpandOperation(const mojom::Expand& expand) {
   base::ranges::transform(
       output_shape, std::back_inserter(shape_values),
       [](uint32_t dim) { return static_cast<int64_t>(dim); });
-  const std::string shape_name =
-      CreateInitializer<int64_t>(shape_dims, shape_values);
+  ASSIGN_OR_RETURN(const std::string shape_name,
+                   CreateInitializer<int64_t>(shape_dims, shape_values));
 
   std::array<const char*, 2> input_names = {input_name.c_str(),
                                             shape_name.c_str()};
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
   model_builder_.AddNode(kOpTypeExpand, node_name, input_names, output_names);
+
+  return base::ok();
 }
 
 void GraphBuilderOrt::AddGatherOperation(const mojom::Gather& gather) {
@@ -1015,12 +1043,13 @@ GraphBuilderOrt::AddInstanceNormalizationOperation(
       case OperandDataType::kFloat16: {
         std::vector<uint16_t> scale_data_fp16(input_channel,
                                               fp16_ieee_from_fp32_value(1.0f));
-        scale_name =
-            CreateInitializer<uint16_t>(constant_dims, scale_data_fp16);
+        ASSIGN_OR_RETURN(scale_name, CreateInitializer<uint16_t>(
+                                         constant_dims, scale_data_fp16));
         break;
       }
       case OperandDataType::kFloat32: {
-        scale_name = CreateInitializer<float>(constant_dims, scale_data);
+        ASSIGN_OR_RETURN(scale_name,
+                         CreateInitializer<float>(constant_dims, scale_data));
         break;
       }
       default:
@@ -1041,11 +1070,13 @@ GraphBuilderOrt::AddInstanceNormalizationOperation(
       case OperandDataType::kFloat16: {
         std::vector<uint16_t> bias_data_fp16(input_channel,
                                              fp16_ieee_from_fp32_value(0.0f));
-        bias_name = CreateInitializer<uint16_t>(constant_dims, bias_data_fp16);
+        ASSIGN_OR_RETURN(bias_name, CreateInitializer<uint16_t>(
+                                        constant_dims, bias_data_fp16));
         break;
       }
       case OperandDataType::kFloat32: {
-        bias_name = CreateInitializer<float>(constant_dims, bias_data);
+        ASSIGN_OR_RETURN(bias_name,
+                         CreateInitializer<float>(constant_dims, bias_data));
         break;
       }
       default:
@@ -1107,12 +1138,14 @@ GraphBuilderOrt::AddLayerNormalizationOperation(
         case OperandDataType::kFloat16: {
           std::vector<uint16_t> zero_data_fp16(checked_input_size.ValueOrDie(),
                                                fp16_ieee_from_fp32_value(0.0f));
-          zero_name = CreateInitializer<uint16_t>(input_shape, zero_data_fp16);
+          ASSIGN_OR_RETURN(zero_name, CreateInitializer<uint16_t>(
+                                          input_shape, zero_data_fp16));
           break;
         }
         case OperandDataType::kFloat32: {
           std::vector<float> zero_data(checked_input_size.ValueOrDie(), 0.0f);
-          zero_name = CreateInitializer<float>(input_shape, zero_data);
+          ASSIGN_OR_RETURN(zero_name,
+                           CreateInitializer<float>(input_shape, zero_data));
           break;
         }
         default:
@@ -1174,12 +1207,14 @@ GraphBuilderOrt::AddLayerNormalizationOperation(
       case OperandDataType::kFloat16: {
         std::vector<uint16_t> scale_data_fp16(checked_scale_size.ValueOrDie(),
                                               fp16_ieee_from_fp32_value(1.0f));
-        scale_name = CreateInitializer<uint16_t>(scale_dims, scale_data_fp16);
+        ASSIGN_OR_RETURN(scale_name, CreateInitializer<uint16_t>(
+                                         scale_dims, scale_data_fp16));
         break;
       }
       case OperandDataType::kFloat32: {
         std::vector<float> scale_data(checked_scale_size.ValueOrDie(), 1.0f);
-        scale_name = CreateInitializer<float>(scale_dims, scale_data);
+        ASSIGN_OR_RETURN(scale_name,
+                         CreateInitializer<float>(scale_dims, scale_data));
         break;
       }
       default:
@@ -1247,8 +1282,8 @@ GraphBuilderOrt::AddPadOperation(const mojom::Pad& pad) {
 
   std::vector<uint32_t> paddings_dims = {
       base::checked_cast<uint32_t>(padding_length)};
-  const std::string paddings_name =
-      CreateInitializer<int64_t>(paddings_dims, paddings);
+  ASSIGN_OR_RETURN(const std::string paddings_name,
+                   CreateInitializer<int64_t>(paddings_dims, paddings));
   input_names.push_back(paddings_name.c_str());
 
   std::string mode;
@@ -1259,12 +1294,13 @@ GraphBuilderOrt::AddPadOperation(const mojom::Pad& pad) {
       auto constant = pad.mode->get_constant()->value;
       switch (input_data_type) {
         case OperandDataType::kFloat32: {
-          constant_name = CreateScalarInitializer(constant);
+          ASSIGN_OR_RETURN(constant_name, CreateScalarInitializer(constant));
           break;
         }
         case OperandDataType::kFloat16: {
-          constant_name =
-              CreateScalarInitializer(fp16_ieee_from_fp32_value(constant));
+          ASSIGN_OR_RETURN(
+              constant_name,
+              CreateScalarInitializer(fp16_ieee_from_fp32_value(constant)));
           break;
         }
         default:
@@ -1381,7 +1417,8 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
 
 // TODO(https://github.com/shiyi9801/chromium/issues/53): 'reduceSumSquare
 // float32 1D tensor with empty axes' test case fails
-void GraphBuilderOrt::AddReduceOperation(const mojom::Reduce& reduce) {
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddReduceOperation(const mojom::Reduce& reduce) {
   const std::string input_name = GetOperandNameById(reduce.input_operand_id);
   std::vector<const char*> input_names = {input_name.c_str()};
 
@@ -1391,7 +1428,7 @@ void GraphBuilderOrt::AddReduceOperation(const mojom::Reduce& reduce) {
     // axes is an operand with data type int64, not an attribute.
     std::vector<uint32_t> axes_dims = {
         base::checked_cast<uint32_t>(axes.size())};
-    axes_name = CreateInitializer<int64_t>(axes_dims, axes);
+    ASSIGN_OR_RETURN(axes_name, CreateInitializer<int64_t>(axes_dims, axes));
     input_names.push_back(axes_name.c_str());
   }
 
@@ -1414,10 +1451,12 @@ void GraphBuilderOrt::AddReduceOperation(const mojom::Reduce& reduce) {
                                           attr_noop_with_empty_axes.Release()};
   model_builder_.AddNode(reduce_op_type, node_name, input_names, output_names,
                          attributes);
+
+  return base::ok();
 }
 
-void GraphBuilderOrt::AddResample2dOperation(
-    const mojom::Resample2d& resample2d) {
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddResample2dOperation(const mojom::Resample2d& resample2d) {
   const std::string node_name = GenerateNextOperationName(resample2d.label);
   const std::string input_name =
       GetOperandNameById(resample2d.input_operand_id);
@@ -1453,7 +1492,7 @@ void GraphBuilderOrt::AddResample2dOperation(
     // or axes.
     std::array<float, 4> scales_data = {1, 1, resample2d.scales->at(0),
                                         resample2d.scales->at(1)};
-    scales_name = CreateInitializer<float>({4}, scales_data);
+    ASSIGN_OR_RETURN(scales_name, CreateInitializer<float>({4}, scales_data));
     sizes_name = "";
   } else {
     // The number of elements of sizes should be the same as the rank of input
@@ -1464,7 +1503,7 @@ void GraphBuilderOrt::AddResample2dOperation(
         base::checked_cast<int64_t>(output_shape[1]),
         base::checked_cast<int64_t>(output_shape[2]),
         base::checked_cast<int64_t>(output_shape[3])};
-    sizes_name = CreateInitializer<int64_t>({4}, sizes_data);
+    ASSIGN_OR_RETURN(sizes_name, CreateInitializer<int64_t>({4}, sizes_data));
     scales_name = "";
   }
   input_names.push_back(scales_name.c_str());
@@ -1486,9 +1525,12 @@ void GraphBuilderOrt::AddResample2dOperation(
 
   model_builder_.AddNode(kOpTypeResample2d, node_name, input_names,
                          output_names, attributes);
+
+  return base::ok();
 }
 
-void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
   const std::string node_name = GenerateNextOperationName(reshape.label);
   const std::string input_name = GetOperandNameById(reshape.input_operand_id);
   const std::string output_name = GetOperandNameById(reshape.output_operand_id);
@@ -1503,17 +1545,20 @@ void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
   base::ranges::transform(
       output_shape, std::back_inserter(shape_values),
       [](uint32_t dim) { return static_cast<int64_t>(dim); });
-  const std::string shape_name =
-      CreateInitializer<int64_t>(shape_dims, shape_values);
+  ASSIGN_OR_RETURN(const std::string shape_name,
+                   CreateInitializer<int64_t>(shape_dims, shape_values));
 
   std::array<const char*, 2> input_names = {input_name.c_str(),
                                             shape_name.c_str()};
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
   model_builder_.AddNode(kOpTypeReshape, node_name, input_names, output_names);
+
+  return base::ok();
 }
 
-void GraphBuilderOrt::AddSliceOperation(const mojom::Slice& slice) {
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddSliceOperation(const mojom::Slice& slice) {
   const std::string node_name = GenerateNextOperationName(slice.label);
   const std::string input_name = GetOperandNameById(slice.input_operand_id);
   const std::string output_name = GetOperandNameById(slice.output_operand_id);
@@ -1532,19 +1577,20 @@ void GraphBuilderOrt::AddSliceOperation(const mojom::Slice& slice) {
   // Starts is an operand with data type int64, not an attribute.
   std::vector<uint32_t> starts_shape = {
       base::checked_cast<uint32_t>(beginnings.size())};
-  const std::string starts_name =
-      CreateInitializer<int64_t>(starts_shape, beginnings);
+  ASSIGN_OR_RETURN(const std::string starts_name,
+                   CreateInitializer<int64_t>(starts_shape, beginnings));
 
   // Ends is an operand with data type int64, not an attribute.
   std::vector<uint32_t> ends_shape = {
       base::checked_cast<uint32_t>(endings.size())};
-  const std::string ends_name = CreateInitializer<int64_t>(ends_shape, endings);
+  ASSIGN_OR_RETURN(const std::string ends_name,
+                   CreateInitializer<int64_t>(ends_shape, endings));
 
   // Steps is an operand with data type int64, not an attribute.
   std::vector<uint32_t> steps_shape = {
       base::checked_cast<uint32_t>(strides.size())};
-  const std::string steps_name =
-      CreateInitializer<int64_t>(steps_shape, strides);
+  ASSIGN_OR_RETURN(const std::string steps_name,
+                   CreateInitializer<int64_t>(steps_shape, strides));
 
   // Axes is an optional input, if not provided, it is an empty string and will
   // be treated as [0, 1, …, len(starts) - 1]:
@@ -1556,6 +1602,8 @@ void GraphBuilderOrt::AddSliceOperation(const mojom::Slice& slice) {
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
   model_builder_.AddNode(kOpTypeSlice, node_name, input_names, output_names);
+
+  return base::ok();
 }
 
 void GraphBuilderOrt::AddSoftmaxOperation(const mojom::Softmax& softmax) {
@@ -1593,7 +1641,8 @@ void GraphBuilderOrt::AddTransposeOperation(const mojom::Transpose& transpose) {
                          attributes);
 }
 
-void GraphBuilderOrt::AddSplitOperation(const mojom::Split& split) {
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddSplitOperation(const mojom::Split& split) {
   const std::string node_name = GenerateNextOperationName(split.label);
   const std::string input_name = GetOperandNameById(split.input_operand_id);
 
@@ -1609,8 +1658,10 @@ void GraphBuilderOrt::AddSplitOperation(const mojom::Split& split) {
     CHECK_LT(split.axis, output_shape.size());
     split_sizes[i] = base::checked_cast<int64_t>(output_shape[split.axis]);
   }
-  const std::string split_name = CreateInitializer<int64_t>(
-      {base::checked_cast<uint32_t>(split_sizes.size())}, split_sizes);
+  ASSIGN_OR_RETURN(
+      const std::string split_name,
+      CreateInitializer<int64_t>(
+          {base::checked_cast<uint32_t>(split_sizes.size())}, split_sizes));
   base::FixedArray<const char*> input_names = {input_name.c_str(),
                                                split_name.c_str()};
 
@@ -1629,10 +1680,12 @@ void GraphBuilderOrt::AddSplitOperation(const mojom::Split& split) {
 
   model_builder_.AddNode(kOpTypeSplit, node_name, input_names, output_names,
                          attributes);
+
+  return base::ok();
 }
 
-void GraphBuilderOrt::AddTriangularOperation(
-    const mojom::Triangular& triangular) {
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddTriangularOperation(const mojom::Triangular& triangular) {
   const std::string node_name = GenerateNextOperationName(triangular.label);
   const std::string input_name =
       GetOperandNameById(triangular.input_operand_id);
@@ -1641,8 +1694,9 @@ void GraphBuilderOrt::AddTriangularOperation(
   std::vector<const char*> input_names = {input_name.c_str()};
 
   // K is an operand with data type int64, not an attribute.;
-  const std::string k_name = CreateScalarInitializer<int64_t>(
-      static_cast<int64_t>(triangular.diagonal));
+  ASSIGN_OR_RETURN(const std::string k_name,
+                   CreateScalarInitializer<int64_t>(
+                       static_cast<int64_t>(triangular.diagonal)));
   input_names.push_back(k_name.c_str());
 
   std::array<const char*, 1> output_names = {output_name.c_str()};
@@ -1655,6 +1709,8 @@ void GraphBuilderOrt::AddTriangularOperation(
 
   model_builder_.AddNode(kOpTypeTriangular, node_name, input_names,
                          output_names, attributes);
+
+  return base::ok();
 }
 
 void GraphBuilderOrt::AddWhereOperation(const mojom::Where& where) {
@@ -1688,7 +1744,7 @@ GraphBuilderOrt::BuildModel() {
 
   // Add initializers.
   for (const auto& [constant_id, _] : constant_operands_) {
-    AddInitializer(constant_id);
+    RETURN_IF_ERROR(AddInitializer(constant_id));
   }
 
   // Add operations.
@@ -1704,7 +1760,7 @@ GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kClamp: {
-        AddClampOperation(*operation->get_clamp());
+        RETURN_IF_ERROR(AddClampOperation(*operation->get_clamp()));
         break;
       }
       case mojom::Operation::Tag::kElementWiseBinary: {
@@ -1725,7 +1781,7 @@ GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kExpand: {
-        AddExpandOperation(*operation->get_expand());
+        RETURN_IF_ERROR(AddExpandOperation(*operation->get_expand()));
         break;
       }
       case mojom::Operation::Tag::kGather: {
@@ -1763,7 +1819,7 @@ GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kReduce: {
-        AddReduceOperation(*operation->get_reduce());
+        RETURN_IF_ERROR(AddReduceOperation(*operation->get_reduce()));
         break;
       }
       case mojom::Operation::Tag::kRelu: {
@@ -1771,11 +1827,11 @@ GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kResample2d: {
-        AddResample2dOperation(*operation->get_resample2d());
+        RETURN_IF_ERROR(AddResample2dOperation(*operation->get_resample2d()));
         break;
       }
       case mojom::Operation::Tag::kReshape: {
-        AddReshapeOperation(*operation->get_reshape());
+        RETURN_IF_ERROR(AddReshapeOperation(*operation->get_reshape()));
         break;
       }
       case mojom::Operation::Tag::kSigmoid: {
@@ -1783,7 +1839,7 @@ GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kSlice: {
-        AddSliceOperation(*operation->get_slice());
+        RETURN_IF_ERROR(AddSliceOperation(*operation->get_slice()));
         break;
       }
       case mojom::Operation::Tag::kSoftmax: {
@@ -1791,7 +1847,7 @@ GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kSplit: {
-        AddSplitOperation(*operation->get_split());
+        RETURN_IF_ERROR(AddSplitOperation(*operation->get_split()));
         break;
       }
       case mojom::Operation::Tag::kTranspose: {
@@ -1799,7 +1855,7 @@ GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kTriangular: {
-        AddTriangularOperation(*operation->get_triangular());
+        RETURN_IF_ERROR(AddTriangularOperation(*operation->get_triangular()));
         break;
       }
       case mojom::Operation::Tag::kWhere: {

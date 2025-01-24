@@ -218,12 +218,8 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
 
   const OrtApi* ort_api = GetOrtApi();
   ScopedOrtSessionOptionsPtr session_options;
-  OrtStatus* status =
-      ort_api->CreateSessionOptions(session_options.GetAddressOf());
-  if (status) {
-    std::string_view msg = ort_api->GetErrorMessage(status);
-    LOG(ERROR) << "[WebNN] Failed to create session options: " << msg;
-    ort_api->ReleaseStatus(status);
+  if (ORT_CALL_FAILED(
+          ort_api->CreateSessionOptions(session_options.GetAddressOf()))) {
     return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
                                               "Failed to create graph."));
   }
@@ -242,13 +238,8 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
             switches::kWebNNOrtDumpModel);
     base::FilePath dump_path = dump_directory.AppendASCII(
         base::StringPrintf("model%d.onnx", dump_count++));
-    status = ort_api->SetOptimizedModelFilePath(session_options,
-                                                dump_path.value().c_str());
-    if (status) {
-      std::string_view msg = ort_api->GetErrorMessage(status);
-      LOG(ERROR) << "[WebNN] Failed to set optimized model file path: " << msg;
-      ort_api->ReleaseStatus(status);
-    }
+    CALL_ORT_FUNC(ort_api->SetOptimizedModelFilePath(
+        session_options, dump_path.value().c_str()));
 
     // TODO(https://github.com/shiyi9801/chromium/issues/54): Support saving
     // tensors created with `CreateTensorWithDataAsOrtValue()` or
@@ -277,26 +268,16 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
     // It is recommended to disable the graph optimization for OpenVINO
     // backend.
     // https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html#other-configuration-settings
-    status = ort_api->SetSessionGraphOptimizationLevel(
-        session_options, GraphOptimizationLevel::ORT_DISABLE_ALL);
-    if (status) {
-      std::string_view msg = ort_api->GetErrorMessage(status);
-      LOG(ERROR) << "[WebNN] Failed to set graph optimization level: " << msg;
-      ort_api->ReleaseStatus(status);
-    }
+    CALL_ORT_FUNC(ort_api->SetSessionGraphOptimizationLevel(
+        session_options, GraphOptimizationLevel::ORT_DISABLE_ALL));
 
     OrtOpenVINOProviderOptions openvino_options;
     openvino_options.device_type = openvino_device_type.c_str();
 
     // TODO(https://github.com/shiyi9801/chromium/issues/74): Fail early when
     // creating the context if the OpenVINO EP is not supported.
-    status = ort_api->SessionOptionsAppendExecutionProvider_OpenVINO(
-        session_options, &openvino_options);
-    if (status) {
-      std::string_view msg = ort_api->GetErrorMessage(status);
-      LOG(ERROR) << "[WebNN] Failed to append OpenVINO execution provider: "
-                 << msg;
-      ort_api->ReleaseStatus(status);
+    if (ORT_CALL_FAILED(ort_api->SessionOptionsAppendExecutionProvider_OpenVINO(
+            session_options, &openvino_options))) {
       return base::unexpected(
           mojom::Error::New(mojom::Error::Code::kUnknownError,
                             "OnnxRuntime OpenVINO EP is not supported."));
@@ -307,13 +288,8 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
     // TODO(https://github.com/shiyi9801/chromium/issues/58): Investigate how
     // to apply layout optimizations (ORT_ENABLE_ALL).
     // https://onnxruntime.ai/docs/performance/model-optimizations/graph-optimizations.html#layout-optimizations
-    status = ort_api->SetSessionGraphOptimizationLevel(
-        session_options, GraphOptimizationLevel::ORT_ENABLE_BASIC);
-    if (status) {
-      std::string_view msg = ort_api->GetErrorMessage(status);
-      LOG(ERROR) << "[WebNN] Failed to set graph optimization level: " << msg;
-      ort_api->ReleaseStatus(status);
-    }
+    CALL_ORT_FUNC(ort_api->SetSessionGraphOptimizationLevel(
+        session_options, GraphOptimizationLevel::ORT_ENABLE_BASIC));
   }
 
   // `CreateEnv()` will increase the reference count and return the reference of
@@ -321,23 +297,15 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
   // will be owned by `GraphImplOrt::Session` that ensures releasing `OrtEnv`
   // reference after releasing `OrtSession`.
   ScopedOrtEnvPtr env;
-  status = ort_api->CreateEnv(ORT_LOGGING_LEVEL_WARNING, "WebNN",
-                              env.GetAddressOf());
-  if (status) {
-    std::string_view msg = ort_api->GetErrorMessage(status);
-    LOG(ERROR) << "[WebNN] Failed to get the ONNX Runtime environment: " << msg;
-    ort_api->ReleaseStatus(status);
+  if (ORT_CALL_FAILED(ort_api->CreateEnv(ORT_LOGGING_LEVEL_WARNING, "WebNN",
+                                         env.GetAddressOf()))) {
     return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
                                               "Failed to create graph."));
   }
 
   ScopedOrtSessionPtr session;
-  status = GetOrtModelBuilderApi()->CreateSessionFromModel(
-      env, model_info->model, session_options, session.GetAddressOf());
-  if (status) {
-    std::string_view msg = ort_api->GetErrorMessage(status);
-    LOG(ERROR) << "[WebNN] Failed to create session from model: " << msg;
-    ort_api->ReleaseStatus(status);
+  if (ORT_CALL_FAILED(GetOrtModelBuilderApi()->CreateSessionFromModel(
+          env, model_info->model, session_options, session.GetAddressOf()))) {
     return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
                                               "Failed to build graph."));
   }

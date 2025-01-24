@@ -31,6 +31,7 @@
 #include "services/webnn/dml/utils.h"
 #if BUILDFLAG(WEBNN_USE_ORT)
 #include "services/webnn/ort/context_impl_ort.h"
+#include "services/webnn/ort/error_ort.h"
 #include "services/webnn/ort/platform_functions_ort.h"
 #include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/ort/utils_ort.h"
@@ -258,15 +259,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     // same instance.  It is released upon the last reference is removed via
     // `ReleaseEnv()`.
     ort::ScopedOrtEnvPtr env;
-    const OrtApi* ort_api = ort::GetOrtApi();
-    OrtStatus* status = ort_api->CreateEnv(ORT_LOGGING_LEVEL_WARNING, "WebNN",
-                                           env.GetAddressOf());
-    if (status) {
-      std::string_view msg = ort_api->GetErrorMessage(status);
-      LOG(ERROR) << "[WebNN] Failed to create an ONNX Runtime environment: "
-                 << msg;
-      ort_api->ReleaseStatus(status);
-
+    if (ORT_CALL_FAILED(ort::GetOrtApi()->CreateEnv(
+            ORT_LOGGING_LEVEL_WARNING, "WebNN", env.GetAddressOf()))) {
       std::move(callback).Run(ToError<mojom::CreateContextResult>(
           mojom::Error::Code::kNotSupportedError,
           "Failed to create a WebNN context."));

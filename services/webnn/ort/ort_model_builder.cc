@@ -68,19 +68,20 @@ void OrtModelBuilder::AddOutput(std::string_view name,
   outputs_.push_back(CreateOrtValueInfo(name, shape, data_type));
 }
 
-void OrtModelBuilder::AddInitializer(std::string_view name,
-                                     base::span<const int64_t> shape,
-                                     base::span<const uint8_t> data,
-                                     ONNXTensorElementDataType data_type) {
+[[nodiscard]] ScopedOrtStatusPtr OrtModelBuilder::AddInitializer(
+    std::string_view name,
+    base::span<const int64_t> shape,
+    base::span<const uint8_t> data,
+    ONNXTensorElementDataType data_type) {
   bool data_is_external = data.size() >= kMinExternalDataSize;
   if (data_is_external) {
-    AddInitializerAsExternalData(name, shape, data, data_type);
+    return AddInitializerAsExternalData(name, shape, data, data_type);
   } else {
-    AddInitializerAsRawData(name, shape, data, data_type);
+    return AddInitializerAsRawData(name, shape, data, data_type);
   }
 }
 
-void OrtModelBuilder::AddInitializerAsRawData(
+[[nodiscard]] ScopedOrtStatusPtr OrtModelBuilder::AddInitializerAsRawData(
     std::string_view name,
     base::span<const int64_t> shape,
     base::span<const uint8_t> data,
@@ -89,15 +90,16 @@ void OrtModelBuilder::AddInitializerAsRawData(
 
   OrtAllocator* allocator = nullptr;
   // Always use CPU allocator for raw data.
-  CHECK_STATUS(GetOrtApi()->GetAllocatorWithDefaultOptions(&allocator));
+  RETURN_STATUS_IF_FAILED(
+      GetOrtApi()->GetAllocatorWithDefaultOptions(&allocator));
   CHECK(allocator);
 
-  CHECK_STATUS(GetOrtApi()->CreateTensorAsOrtValue(allocator, shape.data(),
-                                                   shape.size(), data_type,
-                                                   initializer.GetAddressOf()));
+  RETURN_STATUS_IF_FAILED(GetOrtApi()->CreateTensorAsOrtValue(
+      allocator, shape.data(), shape.size(), data_type,
+      initializer.GetAddressOf()));
 
   void* ort_tensor_raw_data = nullptr;
-  CHECK_STATUS(
+  RETURN_STATUS_IF_FAILED(
       GetOrtApi()->GetTensorMutableData(initializer, &ort_tensor_raw_data));
   CHECK(ort_tensor_raw_data);
   UNSAFE_BUFFERS(
@@ -105,11 +107,13 @@ void OrtModelBuilder::AddInitializerAsRawData(
       .copy_from(data);
 
   // Graph will own the initializer.
-  CHECK_STATUS(GetOrtModelBuilderApi()->AddInitializerToGraph(
+  RETURN_STATUS_IF_FAILED(GetOrtModelBuilderApi()->AddInitializerToGraph(
       graph_, name.data(), initializer.Release(), /*data_is_external=*/false));
+
+  return ScopedOrtStatusPtr();
 }
 
-void OrtModelBuilder::AddInitializerAsExternalData(
+[[nodiscard]] ScopedOrtStatusPtr OrtModelBuilder::AddInitializerAsExternalData(
     std::string_view name,
     base::span<const int64_t> shape,
     base::span<const uint8_t> data,
@@ -121,14 +125,16 @@ void OrtModelBuilder::AddInitializerAsExternalData(
 
   // TODO(https://github.com/shiyi9801/chromium/issues/45): Use
   // `CreateTensorWithDataAndDeleterAsOrtValue()`.
-  CHECK_STATUS(GetOrtApi()->CreateTensorWithDataAsOrtValue(
+  RETURN_STATUS_IF_FAILED(GetOrtApi()->CreateTensorWithDataAsOrtValue(
       memory_info_, model_info_->external_data.back().data(),
       model_info_->external_data.back().size(), shape.data(), shape.size(),
       data_type, initializer.GetAddressOf()));
 
   // Graph will own the initializer.
-  CHECK_STATUS(GetOrtModelBuilderApi()->AddInitializerToGraph(
+  RETURN_STATUS_IF_FAILED(GetOrtModelBuilderApi()->AddInitializerToGraph(
       graph_, name.data(), initializer.Release(), /*data_is_external=*/true));
+
+  return ScopedOrtStatusPtr();
 }
 
 ScopedOrtOpAttrPtr OrtModelBuilder::CreateAttribute(std::string_view name,

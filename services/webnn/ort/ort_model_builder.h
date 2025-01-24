@@ -50,20 +50,23 @@ class OrtModelBuilder {
 
   // Add an initializer to the graph. It will use raw data if byte size
   // of the data is less than 128.
-  void AddInitializer(std::string_view name,
-                      base::span<const int64_t> shape,
-                      base::span<const uint8_t> data,
-                      ONNXTensorElementDataType data_type);
+  [[nodiscard]] ScopedOrtStatusPtr AddInitializer(
+      std::string_view name,
+      base::span<const int64_t> shape,
+      base::span<const uint8_t> data,
+      ONNXTensorElementDataType data_type);
 
-  void AddInitializerAsRawData(std::string_view name,
-                               base::span<const int64_t> shape,
-                               base::span<const uint8_t> data,
-                               ONNXTensorElementDataType data_type);
+  [[nodiscard]] ScopedOrtStatusPtr AddInitializerAsRawData(
+      std::string_view name,
+      base::span<const int64_t> shape,
+      base::span<const uint8_t> data,
+      ONNXTensorElementDataType data_type);
 
-  void AddInitializerAsExternalData(std::string_view name,
-                                    base::span<const int64_t> shape,
-                                    base::span<const uint8_t> data,
-                                    ONNXTensorElementDataType data_type);
+  [[nodiscard]] ScopedOrtStatusPtr AddInitializerAsExternalData(
+      std::string_view name,
+      base::span<const int64_t> shape,
+      base::span<const uint8_t> data,
+      ONNXTensorElementDataType data_type);
 
   using OrtOpAttrData = absl::variant<int64_t,
                                       float,
