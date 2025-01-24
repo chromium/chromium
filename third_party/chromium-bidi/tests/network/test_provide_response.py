@@ -486,3 +486,72 @@ async def test_provide_response_remove_intercept_inflight_request(
         },
         "type": "event",
     }
+
+
+@pytest.mark.asyncio
+async def test_provide_response_works_with_non_latin(websocket, context_id,
+                                                     url_example):
+    await subscribe(websocket,
+                    ["network.responseStarted", "network.responseCompleted"],
+                    [context_id])
+
+    await execute_command(
+        websocket, {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["responseStarted"],
+                "urlPatterns": [{
+                    "type": "string",
+                    "pattern": url_example,
+                }, ],
+            },
+        })
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_example,
+                "context": context_id,
+                "wait": "complete",
+            }
+        })
+
+    event_response = await wait_for_event(websocket, "network.responseStarted")
+    network_id = event_response["params"]["request"]["request"]
+
+    await execute_command(
+        websocket, {
+            "method": "network.provideResponse",
+            "params": {
+                "request": network_id,
+                "headers": [{
+                    "name": "Content-Type",
+                    "value": {
+                        "type": "string",
+                        "value": "text/plain; charset=utf-8",
+                    }
+                }],
+                "body": {
+                    "type": "string",
+                    "value": "Hello 🌍!",
+                },
+            },
+        })
+
+    event_response = await wait_for_event(websocket,
+                                          "network.responseCompleted")
+
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "document.documentElement.innerText",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": False,
+            }
+        })
+
+    assert result['result']['value'] == "Hello 🌍!"

@@ -152,7 +152,7 @@ export default [
       'plugin:@typescript-eslint/recommended-requiring-type-checking',
     )
     .map((config) => ({
-      name: 'Plugin rules',
+      name: 'TypeScript plugins',
       ...config,
       files: ['**/*.ts'],
     })),
@@ -258,7 +258,6 @@ export default [
       ],
     },
   },
-
   {
     name: 'Fix test unused',
     files: ['**/*.ts'],

@@ -45,6 +45,7 @@ import {
   computeHeadersSize,
   getTiming,
   networkHeaderFromCookieHeaders,
+  stringToBase64,
 } from './NetworkUtils.js';
 
 const REALM_REGEX = /(?<=realm=").*(?=")/;
@@ -1105,7 +1106,7 @@ function getCdpBodyFromBiDiBytesValue(
 ): string | undefined {
   let parsedBody: string | undefined;
   if (body?.type === 'string') {
-    parsedBody = btoa(body.value);
+    parsedBody = stringToBase64(body.value);
   } else if (body?.type === 'base64') {
     parsedBody = body.value;
   }
