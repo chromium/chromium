@@ -1529,8 +1529,9 @@ std::optional<GURL> WebAppRegistrar::GetAppScopeInternal(
   if (!web_app)
     return std::nullopt;
 
-  if (web_app->scope().is_empty())
+  if (!web_app->scope().is_valid()) {
     return std::nullopt;
+  }
 
   return web_app->scope();
 }

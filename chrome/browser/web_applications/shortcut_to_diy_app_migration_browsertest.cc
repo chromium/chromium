@@ -41,8 +41,9 @@ IN_PROC_BROWSER_TEST_F(ShortcutToDiyAppMigrationBrowserTest,
                           webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
 
   auto* provider = WebAppProvider::GetForWebApps(profile());
-  ASSERT_TRUE(
-      provider->registrar_unsafe().GetAppById(app_id)->scope().is_empty());
+  ASSERT_FALSE(provider->registrar_unsafe().GetAppById(app_id)->is_diy_app());
+  ASSERT_EQ(provider->registrar_unsafe().GetLatestAppInstallSource(app_id),
+            webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
 }
 
 // Verifies that on next startup of the WebAppProvider, the installed shortcut
