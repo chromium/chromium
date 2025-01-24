@@ -2142,7 +2142,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/jdk',
-              'version': 'G-WIGWdFIBTPPhv2xPK_lTfI5N7WmfCBh0oTKqX-c5sC',
+              'version': 'piuWwZ1qQ83zsTBfiEG7bNjB8NhyDdJYJJJ9TzNVyQsC',
           },
       ],
       # Needed on Linux for use on chromium_presubmit (for checkstyle).
