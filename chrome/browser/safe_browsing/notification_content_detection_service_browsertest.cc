@@ -358,7 +358,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     NotificationContentDetectionAllowlistedChecksEnabledBrowserTest,
     NotificationDisplayedWhenModelNotAvailable) {
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   blink::PlatformNotificationData data =
       CreateNotificationData(u"Allowlisted title", u"Hello, world!", {});
   service()->DisplayPersistentNotification(
@@ -478,15 +477,9 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
   // When the model is checked for all allowlisted sites and the suspicious
-  // threshold is 0, the notification is suspicious.
-  if (GetAllowlistSamplingRate() == "100" &&
-      GetSuspiciousNotificationThreshold() == "0") {
-    EXPECT_TRUE(
-        IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
-  } else {
-    EXPECT_FALSE(
-        IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
-  }
+  // threshold is 0, the notification is not suspicious for allowlisted URLs.
+  EXPECT_FALSE(
+      IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
   histogram_tester().ExpectTotalCount(
       "SafeBrowsing.NotificationContentDetection."
       "DisplayPersistentNotificationEvent",
@@ -504,7 +497,6 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     NotificationContentDetectionShowWarningsEnabledBrowserTest,
     NotificationDisplayedWhenModelNotAvailable) {
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   blink::PlatformNotificationData data =
       CreateNotificationData(u"Allowlisted title", u"Hello, world!", {});
   service()->DisplayPersistentNotification(
