@@ -158,4 +158,25 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
   RegisterHotkey(updated_hotkey);
   EXPECT_NE(updated_hotkey, manager->RegisteredHotkeyForTesting());
 }
+
+IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
+                       SuspendShortcutAndRegisterAccelerator) {
+  if (!IsHotkeySupported()) {
+    GTEST_SKIP() << "Test does not apply to this platform.";
+  }
+  g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                               true);
+  GlicBackgroundModeManager* const manager =
+      g_browser_process->GetFeatures()->glic_background_mode_manager();
+
+  auto* const global_accelerator_listener =
+      ui::GlobalAcceleratorListener::GetInstance();
+  global_accelerator_listener->SetShortcutHandlingSuspended(true);
+  ui::Accelerator updated_hotkey(ui::VKEY_A,
+                                 ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  RegisterHotkey(updated_hotkey);
+
+  EXPECT_EQ(updated_hotkey, manager->RegisteredHotkeyForTesting());
+  EXPECT_TRUE(global_accelerator_listener->IsShortcutHandlingSuspended());
+}
 }  // namespace glic
